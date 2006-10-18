@@ -1,0 +1,611 @@
+#   ANSI C Phrase structure grammar ( A.2 )
+#	ISO/IEC 9899:1999
+ 
+.maxtoken    4096
+.class       "parser"
+.getsym      "chr = *l++;if( l == end ) fillb()"
+.positioning "full"
+
+
+# identificators and numbers
+typename:
+Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/ -1
+Licon:      /([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?/
+
+# Floating point constant
+Lfcon:		/([0-9]*\.[0-9]+|[0-9]+\.)([eE][+-]?[0-9]+)?[flFL]?/
+Lfcon:		/[0-9]+[eE][+-]?[0-9]+[flFL]?/
+Lfcon:		/0[xX]([0-9a-fA-F]*\.[0-9a-fA-F]+|[0-9a-fA-F]+\.?)[pP][+-]?[0-9]+[flFL]?/
+
+# Strings and Chars
+Lscon:      /L?"([^"\\]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
+Lccon:		/L?'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))+'/
+
+# Non-terminal, skip
+_skip:      /\/\/.*/
+_skip:      /[\t\r\n ]+/    \ continue;
+
+# keywords
+Lsizeof:    /sizeof/
+Ltypedef:   /typedef/
+Lextern:    /extern/
+Lstatic:    /static/
+Lauto:      /auto/
+Lregister:  /register/
+Lchar:      /char/
+Lshort:     /short/
+Lint:       /int/
+Llong:      /long/
+Lsigned:    /signed/
+Lunsigned:  /unsigned/
+Lfloat:     /float/
+Ldouble:    /double/
+L_Bool:     /_Bool/
+L_Complex:  /_Complex/
+L_Imaginary:/_Imaginary/
+Lconst:     /const/
+Lvolatile:  /volatile/
+Lrestrict:  /restrict/
+Linline:    /inline/
+Lvoid:      /void/
+Lstruct:    /struct/
+Lunion:     /union/
+Lenum:      /enum/
+'...':      /\.\.\./
+
+Lcase:      /case/
+Ldefault:   /default/
+Lif:        /if/
+Lelse:      /else/
+Lswitch:    /switch/
+Lwhile:     /while/
+Ldo:        /do/
+Lfor:       /for/
+Lgoto:      /goto/
+Lcontinue:  /continue/
+Lbreak:     /break/
+Lreturn:    /return/
+
+# punctuators
+'->':	/->/
+'++':	/\+\+/
+'--':	/--/
+'<<':	/<</
+'>>':	/>>/
+'<=':	/<=/
+'>=':	/>=/
+'==':	/==/
+'!=':	/!=/
+'&&':	/&&/
+'||':	/\|\|/
+'*=':	/\*=/
+'/=':	/\/=/
+'%=':	/%=/
+'+=':   /+=/
+'-=':	/-=/
+'<<=':	/<<=/
+'>>=':	/>>=/
+'&=':	/&=/
+'^=':	/^=/
+'|=':	/\|=/
+
+'(':	/\(/
+')':	/\)/
+'[':	/\[/
+']':	/\]/
+'.':	/\./
+',':	/,/
+'&':	/&/
+'*':	/*/
+'+':	/+/
+'-':	/-/
+'~':	/~/
+'!':	/!/
+'/':	/\//
+'%':	/%/
+'<':	/</
+'>':	/>/
+'^':	/^/
+'|':	/\|/
+'?':	/?/
+':':	/:/
+'=':	/=/
+';':	/;/
+'{':	/{/
+'}':	/}/
+
+'/*':   /\/\*/          { group = @1;continue; }
+[1]
+anysym1: /[\t \r\n]+/	{ continue; }
+anysym1: /[^*\t \r\n]+/ -1
+anysym1: /*/
+anysym2: /TODO[^*\n]*/  { printf( "%s\n", token ); continue; }
+'*/':    /\*\//         { group = @0;continue; }
+
+
+error:
+
+# Attributes
+
+[]
+
+# A.2.1  Expressions
+
+constant ::
+  = Licon
+  = Lccon
+  = Lfcon
+;
+
+primary_expression ::
+  = Lid
+  = constant
+  = Lscon
+  = '(' expression ')'
+;
+
+postfix_expression ::
+  = primary_expression
+  = postfix_expression '[' expression ']'
+  = postfix_expression '(' ')'
+  = postfix_expression '(' argument_expression_list ')'
+  = postfix_expression '.' Lid
+  = postfix_expression '->' Lid
+  = postfix_expression '++'
+  = postfix_expression '--'
+  = '(' type_name ')' '{' initializer_list '}'
+  = '(' type_name ')' '{' initializer_list ',' '}'
+;
+
+argument_expression_list ::
+  = assignment_expression
+  = argument_expression_list ',' assignment_expression
+;
+
+unary_expression ::
+  = postfix_expression
+  = '++' unary_expression
+  = '--' unary_expression
+  = unary_operator cast_expression
+  = Lsizeof unary_expression
+  = Lsizeof '(' type_name ')'
+;
+
+unary_operator ::= '&' | '*' | '+' | '-' | '~' | '!' ;
+
+cast_expression ::
+  = unary_expression
+  = '(' type_name ')' cast_expression
+;
+
+multiplicative_expression ::
+  = cast_expression
+  = multiplicative_expression '*' cast_expression
+  = multiplicative_expression '/' cast_expression
+  = multiplicative_expression '%' cast_expression
+;
+
+additive_expression ::
+  = multiplicative_expression
+  = additive_expression '+' multiplicative_expression
+  = additive_expression '-' multiplicative_expression
+;
+
+shift_expression ::
+  = additive_expression
+  = shift_expression '<<' additive_expression
+  = shift_expression '>>' additive_expression
+;
+
+relational_expression ::
+  = shift_expression
+  = relational_expression '<' shift_expression
+  = relational_expression '>' shift_expression
+  = relational_expression '<=' shift_expression
+  = relational_expression '>=' shift_expression
+;
+
+equality_expression ::
+  = relational_expression
+  = equality_expression '==' relational_expression
+  = equality_expression '!=' relational_expression
+;
+
+and_expression ::
+  = equality_expression
+  = and_expression '&' equality_expression
+;
+
+exclusive_or_expression ::
+  = and_expression
+  = exclusive_or_expression '^' and_expression
+;
+
+inclusive_or_expression ::
+  = exclusive_or_expression
+  = inclusive_or_expression '|' exclusive_or_expression
+;
+
+logical_and_expression ::
+  = inclusive_or_expression
+  = logical_and_expression '&&' inclusive_or_expression
+;
+
+logical_or_expression ::
+  = logical_and_expression
+  = logical_or_expression '||' logical_and_expression
+;
+
+conditional_expression ::
+  = logical_or_expression
+  = logical_or_expression '?' expression ':' conditional_expression
+;
+
+assignment_expression ::
+  = conditional_expression
+  = unary_expression assignment_operator assignment_expression
+;
+
+assignment_operator ::= '=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '^=' | '|=' ;
+
+expression ::
+  = assignment_expression
+  = expression ',' assignment_expression
+;
+
+constant_expression ::
+  = conditional_expression
+;
+
+# A.2.2  Declarations
+
+declaration ::
+  = declaration_specifiers ';'
+  = declaration_specifiers init_declarator_list ';'
+;
+
+declaration_specifiers ::
+  = storage_class_specifier
+  = storage_class_specifier declaration_specifiers
+  = type_specifier
+  = type_specifier declaration_specifiers
+  = type_qualifier
+  = type_qualifier declaration_specifiers
+  = function_specifier declaration_specifiersopt
+;
+
+init_declarator_list ::
+  = init_declarator
+  = init_declarator_list ',' init_declarator
+;
+
+init_declarator ::
+  = declarator
+  = declarator '=' initializer
+;
+
+storage_class_specifier ::
+  = Ltypedef
+  = Lextern
+  = Lstatic
+  = Lauto
+  = Lregister
+;
+
+type_specifier ::
+  = Lvoid
+  = Lchar
+  = Lshort
+  = Lint
+  = Llong
+  = Lfloat
+  = Ldouble
+  = Lsigned
+  = Lunsigned
+  = L_Bool
+  = L_Complex
+  = L_Imaginary
+  = struct_or_union_specifier
+  = enum_specifier
+  = typename
+;
+
+struct_or_union_specifier ::
+  = struct_or_union Lid '{' struct_declaration_list '}'
+  = struct_or_union '{' struct_declaration_list '}'
+  = struct_or_union Lid
+;
+
+struct_or_union ::
+  = Lstruct
+  = Lunion
+;
+
+struct_declaration_list ::
+  = struct_declaration
+  = struct_declaration_list struct_declaration
+;
+
+struct_declaration ::
+  = specifier_qualifier_list struct_declarator_list ';'
+;
+
+specifier_qualifier_list ::
+  = type_specifier specifier_qualifier_list
+  = type_specifier
+  = type_qualifier specifier_qualifier_list
+  = type_qualifier
+;
+
+struct_declarator_list ::
+  = struct_declarator
+  = struct_declarator_list ',' struct_declarator
+;
+
+struct_declarator ::
+  = declarator
+  = ':' constant_expression
+  = declarator ':' constant_expression
+;
+
+enum_specifier ::
+  = Lenum '{' enumerator_list ',' '}'
+  = Lenum '{' enumerator_list '}'
+  = Lenum Lid '{' enumerator_list ',' '}'
+  = Lenum Lid '{' enumerator_list '}'
+  = Lenum Lid
+;
+
+enumerator_list ::
+  = enumerator
+  = enumerator_list ',' enumerator
+;
+
+enumerator ::
+  = Lid
+  = Lid '=' constant_expression
+;
+
+type_qualifier ::
+  = Lconst
+  = Lvolatile
+  = Lrestrict
+;
+
+function_specifier ::
+  = Linline
+;
+
+declarator ::
+  = pointer direct_declarator
+  = direct_declarator
+;
+
+direct_declarator ::
+  = Lid
+  = '(' declarator ')'
+  = direct_declarator '[' type_qualifier_listopt assignment_expressionopt ']'
+  = direct_declarator '[' Lstatic type_qualifier_listopt assignment_expression ']'
+  = direct_declarator '[' type_qualifier_list Lstatic assignment_expression ']'
+  = direct_declarator '[' type_qualifier_listopt '*' ']'
+  = direct_declarator '(' parameter_type_list ')'
+  = direct_declarator '(' Lid_list ')'
+  = direct_declarator '(' ')'
+;
+
+pointer ::
+  = '*'
+  = '*' type_qualifier_list
+  = '*' pointer
+  = '*' type_qualifier_list pointer
+;
+
+type_qualifier_list ::
+  = type_qualifier
+  = type_qualifier_list type_qualifier
+;
+
+parameter_type_list ::
+  = parameter_list
+  = parameter_list ',' '...'
+;
+
+parameter_list ::
+  = parameter_declaration
+  = parameter_list ',' parameter_declaration
+;
+
+parameter_declaration ::
+  = declaration_specifiers declarator
+  = declaration_specifiers abstract_declarator
+  = declaration_specifiers
+;
+
+Lid_list ::
+  = Lid
+  = Lid_list ',' Lid
+;
+
+type_name ::
+  = specifier_qualifier_list
+  = specifier_qualifier_list abstract_declarator
+;
+
+abstract_declarator ::
+  = pointer
+  = direct_abstract_declarator
+  = pointer direct_abstract_declarator
+;
+
+direct_abstract_declarator ::
+  = '(' abstract_declarator ')'
+  = '[' ']'
+  = '[' assignment_expression ']'
+  = direct_abstract_declarator '[' ']'
+  = direct_abstract_declarator '[' assignment_expression ']'
+  = '[' '*' ']'
+  = direct_abstract_declarator '[' '*' ']'
+  = '(' ')'
+  = '(' parameter_type_list ')'
+  = direct_abstract_declarator '(' ')'
+  = direct_abstract_declarator '(' parameter_type_list ')'
+;
+
+initializer ::
+  = assignment_expression
+  = '{' initializer_list '}'
+  = '{' initializer_list ',' '}'
+;
+
+initializer_list ::
+  = designationopt initializer
+  = initializer_list ',' designationopt initializer
+;
+
+designation ::
+  = designator_list '='
+;
+
+designator_list ::
+  = designator
+  = designator_list designator
+;
+
+designator ::
+  = '[' constant_expression ']'
+  = '.' Lid
+;
+
+# A.2.3  Statements
+
+statement ::
+  = labeled_statement
+  = compound_statement
+  = expression_statement
+  = selection_statement
+  = iteration_statement
+  = jump_statement
+;
+
+labeled_statement ::
+  = Lid ':' statement
+  = Lcase constant_expression ':' statement
+  = Ldefault ':' statement
+;
+
+compound_statement ::
+  = '{' '}'
+  = '{' block_item_list '}'
+;
+
+block_item_list ::
+  = block_item
+  = block_item_list block_item
+;
+
+block_item :: 
+  = declaration
+  = statement
+;
+
+expression_statement ::
+  = ';'
+  = expression ';'
+  = error ';'
+;
+
+selection_statement ::
+  = Lif '(' expression ')' statement
+  = Lif '(' expression ')' statement Lelse statement
+  = Lswitch '(' expression ')' statement
+;
+
+iteration_statement ::
+  = Lwhile '(' expression ')' statement
+  = Ldo statement Lwhile '(' expression ')' ';'
+  = Lfor '(' expression_statement expression_statement expressionopt ')' statement
+  = Lfor '(' declaration expression_statement expressionopt')' statement
+;
+
+jump_statement ::
+  = Lgoto Lid ';'
+  = Lcontinue ';'
+  = Lbreak ';'
+  = Lreturn expressionopt ';'
+;
+
+# A.2.4  External definitions
+
+input ::
+  = external_declaration
+  = input external_declaration
+;
+
+external_declaration ::
+  = function_definition
+  = declaration
+;
+
+function_definition ::
+  = declaration_specifiers declarator declaration_listopt compound_statement
+;
+
+declaration_list ::
+  = declaration
+  = declaration_list declaration
+;
+
+%%
+
+#define DEBUG_syntax
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+class parser {
+private:
+    char b[1025], *l, *end;
+    void error( char *r, ... );
+
+public:
+    int parse();
+    void fillb();
+};
+
+void parser::error( char *r, ... )
+{
+    va_list arglist;
+    va_start( arglist, r );
+    vfprintf( stderr, r, arglist );
+}
+
+
+void parser::fillb()
+{
+    int size = fread( b, 1, 1024, stdin );
+    b[size] = 0; end = b + size; l = b;
+}
+
+
+int main( int argc, char *argv[] )
+{
+    int  i;
+    char *input = "-";
+    parser p;
+    
+    for( i = 1; i < argc; i++ ) {
+        if( argv[i][0]!='-' || argv[i][1]==0 )
+            input = argv[i];
+    }
+
+    if( input[0] != '-' || input[1] != 0 )
+        if( !freopen( input, "r", stdin ) ) {
+            perror( input );
+            return 1;
+        }
+
+    p.fillb();
+    p.parse();
+    return 0;
+}
