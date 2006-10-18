@@ -9,7 +9,7 @@ const char *gpl =
 	"/*   %s\n"
 	" *\n"
 	" *   Lapg (Lexical Analyzer and Parser Generator)\n"
-	" *   Copyright (C) 2002-03  Eugeniy Gryaznov (gryaznov@front.ru)\n"
+	" *   Copyright (C) 2002-04  Eugeniy Gryaznov (gryaznov@front.ru)\n"
 	" *\n"
 	" *   This program is free software; you can redistribute it and/or modify\n"
 	" *   it under the terms of the GNU General Public License as published by\n"

@@ -1,7 +1,7 @@
 #   Makefile
 #
 #   Lapg (Lexical Analyzer and Parser Generator)
-#   Copyright (C) 2002-03  Eugeniy Gryaznov (gryaznov@front.ru)
+#   Copyright (C) 2002-04  Eugeniy Gryaznov (gryaznov@front.ru)
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -17,16 +17,16 @@
 #   along with this program; if not, write to the Free Software
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-VER=83
+VER=100
 
-OF=objs/common.o objs/gbuild.o objs/lalr1.o objs/lapg.o objs/lbuild.o objs/parse.o objs/st_c++.o objs/st_cs.o objs/srcgen.o objs/engine.o
-SRC=common.cpp gbuild.cpp lalr1.cpp lapg.cpp lbuild.cpp st_c++.cpp st_cs.cpp srcgen.cpp engine.cpp
-GEN=parse.cpp
+OF=objs/common.o objs/gbuild.o objs/lalr1.o objs/lapg.o objs/lbuild.o objs/parse.o objs/srcgen.o objs/engine.o objs/templates.o objs/defaults.o
+SRC=common.cpp gbuild.cpp lalr1.cpp lapg.cpp lbuild.cpp srcgen.cpp engine.cpp
+GEN=parse.cpp templates.cpp defaults.cpp
 CF=$(SRC) $(GEN)
 HF=common.h gbuild.h lalr1.h lbuild.h srcgen.h
 PARAMS=-DGCC_COMPILER -O2
 
-lapg : $(OF) tags
+lapg : $(OF)
 	g++ -o lapg $(PARAMS) $(OF)
 
 objs :
@@ -36,14 +36,7 @@ objs/%.o : %.cpp $(HF) objs
 	g++ -c -o $@ $(PARAMS) $<
 
 clean :
-	rm -rf objs lapg errors states parse1.cpp tags
-
-pack : clean
-	rm -f save/s$(VER).rar
-	rar a -r save/s$(VER).rar `ls -I 'save'`
-
-tags : $(HF) $(CF)
-	ctags *
+	rm -rf objs lapg errors states parse1.cpp tags txt2c++ templates.cpp defaults.cpp
 
 unix :
 	for A in *.cpp *.h syntax; do dos2unix $$A; done
@@ -51,3 +44,8 @@ unix :
 dos :
 	for A in *.cpp *.h syntax; do unix2dos $$A; done
 
+templates.cpp: templ_cs templ_cpp txt2c++
+	./txt2c++ templates.cpp templ_cs templ_cpp
+
+defaults.cpp: default_cpp default_cs txt2c++
+	./txt2c++ defaults.cpp default_cpp default_cs

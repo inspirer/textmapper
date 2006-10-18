@@ -1,7 +1,7 @@
 /*   templates.cpp
  *
  *   Lapg (Lexical Analyzer and Parser Generator)
- *   Copyright (C) 2002-03  Eugeniy Gryaznov (gryaznov@front.ru)
+ *   Copyright (C) 2002-04  Eugeniy Gryaznov (gryaznov@front.ru)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ const char *templ_cs =
 	"\t\tpublic object sym;\n"
 	"\t\tpublic int  lexem, state;\n"
 	"$#pos\t\tpublic lapg_place pos;\n"
+	"$#lexemend\t\tpublic lapg_place endpos;\n"
 	"\t};\n"
 	"\n"
 	"\tstatic readonly short[] lapg_char2no = new short[] {\n"
@@ -139,6 +140,7 @@ const char *templ_cs =
 	"\t\t\t\t\t@next;\n"
 	"\t\t\t\t}\n"
 	"\t\t\t}\n"
+	"$#lexemend\t\t\tlapg_n.endpos = lapg_current;\n"
 	"\t\t\ttoken[lapg_size] = 0;\n"
 	"\n"
 	"\t\t\tif( lapg_i == -1 ) {\n"
@@ -174,6 +176,7 @@ const char *templ_cs =
 	"\t\t\t\t\t\tSystem.Console.WriteLine( \"reduce to {0}\", lapg_syms[lapg_rlex[lapg_i]] );\n"
 	"\t\t\t\t\t#endif\n"
 	"$#pos\t\t\t\t\tlapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;\n"
+	"$#lexemend\t\t\t\t\tlapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;\n"
 	"${ruleactions\n"
 	"\t\t\t\t\tswitch( lapg_i ) {\n"
 	"${eachaction\n"
@@ -256,6 +259,7 @@ const char *templ_cpp =
 	"\tvoid *sym;\n"
 	"\tint  lexem, state;\n"
 	"$#pos\tstruct lapg_place pos;\n"
+	"$#lexemend\tstruct lapg_place endpos;\n"
 	"};\n"
 	"\n"
 	"static const char lapg_char2no[256] = {\n"
@@ -358,6 +362,7 @@ const char *templ_cpp =
 	"\t\t\t\t@next;\n"
 	"\t\t\t}\n"
 	"\t\t}\n"
+	"$#lexemend\t\tlapg_n.endpos = lapg_current;\n"
 	"\t\ttoken[lapg_size] = 0;\n"
 	"\n"
 	"\t\tif( lapg_i == -1 ) {\n"
@@ -390,6 +395,7 @@ const char *templ_cpp =
 	"\t\t\t\t\tfprintf( stdout, \"reduce to %s\\n\", lapg_syms[lapg_rlex[lapg_i]] );\n"
 	"\t\t\t\t#endif\n"
 	"$#pos\t\t\t\tlapg_gg.pos = (lapg_rlen[lapg_i])?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;\n"
+	"$#lexemend\t\t\t\tlapg_gg.endpos = (lapg_rlen[lapg_i])?lapg_m[lapg_head].endpos:lapg_n.pos;\n"
 	"${ruleactions\n"
 	"\t\t\t\tswitch( lapg_i ) {\n"
 	"${eachaction\n"

@@ -1,7 +1,7 @@
 /*	 srcgen.cpp
  *
  *	 Lapg (Lexical Analyzer and Parser Generator)
- *	 Copyright (C) 2002-03	Eugeniy Gryaznov (gryaznov@front.ru)
+ *	 Copyright (C) 2002-04	Eugeniy Gryaznov (gryaznov@front.ru)
  *
  *	 This program is free software; you can redistribute it and/or modify
  *	 it under the terms of the GNU General Public License as published by
@@ -94,6 +94,12 @@ void SourceGenerator::process_directive( char *id, char *value, int line, int co
 		else error( 0, "lapg: %s, %i(%i) unknown positioning value %s\n", sourcename, line, column, value );
 		delete[] value;
 
+	} else if( !strcmp( id, "lexemend" ) ) {
+		if( !strcmp( value, "on" ) ) lexemend = 1;
+		else if( !strcmp( value, "off" ) ) lexemend = 0;
+		else error( 0, "lapg: %s, %i(%i) unknown lexemend value %s (can be on/off)\n", sourcename, line, column, value );
+		delete[] value;
+
 	} else
 		lalr1::process_directive( id, value, line, column );
 }
@@ -115,7 +121,7 @@ void SourceGenerator::process( int debug )
 
 	// init
 	ns = errprefix = classn = getsym = NULL;
-	positioning = 0;
+	lexemend = positioning = 0;
 	fillb();
 
 	if( run() ) {
@@ -697,6 +703,7 @@ static const char *dollar_varlist[] = {
 	"ruleactions",
 	"eachlexem",
 	"eachaction",	/* 10 */
+	"lexemend",
 	NULL
 };
 
@@ -746,6 +753,8 @@ int SourceGenerator::check_variable( char *var )
 			iteration_counter = -1;
 			update_vars( 1 );
 			return 3;
+		case 11: /* lexemend */
+			return (lexemend && positioning) ? 1 : 0;
 		}
 		return 0;
 }

@@ -16,6 +16,7 @@ $}
 		public object sym;
 		public int  lexem, state;
 $#pos		public lapg_place pos;
+$#lexemend		public lapg_place endpos;
 	};
 
 	static readonly short[] lapg_char2no = new short[] {
@@ -118,6 +119,7 @@ $#pos2					if( chr == '\n' ) { lapg_current.column = 1; lapg_current.line++; }
 					@next;
 				}
 			}
+$#lexemend			lapg_n.endpos = lapg_current;
 			token[lapg_size] = 0;
 
 			if( lapg_i == -1 ) {
@@ -153,6 +155,7 @@ $}
 						System.Console.WriteLine( "reduce to {0}", lapg_syms[lapg_rlex[lapg_i]] );
 					#endif
 $#pos					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
+$#lexemend					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 ${ruleactions
 					switch( lapg_i ) {
 ${eachaction

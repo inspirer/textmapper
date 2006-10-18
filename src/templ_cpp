@@ -11,6 +11,7 @@ struct lapg_symbol {
 	void *sym;
 	int  lexem, state;
 $#pos	struct lapg_place pos;
+$#lexemend	struct lapg_place endpos;
 };
 
 static const char lapg_char2no[256] = {
@@ -113,6 +114,7 @@ $#pos2				if( chr == '\n' ) lapg_current.column = 1, lapg_current.line++;
 				@next;
 			}
 		}
+$#lexemend		lapg_n.endpos = lapg_current;
 		token[lapg_size] = 0;
 
 		if( lapg_i == -1 ) {
@@ -145,6 +147,7 @@ $}
 					fprintf( stdout, "reduce to %s\n", lapg_syms[lapg_rlex[lapg_i]] );
 				#endif
 $#pos				lapg_gg.pos = (lapg_rlen[lapg_i])?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
+$#lexemend				lapg_gg.endpos = (lapg_rlen[lapg_i])?lapg_m[lapg_head].endpos:lapg_n.pos;
 ${ruleactions
 				switch( lapg_i ) {
 ${eachaction

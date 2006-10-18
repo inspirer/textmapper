@@ -308,6 +308,7 @@ int lalr1::parse()
 			} break;
 		}
 
+		skip_symbols:
 		do {
 			lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
