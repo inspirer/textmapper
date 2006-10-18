@@ -1,18 +1,44 @@
 
 
             LAPG ( Lexical analyzer and parser generator )
-               Eugeniy Gryaznov, 2002-03, inspirer@inbox.ru
+               Eugeniy Gryaznov, 2002-04, inspirer@inbox.ru
 
 
   1. Introduction
 
-       Lapg is the combined lexical analyzer and parser generator, which 
-    converts a description for a context-free LALR1 grammar into source file 
-    to parse the grammar.
+       Lapg is the combined lexical analyzer and parser generator, which
+    converts a description for a context-free LALR1 grammar into source file
+    to parse the grammar. The generated parser accepts zero-terminated text,
+    breaks it into tokens and applies given rules to reduce the input to the
+    main non-terminal symbol. Lapg can be used in a wide range of tasks. It
+    may be a simple string parser or a complicated compiler like C++.
+
+    The official homepage is http://gryaznov.net/lapg/
+
+    LAPG is distributed under the General Public License.
+     
 
   2. Invoking
 
-    Run `lapg --help`.
+       By default lapg assumes that the grammar is stored in file with name
+    syntax while the output name depends on target language and usually
+    begins with word parse. 
+
+        usage: lapg [OPTIONS]... [inputfile [outputfile]]
+
+    The content of output file is fully depends on the input, lapg has no
+    command line options which affects the generation process. The only
+    thing you can do from command line is to force generation of debug
+    information. It is very important for detecting lalr1 conflicts and
+    is discussed later.
+
+       lapg -d [inputfile [outputfile]]
+         OR
+       lapg --debug [inputfile [outputfile]]
+    
+    In this mode lapg will generate file 'debug' in the current dirrectory.
+
+    use 'lapg --help' for more details
 
 
   3. Supported languages
@@ -24,20 +50,19 @@
       separate .cpp file, which contains definition for the function:
           int yourclass::parse();
 
-      The full header file with class declaration you must write manually,
-      but you can use autogenerators (see -tf/ts switches).
 
-    3.2  C
+    3.2  C#
 
-         The case of C language is similar to the previous, the generated 
-      .c file exports only one function: int yourclass_parse();
-      Usually you must store the declaration of this function in your .h files.
+         In the case of C# language, the generated .cs file contains one class.
+      You can define additional members for this class in grammar file.
 
+    3.3  Other languages.
 
-    3.3  C#
-
-         Generated file contains a public class with public parse 
-      function.
+         You can easily add a new language to lapg. You need to add language
+      specific template and (optionaly) default syntax file, then modify
+      srcgen.cpp to add one line about your language to 'langs' static array.
+      Recompile lapg and enjoy. Template samples are in files: templ_cpp, templ_cs,
+      or can be obtained by invoking 'lapg --verbose'.
 
 
   4. Syntax of parser-description file
@@ -56,7 +81,7 @@
       Cmd:
         is one of the following
             1. the rest of line after the \
-            2. the whole line, beginning with two tabs.
+            2. the whole line, beginning with two tabs. (I like this)
             3. text in curly braces, which DOES NOT contain any curly brace.
         Two Cmds following one by one, will be concatenated.
 
@@ -95,10 +120,6 @@
         4) LALR(1) Grammar
             This section contains one or more grammar rules.
 
-        File processing ends up on the line which begins with two percent
-        signs. The rest of file interpretation is target language specific.
-
-
       4.3.1 Section #1: Directives
 
         This is the full list of target language independent directives.
@@ -114,7 +135,8 @@
            errorprefix  - this string is inserted after the first parenthesis
                           in call of error function
            positioning  - can be: none, line, or full
-
+           namespace    - namespace name to place class in
+           lang         - can be: c++, cs
 
       4.3.2 Section #2: Vocabulary
 
@@ -153,7 +175,6 @@
           The following metacharacters are available in these actions:
              @      Data associated with a new lexem, is equal to zero by default.
                     (language-specific)
-             @0,... group identificator
              $id    Number, which corresponds the 'id' lexem
              $@     Current lexem position (structure)
              $$     variable, which contains the number of the current 
@@ -165,7 +186,10 @@
 
           A predefined lexem 'eoi' has zero number and special meaning,
           but you can write additional regular expressions for it, and break
-          your data processing at any position.
+          your data processing at specified tokens.
+
+          If you define 'error' lexem, it cannot have regular expression, this
+          is predefined lexem, which is used in error recovering (see 5.)
 
           You cannot define 'input' lexem because it is predefined
           as nonterminal.
@@ -201,9 +225,9 @@
           a :: = b c  { action } ;
 
         the resulting value of 'a' is a function of 'b' and 'c', i.e. action
-        is equivalent to "a = function(b,c)". In this section you can define
+        is equivalent to "a = action(b,c)". In this section you can define
         heritable attributes. Each attribute will depend also on the left siblings
-        of its parent.
+        of its symbol.
 
         This section is declarative. It is used only for static checks and type
         control. If you have declared that a symbol has an attribute, lapg checks,
@@ -221,6 +245,9 @@
         Example #1.
 
           [ b ]
+             
+               This means, that each entry of 'b' symbol must be preceded by action. This action 
+           must produce attribute for 'b'.
 
              c ::= a d { $$ = $a; } b ;
                   Now in any rule for 'b' we can use metacharacter $# to access the 'a'
@@ -231,16 +258,17 @@
 
         Example #2.
 
-          [ type -> newvar-list ]
+          [ type -> newvar_list ]
 
-          definition ::= type newvar-listopt ';' ;
-          newvar-list ::= newvar                        { addvar( $newvar, $# ); }
-                        | newvar-list ',' newvar        { addvar( $newvar, $# ); }
+          definition ::= type newvar_listopt ';' ;
+          newvar_list ::= newvar                        { addvar( $newvar, $# ); }
+                        | newvar_list ',' newvar        { addvar( $newvar, $# ); }
           ;
-        
-          In the attributes section we declared that in our grammar all newvar-list
-          entries are either the leftmost symbol in the rule or preceded by the 
-          'type' symbol, therefore, $# symbol refers to type attribute.
+
+          In the attributes section we declared that in our grammar all newvar_list
+          entries are either the leftmost symbol in the rule with newvar_list in the
+          left part, or preceded by the 'type' symbol, therefore, $# symbol refers 
+          to 'type' attribute.
 
       4.3.4 Section #4: LALR(1) Grammar
 
@@ -256,6 +284,7 @@
                 header '::=' rightpart_or_list ';'
                 header '::'  rightpart_eq_list ';'
                 header '[' rightpart_eq_list ']'
+                prioritydef
 
             header:
                 identificator typeopt
@@ -269,10 +298,16 @@
                 rightpart_eq_list '=' rightpart
 
             rightpart:
-                rightelem_list cmdopt
+                rightelem_list rule_priorityopt cmdopt
 
             rightelem:
                 cmdopt identificator
+
+            rule_priority:
+                << identificator
+
+            prioritydef:
+                % [left|right|nonassoc] identificator_list
 
         Restrictions:
             Symbols ending with opt and terminals cannot be used in 
@@ -288,9 +323,8 @@
           You can define semantic actions at any place in the rule. Actions
           at the end of the rule will be performed when this rule will be applied.
 
-          All internal variables of lapg are prefixed by 'lapg_', but there
-          are two exceptions: variables 'chr' and 'token'. They were described
-          earlier.
+          All semantic actions you define become a part of parse function, therefore
+          do not use 'chr', 'token' and 'lapg_*' variables.
 
           The following metacharacters are available in these actions:
 
@@ -310,7 +344,10 @@
 
              $#           L-attribute.
 
-             @0, ....     position of lexem (structure)
+             @$           position of newly created lexem
+                          (by default: @$ = @0; )
+
+             @0,@1,...    position of i-th symbol in the right part of rule
 
         Examples:
             
@@ -329,3 +366,36 @@
                              | multiplication '*' simple
             { printf( "%i = %i*%i", $multiplication#0, $multiplication#1, $simple ); } 
            ;
+
+  5. Errors handling mechanism
+
+      By default, when the parser encounters an unexpected input, it calls error 
+    function with string "syntax error ..." and exits. But if you need, lapg can skip 
+    some part of input an continue analysis. First of all, you define 'error' lexem in 
+    terminal description section:
+
+       error:
+
+    The definition cannot have regular expression, it turns on mechanism of error recovering.
+    This terminal can be used in grammar in place of skipped part of input. For example:
+
+       expression_statement ::
+          = expression ';'
+          = error ';'   { printf( "expression skipped\n" ); }
+          = ';'
+       ;
+
+    If syntax error is encountered while waiting for expression_statement, input will be skipped
+    up to ';' and the second rule will be applied.
+    
+
+  6. Operator precedence
+
+    Works like in Bison. I don't wont to retell about it, you can find the information in the
+    following articles:
+
+       http://www.gnu.org/software/bison/manual/html_node/Precedence.html
+       http://www.gnu.org/software/bison/manual/html_node/Contextual-Precedence.html
+
+    exception: '%prec' in bison is '<<' in lapg
+
