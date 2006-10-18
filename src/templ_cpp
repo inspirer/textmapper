@@ -4,6 +4,7 @@ ${pos
 struct lapg_place {
 $#pos1	int line;
 $#pos2	int line, column;
+$#pos3	int line, offset;
 };
 $}
 
@@ -95,6 +96,7 @@ int @classname::parse()
 	int  lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
 	lapg_symbol *lapg_m = new lapg_symbol[@maxstack];
 	lapg_symbol lapg_n = { NULL, -1, 0 };
+$#pos3	lapg_place lapg_current = { 1, 0 };
 $#pos2	lapg_place lapg_current = { 1, 1 };
 $#pos1	lapg_place lapg_current = { 1 };
 
@@ -111,6 +113,8 @@ $#pos		lapg_n.pos = lapg_current;
 $#pos1				if( chr == '\n' ) lapg_current.line++;
 $#pos2				lapg_current.column++;
 $#pos2				if( chr == '\n' ) lapg_current.column = 1, lapg_current.line++;
+$#pos3				lapg_current.offset++;
+$#pos3				if( chr == '\n' ) lapg_current.line++;
 				@next;
 			}
 		}
@@ -121,6 +125,7 @@ $#lexemend		lapg_n.endpos = lapg_current;
 $#pos0			error( @errprefix"invalid lexem: `%s`, skipped\n", token );
 $#pos1			error( @errprefix"invalid lexem at line %i: `%s`, skipped\n", lapg_n.pos.line, token );
 $#pos2			error( @errprefix"invalid lexem at line %i, column %i: `%s`, skipped\n", lapg_n.pos.line, lapg_n.pos.column, token );
+$#pos3			error( @errprefix"invalid lexem at line %i: `%s`, skipped\n", lapg_n.pos.line, token );
 			continue;
 		}
 
@@ -186,6 +191,7 @@ $#pos				lapg_m[lapg_head].pos = lapg_n.pos;
 $#pos0					error( @errprefix"syntax error\n" );
 $#pos1					error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 $#pos2					error( @errprefix"syntax error before line %i, column %i\n", lapg_n.pos.line, lapg_n.pos.column );
+$#pos3					error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 				lapg_i = lapg_symbols_ok;
 				lapg_symbols_ok = 0;
 				if( lapg_i > 1 )
@@ -207,11 +213,13 @@ ${noterror
 $#pos0	if( !lapg_i ) error( @errprefix"syntax error\n" );
 $#pos1	if( !lapg_i ) error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 $#pos2	if( !lapg_i ) error( @errprefix"syntax error before line %i, column %i\n", lapg_n.pos.line, lapg_n.pos.column );
+$#pos3	if( !lapg_i ) error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 $}
 ${error
 $#pos0	if( !lapg_i && lapg_symbols_ok >= 4 ) error( @errprefix"syntax error\n" );
 $#pos1	if( !lapg_i && lapg_symbols_ok >= 4 ) error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 $#pos2	if( !lapg_i && lapg_symbols_ok >= 4 ) error( @errprefix"syntax error before line %i, column %i\n", lapg_n.pos.line, lapg_n.pos.column );
+$#pos3	if( !lapg_i && lapg_symbols_ok >= 4 ) error( @errprefix"syntax error before line %i\n", lapg_n.pos.line );
 $}
 	return lapg_i;
 }

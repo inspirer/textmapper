@@ -9,6 +9,7 @@ ${pos
 	public struct lapg_place {
 $#pos1		public int line;
 $#pos2		public int line, column;
+$#pos3		public int line, offset;
 	};
 $}
 
@@ -63,6 +64,10 @@ $}
 	};
 	#endif
 
+	public enum Tokens {
+		@tokenenum
+	}
+
 	static int lapg_next( int state, int symbol ) {
 ${nactions
 		int p;
@@ -104,6 +109,8 @@ $#error		int           lapg_symbols_ok = 4;
 
 $#pos1		lapg_current.line = 1;
 $#pos2		lapg_current.line = lapg_current.column = 1;
+$#pos3		lapg_current.offset = 0;
+$#pos3		lapg_current.line = 1;
 		lapg_m[0].state = 0; lapg_n.lexem = lapg_n.state = 0;
 		@next;
 
@@ -116,6 +123,8 @@ $#pos			lapg_n.pos = lapg_current;
 $#pos1					if( chr == '\n' ) lapg_current.line++;
 $#pos2					lapg_current.column++;
 $#pos2					if( chr == '\n' ) { lapg_current.column = 1; lapg_current.line++; }
+$#pos3					lapg_current.offset++;
+$#pos3					if( chr == '\n' ) lapg_current.line++;
 					@next;
 				}
 			}
@@ -126,6 +135,7 @@ $#lexemend			lapg_n.endpos = lapg_current;
 $#pos0				error(@errprefix System.String.Format( "invalid lexem: `{0}`, skipped", new System.String(AE.GetChars(token,0,lapg_size)) ) );
 $#pos1				error(@errprefix System.String.Format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new System.String(AE.GetChars(token,0,lapg_size)) ) );
 $#pos2				error(@errprefix System.String.Format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new System.String(AE.GetChars(token,0,lapg_size)) ) );
+$#pos3				error(@errprefix System.String.Format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new System.String(AE.GetChars(token,0,lapg_size)) ) );
 				continue;
 			}
 
@@ -194,6 +204,7 @@ $#pos					lapg_m[lapg_head].pos = lapg_n.pos;
 $#pos0						error(@errprefix System.String.Format( "syntax error" ) );
 $#pos1						error(@errprefix System.String.Format( "syntax error before line {0}", lapg_n.pos.line ) );
 $#pos2						error(@errprefix System.String.Format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+$#pos3						error(@errprefix System.String.Format( "syntax error before line {0}", lapg_n.pos.line ) );
 					lapg_i = lapg_symbols_ok;
 					lapg_symbols_ok = 0;
 					if( lapg_i > 1 )
@@ -216,6 +227,7 @@ $}
 $#pos0			error(@errprefix System.String.Format( "syntax error" ) );
 $#pos1			error(@errprefix System.String.Format( "syntax error before line {0}", lapg_n.pos.line ) );
 $#pos2			error(@errprefix System.String.Format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+$#pos3			error(@errprefix System.String.Format( "syntax error before line {0}", lapg_n.pos.line ) );
 			return false;
 		};
 		return true;

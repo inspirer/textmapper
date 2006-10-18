@@ -91,6 +91,7 @@ void SourceGenerator::process_directive( char *id, char *value, int line, int co
 		if( !strcmp( value, "none" ) ) positioning = 0;
 		else if( !strcmp( value, "line" ) ) positioning = 1;
 		else if( !strcmp( value, "full" ) ) positioning = 2;
+		else if( !strcmp( value, "offset" ) ) positioning = 3;
 		else error( 0, "lapg: %s, %i(%i) unknown positioning value %s\n", sourcename, line, column, value );
 		delete[] value;
 
@@ -537,8 +538,64 @@ static const char *at_varlist[] = {
 	"nativecode",	/* 30 */
 	"nativecodeall",
 	"namespace",	/* 32 */
+	"tokenenum",
 	NULL
 };
+
+
+static const char *sym_to_string( const char *s ) {
+	static char buffer[4096];
+
+	*buffer = 0;
+	if( s[0] == '\'' ) {
+		const char *p = s+1;
+		char *dest = buffer;
+		while( *p && *(p+1) ) {
+			if( *p >= 'a' && *p <= 'z' || *p >= 'A' && *p <= 'Z' || *p == '_' )
+				*dest++ = *p++;
+			else {
+				char *name = NULL;
+				switch( *p ) {
+					case '{': name = "LBRACE"; break;
+					case '}': name = "RBRACE"; break;
+					case '[': name = "LBRACKET"; break;
+					case ']': name = "RBRACKET"; break;
+					case '(': name = "LROUNDBRACKET"; break;
+					case ')': name = "RROUNDBRACKET"; break;
+					case '.': name = "DOT"; break;
+					case ',': name = "COMMA"; break;
+					case ':': name = "COLON"; break;
+					case ';': name = "SEMICOLON"; break;
+					case '+': name = "PLUS"; break;
+					case '-': name = "MINUS"; break;
+					case '*': name = "MULT"; break;
+					case '/': name = "DIV"; break;
+					case '%': name = "PERC"; break;
+					case '&': name = "AMP"; break;
+					case '|': name = "OR"; break;
+					case '^': name = "XOR"; break;
+					case '!': name = "EXCL"; break;
+					case '~': name = "TILDE"; break;
+					case '=': name = "EQ"; break;
+					case '<': name = "LESS"; break;
+					case '>': name = "GREATER"; break;
+					case '?': name = "QUESTMARK"; break;
+				}
+				if( name )
+					while( *name ) *dest++ = *name++;
+				else {
+					sprintf( dest, "N%02X", *p );
+					while( *dest ) dest++;
+				}
+				p++;
+			}
+		}
+		*dest = 0;
+		return buffer;
+
+	} else
+		return s;
+}
 
 
 int SourceGenerator::print_variable( char *var, int tabs, int can_write )
@@ -687,6 +744,11 @@ int SourceGenerator::print_variable( char *var, int tabs, int can_write )
 		case 32: /* namespace */ 
 			printf( "%s", (ns)?ns:"lapg" );
 			break;
+		case 33: /* tokenenum */
+			for( i = 0; i < gr.nsyms; i++ )
+				printf( "%s%s,\n", i?TABS(tabs):"", sym_to_string(gr.sym[i].name) );
+			return 1;
+			break;
 	}
 	return 0;
 }
@@ -704,6 +766,7 @@ static const char *dollar_varlist[] = {
 	"eachlexem",
 	"eachaction",	/* 10 */
 	"lexemend",
+	"pos3",			/* 12 */
 	NULL
 };
 
@@ -755,6 +818,7 @@ int SourceGenerator::check_variable( char *var )
 			return 3;
 		case 11: /* lexemend */
 			return (lexemend && positioning) ? 1 : 0;
+		case 12:  /* pos3 */ 		return positioning==3;
 		}
 		return 0;
 }
