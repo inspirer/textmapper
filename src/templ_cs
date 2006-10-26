@@ -198,7 +198,7 @@ ${error
 					lapg_head++;
 					lapg_m[lapg_head].lexem = @error;
 					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, 72 );
+					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, @error );
 $#pos					lapg_m[lapg_head].pos = lapg_n.pos;
 					if( lapg_symbols_ok >= 4 )
 $#pos0						error(@errprefix System.String.Format( "syntax error" ) );
