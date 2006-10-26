@@ -1,22 +1,23 @@
 
 
             LAPG ( Lexical analyzer and parser generator )
-               Eugeniy Gryaznov, 2002-06, inspirer@inbox.ru
+               Evgeny Gryaznov, 2002-06, inspirer@inbox.ru
 
 
   1. Introduction
 
        Lapg is the combined lexical analyzer and parser generator, which
     converts a description for a context-free LALR1 grammar into source file
-    to parse the grammar. The generated parser accepts zero-terminated text,
-    breaks it into tokens and applies given rules to reduce the input to the
-    main non-terminal symbol. Lapg can be used in a wide range of tasks. It
-    may be a simple string parser or a complicated compiler like C++.
+    to parse the grammar. The generated parser accepts zero-terminated text (C/C++) or 
+    string (in C#, Javascript etc.) breaks it into tokens and applies given rules 
+    to reduce the input to the main non-terminal symbol. Lapg can be used in a 
+    wide range of tasks. It may be a simple string parser or a complicated 
+    compiler like C++.
 
     The official homepage is http://gryaznov.net/lapg/
+    SourceForge: http://sourceforge.net/projects/lapg/
 
     LAPG is distributed under the General Public License.
-     
 
   2. Invoking
 
@@ -56,7 +57,11 @@
          In the case of C# language, the generated .cs file contains one class.
       You can define additional members for this class in grammar file.
 
-    3.3  Other languages.
+    3.3  Javascript (from Pawel Chmielowski)
+
+    	 Generates class in separate .js file.
+
+    3.4  Other languages.
 
          You can easily add a new language to lapg. You need to add language
       specific template and (optionaly) default syntax file, then modify
