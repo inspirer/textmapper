@@ -40,7 +40,7 @@ static char help_message[] =
 "  -tf, --template-from-file      generate template for file parsing\n"
 "  -ts, --template-from-string    generate template for string parsing\n"
 "  -vb, --verbose                 print output script\n"
-"  -l name, --lang=name           language (for tf/ts/vb)\n"
+"  -l name, --lang=name           language (for tf/ts/vb), supported: c++, cs, js\n"
 "\n"
 "Defaults:\n"
 "  inputfile = syntax\n"

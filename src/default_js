@@ -1,0 +1,35 @@
+#   Automatically generated grammar
+
+.lang        "js" 
+.getsym      "chr = this.buff[this.l++];"
+.positioning "full"
+
+# Vocabulary
+
+Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/
+_skip:      /\/\/.*/
+_skip:      /[\t\r\n ]+/    \ continue;
+
+# Attributes
+
+[]
+
+# Grammar
+
+input ::= Lid ;
+
+%%
+
+dump = alert;
+
+function error(s) {
+	dump(s);
+}
+
+function parse(string) {
+	var p = new parser();
+        p.buff = string;
+	p.l = 0;
+//      p.DEBUG_syntax = 1;
+	p.parse();
+}

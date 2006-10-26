@@ -1,7 +1,7 @@
 /*	 srcgen.cpp
  *
  *	 Lapg (Lexical Analyzer and Parser Generator)
- *	 Copyright (C) 2002-04	Eugeniy Gryaznov (gryaznov@front.ru)
+ *	 Copyright (C) 2002-06	Eugeniy Gryaznov (gryaznov@front.ru)
  *
  *	 This program is free software; you can redistribute it and/or modify
  *	 it under the terms of the GNU General Public License as published by
@@ -23,16 +23,18 @@
 
 extern const char *templ_cpp, *default_cpp;
 extern const char *templ_cs, *default_cs;
+extern const char *templ_js, *default_js;
 
 #ifdef RUN_IN_DEBUG
-#define CPPDEF "parse1.cpp",
+#define CPPDEF "parse1.cpp"
 #else
-#define CPPDEF "parse.cpp",
+#define CPPDEF "parse.cpp"
 #endif
 
 const language langs[] = {
-	{ "c++", templ_cpp, NULL, default_cpp, CPPDEF },
-	{ "cs",  templ_cs,  NULL, default_cs,  "parse.cs" },
+	{ "c++", templ_cpp, NULL, default_cpp, CPPDEF, "{", "}", 1},
+	{ "cs",  templ_cs,  NULL, default_cs,  "parse.cs", "{", "}", 1},
+	{ "js",  templ_js,  NULL, default_js,  "parse.js", "[", "]", 0},
 	{ NULL }
 };
 
@@ -166,6 +168,13 @@ void SourceGenerator::print_action( char *action, int rule, int expand_cpp, int 
 	int  *rl, length, i, e, k, num;
 	int  rpos;
 
+	if( !langs[language].addLineInfo ) {	/* skip #line */
+		while( *l && strncmp(l,"#line",5) == 0 ) {
+			while( *l && *l != '\n' ) l++;
+			if( *l == '\n' ) l++;
+		}
+	}
+
 	if( tabcount > 10 ) tabcount = 10;
 	for( length = 0, rl = gr.rright+gr.rindex[rule]; *rl >= 0; length++, rl++ );
 	rpos = gr.rindex[rule];
@@ -178,8 +187,14 @@ void SourceGenerator::print_action( char *action, int rule, int expand_cpp, int 
 
 	while( *l ) {
 		if( *l == '\n' ){
-			printf( "\n%s", tabs + 10 - tabcount );
-			l++;
+
+			if( !langs[language].addLineInfo && strncmp(l+1,"#line",5) == 0 ) {
+				l++;
+				while( *l && *l != '\n' ) l++;
+			} else {
+				printf( "\n%s", tabs + 10 - tabcount );
+				l++;
+			}
 
 		} else if( *l == '$' ) {
 			l++;
@@ -290,11 +305,24 @@ void SourceGenerator::print_lexem_action( char *action, char *type, int expand_a
 	char *p, *l = action;
 	char c;
 
+	if( !langs[language].addLineInfo ) {	/* skip #line */
+		while( *l && strncmp(l,"#line",5) == 0 ) {
+			while( *l && *l != '\n' ) l++;
+			if( *l == '\n' ) l++;
+		}
+	}
+
 	if( tabcount > 10 ) tabcount = 10;
 	while( *l ) {
 		if( *l == '\n' ){
-			printf( "\n%s", tabs + 10 - tabcount );
-			l++;
+
+			if( !langs[language].addLineInfo && strncmp(l+1,"#line",5) == 0 ) {
+				l++;
+				while( *l && *l != '\n' ) l++;
+			} else {
+				printf( "\n%s", tabs + 10 - tabcount );
+				l++;
+			}
 
 		} else if( *l == '$' ) {
 			l++;
@@ -403,7 +431,7 @@ void SourceGenerator::print_code( bool last, int tabs )
 
 void SourceGenerator::printout()
 {
-	const char *p, *l = langs[language==-1?0:language].templ_gen;
+	const char *p, *l = langs[language].templ_gen;
 	int action[16], deep = 0, tabs = 0;
 	const char *loop[16];
 	int can_write = 1, denied_at = -1, line = 1;
@@ -638,11 +666,11 @@ int SourceGenerator::print_variable( char *var, int tabs, int can_write )
 			return 1;	
 		case 15: /* lexem */  
 			for( i = 0; i < lr.nstates; i++ ) {
-				if( i ) printf( "%s{", TABS(tabs) );
-					else printf( "{" );
+				if( i ) printf( "%s%s", TABS(tabs),  langs[language].lexem_start);
+					else printf(langs[language].lexem_start );
 				for( e = 0; e < lr.nchars; e++ )
 					printf( "%4i,", lr.dta[i]->change[e] );
-				printf( " },\n" );
+				printf( " %s,\n", langs[language].lexem_end );
 			}
 			return 1;
 		case 16: /* action */
