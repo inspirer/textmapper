@@ -1,0 +1,55 @@
+<html>
+<head>
+<script type="text/javascript" language="javascript" src="parse.js"></script>
+<script type="text/javascript">
+
+function getobject( id ) {
+	var x;
+	if( !( x = document[ id ] ) && document.all ) x = document.all[ id ];
+	if( !x && document.getElementById ) x = document.getElementById( id );
+	if( !x && !document.all && document.getElementsByName ) {
+		x = document.getElementsByName( id );
+		if( x.length == 0 ) return null;
+		if( x.length == 1 ) return x[ 0 ];
+	}
+    return x;
+}
+
+function printlog(text) {
+	getobject("log").value += text + "\n";
+}
+
+function checkit() {
+	dump = printlog;
+	getobject("log").value ="";
+	parse(getobject("src").value);
+}
+</script>
+</head>
+<body>
+
+<h1>Text to parse</h1>
+
+<table cellpadding="0" cellspacing="0" border="0">
+<tr>
+	<td>
+		<textarea id="src" cols="80" rows="7" >
+			[(ff)](OnlyOneIdentifier)
+			([aa][qqq])
+		</textarea>
+	</td>
+</tr>
+<tr>
+    <td>
+		<input type="button" value="Parse" onclick="checkit();"/>
+	</td>
+</tr>
+<tr>
+	<td>
+		<textarea id="log" cols="80" rows="20" ></textarea>
+	</td>
+</tr>
+</table>
+
+</body>
+</html>
