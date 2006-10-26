@@ -81,8 +81,7 @@ $}
 ${pos
 
 	setPos: function(dest, src, prop) {
-		if (prop && !dest[prop])
-			dest = dest[prop] = {};
+		dest = dest[prop] = {};
 		dest.line = src.line;
 $#pos2		dest.column = src.column;
 $#pos3		dest.offset = src.offset;
