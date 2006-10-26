@@ -1,7 +1,7 @@
 /*   gbuild.cpp
  *
  *   Lapg (Lexical Analyzer and Parser Generator)
- *   Copyright (C) 2002-04  Eugeniy Gryaznov (gryaznov@front.ru)
+ *   Copyright (C) 2002-06  Eugeniy Gryaznov (gryaznov@front.ru)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 /*   lapg.cpp
  *
  *   Lapg (Lexical Analyzer and Parser Generator)
- *   Copyright (C) 2002-04  Eugeniy Gryaznov (gryaznov@front.ru)
+ *   Copyright (C) 2002-06  Eugeniy Gryaznov (gryaznov@front.ru)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -21,12 +21,12 @@
 #include "common.h"
 #include "srcgen.h"
 
-#define VERSION "1.2.1"
+#define VERSION "1.2.2"
 #define BUILD   __DATE__
 
 static char help_message[] =
 "lapg - Lexical analyzer and parser generator\n"
-"Eugeniy Gryaznov, 2002-04, inspirer@inbox.ru\n"
+"Eugeniy Gryaznov, 2002-06, inspirer@inbox.ru\n"
 "\n"
 "usage: lapg [OPTIONS]... [inputfile [outputfile]]\n"
 "\n"
@@ -70,7 +70,7 @@ int main(int argc,char *argv[])
 		} else if( check( "-v","--version" ) ) {
 			printf( 
 				"lapg v" VERSION " build " BUILD "\n"
-				"Eugeniy Gryaznov, 2002-04, inspirer@inbox.ru\n" );
+				"Eugeniy Gryaznov, 2002-06, inspirer@inbox.ru\n" );
 			return 0;
 
 		} else if( check( "-tf","--template-from-file" ) ) {

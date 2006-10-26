@@ -1,7 +1,4 @@
  This file is part of the lapg project.
- AUTHOR: Eugeniy Gryaznov, 2002-04, inspirer@inbox.ru
+ AUTHOR: Eugeniy Gryaznov, 2002-06, inspirer@inbox.ru
 
-
-  * string templates
   * 16/32 bit problems (generators, gbuild.h)
-  * custom script support

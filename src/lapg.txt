@@ -1,7 +1,7 @@
 
 
             LAPG ( Lexical analyzer and parser generator )
-               Eugeniy Gryaznov, 2002-04, inspirer@inbox.ru
+               Eugeniy Gryaznov, 2002-06, inspirer@inbox.ru
 
 
   1. Introduction
