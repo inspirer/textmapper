@@ -106,8 +106,10 @@ $#pos3		lapg_current.line = 1;
 		do {
 $#pos			this.setPos(lapg_n, lapg_current, "pos");
 			for (lapg_i = group, token=""; lapg_i >= 0;) {
-				if (token.length < @maxtoken-1)
-					token+= chr==null?" ":chr;
+				if( chr == "" )
+					chr = null;
+				if (token.length < @maxtoken-1 && chr != null)
+					token += chr;
 				lapg_i = this.lapg_lexem[lapg_i][this.lapg_char2no[chr!=null?chr.charCodeAt(0):0]];
 				if (lapg_i >= -1 && chr!=null) { 
 $#pos1					if (chr == "\n") lapg_current.line++;
