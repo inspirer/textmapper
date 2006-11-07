@@ -142,7 +142,7 @@ $}
 		}
 $}
 
-		skip_symbols:
+$#error		skip_symbols:
 		do {
 			lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 

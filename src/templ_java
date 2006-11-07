@@ -120,7 +120,7 @@ $#error		int           lapg_symbols_ok = 4;
 		lapg_m[0].state = 0;
 		@next;
 
-		do {
+		NEXTTOKEN: do {
 			lapg_n = new lapg_symbol();
 $#pos1			lapg_n.pos = new lapg_place( lapg_current_line );
 $#pos2			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
@@ -165,7 +165,8 @@ $}
 			}
 $}
 
-			skip_symbols:
+$#error			SKIPNEXTTOKEN: for(;;) {
+
 			do {
 				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
@@ -201,13 +202,13 @@ $#error					lapg_symbols_ok++;
 			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
 
 			if( (lapg_i == -2 || lapg_m[lapg_head].state == -1) && lapg_n.lexem != 0 ) {
-${error				
+${error
 				while( lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, @error ) == -1 ) {
-					lapg_m[lapg_head].sym = null;
+					lapg_m[lapg_head] = null;
 					lapg_head--;
 				}
 				if( lapg_head >= 0 ) {
-					lapg_head++;
+					lapg_m[++lapg_head] = new lapg_symbol();
 					lapg_m[lapg_head].lexem = @error;
 					lapg_m[lapg_head].sym = null;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, @error );
@@ -220,13 +221,19 @@ $#pos3						error(@errprefix MessageFormat.format( "syntax error before line {0}
 					lapg_i = lapg_symbols_ok;
 					lapg_symbols_ok = 0;
 					if( lapg_i > 1 )
-						goto skip_symbols;
+						continue SKIPNEXTTOKEN;
 					else
-						continue;
-				} else lapg_head = 0;
+						continue NEXTTOKEN;
+				} else {
+					lapg_head = 0;
+					lapg_m[0] = new lapg_symbol();
+					lapg_m[0].state = 0;
+				}
 $}
 				break;
 			}
+$#error			break;
+$#error			}
 
 		} while( lapg_n.lexem != 0 );
 
