@@ -1,0 +1,20 @@
+#   Automatically generated grammar
+
+.lang        "cs" 
+.getsym      "chr = buff[l++];if( l == end ) fillb()"
+.positioning "%%positioning%%"
+.lexemend    "%%lexemend%%"
+
+# Vocabulary
+
+Lid(string):  /[a-zA-Z_][a-zA-Z_0-9]*/	{ @ = new System.String(AE.GetChars(token,0,lapg_size-1)); break; }
+_skip:        /\/\/.*/
+_skip:        /[\t\r\n ]+/    { continue; }
+'(':		  /\(/
+')':		  /\)/
+'[':		  /\[/
+']':		  /\]/
+
+# Attributes
+
+[]

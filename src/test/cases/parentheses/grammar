@@ -1,0 +1,13 @@
+# Grammar
+
+input ::= 
+	parentheses { myprint("[good]"); break; };
+
+parentheses ::= 
+	parentheses parenthesis | parenthesis ;
+
+parenthesis ::= 
+	  '(' Lid ')'				{ myprint( "in (): ", $Lid ); break; }
+	| '(' parentheses ')'
+	| '[' Lid ']'				{ myprint( "in []: ", $Lid ); break; }
+	| '[' parentheses ']' ;
