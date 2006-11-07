@@ -1,9 +1,11 @@
 #!/usr/bin/perl
 
+### JDK 1.5 and VS 8.0 should be installed ###
+
 $lapg = "../bin/lapg.exe";
 $javaPath = $ENV{'JAVA_HOME'};
-$cppCompiler = "";
-$csharpCompiler = 'C:/WINDOWS/Microsoft.NET/Framework/v2.0.50727/csc.exe';
+$cppCompiler = "cl.exe";
+$csharpCompiler = 'csc.exe';
 
 sub mysubst($) {
 	my $s = $_[0];
@@ -63,13 +65,19 @@ sub rungrammar($$$) {
 	system( $lapg, "$folder/syntax", "$folder/parser.$lang" ) == 0 or die "not generated";
 	die "not generated" if not -e "$folder/parser.$lang";
 
+	unlink "errors" if -e "errors";
+
 	if( $lang eq "java" ) {
 		system( "\"$javaPath/bin/javac.exe\" \"$folder/parser.$lang\" -d \"$folder\"" ) == 0 or die "not executed";
-		$result = `\"$javaPath/bin/java.exe\" -cp \"$folder\" mypackage.parser \"$inputfile\" \"$folder/output\"` or die "no result";
+		$result = `\"$javaPath/bin/java.exe\" -cp \"$folder\" mypackage.parser \"$inputfile\"` or die "no result";
 
 	} elsif( $lang eq "cs" ) {
 		system( "\"$csharpCompiler\" /nologo /nowarn:0164 /out:$folder\\parser.exe \"$folder\\parser.$lang\"" ) == 0 or die "not executed";
-		$result = `\"$folder/parser.exe\" \"$inputfile\" \"$folder/output\"` or die "no result";
+		$result = `\"$folder/parser.exe\" \"$inputfile\"` or die "no result";
+
+	} elsif( $lang eq "cpp" ) {
+		system( "$cppCompiler /w /nologo \"$folder\\parser.$lang\" /Fe$folder/parser.exe /Fo$folder/parser.obj" ) == 0 or die "not executed";
+		$result = `\"$folder/parser.exe\" \"$inputfile\"` or die "no result";
 
 	} else {
 		die "unknown lang";
@@ -82,12 +90,19 @@ sub rungrammar($$$) {
 	return $result;
 }
 
-sub test($$$%) {
-    my ($lang,$grammar,$textopts,%options) = @_;
+%hiddenOptions = map { $_ => $_; } ("in","out");
+
+sub test($$%) {
+    my ($lang,$grammar,%options) = @_;
 	die "no in=" if not defined $options{'in'};
 	die "no out=" if not defined $options{'out'};
+	my $textopts = "";
+	for( keys %options ) {
+		$textopts .= ", $_=".$options{$_} unless exists $hiddenOptions{$_};
+	}
+	$options{"error"} = exists $options{"err"} ? "error:" : "";
 	
-	print "$counter: $lang, $textopts\n";
+	print "$counter: $lang$textopts ($options{'out'})\n";
 
 	$file = content( "cases/".$lang.".prefix")
 			.content( $grammar."grammar" )
@@ -125,7 +140,7 @@ while (<CONFIG>) {
 	    $lang = $1;
 	    @options = mysubst($2);
 		for( @options ) {
-			test( $lang, $grammar, $_, getoptions($_));
+			test( $lang, $grammar, getoptions($_));
 		}
 
 	} else {
