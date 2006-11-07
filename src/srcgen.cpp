@@ -24,6 +24,7 @@
 extern const char *templ_cpp, *default_cpp;
 extern const char *templ_cs, *default_cs;
 extern const char *templ_js, *default_js;
+extern const char *templ_java, *default_java;
 
 #ifdef RUN_IN_DEBUG
 #define CPPDEF "parse1.cpp"
@@ -35,6 +36,7 @@ const language langs[] = {
 	{ "c++", templ_cpp, NULL, default_cpp, CPPDEF, "{", "}", 1},
 	{ "cs",  templ_cs,  NULL, default_cs,  "parse.cs", "{", "}", 1},
 	{ "js",  templ_js,  NULL, default_js,  "parse.js", "[", "]", 0},
+	{ "java", templ_java, NULL, default_java, "Parser.java", "{", "}", 0},
 	{ NULL }
 };
 

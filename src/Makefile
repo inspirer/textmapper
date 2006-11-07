@@ -44,8 +44,8 @@ unix :
 dos :
 	for A in *.cpp *.h syntax; do unix2dos $$A; done
 
-templates.cpp: templ_cs templ_cpp templ_js txt2c++
-	./txt2c++ templates.cpp templ_cs templ_cpp templ_js
+templates.cpp: templ_cs templ_cpp templ_js templ_java txt2c++
+	./txt2c++ templates.cpp templ_cs templ_cpp templ_js templ_java 
 
-defaults.cpp: default_cpp default_cs default_js txt2c++
-	./txt2c++ defaults.cpp default_cpp default_cs default_js
+defaults.cpp: default_cpp default_cs default_js default_java txt2c++
+	./txt2c++ defaults.cpp default_cpp default_cs default_js default_java

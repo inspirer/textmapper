@@ -21,7 +21,7 @@
 #include "common.h"
 #include "srcgen.h"
 
-#define VERSION "1.2.2"
+#define VERSION "1.2.3"
 #define BUILD   __DATE__
 
 static char help_message[] =
@@ -40,11 +40,11 @@ static char help_message[] =
 "  -tf, --template-from-file      generate template for file parsing\n"
 "  -ts, --template-from-string    generate template for string parsing\n"
 "  -vb, --verbose                 print output script\n"
-"  -l name, --lang=name           language (for tf/ts/vb), supported: c++, cs, js\n"
+"  -l name, --lang=name           language (for tf/ts/vb), supported: c++, cs, js, java\n"
 "\n"
 "Defaults:\n"
 "  inputfile = syntax\n"
-"  outputfile = parse.cpp/cs...\n"
+"  outputfile = parse.cpp/cs/java/js...\n"
 "\n"
 ;
 
