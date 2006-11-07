@@ -54,14 +54,18 @@
 
     3.2  C#
 
-         In the case of C# language, the generated .cs file contains one class.
+        In the case of C# language, the generated .cs file contains one class.
       You can define additional members for this class in grammar file.
 
     3.3  Javascript (from Pawel Chmielowski)
 
-    	 Generates class in separate .js file.
+    	Generates class in separate .js file.
 
-    3.4  Other languages.
+    3.4  Java
+
+    	Generates java class in specified package (use .namespace directive).
+
+    3.5  Other languages.
 
          You can easily add a new language to lapg. You need to add language
       specific template and (optionaly) default syntax file, then modify
