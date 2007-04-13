@@ -10,11 +10,17 @@
 </menu>
 
 <lang id="rus">
-<page_top></page_top>
+<main_link>На главную</main_link>
+<mail_link>Отправить письмо</mail_link>
+<page_top>Наверх страницы</page_top>
+<page_top_short>Наверх</page_top_short>
 </lang>
 
 <lang id="eng">
-
+<main_link>Home</main_link>
+<mail_link>Send mail</mail_link>
+<page_top>Goto top</page_top>
+<page_top_short>Top</page_top_short>
 </lang>
 
 </i18n>

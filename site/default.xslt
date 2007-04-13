@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="windows-1251" ?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-<xsl:output method="html" encoding="windows-1251"/>
+<xsl:output method="html" encoding="ascii"/>
 <xsl:param name="lang"/>
 
 <xsl:template match="hxml">
@@ -180,12 +180,12 @@
                         		<td height="5"></td>
                         	</tr>
                             <tr>
-                                <td><a href="index.html" title="На главную">
-                                    <img src="images/icon_home.gif" height="15" width="15" border="0" alt="На главную"/></a></td>
+                                <td><a href="index.html"><xsl:attribute name="title"><xsl:value-of select="i18n/lang[@id=$lang]/main_link"/></xsl:attribute>
+                                    <img src="images/icon_home.gif" height="15" width="15" border="0"><xsl:attribute name="alt"><xsl:value-of select="i18n/lang[@id=$lang]/main_link"/></xsl:attribute></img></a></td>
                                 <td>
                                     <img src="images/icondiv.gif" height="30" width="55" border="0" alt="|"/></td>
                                 <td><a href="mailto:eugeniy@gryaznov.net">
-                                    <img src="images/icon_mail.gif" height="10" width="15" border="0" alt="Отправить письмо"/></a></td>
+                                    <img src="images/icon_mail.gif" height="10" width="15" border="0"><xsl:attribute name="alt"><xsl:value-of select="i18n/lang[@id=$lang]/mail_link"/></xsl:attribute></img></a></td>
                                 <td width="10" height="40"><img src="images/empty.gif" height="40" width="10" border="0" alt=""/></td>
                             </tr>
                         </table>
@@ -286,19 +286,14 @@
                 <td width="25%" valign="bottom" align="right">
                     <table cellspacing="0" cellpadding="0" border="0"><tr>
                     <td>
-                        <a href="#top" title="Наверх страницы">
+                        <a href="#top"><xsl:attribute name="title"><xsl:value-of select="i18n/lang[@id=$lang]/page_top"/></xsl:attribute>
                             <img src="images/butt_top.gif" height="40" width="60" border="0" alt=""/></a></td>
                     <td class="address">
-                        <a href="#top" title="Наверх страницы">Наверх</a></td>
+                        <a href="#top"><xsl:attribute name="title"><xsl:value-of select="i18n/lang[@id=$lang]/page_top"/></xsl:attribute><xsl:value-of select="i18n/lang[@id=$lang]/page_top_short"/></a></td>
                     </tr>
                     </table>
                 </td>
-                <td width="25%" valign="bottom">
-                </td>
-                <td width="25%" valign="bottom" class="phone" align="right">
-                    <img src="images/empty.gif" height="3" width="1" border="0" alt=""/><br/>
-                    <span class="number">+7 (921) 3497513</span><br/>
-                    <img src="images/empty.gif" height="10" width="1" border="0" alt=""/><br/>
+                <td width="50%" valign="bottom">
                 </td>
                 </tr>
                 </table>

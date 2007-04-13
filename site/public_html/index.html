@@ -1,0 +1,258 @@
+<!-- ERROR: Zero-length file! -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ascii">
+<title>Lexical Analyzer and Parser Generator</title>
+<link href="styles.css" type="text/css" rel="stylesheet">
+</head>
+<body bgcolor="#FFFFFF" link="#2971C1" vlink="#2971C1" alink="#2971C1" marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0" bottommargin="0">
+<a name="top"></a><table width="100%" height="100%" cellspacing="0" cellpadding="0" border="0">
+<tr><td height="95%" valign="top"><table width="965" cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td width="40"><img src="images/empty.gif" height="1" width="40" border="0" alt=""></td>
+<td width="100%"><img src="images/empty.gif" height="1" width="900" border="0" alt=""></td>
+<td width="25"><img src="images/empty.gif" height="1" width="25" border="0" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
+<td width="70%" align="right" valign="top"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr><td height="23" colspan="3"></td></tr>
+<tr>
+<td align="right" valign="top"><table cellspacing="0" cellpadding="0" border="0"><tr><td valign="bottom" background="images/underlbg.gif" style="background-position:bottom;background-repeat:repeat-x;"><table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="textform"><a href="index.html" title="Home">Home</a></td>
+<td class="textform"><img src="images/topdiv.gif" height="15" width="25" border="0" alt="|"></td>
+<td class="textform"><a href="docs.html" title="Documentation">Documentation</a></td>
+<td class="textform"><img src="images/topdiv.gif" height="15" width="25" border="0" alt="|"></td>
+<td class="textform"><a href="samples.html" title="Grammars">Grammars</a></td>
+</tr>
+<tr><td height="5" colspan="5"></td></tr>
+</table></td></tr></table></td>
+<td width="20"><img src="images/empty.gif" height="1" width="20" border="0" alt=""></td>
+<td width="155" align="right"><img src="images/head_left.jpg" height="60" width="155" border="0" alt=""></td>
+</tr>
+<tr><td colspan="3" height="54" valign="bottom" align="left"><table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td width="6"><img src="images/empty.gif" height="1" width="6" border="0" alt=""></td>
+<td><span class="head1">LAPG</span></td>
+</tr>
+<tr>
+<td></td>
+<td valign="bottom" height="7"><img src="images/red_lineh.gif" height="3" width="243" border="0" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td height="3"></td>
+</tr>
+</table></td></tr>
+</table></td>
+<td align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
+<tr><td height="17"></td></tr>
+<tr><td><img src="images/red_line.gif" height="120" width="5" border="0" alt=""></td></tr>
+</table></td>
+<td width="450" align="left" valign="top"><table cellspacing="0" cellpadding="0" border="0">
+<tr><td align="right" height="45"><table cellspacing="0" cellpadding="0" border="0">
+<tr><td height="5"></td></tr>
+<tr>
+<td><a href="index.html" title="Home"><img src="images/icon_home.gif" height="15" width="15" border="0" alt="Home"></a></td>
+<td><img src="images/icondiv.gif" height="30" width="55" border="0" alt="|"></td>
+<td><a href="mailto:eugeniy@gryaznov.net"><img src="images/icon_mail.gif" height="10" width="15" border="0" alt="Send mail"></a></td>
+<td width="10" height="40"><img src="images/empty.gif" height="40" width="10" border="0" alt=""></td>
+</tr>
+</table></td></tr>
+<tr><td><img src="images/head_right.jpg" height="60" width="429" border="0" alt=""></td></tr>
+<tr><td><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td width="30" height="32"><img src="images/empty.gif" height="32" width="30" border="0" alt=""></td>
+<td valign="bottom" align="left" background="images/underlbg.gif" style="background-position:bottom;background-repeat:repeat-x;"><table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td class="textform"><a href="download.html" title="Download">Download</a></td>
+<td class="textform"><img src="images/topdiv.gif" height="15" width="25" border="0" alt="|"></td>
+<td class="textform"><a href="links.html" title="Related Links">Related Links</a></td>
+</tr>
+<tr><td height="5" colspan="5"></td></tr>
+</table></td>
+</tr></table></td></tr>
+</table></td>
+</tr></table></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td valign="top"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr><td height="18"></td></tr>
+<tr><td class="text">
+
+<p>
+
+Lapg is the combined lexical analyzer and parser generator, which converts a
+description for a context-free LALR1 grammar into source file to parse the 
+grammar. The generated parser accepts zero-terminated text, breaks it into 
+tokens and applies given rules to reduce the input to the main non-terminal
+symbol. Lapg can be used in a wide range of tasks. It may be a simple string
+parser or a complicated compiler like C++. 
+
+
+</p>
+
+<span class="head3">Download</span><p><table cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td width="20"><img src="images/empty.gif" height="1" width="20" border="0" alt=""></td>
+<td width="100"><img src="images/empty.gif" height="1" width="100" border="0" alt=""></td>
+<td width="100%"><img src="images/empty.gif" height="1" width="200" border="0" alt=""></td>
+</tr>
+<tr><td colspan="3" class="loadh">Lapg</td></tr>
+<tr><td colspan="3" height="5"></td></tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/b2lapg.tgz">b2lapg.tgz</a></td>
+<td>Bison -&gt; lapg converter</td>
+</tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/lapg.txt">lapg.txt</a></td>
+<td>Lapg documentation</td>
+</tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/gcc_2_96_syntax">gcc_2_96_syntax</a></td>
+<td>GCC 2.96 grammar for lapg</td>
+</tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/lapg84.tgz">lapg84.tgz</a></td>
+<td>lapg win32/linux source</td>
+</tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/lapg1_2_0_exe.rar">lapg1_2_0_exe.rar</a></td>
+<td>Lapg 1.2.0 binary (win32)</td>
+</tr>
+<tr>
+<td align="center"><img src="images/dir-file.png" border="0"></td>
+<td><a href="/files/lapg/lapg1_2_0_src.rar">lapg1_2_0_src.rar</a></td>
+<td>Lapg 1.2.0 sources (win32/linux)</td>
+</tr>
+</table></p>
+
+Lapg is the combined lexical analyzer and parser generator, which converts a 
+description for a context-free LALR1 grammar into source file to parse the 
+grammar. Unlike bison or yacc, you have no need to write lexical analyzer 
+manually or use extra tools such as flex. With lapg, you can easily define 
+your own grammar and lexical analyzer for it in a file and have the 
+only c/cpp/cs file as an output. 
+
+<p>
+Features:
+
+
+<ul>
+<li>C, C++ and C# are supported </li>
+<li>L-attributes </li>
+<li>Lexems definition with regular expressions </li>
+<li>Very fast </li>
+</ul>
+</p>
+
+</td></tr>
+</table></td></tr></table></td>
+<td></td>
+</tr>
+</table></td></tr>
+<tr><td><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td valign="bottom" background="images/grey.gif" style="background-position:bottom;background-repeat:repeat-x;"><table width="965" cellspacing="0" cellpadding="0" border="0">
+<tr>
+<td width="40"><img src="images/empty.gif" height="1" width="40" border="0" alt=""></td>
+<td width="100%"><img src="images/empty.gif" height="1" width="900" border="0" alt=""></td>
+<td width="25"><img src="images/empty.gif" height="1" width="25" border="0" alt=""></td>
+</tr>
+<tr>
+<td height="40"></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td valign="bottom"><table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
+<td width="25%"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td><img src="images/icon_address.gif" height="10" width="20" border="0" alt=""></td>
+<td class="address"><a href="mailto:eugeniy@gryaznov.net" title="eugeniy@gryaznov.net">eugeniy<i>@</i>gryaznov.net</a></td>
+</tr></table></td>
+<td width="25%" valign="bottom" align="right"><table cellspacing="0" cellpadding="0" border="0"><tr>
+<td><a href="#top" title="Goto top"><img src="images/butt_top.gif" height="40" width="60" border="0" alt=""></a></td>
+<td class="address"><a href="#top" title="Goto top">Top</a></td>
+</tr></table></td>
+<td width="50%" valign="bottom"></td>
+</tr></table></td>
+<td></td>
+</tr>
+</table></td></tr></table></td></tr>
+</table>
+</body>
+</html>
