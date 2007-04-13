@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<i18n>
+
+<menu lang="eng">
+<item title="Home"			link="index.html"/>
+<item title="Documentation"	link="docs.html"/>
+<item title="Grammars"		link="samples.html"/>
+<item title="Download"		link="download.html"/>
+<item title="Related Links"	link="links.html"/>
+</menu>
+
+<lang id="rus">
+<page_top></page_top>
+</lang>
+
+<lang id="eng">
+
+</lang>
+
+</i18n>
