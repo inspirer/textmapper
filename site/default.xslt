@@ -180,13 +180,9 @@
                         		<td height="5"></td>
                         	</tr>
                             <tr>
-                                <td><a href="index.html"><xsl:attribute name="title"><xsl:value-of select="i18n/lang[@id=$lang]/main_link"/></xsl:attribute>
-                                    <img src="images/icon_home.gif" height="15" width="15" border="0"><xsl:attribute name="alt"><xsl:value-of select="i18n/lang[@id=$lang]/main_link"/></xsl:attribute></img></a></td>
-                                <td>
-                                    <img src="images/icondiv.gif" height="30" width="55" border="0" alt="|"/></td>
-                                <td><a href="mailto:eugeniy@gryaznov.net">
-                                    <img src="images/icon_mail.gif" height="10" width="15" border="0"><xsl:attribute name="alt"><xsl:value-of select="i18n/lang[@id=$lang]/mail_link"/></xsl:attribute></img></a></td>
-                                <td width="10" height="40"><img src="images/empty.gif" height="40" width="10" border="0" alt=""/></td>
+                            	<td height="31">
+                            		<a href="http://sourceforge.net"><img src="http://sflogo.sourceforge.net/sflogo.php?group_id=75820&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo" /></a>
+                            	</td>
                             </tr>
                         </table>
                     </td>
@@ -283,7 +279,7 @@
 	                </tr>
     	            </table>
 				</td>
-                <td width="25%" valign="bottom" align="right">
+                <td width="50%" valign="bottom" align="right">
                     <table cellspacing="0" cellpadding="0" border="0"><tr>
                     <td>
                         <a href="#top"><xsl:attribute name="title"><xsl:value-of select="i18n/lang[@id=$lang]/page_top"/></xsl:attribute>
@@ -293,7 +289,7 @@
                     </tr>
                     </table>
                 </td>
-                <td width="50%" valign="bottom">
+                <td width="25%" align="right">
                 </td>
                 </tr>
                 </table>

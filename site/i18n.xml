@@ -5,20 +5,16 @@
 <item title="Home"			link="index.html"/>
 <item title="Documentation"	link="docs.html"/>
 <item title="Grammars"		link="samples.html"/>
-<item title="Download"		link="download.html"/>
+<item title="Download"		link="http://downloads.sourceforge.net/lapg/"/>
 <item title="Related Links"	link="links.html"/>
 </menu>
 
 <lang id="rus">
-<main_link>На главную</main_link>
-<mail_link>Отправить письмо</mail_link>
 <page_top>Наверх страницы</page_top>
 <page_top_short>Наверх</page_top_short>
 </lang>
 
 <lang id="eng">
-<main_link>Home</main_link>
-<mail_link>Send mail</mail_link>
 <page_top>Goto top</page_top>
 <page_top_short>Top</page_top_short>
 </lang>
