@@ -234,7 +234,7 @@
             	<td valign="top">
             	    <table width="100%" cellspacing="0" cellpadding="0" border="0">
             	    <tr>
-            	    	<td height="18"></td>
+            	    	<td height="38"></td>
             	    </tr>
             	    <tr>
             	    	<td class="text">
