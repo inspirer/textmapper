@@ -5,8 +5,9 @@
 <item title="Home"			link="index.html"/>
 <item title="Documentation"	link="docs.html"/>
 <item title="Grammars"		link="samples.html"/>
-<item title="Download"		link="http://downloads.sourceforge.net/lapg/"/>
+<item title="Download"		link="download.html"/>
 <item title="Related Links"	link="links.html"/>
+<item title="Lapg on SF.NET" link="http://www.sourceforge.net/projects/lapg"/>
 </menu>
 
 <lang id="rus">
