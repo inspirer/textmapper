@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+
+<hxml xmlns:xi="http://www.w3.org/2001/XInclude">
+<xi:include href="i18n.xml"/>
+
+<title lang="eng">Links</title>
+
+<content>
+
+<lang lang='eng'>
+<h>Links</h>
+<p>
+hmm
+</p>
+
+</lang>
+</content>
+
+</hxml>

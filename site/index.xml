@@ -3,28 +3,37 @@
 <hxml xmlns:xi="http://www.w3.org/2001/XInclude">
 <xi:include href="i18n.xml"/>
 
-<title lang="eng">LAPG</title>
+<title lang="eng">Lapg Home</title>
 
 <content>
 
-<p>
 <lang lang='eng'>
+<h>What is lapg?</h>
+<p>
 Lapg is the combined lexical analyzer and parser generator, which converts a
 description for a context-free LALR1 grammar into source file to parse the 
 grammar. The generated parser accepts zero-terminated text, breaks it into 
 tokens and applies given rules to reduce the input to the main non-terminal
 symbol. Lapg can be used in a wide range of tasks. It may be a simple string
 parser or a complicated compiler like C++. 
-</lang>
-<lang lang='rus'>
-Lapg это средство дл€ создани€ практически любых парсеров основанных на
-LALR(1) грамматиках. ¬ы задаете грамматику и получаете на выходе класс,
-готовый принимать символьный поток данных (обычно это строка или файл).
-Lapg по описанию лексем и контекстно-свободной грамматики генерирует
-синтаксический и лексический анализаторы в одном классе.  од может
-генерироватьс€ дл€ —++ или C#.
-</lang>
 </p>
+<p>
+Features:
+<ul>
+<li>Understands LALR(1) grammars with L-attributes</li>
+<li>Provides readable grammar ambiguities reports</li>
+<li>Generates code for C++, C#, Java and Javascript</li>
+<li>Puts all generated code into one file, which doesn't require specific runtime</li>
+<li>Accepts lexems definition with regular expressions</li>
+<li>Works very fast</li>
+</ul>
+</p>
+<h>License</h>
+<p>
+The Lapg package is released under GPL license.
+</p>
+
+</lang>
 
 <download dir="/files/lapg/">
 <group name="Lapg">
@@ -36,25 +45,6 @@ Lapg по описанию лексем и контекстно-свободной грамматики генерирует
 <file name='lapg1_2_0_src.rar' type='Rar archive'>Lapg 1.2.0 sources (win32/linux)</file>
 </group>
 </download>
-
-Lapg is the combined lexical analyzer and parser generator, which converts a 
-description for a context-free LALR1 grammar into source file to parse the 
-grammar. Unlike bison or yacc, you have no need to write lexical analyzer 
-manually or use extra tools such as flex. With lapg, you can easily define 
-your own grammar and lexical analyzer for it in a file and have the 
-only c/cpp/cs file as an output. 
-
-<p>
-Features:
-
-
-<ul>
-<li>C, C++ and C# are supported </li>
-<li>L-attributes </li>
-<li>Lexems definition with regular expressions </li>
-<li>Very fast </li>
-</ul>
-</p>
 
 </content>
 
