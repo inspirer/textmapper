@@ -1,11 +1,14 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg.lalr.internal;
 
 import java.util.Arrays;
+
+import net.sf.lapg.lalr.Grammar;
+import net.sf.lapg.lalr.IError;
 
 /**
  *  LR(0) states generator
  */
-public class EngineLR0 extends EngineBase {
+class EngineLR0 extends EngineBase {
 
 	protected static final int BITS = 32;
 	protected static final int MAX_WORD = 0x7ff0;

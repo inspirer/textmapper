@@ -1,13 +1,17 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg.lalr.internal;
 
 import java.util.Iterator;
 
-public abstract class EngineBase {
+import net.sf.lapg.lalr.Grammar;
+import net.sf.lapg.lalr.IError;
+import net.sf.lapg.lalr.Rule;
+import net.sf.lapg.lalr.Symbol;
+
+abstract class EngineBase {
 
 	protected EngineBase(Grammar g, IError err, int debuglev) {
 		this.err = err;
 		this.debuglev = debuglev;
-		this.errors = 0;
 
 		this.nsyms = g.syms.size();
 		this.rules = g.rules.size();
@@ -56,7 +60,7 @@ public abstract class EngineBase {
 
 	// log
 
-	protected final int debuglev, errors;
+	protected final int debuglev;
 	protected final IError err;
 
 	// grammar information
@@ -100,6 +104,4 @@ public abstract class EngineBase {
 
 		err.error(errl, "\n");
 	}
-	
-	public abstract void clear();
 }

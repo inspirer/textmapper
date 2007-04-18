@@ -1,6 +1,5 @@
 package net.sf.lapg;
 
-import java.util.Arrays;
 
 public class Lapg {
 

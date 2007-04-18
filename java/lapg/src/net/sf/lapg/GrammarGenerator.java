@@ -7,7 +7,6 @@ import net.sf.lapg.lalr.Grammar;
 import net.sf.lapg.lalr.IError;
 import net.sf.lapg.lalr.Rule;
 import net.sf.lapg.lalr.Symbol;
-import net.sf.lapg.lalr.Engine.Result;
 
 public class GrammarGenerator {
 	

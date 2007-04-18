@@ -1,9 +1,12 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg.lalr.internal;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-public class EngineLalr extends EngineLR0 {
+import net.sf.lapg.lalr.Grammar;
+import net.sf.lapg.lalr.IError;
+
+class EngineLalr extends EngineLR0 {
 	
 	public class Short {
 		short value;
@@ -15,14 +18,16 @@ public class EngineLalr extends EngineLR0 {
 	}
 
 	// LALR
+
+	protected short[] larule, laindex;
+	protected int[] LA /* ? -> setof(term) */;
 	
 	private int maxrpart, ngotos, ntgotos;
-	private short[] larule, laindex;
 	private Short[] lookback;
 	private short[] nterm_goto, nterm_from, nterm_to;
 	private short[] edge;
 	private short[][] graph;
-	private int[] LA /* ? -> setof(term) */, follow /* ngotos ->setof(term) */;
+	private int[] follow /* ngotos ->setof(term) */;
 
 	protected void lalr() {
 		LA = null;

@@ -2,9 +2,11 @@ package net.sf.lapg.lalr;
 
 public class Rule {
 
-	public int left, line, prio;
-	public String action;
-	public int[] right;
+	public final int left;
+	public final int[] right;
+	public final int line;
+	public final int prio;
+	public final String action;
 	
 	public Rule(int left, int line, int prio, String action, int[] right) {
 		this.left = left;
