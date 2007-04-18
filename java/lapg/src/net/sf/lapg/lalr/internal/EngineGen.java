@@ -300,16 +300,12 @@ public class EngineGen extends EngineLalr {
 		
 		 // engine
 		if (!LR0()) {
-			clear();
 			return null;
 		}
 
 		lalr();
 		action();
-		Result r = createResult();
-		clear();
-		
-		return r;
+		return createResult();
 	}
 
 	private Result createResult() {

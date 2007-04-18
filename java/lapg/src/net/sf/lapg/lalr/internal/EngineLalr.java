@@ -289,12 +289,12 @@ class EngineLalr extends EngineLR0 {
 			int fstate = nterm_from[i];
 			int symbol = state[nterm_to[i]].symbol;
 
-			rule = derives[symbol];
-			for( int ruleind = 0; rule[ruleind] >= 0; ruleind++ ) {
+			rule = derives[symbol-nterms];
+			for( int ri = 0; ri < rule.length; ri++ ) {
 				currstate = states[0] = (short)fstate;
 				length = 1;
 
-				for( rpart = rindex[rule[ruleind]]; rright[rpart] >= 0; rpart++ ) {
+				for( rpart = rindex[rule[ri]]; rright[rpart] >= 0; rpart++ ) {
 					int nshifts = state[currstate].nshifts;
 					short[] shft = state[currstate].shifts;
 
@@ -309,7 +309,7 @@ class EngineLalr extends EngineLR0 {
 				}
 
 				if( !state[currstate].LR0 )
-					add_lookback( currstate, rule[ruleind], (short)i );
+					add_lookback( currstate, rule[ri], (short)i );
 
 				for( length--;;) {
 					rpart--;
