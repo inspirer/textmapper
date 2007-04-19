@@ -8,7 +8,7 @@ import net.sf.lapg.lalr.IError;
 /**
  *  LR(0) states generator
  */
-class EngineLR0 extends EngineBase {
+class LR0 extends ContextFree {
 
 	protected static final int BITS = 32;
 	protected static final int MAX_WORD = 0x7ff0;
@@ -35,11 +35,11 @@ class EngineLR0 extends EngineBase {
 	protected State[] state;
 	protected State first;
 
-	protected EngineLR0(Grammar g, IError err, int debuglev) {
+	protected LR0(Grammar g, IError err, int debuglev) {
 		super(g, err, debuglev);
 	}
 
-	protected boolean LR0() {
+	protected boolean buildLR0() {
 		allocate_data();
 		build_derives();
 		build_sets();

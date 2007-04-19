@@ -7,9 +7,9 @@ import net.sf.lapg.lalr.IError;
 import net.sf.lapg.lalr.Rule;
 import net.sf.lapg.lalr.Symbol;
 
-abstract class EngineBase {
+abstract class ContextFree {
 
-	protected EngineBase(Grammar g, IError err, int debuglev) {
+	protected ContextFree(Grammar g, IError err, int debuglev) {
 		this.err = err;
 		this.debuglev = debuglev;
 

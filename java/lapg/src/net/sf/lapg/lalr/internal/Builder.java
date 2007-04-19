@@ -8,9 +8,9 @@ import net.sf.lapg.lalr.Result;
 import net.sf.lapg.lalr.Symbol;
 
 
-public class EngineGen extends EngineLalr {
+public class Builder extends Lalr1 {
 
-	private EngineGen(Grammar g, IError err, int debuglev) {
+	private Builder(Grammar g, IError err, int debuglev) {
 		super(g, err, debuglev);
 	}
 
@@ -299,11 +299,11 @@ public class EngineGen extends EngineLalr {
 		verify_grammar();
 		
 		 // engine
-		if (!LR0()) {
+		if (!buildLR0()) {
 			return null;
 		}
 
-		lalr();
+		buildLalr();
 		action();
 		return createResult();
 	}
@@ -334,7 +334,7 @@ public class EngineGen extends EngineLalr {
 	}
 	
 	public static Result compile(Grammar g, IError err, int debuglev) {
-		EngineGen en = new EngineGen(g, err, debuglev);
+		Builder en = new Builder(g, err, debuglev);
 		return en.generate();
 	}
 }

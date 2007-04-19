@@ -6,14 +6,14 @@ import java.util.Arrays;
 import net.sf.lapg.lalr.Grammar;
 import net.sf.lapg.lalr.IError;
 
-class EngineLalr extends EngineLR0 {
+class Lalr1 extends LR0 {
 	
 	public class Short {
 		short value;
 		Short next;
 	};
 
-	EngineLalr(Grammar g, IError err, int debuglev) {
+	Lalr1(Grammar g, IError err, int debuglev) {
 		super(g, err, debuglev);
 	}
 
@@ -29,7 +29,7 @@ class EngineLalr extends EngineLR0 {
 	private short[][] graph;
 	private int[] follow /* ngotos ->setof(term) */;
 
-	protected void lalr() {
+	protected void buildLalr() {
 		LA = null;
 		laindex = larule = null;
 
