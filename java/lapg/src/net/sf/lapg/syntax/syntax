@@ -1,0 +1,232 @@
+#   syntax: lalr1 generator source grammar
+#
+#   Lapg (Lexical Analyzer and Parser Generator)
+#   Copyright (C) 2002-06  Evgeny Gryaznov (inspirer@inbox.ru)
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+.lang        "java" 
+.getsym      "chr = buff[l++];if( l == end ) fillb()"
+.positioning "full"
+.class       "Parser"
+.namespace	 "net.sf.lapg.syntax"
+.maxtoken    4096
+.stack       512
+.errorprefix "0, "
+
+# Vocabulary
+
+id(char*):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^']+'/  { @ = new String(token,0,lapg_size); break; }
+regexp(char*): /\/([^\/\\]|\\.)*\//              { @ = new String(token,1,lapg_size-2); break; }
+cmd1(char*):   /\\.*/           { @ = new String(token,1,lapg_size-1); break; }
+cmd2(char*):   /\n\t\t.*/       { @ = new String(token,3,lapg_size-3); break; }
+cmd3(char*):   /{[^{}\n]*}/     { @ = new String(token,1,lapg_size-2); break; }
+str(char*):    /"[^"\n]*"/      { @ = new String(token,1,lapg_size-2); break; }
+type(char*):   /\([^\)]+\)/     { @ = new String(token,1,lapg_size-2); break; }
+Int(int):      /-?[0-9]+/       { @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
+eoi:           /\n%%.*/
+'%':           /\n%/
+_skip:         /\n|[\t\r ]+/    { continue; }
+_skip:         /\n\t/
+_skip:  /#.*/
+'=':    /=/
+'::=':  /::=/
+'|':    /\|/
+';':    /;/
+'.':    /\./
+':':    /:/
+'::':   /::/
+'->':   /->/
+',':    /,/
+'[':    /\[/
+']':    /\]/
+'<<':   /<</
+
+# Attributes
+
+[ idlist ]
+
+# Grammar
+
+input ::= directives lexical_part magazine_def grammar_part ;
+
+cmdx(char*) ::= cmd1 | cmd2 { @$.line++; } | cmd3 ;
+
+cmd (char*) ::
+  = cmdx
+		$$ = concat( NULL, $cmdx, sourcename, @0.line );
+  = cmd cmdx
+		$$ = concat( $cmd, $cmdx, sourcename, (@0.line+1!=@1.line)?@1.line:-1 );
+		@$ = @1;
+;
+
+directives ::= directives directive | directive ;
+
+directive ::
+  = '.' id str
+		process_directive( $id, $str, @0.line, @0.column );
+
+  = '.' id Int
+		process_directive( $id, $Int, @0.line, @0.column );
+;
+
+lexical_part ::= newtypelexemopt lexemdef | lexical_part newtypelexemopt lexemdef ;
+
+int32(int) ::= Int { if( $Int < 0 || $Int >= BITS ) $int32 = 0; else $int32 = 1 << $Int; } ;
+int32_list(int) ::= int32 | int32_list int32 { $int32_list |= $int32; } ;
+newtypelexem ::= '[' int32_list ']' { lb.currentgroups = $int32_list; } ;
+
+lexemdef ::
+  = id ':'
+		gb.terminal($id);
+
+  = id type ':'
+		gb.terminal($id,$type);
+
+  = id ':' regexp Intopt cmd
+		lb.lexem( gb.terminal($id), $regexp, $id, $cmd, $Intopt );
+
+  = id ':' regexp Intopt
+		lb.lexem( gb.terminal($id), $regexp, $id, NULL, $Intopt );
+
+  = id type ':' regexp Intopt cmd
+		lb.lexem( gb.terminal($id, $type), $regexp, $id, $cmd, $Intopt );
+
+  = id type ':' regexp Intopt
+		lb.lexem( gb.terminal($id, $type), $regexp, $id, NULL, $Intopt );
+;
+
+magazine_def ::= '[' magazine_def_listopt ']' ;
+magazine_def_list ::= magazine_def_list ',' attrib | attrib ;
+
+attrib ::
+  = id '->' id
+		gb.symbol( $id#1, 0, NULL, gb.symbol( $id#0, 0 ) );
+  = id
+		gb.symbol( $id, 0, NULL, -1 );
+;
+
+grammar_part ::= ruledef | grammar_part ruledef ;
+ruledef ::= 
+	def_rule_for '::=' rules_or ';' | 
+	def_rule_for '::' rules_eq ';'  | 
+	def_rule_for '[' rules_eq ']'   | 
+	prioritydef ;
+
+rules_or ::= 
+	rules_or '|' stdrule | 
+	stdrule ;
+
+rules_eq ::= 
+	rules_eq '=' stdrule | 
+	'=' stdrule ;
+
+prioritydef ::=
+	'%' id
+		if( !strcmp($id,"left")) $$ = (void*)1;
+		else if( !strcmp($id,"right")) $$ = (void*)2;
+		else if( !strcmp($id,"nonassoc")) $$ = (void*)3;
+		else { error(0,"wrong priority declaration: %%%s",$id);$$ = 0; }
+	idlist ';' ;
+
+idlist(int) ::= id { gb.addprio($id,$#,0); } | idlist id { gb.addprio($id,$#,1); } ;
+
+rule_priority(int) ::=
+	'<<' id { $rule_priority = gb.symbol( $id, 0 ); } |
+	{ $rule_priority = -1; } ;
+
+stdrule ::
+  = ids rule_priority cmd
+		gb.rule( length, $rule_priority, $cmd, rule, @$.line );
+
+  = ids rule_priority
+		gb.rule( length, $rule_priority, NULL, rule, @$.line );
+
+  = cmd rule_priority
+		gb.rule( 0, $rule_priority, $cmd, rule, @$.line );
+
+  = rule_priority
+		gb.rule( 0, $rule_priority, NULL, rule, @$.line );
+;
+
+ids ::
+  = ids rule_priority cmdopt id          # rule_priority must not be here
+		if( $cmdopt ) {
+			length += 2;
+			rule[length] = gb.symbol( $id, 0 );
+			rule[length-1] = gb.symbol( $id, 2, NULL, rule[length] );
+			gb.rule( 0, -1, $cmdopt, rule+length-1, @1.line );
+		} else rule[++length] = gb.symbol( $id, 0 );
+
+  = cmdopt id
+		length = 0;
+		if( $cmdopt ) {
+			length += 2;
+			rule[length] = gb.symbol( $id, 0 );
+			rule[length-1] = gb.symbol( $id, 2, NULL, rule[length] );
+			gb.rule( 0, -1, $cmdopt, rule+length-1, @0.line );
+		} else rule[++length] = gb.symbol( $id, 0 );
+;
+
+def_rule_for ::
+  = id
+		rule[0] = gb.symbol( $id, 1 );
+
+  = id type
+		rule[0] = gb.symbol( $id, 1, $type );
+;
+
+# EOF
+
+%%
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+%%
+
+private static final boolean DEBUG_SYNTAX = true;
+byte[] buff = new byte[1025];
+int l, end;
+InputStream input;
+
+void fillb() {
+	l = 0;
+	try {
+		end = input.read( buff, 0, 1024 );
+		if( end == -1 )
+			end = 0;
+	} catch( IOException ex ) {
+		end = 0;
+	}
+	buff[end] = 0;
+}
+
+void error( int i, String s ) {
+	System.err.println(s);
+}
+
+public static void main(String[] args) throws FileNotFoundException {
+	Parser p = new Parser();
+	
+	if( args.length > 0 ) 
+		p.input = new FileInputStream( args[0] );
+	else 
+		p.input = System.in;
+
+	p.fillb();
+	p.parse();
+}
