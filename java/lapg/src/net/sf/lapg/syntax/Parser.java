@@ -11,9 +11,38 @@ import java.text.MessageFormat;
 public class Parser {
 	
 	private static final boolean DEBUG_SYNTAX = true;
+	private static final int BITS = 32;
+	
 	byte[] buff = new byte[1025];
 	int l, end;
 	InputStream input;
+	
+	GrammarBuilder gb = new GrammarBuilder();  // TODO
+	LexicalBuilder lb = new LexicalBuilder();  // TODO
+	
+	int length;
+	int[] rule = new int[128];
+	
+	final String sourcename = "something";
+	
+	void process_directive( String id, int value, int line, int column ) {
+		// TODO
+	}
+	
+	void process_directive( String id, String value, int line, int column ) {
+		// TODO
+	}
+	
+	String concat( String s1, String s2, String file, int line ) {
+		if( s1 != null ) {
+			if( line != -1 )
+				return s1 + "\n#line "+line+" \""+file+"\"\n" + s2;
+			else 
+				return s1 + "\n" + s2;
+		} else {
+			return "#line "+line+" \""+file+"\"\n" + s2;
+		}
+	}
 	
 	void fillb() {
 		l = 0;
@@ -44,7 +73,7 @@ public class Parser {
 	}
 
 	public class lapg_place {
-		public final int line, column;
+		public int line, column;
 
 		public lapg_place( int line, int column ) {
 			this.line = line;
@@ -345,7 +374,7 @@ public class Parser {
 		lapg_m[0].state = 0;
 		chr = buff[l++];if( l == end ) fillb();
 
-		NEXTTOKEN: do {
+		do {
 			lapg_n = new lapg_symbol();
 			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
@@ -405,76 +434,76 @@ public class Parser {
 						case 2:
 							 lapg_gg.pos.line++; 
 						case 4:
-							lapg_gg.sym = concat( NULL, ((char*)lapg_m[lapg_head-0].sym), sourcename, lapg_m[lapg_head-0].pos.line );
+							lapg_gg.sym = concat( null, ((String)lapg_m[lapg_head-0].sym), sourcename, lapg_m[lapg_head-0].pos.line );
 						case 5:
-							lapg_gg.sym = concat( ((char*)lapg_gg.sym), ((char*)lapg_m[lapg_head-0].sym), sourcename, (lapg_m[lapg_head-1].pos.line+1!=lapg_m[lapg_head-0].pos.line)?lapg_m[lapg_head-0].pos.line:-1 );
+							lapg_gg.sym = concat( ((String)lapg_gg.sym), ((String)lapg_m[lapg_head-0].sym), sourcename, (lapg_m[lapg_head-1].pos.line+1!=lapg_m[lapg_head-0].pos.line)?lapg_m[lapg_head-0].pos.line:-1 );
 							lapg_gg.pos = lapg_m[lapg_head-0].pos;
 						case 8:
-							process_directive( ((char*)lapg_m[lapg_head-1].sym), ((char*)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
+							process_directive( ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
 						case 9:
-							process_directive( ((char*)lapg_m[lapg_head-1].sym), ((int)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
+							process_directive( ((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
 						case 14:
-							 if( ((int)lapg_m[lapg_head-0].sym) < 0 || ((int)lapg_m[lapg_head-0].sym) >= BITS ) ((int)lapg_gg.sym) = 0; else ((int)lapg_gg.sym) = 1 << ((int)lapg_m[lapg_head-0].sym); 
+							 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
 						case 16:
-							 ((int)lapg_gg.sym) |= ((int)lapg_m[lapg_head-0].sym); 
+							 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
 						case 17:
-							 lb.currentgroups = ((int)lapg_m[lapg_head-1].sym); 
+							 lb.currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
 						case 18:
-							gb.terminal(((char*)lapg_m[lapg_head-1].sym));
+							gb.terminal(((String)lapg_m[lapg_head-1].sym), null);
 						case 19:
-							gb.terminal(((char*)lapg_m[lapg_head-2].sym),((char*)lapg_m[lapg_head-1].sym));
+							gb.terminal(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-1].sym));
 						case 22:
-							lb.lexem( gb.terminal(((char*)lapg_m[lapg_head-4].sym)), ((char*)lapg_m[lapg_head-2].sym), ((char*)lapg_m[lapg_head-4].sym), ((char*)lapg_m[lapg_head-0].sym), ((int)lapg_m[lapg_head-1].sym) );
+							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-4].sym), null), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
 						case 23:
-							lb.lexem( gb.terminal(((char*)lapg_m[lapg_head-3].sym)), ((char*)lapg_m[lapg_head-1].sym), ((char*)lapg_m[lapg_head-3].sym), NULL, ((int)lapg_m[lapg_head-0].sym) );
+							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-3].sym), null), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-3].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
 						case 24:
-							lb.lexem( gb.terminal(((char*)lapg_m[lapg_head-5].sym), ((char*)lapg_m[lapg_head-4].sym)), ((char*)lapg_m[lapg_head-2].sym), ((char*)lapg_m[lapg_head-5].sym), ((char*)lapg_m[lapg_head-0].sym), ((int)lapg_m[lapg_head-1].sym) );
+							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym)), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
 						case 25:
-							lb.lexem( gb.terminal(((char*)lapg_m[lapg_head-4].sym), ((char*)lapg_m[lapg_head-3].sym)), ((char*)lapg_m[lapg_head-1].sym), ((char*)lapg_m[lapg_head-4].sym), NULL, ((int)lapg_m[lapg_head-0].sym) );
+							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym)), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-4].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
 						case 31:
-							gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0, NULL, gb.symbol( ((char*)lapg_m[lapg_head-2].sym), 0 ) );
+							gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, gb.nonterm( ((String)lapg_m[lapg_head-2].sym), 0 ) );
 						case 32:
-							gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0, NULL, -1 );
+							gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, -1 );
 						case 43:
-							if( !strcmp(((char*)lapg_m[lapg_head-0].sym),"left")) lapg_gg.sym = (void*)1;
-							else if( !strcmp(((char*)lapg_m[lapg_head-0].sym),"right")) lapg_gg.sym = (void*)2;
-							else if( !strcmp(((char*)lapg_m[lapg_head-0].sym),"nonassoc")) lapg_gg.sym = (void*)3;
-							else { error(0,"wrong priority declaration: %%%s",((char*)lapg_m[lapg_head-0].sym));lapg_gg.sym = 0; }
+							if( ((String)lapg_m[lapg_head-0].sym).equals("left")) lapg_gg.sym = 1;
+							else if( ((String)lapg_m[lapg_head-0].sym).equals("right")) lapg_gg.sym = 2;
+							else if( ((String)lapg_m[lapg_head-0].sym).equals("nonassoc")) lapg_gg.sym = 3;
+							else { error(0,"wrong priority declaration: %" + ((String)lapg_m[lapg_head-0].sym));lapg_gg.sym = 0; }
 						case 45:
-							 gb.addprio(((char*)lapg_m[lapg_head-0].sym),((int)lapg_m[lapg_head-1].sym),0); 
+							 gb.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-1].sym),false); 
 						case 46:
-							 gb.addprio(((char*)lapg_m[lapg_head-0].sym),((int)lapg_m[lapg_head-2].sym),1); 
+							 gb.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-2].sym),true); 
 						case 47:
-							 ((int)lapg_gg.sym) = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0 ); 
+							 lapg_gg.sym = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 ); 
 						case 48:
-							 ((int)lapg_gg.sym) = -1; 
+							 lapg_gg.sym = -1; 
 						case 49:
-							gb.rule( length, ((int)lapg_m[lapg_head-1].sym), ((char*)lapg_m[lapg_head-0].sym), rule, lapg_gg.pos.line );
+							gb.rule( length, ((Integer)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), rule, lapg_gg.pos.line );
 						case 50:
-							gb.rule( length, ((int)lapg_m[lapg_head-0].sym), NULL, rule, lapg_gg.pos.line );
+							gb.rule( length, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
 						case 51:
-							gb.rule( 0, ((int)lapg_m[lapg_head-0].sym), ((char*)lapg_m[lapg_head-1].sym), rule, lapg_gg.pos.line );
+							gb.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), ((String)lapg_m[lapg_head-1].sym), rule, lapg_gg.pos.line );
 						case 52:
-							gb.rule( 0, ((int)lapg_m[lapg_head-0].sym), NULL, rule, lapg_gg.pos.line );
+							gb.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
 						case 55:
-							if( ((char*)lapg_m[lapg_head-1].sym) ) {
+							if( ((String)lapg_m[lapg_head-1].sym) != null ) {
 								length += 2;
-								rule[length] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0 );
-								rule[length-1] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 2, NULL, rule[length] );
-								gb.rule( 0, -1, ((char*)lapg_m[lapg_head-1].sym), rule+length-1, lapg_m[lapg_head-2].pos.line );
-							} else rule[++length] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0 );
+								rule[length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length-1] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
+								gb.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-2].pos.line );
+							} else rule[++length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
 						case 56:
 							length = 0;
-							if( ((char*)lapg_m[lapg_head-1].sym) ) {
+							if( ((String)lapg_m[lapg_head-1].sym) != null) {
 								length += 2;
-								rule[length] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0 );
-								rule[length-1] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 2, NULL, rule[length] );
-								gb.rule( 0, -1, ((char*)lapg_m[lapg_head-1].sym), rule+length-1, lapg_m[lapg_head-1].pos.line );
-							} else rule[++length] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 0 );
+								rule[length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length-1] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
+								gb.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-1].pos.line );
+							} else rule[++length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
 						case 57:
-							rule[0] = gb.symbol( ((char*)lapg_m[lapg_head-0].sym), 1 );
+							rule[0] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 1 );
 						case 58:
-							rule[0] = gb.symbol( ((char*)lapg_m[lapg_head-1].sym), 1, ((char*)lapg_m[lapg_head-0].sym) );
+							rule[0] = gb.nonterm( ((String)lapg_m[lapg_head-1].sym), 1, ((String)lapg_m[lapg_head-0].sym), -2 );
 					}
 					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 
 						lapg_m[lapg_head--] = null;

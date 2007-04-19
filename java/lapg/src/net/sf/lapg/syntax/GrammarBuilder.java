@@ -1,4 +1,4 @@
-package net.sf.lapg;
+package net.sf.lapg.syntax;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -8,7 +8,7 @@ import net.sf.lapg.lalr.IError;
 import net.sf.lapg.lalr.Rule;
 import net.sf.lapg.lalr.Symbol;
 
-public class GrammarGenerator {
+public class GrammarBuilder {
 	
 	public static final int SYM_PLACE_RIGHT = 0;		// symbol from right part of rule, or define attr for sname (see sibling)	 
 	public static final int SYM_PLACE_LEFT = 1;			// symbol from left part of rule 
@@ -103,8 +103,17 @@ public class GrammarGenerator {
 		}
 		return s;
 	}
+	
+	public int nonterm(String name, int symPlace, String type, int sibling) {
+		Symbol s = symbol(name, symPlace, type, sibling);
+		return s.index;
+	}
 
-	private Symbol terminal(String name, String type) {
+	public int nonterm(String name, int symPlace) {
+		return nonterm(name, symPlace, null, -2);
+	}
+
+	public int terminal(String name, String type) {
 		
 		assert syms.size() == nterms;
 
@@ -119,7 +128,7 @@ public class GrammarGenerator {
 
 			if (name.equals("error"))
 				errorn = s.index;
-			return s;
+			return s.index;
 		}
 	}
 
@@ -134,7 +143,7 @@ public class GrammarGenerator {
 		eoi = i;
 	}
 
-	private void rule(int length, int priority, String action, int[] array, int defline) {
+	public void rule(int length, int priority, String action, int[] array, int defline) {
 		int i, left = array[0];
 
 		// calculate priority if needed
@@ -174,7 +183,7 @@ public class GrammarGenerator {
 		situations += right.length;
 	}
 		
-	void addprio(String id, int prio, boolean restofgroup) {
+	public void addprio(String id, int prio, boolean restofgroup) {
 		if (prio > 0) {
 			Symbol s = symbol(id, 0, null, -2);
 			if (!restofgroup) {

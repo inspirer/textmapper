@@ -28,14 +28,14 @@
 
 # Vocabulary
 
-id(char*):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^']+'/  { @ = new String(token,0,lapg_size); break; }
-regexp(char*): /\/([^\/\\]|\\.)*\//              { @ = new String(token,1,lapg_size-2); break; }
-cmd1(char*):   /\\.*/           { @ = new String(token,1,lapg_size-1); break; }
-cmd2(char*):   /\n\t\t.*/       { @ = new String(token,3,lapg_size-3); break; }
-cmd3(char*):   /{[^{}\n]*}/     { @ = new String(token,1,lapg_size-2); break; }
-str(char*):    /"[^"\n]*"/      { @ = new String(token,1,lapg_size-2); break; }
-type(char*):   /\([^\)]+\)/     { @ = new String(token,1,lapg_size-2); break; }
-Int(int):      /-?[0-9]+/       { @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
+id(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^']+'/  { @ = new String(token,0,lapg_size); break; }
+regexp(String): /\/([^\/\\]|\\.)*\//              { @ = new String(token,1,lapg_size-2); break; }
+cmd1(String):   /\\.*/           { @ = new String(token,1,lapg_size-1); break; }
+cmd2(String):   /\n\t\t.*/       { @ = new String(token,3,lapg_size-3); break; }
+cmd3(String):   /{[^{}\n]*}/     { @ = new String(token,1,lapg_size-2); break; }
+str(String):    /"[^"\n]*"/      { @ = new String(token,1,lapg_size-2); break; }
+type(String):   /\([^\)]+\)/     { @ = new String(token,1,lapg_size-2); break; }
+Int(Integer):      /-?[0-9]+/       { @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
 eoi:           /\n%%.*/
 '%':           /\n%/
 _skip:         /\n|[\t\r ]+/    { continue; }
@@ -60,13 +60,14 @@ _skip:  /#.*/
 
 # Grammar
 
-input ::= directives lexical_part magazine_def grammar_part ;
+input ::= 
+	directives lexical_part magazine_def grammar_part ;
 
-cmdx(char*) ::= cmd1 | cmd2 { @$.line++; } | cmd3 ;
+cmdx(String) ::= cmd1 | cmd2 { @$.line++; } | cmd3 ;
 
-cmd (char*) ::
+cmd (String) ::
   = cmdx
-		$$ = concat( NULL, $cmdx, sourcename, @0.line );
+		$$ = concat( null, $cmdx, sourcename, @0.line );
   = cmd cmdx
 		$$ = concat( $cmd, $cmdx, sourcename, (@0.line+1!=@1.line)?@1.line:-1 );
 		@$ = @1;
@@ -84,28 +85,28 @@ directive ::
 
 lexical_part ::= newtypelexemopt lexemdef | lexical_part newtypelexemopt lexemdef ;
 
-int32(int) ::= Int { if( $Int < 0 || $Int >= BITS ) $int32 = 0; else $int32 = 1 << $Int; } ;
-int32_list(int) ::= int32 | int32_list int32 { $int32_list |= $int32; } ;
+int32(Integer) ::= Int { if( $Int < 0 || $Int >= BITS ) $$ = 0; else $$ = 1 << $Int; } ;
+int32_list(Integer) ::= int32 | int32_list int32 { $$ = $int32_list | $int32; } ;
 newtypelexem ::= '[' int32_list ']' { lb.currentgroups = $int32_list; } ;
 
 lexemdef ::
   = id ':'
-		gb.terminal($id);
+		gb.terminal($id, null);
 
   = id type ':'
 		gb.terminal($id,$type);
 
   = id ':' regexp Intopt cmd
-		lb.lexem( gb.terminal($id), $regexp, $id, $cmd, $Intopt );
+		lb.lexem( gb.terminal($id, null), $regexp, $id, $cmd, $Intopt );
 
   = id ':' regexp Intopt
-		lb.lexem( gb.terminal($id), $regexp, $id, NULL, $Intopt );
+		lb.lexem( gb.terminal($id, null), $regexp, $id, null, $Intopt );
 
   = id type ':' regexp Intopt cmd
 		lb.lexem( gb.terminal($id, $type), $regexp, $id, $cmd, $Intopt );
 
   = id type ':' regexp Intopt
-		lb.lexem( gb.terminal($id, $type), $regexp, $id, NULL, $Intopt );
+		lb.lexem( gb.terminal($id, $type), $regexp, $id, null, $Intopt );
 ;
 
 magazine_def ::= '[' magazine_def_listopt ']' ;
@@ -113,9 +114,9 @@ magazine_def_list ::= magazine_def_list ',' attrib | attrib ;
 
 attrib ::
   = id '->' id
-		gb.symbol( $id#1, 0, NULL, gb.symbol( $id#0, 0 ) );
+		gb.nonterm( $id#1, 0, null, gb.nonterm( $id#0, 0 ) );
   = id
-		gb.symbol( $id, 0, NULL, -1 );
+		gb.nonterm( $id, 0, null, -1 );
 ;
 
 grammar_part ::= ruledef | grammar_part ruledef ;
@@ -135,57 +136,57 @@ rules_eq ::=
 
 prioritydef ::=
 	'%' id
-		if( !strcmp($id,"left")) $$ = (void*)1;
-		else if( !strcmp($id,"right")) $$ = (void*)2;
-		else if( !strcmp($id,"nonassoc")) $$ = (void*)3;
-		else { error(0,"wrong priority declaration: %%%s",$id);$$ = 0; }
+		if( $id.equals("left")) $$ = 1;
+		else if( $id.equals("right")) $$ = 2;
+		else if( $id.equals("nonassoc")) $$ = 3;
+		else { error(0,"wrong priority declaration: %" + $id);$$ = 0; }
 	idlist ';' ;
 
-idlist(int) ::= id { gb.addprio($id,$#,0); } | idlist id { gb.addprio($id,$#,1); } ;
+idlist(Integer) ::= id { gb.addprio($id,$#,false); } | idlist id { gb.addprio($id,$#,true); } ;
 
-rule_priority(int) ::=
-	'<<' id { $rule_priority = gb.symbol( $id, 0 ); } |
-	{ $rule_priority = -1; } ;
+rule_priority(Integer) ::=
+	'<<' id { $$ = gb.nonterm( $id, 0 ); } |
+	{ $$ = -1; } ;
 
 stdrule ::
   = ids rule_priority cmd
 		gb.rule( length, $rule_priority, $cmd, rule, @$.line );
 
   = ids rule_priority
-		gb.rule( length, $rule_priority, NULL, rule, @$.line );
+		gb.rule( length, $rule_priority, null, rule, @$.line );
 
   = cmd rule_priority
 		gb.rule( 0, $rule_priority, $cmd, rule, @$.line );
 
   = rule_priority
-		gb.rule( 0, $rule_priority, NULL, rule, @$.line );
+		gb.rule( 0, $rule_priority, null, rule, @$.line );
 ;
 
 ids ::
   = ids rule_priority cmdopt id          # rule_priority must not be here
-		if( $cmdopt ) {
+		if( $cmdopt != null ) {
 			length += 2;
-			rule[length] = gb.symbol( $id, 0 );
-			rule[length-1] = gb.symbol( $id, 2, NULL, rule[length] );
-			gb.rule( 0, -1, $cmdopt, rule+length-1, @1.line );
-		} else rule[++length] = gb.symbol( $id, 0 );
+			rule[length] = gb.nonterm( $id, 0 );
+			rule[length-1] = gb.nonterm( $id, 2, null, rule[length] );
+			gb.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @1.line );
+		} else rule[++length] = gb.nonterm( $id, 0 );
 
   = cmdopt id
 		length = 0;
-		if( $cmdopt ) {
+		if( $cmdopt != null) {
 			length += 2;
-			rule[length] = gb.symbol( $id, 0 );
-			rule[length-1] = gb.symbol( $id, 2, NULL, rule[length] );
-			gb.rule( 0, -1, $cmdopt, rule+length-1, @0.line );
-		} else rule[++length] = gb.symbol( $id, 0 );
+			rule[length] = gb.nonterm( $id, 0 );
+			rule[length-1] = gb.nonterm( $id, 2, null, rule[length] );
+			gb.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @0.line );
+		} else rule[++length] = gb.nonterm( $id, 0 );
 ;
 
 def_rule_for ::
   = id
-		rule[0] = gb.symbol( $id, 1 );
+		rule[0] = gb.nonterm( $id, 1 );
 
   = id type
-		rule[0] = gb.symbol( $id, 1, $type );
+		rule[0] = gb.nonterm( $id, 1, $type, -2 );
 ;
 
 # EOF
@@ -199,9 +200,38 @@ import java.text.MessageFormat;
 %%
 
 private static final boolean DEBUG_SYNTAX = true;
+private static final int BITS = 32;
+
 byte[] buff = new byte[1025];
 int l, end;
 InputStream input;
+
+GrammarBuilder gb = new GrammarBuilder();  // TODO
+LexicalBuilder lb = new LexicalBuilder();  // TODO
+
+int length;
+int[] rule = new int[128];
+
+final String sourcename = "something";
+
+void process_directive( String id, int value, int line, int column ) {
+	// TODO
+}
+
+void process_directive( String id, String value, int line, int column ) {
+	// TODO
+}
+
+String concat( String s1, String s2, String file, int line ) {
+	if( s1 != null ) {
+		if( line != -1 )
+			return s1 + "\n#line "+line+" \""+file+"\"\n" + s2;
+		else 
+			return s1 + "\n" + s2;
+	} else {
+		return "#line "+line+" \""+file+"\"\n" + s2;
+	}
+}
 
 void fillb() {
 	l = 0;
