@@ -55,7 +55,7 @@ int lalr1::run()
 	int res = parse();
 
 	if( res ) {
-		gb.set_input( input_sym = gb.symbol( "input", 0 ) );
+		gb.set_input( gb.symbol( "input", 0 ) );
 		res = lb.generate( &lr );
 		if( res ) {
 			res = gb.generate( &gr );

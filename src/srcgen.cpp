@@ -573,7 +573,7 @@ static const char *at_varlist[] = {
 };
 
 
-static const char *sym_to_string( const char *s ) {
+static const char *sym_to_string( const char *s, int number ) {
 	static char buffer[4096];
 
 	*buffer = 0;
@@ -623,8 +623,12 @@ static const char *sym_to_string( const char *s ) {
 		*dest = 0;
 		return buffer;
 
-	} else
+	} else if( s[0] == '{' && s[1] == '}' ) {
+		sprintf(buffer,"_sym%i",number);
+		return buffer;
+	} else {
 		return s;
+	}
 }
 
 
@@ -776,7 +780,7 @@ int SourceGenerator::print_variable( char *var, int tabs, int can_write )
 			break;
 		case 33: /* tokenenum */
 			for( i = 0; i < gr.nsyms; i++ )
-				printf( "%s%s,\n", i?TABS(tabs):"", sym_to_string(gr.sym[i].name) );
+				printf( "%s%s,\n", i?TABS(tabs):"", sym_to_string(gr.sym[i].name, i) );
 			return 1;
 			break;
 	}

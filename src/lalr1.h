@@ -41,7 +41,7 @@ private:
 protected:
 	GrammarBuilder::Result gr; 
 	LexicalBuilder::Result lr;
-	int input_sym, debuglev;
+	int debuglev;
 	int maxtoken, maxstack;
 	char *l, *end;
 

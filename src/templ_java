@@ -9,9 +9,9 @@ public class @classname {
 
 ${pos
 	public class lapg_place {
-$#pos1		public final int line;
-$#pos2		public final int line, column;
-$#pos3		public final int line, offset;
+$#pos1		public int line;
+$#pos2		public int line, column;
+$#pos3		public int line, offset;
 
 $#pos1		public lapg_place( int line ) {
 $#pos2		public lapg_place( int line, int column ) {
@@ -120,7 +120,8 @@ $#error		int           lapg_symbols_ok = 4;
 		lapg_m[0].state = 0;
 		@next;
 
-		NEXTTOKEN: do {
+$#error		NEXTTOKEN: 
+		do {
 			lapg_n = new lapg_symbol();
 $#pos1			lapg_n.pos = new lapg_place( lapg_current_line );
 $#pos2			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
@@ -184,6 +185,7 @@ ${ruleactions
 ${eachaction
 						case @rulenum:
 							@ruleaction
+							break;
 $}
 					}
 $}
