@@ -48,7 +48,7 @@ class LR0 extends ContextFree {
 		while (current != null) {
 			build_closure(current.elems);
 			if (!process_state()) {
-				err.error(0, "syntax analyzer is too big ...\n");
+				err.error("syntax analyzer is too big ...\n");
 				freeLR0();
 				return false;
 			}
@@ -370,16 +370,16 @@ class LR0 extends ContextFree {
 
 	private void show_debug() {
 		if (debuglev != 0) {
-			err.error(2, "\nStates\n0:\n");
+			err.debug( "\nStates\n0:\n");
 
 			for (State t = first; t != null; t = t.next) {
 				if (t != first)
-					err.error(2, "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].name + ")\n");
+					err.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].name + ")\n");
 
 				build_closure(t.elems);
 
 				for (int i = 0; i < closureend; i++) {
-					print_situation(2, closure[i]);
+					print_situation(closure[i]);
 				}
 			}
 		}

@@ -24,7 +24,6 @@
 .namespace	 "net.sf.lapg.syntax"
 .maxtoken    4096
 .stack       512
-.errorprefix "0, "
 
 # Vocabulary
 
@@ -139,7 +138,7 @@ prioritydef ::=
 		if( $id.equals("left")) $$ = 1;
 		else if( $id.equals("right")) $$ = 2;
 		else if( $id.equals("nonassoc")) $$ = 3;
-		else { error(0,"wrong priority declaration: %" + $id);$$ = 0; }
+		else { error("wrong priority declaration: %" + $id);$$ = 0; }
 	idlist ';' ;
 
 idlist(Integer) ::= id { dc.addprio($id,$#,false); } | idlist id { dc.addprio($id,$#,true); } ;
@@ -220,7 +219,7 @@ private Parser( InputStream is, String sourceName, DescriptionCollector dc, IErr
 	this.err = err;
 }
 
-public static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
 	Parser p = new Parser(is, sourceName, dc, err);
 	p.fillb();
 	return p.parse();
@@ -249,6 +248,6 @@ void fillb() {
 	buff[end] = 0;
 }
 
-void error( int i, String s ) {
-	err.error(i, s);
+void error( String s ) {
+	err.error(s);
 }

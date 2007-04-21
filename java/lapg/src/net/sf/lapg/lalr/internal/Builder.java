@@ -113,10 +113,10 @@ public class Builder extends Lalr1 {
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
 			if (!sym[i].term && !sym[i].defed) {
-				err.error(0, "no rules for `" + sym[i].name + "`\n");
+				err.error("no rules for `" + sym[i].name + "`\n");
 			} else if (!sym[i].good || !sym[i].employed) {
 				if (!sym[i].name.startsWith("_skip"))
-					err.error(1, "lapg: symbol `" + sym[i].name + "` is useless\n");
+					err.warn( "lapg: symbol `" + sym[i].name + "` is useless\n");
 			}
 		}
 	}
@@ -159,7 +159,7 @@ public class Builder extends Lalr1 {
 		if (state[s].number == 0)
 			return;
 		print_input(state[s].fromstate);
-		err.error(1, " " + sym[state[s].symbol].name);
+		err.warn( " " + sym[state[s].symbol].name);
 	}
 
 	private void action() {
@@ -220,33 +220,33 @@ public class Builder extends Lalr1 {
 									} else if (next[termSym] == -1) {
 										switch (compare_prio(larule[i], termSym)) {
 										case 0: // shift/reduce
-											err.error(1, "\ninput:");
+											err.warn( "\ninput:");
 											print_input(t.number);
-											err.error(1, "\nconflict: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
-											print_rule(1, larule[i]);
+											err.warn( "\nconflict: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											warn_rule(larule[i]);
 											sr++;
 											break;
 										case 1: // shift
-											err.error(1, "\ninput:");
+											err.warn( "\ninput:");
 											print_input(t.number);
-											err.error(1, "\nfixed: shift: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
-											print_rule(1, larule[i]);
+											err.warn( "\nfixed: shift: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											warn_rule(larule[i]);
 											break;
 										case 2: // reduce
-											err.error(1, "\ninput:");
+											err.warn( "\ninput:");
 											print_input(t.number);
-											err.error(1, "\nfixed: reduce: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
-											print_rule(1, larule[i]);
+											err.warn( "\nfixed: reduce: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											warn_rule(larule[i]);
 											next[termSym] = larule[i];
 											break;
 										}
 									} else {
 										// reduce/reduce
-										err.error(1, "\ninput:");
+										err.warn( "\ninput:");
 										print_input(t.number);
-										err.error(1, "\nconflict: reduce/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
-										print_rule(1, next[termSym]);
-										print_rule(1, larule[i]);
+										err.warn( "\nconflict: reduce/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+										warn_rule(next[termSym]);
+										warn_rule(larule[i]);
 										rr++;
 									}
 								}
@@ -272,7 +272,7 @@ public class Builder extends Lalr1 {
 			}
 		}
 		if ((sr + rr) > 0)
-			err.error(0, "conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n");
+			err.error("conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n");
 		
 		e = 0;
 		action_table = new short[nactions];
@@ -285,12 +285,12 @@ public class Builder extends Lalr1 {
 
 	private Result generate() {
 		if (input == -1) {
-			err.error(0, "input symbol is not defined\n");
+			err.error("input symbol is not defined\n");
 			return null;
 		}
 
 		if (eoi == -1) {
-			err.error(0, "the end-of-input symbol is not defined\n");
+			err.error("the end-of-input symbol is not defined\n");
 			return null;
 		}
 

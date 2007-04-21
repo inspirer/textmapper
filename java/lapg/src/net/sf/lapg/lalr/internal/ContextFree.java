@@ -74,7 +74,7 @@ abstract class ContextFree {
 
 	// info
 
-	protected void print_situation(int errl, int situation) {
+	protected void print_situation(int situation) {
 		int rulenum, i;
 
 		for (i = situation; rright[i] >= 0; i++)
@@ -82,26 +82,26 @@ abstract class ContextFree {
 		rulenum = -rright[i] - 1;
 
 		// left part of the rule
-		err.error(errl, "  " + sym[rleft[rulenum]].name + " ::=");
+		err.debug("  " + sym[rleft[rulenum]].name + " ::=");
 
 		for (i = rindex[rulenum]; rright[i] >= 0; i++) {
 			if (i == situation)
-				err.error(errl, " _");
-			err.error(errl, " " + sym[rright[i]].name);
+				err.debug(" _");
+			err.debug(" " + sym[rright[i]].name);
 		}
 		if (i == situation)
-			err.error(errl, " _");
-		err.error(errl, "\n");
+			err.debug(" _");
+		err.debug("\n");
 	}
 
-	protected void print_rule(int errl, int rule) {
+	protected void warn_rule(int rule) {
 		int rr = rindex[rule];
 
-		err.error(errl, "  " + sym[rleft[rule]].name + " ::=");
+		err.warn("  " + sym[rleft[rule]].name + " ::=");
 
 		for (; rright[rr] >= 0; rr++)
-			err.error(errl, " " + sym[rright[rr]].name);
+			err.warn(" " + sym[rright[rr]].name);
 
-		err.error(errl, "\n");
+		err.warn("\n");
 	}
 }

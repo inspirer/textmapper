@@ -47,8 +47,7 @@ class DescriptionCollector implements Syntax {
 			case SYM_PLACE_RIGHT:
 				if (sibling != -2) {
 					if (existing.has_attr) {
-						err.error(0, "L-attribute for symbol `" + existing.name
-								+ "' already defined\n");
+						err.error("L-attribute for symbol `" + existing.name + "' already defined\n");
 					} else {
 						existing.has_attr = true;
 						existing.sibling = sibling;
@@ -57,9 +56,7 @@ class DescriptionCollector implements Syntax {
 				return existing;
 			case SYM_PLACE_LEFT:
 				if (existing.term) {
-					err.error(0,
-							"error: terminal used as the left part of rule: "
-									+ name + "\n");
+					err.error("error: terminal used as the left part of rule: " + name + "\n");
 					errors++;
 				} else {
 					existing.defed = true;
@@ -91,8 +88,7 @@ class DescriptionCollector implements Syntax {
 		if (symPlace != SYM_PLACE_LATTRIB && i > 0 && name.endsWith("opt")) {
 
 			if (symPlace == SYM_PLACE_LEFT) {
-				err.error(0, "error: defined symbol with opt at end: `" + name
-						+ "'\n");
+				err.error("error: defined symbol with opt at end: `" + name + "'\n");
 				errors++;
 			}
 
@@ -123,7 +119,7 @@ class DescriptionCollector implements Syntax {
 		assert syms.size() == nterms;
 
 		if (name.equals("input")) {
-			err.error(0, "error: wrong name for terminal: " + name + "\n");
+			err.error("error: wrong name for terminal: " + name + "\n");
 			errors++;
 			return terminal("$" + name, type);
 		} else {
@@ -181,7 +177,7 @@ class DescriptionCollector implements Syntax {
 				if( i == 0 && right[i] != left // we allow left-recursive rules
 				 || i > 0 && s.sibling == -1 && !syms.get(right[i-1]).is_attr
 				 || i > 0 && s.sibling >= 0  && right[i-1] != s.sibling )
-					err.error( 0, "L-attribute for symbol `"+s.name+"' is omitted\n" );
+					err.error("L-attribute for symbol `" + s.name + "' is omitted\n");
 			}
 		}
 

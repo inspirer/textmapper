@@ -31,7 +31,7 @@ public class Parser {
 		this.err = err;
 	}
 	
-	public static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+	static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
 		Parser p = new Parser(is, sourceName, dc, err);
 		p.fillb();
 		return p.parse();
@@ -60,8 +60,8 @@ public class Parser {
 		buff[end] = 0;
 	}
 	
-	void error( int i, String s ) {
-		err.error(i, s);
+	void error( String s ) {
+		err.error(s);
 	}
 
 	public class lapg_place {
@@ -380,7 +380,7 @@ public class Parser {
 			}
 
 			if( lapg_i == -1 ) {
-				error(0,  MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
+				error( MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -460,7 +460,7 @@ public class Parser {
 							if( ((String)lapg_m[lapg_head-0].sym).equals("left")) lapg_gg.sym = 1;
 							else if( ((String)lapg_m[lapg_head-0].sym).equals("right")) lapg_gg.sym = 2;
 							else if( ((String)lapg_m[lapg_head-0].sym).equals("nonassoc")) lapg_gg.sym = 3;
-							else { error(0,"wrong priority declaration: %" + ((String)lapg_m[lapg_head-0].sym));lapg_gg.sym = 0; }
+							else { error("wrong priority declaration: %" + ((String)lapg_m[lapg_head-0].sym));lapg_gg.sym = 0; }
 						case 45:
 							 dc.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-1].sym),false); 
 						case 46:
@@ -517,7 +517,7 @@ public class Parser {
 		} while( lapg_n.lexem != 0 );
 
 		if( lapg_m[lapg_head].state != 91-1 ) {
-			error(0,  MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+			error( MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
 			return false;
 		};
 		return true;

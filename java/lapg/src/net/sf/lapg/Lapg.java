@@ -14,7 +14,7 @@ public class Lapg {
 	
 	private static final String help_message =
 		"lapg - Lexical analyzer and parser generator\n"+
-		"Evgeny Gryaznov, 2002-06, inspirer@inbox.ru\n"+
+		"Evgeny Gryaznov, 2002-07, inspirer@inbox.ru\n"+
 		"\n"+
 		"usage: lapg [OPTIONS]... [inputfile [outputfile]]\n"+
 		"\n"+

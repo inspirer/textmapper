@@ -383,15 +383,15 @@ class Lalr1 extends LR0 {
 
 		int i, e;
 
-		err.error(2, "\nFollow:\n");
+		err.debug( "\nFollow:\n");
 		for (i = 0; i < ngotos; i++) {
 
-			err.error(2, MessageFormat.format("{0,number,####} . {1,number,####}\t", nterm_from[i], nterm_to[i]));
+			err.debug( MessageFormat.format("{0,number,####} . {1,number,####}\t", nterm_from[i], nterm_to[i]));
 			for (e = 0; e < nterms; e++)
 				if (((follow[i*termset + (e) / BITS] & (1 << ((e) % BITS))) != 0))
-					err.error(2, " " + sym[e].name);
+					err.debug( " " + sym[e].name);
 
-			err.error(2, "\n");
+			err.debug( "\n");
 		}
 	}
 
@@ -401,15 +401,15 @@ class Lalr1 extends LR0 {
 		if (debuglev < 2)
 			return;
 
-		err.error(2, "\nGraph:\n");
+		err.debug( "\nGraph:\n");
 
 		for (int i = 0; i < ngotos; i++) {
 			short[] p = graph[i];
 			if (p != null) {
-				err.error(2, MessageFormat.format(" {0,number,####}: ", i));
+				err.debug( MessageFormat.format(" {0,number,####}: ", i));
 				for (int e = 0; p[e] >= 0; e++)
-					err.error(2, " " + p[e]);
-				err.error(2, "\n");
+					err.debug( " " + p[e]);
+				err.debug( "\n");
 			}
 		}
 
@@ -423,25 +423,25 @@ class Lalr1 extends LR0 {
 		if (debuglev == 0)
 			return;
 
-		err.error(2, "\nLookaheads:\n");
+		err.debug( "\nLookaheads:\n");
 
 		for (i = 0; i < nstates; i++) {
 			if (laindex[i] < laindex[i + 1]) {
 				max = laindex[i + 1];
-				err.error(2, i + ":\n");
+				err.debug( i + ":\n");
 
 				for (e = laindex[i]; e < max; e++) {
 					k = rindex[larule[e]];
 					while (rright[k] >= 0)
 						k++;
-					print_situation(2, k);
+					print_situation(k);
 					int set = termset * e;
 
-					err.error(2, "  >>>");
+					err.debug( "  >>>");
 					for (k = 0; k < nterms; k++)
 						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0))
-							err.error(2, " " + sym[k].name);
-					err.error(2, "\n");
+							err.debug( " " + sym[k].name);
+					err.debug( "\n");
 				}
 			}
 		}
