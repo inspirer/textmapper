@@ -7,8 +7,9 @@ import net.sf.lapg.lalr.Grammar;
 import net.sf.lapg.lalr.IError;
 import net.sf.lapg.lalr.Rule;
 import net.sf.lapg.lalr.Symbol;
+import net.sf.lapg.lalr.Syntax;
 
-public class GrammarBuilder {
+class DescriptionCollector implements Syntax {
 	
 	public static final int SYM_PLACE_RIGHT = 0;		// symbol from right part of rule, or define attr for sname (see sibling)	 
 	public static final int SYM_PLACE_LEFT = 1;			// symbol from left part of rule 
@@ -24,6 +25,10 @@ public class GrammarBuilder {
 	IError err;
 	int errors;
 	
+	public DescriptionCollector(IError err) {
+		this.err = err;
+	}
+
 	private Symbol symbol(String name, int symPlace, String type, int sibling) {
 		Symbol s, existing = null;
 
@@ -104,16 +109,16 @@ public class GrammarBuilder {
 		return s;
 	}
 	
-	public int nonterm(String name, int symPlace, String type, int sibling) {
+	int nonterm(String name, int symPlace, String type, int sibling) {
 		Symbol s = symbol(name, symPlace, type, sibling);
 		return s.index;
 	}
 
-	public int nonterm(String name, int symPlace) {
+	int nonterm(String name, int symPlace) {
 		return nonterm(name, symPlace, null, -2);
 	}
 
-	public int terminal(String name, String type) {
+	int terminal(String name, String type) {
 		
 		assert syms.size() == nterms;
 
@@ -132,18 +137,18 @@ public class GrammarBuilder {
 		}
 	}
 
-	private void set_input(int i) {
+	void set_input(int i) {
 		assert input == -1 && i >= nterms && i < syms.size();
 		input = i;
 	}
 
 
-	private void set_eoi(int i) {
+	void set_eoi(int i) {
 		assert eoi == -1 && i < nterms && i >= 0;
 		eoi = i;
 	}
 
-	public void rule(int length, int priority, String action, int[] array, int defline) {
+	void rule(int length, int priority, String action, int[] array, int defline) {
 		int i, left = array[0];
 
 		// calculate priority if needed
@@ -183,7 +188,7 @@ public class GrammarBuilder {
 		situations += right.length;
 	}
 		
-	public void addprio(String id, int prio, boolean restofgroup) {
+	void addprio(String id, int prio, boolean restofgroup) {
 		if (prio > 0) {
 			Symbol s = symbol(id, 0, null, -2);
 			if (!restofgroup) {
@@ -196,4 +201,20 @@ public class GrammarBuilder {
 	public Grammar getGrammar() {
 		return new Grammar(syms, rules, priorul, nterms, situations, input, eoi, errorn);
 	}
+	
+	void process_directive( String id, int value, int line, int column ) {
+		// TODO
+	}
+
+	void process_directive( String id, String value, int line, int column ) {
+		// TODO
+	}
+
+	public int currentgroups, totalgroups;
+
+	public int  lexem( int num, String regexp, String name, String action, int priority ) {
+		// TODO
+		return 0;
+	}
+
 }

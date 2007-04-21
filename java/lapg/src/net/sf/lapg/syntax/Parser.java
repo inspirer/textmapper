@@ -2,11 +2,11 @@
 
 package net.sf.lapg.syntax;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+
+import net.sf.lapg.lalr.IError;
 
 public class Parser {
 	
@@ -16,21 +16,25 @@ public class Parser {
 	byte[] buff = new byte[1025];
 	int l, end;
 	InputStream input;
-	
-	GrammarBuilder gb = new GrammarBuilder();  // TODO
-	LexicalBuilder lb = new LexicalBuilder();  // TODO
+	IError err;
+	DescriptionCollector dc;
 	
 	int length;
 	int[] rule = new int[128];
 	
-	final String sourcename = "something";
+	String sourcename;
 	
-	void process_directive( String id, int value, int line, int column ) {
-		// TODO
+	private Parser( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+		this.input = is;
+		this.sourcename = sourceName;
+		this.dc = dc;
+		this.err = err;
 	}
 	
-	void process_directive( String id, String value, int line, int column ) {
-		// TODO
+	public static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+		Parser p = new Parser(is, sourceName, dc, err);
+		p.fillb();
+		return p.parse();
 	}
 	
 	String concat( String s1, String s2, String file, int line ) {
@@ -57,19 +61,7 @@ public class Parser {
 	}
 	
 	void error( int i, String s ) {
-		System.err.println(s);
-	}
-	
-	public static void main(String[] args) throws FileNotFoundException {
-		Parser p = new Parser();
-		
-		if( args.length > 0 ) 
-			p.input = new FileInputStream( args[0] );
-		else 
-			p.input = System.in;
-	
-		p.fillb();
-		p.parse();
+		err.error(i, s);
 	}
 
 	public class lapg_place {
@@ -439,71 +431,71 @@ public class Parser {
 							lapg_gg.sym = concat( ((String)lapg_gg.sym), ((String)lapg_m[lapg_head-0].sym), sourcename, (lapg_m[lapg_head-1].pos.line+1!=lapg_m[lapg_head-0].pos.line)?lapg_m[lapg_head-0].pos.line:-1 );
 							lapg_gg.pos = lapg_m[lapg_head-0].pos;
 						case 8:
-							process_directive( ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
+							dc.process_directive( ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
 						case 9:
-							process_directive( ((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
+							dc.process_directive( ((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line, lapg_m[lapg_head-2].pos.column );
 						case 14:
 							 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
 						case 16:
 							 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
 						case 17:
-							 lb.currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
+							 dc.currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
 						case 18:
-							gb.terminal(((String)lapg_m[lapg_head-1].sym), null);
+							dc.terminal(((String)lapg_m[lapg_head-1].sym), null);
 						case 19:
-							gb.terminal(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-1].sym));
+							dc.terminal(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-1].sym));
 						case 22:
-							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-4].sym), null), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
+							dc.lexem( dc.terminal(((String)lapg_m[lapg_head-4].sym), null), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
 						case 23:
-							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-3].sym), null), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-3].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
+							dc.lexem( dc.terminal(((String)lapg_m[lapg_head-3].sym), null), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-3].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
 						case 24:
-							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym)), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
+							dc.lexem( dc.terminal(((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym)), ((String)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-0].sym), ((Integer)lapg_m[lapg_head-1].sym) );
 						case 25:
-							lb.lexem( gb.terminal(((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym)), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-4].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
+							dc.lexem( dc.terminal(((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym)), ((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-4].sym), null, ((Integer)lapg_m[lapg_head-0].sym) );
 						case 31:
-							gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, gb.nonterm( ((String)lapg_m[lapg_head-2].sym), 0 ) );
+							dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, dc.nonterm( ((String)lapg_m[lapg_head-2].sym), 0 ) );
 						case 32:
-							gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, -1 );
+							dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0, null, -1 );
 						case 43:
 							if( ((String)lapg_m[lapg_head-0].sym).equals("left")) lapg_gg.sym = 1;
 							else if( ((String)lapg_m[lapg_head-0].sym).equals("right")) lapg_gg.sym = 2;
 							else if( ((String)lapg_m[lapg_head-0].sym).equals("nonassoc")) lapg_gg.sym = 3;
 							else { error(0,"wrong priority declaration: %" + ((String)lapg_m[lapg_head-0].sym));lapg_gg.sym = 0; }
 						case 45:
-							 gb.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-1].sym),false); 
+							 dc.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-1].sym),false); 
 						case 46:
-							 gb.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-2].sym),true); 
+							 dc.addprio(((String)lapg_m[lapg_head-0].sym),((Integer)lapg_m[lapg_head-2].sym),true); 
 						case 47:
-							 lapg_gg.sym = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 ); 
+							 lapg_gg.sym = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 ); 
 						case 48:
 							 lapg_gg.sym = -1; 
 						case 49:
-							gb.rule( length, ((Integer)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), rule, lapg_gg.pos.line );
+							dc.rule( length, ((Integer)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), rule, lapg_gg.pos.line );
 						case 50:
-							gb.rule( length, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
+							dc.rule( length, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
 						case 51:
-							gb.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), ((String)lapg_m[lapg_head-1].sym), rule, lapg_gg.pos.line );
+							dc.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), ((String)lapg_m[lapg_head-1].sym), rule, lapg_gg.pos.line );
 						case 52:
-							gb.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
+							dc.rule( 0, ((Integer)lapg_m[lapg_head-0].sym), null, rule, lapg_gg.pos.line );
 						case 55:
 							if( ((String)lapg_m[lapg_head-1].sym) != null ) {
 								length += 2;
-								rule[length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
-								rule[length-1] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
-								gb.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-2].pos.line );
-							} else rule[++length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length-1] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
+								dc.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-2].pos.line );
+							} else rule[++length] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
 						case 56:
 							length = 0;
 							if( ((String)lapg_m[lapg_head-1].sym) != null) {
 								length += 2;
-								rule[length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
-								rule[length-1] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
-								gb.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-1].pos.line );
-							} else rule[++length] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
+								rule[length-1] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 2, null, rule[length] );
+								dc.rule( 0, -1, ((String)lapg_m[lapg_head-1].sym), new int[]{ rule[length-1] }, lapg_m[lapg_head-1].pos.line );
+							} else rule[++length] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 0 );
 						case 57:
-							rule[0] = gb.nonterm( ((String)lapg_m[lapg_head-0].sym), 1 );
+							rule[0] = dc.nonterm( ((String)lapg_m[lapg_head-0].sym), 1 );
 						case 58:
-							rule[0] = gb.nonterm( ((String)lapg_m[lapg_head-1].sym), 1, ((String)lapg_m[lapg_head-0].sym), -2 );
+							rule[0] = dc.nonterm( ((String)lapg_m[lapg_head-1].sym), 1, ((String)lapg_m[lapg_head-0].sym), -2 );
 					}
 					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 
 						lapg_m[lapg_head--] = null;

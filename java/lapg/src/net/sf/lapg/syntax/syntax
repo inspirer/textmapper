@@ -77,36 +77,36 @@ directives ::= directives directive | directive ;
 
 directive ::
   = '.' id str
-		process_directive( $id, $str, @0.line, @0.column );
+		dc.process_directive( $id, $str, @0.line, @0.column );
 
   = '.' id Int
-		process_directive( $id, $Int, @0.line, @0.column );
+		dc.process_directive( $id, $Int, @0.line, @0.column );
 ;
 
 lexical_part ::= newtypelexemopt lexemdef | lexical_part newtypelexemopt lexemdef ;
 
 int32(Integer) ::= Int { if( $Int < 0 || $Int >= BITS ) $$ = 0; else $$ = 1 << $Int; } ;
 int32_list(Integer) ::= int32 | int32_list int32 { $$ = $int32_list | $int32; } ;
-newtypelexem ::= '[' int32_list ']' { lb.currentgroups = $int32_list; } ;
+newtypelexem ::= '[' int32_list ']' { dc.currentgroups = $int32_list; } ;
 
 lexemdef ::
   = id ':'
-		gb.terminal($id, null);
+		dc.terminal($id, null);
 
   = id type ':'
-		gb.terminal($id,$type);
+		dc.terminal($id,$type);
 
   = id ':' regexp Intopt cmd
-		lb.lexem( gb.terminal($id, null), $regexp, $id, $cmd, $Intopt );
+		dc.lexem( dc.terminal($id, null), $regexp, $id, $cmd, $Intopt );
 
   = id ':' regexp Intopt
-		lb.lexem( gb.terminal($id, null), $regexp, $id, null, $Intopt );
+		dc.lexem( dc.terminal($id, null), $regexp, $id, null, $Intopt );
 
   = id type ':' regexp Intopt cmd
-		lb.lexem( gb.terminal($id, $type), $regexp, $id, $cmd, $Intopt );
+		dc.lexem( dc.terminal($id, $type), $regexp, $id, $cmd, $Intopt );
 
   = id type ':' regexp Intopt
-		lb.lexem( gb.terminal($id, $type), $regexp, $id, null, $Intopt );
+		dc.lexem( dc.terminal($id, $type), $regexp, $id, null, $Intopt );
 ;
 
 magazine_def ::= '[' magazine_def_listopt ']' ;
@@ -114,9 +114,9 @@ magazine_def_list ::= magazine_def_list ',' attrib | attrib ;
 
 attrib ::
   = id '->' id
-		gb.nonterm( $id#1, 0, null, gb.nonterm( $id#0, 0 ) );
+		dc.nonterm( $id#1, 0, null, dc.nonterm( $id#0, 0 ) );
   = id
-		gb.nonterm( $id, 0, null, -1 );
+		dc.nonterm( $id, 0, null, -1 );
 ;
 
 grammar_part ::= ruledef | grammar_part ruledef ;
@@ -142,61 +142,61 @@ prioritydef ::=
 		else { error(0,"wrong priority declaration: %" + $id);$$ = 0; }
 	idlist ';' ;
 
-idlist(Integer) ::= id { gb.addprio($id,$#,false); } | idlist id { gb.addprio($id,$#,true); } ;
+idlist(Integer) ::= id { dc.addprio($id,$#,false); } | idlist id { dc.addprio($id,$#,true); } ;
 
 rule_priority(Integer) ::=
-	'<<' id { $$ = gb.nonterm( $id, 0 ); } |
+	'<<' id { $$ = dc.nonterm( $id, 0 ); } |
 	{ $$ = -1; } ;
 
 stdrule ::
   = ids rule_priority cmd
-		gb.rule( length, $rule_priority, $cmd, rule, @$.line );
+		dc.rule( length, $rule_priority, $cmd, rule, @$.line );
 
   = ids rule_priority
-		gb.rule( length, $rule_priority, null, rule, @$.line );
+		dc.rule( length, $rule_priority, null, rule, @$.line );
 
   = cmd rule_priority
-		gb.rule( 0, $rule_priority, $cmd, rule, @$.line );
+		dc.rule( 0, $rule_priority, $cmd, rule, @$.line );
 
   = rule_priority
-		gb.rule( 0, $rule_priority, null, rule, @$.line );
+		dc.rule( 0, $rule_priority, null, rule, @$.line );
 ;
 
 ids ::
   = ids rule_priority cmdopt id          # rule_priority must not be here
 		if( $cmdopt != null ) {
 			length += 2;
-			rule[length] = gb.nonterm( $id, 0 );
-			rule[length-1] = gb.nonterm( $id, 2, null, rule[length] );
-			gb.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @1.line );
-		} else rule[++length] = gb.nonterm( $id, 0 );
+			rule[length] = dc.nonterm( $id, 0 );
+			rule[length-1] = dc.nonterm( $id, 2, null, rule[length] );
+			dc.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @1.line );
+		} else rule[++length] = dc.nonterm( $id, 0 );
 
   = cmdopt id
 		length = 0;
 		if( $cmdopt != null) {
 			length += 2;
-			rule[length] = gb.nonterm( $id, 0 );
-			rule[length-1] = gb.nonterm( $id, 2, null, rule[length] );
-			gb.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @0.line );
-		} else rule[++length] = gb.nonterm( $id, 0 );
+			rule[length] = dc.nonterm( $id, 0 );
+			rule[length-1] = dc.nonterm( $id, 2, null, rule[length] );
+			dc.rule( 0, -1, $cmdopt, new int[]{ rule[length-1] }, @0.line );
+		} else rule[++length] = dc.nonterm( $id, 0 );
 ;
 
 def_rule_for ::
   = id
-		rule[0] = gb.nonterm( $id, 1 );
+		rule[0] = dc.nonterm( $id, 1 );
 
   = id type
-		rule[0] = gb.nonterm( $id, 1, $type, -2 );
+		rule[0] = dc.nonterm( $id, 1, $type, -2 );
 ;
 
 # EOF
 
 %%
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+
+import net.sf.lapg.lalr.IError;
 %%
 
 private static final boolean DEBUG_SYNTAX = true;
@@ -205,21 +205,25 @@ private static final int BITS = 32;
 byte[] buff = new byte[1025];
 int l, end;
 InputStream input;
-
-GrammarBuilder gb = new GrammarBuilder();  // TODO
-LexicalBuilder lb = new LexicalBuilder();  // TODO
+IError err;
+DescriptionCollector dc;
 
 int length;
 int[] rule = new int[128];
 
-final String sourcename = "something";
+String sourcename;
 
-void process_directive( String id, int value, int line, int column ) {
-	// TODO
+private Parser( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+	this.input = is;
+	this.sourcename = sourceName;
+	this.dc = dc;
+	this.err = err;
 }
 
-void process_directive( String id, String value, int line, int column ) {
-	// TODO
+public static boolean parse( InputStream is, String sourceName, DescriptionCollector dc, IError err) {
+	Parser p = new Parser(is, sourceName, dc, err);
+	p.fillb();
+	return p.parse();
 }
 
 String concat( String s1, String s2, String file, int line ) {
@@ -246,17 +250,5 @@ void fillb() {
 }
 
 void error( int i, String s ) {
-	System.err.println(s);
-}
-
-public static void main(String[] args) throws FileNotFoundException {
-	Parser p = new Parser();
-	
-	if( args.length > 0 ) 
-		p.input = new FileInputStream( args[0] );
-	else 
-		p.input = System.in;
-
-	p.fillb();
-	p.parse();
+	err.error(i, s);
 }
