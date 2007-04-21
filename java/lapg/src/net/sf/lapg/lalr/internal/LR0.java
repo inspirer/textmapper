@@ -31,7 +31,7 @@ class LR0 extends ContextFree {
 
 	// result
 	protected int nstates, termset;
-	protected int[][] derives /* nvars: list of rules */;
+	protected int[][] derives /* nvars: list of rules */;   // !! note: derives -= nterms;
 	protected State[] state;
 	protected State first;
 
@@ -179,17 +179,17 @@ class LR0 extends ContextFree {
 	}
 
 	private void build_closure(short[] prev) {
-		int e;
+		int e, i;
 
 		if (prev[0] == -1) {
 			int from = (input - nterms) * ruleset;
-			for (int i = 0; i < ruleset; i++)
+			for (i = 0; i < ruleset; i++)
 				closurebit[i] = ruleforvar[from++];
 
 		} else {
 			Arrays.fill(closurebit, 0);
 
-			for (int i = 0; prev[i] >= 0; i++) {
+			for (i = 0; prev[i] >= 0; i++) {
 				e = rright[prev[i]];
 				if (e >= (int) nterms) {
 					int from = (e - nterms) * ruleset;
@@ -202,8 +202,8 @@ class LR0 extends ContextFree {
 		int rule = 0, prev_index = 0;
 		closureend = 0;
 
-		for (e = 0; e < ruleset; e++) {
-			int rulebit = closurebit[e];
+		for (i = 0; i < ruleset; i++) {
+			int rulebit = closurebit[i];
 			if (rulebit == 0) {
 				rule += BITS;
 			} else {

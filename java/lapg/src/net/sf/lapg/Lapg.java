@@ -38,7 +38,7 @@ public class Lapg {
 		return s != null && ( s.equals(v1) || s.equals(v2) );
 	}
 
-	public static int main(String[] args) {
+	public static void main(String[] args) {
 		int debug = 0, action = 0;
 		String input = "syntax", lang = null, output = null;
 
@@ -52,13 +52,13 @@ public class Lapg {
 
 			} else if( check( args[i], "-h","--help" ) ) {
 				System.out.println( help_message );
-				return 0;
+				return;
 
 			} else if( check( args[i], "-v","--version" ) ) {
 				System.out.print( 
 					"lapg v" + VERSION + " build " + BUILD + "\n" +
 					"Evgeny Gryaznov, 2002-07, inspirer@inbox.ru\n" );
-				return 0;
+				return;
 
 			} else if( check( args[i], "-tf","--template-from-file" ) ) {
 				action = 1;
@@ -91,7 +91,8 @@ public class Lapg {
 			} else if( args[i].startsWith("-") && args[i].length() > 1 ) {
 				System.err.println( "lapg: invalid option " + args[i]);
 				System.err.println( "Try 'lapg --help' for more information.");
-				return 1;
+				System.exit(1);
+				return;
 
 			} else switch( e++ ){
 				case 0: input = args[i]; break;
@@ -114,7 +115,8 @@ public class Lapg {
 						sourceName = input;
 					} catch( FileNotFoundException ex) {
 						System.err.println( "lapg: file not found: " + input);
-						return 1;
+						System.exit(1);
+						return;
 					}
 				} else {
 					stream = System.in;
@@ -145,7 +147,5 @@ public class Lapg {
 //				g.printScript();
 				break;
 		}
-
-		return 0;
 	}
 }

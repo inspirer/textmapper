@@ -304,8 +304,9 @@ public class Builder extends Lalr1 {
 		}
 
 		buildLalr();
-		action();
-		return createResult();
+//		action();
+//		return createResult();
+		return null;
 	}
 
 	private Result createResult() {

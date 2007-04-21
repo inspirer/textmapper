@@ -20,10 +20,10 @@ class DescriptionCollector implements Syntax {
 	Vector<Rule> rules = new Vector<Rule>();
 	Vector<Symbol> syms = new Vector<Symbol>();
 	Vector<Integer> priorul = new Vector<Integer>();
-	int nterms, input, eoi, errorn, situations = 0;
+	int nterms = 0, input = -1, eoi = -1, errorn = -1, situations = 0;
 	
 	IError err;
-	int errors;
+	int errors = 0;
 	
 	public DescriptionCollector(IError err) {
 		this.err = err;
@@ -125,7 +125,7 @@ class DescriptionCollector implements Syntax {
 		} else {
 			Symbol s = symbol(name, SYM_PLACE_RIGHT, type, -2);
 			s.term = true;
-			nterms++;
+			nterms = syms.size();
 
 			if (name.equals("error"))
 				errorn = s.index;
@@ -208,7 +208,7 @@ class DescriptionCollector implements Syntax {
 
 	public int currentgroups, totalgroups;
 
-	public int  lexem( int num, String regexp, String name, String action, int priority ) {
+	public int  lexem( int num, String regexp, String name, String action, Integer priority ) {
 		// TODO
 		return 0;
 	}

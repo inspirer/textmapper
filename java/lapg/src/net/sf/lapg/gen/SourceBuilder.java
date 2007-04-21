@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import net.sf.lapg.lalr.IError;
 import net.sf.lapg.lalr.Syntax;
+import net.sf.lapg.lalr.internal.Builder;
 import net.sf.lapg.syntax.SyntaxUtils;
 
 public class SourceBuilder {
@@ -25,7 +26,7 @@ public class SourceBuilder {
 
 	public boolean process(String sourceName, InputStream input) {
 		Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err);
-		
+		Builder.compile(s.getGrammar(), err, debuglev);
 		
 		return true;
 	}
