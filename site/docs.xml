@@ -8,9 +8,13 @@
 <content>
 
 <lang lang='eng'>
-<h>Documentation</h>
+<h>Writing syntax</h>
 <p>
-hmm
+
+<list>
+<item href="aa.xml" title="Syntax file">Grammar description file format.</item>
+<item href="aa.xml" title="Tutorial">Getting started with grammars tutorial.</item>
+</list>
 </p>
 
 </lang>

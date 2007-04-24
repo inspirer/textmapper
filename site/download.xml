@@ -14,7 +14,7 @@ http://downloads.sourceforge.net/lapg/
 </p>
 
 <download dir="/files/lapg/">
-<group name="Lapg">
+<group name="v1.2.2">
 <file name='b2lapg.tgz' type='tar.gzipped'>Bison -> lapg converter</file>
 <file name='lapg.txt' type='text'>Lapg documentation</file>
 <file name='gcc_2_96_syntax' type='text, syntax file'>GCC 2.96 grammar for lapg</file>

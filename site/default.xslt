@@ -382,4 +382,23 @@
 </xsl:if>
 </xsl:template>
 
+
+<!-- LIST -->
+<xsl:template match="list">
+
+<table cellspacing="0" cellpadding="0" border="0">
+<xsl:for-each select="item">
+<xsl:if test="position() &gt; 1"><tr><td colspan='3' height='20'></td></tr></xsl:if>
+<tr><td width="10"><img src='/webim/images/free.gif' width='10' height='1' border='0' alt=''/></td>
+<td width='20' valign='top'><img src='images/redli.gif' width='5' height='45' border='0' alt=''/></td>
+<td valign='top' class='text'>
+<a><xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute><xsl:value-of select="@title"/></a>
+<br/><img src='/webim/images/free.gif' width='1' height='10' border='0' alt=''/><br/>
+<xsl:value-of select="."/><br/></td></tr>
+</xsl:for-each>
+</table>
+
+</xsl:template>
+
+
 </xsl:stylesheet>
