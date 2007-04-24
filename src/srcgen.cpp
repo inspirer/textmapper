@@ -1,7 +1,7 @@
 /*	 srcgen.cpp
  *
  *	 Lapg (Lexical Analyzer and Parser Generator)
- *	 Copyright (C) 2002-06	Evgeny Gryaznov (inspirer@inbox.ru)
+ *	 Copyright (C) 2002-07	Evgeny Gryaznov (inspirer@inbox.ru)
  *
  *	 This program is free software; you can redistribute it and/or modify
  *	 it under the terms of the GNU General Public License as published by
@@ -22,9 +22,11 @@
 #include "srcgen.h"
 
 extern const char *templ_cpp, *default_cpp;
+extern const char *templ_c, *default_c;
 extern const char *templ_cs, *default_cs;
 extern const char *templ_js, *default_js;
 extern const char *templ_java, *default_java;
+extern const char *templ_text;
 
 #ifdef RUN_IN_DEBUG
 #define CPPDEF "parse1.cpp"
@@ -34,9 +36,11 @@ extern const char *templ_java, *default_java;
 
 const language langs[] = {
 	{ "c++", templ_cpp, NULL, default_cpp, CPPDEF, "{", "}", 1},
+	{ "c", templ_c, NULL, default_c, "parse.c", "{", "}", 1},
 	{ "cs",  templ_cs,  NULL, default_cs,  "parse.cs", "{", "}", 1},
 	{ "js",  templ_js,  NULL, default_js,  "parse.js", "[", "]", 0},
 	{ "java", templ_java, NULL, default_java, "Parser.java", "{", "}", 0},
+	{ "text", templ_text, NULL, NULL, "tables.txt", "{", "}", 1},
 	{ NULL }
 };
 
@@ -105,6 +109,12 @@ void SourceGenerator::process_directive( char *id, char *value, int line, int co
 		else error( 0, "lapg: %s, %i(%i) unknown lexemend value %s (can be on/off)\n", sourcename, line, column, value );
 		delete[] value;
 
+	} else if( !strcmp( id, "breaks" ) ) {
+		if( !strcmp( value, "on" ) ) genbreaks = 1;
+		else if( !strcmp( value, "off" ) ) genbreaks = 0;
+		else error( 0, "lapg: %s, %i(%i) unknown breaks value %s (can be on/off)\n", sourcename, line, column, value );
+		delete[] value;
+
 	} else
 		lalr1::process_directive( id, value, line, column );
 }
@@ -127,6 +137,7 @@ void SourceGenerator::process( int debug )
 	// init
 	ns = errprefix = classn = getsym = NULL;
 	lexemend = positioning = 0;
+	genbreaks = 1;
 	fillb();
 
 	if( run() ) {
@@ -801,6 +812,7 @@ static const char *dollar_varlist[] = {
 	"eachaction",	/* 10 */
 	"lexemend",
 	"pos3",			/* 12 */
+	"breaks",
 	NULL
 };
 
@@ -853,8 +865,9 @@ int SourceGenerator::check_variable( char *var )
 		case 11: /* lexemend */
 			return (lexemend && positioning) ? 1 : 0;
 		case 12:  /* pos3 */ 		return positioning==3;
-		}
-		return 0;
+		case 13:  /* breaks */      return genbreaks ? 1 : 0;
+	}
+	return 0;
 }
 
 int SourceGenerator::update_vars( int type )

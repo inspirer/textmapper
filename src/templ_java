@@ -162,6 +162,7 @@ ${lexemactions
 ${eachlexem
 				case @lexemnum:
 					@lexemaction
+$#breaks					break;
 $}
 			}
 $}
@@ -185,7 +186,7 @@ ${ruleactions
 ${eachaction
 						case @rulenum:
 							@ruleaction
-							break;
+$#breaks							break;
 $}
 					}
 $}

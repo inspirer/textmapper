@@ -1,7 +1,7 @@
 #   Makefile
 #
 #   Lapg (Lexical Analyzer and Parser Generator)
-#   Copyright (C) 2002-06  Evgeny Gryaznov (inspirer@inbox.ru)
+#   Copyright (C) 2002-07  Evgeny Gryaznov (inspirer@inbox.ru)
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -44,8 +44,8 @@ unix :
 dos :
 	for A in *.cpp *.h syntax; do unix2dos $$A; done
 
-templates.cpp: templ_cs templ_cpp templ_js templ_java txt2c++
-	./txt2c++ templates.cpp templ_cs templ_cpp templ_js templ_java 
+templates.cpp: templ_cs templ_cpp templ_js templ_java templ_c templ_text txt2c++
+	./txt2c++ templates.cpp templ_cs templ_cpp templ_js templ_java templ_c templ_text
 
-defaults.cpp: default_cpp default_cs default_js default_java txt2c++
-	./txt2c++ defaults.cpp default_cpp default_cs default_js default_java
+defaults.cpp: default_cpp default_cs default_js default_java default_c txt2c++
+	./txt2c++ defaults.cpp default_cpp default_cs default_js default_java default_c

@@ -15,10 +15,6 @@ $#pos	struct lapg_place pos;
 $#lexemend	struct lapg_place endpos;
 };
 
-enum lapg_tokens {
-@tokenenum	
-};
-
 static const char lapg_char2no[256] = {
 @char2no
 };
@@ -63,7 +59,7 @@ static const char *lapg_syms[] = {
 };
 #endif
 
-static inline int lapg_next( int state, int symbol )
+static int lapg_next( int state, int symbol )
 {
 ${nactions
 	if( lapg_action[state] < -2 ) {
@@ -76,7 +72,7 @@ $}
 	return lapg_action[state];
 }
 
-static inline int lapg_state_sym( int state, int symbol )
+static int lapg_state_sym( int state, int symbol )
 {
 	int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol+1]-1;
 	int i, e;
