@@ -31,7 +31,7 @@ void myprint( String s1 ) {
 	System.out.println(s1);
 }
 
-void myprint( String s1, String s2 ) {
+void myprint2( String s1, String s2 ) {
 	System.out.println(s1+s2);
 }
 

@@ -79,6 +79,10 @@ sub rungrammar($$$) {
 		system( "$cppCompiler /w /nologo \"$folder\\parser.$lang\" /Fe$folder/parser.exe /Fo$folder/parser.obj" ) == 0 or die "not executed";
 		$result = `\"$folder/parser.exe\" \"$inputfile\"` or die "no result";
 
+	} elsif( $lang eq "c" ) {
+		system( "$cppCompiler /w /nologo /TC \"$folder\\parser.$lang\" /Fe$folder/parser.exe /Fo$folder/parser.obj" ) == 0 or die "not executed";
+		$result = `\"$folder/parser.exe\" \"$inputfile\"` or die "no result";
+
 	} else {
 		die "unknown lang";
 	}

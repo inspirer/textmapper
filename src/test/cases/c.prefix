@@ -1,17 +1,14 @@
 #   Automatically generated grammar
-
-.lang        "java" 
-.getsym      "chr = buff[l++];if( l == end ) fillb()"
+ 
+.lang        "c" 
+.getsym      "chr = *l++;if( l == end ) fillb()"
 .positioning "%%positioning%%"
 .lexemend    "%%lexemend%%"
-.class       "parser"
-.namespace	 "mypackage"
-.breaks      "off"
 
 # Vocabulary
 
-Lid(String):  /[a-zA-Z_][a-zA-Z_0-9]*/	{ @ = new String(token,0,lapg_size); break; }
-Lint:		  /[0-9]+/
+Lid(char *):  /[a-zA-Z_][a-zA-Z_0-9]*/	{ @ = _strdup(token); }
+Lint:		  /[0-9]+/					{ @ = _strdup(token); }
 _skip:        /\/\/.*/
 _skip:        /[\t\r\n ]+/    { continue; }
 '(':		  /\(/
@@ -30,3 +27,4 @@ _skip:        /[\t\r\n ]+/    { continue; }
 # Attributes
 
 []
+

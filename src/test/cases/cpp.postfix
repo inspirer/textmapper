@@ -35,7 +35,7 @@ void myprint( char *s1 ) {
 	printf( "%s\n", s1 );
 }
 
-void myprint( char *s1, char *s2 ) {
+void myprint2( char *s1, char *s2 ) {
 	printf( "%s%s\n", s1, s2 );
 }
 

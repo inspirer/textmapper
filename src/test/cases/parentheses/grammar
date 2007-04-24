@@ -7,7 +7,7 @@ parentheses ::=
 	parentheses parenthesis | parenthesis ;
 
 parenthesis ::= 
-	  '(' Lid ')'				{ myprint( "in (): ", $Lid ); break; }
+	  '(' Lid ')'				{ myprint2( "in (): ", $Lid ); break; }
 	| '(' parentheses ')'
-	| '[' Lid ']'				{ myprint( "in []: ", $Lid ); break; }
+	| '[' Lid ']'				{ myprint2( "in []: ", $Lid ); break; }
 	| '[' parentheses ']' ;

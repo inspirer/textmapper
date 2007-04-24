@@ -24,7 +24,7 @@ void myprint( string s1 ) {
 	System.Console.WriteLine(s1);
 }
 
-void myprint( string s1, string s2 ) {
+void myprint2( string s1, string s2 ) {
 	System.Console.WriteLine(s1+s2);
 }
 
