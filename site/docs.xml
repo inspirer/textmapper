@@ -12,8 +12,7 @@
 <p>
 
 <list>
-<item href="aa.xml" title="Syntax file">Grammar description file format.</item>
-<item href="aa.xml" title="Tutorial">Getting started with grammars tutorial.</item>
+<item href="docs\lapg.txt" title="Syntax file">Grammar description file format.</item>
 </list>
 </p>
 

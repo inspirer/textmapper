@@ -168,11 +168,12 @@ generation, supports 4 languages and can be adapted for any language you like.
 <br><br>
 <b>Features</b>:
 <ul>
-<li>Understands LALR(1) grammars with L-attributes</li>
+<li>Understands context-free LALR(1) grammars with L-attributes</li>
 <li>Provides readable grammar ambiguities reports</li>
+<li>Supports error recovery, operator precedence</li>
 <li>Generates code for C++, C#, Java and Javascript</li>
-<li>Puts all generated code into one file, which doesn't require specific runtime</li>
-<li>Accepts lexems definition with regular expressions</li>
+<li>Generated source doesn't require specific runtime</li>
+<li>Lexem patterns are specified using regular expressions</li>
 <li>Tokenizer supports modes, which limit sets of tokens considered for a match</li>
 <li>Has option to generate default grammar for chosen target language</li>
 <li>Works very fast</li>

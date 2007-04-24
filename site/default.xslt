@@ -343,14 +343,14 @@
 <xsl:template match="download">
 <xsl:variable name="dwlddir" select="@dir"/>
 
-<span class="head3">Download</span>
+<span class="head3"><xsl:value-of select="@title"/></span>
 
-<p>
 <xsl:for-each select="group">
+<p>
 <table cellspacing="0" cellpadding="0" border="0">
 <tr>
 <td width="20"><img src="images/empty.gif" height="1" width="20" border="0" alt=""/></td>
-<td width="100"><img src="images/empty.gif" height="1" width="100" border="0" alt=""/></td>
+<td width="200"><img src="images/empty.gif" height="1" width="200" border="0" alt=""/></td>
 <td width="100%"><img src="images/empty.gif" height="1" width="200" border="0" alt=""/></td>
 </tr>
 <tr><td colspan="3" class="loadh"><xsl:value-of select="@name"/></td></tr>
@@ -358,13 +358,13 @@
 <xsl:for-each select="file">
 <tr>
 <td align="center"><img src="images/dir-file.png" border="0"/></td>
-<td><a><xsl:attribute name="href"><xsl:value-of select="$dwlddir"/><xsl:value-of select="@name"/></xsl:attribute><xsl:value-of select="@name"/></a></td>
+<td><a><xsl:attribute name="href"><xsl:choose><xsl:when test="@link"><xsl:value-of select="@link"/></xsl:when><xsl:otherwise><xsl:value-of select="$dwlddir"/><xsl:value-of select="@name"/></xsl:otherwise></xsl:choose></xsl:attribute><xsl:value-of select="@name"/></a></td>
 <td><xsl:value-of select="."/></td>
 </tr>
 </xsl:for-each>
 </table>
-</xsl:for-each>
 </p>
+</xsl:for-each>
 
 </xsl:template>
 

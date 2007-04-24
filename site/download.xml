@@ -8,19 +8,14 @@
 <content>
 
 <lang lang='eng'>
-<h>The latest stable release</h>
-<p>
-http://downloads.sourceforge.net/lapg/
-</p>
 
-<download dir="/files/lapg/">
+<download dir="files/" title="The latest stable release">
 <group name="v1.2.2">
-<file name='b2lapg.tgz' type='tar.gzipped'>Bison -> lapg converter</file>
-<file name='lapg.txt' type='text'>Lapg documentation</file>
-<file name='gcc_2_96_syntax' type='text, syntax file'>GCC 2.96 grammar for lapg</file>
-<file name='lapg84.tgz' type='tar.gzipped'>lapg win32/linux source</file>
-<file name='lapg1_2_0_exe.rar' type='Rar archive'>Lapg 1.2.0 binary (win32)</file>
-<file name='lapg1_2_0_src.rar' type='Rar archive'>Lapg 1.2.0 sources (win32/linux)</file>
+<file name='lapg_1_2_2_win32.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_2_win32.zip?download">Lapg 1.2.2 binary (win32)</file>
+<file name='lapg_1_2_2_src.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_2_src.zip?download">Lapg 1.2.2 sources (win32/linux)</file>
+</group>
+<group name="Tools">
+<file name='b2lapg.tar.gz' type='.tar.gz'>Grammar description converter: bison -&gt; lapg</file>
 </group>
 </download>
 
