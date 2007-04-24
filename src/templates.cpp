@@ -889,7 +889,6 @@ const char *templ_java =
 	"${eachlexem\n"
 	"\t\t\t\tcase @lexemnum:\n"
 	"\t\t\t\t\t@lexemaction\n"
-	"$#breaks\t\t\t\t\tbreak;\n"
 	"$}\n"
 	"\t\t\t}\n"
 	"$}\n"

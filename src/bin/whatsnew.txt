@@ -8,10 +8,15 @@
 [-] Fixed error
 
 ---------------------------------------------------------------------------
-lapg v1.2.3 build ....
+lapg v1.2.3 build Apr 25 2007
 ---------------------------------------------------------------------------
 
-[+] Supported Java as target language
+[+] Supported Java and ANSI C as target languages
+
+[+] .breaks "off"  turns off generation of breaks after action in 
+	Java language
+
+[+] Fixed generated enum member names for L-attributes
 
 [-] Fixed syntax error after wrong lexem in C# script
 

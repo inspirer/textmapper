@@ -162,7 +162,6 @@ ${lexemactions
 ${eachlexem
 				case @lexemnum:
 					@lexemaction
-$#breaks					break;
 $}
 			}
 $}

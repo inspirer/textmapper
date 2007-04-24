@@ -1,7 +1,7 @@
 
 
             LAPG ( Lexical analyzer and parser generator )
-               Evgeny Gryaznov, 2002-06, inspirer@inbox.ru
+               Evgeny Gryaznov, 2002-07, inspirer@inbox.ru
 
 
   1. Introduction
@@ -14,7 +14,7 @@
     wide range of tasks. It may be a simple string parser or a complicated 
     compiler like C++.
 
-    The official homepage is http://gryaznov.net/lapg/
+    The official homepage is http://lapg.sourceforge.net/
     SourceForge: http://sourceforge.net/projects/lapg/
 
     LAPG is distributed under the General Public License.
@@ -65,7 +65,11 @@
 
     	Generates java class in specified package (use .namespace directive).
 
-    3.5  Other languages.
+    3.5  ANSI C
+
+    	Looks like C++ template without class declaration.
+
+    3.6  Other languages.
 
          You can easily add a new language to lapg. You need to add language
       specific template and (optionaly) default syntax file, then modify
