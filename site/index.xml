@@ -13,7 +13,7 @@
 <h>What is lapg?</h>
 <p>
 Lapg is the combined lexical analyzer and parser generator, which converts a
-description for a context-free LALR(1) grammar into source file to parse the 
+description for a context-free LALR grammar into source file to parse the 
 grammar. The generated parser accepts zero-terminated text, breaks it into 
 tokens and applies given rules to reduce the input to the main non-terminal
 symbol. Lapg can be used in a wide range of tasks. It may be a simple string
@@ -24,14 +24,14 @@ parser or a complicated compiler like C++.
 <h>Why use lapg?</h>
 <p>
 Lapg is user-friendly replacement of yacc and lex. It uses templates for parser 
-generation, supports 4 languages and can be adapted for any language you like.
+generation, supports 5 languages and can be adapted for any language you like.
 <br/><br/>
 <b>Features</b>:
 <ul>
-<li>Understands context-free LALR(1) grammars with L-attributes</li>
+<li>Understands context-free LALR grammars with L-attributes</li>
 <li>Provides readable grammar ambiguities reports</li>
 <li>Supports error recovery, operator precedence</li>
-<li>Generates code for C++, C#, Java and Javascript</li>
+<li>Generates code for C, C++, C#, Java and Javascript</li>
 <li>Generated source doesn't require specific runtime</li>
 <li>Lexem patterns are specified using regular expressions</li>
 <li>Tokenizer supports modes, which limit sets of tokens considered for a match</li>
