@@ -16,7 +16,7 @@ void error( char *r, ... )
 {
 	va_list arglist;
 	va_start( arglist, r );
-	vfprintf( stderr, r, arglist );
+	vfprintf( stdout, r, arglist );
 }
 
 
