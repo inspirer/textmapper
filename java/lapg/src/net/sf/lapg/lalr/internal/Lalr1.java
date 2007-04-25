@@ -51,6 +51,7 @@ class Lalr1 extends LR0 {
 
 		freeLA();
 
+		// TODO
 		for (int i = nterms; i <= nsyms; i++)
 			term_goto[i] += ntgotos;
 	}
@@ -90,13 +91,11 @@ class Lalr1 extends LR0 {
 		Arrays.fill(LA, 0);
 
 		// fills: larule, laindex
-		int laind = 0;
 		for( i = 0, t = first; t != null; t = t.next ) {
 			laindex[t.number] = (short)i;
 			if( !t.LR0 ) {
 				for( k = 0; k < t.nreduce; k++ )
-					larule[laind++] = t.reduce[k];
-				i += t.nreduce;
+					larule[i++] = t.reduce[k];
 			}
 		}
 	}

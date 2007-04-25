@@ -304,9 +304,8 @@ public class Builder extends Lalr1 {
 		}
 
 		buildLalr();
-//		action();
-//		return createResult();
-		return null;
+		action();
+		return createResult();
 	}
 
 	private Result createResult() {
@@ -323,11 +322,9 @@ public class Builder extends Lalr1 {
 		r.rprio = this.rprio;
 		r.rlines = this.rlines;
 		r.raction = this.raction;
-
-// TODO		
-//		r.sym_goto = this.term_goto;
-//		r.sym_from = this.term_from;
-//		r.sym_to = this.term_to;
+		r.sym_goto = this.term_goto;
+		r.sym_from = this.term_from;
+		r.sym_to = this.term_to;
 		r.action_table = this.action_table;
 		r.action_index = this.action_index;
 		r.nactions = this.nactions;
