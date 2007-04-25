@@ -10,9 +10,9 @@
 <lang lang='eng'>
 
 <download dir="files/" title="The latest stable release">
-<group name="v1.2.2">
-<file name='lapg_1_2_2_win32.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_2_win32.zip?download">Lapg 1.2.2 binary (win32)</file>
-<file name='lapg_1_2_2_src.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_2_src.zip?download">Lapg 1.2.2 sources (win32/linux)</file>
+<group name="v1.2.3">
+<file name='lapg_1_2_3_win32.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_3_win32.zip?download">Lapg 1.2.3 binary (win32)</file>
+<file name='lapg_1_2_3_src.zip' type='Zip archive' link="http://prdownloads.sourceforge.net/lapg/lapg_1_2_3_src.zip?download">Lapg 1.2.3 sources (win32/linux)</file>
 </group>
 <group name="Tools">
 <file name='b2lapg.tar.gz' type='.tar.gz'>Grammar description converter: bison -&gt; lapg</file>
