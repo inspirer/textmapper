@@ -1,11 +1,11 @@
-package net.sf.lapg.lalr.internal;
+package net.sf.lapg.lalr;
 
 import java.util.Vector;
 
-import net.sf.lapg.lalr.Grammar;
-import net.sf.lapg.lalr.IError;
-import net.sf.lapg.lalr.Result;
-import net.sf.lapg.lalr.Symbol;
+import net.sf.lapg.Grammar;
+import net.sf.lapg.IError;
+import net.sf.lapg.ParserTables;
+import net.sf.lapg.Symbol;
 
 
 public class Builder extends Lalr1 {
@@ -283,7 +283,7 @@ public class Builder extends Lalr1 {
 	}
 
 
-	private Result generate() {
+	private ParserTables generate() {
 		if (input == -1) {
 			err.error("input symbol is not defined\n");
 			return null;
@@ -308,8 +308,8 @@ public class Builder extends Lalr1 {
 		return createResult();
 	}
 
-	private Result createResult() {
-		Result r = new Result();
+	private ParserTables createResult() {
+		ParserTables r = new ParserTables();
 		r.sym = this.sym; 
 		r.rules = this.rules;
 		r.nsyms = this.nsyms;
@@ -331,7 +331,7 @@ public class Builder extends Lalr1 {
 		return r;
 	}
 	
-	public static Result compile(Grammar g, IError err, int debuglev) {
+	public static ParserTables compile(Grammar g, IError err, int debuglev) {
 		Builder en = new Builder(g, err, debuglev);
 		return en.generate();
 	}

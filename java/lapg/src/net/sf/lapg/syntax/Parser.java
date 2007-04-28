@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 
-import net.sf.lapg.lalr.IError;
+import net.sf.lapg.IError;
 
 public class Parser {
 	

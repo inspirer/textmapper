@@ -1,10 +1,10 @@
-package net.sf.lapg.lalr.internal;
+package net.sf.lapg.lalr;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import net.sf.lapg.lalr.Grammar;
-import net.sf.lapg.lalr.IError;
+import net.sf.lapg.Grammar;
+import net.sf.lapg.IError;
 
 class Lalr1 extends LR0 {
 	

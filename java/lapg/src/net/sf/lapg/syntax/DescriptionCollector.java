@@ -3,11 +3,11 @@ package net.sf.lapg.syntax;
 import java.util.Iterator;
 import java.util.Vector;
 
-import net.sf.lapg.lalr.Grammar;
-import net.sf.lapg.lalr.IError;
-import net.sf.lapg.lalr.Rule;
-import net.sf.lapg.lalr.Symbol;
-import net.sf.lapg.lalr.Syntax;
+import net.sf.lapg.Grammar;
+import net.sf.lapg.IError;
+import net.sf.lapg.Rule;
+import net.sf.lapg.Symbol;
+import net.sf.lapg.Syntax;
 
 class DescriptionCollector implements Syntax {
 	

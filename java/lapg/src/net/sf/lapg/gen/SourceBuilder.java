@@ -2,10 +2,10 @@ package net.sf.lapg.gen;
 
 import java.io.InputStream;
 
-import net.sf.lapg.lalr.IError;
-import net.sf.lapg.lalr.Result;
-import net.sf.lapg.lalr.Syntax;
-import net.sf.lapg.lalr.internal.Builder;
+import net.sf.lapg.IError;
+import net.sf.lapg.ParserTables;
+import net.sf.lapg.Syntax;
+import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.syntax.SyntaxUtils;
 
 public class SourceBuilder {
@@ -26,7 +26,7 @@ public class SourceBuilder {
 
 	public boolean process(String sourceName, InputStream input) {
 		Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err);
-		Result r = Builder.compile(s.getGrammar(), err, debuglev);
+		ParserTables r = Builder.compile(s.getGrammar(), err, debuglev);
 		
 		return true;
 	}

@@ -2,8 +2,8 @@ package net.sf.lapg.syntax;
 
 import java.io.InputStream;
 
-import net.sf.lapg.lalr.IError;
-import net.sf.lapg.lalr.Syntax;
+import net.sf.lapg.IError;
+import net.sf.lapg.Syntax;
 
 public class SyntaxUtils {
 

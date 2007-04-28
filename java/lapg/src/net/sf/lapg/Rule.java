@@ -1,4 +1,4 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg;
 
 public class Rule {
 

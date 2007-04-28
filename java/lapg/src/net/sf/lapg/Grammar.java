@@ -1,6 +1,7 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg;
 
 import java.util.Vector;
+
 
 public class Grammar {
 	

@@ -1,11 +1,11 @@
-package net.sf.lapg.lalr.internal;
+package net.sf.lapg.lalr;
 
 import java.util.Iterator;
 
-import net.sf.lapg.lalr.Grammar;
-import net.sf.lapg.lalr.IError;
-import net.sf.lapg.lalr.Rule;
-import net.sf.lapg.lalr.Symbol;
+import net.sf.lapg.Grammar;
+import net.sf.lapg.IError;
+import net.sf.lapg.Rule;
+import net.sf.lapg.Symbol;
 
 abstract class ContextFree {
 

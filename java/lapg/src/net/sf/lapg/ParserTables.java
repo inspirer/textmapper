@@ -1,6 +1,6 @@
-package net.sf.lapg.lalr;
+package net.sf.lapg;
 
-public class Result {
+public class ParserTables {
 	public Symbol[] sym;
 	public int rules, nsyms, nterms, nstates, errorn;
 	public int[] rleft, rright, rindex, rprio, rlines;

@@ -2,7 +2,7 @@ package net.sf.lapg.gen;
 
 import java.io.PrintStream;
 
-import net.sf.lapg.lalr.IError;
+import net.sf.lapg.IError;
 
 public class ErrorImpl implements IError {
 	

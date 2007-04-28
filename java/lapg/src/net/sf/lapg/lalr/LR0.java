@@ -1,9 +1,9 @@
-package net.sf.lapg.lalr.internal;
+package net.sf.lapg.lalr;
 
 import java.util.Arrays;
 
-import net.sf.lapg.lalr.Grammar;
-import net.sf.lapg.lalr.IError;
+import net.sf.lapg.Grammar;
+import net.sf.lapg.IError;
 
 /**
  *  LR(0) states generator
