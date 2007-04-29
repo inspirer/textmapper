@@ -1,10 +1,12 @@
 package net.sf.lapg.syntax;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
 import net.sf.lapg.Grammar;
 import net.sf.lapg.IError;
+import net.sf.lapg.Lexem;
 import net.sf.lapg.Rule;
 import net.sf.lapg.Symbol;
 import net.sf.lapg.Syntax;
@@ -206,11 +208,18 @@ class DescriptionCollector implements Syntax {
 		// TODO
 	}
 
-	public int currentgroups, totalgroups;
+	public int currentgroups = 1;
+	
+	private ArrayList<Lexem> lexems = new ArrayList<Lexem>();	
 
-	public int  lexem( int num, String regexp, String name, String action, Integer priority ) {
-		// TODO
-		return 0;
+	public void lexem( int num, String regexp, String name, String action, Integer priority ) {
+		Lexem l = new Lexem(num, name, regexp, action, priority != null ? priority.intValue() : 0, currentgroups);
+		lexems.add(l);
 	}
 
+	public Lexem[] getLexems() {
+		return lexems.toArray(new Lexem[lexems.size()]);
+	}
+
+	
 }

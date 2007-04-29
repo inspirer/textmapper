@@ -2,6 +2,7 @@ package net.sf.lapg.lex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 
 import net.sf.lapg.IError;
 
@@ -9,7 +10,11 @@ public class RegexpParser {
 	
 	private IError err;
 	
+	// result
 	private int[] symbols;
+	private ArrayList<int[]> setpool;
+
+	// temporary variables
 	private int[] sym;
 	private int[] stack;
 	private int[] set;
@@ -20,13 +25,16 @@ public class RegexpParser {
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
 		this.set = new int[LexConstants.SIZE_SYM];
-		this.setpools = new ArrayList<int[]>();
+		this.setpool = new ArrayList<int[]>();
+
+		Arrays.fill(symbols, 0);
+		symbols[(0)/LexConstants.BITS] |= (1<<((0)%LexConstants.BITS));
+		symbols[(1)/LexConstants.BITS] |= (1<<((1)%LexConstants.BITS));
 	}
 
 	private int index;
 	private char[] re;
 	private String regexp;
-	private ArrayList<int[]> setpools;
 
 	private int escape(int c) {
 		switch (c) {
@@ -47,6 +55,18 @@ public class RegexpParser {
 		}
 	}
 
+	private int storeSet() {
+		int[] newSet = new int[LexConstants.SIZE_SYM];
+		for( int i = 0; i < LexConstants.SIZE_SYM; i++ )
+			newSet[i] = set[i];
+		int setIndex = setpool.size() * LexConstants.SIZE_SYM;
+		setpool.add(newSet);
+		return setIndex;
+	}
+
+	/**
+	 * regexp "tokenizer"
+	 */
 	private int getnext() {
 		int i, e;
 		boolean invert = false;
@@ -79,7 +99,8 @@ public class RegexpParser {
 				Arrays.fill( set, 0);
 				
 				while( index < re.length && re[index] != ']' ) {
-					if( (i = re[index]) == '\\' ) {
+					i = re[index];
+					if( i == '\\' ) {
 						index++;
 						if( index >= re.length ) {
 							err.error( "lex: \\ found at the end of expression: /"+regexp+"/\n" );
@@ -117,7 +138,7 @@ public class RegexpParser {
 				}
 
 				if( index >= re.length ) {
-					err.error( "lex: enclosing square bracket not found:" );
+					err.error( "lex: enclosing square bracket not found: /"+regexp+"/\n" );
 					return -1;
 				}
 
@@ -130,14 +151,8 @@ public class RegexpParser {
 					set[(0)/LexConstants.BITS] &= ~(1<<((0)%LexConstants.BITS));
 				}
 
-				int[] n = new int[LexConstants.SIZE_SYM];
-				for( i = 0; i < LexConstants.SIZE_SYM; i++ )
-					n[i] = set[i];
-				int res = setpools.size() * LexConstants.SIZE_SYM;
-				setpools.add(n);
-
 				index++;
-				return res;
+				return storeSet();
 
 			case '\\':
 				index++;
@@ -158,17 +173,18 @@ public class RegexpParser {
 		}
 	}
 	
-	public Result compile(int number, String name, String expressionParam) {
+	/**
+	 * @return Engine representation of regular expression
+	 */
+	public int[] compile(int number, String name, String regexp) {
 		
-		int length = 0, e = 1;
+		int length = 0, deep = 1;
 		boolean addbrackets = false;
 
 		this.index = 0;
-		this.regexp = expressionParam;
+		this.regexp = regexp;
 		this.re = this.regexp.toCharArray();
 		
-		Result result = new Result();
-
 		if( re.length == 0 ) {
 			err.error( "lex: regexp for `"+name+"' does not contain symbols\n" );
 			return null;
@@ -176,7 +192,7 @@ public class RegexpParser {
 		
 		while( index < re.length ) {
 			if( length > LexConstants.MAX_ENTRIES-5 ) {
-				err.error( "lex: regular expression is too long: /"+regexp+"/\n" );
+				err.error( "lex: regexp for `"+name+"' is too long: /"+regexp+"/\n" );
 				return null;
 			}
 
@@ -184,26 +200,26 @@ public class RegexpParser {
 
 			switch( sym[length] ) {
 				case LexConstants.LBR:
-					stack[e] = length;
-					if( ++e >= LexConstants.MAX_DEEP ) {
-						err.error( "lex: regular expression is too deep: /"+regexp+"/\n" );
+					stack[deep] = length;
+					if( ++deep >= LexConstants.MAX_DEEP ) {
+						err.error( "lex: regexp for `"+name+"' is too deep: /"+regexp+"/\n" );
 						return null;
 					}
 					break;
 				case LexConstants.OR:
-					if( e == 1 ) {
+					if( deep == 1 ) {
 						addbrackets = true; 
 					}
 					break;
 				case LexConstants.RBR:
-					if( --e == 0 ) {
-						err.error( "lex: error in using parantheses: /"+regexp+"/\n");
+					if( --deep == 0 ) {
+						err.error( "lex: error in `"+name+"', wrong parantheses: /"+regexp+"/\n");
 						return null;
 					}
-					sym[stack[e]] |= length;
+					sym[stack[deep]] |= length;
 					/* FALLTHROUGH */
 				default:
-					if( re[index] == '+' || re[index] == '?' || re[index] == '*' ) {
+					if( index < re.length && (re[index] == '+' || re[index] == '?' || re[index] == '*') ) {
 						switch( re[index] ) {
 							case '+': sym[length] |= 1<<29; break;
 							case '*': sym[length] |= 2<<29; break;
@@ -220,11 +236,12 @@ public class RegexpParser {
 			length++;
 		}
 
-		if( e != 1 ) { 
-			err.error( "lex: error in using parantheses: /"+regexp+"/\n");
+		if( deep != 1 ) { 
+			err.error( "lex: error in `"+name+"', wrong parantheses: /"+regexp+"/\n");
 			return null;
 		}
 
+		int e;
 		if( addbrackets ) {
 			for( e = 0; e < length; e++ ) { 
 				if( (sym[e]&LexConstants.MASK) == LexConstants.LBR ) {
@@ -236,13 +253,37 @@ public class RegexpParser {
 		}
 
 		sym[length++] = -1-number;
+
+		e = 0;
+		int[] result = new int[length + (addbrackets ? 1 : 0)];
+		if( addbrackets )
+			result[e++] = LexConstants.LBR|(length-1);
+		for( int i = 0; i < length; i++, e++ )
+			result[e] = sym[i];
 		
 		return result;
 	}
-	
-	public class Result {
-		public int[] sym;
-		public int[] setpool;
-		public int[] symbols;
+
+	/**
+	 * @return array of sets of symbols
+	 */
+	public int[] getSetpool() {
+		int[] result = new int[setpool.size() * LexConstants.SIZE_SYM];
+		int e = 0;
+		
+		for( Iterator<int[]> it = setpool.iterator(); it.hasNext(); ) {
+			int[] from = it.next();
+			for( int i = 0; i < LexConstants.SIZE_SYM; i++)
+				result[e++] = from[i];
+		}
+		
+		return result;
+	}
+
+	/**
+	 * @return set of used symbols
+	 */
+	public int[] getSymbolSet() {
+		return symbols;
 	}
 }
