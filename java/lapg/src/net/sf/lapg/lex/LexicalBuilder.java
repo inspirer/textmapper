@@ -11,10 +11,10 @@ import net.sf.lapg.common.FormatUtil;
 
 public class LexicalBuilder {
 
-	class State {
+	private class State {
 		State next, hash;
 		int number;
-		int []change;
+		int[] change;
 		int[] set;
 	};
 
@@ -84,7 +84,7 @@ public class LexicalBuilder {
 		return n.number;
 	}
 
-	private final static boolean LEX_CLOSURE_DEBUG = true;  
+	private final static boolean LEX_CLOSURE_DEBUG = false;  
 	
 	// builds closure of the given set (using jumps)
 	private int closure(int[] set) {
@@ -559,10 +559,14 @@ public class LexicalBuilder {
 	
 		buildJumps();
 		buildArrays();
-		buildStates();
+		if(!buildStates())
+			return null;
 
-		// TODO
-		return null;
+		int[][] stateChange = new int[states][];
+		for( State s = first; s != null; s = s.next )
+			stateChange[s.number] = s.change;
+
+		return new LexerTables(states, characters, nterms, lact, lnum, char2no, groupset, stateChange);
 	}
 
 	/**

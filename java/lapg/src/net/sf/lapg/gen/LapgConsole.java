@@ -1,5 +1,6 @@
 package net.sf.lapg.gen;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -21,10 +22,11 @@ public class LapgConsole {
 		"Operations:\n"+
 		"  -h,  --help                    display this help\n"+
 		"  -v,  --version                 output version information\n"+
-		"  -tf, --template-from-file      generate template for file parsing\n"+
-		"  -ts, --template-from-string    generate template for string parsing\n"+
-		"  -vb, --verbose                 print output script\n"+
-		"  -l name, --lang=name           language (for tf/ts/vb), supported: c++, cs, js, java\n"+
+		"  -tf, --template-from-file      output template for file parsing\n"+
+		"  -ts, --template-from-string    output template for string parsing\n"+
+		"  -vb, --verbose                 output generator template\n"+
+		"  -l name, --lang=name           language (for tf/ts/vb), supported: c, c++, cs, js, java\n"+
+		"  -g file, --gen=filename        use generator template\n"+
 		"\n"+
 		"Defaults:\n"+
 		"  inputfile = syntax\n"+
@@ -41,7 +43,7 @@ public class LapgConsole {
 	private static final int DEBUG_TABLES = 2;
 
 	private int debug;
-	private String input, output;
+	private String input, output, template;
 	private TargetLanguage lang;
 	private int action;
 	
@@ -51,6 +53,7 @@ public class LapgConsole {
 		input = "syntax";
 		lang = null;
 		output = null;
+		template = null;
 	}
 
 	private static boolean check( String s, String v1, String v2) {
@@ -97,6 +100,12 @@ public class LapgConsole {
 					return false;
 				}
 
+			} else if( (args[i].equals("-g") && i+1 < args.length) || args[i].startsWith("--gen=") ) {
+				if( args[i].startsWith("--") )
+					template = args[i].substring(6);
+				else
+					template = args[++i];
+
 			} else if( args[i].startsWith("-") && args[i].length() > 1 ) {
 				System.err.println( "lapg: invalid option " + args[i]);
 				System.err.println( "Try 'lapg --help' for more information.");
@@ -130,12 +139,9 @@ public class LapgConsole {
 			sourceName = "<stdin>";
 		}
 
-		// save options
-		//g.targetname = output;
-
-		//new File("errors").delete();
-		//new File("states").delete();
-		p.process(sourceName, stream);
+		new File(ErrorImpl.OUT_ERRORS).delete();
+		new File(ErrorImpl.OUT_TABLES).delete();
+		p.process(sourceName, stream, output);
 	}
 	
 	private void showHelp() {
