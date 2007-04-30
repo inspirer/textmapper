@@ -28,8 +28,8 @@ public class SourceBuilder {
 
 	public boolean process(String sourceName, InputStream input) {
 		Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err);
+		LexerTables l = LexicalBuilder.compile(s.getLexems(), err, debuglev);
 		ParserTables r = Builder.compile(s.getGrammar(), err, debuglev);
-		LexerTables l = LexicalBuilder.compile(s.getLexems(), err);
 		
 		return true;
 	}

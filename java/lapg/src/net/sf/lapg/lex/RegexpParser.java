@@ -9,7 +9,7 @@ import net.sf.lapg.IError;
 public class RegexpParser {
 	
 	private IError err;
-	
+
 	// result
 	private int[] symbols;
 	private ArrayList<int[]> setpool;
@@ -21,10 +21,11 @@ public class RegexpParser {
 	
 	public RegexpParser(IError err) {
 		this.err = err;
-		this.symbols = new int[LexConstants.SIZE_SYM];
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
 		this.set = new int[LexConstants.SIZE_SYM];
+
+		this.symbols = new int[LexConstants.SIZE_SYM];
 		this.setpool = new ArrayList<int[]>();
 
 		Arrays.fill(symbols, 0);
