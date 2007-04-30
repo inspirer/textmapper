@@ -14,7 +14,7 @@ public class LexicalBuilder {
 	class State {
 		State next, hash;
 		int number;
-		//short []change;
+		int []change;
 		int[] set;
 	};
 
@@ -41,7 +41,7 @@ public class LexicalBuilder {
 	State first, last, current;
 	int[] clsr, cset;
 
-	//int groupset[BITS];
+	int[] groupset;
 
 
 	private LexicalBuilder(Lexem[] lexems, IError err, int debuglev) {
@@ -51,11 +51,101 @@ public class LexicalBuilder {
 	}
 	
 	private int add_set( int[] state, int size, int sum ) {
-		return 0;
+		State n;
+		int i;
+
+		assert sum >= 0;
+
+		// search for existing
+		for( n = hash[sum]; n != null; n = n.hash ) {
+			for( i = 0; n.set[i] >= 0 && state[i] >= 0 && n.set[i] == state[i]; i++);
+			if( n.set[i] == -1 && state[i] == -1 )
+				return n.number;
+		}
+
+		// have we exceed the limits
+		if( states >= LexConstants.MAX_WORD )
+			return -1;
+
+		// create new
+		n = new State();
+		n.set = new int[size+1];
+		last = last.next = n;
+		n.hash = hash[sum];
+		hash[sum] = n;
+		n.next = null;
+
+		n.number = states++;
+		n.change = null;
+		for( i = 0; i < size; i++ )
+			n.set[i] = state[i];
+		n.set[size] = -1;
+
+		return n.number;
 	}
+
+	private final static boolean LEX_CLOSURE_DEBUG = true;  
 	
-	private void closure( int[] set, int /*&*/length ) {
+	// builds closure of the given set (using jumps)
+	private int closure(int[] set) {
+		int n, p;
+		int i = 0, clind = 0, base, slen;
+		int k, l, m, word;
+
+		if( LEX_CLOSURE_DEBUG ) {
+			err.debug( "\tclosure of: " );
+			for( n = 0; set[n] >= 0; n++ ) err.debug(" " + set[n]);
+			err.debug( "\n" );
+		}
+
+		for( p = 0; set[p] >= 0; ) {
+
+			// search for next terminal
+			while( i < nterms && set[p] >= lindex[i+1] ) i++;
+			assert i < nterms;
+
+			// create closure for it in cset
+			slen = ljmpset[i];
+			Arrays.fill(cset, 0);
+
+			for( base = lindex[i], word = lindex[i+1]; set[p] >= 0 && set[p] < word; p++ ) {
+				assert set[p] >= base;
+				int[] cjmp = ljmp[i];
+				n = (set[p] - base) * slen;
+				for( l = 0; l < slen; l++ )
+					cset[l] |= cjmp[n++];
+			}
+
+			if( LEX_CLOSURE_DEBUG ) {
+			    err.debug("\t\t\tcset ("+i+", base="+base+") = "); 
+				for( l = 0; l < slen*LexConstants.BITS; l++ )
+					if ((cset[(l)/LexConstants.BITS]&(1<<((l)%LexConstants.BITS)))!=0) 
+						err.debug(" "+l+"("+FormatUtil.asHex(lsym[base+l], 2)+")");
+				err.debug("\n");
+			}
+			
+			// save cset in closure (exclude LBR, RBR, SPL, OR)
+			for( m = base, k = 0; k < slen; k++ )
+				if( (word = cset[k]) == 0 )
+					m += LexConstants.BITS;
+				else for( l = 0; l < LexConstants.BITS; l++, m++ )
+					if( (word & (1<<l)) != 0 )
+						if( (int)(lsym[m] & LexConstants.MASK) > (int)LexConstants.SPL ) 
+							clsr[clind++] = m;
+		}
+
+		// save closure in initial array
+		for( i = 0; i < clind; i++ )
+			set[i] = clsr[i];
+		set[clind] = -1;
+
+		if( LEX_CLOSURE_DEBUG ) {
+			err.debug("\t\t\tis: ");
+			for( n = 0; set[n] >= 0; n++ ) err.debug(" " + set[n]);
+			err.debug("\n");
+		}
 		
+		return clind;
 	}
 
 	// fills: ljmp
@@ -194,167 +284,181 @@ public class LexicalBuilder {
 	}
 	
 	private boolean buildStates() {
-//		int i, e, k;
-//		int *cs, *next, nnext;
-//		int[] toshift = new int[SIZE_SYM];
-//
-//		// allocate temporary storage
-//		clsr = new int[nsit];
-//		next = new int[nsit+1];
-//		nnext = 0;
-//
-//		// fix lindex and allocate temporary set
-//		inc_realloc( (void**)&lindex, nterms, sizeof(int) );
-//		lindex[nterms] = nsit;
-//		for( e = 1, i = 0; i < nterms; i++ )
-//			if( ljmpset[i] > e ) e = ljmpset[i];
-//		cset = new int[e];
-//
-//		// create first set
-//		for( i = 0; i < nterms; i++ ) 
-//			if( group[i] & 1 )
-//				next[nnext++] = lindex[i];
-//		next[nnext] = -1;
-//		closure( next, nnext );
-//		for( e = 0, cs = next; *cs >= 0; cs++ ) e += *cs;
-//		e = (unsigned)e % HASH_SIZE;
-//		groupset[0] = 0;
-//
-//		// create state
-//		states = 1;
-//		Arrays.fill(hash, null);
-//		
-//		current = first = last = (State *) new char[ sizeof(State) + nnext*sizeof(int) ];
-//		first.number = 0;
-//		first.hash = first.next = NULL;
-//		hash[e] = first;
-//		for( i = 0; i <= nnext; i++ )
-//			first.set[i] = next[i];
-//
-//		// create left group states
-//		for( k = 1; k < BITS; k++ ) {
-//			if( totalgroups & (1<<k) ) {
-//				for( nnext = i = 0; i < nterms; i++ ) 
-//					if( group[i] & (1<<k) )
-//						next[nnext++] = lindex[i];
-//				next[nnext] = -1;
-//				closure( next, nnext );
-//				for( e = 0, cs = next; *cs >= 0; cs++ ) e += *cs;
-//				groupset[k] = add_set( next, nnext, (unsigned)e % HASH_SIZE );
-//			} else {
-//				groupset[k] = (unsigned)-1;
-//			}
-//		}
-//
-//		// generate states
-//		while( current ) {
-//
-//			// first of all we must search if there any lexem have been read already
-//			int lexnum = -1;
-//			memset( toshift, 0, (((256)+BITS-1)/BITS)*sizeof(int) );
-//			for( cs = current.set; *cs >= 0; cs++ ) {
-//				if( lsym[*cs] < 0 && lsym[*cs] >= -MAX_LEXEMS ) {
-//
-//					// end of some regexp found
-//					final int nlex = -1-lsym[*cs];
-//					if( lexnum != -1 && lexnum != nlex ) {
-//
-//						if( lprio[nlex] == lprio[lexnum] ) {
-//							err.error("lex: two lexems are identical: "+lname[lexnum]+" and "+lname[nlex]+"\n");
-//							lexemerrors++;
-//
-//						} else if( lprio[nlex] > lprio[lexnum] ) {
-//							if( debuglev ) 
-//								err.warn("fixed: %s > %s\n", lname[nlex], lname[lexnum] );
-//							lexnum = nlex;
-//
-//						} else if( debuglev ) 
-//							err.warn("fixed: %s > %s\n", lname[lexnum], lname[nlex] );
-//
-//					} else lexnum = nlex;
-//			
-//				} else {
-//					switch( lsym[*cs]&MASK ) {
-//						case SYM: 
-//							toshift[(lsym[*cs]&0xff)/BITS] |= (1<<((lsym[*cs]&0xff)%BITS));
-//							break;
-//						case ANY: 
-//							for( i = 1; i < SIZE_SYM; i++ )
-//								toshift[i] = ~0;
-//							toshift[0] |= ~((1<<'\n')+(1));
-//							break;
-//						default: 
-//							e = lsym[*cs]&~HIGH_STORAGE;
-//							for( i = 0; i < SIZE_SYM; i++, e++ )
-//								toshift[i] |= setpool[e];
-//							break;
-//					}
-//				}
-//			}
-//
-//			// check for the empty lexem
-//			if( current == first && lexnum != -1 ) {
-//				err.error( 0, "lex: lexem is empty: `%s`\n", lname[lexnum] );
-//				lexemerrors++;
-//			}
-//
-//
-//			// allocate new change table
-//			current.change = new short[characters];
-//
-//			// try to shift all available symbols
-//			for( i = 0; i < characters; i++ ) {
-//				if ((toshift[(no2char[i])/BITS]&(1<<((no2char[i])%BITS)))!=0) {
-//					int *p, *t, *o, l, sym = no2char[i];
-//
-//					// create new state
-//					for( t = next, p = current.set; *p >= 0; p++ ) {
-//						l = lsym[*p];
-//
-//						if( (l&MASK) == ANY ) {
-//							if( sym != '\n' ) 
-//								*t++ = *p + 1;
-//						} else if( (l&MASK) == SYM ) {
-//							if( sym == (l&0xff) ) 
-//								*t++ = *p + 1;
-//						} else if( l >= 0 ) {
-//							o = &setpool[l&~HIGH_STORAGE];
-//							if ((o[(sym)/BITS]&(1<<((sym)%BITS)))!=0) 
-//								*t++ = *p + 1;
-//						}
-//					}
-//					nnext = t - next;
-//
-//					// closure
-//					*t = -1;
-//					closure( next, nnext );
-//
-//					// save new state
-//					for( l = e = 0; e < nnext; e++ )
-//						l += next[e];
-//
-//					current.change[i] = add_set( next, nnext, (unsigned)l % HASH_SIZE );
-//
-//					// Have we exceeded the limits?
-//					if( current.change[i] == -1 ) {
-//						err.error( "lex: lexical analyzer is too big ...\n" );
-//						return false;
-//					}
-//
-//				} else { 
-//					current.change[i] = (lexnum>=0) ? -2-lnum[lexnum] : -1;
-//				}
-//			}
-//
-//			ASSERT( current.change[0] < 0 );
-//
-//			// next state
-//			current = current.next;
-//		}
-//
-//		first.change[0] = -2;
+		int i, e, k;
+		int nnext, lexemerrors = 0;
+		int[] toshift = new int[LexConstants.SIZE_SYM];
 
-		return true;
+		// allocate temporary storage
+		hash = new State[LexConstants.HASH_SIZE];
+		clsr = new int[nsit];
+		int[] next = new int[nsit+1];
+		nnext = 0;
+
+		// allocate temporary set
+		for( e = 1, i = 0; i < nterms; i++ ) {
+			if( ljmpset[i] > e ) {
+				e = ljmpset[i];
+			}
+		}
+		cset = new int[e];
+
+		// create first set
+		for( i = 0; i < nterms; i++ ) {
+			if( (group[i] & 1) != 0 ) {
+				next[nnext++] = lindex[i];
+			}
+		}
+		next[nnext] = -1;
+		nnext = closure(next);
+		
+		
+		for( i = 0, e = 0; next[i] >= 0; i++ ) e += next[i];
+		e = e % LexConstants.HASH_SIZE;
+		
+		groupset = new int[LexConstants.BITS];
+		groupset[0] = 0;
+
+		// create state
+		states = 1;
+		Arrays.fill(hash, null);
+		
+		current = first = last = new State();
+		first.number = 0;
+		first.hash = first.next = null;
+		hash[e] = first;
+		first.set = new int[nnext+1];
+		for( i = 0; i <= nnext; i++ )
+			first.set[i] = next[i];
+
+		// create left group states
+		for( k = 1; k < LexConstants.BITS; k++ ) {
+			if( (totalgroups & (1<<k)) != 0 ) {
+				for( nnext = i = 0; i < nterms; i++ ) { 
+					if( (group[i] & (1<<k)) != 0 ) {
+						next[nnext++] = lindex[i];
+					}
+				}
+				next[nnext] = -1;
+				nnext = closure(next);
+
+				for( i = 0, e = 0; next[i] >= 0; i++ ) e += next[i];
+				groupset[k] = add_set( next, nnext, e % LexConstants.HASH_SIZE );
+			} else {
+				groupset[k] = -1;
+			}
+		}
+
+		// generate states
+		while( current != null ) {
+
+			// first of all we must search if there any lexem have been read already
+			int lexnum = -1;
+			Arrays.fill(toshift, 0);
+			int[] cset = current.set;
+
+			for( int csi = 0; cset[csi] >= 0; csi++ ) {
+				int csval = cset[csi];
+				if( lsym[csval] < 0 && lsym[csval] >= -LexConstants.MAX_LEXEMS ) {
+
+					// end of some regexp found
+					final int nlex = -1-lsym[csval];
+					if( lexnum != -1 && lexnum != nlex ) {
+
+						if( lprio[nlex] == lprio[lexnum] ) {
+							err.error("lex: two lexems are identical: "+lname[lexnum]+" and "+lname[nlex]+"\n");
+							lexemerrors++;
+
+						} else if( lprio[nlex] > lprio[lexnum] ) {
+							if( debuglev != 0 ) 
+								err.warn("fixed: "+lname[nlex]+" > "+lname[lexnum]+"\n" );
+							lexnum = nlex;
+
+						} else if( debuglev != 0 ) 
+							err.warn("fixed: "+lname[lexnum]+" > "+lname[nlex]+"\n" );
+
+					} else lexnum = nlex;
+			
+				} else {
+					switch( lsym[csval]&LexConstants.MASK ) {
+						case LexConstants.SYM: 
+							toshift[(lsym[csval]&0xff)/LexConstants.BITS] |= (1<<((lsym[csval]&0xff)%LexConstants.BITS));
+							break;
+						case LexConstants.ANY: 
+							for( i = 1; i < LexConstants.SIZE_SYM; i++ )
+								toshift[i] = ~0;
+							toshift[0] |= ~((1<<'\n')+(1));
+							break;
+						default: 
+							e = lsym[csval]&~LexConstants.HIGH_STORAGE;
+							for( i = 0; i < LexConstants.SIZE_SYM; i++, e++ )
+								toshift[i] |= setpool[e];
+							break;
+					}
+				}
+			}
+
+			// check for the empty lexem
+			if( current == first && lexnum != -1 ) {
+				err.error("lex: lexem is empty: `"+lname[lexnum]+"`\n");
+				lexemerrors++;
+			}
+
+			// allocate new change table
+			current.change = new int[characters];
+
+			// try to shift all available symbols
+			for( i = 0; i < characters; i++ ) {
+				if ((toshift[(no2char[i])/LexConstants.BITS]&(1<<((no2char[i])%LexConstants.BITS)))!=0) {
+					int l, sym = no2char[i];
+
+					nnext = 0;
+					// create new state
+					for( int p = 0; cset[p] >= 0; p++ ) {
+						l = lsym[cset[p]];
+
+						if( (l&LexConstants.MASK) == LexConstants.ANY ) {
+							if( sym != '\n' ) 
+								next[nnext++] = cset[p] + 1;
+						} else if( (l&LexConstants.MASK) == LexConstants.SYM ) {
+							if( sym == (l&0xff) ) 
+								next[nnext++] = cset[p] + 1;
+						} else if( l >= 0 ) {
+							int o = l&~LexConstants.HIGH_STORAGE;
+							if ((setpool[o+(sym)/LexConstants.BITS]&(1<<((sym)%LexConstants.BITS)))!=0) 
+								next[nnext++] = cset[p] + 1;
+						}
+					}
+
+					// closure
+					next[nnext] = -1;
+					nnext = closure(next);
+
+					// save new state
+					for( l = e = 0; e < nnext; e++ )
+						l += next[e];
+
+					current.change[i] = add_set( next, nnext, l % LexConstants.HASH_SIZE );
+
+					// Have we exceeded the limits?
+					if( current.change[i] == -1 ) {
+						err.error( "lex: lexical analyzer is too big ...\n" );
+						return false;
+					}
+
+				} else { 
+					current.change[i] = (lexnum>=0) ? -2-lnum[lexnum] : -1;
+				}
+			}
+
+			assert current.change[0] < 0;
+
+			// next state
+			current = current.next;
+		}
+
+		first.change[0] = -2;
+
+		return lexemerrors == 0;
 	}
 
 	/**
@@ -375,7 +479,7 @@ public class LexicalBuilder {
 		lnum = new int[nterms];
 		lprio = new int[nterms];
 		group = new int[nterms];
-		lindex = new int[nterms];
+		lindex = new int[nterms+1];
 		llen = new int[nterms];
 		ljmpset = new int[nterms];
 		ljmp = new int[nterms][];
@@ -396,7 +500,7 @@ public class LexicalBuilder {
 				return false;
 			}
 
-			int[] lexem_sym =  rp.compile(l.index, l.name, l.regexp);
+			int[] lexem_sym =  rp.compile(i, l.name, l.regexp);
 
 			lnum[i] = l.index;
 			lprio[i] = l.priority;
@@ -412,6 +516,7 @@ public class LexicalBuilder {
 			syms.add(lexem_sym);
 			nsit += lexem_sym.length;
 		}
+		lindex[nterms] = nsit;
 		lsym = new int[nsit];
 		int e = 0;
 		for( Iterator<int[]> it = syms.iterator(); it.hasNext(); ) {
@@ -427,6 +532,18 @@ public class LexicalBuilder {
 
 		setpool = rp.getSetpool();
 		symbols = rp.getSymbolSet();
+		
+		if( debuglev >= 2 ) {
+			err.debug("\nSymbols:\n\n");
+			for( int i = 0; i < nterms; i++ ) {
+				err.debug(lname[i] + "," +lnum[i]+ ": " );
+				for( e = lindex[i]; e < lindex[i+1]; e++ )
+					err.debug(" " + FormatUtil.asHex(lsym[e], 8));
+					
+				err.debug("\n");
+			}
+		}
+		
 		return true;
 	}
 

@@ -4,6 +4,7 @@ public interface LexConstants {
 	public static final int BITS = 32;
 	public static final int MAX_LEXEMS = 0x100000;
 	public static final int MAX_ENTRIES = 1024;
+	public static final int MAX_WORD = 0x7ff0;
 	public static final int MAX_DEEP = 128;
 	public static final int SIZE_SYM = (((256)+BITS-1)/BITS);
 	public static final int HASH_SIZE = 1023;
