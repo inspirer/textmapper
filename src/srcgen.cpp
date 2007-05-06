@@ -285,18 +285,26 @@ void SourceGenerator::print_action( char *action, int rule, int expand_cpp, int 
 			}
 
 		} else if( *l == '@' ) {
+			int endpos = 0;
 			l++;
 
-			if( *l == '$' )
-				printf( "lapg_gg.pos" ), l++;
+			if( *l == '~' ) {
+				l++;
+				endpos = 1;
+			}
 
-			else if( *l >= '0' && *l <= '9' ) {
+			if( *l == '$' ) {
+				printf( endpos ? "lapg_gg.endpos" : "lapg_gg.pos" );
+				l++;
+
+			} else if( *l >= '0' && *l <= '9' ) {
 
 				for( i = 0; *l >= '0' && *l <= '9'; l++ ) i = i * 10 + (*l - '0');
 
 				if( i >= length )
 					error( 0, "in rule, defined at line %i:\n\telement @%i is absent, skipped\n", gr.rlines[rule], i );
-				else printf( "lapg_m[lapg_head-%i].pos", length-i-1 );
+				else 
+					printf( "lapg_m[lapg_head-%i].%spos", length-i-1, endpos ? "end" : "" );
 			} else
 				error( 0, "in rule, defined at line %i:\n\tthe @ sign is skipped\n", gr.rlines[rule] );
 

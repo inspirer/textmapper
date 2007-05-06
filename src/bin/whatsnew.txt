@@ -8,6 +8,18 @@
 [-] Fixed error
 
 ---------------------------------------------------------------------------
+lapg v1.2.4 build ..
+---------------------------------------------------------------------------
+
+[+] New syntax in rule definition: @~$, @~0, $~1 stand for end position of symbol
+
+[-] Fixed "invalid lexem" loop when lexer states are used (java)
+
+[-] Fixed ArrayOutOfBound in java when stream contains symbols from ascii8
+
+[-] Fixed default java template (lapg -tf -l java)
+
+---------------------------------------------------------------------------
 lapg v1.2.3 build Apr 25 2007
 ---------------------------------------------------------------------------
 
@@ -16,7 +28,7 @@ lapg v1.2.3 build Apr 25 2007
 [+] .breaks "off"  turns off generation of breaks after action in 
 	Java language
 
-[+] Fixed generated enum member names for L-attributes
+[-] Fixed generated enum member names for L-attributes
 
 [-] Fixed syntax error after wrong lexem in C# script
 

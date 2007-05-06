@@ -128,7 +128,7 @@ $#pos2			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
 $#pos3			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
 				if( lapg_size < @maxtoken-1 ) token[lapg_size++] = (byte)chr;
-				lapg_i = lapg_lexem[lapg_i][lapg_char2no[chr]];
+				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
 				if( lapg_i >= -1 && chr != 0 ) { 
 $#pos1					if( chr == '\n' ) lapg_current_line++;
 $#pos2					lapg_current_column++;
@@ -145,6 +145,10 @@ $#pos3			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_offset 
 $}
 
 			if( lapg_i == -1 ) {
+				if( chr == 0 ) {
+					error(@errprefix "Unexpected end of file reached");
+					break;
+				}
 $#pos0				error(@errprefix MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
 $#pos1				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
 $#pos2				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
