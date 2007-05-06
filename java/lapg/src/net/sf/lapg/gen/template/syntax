@@ -1,0 +1,155 @@
+#   Automatically generated grammar
+
+.lang        "java" 
+.getsym      "chr = l < buff.length ? buff[l++] : 0"
+.positioning "offset"
+.class       "Parser"
+.namespace	 "net.sf.lapg.gen.template"
+.breaks		 "on"
+.lexemend    "on"
+
+# Vocabulary
+
+# Identificators
+
+[0]
+
+any:	/[^$]+/
+any:	/$$/
+
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/				{ @ = new String(token,1,lapg_size-1); break; }
+
+'${':	/${/		{ group = @1; break; }
+
+[1]
+
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ @ = new String(token,0,lapg_size); break; }
+
+Lend:		/end/
+Lforeach:	/foreach/
+Lif:		/if/
+Lin:		/in/
+Lnot:		/not/
+
+'}':	/}/			{ group = @0; break; }
+'-':	/-/
+
+_skip:		/#.*/
+_skip:      /[\t\r\n ]+/    \ continue;
+
+
+# Attributes
+
+[]
+
+# Grammar
+
+input ::= 
+	instructions ;
+
+instructions ::=
+	instructions instruction | instruction ;
+
+kill_ends(Boolean) ::= 
+	'-' { $$ = Boolean.TRUE; } 
+	| { $$ = Boolean.FALSE; } ;
+
+instruction ::=
+	  control_instruction
+	| simple_instruction
+	| escid									{ context.acceptVar($escid); }
+	| any									{ context.accept(lexem(@0.offset,@~0.offset)); }
+;
+
+simple_instruction ::=
+	'${' out_sentence kill_ends '}' 		{ if( $kill_ends ) killEndsForBrace(@3.offset); } ;
+
+out_sentence ::=
+	identifier 								{ context.acceptVar($identifier); } 
+;
+
+# control statements
+
+control_instruction ::=
+	control_start_instruction instructions control_end_instruction ;
+
+control_start_instruction (TemplateContext) ::=
+	'${' control_sentence kill_ends '}' 	{ if( $kill_ends ) killEndsForBrace(@3.offset); } ;
+
+control_sentence (TemplateContext) ::=
+	  Lforeach identifier Lin identifier 
+	| Lif Lnotopt identifier
+;
+
+control_end_instruction ::=
+	'${' Lend kill_ends '}' 				{ if( $kill_ends ) killEndsForBrace(@3.offset); } ;
+
+
+##################################################################################
+
+%%
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+%%
+
+private static final boolean DEBUG_SYNTAX = true;
+
+int killEnds = -1;
+TemplateContext context = new TemplateContext(null);
+byte[] buff;
+int l;
+
+private String lexem(int start, int end) {
+	if( killEnds == start ) {
+		while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
+			start++;
+
+		if( start < end && buff[start] == '\r' )
+			start++;
+
+		if( start < end && buff[start] == '\n' )
+			start++;
+	}
+	try {
+		return new String(buff, start, end-start, "utf-8");
+	} catch(UnsupportedEncodingException ex) {
+		return "";
+	}
+}
+
+private void killEndsForBrace(int offset) {
+	killEnds = offset+1;
+}
+
+void error( String s ) {
+	System.err.println(s);
+}
+
+public boolean parse(String s) {
+	l = 0;
+	try {
+		buff = s.getBytes("utf-8");
+	} catch( UnsupportedEncodingException ex ) {
+		return false;
+	}
+	return parse();
+}
+
+public String getResult() {
+	return context.toString();
+}
+
+public static void main(String[] args) {
+	Parser p = new Parser();
+	p.parse(
+		"Okey, here is template\n"+
+		"\n"+
+		"${foreach a in list-}\n"+
+		"inside foreach\n"+
+		"${if aaa}inside if${aaa}${end}Æ\n"+
+		"after if\n"+
+		"${end-}\n"+
+		"after end\n" );
+
+	System.out.println("----\n"+p.getResult());
+}
