@@ -1,0 +1,10 @@
+
+# default template
+#
+
+
+${template my2-}
+
+${this[0].getName()}
+
+${end} 

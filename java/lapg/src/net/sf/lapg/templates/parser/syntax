@@ -1,0 +1,221 @@
+#   Automatically generated grammar
+
+.lang        "java" 
+.getsym      "chr = l < buff.length ? buff[l++] : 0"
+.positioning "offset"
+.class       "Parser"
+.namespace	 "net.sf.lapg.templates.parser"
+.breaks		 "on"
+.lexemend    "on"
+
+# Vocabulary
+
+[0]
+
+any:	/[^$]+/
+any:	/$$/
+
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/		{ @ = new String(token,1,lapg_size-1); break; }
+
+'${':	/${/		{ group = @1; break; }
+
+[1]
+
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ @ = new String(token,0,lapg_size); break; }
+
+icon(Integer):	/[0-9]+/							{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))+'/	{ @ = new String(token,1,lapg_size-2); break; }
+
+Lend:		/end/
+Lfalse:		/false/
+Lforeach:	/foreach/
+Lif:		/if/
+Lin:		/in/
+Lnot:		/not/
+Ltemplate:  /template/
+Ltrue:		/true/
+Lthis:		/this/
+
+'}':		/}/			{ group = @0; break; }
+'-':		/-/
+'[':		/\[/
+']':		/\]/
+'(':		/\(/
+')':		/\)/
+'.':		/\./
+',':		/,/
+
+_skip:      /[\t\r\n ]+/    \ continue;
+
+# Attributes
+
+[]
+
+# Grammar
+
+input ::=
+	templates 
+;
+
+templates ::=
+	templates template_declaration_or_space 
+	| template_declaration_or_space 
+;
+
+template_declaration_or_space ::=
+	template_start instructions template_end		{ $template_start.setInstructions($instructions); templates.add($template_start); }
+	| any
+;
+
+template_start (TemplateNode) ::=
+	'${' Ltemplate identifier skip_spaces '}'		{ $$ = new TemplateNode($identifier); } ;
+
+template_end ::=
+	'${' Lend '}' ;
+
+instructions (ArrayList<Node>) ::=
+	instructions instruction						{ $instructions.add($instruction); }
+	| instruction 									{ $$ = new ArrayList<Node>(); $instructions.add($instruction); }
+;
+
+skip_spaces(Boolean) ::= 
+	'-' { $$ = Boolean.TRUE; } 
+	| { $$ = Boolean.FALSE; } 
+;
+
+instruction (Node) ::=
+	  control_instruction
+	| simple_instruction
+	| escid											{ $$ = new SelectExpressionNode($escid); }
+	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset)); }
+;
+
+simple_instruction ::=
+	'${' sentence skip_spaces '}' 					{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } 
+;
+
+sentence (SelectExpressionNode) ::=
+	select_expression
+;
+
+control_instruction (CompoundNode) ::=
+	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
+;
+
+control_start (CompoundNode) ::=
+	'${' control_sentence skip_spaces '}' 			{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } ;
+
+control_sentence (CompoundNode) ::=
+	  Lforeach identifier Lin select_expression		{ $$ = new ForeachNode($identifier, $select_expression); }
+	| Lif Lnotopt select_expression					{ $$ = new IfNode($select_expression); }
+;
+
+control_end ::=
+	'${' Lend skip_spaces '}'						{ if( $skip_spaces ) skipSpaces(@3.offset); }
+;
+
+select_expression (ExpressionNode) ::=
+  	  identifier									{ $$ = new SelectNode(null, $identifier); }
+  	| Lthis											{ $$ = new ThisNode(); }
+    | select_expression '.' identifier				{ $$ = new SelectNode($select_expression#1, $identifier); }
+    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt); }
+    | select_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($select_expression#1, $identifier, $expression_listopt); }
+    | select_expression '[' index_expression ']'	{ $$ = new IndexNode($select_expression#1, $index_expression); }
+;
+
+index_expression ::=
+	icon | select_expression ;
+
+expression ::=
+	select_expression | literal_expression
+;
+
+literal_expression ::= 
+	  icon 
+	| bcon 
+	| ccon ;
+
+bcon (Boolean) ::= 
+	Ltrue 											{ $$ = Boolean.TRUE; }
+	| Lfalse										{ $$ = Boolean.FALSE; }
+;
+
+expression_list (ArrayList) ::=
+	expression										{ $$ = new ArrayList<Object>(); $expression_list.add($expression); }	
+	| expression_list ',' expression				{ $expression_list.add($expression); }
+;
+
+
+##################################################################################
+
+%%
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+
+import net.sf.lapg.templates.ITemplate;
+import net.sf.lapg.templates.ast.CompoundNode;
+import net.sf.lapg.templates.ast.ExpressionNode;
+import net.sf.lapg.templates.ast.ForeachNode;
+import net.sf.lapg.templates.ast.IfNode;
+import net.sf.lapg.templates.ast.IndexNode;
+import net.sf.lapg.templates.ast.MethodCallNode;
+import net.sf.lapg.templates.ast.Node;
+import net.sf.lapg.templates.ast.SelectExpressionNode;
+import net.sf.lapg.templates.ast.SelectNode;
+import net.sf.lapg.templates.ast.TemplateNode;
+import net.sf.lapg.templates.ast.TextNode;
+import net.sf.lapg.templates.ast.ThisNode;
+%%
+
+private ArrayList<ITemplate> templates;
+
+public Parser() {
+}
+
+private static final boolean DEBUG_SYNTAX = true;
+
+int killEnds = -1;
+byte[] buff;
+int l;
+
+private String rawText(int start, int end) {
+	if( killEnds == start ) {
+		while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
+			start++;
+
+		if( start < end && buff[start] == '\r' )
+			start++;
+
+		if( start < end && buff[start] == '\n' )
+			start++;
+	}
+	try {
+		return new String(buff, start, end-start, "utf-8");
+	} catch(UnsupportedEncodingException ex) {
+		return "";
+	}
+}
+
+private void skipSpaces(int offset) {
+	killEnds = offset+1;
+}
+
+void error( String s ) {
+	System.err.println(s);
+}
+
+public boolean parse(String s) {
+	l = 0;
+	templates = new ArrayList<ITemplate>();
+	try {
+		buff = s.getBytes("utf-8");
+	} catch( UnsupportedEncodingException ex ) {
+		return false;
+	}
+	return parse();
+}
+
+public ITemplate[] getResult() {
+	return templates.toArray(new ITemplate[templates.size()]);
+}
