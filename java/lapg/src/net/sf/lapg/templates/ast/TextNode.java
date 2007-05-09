@@ -1,5 +1,7 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.ExecutionEnvironment;
+
 public class TextNode extends Node {
 	String text;
 
@@ -11,7 +13,7 @@ public class TextNode extends Node {
 		return text;
 	}
 
-	protected void emit(StringBuffer sb, Object context) {
+	protected void emit(StringBuffer sb, Object context, ExecutionEnvironment env) {
 		sb.append(text);
 	}
 }

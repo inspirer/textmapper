@@ -1,31 +1,25 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.ExecutionEnvironment;
+
 
 public class IndexNode extends ExpressionNode {
 
-	ExpressionNode object;
-	Object index;
+	ExpressionNode objectExpr;
+	ExpressionNode indexExpr;
 
-	public IndexNode(ExpressionNode object, Object index) {
-		this.object = object;
-		this.index = index;
+	public IndexNode(ExpressionNode objectExpr, ExpressionNode index) {
+		this.objectExpr = objectExpr;
+		this.indexExpr = index;
 	}
 
-	public Object resolve(Object context) {
-		Object objContext = object.resolve(context);
-		if( objContext == null )
+	public Object resolve(Object context, ExecutionEnvironment env) {
+		Object object = objectExpr.resolve(context, env);
+		if( object == null )
 			return null;
 
-		if( objContext instanceof Object[]) {
-			Object i = index;
-			if( index instanceof ExpressionNode )
-				i = ((ExpressionNode)index).resolve(context);
-			
-			if( i instanceof Integer )
-				return ((Object[])objContext)[(Integer)index];
-			else
-				; // fire error
-		}
-		return null;
+		Object index = indexExpr.resolve(context, env);
+
+		return env.getByIndex(context, index);
 	}
 }

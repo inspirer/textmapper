@@ -2,6 +2,8 @@ package net.sf.lapg.templates.ast;
 
 import java.util.ArrayList;
 
+import net.sf.lapg.templates.ExecutionEnvironment;
+
 public class CompoundNode extends Node {
 
 	protected ArrayList<Node> instructions;
@@ -14,9 +16,9 @@ public class CompoundNode extends Node {
 		this.instructions = instructions;
 	}
 
-	protected void emit(StringBuffer sb, Object context) {
+	protected void emit(StringBuffer sb, Object context, ExecutionEnvironment env) {
 		for( Node n : instructions ) {
-			n.emit(sb, context);
+			n.emit(sb, context, env);
 		}
 	}
 }

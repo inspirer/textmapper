@@ -2,6 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import java.io.PrintStream;
 
+import net.sf.lapg.templates.ExecutionEnvironment;
 import net.sf.lapg.templates.ITemplate;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
@@ -18,7 +19,8 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	public String apply(Object context, PrintStream errors) {
 		// TODO Auto-generated method stub
 		StringBuffer sb = new StringBuffer();
-		emit(sb, context);
+		ExecutionEnvironment env = new ExecutionEnvironment();
+		emit(sb, context, env);
 		return sb.toString();
 	}
 }

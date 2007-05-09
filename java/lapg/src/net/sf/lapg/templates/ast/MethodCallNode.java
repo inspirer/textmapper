@@ -1,52 +1,42 @@
 package net.sf.lapg.templates.ast;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
+
+import net.sf.lapg.templates.ExecutionEnvironment;
 
 public class MethodCallNode extends ExpressionNode {
 	
-	ExpressionNode object;
+	ExpressionNode objectExpr;
 	String methodName;
-	Object[] arguments;
+	ExpressionNode[] arguments;
 	
-	public MethodCallNode(ExpressionNode object, String methodName, List arguments) {
-		this.object = object;
+	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments) {
+		this.objectExpr = objectExpr;
 		this.methodName = methodName;
-		this.arguments = arguments != null && arguments.size() > 0 ? arguments.toArray() : null;
+		this.arguments = arguments != null && arguments.size() > 0 ? (ExpressionNode[]) arguments
+				.toArray(new ExpressionNode[arguments.size()]) : null;
 	}
 
-	public Object resolve(Object context) {
-		if( object != null )
-			context = object.resolve(context);
-		if( context == null )
-			return null;
-		
+	public Object resolve(Object context, ExecutionEnvironment env) {
+		Object object;
+		if( objectExpr != null ) {
+			object = objectExpr.resolve(context, env);
+			if( object == null )
+				return null;
+		} else {
+			object = context;
+		}
+
 		Object[] args = null;
-		Class[] argClasses = null;
 		if( arguments != null ) {
 			args = new Object[arguments.length];
-			argClasses = new Class[arguments.length];
 			for( int i = 0; i < arguments.length; i++ ) {
-				if( arguments[i] instanceof ExpressionNode ) {
-					args[i] = ((ExpressionNode)arguments[i]).resolve(context);
-				} else {
-					args[i] = arguments[i];
-				}
+				args[i] = arguments[i].resolve(context, env);
 				if( args[i] == null )
 					return null;
-				argClasses[i] = args[i].getClass();			
 			}
-			
 		}
-		try {
-			Method meth = context.getClass().getMethod(methodName, argClasses);
-			return meth.invoke(context, args);
-		} catch( NoSuchMethodException ex ) {
-		} catch( IllegalAccessException ex ) {
-		} catch( InvocationTargetException ex ) {
-		}
-		return null;
+		return env.callMethod(object, methodName, args);
 	}
 	
 	

@@ -5,6 +5,8 @@
 
 ${template my2-}
 
-${this[0].getName()}
+${this[0].name.toUpperCase()}
+
+${if this.length == 1} ${this.length} ${end}
 
 ${end} 

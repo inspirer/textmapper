@@ -44,6 +44,14 @@ Lthis:		/this/
 ')':		/\)/
 '.':		/\./
 ',':		/,/
+'&&':		/&&/
+'||':		/\|\|/
+'==':		/==/
+'!=':		/!=/
+'<=':		/<=/
+'>=':		/>=/
+'<':		/</
+'>':		/>/
 
 _skip:      /[\t\r\n ]+/    \ continue;
 
@@ -86,16 +94,16 @@ skip_spaces(Boolean) ::=
 instruction (Node) ::=
 	  control_instruction
 	| simple_instruction
-	| escid											{ $$ = new SelectExpressionNode($escid); }
+	| escid											{ $$ = new SelectNode(null, $escid); }
 	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset)); }
 ;
 
-simple_instruction ::=
+simple_instruction (Node) ::=
 	'${' sentence skip_spaces '}' 					{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } 
 ;
 
-sentence (SelectExpressionNode) ::=
-	select_expression
+sentence (Node) ::=
+	expression
 ;
 
 control_instruction (CompoundNode) ::=
@@ -106,45 +114,60 @@ control_start (CompoundNode) ::=
 	'${' control_sentence skip_spaces '}' 			{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } ;
 
 control_sentence (CompoundNode) ::=
-	  Lforeach identifier Lin select_expression		{ $$ = new ForeachNode($identifier, $select_expression); }
-	| Lif Lnotopt select_expression					{ $$ = new IfNode($select_expression); }
+	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression); }
+	| Lif Lnotopt expression						{ $$ = new IfNode($expression); }
 ;
 
 control_end ::=
 	'${' Lend skip_spaces '}'						{ if( $skip_spaces ) skipSpaces(@3.offset); }
 ;
 
-select_expression (ExpressionNode) ::=
-  	  identifier									{ $$ = new SelectNode(null, $identifier); }
+primary_expression (ExpressionNode) ::=
+  	  identifier									{ $$ = new SelectNode(null, $identifier); } 
+    | '(' expression ')'							{ $$ = $1; }
+	| icon 											{ $$ = new LiteralNode($0); }
+	| bcon                                          { $$ = new LiteralNode($0); }
+	| ccon 											{ $$ = new LiteralNode($0); }
   	| Lthis											{ $$ = new ThisNode(); }
-    | select_expression '.' identifier				{ $$ = new SelectNode($select_expression#1, $identifier); }
     | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt); }
-    | select_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($select_expression#1, $identifier, $expression_listopt); }
-    | select_expression '[' index_expression ']'	{ $$ = new IndexNode($select_expression#1, $index_expression); }
+    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier); }
+    | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt); }
+    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression); }
 ;
-
-index_expression ::=
-	icon | select_expression ;
-
-expression ::=
-	select_expression | literal_expression
-;
-
-literal_expression ::= 
-	  icon 
-	| bcon 
-	| ccon ;
 
 bcon (Boolean) ::= 
 	Ltrue 											{ $$ = Boolean.TRUE; }
 	| Lfalse										{ $$ = Boolean.FALSE; }
 ;
 
-expression_list (ArrayList) ::=
-	expression										{ $$ = new ArrayList<Object>(); $expression_list.add($expression); }	
-	| expression_list ',' expression				{ $expression_list.add($expression); }
+relational_expression (ExpressionNode) ::=
+      primary_expression
+    | relational_expression '<' primary_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $primary_expression); }
+    | relational_expression '>' primary_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $primary_expression); }
+    | relational_expression '<=' primary_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $primary_expression); }
+    | relational_expression '>=' primary_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $primary_expression); }
 ;
 
+equality_expression (ExpressionNode) ::=
+      relational_expression
+    | equality_expression '==' relational_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression, $relational_expression); }
+    | equality_expression '!=' relational_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression, $relational_expression); }
+;
+
+conditional_and_expression (ExpressionNode) ::=
+      equality_expression
+    | conditional_and_expression '&&' equality_expression { $$ = new ConditionalNode(ConditionalNode.AND, $conditional_and_expression, $equality_expression); }
+;
+
+expression (ExpressionNode) ::=
+      conditional_and_expression
+    | expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $expression, $conditional_and_expression); }
+;
+
+expression_list (ArrayList) ::=
+	expression										{ $$ = new ArrayList(); $expression_list.add($expression); }	
+	| expression_list ',' expression				{ $expression_list.add($expression); }
+;
 
 ##################################################################################
 
@@ -155,13 +178,14 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.ITemplate;
 import net.sf.lapg.templates.ast.CompoundNode;
+import net.sf.lapg.templates.ast.ConditionalNode;
 import net.sf.lapg.templates.ast.ExpressionNode;
 import net.sf.lapg.templates.ast.ForeachNode;
 import net.sf.lapg.templates.ast.IfNode;
 import net.sf.lapg.templates.ast.IndexNode;
+import net.sf.lapg.templates.ast.LiteralNode;
 import net.sf.lapg.templates.ast.MethodCallNode;
 import net.sf.lapg.templates.ast.Node;
-import net.sf.lapg.templates.ast.SelectExpressionNode;
 import net.sf.lapg.templates.ast.SelectNode;
 import net.sf.lapg.templates.ast.TemplateNode;
 import net.sf.lapg.templates.ast.TextNode;
