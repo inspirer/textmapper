@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.EvaluationException;
 
 public class SelectNode extends ExpressionNode {
 
@@ -12,10 +13,10 @@ public class SelectNode extends ExpressionNode {
 		this.identifier = identifier;
 	}
 
-	public Object resolve(Object context, ExecutionEnvironment env) {
+	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
-			object = objectExpr.resolve(context, env);
+			object = env.evaluate(objectExpr, context);
 			if( object == null )
 				return null;
 		} else {
@@ -23,5 +24,12 @@ public class SelectNode extends ExpressionNode {
 		}
 
 		return env.getProperty(object, identifier, objectExpr == null);
+	}
+
+	public String toString() {
+		if( objectExpr != null )
+			return objectExpr.toString() + "." + identifier;
+		else
+			return identifier;
 	}
 }

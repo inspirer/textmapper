@@ -24,7 +24,7 @@ escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/		{ @ = new String(token,1,lapg_size-1);
 identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ @ = new String(token,0,lapg_size); break; }
 
 icon(Integer):	/[0-9]+/							{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))+'/	{ @ = new String(token,1,lapg_size-2); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ @ = new String(token,1,lapg_size-2); break; }
 
 Lend:		/end/
 Lfalse:		/false/
@@ -197,7 +197,7 @@ private ArrayList<ITemplate> templates;
 public Parser() {
 }
 
-private static final boolean DEBUG_SYNTAX = true;
+private static final boolean DEBUG_SYNTAX = false;
 
 int killEnds = -1;
 byte[] buff;

@@ -5,10 +5,19 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.lapg.templates.ast.ExpressionNode;
+
 public class ExecutionEnvironment {
 	
-	HashMap<String,Object> vars;
+	HashMap<String,Object> vars = new HashMap<String,Object>();
 
+	public Object getVariable(String id) {
+		return vars.get(id);
+	}
+	
+	public void setVariable(String id, Object value) {
+		vars.put(id, value);
+	}
 	
 	public Object getProperty( Object obj, String id, boolean searchVars ) {
 		if( searchVars ) {
@@ -27,11 +36,13 @@ public class ExecutionEnvironment {
 				Method meth = obj.getClass().getMethod(getAccessor);
 				return meth.invoke(obj);
 			} catch( NoSuchMethodException ex ) {
+				throw new RuntimeException("NoSuchMethodException - " + getAccessor);
 			} catch( IllegalAccessException ex ) {
+				throw new RuntimeException("IllegalAccessException");
 			} catch( InvocationTargetException ex ) {
+				throw new RuntimeException("InvocationTargetException");
 			}
 		}
-		return null;
 	}
 	
 	public Object callMethod( Object obj, String methodName, Object[] args ) {
@@ -46,18 +57,22 @@ public class ExecutionEnvironment {
 			Method meth = obj.getClass().getMethod(methodName, argClasses);
 			return meth.invoke(obj, args);
 		} catch( NoSuchMethodException ex ) {
+			throw new RuntimeException("NoSuchMethodException - " + methodName);
 		} catch( IllegalAccessException ex ) {
+			throw new RuntimeException("IllegalAccessException");
 		} catch( InvocationTargetException ex ) {
+			throw new RuntimeException("InvocationTargetException");
 		}
-		return null;
 	}
 	
 	public Object getByIndex(Object obj, Object index) {
-		if( obj instanceof Object[]) { 
-			if( index instanceof Integer )
-				return ((Object[])obj)[(Integer)index];
-			else
-				; // fire error
+		if( obj instanceof Object[]) {
+			Object[] array = (Object[])obj;
+			if( index instanceof Integer ) { 
+				return array[(Integer)index];
+			} else {
+				throw new RuntimeException("index object should be integer");
+			}
 		}
 		return null;
 	}
@@ -69,5 +84,28 @@ public class ExecutionEnvironment {
 			return ((String)o).length() > 0;
 		}
 		return o != null;
+	}
+	
+	public Object evaluate(ExpressionNode expr, Object context) throws EvaluationException {
+		try {
+			Object result = expr.evaluate(context, this);
+			if( result == null ) {
+				EvaluationException ex = new EvaluationException(expr, context, "null", null);
+				fireError(ex.getMessage());
+				throw ex;
+			}
+			return result;
+		} catch( EvaluationException ex ) {
+			throw ex;
+		} catch( Throwable th ) {
+			Throwable cause = th.getCause() != null ? th.getCause() : th;
+			EvaluationException ex = new EvaluationException(expr, context, cause.getMessage(), cause);
+			fireError(ex.getMessage());
+			throw ex;
+		}
+	}
+	
+	public void fireError(String error) {
+		System.err.println(error);
 	}
 }

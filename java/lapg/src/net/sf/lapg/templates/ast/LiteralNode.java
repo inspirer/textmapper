@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.EvaluationException;
 
 public class LiteralNode extends ExpressionNode {
 	
@@ -10,7 +11,13 @@ public class LiteralNode extends ExpressionNode {
 		this.literal = literal;
 	}
 
-	public Object resolve(Object context, ExecutionEnvironment env) {
+	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
 		return literal;
+	}
+
+	public String toString() {
+		if( literal instanceof String)
+			return "'" + literal.toString() + "'";
+		return literal.toString();
 	}
 }

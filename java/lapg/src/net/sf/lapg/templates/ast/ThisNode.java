@@ -4,7 +4,11 @@ import net.sf.lapg.templates.ExecutionEnvironment;
 
 public class ThisNode extends ExpressionNode {
 
-	public Object resolve(Object context, ExecutionEnvironment env) {
+	public Object evaluate(Object context, ExecutionEnvironment env) {
 		return context;
+	}
+
+	public String toString() {
+		return "this";
 	}
 }

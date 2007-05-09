@@ -7,6 +7,13 @@ ${template my2-}
 
 ${this[0].name.toUpperCase()}
 
-${if this.length == 1} ${this.length} ${end}
+${if this.length == 1 && ('j\'o' || false)} ${this.length} ${end}
 
+${foreach a in this[0]-}
+${index} : ${a.name}
+${end}
+
+${end} 
+
+${template qpm-}
 ${end} 

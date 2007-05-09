@@ -17,7 +17,6 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	}
 
 	public String apply(Object context, PrintStream errors) {
-		// TODO Auto-generated method stub
 		StringBuffer sb = new StringBuffer();
 		ExecutionEnvironment env = new ExecutionEnvironment();
 		emit(sb, context, env);

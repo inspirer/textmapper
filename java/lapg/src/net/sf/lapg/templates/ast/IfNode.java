@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.EvaluationException;
 
 public class IfNode extends CompoundNode {
 	ExpressionNode select;
@@ -14,11 +15,14 @@ public class IfNode extends CompoundNode {
 	}
 
 	protected void emit(StringBuffer sb, Object context, ExecutionEnvironment env) {
-		Object value = select.resolve(context, env);
-		if( env.toBoolean(value) ) {
-			for( Node n : instructions ) {
-				n.emit(sb, context, env);
+		try {
+			if( env.toBoolean(env.evaluate(select, context)) ) {
+				for( Node n : instructions ) {
+					n.emit(sb, context, env);
+				}
 			}
+		} catch( EvaluationException ex ) {
+			/* ignore, skip if */
 		}
 	}
 }

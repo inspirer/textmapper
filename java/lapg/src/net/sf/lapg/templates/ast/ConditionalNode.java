@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.EvaluationException;
 
 public class ConditionalNode extends ExpressionNode {
 	
@@ -13,6 +14,8 @@ public class ConditionalNode extends ExpressionNode {
 	public static final int AND = 7;
 	public static final int OR = 8;
 	
+	private static String[] operators = new String[] { "", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || " };
+	
 	int kind;
 	ExpressionNode leftExpr, rightExpr;
 	
@@ -22,9 +25,9 @@ public class ConditionalNode extends ExpressionNode {
 		this.rightExpr = right;
 	}
 
-	public Object resolve(Object context, ExecutionEnvironment env) {
-		Object right = rightExpr.resolve(context, env);
-		Object left = leftExpr.resolve(context, env);
+	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
+		Object right = env.evaluate(rightExpr, context);
+		Object left = env.evaluate(leftExpr, context);
 
 		switch( kind ) {
 		case EQ:
@@ -49,7 +52,8 @@ public class ConditionalNode extends ExpressionNode {
 			case GT:
 				return l > r;
 			}
-			
+		} else {
+			throw new RuntimeException("relational arguments should be integer");
 		}
 		
 		return null;
@@ -62,5 +66,9 @@ public class ConditionalNode extends ExpressionNode {
 			return false;
 		
 		return a.equals(b);
+	}
+
+	public String toString() {
+		return leftExpr.toString() + operators[kind] + rightExpr.toString();
 	}
 }

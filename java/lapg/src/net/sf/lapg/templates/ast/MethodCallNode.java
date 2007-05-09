@@ -3,6 +3,7 @@ package net.sf.lapg.templates.ast;
 import java.util.List;
 
 import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.EvaluationException;
 
 public class MethodCallNode extends ExpressionNode {
 	
@@ -17,10 +18,10 @@ public class MethodCallNode extends ExpressionNode {
 				.toArray(new ExpressionNode[arguments.size()]) : null;
 	}
 
-	public Object resolve(Object context, ExecutionEnvironment env) {
+	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
-			object = objectExpr.resolve(context, env);
+			object = env.evaluate(objectExpr, context);
 			if( object == null )
 				return null;
 		} else {
@@ -31,13 +32,28 @@ public class MethodCallNode extends ExpressionNode {
 		if( arguments != null ) {
 			args = new Object[arguments.length];
 			for( int i = 0; i < arguments.length; i++ ) {
-				args[i] = arguments[i].resolve(context, env);
+				args[i] = env.evaluate(arguments[i], context);
 				if( args[i] == null )
 					return null;
 			}
 		}
 		return env.callMethod(object, methodName, args);
 	}
-	
-	
+
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if( objectExpr != null ) {
+			sb.append(objectExpr.toString());
+			sb.append('.');
+		}
+		sb.append(methodName);
+		sb.append('(');
+		for( int i = 0; i < arguments.length; i++ ) {
+			if( i > 0)
+				sb.append(",");
+			sb.append(arguments[i].toString());
+		}
+		sb.append(')');
+		return sb.toString();
+	}
 }
