@@ -9,9 +9,11 @@ ${this[0].name.toUpperCase()}
 
 ${if this.length == 1 && ('j\'o' || false)} ${this.length} ${end}
 
-${foreach a in this[0]-}
+${foreach a in this-}
 ${index} : ${a.name}
 ${end}
+
+${call id(1) for this[0]}
 
 ${end} 
 

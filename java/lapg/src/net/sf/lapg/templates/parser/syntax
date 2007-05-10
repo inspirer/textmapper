@@ -26,8 +26,10 @@ identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ @ = new String(token,0,lapg_s
 icon(Integer):	/[0-9]+/							{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
 ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ @ = new String(token,1,lapg_size-2); break; }
 
+Lcall:		/call/
 Lend:		/end/
 Lfalse:		/false/
+Lfor:		/for/
 Lforeach:	/foreach/
 Lif:		/if/
 Lin:		/in/
@@ -103,7 +105,21 @@ simple_instruction (Node) ::=
 ;
 
 sentence (Node) ::=
-	expression
+	  expression
+	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt); }
+;
+
+template_id (String) ::=
+	identifier
+	| template_id '.' identifier					{ $$ = $template_id + "." + $identifier; }
+;
+
+template_for_expr (ExpressionNode) ::=
+	Lfor expression									{ $$ = $1; }
+;
+
+template_arguments (ArrayList) ::=
+	'(' expression_listopt ')'						{ $$ = $1; } 
 ;
 
 control_instruction (CompoundNode) ::=
@@ -177,6 +193,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import net.sf.lapg.templates.ITemplate;
+import net.sf.lapg.templates.ast.CallTemplateNode;
 import net.sf.lapg.templates.ast.CompoundNode;
 import net.sf.lapg.templates.ast.ConditionalNode;
 import net.sf.lapg.templates.ast.ExpressionNode;
