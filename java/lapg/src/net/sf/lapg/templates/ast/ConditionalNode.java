@@ -1,7 +1,7 @@
 package net.sf.lapg.templates.ast;
 
-import net.sf.lapg.templates.ExecutionEnvironment;
-import net.sf.lapg.templates.EvaluationException;
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class ConditionalNode extends ExpressionNode {
 	
@@ -25,9 +25,9 @@ public class ConditionalNode extends ExpressionNode {
 		this.rightExpr = right;
 	}
 
-	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
-		Object right = env.evaluate(rightExpr, context);
-		Object left = env.evaluate(leftExpr, context);
+	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+		Object right = env.evaluate(rightExpr, context, false);
+		Object left = env.evaluate(leftExpr, context, false);
 
 		switch( kind ) {
 		case EQ:

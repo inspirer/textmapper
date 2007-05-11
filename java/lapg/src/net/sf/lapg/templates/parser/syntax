@@ -78,7 +78,18 @@ template_declaration_or_space ::=
 ;
 
 template_start (TemplateNode) ::=
-	'${' Ltemplate identifier skip_spaces '}'		{ $$ = new TemplateNode($identifier); } ;
+	'${' Ltemplate identifier template_parametersopt skip_spaces '}'		
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt); } 
+;
+
+template_parameters (ArrayList) ::=
+	'(' identifier_listopt ')' 						{ $$ = $1; }
+;
+
+identifier_list (ArrayList) ::=
+	  identifier                                    { $$ = new ArrayList(); $identifier_list.add($identifier); }
+	| identifier_list ',' identifier                { $identifier_list.add($identifier); }
+;
 
 template_end ::=
 	'${' Lend '}' ;

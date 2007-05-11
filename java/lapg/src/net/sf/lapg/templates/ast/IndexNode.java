@@ -1,7 +1,7 @@
 package net.sf.lapg.templates.ast;
 
-import net.sf.lapg.templates.ExecutionEnvironment;
-import net.sf.lapg.templates.EvaluationException;
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 
 public class IndexNode extends ExpressionNode {
@@ -14,12 +14,12 @@ public class IndexNode extends ExpressionNode {
 		this.indexExpr = index;
 	}
 
-	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
-		Object object = env.evaluate(objectExpr, context);
+	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+		Object object = env.evaluate(objectExpr, context, false);
 		if( object == null )
 			return null;
 
-		Object index = env.evaluate(indexExpr, context);
+		Object index = env.evaluate(indexExpr, context, false);
 
 		return env.getByIndex(context, index);
 	}

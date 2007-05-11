@@ -5,13 +5,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import net.sf.lapg.templates.api.DefaultEnvironment;
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.parser.Parser;
 
 public class TemplateService {
 
 	private TemplateService() {
 	}
-	
+
+	public static String executeTemplate(ITemplate template, Object context, Object[] arguments) {
+		IEvaluationEnvironment env = new DefaultEnvironment();
+		try {
+			return template.apply(context, env, arguments);
+		} catch( EvaluationException ex ) {
+			env.fireError(ex.getMessage());
+			return "";
+		}
+	}
+
 	public static ITemplate[] loadTemplates(String templates) {
 		Parser p = new Parser();
 		if( !p.parse(templates) )

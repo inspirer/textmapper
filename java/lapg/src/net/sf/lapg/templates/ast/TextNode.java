@@ -1,6 +1,6 @@
 package net.sf.lapg.templates.ast;
 
-import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class TextNode extends Node {
 	String text;
@@ -13,7 +13,7 @@ public class TextNode extends Node {
 		return text;
 	}
 
-	protected void emit(StringBuffer sb, Object context, ExecutionEnvironment env) {
+	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		sb.append(text);
 	}
 }

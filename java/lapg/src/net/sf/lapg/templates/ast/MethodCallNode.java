@@ -2,8 +2,8 @@ package net.sf.lapg.templates.ast;
 
 import java.util.List;
 
-import net.sf.lapg.templates.ExecutionEnvironment;
-import net.sf.lapg.templates.EvaluationException;
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class MethodCallNode extends ExpressionNode {
 	
@@ -18,10 +18,10 @@ public class MethodCallNode extends ExpressionNode {
 				.toArray(new ExpressionNode[arguments.size()]) : null;
 	}
 
-	public Object evaluate(Object context, ExecutionEnvironment env) throws EvaluationException {
+	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
-			object = env.evaluate(objectExpr, context);
+			object = env.evaluate(objectExpr, context, false);
 			if( object == null )
 				return null;
 		} else {
@@ -32,7 +32,7 @@ public class MethodCallNode extends ExpressionNode {
 		if( arguments != null ) {
 			args = new Object[arguments.length];
 			for( int i = 0; i < arguments.length; i++ ) {
-				args[i] = env.evaluate(arguments[i], context);
+				args[i] = env.evaluate(arguments[i], context, false);
 				if( args[i] == null )
 					return null;
 			}

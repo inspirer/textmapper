@@ -2,8 +2,8 @@ package net.sf.lapg.templates.ast;
 
 import java.util.List;
 
-import net.sf.lapg.templates.EvaluationException;
-import net.sf.lapg.templates.ExecutionEnvironment;
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class ForeachNode extends CompoundNode {
 	
@@ -16,9 +16,9 @@ public class ForeachNode extends CompoundNode {
 		this.selectExpr = selectExpr;
 	}
 
-	protected void emit(StringBuffer sb, Object context, ExecutionEnvironment env) {
+	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		try {
-			Object select = env.evaluate(selectExpr, context);
+			Object select = env.evaluate(selectExpr, context, false);
 			Object prevVar = env.getVariable(var);
 			Object prevIndex = env.getVariable(INDEX);
 			int index = 0;

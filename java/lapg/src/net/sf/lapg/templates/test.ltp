@@ -17,5 +17,5 @@ ${call id(1) for this[0]}
 
 ${end} 
 
-${template qpm-}
+${template qpm(a,b)-}
 ${end} 
