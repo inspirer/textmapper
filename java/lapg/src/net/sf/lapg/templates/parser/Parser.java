@@ -6,7 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
-import net.sf.lapg.templates.ITemplate;
+import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.CallTemplateNode;
 import net.sf.lapg.templates.ast.CompoundNode;
 import net.sf.lapg.templates.ast.ConditionalNode;
