@@ -9,10 +9,12 @@ import net.sf.lapg.templates.api.ITemplate;
 public class TemplateNode extends CompoundNode implements ITemplate {
 	private String name;
 	private String[] parameters;
+	private String templatePackage;
 
-	public TemplateNode(String name, List<String> parameters) {
+	public TemplateNode(String name, List<String> parameters, String templatePackage) {
 		this.name = name;
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
+		this.templatePackage = templatePackage;
 	}
 
 	public String getName() {
@@ -60,5 +62,9 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			sb.append(')');
 		}
 		return sb.toString();
+	}
+	
+	public String getPackage() {
+		return templatePackage;
 	}
 }

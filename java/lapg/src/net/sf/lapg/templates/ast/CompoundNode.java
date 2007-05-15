@@ -17,8 +17,10 @@ public class CompoundNode extends Node {
 	}
 
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
-		for( Node n : instructions ) {
-			n.emit(sb, context, env);
+		if (instructions != null) {
+			for (Node n : instructions) {
+				n.emit(sb, context, env);
+			}
 		}
 	}
 }

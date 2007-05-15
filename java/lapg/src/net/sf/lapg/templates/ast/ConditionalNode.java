@@ -59,7 +59,7 @@ public class ConditionalNode extends ExpressionNode {
 		return null;
 	}
 	
-	private static boolean safeEqual(Object a, Object b) {
+	public static boolean safeEqual(Object a, Object b) {
 		if( a == null )
 			return b == null;
 		if( b == null )

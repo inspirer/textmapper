@@ -10,11 +10,13 @@ public class CallTemplateNode extends Node {
 	String identifier;
 	ExpressionNode[] arguments;
 	ExpressionNode selectExpr;
+	String currentPackage;
 
-	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr) {
+	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage) {
 		this.identifier = identifier;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
+		this.currentPackage = currentPackage;
 	}
 	
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
@@ -37,7 +39,8 @@ public class CallTemplateNode extends Node {
 						return;
 				}
 			}
-			sb.append(env.executeTemplate(identifier, callContext, args));
+			String qualifiedName = identifier.indexOf('.') == -1 ? currentPackage + "." + identifier : identifier;
+			sb.append(env.executeTemplate(qualifiedName, callContext, args));
 		} catch(EvaluationException ex) {
 			/* some problems in expressions evaluation, skip call */
 		}			

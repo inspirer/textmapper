@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.api;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -42,6 +43,12 @@ public class DefaultEnvironment implements IEvaluationEnvironment {
 		} else {
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 			try {
+				try {
+					Field f = obj.getClass().getField(id);
+					return f.get(obj);
+				} catch( NoSuchFieldException ex ) {
+				}
+
 				Method meth = obj.getClass().getMethod(getAccessor);
 				return meth.invoke(obj);
 			} catch( NoSuchMethodException ex ) {

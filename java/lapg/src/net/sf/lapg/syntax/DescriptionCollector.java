@@ -1,7 +1,9 @@
 package net.sf.lapg.syntax;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import net.sf.lapg.Grammar;
@@ -200,12 +202,18 @@ class DescriptionCollector implements Syntax {
 		return new Grammar(syms, rules, priorul, nterms, situations, input, eoi, errorn);
 	}
 	
+	HashMap<String,String> options = new HashMap<String,String>();
+	
 	void process_directive( String id, int value, int line, int column ) {
-		// TODO
+		options.put(id, Integer.toString(value));
 	}
 
 	void process_directive( String id, String value, int line, int column ) {
-		// TODO
+		options.put(id, value);
+	}
+	
+	public Map<String, String> getOptions() {
+		return options;
 	}
 
 	public int currentgroups = 1;

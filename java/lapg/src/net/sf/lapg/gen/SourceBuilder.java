@@ -1,8 +1,10 @@
 package net.sf.lapg.gen;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 
 import net.sf.lapg.IError;
 import net.sf.lapg.LexerTables;
@@ -11,6 +13,7 @@ import net.sf.lapg.Syntax;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.syntax.SyntaxUtils;
+import net.sf.lapg.templates.api.TemplateEnvironment;
 
 public class SourceBuilder {
 	
@@ -38,8 +41,9 @@ public class SourceBuilder {
 			if (output != null) {
 				try {
 					PrintStream ps = new PrintStream(output);
-					OutputUtils.printTables(ps, l);
-					OutputUtils.printTables(ps, r);
+//					OutputUtils.printTables(ps, l);
+//					OutputUtils.printTables(ps, r);
+					generateOutput(s,l,r,ps);
 
 				} catch (FileNotFoundException ex) {
 					err.error(ex.getLocalizedMessage());
@@ -53,6 +57,17 @@ public class SourceBuilder {
 				t.printStackTrace(System.err);
 			return false;
 		}
+	}
+	
+	private void generateOutput(Syntax s, LexerTables l, ParserTables r, PrintStream ps) {
+		HashMap<String,Object> map = new HashMap<String, Object>();
+		map.put("syntax", s);
+		map.put("lex", l);
+		map.put("parser", r);
+		map.put("opts", s.getOptions() );
+		
+		TemplateEnvironment env = new TemplateEnvironment(new File[] {new File("C:\\projects\\sf\\lapg_java\\templates")});
+		ps.print(env.executeTemplate("java.main", map, null));
 	}
 	
 	public static TargetLanguage getLanguage(String id) {

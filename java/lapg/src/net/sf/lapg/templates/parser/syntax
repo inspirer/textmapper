@@ -18,6 +18,7 @@ any:	/$$/
 escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/		{ @ = new String(token,1,lapg_size-1); break; }
 
 '${':	/${/		{ group = @1; break; }
+'$/':   /$\//
 
 [1]
 
@@ -27,13 +28,16 @@ icon(Integer):	/[0-9]+/							{ @ = Integer.parseInt(new String(token,0,lapg_siz
 ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ @ = new String(token,1,lapg_size-2); break; }
 
 Lcall:		/call/
+Lcase:		/case/
 Lend:		/end/
+Lelse:		/else/
 Lfalse:		/false/
 Lfor:		/for/
 Lforeach:	/foreach/
 Lif:		/if/
 Lin:		/in/
 Lnot:		/not/
+Lswitch:	/switch/
 Ltemplate:  /template/
 Ltrue:		/true/
 Lthis:		/this/
@@ -79,7 +83,7 @@ template_declaration_or_space ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate identifier template_parametersopt skip_spaces '}'		
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt); } 
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage); } 
 ;
 
 template_parameters (ArrayList) ::=
@@ -106,6 +110,7 @@ skip_spaces(Boolean) ::=
 
 instruction (Node) ::=
 	  control_instruction
+	| switch_instruction
 	| simple_instruction
 	| escid											{ $$ = new SelectNode(null, $escid); }
 	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset)); }
@@ -117,7 +122,7 @@ simple_instruction (Node) ::=
 
 sentence (Node) ::=
 	  expression
-	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt); }
+	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage); }
 ;
 
 template_id (String) ::=
@@ -135,6 +140,27 @@ template_arguments (ArrayList) ::=
 
 control_instruction (CompoundNode) ::=
 	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
+	| control_start instructions else_node instructions control_end 			
+                  									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1); }
+;
+
+else_node (ElseNode) ::=
+	'${' Lelse skip_spaces '}' 						{ if( $skip_spaces ) skipSpaces(@3.offset); }
+;
+
+switch_instruction (CompoundNode) ::=
+	'${' Lswitch expression skip_spaces '}' 		{ if( $skip_spaces ) skipSpaces(@4.offset); }
+	anyopt case_list control_end            		{ $$ = new SwitchNode($expression, $case_list); checkIsSpace(@6.offset,@~6.offset); }
+;
+
+case_list (ArrayList) ::=
+	one_case										{ $$ = new ArrayList(); $case_list.add($one_case); }	
+	| case_list one_case                            { $case_list.add($one_case); }
+	| case_list instruction                         { CaseNode.add($case_list, $instruction); }
+;
+
+one_case (CaseNode) ::=
+	'${' Lcase expression skip_spaces '}' 			{ $$ = new CaseNode($expression); if( $skip_spaces ) skipSpaces(@4.offset); } 
 ;
 
 control_start (CompoundNode) ::=
@@ -147,6 +173,7 @@ control_sentence (CompoundNode) ::=
 
 control_end ::=
 	'${' Lend skip_spaces '}'						{ if( $skip_spaces ) skipSpaces(@3.offset); }
+	| '$/'
 ;
 
 primary_expression (ExpressionNode) ::=
@@ -205,6 +232,7 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.CallTemplateNode;
+import net.sf.lapg.templates.ast.CaseNode;
 import net.sf.lapg.templates.ast.CompoundNode;
 import net.sf.lapg.templates.ast.ConditionalNode;
 import net.sf.lapg.templates.ast.ExpressionNode;
@@ -215,12 +243,14 @@ import net.sf.lapg.templates.ast.LiteralNode;
 import net.sf.lapg.templates.ast.MethodCallNode;
 import net.sf.lapg.templates.ast.Node;
 import net.sf.lapg.templates.ast.SelectNode;
+import net.sf.lapg.templates.ast.SwitchNode;
 import net.sf.lapg.templates.ast.TemplateNode;
 import net.sf.lapg.templates.ast.TextNode;
 import net.sf.lapg.templates.ast.ThisNode;
 %%
 
 private ArrayList<ITemplate> templates;
+private String templatePackage;
 
 public Parser() {
 }
@@ -249,6 +279,20 @@ private String rawText(int start, int end) {
 	}
 }
 
+private void checkIsSpace(int start, int end) {
+	String val = rawText(start,end).trim();
+	if( val.length() > 0 )
+		error("Unknown text ignored: `"+val+"`");
+}
+
+private void applyElse(CompoundNode node, ArrayList<Node> instructions) {
+	if( node instanceof IfNode ) {
+		((IfNode)node).setElseInstructions(instructions);
+	} else {
+		error("Unknown else node, instructions skipped");
+	}
+}
+
 private void skipSpaces(int offset) {
 	killEnds = offset+1;
 }
@@ -257,8 +301,9 @@ void error( String s ) {
 	System.err.println(s);
 }
 
-public boolean parse(String s) {
+public boolean parse(String s, String templatePackage) {
 	l = 0;
+	this.templatePackage = templatePackage;
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.getBytes("utf-8");

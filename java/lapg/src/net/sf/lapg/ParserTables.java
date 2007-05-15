@@ -8,4 +8,8 @@ public class ParserTables {
 	public short[] sym_goto, sym_from, sym_to, action_table;
 	public int[] action_index;
 	public int nactions;
+	
+	public boolean hasError() {
+		return errorn != -1;
+	}
 }
