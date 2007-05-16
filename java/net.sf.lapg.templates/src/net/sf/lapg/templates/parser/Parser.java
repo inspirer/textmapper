@@ -629,7 +629,7 @@ public class Parser {
 							 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); templates.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
 							break;
 						case 7:
-							 lapg_gg.sym = new TemplateNode(((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-2].sym), templatePackage); 
+							 lapg_gg.sym = new TemplateNode(((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-2].sym), templatePackage); if( ((Boolean)lapg_m[lapg_head-1].sym) ) skipSpaces(lapg_m[lapg_head-0].pos.offset); 
 							break;
 						case 10:
 							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 

@@ -83,7 +83,7 @@ template_declaration_or_space ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate identifier template_parametersopt skip_spaces '}'		
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage); } 
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage); if( $skip_spaces ) skipSpaces(@5.offset); } 
 ;
 
 template_parameters (ArrayList) ::=

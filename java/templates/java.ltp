@@ -1,35 +1,40 @@
-
 ${template main-}
 // @target
 
-package @namespace;
+package ${opts.namespace};
 
 @nativecode
 
-public class @classname {
+public class ${opts.class} {
 	@nativecodeall
 
-$${pos
+${if opts.positioning != 'none'}
 	public class lapg_place {
-$$#pos1		public int line;
-$$#pos2		public int line, column;
-$$#pos3		public int line, offset;
+${switch opts.positioning}
+${case 'line'}		public int line;
+${case 'full'}		public int line, column;
+${case 'offset'}		public int line, offset;
+${end-}
 
-$$#pos1		public lapg_place( int line ) {
-$$#pos2		public lapg_place( int line, int column ) {
-$$#pos3		public lapg_place( int line, int offset ) {
+${switch opts.positioning}
+${case 'line'}		public lapg_place( int line ) {
+${case 'full'}		public lapg_place( int line, int column ) {
+${case 'offset'}		public lapg_place( int line, int offset ) {
+${end-}
 			this.line = line;
-$$#pos2			this.column = column;
-$$#pos3			this.offset = offset;
+${switch opts.positioning}
+${case 'full'}			this.column = column;
+${case 'offset'}			this.offset = offset;
+${end-}
 		}
 	};
-$$}
+${end}
 
 	public class lapg_symbol {
 		public Object sym;
 		public int  lexem, state;
-$$#pos		public lapg_place pos;
-$$#lexemend		public lapg_place endpos;
+${if opts.positioning != 'none'}		public lapg_place pos;$/
+${if opts.lexemend == 'on'}		public lapg_place endpos;$/
 	};
 
 	private static final short[] lapg_char2no = new short[] {
@@ -113,48 +118,58 @@ $$}
 		int           lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
 		lapg_symbol[] lapg_m = new lapg_symbol[@maxstack];
 		lapg_symbol   lapg_n;
-$$#pos1		int           lapg_current_line = 1;
-$$#pos2		int           lapg_current_line = 1, lapg_current_column = 1;
-$$#pos3		int           lapg_current_line = 1, lapg_current_offset = 0;
-$$#error		int           lapg_symbols_ok = 4;
+${switch opts.positioning}
+${case 'line'}		int           lapg_current_line = 1;
+${case 'full'}		int           lapg_current_line = 1, lapg_current_column = 1;
+${case 'offset'}		int           lapg_current_line = 1, lapg_current_offset = 0;
+${end-}
+${if parser.hasError()}		int           lapg_symbols_ok = 4;$/
 
 		lapg_m[0] = new lapg_symbol();
 		lapg_m[0].state = 0;
-		@next;
+		${opts.getsym};
 
-$$#error		NEXTTOKEN: 
+${if parser.hasError()}		NEXTTOKEN:$/
 		do {
 			lapg_n = new lapg_symbol();
-$$#pos1			lapg_n.pos = new lapg_place( lapg_current_line );
-$$#pos2			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
-$$#pos3			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
+${switch opts.positioning}
+${case 'line'}			lapg_n.pos = new lapg_place( lapg_current_line );
+${case 'full'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
+${case 'offset'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
+${end-}
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
 				if( lapg_size < @maxtoken-1 ) token[lapg_size++] = (byte)chr;
 				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
 				if( lapg_i >= -1 && chr != 0 ) { 
-$$#pos1					if( chr == '\n' ) lapg_current_line++;
-$$#pos2					lapg_current_column++;
-$$#pos2					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
-$$#pos3					lapg_current_offset++;
-$$#pos3					if( chr == '\n' ) lapg_current_line++;
-					@next;
+${switch opts.positioning}
+${case 'line'}					if( chr == '\n' ) lapg_current_line++;
+${case 'full'}					lapg_current_column++;
+${case 'full'}					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
+${case 'offset'}					lapg_current_offset++;
+${case 'offset'}					if( chr == '\n' ) lapg_current_line++;
+${end-}
+					${opts.getsym};
 				}
 			}
-$${lexemend
-$$#pos1			lapg_n.endpos = new lapg_place( lapg_current_line );
-$$#pos2			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_column );
-$$#pos3			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_offset );
-$$}
+${if opts.lexemend == 'on'-}
+${switch opts.positioning}
+${case 'line'}			lapg_n.endpos = new lapg_place( lapg_current_line );
+${case 'full'}			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_column );
+${case 'offset'}			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_offset );
+${end-}
+${end-}
 
 			if( lapg_i == -1 ) {
 				if( chr == 0 ) {
 					error(@errprefix "Unexpected end of file reached");
 					break;
 				}
-$$#pos0				error(@errprefix MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
-$$#pos1				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
-$$#pos2				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
-$$#pos3				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
+${switch opts.positioning}
+${case 'none'}				error(@errprefix MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
+${case 'line'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
+${case 'full'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
+${case 'offset'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
+${end-}
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -174,7 +189,7 @@ ${end-}
 			}
 ${end-}
 
-$$#error			SKIPNEXTTOKEN: for(;;) {
+${if parser.hasError()}			SKIPNEXTTOKEN: for(;;) {$/
 
 			do {
 				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
@@ -186,14 +201,14 @@ $$#error			SKIPNEXTTOKEN: for(;;) {
 					lapg_gg.state = 0;
 					if( DEBUG_SYNTAX )
 						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
-$$#pos					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
-$$#lexemend					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
+${if opts.positioning != 'none'}					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;$/
+${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
 $${ruleactions
 					switch( lapg_i ) {
 $${eachaction
 						case @rulenum:
 							@ruleaction
-$$#breaks							break;
+${if opts.breaks == 'on'}							break;$/
 $$}
 					}
 $$}
@@ -204,7 +219,7 @@ $$}
 				} else if( lapg_i == -1 ) {
 					lapg_m[++lapg_head] = lapg_n;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-$$#error					lapg_symbols_ok++;
+${if parser.hasError()}					lapg_symbols_ok++;$/
 					if( DEBUG_SYNTAX )
 						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], new String(token,0,lapg_size) ) );
 				}
