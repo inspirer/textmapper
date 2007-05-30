@@ -1,0 +1,23 @@
+${template initialValues-}
+0,
+1,
+2,
+3
+${end}
+
+${template callTempl-}
+
+static int a[] {
+	${call initialValues-}
+};
+
+${end}
+
+
+${template useformat-}
+
+static int a[] {
+	${call initialValues-}
+};
+
+${end}
