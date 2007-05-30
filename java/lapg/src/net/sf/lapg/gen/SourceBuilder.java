@@ -13,6 +13,7 @@ import net.sf.lapg.Syntax;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.syntax.SyntaxUtils;
+import net.sf.lapg.templates.api.FolderTemplateEnvironment;
 import net.sf.lapg.templates.api.TemplateEnvironment;
 
 public class SourceBuilder {
@@ -66,7 +67,7 @@ public class SourceBuilder {
 		map.put("parser", r);
 		map.put("opts", s.getOptions() );
 		
-		TemplateEnvironment env = new TemplateEnvironment(new File[] {new File("C:\\projects\\sf\\lapg_java\\templates")});
+		TemplateEnvironment env = new FolderTemplateEnvironment(new File[] {new File("C:\\projects\\sf\\lapg_java\\templates")});
 		ps.print(env.executeTemplate("java.main", map, null));
 	}
 	

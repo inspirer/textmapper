@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sf.lapg.templates.ast.ExpressionNode;
 
-public class DefaultEnvironment implements IEvaluationEnvironment {
+public class AbstractEnvironment implements IEvaluationEnvironment {
 	
 	HashMap<String,Object> vars = new HashMap<String,Object>();
 

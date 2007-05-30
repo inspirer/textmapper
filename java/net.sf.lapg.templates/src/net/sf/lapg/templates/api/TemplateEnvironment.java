@@ -1,32 +1,20 @@
 package net.sf.lapg.templates.api;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.HashMap;
 
 import net.sf.lapg.templates.parser.Parser;
 
-public class TemplateEnvironment extends DefaultEnvironment {
+public abstract class TemplateEnvironment extends AbstractEnvironment {
 	
-	private File[] myFolders;
 	private HashMap<String,ITemplate> templates;
 
-	public TemplateEnvironment(File[] folders) {
-		this.myFolders = folders;
+	public TemplateEnvironment() {
 		this.templates = new HashMap<String,ITemplate>();
 	}
+
+	protected abstract String getTemplateContainerContents(String name);
 	
-	private File getFile(String name) {
-		for( File f : myFolders ) {
-			File file = new File(f, name);
-			if( file.exists() )
-				return file;
-		}
-		return null;
-	}
+	protected abstract String getContainerName(String templatePackage);
 	
 	private ITemplate getTemplate(String name) {
 		if( templates.containsKey(name) )
@@ -38,16 +26,16 @@ public class TemplateEnvironment extends DefaultEnvironment {
 			return null;
 		}
 		
-		String fname = name.substring(0, lastDot);
-		File f = getFile(fname+".ltp");
-		if( f == null ) {
-			fireError("Couldn't find template file for template `" + name + "`");
+		String templatePackage = name.substring(0, lastDot);
+		String contents = getTemplateContainerContents(getContainerName(templatePackage));
+		if( contents == null ) {
+			fireError("Couldn't load template container for `" + name + "`");
 			return null;
 		}
 
-		ITemplate[] loaded = loadTemplatesFromFile(f.toString(), fname);
+		ITemplate[] loaded = loadTemplates(contents, templatePackage); 
 		if( loaded == null || loaded.length == 0 ) {
-			fireError("Couldn't load templates from file " + f.toString());
+			fireError("Couldn't get templates from " + getContainerName(templatePackage));
 			return null;
 		}
 
@@ -56,11 +44,11 @@ public class TemplateEnvironment extends DefaultEnvironment {
 		for( ITemplate t : loaded ) {
 			if( t.getName().equals(id))
 				result = t;
-			templates.put(fname+"."+t.getName(), t);
+			templates.put(templatePackage+"."+t.getName(), t);
 		}
 		
 		if( result == null ) {
-			fireError("Template `"+id+"` was not found in file `" + f.toString() + "`");
+			fireError("Template `"+id+"` was not found in `" + getContainerName(templatePackage) + "`");
 		}
 		return result;
 	}
@@ -82,32 +70,5 @@ public class TemplateEnvironment extends DefaultEnvironment {
 		if( !p.parse(templates, templatePackage) )
 			return new ITemplate[0];
 		return p.getResult();
-	}
-	
-	private static ITemplate[] loadTemplatesFromFile(String filename, String templatePackage) {
-		String contents = getFileContents(filename);
-		if( contents == null )
-			return null;
-		
-		return loadTemplates(contents, templatePackage);
-	}
-	
-	private static String getFileContents(String file) {
-		StringBuffer contents = new StringBuffer();
-		char[] buffer = new char[2048];
-		int count;
-		try {
-			Reader in = new InputStreamReader(new FileInputStream(file));
-			try {
-				while ((count = in.read(buffer)) > 0) {
-					contents.append(buffer, 0, count);
-				}
-			} finally {
-				in.close();
-			}
-		} catch (IOException ioe) {
-			return null;
-		}
-		return contents.toString();
 	}
 }
