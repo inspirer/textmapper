@@ -71,4 +71,12 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 			return new ITemplate[0];
 		return p.getResult();
 	}
+
+	private IStaticMethods myStaticMethods = null;
+	
+	public IStaticMethods getStaticMethods() {
+		if( myStaticMethods == null)
+			myStaticMethods = new DefaultStaticMethods();
+		return myStaticMethods;
+	}
 }

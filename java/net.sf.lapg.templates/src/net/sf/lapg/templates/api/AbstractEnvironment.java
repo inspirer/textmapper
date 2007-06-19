@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sf.lapg.templates.ast.ExpressionNode;
 
-public class AbstractEnvironment implements IEvaluationEnvironment {
+public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 	
 	HashMap<String,Object> vars = new HashMap<String,Object>();
 
@@ -142,5 +142,9 @@ public class AbstractEnvironment implements IEvaluationEnvironment {
 	 */
 	public void fireError(String error) {
 		System.err.println(error);
+	}
+
+	public IStaticMethods getStaticMethods() {
+		return null;
 	}
 }

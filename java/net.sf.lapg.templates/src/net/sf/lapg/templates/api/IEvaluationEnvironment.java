@@ -16,4 +16,5 @@ public interface IEvaluationEnvironment {
 	public String executeTemplate(String name, Object context, Object[] arguments);
 
 	public void fireError(String error);
+	public IStaticMethods getStaticMethods();
 }

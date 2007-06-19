@@ -36,5 +36,9 @@ public class LoopTest extends TemplateTestCase {
 		// test 1
 		String q = env.executeTemplate("format.callTempl", h, null);
 		Assert.assertEquals("\r\nstatic int a[] {\r\n	0,\r\n1,\r\n2,\r\n3\r\n};\r\n\r\n", q);
+
+		// test 2
+		q = env.executeTemplate("format.useformat", h, null);
+		Assert.assertEquals("\r\nstatic int a[] {\r\n	1,2,aa,4,5,\n6,7,8,9,10,\n11,12,13,14,\n15,16,17,19,\n20,21,22,23,\n24,25\r\n};\r\n\r\n", q);
 	}
 }

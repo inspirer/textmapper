@@ -187,6 +187,7 @@ primary_expression (ExpressionNode) ::=
     | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier); }
     | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt); }
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression); }
+    | '[' expression_listopt ']'					{ $$ = new ListNode($expression_listopt); }
 ;
 
 bcon (Boolean) ::= 
@@ -239,6 +240,7 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 import net.sf.lapg.templates.ast.ForeachNode;
 import net.sf.lapg.templates.ast.IfNode;
 import net.sf.lapg.templates.ast.IndexNode;
+import net.sf.lapg.templates.ast.ListNode;
 import net.sf.lapg.templates.ast.LiteralNode;
 import net.sf.lapg.templates.ast.MethodCallNode;
 import net.sf.lapg.templates.ast.Node;
