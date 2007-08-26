@@ -24,24 +24,28 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	public String apply(Object context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0,
 			argsCount = arguments != null ? arguments.length : 0;
-		
-		if( paramCount != argsCount )
+
+		if( paramCount != argsCount ) {
 			throw new EvaluationException("Wrong number of arguments used while calling `"+toString()+"`: should be " + paramCount + " instead of " + argsCount);
-		
+		}
+
 		StringBuffer sb = new StringBuffer();
 		if( paramCount > 0 ) {
 			int i;
 			Object[] old = new Object[paramCount];
-			for( i = 0; i < paramCount; i++ )
+			for( i = 0; i < paramCount; i++ ) {
 				old[i] = env.getVariable(parameters[i]);
+			}
 			try {
-				for( i = 0; i < paramCount; i++ )
+				for( i = 0; i < paramCount; i++ ) {
 					env.setVariable(parameters[i], arguments[i]);
-				
+				}
+
 				emit(sb, context, env);
 			} finally {
-				for( i = 0; i < paramCount; i++ )
+				for( i = 0; i < paramCount; i++ ) {
 					env.setVariable(parameters[i], old[i]);
+				}
 			}
 		} else {
 			emit(sb, context, env);
@@ -49,21 +53,23 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return sb.toString();
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		if( parameters != null ) {
 			sb.append('(');
 			for( int i = 0; i < parameters.length; i++ ) {
-				if( i > 0 )
+				if( i > 0 ) {
 					sb.append(',');
+				}
 				sb.append(parameters[i]);
 			}
 			sb.append(')');
 		}
 		return sb.toString();
 	}
-	
+
 	public String getPackage() {
 		return templatePackage;
 	}

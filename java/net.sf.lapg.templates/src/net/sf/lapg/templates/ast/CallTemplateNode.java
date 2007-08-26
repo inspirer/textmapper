@@ -24,8 +24,6 @@ public class CallTemplateNode extends Node {
 			Object callContext;
 			if( selectExpr != null ) {
 				callContext = env.evaluate(selectExpr, context, false);
-				if( callContext == null )
-					return;
 			} else {
 				callContext = context;
 			}

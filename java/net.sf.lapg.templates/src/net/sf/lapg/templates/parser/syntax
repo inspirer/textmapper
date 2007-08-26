@@ -43,7 +43,13 @@ Ltrue:		/true/
 Lthis:		/this/
 
 '}':		/}/			{ group = @0; break; }
+'-}':		/-}/		{ group = @0; break; }
+'+':		/+/
 '-':		/-/
+'*':		/*/
+'/':		/\//
+'%':		/%/
+'!':		/!/
 '[':		/\[/
 ']':		/\]/
 '(':		/\(/
@@ -82,8 +88,8 @@ template_declaration_or_space ::=
 ;
 
 template_start (TemplateNode) ::=
-	'${' Ltemplate identifier template_parametersopt skip_spaces '}'		
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage); if( $skip_spaces ) skipSpaces(@5.offset); } 
+	'${' Ltemplate identifier template_parametersopt '[-]}'
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage); }
 ;
 
 template_parameters (ArrayList) ::=
@@ -103,9 +109,9 @@ instructions (ArrayList<Node>) ::=
 	| instruction 									{ $$ = new ArrayList<Node>(); $instructions.add($instruction); }
 ;
 
-skip_spaces(Boolean) ::= 
-	'-' { $$ = Boolean.TRUE; } 
-	| { $$ = Boolean.FALSE; } 
+'[-]}' ::=
+	'-}'											{ skipSpaces(@0.offset+1); }
+	| '}'
 ;
 
 instruction (Node) ::=
@@ -117,7 +123,7 @@ instruction (Node) ::=
 ;
 
 simple_instruction (Node) ::=
-	'${' sentence skip_spaces '}' 					{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } 
+	'${' sentence '[-]}' 							{ $$ = $1; } 
 ;
 
 sentence (Node) ::=
@@ -140,17 +146,17 @@ template_arguments (ArrayList) ::=
 
 control_instruction (CompoundNode) ::=
 	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
-	| control_start instructions else_node instructions control_end 			
+	| control_start instructions else_node instructions control_end
                   									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1); }
 ;
 
 else_node (ElseNode) ::=
-	'${' Lelse skip_spaces '}' 						{ if( $skip_spaces ) skipSpaces(@3.offset); }
+	'${' Lelse '[-]}'
 ;
 
 switch_instruction (CompoundNode) ::=
-	'${' Lswitch expression skip_spaces '}' 		{ if( $skip_spaces ) skipSpaces(@4.offset); }
-	anyopt case_list control_end            		{ $$ = new SwitchNode($expression, $case_list); checkIsSpace(@6.offset,@~6.offset); }
+	'${' Lswitch expression '[-]}' anyopt 
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list); checkIsSpace(@4.offset,@~4.offset); }
 ;
 
 case_list (ArrayList) ::=
@@ -160,11 +166,11 @@ case_list (ArrayList) ::=
 ;
 
 one_case (CaseNode) ::=
-	'${' Lcase expression skip_spaces '}' 			{ $$ = new CaseNode($expression); if( $skip_spaces ) skipSpaces(@4.offset); } 
+	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression); } 
 ;
 
 control_start (CompoundNode) ::=
-	'${' control_sentence skip_spaces '}' 			{ $$ = $1; if( $skip_spaces ) skipSpaces(@3.offset); } ;
+	'${' control_sentence '[-]}' 					{ $$ = $1; } ;
 
 control_sentence (CompoundNode) ::=
 	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression); }
@@ -172,7 +178,7 @@ control_sentence (CompoundNode) ::=
 ;
 
 control_end ::=
-	'${' Lend skip_spaces '}'						{ if( $skip_spaces ) skipSpaces(@3.offset); }
+	'${' Lend '[-]}'
 	| '$/'
 ;
 
@@ -195,12 +201,32 @@ bcon (Boolean) ::=
 	| Lfalse										{ $$ = Boolean.FALSE; }
 ;
 
+unary_expression (ExpressionNode) ::=
+	primary_expression
+	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression#1); }
+	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1); }
+;
+
+mult_expression (ExpressionNode) ::=
+	unary_expression
+	| mult_expression '*' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $mult_expression, $unary_expression); }
+	| mult_expression '/' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $mult_expression, $unary_expression); }
+	| mult_expression '%' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.REM, $mult_expression, $unary_expression); }
+;
+
+additive_expression (ExpressionNode) ::=
+	mult_expression
+	| additive_expression '+' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $additive_expression, $mult_expression); }
+	| additive_expression '-' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $additive_expression, $mult_expression); }
+;
+
+
 relational_expression (ExpressionNode) ::=
-      primary_expression
-    | relational_expression '<' primary_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $primary_expression); }
-    | relational_expression '>' primary_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $primary_expression); }
-    | relational_expression '<=' primary_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $primary_expression); }
-    | relational_expression '>=' primary_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $primary_expression); }
+      additive_expression
+    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $additive_expression); }
+    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $additive_expression); }
+    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $additive_expression); }
+    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $additive_expression); }
 ;
 
 equality_expression (ExpressionNode) ::=
@@ -232,6 +258,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.ast.ArithmeticNode;
 import net.sf.lapg.templates.ast.CallTemplateNode;
 import net.sf.lapg.templates.ast.CaseNode;
 import net.sf.lapg.templates.ast.CompoundNode;
@@ -249,6 +276,7 @@ import net.sf.lapg.templates.ast.SwitchNode;
 import net.sf.lapg.templates.ast.TemplateNode;
 import net.sf.lapg.templates.ast.TextNode;
 import net.sf.lapg.templates.ast.ThisNode;
+import net.sf.lapg.templates.ast.UnaryExpression;
 %%
 
 private ArrayList<ITemplate> templates;

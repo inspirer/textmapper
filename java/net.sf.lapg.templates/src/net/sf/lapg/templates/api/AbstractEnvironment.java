@@ -95,6 +95,8 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			} else {
 				throw new RuntimeException("index object should be integer");
 			}
+		} else if( obj instanceof Map) {
+			return ((Map)obj).get(index);
 		}
 		return null;
 	}

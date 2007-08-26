@@ -17,3 +17,29 @@ $index: $q
 ${end-}
 
 ${end}
+
+${template arithm1-}
+
+${1+1} = 2
+
+${end}
+
+${template arithm2-}
+
+${20-5-5} = 10
+
+${end}
+
+${template arithm3-}
+
+${5-6} = -1
+
+${end}
+
+${template arithm4-}
+${(4+120)/2%30} = 2
+${end}
+
+${template arithm5-}
+${!(1==2)} ${(1==2)} ${(1==1)} ${1==1} ${-1==1} ${-1-1}
+${end}

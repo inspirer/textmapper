@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import java.util.Collection;
 import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationException;
@@ -23,8 +24,8 @@ public class ForeachNode extends CompoundNode {
 			Object prevIndex = env.getVariable(INDEX);
 			int index = 0;
 			try {
-				if( select instanceof List ) {
-					for( Object o : (List)select ) {
+				if( select instanceof Collection ) {
+					for( Object o : (Collection)select ) {
 						env.setVariable(var, o);
 						env.setVariable(INDEX, index++);
 						for( Node n : instructions ) {
@@ -40,7 +41,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or List for " + context.getClass().getCanonicalName());
+					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + context.getClass().getCanonicalName());
 				}
 			} finally {
 				env.setVariable(var, prevVar);

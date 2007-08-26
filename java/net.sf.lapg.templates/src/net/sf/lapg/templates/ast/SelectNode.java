@@ -7,18 +7,17 @@ public class SelectNode extends ExpressionNode {
 
 	ExpressionNode objectExpr;
 	String identifier;
-	
+
 	public SelectNode(ExpressionNode objectExpr, String identifier) {
 		this.objectExpr = objectExpr;
 		this.identifier = identifier;
 	}
 
+	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
-			if( object == null )
-				return null;
 		} else {
 			object = context;
 		}
@@ -26,10 +25,12 @@ public class SelectNode extends ExpressionNode {
 		return env.getProperty(object, identifier, objectExpr == null);
 	}
 
+	@Override
 	public String toString() {
-		if( objectExpr != null )
+		if( objectExpr != null ) {
 			return objectExpr.toString() + "." + identifier;
-		else
+		} else {
 			return identifier;
+		}
 	}
 }

@@ -4,7 +4,7 @@ import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class ConditionalNode extends ExpressionNode {
-	
+
 	public static final int LT = 1;
 	public static final int GT = 2;
 	public static final int LE = 3;
@@ -13,18 +13,20 @@ public class ConditionalNode extends ExpressionNode {
 	public static final int NE = 6;
 	public static final int AND = 7;
 	public static final int OR = 8;
-	
+
 	private static String[] operators = new String[] { "", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || " };
-	
-	int kind;
-	ExpressionNode leftExpr, rightExpr;
-	
+
+	private int kind;
+	private ExpressionNode leftExpr;
+	private ExpressionNode rightExpr;
+
 	public ConditionalNode(int kind, ExpressionNode left, ExpressionNode right) {
 		this.kind = kind;
 		this.leftExpr = left;
 		this.rightExpr = right;
 	}
 
+	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object right = env.evaluate(rightExpr, context, false);
 		Object left = env.evaluate(leftExpr, context, false);
@@ -39,7 +41,7 @@ public class ConditionalNode extends ExpressionNode {
 		case OR:
 			return env.toBoolean(left) || env.toBoolean(right);
 		}
-		
+
 		if( left instanceof Integer && right instanceof Integer ) {
 			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
 			switch( kind ) {
@@ -55,19 +57,22 @@ public class ConditionalNode extends ExpressionNode {
 		} else {
 			throw new RuntimeException("relational arguments should be integer");
 		}
-		
-		return null;
+
+		throw new RuntimeException("internal error: unknown kind");
 	}
-	
+
 	public static boolean safeEqual(Object a, Object b) {
-		if( a == null )
+		if( a == null ) {
 			return b == null;
-		if( b == null )
+		}
+		if( b == null ) {
 			return false;
-		
+		}
+
 		return a.equals(b);
 	}
 
+	@Override
 	public String toString() {
 		return leftExpr.toString() + operators[kind] + rightExpr.toString();
 	}

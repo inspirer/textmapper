@@ -7,11 +7,11 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.api.IStaticMethods;
 
 public class MethodCallNode extends ExpressionNode {
-	
+
 	ExpressionNode objectExpr;
 	String methodName;
 	ExpressionNode[] arguments;
-	
+
 	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments) {
 		this.objectExpr = objectExpr;
 		this.methodName = methodName;
@@ -19,18 +19,18 @@ public class MethodCallNode extends ExpressionNode {
 				.toArray(new ExpressionNode[arguments.size()]) : null;
 	}
 
+	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
-			if( object == null )
-				return null;
 		} else {
 			IStaticMethods staticMethods = env.getStaticMethods();
-			if( staticMethods != null && staticMethods.isSupported(methodName) )
+			if( staticMethods != null && staticMethods.isSupported(methodName) ) {
 				object = staticMethods;
-			else
+			} else {
 				object = context;
+			}
 		}
 
 		Object[] args = null;
@@ -38,13 +38,12 @@ public class MethodCallNode extends ExpressionNode {
 			args = new Object[arguments.length];
 			for( int i = 0; i < arguments.length; i++ ) {
 				args[i] = env.evaluate(arguments[i], context, false);
-				if( args[i] == null )
-					return null;
 			}
 		}
 		return env.callMethod(object, methodName, args);
 	}
 
+	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		if( objectExpr != null ) {
@@ -55,8 +54,9 @@ public class MethodCallNode extends ExpressionNode {
 		sb.append('(');
 		if( arguments != null ) {
 			for( int i = 0; i < arguments.length; i++ ) {
-				if( i > 0)
+				if( i > 0) {
 					sb.append(",");
+				}
 				sb.append(arguments[i].toString());
 			}
 		}

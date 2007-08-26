@@ -16,12 +16,9 @@ public class IndexNode extends ExpressionNode {
 
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object = env.evaluate(objectExpr, context, false);
-		if( object == null )
-			return null;
-
 		Object index = env.evaluate(indexExpr, context, false);
 
-		return env.getByIndex(context, index);
+		return env.getByIndex(object, index);
 	}
 
 	public String toString() {
