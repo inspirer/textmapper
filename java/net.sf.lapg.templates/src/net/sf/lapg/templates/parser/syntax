@@ -64,6 +64,7 @@ Lthis:		/this/
 '>=':		/>=/
 '<':		/</
 '>':		/>/
+':':		/:/
 
 _skip:      /[\t\r\n ]+/    \ continue;
 
@@ -194,6 +195,12 @@ primary_expression (ExpressionNode) ::=
     | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt); }
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression); }
     | '[' expression_listopt ']'					{ $$ = new ListNode($expression_listopt); }
+    | '[' field_list ']'							{ $$ = new ObjectNode($field_list); }
+;
+
+field_list (HashMap) ::=
+	identifier ':' expression						{ $$ = new HashMap(); $field_list.put($identifier, $expression); }
+	| field_list ',' identifier ':' expression		{ $field_list.put($identifier, $expression); }
 ;
 
 bcon (Boolean) ::= 
@@ -246,7 +253,7 @@ expression (ExpressionNode) ::=
 ;
 
 expression_list (ArrayList) ::=
-	expression										{ $$ = new ArrayList(); $expression_list.add($expression); }	
+	expression										{ $$ = new ArrayList(); $expression_list.add($expression); }
 	| expression_list ',' expression				{ $expression_list.add($expression); }
 ;
 
@@ -256,6 +263,7 @@ expression_list (ArrayList) ::=
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.ArithmeticNode;
@@ -271,6 +279,7 @@ import net.sf.lapg.templates.ast.ListNode;
 import net.sf.lapg.templates.ast.LiteralNode;
 import net.sf.lapg.templates.ast.MethodCallNode;
 import net.sf.lapg.templates.ast.Node;
+import net.sf.lapg.templates.ast.ObjectNode;
 import net.sf.lapg.templates.ast.SelectNode;
 import net.sf.lapg.templates.ast.SwitchNode;
 import net.sf.lapg.templates.ast.TemplateNode;

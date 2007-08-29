@@ -64,5 +64,9 @@ public class LoopTest extends TemplateTestCase {
 		// test 5
 		q = env.executeTemplate("loop.arithm5", new Object(), null);
 		Assert.assertEquals("true false true true false -2\r\n", q);
+
+		// test 6
+		q = env.executeTemplate("loop.arithm6", new Object(), null);
+		Assert.assertEquals("uh: lite1\r\noh: okey\r\n", q);
 	}
 }
