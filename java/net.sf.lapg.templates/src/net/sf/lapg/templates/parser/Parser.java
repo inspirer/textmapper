@@ -30,32 +30,29 @@ import net.sf.lapg.templates.ast.ThisNode;
 import net.sf.lapg.templates.ast.UnaryExpression;
 
 public class Parser {
-
+	
 	private ArrayList<ITemplate> templates;
 	private String templatePackage;
-
+	
 	public Parser() {
 	}
-
+	
 	private static final boolean DEBUG_SYNTAX = false;
-
+	
 	int killEnds = -1;
 	byte[] buff;
 	int l;
-
+	
 	private String rawText(int start, int end) {
 		if( killEnds == start ) {
-			while( start < end && (buff[start] == '\t' || buff[start] == ' ') ) {
+			while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
 				start++;
-			}
-
-			if( start < end && buff[start] == '\r' ) {
+	
+			if( start < end && buff[start] == '\r' )
 				start++;
-			}
-
-			if( start < end && buff[start] == '\n' ) {
+	
+			if( start < end && buff[start] == '\n' )
 				start++;
-			}
 		}
 		try {
 			return new String(buff, start, end-start, "utf-8");
@@ -63,14 +60,13 @@ public class Parser {
 			return "";
 		}
 	}
-
+	
 	private void checkIsSpace(int start, int end) {
 		String val = rawText(start,end).trim();
-		if( val.length() > 0 ) {
+		if( val.length() > 0 )
 			error("Unknown text ignored: `"+val+"`");
-		}
 	}
-
+	
 	private void applyElse(CompoundNode node, ArrayList<Node> instructions) {
 		if( node instanceof IfNode ) {
 			((IfNode)node).setElseInstructions(instructions);
@@ -78,15 +74,15 @@ public class Parser {
 			error("Unknown else node, instructions skipped");
 		}
 	}
-
+	
 	private void skipSpaces(int offset) {
 		killEnds = offset+1;
 	}
-
+	
 	void error( String s ) {
 		System.err.println(s);
 	}
-
+	
 	public boolean parse(String s, String templatePackage) {
 		l = 0;
 		this.templatePackage = templatePackage;
@@ -98,7 +94,7 @@ public class Parser {
 		}
 		return parse();
 	}
-
+	
 	public ITemplate[] getResult() {
 		return templates.toArray(new ITemplate[templates.size()]);
 	}
@@ -625,11 +621,8 @@ public class Parser {
 	private static int lapg_next( int state, int symbol ) {
 		int p;
 		if( lapg_action[state] < -2 ) {
-			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 ) {
-				if( lapg_lalr[p] == symbol ) {
-					break;
-				}
-			}
+			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 )
+				if( lapg_lalr[p] == symbol ) break;
 			return lapg_lalr[p+1];
 		}
 		return lapg_action[state];
@@ -642,13 +635,12 @@ public class Parser {
 		while( min <= max ) {
 			e = (min + max) >> 1;
 			i = lapg_sym_from[e];
-			if( i == state ) {
+			if( i == state )
 				return lapg_sym_to[e];
-			} else if( i < state ) {
+			else if( i < state )
 				min = e + 1;
-			} else {
+			else
 				max = e - 1;
-			}
 		}
 		return -1;
 	}
@@ -669,15 +661,11 @@ public class Parser {
 			lapg_n = new lapg_symbol();
 			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
-				if( lapg_size < 1024-1 ) {
-					token[lapg_size++] = (byte)chr;
-				}
+				if( lapg_size < 1024-1 ) token[lapg_size++] = (byte)chr;
 				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
-				if( lapg_i >= -1 && chr != 0 ) {
+				if( lapg_i >= -1 && chr != 0 ) { 
 					lapg_current_offset++;
-					if( chr == '\n' ) {
-						lapg_current_line++;
-					}
+					if( chr == '\n' ) lapg_current_line++;
 					chr = l < buff.length ? buff[l++] : 0;
 				}
 			}
@@ -699,19 +687,19 @@ public class Parser {
 
 			switch( lapg_n.lexem ) {
 				case 2:
-					 lapg_n.sym = new String(token,1,lapg_size-1); break;
+					 lapg_n.sym = new String(token,1,lapg_size-1); break; 
 				case 3:
-					 group = 1; break;
+					 group = 1; break; 
 				case 5:
-					 lapg_n.sym = new String(token,0,lapg_size); break;
+					 lapg_n.sym = new String(token,0,lapg_size); break; 
 				case 6:
-					 lapg_n.sym = Integer.parseInt(new String(token,0,lapg_size)); break;
+					 lapg_n.sym = Integer.parseInt(new String(token,0,lapg_size)); break; 
 				case 7:
-					 lapg_n.sym = new String(token,1,lapg_size-2); break;
+					 lapg_n.sym = new String(token,1,lapg_size-2); break; 
 				case 22:
-					 group = 0; break;
+					 group = 0; break; 
 				case 23:
-					 group = 0; break;
+					 group = 0; break; 
 				case 45:
 					 continue;
 			}
@@ -725,198 +713,195 @@ public class Parser {
 					lapg_gg.sym = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].sym:null;
 					lapg_gg.lexem = lapg_rlex[lapg_i];
 					lapg_gg.state = 0;
-					if( DEBUG_SYNTAX ) {
+					if( DEBUG_SYNTAX )
 						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
-					}
 					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
 						case 3:
-							 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); templates.add(((TemplateNode)lapg_m[lapg_head-2].sym));
+							 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); templates.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
 							break;
 						case 7:
-							 lapg_gg.sym = new TemplateNode(((String)lapg_m[lapg_head-2].sym), ((ArrayList)lapg_m[lapg_head-1].sym), templatePackage);
+							 lapg_gg.sym = new TemplateNode(((String)lapg_m[lapg_head-2].sym), ((ArrayList)lapg_m[lapg_head-1].sym), templatePackage); 
 							break;
 						case 10:
-							 lapg_gg.sym = lapg_m[lapg_head-1].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 
 							break;
 						case 11:
-							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add((lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 12:
-							 ((ArrayList)lapg_gg.sym).add((lapg_m[lapg_head-0].sym));
+							 ((ArrayList)lapg_gg.sym).add(((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 14:
-							 ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym));
+							 ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 15:
-							 lapg_gg.sym = new ArrayList<Node>(); ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArrayList<Node>(); ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 16:
-							 skipSpaces(lapg_m[lapg_head-0].pos.offset+1);
+							 skipSpaces(lapg_m[lapg_head-0].pos.offset+1); 
 							break;
 						case 21:
-							 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 22:
-							 lapg_gg.sym = new TextNode(rawText(lapg_m[lapg_head-0].pos.offset,lapg_m[lapg_head-0].endpos.offset));
+							 lapg_gg.sym = new TextNode(rawText(lapg_m[lapg_head-0].pos.offset,lapg_m[lapg_head-0].endpos.offset)); 
 							break;
 						case 23:
-							 lapg_gg.sym = lapg_m[lapg_head-1].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 
 							break;
 						case 29:
-							 lapg_gg.sym = new CallTemplateNode(((String)lapg_m[lapg_head-2].sym),((ArrayList)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-0].sym),templatePackage);
+							 lapg_gg.sym = new CallTemplateNode(((String)lapg_m[lapg_head-2].sym),((ArrayList)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-0].sym),templatePackage); 
 							break;
 						case 31:
-							 lapg_gg.sym = ((String)lapg_gg.sym) + "." + ((String)lapg_m[lapg_head-0].sym);
+							 lapg_gg.sym = ((String)lapg_gg.sym) + "." + ((String)lapg_m[lapg_head-0].sym); 
 							break;
 						case 32:
-							 lapg_gg.sym = lapg_m[lapg_head-0].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-0].sym; 
 							break;
 						case 35:
-							 lapg_gg.sym = lapg_m[lapg_head-1].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 
 							break;
 						case 36:
-							 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym));
+							 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 37:
-							 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-3].sym)); applyElse(((CompoundNode)lapg_gg.sym),((ArrayList<Node>)lapg_m[lapg_head-1].sym));
+							 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-3].sym)); applyElse(((CompoundNode)lapg_gg.sym),((ArrayList<Node>)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 41:
-							 lapg_gg.sym = new SwitchNode(((ExpressionNode)lapg_m[lapg_head-4].sym), ((ArrayList)lapg_m[lapg_head-1].sym)); checkIsSpace(lapg_m[lapg_head-2].pos.offset,lapg_m[lapg_head-2].endpos.offset);
+							 lapg_gg.sym = new SwitchNode(((ExpressionNode)lapg_m[lapg_head-4].sym), ((ArrayList)lapg_m[lapg_head-1].sym)); checkIsSpace(lapg_m[lapg_head-2].pos.offset,lapg_m[lapg_head-2].endpos.offset); 
 							break;
 						case 42:
-							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add((lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((CaseNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 43:
-							 ((ArrayList)lapg_gg.sym).add(((CaseNode)lapg_m[lapg_head-0].sym));
+							 ((ArrayList)lapg_gg.sym).add(((CaseNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 44:
-							 CaseNode.add(((ArrayList)lapg_gg.sym), ((Node)lapg_m[lapg_head-0].sym));
+							 CaseNode.add(((ArrayList)lapg_gg.sym), ((Node)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 45:
-							 lapg_gg.sym = new CaseNode(((ExpressionNode)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new CaseNode(((ExpressionNode)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 46:
-							 lapg_gg.sym = lapg_m[lapg_head-1].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 
 							break;
 						case 47:
-							 lapg_gg.sym = new ForeachNode(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ForeachNode(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 50:
-							 lapg_gg.sym = new IfNode(((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new IfNode(((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 53:
-							 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 54:
-							 lapg_gg.sym = lapg_m[lapg_head-1].sym;
+							 lapg_gg.sym = lapg_m[lapg_head-1].sym; 
 							break;
 						case 55:
-							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym);
+							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym); 
 							break;
 						case 56:
-							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym);
+							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym); 
 							break;
 						case 57:
-							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym);
+							 lapg_gg.sym = new LiteralNode(lapg_m[lapg_head-0].sym); 
 							break;
 						case 58:
-							 lapg_gg.sym = new ThisNode();
+							 lapg_gg.sym = new ThisNode(); 
 							break;
 						case 59:
-							 lapg_gg.sym = new MethodCallNode(null, ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new MethodCallNode(null, ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 60:
-							 lapg_gg.sym = new SelectNode(((ExpressionNode)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new SelectNode(((ExpressionNode)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 61:
-							 lapg_gg.sym = new MethodCallNode(((ExpressionNode)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new MethodCallNode(((ExpressionNode)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 62:
-							 lapg_gg.sym = new IndexNode(((ExpressionNode)lapg_m[lapg_head-3].sym), ((ExpressionNode)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new IndexNode(((ExpressionNode)lapg_m[lapg_head-3].sym), ((ExpressionNode)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 63:
-							 lapg_gg.sym = new ListNode(((ArrayList)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new ListNode(((ArrayList)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 64:
-							 lapg_gg.sym = new ObjectNode(((HashMap)lapg_m[lapg_head-1].sym));
+							 lapg_gg.sym = new ObjectNode(((HashMap)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 65:
-							 lapg_gg.sym = new HashMap(); ((HashMap)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new HashMap(); ((HashMap)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 66:
-							 ((HashMap)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 ((HashMap)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 67:
-							 lapg_gg.sym = Boolean.TRUE;
+							 lapg_gg.sym = Boolean.TRUE; 
 							break;
 						case 68:
-							 lapg_gg.sym = Boolean.FALSE;
+							 lapg_gg.sym = Boolean.FALSE; 
 							break;
 						case 70:
-							 lapg_gg.sym = new UnaryExpression(UnaryExpression.NOT, ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new UnaryExpression(UnaryExpression.NOT, ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 71:
-							 lapg_gg.sym = new UnaryExpression(UnaryExpression.MINUS, ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new UnaryExpression(UnaryExpression.MINUS, ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 73:
-							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MULT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MULT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 74:
-							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.DIV, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.DIV, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 75:
-							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.REM, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.REM, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 77:
-							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.PLUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.PLUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 78:
-							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MINUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MINUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 80:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.LT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.LT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 81:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.GT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.GT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 82:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.LE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.LE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 83:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.GE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.GE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 85:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 86:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 88:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.AND, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.AND, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 90:
-							 lapg_gg.sym = new ConditionalNode(ConditionalNode.OR, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ConditionalNode(ConditionalNode.OR, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 91:
-							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 92:
-							 ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym));
+							 ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 							break;
 					}
-					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) {
+					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 
 						lapg_m[lapg_head--] = null;
-					}
 					lapg_m[++lapg_head] = lapg_gg;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
 				} else if( lapg_i == -1 ) {
 					lapg_m[++lapg_head] = lapg_n;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-					if( DEBUG_SYNTAX ) {
+					if( DEBUG_SYNTAX )
 						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], new String(token,0,lapg_size) ) );
-					}
 				}
 
 			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
