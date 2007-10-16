@@ -19,7 +19,7 @@ public class TemplateStaticMethods implements IStaticMethods {
 		return supported.contains(name);
 	}
 
-	public static String format(short[] table, int maxwidth, int leftpadding ) {
+	public String format(short[] table, Integer maxwidth, Integer leftpadding ) {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < table.length; i++ ) {
 			if( i > 0 ) {
