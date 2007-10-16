@@ -12,4 +12,14 @@ public class ParserTables {
 	public boolean hasError() {
 		return errorn != -1;
 	}
+
+	public boolean hasActions() {
+		if( raction != null ) {
+			for( int i = 0; i < raction.length; i++ ) {
+				if( raction[i] != null )
+					return true;
+			}
+		}
+		return false;
+	}
 }

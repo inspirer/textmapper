@@ -1,6 +1,5 @@
 package net.sf.lapg.gen;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -13,11 +12,12 @@ import net.sf.lapg.Syntax;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.syntax.SyntaxUtils;
-import net.sf.lapg.templates.api.FolderTemplateEnvironment;
+import net.sf.lapg.templates.api.ClassLoaderTemplateEnvironment;
+import net.sf.lapg.templates.api.IStaticMethods;
 import net.sf.lapg.templates.api.TemplateEnvironment;
 
 public class SourceBuilder {
-	
+
 	private static final TargetLanguage[] allLanguages = new TargetLanguage[] {
 		new TargetLanguage("java", "", "Parser.java")
 	};
@@ -54,27 +54,39 @@ public class SourceBuilder {
 			return true;
 		} catch (Throwable t) {
 			err.error("lapg: internal error: " + t.getClass().getName()+"\n");
-			if( debuglev >= 2)
+			if( debuglev >= 2) {
 				t.printStackTrace(System.err);
+			}
 			return false;
 		}
 	}
-	
+
 	private void generateOutput(Syntax s, LexerTables l, ParserTables r, PrintStream ps) {
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l);
 		map.put("parser", r);
 		map.put("opts", s.getOptions() );
-		
-		TemplateEnvironment env = new FolderTemplateEnvironment(new File[] {new File("C:\\projects\\sf\\lapg_java\\templates")});
+
+		TemplateEnvironment env = new ClassLoaderTemplateEnvironment(getClass().getClassLoader(), "net/sf/lapg/gen/templates") {
+			private IStaticMethods myStaticMethods = null;
+
+			@Override
+			public IStaticMethods getStaticMethods() {
+				if( myStaticMethods == null) {
+					myStaticMethods = new TemplateStaticMethods();
+				}
+				return myStaticMethods;
+			}
+		};
 		ps.print(env.executeTemplate("java.main", map, null));
 	}
-	
+
 	public static TargetLanguage getLanguage(String id) {
 		for( TargetLanguage l : allLanguages ) {
-			if( l.id.equals(id) )
+			if( l.id.equals(id) ) {
 				return l;
+			}
 		}
 		return null;
 	}
