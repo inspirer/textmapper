@@ -1,0 +1,454 @@
+// @target
+
+package CSharpProcessor;
+
+@nativecode
+
+public class parser {
+	@nativecodeall
+
+
+	public class lapg_place {
+		public int line, column;
+
+		public lapg_place( int line, int column ) {
+			this.line = line;
+			this.column = column;
+		}
+	};
+
+
+	public class lapg_symbol {
+		public Object sym;
+		public int  lexem, state;
+		public lapg_place pos;
+		public lapg_place endpos;
+	};
+
+	private static final short[] lapg_char2no = new short[] {
+		@char2no
+	};
+
+	private static final short[][] lapg_lexem = new short[][] {
+		@lexem
+	};
+
+	private static final int[] lapg_action = new int[] {
+		@action
+	};
+
+
+	private static final short[] lapg_lalr = new short[] {
+		
+	};
+
+
+	private static final short[] lapg_sym_goto = new short[] {
+		@sym_goto
+	};
+
+	private static final short[] lapg_sym_from = new short[] {
+		@sym_from
+	};
+
+	private static final short[] lapg_sym_to = new short[] {
+		@sym_to
+	};
+
+	private static final short[] lapg_rlen = new short[] {
+		@rlen
+	};
+
+	private static final short[] lapg_rlex = new short[] {
+		@rlex
+	};
+
+	private static final String[] lapg_syms = new String[] {
+		@syms
+	};
+
+	public enum Tokens {
+		@tokenenum
+	}
+
+	private static int lapg_next( int state, int symbol ) {
+		int p;
+		if( lapg_action[state] < -2 ) {
+			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 )
+				if( lapg_lalr[p] == symbol ) break;
+			return lapg_lalr[p+1];
+		}
+		return lapg_action[state];
+	}
+
+	private static int lapg_state_sym( int state, int symbol ) {
+		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol+1]-1;
+		int i, e;
+
+		while( min <= max ) {
+			e = (min + max) >> 1;
+			i = lapg_sym_from[e];
+			if( i == state )
+				return lapg_sym_to[e];
+			else if( i < state )
+				min = e + 1;
+			else
+				max = e - 1;
+		}
+		return -1;
+	}
+
+	public boolean parse() {
+
+		byte[]        token = new byte[@maxtoken];
+		int           lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
+		lapg_symbol[] lapg_m = new lapg_symbol[@maxstack];
+		lapg_symbol   lapg_n;
+		int           lapg_current_line = 1, lapg_current_column = 1;
+
+
+		lapg_m[0] = new lapg_symbol();
+		lapg_m[0].state = 0;
+		chr = buff[l++];if( l == end ) fillb();
+
+
+		do {
+			lapg_n = new lapg_symbol();
+			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
+			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
+				if( lapg_size < @maxtoken-1 ) token[lapg_size++] = (byte)chr;
+				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
+				if( lapg_i >= -1 && chr != 0 ) { 
+					lapg_current_column++;
+					chr = buff[l++];if( l == end ) fillb();
+				}
+			}
+			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_column );
+
+			if( lapg_i == -1 ) {
+				if( chr == 0 ) {
+					error(@errprefix "Unexpected end of file reached");
+					break;
+				}
+				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
+				lapg_n.lexem = -1;
+				continue;
+			}
+
+			lapg_size--;
+			lapg_n.lexem = -lapg_i-2;
+			lapg_n.sym = null;
+
+			switch( lapg_n.lexem ) {
+				case 130:
+					#line 170 "syntax"
+ continue;
+				case 133:
+					#line 174 "syntax"
+ continue;
+				case 134:
+					#line 176 "syntax"
+ group = @1;continue; 
+				case 135:
+					#line 178 "syntax"
+ continue; 
+				case 137:
+					#line 180 "syntax"
+ group = @0;continue; 
+			}
+
+
+
+			do {
+				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
+
+				if( lapg_i >= 0 ) {
+					lapg_symbol lapg_gg = new lapg_symbol();
+					lapg_gg.sym = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].sym:null;
+					lapg_gg.lexem = lapg_rlex[lapg_i];
+					lapg_gg.state = 0;
+					if( DEBUG_SYNTAX )
+						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
+					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
+					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
+					switch( lapg_i ) {
+						case 24:
+							#line 222 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 25:
+							#line 223 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 26:
+							#line 224 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 27:
+							#line 225 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 28:
+							#line 226 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 29:
+							#line 227 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 30:
+							#line 228 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 33:
+							#line 241 "syntax"
+ $$ = new Node( Kind.Identifier, null, null, null ); break; 
+							break;
+						case 76:
+							#line 325 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 77:
+							#line 326 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 78:
+							#line 327 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 79:
+							#line 328 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 80:
+							#line 329 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 81:
+							#line 330 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 82:
+							#line 331 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 83:
+							#line 332 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 84:
+							#line 333 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 85:
+							#line 334 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 86:
+							#line 335 "syntax"
+ $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; 
+							break;
+						case 87:
+							#line 336 "syntax"
+ $$ = new Node( Kind.TypeDot, null, null, null ); break; 
+							break;
+						case 90:
+							#line 337 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 91:
+							#line 338 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 92:
+							#line 339 "syntax"
+ $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; 
+							break;
+						case 93:
+							#line 340 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 98:
+							#line 344 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 99:
+							#line 345 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 100:
+							#line 349 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 102:
+							#line 354 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 103:
+							#line 355 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 104:
+							#line 356 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 105:
+							#line 357 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 106:
+							#line 358 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 107:
+							#line 359 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 109:
+							#line 365 "syntax"
+$$ = $1;
+// HACK to resolve Cast ambiguity
+if( CastExpr($expression,lapg_n) ) {
+	// perform reduce
+	for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) lapg_m[lapg_head--].sym = null;
+	lapg_m[++lapg_head] = lapg_gg;
+	lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
+	if( lapg_m[lapg_head].state != -1 ) {
+		// shift cast_token (if possible)
+		lapg_gg.lexem = (int)Tokens.cast_token;
+		lapg_gg.sym = null;
+		lapg_gg.state = lapg_state_sym( lapg_m[lapg_head].state, lapg_gg.lexem );
+		lapg_gg.pos = lapg_gg.endpos = lapg_n.pos;
+		if( lapg_gg.state != -1 )
+			lapg_m[++lapg_head] = lapg_gg;
+	}
+	// skip default reduce code
+	continue;
+}
+break;
+							break;
+						case 110:
+							#line 388 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 111:
+							#line 389 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 113:
+							#line 394 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 114:
+							#line 395 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 115:
+							#line 396 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 117:
+							#line 401 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 118:
+							#line 402 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 120:
+							#line 407 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 121:
+							#line 408 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 123:
+							#line 413 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 124:
+							#line 414 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 125:
+							#line 415 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 126:
+							#line 416 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 127:
+							#line 417 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 128:
+							#line 418 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 130:
+							#line 423 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 131:
+							#line 424 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 133:
+							#line 429 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 135:
+							#line 434 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 137:
+							#line 439 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 139:
+							#line 444 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 141:
+							#line 449 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 143:
+							#line 454 "syntax"
+ $$ = new Node(); break; 
+							break;
+						case 144:
+							#line 458 "syntax"
+ $$ = new Node(); break; 
+							break;
+					}
+					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 
+						lapg_m[lapg_head--] = null;
+					lapg_m[++lapg_head] = lapg_gg;
+					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
+				} else if( lapg_i == -1 ) {
+					lapg_m[++lapg_head] = lapg_n;
+					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
+
+					if( DEBUG_SYNTAX )
+						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], new String(token,0,lapg_size) ) );
+				}
+
+			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
+
+			if( (lapg_i == -2 || lapg_m[lapg_head].state == -1) && lapg_n.lexem != 0 ) {
+				break;
+			}
+
+		} while( lapg_n.lexem != 0 );
+
+		if( lapg_m[lapg_head].state != @nstates-1 ) {
+			error(@errprefix MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+			return false;
+		};
+		return true;
+	}
+}
+
