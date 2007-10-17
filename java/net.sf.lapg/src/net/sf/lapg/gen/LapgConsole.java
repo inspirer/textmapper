@@ -9,10 +9,8 @@ import net.sf.lapg.Lapg;
 
 public class LapgConsole {
 
-	private static final String help_message =
+	private static final String HELP_MESSAGE =
 		"lapg - Lexical analyzer and parser generator\n"+
-		"Evgeny Gryaznov, 2002-07, inspirer@inbox.ru\n"+
-		"\n"+
 		"usage: lapg [OPTIONS]... [inputfile [outputfile]]\n"+
 		"\n"+
 		"LALR Generator:\n"+
@@ -21,9 +19,9 @@ public class LapgConsole {
 		"\n"+
 		"Operations:\n"+
 		"  -h,  --help                    display this help\n"+
-		"  -v,  --version                 output version information\n"+
-		"  -tf, --template-from-file      output template for file parsing\n"+
-		"  -ts, --template-from-string    output template for string parsing\n"+
+		"  -v,  --version                 version information\n"+
+		"  -tf, --template-from-file      template for file parsing\n"+
+		"  -ts, --template-from-string    template for string parsing\n"+
 		"  -vb, --verbose                 output generator template\n"+
 		"  -l name, --lang=name           language (for tf/ts/vb), supported: c, c++, cs, js, java\n"+
 		"  -g file, --gen=filename        use generator template\n"+
@@ -31,22 +29,22 @@ public class LapgConsole {
 		"Defaults:\n"+
 		"  inputfile = syntax\n"+
 		"  outputfile = parse.cpp/cs/java/js...\n";
-	
+
 	private static final int ACT_COMPILE = 0;
 	private static final int ACT_HELP = 1;
 	private static final int ACT_VERSION = 2;
 	private static final int ACT_TEMPLATE_FILE = 3;
 	private static final int ACT_TEMPLATE_STRING = 4;
 	private static final int ACT_VERBOSE = 5;
-	
+
 	private static final int DEBUG_AMBIG = 1;
 	private static final int DEBUG_TABLES = 2;
 
+	private int action;
 	private int debug;
 	private String input, output, template;
 	private TargetLanguage lang;
-	private int action;
-	
+
 	public LapgConsole() {
 		debug = 0;
 		action = ACT_COMPILE;
@@ -89,11 +87,12 @@ public class LapgConsole {
 			} else if( (args[i].equals("-l") && i+1 < args.length) || args[i].startsWith("--lang=") ) {
 				String lng;
 
-				if( args[i].startsWith("--") )
+				if( args[i].startsWith("--") ) {
 					lng = args[i].substring(7);
-				else
+				} else {
 					lng = args[++i];
-				
+				}
+
 				lang = SourceBuilder.getLanguage(lng);
 				if( lang == null ) {
 					System.err.println( "lapg: unknown language: " + lng );
@@ -101,22 +100,25 @@ public class LapgConsole {
 				}
 
 			} else if( (args[i].equals("-g") && i+1 < args.length) || args[i].startsWith("--gen=") ) {
-				if( args[i].startsWith("--") )
+				if( args[i].startsWith("--") ) {
 					template = args[i].substring(6);
-				else
+				} else {
 					template = args[++i];
+				}
 
 			} else if( args[i].startsWith("-") && args[i].length() > 1 ) {
 				System.err.println( "lapg: invalid option " + args[i]);
 				System.err.println( "Try 'lapg --help' for more information.");
 				return false;
 
-			} else switch( e++ ){
-				case 0: input = args[i]; break;
-				case 1: output = args[i]; break;
+			} else {
+				switch( e++ ){
+					case 0: input = args[i]; break;
+					case 1: output = args[i]; break;
+				}
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -124,7 +126,7 @@ public class LapgConsole {
 		SourceBuilder p = new SourceBuilder(lang, debug);
 
 		InputStream stream;
-		String sourceName; 
+		String sourceName;
 		if( input != null && !input.startsWith("-") ) {
 			try {
 				stream = new FileInputStream( input );
@@ -143,17 +145,17 @@ public class LapgConsole {
 		new File(ErrorImpl.OUT_TABLES).delete();
 		p.process(sourceName, stream, output);
 	}
-	
+
 	private void showHelp() {
-		System.out.print(help_message);
+		System.out.print(HELP_MESSAGE);
 	}
 
 	private void showVersion() {
-		System.out.print( 
+		System.out.print(
 				"lapg v" + Lapg.VERSION + " build " + Lapg.BUILD + "\n" +
 				"Evgeny Gryaznov, 2002-07, inspirer@inbox.ru\n" );
 	}
-	
+
 	private void showFileTemplate() {
 		//g.TemplateFromFile();
 	}
@@ -161,7 +163,7 @@ public class LapgConsole {
 	private void showStringTemplate() {
 		//g.TemplateFromString();
 	}
-	
+
 	private void showScript() {
 		//g.printScript()
 	}

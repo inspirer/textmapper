@@ -19,7 +19,7 @@ import net.sf.lapg.templates.api.TemplateEnvironment;
 public class SourceBuilder {
 
 	private static final TargetLanguage[] allLanguages = new TargetLanguage[] {
-		new TargetLanguage("java", "", "Parser.java")
+		new TargetLanguage("java", "java.main", "Parser.java")
 	};
 
 	private TargetLanguage myLanguage;
@@ -39,6 +39,10 @@ public class SourceBuilder {
 			ParserTables r = Builder.compile(s.getGrammar(), err, debuglev);
 
 			// temporary
+			if( myLanguage == null ) {
+				myLanguage = getLanguage(s.getOptions().get("lang"));
+			}
+
 			if (output != null) {
 				try {
 					PrintStream ps = new PrintStream(output);
@@ -79,7 +83,7 @@ public class SourceBuilder {
 				return myStaticMethods;
 			}
 		};
-		ps.print(env.executeTemplate("java.main", map, null));
+		ps.print(env.executeTemplate(myLanguage.template, map, null));
 	}
 
 	public static TargetLanguage getLanguage(String id) {
