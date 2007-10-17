@@ -8,7 +8,7 @@ public class ParserTables {
 	public short[] sym_goto, sym_from, sym_to, action_table;
 	public int[] action_index;
 	public int nactions;
-	
+
 	public boolean hasError() {
 		return errorn != -1;
 	}
@@ -16,10 +16,22 @@ public class ParserTables {
 	public boolean hasActions() {
 		if( raction != null ) {
 			for( int i = 0; i < raction.length; i++ ) {
-				if( raction[i] != null )
+				if( raction[i] != null ) {
 					return true;
+				}
 			}
 		}
 		return false;
+	}
+
+	public int[] getRuleLength() {
+		int[] result = new int[rules];
+		for( int i = 0; i < rules; i++ ) {
+			int e = 0;
+			for(; rright[ rindex[i]+e ] >= 0; e++) {
+			}
+			result[i] = e;
+		}
+		return result;
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.sf.lapg.common.FormatUtil;
 import net.sf.lapg.templates.api.IStaticMethods;
 
 public class TemplateStaticMethods implements IStaticMethods {
@@ -11,7 +12,7 @@ public class TemplateStaticMethods implements IStaticMethods {
 
 	private static HashSet<String> getSupported() {
 		HashSet<String> set = new HashSet<String>();
-		Collections.addAll(set, new String[] { "format" });
+		Collections.addAll(set, new String[] { "format", "toIdentifier" });
 		return set;
 	}
 
@@ -76,5 +77,55 @@ public class TemplateStaticMethods implements IStaticMethods {
 			sb.append(",\n");
 		}
 		return sb.toString();
+	}
+
+	public String toIdentifier(String s, Integer number) {
+
+		if( s.startsWith("\'") && s.endsWith("\'")) {
+			StringBuffer res = new StringBuffer();
+			String inner = s.substring(1, s.length()-1);
+			for( int i = 0; i < inner.length(); i++ ) {
+				int c = inner.charAt(i);
+				if( c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' ) {
+					res.append(c);
+				} else {
+					String name;
+					switch( c ) {
+						case '{': name = "LBRACE"; break;
+						case '}': name = "RBRACE"; break;
+						case '[': name = "LBRACKET"; break;
+						case ']': name = "RBRACKET"; break;
+						case '(': name = "LROUNDBRACKET"; break;
+						case ')': name = "RROUNDBRACKET"; break;
+						case '.': name = "DOT"; break;
+						case ',': name = "COMMA"; break;
+						case ':': name = "COLON"; break;
+						case ';': name = "SEMICOLON"; break;
+						case '+': name = "PLUS"; break;
+						case '-': name = "MINUS"; break;
+						case '*': name = "MULT"; break;
+						case '/': name = "DIV"; break;
+						case '%': name = "PERC"; break;
+						case '&': name = "AMP"; break;
+						case '|': name = "OR"; break;
+						case '^': name = "XOR"; break;
+						case '!': name = "EXCL"; break;
+						case '~': name = "TILDE"; break;
+						case '=': name = "EQ"; break;
+						case '<': name = "LESS"; break;
+						case '>': name = "GREATER"; break;
+						case '?': name = "QUESTMARK"; break;
+						default: name = "N" + FormatUtil.asHex(c, 2);break;
+					}
+					res.append(name);
+				}
+			}
+
+			return res.toString();
+		} else if( s.equals("{}") ) {
+			return "_sym" + number;
+		} else {
+			return s;
+		}
 	}
 }

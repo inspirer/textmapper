@@ -68,7 +68,7 @@ ${end}
 	};
 
 	private static final short[] lapg_rlen = new short[] {
-		@rlen
+		${format(parser.ruleLength, 16, 2)}
 	};
 
 	private static final short[] lapg_rlex = new short[] {
@@ -76,11 +76,15 @@ ${end}
 	};
 
 	private static final String[] lapg_syms = new String[] {
-		@syms
+${foreach s in parser.sym-}
+		"${s.name}",
+${end-}
 	};
 
 	public enum Tokens {
-		@tokenenum
+${foreach s in parser.sym-}
+		${toIdentifier(s.name,index)},
+${end-}
 	}
 
 	private static int lapg_next( int state, int symbol ) {
