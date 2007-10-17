@@ -9,7 +9,7 @@ import java.util.Map;
 import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
-	
+
 	HashMap<String,Object> vars = new HashMap<String,Object>();
 
 	/* (non-Javadoc)
@@ -18,22 +18,23 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 	public Object getVariable(String id) {
 		return vars.get(id);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#setVariable(java.lang.String, java.lang.Object)
 	 */
 	public void setVariable(String id, Object value) {
 		vars.put(id, value);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#getProperty(java.lang.Object, java.lang.String, boolean)
 	 */
 	public Object getProperty( Object obj, String id, boolean searchVars ) {
 		if( searchVars ) {
 			Object res = vars.get(id);
-			if( res != null )
+			if( res != null ) {
 				return res;
+			}
 		}
 
 		if( obj instanceof Map) {
@@ -52,7 +53,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 				Method meth = obj.getClass().getMethod(getAccessor);
 				return meth.invoke(obj);
 			} catch( NoSuchMethodException ex ) {
-				throw new RuntimeException("NoSuchMethodException - " + getAccessor);
+				throw new RuntimeException("nomethod: " + ex.toString() );
 			} catch( IllegalAccessException ex ) {
 				throw new RuntimeException("IllegalAccessException");
 			} catch( InvocationTargetException ex ) {
@@ -60,7 +61,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#callMethod(java.lang.Object, java.lang.String, java.lang.Object[])
 	 */
@@ -70,27 +71,27 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			if( args != null ) {
 				argClasses = new Class[args.length];
 				for( int i = 0; i < args.length; i++ ) {
-					argClasses[i] = args[i].getClass();			
-				}				
+					argClasses[i] = args[i].getClass();
+				}
 			}
 			Method meth = obj.getClass().getMethod(methodName, argClasses);
 			return meth.invoke(obj, args);
 		} catch( NoSuchMethodException ex ) {
-			throw new RuntimeException("NoSuchMethodException - " + methodName);
+			throw new RuntimeException("nomethod: " + ex.toString() );
 		} catch( IllegalAccessException ex ) {
 			throw new RuntimeException("IllegalAccessException");
 		} catch( InvocationTargetException ex ) {
 			throw new RuntimeException("InvocationTargetException");
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#getByIndex(java.lang.Object, java.lang.Object)
 	 */
 	public Object getByIndex(Object obj, Object index) {
 		if( obj instanceof Object[]) {
 			Object[] array = (Object[])obj;
-			if( index instanceof Integer ) { 
+			if( index instanceof Integer ) {
 				return array[(Integer)index];
 			} else {
 				throw new RuntimeException("index object should be integer");
@@ -100,7 +101,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		}
 		return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#toBoolean(java.lang.Object)
 	 */
@@ -112,7 +113,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		}
 		return o != null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see net.sf.lapg.templates.IEvaluationEnvironment#evaluate(net.sf.lapg.templates.ast.ExpressionNode, java.lang.Object)
 	 */
