@@ -38,15 +38,15 @@ ${if opts.lexemend == 'on'}		public lapg_place endpos;$/
 	};
 
 	private static final short[] lapg_char2no = new short[] {
-		@char2no
+		${format(lex.char2no, 16, 2)}
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
-		@lexem
+		${format(lex.change, 2, '{', '}')}
 	};
 
 	private static final int[] lapg_action = new int[] {
-		@action
+		${format(parser.action_index, 16, 2)}
 	};
 
 ${if parser.nactions > 0}
