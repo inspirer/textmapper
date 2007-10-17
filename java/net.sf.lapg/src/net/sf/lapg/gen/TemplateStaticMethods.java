@@ -37,4 +37,23 @@ public class TemplateStaticMethods implements IStaticMethods {
 		}
 		return sb.toString();
 	}
+
+	public String format(int[] table, Integer maxwidth, Integer leftpadding ) {
+		StringBuffer sb = new StringBuffer();
+		for( int i = 0; i < table.length; i++ ) {
+			if( i > 0 ) {
+				if( (i%maxwidth) == 0 ) {
+					sb.append("\n");
+					for( int e = 0; e < leftpadding; e++) {
+						sb.append("\t");
+					}
+				} else {
+					sb.append(" ");
+				}
+			}
+			sb.append(table[i]);
+			sb.append(",");
+		}
+		return sb.toString();
+	}
 }
