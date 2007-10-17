@@ -175,6 +175,7 @@ control_start (CompoundNode) ::=
 
 control_sentence (CompoundNode) ::=
 	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression); }
+	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1); }
 	| Lif Lnotopt expression						{ $$ = new IfNode($expression); }
 ;
 
