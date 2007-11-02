@@ -2473,9 +2473,9 @@ public class parser {
 
 	public boolean parse() {
 
-		byte[]        token = new byte[@maxtoken];
+		byte[]        token = new byte[4096];
 		int           lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
-		lapg_symbol[] lapg_m = new lapg_symbol[@maxstack];
+		lapg_symbol[] lapg_m = new lapg_symbol[1024];
 		lapg_symbol   lapg_n;
 		int           lapg_current_line = 1, lapg_current_column = 1;
 
@@ -2489,10 +2489,11 @@ public class parser {
 			lapg_n = new lapg_symbol();
 			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
-				if( lapg_size < @maxtoken-1 ) token[lapg_size++] = (byte)chr;
+				if( lapg_size < 4095 ) token[lapg_size++] = (byte)chr;
 				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
 				if( lapg_i >= -1 && chr != 0 ) { 
 					lapg_current_column++;
+					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
 					chr = buff[l++];if( l == end ) fillb();
 				}
 			}
@@ -2500,10 +2501,10 @@ public class parser {
 
 			if( lapg_i == -1 ) {
 				if( chr == 0 ) {
-					error(@errprefix "Unexpected end of file reached");
+					error( "Unexpected end of file reached");
 					break;
 				}
-				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
+				error( MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -2514,19 +2515,19 @@ public class parser {
 
 			switch( lapg_n.lexem ) {
 				case 130:
-					#line 170 "syntax"
+					#line 169 "syntax"
  continue;
 				case 133:
-					#line 174 "syntax"
+					#line 173 "syntax"
  continue;
 				case 134:
-					#line 176 "syntax"
+					#line 175 "syntax"
  group = @1;continue; 
 				case 135:
-					#line 178 "syntax"
+					#line 177 "syntax"
  continue; 
 				case 137:
-					#line 180 "syntax"
+					#line 179 "syntax"
  group = @0;continue; 
 			}
 
@@ -2546,139 +2547,139 @@ public class parser {
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
 						case 24:
-							#line 222 "syntax"
+							#line 221 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 25:
-							#line 223 "syntax"
+							#line 222 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 26:
-							#line 224 "syntax"
+							#line 223 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 27:
-							#line 225 "syntax"
+							#line 224 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 28:
-							#line 226 "syntax"
+							#line 225 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 29:
-							#line 227 "syntax"
+							#line 226 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 30:
-							#line 228 "syntax"
+							#line 227 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 33:
-							#line 241 "syntax"
+							#line 240 "syntax"
  $$ = new Node( Kind.Identifier, null, null, null ); break; 
 							break;
 						case 76:
-							#line 325 "syntax"
+							#line 324 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 77:
-							#line 326 "syntax"
+							#line 325 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 78:
-							#line 327 "syntax"
+							#line 326 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 79:
-							#line 328 "syntax"
+							#line 327 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 80:
-							#line 329 "syntax"
+							#line 328 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 81:
-							#line 330 "syntax"
+							#line 329 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 82:
-							#line 331 "syntax"
+							#line 330 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 83:
-							#line 332 "syntax"
+							#line 331 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 84:
-							#line 333 "syntax"
+							#line 332 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 85:
-							#line 334 "syntax"
+							#line 333 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 86:
-							#line 335 "syntax"
+							#line 334 "syntax"
  $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; 
 							break;
 						case 87:
-							#line 336 "syntax"
+							#line 335 "syntax"
  $$ = new Node( Kind.TypeDot, null, null, null ); break; 
 							break;
 						case 90:
-							#line 337 "syntax"
+							#line 336 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 91:
-							#line 338 "syntax"
+							#line 337 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 92:
-							#line 339 "syntax"
+							#line 338 "syntax"
  $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; 
 							break;
 						case 93:
-							#line 340 "syntax"
+							#line 339 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 98:
-							#line 344 "syntax"
+							#line 343 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 99:
-							#line 345 "syntax"
+							#line 344 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 100:
-							#line 349 "syntax"
+							#line 348 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 102:
-							#line 354 "syntax"
+							#line 353 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 103:
-							#line 355 "syntax"
+							#line 354 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 104:
-							#line 356 "syntax"
+							#line 355 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 105:
-							#line 357 "syntax"
+							#line 356 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 106:
-							#line 358 "syntax"
+							#line 357 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 107:
-							#line 359 "syntax"
+							#line 358 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 109:
-							#line 365 "syntax"
+							#line 364 "syntax"
 $$ = $1;
 // HACK to resolve Cast ambiguity
 if( CastExpr($expression,lapg_n) ) {
@@ -2701,99 +2702,99 @@ if( CastExpr($expression,lapg_n) ) {
 break;
 							break;
 						case 110:
-							#line 388 "syntax"
+							#line 387 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 111:
-							#line 389 "syntax"
+							#line 388 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 113:
-							#line 394 "syntax"
+							#line 393 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 114:
-							#line 395 "syntax"
+							#line 394 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 115:
-							#line 396 "syntax"
+							#line 395 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 117:
-							#line 401 "syntax"
+							#line 400 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 118:
-							#line 402 "syntax"
+							#line 401 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 120:
-							#line 407 "syntax"
+							#line 406 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 121:
-							#line 408 "syntax"
+							#line 407 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 123:
-							#line 413 "syntax"
+							#line 412 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 124:
-							#line 414 "syntax"
+							#line 413 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 125:
-							#line 415 "syntax"
+							#line 414 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 126:
-							#line 416 "syntax"
+							#line 415 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 127:
-							#line 417 "syntax"
+							#line 416 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 128:
-							#line 418 "syntax"
+							#line 417 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 130:
-							#line 423 "syntax"
+							#line 422 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 131:
-							#line 424 "syntax"
+							#line 423 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 133:
-							#line 429 "syntax"
+							#line 428 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 135:
-							#line 434 "syntax"
+							#line 433 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 137:
-							#line 439 "syntax"
+							#line 438 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 139:
-							#line 444 "syntax"
+							#line 443 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 141:
-							#line 449 "syntax"
+							#line 448 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 143:
-							#line 454 "syntax"
+							#line 453 "syntax"
  $$ = new Node(); break; 
 							break;
 						case 144:
-							#line 458 "syntax"
+							#line 457 "syntax"
  $$ = new Node(); break; 
 							break;
 					}
@@ -2818,7 +2819,7 @@ break;
 		} while( lapg_n.lexem != 0 );
 
 		if( lapg_m[lapg_head].state != @nstates-1 ) {
-			error(@errprefix MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+			error( MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
 			return false;
 		};
 		return true;

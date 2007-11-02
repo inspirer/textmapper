@@ -14,23 +14,24 @@ import net.sf.lapg.Symbol;
 import net.sf.lapg.Syntax;
 
 class DescriptionCollector implements Syntax {
-	
-	public static final int SYM_PLACE_RIGHT = 0;		// symbol from right part of rule, or define attr for sname (see sibling)	 
-	public static final int SYM_PLACE_LEFT = 1;			// symbol from left part of rule 
-	public static final int SYM_PLACE_LATTRIB = 2;		// create new symbol for L-attrib definition 
 
-	public static final int PRIO_UNDEFINED = -1; 
+	public static final int SYM_PLACE_RIGHT = 0;		// symbol from right part of rule, or define attr for sname (see sibling)
+	public static final int SYM_PLACE_LEFT = 1;			// symbol from left part of rule
+	public static final int SYM_PLACE_LATTRIB = 2;		// create new symbol for L-attrib definition
+
+	public static final int PRIO_UNDEFINED = -1;
 
 	Vector<Rule> rules = new Vector<Rule>();
 	Vector<Symbol> syms = new Vector<Symbol>();
 	Vector<Integer> priorul = new Vector<Integer>();
 	int nterms = 0, input = -1, eoi = -1, errorn = -1, situations = 0;
-	
+
 	IError err;
 	int errors = 0;
-	
-	public DescriptionCollector(IError err) {
+
+	public DescriptionCollector(IError err, Map<String,String> options) {
 		this.err = err;
+		this.options = new HashMap<String,String>(options);
 	}
 
 	private Symbol symbol(String name, int symPlace, String type, int sibling) {
@@ -64,8 +65,9 @@ class DescriptionCollector implements Syntax {
 					errors++;
 				} else {
 					existing.defed = true;
-					if (type != null && existing.type == null)
+					if (type != null && existing.type == null) {
 						existing.type = type;
+					}
 				}
 				return existing;
 			case SYM_PLACE_LATTRIB:
@@ -79,8 +81,9 @@ class DescriptionCollector implements Syntax {
 		s.defed = (symPlace != 0);
 		syms.add(s);
 
-		if (symPlace == SYM_PLACE_RIGHT && sibling != -2)
+		if (symPlace == SYM_PLACE_RIGHT && sibling != -2) {
 			s.has_attr = true;
+		}
 
 		if (symPlace == SYM_PLACE_LATTRIB) {
 			assert existing != null;
@@ -108,7 +111,7 @@ class DescriptionCollector implements Syntax {
 		}
 		return s;
 	}
-	
+
 	int nonterm(String name, int symPlace, String type, int sibling) {
 		Symbol s = symbol(name, symPlace, type, sibling);
 		return s.index;
@@ -119,7 +122,7 @@ class DescriptionCollector implements Syntax {
 	}
 
 	int terminal(String name, String type) {
-		
+
 		assert syms.size() == nterms;
 
 		if (name.equals("input")) {
@@ -131,8 +134,9 @@ class DescriptionCollector implements Syntax {
 			s.term = true;
 			nterms = syms.size();
 
-			if (name.equals("error"))
+			if (name.equals("error")) {
 				errorn = s.index;
+			}
 			return s.index;
 		}
 	}
@@ -161,12 +165,14 @@ class DescriptionCollector implements Syntax {
 			}
 		}
 
-		if( length == 0 ) 
+		if( length == 0 ) {
 			syms.get(left).empty = true;
+		}
 
 		int[] right = new int[length+1];
-		for( i = 0; i < length; i++)
+		for( i = 0; i < length; i++) {
 			right[i] = array[i+1];
+		}
 		right[length] = -1-rules.size();
 		Rule r = new Rule(left, defline, priority, action, right);
 		rules.add(r);
@@ -180,14 +186,15 @@ class DescriptionCollector implements Syntax {
 			} else if( s.has_attr ) {
 				if( i == 0 && right[i] != left // we allow left-recursive rules
 				 || i > 0 && s.sibling == -1 && !syms.get(right[i-1]).is_attr
-				 || i > 0 && s.sibling >= 0  && right[i-1] != s.sibling )
+				 || i > 0 && s.sibling >= 0  && right[i-1] != s.sibling ) {
 					err.error("L-attribute for symbol `" + s.name + "' is omitted\n");
+				}
 			}
 		}
 
 		situations += right.length;
 	}
-		
+
 	void addprio(String id, int prio, boolean restofgroup) {
 		if (prio > 0) {
 			Symbol s = symbol(id, 0, null, -2);
@@ -201,9 +208,9 @@ class DescriptionCollector implements Syntax {
 	public Grammar getGrammar() {
 		return new Grammar(syms, rules, priorul, nterms, situations, input, eoi, errorn);
 	}
-	
-	HashMap<String,String> options = new HashMap<String,String>();
-	
+
+	HashMap<String,String> options;
+
 	void process_directive( String id, int value, int line, int column ) {
 		options.put(id, Integer.toString(value));
 	}
@@ -211,14 +218,14 @@ class DescriptionCollector implements Syntax {
 	void process_directive( String id, String value, int line, int column ) {
 		options.put(id, value);
 	}
-	
+
 	public Map<String, String> getOptions() {
 		return options;
 	}
 
 	public int currentgroups = 1;
-	
-	private ArrayList<Lexem> lexems = new ArrayList<Lexem>();	
+
+	private ArrayList<Lexem> lexems = new ArrayList<Lexem>();
 
 	public void lexem( int num, String regexp, String name, String action, Integer priority ) {
 		Lexem l = new Lexem(num, name, regexp, action, priority != null ? priority.intValue() : 0, currentgroups);
@@ -229,5 +236,5 @@ class DescriptionCollector implements Syntax {
 		return lexems.toArray(new Lexem[lexems.size()]);
 	}
 
-	
+
 }

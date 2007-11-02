@@ -8,14 +8,13 @@
 
 # TODO: unsafe code
 
-.maxtoken    4096
+.maxtoken    "4096"
 .getsym      "chr = buff[l++];if( l == end ) fillb()"
 .positioning "full"
 .class       "parser"
 .namespace   "CSharpProcessor"
 .lang        "java"
 .lexemend    "on"
-.breaks      "on"
 
 # Vocabulary
 

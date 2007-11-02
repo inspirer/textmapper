@@ -118,9 +118,9 @@ ${end-}
 
 	public boolean parse() {
 
-		byte[]        token = new byte[@maxtoken];
+		byte[]        token = new byte[${opts.maxtoken}];
 		int           lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
-		lapg_symbol[] lapg_m = new lapg_symbol[@maxstack];
+		lapg_symbol[] lapg_m = new lapg_symbol[${opts.stack}];
 		lapg_symbol   lapg_n;
 ${switch opts.positioning}
 ${case 'line'}		int           lapg_current_line = 1;
@@ -142,15 +142,15 @@ ${case 'full'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_co
 ${case 'offset'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
 ${end-}
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
-				if( lapg_size < @maxtoken-1 ) token[lapg_size++] = (byte)chr;
+				if( lapg_size < ${opts.maxtoken-1} ) token[lapg_size++] = (byte)chr;
 				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
 				if( lapg_i >= -1 && chr != 0 ) { 
 ${switch opts.positioning}
 ${case 'line'}					if( chr == '\n' ) lapg_current_line++;
 ${case 'full'}					lapg_current_column++;
-${case 'full'}					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
+					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
 ${case 'offset'}					lapg_current_offset++;
-${case 'offset'}					if( chr == '\n' ) lapg_current_line++;
+					if( chr == '\n' ) lapg_current_line++;
 ${end-}
 					${opts.getsym};
 				}
@@ -165,14 +165,14 @@ ${end-}
 
 			if( lapg_i == -1 ) {
 				if( chr == 0 ) {
-					error(@errprefix "Unexpected end of file reached");
+					error(${opts.errorprefix} "Unexpected end of file reached");
 					break;
 				}
 ${switch opts.positioning}
-${case 'none'}				error(@errprefix MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
-${case 'line'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
-${case 'full'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
-${case 'offset'}				error(@errprefix MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
+${case 'none'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
+${case 'line'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
+${case 'full'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
+${case 'offset'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
 ${end-}
 				lapg_n.lexem = -1;
 				continue;
@@ -248,10 +248,10 @@ ${if opts.positioning != 'none'-}
 ${end-}
 					if( lapg_symbols_ok >= 4 )
 ${switch opts.positioning}
-${case 'none'}						error(@errprefix "syntax error" );
-${case 'line'}						error(@errprefix MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${case 'full'}						error(@errprefix MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
-${case 'offset'}						error(@errprefix MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'none'}						error(${opts.errorprefix} "syntax error" );
+${case 'line'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'full'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+${case 'offset'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${end}
 					lapg_i = lapg_symbols_ok;
 					lapg_symbols_ok = 0;
@@ -280,10 +280,10 @@ ${else-}
 		if( lapg_m[lapg_head].state != @nstates-1 ) {
 ${end-}
 ${switch opts.positioning}
-${case 'none'}			error(@errprefix "syntax error" );
-${case 'line'}			error(@errprefix MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${case 'full'}			error(@errprefix MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
-${case 'offset'}			error(@errprefix MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'none'}			error(${opts.errorprefix} "syntax error" );
+${case 'line'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'full'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+${case 'offset'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${end-}
 			return false;
 		};

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.Map;
 
 import net.sf.lapg.IError;
 import net.sf.lapg.LexerTables;
@@ -32,9 +33,24 @@ public class SourceBuilder {
 		this.err = new ErrorImpl(debuglev);
 	}
 
+	private Map<String,String> getDefaultOptions() {
+		HashMap<String, String> defaults = new HashMap<String, String>();
+		defaults.put("class","Parser");
+		defaults.put("getsym","?");
+		defaults.put("errorprefix","");
+		defaults.put("breaks","on");
+		defaults.put("namespace","?");
+		defaults.put("lang","java");
+		defaults.put("positioning","line");
+		defaults.put("lexemend","off");
+		defaults.put("maxtoken","2048");
+		defaults.put("stack","1024");
+		return defaults;
+	}
+
 	public boolean process(String sourceName, InputStream input, String output) {
 		try {
-			Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err);
+			Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err, getDefaultOptions());
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), err, debuglev);
 			ParserTables r = Builder.compile(s.getGrammar(), err, debuglev);
 
