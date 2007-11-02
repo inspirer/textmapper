@@ -24,10 +24,17 @@ public class ArithmeticNode extends ExpressionNode {
 		this.rightExpr = right;
 	}
 
+	private Object convertToInteger(Object s) {
+		if( s instanceof String ) {
+			return new Integer((String)s);
+		}
+		return s;
+	}
+
 	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
-		Object right = env.evaluate(rightExpr, context, false);
-		Object left = env.evaluate(leftExpr, context, false);
+		Object right = convertToInteger(env.evaluate(rightExpr, context, false));
+		Object left = convertToInteger(env.evaluate(leftExpr, context, false));
 
 		if( left instanceof Integer && right instanceof Integer ) {
 			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
