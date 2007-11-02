@@ -16,10 +16,7 @@ any:	/[^<]+/
 
 '<':	/</         { group = @1; break; }
 
-comment:   /<%--([^-]|-[^-]|--[^%]|--%[^>])*--%>/
-comment:   /<!--([^-]|-[^-]|--[^>])*-->/
-doctype:   /<![^-][^>]*>/
-taglib:    /<%@([^%]|%[^>])*%>/
+_skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/		\ continue;
 
 [1]
 
@@ -53,10 +50,7 @@ xml_tag_or_space ::=
 	tag_start tag_end								{ checkTag($tag_start,$tag_end,@1.line); }
 	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,@2.line); }
 	| no_body_tag
-	| comment
-    | taglib
-    | doctype
-	| any
+	| any											{ $$ = getData(@0.offset,@~0.offset); }
 ;
 
 tag_name (String) ::=
@@ -65,25 +59,24 @@ tag_name (String) ::=
 ;
 
 tag_start (XmlNode) ::=
-	'<' tag_name argumentsopt '>'		            { $$ = new XmlNode($tag_name, $argumentsopt); }
+	'<' tag_name attributesopt '>'		            { $$ = new XmlNode($tag_name, $attributesopt, @0.line); }
 ;
 
 no_body_tag (XmlNode) ::=
-	'<' tag_name argumentsopt '/' '>'		        { $$ = new XmlNode($tag_name, $argumentsopt); }
+	'<' tag_name attributesopt '/' '>'		        { $$ = new XmlNode($tag_name, $attributesopt, @0.line); }
 ;
 
 tag_end (String) ::=
 	'<' '/' tag_name '>'		                    { $$ = $tag_name; }
 ;
 
-arguments (ArrayList<XmlArgument>) ::=
-	arguments argument								{ $arguments.add($argument); }
-	| argument 										{ $$ = new ArrayList<XmlArgument>(); $arguments.add($argument); }
+attributes (ArrayList<XmlAttribute>) ::=
+	attributes attribute							{ $attributes.add($attribute); }
+	| attribute 									{ $$ = new ArrayList<XmlAttribute>(); $attributes.add($attribute); }
 ;
 
-argument (XmlArgument) ::=
-	identifier '=' ccon								{ $$ = new XmlArgument(); }
-	| identifier									{ $$ = new XmlArgument(); }
+attribute (XmlAttribute) ::=
+	identifier '=' ccon								{ $$ = new XmlAttribute($identifier,$ccon); }
 ;
 
 
@@ -93,9 +86,6 @@ argument (XmlArgument) ::=
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-
-import net.sf.lapg.templates.model.xml.XmlArgument;
-import net.sf.lapg.templates.model.xml.XmlNode;
 %%
 
 public Parser() {
@@ -105,26 +95,11 @@ private static final boolean DEBUG_SYNTAX = false;
 
 private StringBuffer sb;
 
-int killEnds = -1;
 byte[] buff;
 int l;
 
-private String rawText(int start, int end) {
-	if( killEnds == start ) {
-		while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
-			start++;
-
-		if( start < end && buff[start] == '\r' )
-			start++;
-
-		if( start < end && buff[start] == '\n' )
-			start++;
-	}
-	try {
-		return new String(buff, start, end-start, "utf-8");
-	} catch(UnsupportedEncodingException ex) {
-		return "";
-	}
+private XmlData getData(int start, int end) {
+	return new XmlData(buff, start, end-start);
 }
 
 void error( String s ) {
