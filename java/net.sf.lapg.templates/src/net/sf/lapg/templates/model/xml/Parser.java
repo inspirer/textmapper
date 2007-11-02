@@ -5,6 +5,7 @@ package net.sf.lapg.templates.model.xml;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Parser {
 	
@@ -13,7 +14,7 @@ public class Parser {
 	
 	private static final boolean DEBUG_SYNTAX = false;
 	
-	private StringBuffer sb;
+	private List<?> result;
 	
 	byte[] buff;
 	int l;
@@ -26,18 +27,16 @@ public class Parser {
 		System.err.println(s);
 	}
 	
-	public String parse(String s) {
+	public List<?> parse(String s) {
 		l = 0;
-		sb = new StringBuffer();
+		result = null;
 		try {
 			buff = s.getBytes("utf-8");
 		} catch( UnsupportedEncodingException ex ) {
 			return null;
 		}
-		if( parse() )
-			return sb.toString();
-	
-		return null;
+		parse();
+		return result;
 	}
 	
 	private void checkTag(XmlNode node, String endTag, int line) {
@@ -285,11 +284,20 @@ public class Parser {
 					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
+						case 0:
+							 result = ((List<Object>)lapg_m[lapg_head-0].sym); 
+							break;
+						case 1:
+							 ((List<Object>)lapg_gg.sym).add(lapg_m[lapg_head-0].sym); 
+							break;
+						case 2:
+							 lapg_gg.sym = new ArrayList<Object>(); ((List<Object>)lapg_gg.sym).add(lapg_m[lapg_head-0].sym); 
+							break;
 						case 3:
 							 checkTag(((XmlNode)lapg_m[lapg_head-1].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); 
 							break;
 						case 4:
-							 checkTag(((XmlNode)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); 
+							 checkTag(((XmlNode)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); ((XmlNode)lapg_m[lapg_head-2].sym).data = ((List<Object>)lapg_m[lapg_head-1].sym); 
 							break;
 						case 6:
 							 lapg_gg.sym = getData(lapg_m[lapg_head-0].pos.offset,lapg_m[lapg_head-0].endpos.offset); 
@@ -301,19 +309,19 @@ public class Parser {
 							 lapg_gg.sym = ((String)lapg_m[lapg_head-2].sym) + ":" + ((String)lapg_m[lapg_head-0].sym); 
 							break;
 						case 11:
-							 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-2].sym), ((ArrayList<XmlAttribute>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-3].pos.line); 
+							 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-2].sym), ((List<XmlAttribute>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-3].pos.line); 
 							break;
 						case 12:
-							 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-3].sym), ((ArrayList<XmlAttribute>)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-4].pos.line); 
+							 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-3].sym), ((List<XmlAttribute>)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-4].pos.line); 
 							break;
 						case 13:
 							 lapg_gg.sym = ((String)lapg_m[lapg_head-1].sym); 
 							break;
 						case 14:
-							 ((ArrayList<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head-0].sym)); 
+							 ((List<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 15:
-							 lapg_gg.sym = new ArrayList<XmlAttribute>(); ((ArrayList<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head-0].sym)); 
+							 lapg_gg.sym = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 16:
 							 lapg_gg.sym = new XmlAttribute(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym)); 
