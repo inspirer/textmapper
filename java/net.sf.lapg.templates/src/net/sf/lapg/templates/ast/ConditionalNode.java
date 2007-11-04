@@ -56,10 +56,10 @@ public class ConditionalNode extends ExpressionNode {
 				return l > r;
 			}
 		} else {
-			throw new RuntimeException("relational arguments should be integer");
+			throw new EvaluationException("relational arguments should be integer");
 		}
 
-		throw new RuntimeException("internal error: unknown kind");
+		throw new EvaluationException("internal error: unknown kind");
 	}
 
 	public static boolean safeEqual(Object a, Object b) {

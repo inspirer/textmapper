@@ -4,7 +4,7 @@
 .getsym      "chr = l < buff.length ? buff[l++] : 0"
 .positioning "offset"
 .class       "Parser"
-.namespace	 "net.sf.lapg.templates.parser"
+.namespace	 "net.sf.lapg.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
 
@@ -41,6 +41,7 @@ Lswitch:	/switch/
 Ltemplate:  /template/
 Ltrue:		/true/
 Lthis:		/this/
+Lassert:	/assert/
 
 '}':		/}/			{ group = @0; break; }
 '-}':		/-}/		{ group = @0; break; }
@@ -130,6 +131,7 @@ simple_instruction (Node) ::=
 sentence (Node) ::=
 	  expression
 	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage); }
+	| Lassert expression							{ $$ = new AssertNode($expression); }
 ;
 
 template_id (String) ::=
@@ -267,26 +269,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.ast.ArithmeticNode;
-import net.sf.lapg.templates.ast.CallTemplateNode;
-import net.sf.lapg.templates.ast.CaseNode;
-import net.sf.lapg.templates.ast.CompoundNode;
-import net.sf.lapg.templates.ast.ConditionalNode;
-import net.sf.lapg.templates.ast.ExpressionNode;
-import net.sf.lapg.templates.ast.ForeachNode;
-import net.sf.lapg.templates.ast.IfNode;
-import net.sf.lapg.templates.ast.IndexNode;
-import net.sf.lapg.templates.ast.ListNode;
-import net.sf.lapg.templates.ast.LiteralNode;
-import net.sf.lapg.templates.ast.MethodCallNode;
-import net.sf.lapg.templates.ast.Node;
-import net.sf.lapg.templates.ast.ObjectNode;
-import net.sf.lapg.templates.ast.SelectNode;
-import net.sf.lapg.templates.ast.SwitchNode;
-import net.sf.lapg.templates.ast.TemplateNode;
-import net.sf.lapg.templates.ast.TextNode;
-import net.sf.lapg.templates.ast.ThisNode;
-import net.sf.lapg.templates.ast.UnaryExpression;
 %%
 
 private ArrayList<ITemplate> templates;

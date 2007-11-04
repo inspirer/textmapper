@@ -51,7 +51,7 @@ public class ArithmeticNode extends ExpressionNode {
 				return new Integer(l%r);
 			}
 		} else {
-			throw new RuntimeException("arithmetic arguments should be integer");
+			throw new EvaluationException("arithmetic arguments should be integer");
 		}
 
 		return null;

@@ -3,7 +3,6 @@ package net.sf.lapg.templates.test.cases;
 import java.util.Hashtable;
 
 import junit.framework.Assert;
-
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.test.TemplateTestCase;
 
@@ -68,5 +67,18 @@ public class LoopTest extends TemplateTestCase {
 		// test 6
 		q = env.executeTemplate("loop.arithm6", new Object(), null);
 		Assert.assertEquals("uh: lite1\r\noh: okey\r\n", q);
+	}
+
+	public void testAssert() {
+		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
+		h.put("list", new String[] { "w1", "w2" });
+		TestEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+
+		// test 1
+		env.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
+		env.addErrors("Assertion `list.length > 5` failed for java.util.Hashtable");
+		env.addErrors("Assertion `list[1] == 'w4'` failed for java.util.Hashtable");
+		String q = env.executeTemplate("format.assertit", h, null);
+		env.assertEmptyErrors();
 	}
 }

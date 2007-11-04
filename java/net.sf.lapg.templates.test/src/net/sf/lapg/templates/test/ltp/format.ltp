@@ -21,3 +21,12 @@ static int a[] {
 };
 
 ${end}
+
+${template assertit-}
+${assert list.length == 2-}
+${assert l == 'a'-}
+${assert list.length > 5-}
+${assert list[0] == 'w1'-}
+${assert list[1] == 'w4'-}
+${assert list[1] == 'w2'-}
+${end}

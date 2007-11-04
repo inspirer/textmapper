@@ -31,11 +31,11 @@ public class UnaryExpression extends ExpressionNode {
 			if( value instanceof Integer ) {
 				return -((Integer)value).intValue();
 			} else {
-				throw new RuntimeException("unary minus expression should be Integer");
+				throw new EvaluationException("unary minus expression should be Integer");
 			}
 		}
 
-		throw new RuntimeException("internal error: unknown kind");
+		throw new EvaluationException("internal error: unknown kind");
 	}
 
 	@Override

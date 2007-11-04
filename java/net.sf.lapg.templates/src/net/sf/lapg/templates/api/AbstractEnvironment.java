@@ -20,7 +20,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		vars.put(id, value);
 	}
 
-	public Object getProperty( Object obj, String id, boolean searchVars ) {
+	public Object getProperty( Object obj, String id, boolean searchVars ) throws EvaluationException {
 		if( searchVars ) {
 			Object res = vars.get(id);
 			if( res != null ) {
@@ -44,16 +44,16 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 				Method meth = obj.getClass().getMethod(getAccessor);
 				return meth.invoke(obj);
 			} catch( NoSuchMethodException ex ) {
-				throw new RuntimeException("nomethod: " + ex.toString() );
+				throw new EvaluationException("nomethod: " + ex.toString() );
 			} catch( IllegalAccessException ex ) {
-				throw new RuntimeException("IllegalAccessException");
+				throw new EvaluationException("IllegalAccessException");
 			} catch( InvocationTargetException ex ) {
-				throw new RuntimeException("InvocationTargetException");
+				throw new EvaluationException("InvocationTargetException");
 			}
 		}
 	}
 
-	public Object callMethod( Object obj, String methodName, Object[] args ) {
+	public Object callMethod( Object obj, String methodName, Object[] args ) throws EvaluationException {
 		try {
 			Class[] argClasses = null;
 			if( args != null ) {
@@ -65,21 +65,21 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			Method meth = obj.getClass().getMethod(methodName, argClasses);
 			return meth.invoke(obj, args);
 		} catch( NoSuchMethodException ex ) {
-			throw new RuntimeException("nomethod: " + ex.toString() );
+			throw new EvaluationException("nomethod: " + ex.toString() );
 		} catch( IllegalAccessException ex ) {
-			throw new RuntimeException("IllegalAccessException");
+			throw new EvaluationException("IllegalAccessException");
 		} catch( InvocationTargetException ex ) {
-			throw new RuntimeException("InvocationTargetException");
+			throw new EvaluationException("InvocationTargetException");
 		}
 	}
 
-	public Object getByIndex(Object obj, Object index) {
+	public Object getByIndex(Object obj, Object index) throws EvaluationException {
 		if( obj instanceof Object[]) {
 			Object[] array = (Object[])obj;
 			if( index instanceof Integer ) {
 				return array[(Integer)index];
 			} else {
-				throw new RuntimeException("index object should be integer");
+				throw new EvaluationException("index object should be integer");
 			}
 		} else if( obj instanceof Map) {
 			return ((Map)obj).get(index);
@@ -100,17 +100,19 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		try {
 			Object result = expr.evaluate(context, this);
 			if( result == null && !permitNull ) {
-				EvaluationException ex = new EvaluationException(expr, context, "null", null);
-				fireError(ex.getMessage());
+				String message = "Evaluation of `"+expr.toString()+"` failed for " + getContextTitle(context) + ": null";
+				EvaluationException ex = new HandledEvaluationException(message);
+				fireError(message);
 				throw ex;
 			}
 			return result;
-		} catch( EvaluationException ex ) {
+		} catch( HandledEvaluationException ex ) {
 			throw ex;
 		} catch( Throwable th ) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
-			EvaluationException ex = new EvaluationException(expr, context, cause.getMessage(), cause);
-			fireError(ex.getMessage());
+			String message = "Evaluation of `"+expr.toString()+"` failed for " + getContextTitle(context) + ": " + cause.getMessage();
+			EvaluationException ex = new HandledEvaluationException(message);
+			fireError(message);
 			throw ex;
 		}
 	}
@@ -132,5 +134,14 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	public IStaticMethods getStaticMethods() {
 		return null;
+	}
+
+	private static class HandledEvaluationException extends EvaluationException {
+
+		private static final long serialVersionUID = -718162932392225590L;
+
+		public HandledEvaluationException(String message) {
+			super(message);
+		}
 	}
 }
