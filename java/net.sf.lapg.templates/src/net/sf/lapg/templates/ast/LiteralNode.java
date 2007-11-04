@@ -4,20 +4,26 @@ import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class LiteralNode extends ExpressionNode {
-	
-	Object literal;
+
+	private Object literal;
 
 	public LiteralNode(Object literal) {
 		this.literal = literal;
 	}
 
+	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		return literal;
 	}
 
-	public String toString() {
-		if( literal instanceof String)
-			return "'" + literal.toString() + "'";
-		return literal.toString();
+	@Override
+	public void toString(StringBuffer sb) {
+		if( literal instanceof String) {
+			sb.append("'");
+			sb.append(literal.toString());
+			sb.append("'");
+		} else {
+			sb.append(literal.toString());
+		}
 	}
 }

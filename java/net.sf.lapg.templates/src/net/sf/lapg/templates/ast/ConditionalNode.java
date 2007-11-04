@@ -28,19 +28,20 @@ public class ConditionalNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
-		Object right = env.evaluate(rightExpr, context, false);
 		Object left = env.evaluate(leftExpr, context, false);
 
 		switch( kind ) {
 		case EQ:
-			return safeEqual(left,right);
+			return safeEqual(left,env.evaluate(rightExpr, context, false));
 		case NE:
-			return !safeEqual(left,right);
+			return !safeEqual(left,env.evaluate(rightExpr, context, false));
 		case AND:
-			return env.toBoolean(left) && env.toBoolean(right);
+			return env.toBoolean(left) && env.toBoolean(env.evaluate(rightExpr, context, false));
 		case OR:
-			return env.toBoolean(left) || env.toBoolean(right);
+			return env.toBoolean(left) || env.toBoolean(env.evaluate(rightExpr, context, false));
 		}
+
+		Object right = env.evaluate(rightExpr, context, false);
 
 		if( left instanceof Integer && right instanceof Integer ) {
 			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
@@ -73,7 +74,9 @@ public class ConditionalNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		return leftExpr.toString() + operators[kind] + rightExpr.toString();
+	public void toString(StringBuffer sb) {
+		leftExpr.toString(sb);
+		sb.append(operators[kind]);
+		rightExpr.toString(sb);
 	}
 }

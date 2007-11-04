@@ -8,8 +8,8 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 public class ForeachNode extends CompoundNode {
 
 	private static final String INDEX = "index";
-	String var;
-	ExpressionNode selectExpr, targetExpr;
+	private String var;
+	private ExpressionNode selectExpr, targetExpr;
 
 	public ForeachNode(String var, ExpressionNode selectExpr) {
 		this.var = var;
@@ -43,7 +43,7 @@ public class ForeachNode extends CompoundNode {
 							}
 						}
 					} else {
-						env.fireError("In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + context.getClass().getCanonicalName());
+						env.fireError("In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getContextTitle(context));
 					}
 				} else if( select instanceof Collection ) {
 					for( Object o : (Collection<?>)select ) {
@@ -62,7 +62,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + context.getClass().getCanonicalName());
+					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getContextTitle(context));
 				}
 			} finally {
 				env.setVariable(var, prevVar);

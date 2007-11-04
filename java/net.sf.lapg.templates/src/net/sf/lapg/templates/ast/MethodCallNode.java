@@ -8,9 +8,9 @@ import net.sf.lapg.templates.api.IStaticMethods;
 
 public class MethodCallNode extends ExpressionNode {
 
-	ExpressionNode objectExpr;
-	String methodName;
-	ExpressionNode[] arguments;
+	private ExpressionNode objectExpr;
+	private String methodName;
+	private ExpressionNode[] arguments;
 
 	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments) {
 		this.objectExpr = objectExpr;
@@ -44,10 +44,9 @@ public class MethodCallNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+	public void toString(StringBuffer sb) {
 		if( objectExpr != null ) {
-			sb.append(objectExpr.toString());
+			objectExpr.toString(sb);
 			sb.append('.');
 		}
 		sb.append(methodName);
@@ -57,10 +56,9 @@ public class MethodCallNode extends ExpressionNode {
 				if( i > 0) {
 					sb.append(",");
 				}
-				sb.append(arguments[i].toString());
+				arguments[i].toString(sb);
 			}
 		}
 		sb.append(')');
-		return sb.toString();
 	}
 }

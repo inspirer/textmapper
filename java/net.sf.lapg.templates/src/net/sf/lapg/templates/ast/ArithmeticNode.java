@@ -33,8 +33,8 @@ public class ArithmeticNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
-		Object right = convertToInteger(env.evaluate(rightExpr, context, false));
 		Object left = convertToInteger(env.evaluate(leftExpr, context, false));
+		Object right = convertToInteger(env.evaluate(rightExpr, context, false));
 
 		if( left instanceof Integer && right instanceof Integer ) {
 			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
@@ -58,7 +58,9 @@ public class ArithmeticNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		return leftExpr.toString() + operators[kind] + rightExpr.toString();
+	public void toString(StringBuffer sb) {
+		leftExpr.toString(sb);
+		sb.append(operators[kind]);
+		rightExpr.toString(sb);
 	}
 }

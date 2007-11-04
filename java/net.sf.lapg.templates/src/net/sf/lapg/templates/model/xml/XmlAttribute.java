@@ -1,8 +1,7 @@
 package net.sf.lapg.templates.model.xml;
 
-import net.sf.lapg.templates.api.IEntity;
 
-public class XmlAttribute implements IEntity {
+public class XmlAttribute extends XmlElement {
 
 	private String name;
 	private String value;
@@ -22,11 +21,11 @@ public class XmlAttribute implements IEntity {
 		return value;
 	}
 
-	public String getLocation() {
-		return null;
-	}
-
 	public String getTitle() {
 		return "attribute " + name + " of " + (container == null ? "<unknown>" : container.getTitle());
+	}
+
+	@Override
+	public void toString(StringBuffer sb) {
 	}
 }

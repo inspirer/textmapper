@@ -6,14 +6,15 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class IndexNode extends ExpressionNode {
 
-	ExpressionNode objectExpr;
-	ExpressionNode indexExpr;
+	private ExpressionNode objectExpr;
+	private ExpressionNode indexExpr;
 
 	public IndexNode(ExpressionNode objectExpr, ExpressionNode index) {
 		this.objectExpr = objectExpr;
 		this.indexExpr = index;
 	}
 
+	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object = env.evaluate(objectExpr, context, false);
 		Object index = env.evaluate(indexExpr, context, false);
@@ -21,7 +22,11 @@ public class IndexNode extends ExpressionNode {
 		return env.getByIndex(object, index);
 	}
 
-	public String toString() {
-		return objectExpr.toString() + "[" + indexExpr.toString() + "]";
+	@Override
+	public void toString(StringBuffer sb) {
+		objectExpr.toString(sb);
+		sb.append("[");
+		indexExpr.toString(sb);
+		sb.append("]");
 	}
 }

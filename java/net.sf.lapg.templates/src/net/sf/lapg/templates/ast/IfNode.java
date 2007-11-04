@@ -6,8 +6,8 @@ import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class IfNode extends CompoundNode {
-	ExpressionNode select;
-	ArrayList<Node> elseInstructions;
+	private ExpressionNode select;
+	private ArrayList<Node> elseInstructions;
 
 	public IfNode(ExpressionNode select) {
 		this.select = select;
@@ -21,6 +21,7 @@ public class IfNode extends CompoundNode {
 		this.elseInstructions = elseInstructions;
 	}
 
+	@Override
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		try {
 			ArrayList<Node> execute = env.toBoolean(env.evaluate(select, context, true)) ? instructions

@@ -6,9 +6,9 @@ public class XmlModel {
 
 	public static XmlNode load(String content) {
 		Parser p = new Parser();
-		List<?> result = p.parse(content);
+		List<XmlElement> result = p.parse(content);
 		XmlNode root = new XmlNode("<root>", null, 1);
-		root.data = result;
+		root.setData(result);
 		return root;
 	}
 

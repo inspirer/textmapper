@@ -15,6 +15,8 @@ public interface IEvaluationEnvironment {
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException;
 	public String executeTemplate(String name, Object context, Object[] arguments);
 
+	public String getContextTitle(Object context);
+
 	public void fireError(String error);
 	public IStaticMethods getStaticMethods();
 }

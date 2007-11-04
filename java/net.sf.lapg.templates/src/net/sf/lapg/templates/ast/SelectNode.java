@@ -26,11 +26,11 @@ public class SelectNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
+	public void toString(StringBuffer sb) {
 		if( objectExpr != null ) {
-			return objectExpr.toString() + "." + identifier;
-		} else {
-			return identifier;
+			objectExpr.toString(sb);
+			sb.append(".");
 		}
+		sb.append(identifier);
 	}
 }

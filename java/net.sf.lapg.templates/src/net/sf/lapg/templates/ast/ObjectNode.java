@@ -24,8 +24,7 @@ public class ObjectNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+	public void toString(StringBuffer sb) {
 		sb.append('[');
 		boolean notFirst = false;
 		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {
@@ -39,6 +38,5 @@ public class ObjectNode extends ExpressionNode {
 			sb.append(entry.getValue().toString());
 		}
 		sb.append(']');
-		return sb.toString();
 	}
 }

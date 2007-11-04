@@ -7,7 +7,7 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class ListNode extends ExpressionNode {
 
-	ExpressionNode[] expressions;
+	private ExpressionNode[] expressions;
 
 	public ListNode(List<ExpressionNode> expressions) {
 		this.expressions = expressions != null && expressions.size() > 0 ? (ExpressionNode[]) expressions
@@ -29,18 +29,16 @@ public class ListNode extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
+	public void toString(StringBuffer sb) {
 		sb.append('[');
 		if( expressions != null ) {
 			for( int i = 0; i < expressions.length; i++ ) {
 				if( i > 0) {
 					sb.append(",");
 				}
-				sb.append(expressions[i].toString());
+				expressions[i].toString(sb);
 			}
 		}
 		sb.append(']');
-		return sb.toString();
 	}
 }

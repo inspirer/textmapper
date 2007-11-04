@@ -12,23 +12,14 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	HashMap<String,Object> vars = new HashMap<String,Object>();
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#getVariable(java.lang.String)
-	 */
 	public Object getVariable(String id) {
 		return vars.get(id);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#setVariable(java.lang.String, java.lang.Object)
-	 */
 	public void setVariable(String id, Object value) {
 		vars.put(id, value);
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#getProperty(java.lang.Object, java.lang.String, boolean)
-	 */
 	public Object getProperty( Object obj, String id, boolean searchVars ) {
 		if( searchVars ) {
 			Object res = vars.get(id);
@@ -62,9 +53,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#callMethod(java.lang.Object, java.lang.String, java.lang.Object[])
-	 */
 	public Object callMethod( Object obj, String methodName, Object[] args ) {
 		try {
 			Class[] argClasses = null;
@@ -85,9 +73,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#getByIndex(java.lang.Object, java.lang.Object)
-	 */
 	public Object getByIndex(Object obj, Object index) {
 		if( obj instanceof Object[]) {
 			Object[] array = (Object[])obj;
@@ -102,9 +87,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#toBoolean(java.lang.Object)
-	 */
 	public boolean toBoolean(Object o) {
 		if( o instanceof Boolean ) {
 			return ((Boolean)o).booleanValue();
@@ -114,9 +96,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return o != null;
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#evaluate(net.sf.lapg.templates.ast.ExpressionNode, java.lang.Object)
-	 */
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException {
 		try {
 			Object result = expr.evaluate(context, this);
@@ -140,9 +119,13 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return "";
 	}
 
-	/* (non-Javadoc)
-	 * @see net.sf.lapg.templates.IEvaluationEnvironment#fireError(java.lang.String)
-	 */
+	public String getContextTitle(Object context) {
+		if( context == null ) {
+			return "<unknown>";
+		}
+		return context.getClass().getCanonicalName();
+	}
+
 	public void fireError(String error) {
 		System.err.println(error);
 	}

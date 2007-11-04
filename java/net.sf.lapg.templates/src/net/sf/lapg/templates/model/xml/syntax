@@ -41,14 +41,14 @@ input ::=
 	xml_tags										{ result = $xml_tags; } 
 ;
 
-xml_tags (List<Object>) ::=
+xml_tags (List<XmlElement>) ::=
 	xml_tags xml_tag_or_space 						{ $xml_tags.add($xml_tag_or_space); }
-	| xml_tag_or_space 								{ $$ = new ArrayList<Object>(); $xml_tags.add($xml_tag_or_space); }
+	| xml_tag_or_space 								{ $$ = new ArrayList<XmlElement>(); $xml_tags.add($xml_tag_or_space); }
 ;
 
-xml_tag_or_space ::=
+xml_tag_or_space (XmlElement) ::=
 	tag_start tag_end								{ checkTag($tag_start,$tag_end,@1.line); }
-	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,@2.line); $tag_start.data = $xml_tags; }
+	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,@2.line); $tag_start.setData($xml_tags); }
 	| no_body_tag
 	| any											{ $$ = getData(@0.offset,@~0.offset); }
 ;
@@ -94,7 +94,7 @@ public Parser() {
 
 private static final boolean DEBUG_SYNTAX = false;
 
-private List<?> result;
+private List<XmlElement> result;
 
 byte[] buff;
 int l;
@@ -107,7 +107,7 @@ void error( String s ) {
 	System.err.println(s);
 }
 
-public List<?> parse(String s) {
+public List<XmlElement> parse(String s) {
 	l = 0;
 	result = null;
 	try {

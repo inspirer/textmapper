@@ -39,7 +39,8 @@ public class UnaryExpression extends ExpressionNode {
 	}
 
 	@Override
-	public String toString() {
-		return operators[kind] + expr.toString();
+	public void toString(StringBuffer sb) {
+		sb.append(operators[kind]);
+		expr.toString(sb);
 	}
 }

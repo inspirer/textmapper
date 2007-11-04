@@ -14,7 +14,7 @@ public class Parser {
 	
 	private static final boolean DEBUG_SYNTAX = false;
 	
-	private List<?> result;
+	private List<XmlElement> result;
 	
 	byte[] buff;
 	int l;
@@ -27,7 +27,7 @@ public class Parser {
 		System.err.println(s);
 	}
 	
-	public List<?> parse(String s) {
+	public List<XmlElement> parse(String s) {
 		l = 0;
 		result = null;
 		try {
@@ -285,19 +285,19 @@ public class Parser {
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
 						case 0:
-							 result = ((List<Object>)lapg_m[lapg_head-0].sym); 
+							 result = ((List<XmlElement>)lapg_m[lapg_head-0].sym); 
 							break;
 						case 1:
-							 ((List<Object>)lapg_gg.sym).add(lapg_m[lapg_head-0].sym); 
+							 ((List<XmlElement>)lapg_gg.sym).add(((XmlElement)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 2:
-							 lapg_gg.sym = new ArrayList<Object>(); ((List<Object>)lapg_gg.sym).add(lapg_m[lapg_head-0].sym); 
+							 lapg_gg.sym = new ArrayList<XmlElement>(); ((List<XmlElement>)lapg_gg.sym).add(((XmlElement)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 3:
 							 checkTag(((XmlNode)lapg_m[lapg_head-1].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); 
 							break;
 						case 4:
-							 checkTag(((XmlNode)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); ((XmlNode)lapg_m[lapg_head-2].sym).data = ((List<Object>)lapg_m[lapg_head-1].sym); 
+							 checkTag(((XmlNode)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); ((XmlNode)lapg_m[lapg_head-2].sym).setData(((List<XmlElement>)lapg_m[lapg_head-1].sym)); 
 							break;
 						case 6:
 							 lapg_gg.sym = getData(lapg_m[lapg_head-0].pos.offset,lapg_m[lapg_head-0].endpos.offset); 
