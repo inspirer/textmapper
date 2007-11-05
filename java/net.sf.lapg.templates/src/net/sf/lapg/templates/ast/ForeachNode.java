@@ -45,7 +45,7 @@ public class ForeachNode extends CompoundNode {
 							}
 						}
 					} else {
-						env.fireError("In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
+						env.fireError(this, "In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
 					}
 				} else if( select instanceof Collection ) {
 					for( Object o : (Collection<?>)select ) {
@@ -64,7 +64,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getTitle(context));
+					env.fireError(this, "In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getTitle(context));
 				}
 			} finally {
 				env.setVariable(var, prevVar);

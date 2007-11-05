@@ -19,7 +19,7 @@ public class AssertNode extends Node {
 			Object res = env.evaluate(expr, context, true);
 			Boolean b = env.toBoolean(res);
 			if( !b.booleanValue() ) {
-				env.fireError("Assertion `"+expr.toString()+"` failed for " + env.getTitle(context));
+				env.fireError(this, "Assertion `"+expr.toString()+"` failed for " + env.getTitle(context));
 			}
 		} catch( EvaluationException ex ) {
 		}

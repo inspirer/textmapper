@@ -14,10 +14,11 @@ public interface IEvaluationEnvironment {
 	public boolean toBoolean(Object o) throws EvaluationException;
 
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException;
+	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments);
 	public String executeTemplate(String name, Object context, Object[] arguments);
 
 	public String getTitle(Object context);
 
-	public void fireError(String error);
+	public void fireError(ILocatedEntity referer, String error);
 	public IStaticMethods getStaticMethods();
 }

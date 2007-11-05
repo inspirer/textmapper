@@ -16,27 +16,27 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 
 	protected abstract String getContainerName(String templatePackage);
 
-	private ITemplate getTemplate(String name) {
+	private ITemplate getTemplate(ILocatedEntity referer, String name) {
 		if( templates.containsKey(name) ) {
 			return templates.get(name);
 		}
 
 		int lastDot = name.lastIndexOf('.');
 		if( lastDot == -1 ) {
-			fireError("Fully qualified template name should contain dot.");
+			fireError(referer, "Fully qualified template name should contain dot.");
 			return null;
 		}
 
 		String templatePackage = name.substring(0, lastDot);
 		String contents = getTemplateContainerContents(getContainerName(templatePackage));
 		if( contents == null ) {
-			fireError("Couldn't load template container for `" + name + "`");
+			fireError(referer, "Couldn't load template container for `" + name + "`");
 			return null;
 		}
 
 		ITemplate[] loaded = loadTemplates(contents, templatePackage);
 		if( loaded == null || loaded.length == 0 ) {
-			fireError("Couldn't get templates from " + getContainerName(templatePackage));
+			fireError(referer, "Couldn't get templates from " + getContainerName(templatePackage));
 			return null;
 		}
 
@@ -50,21 +50,21 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 		}
 
 		if( result == null ) {
-			fireError("Template `"+id+"` was not found in `" + getContainerName(templatePackage) + "`");
+			fireError(referer, "Template `"+id+"` was not found in `" + getContainerName(templatePackage) + "`");
 		}
 		return result;
 	}
 
 	@Override
-	public String executeTemplate(String name, Object context, Object[] arguments) {
-		ITemplate t = getTemplate(name);
+	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments) {
+		ITemplate t = getTemplate(referer, name);
 		if( t == null ) {
 			return "";
 		}
 		try {
 			return t.apply(context, this, arguments);
 		} catch( EvaluationException ex ) {
-			fireError(ex.getMessage());
+			fireError(t, ex.getMessage());
 			return "";
 		}
 	}

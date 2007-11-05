@@ -36,7 +36,7 @@ public class CallTemplateNode extends Node {
 				}
 			}
 			String qualifiedName = identifier.indexOf('.') == -1 ? currentPackage + "." + identifier : identifier;
-			sb.append(env.executeTemplate(qualifiedName, callContext, args));
+			sb.append(env.executeTemplate(this, qualifiedName, callContext, args));
 		} catch(EvaluationException ex) {
 			/* some problems in expressions evaluation, skip call */
 		}

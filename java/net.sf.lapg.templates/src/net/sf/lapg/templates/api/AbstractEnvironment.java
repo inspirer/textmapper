@@ -116,7 +116,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			if( result == null && !permitNull ) {
 				String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
-				fireError(message);
+				fireError(expr, message);
 				throw ex;
 			}
 			return result;
@@ -126,13 +126,17 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
 			String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
-			fireError(message);
+			fireError(expr, message);
 			throw ex;
 		}
 	}
 
-	public String executeTemplate(String name, Object context, Object[] arguments) {
+	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments) {
 		return "";
+	}
+
+	public String executeTemplate(String name, Object context, Object[] arguments) {
+		return executeTemplate(null, name, context, arguments);
 	}
 
 	public String getTitle(Object context) {
@@ -145,7 +149,10 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return context.getClass().getCanonicalName();
 	}
 
-	public void fireError(String error) {
+	public void fireError(ILocatedEntity referer, String error) {
+		if( referer != null ) {
+			System.err.print(referer.getLocation() + ": ");
+		}
 		System.err.println(error);
 	}
 
