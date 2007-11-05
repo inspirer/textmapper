@@ -9,7 +9,8 @@ public class IfNode extends CompoundNode {
 	private ExpressionNode select;
 	private ArrayList<Node> elseInstructions;
 
-	public IfNode(ExpressionNode select) {
+	public IfNode(ExpressionNode select, int line) {
+		super(line);
 		this.select = select;
 	}
 

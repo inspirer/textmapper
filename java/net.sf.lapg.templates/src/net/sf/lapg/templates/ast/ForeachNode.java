@@ -11,13 +11,15 @@ public class ForeachNode extends CompoundNode {
 	private String var;
 	private ExpressionNode selectExpr, targetExpr;
 
-	public ForeachNode(String var, ExpressionNode selectExpr) {
+	public ForeachNode(String var, ExpressionNode selectExpr, int line) {
+		super(line);
 		this.var = var;
 		this.selectExpr = selectExpr;
 		this.targetExpr = null;
 	}
 
-	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr) {
+	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, int line) {
+		super(line);
 		this.var = var;
 		this.selectExpr = selectExpr;
 		this.targetExpr = targetExpr;
@@ -43,7 +45,7 @@ public class ForeachNode extends CompoundNode {
 							}
 						}
 					} else {
-						env.fireError("In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getContextTitle(context));
+						env.fireError("In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
 					}
 				} else if( select instanceof Collection ) {
 					for( Object o : (Collection<?>)select ) {
@@ -62,7 +64,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getContextTitle(context));
+					env.fireError("In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getTitle(context));
 				}
 			} finally {
 				env.setVariable(var, prevVar);

@@ -9,7 +9,8 @@ public class ListNode extends ExpressionNode {
 
 	private ExpressionNode[] expressions;
 
-	public ListNode(List<ExpressionNode> expressions) {
+	public ListNode(List<ExpressionNode> expressions, int line) {
+		super(line);
 		this.expressions = expressions != null && expressions.size() > 0 ? (ExpressionNode[]) expressions
 				.toArray(new ExpressionNode[expressions.size()]) : null;
 	}

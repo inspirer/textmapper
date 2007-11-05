@@ -5,7 +5,7 @@ public class XmlAttribute extends XmlElement {
 
 	private String name;
 	private String value;
-	XmlNode container = null;
+	private XmlNode container = null;
 
 	public XmlAttribute(String name, String value) {
 		super();
@@ -21,11 +21,19 @@ public class XmlAttribute extends XmlElement {
 		return value;
 	}
 
+	void setContainer(XmlNode node) {
+		this.container = node;
+	}
+
 	public String getTitle() {
-		return "attribute " + name + " of " + (container == null ? "<unknown>" : container.getTitle());
+		return (container == null ? "<unknown>" : container.getTitle()) + ".@" + name;
 	}
 
 	@Override
 	public void toString(StringBuffer sb) {
+		sb.append(name);
+		sb.append("=\"");
+		sb.append(value);
+		sb.append("\"");
 	}
 }

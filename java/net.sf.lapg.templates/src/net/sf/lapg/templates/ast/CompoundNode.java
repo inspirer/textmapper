@@ -6,6 +6,10 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class CompoundNode extends Node {
 
+	protected CompoundNode(int line) {
+		super(line);
+	}
+
 	protected ArrayList<Node> instructions;
 
 	public ArrayList<Node> getInstructions() {
@@ -16,6 +20,7 @@ public class CompoundNode extends Node {
 		this.instructions = instructions;
 	}
 
+	@Override
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		if (instructions != null) {
 			for (Node n : instructions) {

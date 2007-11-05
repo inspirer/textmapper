@@ -5,7 +5,8 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 public class TextNode extends Node {
 	private String text;
 
-	public TextNode(String text) {
+	public TextNode(String text, int line) {
+		super(line);
 		this.text = text;
 	}
 

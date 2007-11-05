@@ -5,6 +5,10 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public abstract class ExpressionNode extends Node {
 
+	protected ExpressionNode(int line) {
+		super(line);
+	}
+
 	@Override
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		try {

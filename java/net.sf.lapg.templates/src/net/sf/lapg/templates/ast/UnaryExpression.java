@@ -13,7 +13,8 @@ public class UnaryExpression extends ExpressionNode {
 	private int kind;
 	private ExpressionNode expr;
 
-	public UnaryExpression(int kind, ExpressionNode expr) {
+	public UnaryExpression(int kind, ExpressionNode expr, int line) {
+		super(line);
 		this.kind = kind;
 		this.expr = expr;
 	}

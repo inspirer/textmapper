@@ -28,7 +28,9 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			}
 		}
 
-		if( obj instanceof Map) {
+		if( obj instanceof IPropertyContainer ) {
+			return ((IPropertyContainer)obj).getProperty(id);
+		} else if( obj instanceof Map) {
 			return ((Map)obj).get(id);
 		} else if( id.equals("length") && obj instanceof Object[]) {
 			return ((Object[])obj).length;
@@ -74,7 +76,9 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 	}
 
 	public Object getByIndex(Object obj, Object index) throws EvaluationException {
-		if( obj instanceof Object[]) {
+		if( obj instanceof IPropertyContainer) {
+			return ((IPropertyContainer)obj).getByIndex(index);
+		} else if( obj instanceof Object[]) {
 			Object[] array = (Object[])obj;
 			if( index instanceof Integer ) {
 				return array[(Integer)index];
@@ -96,11 +100,21 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return o != null;
 	}
 
+	public Object getByQuery(Object obj, String query) throws EvaluationException {
+
+		if( obj instanceof INavigatableContainer) {
+			return ((INavigatableContainer)obj).getByQuery(query);
+		} else if( obj instanceof Map ) {
+			return ((Map<?,?>)obj).get(query);
+		}
+		throw new EvaluationException("do not know how to execute query");
+	}
+
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException {
 		try {
 			Object result = expr.evaluate(context, this);
 			if( result == null && !permitNull ) {
-				String message = "Evaluation of `"+expr.toString()+"` failed for " + getContextTitle(context) + ": null";
+				String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
 				fireError(message);
 				throw ex;
@@ -110,7 +124,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			throw ex;
 		} catch( Throwable th ) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
-			String message = "Evaluation of `"+expr.toString()+"` failed for " + getContextTitle(context) + ": " + cause.getMessage();
+			String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
 			fireError(message);
 			throw ex;
@@ -121,9 +135,12 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		return "";
 	}
 
-	public String getContextTitle(Object context) {
+	public String getTitle(Object context) {
 		if( context == null ) {
 			return "<unknown>";
+		}
+		if( context instanceof INamedEntity ) {
+			return ((INamedEntity)context).getTitle();
 		}
 		return context.getClass().getCanonicalName();
 	}

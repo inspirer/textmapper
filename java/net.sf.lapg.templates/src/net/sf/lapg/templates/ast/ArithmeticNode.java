@@ -18,7 +18,8 @@ public class ArithmeticNode extends ExpressionNode {
 	private ExpressionNode leftExpr;
 	private ExpressionNode rightExpr;
 
-	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right) {
+	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right, int line) {
+		super(line);
 		this.kind = kind;
 		this.leftExpr = left;
 		this.rightExpr = right;

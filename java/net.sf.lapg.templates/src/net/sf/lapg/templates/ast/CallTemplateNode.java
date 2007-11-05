@@ -12,7 +12,8 @@ public class CallTemplateNode extends Node {
 	private ExpressionNode selectExpr;
 	private String currentPackage;
 
-	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage) {
+	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, int line) {
+		super(line);
 		this.identifier = identifier;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;

@@ -9,12 +9,14 @@ public class SwitchNode extends Node {
 
 	ArrayList<CaseNode> cases;
 	ExpressionNode expression;
-	
-	public SwitchNode(ExpressionNode expression, ArrayList<CaseNode> cases) {
+
+	public SwitchNode(ExpressionNode expression, ArrayList<CaseNode> cases, int line) {
+		super(line);
 		this.expression = expression;
 		this.cases = cases;
 	}
 
+	@Override
 	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
 		try {
 			Object value = env.evaluate(expression, context, false);

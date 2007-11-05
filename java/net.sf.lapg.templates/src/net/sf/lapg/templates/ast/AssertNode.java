@@ -7,7 +7,8 @@ public class AssertNode extends Node {
 
 	private ExpressionNode expr;
 
-	public AssertNode(ExpressionNode expr) {
+	public AssertNode(ExpressionNode expr, int line) {
+		super(line);
 		this.expr = expr;
 	}
 
@@ -18,7 +19,7 @@ public class AssertNode extends Node {
 			Object res = env.evaluate(expr, context, true);
 			Boolean b = env.toBoolean(res);
 			if( !b.booleanValue() ) {
-				env.fireError("Assertion `"+expr.toString()+"` failed for " + env.getContextTitle(context));
+				env.fireError("Assertion `"+expr.toString()+"` failed for " + env.getTitle(context));
 			}
 		} catch( EvaluationException ex ) {
 		}

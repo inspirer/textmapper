@@ -7,7 +7,8 @@ public class LiteralNode extends ExpressionNode {
 
 	private Object literal;
 
-	public LiteralNode(Object literal) {
+	public LiteralNode(Object literal, int line) {
+		super(line);
 		this.literal = literal;
 	}
 

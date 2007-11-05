@@ -10,7 +10,8 @@ public class ObjectNode extends ExpressionNode {
 
 	private HashMap<String,ExpressionNode> fields;
 
-	public ObjectNode(HashMap<String,ExpressionNode> fields) {
+	public ObjectNode(HashMap<String,ExpressionNode> fields, int line) {
+		super(line);
 		this.fields = fields;
 	}
 

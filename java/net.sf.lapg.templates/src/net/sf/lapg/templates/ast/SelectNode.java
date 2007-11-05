@@ -5,10 +5,11 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class SelectNode extends ExpressionNode {
 
-	ExpressionNode objectExpr;
-	String identifier;
+	private ExpressionNode objectExpr;
+	private String identifier;
 
-	public SelectNode(ExpressionNode objectExpr, String identifier) {
+	public SelectNode(ExpressionNode objectExpr, String identifier, int line) {
+		super(line);
 		this.objectExpr = objectExpr;
 		this.identifier = identifier;
 	}

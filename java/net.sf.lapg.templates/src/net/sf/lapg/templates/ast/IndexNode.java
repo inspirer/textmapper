@@ -9,7 +9,8 @@ public class IndexNode extends ExpressionNode {
 	private ExpressionNode objectExpr;
 	private ExpressionNode indexExpr;
 
-	public IndexNode(ExpressionNode objectExpr, ExpressionNode index) {
+	public IndexNode(ExpressionNode objectExpr, ExpressionNode index, int line) {
+		super(line);
 		this.objectExpr = objectExpr;
 		this.indexExpr = index;
 	}
