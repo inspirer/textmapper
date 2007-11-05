@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.ClassLoaderTemplateEnvironment;
+import net.sf.lapg.templates.api.ILocatedEntity;
 
 public class TestEnvironment extends ClassLoaderTemplateEnvironment {
 
@@ -14,7 +15,7 @@ public class TestEnvironment extends ClassLoaderTemplateEnvironment {
 	}
 
 	@Override
-	public void fireError(String error) {
+	public void fireError(ILocatedEntity referer, String error) {
 		if( nextErrors.size() > 0 ) {
 			String next = nextErrors.remove(0);
 			Assert.assertEquals(next, error);
