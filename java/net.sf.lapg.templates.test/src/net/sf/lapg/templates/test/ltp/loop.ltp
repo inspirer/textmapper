@@ -53,3 +53,13 @@ ${end}
 ${template arithm6-}
 ${call helper([[id:'uh',key:'we'],[id:'oh',key:'we2']]) for [we:'lite1',we2:'okey']-}
 ${end}
+
+${template xmldo-}
+${foreach u in r['user']-}
+${u['@name'].value}
+${end-}
+${end}
+
+${template selectit-}
+${`r.user[0].@name`}
+${end}
