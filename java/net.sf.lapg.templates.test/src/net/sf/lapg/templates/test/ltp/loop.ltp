@@ -61,5 +61,5 @@ ${end-}
 ${end}
 
 ${template selectit-}
-${`r.user[0].@name`}
+${r.user.first().`@name`}
 ${end}
