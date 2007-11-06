@@ -18,12 +18,13 @@
 #   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 .lang        "java" 
-.getsym      "chr = buff[l++];if( l == end ) fillb()"
-.positioning "full"
+.getsym      "chr = l < buff.length ? buff[l++] : 0"
 .class       "Parser"
 .namespace	 "net.sf.lapg.input"
 .maxtoken    4096
-.stack       512
+.breaks		 "on"
+.lexemend    "on"
+.positioning "offset"
 
 # Vocabulary
 
@@ -43,8 +44,6 @@ _skip:  /#.*/
 ';':    /;/
 '.':    /\./
 ':':    /:/
-'->':   /->/
-',':    /,/
 '[':    /\[/
 ']':    /\]/
 '<<':   /<</
@@ -53,11 +52,11 @@ _skip:  /#.*/
 
 [1]
 
-any:	/[^'"{}]+/
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
-scon(String):	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
-'i{':	/{/		{ deep++; break; }
-'}':	/}/		{ if( --deep == 0 ) group = @0; break; }
+_skip:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
+_skip:	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
+_skip:	/[^'"{}]+/
+'i{':	/{/				{ deep++; break; }
+'}':	/}/				{ if( --deep == 0 ) group = @0; break; }
 
 # Attributes
 
@@ -65,139 +64,132 @@ scon(String):	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*
 
 # Grammar
 
-input ::= 
-	directives lexical_part magazine_def grammar_part ;
-
-command (String) ::=
-	'{' command_tokens '}' ;
-	
-command_tokens ::=
-	command_tokens command_token | command_token ;
-	
-command_token ::=
-	any
-	| ccon
-	| scon
-	| 'i{' command_tokens '}'
-;
+input ::=
+	directives
+	lexical_definitions
+	grammar_definitions ;
 
 directives ::= 
 	directives directive | directive ;
 
 directive ::=
-	'.' identifier scon | '.' identifier icon ;
-
-lexical_part ::= 
-	newtypelexemopt lexemdef | lexical_part newtypelexemopt lexemdef ;
-
-int32(Integer) ::= icon ;
-
-int32_list(Integer) ::= int32 | int32_list int32 ;
-
-newtypelexem ::= '[' int32_list ']';
-
-lexemdef ::
-  = identifier ':'
-  = identifier type ':'
-  = identifier ':' regexp iconopt command
-  = identifier ':' regexp iconopt
-  = identifier type ':' regexp iconopt command
-  = identifier type ':' regexp iconopt
+	'.' identifier scon 
+	| '.' identifier icon 
 ;
 
-magazine_def ::= '[' magazine_def_listopt ']' ;
-magazine_def_list ::= magazine_def_list ',' attrib | attrib ;
-
-attrib ::
-  = identifier '->' identifier
-  = identifier
+lexical_definitions ::= 
+	lexical_definitions lexical_definition 
+	| lexical_definition 
 ;
 
-grammar_part ::=
-	ruledef | grammar_part ruledef ;
-
-ruledef ::= 
-	def_rule_for '::=' rules_or ';' | 
-	prioritydef ;
-
-rules_or ::= 
-	rules_or '|' stdrule | 
-	stdrule ;
-
-prioritydef ::=
-	'%' identifier idlist ';' ;
-
-idlist(Integer) ::= 
-	identifier | idlist identifier ;
-
-rule_priority(Integer) ::=
-	'<<' identifier | ;
-
-stdrule ::
-  = ids rule_priority command
-  = ids rule_priority
-  = command rule_priority
-  = rule_priority
+lexical_definition ::=
+	'[' iconlist ']'
+	| def_symbol typeopt ':'
+	| def_symbol typeopt ':' regexp iconopt commandopt
 ;
 
-ids ::
-  = ids rule_priority commandopt identifier          # rule_priority must not be here
-  = commandopt identifier
+iconlist(Integer) ::=
+	icon | iconlist icon ;
+
+grammar_definitions ::=
+	grammar_definition | grammar_definitions grammar_definition ;
+
+grammar_definition ::= 
+	def_symbol typeopt '::=' rule_right_part ';'
+	| '%' identifier identifiers ';' 
+; 
+
+rule_right_part (List<CRule>) ::= 
+	rule_right_part '|' rule_def
+	| rule_def
 ;
 
-def_rule_for ::
-  = identifier
-  = identifier type
+identifiers ::= 
+	identifier | identifiers identifier ;
+
+rule_def (CRule) ::=
+	rule_symbols commandopt rule_priorityopt ;
+
+rule_symbols (List<CSymbol>) ::=
+	rule_symbols commandopt symbol
+	| commandopt symbol
 ;
 
-# EOF
+rule_priority (CSymbol) ::=
+	'<<' symbol											{ $$ = $symbol; } 
+;
+
+command (CAction) ::=
+	'{' command_tokens '}'								{ $$ = new CAction(@0.line, rawData(@0.offset,@~0.offset)); }  
+;
+	
+command_tokens ::=
+	command_tokens command_token | command_token ;
+
+command_token ::=
+	'i{' command_tokensopt '}' 
+;
+
+symbol (CSymbol) ::=
+	identifier											{ $$ = getSymbol($identifier,-1); }
+;
+
+def_symbol (CSymbol) ::=
+	identifier											{ $$ = getSymbol($identifier,@0.line); }
+;
+
+##################################################################################
 
 %%
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
-
-import net.sf.lapg.IError;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 %%
+
+public Parser() {
+}
 
 private static final boolean DEBUG_SYNTAX = false;
-private static final int BITS = 32;
 
-byte[] buff = new byte[1025];
-int l, end;
-InputStream input;
-IError err;
+private HashMap<String,CSymbol> symbols = new HashMap<String,CSymbol>();
 
-int length;
-int[] rule = new int[128];
-int deep = 0;
+private byte[] buff;
+private int l;
+private int deep = 0;
 
-String sourcename;
-
-private Parser( InputStream is, String sourceName, IError err) {
-	this.input = is;
-	this.sourcename = sourceName;
-	this.err = err;
+private String rawData(int start, int end) {
+	return new String(buff, start, end-start);
 }
 
-static boolean parse( InputStream is, String sourceName, IError err) {
-	Parser p = new Parser(is, sourceName, err);
-	p.fillb();
-	return p.parse();
-}
-
-void fillb() {
-	l = 0;
-	try {
-		end = input.read( buff, 0, 1024 );
-		if( end == -1 )
-			end = 0;
-	} catch( IOException ex ) {
-		end = 0;
+private CSymbol getSymbol(String name, int line) {
+	CSymbol res = symbols.get(name);
+	if( res == null ) {
+		res = new CSymbol(name);
+		symbols.put(name,res);
 	}
-	buff[end] = 0;
+	if( line > 0 ) {
+		res.intDefine(line);
+	}
+	return res;
+}
+
+private CSymbol wrapCommand(CAction action) {
+	return new CSymbol(null); // TODO
 }
 
 void error( String s ) {
-	err.error(s);
+	System.err.println(s);
+}
+
+public boolean parse(String s) {
+	l = 0;
+	try {
+		buff = s.getBytes("utf-8");
+	} catch( UnsupportedEncodingException ex ) {
+		return false;
+	}
+	boolean res = parse();
+	return res;
 }
