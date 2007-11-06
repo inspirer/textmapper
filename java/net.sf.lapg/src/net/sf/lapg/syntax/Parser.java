@@ -371,7 +371,7 @@ public class Parser {
 			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
 			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
 				if( lapg_size < 4096-1 ) token[lapg_size++] = (byte)chr;
-				lapg_i = lapg_lexem[lapg_i][lapg_char2no[chr]];
+				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
 				if( lapg_i >= -1 && chr != 0 ) { 
 					lapg_current_column++;
 					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
@@ -380,6 +380,10 @@ public class Parser {
 			}
 
 			if( lapg_i == -1 ) {
+				if( chr == 0 ) {
+					error( "Unexpected end of file reached");
+					break;
+				}
 				error( MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
 				lapg_n.lexem = -1;
 				continue;

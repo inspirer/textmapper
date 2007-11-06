@@ -195,10 +195,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 
-import net.sf.lapg.lalr.IError;
+import net.sf.lapg.IError;
 %%
 
-private static final boolean DEBUG_SYNTAX = true;
+private static final boolean DEBUG_SYNTAX = false;
 private static final int BITS = 32;
 
 byte[] buff = new byte[1025];
