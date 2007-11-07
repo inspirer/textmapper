@@ -43,4 +43,31 @@ public class CRule implements ILocatedEntity {
 	public CSymbol getPriority() {
 		return priority;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if( left.getName() == null ) {
+			sb.append("<noname>");
+		} else {
+			sb.append(left.getName());
+		}
+		sb.append(" ::=");
+		for( CSymbol s : right ) {
+			sb.append(" ");
+			if( s.getName() == null ) {
+				sb.append("{}");
+			} else {
+				sb.append(s.getName());
+			}
+		}
+		if( action != null ) {
+			sb.append(" {}");
+		}
+		if( priority != null ) {
+			sb.append(" << ");
+			sb.append(priority.getName());
+		}
+		return sb.toString();
+	}
 }

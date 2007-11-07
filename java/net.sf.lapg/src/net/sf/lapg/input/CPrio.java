@@ -31,4 +31,32 @@ public class CPrio implements ILocatedEntity {
 	public String getLocation() {
 		return "line:" + line;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		switch(prio) {
+		case LEFT:
+			sb.append("left");
+			break;
+		case RIGHT:
+			sb.append("right");
+			break;
+		case NONASSOC:
+			sb.append("nonassoc");
+			break;
+		}
+		sb.append("=[");
+		boolean notfirst = false;
+		for( CSymbol s : symbols ) {
+			if( notfirst ) {
+				sb.append(", ");
+			} else {
+				notfirst = true;
+			}
+			sb.append(s.getName());
+		}
+		sb.append("]");
+		return sb.toString();
+	}
 }

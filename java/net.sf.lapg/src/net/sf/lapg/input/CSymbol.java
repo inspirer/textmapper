@@ -59,4 +59,26 @@ public class CSymbol implements ILocatedEntity {
 	public String getType() {
 		return type;
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if( name == null ) {
+			sb.append("<noname>");
+		} else {
+			sb.append(name);
+		}
+		if( type != null ) {
+			sb.append(" (");
+			sb.append(type);
+			sb.append(")");
+		}
+		sb.append(" [");
+		sb.append("term=");
+		sb.append(isTerm);
+		sb.append(", defined=");
+		sb.append(isDefined);
+		sb.append("]");
+		return sb.toString();
+	}
 }

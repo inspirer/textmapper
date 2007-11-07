@@ -25,4 +25,9 @@ public class COption implements ILocatedEntity {
 	public String getLocation() {
 		return "line:" + line;
 	}
+
+	@Override
+	public String toString() {
+		return name + "='" + value + "'";
+	}
 }
