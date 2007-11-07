@@ -5,55 +5,78 @@ package net.sf.lapg.input;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Parser {
 	
-	public Parser() {
+	private Parser() {
 	}
 	
 	private static final boolean DEBUG_SYNTAX = false;
+	private static final int BITS = 32;
 	
-	private HashMap<String,CSymbol> symbols = new HashMap<String,CSymbol>();
+	private Map<String,CSymbol> symCash = new HashMap<String,CSymbol>();
+	
+	private List<CSymbol> symbols = new ArrayList<CSymbol>();
+	private List<CRule> rules = new ArrayList<CRule>();
+	private List<CPrio> prios = new ArrayList<CPrio>();
+	private List<COption> options = new ArrayList<COption>();
 	
 	private byte[] buff;
 	private int l;
+	
+	private int currentgroups = 1;
 	private int deep = 0;
 	
 	private String rawData(int start, int end) {
 		return new String(buff, start, end-start);
 	}
 	
-	private CSymbol getSymbol(String name, int line) {
-		CSymbol res = symbols.get(name);
+	private CSymbol getSymbol(String name) {
+		CSymbol res = symCash.get(name);
 		if( res == null ) {
 			res = new CSymbol(name);
-			symbols.put(name,res);
-		}
-		if( line > 0 ) {
-			res.intDefine(line);
+			symbols.add(res);
+			symCash.put(name,res);
 		}
 		return res;
 	}
 	
-	private CSymbol wrapCommand(CAction action) {
-		return new CSymbol(null); // TODO
+	private void buildRule(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
+		if( cmdopt != null ) {
+			CSymbol sym = new CSymbol(null);
+			symbols.add(sym);
+			sym.addRules(Collections.singletonList(new CRule(null, cmdopt, null)));
+			sym.setDefined(null, cmdopt.getLine());
+			list.add(sym);
+		}
+		list.add(symbol);
 	}
 	
 	void error( String s ) {
 		System.err.println(s);
 	}
 	
-	public boolean parse(String s) {
+	private CSyntax doParse(String s) {
 		l = 0;
 		try {
 			buff = s.getBytes("utf-8");
 		} catch( UnsupportedEncodingException ex ) {
-			return false;
+			return null;
 		}
-		boolean res = parse();
-		return res;
+		if( !parse() ) {
+			return null;
+		}
+		
+		return new CSyntax(symbols,rules,prios,options);
+	}
+	
+	public static CSyntax process(String data) {
+		Parser p = new Parser();
+		return p.doParse(data);
 	}
 
 	public class lapg_place {
@@ -145,56 +168,58 @@ public class Parser {
 
 	private static final int[] lapg_action = new int[] {
 		  -1,  -1,  -1,   2,  -1,  39,  -1,  -1,   1,   6,  -3,   3,   4,  16,  -1,  -1,
-		  -9,   5, -17,  18,   8,  -1,  17,   7,  -1, -25,  19,  -1, -31,  24,  -1,  -1,
-		 -41, -47,  25,  21,  -1,  -1,  13,  -1,  23, -59,  11, -71, -81,  -1,  34,  38,
-		  30, -87,  20, -93,  15,-103,  -1,  32,  33,  22,  -1,  28,  26,  29,  37,  31,
+		  -9,   5, -17,  18,   8,  -1,  17,   7,  -1, -25,  19,  -1, -31,  25,  -1,  -1,
+		 -41, -53,  21,  24, -65, -71,  13,  -1,  23, -81,  11, -93,-103,  -1,-109,  37,
+		  -1,  31,  29,  26,-115,  20,-127,  15,  -1,  35,  36,  32,  22,  30,  28,  38,
 		  -1,  -2,
 	};
 
 	private static final short[] lapg_lalr = new short[] {
 		   4,  -1,  12,   9,  -1,  -2,   1,  -1,   6,  -1,   0,   0,  -1,  -2,   4,  -1,
 		   8,   9,  12,   9,  -1,  -2,   4,  -1,   8,   9,  -1,  -2,   2,  -1,   1,  10,
-		   6,  10,  13,  10,  -1,  -2,  16,  -1,   1,  14,  -1,  -2,   5,  -1,   1,  12,
-		   6,  12,  13,  12,  16,  12,  -1,  -2,  16,  -1,   1,  14,   9,  14,  10,  14,
-		  15,  14,  -1,  -2,  16,  -1,   1,  14,   6,  14,  13,  14,  -1,  -2,  17,  -1,
-		  18,  36,  -1,  -2,  16,  -1,   1,  14,  -1,  -2,   1,  -1,  15,  -1,   9,  27,
-		  10,  27,  -1,  -2,  17,  -1,  18,  35,  -1,  -2,
+		   6,  10,  13,  10,  -1,  -2,  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,
+		  -1,  -2,   5,  -1,   1,  12,   6,  12,  13,  12,  16,  12,  -1,  -2,  17,  -1,
+		  18,  34,  -1,  -2,   1,  -1,  15,  -1,   9,  27,  10,  27,  -1,  -2,  16,  -1,
+		   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,  16,  -1,   1,  14,   6,  14,
+		  13,  14,  -1,  -2,  17,  -1,  18,  34,  -1,  -2,  17,  -1,  18,  33,  -1,  -2,
+		  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,   1,  -1,  15,  -1,
+		   9,  27,  10,  27,  -1,  -2,
 	};
 
 	private static final short[] lapg_sym_goto = new short[] {
 		   0,   1,  11,  12,  13,  16,  20,  22,  22,  24,  25,  27,  29,  31,  33,  34,
-		  35,  39,  43,  45,  46,  47,  48,  49,  51,  53,  54,  57,  60,  61,  65,  69,
-		  71,  72,  73,  75,  77,  78,  79,  82,  84,  88,  89,
+		  36,  40,  43,  45,  46,  47,  48,  49,  51,  53,  54,  62,  65,  66,  70,  74,
+		  76,  77,  78,  80,  82,  84,  86,  88,  90,  93,
 	};
 
 	private static final short[] lapg_sym_from = new short[] {
-		  64,   1,   2,   7,  15,  16,  24,  30,  37,  51,  58,  28,   4,  10,  18,  25,
+		  64,   1,   2,   7,  15,  16,  24,  30,  37,  48,  54,  28,   4,  10,  18,  25,
 		   4,   6,  14,  33,   7,  16,  27,  31,  39,  30,  39,   0,   2,  21,  27,   2,
-		   7,  14,  51,  32,  41,  43,  49,  36,  44,  45,  53,  45,  54,   0,   0,   2,
-		   7,   0,   2,   2,   7,   6,   2,   7,  16,  10,  18,  25,  33,  32,  41,  43,
-		  49,  32,  41,  43,  49,   7,  16,  32,  24,  32,  49,  32,  49,  51,  51,  37,
-		  51,  58,  36,  44,  36,  44,  45,  53,  44,
+		   7,  14,  37,  54,  32,  41,  43,  52,  36,  44,  46,  45,  56,   0,   0,   2,
+		   7,   0,   2,   2,   7,   6,   2,   7,  16,  24,  30,  37,  48,  54,  10,  18,
+		  25,  33,  32,  41,  43,  52,  32,  41,  43,  52,   7,  16,  32,  24,  32,  52,
+		  32,  52,  37,  54,  37,  54,  36,  44,  36,  44,  36,  44,  46,
 	};
 
 	private static final short[] lapg_sym_to = new short[] {
-		  65,   4,   5,   5,  24,   5,  29,  34,  47,  47,  47,  33,  11,  20,  20,  20,
-		  12,  13,  22,  42,  15,  15,  32,  32,  49,  35,  50,   1,   1,  28,  28,   6,
-		   6,  23,  58,  36,  36,  36,  36,  44,  44,  44,  44,  55,  62,  64,   2,   7,
-		  16,   3,   8,   9,  17,  14,  10,  18,  25,  21,  27,  31,  43,  37,  51,  52,
-		  37,  38,  38,  38,  38,  19,  26,  39,  30,  40,  57,  41,  41,  59,  60,  48,
-		  61,  63,  45,  53,  46,  46,  56,  56,  54,
+		  65,   4,   5,   5,  24,   5,   5,   5,   5,   5,   5,  33,  11,  20,  20,  20,
+		  12,  13,  22,  42,  15,  15,  32,  32,  52,  34,  53,   1,   1,  28,  28,   6,
+		   6,  23,  48,  48,  36,  36,  36,  36,  44,  44,  44,  57,  63,  64,   2,   7,
+		  16,   3,   8,   9,  17,  14,  10,  18,  25,  29,  35,  49,  59,  61,  21,  27,
+		  31,  43,  37,  54,  55,  37,  38,  38,  38,  38,  19,  26,  39,  30,  40,  60,
+		  41,  41,  50,  62,  51,  51,  45,  56,  46,  46,  47,  47,  58,
 	};
 
 	private static final short[] lapg_rlen = new short[] {
 		   3,   2,   1,   3,   3,   2,   1,   3,   1,   0,   3,   1,   0,   1,   0,   6,
-		   1,   2,   1,   2,   5,   4,   3,   1,   1,   2,   1,   0,   3,   3,   2,   2,
-		   3,   2,   1,   1,   0,   3,   1,   1,
+		   1,   2,   1,   2,   5,   4,   3,   1,   2,   1,   1,   0,   3,   2,   3,   2,
+		   2,   1,   0,   3,   2,   1,   3,   1,
 	};
 
 	private static final short[] lapg_rlex = new short[] {
 		  19,  20,  20,  23,  23,  21,  21,  24,  27,  27,  24,  28,  28,  29,  29,  24,
-		  25,  25,  22,  22,  31,  31,  32,  32,  33,  33,  36,  36,  34,  35,  35,  37,
-		  30,  39,  39,  41,  41,  40,  38,  26,
+		  25,  25,  22,  22,  31,  31,  32,  32,  33,  33,  36,  36,  34,  34,  35,  35,
+		  37,  38,  38,  30,  39,  39,  40,  26,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -223,23 +248,22 @@ public class Parser {
 		"grammar_definitions",
 		"directive",
 		"lexical_definition",
-		"iconlist",
-		"def_symbol",
+		"iconlist_in_bits",
+		"symbol",
 		"typeopt",
 		"iconopt",
 		"commandopt",
 		"command",
 		"grammar_definition",
 		"rule_right_part",
-		"identifiers",
+		"symbol_list",
 		"rule_def",
 		"rule_symbols",
 		"rule_priorityopt",
 		"rule_priority",
-		"symbol",
+		"command_tokensopt",
 		"command_tokens",
 		"command_token",
-		"command_tokensopt",
 	};
 
 	public enum Tokens {
@@ -268,23 +292,22 @@ public class Parser {
 		grammar_definitions,
 		directive,
 		lexical_definition,
-		iconlist,
-		def_symbol,
+		iconlist_in_bits,
+		symbol,
 		typeopt,
 		iconopt,
 		commandopt,
 		command,
 		grammar_definition,
 		rule_right_part,
-		identifiers,
+		symbol_list,
 		rule_def,
 		rule_symbols,
 		rule_priorityopt,
 		rule_priority,
-		symbol,
+		command_tokensopt,
 		command_tokens,
 		command_token,
-		command_tokensopt,
 	}
 
 	private static int lapg_next( int state, int symbol ) {
@@ -389,17 +412,41 @@ public class Parser {
 					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
+						case 3:
+							 options.add(new COption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line)); 
+							break;
+						case 4:
+							 options.add(new COption(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line)); 
+							break;
+						case 7:
+							 currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
+							break;
+						case 16:
+							 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
+							break;
+						case 17:
+							 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
+							break;
+						case 24:
+							 ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
+							break;
+						case 25:
+							 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
+							break;
+						case 30:
+							 buildRule(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
+							break;
 						case 31:
-							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
+							 lapg_gg.sym = new ArrayList<CSymbol>(); buildRule(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 32:
-							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset,lapg_m[lapg_head-2].endpos.offset)); 
+							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 							break;
-						case 38:
-							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym),-1); 
+						case 35:
+							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-1].pos.offset,lapg_m[lapg_head-1].endpos.offset)); 
 							break;
 						case 39:
-							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym),lapg_m[lapg_head-0].pos.line); 
+							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym)); 
 							break;
 					}
 					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 

@@ -19,4 +19,8 @@ public class CAction implements ILocatedEntity {
 	public String getContents() {
 		return contents;
 	}
+
+	int getLine() {
+		return line;
+	}
 }

@@ -73,8 +73,8 @@ directives ::=
 	directives directive | directive ;
 
 directive ::=
-	'.' identifier scon 
-	| '.' identifier icon 
+	'.' identifier scon 								{ options.add(new COption($identifier, $scon, @1.line)); }
+	| '.' identifier icon								{ options.add(new COption($identifier, $icon, @1.line)); }
 ;
 
 lexical_definitions ::= 
@@ -83,20 +83,22 @@ lexical_definitions ::=
 ;
 
 lexical_definition ::=
-	'[' iconlist ']'
-	| def_symbol typeopt ':'
-	| def_symbol typeopt ':' regexp iconopt commandopt
+	'[' iconlist_in_bits ']'							{ currentgroups = $iconlist_in_bits; }
+	| symbol typeopt ':'
+	| symbol typeopt ':' regexp iconopt commandopt
 ;
 
-iconlist(Integer) ::=
-	icon | iconlist icon ;
+iconlist_in_bits(Integer) ::=
+	icon 												{ if( $icon < 0 || $icon >= BITS ) $$ = 0; else $$ = 1 << $icon; } 
+	| iconlist_in_bits icon  							{ $$ = $iconlist_in_bits | $icon; }
+;
 
 grammar_definitions ::=
 	grammar_definition | grammar_definitions grammar_definition ;
 
 grammar_definition ::= 
-	def_symbol typeopt '::=' rule_right_part ';'
-	| '%' identifier identifiers ';' 
+	symbol typeopt '::=' rule_right_part ';'
+	| '%' identifier symbol_list ';' 
 ; 
 
 rule_right_part (List<CRule>) ::= 
@@ -104,15 +106,19 @@ rule_right_part (List<CRule>) ::=
 	| rule_def
 ;
 
-identifiers ::= 
-	identifier | identifiers identifier ;
+symbol_list (List<CSymbol>) ::= 
+	symbol_list symbol									{ $symbol_list.add($symbol); }
+	| symbol 											{ $$ = new ArrayList<CSymbol>(); $symbol_list.add($symbol); }
+;
 
 rule_def (CRule) ::=
-	rule_symbols commandopt rule_priorityopt ;
+	rule_symbols commandopt rule_priorityopt
+	| commandopt rule_priorityopt 
+;
 
 rule_symbols (List<CSymbol>) ::=
-	rule_symbols commandopt symbol
-	| commandopt symbol
+	rule_symbols commandopt symbol						{ buildRule($rule_symbols,$commandopt,$symbol); } 
+	| commandopt symbol									{ $$ = new ArrayList<CSymbol>(); buildRule($rule_symbols,$commandopt,$symbol); }
 ;
 
 rule_priority (CSymbol) ::=
@@ -120,7 +126,7 @@ rule_priority (CSymbol) ::=
 ;
 
 command (CAction) ::=
-	'{' command_tokens '}'								{ $$ = new CAction(@0.line, rawData(@0.offset,@~0.offset)); }  
+	'{' command_tokensopt '}'							{ $$ = new CAction(@0.line, rawData(@1.offset,@~1.offset)); }  
 ;
 	
 command_tokens ::=
@@ -131,11 +137,7 @@ command_token ::=
 ;
 
 symbol (CSymbol) ::=
-	identifier											{ $$ = getSymbol($identifier,-1); }
-;
-
-def_symbol (CSymbol) ::=
-	identifier											{ $$ = getSymbol($identifier,@0.line); }
+	identifier											{ $$ = getSymbol($identifier); }
 ;
 
 ##################################################################################
@@ -144,52 +146,75 @@ def_symbol (CSymbol) ::=
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 %%
 
-public Parser() {
+private Parser() {
 }
 
 private static final boolean DEBUG_SYNTAX = false;
+private static final int BITS = 32;
 
-private HashMap<String,CSymbol> symbols = new HashMap<String,CSymbol>();
+private Map<String,CSymbol> symCash = new HashMap<String,CSymbol>();
+
+private List<CSymbol> symbols = new ArrayList<CSymbol>();
+private List<CRule> rules = new ArrayList<CRule>();
+private List<CPrio> prios = new ArrayList<CPrio>();
+private List<COption> options = new ArrayList<COption>();
 
 private byte[] buff;
 private int l;
+
+private int currentgroups = 1;
 private int deep = 0;
 
 private String rawData(int start, int end) {
 	return new String(buff, start, end-start);
 }
 
-private CSymbol getSymbol(String name, int line) {
-	CSymbol res = symbols.get(name);
+private CSymbol getSymbol(String name) {
+	CSymbol res = symCash.get(name);
 	if( res == null ) {
 		res = new CSymbol(name);
-		symbols.put(name,res);
-	}
-	if( line > 0 ) {
-		res.intDefine(line);
+		symbols.add(res);
+		symCash.put(name,res);
 	}
 	return res;
 }
 
-private CSymbol wrapCommand(CAction action) {
-	return new CSymbol(null); // TODO
+private void buildRule(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
+	if( cmdopt != null ) {
+		CSymbol sym = new CSymbol(null);
+		symbols.add(sym);
+		sym.addRules(Collections.singletonList(new CRule(null, cmdopt, null)));
+		sym.setDefined(null, cmdopt.getLine());
+		list.add(sym);
+	}
+	list.add(symbol);
 }
 
 void error( String s ) {
 	System.err.println(s);
 }
 
-public boolean parse(String s) {
+private CSyntax doParse(String s) {
 	l = 0;
 	try {
 		buff = s.getBytes("utf-8");
 	} catch( UnsupportedEncodingException ex ) {
-		return false;
+		return null;
 	}
-	boolean res = parse();
-	return res;
+	if( !parse() ) {
+		return null;
+	}
+	
+	return new CSyntax(symbols,rules,prios,options);
+}
+
+public static CSyntax process(String data) {
+	Parser p = new Parser();
+	return p.doParse(data);
 }
