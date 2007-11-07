@@ -3,20 +3,44 @@ package net.sf.lapg.input;
 import java.util.Collections;
 import java.util.List;
 
-public class CRule {
+import net.sf.lapg.templates.api.ILocatedEntity;
+
+public class CRule implements ILocatedEntity {
 
 	private CSymbol left;
 	private List<CSymbol> right;
 	private CAction action;
 	private CSymbol priority;
+	private int line;
 
-	public CRule(List<CSymbol> right, CAction action, CSymbol priority) {
+	public CRule(List<CSymbol> right, CAction action, CSymbol priority, int line) {
 		this.right = right != null ? right : Collections.<CSymbol>emptyList();
 		this.action = action;
 		this.priority = priority;
+		this.line = line;
 	}
 
 	void setLeft(CSymbol sym) {
 		this.left = sym;
+	}
+
+	public String getLocation() {
+		return "line:" + line;
+	}
+
+	public CSymbol getLeft() {
+		return left;
+	}
+
+	public List<CSymbol> getRight() {
+		return right;
+	}
+
+	public CAction getAction() {
+		return action;
+	}
+
+	public CSymbol getPriority() {
+		return priority;
 	}
 }

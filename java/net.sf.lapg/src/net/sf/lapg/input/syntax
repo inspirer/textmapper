@@ -1,7 +1,7 @@
 #   syntax: lalr1 generator source grammar
 #
 #   Lapg (Lexical Analyzer and Parser Generator)
-#   Copyright (C) 2002-06  Evgeny Gryaznov (inspirer@inbox.ru)
+#   Copyright (C) 2002-07  Evgeny Gryaznov (inspirer@inbox.ru)
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -84,8 +84,8 @@ lexical_definitions ::=
 
 lexical_definition ::=
 	'[' iconlist_in_bits ']'							{ currentgroups = $iconlist_in_bits; }
-	| symbol typeopt ':'
-	| symbol typeopt ':' regexp iconopt commandopt
+	| symbol typeopt ':'								{ addLexem($symbol, $typeopt, null, null, null, @0.line); }
+	| symbol typeopt ':' regexp iconopt commandopt		{ addLexem($symbol, $typeopt, $regexp, $iconopt, $commandopt, @0.line); }
 ;
 
 iconlist_in_bits(Integer) ::=
@@ -94,16 +94,18 @@ iconlist_in_bits(Integer) ::=
 ;
 
 grammar_definitions ::=
-	grammar_definition | grammar_definitions grammar_definition ;
+	grammar_definitions grammar_definition
+	| grammar_definition 
+;
 
 grammar_definition ::= 
-	symbol typeopt '::=' rule_right_part ';'
-	| '%' identifier symbol_list ';' 
+	rules_definition ';'
+	| '%' identifier symbol_list ';'					{ addPrio($identifier, $symbol_list, @1.line); }
 ; 
 
-rule_right_part (List<CRule>) ::= 
-	rule_right_part '|' rule_def
-	| rule_def
+rules_definition (CSymbol) ::= 
+	symbol typeopt '::=' rule_def						{ $symbol.setDefined($typeopt, @0.line); addRule($rule_def,$symbol); }
+	| rules_definition '|' rule_def						{ addRule($rule_def,$rules_definition); }
 ;
 
 symbol_list (List<CSymbol>) ::= 
@@ -112,13 +114,13 @@ symbol_list (List<CSymbol>) ::=
 ;
 
 rule_def (CRule) ::=
-	rule_symbols commandopt rule_priorityopt
-	| commandopt rule_priorityopt 
+	rule_symbols commandopt rule_priorityopt			{ $$ = new CRule($rule_symbols, $commandopt, $rule_priorityopt, @0.line); }
+	| commandopt rule_priorityopt 						{ $$ = new CRule(null, $commandopt, $rule_priorityopt, @0.line); }
 ;
 
 rule_symbols (List<CSymbol>) ::=
-	rule_symbols commandopt symbol						{ buildRule($rule_symbols,$commandopt,$symbol); } 
-	| commandopt symbol									{ $$ = new ArrayList<CSymbol>(); buildRule($rule_symbols,$commandopt,$symbol); }
+	rule_symbols commandopt symbol						{ addRuleSymbol($rule_symbols,$commandopt,$symbol); } 
+	| commandopt symbol									{ $$ = new ArrayList<CSymbol>(); addRuleSymbol($rule_symbols,$commandopt,$symbol); }
 ;
 
 rule_priority (CSymbol) ::=
@@ -152,7 +154,9 @@ import java.util.List;
 import java.util.Map;
 %%
 
-private Parser() {
+private Parser(byte[] data) {
+	this.buff = data;
+	this.l = 0;
 }
 
 private static final boolean DEBUG_SYNTAX = false;
@@ -185,36 +189,51 @@ private CSymbol getSymbol(String name) {
 	return res;
 }
 
-private void buildRule(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
+private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
+	sym.setTerminal(type, regexp,lexprio!=null?lexprio.intValue():0,command, line);
+}
+
+private void addRule( CRule rule, CSymbol left ) {
+	rule.setLeft(left);
+	rules.add(rule);
+}
+
+private void addPrio( String prio, List<CSymbol> list, int line ) {
+	if( prio.equals("left") ) {
+		prios.add(new CPrio(CPrio.LEFT, list,line));
+	} else if( prio.equals("right") ) {
+		prios.add(new CPrio(CPrio.RIGHT, list,line));
+	} else if( prio.equals("nonassoc") ) {
+		prios.add(new CPrio(CPrio.NONASSOC, list,line));
+	} else {
+		error("unknown priority identifier used: `"+prio+"` at " + line);
+	}
+}
+
+private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 	if( cmdopt != null ) {
 		CSymbol sym = new CSymbol(null);
 		symbols.add(sym);
-		sym.addRules(Collections.singletonList(new CRule(null, cmdopt, null)));
+		addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
 		sym.setDefined(null, cmdopt.getLine());
 		list.add(sym);
 	}
 	list.add(symbol);
 }
 
-void error( String s ) {
+private void error( String s ) {
 	System.err.println(s);
 }
 
-private CSyntax doParse(String s) {
-	l = 0;
+public static CSyntax process(String data) {
 	try {
-		buff = s.getBytes("utf-8");
+		Parser p = new Parser(data.getBytes("utf-8"));
+		if( !p.parse() ) {
+			return null;
+		}
+	
+		return new CSyntax(p.symbols,p.rules,p.prios,p.options);
 	} catch( UnsupportedEncodingException ex ) {
 		return null;
 	}
-	if( !parse() ) {
-		return null;
-	}
-	
-	return new CSyntax(symbols,rules,prios,options);
-}
-
-public static CSyntax process(String data) {
-	Parser p = new Parser();
-	return p.doParse(data);
 }

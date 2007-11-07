@@ -12,7 +12,9 @@ import java.util.Map;
 
 public class Parser {
 	
-	private Parser() {
+	private Parser(byte[] data) {
+		this.buff = data;
+		this.l = 0;
 	}
 	
 	private static final boolean DEBUG_SYNTAX = false;
@@ -45,38 +47,53 @@ public class Parser {
 		return res;
 	}
 	
-	private void buildRule(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
+	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
+		sym.setTerminal(type, regexp,lexprio!=null?lexprio.intValue():0,command, line);
+	}
+	
+	private void addRule( CRule rule, CSymbol left ) {
+		rule.setLeft(left);
+		rules.add(rule);
+	}
+	
+	private void addPrio( String prio, List<CSymbol> list, int line ) {
+		if( prio.equals("left") ) {
+			prios.add(new CPrio(CPrio.LEFT, list,line));
+		} else if( prio.equals("right") ) {
+			prios.add(new CPrio(CPrio.RIGHT, list,line));
+		} else if( prio.equals("nonassoc") ) {
+			prios.add(new CPrio(CPrio.NONASSOC, list,line));
+		} else {
+			error("unknown priority identifier used: `"+prio+"` at " + line);
+		}
+	}
+	
+	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			CSymbol sym = new CSymbol(null);
 			symbols.add(sym);
-			sym.addRules(Collections.singletonList(new CRule(null, cmdopt, null)));
+			addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
 			sym.setDefined(null, cmdopt.getLine());
 			list.add(sym);
 		}
 		list.add(symbol);
 	}
 	
-	void error( String s ) {
+	private void error( String s ) {
 		System.err.println(s);
 	}
 	
-	private CSyntax doParse(String s) {
-		l = 0;
+	public static CSyntax process(String data) {
 		try {
-			buff = s.getBytes("utf-8");
+			Parser p = new Parser(data.getBytes("utf-8"));
+			if( !p.parse() ) {
+				return null;
+			}
+		
+			return new CSyntax(p.symbols,p.rules,p.prios,p.options);
 		} catch( UnsupportedEncodingException ex ) {
 			return null;
 		}
-		if( !parse() ) {
-			return null;
-		}
-		
-		return new CSyntax(symbols,rules,prios,options);
-	}
-	
-	public static CSyntax process(String data) {
-		Parser p = new Parser();
-		return p.doParse(data);
 	}
 
 	public class lapg_place {
@@ -168,51 +185,51 @@ public class Parser {
 
 	private static final int[] lapg_action = new int[] {
 		  -1,  -1,  -1,   2,  -1,  39,  -1,  -1,   1,   6,  -3,   3,   4,  16,  -1,  -1,
-		  -9,   5, -17,  18,   8,  -1,  17,   7,  -1, -25,  19,  -1, -31,  25,  -1,  -1,
-		 -41, -53,  21,  24, -65, -71,  13,  -1,  23, -81,  11, -93,-103,  -1,-109,  37,
-		  -1,  31,  29,  26,-115,  20,-127,  15,  -1,  35,  36,  32,  22,  30,  28,  38,
+		  -9,   5, -17,  19,  -1,   8,  -1,  17,   7,  -1, -25,  18,  -1, -31,  20, -43,
+		  25,  -1,  -1, -53, -65, -71,  13,  23, -81, -93,  21,  24,  22,-105,  -1,-111,
+		  37,  -1,  31,  29,  26,-117,  11,-127,  -1,  35,  36,  32,  30,  28,  15,  38,
 		  -1,  -2,
 	};
 
 	private static final short[] lapg_lalr = new short[] {
 		   4,  -1,  12,   9,  -1,  -2,   1,  -1,   6,  -1,   0,   0,  -1,  -2,   4,  -1,
-		   8,   9,  12,   9,  -1,  -2,   4,  -1,   8,   9,  -1,  -2,   2,  -1,   1,  10,
-		   6,  10,  13,  10,  -1,  -2,  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,
-		  -1,  -2,   5,  -1,   1,  12,   6,  12,  13,  12,  16,  12,  -1,  -2,  17,  -1,
+		   8,   9,  12,   9,  -1,  -2,   4,  -1,   8,   9,  -1,  -2,  16,  -1,   1,  14,
+		   9,  14,  10,  14,  15,  14,  -1,  -2,   2,  -1,   1,  10,   6,  10,  13,  10,
+		  -1,  -2,  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,  17,  -1,
 		  18,  34,  -1,  -2,   1,  -1,  15,  -1,   9,  27,  10,  27,  -1,  -2,  16,  -1,
-		   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,  16,  -1,   1,  14,   6,  14,
-		  13,  14,  -1,  -2,  17,  -1,  18,  34,  -1,  -2,  17,  -1,  18,  33,  -1,  -2,
-		  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,   1,  -1,  15,  -1,
-		   9,  27,  10,  27,  -1,  -2,
+		   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,   5,  -1,   1,  12,   6,  12,
+		  13,  12,  16,  12,  -1,  -2,  17,  -1,  18,  34,  -1,  -2,  17,  -1,  18,  33,
+		  -1,  -2,   1,  -1,  15,  -1,   9,  27,  10,  27,  -1,  -2,  16,  -1,   1,  14,
+		   6,  14,  13,  14,  -1,  -2,
 	};
 
 	private static final short[] lapg_sym_goto = new short[] {
 		   0,   1,  11,  12,  13,  16,  20,  22,  22,  24,  25,  27,  29,  31,  33,  34,
 		  36,  40,  43,  45,  46,  47,  48,  49,  51,  53,  54,  62,  65,  66,  70,  74,
-		  76,  77,  78,  80,  82,  84,  86,  88,  90,  93,
+		  76,  78,  79,  81,  83,  85,  87,  89,  91,  94,
 	};
 
 	private static final short[] lapg_sym_from = new short[] {
-		  64,   1,   2,   7,  15,  16,  24,  30,  37,  48,  54,  28,   4,  10,  18,  25,
-		   4,   6,  14,  33,   7,  16,  27,  31,  39,  30,  39,   0,   2,  21,  27,   2,
-		   7,  14,  37,  54,  32,  41,  43,  52,  36,  44,  46,  45,  56,   0,   0,   2,
-		   7,   0,   2,   2,   7,   6,   2,   7,  16,  24,  30,  37,  48,  54,  10,  18,
-		  25,  33,  32,  41,  43,  52,  32,  41,  43,  52,   7,  16,  32,  24,  32,  52,
-		  32,  52,  37,  54,  37,  54,  36,  44,  36,  44,  36,  44,  46,
+		  64,   1,   2,   7,  15,  16,  25,  33,  37,  49,  53,  31,   4,  10,  18,  26,
+		   4,   6,  14,  41,   7,  16,  28,  34,  20,  20,  33,   0,   2,  22,  28,   2,
+		   7,  14,  37,  53,  29,  35,  40,  55,  36,  45,  47,  46,  56,   0,   0,   2,
+		   7,   0,   2,   2,   7,   6,   2,   7,  16,  25,  33,  37,  49,  53,  10,  18,
+		  26,  41,  29,  35,  40,  55,  29,  35,  40,  55,   7,  16,   7,  16,  25,  29,
+		  35,  29,  35,  37,  53,  37,  53,  36,  45,  36,  45,  36,  45,  47,
 	};
 
 	private static final short[] lapg_sym_to = new short[] {
-		  65,   4,   5,   5,  24,   5,   5,   5,   5,   5,   5,  33,  11,  20,  20,  20,
-		  12,  13,  22,  42,  15,  15,  32,  32,  52,  34,  53,   1,   1,  28,  28,   6,
-		   6,  23,  48,  48,  36,  36,  36,  36,  44,  44,  44,  57,  63,  64,   2,   7,
-		  16,   3,   8,   9,  17,  14,  10,  18,  25,  29,  35,  49,  59,  61,  21,  27,
-		  31,  43,  37,  54,  55,  37,  38,  38,  38,  38,  19,  26,  39,  30,  40,  60,
-		  41,  41,  50,  62,  51,  51,  45,  56,  46,  46,  47,  47,  58,
+		  65,   4,   5,   5,  25,   5,   5,   5,   5,   5,   5,  41,  11,  21,  21,  21,
+		  12,  13,  23,  54,  15,  15,  35,  35,  29,  30,  42,   1,   1,  31,  31,   6,
+		   6,  24,  49,  49,  36,  36,  36,  36,  45,  45,  45,  57,  63,  64,   2,   7,
+		  16,   3,   8,   9,  17,  14,  10,  18,  26,  32,  43,  50,  59,  60,  22,  28,
+		  34,  55,  37,  37,  53,  62,  38,  38,  38,  38,  19,  27,  20,  20,  33,  39,
+		  44,  40,  40,  51,  61,  52,  52,  46,  56,  47,  47,  48,  48,  58,
 	};
 
 	private static final short[] lapg_rlen = new short[] {
 		   3,   2,   1,   3,   3,   2,   1,   3,   1,   0,   3,   1,   0,   1,   0,   6,
-		   1,   2,   1,   2,   5,   4,   3,   1,   2,   1,   1,   0,   3,   2,   3,   2,
+		   1,   2,   2,   1,   2,   4,   4,   3,   2,   1,   1,   0,   3,   2,   3,   2,
 		   2,   1,   0,   3,   2,   1,   3,   1,
 	};
 
@@ -255,7 +272,7 @@ public class Parser {
 		"commandopt",
 		"command",
 		"grammar_definition",
-		"rule_right_part",
+		"rules_definition",
 		"symbol_list",
 		"rule_def",
 		"rule_symbols",
@@ -299,7 +316,7 @@ public class Parser {
 		commandopt,
 		command,
 		grammar_definition,
-		rule_right_part,
+		rules_definition,
 		symbol_list,
 		rule_def,
 		rule_symbols,
@@ -421,11 +438,26 @@ public class Parser {
 						case 7:
 							 currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
 							break;
+						case 10:
+							 addLexem(((CSymbol)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, lapg_m[lapg_head-2].pos.line); 
+							break;
+						case 15:
+							 addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CAction)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line); 
+							break;
 						case 16:
 							 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
 							break;
 						case 17:
 							 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
+							break;
+						case 21:
+							 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
+							break;
+						case 22:
+							 ((CSymbol)lapg_m[lapg_head-3].sym).setDefined(((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
+							break;
+						case 23:
+							 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym)); 
 							break;
 						case 24:
 							 ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
@@ -433,11 +465,17 @@ public class Parser {
 						case 25:
 							 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
+						case 28:
+							 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line); 
+							break;
+						case 29:
+							 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line); 
+							break;
 						case 30:
-							 buildRule(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
+							 addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 31:
-							 lapg_gg.sym = new ArrayList<CSymbol>(); buildRule(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
+							 lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 32:
 							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 

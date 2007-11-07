@@ -1,8 +1,5 @@
 package net.sf.lapg.input;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.lapg.templates.api.ILocatedEntity;
 
 public class CSymbol implements ILocatedEntity {
@@ -12,9 +9,6 @@ public class CSymbol implements ILocatedEntity {
 	private String name;
 	private String type;
 	private boolean isTerm = false, isDefined = false;
-
-	// non-term
-	private List<CRule> rules;
 
 	// term
 	private CAction lexemAction;
@@ -35,19 +29,34 @@ public class CSymbol implements ILocatedEntity {
 		setDefined(type, line);
 		this.isTerm = true;
 		this.lexemAction = action;
-	}
-
-	void addRules(List<CRule> rules) {
-		if( this.rules == null ) {
-			this.rules = new ArrayList<CRule>();
-		}
-		this.rules.addAll(rules);
-		for( CRule r : rules ) {
-			r.setLeft(this);
-		}
+		this.lexemPrio = prio;
 	}
 
 	public String getLocation() {
 		return "line:" + line;
+	}
+
+	public boolean isTerm() {
+		return isTerm;
+	}
+
+	public boolean isDefined() {
+		return isDefined;
+	}
+
+	public CAction getLexemAction() {
+		return lexemAction;
+	}
+
+	public int getLexemPrio() {
+		return lexemPrio;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getType() {
+		return type;
 	}
 }
