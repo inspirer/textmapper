@@ -4,6 +4,9 @@ import java.util.List;
 
 public class CSyntax {
 
+	public static final String EOI = "eoi";
+	public static final String INPUT = "input";
+
 	private List<String> errors;
 
 	private List<CSymbol> symbols;

@@ -15,6 +15,8 @@ public class Parser {
 	private Parser(byte[] data) {
 		this.buff = data;
 		this.l = 0;
+		
+		addLexem(getSymbol(CSyntax.EOI), null, null, null, null, 1);
 	}
 	
 	private static final boolean DEBUG_SYNTAX = false;
@@ -48,7 +50,19 @@ public class Parser {
 	}
 	
 	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
-		sym.setTerminal(type, regexp,lexprio!=null?lexprio.intValue():0,command, line);
+		try {
+			sym.setTerminal(type, line, regexp != null ? new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,line) : null);
+		} catch( ParseException ex ) {
+			error(ex.getMessage());
+		}
+	}
+	
+	private void addNonterm(CSymbol sym, String type, int line ) {
+		try {
+			sym.setNonTerminal(type, line);
+		} catch( ParseException ex ) {
+			error(ex.getMessage());
+		}
 	}
 	
 	private void addRule( CRule rule, CSymbol left ) {
@@ -70,11 +84,15 @@ public class Parser {
 	
 	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
-			CSymbol sym = new CSymbol(null);
-			symbols.add(sym);
-			addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
-			sym.setDefined(null, cmdopt.getLine());
-			list.add(sym);
+			try {
+				CSymbol sym = new CSymbol(null);
+				sym.setNonTerminal(null, cmdopt.getLine());
+				symbols.add(sym);
+				addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
+				list.add(sym);
+			} catch( ParseException ex ) {
+				error(ex.getMessage());
+			}
 		}
 		list.add(symbol);
 	}
@@ -93,6 +111,14 @@ public class Parser {
 			return new CSyntax(p.symbols,p.rules,p.prios,p.options);
 		} catch( UnsupportedEncodingException ex ) {
 			return null;
+		}
+	}
+	
+	static class ParseException extends Exception {
+		private static final long serialVersionUID = 2811939050284758826L;
+	
+		public ParseException(String arg0) {
+			super(arg0);
 		}
 	}
 
@@ -454,7 +480,7 @@ public class Parser {
 							 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
 							break;
 						case 22:
-							 ((CSymbol)lapg_m[lapg_head-3].sym).setDefined(((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
+							 addNonterm(((CSymbol)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
 							break;
 						case 23:
 							 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym)); 

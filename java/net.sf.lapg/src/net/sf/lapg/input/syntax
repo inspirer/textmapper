@@ -104,7 +104,7 @@ grammar_definition ::=
 ; 
 
 rules_definition (CSymbol) ::= 
-	symbol typeopt '::=' rule_def						{ $symbol.setDefined($typeopt, @0.line); addRule($rule_def,$symbol); }
+	symbol typeopt '::=' rule_def						{ addNonterm($symbol, $typeopt, @0.line); addRule($rule_def,$symbol); }
 	| rules_definition '|' rule_def						{ addRule($rule_def,$rules_definition); }
 ;
 
@@ -157,6 +157,8 @@ import java.util.Map;
 private Parser(byte[] data) {
 	this.buff = data;
 	this.l = 0;
+	
+	addLexem(getSymbol(CSyntax.EOI), null, null, null, null, 1);
 }
 
 private static final boolean DEBUG_SYNTAX = false;
@@ -190,7 +192,19 @@ private CSymbol getSymbol(String name) {
 }
 
 private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
-	sym.setTerminal(type, regexp,lexprio!=null?lexprio.intValue():0,command, line);
+	try {
+		sym.setTerminal(type, line, regexp != null ? new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,line) : null);
+	} catch( ParseException ex ) {
+		error(ex.getMessage());
+	}
+}
+
+private void addNonterm(CSymbol sym, String type, int line ) {
+	try {
+		sym.setNonTerminal(type, line);
+	} catch( ParseException ex ) {
+		error(ex.getMessage());
+	}
 }
 
 private void addRule( CRule rule, CSymbol left ) {
@@ -212,11 +226,15 @@ private void addPrio( String prio, List<CSymbol> list, int line ) {
 
 private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 	if( cmdopt != null ) {
-		CSymbol sym = new CSymbol(null);
-		symbols.add(sym);
-		addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
-		sym.setDefined(null, cmdopt.getLine());
-		list.add(sym);
+		try {
+			CSymbol sym = new CSymbol(null);
+			sym.setNonTerminal(null, cmdopt.getLine());
+			symbols.add(sym);
+			addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
+			list.add(sym);
+		} catch( ParseException ex ) {
+			error(ex.getMessage());
+		}
 	}
 	list.add(symbol);
 }
@@ -235,5 +253,13 @@ public static CSyntax process(String data) {
 		return new CSyntax(p.symbols,p.rules,p.prios,p.options);
 	} catch( UnsupportedEncodingException ex ) {
 		return null;
+	}
+}
+
+static class ParseException extends Exception {
+	private static final long serialVersionUID = 2811939050284758826L;
+
+	public ParseException(String arg0) {
+		super(arg0);
 	}
 }

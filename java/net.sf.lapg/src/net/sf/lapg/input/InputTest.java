@@ -9,7 +9,7 @@ public class InputTest {
 
 	public static void main(String[] args) {
 		String toParse = getFileContents(args[0]);
-		Parser.process(toParse);
+		CSyntax cs = Parser.process(toParse);
 	}
 
 	private static String getFileContents(String file) {
