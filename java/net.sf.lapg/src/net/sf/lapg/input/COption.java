@@ -4,9 +4,9 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 
 public class COption implements ILocatedEntity {
 
-	private String name;
-	private Object value;
-	private int line;
+	private final String name;
+	private final Object value;
+	private final int line;
 
 	public COption(String myName, Object myValue, int line) {
 		this.name = myName;

@@ -4,8 +4,8 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 
 public class CAction implements ILocatedEntity {
 
-	private int line;
-	private String contents;
+	private final int line;
+	private final String contents;
 
 	public CAction(int line, String contents) {
 		this.line = line;

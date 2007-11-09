@@ -8,10 +8,10 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 public class CRule implements ILocatedEntity {
 
 	private CSymbol left;
-	private List<CSymbol> right;
-	private CAction action;
-	private CSymbol priority;
-	private int line;
+	private final List<CSymbol> right;
+	private final CAction action;
+	private final CSymbol priority;
+	private final int line;
 	int index;
 
 	public CRule(List<CSymbol> right, CAction action, CSymbol priority, int line) {

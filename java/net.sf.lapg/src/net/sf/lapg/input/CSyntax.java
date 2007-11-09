@@ -20,6 +20,7 @@ public class CSyntax {
 		this.prios = prios.toArray(new CPrio[prios.size()]);
 		this.options = options.toArray(new COption[options.size()]);
 		sortSymbols();
+		enumerateAll();
 	}
 
 	/**
@@ -47,8 +48,18 @@ public class CSyntax {
 					CSymbol ex = symbols[i];
 					symbols[i] = symbols[0];
 					symbols[0] = ex;
+					break;
 				}
 			}
+		}
+	}
+
+	private void enumerateAll() {
+		for( int i = 0; i < symbols.length; i++ ) {
+			symbols[i].index = i;
+		}
+		for( int i = 0; i < rules.length; i++ ) {
+			rules[i].index = i;
 		}
 	}
 

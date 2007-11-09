@@ -10,9 +10,9 @@ public class CPrio implements ILocatedEntity {
 	public static final int RIGHT = 2;
 	public static final int NONASSOC = 3;
 
-	private int prio;
-	private List<CSymbol> symbols;
-	private int line;
+	private final int prio;
+	private final List<CSymbol> symbols;
+	private final int line;
 
 	public CPrio(int prio, List<CSymbol> symbols, int line) {
 		this.prio = prio;
