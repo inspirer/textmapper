@@ -23,6 +23,7 @@ public class Parser {
 	private static final int BITS = 32;
 	
 	private Map<String,CSymbol> symCash = new HashMap<String,CSymbol>();
+	private List<String> errors = new ArrayList<String>();
 	
 	private List<CSymbol> symbols = new ArrayList<CSymbol>();
 	private List<CRule> rules = new ArrayList<CRule>();
@@ -98,14 +99,14 @@ public class Parser {
 	}
 	
 	private void error( String s ) {
-		System.err.println(s);
+		errors.add(s);
 	}
 	
 	public static CSyntax process(String data) {
 		try {
 			Parser p = new Parser(data.getBytes("utf-8"));
-			if( !p.parse() ) {
-				return null;
+			if( !p.parse() || !p.errors.isEmpty() ) {
+				return new CSyntax(p.errors);
 			}
 		
 			return new CSyntax(p.symbols,p.rules,p.prios,p.options);
