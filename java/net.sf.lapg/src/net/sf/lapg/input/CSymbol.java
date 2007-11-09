@@ -12,12 +12,14 @@ public class CSymbol implements ILocatedEntity {
 	private final List<CLexem> lexems = new ArrayList<CLexem>();
 
 	private int line;
+	int index;
 	private String type;
 	private boolean isTerm = false, isDefined = false;
 
-	public CSymbol(String name) {
-		this.line = 0;
+	public CSymbol(String name, int line) {
+		this.line = line;
 		this.name = name;
+		this.index = -1;
 	}
 
 	private void setDefined( String ntype, int nline, boolean nisterm ) throws ParseException {
@@ -67,6 +69,10 @@ public class CSymbol implements ILocatedEntity {
 
 	public boolean isDefined() {
 		return isDefined;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	public String getName() {

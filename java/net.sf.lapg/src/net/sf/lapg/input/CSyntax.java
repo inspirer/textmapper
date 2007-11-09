@@ -9,39 +9,74 @@ public class CSyntax {
 
 	private List<String> errors;
 
-	private List<CSymbol> symbols;
-	private List<CRule> rules;
-	private List<CPrio> prios;
-	private List<COption> options;
+	private CSymbol[] symbols;
+	private CRule[] rules;
+	private CPrio[] prios;
+	private COption[] options;
 
 	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, List<COption> options) {
-		this.symbols = symbols;
-		this.rules = rules;
-		this.prios = prios;
-		this.options = options;
+		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
+		this.rules = rules.toArray(new CRule[rules.size()]);
+		this.prios = prios.toArray(new CPrio[prios.size()]);
+		this.options = options.toArray(new COption[options.size()]);
+		sortSymbols();
+	}
+
+	/**
+	 *  Inplace sort of symbols. [eoi term] [other terms] [all non-terminals]
+	 */
+	private void sortSymbols() {
+		int first = 0, end = symbols.length - 1;
+
+		while( first < end ) {
+			while( symbols[first].isTerm() && first < end ) {
+				first++;
+			}
+			while( !symbols[end].isTerm() && first < end) {
+				end--;
+			}
+			if( first < end ) {
+				CSymbol ex = symbols[end];
+				symbols[end] = symbols[first];
+				symbols[first] = ex;
+			}
+		}
+		if( symbols.length > 0 && !symbols[0].getName().equals(EOI) ) {
+			for( int i = 1; i < symbols.length; i++ ) {
+				if( symbols[i].getName().equals(EOI) ) {
+					CSymbol ex = symbols[i];
+					symbols[i] = symbols[0];
+					symbols[0] = ex;
+				}
+			}
+		}
 	}
 
 	public CSyntax(List<String> errors) {
 		this.errors = errors;
 	}
 
-	public boolean isParsed() {
-		return errors == null;
+	public boolean hasErrors() {
+		return errors != null;
 	}
 
-	public List<CSymbol> getSymbols() {
+	public CSymbol[] getSymbols() {
 		return symbols;
 	}
 
-	public List<CRule> getRules() {
+	public CRule[] getRules() {
 		return rules;
 	}
 
-	public List<CPrio> getPrios() {
+	public CPrio[] getPrios() {
 		return prios;
 	}
 
-	public List<COption> getOptions() {
+	public COption[] getOptions() {
 		return options;
+	}
+
+	public List<String> getErrors() {
+		return errors;
 	}
 }

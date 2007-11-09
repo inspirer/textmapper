@@ -139,7 +139,7 @@ command_token ::=
 ;
 
 symbol (CSymbol) ::=
-	identifier											{ $$ = getSymbol($identifier); }
+	identifier											{ $$ = getSymbol($identifier, @0.line); }
 ;
 
 ##################################################################################
@@ -158,7 +158,8 @@ private Parser(byte[] data) {
 	this.buff = data;
 	this.l = 0;
 	
-	addLexem(getSymbol(CSyntax.EOI), null, null, null, null, 1);
+	addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
+	getSymbol(CSyntax.INPUT, 1);
 }
 
 private static final boolean DEBUG_SYNTAX = false;
@@ -182,10 +183,10 @@ private String rawData(int start, int end) {
 	return new String(buff, start, end-start);
 }
 
-private CSymbol getSymbol(String name) {
+private CSymbol getSymbol(String name, int line) {
 	CSymbol res = symCash.get(name);
 	if( res == null ) {
-		res = new CSymbol(name);
+		res = new CSymbol(name, line);
 		symbols.add(res);
 		symCash.put(name,res);
 	}
@@ -228,7 +229,7 @@ private void addPrio( String prio, List<CSymbol> list, int line ) {
 private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 	if( cmdopt != null ) {
 		try {
-			CSymbol sym = new CSymbol(null);
+			CSymbol sym = new CSymbol(null, 0);
 			sym.setNonTerminal(null, cmdopt.getLine());
 			symbols.add(sym);
 			addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);

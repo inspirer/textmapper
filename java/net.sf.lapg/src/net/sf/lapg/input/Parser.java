@@ -16,7 +16,8 @@ public class Parser {
 		this.buff = data;
 		this.l = 0;
 		
-		addLexem(getSymbol(CSyntax.EOI), null, null, null, null, 1);
+		addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
+		getSymbol(CSyntax.INPUT, 1);
 	}
 	
 	private static final boolean DEBUG_SYNTAX = false;
@@ -40,10 +41,10 @@ public class Parser {
 		return new String(buff, start, end-start);
 	}
 	
-	private CSymbol getSymbol(String name) {
+	private CSymbol getSymbol(String name, int line) {
 		CSymbol res = symCash.get(name);
 		if( res == null ) {
-			res = new CSymbol(name);
+			res = new CSymbol(name, line);
 			symbols.add(res);
 			symCash.put(name,res);
 		}
@@ -86,7 +87,7 @@ public class Parser {
 	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			try {
-				CSymbol sym = new CSymbol(null);
+				CSymbol sym = new CSymbol(null, 0);
 				sym.setNonTerminal(null, cmdopt.getLine());
 				symbols.add(sym);
 				addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
@@ -511,7 +512,7 @@ public class Parser {
 							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-1].pos.offset,lapg_m[lapg_head-1].endpos.offset)); 
 							break;
 						case 39:
-							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym)); 
+							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 
 							break;
 					}
 					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 

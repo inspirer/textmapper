@@ -12,12 +12,14 @@ public class CRule implements ILocatedEntity {
 	private CAction action;
 	private CSymbol priority;
 	private int line;
+	int index;
 
 	public CRule(List<CSymbol> right, CAction action, CSymbol priority, int line) {
 		this.right = right != null ? right : Collections.<CSymbol>emptyList();
 		this.action = action;
 		this.priority = priority;
 		this.line = line;
+		this.index = -1;
 	}
 
 	void setLeft(CSymbol sym) {
@@ -42,6 +44,10 @@ public class CRule implements ILocatedEntity {
 
 	public CSymbol getPriority() {
 		return priority;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	@Override

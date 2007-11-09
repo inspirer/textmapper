@@ -10,6 +10,11 @@ public class InputTest {
 	public static void main(String[] args) {
 		String toParse = getFileContents(args[0]);
 		CSyntax cs = Parser.process(toParse);
+		if( cs.hasErrors() ) {
+			for( String s : cs.getErrors()) {
+				System.err.println(s);
+			}
+		}
 	}
 
 	private static String getFileContents(String file) {
