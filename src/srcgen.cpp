@@ -431,6 +431,8 @@ void SourceGenerator::print_code( bool last, int tabs )
 				fwrite( buffer, 1, p - buffer, stdout );
 				p = lastline = buffer;
 			}
+		} else {
+			l++; // skip CR
 		}
 
 		if( l == end )
