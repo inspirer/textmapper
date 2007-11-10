@@ -3,11 +3,11 @@ package net.sf.lapg.lalr;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import net.sf.lapg.Grammar;
 import net.sf.lapg.IError;
+import net.sf.lapg.api.Grammar;
 
 class Lalr1 extends LR0 {
-	
+
 	public class Short {
 		short value;
 		Short next;
@@ -22,7 +22,7 @@ class Lalr1 extends LR0 {
 	protected short[] larule, laindex;
 	protected int[] LA /* ? -> setof(term) */;
 	protected short[] term_goto /* nsyms + 1 */, term_from, term_to /* ngotos: state->state */;
-	
+
 	private int maxrpart, ngotos, ntgotos;
 	private Short[] lookback;
 	private short[] edge;
@@ -52,8 +52,9 @@ class Lalr1 extends LR0 {
 		freeLA();
 
 		// TODO
-		for (int i = nterms; i <= nsyms; i++)
+		for (int i = nterms; i <= nsyms; i++) {
 			term_goto[i] += ntgotos;
+		}
 	}
 
 
@@ -67,18 +68,25 @@ class Lalr1 extends LR0 {
 		maxrpart = 2;
 		for( e = i = 0; i < situations; i++ ) {
 			if( rright[i] < 0 ) {
-				if( e > maxrpart ) maxrpart = e;
+				if( e > maxrpart ) {
+					maxrpart = e;
+				}
 				e = 0;
-			} else e++;
+			} else {
+				e++;
+			}
 		}
 
 		// get larule size
-		for( e = 0, t = first; t != null; t = t.next )
-			if( !t.LR0 )
+		for( e = 0, t = first; t != null; t = t.next ) {
+			if( !t.LR0 ) {
 				e += t.nreduce;
+			}
+		}
 
-		if( e == 0 ) 
+		if( e == 0 ) {
 			e = 1;
+		}
 
 		// allocate
 		laindex = new short[ nstates+1 ];
@@ -94,8 +102,9 @@ class Lalr1 extends LR0 {
 		for( i = 0, t = first; t != null; t = t.next ) {
 			laindex[t.number] = (short)i;
 			if( !t.LR0 ) {
-				for( k = 0; k < t.nreduce; k++ )
+				for( k = 0; k < t.nreduce; k++ ) {
 					larule[i++] = t.reduce[k];
+				}
 			}
 		}
 	}
@@ -110,16 +119,17 @@ class Lalr1 extends LR0 {
 
 		goto_nshifts = new short[ nsyms ];
 		term_goto = new short[ nsyms + 1 ];
-		
+
 		Arrays.fill(goto_nshifts, (short)0);
 
 		ngotos = 0;
-		for( t = first; t != null; t = t.next )
+		for( t = first; t != null; t = t.next ) {
 			for( i = t.nshifts-1; i >= 0; i-- ) {
 				symnum = state[t.shifts[i]].symbol;
 				goto_nshifts[symnum]++;
 				ngotos++;
 			}
+		}
 
 		for( e = i = 0; i < nsyms; i++ ) {
 			term_goto[i] = (short)e;
@@ -130,7 +140,7 @@ class Lalr1 extends LR0 {
 		term_from = new short[ ngotos ];
 		term_to = new short[ ngotos ];
 
-		for( t = first; t != null; t = t.next )
+		for( t = first; t != null; t = t.next ) {
 			for( i = t.nshifts-1; i >= 0; i-- ) {
 				int newstate = t.shifts[i];
 				symnum = state[newstate].symbol;
@@ -138,12 +148,14 @@ class Lalr1 extends LR0 {
 				term_from[e] = (short)t.number;
 				term_to[e] = (short)newstate;
 			}
+		}
 
 		ntgotos = term_goto[nterms];
 		ngotos -= ntgotos;
-		
-		for( i = nterms; i <= nsyms; i++ )
+
+		for( i = nterms; i <= nsyms; i++ ) {
 			term_goto[i] -= ntgotos;
+		}
 	}
 
 
@@ -156,12 +168,13 @@ class Lalr1 extends LR0 {
 		while( min <= max ) {
 			e = (min + max) >> 1;
 			i = term_from[ntgotos+e];
-			if( i == state )
+			if( i == state ) {
 				return e;
-			else if( i < state )
+			} else if( i < state ) {
 				min = e + 1;
-			else
+			} else {
 				max = e - 1;
+			}
 		}
 
 		assert false;
@@ -203,20 +216,23 @@ class Lalr1 extends LR0 {
 			short[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
 
-			for( e = 0; e < nshifts && state[shifts[shifts_ind]].symbol < nterms; e++, shifts_ind++ )
+			for( e = 0; e < nshifts && state[shifts[shifts_ind]].symbol < nterms; e++, shifts_ind++ ) {
 				follow[settrav + (state[shifts[shifts_ind]].symbol)/BITS] |= (1<<((state[shifts[shifts_ind]].symbol)%BITS));
+			}
 
 			for( ; e < nshifts; e++, shifts_ind++ ) {
 				k = state[shifts[shifts_ind]].symbol;
-				if( sym[k].empty )
+				if( sym_empty[k] ) {
 					edge[nedges++] = (short)select_goto( st, k );
+				}
 			}
 
 			if( nedges != 0 ) {
 				empties[i] = new short[nedges+1];
-				short[] target = empties[i]; 
-				for( int q = 0; q < nedges; q++)
+				short[] target = empties[i];
+				for( int q = 0; q < nedges; q++) {
 					target[q] = edge[q];
+				}
 				empties[i][nedges] = -1;
 				nedges = 0;
 			} else {
@@ -242,30 +258,34 @@ class Lalr1 extends LR0 {
 		for( i = 0; i < n; i++ ) {
 			p = graph[i];
 			if( p != null ) {
-				for( int e = 0; p[e] >= 0; e++ )
+				for( int e = 0; p[e] >= 0; e++ ) {
 					nedges[p[e]]++;
+				}
 			}
 		}
 
 		// allocate new graph
 		short[][] newgraph = new short[n][];
-		for( i = 0; i < n; i++ )
+		for( i = 0; i < n; i++ ) {
 			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i]+1] : null;
+		}
 
 		// fill new graph
 		Arrays.fill(nedges, (short)0);
 		for( i = 0; i < n; i++ ) {
 			p = graph[i];
 			if( p != null ) {
-				for( int e = 0; p[e] >= 0; e++ )
+				for( int e = 0; p[e] >= 0; e++ ) {
 					newgraph[p[e]][nedges[p[e]]++] = (short)i;
+				}
 			}
 		}
 
 		// insert -1 (end-of-row markers)
 		for( i = 0; i < n; i++ ) {
-			if( newgraph[i] != null )
+			if( newgraph[i] != null ) {
 				newgraph[i][nedges[i]] = -1;
+			}
 		}
 
 		graph = newgraph;
@@ -302,15 +322,16 @@ class Lalr1 extends LR0 {
 					states[length++] = (short)currstate;
 				}
 
-				if( !state[currstate].LR0 )
+				if( !state[currstate].LR0 ) {
 					add_lookback( currstate, rule[ri], (short)i );
+				}
 
 				for( length--;;) {
 					rpart--;
-					if( rpart >= 0 && rright[rpart] >= (int)nterms ) {
+					if( rpart >= 0 && rright[rpart] >= nterms ) {
 						currstate = states[--length];
 						edge[nedges++] = (short)select_goto( currstate, rright[rpart] );
-						if( sym[rright[rpart]].empty ) {
+						if( sym_empty[rright[rpart]] ) {
 							continue;
 						}
 					}
@@ -320,9 +341,10 @@ class Lalr1 extends LR0 {
 
 			if( nedges != 0 ) {
 				graph[i] = new short[nedges+1];
-				short[] target = graph[i]; 
-				for( int q = 0; q < nedges; q++)
+				short[] target = graph[i];
+				for( int q = 0; q < nedges; q++) {
 					target[q] = edge[q];
+				}
 				graph[i][nedges] = -1;
 				nedges = 0;
 			} else {
@@ -354,8 +376,9 @@ class Lalr1 extends LR0 {
 			// add all associated gotos
 			for (s = lookback[i]; s != null; s = s.next) {
 				from = termset * s.value;
-				for (int q = 0; q < termset; q++)
+				for (int q = 0; q < termset; q++) {
 					LA[p + q] |= follow[from + q];
+				}
 			}
 
 			// free lookback
@@ -369,22 +392,25 @@ class Lalr1 extends LR0 {
 		lookback = null;
 		follow = null;
 	}
-	
+
 	private static final String spaces = "    ";
-	
+
 	private String format(int l, boolean left) {
 		String s = Integer.toString(l);
-		if( s.length() >= 4 )
+		if( s.length() >= 4 ) {
 			return s;
-		if( left )
+		}
+		if( left ) {
 			return spaces.substring(s.length()) + s;
+		}
 		return s + spaces.substring(s.length());
 	}
 
 	// debug
 	private void show_follow() {
-		if (debuglev < 2)
+		if (debuglev < 2) {
 			return;
+		}
 
 		int i, e;
 
@@ -392,9 +418,11 @@ class Lalr1 extends LR0 {
 		for (i = 0; i < ngotos; i++) {
 
 			err.debug( format(term_from[ntgotos+i], false) + " -> " + format(term_to[ntgotos+i], true) + "\t");
-			for (e = 0; e < nterms; e++)
-				if (((follow[i*termset + (e) / BITS] & (1 << ((e) % BITS))) != 0))
-					err.debug( " " + sym[e].name);
+			for (e = 0; e < nterms; e++) {
+				if (((follow[i*termset + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
+					err.debug( " " + sym[e].getName());
+				}
+			}
 
 			err.debug( "\n");
 		}
@@ -403,8 +431,9 @@ class Lalr1 extends LR0 {
 
 	// debug
 	private void show_graph() {
-		if (debuglev < 2)
+		if (debuglev < 2) {
 			return;
+		}
 
 		err.debug( "\nGraph:\n");
 
@@ -412,8 +441,9 @@ class Lalr1 extends LR0 {
 			short[] p = graph[i];
 			if (p != null) {
 				err.debug( MessageFormat.format(" {0,number,####}: ", i));
-				for (int e = 0; p[e] >= 0; e++)
+				for (int e = 0; p[e] >= 0; e++) {
 					err.debug( " " + p[e]);
+				}
 				err.debug( "\n");
 			}
 		}
@@ -425,8 +455,9 @@ class Lalr1 extends LR0 {
 	private void show_lookaheads() {
 		int i, e, k, max;
 
-		if (debuglev == 0)
+		if (debuglev == 0) {
 			return;
+		}
 
 		err.debug( "\nLookaheads:\n");
 
@@ -437,15 +468,18 @@ class Lalr1 extends LR0 {
 
 				for (e = laindex[i]; e < max; e++) {
 					k = rindex[larule[e]];
-					while (rright[k] >= 0)
+					while (rright[k] >= 0) {
 						k++;
+					}
 					print_situation(k);
 					int set = termset * e;
 
 					err.debug( "  >>>");
-					for (k = 0; k < nterms; k++)
-						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0))
-							err.debug( " " + sym[k].name);
+					for (k = 0; k < nterms; k++) {
+						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0)) {
+							err.debug( " " + sym[k].getName());
+						}
+					}
 					err.debug( "\n");
 				}
 			}
@@ -471,28 +505,34 @@ class Lalr1 extends LR0 {
 		if (relation[i] != null) {
 			short[] row = relation[i];
 			for (int e = 0; row[e] >= 0; e++) {
-				if (gc_index[row[e]] == 0)
+				if (gc_index[row[e]] == 0) {
 					do_vertex(row[e]);
+				}
 
-				if (gc_index[i] > gc_index[row[e]])
+				if (gc_index[i] > gc_index[row[e]]) {
 					gc_index[i] = gc_index[row[e]];
+				}
 
 				int from = termset * row[e], to = termset * i;
-				for (k = 0; k < termset; k++)
+				for (k = 0; k < termset; k++) {
 					follow[to++] |= follow[from++];
+				}
 			}
 		}
 
-		if (gc_index[i] == height)
+		if (gc_index[i] == height) {
 			for (;;) {
 				int e = gc_vertices[top--];
 				gc_index[e] = (short) infinity;
-				if (i == e)
+				if (i == e) {
 					break;
+				}
 				int from = termset * i, to = termset * e;
-				for (k = 0; k < termset; k++)
+				for (k = 0; k < termset; k++) {
 					follow[to++] |= follow[from++];
+				}
 			}
+		}
 	}
 
 	// modifies: follow (in according to digraph)
@@ -505,12 +545,15 @@ class Lalr1 extends LR0 {
 		infinity = ngotos + 2;
 		top = 0;
 
-		for (i = 0; i < ngotos; i++)
+		for (i = 0; i < ngotos; i++) {
 			gc_index[i] = 0;
+		}
 
-		for (i = 0; i < ngotos; i++)
-			if (gc_index[i] == 0 && relation[i] != null)
+		for (i = 0; i < ngotos; i++) {
+			if (gc_index[i] == 0 && relation[i] != null) {
 				do_vertex(i);
+			}
+		}
 
 		gc_index = null;
 		gc_vertices = null;

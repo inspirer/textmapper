@@ -9,10 +9,10 @@ import java.util.Map;
 import net.sf.lapg.IError;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
-import net.sf.lapg.Syntax;
+import net.sf.lapg.api.Grammar;
+import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
-import net.sf.lapg.syntax.SyntaxUtils;
 import net.sf.lapg.templates.api.ClassLoaderTemplateEnvironment;
 import net.sf.lapg.templates.api.IStaticMethods;
 import net.sf.lapg.templates.api.TemplateEnvironment;
@@ -50,13 +50,13 @@ public class SourceBuilder {
 
 	public boolean process(String sourceName, InputStream input, String output) {
 		try {
-			Syntax s = SyntaxUtils.parseSyntax(sourceName, input, err, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(sourceName, input, err, getDefaultOptions());
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), err, debuglev);
-			ParserTables r = Builder.compile(s.getGrammar(), err, debuglev);
+			ParserTables r = Builder.compile(s, err, debuglev);
 
-			// temporary
+			// TODO temporary
 			if( myLanguage == null ) {
-				myLanguage = getLanguage(s.getOptions().get("lang"));
+				myLanguage = getLanguage("java"/* TODO s.getOptions().get("lang")*/);
 			}
 
 			if (output != null) {
@@ -81,7 +81,7 @@ public class SourceBuilder {
 		}
 	}
 
-	private void generateOutput(Syntax s, LexerTables l, ParserTables r, PrintStream ps) {
+	private void generateOutput(Grammar s, LexerTables l, ParserTables r, PrintStream ps) {
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l);

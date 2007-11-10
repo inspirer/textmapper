@@ -2,8 +2,8 @@ package net.sf.lapg.lalr;
 
 import java.util.Arrays;
 
-import net.sf.lapg.Grammar;
 import net.sf.lapg.IError;
+import net.sf.lapg.api.Grammar;
 
 /**
  *  LR(0) states generator
@@ -26,7 +26,7 @@ class LR0 extends ContextFree {
 	private short[] symcanshift;
 	private int[]   closurebit /* ruleset */;
 	private int 	ntoreduce, ntoshift;
-	private State[] table; 
+	private State[] table;
 	private State current, last;
 
 	// result
@@ -118,8 +118,9 @@ class LR0 extends ContextFree {
 			derives[i] = current;
 			int c = 0;
 			e = m[i];
-			for (; e != -1; e = q[e])
+			for (; e != -1; e = q[e]) {
 				current[c++] = e;
+			}
 			assert c == count[i];
 		}
 	}
@@ -136,22 +137,29 @@ class LR0 extends ContextFree {
 			p = derives[i];
 			for (int q = 0; q < p.length; q++) {
 				e = rright[rindex[p[q]]];
-				if (e >= (int) nterms)
+				if (e >= nterms) {
 					firsts[varset * i + (e - nterms) / BITS] |= (1 << ((e - nterms) % BITS));
+				}
 			}
 		}
 
 		// [j,i] && [i,e] => [j,e]
-		for (i = 0; i < nvars; i++)
-			for (j = 0; j < nvars; j++)
-				if (((firsts[varset * j + (i) / BITS] & (1 << ((i) % BITS))) != 0))
-					for (e = 0; e < nvars; e++)
-						if (((firsts[varset * i + (e) / BITS] & (1 << ((e) % BITS))) != 0))
+		for (i = 0; i < nvars; i++) {
+			for (j = 0; j < nvars; j++) {
+				if (((firsts[varset * j + (i) / BITS] & (1 << ((i) % BITS))) != 0)) {
+					for (e = 0; e < nvars; e++) {
+						if (((firsts[varset * i + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
 							firsts[varset * j + (e) / BITS] |= (1 << ((e) % BITS));
+						}
+					}
+				}
+			}
+		}
 
 		// set [i,i]
-		for (i = 0; i < nvars; i++)
+		for (i = 0; i < nvars; i++) {
 			firsts[varset * i + (i) / BITS] |= (1 << ((i) % BITS));
+		}
 
 		// ruleforvar
 		ruleforvar = new int[nvars * ruleset];
@@ -183,18 +191,20 @@ class LR0 extends ContextFree {
 
 		if (prev[0] == -1) {
 			int from = (input - nterms) * ruleset;
-			for (i = 0; i < ruleset; i++)
+			for (i = 0; i < ruleset; i++) {
 				closurebit[i] = ruleforvar[from++];
+			}
 
 		} else {
 			Arrays.fill(closurebit, 0);
 
 			for (i = 0; prev[i] >= 0; i++) {
 				e = rright[prev[i]];
-				if (e >= (int) nterms) {
+				if (e >= nterms) {
 					int from = (e - nterms) * ruleset;
-					for (int x = 0; x < ruleset; x++)
+					for (int x = 0; x < ruleset; x++) {
 						closurebit[x] |= ruleforvar[from++];
+					}
 				}
 			}
 		}
@@ -210,8 +220,9 @@ class LR0 extends ContextFree {
 				for (e = 0; e < BITS; e++) {
 					if ((rulebit & (1 << e)) != 0) {
 						int index = rindex[rule];
-						while (prev[prev_index] >= 0 && prev[prev_index] < index)
+						while (prev[prev_index] >= 0 && prev[prev_index] < index) {
 							closure[closureend++] = prev[prev_index++];
+						}
 						closure[closureend++] = (short) index;
 					}
 					rule++;
@@ -219,8 +230,9 @@ class LR0 extends ContextFree {
 			}
 		}
 
-		while (prev[prev_index] >= 0)
+		while (prev[prev_index] >= 0) {
 			closure[closureend++] = prev[prev_index++];
+		}
 	}
 
 	private State new_state(int from, int by, int hash, int size) {
@@ -245,26 +257,30 @@ class LR0 extends ContextFree {
 		int i, hash;
 		State t;
 
-		for (hash = i = 0; i < size; i++)
+		for (hash = i = 0; i < size; i++) {
 			hash += new_core[i];
+		}
 		t = table[hash % STATE_TABLE_SIZE];
 
 		while (t != null) {
 			for (i = 0; i < size; i++) {
-				if (new_core[i] != t.elems[i])
+				if (new_core[i] != t.elems[i]) {
 					break;
+				}
 			}
 
-			if (i == size)
+			if (i == size) {
 				break;
+			}
 
 			t = t.link;
 		}
 
 		if (t == null) {
 			t = new_state(current.number, symbol, hash, size);
-			for (i = 0; i < size; i++)
+			for (i = 0; i < size; i++) {
 				t.elems[i] = new_core[i];
+			}
 			t.elems[size] = -1;
 		}
 
@@ -284,8 +300,9 @@ class LR0 extends ContextFree {
 				symbase[sym][e++] = (short) (closure[i] + 1);
 				symbasesize[sym] = e;
 
-			} else
+			} else {
 				toreduce[ntoreduce++] = (short) (-1 - rright[closure[i]]);
+			}
 		}
 
 		ntoshift = 0;
@@ -303,12 +320,14 @@ class LR0 extends ContextFree {
 
 		for (i = 0; i < ntoshift; i++) {
 			current.shifts[i] = (short) goto_state(symcanshift[i]);
-			if (current.shifts[i] >= MAX_WORD)
+			if (current.shifts[i] >= MAX_WORD) {
 				return false;
+			}
 		}
 
-		for (i = 0; i < ntoreduce; i++)
+		for (i = 0; i < ntoreduce; i++) {
 			current.reduce[i] = toreduce[i];
+		}
 
 		current.LR0 = !(ntoreduce > 1 || (ntoshift != 0 && ntoreduce != 0));
 		return true;
@@ -322,11 +341,13 @@ class LR0 extends ContextFree {
 
 			t.shifts = new short[n + 1];
 			e = 0;
-			for (i = 0; i < n && state[old[i]].symbol < symbol; i++)
+			for (i = 0; i < n && state[old[i]].symbol < symbol; i++) {
 				t.shifts[e++] = old[i];
+			}
 			t.shifts[e++] = (short) tostate;
-			for (; i < n; i++)
+			for (; i < n; i++) {
 				t.shifts[e++] = old[i];
+			}
 			t.nshifts++;
 
 		} else {
@@ -342,12 +363,14 @@ class LR0 extends ContextFree {
 
 		// search for next_to_final
 		for (next_to_final = first.next; next_to_final != null && next_to_final.fromstate == 0; next_to_final = next_to_final.next) {
-			if (next_to_final.symbol == input)
+			if (next_to_final.symbol == input) {
 				break;
+			}
 		}
 
-		if (next_to_final != null && next_to_final.fromstate != 0)
+		if (next_to_final != null && next_to_final.fromstate != 0) {
 			next_to_final = null;
+		}
 
 		// if not found then create
 		if (next_to_final == null) {
@@ -359,12 +382,14 @@ class LR0 extends ContextFree {
 
 		// create state array
 		state = new State[nstates];
-		for (t = first; t != null; t = t.next)
+		for (t = first; t != null; t = t.next) {
 			state[t.number] = t;
+		}
 
 		// insert shifts
-		if (created)
+		if (created) {
 			insert_shift(first, next_to_final.number);
+		}
 		insert_shift(next_to_final, final_state.number);
 	}
 
@@ -373,8 +398,9 @@ class LR0 extends ContextFree {
 			err.debug( "\nStates\n0:\n");
 
 			for (State t = first; t != null; t = t.next) {
-				if (t != first)
-					err.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].name + ")\n");
+				if (t != first) {
+					err.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
+				}
 
 				build_closure(t.elems);
 

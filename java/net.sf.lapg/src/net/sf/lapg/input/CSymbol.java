@@ -1,15 +1,12 @@
 package net.sf.lapg.input;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.sf.lapg.api.Symbol;
 import net.sf.lapg.input.Parser.ParseException;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
-public class CSymbol implements ILocatedEntity {
+public class CSymbol implements Symbol, ILocatedEntity {
 
 	private final String name;
-	private final List<CLexem> lexems = new ArrayList<CLexem>();
 
 	private int line;
 	int index;
@@ -44,18 +41,23 @@ public class CSymbol implements ILocatedEntity {
 		}
 	}
 
-	void setTerminal( String type, int line, CLexem lexem ) throws ParseException {
+	void setTerminal( String type, boolean hasRegExp, int line ) throws ParseException {
 		if( name.equals(CSyntax.INPUT) ) {
 			throw new ParseException("cannot declare terminal with name `"+name+"` (reserved non-terminal) at line " + line);
 		}
-
-		setDefined(type, line, true);
-		if( lexem != null ) {
-			lexems.add(lexem);
+		if( name.equals(CSyntax.ERROR) && hasRegExp ) {
+			throw new ParseException("cannot have regexp for symbol with name `"+name+"` (reserved non-terminal) at line " + line);
 		}
+		if( name.endsWith(CSyntax.OPTSUFFIX) ) {
+			throw new ParseException("cannot declare terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix is reserved for non-terms) at line " + line);
+		}
+		setDefined(type, line, true);
 	}
 
  	void setNonTerminal( String type, int line ) throws ParseException {
+		if( name.endsWith(CSyntax.OPTSUFFIX) && line != 0 ) {
+			throw new ParseException("cannot declare non-terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix symbols are generated automatically) at line " + line);
+		}
 		setDefined(type, line, false);
 	}
 
@@ -81,10 +83,6 @@ public class CSymbol implements ILocatedEntity {
 
 	public String getType() {
 		return type;
-	}
-
-	public List<CLexem> getLexems() {
-		return lexems;
 	}
 
 	@Override

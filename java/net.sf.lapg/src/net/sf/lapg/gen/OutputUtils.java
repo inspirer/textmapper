@@ -13,14 +13,16 @@ public class OutputUtils {
 			if( i > 0 ) {
 				if( (i%maxwidth) == 0 ) {
 					out.print("\n");
-					for( int e = 0; e < leftpadding; e++)
+					for( int e = 0; e < leftpadding; e++) {
 						out.print("\t");
-				} else
+					}
+				} else {
 					out.print(" ");
+				}
 			}
 			out.print(table[i]);
 			out.print(",");
-		}		
+		}
 	}
 
 	public static void print(PrintStream out, short[] table, int maxwidth, int leftpadding ) {
@@ -28,21 +30,24 @@ public class OutputUtils {
 			if( i > 0 ) {
 				if( (i%maxwidth) == 0 ) {
 					out.print("\n");
-					for( int e = 0; e < leftpadding; e++)
+					for( int e = 0; e < leftpadding; e++) {
 						out.print("\t");
-				} else
+					}
+				} else {
 					out.print(" ");
+				}
 			}
 			out.print(table[i]);
 			out.print(",");
-		}		
+		}
 	}
 
 	public static void print(PrintStream out, int[][] table, int leftpadding, char startrow, char endrow ) {
 		for( int i = 0; i < table.length; i++ ) {
 			if( i > 0 ) {
-				for( int e = 0; e < leftpadding; e++)
-					out.print("\t");			
+				for( int e = 0; e < leftpadding; e++) {
+					out.print("\t");
+				}
 			}
 			out.print(startrow);
 			out.print(" ");
@@ -53,13 +58,13 @@ public class OutputUtils {
 			}
 			out.print(endrow);
 			out.print(",\n");
-		}		
+		}
 	}
-	
+
 	public static void printTables(PrintStream out, LexerTables lt) {
-		
+
 		out.print("// tables.txt\n\n");
-		
+
 		out.print("lapg_char2no = {\n\t");
 		print(out, lt.char2no, 16, 1);
 		out.print("\n}\n\n");
@@ -68,7 +73,7 @@ public class OutputUtils {
 		print(out, lt.change, 1, '{', '}');
 		out.print("}\n\n");
 	}
-	
+
 	public static String toIdentifier(String s, int number) {
 
 		if( s.startsWith("\'") && s.endsWith("\'")) {
@@ -152,10 +157,12 @@ public class OutputUtils {
 				}
 			}
 			int e = 0;
-			for(; pt.rright[ pt.rindex[i]+e ] >= 0; e++);
+			for(; pt.rright[ pt.rindex[i]+e ] >= 0; e++) {
+				;
+			}
 			out.print(e);
 			out.print(",");
-		}		
+		}
 		out.print("\n}\n\n");
 
 		out.print("lapg_rlex ["+pt.rules+"] = {\n\t");
@@ -165,18 +172,18 @@ public class OutputUtils {
 		out.print("lapg_syms = {\n");
 		for( int i = 0; i < pt.nsyms; i++ ) {
 			out.print("\t\"");
-			out.print(pt.sym[i].name);
+			out.print(pt.sym[i].getName());
 			out.print("\",\n");
 		}
 		out.print("}\n\n");
-		
+
 		out.print("Tokens = {\n");
 		for( int i = 0; i < pt.nsyms; i++ ) {
 			out.print("\t");
-			out.print(toIdentifier(pt.sym[i].name, i));
+			out.print(toIdentifier(pt.sym[i].getName(), i));
 			out.print(",\n");
 		}
 		out.print("}\n\n");
-		
+
 	}
 }

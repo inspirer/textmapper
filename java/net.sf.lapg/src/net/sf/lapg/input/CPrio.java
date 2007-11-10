@@ -2,21 +2,18 @@ package net.sf.lapg.input;
 
 import java.util.List;
 
+import net.sf.lapg.api.Prio;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
-public class CPrio implements ILocatedEntity {
-
-	public static final int LEFT = 1;
-	public static final int RIGHT = 2;
-	public static final int NONASSOC = 3;
+public class CPrio implements Prio, ILocatedEntity {
 
 	private final int prio;
-	private final List<CSymbol> symbols;
+	private final CSymbol[] symbols;
 	private final int line;
 
 	public CPrio(int prio, List<CSymbol> symbols, int line) {
 		this.prio = prio;
-		this.symbols = symbols;
+		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
 		this.line = line;
 	}
 
@@ -24,7 +21,7 @@ public class CPrio implements ILocatedEntity {
 		return prio;
 	}
 
-	public List<CSymbol> getSymbols() {
+	public CSymbol[] getSymbols() {
 		return symbols;
 	}
 

@@ -2,10 +2,9 @@ package net.sf.lapg.lalr;
 
 import java.util.Vector;
 
-import net.sf.lapg.Grammar;
 import net.sf.lapg.IError;
 import net.sf.lapg.ParserTables;
-import net.sf.lapg.Symbol;
+import net.sf.lapg.api.Grammar;
 
 
 public class Builder extends Lalr1 {
@@ -19,17 +18,22 @@ public class Builder extends Lalr1 {
 	private int nactions;
 	private short[] action_table;
 
-	
+	//
+
+//	private final int[] sym_opt;
+
 	private void fix_grammar() {
 
-		for (int i = 0; i < nsyms; i++) {
-			Symbol curr = sym[i];
-			if (curr.opt != -1)
-				sym[curr.opt].type = curr.type;
-
-			if (curr.is_attr)
-				curr.type = sym[curr.sibling].type;
-		}
+		// TODO copy types
+//		for (int i = 0; i < nsyms; i++) {
+//			if (sym_opt[i] != -1) {
+//				sym[sym_opt[i]].type = sym[i].getType();
+//			}
+//
+//			if (sym[i].is_attr) {
+//				sym[i].type = sym[sym[i].sibling].type;
+//			}
+//		}
 	}
 
 	private void verify_grammar() {
@@ -39,15 +43,17 @@ public class Builder extends Lalr1 {
 		// search for symbols which accepts the empty chain
 		search_next_empty: for (;;) {
 			for (i = 0; i < rules; i++) {
-				if (!sym[rleft[i]].empty) {
+				if (!sym_empty[rleft[i]]) {
 
 					k = true;
-					for (e = rindex[i]; k && (rright[e] >= 0); e++)
-						if (!sym[rright[e]].empty)
+					for (e = rindex[i]; k && (rright[e] >= 0); e++) {
+						if (!sym_empty[rright[e]]) {
 							k = false;
+						}
+					}
 
 					if (k) {
-						sym[rleft[i]].empty = true;
+						sym_empty[rleft[i]] = true;
 						continue search_next_empty;
 					}
 				}
@@ -55,23 +61,29 @@ public class Builder extends Lalr1 {
 			break;
 		}
 
+		boolean[] sym_good = new boolean[nsyms];
+
 		// terminal and empty symbols are good
-		for (i = 0; i < nsyms; i++)
-			if (sym[i].term || sym[i].empty)
-				sym[i].good = true;
+		for (i = 0; i < nsyms; i++) {
+			if (sym[i].isTerm() || sym_empty[i]) {
+				sym_good[i] = true;
+			}
+		}
 
 		// search for the good symbols
 		get_next_good: for (;;) {
 			for (i = 0; i < rules; i++) {
-				if (!sym[rleft[i]].good) {
+				if (!sym_good[rleft[i]]) {
 
 					k = true;
-					for (e = rindex[i]; k && (rright[e] >= 0); e++)
-						if (!sym[rright[e]].good)
+					for (e = rindex[i]; k && (rright[e] >= 0); e++) {
+						if (!sym_good[rright[e]]) {
 							k = false;
+						}
+					}
 
 					if (k) {
-						sym[rleft[i]].good = true;
+						sym_good[rleft[i]] = true;
 						continue get_next_good;
 					}
 				}
@@ -80,86 +92,98 @@ public class Builder extends Lalr1 {
 		}
 
 		// search for the employed symbols
+		boolean[] sym_employed = new boolean[nsyms];
+		boolean[] sym_temp = new boolean[nsyms];
 		k = true;
-		sym[input].temp = true;
+		sym_temp[input] = true;
 		while (k) {
 			k = false;
 			for (i = 0; i < nsyms; i++) {
-				if (sym[i].temp) {
+				if (sym_temp[i]) {
 					for (h = 0; h < rules; h++) {
-						if (rleft[h] == (int) i) {
+						if (rleft[h] == i) {
 							for (e = rindex[h]; rright[e] >= 0; e++) {
-								if (!sym[rright[e]].temp && !sym[rright[e]].employed) {
-									if (sym[rright[e]].term) {
-										sym[rright[e]].employed = true;
+								if (!sym_temp[rright[e]] && !sym_employed[rright[e]]) {
+									if (sym[rright[e]].isTerm()) {
+										sym_employed[rright[e]] = true;
 									} else {
 										k = true;
-										sym[rright[e]].temp = true;
+										sym_temp[rright[e]] = true;
 									}
 								}
 							}
 						}
 					}
 
-					sym[i].employed = true;
-					sym[i].temp = false;
+					sym_employed[i] = true;
+					sym_temp[i] = false;
 				}
 			}
 		}
 
 		// eoi is very useful token
-		sym[eoi].good = sym[eoi].employed = true;
+		sym_good[eoi] = sym_employed[eoi] = true;
 
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
-			if (!sym[i].term && !sym[i].defed) {
-				err.error("no rules for `" + sym[i].name + "`\n");
-			} else if (!sym[i].good || !sym[i].employed) {
-				if (!sym[i].name.startsWith("_skip"))
-					err.warn( "lapg: symbol `" + sym[i].name + "` is useless\n");
+			if (!sym[i].isTerm() && !sym[i].isDefined()) {
+				err.error("no rules for `" + sym[i].getName() + "`\n");
+			} else if (!sym_good[i] || !sym_employed[i]) {
+				if (!sym[i].getName().startsWith("_skip")) {
+					err.warn( "lapg: symbol `" + sym[i].getName() + "` is useless\n");
+				}
 			}
 		}
 	}
-	
+
 	// returns 0:unresolved 1:shift 2:reduce
 	private int compare_prio( int rule, int next )
 	{
 		int i, cgroup, assoc = -1, rule_group = -1, next_group = -1, nextassoc = -1;
-		
-		if( nprio == 0 )
+
+		if( nprio == 0 ) {
 			return 0;
-		
-		for( cgroup = i = 0; i < nprio; i++ )
+		}
+
+		for( cgroup = i = 0; i < nprio; i++ ) {
 			if( priorul[i] < 0 ) {
 				assoc = -priorul[i];
 				cgroup++;
 			} else {
-				if( priorul[i] == rprio[rule] )
-					rule_group = cgroup;			
+				if( priorul[i] == rprio[rule] ) {
+					rule_group = cgroup;
+				}
 				if( priorul[i] == next ) {
 					next_group = cgroup;
 					nextassoc = assoc;
 				}
 			}
-		
-		if( rule_group == -1 || next_group == -1 )
+		}
+
+		if( rule_group == -1 || next_group == -1 ) {
 			return 0;
-		if( rule_group > next_group )
+		}
+		if( rule_group > next_group ) {
 			return 2;               // reduce
-		if( rule_group < next_group )
+		}
+		if( rule_group < next_group ) {
 			return 1;               // shift
-		if( nextassoc == 1 )
+		}
+		if( nextassoc == 1 ) {
 			return 2;               // left => reduce
-		if( nextassoc == 2 )
+		}
+		if( nextassoc == 2 ) {
 			return 1;               // right => shift
+		}
 		return 0;
 	}
 
 	private void print_input(int s) {
-		if (state[s].number == 0)
+		if (state[s].number == 0) {
 			return;
+		}
 		print_input(state[s].fromstate);
-		err.warn( " " + sym[state[s].symbol].name);
+		err.warn( " " + sym[state[s].symbol].getName());
 	}
 
 	private void action() {
@@ -187,15 +211,17 @@ public class Builder extends Lalr1 {
 
 				// prepare
 				setsize = 0;
-				for (i = 0; i < nterms; i++)
+				for (i = 0; i < nterms; i++) {
 					next[i] = -2;
+				}
 
 				// process shifts
 				int termSym;
 				for (i = 0; i < t.nshifts; i++) {
 					termSym = state[t.shifts[i]].symbol;
-					if (termSym >= nterms)
+					if (termSym >= nterms) {
 						break;
+					}
 					assert next[termSym] == -2;
 					next[termSym] = -1;
 					actionset[setsize++] = (short) termSym;
@@ -222,20 +248,20 @@ public class Builder extends Lalr1 {
 										case 0: // shift/reduce
 											err.warn( "\ninput:");
 											print_input(t.number);
-											err.warn( "\nconflict: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											err.warn( "\nconflict: shift/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
 											warn_rule(larule[i]);
 											sr++;
 											break;
 										case 1: // shift
 											err.warn( "\ninput:");
 											print_input(t.number);
-											err.warn( "\nfixed: shift: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											err.warn( "\nfixed: shift: shift/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
 											warn_rule(larule[i]);
 											break;
 										case 2: // reduce
 											err.warn( "\ninput:");
 											print_input(t.number);
-											err.warn( "\nfixed: reduce: shift/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+											err.warn( "\nfixed: reduce: shift/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
 											warn_rule(larule[i]);
 											next[termSym] = larule[i];
 											break;
@@ -244,7 +270,7 @@ public class Builder extends Lalr1 {
 										// reduce/reduce
 										err.warn( "\ninput:");
 										print_input(t.number);
-										err.warn( "\nconflict: reduce/reduce (" + t.number + ", next " + sym[termSym].name + ")\n");
+										err.warn( "\nconflict: reduce/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
 										warn_rule(next[termSym]);
 										warn_rule(larule[i]);
 										rr++;
@@ -268,17 +294,19 @@ public class Builder extends Lalr1 {
 				stateActions[e++] = -2;
 				actionTables.add(stateActions);
 				nactions += stateActions.length;
-				
+
 			}
 		}
-		if ((sr + rr) > 0)
+		if ((sr + rr) > 0) {
 			err.error("conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n");
-		
+		}
+
 		e = 0;
 		action_table = new short[nactions];
 		for( short[] stateActions : actionTables ) {
-			for( i = 0; i < stateActions.length; i++ )
+			for( i = 0; i < stateActions.length; i++ ) {
 				action_table[e++] = stateActions[i];
+			}
 		}
 	}
 
@@ -297,7 +325,7 @@ public class Builder extends Lalr1 {
 		// grammar
 		fix_grammar();
 		verify_grammar();
-		
+
 		 // engine
 		if (!buildLR0()) {
 			return null;
@@ -310,7 +338,7 @@ public class Builder extends Lalr1 {
 
 	private ParserTables createResult() {
 		ParserTables r = new ParserTables();
-		r.sym = this.sym; 
+		r.sym = this.sym;
 		r.rules = this.rules;
 		r.nsyms = this.nsyms;
 		r.nterms = this.nterms;
@@ -330,7 +358,7 @@ public class Builder extends Lalr1 {
 		r.nactions = this.nactions;
 		return r;
 	}
-	
+
 	public static ParserTables compile(Grammar g, IError err, int debuglev) {
 		Builder en = new Builder(g, err, debuglev);
 		return en.generate();

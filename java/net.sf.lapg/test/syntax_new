@@ -178,6 +178,9 @@ anysym1: /[^*]+/		{ continue; }
 anysym1: /*/
 '*/':    /\*\//         { group = @0;continue; }
 
+# Attributes
+
+#[]
 
 # Main rule
 

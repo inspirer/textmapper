@@ -2515,20 +2515,15 @@ public class parser {
 
 			switch( lapg_n.lexem ) {
 				case 130:
-					#line 169 "syntax"
- continue;
+					 continue; 
 				case 133:
-					#line 173 "syntax"
- continue;
+					 continue; 
 				case 134:
-					#line 175 "syntax"
- group = @1;continue; 
+					 group = @1;continue; 
 				case 135:
-					#line 177 "syntax"
- continue; 
+					 continue; 
 				case 137:
-					#line 179 "syntax"
- group = @0;continue; 
+					 group = @0;continue; 
 			}
 
 
@@ -2547,255 +2542,197 @@ public class parser {
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
 						case 24:
-							#line 221 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 25:
-							#line 222 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 26:
-							#line 223 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 27:
-							#line 224 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 28:
-							#line 225 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 29:
-							#line 226 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 30:
-							#line 227 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 33:
-							#line 240 "syntax"
- $$ = new Node( Kind.Identifier, null, null, null ); break; 
+							 $$ = new Node( Kind.Identifier, null, null, null ); break; 
 							break;
 						case 76:
-							#line 324 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 77:
-							#line 325 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 78:
-							#line 326 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 79:
-							#line 327 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 80:
-							#line 328 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 81:
-							#line 329 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 82:
-							#line 330 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 83:
-							#line 331 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 84:
-							#line 332 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 85:
-							#line 333 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 86:
-							#line 334 "syntax"
- $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; 
+							 $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; 
 							break;
 						case 87:
-							#line 335 "syntax"
- $$ = new Node( Kind.TypeDot, null, null, null ); break; 
+							 $$ = new Node( Kind.TypeDot, null, null, null ); break; 
 							break;
 						case 90:
-							#line 336 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 91:
-							#line 337 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 92:
-							#line 338 "syntax"
- $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; 
+							 $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; 
 							break;
 						case 93:
-							#line 339 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 98:
-							#line 343 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 99:
-							#line 344 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 100:
-							#line 348 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 102:
-							#line 353 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 103:
-							#line 354 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 104:
-							#line 355 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 105:
-							#line 356 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 106:
-							#line 357 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 107:
-							#line 358 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 109:
-							#line 364 "syntax"
-$$ = $1;
-// HACK to resolve Cast ambiguity
-if( CastExpr($expression,lapg_n) ) {
-	// perform reduce
-	for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) lapg_m[lapg_head--].sym = null;
-	lapg_m[++lapg_head] = lapg_gg;
-	lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
-	if( lapg_m[lapg_head].state != -1 ) {
-		// shift cast_token (if possible)
-		lapg_gg.lexem = (int)Tokens.cast_token;
-		lapg_gg.sym = null;
-		lapg_gg.state = lapg_state_sym( lapg_m[lapg_head].state, lapg_gg.lexem );
-		lapg_gg.pos = lapg_gg.endpos = lapg_n.pos;
-		if( lapg_gg.state != -1 )
+							
+		$$ = $1;
+		// HACK to resolve Cast ambiguity
+		if( CastExpr($expression,lapg_n) ) {
+			// perform reduce
+			for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) lapg_m[lapg_head--].sym = null;
 			lapg_m[++lapg_head] = lapg_gg;
-	}
-	// skip default reduce code
-	continue;
-}
-break;
+			lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
+			if( lapg_m[lapg_head].state != -1 ) {
+				// shift cast_token (if possible)
+				lapg_gg.lexem = (int)Tokens.cast_token;
+				lapg_gg.sym = null;
+				lapg_gg.state = lapg_state_sym( lapg_m[lapg_head].state, lapg_gg.lexem );
+				lapg_gg.pos = lapg_gg.endpos = lapg_n.pos;
+				if( lapg_gg.state != -1 )
+					lapg_m[++lapg_head] = lapg_gg;
+			}
+			// skip default reduce code
+			continue;
+		}
 							break;
 						case 110:
-							#line 387 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 111:
-							#line 388 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 113:
-							#line 393 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 114:
-							#line 394 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 115:
-							#line 395 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 117:
-							#line 400 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 118:
-							#line 401 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 120:
-							#line 406 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 121:
-							#line 407 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 123:
-							#line 412 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 124:
-							#line 413 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 125:
-							#line 414 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 126:
-							#line 415 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 127:
-							#line 416 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 128:
-							#line 417 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 130:
-							#line 422 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 131:
-							#line 423 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 133:
-							#line 428 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 135:
-							#line 433 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 137:
-							#line 438 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 139:
-							#line 443 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 141:
-							#line 448 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 143:
-							#line 453 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 						case 144:
-							#line 457 "syntax"
- $$ = new Node(); break; 
+							 $$ = new Node(); break; 
 							break;
 					}
 					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 

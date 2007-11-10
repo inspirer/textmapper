@@ -12,12 +12,12 @@ import java.util.Map;
 
 public class Parser {
 	
-	private Parser(byte[] data) {
+	private Parser(byte[] data, Map<String,String> defaultOptions) {
 		this.buff = data;
 		this.l = 0;
 		
 		addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
-		getSymbol(CSyntax.INPUT, 1);
+		options.putAll(defaultOptions);
 	}
 	
 	private static final boolean DEBUG_SYNTAX = false;
@@ -29,7 +29,8 @@ public class Parser {
 	private List<CSymbol> symbols = new ArrayList<CSymbol>();
 	private List<CRule> rules = new ArrayList<CRule>();
 	private List<CPrio> prios = new ArrayList<CPrio>();
-	private List<COption> options = new ArrayList<COption>();
+	private Map<String,String> options = new HashMap<String, String>();
+	private List<CLexem> lexems = new ArrayList<CLexem>();
 	
 	private byte[] buff;
 	private int l;
@@ -47,13 +48,27 @@ public class Parser {
 			res = new CSymbol(name, line);
 			symbols.add(res);
 			symCash.put(name,res);
+	
+			if( name.endsWith(CSyntax.OPTSUFFIX) && name.length() > CSyntax.OPTSUFFIX.length() ) {
+				try {
+					CSymbol original = getSymbol(name.substring(0, name.length()-CSyntax.OPTSUFFIX.length()), line);
+					res.setNonTerminal(null, 0);
+					addRule(new CRule(Collections.singletonList(original), null, null, line), res);
+					addRule(new CRule(null, null, null, line), res);
+				} catch(ParseException ex) {
+					/* should never happen */
+				}
+			}
 		}
 		return res;
 	}
 	
 	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
 		try {
-			sym.setTerminal(type, line, regexp != null ? new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,line) : null);
+			sym.setTerminal(type, regexp != null, line);
+			if( regexp != null ) {
+				lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,line));
+			}
 		} catch( ParseException ex ) {
 			error(ex.getMessage());
 		}
@@ -103,14 +118,15 @@ public class Parser {
 		errors.add(s);
 	}
 	
-	public static CSyntax process(String data) {
+	public static CSyntax process(String data, Map<String,String> defaultOptions) {
 		try {
-			Parser p = new Parser(data.getBytes("utf-8"));
+			Parser p = new Parser(data.getBytes("utf-8"), defaultOptions);
 			if( !p.parse() || !p.errors.isEmpty() ) {
 				return new CSyntax(p.errors);
 			}
+			p.getSymbol(CSyntax.INPUT, 1);
 		
-			return new CSyntax(p.symbols,p.rules,p.prios,p.options);
+			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems);
 		} catch( UnsupportedEncodingException ex ) {
 			return null;
 		}
@@ -458,10 +474,10 @@ public class Parser {
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
 						case 3:
-							 options.add(new COption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line)); 
+							 options.put(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 4:
-							 options.add(new COption(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line)); 
+							 options.put(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString()); 
 							break;
 						case 7:
 							 currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
@@ -509,7 +525,7 @@ public class Parser {
 							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 							break;
 						case 35:
-							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-1].pos.offset,lapg_m[lapg_head-1].endpos.offset)); 
+							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-1].endpos.offset)); 
 							break;
 						case 39:
 							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 

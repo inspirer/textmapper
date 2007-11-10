@@ -1,21 +1,21 @@
 package net.sf.lapg.input;
 
-import java.util.Collections;
 import java.util.List;
 
+import net.sf.lapg.api.Rule;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
-public class CRule implements ILocatedEntity {
+public class CRule implements ILocatedEntity, Rule {
 
 	private CSymbol left;
-	private final List<CSymbol> right;
+	private final CSymbol[] right;
 	private final CAction action;
 	private final CSymbol priority;
 	private final int line;
 	int index;
 
 	public CRule(List<CSymbol> right, CAction action, CSymbol priority, int line) {
-		this.right = right != null ? right : Collections.<CSymbol>emptyList();
+		this.right = right != null ? right.toArray(new CSymbol[right.size()]) : new CSymbol[0];
 		this.action = action;
 		this.priority = priority;
 		this.line = line;
@@ -34,16 +34,24 @@ public class CRule implements ILocatedEntity {
 		return left;
 	}
 
-	public List<CSymbol> getRight() {
+	public CSymbol[] getRight() {
 		return right;
 	}
 
-	public CAction getAction() {
-		return action;
+	public String getAction() {
+		return action != null ? action.getContents() : null;
 	}
 
-	public CSymbol getPriority() {
-		return priority;
+	public int getPriority() {
+		if( priority != null ) {
+			return priority.getIndex();
+		}
+		for( int i = right.length-1; i >= 0; i --) {
+			if( right[i].isTerm()) {
+				return right[i].getIndex();
+			}
+		}
+		return -1;
 	}
 
 	public int getIndex() {
@@ -75,5 +83,9 @@ public class CRule implements ILocatedEntity {
 			sb.append(priority.getName());
 		}
 		return sb.toString();
+	}
+
+	public int getLine() {
+		return line;
 	}
 }

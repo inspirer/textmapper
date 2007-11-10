@@ -1,39 +1,60 @@
 package net.sf.lapg.lalr;
 
-import java.util.Iterator;
-
-import net.sf.lapg.Grammar;
 import net.sf.lapg.IError;
-import net.sf.lapg.Rule;
-import net.sf.lapg.Symbol;
+import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.Prio;
+import net.sf.lapg.api.Rule;
+import net.sf.lapg.api.Symbol;
 
 abstract class ContextFree {
+
+	private static int getSituations(Rule[] rules) {
+		int counter = 0;
+		for (int i = 0; i < rules.length; i++) {
+			counter += rules[i].getRight().length + 1;
+		}
+		return counter;
+	}
+
+	private static int[] getPriorityRules(Prio[] prios) {
+		int counter = 0;
+		for( int i = 0; i < prios.length; i++ ) {
+			counter += prios[i].getSymbols().length + 1;
+		}
+
+		int[] result = new int[counter];
+
+		int curr_prio = 0;
+		for( int i = 0; i < prios.length; i++ ) {
+			result[curr_prio++] = - prios[i].getPrio();
+			Symbol[] list = prios[i].getSymbols();
+			for( int e = 0; e < list.length; e++ ) {
+				result[curr_prio++] = list[e].getIndex();
+			}
+		}
+
+		assert curr_prio == counter;
+		return result;
+	}
 
 	protected ContextFree(Grammar g, IError err, int debuglev) {
 		this.err = err;
 		this.debuglev = debuglev;
 
-		this.nsyms = g.syms.size();
-		this.rules = g.rules.size();
-		this.nprio = g.prio.size();
-		this.nterms = g.nterms;
-		this.input = g.input;
-		this.eoi = g.eoi;
-		this.errorn = g.errorn;
-		this.situations = g.situations;
+		this.sym = g.getSymbols();
 
-		this.sym = new Symbol[g.syms.size()];
-		for (Iterator<Symbol> it = g.syms.iterator(); it.hasNext();) {
-			Symbol s = it.next();
-			sym[s.index] = s;
-		}
+		this.nsyms = sym.length;
+		this.rules = g.getRules().length;
+		this.nterms = g.getTerminals();
+		this.input = g.getInput();
+		this.eoi = g.getEoi();
+		this.errorn = g.getError();
 
-		this.priorul = new int[nprio];
+		this.situations = getSituations(g.getRules());
 
-		int i = 0;
-		for (Iterator<Integer> it = g.prio.iterator(); it.hasNext();) {
-			this.priorul[i++] = it.next();
-		}
+		this.priorul = getPriorityRules(g.getPriorities());
+		this.nprio = this.priorul.length;
+
 
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];
@@ -41,18 +62,25 @@ abstract class ContextFree {
 		this.rlines = new int[rules];
 		this.raction = new String[rules];
 		this.rright = new int[situations];
+		this.sym_empty = new boolean[nsyms];
 
-		i = 0;
 		int curr_rindex = 0;
-		for (Iterator<Rule> it = g.rules.iterator(); it.hasNext(); i++) {
-			Rule r = it.next();
-			this.rleft[i] = r.left;
-			this.rprio[i] = r.prio;
+		Rule[] wrules = g.getRules();
+		for (int i = 0; i < wrules.length; i++) {
+			Rule r = wrules[i];
+			this.rleft[i] = r.getLeft().getIndex();
+			this.rprio[i] = r.getPriority();
 			this.rindex[i] = curr_rindex;
-			this.rlines[i] = r.line;
-			this.raction[i] = r.action;
-			for (int e = 0; e < r.right.length; e++)
-				this.rright[curr_rindex++] = r.right[e];
+			this.rlines[i] = r.getLine();
+			this.raction[i] = r.getAction();
+			Symbol[] wright = r.getRight();
+			for (int e = 0; e < wright.length; e++) {
+				this.rright[curr_rindex++] = wright[e].getIndex();
+			}
+			this.rright[curr_rindex++] = -1-i;
+			if( wright.length == 0 ) {
+				sym_empty[rleft[i]] = true;
+			}
 		}
 
 		assert situations == curr_rindex;
@@ -71,36 +99,41 @@ abstract class ContextFree {
 	protected final int[] priorul;
 	protected final String[] raction;
 	protected final int[] rleft, rindex, rright, rprio, rlines;
+	protected final boolean[] sym_empty;
 
 	// info
 
 	protected void print_situation(int situation) {
 		int rulenum, i;
 
-		for (i = situation; rright[i] >= 0; i++)
+		for (i = situation; rright[i] >= 0; i++) {
 			;
+		}
 		rulenum = -rright[i] - 1;
 
 		// left part of the rule
-		err.debug("  " + sym[rleft[rulenum]].name + " ::=");
+		err.debug("  " + sym[rleft[rulenum]].getName() + " ::=");
 
 		for (i = rindex[rulenum]; rright[i] >= 0; i++) {
-			if (i == situation)
+			if (i == situation) {
 				err.debug(" _");
-			err.debug(" " + sym[rright[i]].name);
+			}
+			err.debug(" " + sym[rright[i]].getName());
 		}
-		if (i == situation)
+		if (i == situation) {
 			err.debug(" _");
+		}
 		err.debug("\n");
 	}
 
 	protected void warn_rule(int rule) {
 		int rr = rindex[rule];
 
-		err.warn("  " + sym[rleft[rule]].name + " ::=");
+		err.warn("  " + sym[rleft[rule]].getName() + " ::=");
 
-		for (; rright[rr] >= 0; rr++)
-			err.warn(" " + sym[rright[rr]].name);
+		for (; rright[rr] >= 0; rr++) {
+			err.warn(" " + sym[rright[rr]].getName());
+		}
 
 		err.warn("\n");
 	}

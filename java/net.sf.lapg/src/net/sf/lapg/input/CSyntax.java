@@ -1,26 +1,55 @@
 package net.sf.lapg.input;
 
 import java.util.List;
+import java.util.Map;
 
-public class CSyntax {
+import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.Lexem;
+
+public class CSyntax implements Grammar {
 
 	public static final String EOI = "eoi";
 	public static final String INPUT = "input";
+	public static final String ERROR = "error";
+	public static final String OPTSUFFIX = "opt";
 
 	private List<String> errors;
 
-	private CSymbol[] symbols;
-	private CRule[] rules;
-	private CPrio[] prios;
-	private COption[] options;
+	private final CSymbol[] symbols;
+	private final CRule[] rules;
+	private final CPrio[] prios;
+	private final Map<String,String> options;
+	private final CLexem[] lexems;
 
-	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, List<COption> options) {
+	private final int myInput;
+	private final int myError;
+	private final int myTerms;
+
+	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String,String> options, List<CLexem> lexems) {
 		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
 		this.rules = rules.toArray(new CRule[rules.size()]);
 		this.prios = prios.toArray(new CPrio[prios.size()]);
-		this.options = options.toArray(new COption[options.size()]);
+		this.lexems = lexems.toArray(new CLexem[lexems.size()]);
+		this.options = options;
 		sortSymbols();
 		enumerateAll();
+
+		myInput = findSymbol(INPUT);
+		myError = findSymbol(ERROR);
+		int i = 0;
+		for(; i < this.symbols.length && this.symbols[i].isTerm(); i++) {
+			;
+		}
+		myTerms = i;
+	}
+
+	private int findSymbol(String name) {
+		for( int i = 0; i < symbols.length; i++) {
+			if( symbols[i].getName().equals(name) ) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	/**
@@ -65,6 +94,13 @@ public class CSyntax {
 
 	public CSyntax(List<String> errors) {
 		this.errors = errors;
+		lexems = null;
+		options = null;
+		prios = null;
+		rules = null;
+		symbols = null;
+		myTerms = 0;
+		myInput = myError = -1;
 	}
 
 	public boolean hasErrors() {
@@ -79,15 +115,35 @@ public class CSyntax {
 		return rules;
 	}
 
-	public CPrio[] getPrios() {
+	public CPrio[] getPriorities() {
 		return prios;
 	}
 
-	public COption[] getOptions() {
+	public Map<String, String> getOptions() {
 		return options;
 	}
 
 	public List<String> getErrors() {
 		return errors;
+	}
+
+	public int getEoi() {
+		return 0;
+	}
+
+	public int getError() {
+		return myError;
+	}
+
+	public int getInput() {
+		return myInput;
+	}
+
+	public int getTerminals() {
+		return myTerms;
+	}
+
+	public Lexem[] getLexems() {
+		return lexems;
 	}
 }

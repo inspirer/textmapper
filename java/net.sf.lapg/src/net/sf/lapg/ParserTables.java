@@ -1,5 +1,7 @@
 package net.sf.lapg;
 
+import net.sf.lapg.api.Symbol;
+
 public class ParserTables {
 	public Symbol[] sym;
 	public int rules, nsyms, nterms, nstates, errorn;
