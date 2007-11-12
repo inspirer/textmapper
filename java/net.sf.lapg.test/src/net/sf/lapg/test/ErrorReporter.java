@@ -1,19 +1,20 @@
 package net.sf.lapg.test;
 
+import junit.framework.Assert;
 import net.sf.lapg.IError;
 
 public class ErrorReporter implements IError {
 
 	public void debug(String info) {
-		System.out.print(info);
+		Assert.fail(info);
 	}
 
 	public void error(String error) {
-		System.out.print(error);
+		Assert.fail(error);
 	}
 
 	public void warn(String warning) {
-		System.out.print(warning);
+		Assert.fail(warning);
 	}
 
 }

@@ -1,0 +1,19 @@
+
+a:
+b:
+'(':
+')':
+
+input ::=
+	list ;
+
+list ::=
+	item
+	| list item 
+;
+
+item ::=
+	'(' listopt ')'
+	| a
+	| b {  ${for a in b}..!..$$  }
+;
