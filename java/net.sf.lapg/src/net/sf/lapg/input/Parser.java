@@ -228,59 +228,60 @@ public class Parser {
 	};
 
 	private static final int[] lapg_action = new int[] {
-		  -1,  -1,  -1,   2,  -1,  39,  -1,  -1,   1,   6,  -3,   3,   4,  16,  -1,  -1,
-		  -9,   5, -17,  19,  -1,   8,  -1,  17,   7,  -1, -25,  18,  -1, -31,  20, -43,
-		  25,  -1,  -1, -53, -65, -71,  13,  23, -81, -93,  21,  24,  22,-105,  -1,-111,
-		  37,  -1,  31,  29,  26,-117,  11,-127,  -1,  35,  36,  32,  30,  28,  15,  38,
-		  -1,  -2,
+		  -3,  -1,  -1, -11,   4,  -1,  41,  -1,  -1,   8, -19,   3,   5,   6,  18,  -1,
+		  -1, -25,   7, -33,  21,  -1,  10,  -1,  19,   9,  -1, -41,  20,  -1, -47,  22,
+		 -59,  27,  -1,  -1, -69, -81, -87,  15,  25, -97,-109,  23,  26,  24,-121,  -1,
+		-127,  39,  -1,  33,  31,  28,-133,  13,-143,  -1,  37,  38,  34,  32,  30,  17,
+		  40,  -1,  -2,
 	};
 
 	private static final short[] lapg_lalr = new short[] {
-		   4,  -1,  12,   9,  -1,  -2,   1,  -1,   6,  -1,   0,   0,  -1,  -2,   4,  -1,
-		   8,   9,  12,   9,  -1,  -2,   4,  -1,   8,   9,  -1,  -2,  16,  -1,   1,  14,
-		   9,  14,  10,  14,  15,  14,  -1,  -2,   2,  -1,   1,  10,   6,  10,  13,  10,
-		  -1,  -2,  16,  -1,   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,  17,  -1,
-		  18,  34,  -1,  -2,   1,  -1,  15,  -1,   9,  27,  10,  27,  -1,  -2,  16,  -1,
-		   1,  14,   9,  14,  10,  14,  15,  14,  -1,  -2,   5,  -1,   1,  12,   6,  12,
-		  13,  12,  16,  12,  -1,  -2,  17,  -1,  18,  34,  -1,  -2,  17,  -1,  18,  33,
-		  -1,  -2,   1,  -1,  15,  -1,   9,  27,  10,  27,  -1,  -2,  16,  -1,   1,  14,
-		   6,  14,  13,  14,  -1,  -2,
+		  11,  -1,   1,   1,  13,   1,  -1,  -2,  11,  -1,   1,   0,  13,   0,  -1,  -2,
+		   4,  -1,  12,  11,  -1,  -2,   1,  -1,   6,  -1,   0,   2,  -1,  -2,   4,  -1,
+		   8,  11,  12,  11,  -1,  -2,   4,  -1,   8,  11,  -1,  -2,  16,  -1,   1,  16,
+		   9,  16,  10,  16,  15,  16,  -1,  -2,   2,  -1,   1,  12,   6,  12,  13,  12,
+		  -1,  -2,  16,  -1,   1,  16,   9,  16,  10,  16,  15,  16,  -1,  -2,  17,  -1,
+		  18,  36,  -1,  -2,   1,  -1,  15,  -1,   9,  29,  10,  29,  -1,  -2,  16,  -1,
+		   1,  16,   9,  16,  10,  16,  15,  16,  -1,  -2,   5,  -1,   1,  14,   6,  14,
+		  13,  14,  16,  14,  -1,  -2,  17,  -1,  18,  36,  -1,  -2,  17,  -1,  18,  35,
+		  -1,  -2,   1,  -1,  15,  -1,   9,  29,  10,  29,  -1,  -2,  16,  -1,   1,  16,
+		   6,  16,  13,  16,  -1,  -2,
 	};
 
 	private static final short[] lapg_sym_goto = new short[] {
 		   0,   1,  11,  12,  13,  16,  20,  22,  22,  24,  25,  27,  29,  31,  33,  34,
-		  36,  40,  43,  45,  46,  47,  48,  49,  51,  53,  54,  62,  65,  66,  70,  74,
-		  76,  78,  79,  81,  83,  85,  87,  89,  91,  94,
+		  36,  40,  43,  45,  46,  47,  48,  49,  50,  52,  54,  55,  63,  66,  67,  71,
+		  75,  77,  79,  80,  82,  84,  86,  88,  90,  92,  95,
 	};
 
 	private static final short[] lapg_sym_from = new short[] {
-		  64,   1,   2,   7,  15,  16,  25,  33,  37,  49,  53,  31,   4,  10,  18,  26,
-		   4,   6,  14,  41,   7,  16,  28,  34,  20,  20,  33,   0,   2,  22,  28,   2,
-		   7,  14,  37,  53,  29,  35,  40,  55,  36,  45,  47,  46,  56,   0,   0,   2,
-		   7,   0,   2,   2,   7,   6,   2,   7,  16,  25,  33,  37,  49,  53,  10,  18,
-		  26,  41,  29,  35,  40,  55,  29,  35,  40,  55,   7,  16,   7,  16,  25,  29,
-		  35,  29,  35,  37,  53,  37,  53,  36,  45,  36,  45,  36,  45,  47,
+		  65,   1,   2,   8,  16,  17,  26,  34,  38,  50,  54,  32,   5,  10,  19,  27,
+		   5,   7,  15,  42,   8,  17,  29,  35,  21,  21,  34,   0,   3,  23,  29,   2,
+		   8,  15,  38,  54,  30,  36,  41,  56,  37,  46,  48,  47,  57,   0,   0,   0,
+		   2,   8,   0,   3,   2,   8,   7,   2,   8,  17,  26,  34,  38,  50,  54,  10,
+		  19,  27,  42,  30,  36,  41,  56,  30,  36,  41,  56,   8,  17,   8,  17,  26,
+		  30,  36,  30,  36,  38,  54,  38,  54,  37,  46,  37,  46,  37,  46,  48,
 	};
 
 	private static final short[] lapg_sym_to = new short[] {
-		  65,   4,   5,   5,  25,   5,   5,   5,   5,   5,   5,  41,  11,  21,  21,  21,
-		  12,  13,  23,  54,  15,  15,  35,  35,  29,  30,  42,   1,   1,  31,  31,   6,
-		   6,  24,  49,  49,  36,  36,  36,  36,  45,  45,  45,  57,  63,  64,   2,   7,
-		  16,   3,   8,   9,  17,  14,  10,  18,  26,  32,  43,  50,  59,  60,  22,  28,
-		  34,  55,  37,  37,  53,  62,  38,  38,  38,  38,  19,  27,  20,  20,  33,  39,
-		  44,  40,  40,  51,  61,  52,  52,  46,  56,  47,  47,  48,  48,  58,
+		  66,   5,   6,   6,  26,   6,   6,   6,   6,   6,   6,  42,  12,  22,  22,  22,
+		  13,  14,  24,  55,  16,  16,  36,  36,  30,  31,  43,   1,   1,  32,  32,   7,
+		   7,  25,  50,  50,  37,  37,  37,  37,  46,  46,  46,  58,  64,  65,   2,   3,
+		   8,  17,   4,  11,   9,  18,  15,  10,  19,  27,  33,  44,  51,  60,  61,  23,
+		  29,  35,  56,  38,  38,  54,  63,  39,  39,  39,  39,  20,  28,  21,  21,  34,
+		  40,  45,  41,  41,  52,  62,  53,  53,  47,  57,  48,  48,  49,  49,  59,
 	};
 
 	private static final short[] lapg_rlen = new short[] {
-		   3,   2,   1,   3,   3,   2,   1,   3,   1,   0,   3,   1,   0,   1,   0,   6,
-		   1,   2,   2,   1,   2,   4,   4,   3,   2,   1,   1,   0,   3,   2,   3,   2,
-		   2,   1,   0,   3,   2,   1,   3,   1,
+		   1,   0,   3,   2,   1,   3,   3,   2,   1,   3,   1,   0,   3,   1,   0,   1,
+		   0,   6,   1,   2,   2,   1,   2,   4,   4,   3,   2,   1,   1,   0,   3,   2,
+		   3,   2,   2,   1,   0,   3,   2,   1,   3,   1,
 	};
 
 	private static final short[] lapg_rlex = new short[] {
-		  19,  20,  20,  23,  23,  21,  21,  24,  27,  27,  24,  28,  28,  29,  29,  24,
-		  25,  25,  22,  22,  31,  31,  32,  32,  33,  33,  36,  36,  34,  34,  35,  35,
-		  37,  38,  38,  30,  39,  39,  40,  26,
+		  20,  20,  19,  21,  21,  24,  24,  22,  22,  25,  28,  28,  25,  29,  29,  30,
+		  30,  25,  26,  26,  23,  23,  32,  32,  33,  33,  34,  34,  37,  37,  35,  35,
+		  36,  36,  38,  39,  39,  31,  40,  40,  41,  27,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -304,6 +305,7 @@ public class Parser {
 		"'i{'",
 		"'}'",
 		"input",
+		"directivesopt",
 		"directives",
 		"lexical_definitions",
 		"grammar_definitions",
@@ -348,6 +350,7 @@ public class Parser {
 		iLBRACE,
 		RBRACE,
 		input,
+		directivesopt,
 		directives,
 		lexical_definitions,
 		grammar_definitions,
@@ -473,61 +476,61 @@ public class Parser {
 					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
-						case 3:
+						case 5:
 							 options.put(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym)); 
 							break;
-						case 4:
+						case 6:
 							 options.put(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString()); 
 							break;
-						case 7:
+						case 9:
 							 currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
 							break;
-						case 10:
+						case 12:
 							 addLexem(((CSymbol)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, lapg_m[lapg_head-2].pos.line); 
 							break;
-						case 15:
+						case 17:
 							 addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CAction)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line); 
 							break;
-						case 16:
+						case 18:
 							 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
 							break;
-						case 17:
+						case 19:
 							 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
 							break;
-						case 21:
+						case 23:
 							 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
 							break;
-						case 22:
+						case 24:
 							 addNonterm(((CSymbol)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
 							break;
-						case 23:
+						case 25:
 							 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym)); 
 							break;
-						case 24:
+						case 26:
 							 ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
-						case 25:
+						case 27:
 							 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
-						case 28:
+						case 30:
 							 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line); 
 							break;
-						case 29:
+						case 31:
 							 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line); 
 							break;
-						case 30:
+						case 32:
 							 addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
-						case 31:
+						case 33:
 							 lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
-						case 32:
+						case 34:
 							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 							break;
-						case 35:
+						case 37:
 							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-1].endpos.offset)); 
 							break;
-						case 39:
+						case 41:
 							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 
 							break;
 					}
@@ -550,7 +553,7 @@ public class Parser {
 
 		} while( lapg_n.lexem != 0 );
 
-		if( lapg_m[lapg_head].state != 66-1 ) {
+		if( lapg_m[lapg_head].state != 67-1 ) {
 			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 			return false;
 		};

@@ -65,7 +65,7 @@ _skip:	/[^'"{}]+/
 # Grammar
 
 input ::=
-	directives
+	directivesopt
 	lexical_definitions
 	grammar_definitions ;
 

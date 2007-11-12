@@ -1,6 +1,6 @@
 ##########################################################################
 #   C# phrase structure grammar
-#	REQUIRES: lapg 1.2.2+
+#	REQUIRES: lapg 1.4.0+
 #   grammar compiler: http://sourceforge.net/projects/lapg/
 #
 #	From: C# Language specification Final Draft - October 2002 (by ECMA TC39/TG2)
