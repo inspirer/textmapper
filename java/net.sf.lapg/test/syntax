@@ -1,6 +1,6 @@
 ##########################################################################
 #   C# phrase structure grammar
-#	REQUIRES: lapg 1.2.2+
+#	REQUIRES: lapg 1.4.0+
 #   grammar compiler: http://sourceforge.net/projects/lapg/
 #
 #	From: C# Language specification Final Draft - October 2002 (by ECMA TC39/TG2)
@@ -8,10 +8,10 @@
 
 # TODO: unsafe code
 
-.maxtoken    "4096"
+.maxtoken    4096
 .getsym      "chr = buff[l++];if( l == end ) fillb()"
-.positioning "full"
-.class       "parser"
+.positioning "offset"
+.class       "pparser"
 .namespace   "CSharpProcessor"
 .lang        "java"
 .lexemend    "on"
@@ -21,6 +21,7 @@
 # Identificators
 
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1
+error:
 
 # literals
 
@@ -166,11 +167,11 @@ Lwhile:		/while/
 
 cast_token:
 
-comment:	/\/\/\/.*/		\ continue;
+comment:	/\/\/\/.*/		{ continue; }
 
 _skip:      /\/\/([^\/\n\r].*)?/
 _skip:		/#.*/
-_skip:      /[\t\r\n ]+/    \ continue;
+_skip:      /[\t\r\n ]+/    { continue; }
 
 '/*':   /\/\*/          { group = @1;continue; }
 [1]
@@ -180,188 +181,188 @@ anysym1: /*/
 
 # Attributes
 
-[]
+#[]
 
 # Main rule
 
-input ::
-  = using_directivesopt namespace_member_declarationsopt
-  = using_directivesopt attributes
+input ::=
+	using_directivesopt namespace_member_declarationsopt
+  	| using_directivesopt attributes
 ;
 
 # Modifiers
 
-modifier ::
-  = Lnew
-  = Lpublic
-  = Lprotected
-  = Linternal
-  = Lprivate
-  = Labstract
-  = Lsealed
-  = Lstatic
-  = Lreadonly
-  = Lvirtual
-  = Loverride
-  = Lextern
-  = Lvolatile
-  = Lunsafe
+modifier ::=
+ 	Lnew
+  | Lpublic
+  | Lprotected
+  | Linternal
+  | Lprivate
+  | Labstract
+  | Lsealed
+  | Lstatic
+  | Lreadonly
+  | Lvirtual
+  | Loverride
+  | Lextern
+  | Lvolatile
+  | Lunsafe
 ;
 
-modifiers ::
-  = modifier
-  = modifiers modifier
+modifiers ::=
+	modifier
+  | modifiers modifier
 ;
 
 optsemicolon ::= | ';' ;
 
 # A.1.8 Literals
 
-literal (Node) ::
-  = Licon												{ $$ = new Node(); break; }
-  = Lfcon                                               { $$ = new Node(); break; }
-  = Lccon                                               { $$ = new Node(); break; }
-  = Lscon                                               { $$ = new Node(); break; }
-  = Ltrue                                               { $$ = new Node(); break; }
-  = Lfalse                                              { $$ = new Node(); break; }
-  = Lnull                                               { $$ = new Node(); break; }
+literal (Node) ::=
+    Licon												{ $$ = new Node(); break; }
+  | Lfcon                                               { $$ = new Node(); break; }
+  | Lccon                                               { $$ = new Node(); break; }
+  | Lscon                                               { $$ = new Node(); break; }
+  | Ltrue                                               { $$ = new Node(); break; }
+  | Lfalse                                              { $$ = new Node(); break; }
+  | Lnull                                               { $$ = new Node(); break; }
 ;
 
 # A.2 Syntactic grammar
 
 # A.2.1 Basic concepts
 
-qualified_identifier ::
-  = identifier
-  = qualified_identifier '.' identifier
+qualified_identifier ::=
+    identifier
+  | qualified_identifier '.' identifier
 ;
 
-ID (Node) ::
-  = identifier											{ $$ = new Node( Kind.Identifier, null, null, null ); break; }
+ID (Node) ::=
+    identifier											{ $$ = new Node( Kind.Identifier, null, null, null ); break; }
 ;
 
 
 # A.2.2 Types
 
-type_name ::
-  = qualified_identifier
+type_name ::=
+    qualified_identifier
 ;
 
-type ::
-  = type_name
-  = builtin_types
-  = array_type
-  = pointer_type
+type ::=
+    type_name
+  | builtin_types
+  | array_type
+  | pointer_type
 ;
 
-non_array_type ::
-  = type_name
-  = builtin_types
-  = pointer_type
+non_array_type ::=
+    type_name
+  | builtin_types
+  | pointer_type
 ;
 
-local_type ::
-  = primary_expression
-  = builtin_types
-  = builtin_types rank_specifiers
+local_type ::=
+    primary_expression
+  | builtin_types
+  | builtin_types rank_specifiers
 ;
 
-cast_type ::
-  = builtin_types
-  = cast_type '*'
-  = cast_type rank_specifier
+cast_type ::=
+    builtin_types
+  | cast_type '*'
+  | cast_type rank_specifier
 ;
 
-builtin_types ::
-  = Lobject
-  = Lstring
-  = Lbool
-  = Ldecimal
-  = Lfloat
-  = Ldouble
-  = integral_type
-  = Lvoid
+builtin_types ::=
+    Lobject
+  | Lstring
+  | Lbool
+  | Ldecimal
+  | Lfloat
+  | Ldouble
+  | integral_type
+  | Lvoid
 ;
 
-integral_type ::
-  = Lsbyte
-  = Lbyte
-  = Lshort
-  = Lushort
-  = Lint
-  = Luint
-  = Llong
-  = Lulong
-  = Lchar
+integral_type ::=
+    Lsbyte
+  | Lbyte
+  | Lshort
+  | Lushort
+  | Lint
+  | Luint
+  | Llong
+  | Lulong
+  | Lchar
 ;
 
-pointer_type ::
-  = type '*'
+pointer_type ::=
+    type '*'
 ;
 
 # A.2.4 Expressions
 
-argument_list ::
-  = argument
-  = argument_list ',' argument
+argument_list ::=
+    argument
+  | argument_list ',' argument
 ;
 
-argument ::
-  = expression
-  = Lref expression
-  = Lout expression
+argument ::=
+    expression
+  | Lref expression
+  | Lout expression
 ;
 
-primary_expression (Node) ::
-  = primary_expression_na
-  = new_array_expression
+primary_expression (Node) ::=
+    primary_expression_na
+  | new_array_expression
 ;
 
-primary_expression_na (Node) ::
-  = literal
-  = ID
-  = parenthesized
-  = Lthis												{ $$ = new Node(); break; }
-  = Lbase '.' ID										{ $$ = new Node(); break; }
-  = Lbase '[' expression_list ']'                       { $$ = new Node(); break; }
-  = Ltypeof '(' type ')'                                { $$ = new Node(); break; }
-  = Lchecked '(' expression ')'                         { $$ = new Node(); break; }
-  = Lunchecked '(' expression ')'                       { $$ = new Node(); break; }
-  = Lsizeof '(' type ')'                                { $$ = new Node(); break; }
-  = primary_expression '++'                             { $$ = new Node(); break; }
-  = primary_expression '--'                             { $$ = new Node(); break; }
-  = primary_expression '->' ID                          { $$ = new Node(); break; }
-  = primary_expression '.' ID							{ $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; }
-  = builtin_types '.' ID								{ $$ = new Node( Kind.TypeDot, null, null, null ); break; }
-  = primary_expression '(' argument_listopt ')'         { $$ = new Node(); break; }
-  = primary_expression_na '[' expression_list ']'       { $$ = new Node(); break; }
-  = primary_expression_na rank_specifier				{ $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; }
-  = object_or_delegate_creation_expression				{ $$ = new Node(); break; }
+primary_expression_na (Node) ::=
+    literal
+  | ID
+  | parenthesized
+  | Lthis												{ $$ = new Node(); break; }
+  | Lbase '.' ID										{ $$ = new Node(); break; }
+  | Lbase '[' expression_list ']'                       { $$ = new Node(); break; }
+  | Ltypeof '(' type ')'                                { $$ = new Node(); break; }
+  | Lchecked '(' expression ')'                         { $$ = new Node(); break; }
+  | Lunchecked '(' expression ')'                       { $$ = new Node(); break; }
+  | Lsizeof '(' type ')'                                { $$ = new Node(); break; }
+  | primary_expression '++'                             { $$ = new Node(); break; }
+  | primary_expression '--'                             { $$ = new Node(); break; }
+  | primary_expression '->' ID                          { $$ = new Node(); break; }
+  | primary_expression '.' ID							{ $$ = new Node( Kind.Dot, $primary_expression, null, null ); break; }
+  | builtin_types '.' ID								{ $$ = new Node( Kind.TypeDot, null, null, null ); break; }
+  | primary_expression '(' argument_listopt ')'         { $$ = new Node(); break; }
+  | primary_expression_na '[' expression_list ']'       { $$ = new Node(); break; }
+  | primary_expression_na rank_specifier				{ $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; }
+  | object_or_delegate_creation_expression				{ $$ = new Node(); break; }
 ;
 
-new_array_expression (Node) ::
-  = Lnew non_array_type '[' expression_list ']' rank_specifiersopt array_initializeropt		{ $$ = new Node(); break; }
-  = Lnew array_type array_initializer                   { $$ = new Node(); break; }
+new_array_expression (Node) ::=
+    Lnew non_array_type '[' expression_list ']' rank_specifiersopt array_initializeropt		{ $$ = new Node(); break; }
+  | Lnew array_type array_initializer                   { $$ = new Node(); break; }
 ;
 
 object_or_delegate_creation_expression (Node) ::=
 	Lnew type '(' argument_listopt ')'                  { $$ = new Node(); break; }
 ;
 
-unary_expression (Node) ::
-  = primary_expression
-  = '+' unary_expression								{ $$ = new Node(); break; }
-  = '-' unary_expression								{ $$ = new Node(); break; }
-  = '!' unary_expression                                { $$ = new Node(); break; }
-  = '~' unary_expression                                { $$ = new Node(); break; }
-  = '++' unary_expression                               { $$ = new Node(); break; }
-  = '--' unary_expression                               { $$ = new Node(); break; }
-  = cast_expression
+unary_expression (Node) ::=
+    primary_expression
+  | '+' unary_expression								{ $$ = new Node(); break; }
+  | '-' unary_expression								{ $$ = new Node(); break; }
+  | '!' unary_expression                                { $$ = new Node(); break; }
+  | '~' unary_expression                                { $$ = new Node(); break; }
+  | '++' unary_expression                               { $$ = new Node(); break; }
+  | '--' unary_expression                               { $$ = new Node(); break; }
+  | cast_expression
 ;
 
-parenthesized (Node) ::
-  = '(' expression ')'
-		$$ = $1;
+parenthesized (Node) ::=
+    '(' expression ')'
+		{ $$ = $1;
 		// HACK to resolve Cast ambiguity
 		if( CastExpr($expression,lapg_n) ) {
 			// perform reduce
@@ -380,81 +381,81 @@ parenthesized (Node) ::
 			// skip default reduce code
 			continue;
 		}
-		break;
+		break; }
 ;
 
-cast_expression (Node) ::
-  = parenthesized cast_token unary_expression                   { $$ = new Node(); break; }
-  = '(' cast_type ')' unary_expression                          { $$ = new Node(); break; }
+cast_expression (Node) ::=
+    parenthesized cast_token unary_expression                   { $$ = new Node(); break; }
+  | '(' cast_type ')' unary_expression                          { $$ = new Node(); break; }
 ;
 
-multiplicative_expression (Node) ::
-  = unary_expression
-  = multiplicative_expression '*' unary_expression              { $$ = new Node(); break; }
-  = multiplicative_expression '/' unary_expression              { $$ = new Node(); break; }
-  = multiplicative_expression '%' unary_expression              { $$ = new Node(); break; }
+multiplicative_expression (Node) ::=
+    unary_expression
+  | multiplicative_expression '*' unary_expression              { $$ = new Node(); break; }
+  | multiplicative_expression '/' unary_expression              { $$ = new Node(); break; }
+  | multiplicative_expression '%' unary_expression              { $$ = new Node(); break; }
 ;
 
-additive_expression (Node) ::
-  = multiplicative_expression
-  = additive_expression '+' multiplicative_expression           { $$ = new Node(); break; }
-  = additive_expression '-' multiplicative_expression           { $$ = new Node(); break; }
+additive_expression (Node) ::=
+    multiplicative_expression
+  | additive_expression '+' multiplicative_expression           { $$ = new Node(); break; }
+  | additive_expression '-' multiplicative_expression           { $$ = new Node(); break; }
 ;
 
-shift_expression (Node) ::
-  = additive_expression
-  = shift_expression '<<' additive_expression                   { $$ = new Node(); break; }
-  = shift_expression '>>' additive_expression					{ $$ = new Node(); break; }
+shift_expression (Node) ::=
+    additive_expression
+  | shift_expression '<<' additive_expression                   { $$ = new Node(); break; }
+  | shift_expression '>>' additive_expression					{ $$ = new Node(); break; }
 ;
 
-relational_expression (Node) ::
-  = shift_expression
-  = relational_expression '<' shift_expression                  { $$ = new Node(); break; }
-  = relational_expression '>' shift_expression                  { $$ = new Node(); break; }
-  = relational_expression '<=' shift_expression                 { $$ = new Node(); break; }
-  = relational_expression '>=' shift_expression                 { $$ = new Node(); break; }
-  = relational_expression Lis type                              { $$ = new Node(); break; }
-  = relational_expression Las type                              { $$ = new Node(); break; }
+relational_expression (Node) ::=
+    shift_expression
+  | relational_expression '<' shift_expression                  { $$ = new Node(); break; }
+  | relational_expression '>' shift_expression                  { $$ = new Node(); break; }
+  | relational_expression '<=' shift_expression                 { $$ = new Node(); break; }
+  | relational_expression '>=' shift_expression                 { $$ = new Node(); break; }
+  | relational_expression Lis type                              { $$ = new Node(); break; }
+  | relational_expression Las type                              { $$ = new Node(); break; }
 ;
 
-equality_expression (Node) ::
-  = relational_expression
-  = equality_expression '==' relational_expression              { $$ = new Node(); break; }
-  = equality_expression '!=' relational_expression              { $$ = new Node(); break; }
+equality_expression (Node) ::=
+    relational_expression
+  | equality_expression '==' relational_expression              { $$ = new Node(); break; }
+  | equality_expression '!=' relational_expression              { $$ = new Node(); break; }
 ;
 
-and_expression (Node) ::
-  = equality_expression
-  = and_expression '&' equality_expression                      { $$ = new Node(); break; }
+and_expression (Node) ::=
+    equality_expression
+  | and_expression '&' equality_expression                      { $$ = new Node(); break; }
 ;
 
-exclusive_or_expression (Node) ::
-  = and_expression
-  = exclusive_or_expression '^' and_expression                  { $$ = new Node(); break; }
+exclusive_or_expression (Node) ::=
+    and_expression
+  | exclusive_or_expression '^' and_expression                  { $$ = new Node(); break; }
 ;
 
-inclusive_or_expression (Node) ::
-  = exclusive_or_expression
-  = inclusive_or_expression '|' exclusive_or_expression         { $$ = new Node(); break; }
+inclusive_or_expression (Node) ::=
+    exclusive_or_expression
+  | inclusive_or_expression '|' exclusive_or_expression         { $$ = new Node(); break; }
 ;
 
-conditional_and_expression (Node) ::
-  = inclusive_or_expression
-  = conditional_and_expression '&&' inclusive_or_expression     { $$ = new Node(); break; }
+conditional_and_expression (Node) ::=
+    inclusive_or_expression
+  | conditional_and_expression '&&' inclusive_or_expression     { $$ = new Node(); break; }
 ;
 
-conditional_or_expression (Node) ::
-  = conditional_and_expression
-  = conditional_or_expression '||' conditional_and_expression   { $$ = new Node(); break; }
+conditional_or_expression (Node) ::=
+    conditional_and_expression
+  | conditional_or_expression '||' conditional_and_expression   { $$ = new Node(); break; }
 ;
 
-conditional_expression (Node) ::
-  = conditional_or_expression
-  = conditional_or_expression '?' expression ':' expression		{ $$ = new Node(); break; }
+conditional_expression (Node) ::=
+    conditional_or_expression
+  | conditional_or_expression '?' expression ':' expression		{ $$ = new Node(); break; }
 ;
 
-assignment (Node) ::
-  = unary_expression assignment_operator expression		{ $$ = new Node(); break; }
+assignment (Node) ::=
+    unary_expression assignment_operator expression		{ $$ = new Node(); break; }
 ;
 
 assignment_operator ::=
@@ -471,360 +472,360 @@ assignment_operator ::=
 	| '>>='
 ;
 
-expression_list ::
-  = expression
-  = expression_list ',' expression
+expression_list ::=
+    expression
+  | expression_list ',' expression
 ;
 
-expression (Node) ::
-  = conditional_expression
-  = assignment
+expression (Node) ::=
+    conditional_expression
+  | assignment
 ;
 
-constant_expression (Node) ::
-  = expression
+constant_expression (Node) ::=
+    expression
 ;
 
 # A.2.5 Statements
 
-statement ::
-  = ID ':' statement
-  = local_variable_declaration ';'
-  = local_constant_declaration ';'
-  = embedded_statement
+statement ::=
+    ID ':' statement
+  | local_variable_declaration ';'
+  | local_constant_declaration ';'
+  | embedded_statement
 ;
 
-embedded_statement ::
-  = block
-  = statement_expression ';'
-  = ';'
-  = Lif '(' expression ')' embedded_statement
-  = Lif '(' expression ')' embedded_statement Lelse embedded_statement
-  = Lswitch '(' expression ')' switch_block
-  = Lwhile '(' expression ')' embedded_statement
-  = Ldo embedded_statement Lwhile '(' expression ')' ';'
-  = Lfor '(' for_initializeropt ';' expressionopt ';' statement_expression_listopt ')' embedded_statement
-  = Lforeach '(' type ID Lin expression ')' embedded_statement
-  = Lbreak ';'
-  = Lcontinue ';'
-  = Lgoto ID ';'
-  = Lgoto Lcase constant_expression ';'
-  = Lgoto Ldefault ';'
-  = Lreturn expressionopt ';'
-  = Lthrow expressionopt ';'
-  = try_statement
-  = Llock '(' expression ')' embedded_statement
-  = Lusing '(' resource_acquisition ')' embedded_statement
-  = Lunsafe block
-  = Lchecked block
-  = Lunchecked block
+embedded_statement ::=
+    block
+  | statement_expression ';'
+  | ';'
+  | Lif '(' expression ')' embedded_statement
+  | Lif '(' expression ')' embedded_statement Lelse embedded_statement
+  | Lswitch '(' expression ')' switch_block
+  | Lwhile '(' expression ')' embedded_statement
+  | Ldo embedded_statement Lwhile '(' expression ')' ';'
+  | Lfor '(' for_initializeropt ';' expressionopt ';' statement_expression_listopt ')' embedded_statement
+  | Lforeach '(' type ID Lin expression ')' embedded_statement
+  | Lbreak ';'
+  | Lcontinue ';'
+  | Lgoto ID ';'
+  | Lgoto Lcase constant_expression ';'
+  | Lgoto Ldefault ';'
+  | Lreturn expressionopt ';'
+  | Lthrow expressionopt ';'
+  | try_statement
+  | Llock '(' expression ')' embedded_statement
+  | Lusing '(' resource_acquisition ')' embedded_statement
+  | Lunsafe block
+  | Lchecked block
+  | Lunchecked block
 ;
 
-block ::
-  = '{' statementsopt '}'
+block ::=
+    '{' statementsopt '}'
 ;
 
-statements ::
-  = statement
-  = statements statement
+statements ::=
+    statement
+  | statements statement
 ;
 
-local_variable_declaration ::
-  = local_type variable_declarators
+local_variable_declaration ::=
+    local_type variable_declarators
 ;
 
-local_constant_declaration ::
-  = Lconst type constant_declarators
+local_constant_declaration ::=
+    Lconst type constant_declarators
 ;
 
-constant_declarators ::
-  = constant_declarator
-  = constant_declarators ',' constant_declarator
+constant_declarators ::=
+    constant_declarator
+  | constant_declarators ',' constant_declarator
 ;
 
-constant_declarator ::
-  = ID '=' constant_expression
+constant_declarator ::=
+    ID '=' constant_expression
 ;
 
-statement_expression ::
-  = primary_expression '(' argument_listopt ')'
-  = object_or_delegate_creation_expression
-  = assignment
-  = primary_expression '++'
-  = primary_expression '--'
-  = '++' unary_expression
-  = '--' unary_expression
+statement_expression ::=
+    primary_expression '(' argument_listopt ')'
+  | object_or_delegate_creation_expression
+  | assignment
+  | primary_expression '++'
+  | primary_expression '--'
+  | '++' unary_expression
+  | '--' unary_expression
 ;
 
-switch_block ::
-  = '{' switch_sectionsopt '}'
+switch_block ::=
+    '{' switch_sectionsopt '}'
 ;
 
-switch_sections ::
-  = switch_section
-  = switch_sections switch_section
+switch_sections ::=
+    switch_section
+  | switch_sections switch_section
 ;
 
-switch_section ::
-  = switch_labels statements_as_one
+switch_section ::=
+    switch_labels statements_as_one
 ;
 
-statements_as_one ::
-  = statements
+statements_as_one ::=
+    statements
 ;
 
-switch_labels ::
-  = switch_label
-  = switch_labels switch_label
+switch_labels ::=
+    switch_label
+  | switch_labels switch_label
 ;
 
-switch_label ::
-  = Lcase constant_expression ':'
-  = Ldefault ':'
+switch_label ::=
+    Lcase constant_expression ':'
+  | Ldefault ':'
 ;
 
-for_initializer ::
-  = local_variable_declaration
-  = statement_expression_list
+for_initializer ::=
+    local_variable_declaration
+  | statement_expression_list
 ;
 
-statement_expression_list ::
-  = statement_expression
-  = statement_expression_list ',' statement_expression
+statement_expression_list ::=
+    statement_expression
+  | statement_expression_list ',' statement_expression
 ;
 
-try_statement ::
-  = Ltry block catch_finally
+try_statement ::=
+    Ltry block catch_finally
 ;
 
-catch_finally ::
-  = catch_clauses
-  = finally_clause
-  = catch_clauses finally_clause
+catch_finally ::=
+    catch_clauses
+  | finally_clause
+  | catch_clauses finally_clause
 ;
 
-catch_clauses ::
-  = specific_catch_clauses
-  = specific_catch_clauses general_catch_clause
-  = general_catch_clause
+catch_clauses ::=
+    specific_catch_clauses
+  | specific_catch_clauses general_catch_clause
+  | general_catch_clause
 ;
 
-specific_catch_clauses ::
-  = specific_catch_clause
-  = specific_catch_clauses specific_catch_clause
+specific_catch_clauses ::=
+    specific_catch_clause
+  | specific_catch_clauses specific_catch_clause
 ;
 
-specific_catch_clause ::
-  = Lcatch '(' type_name IDopt ')' block
+specific_catch_clause ::=
+    Lcatch '(' type_name IDopt ')' block
 
 ;
 
-general_catch_clause ::
-  = Lcatch block
+general_catch_clause ::=
+    Lcatch block
 ;
 
-finally_clause ::
-  = Lfinally block
+finally_clause ::=
+    Lfinally block
 ;
 
-resource_acquisition ::
-  = local_variable_declaration
-  = expression
+resource_acquisition ::=
+    local_variable_declaration
+  | expression
 ;
 
 # Declaration level
 
 # Namespaces
 
-namespace_declaration ::
-  = Lnamespace qualified_identifier '{' using_directivesopt namespace_member_declarationsopt '}' optsemicolon
+namespace_declaration ::=
+    Lnamespace qualified_identifier '{' using_directivesopt namespace_member_declarationsopt '}' optsemicolon
 ;
 
-using_directives ::
-  = using_directive
-  = using_directives using_directive
+using_directives ::=
+    using_directive
+  | using_directives using_directive
 ;
 
-using_directive ::
-  = Lusing ID '=' qualified_identifier ';'
-  = Lusing qualified_identifier ';'
+using_directive ::=
+    Lusing ID '=' qualified_identifier ';'
+  | Lusing qualified_identifier ';'
 ;
 
-namespace_member_declarations ::
-  = namespace_member_declaration
-  = namespace_member_declarations namespace_member_declaration
+namespace_member_declarations ::=
+    namespace_member_declaration
+  | namespace_member_declarations namespace_member_declaration
 ;
 
-namespace_member_declaration ::
-  = namespace_declaration
-  = type_declaration
+namespace_member_declaration ::=
+    namespace_declaration
+  | type_declaration
 ;
 
-type_declaration ::
-  = class_declaration
-  = struct_declaration
-  = interface_declaration
-  = enum_declaration
-  = delegate_declaration
+type_declaration ::=
+    class_declaration
+  | struct_declaration
+  | interface_declaration
+  | enum_declaration
+  | delegate_declaration
 ;
 
 # A.2.6 Classes
 
-class_declaration ::
-  = attributesopt modifiersopt Lclass ID class_baseopt class_body optsemicolon
+class_declaration ::=
+    attributesopt modifiersopt Lclass ID class_baseopt class_body optsemicolon
 ;
 
-class_base ::
-  = ':' type_list
+class_base ::=
+    ':' type_list
 ;
 
-type_list ::
-  = qualified_identifier
-  = type_list ',' qualified_identifier
+type_list ::=
+    qualified_identifier
+  | type_list ',' qualified_identifier
 ;
 
-class_body ::
-  = '{' class_member_declarationsopt '}'
+class_body ::=
+    '{' class_member_declarationsopt '}'
 ;
 
-class_member_declarations ::
-  = class_member_declaration
-  = class_member_declarations class_member_declaration
+class_member_declarations ::=
+    class_member_declaration
+  | class_member_declarations class_member_declaration
 ;
 
-class_member_declaration ::
-  = constant_declaration
-  = field_declaration
-  = method_declaration
-  = property_declaration
-  = event_declaration
-  = indexer_declaration
-  = operator_declaration
-  = constructor_declaration
-  = destructor_declaration
-  = type_declaration
+class_member_declaration ::=
+    constant_declaration
+  | field_declaration
+  | method_declaration
+  | property_declaration
+  | event_declaration
+  | indexer_declaration
+  | operator_declaration
+  | constructor_declaration
+  | destructor_declaration
+  | type_declaration
 ;
 
 # Constant/Field
 
-constant_declaration ::
-  = attributesopt const_modifiers type constant_declarators ';'
+constant_declaration ::=
+    attributesopt const_modifiers type constant_declarators ';'
 ;
 
-const_modifiers ::
-  = Lconst
-  = modifiers Lconst
+const_modifiers ::=
+    Lconst
+  | modifiers Lconst
 ;
 
-field_declaration ::
-  = attributesopt modifiersopt type variable_declarators ';'
+field_declaration ::=
+    attributesopt modifiersopt type variable_declarators ';'
 ;
 
-variable_declarators ::
-  = variable_declarator
-  = variable_declarators ',' variable_declarator
+variable_declarators ::=
+    variable_declarator
+  | variable_declarators ',' variable_declarator
 ;
 
-variable_declarator ::
-  = ID
-  = ID '=' variable_initializer
+variable_declarator ::=
+    ID
+  | ID '=' variable_initializer
 ;
 
-variable_initializer ::
-  = expression
-  = array_initializer
+variable_initializer ::=
+    expression
+  | array_initializer
 ;
 
 # Method
 
-method_declaration ::
-  = attributesopt modifiersopt type member_name '(' formal_parameter_listopt ')' optional_body
+method_declaration ::=
+    attributesopt modifiersopt type member_name '(' formal_parameter_listopt ')' optional_body
 ;
 
-member_name ::
-  = identifier
-  = qualified_identifier '.' identifier
+member_name ::=
+    identifier
+  | qualified_identifier '.' identifier
 ;
 
-formal_parameter_list ::
-  = fixed_parameters
-  = fixed_parameters ',' parameter_array
-  = parameter_array
+formal_parameter_list ::=
+    fixed_parameters
+  | fixed_parameters ',' parameter_array
+  | parameter_array
 ;
 
-fixed_parameters ::
-  = fixed_parameter
-  = fixed_parameters ',' fixed_parameter
+fixed_parameters ::=
+    fixed_parameter
+  | fixed_parameters ',' fixed_parameter
 ;
 
-fixed_parameter ::
-  = attributesopt parameter_modifieropt type ID
+fixed_parameter ::=
+    attributesopt parameter_modifieropt type ID
 ;
 
-parameter_modifier ::
-  = Lref
-  = Lout
+parameter_modifier ::=
+    Lref
+  | Lout
 ;
 
-params_modifier ::
-  = Lparams
+params_modifier ::=
+    Lparams
 ;
 
-parameter_array ::
-  = attributesopt params_modifier array_type ID
+parameter_array ::=
+    attributesopt params_modifier array_type ID
 ;
 
 # Property/Event/Indexer
 
-property_declaration ::
-  = attributesopt modifiersopt type member_name '{' accessor_declarations '}'
+property_declaration ::=
+    attributesopt modifiersopt type member_name '{' accessor_declarations '}'
 ;
 
-accessor_declarations ::
-  = accessor_declaration accessor_declarationopt
+accessor_declarations ::=
+    accessor_declaration accessor_declarationopt
 ;
 
-accessor_declaration ::
-  = attributesopt ID optional_body
+accessor_declaration ::=
+    attributesopt ID optional_body
 ;
 
-optional_body ::
-  = block
-  = ';'
+optional_body ::=
+    block
+  | ';'
 ;
 
-event_declaration ::
-  = attributesopt modifiersopt Levent type variable_declarators ';'
-  = attributesopt modifiersopt Levent type member_name '{' accessor_declarations '}'
+event_declaration ::=
+    attributesopt modifiersopt Levent type variable_declarators ';'
+  | attributesopt modifiersopt Levent type member_name '{' accessor_declarations '}'
 ;
 
-indexer_declaration ::
-  = attributesopt modifiersopt type indexer_name '[' formal_parameter_list ']' '{' accessor_declarations '}'
+indexer_declaration ::=
+    attributesopt modifiersopt type indexer_name '[' formal_parameter_list ']' '{' accessor_declarations '}'
 ;
 
-indexer_name ::
-  = Lthis
-  = qualified_identifier '.' Lthis
+indexer_name ::=
+    Lthis
+  | qualified_identifier '.' Lthis
 ;
 
 # Operators
 
-operator_declaration ::
-  = attributesopt modifiersopt operator_declarator optional_body
+operator_declaration ::=
+    attributesopt modifiersopt operator_declarator optional_body
 ;
 
-operator_declarator ::
-  = unary_binary_operator_declarator
-  = conversion_operator_declarator
+operator_declarator ::=
+    unary_binary_operator_declarator
+  | conversion_operator_declarator
 ;
 
-simple_parameter ::
-  = type ID
+simple_parameter ::=
+    type ID
 ;
 
-unary_binary_operator_declarator ::
-  = type overloadable_operator_name '(' simple_parameter ')'
-  = type overloadable_operator_name '(' simple_parameter ',' simple_parameter ')'
+unary_binary_operator_declarator ::=
+    type overloadable_operator_name '(' simple_parameter ')'
+  | type overloadable_operator_name '(' simple_parameter ',' simple_parameter ')'
 ;
 
 overloadable_operator_name ::=
@@ -835,46 +836,46 @@ overloadable_operator ::=
 	'!' | '~' | '++' | '--' | Ltrue | Lfalse |
 	'*' | '/' | '%' | '&' | '|' | '^' | '<<' | '>>' | '==' | '!=' | '>' | '<' | '>=' | '<=' ;
 
-conversion_operator_declarator ::
-  = conversion_modifier Loperator type '(' simple_parameter ')'
+conversion_operator_declarator ::=
+    conversion_modifier Loperator type '(' simple_parameter ')'
 ;
 
-conversion_modifier ::
-  = Limplicit
-  = Lexplicit
+conversion_modifier ::=
+    Limplicit
+  | Lexplicit
 ;
 
 # Constructor/Destructor
 
-constructor_declaration ::
-  = attributesopt modifiersopt ID '(' formal_parameter_listopt ')' constructor_initializeropt optional_body
+constructor_declaration ::=
+    attributesopt modifiersopt ID '(' formal_parameter_listopt ')' constructor_initializeropt optional_body
 ;
 
-constructor_initializer ::
-  = ':' Lbase '(' argument_listopt ')'
-  = ':' Lthis '(' argument_listopt ')'
+constructor_initializer ::=
+    ':' Lbase '(' argument_listopt ')'
+  | ':' Lthis '(' argument_listopt ')'
 ;
 
-destructor_modifier ::
-  = Lextern
+destructor_modifier ::=
+    Lextern
 ;
 
-destructor_declaration ::
-  = attributesopt destructor_modifieropt '~' ID '(' ')' optional_body
+destructor_declaration ::=
+    attributesopt destructor_modifieropt '~' ID '(' ')' optional_body
 ;
 
 # A.2.7 Structs
 
-struct_declaration ::
-  = attributesopt modifiersopt Lstruct ID struct_interfacesopt struct_body optsemicolon
+struct_declaration ::=
+    attributesopt modifiersopt Lstruct ID struct_interfacesopt struct_body optsemicolon
 ;
 
-struct_interfaces ::
-  = ':' type_list
+struct_interfaces ::=
+    ':' type_list
 ;
 
-struct_body ::
-  = '{' class_member_declarationsopt '}'
+struct_body ::=
+    '{' class_member_declarationsopt '}'
 ;
 
 # A.2.8 Arrays
@@ -883,142 +884,142 @@ array_type ::=
 	non_array_type rank_specifiers
 ;
 
-rank_specifiers ::
-  = rank_specifier
-  = rank_specifiers rank_specifier
+rank_specifiers ::=
+    rank_specifier
+  | rank_specifiers rank_specifier
 ;
 
 rank_specifier ::=
 	'[' dim_separatorsopt ']' ;
 
-dim_separators ::
-  = ','
-  = dim_separators ','
+dim_separators ::=
+    ','
+  | dim_separators ','
 ;
 
-array_initializer ::
-  = '{' variable_initializer_listopt '}'
-  = '{' variable_initializer_list ',' '}'
+array_initializer ::=
+    '{' variable_initializer_listopt '}'
+  | '{' variable_initializer_list ',' '}'
 ;
 
-variable_initializer_list ::
-  = variable_initializer
-  = variable_initializer_list ',' variable_initializer
+variable_initializer_list ::=
+    variable_initializer
+  | variable_initializer_list ',' variable_initializer
 ;
 
 # A.2.9 Interfaces
 
-interface_declaration ::
-  = attributesopt modifiersopt Linterface ID interface_baseopt interface_body optsemicolon
+interface_declaration ::=
+    attributesopt modifiersopt Linterface ID interface_baseopt interface_body optsemicolon
 ;
 
-interface_base ::
-  = ':' type_list
+interface_base ::=
+    ':' type_list
 ;
 
-interface_body ::
-  = '{' interface_member_declarationsopt '}'
+interface_body ::=
+    '{' interface_member_declarationsopt '}'
 ;
 
-interface_member_declarations ::
-  = interface_member_declaration
-  = interface_member_declarations interface_member_declaration
+interface_member_declarations ::=
+    interface_member_declaration
+  | interface_member_declarations interface_member_declaration
 ;
 
-interface_member_declaration ::
-  = attributesopt iface_member_modifieropt type ID '(' formal_parameter_listopt ')' ';'
-  = attributesopt iface_member_modifieropt type ID '{' interface_accessors '}'
-  = attributesopt iface_member_modifieropt Levent type ID ';'
-  = attributesopt iface_member_modifieropt type iface_indexer_name '[' formal_parameter_list ']' '{' interface_accessors '}'
+interface_member_declaration ::=
+    attributesopt iface_member_modifieropt type ID '(' formal_parameter_listopt ')' ';'
+  | attributesopt iface_member_modifieropt type ID '{' interface_accessors '}'
+  | attributesopt iface_member_modifieropt Levent type ID ';'
+  | attributesopt iface_member_modifieropt type iface_indexer_name '[' formal_parameter_list ']' '{' interface_accessors '}'
 ;
 
-iface_indexer_name ::
-  = Lthis
+iface_indexer_name ::=
+    Lthis
 ;
 
-iface_member_modifier ::
-  = Lnew
+iface_member_modifier ::=
+    Lnew
 ;
 
-interface_accessors ::
-  = interface_accessor interface_accessoropt
+interface_accessors ::=
+    interface_accessor interface_accessoropt
 ;
 
-interface_accessor ::
-  = attributesopt ID ';'
+interface_accessor ::=
+    attributesopt ID ';'
 ;
 
 # A.2.10 Enums
 
-enum_declaration ::
-  = attributesopt modifiersopt Lenum ID enum_baseopt enum_body optsemicolon
+enum_declaration ::=
+    attributesopt modifiersopt Lenum ID enum_baseopt enum_body optsemicolon
 ;
 
-enum_base ::
-  = ':' integral_type
+enum_base ::=
+    ':' integral_type
 ;
 
-enum_body ::
-  = '{' enum_member_declarationsopt '}'
-  = '{' enum_member_declarations ',' '}'
+enum_body ::=
+    '{' enum_member_declarationsopt '}'
+  | '{' enum_member_declarations ',' '}'
 ;
 
-enum_member_declarations ::
-  = enum_member_declaration
-  = enum_member_declarations ',' enum_member_declaration
+enum_member_declarations ::=
+    enum_member_declaration
+  | enum_member_declarations ',' enum_member_declaration
 ;
 
-enum_member_declaration ::
-  = attributesopt ID
-  = attributesopt ID '=' constant_expression
+enum_member_declaration ::=
+    attributesopt ID
+  | attributesopt ID '=' constant_expression
 ;
 
 # A.2.11 Delegates
 
-delegate_declaration ::
-  = attributesopt modifiersopt Ldelegate type ID '(' formal_parameter_listopt ')' ';'
+delegate_declaration ::=
+    attributesopt modifiersopt Ldelegate type ID '(' formal_parameter_listopt ')' ';'
 ;
 
 # A.2.12 Attributes
 
-attributes ::
-  = attribute_sect
-  = attributes attribute_sect
+attributes ::=
+    attribute_sect
+  | attributes attribute_sect
 ;
 
-attribute_sect ::
-  = '[' attribute_target ':' attribute_list ',' ']'
-  = '[' attribute_target ':' attribute_list ']'
-  = '[' attribute_list ',' ']'
-  = '[' attribute_list ']'
+attribute_sect ::=
+    '[' attribute_target ':' attribute_list ',' ']'
+  | '[' attribute_target ':' attribute_list ']'
+  | '[' attribute_list ',' ']'
+  | '[' attribute_list ']'
 ;
 
-attribute_target ::
-  = identifier
-  = Levent
-  = Lreturn
+attribute_target ::=
+    identifier
+  | Levent
+  | Lreturn
 ;
 
-attribute_list ::
-  = attribute
-  = attribute_list ',' attribute
+attribute_list ::=
+    attribute
+  | attribute_list ',' attribute
 ;
 
-attribute ::
-  = attribute_name attribute_argumentsopt
+attribute ::=
+    attribute_name attribute_argumentsopt
 ;
 
-attribute_name ::
-  = qualified_identifier
+attribute_name ::=
+    qualified_identifier
 ;
 
-attribute_arguments ::
-  = '(' attribute_argument_listopt ')'
+attribute_arguments ::=
+    '(' attribute_argument_listopt ')'
 ;
 
-attribute_argument_list ::
-  = expression
-  = attribute_argument_list ',' expression
+attribute_argument_list ::=
+    expression
+  | attribute_argument_list ',' expression
 ;
 
 %%

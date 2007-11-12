@@ -128,7 +128,7 @@ rule_priority (CSymbol) ::=
 ;
 
 command (CAction) ::=
-	'{' command_tokensopt '}'							{ $$ = new CAction(@0.line, rawData(@0.offset+1,@~1.offset)); }  
+	'{' command_tokensopt '}'							{ $$ = new CAction(@0.line, rawData(@0.offset+1,@2.offset)); }  
 ;
 	
 command_tokens ::=

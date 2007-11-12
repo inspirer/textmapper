@@ -528,7 +528,7 @@ public class Parser {
 							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 							break;
 						case 37:
-							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-1].endpos.offset)); 
+							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset)); 
 							break;
 						case 41:
 							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 

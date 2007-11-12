@@ -59,7 +59,6 @@ abstract class ContextFree {
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];
 		this.rindex = new int[rules];
-		this.rlines = new int[rules];
 		this.raction = new String[rules];
 		this.rright = new int[situations];
 		this.sym_empty = new boolean[nsyms];
@@ -71,7 +70,6 @@ abstract class ContextFree {
 			this.rleft[i] = r.getLeft().getIndex();
 			this.rprio[i] = r.getPriority();
 			this.rindex[i] = curr_rindex;
-			this.rlines[i] = r.getLine();
 			this.raction[i] = r.getAction();
 			Symbol[] wright = r.getRight();
 			for (int e = 0; e < wright.length; e++) {
@@ -98,7 +96,7 @@ abstract class ContextFree {
 	protected final Symbol[] sym;
 	protected final int[] priorul;
 	protected final String[] raction;
-	protected final int[] rleft, rindex, rright, rprio, rlines;
+	protected final int[] rleft, rindex, rright, rprio;
 	protected final boolean[] sym_empty;
 
 	// info

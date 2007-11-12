@@ -16,7 +16,7 @@ public class SyntaxUtil {
 		CSyntax cs = Parser.process(contents, options);
 		if( cs.hasErrors() ) {
 			for( String s : cs.getErrors()) {
-				err.error(s);
+				err.error(s+"\n");
 			}
 		}
 		return cs;

@@ -127,13 +127,13 @@ ${case 'line'}		int           lapg_current_line = 1;
 ${case 'full'}		int           lapg_current_line = 1, lapg_current_column = 1;
 ${case 'offset'}		int           lapg_current_line = 1, lapg_current_offset = 0;
 ${end-}
-${if parser.hasError()}		int           lapg_symbols_ok = 4;$/
+${if syntax.error!=-1}		int           lapg_symbols_ok = 4;$/
 
 		lapg_m[0] = new lapg_symbol();
 		lapg_m[0].state = 0;
 		${opts.getsym};
 
-${if parser.hasError()}		NEXTTOKEN:$/
+${if syntax.error!=-1}		NEXTTOKEN:$/
 		do {
 			lapg_n = new lapg_symbol();
 ${switch opts.positioning}
@@ -184,16 +184,16 @@ ${end-}
 
 ${if lex.hasActions()-}
 			switch( lapg_n.lexem ) {
-${foreach action in lex.actions-}
-${if action-}
-				case $index:
-					$action
+${foreach lexem in syntax.lexems-}
+${if lexem.action-}
+				case ${lexem.symbol.index}:
+					${lexem.action}
 ${end-}
 ${end-}
 			}
 ${end-}
 
-${if parser.hasError()}			SKIPNEXTTOKEN: for(;;) {$/
+${if syntax.error!=-1}			SKIPNEXTTOKEN: for(;;) {$/
 
 			do {
 				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
@@ -209,10 +209,10 @@ ${if opts.positioning != 'none'}					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m
 ${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
 ${if parser.hasActions()-}
 					switch( lapg_i ) {
-${foreach action in parser.raction-}
-${if action-}
-						case $index:
-							$action
+${foreach rule in syntax.rules-}
+${if rule.action-}
+						case ${rule.index}:
+							${rule.action}
 ${if opts.breaks == 'on'}							break;$/
 ${end-}
 ${end-}
@@ -225,7 +225,7 @@ ${end-}
 				} else if( lapg_i == -1 ) {
 					lapg_m[++lapg_head] = lapg_n;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-${if parser.hasError()}					lapg_symbols_ok++;$/
+${if syntax.error!=-1}					lapg_symbols_ok++;$/
 					if( DEBUG_SYNTAX )
 						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], new String(token,0,lapg_size) ) );
 				}
@@ -233,16 +233,16 @@ ${if parser.hasError()}					lapg_symbols_ok++;$/
 			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
 
 			if( (lapg_i == -2 || lapg_m[lapg_head].state == -1) && lapg_n.lexem != 0 ) {
-${if parser.hasError()-}
-				while( lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, @error ) == -1 ) {
+${if syntax.error!=-1-}
+				while( lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, ${syntax.error} ) == -1 ) {
 					lapg_m[lapg_head] = null;
 					lapg_head--;
 				}
 				if( lapg_head >= 0 ) {
 					lapg_m[++lapg_head] = new lapg_symbol();
-					lapg_m[lapg_head].lexem = @error;
+					lapg_m[lapg_head].lexem = ${syntax.error};
 					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, @error );
+					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, ${syntax.error} );
 ${if opts.positioning != 'none'-}
 					lapg_m[lapg_head].pos = lapg_n.pos;
 ${end-}
@@ -267,17 +267,17 @@ ${end}
 ${end-}
 				break;
 			}
-${if parser.hasError()-}
+${if syntax.error!=-1-}
 			break;
 			}
 ${end-}
 
 		} while( lapg_n.lexem != 0 );
 
-${if parser.hasError()-}
-		if( lapg_m[lapg_head].state != @nstates-1 && lapg_symbols_ok >= 4 ) {
+${if syntax.error!=-1-}
+		if( lapg_m[lapg_head].state != ${parser.nstates-1} && lapg_symbols_ok >= 4 ) {
 ${else-}
-		if( lapg_m[lapg_head].state != @nstates-1 ) {
+		if( lapg_m[lapg_head].state != ${parser.nstates-1} ) {
 ${end-}
 ${switch opts.positioning}
 ${case 'none'}			error(${opts.errorprefix} "syntax error" );

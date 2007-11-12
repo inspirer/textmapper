@@ -5,7 +5,7 @@ import net.sf.lapg.api.Symbol;
 public class ParserTables {
 	public Symbol[] sym;
 	public int rules, nsyms, nterms, nstates, errorn;
-	public int[] rleft, rright, rindex, rprio, rlines;
+	public int[] rleft, rright, rindex, rprio;
 	public String[] raction;
 	public short[] sym_goto, sym_from, sym_to, action_table;
 	public int[] action_index;
