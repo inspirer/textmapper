@@ -22,7 +22,7 @@ public class SyntaxUtil {
 		return cs;
 	}
 
-	private static String getFileContents(InputStream stream) {
+	public static String getFileContents(InputStream stream) {
 		StringBuffer contents = new StringBuffer();
 		char[] buffer = new char[2048];
 		int count;

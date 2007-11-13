@@ -1,77 +1,75 @@
 package net.sf.lapg.gen;
 
-import java.io.PrintStream;
-
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.common.FormatUtil;
 
 public class OutputUtils {
 
-	public static void print(PrintStream out, int[] table, int maxwidth, int leftpadding ) {
+	public static void print(StringBuffer sb, int[] table, int maxwidth, int leftpadding ) {
 		for( int i = 0; i < table.length; i++ ) {
 			if( i > 0 ) {
 				if( (i%maxwidth) == 0 ) {
-					out.print("\n");
+					sb.append("\n");
 					for( int e = 0; e < leftpadding; e++) {
-						out.print("\t");
+						sb.append("\t");
 					}
 				} else {
-					out.print(" ");
+					sb.append(" ");
 				}
 			}
-			out.print(table[i]);
-			out.print(",");
+			sb.append(table[i]);
+			sb.append(",");
 		}
 	}
 
-	public static void print(PrintStream out, short[] table, int maxwidth, int leftpadding ) {
+	public static void print(StringBuffer sb, short[] table, int maxwidth, int leftpadding ) {
 		for( int i = 0; i < table.length; i++ ) {
 			if( i > 0 ) {
 				if( (i%maxwidth) == 0 ) {
-					out.print("\n");
+					sb.append("\n");
 					for( int e = 0; e < leftpadding; e++) {
-						out.print("\t");
+						sb.append("\t");
 					}
 				} else {
-					out.print(" ");
+					sb.append(" ");
 				}
 			}
-			out.print(table[i]);
-			out.print(",");
+			sb.append(table[i]);
+			sb.append(",");
 		}
 	}
 
-	public static void print(PrintStream out, int[][] table, int leftpadding, char startrow, char endrow ) {
+	public static void print(StringBuffer sb, int[][] table, int leftpadding, char startrow, char endrow ) {
 		for( int i = 0; i < table.length; i++ ) {
 			if( i > 0 ) {
 				for( int e = 0; e < leftpadding; e++) {
-					out.print("\t");
+					sb.append("\t");
 				}
 			}
-			out.print(startrow);
-			out.print(" ");
+			sb.append(startrow);
+			sb.append(" ");
 			int[] row = table[i];
 			for( int e = 0; e < row.length; e++ ) {
-				out.print(row[e]);
-				out.print(", ");
+				sb.append(row[e]);
+				sb.append(", ");
 			}
-			out.print(endrow);
-			out.print(",\n");
+			sb.append(endrow);
+			sb.append(",\n");
 		}
 	}
 
-	public static void printTables(PrintStream out, LexerTables lt) {
+	public static void printTables(StringBuffer sb, LexerTables lt) {
 
-		out.print("// tables.txt\n\n");
+		sb.append("// tables.txt\n\n");
 
-		out.print("lapg_char2no = {\n\t");
-		print(out, lt.char2no, 16, 1);
-		out.print("\n}\n\n");
+		sb.append("lapg_char2no = {\n\t");
+		print(sb, lt.char2no, 16, 1);
+		sb.append("\n}\n\n");
 
-		out.print("lapg_lexem ["+lt.nstates+","+lt.nchars+"] = {\n\t");
-		print(out, lt.change, 1, '{', '}');
-		out.print("}\n\n");
+		sb.append("lapg_lexem ["+lt.nstates+","+lt.nchars+"] = {\n\t");
+		print(sb, lt.change, 1, '{', '}');
+		sb.append("}\n\n");
 	}
 
 	public static String toIdentifier(String s, int number) {
@@ -124,66 +122,66 @@ public class OutputUtils {
 		}
 	}
 
-	public static void printTables(PrintStream out, ParserTables pt) {
-		out.print("lapg_action ["+pt.nstates+"] = {\n\t");
-		print(out, pt.action_index, 16, 1);
-		out.print("\n}\n\n");
+	public static void printTables(StringBuffer sb, ParserTables pt) {
+		sb.append("lapg_action ["+pt.nstates+"] = {\n\t");
+		print(sb, pt.action_index, 16, 1);
+		sb.append("\n}\n\n");
 
 		if( pt.nactions > 0 ) {
-			out.print("lapg_lalr ["+pt.nactions+"] = {\n\t");
-			print(out, pt.action_table, 16, 1);
-			out.print("\n}\n\n");
+			sb.append("lapg_lalr ["+pt.nactions+"] = {\n\t");
+			print(sb, pt.action_table, 16, 1);
+			sb.append("\n}\n\n");
 		}
 
-		out.print("lapg_sym_goto ["+pt.nsyms+"+1] = {\n\t");
-		print(out, pt.sym_goto, 16, 1);
-		out.print("\n}\n\n");
+		sb.append("lapg_sym_goto ["+pt.nsyms+"+1] = {\n\t");
+		print(sb, pt.sym_goto, 16, 1);
+		sb.append("\n}\n\n");
 
-		out.print("lapg_sym_from ["+pt.sym_goto[pt.nsyms]+"] = {\n\t");
-		print(out, pt.sym_from, 16, 1);
-		out.print("\n}\n\n");
+		sb.append("lapg_sym_from ["+pt.sym_goto[pt.nsyms]+"] = {\n\t");
+		print(sb, pt.sym_from, 16, 1);
+		sb.append("\n}\n\n");
 
-		out.print("lapg_sym_to ["+pt.sym_goto[pt.nsyms]+"] = {\n\t");
-		print(out, pt.sym_to, 16, 1);
-		out.print("\n}\n\n");
+		sb.append("lapg_sym_to ["+pt.sym_goto[pt.nsyms]+"] = {\n\t");
+		print(sb, pt.sym_to, 16, 1);
+		sb.append("\n}\n\n");
 
-		out.print("lapg_rlen ["+pt.rules+"] = {\n\t");
+		sb.append("lapg_rlen ["+pt.rules+"] = {\n\t");
 		for( int i = 0; i < pt.rules; i++ ) {
 			if( i > 0 ) {
 				if( (i%16) == 0 ) {
-					out.print("\n\t");
+					sb.append("\n\t");
 				} else {
-					out.print(" ");
+					sb.append(" ");
 				}
 			}
 			int e = 0;
 			for(; pt.rright[ pt.rindex[i]+e ] >= 0; e++) {
 				;
 			}
-			out.print(e);
-			out.print(",");
+			sb.append(e);
+			sb.append(",");
 		}
-		out.print("\n}\n\n");
+		sb.append("\n}\n\n");
 
-		out.print("lapg_rlex ["+pt.rules+"] = {\n\t");
-		print(out, pt.rleft, 16, 1);
-		out.print("\n}\n\n");
+		sb.append("lapg_rlex ["+pt.rules+"] = {\n\t");
+		print(sb, pt.rleft, 16, 1);
+		sb.append("\n}\n\n");
 
-		out.print("lapg_syms = {\n");
+		sb.append("lapg_syms = {\n");
 		for( int i = 0; i < pt.nsyms; i++ ) {
-			out.print("\t\"");
-			out.print(pt.sym[i].getName());
-			out.print("\",\n");
+			sb.append("\t\"");
+			sb.append(pt.sym[i].getName());
+			sb.append("\",\n");
 		}
-		out.print("}\n\n");
+		sb.append("}\n\n");
 
-		out.print("Tokens = {\n");
+		sb.append("Tokens = {\n");
 		for( int i = 0; i < pt.nsyms; i++ ) {
-			out.print("\t");
-			out.print(toIdentifier(pt.sym[i].getName(), i));
-			out.print(",\n");
+			sb.append("\t");
+			sb.append(toIdentifier(pt.sym[i].getName(), i));
+			sb.append(",\n");
 		}
-		out.print("}\n\n");
+		sb.append("}\n\n");
 
 	}
 }
