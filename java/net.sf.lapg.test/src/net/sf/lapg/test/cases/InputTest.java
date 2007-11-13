@@ -28,28 +28,28 @@ public class InputTest extends TestCase {
 		return is;
 	}
 
-	private static void normalizeSpaces(StringBuffer sb) {
-
-		// remove \t
-		int i = 0;
-		while( (i = sb.indexOf("\t",i)) >= 0 ) {
-			sb.replace(i, i+1, " ");
+	private static int nextSpace(StringBuffer s, int from) {
+		int i1 = s.indexOf(" ");
+		int i2 = s.indexOf("\t");
+		if( i1 >= from && i2 >= from ) {
+			return Math.min(i1, i2);
 		}
-		// several spaces => one space
-		i = 0;
-		while( (i = sb.indexOf("  ",i)) >= 0 ) {
-			int e = i+1;
-			while(sb.charAt(e) == ' ') {
-				e++;
-			}
-			sb.replace(i, e, " ");
-			i++;
+		return i1 >= from ? i1 : i2;
+	}
+
+	private static void removeSpaces(StringBuffer sb) {
+
+		// remove \t and spaces
+		// TODO slow, improve
+		int i = 0;
+		while( (i = nextSpace(sb,i)) >= 0 ) {
+			sb.replace(i, i+1, "");
 		}
 	}
 
-	private void checkGenTables( Grammar g, String outputId ) {
-		LexerTables lt = LexicalBuilder.compile(g.getLexems(), new ErrorReporter(), 0);
-		ParserTables pt = Builder.compile(g, new ErrorReporter(), 0);
+	private void checkGenTables( Grammar g, String outputId, ErrorReporter er ) {
+		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er, 0);
+		ParserTables pt = Builder.compile(g, er, 0);
 
 		StringBuffer sb = new StringBuffer();
 
@@ -57,8 +57,8 @@ public class InputTest extends TestCase {
 		OutputUtils.printTables(sb, pt);
 
 		StringBuffer expected = new StringBuffer(SyntaxUtil.getFileContents(openStream(outputId, RESULTCONTAINER)));
-		normalizeSpaces(sb);
-		normalizeSpaces(expected);
+		removeSpaces(sb);
+		removeSpaces(expected);
 
 		Assert.assertEquals(expected.toString().trim(), sb.toString().trim());
 	}
@@ -91,7 +91,7 @@ public class InputTest extends TestCase {
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction());
 
-		checkGenTables(g, "syntax1.tbl");
+		checkGenTables(g, "syntax1.tbl", new ErrorReporter());
 	}
 
 	public void testCheckSimple2() {
@@ -113,6 +113,27 @@ public class InputTest extends TestCase {
 		Assert.assertEquals(8, g.getRules().length);
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction());
 
-		checkGenTables(g, "syntax2.tbl");
+		checkGenTables(g, "syntax2.tbl", new ErrorReporter());
+	}
+
+	public void testCheckCSharpGrammar() {
+		ErrorReporter er = new ErrorReporter();
+		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), er, new HashMap<String,String>());
+		Assert.assertNotNull(g);
+
+		er.warns.append("lapg: symbol `error` is useless\n"+
+		"lapg: symbol `Lfixed` is useless\n"+
+		"lapg: symbol `Lstackalloc` is useless\n"+
+		"lapg: symbol `comment` is useless\n"+
+		"lapg: symbol `'/*'` is useless\n"+
+		"lapg: symbol `anysym1` is useless\n"+
+		"lapg: symbol `'*/'` is useless\n"+
+		"\n"+
+		"input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"+
+		"conflict: shift/reduce (684, next Lelse)\n"+
+		"  embedded_statement ::= Lif '(' expression ')' embedded_statement\n");
+		er.errors.append("conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+
+		checkGenTables(g, "syntax_cs.tbl", er);
 	}
 }
