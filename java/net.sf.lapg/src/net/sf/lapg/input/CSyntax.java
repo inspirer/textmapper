@@ -146,4 +146,22 @@ public class CSyntax implements Grammar {
 	public Lexem[] getLexems() {
 		return lexems;
 	}
+
+	public boolean hasActions() {
+		for( CRule r : rules ) {
+			if( r.getAction() != null ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean hasLexemActions() {
+		for( int i = 0; i < lexems.length; i++ ) {
+			if( lexems[i].getAction() != null ) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

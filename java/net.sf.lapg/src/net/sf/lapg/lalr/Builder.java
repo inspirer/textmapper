@@ -348,7 +348,6 @@ public class Builder extends Lalr1 {
 		r.rright = this.rright;
 		r.rindex = this.rindex;
 		r.rprio = this.rprio;
-		r.raction = this.raction;
 		r.sym_goto = this.term_goto;
 		r.sym_from = this.term_from;
 		r.sym_to = this.term_to;

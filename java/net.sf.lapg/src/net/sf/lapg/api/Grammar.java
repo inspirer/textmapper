@@ -15,4 +15,7 @@ public interface Grammar {
 	public int getInput();
 	public int getEoi();
 	public int getError();
+
+	public boolean hasActions();
+	public boolean hasLexemActions();
 }

@@ -182,7 +182,7 @@ ${end-}
 			lapg_n.lexem = -lapg_i-2;
 			lapg_n.sym = null;
 
-${if lex.hasActions()-}
+${if syntax.hasLexemActions()-}
 			switch( lapg_n.lexem ) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
@@ -207,7 +207,7 @@ ${if syntax.error!=-1}			SKIPNEXTTOKEN: for(;;) {$/
 						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
 ${if opts.positioning != 'none'}					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;$/
 ${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
-${if parser.hasActions()-}
+${if syntax.hasActions()-}
 					switch( lapg_i ) {
 ${foreach rule in syntax.rules-}
 ${if rule.action-}

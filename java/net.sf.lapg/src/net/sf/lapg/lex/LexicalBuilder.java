@@ -30,7 +30,7 @@ public class LexicalBuilder {
 
 	private int[] lnum, lprio, group, lindex, llen, ljmpset;
 	private int[][] ljmp;
-	private String[] lname, lact;
+	private String[] lname;
 
 	// generate-time variables
 	int characters;
@@ -537,7 +537,6 @@ public class LexicalBuilder {
 		ljmpset = new int[nterms];
 		ljmp = new int[nterms][];
 		lname = new String[nterms];
-		lact = new String[nterms];
 
 		for( int i = 0; i < nterms; i++ ) {
 			Lexem l = myLexems[i];
@@ -563,7 +562,6 @@ public class LexicalBuilder {
 			ljmpset[i] = (((lexem_sym.length)+LexConstants.BITS-1)/LexConstants.BITS);
 			ljmp[i] = new int[lexem_sym.length*ljmpset[i]];
 			lname[i] = l.getSymbol().getName();
-			lact[i] = l.getAction();
 
 			Arrays.fill(ljmp[i], 0);
 			syms.add(lexem_sym);
@@ -624,7 +622,7 @@ public class LexicalBuilder {
 			stateChange[s.number] = s.change;
 		}
 
-		return new LexerTables(states, characters, nterms, lact, lnum, char2no, groupset, stateChange);
+		return new LexerTables(states, characters, nterms, lnum, char2no, groupset, stateChange);
 	}
 
 	/**
