@@ -1,0 +1,335 @@
+.lang        "text" 
+
+# Vocabulary
+
+[0]
+
+any:	/[^$]+/
+any:	/$$/
+
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/			{ @ = new String(token,1,lapg_size-1); break; }
+
+'${':	/${/		{ group = @1; break; }
+'$/':   /$\//
+
+[1]
+
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ @ = new String(token,0,lapg_size); break; }
+
+icon(Integer):	/[0-9]+/							{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ @ = new String(token,1,lapg_size-2); break; }
+query(String):	/`[^\n`]+`/						{ @ = new String(token,1,lapg_size-2); break; }
+
+Lcall:		/call/
+Lcase:		/case/
+Lend:		/end/
+Lelse:		/else/
+Lfalse:		/false/
+Lfor:		/for/
+Lforeach:	/foreach/
+Lif:		/if/
+Lin:		/in/
+Lnot:		/not/
+Lswitch:	/switch/
+Ltemplate:  /template/
+Ltrue:		/true/
+Lthis:		/this/
+Lassert:	/assert/
+
+'}':		/}/			{ group = @0; break; }
+'-}':		/-}/		{ group = @0; break; }
+'+':		/+/
+'-':		/-/
+'*':		/*/
+'/':		/\//
+'%':		/%/
+'!':		/!/
+'[':		/\[/
+']':		/\]/
+'(':		/\(/
+')':		/\)/
+'.':		/\./
+',':		/,/
+'&&':		/&&/
+'||':		/\|\|/
+'==':		/==/
+'!=':		/!=/
+'<=':		/<=/
+'>=':		/>=/
+'<':		/</
+'>':		/>/
+':':		/:/
+
+_skip:      /[\t\r\n ]+/    { continue; }
+
+# Attributes
+
+#[]
+
+# Grammar
+
+input ::=
+	templates 
+;
+
+templates ::=
+	templates template_declaration_or_space 
+	| template_declaration_or_space 
+;
+
+template_declaration_or_space ::=
+	template_start instructions template_end		{ $template_start.setInstructions($instructions); templates.add($template_start); }
+	| any
+;
+
+template_start (TemplateNode) ::=
+	'${' Ltemplate identifier template_parametersopt '[-]}'
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage,@0.line); }
+;
+
+template_parameters (ArrayList) ::=
+	'(' identifier_listopt ')' 						{ $$ = $1; }
+;
+
+identifier_list (ArrayList) ::=
+	  identifier                                    { $$ = new ArrayList(); $identifier_list.add($identifier); }
+	| identifier_list ',' identifier                { $identifier_list.add($identifier); }
+;
+
+template_end ::=
+	'${' Lend '}' ;
+
+instructions (ArrayList<Node>) ::=
+	instructions instruction						{ $instructions.add($instruction); }
+	| instruction 									{ $$ = new ArrayList<Node>(); $instructions.add($instruction); }
+;
+
+'[-]}' ::=
+	'-}'											{ skipSpaces(@0.offset+1); }
+	| '}'
+;
+
+instruction (Node) ::=
+	  control_instruction
+	| switch_instruction
+	| simple_instruction
+	| escid											{ $$ = new SelectNode(null, $escid,@0.line); }
+	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset),@0.line); }
+;
+
+simple_instruction (Node) ::=
+	'${' sentence '[-]}' 							{ $$ = $1; } 
+;
+
+sentence (Node) ::=
+	  expression
+	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage,@0.line); }
+	| Lassert expression							{ $$ = new AssertNode($expression,@0.line); }
+;
+
+template_id (String) ::=
+	identifier
+	| template_id '.' identifier					{ $$ = $template_id + "." + $identifier; }
+;
+
+template_for_expr (ExpressionNode) ::=
+	Lfor expression									{ $$ = $1; }
+;
+
+template_arguments (ArrayList) ::=
+	'(' expression_listopt ')'						{ $$ = $1; } 
+;
+
+control_instruction (CompoundNode) ::=
+	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
+	| control_start instructions else_node instructions control_end
+                  									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1); }
+;
+
+else_node (ElseNode) ::=
+	'${' Lelse '[-]}'
+;
+
+switch_instruction (CompoundNode) ::=
+	'${' Lswitch expression '[-]}' anyopt 
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,@0.line); checkIsSpace(@4.offset,@~4.offset); }
+;
+
+case_list (ArrayList) ::=
+	one_case										{ $$ = new ArrayList(); $case_list.add($one_case); }	
+	| case_list one_case                            { $case_list.add($one_case); }
+	| case_list instruction                         { CaseNode.add($case_list, $instruction); }
+;
+
+one_case (CaseNode) ::=
+	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression,@0.line); } 
+;
+
+control_start (CompoundNode) ::=
+	'${' control_sentence '[-]}' 					{ $$ = $1; } ;
+
+control_sentence (CompoundNode) ::=
+	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression,@0.line); }
+	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1,@0.line); }
+	| Lif Lnotopt expression						{ $$ = new IfNode($expression,@0.line); }
+;
+
+control_end ::=
+	'${' Lend '[-]}'
+	| '$/'
+;
+
+primary_expression (ExpressionNode) ::=
+  	  identifier									{ $$ = new SelectNode(null, $identifier,@0.line); }
+  	| query											{ $$ = new QueryNode(null, $query,@0.line); } 
+    | '(' expression ')'							{ $$ = $1; }
+	| icon 											{ $$ = new LiteralNode($0,@0.line); }
+	| bcon                                          { $$ = new LiteralNode($0,@0.line); }
+	| ccon 											{ $$ = new LiteralNode($0,@0.line); }
+  	| Lthis											{ $$ = new ThisNode(@0.line); }
+    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt,@0.line); }
+    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier,@0.line); }
+    | primary_expression '.' query					{ $$ = new QueryNode($primary_expression#1, $query,@0.line); }
+    | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,@0.line); }
+    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,@0.line); }
+    | '[' expression_listopt ']'					{ $$ = new ListNode($expression_listopt,@0.line); }
+    | '[' field_list ']'							{ $$ = new ObjectNode($field_list,@0.line); }
+;
+
+field_list (HashMap) ::=
+	identifier ':' expression						{ $$ = new HashMap(); $field_list.put($identifier, $expression); }
+	| field_list ',' identifier ':' expression		{ $field_list.put($identifier, $expression); }
+;
+
+bcon (Boolean) ::= 
+	Ltrue 											{ $$ = Boolean.TRUE; }
+	| Lfalse										{ $$ = Boolean.FALSE; }
+;
+
+unary_expression (ExpressionNode) ::=
+	primary_expression
+	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression#1,@0.line); }
+	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1,@0.line); }
+;
+
+mult_expression (ExpressionNode) ::=
+	unary_expression
+	| mult_expression '*' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $mult_expression, $unary_expression,@0.line); }
+	| mult_expression '/' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $mult_expression, $unary_expression,@0.line); }
+	| mult_expression '%' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.REM, $mult_expression, $unary_expression,@0.line); }
+;
+
+additive_expression (ExpressionNode) ::=
+	mult_expression
+	| additive_expression '+' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $additive_expression, $mult_expression,@0.line); }
+	| additive_expression '-' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $additive_expression, $mult_expression,@0.line); }
+;
+
+
+relational_expression (ExpressionNode) ::=
+      additive_expression
+    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $additive_expression,@0.line); }
+    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $additive_expression,@0.line); }
+    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $additive_expression,@0.line); }
+    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $additive_expression,@0.line); }
+;
+
+equality_expression (ExpressionNode) ::=
+      relational_expression
+    | equality_expression '==' relational_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression, $relational_expression,@0.line); }
+    | equality_expression '!=' relational_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression, $relational_expression,@0.line); }
+;
+
+conditional_and_expression (ExpressionNode) ::=
+      equality_expression
+    | conditional_and_expression '&&' equality_expression { $$ = new ConditionalNode(ConditionalNode.AND, $conditional_and_expression, $equality_expression,@0.line); }
+;
+
+expression (ExpressionNode) ::=
+      conditional_and_expression
+    | expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $expression, $conditional_and_expression,@0.line); }
+;
+
+expression_list (ArrayList) ::=
+	expression										{ $$ = new ArrayList(); $expression_list.add($expression); }
+	| expression_list ',' expression				{ $expression_list.add($expression); }
+;
+
+##################################################################################
+
+%%
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import net.sf.lapg.templates.api.ITemplate;
+%%
+
+private ArrayList<ITemplate> templates;
+private String templatePackage;
+
+public Parser() {
+}
+
+private static final boolean DEBUG_SYNTAX = false;
+
+int killEnds = -1;
+byte[] buff;
+int l;
+
+private String rawText(int start, int end) {
+	if( killEnds == start ) {
+		while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
+			start++;
+
+		if( start < end && buff[start] == '\r' )
+			start++;
+
+		if( start < end && buff[start] == '\n' )
+			start++;
+	}
+	try {
+		return new String(buff, start, end-start, "utf-8");
+	} catch(UnsupportedEncodingException ex) {
+		return "";
+	}
+}
+
+private void checkIsSpace(int start, int end) {
+	String val = rawText(start,end).trim();
+	if( val.length() > 0 )
+		error("Unknown text ignored: `"+val+"`");
+}
+
+private void applyElse(CompoundNode node, ArrayList<Node> instructions) {
+	if( node instanceof IfNode ) {
+		((IfNode)node).setElseInstructions(instructions);
+	} else {
+		error("Unknown else node, instructions skipped");
+	}
+}
+
+private void skipSpaces(int offset) {
+	killEnds = offset+1;
+}
+
+void error( String s ) {
+	System.err.println(s);
+}
+
+public boolean parse(String s, String templatePackage) {
+	l = 0;
+	this.templatePackage = templatePackage;
+	templates = new ArrayList<ITemplate>();
+	try {
+		buff = s.getBytes("utf-8");
+	} catch( UnsupportedEncodingException ex ) {
+		return false;
+	}
+	return parse();
+}
+
+public ITemplate[] getResult() {
+	return templates.toArray(new ITemplate[templates.size()]);
+}

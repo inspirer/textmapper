@@ -28,26 +28,21 @@ public class InputTest extends TestCase {
 		return is;
 	}
 
-	private static int nextSpace(StringBuffer s, int from) {
-		int i1 = s.indexOf(" ");
-		int i2 = s.indexOf("\t");
-		if( i1 >= from && i2 >= from ) {
-			return Math.min(i1, i2);
+	private static String removeSpaces(String input) {
+		char[] c = new char[input.length()];
+		input.getChars(0, input.length(), c, 0);
+
+		int to = 0;
+		for (int i = 0; i < c.length; i++) {
+			if (c[i] != ' ' && c[i] != '\t') {
+				c[to++] = c[i];
+			}
 		}
-		return i1 >= from ? i1 : i2;
+
+		return new String(c, 0, to);
 	}
 
-	private static void removeSpaces(StringBuffer sb) {
-
-		// remove \t and spaces
-		// TODO slow, improve
-		int i = 0;
-		while( (i = nextSpace(sb,i)) >= 0 ) {
-			sb.replace(i, i+1, "");
-		}
-	}
-
-	private void checkGenTables( Grammar g, String outputId, ErrorReporter er ) {
+	private void checkGenTables(Grammar g, String outputId, ErrorReporter er) {
 		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er, 0);
 		ParserTables pt = Builder.compile(g, er, 0);
 
@@ -56,15 +51,15 @@ public class InputTest extends TestCase {
 		OutputUtils.printTables(sb, lt);
 		OutputUtils.printTables(sb, pt);
 
-		StringBuffer expected = new StringBuffer(SyntaxUtil.getFileContents(openStream(outputId, RESULTCONTAINER)));
-		removeSpaces(sb);
-		removeSpaces(expected);
+		String expected = removeSpaces(SyntaxUtil.getFileContents(openStream(outputId, RESULTCONTAINER)).trim());
+		String actual = removeSpaces(sb.toString().trim());
 
-		Assert.assertEquals(expected.toString().trim(), sb.toString().trim());
+		Assert.assertEquals(expected, actual);
 	}
 
 	public void testCheckSimple1() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new ErrorReporter(), new HashMap<String,String>());
+		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new ErrorReporter(),
+				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi());
 
@@ -73,7 +68,9 @@ public class InputTest extends TestCase {
 		Assert.assertEquals("eoi", syms[0].getName());
 		Assert.assertEquals("identifier", syms[1].getName());
 		Assert.assertEquals("Licon", syms[2].getName());
-		Assert.assertEquals("_skip", syms[3].getName());  // TODO do not collect skip symbols
+		Assert.assertEquals("_skip", syms[3].getName()); // TODO do not
+															// collect skip
+															// symbols
 		Assert.assertEquals("input", syms[4].getName());
 		Assert.assertEquals("list", syms[5].getName());
 		Assert.assertEquals("list_item", syms[6].getName());
@@ -87,7 +84,8 @@ public class InputTest extends TestCase {
 		Lexem[] lexems = g.getLexems();
 		Assert.assertEquals(3, lexems.length);
 		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp());
-		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1].getRegexp());
+		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
+				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction());
 
@@ -95,7 +93,8 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckSimple2() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new ErrorReporter(), new HashMap<String,String>());
+		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new ErrorReporter(),
+				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi());
 
@@ -117,23 +116,41 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckCSharpGrammar() {
-		ErrorReporter er = new ErrorReporter();
-		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), er, new HashMap<String,String>());
+		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new ErrorReporter(),
+				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		er.warns.append("lapg: symbol `error` is useless\n"+
-		"lapg: symbol `Lfixed` is useless\n"+
-		"lapg: symbol `Lstackalloc` is useless\n"+
-		"lapg: symbol `comment` is useless\n"+
-		"lapg: symbol `'/*'` is useless\n"+
-		"lapg: symbol `anysym1` is useless\n"+
-		"lapg: symbol `'*/'` is useless\n"+
-		"\n"+
-		"input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"+
-		"conflict: shift/reduce (684, next Lelse)\n"+
-		"  embedded_statement ::= Lif '(' expression ')' embedded_statement\n");
-		er.errors.append("conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+		ErrorReporter er = new ErrorReporter(
+				"lapg: symbol `error` is useless\n"
+						+ "lapg: symbol `Lfixed` is useless\n"
+						+ "lapg: symbol `Lstackalloc` is useless\n"
+						+ "lapg: symbol `comment` is useless\n"
+						+ "lapg: symbol `'/*'` is useless\n"
+						+ "lapg: symbol `anysym1` is useless\n"
+						+ "lapg: symbol `'*/'` is useless\n"
+						+ "\n"
+						+ "input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+						+ "conflict: shift/reduce (684, next Lelse)\n"
+						+ "  embedded_statement ::= Lif '(' expression ')' embedded_statement\n",
+				"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
 		checkGenTables(g, "syntax_cs.tbl", er);
+		er.assertDone();
+	}
+
+	public void testLapgGrammar() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new ErrorReporter(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
+
+		checkGenTables(g, "syntax_lapg.tbl", new ErrorReporter());
+	}
+
+	public void testLapgTemplatesGrammar() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new ErrorReporter(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
+
+		checkGenTables(g, "syntax_tpl.tbl", new ErrorReporter());
 	}
 }

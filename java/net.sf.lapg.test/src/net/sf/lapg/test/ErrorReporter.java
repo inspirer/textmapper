@@ -5,10 +5,15 @@ import net.sf.lapg.IError;
 
 public class ErrorReporter implements IError {
 
-	public final StringBuffer warns = new StringBuffer();
-	public final StringBuffer errors = new StringBuffer();
+	private final StringBuffer warns = new StringBuffer();
+	private final StringBuffer errors = new StringBuffer();
 
 	public ErrorReporter() {
+	}
+
+	public ErrorReporter(String warns, String errors) {
+		this.warns.append(warns);
+		this.errors.append(errors);
 	}
 
 	public void debug(String info) {
@@ -29,5 +34,10 @@ public class ErrorReporter implements IError {
 		} else {
 			Assert.fail(warning);
 		}
+	}
+
+	public void assertDone() {
+		Assert.assertEquals("", warns.toString());
+		Assert.assertEquals("", errors.toString());
 	}
 }
