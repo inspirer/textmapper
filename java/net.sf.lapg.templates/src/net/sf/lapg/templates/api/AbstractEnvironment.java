@@ -6,6 +6,8 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
+	// TODO scope of variables
+
 	HashMap<String,Object> vars = new HashMap<String,Object>();
 	NavigationStrategyFactory strategies = new NavigationStrategyFactory();
 
