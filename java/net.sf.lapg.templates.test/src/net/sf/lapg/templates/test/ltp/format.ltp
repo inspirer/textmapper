@@ -30,3 +30,15 @@ ${assert list[0] == 'w1'-}
 ${assert list[1] == 'w4'-}
 ${assert list[1] == 'w2'-}
 ${end}
+
+${template useCall1-}
+${this} is mine
+${end}
+
+${template useCall2-}
+${'Table'->format.useCall1()-}
+${end}
+
+${template useCall3-}
+${'site'->useCall1()-}
+${end}
