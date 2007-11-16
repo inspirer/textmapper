@@ -1,4 +1,4 @@
-package net.sf.lapg.templates.api;
+package net.sf.lapg.templates.api.impl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -6,7 +6,10 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 
-public class NavigationStrategyFactory {
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.INavigationStrategy;
+
+public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
 	public INavigationStrategy getStrategy(Object o) {
 
@@ -23,7 +26,7 @@ public class NavigationStrategyFactory {
 		}
 
 		if( o instanceof Collection ) {
-			//return collectionNavigation;
+			return collectionNavigation;
 		}
 
 		return javaNavigation;
@@ -96,6 +99,34 @@ public class NavigationStrategyFactory {
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
 			return ((Map<?, ?>)obj).get(id);
+		}
+	};
+
+	private INavigationStrategy collectionNavigation = new INavigationStrategy() {
+
+		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
+			Collection<?> cl = (Collection<?>) obj;
+			if( args == null ) {
+				if( methodName.equals("first") ) {
+					return cl.isEmpty() ? null : cl.iterator().next();
+				}
+			}
+			return javaNavigation.callMethod(obj, methodName, args);
+		}
+
+		public Object getByIndex(Object obj, Object index) throws EvaluationException {
+			throw new EvaluationException("do not know how to calculate index");
+		}
+
+		public Object getByQuery(Object obj, String query) throws EvaluationException {
+			throw new EvaluationException("do not know how to execute query");
+		}
+
+		public Object getProperty(Object obj, String id) throws EvaluationException {
+			if( id.equals("length") ) {
+				return ((Collection<?>)obj).size();
+			}
+			throw new EvaluationException("do not know property `"+id+"`");
 		}
 	};
 

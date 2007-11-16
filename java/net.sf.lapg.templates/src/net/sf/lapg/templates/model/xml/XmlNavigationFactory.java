@@ -4,11 +4,21 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.INavigationStrategy;
-import net.sf.lapg.templates.api.NavigationStrategyFactory;
+import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 
-public class XmlNavigationFactory extends NavigationStrategyFactory {
+public class XmlNavigationFactory extends DefaultNavigationFactory {
 
-	public INavigationStrategy xmlNavigation = new INavigationStrategy() {
+	@Override
+	public INavigationStrategy getStrategy(Object o) {
+
+		if( o instanceof XmlNode ) {
+			return xmlNavigation;
+		}
+
+		return super.getStrategy(o);
+	}
+
+	private INavigationStrategy xmlNavigation = new INavigationStrategy() {
 
 		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
 			// TODO Auto-generated method stub
@@ -42,8 +52,7 @@ public class XmlNavigationFactory extends NavigationStrategyFactory {
 		}
 
 		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			// TODO Auto-generated method stub
-			return null;
+			return getByIndex(obj, query);
 		}
 
 		public Object getProperty(Object obj, String property) throws EvaluationException {
@@ -59,12 +68,7 @@ public class XmlNavigationFactory extends NavigationStrategyFactory {
 				return node.getAttributes();
 			}
 
-			for( XmlNode o : node.getNodes()) {
-				if( o.getTagName().equals(property) ) {
-					return o;
-				}
-			}
-			return null;
+			return getByIndex(obj, property);
 		}
 	};
 }

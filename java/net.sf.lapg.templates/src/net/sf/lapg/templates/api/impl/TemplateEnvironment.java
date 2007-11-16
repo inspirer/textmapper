@@ -1,20 +1,38 @@
-package net.sf.lapg.templates.api;
+package net.sf.lapg.templates.api.impl;
 
 import java.util.HashMap;
 
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.api.INavigationStrategy;
+import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.ast.Parser;
 
-public abstract class TemplateEnvironment extends AbstractEnvironment {
+public class TemplateEnvironment extends AbstractEnvironment {
 
 	private HashMap<String,ITemplate> templates;
+	private ITemplateLoader[] loaders;
 
-	public TemplateEnvironment() {
+	public TemplateEnvironment(INavigationStrategy.Factory strategy, ITemplateLoader... loaders) {
+		super(strategy);
 		this.templates = new HashMap<String,ITemplate>();
+		this.loaders = loaders;
+
+		if( loaders == null || loaders.length < 1) {
+			throw new IllegalArgumentException("no loaders provided");
+		}
 	}
 
-	protected abstract String getTemplateContainerContents(String name);
-
-	protected abstract String getContainerName(String templatePackage);
+	private String getContainerContent(String containerName) {
+		for(ITemplateLoader loader : loaders) {
+			String result = loader.load(containerName);
+			if( result != null ) {
+				return result;
+			}
+		}
+		return null;
+	}
 
 	private ITemplate getTemplate(ILocatedEntity referer, String name) {
 
@@ -29,7 +47,7 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 		}
 
 		String templatePackage = name.substring(0, lastDot);
-		String contents = getTemplateContainerContents(getContainerName(templatePackage));
+		String contents = getContainerContent(templatePackage);
 		if( contents == null ) {
 			fireError(referer, "Couldn't load template container for `" + name + "`");
 			return null;
@@ -37,7 +55,7 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 
 		ITemplate[] loaded = loadTemplates(contents, templatePackage);
 		if( loaded == null || loaded.length == 0 ) {
-			fireError(referer, "Couldn't get templates from " + getContainerName(templatePackage));
+			fireError(referer, "Couldn't get templates from package " + templatePackage);
 			return null;
 		}
 
@@ -55,7 +73,7 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 		}
 
 		if( result == null ) {
-			fireError(referer, "Template `"+id+"` was not found in `" + getContainerName(templatePackage) + "`");
+			fireError(referer, "Template `"+id+"` was not found in package `" + templatePackage + "`");
 		}
 		return result;
 	}
@@ -96,15 +114,5 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 			return new ITemplate[0];
 		}
 		return p.getResult();
-	}
-
-	private IStaticMethods myStaticMethods = null;
-
-	@Override
-	public IStaticMethods getStaticMethods() {
-		if( myStaticMethods == null) {
-			myStaticMethods = new DefaultStaticMethods();
-		}
-		return myStaticMethods;
 	}
 }

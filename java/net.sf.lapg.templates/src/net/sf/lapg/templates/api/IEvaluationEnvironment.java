@@ -4,10 +4,10 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 
 public interface IEvaluationEnvironment {
 
-	public Object getVariable(String id);
-	public void setVariable(String id, Object value);
+	public Object getVariable(String name);
+	public void setVariable(String name, Object value);
 
-	public Object getProperty(Object obj, String id) throws EvaluationException;
+	public Object getProperty(Object obj, String propertyName) throws EvaluationException;
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException;
 	public Object getByIndex(Object obj, Object index) throws EvaluationException;
 	public Object getByQuery(Object obj, String query) throws EvaluationException;
@@ -21,5 +21,4 @@ public interface IEvaluationEnvironment {
 	public String getTitle(Object context);
 
 	public void fireError(ILocatedEntity referer, String error);
-	public IStaticMethods getStaticMethods();
 }

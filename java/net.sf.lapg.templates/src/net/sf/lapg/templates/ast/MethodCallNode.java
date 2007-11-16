@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
-import net.sf.lapg.templates.api.IStaticMethods;
 
 public class MethodCallNode extends ExpressionNode {
 
@@ -26,12 +25,7 @@ public class MethodCallNode extends ExpressionNode {
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
 		} else {
-			IStaticMethods staticMethods = env.getStaticMethods();
-			if( staticMethods != null && staticMethods.isSupported(methodName) ) {
-				object = staticMethods;
-			} else {
-				object = context;
-			}
+			object = context;
 		}
 
 		Object[] args = null;

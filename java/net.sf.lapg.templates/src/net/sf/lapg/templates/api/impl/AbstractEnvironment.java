@@ -1,15 +1,25 @@
-package net.sf.lapg.templates.api;
+package net.sf.lapg.templates.api.impl;
 
 import java.util.HashMap;
 
+import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.api.INamedEntity;
+import net.sf.lapg.templates.api.INavigationStrategy;
+import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	// TODO scope of variables
 
-	HashMap<String,Object> vars = new HashMap<String,Object>();
-	NavigationStrategyFactory strategies = new NavigationStrategyFactory();
+	private final HashMap<String,Object> vars = new HashMap<String,Object>();
+	private final INavigationStrategy.Factory strategies;
+
+	public AbstractEnvironment(INavigationStrategy.Factory factory) {
+		this.strategies = factory;
+	}
 
 	public Object getVariable(String id) {
 		return vars.get(id);
@@ -92,10 +102,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			System.err.print(referer.getLocation() + ": ");
 		}
 		System.err.println(error);
-	}
-
-	public IStaticMethods getStaticMethods() {
-		return null;
 	}
 
 	private static class HandledEvaluationException extends EvaluationException {

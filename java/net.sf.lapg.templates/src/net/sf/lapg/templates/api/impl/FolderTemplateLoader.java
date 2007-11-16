@@ -1,4 +1,4 @@
-package net.sf.lapg.templates.api;
+package net.sf.lapg.templates.api.impl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,22 +6,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class FolderTemplateEnvironment extends TemplateEnvironment {
-	
+import net.sf.lapg.templates.api.ITemplateLoader;
+
+public class FolderTemplateLoader implements ITemplateLoader {
+
 	private File[] myFolders;
 
-	public FolderTemplateEnvironment(File[] folders) {
+	public FolderTemplateLoader(File[] folders) {
 		this.myFolders = folders;
-	}
-
-	protected String getTemplateContainerContents(String name) {
-		for( File f : myFolders ) {
-			File file = new File(f, name);
-			if( file.exists() ) {
-				return getFileContents(file.toString());
-			}
-		}
-		return null;
 	}
 
 	private static String getFileContents(String file) {
@@ -43,7 +35,15 @@ public class FolderTemplateEnvironment extends TemplateEnvironment {
 		return contents.toString();
 	}
 
-	protected String getContainerName(String templatePackage) {
-		return templatePackage + ".ltp";
+	public String load(String containerName) {
+		String fileName = containerName +  CONTAINER_EXT;
+
+		for( File f : myFolders ) {
+			File file = new File(f, fileName);
+			if( file.exists() ) {
+				return getFileContents(file.toString());
+			}
+		}
+		return null;
 	}
 }

@@ -13,4 +13,9 @@ public interface INavigationStrategy {
 
 	// <obj>.`query`
 	public Object getByQuery(Object obj, String query) throws EvaluationException;
+
+
+	public static interface Factory {
+		public INavigationStrategy getStrategy(Object o);
+	}
 }

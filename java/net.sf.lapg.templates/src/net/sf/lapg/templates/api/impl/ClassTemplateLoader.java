@@ -1,30 +1,21 @@
-package net.sf.lapg.templates.api;
+package net.sf.lapg.templates.api.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-public class ClassLoaderTemplateEnvironment extends TemplateEnvironment {
+import net.sf.lapg.templates.api.ITemplateLoader;
+
+public class ClassTemplateLoader implements ITemplateLoader {
 
 	private ClassLoader loader;
+
 	private String rootPackage;
 
-	public ClassLoaderTemplateEnvironment(ClassLoader loader, String rootPackage) {
+	public ClassTemplateLoader(ClassLoader loader, String rootPackage) {
 		this.loader = loader;
 		this.rootPackage = rootPackage;
-	}
-
-	protected String getContainerName(String templatePackage) {
-		return templatePackage.replace('.', '/') + ".ltp";
-	}
-
-	protected String getTemplateContainerContents(String name) {
-		InputStream s = loader.getResourceAsStream(rootPackage + "/" + name);
-		if(s == null)
-			return null;
-		
-		return getStreamContents(s);
 	}
 
 	private static String getStreamContents(InputStream stream) {
@@ -44,5 +35,14 @@ public class ClassLoaderTemplateEnvironment extends TemplateEnvironment {
 			return null;
 		}
 		return contents.toString();
+	}
+
+	public String load(String containerName) {
+		InputStream s = loader.getResourceAsStream(rootPackage + "/" + (containerName.replace('.', '/') + CONTAINER_EXT));
+		if (s == null) {
+			return null;
+		}
+
+		return getStreamContents(s);
 	}
 }
