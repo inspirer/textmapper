@@ -3,11 +3,7 @@ package net.sf.lapg.templates.model.xml;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.INavigatableContainer;
-import net.sf.lapg.templates.api.IPropertyContainer;
-
-public class XmlNode extends XmlElement implements IPropertyContainer, INavigatableContainer {
+public class XmlNode extends XmlElement {
 
 	private String tagName;
 	private List<XmlAttribute> attributes;
@@ -79,59 +75,5 @@ public class XmlNode extends XmlElement implements IPropertyContainer, INavigata
 			sb.append(">");
 		}
 
-	}
-
-	public Object getByIndex(Object key) {
-
-		if( false == key instanceof String ) {
-			return null;
-		}
-
-		if( ((String)key).startsWith("@") ) {
-			String searchAttr = ((String)key).substring(1);
-			if( attributes != null ) {
-				for(XmlAttribute attr : attributes) {
-					if( attr.getName().equals(searchAttr)) {
-						return attr;
-					}
-				}
-			}
-		}
-
-		ArrayList<XmlNode> nodes = new ArrayList<XmlNode>();
-		if( data != null ) {
-			for( Object o : data) {
-				if( o instanceof XmlNode && ((XmlNode)o).tagName.equals(key) ) {
-					nodes.add((XmlNode)o);
-				}
-			}
-		}
-		return nodes;
-	}
-
-	public Object getProperty(String property) {
-		if( property.equals("tagName")) {
-			return getTagName();
-		}
-		if( property.equals("nodes")) {
-			return getNodes();
-		}
-		if( property.equals("attrs")) {
-			return getAttributes();
-		}
-
-		if( data != null ) {
-			for( Object o : data) {
-				if( o instanceof XmlNode && ((XmlNode)o).tagName.equals(property) ) {
-					return o;
-				}
-			}
-		}
-		return null;
-	}
-
-	public Object getByQuery(String queryString) throws EvaluationException {
-		// TODO
-		return null;
 	}
 }

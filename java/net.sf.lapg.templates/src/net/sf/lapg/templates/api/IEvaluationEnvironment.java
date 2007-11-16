@@ -7,7 +7,7 @@ public interface IEvaluationEnvironment {
 	public Object getVariable(String id);
 	public void setVariable(String id, Object value);
 
-	public Object getProperty(Object obj, String id, boolean searchVars) throws EvaluationException;
+	public Object getProperty(Object obj, String id) throws EvaluationException;
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException;
 	public Object getByIndex(Object obj, Object index) throws EvaluationException;
 	public Object getByQuery(Object obj, String query) throws EvaluationException;

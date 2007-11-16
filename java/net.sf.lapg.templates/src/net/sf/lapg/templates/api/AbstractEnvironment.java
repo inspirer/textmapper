@@ -1,16 +1,13 @@
 package net.sf.lapg.templates.api;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Map;
 
 import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	HashMap<String,Object> vars = new HashMap<String,Object>();
+	NavigationStrategyFactory strategies = new NavigationStrategyFactory();
 
 	public Object getVariable(String id) {
 		return vars.get(id);
@@ -20,75 +17,24 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		vars.put(id, value);
 	}
 
-	public Object getProperty( Object obj, String id, boolean searchVars ) throws EvaluationException {
-		if( searchVars ) {
-			Object res = vars.get(id);
-			if( res != null ) {
-				return res;
-			}
-		}
-
-		if( obj instanceof IPropertyContainer ) {
-			return ((IPropertyContainer)obj).getProperty(id);
-		} else if( obj instanceof Map) {
-			return ((Map)obj).get(id);
-		} else if( id.equals("length") && obj instanceof Object[]) {
-			return ((Object[])obj).length;
-		} else {
-			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
-			try {
-				try {
-					Field f = obj.getClass().getField(id);
-					return f.get(obj);
-				} catch( NoSuchFieldException ex ) {
-				}
-
-				Method meth = obj.getClass().getMethod(getAccessor);
-				return meth.invoke(obj);
-			} catch( NoSuchMethodException ex ) {
-				throw new EvaluationException("nomethod: " + ex.toString() );
-			} catch( IllegalAccessException ex ) {
-				throw new EvaluationException("IllegalAccessException");
-			} catch( InvocationTargetException ex ) {
-				throw new EvaluationException("InvocationTargetException");
-			}
-		}
-	}
-
-	public Object callMethod( Object obj, String methodName, Object[] args ) throws EvaluationException {
-		try {
-			Class[] argClasses = null;
-			if( args != null ) {
-				argClasses = new Class[args.length];
-				for( int i = 0; i < args.length; i++ ) {
-					argClasses[i] = args[i].getClass();
-				}
-			}
-			Method meth = obj.getClass().getMethod(methodName, argClasses);
-			return meth.invoke(obj, args);
-		} catch( NoSuchMethodException ex ) {
-			throw new EvaluationException("nomethod: " + ex.toString() );
-		} catch( IllegalAccessException ex ) {
-			throw new EvaluationException("IllegalAccessException");
-		} catch( InvocationTargetException ex ) {
-			throw new EvaluationException("InvocationTargetException");
-		}
+	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
+		INavigationStrategy strategy = strategies.getStrategy(obj);
+		return strategy.callMethod(obj, methodName, args);
 	}
 
 	public Object getByIndex(Object obj, Object index) throws EvaluationException {
-		if( obj instanceof IPropertyContainer) {
-			return ((IPropertyContainer)obj).getByIndex(index);
-		} else if( obj instanceof Object[]) {
-			Object[] array = (Object[])obj;
-			if( index instanceof Integer ) {
-				return array[(Integer)index];
-			} else {
-				throw new EvaluationException("index object should be integer");
-			}
-		} else if( obj instanceof Map) {
-			return ((Map)obj).get(index);
-		}
-		return null;
+		INavigationStrategy strategy = strategies.getStrategy(obj);
+		return strategy.getByIndex(obj, index);
+	}
+
+	public Object getByQuery(Object obj, String query) throws EvaluationException {
+		INavigationStrategy strategy = strategies.getStrategy(obj);
+		return strategy.getByQuery(obj, query);
+	}
+
+	public Object getProperty(Object obj, String id) throws EvaluationException {
+		INavigationStrategy strategy = strategies.getStrategy(obj);
+		return strategy.getProperty(obj, id);
 	}
 
 	public boolean toBoolean(Object o) {
@@ -98,16 +44,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			return ((String)o).length() > 0;
 		}
 		return o != null;
-	}
-
-	public Object getByQuery(Object obj, String query) throws EvaluationException {
-
-		if( obj instanceof INavigatableContainer) {
-			return ((INavigatableContainer)obj).getByQuery(query);
-		} else if( obj instanceof Map ) {
-			return ((Map<?,?>)obj).get(query);
-		}
-		throw new EvaluationException("do not know how to execute query");
 	}
 
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException {

@@ -20,10 +20,15 @@ public class SelectNode extends ExpressionNode {
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
 		} else {
+			Object value = env.getVariable(identifier);
+			if( value != null ) {
+				return value;
+			}
+
 			object = context;
 		}
 
-		return env.getProperty(object, identifier, objectExpr == null);
+		return env.getProperty(object, identifier);
 	}
 
 	@Override
