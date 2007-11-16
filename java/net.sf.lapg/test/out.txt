@@ -17,7 +17,6 @@ public class pparser {
 		}
 	};
 
-
 	public class lapg_symbol {
 		public Object sym;
 		public int  lexem, state;

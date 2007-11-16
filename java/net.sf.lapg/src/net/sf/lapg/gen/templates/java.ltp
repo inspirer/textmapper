@@ -8,72 +8,11 @@ package ${opts.namespace};
 public class ${opts.class} {
 	@nativecodeall
 
-${if opts.positioning != 'none'}
-	public class lapg_place {
-${switch opts.positioning}
-${case 'line'}		public int line;
-${case 'full'}		public int line, column;
-${case 'offset'}		public int line, offset;
-${end-}
+${call innerDeclarations-}
 
-${switch opts.positioning}
-${case 'line'}		public lapg_place( int line ) {
-${case 'full'}		public lapg_place( int line, int column ) {
-${case 'offset'}		public lapg_place( int line, int offset ) {
-${end-}
-			this.line = line;
-${switch opts.positioning}
-${case 'full'}			this.column = column;
-${case 'offset'}			this.offset = offset;
-${end-}
-		}
-	};
-${end}
+${call lexerTables-}
 
-	public class lapg_symbol {
-		public Object sym;
-		public int  lexem, state;
-${if opts.positioning != 'none'}		public lapg_place pos;$/
-${if opts.lexemend == 'on'}		public lapg_place endpos;$/
-	};
-
-	private static final short[] lapg_char2no = new short[] {
-		${format(lex.char2no, 16, 2)}
-	};
-
-	private static final short[][] lapg_lexem = new short[][] {
-		${format(lex.change, 2, '{', '}')}
-	};
-
-	private static final int[] lapg_action = new int[] {
-		${format(parser.action_index, 16, 2)}
-	};
-
-${if parser.nactions > 0}
-	private static final short[] lapg_lalr = new short[] {
-		${format(parser.action_table, 16, 2)}
-	};
-${end}
-
-	private static final short[] lapg_sym_goto = new short[] {
-		${format(parser.sym_goto, 16, 2)}
-	};
-
-	private static final short[] lapg_sym_from = new short[] {
-		${format(parser.sym_from, 16, 2)}
-	};
-
-	private static final short[] lapg_sym_to = new short[] {
-		${format(parser.sym_to, 16, 2)}
-	};
-
-	private static final short[] lapg_rlen = new short[] {
-		${format(parser.ruleLength, 16, 2)}
-	};
-
-	private static final short[] lapg_rlex = new short[] {
-		${format(parser.rleft, 16, 2)}
-	};
+${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
 ${foreach s in parser.sym-}
@@ -292,3 +231,77 @@ ${end-}
 }
 
 ${end} 
+
+${template innerDeclarations-}
+${if opts.positioning != 'none'}
+	public class lapg_place {
+${switch opts.positioning}
+${case 'line'}		public int line;
+${case 'full'}		public int line, column;
+${case 'offset'}		public int line, offset;
+${end-}
+
+${switch opts.positioning}
+${case 'line'}		public lapg_place( int line ) {
+${case 'full'}		public lapg_place( int line, int column ) {
+${case 'offset'}		public lapg_place( int line, int offset ) {
+${end-}
+			this.line = line;
+${switch opts.positioning}
+${case 'full'}			this.column = column;
+${case 'offset'}			this.offset = offset;
+${end-}
+		}
+	};
+${end-}
+
+	public class lapg_symbol {
+		public Object sym;
+		public int  lexem, state;
+${if opts.positioning != 'none'}		public lapg_place pos;$/
+${if opts.lexemend == 'on'}		public lapg_place endpos;$/
+	};
+${end}
+
+
+${template lexerTables-}
+	private static final short[] lapg_char2no = new short[] {
+		${format(lex.char2no, 16, 2)}
+	};
+
+	private static final short[][] lapg_lexem = new short[][] {
+		${format(lex.change, 2, '{', '}')}
+	};
+${end}
+
+${template parserTables-}
+	private static final int[] lapg_action = new int[] {
+		${format(parser.action_index, 16, 2)}
+	};
+
+${if parser.nactions > 0}
+	private static final short[] lapg_lalr = new short[] {
+		${format(parser.action_table, 16, 2)}
+	};
+${end}
+
+	private static final short[] lapg_sym_goto = new short[] {
+		${format(parser.sym_goto, 16, 2)}
+	};
+
+	private static final short[] lapg_sym_from = new short[] {
+		${format(parser.sym_from, 16, 2)}
+	};
+
+	private static final short[] lapg_sym_to = new short[] {
+		${format(parser.sym_to, 16, 2)}
+	};
+
+	private static final short[] lapg_rlen = new short[] {
+		${format(parser.ruleLength, 16, 2)}
+	};
+
+	private static final short[] lapg_rlex = new short[] {
+		${format(parser.rleft, 16, 2)}
+	};
+${end}
