@@ -16,6 +16,7 @@ public interface IEvaluationEnvironment {
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException;
 	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments);
 	public String executeTemplate(String name, Object context, Object[] arguments);
+	public String evaluateTemplate(ILocatedEntity referer, String template, Object context);
 
 	public String getTitle(Object context);
 

@@ -32,6 +32,7 @@ Lcall:		/call/
 Lcase:		/case/
 Lend:		/end/
 Lelse:		/else/
+Leval:		/eval/
 Lfalse:		/false/
 Lfor:		/for/
 Lforeach:	/foreach/
@@ -62,6 +63,7 @@ Lassert:	/assert/
 '||':		/\|\|/
 '==':		/==/
 '!=':		/!=/
+'->':		/->/
 '<=':		/<=/
 '>=':		/>=/
 '<':		/</
@@ -132,6 +134,7 @@ simple_instruction (Node) ::=
 sentence (Node) ::=
 	  expression
 	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage,@0.line); }
+	| Leval expression								{ $$ = new EvalNode($expression,@0.line); }
 	| Lassert expression							{ $$ = new AssertNode($expression,@0.line); }
 ;
 
@@ -202,6 +205,7 @@ primary_expression (ExpressionNode) ::=
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,@0.line); }
     | '[' expression_listopt ']'					{ $$ = new ListNode($expression_listopt,@0.line); }
     | '[' field_list ']'							{ $$ = new ObjectNode($field_list,@0.line); }
+    | primary_expression '->' template_id template_arguments { $$ = new CallTemplateNode($template_id,$template_arguments,$primary_expression,templatePackage,@0.line); }
 ;
 
 field_list (HashMap) ::=

@@ -17,6 +17,7 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 	protected abstract String getContainerName(String templatePackage);
 
 	private ITemplate getTemplate(ILocatedEntity referer, String name) {
+
 		if( templates.containsKey(name) ) {
 			return templates.get(name);
 		}
@@ -46,7 +47,11 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 			if( t.getName().equals(id)) {
 				result = t;
 			}
-			templates.put(templatePackage+"."+t.getName(), t);
+			String templateId = templatePackage+"."+t.getName();
+			if( templates.containsKey(templateId)) {
+				fireError(t, "Template `"+templateId+"` was already defined");
+			}
+			templates.put(templateId, t);
 		}
 
 		if( result == null ) {
@@ -63,6 +68,22 @@ public abstract class TemplateEnvironment extends AbstractEnvironment {
 		}
 		try {
 			return t.apply(context, this, arguments);
+		} catch( EvaluationException ex ) {
+			fireError(t, ex.getMessage());
+			return "";
+		}
+	}
+
+	public String evaluateTemplate(ILocatedEntity referer, String template, Object context) {
+
+		// TODO replace hack with normal parser
+		ITemplate[] loaded = loadTemplates("${template temp}"+template+"${end}", "temp");
+		ITemplate t = ( loaded != null && loaded.length == 1 && loaded[0].getName().equals("temp") ) ? loaded[0] : null;
+		if( t == null ) {
+			return "";
+		}
+		try {
+			return t.apply(context, this, null);
 		} catch( EvaluationException ex ) {
 			fireError(t, ex.getMessage());
 			return "";

@@ -5,40 +5,47 @@ import java.util.List;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
-public class CallTemplateNode extends Node {
+public class CallTemplateNode extends ExpressionNode {
 
-	private String identifier;
+	private String templateId;
 	private ExpressionNode[] arguments;
 	private ExpressionNode selectExpr;
-	private String currentPackage;
 
 	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, int line) {
 		super(line);
-		this.identifier = identifier;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
-		this.currentPackage = currentPackage;
+		this.templateId = identifier.indexOf('.') == -1 ? currentPackage + "." + identifier : identifier;
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
-		try {
-			Object callContext = selectExpr != null ? env.evaluate(selectExpr, context, false) : context;
+	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+		Object callContext = selectExpr != null ? env.evaluate(selectExpr, context, false) : context;
 
-			Object[] args = null;
-			if( arguments != null ) {
-				args = new Object[arguments.length];
-				for( int i = 0; i < arguments.length; i++ ) {
-					args[i] = env.evaluate(arguments[i], context, false);
-					if( args[i] == null ) {
-						return;
-					}
-				}
+		Object[] args = null;
+		if( arguments != null ) {
+			args = new Object[arguments.length];
+			for( int i = 0; i < arguments.length; i++ ) {
+				args[i] = env.evaluate(arguments[i], context, false);
 			}
-			String qualifiedName = identifier.indexOf('.') == -1 ? currentPackage + "." + identifier : identifier;
-			sb.append(env.executeTemplate(this, qualifiedName, callContext, args));
-		} catch(EvaluationException ex) {
-			/* some problems in expressions evaluation, skip call */
 		}
+		return env.executeTemplate(this, templateId, callContext, args);
+	}
+
+	@Override
+	public void toString(StringBuffer sb) {
+		selectExpr.toString(sb);
+		sb.append("->");
+		sb.append(templateId);
+		sb.append("(");
+		if( arguments != null ) {
+			for( int i = 0; i < arguments.length; i++ ) {
+				if( i > 0 ) {
+					sb.append(",");
+				}
+				arguments[i].toString(sb);
+			}
+		}
+ 		sb.append(")");
 	}
 }
