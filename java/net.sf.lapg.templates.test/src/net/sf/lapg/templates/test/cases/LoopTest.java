@@ -4,6 +4,9 @@ import java.util.Hashtable;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
+import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 import net.sf.lapg.templates.test.TemplateTestCase;
 
 public class LoopTest extends TemplateTestCase {
@@ -11,7 +14,8 @@ public class LoopTest extends TemplateTestCase {
 	public void testForEach() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		IEvaluationEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", h, null);
@@ -30,7 +34,8 @@ public class LoopTest extends TemplateTestCase {
 	public void testCall() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		IEvaluationEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
+		env.setVariable("util", new DefaultStaticMethods());
 
 		// test 1
 		String q = env.executeTemplate("format.callTempl", h, null);
@@ -50,7 +55,7 @@ public class LoopTest extends TemplateTestCase {
 	}
 
 	public void testApply() {
-		IEvaluationEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
 		String q = env.executeTemplate("loop.tryonthefly", null, null);
@@ -58,7 +63,7 @@ public class LoopTest extends TemplateTestCase {
 	}
 
 	public void testArithm() {
-		IEvaluationEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
 		String q = env.executeTemplate("loop.arithm1", new Object(), null);
@@ -88,7 +93,7 @@ public class LoopTest extends TemplateTestCase {
 	public void testAssert() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "w1", "w2" });
-		TestEnvironment env = new TestEnvironment(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp");
+		TestEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
 		env.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");

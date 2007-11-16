@@ -3,16 +3,18 @@ package net.sf.lapg.templates.test.cases;
 import java.util.ArrayList;
 
 import junit.framework.Assert;
-import net.sf.lapg.templates.api.ClassLoaderTemplateEnvironment;
 import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.INavigationStrategy.Factory;
+import net.sf.lapg.templates.api.impl.TemplateEnvironment;
 
-public class TestEnvironment extends ClassLoaderTemplateEnvironment {
+public class TestEnvironment extends TemplateEnvironment {
+
+	public TestEnvironment(Factory strategy, ITemplateLoader... loaders) {
+		super(strategy, loaders);
+	}
 
 	public ArrayList<String> nextErrors = new ArrayList<String>();
-
-	public TestEnvironment(ClassLoader loader, String rootPackage) {
-		super(loader, rootPackage);
-	}
 
 	@Override
 	public void fireError(ILocatedEntity referer, String error) {

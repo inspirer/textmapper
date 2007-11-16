@@ -55,13 +55,13 @@ ${call helper([[id:'uh',key:'we'],[id:'oh',key:'we2']]) for [we:'lite1',we2:'oke
 ${end}
 
 ${template xmldo-}
-${foreach u in r['user']-}
+${foreach u in r.first().user-}
 ${u['@name'].value}
 ${end-}
 ${end}
 
 ${template selectit-}
-${r.user.first().`@name`}
+${r.first().user.first().`@name`}
 ${end}
 
 ${template tryonthefly-}

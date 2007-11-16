@@ -1,25 +1,8 @@
 package net.sf.lapg.gen;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import net.sf.lapg.common.FormatUtil;
-import net.sf.lapg.templates.api.IStaticMethods;
 
-public class TemplateStaticMethods implements IStaticMethods {
-	private static Set<String> supported = getSupported();
-
-	private static HashSet<String> getSupported() {
-		HashSet<String> set = new HashSet<String>();
-		Collections.addAll(set, new String[] { "format", "toIdentifier" });
-		return set;
-	}
-
-	public boolean isSupported(String name) {
-		return supported.contains(name);
-	}
-
+public class TemplateStaticMethods {
 	public String format(short[] table, Integer maxwidth, Integer leftpadding ) {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < table.length; i++ ) {

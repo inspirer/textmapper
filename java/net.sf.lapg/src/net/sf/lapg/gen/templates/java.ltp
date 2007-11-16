@@ -22,7 +22,7 @@ ${end-}
 
 	public enum Tokens {
 ${foreach s in parser.sym-}
-		${toIdentifier(s.name,index)},
+		${util.toIdentifier(s.name,index)},
 ${end-}
 	}
 
@@ -266,42 +266,42 @@ ${end}
 
 ${template lexerTables-}
 	private static final short[] lapg_char2no = new short[] {
-		${format(lex.char2no, 16, 2)}
+		${util.format(lex.char2no, 16, 2)}
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
-		${format(lex.change, 2, '{', '}')}
+		${util.format(lex.change, 2, '{', '}')}
 	};
 ${end}
 
 ${template parserTables-}
 	private static final int[] lapg_action = new int[] {
-		${format(parser.action_index, 16, 2)}
+		${util.format(parser.action_index, 16, 2)}
 	};
 
 ${if parser.nactions > 0}
 	private static final short[] lapg_lalr = new short[] {
-		${format(parser.action_table, 16, 2)}
+		${util.format(parser.action_table, 16, 2)}
 	};
 ${end}
 
 	private static final short[] lapg_sym_goto = new short[] {
-		${format(parser.sym_goto, 16, 2)}
+		${util.format(parser.sym_goto, 16, 2)}
 	};
 
 	private static final short[] lapg_sym_from = new short[] {
-		${format(parser.sym_from, 16, 2)}
+		${util.format(parser.sym_from, 16, 2)}
 	};
 
 	private static final short[] lapg_sym_to = new short[] {
-		${format(parser.sym_to, 16, 2)}
+		${util.format(parser.sym_to, 16, 2)}
 	};
 
 	private static final short[] lapg_rlen = new short[] {
-		${format(parser.ruleLength, 16, 2)}
+		${util.format(parser.ruleLength, 16, 2)}
 	};
 
 	private static final short[] lapg_rlex = new short[] {
-		${format(parser.rleft, 16, 2)}
+		${util.format(parser.rleft, 16, 2)}
 	};
 ${end}
