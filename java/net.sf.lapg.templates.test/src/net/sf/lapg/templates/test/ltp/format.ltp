@@ -42,3 +42,16 @@ ${end}
 ${template useCall3-}
 ${'site'->useCall1()-}
 ${end}
+
+${template testdollar-}
+$$ is dollar
+${end}
+
+
+${template testdollarindexRoutine-}
+$0-$1-$2
+${end}
+
+${template testdollarindex-}
+${call testdollarindexRoutine for ['ww','yt',7]-}
+${end}

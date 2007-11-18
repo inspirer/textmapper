@@ -62,6 +62,18 @@ public class LoopTest extends TemplateTestCase {
 		Assert.assertEquals("w1 is bad\r\nw2 is bad\r\nt4 is bad\r\n", q);
 	}
 
+	public void testDollar() {
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
+
+		// test 1
+		String q = env.executeTemplate("format.testdollar", null, null);
+		Assert.assertEquals("$ is dollar\r\n", q);
+
+		// test 2
+		q = env.executeTemplate("format.testdollarindex", null, null);
+		Assert.assertEquals("ww-yt-7\r\n", q);
+	}
+
 	public void testArithm() {
 		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
