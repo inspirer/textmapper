@@ -13,9 +13,10 @@
 [0]
 
 any:	/[^$]+/
-any:	/$$/
 
+escdollar:		/$$/
 escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/			{ @ = new String(token,1,lapg_size-1); break; }
+escint(Integer):/$[0-9]+/							{ @ = Integer.parseInt(new String(token,1,lapg_size-1)); break; }
 
 '${':	/${/		{ group = @1; break; }
 '$/':   /$\//
@@ -124,6 +125,8 @@ instruction (Node) ::=
 	| switch_instruction
 	| simple_instruction
 	| escid											{ $$ = new SelectNode(null, $escid,@0.line); }
+	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint,@0.line), @0.line); }
+	| escdollar										{ $$ = new DollarNode(@0.line); }
 	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset),@0.line); }
 ;
 

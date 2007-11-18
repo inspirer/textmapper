@@ -17,7 +17,7 @@ public class IndexNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
-		Object object = env.evaluate(objectExpr, context, false);
+		Object object = objectExpr != null ? env.evaluate(objectExpr, context, false) : context;
 		Object index = env.evaluate(indexExpr, context, false);
 
 		return env.getByIndex(object, index);
