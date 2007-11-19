@@ -9,11 +9,14 @@ public class CPrio implements Prio, ILocatedEntity {
 
 	private final int prio;
 	private final CSymbol[] symbols;
+
+	private final String input;
 	private final int line;
 
-	public CPrio(int prio, List<CSymbol> symbols, int line) {
+	public CPrio(int prio, List<CSymbol> symbols, String input, int line) {
 		this.prio = prio;
 		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
+		this.input = input;
 		this.line = line;
 	}
 
@@ -26,7 +29,7 @@ public class CPrio implements Prio, ILocatedEntity {
 	}
 
 	public String getLocation() {
-		return "line:" + line;
+		return input + "," + line;
 	}
 
 	@Override

@@ -126,7 +126,7 @@ ${if syntax.hasLexemActions()-}
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
 				case ${lexem.symbol.index}:
-					${lexem.action}
+					${lexem.action.contents}
 ${end-}
 ${end-}
 			}
@@ -150,8 +150,8 @@ ${if syntax.hasActions()-}
 					switch( lapg_i ) {
 ${foreach rule in syntax.rules-}
 ${if rule.action-}
-						case ${rule.index}:
-							${rule.action}
+						case ${rule.index}: // ${rule}
+							${call parserAction for rule-}
 ${if opts.breaks == 'on'}							break;$/
 ${end-}
 ${end-}
@@ -304,4 +304,8 @@ ${end}
 	private static final short[] lapg_rlex = new short[] {
 		${util.format(parser.rleft, 16, 2)}
 	};
+${end}
+
+${template parserAction-}
+${this.action.contents}
 ${end}

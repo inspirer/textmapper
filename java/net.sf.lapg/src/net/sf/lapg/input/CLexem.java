@@ -1,5 +1,6 @@
 package net.sf.lapg.input;
 
+import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
@@ -9,20 +10,23 @@ public class CLexem implements ILocatedEntity, Lexem {
 	private final String regexp;
 	private final CAction action;
 	private final int priority;
-	private final int line;
 	private final int groups;
 
-	public CLexem(CSymbol sym, String regexp, CAction action, int priority, int groups, int line) {
+	private final String input;
+	private final int line;
+
+	public CLexem(CSymbol sym, String regexp, CAction action, int priority, int groups, String input, int line) {
 		this.sym = sym;
 		this.regexp = regexp;
 		this.action = action;
 		this.priority = priority;
-		this.line = line;
 		this.groups = groups;
+		this.input = input;
+		this.line = line;
 	}
 
 	public String getLocation() {
-		return "line:" + line;
+		return input + "," + line;
 	}
 
 	public CSymbol getSymbol() {
@@ -33,8 +37,8 @@ public class CLexem implements ILocatedEntity, Lexem {
 		return regexp;
 	}
 
-	public String getAction() {
-		return action != null ? action.getContents() : null;
+	public Action getAction() {
+		return action;
 	}
 
 	public int getPriority() {

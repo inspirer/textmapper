@@ -12,7 +12,8 @@ import java.util.Map;
 
 public class Parser {
 	
-	private Parser(byte[] data, Map<String,String> defaultOptions) {
+	private Parser(String inputId, byte[] data, Map<String,String> defaultOptions) {
+		this.inputId = inputId;
 		this.buff = data;
 		this.l = 0;
 		
@@ -32,6 +33,7 @@ public class Parser {
 	private Map<String,String> options = new HashMap<String, String>();
 	private List<CLexem> lexems = new ArrayList<CLexem>();
 	
+	private String inputId;
 	private byte[] buff;
 	private int l;
 	
@@ -45,16 +47,16 @@ public class Parser {
 	private CSymbol getSymbol(String name, int line) {
 		CSymbol res = symCash.get(name);
 		if( res == null ) {
-			res = new CSymbol(name, line);
+			res = new CSymbol(name, inputId, line);
 			symbols.add(res);
 			symCash.put(name,res);
 	
 			if( name.endsWith(CSyntax.OPTSUFFIX) && name.length() > CSyntax.OPTSUFFIX.length() ) {
 				try {
 					CSymbol original = getSymbol(name.substring(0, name.length()-CSyntax.OPTSUFFIX.length()), line);
-					res.setNonTerminal(null, 0);
-					addRule(new CRule(Collections.singletonList(original), null, null, line), res);
-					addRule(new CRule(null, null, null, line), res);
+					res.setNonTerminal(null, null, 0);
+					addRule(new CRule(Collections.singletonList(original), null, null, inputId, line), res);
+					addRule(new CRule(null, null, null, inputId, line), res);
 				} catch(ParseException ex) {
 					/* should never happen */
 				}
@@ -65,9 +67,9 @@ public class Parser {
 	
 	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
 		try {
-			sym.setTerminal(type, regexp != null, line);
+			sym.setTerminal(type, regexp != null, inputId, line);
 			if( regexp != null ) {
-				lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,line));
+				lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,inputId,line));
 			}
 		} catch( ParseException ex ) {
 			error(ex.getMessage());
@@ -76,7 +78,7 @@ public class Parser {
 	
 	private void addNonterm(CSymbol sym, String type, int line ) {
 		try {
-			sym.setNonTerminal(type, line);
+			sym.setNonTerminal(type, inputId, line);
 		} catch( ParseException ex ) {
 			error(ex.getMessage());
 		}
@@ -89,11 +91,11 @@ public class Parser {
 	
 	private void addPrio( String prio, List<CSymbol> list, int line ) {
 		if( prio.equals("left") ) {
-			prios.add(new CPrio(CPrio.LEFT, list,line));
+			prios.add(new CPrio(CPrio.LEFT, list,inputId,line));
 		} else if( prio.equals("right") ) {
-			prios.add(new CPrio(CPrio.RIGHT, list,line));
+			prios.add(new CPrio(CPrio.RIGHT, list,inputId,line));
 		} else if( prio.equals("nonassoc") ) {
-			prios.add(new CPrio(CPrio.NONASSOC, list,line));
+			prios.add(new CPrio(CPrio.NONASSOC, list,inputId,line));
 		} else {
 			error("unknown priority identifier used: `"+prio+"` at " + line);
 		}
@@ -102,10 +104,10 @@ public class Parser {
 	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			try {
-				CSymbol sym = new CSymbol(null, 0);
-				sym.setNonTerminal(null, cmdopt.getLine());
+				CSymbol sym = new CSymbol(null, inputId, 0);
+				sym.setNonTerminal(null, inputId, cmdopt.getLine());
 				symbols.add(sym);
-				addRule(new CRule(null, cmdopt, null, cmdopt.getLine()), sym);
+				addRule(new CRule(null, cmdopt, null, inputId, cmdopt.getLine()), sym);
 				list.add(sym);
 			} catch( ParseException ex ) {
 				error(ex.getMessage());
@@ -118,9 +120,9 @@ public class Parser {
 		errors.add(s);
 	}
 	
-	public static CSyntax process(String data, Map<String,String> defaultOptions) {
+	public static CSyntax process(String inputId, String contents, Map<String,String> defaultOptions) {
 		try {
-			Parser p = new Parser(data.getBytes("utf-8"), defaultOptions);
+			Parser p = new Parser(inputId, contents.getBytes("utf-8"), defaultOptions);
 			if( !p.parse() || !p.errors.isEmpty() ) {
 				return new CSyntax(p.errors);
 			}
@@ -513,10 +515,10 @@ public class Parser {
 							 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 							break;
 						case 30:
-							 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-2].pos.line); 
+							 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-2].pos.line); 
 							break;
 						case 31:
-							 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-1].pos.line); 
+							 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-1].pos.line); 
 							break;
 						case 32:
 							 addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
@@ -528,7 +530,7 @@ public class Parser {
 							 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 							break;
 						case 37:
-							 lapg_gg.sym = new CAction(lapg_m[lapg_head-2].pos.line, rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset)); 
+							 lapg_gg.sym = new CAction(rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset), inputId, lapg_m[lapg_head-2].pos.line); 
 							break;
 						case 41:
 							 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 

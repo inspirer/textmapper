@@ -1,19 +1,23 @@
 package net.sf.lapg.input;
 
+import net.sf.lapg.api.Action;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
-public class CAction implements ILocatedEntity {
+public class CAction implements Action, ILocatedEntity {
 
-	private final int line;
 	private final String contents;
 
-	public CAction(int line, String contents) {
-		this.line = line;
+	private final String input;
+	private final int line;
+
+	public CAction(String contents, String input, int line) {
 		this.contents = contents;
+		this.input = input;
+		this.line = line;
 	}
 
 	public String getLocation() {
-		return "line:" + line;
+		return input + "," + line;
 	}
 
 	public String getContents() {

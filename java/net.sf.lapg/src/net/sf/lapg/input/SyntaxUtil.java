@@ -13,7 +13,7 @@ public class SyntaxUtil {
 
 	public static Grammar parseSyntax( String sourceName, InputStream stream, IError err, Map<String,String> options) {
 		String contents = getFileContents(stream);
-		CSyntax cs = Parser.process(contents, options);
+		CSyntax cs = Parser.process(sourceName, contents, options);
 		if( cs.hasErrors() ) {
 			for( String s : cs.getErrors()) {
 				err.error(s+"\n");

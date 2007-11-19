@@ -8,18 +8,21 @@ public class CSymbol implements Symbol, ILocatedEntity {
 
 	private final String name;
 
+	private String input;
 	private int line;
+
 	int index;
 	private String type;
 	private boolean isTerm = false, isDefined = false;
 
-	public CSymbol(String name, int line) {
-		this.line = line;
+	public CSymbol(String name, String input, int line) {
 		this.name = name;
 		this.index = -1;
+		this.input = input;
+		this.line = line;
 	}
 
-	private void setDefined( String ntype, int nline, boolean nisterm ) throws ParseException {
+	private void setDefined( String ntype, boolean nisterm, String ninput, int nline ) throws ParseException {
 		if( isDefined ) {
 			if( nisterm != isTerm ) {
 				throw new ParseException(
@@ -32,7 +35,10 @@ public class CSymbol implements Symbol, ILocatedEntity {
 				throw new ParseException("redeclaring type for `"+name+"` at line " + nline + " (previously declared at line " + this.line + ")");
 			}
 		} else {
-			line = nline;
+			if( line != 0) {
+				input = ninput;
+				line = nline;
+			}
 			isDefined = true;
 			isTerm = nisterm;
 		}
@@ -41,7 +47,7 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		}
 	}
 
-	void setTerminal( String type, boolean hasRegExp, int line ) throws ParseException {
+	void setTerminal( String type, boolean hasRegExp, String input, int line ) throws ParseException {
 		if( name.equals(CSyntax.INPUT) ) {
 			throw new ParseException("cannot declare terminal with name `"+name+"` (reserved non-terminal) at line " + line);
 		}
@@ -51,18 +57,18 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		if( name.endsWith(CSyntax.OPTSUFFIX) ) {
 			throw new ParseException("cannot declare terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix is reserved for non-terms) at line " + line);
 		}
-		setDefined(type, line, true);
+		setDefined(type, true, input, line);
 	}
 
- 	void setNonTerminal( String type, int line ) throws ParseException {
+ 	void setNonTerminal( String type, String input, int line ) throws ParseException {
 		if( name.endsWith(CSyntax.OPTSUFFIX) && line != 0 ) {
 			throw new ParseException("cannot declare non-terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix symbols are generated automatically) at line " + line);
 		}
-		setDefined(type, line, false);
+		setDefined(type, false, input, line);
 	}
 
 	public String getLocation() {
-		return "line:" + line;
+		return input + "," + line;
 	}
 
 	public boolean isTerm() {

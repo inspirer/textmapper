@@ -7,5 +7,5 @@ public interface Rule {
 	public Symbol getLeft();
 	public Symbol[] getRight();
 	public int getPriority();
-	public String getAction();
+	public Action getAction();
 }

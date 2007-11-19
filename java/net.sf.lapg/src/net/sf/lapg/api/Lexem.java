@@ -6,5 +6,5 @@ public interface Lexem {
 	public String getRegexp();
 	public int getPriority();
 	public int getGroups();
-	public String getAction();
+	public Action getAction();
 }
