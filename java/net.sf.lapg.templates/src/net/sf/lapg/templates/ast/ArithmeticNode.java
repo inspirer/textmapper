@@ -27,7 +27,11 @@ public class ArithmeticNode extends ExpressionNode {
 
 	private Object convertToInteger(Object s) {
 		if( s instanceof String ) {
-			return new Integer((String)s);
+			try {
+				return new Integer((String)s);
+			} catch(NumberFormatException ex) {
+				/* ignore */
+			}
 		}
 		return s;
 	}
@@ -51,6 +55,15 @@ public class ArithmeticNode extends ExpressionNode {
 			case REM:
 				return new Integer(l%r);
 			}
+		} else if( kind == PLUS ) {
+			if( left instanceof Object[] && right instanceof Object[] ) {
+				return concatenate((Object[])left,(Object[])right);
+			} else if( left instanceof String && right instanceof String ) {
+				return ((String)left) + ((String)right);
+			} else {
+				throw new EvaluationException("arguments of plus should be arrays, strings or integers");
+			}
+
 		} else {
 			throw new EvaluationException("arithmetic arguments should be integer");
 		}
@@ -63,5 +76,20 @@ public class ArithmeticNode extends ExpressionNode {
 		leftExpr.toString(sb);
 		sb.append(operators[kind]);
 		rightExpr.toString(sb);
+	}
+
+	private static Object[] concatenate(Object[] a1, Object[] a2) {
+		int a1Len= a1.length;
+		int a2Len= a2.length;
+		if (a1Len == 0) {
+			return a2;
+		}
+		if (a2Len == 0) {
+			return a1;
+		}
+		Object[] res= new Object[a1Len + a2Len];
+		System.arraycopy(a1, 0, res, 0, a1Len);
+		System.arraycopy(a2, 0, res, a1Len, a2Len);
+		return res;
 	}
 }

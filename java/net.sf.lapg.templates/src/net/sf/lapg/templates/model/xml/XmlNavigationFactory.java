@@ -51,10 +51,6 @@ public class XmlNavigationFactory extends DefaultNavigationFactory {
 			return nodes;
 		}
 
-		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			return getByIndex(obj, query);
-		}
-
 		public Object getProperty(Object obj, String property) throws EvaluationException {
 			XmlNode node = (XmlNode)obj;
 

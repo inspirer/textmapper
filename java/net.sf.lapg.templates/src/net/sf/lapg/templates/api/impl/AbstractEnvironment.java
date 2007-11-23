@@ -7,7 +7,6 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
-import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
@@ -37,11 +36,6 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 	public Object getByIndex(Object obj, Object index) throws EvaluationException {
 		INavigationStrategy strategy = strategies.getStrategy(obj);
 		return strategy.getByIndex(obj, index);
-	}
-
-	public Object getByQuery(Object obj, String query) throws EvaluationException {
-		INavigationStrategy strategy = strategies.getStrategy(obj);
-		return strategy.getByQuery(obj, query);
 	}
 
 	public Object getProperty(Object obj, String id) throws EvaluationException {

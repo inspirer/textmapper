@@ -32,7 +32,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		return javaNavigation;
 	}
 
-	private INavigationStrategy javaNavigation = new INavigationStrategy() {
+	protected INavigationStrategy javaNavigation = new INavigationStrategy() {
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
@@ -77,10 +77,6 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			throw new EvaluationException("do not know how to apply index");
 		}
-
-		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			throw new EvaluationException("do not know how to execute query");
-		}
 	};
 
 	private INavigationStrategy mapNavigation = new INavigationStrategy() {
@@ -91,10 +87,6 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			return ((Map<?,?>)obj).get(index);
-		}
-
-		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			return ((Map<?,?>)obj).get(query);
 		}
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
@@ -116,10 +108,6 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			throw new EvaluationException("do not know how to calculate index");
-		}
-
-		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			throw new EvaluationException("do not know how to execute query");
 		}
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
@@ -153,10 +141,6 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
-		}
-
-		public Object getByQuery(Object obj, String query) throws EvaluationException {
-			throw new EvaluationException("do not know how to execute query");
 		}
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {

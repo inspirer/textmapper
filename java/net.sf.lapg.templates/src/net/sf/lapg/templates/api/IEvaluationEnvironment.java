@@ -10,7 +10,6 @@ public interface IEvaluationEnvironment {
 	public Object getProperty(Object obj, String propertyName) throws EvaluationException;
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException;
 	public Object getByIndex(Object obj, Object index) throws EvaluationException;
-	public Object getByQuery(Object obj, String query) throws EvaluationException;
 	public boolean toBoolean(Object o) throws EvaluationException;
 
 	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException;

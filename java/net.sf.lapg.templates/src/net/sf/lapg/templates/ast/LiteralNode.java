@@ -19,7 +19,9 @@ public class LiteralNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		if( literal instanceof String) {
+		if( literal == null ) {
+			sb.append("null");
+		} else if( literal instanceof String) {
 			sb.append("'");
 			sb.append(literal.toString());
 			sb.append("'");
