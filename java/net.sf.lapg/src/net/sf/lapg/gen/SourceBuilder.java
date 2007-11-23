@@ -81,12 +81,12 @@ public class SourceBuilder {
 		}
 	}
 
-	private void generateOutput(Grammar s, LexerTables l, ParserTables r, PrintStream ps) {
+	private void generateOutput(Grammar grammar, LexerTables l, ParserTables r, PrintStream ps) {
 		HashMap<String,Object> map = new HashMap<String, Object>();
-		map.put("syntax", s);
+		map.put("syntax", grammar);
 		map.put("lex", l);
 		map.put("parser", r);
-		map.put("opts", s.getOptions() );
+		map.put("opts", grammar.getOptions() );
 
 		TemplateEnvironment env = new TemplateEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
 		env.setVariable("util", new TemplateStaticMethods());

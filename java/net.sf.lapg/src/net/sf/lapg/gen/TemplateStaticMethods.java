@@ -1,8 +1,9 @@
 package net.sf.lapg.gen;
 
 import net.sf.lapg.common.FormatUtil;
+import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 
-public class TemplateStaticMethods {
+public class TemplateStaticMethods extends DefaultStaticMethods {
 	public String format(short[] table, Integer maxwidth, Integer leftpadding ) {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < table.length; i++ ) {
