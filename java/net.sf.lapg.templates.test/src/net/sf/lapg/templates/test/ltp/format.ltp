@@ -36,11 +36,11 @@ ${this} is mine
 ${end}
 
 ${template useCall2-}
-${'Table'->format.useCall1()-}
+${call(format.useCall1) 'Table'-}
 ${end}
 
 ${template useCall3-}
-${'site'->useCall1()-}
+${call(useCall1) 'site'-}
 ${end}
 
 ${template testdollar-}

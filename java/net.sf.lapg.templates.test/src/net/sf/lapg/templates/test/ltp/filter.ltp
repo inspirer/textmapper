@@ -1,0 +1,9 @@
+
+
+${template map1worker-}
+${util.print( map(name->value) this )-}
+${end}
+
+${template map1-}
+${call(map1worker) [['name'->'nbsss','value'->'a3'],['name'->'a45','value'->'943'],['name'->'ano','value'->'yes']]-}
+${end}

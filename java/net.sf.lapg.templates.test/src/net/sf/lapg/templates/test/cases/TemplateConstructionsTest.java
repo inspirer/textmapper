@@ -9,7 +9,7 @@ import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 import net.sf.lapg.templates.test.TemplateTestCase;
 
-public class LoopTest extends TemplateTestCase {
+public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testForEach() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
@@ -72,6 +72,15 @@ public class LoopTest extends TemplateTestCase {
 		// test 2
 		q = env.executeTemplate("format.testdollarindex", null, null);
 		Assert.assertEquals("ww-yt-7\r\n", q);
+	}
+
+	public void testMap() {
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
+		env.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("filter.map1", null, null);
+		Assert.assertEquals("[nbsss -> a3,ano -> yes,a45 -> 943]", q);
 	}
 
 	public void testArithm() {
