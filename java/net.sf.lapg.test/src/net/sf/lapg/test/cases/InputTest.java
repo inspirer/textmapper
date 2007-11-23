@@ -87,7 +87,7 @@ public class InputTest extends TestCase {
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
 				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
-		Assert.assertEquals(" continue; ", lexems[2].getAction());
+		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
 		checkGenTables(g, "syntax1.tbl", new ErrorReporter());
 	}
@@ -110,7 +110,7 @@ public class InputTest extends TestCase {
 		Assert.assertEquals("item", syms[7].getName());
 		Assert.assertEquals("listopt", syms[8].getName());
 		Assert.assertEquals(8, g.getRules().length);
-		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction());
+		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
 
 		checkGenTables(g, "syntax2.tbl", new ErrorReporter());
 	}
