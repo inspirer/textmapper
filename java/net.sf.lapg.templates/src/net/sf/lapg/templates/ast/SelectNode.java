@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -15,17 +16,17 @@ public class SelectNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
 		} else {
-			Object value = env.getVariable(identifier);
+			Object value = context.getVariable(identifier);
 			if( value != null ) {
 				return value;
 			}
 
-			object = context;
+			object = context.getThisObject();
 		}
 
 		return env.getProperty(object, identifier);

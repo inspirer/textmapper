@@ -2,6 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import java.util.Collection;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -26,11 +27,11 @@ public class ForeachNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
 		try {
 			Object select = env.evaluate(selectExpr, context, false);
-			Object prevVar = env.getVariable(var);
-			Object prevIndex = env.getVariable(INDEX);
+			Object prevVar = context.getVariable(var);
+			Object prevIndex = context.getVariable(INDEX);
 			int index = 0;
 			try {
 				if( targetExpr != null ) {
@@ -39,7 +40,7 @@ public class ForeachNode extends CompoundNode {
 						int toInt = (Integer)to;
 						int delta = toInt >= (Integer)select ? 1 : -1;
 						for( int i = (Integer)select; (delta > 0 ? i <= toInt : i >= toInt); i += delta ) {
-							env.setVariable(var, i);
+							context.setVariable(var, i);
 							for( Node n : instructions ) {
 								n.emit(sb, context, env);
 							}
@@ -49,16 +50,16 @@ public class ForeachNode extends CompoundNode {
 					}
 				} else if( select instanceof Collection ) {
 					for( Object o : (Collection<?>)select ) {
-						env.setVariable(var, o);
-						env.setVariable(INDEX, index++);
+						context.setVariable(var, o);
+						context.setVariable(INDEX, index++);
 						for( Node n : instructions ) {
 							n.emit(sb, context, env);
 						}
 					}
 				} else if(select instanceof Object[]) {
 					for( Object o : (Object[])select ) {
-						env.setVariable(var, o);
-						env.setVariable(INDEX, index++);
+						context.setVariable(var, o);
+						context.setVariable(INDEX, index++);
 						for( Node n : instructions ) {
 							n.emit(sb, context, env);
 						}
@@ -67,8 +68,8 @@ public class ForeachNode extends CompoundNode {
 					env.fireError(this, "In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getTitle(context));
 				}
 			} finally {
-				env.setVariable(var, prevVar);
-				env.setVariable(INDEX, prevIndex);
+				context.setVariable(var, prevVar);
+				context.setVariable(INDEX, prevIndex);
 			}
 		} catch( EvaluationException ex ) {
 			/* ignore, skip foreach */

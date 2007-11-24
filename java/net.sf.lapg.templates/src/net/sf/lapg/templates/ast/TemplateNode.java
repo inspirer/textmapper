@@ -2,6 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import java.util.List;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.api.ITemplate;
@@ -22,7 +23,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return name;
 	}
 
-	public String apply(Object context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException {
+	public String apply(EvaluationContext context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0,
 			argsCount = arguments != null ? arguments.length : 0;
 
@@ -35,17 +36,17 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			int i;
 			Object[] old = new Object[paramCount];
 			for( i = 0; i < paramCount; i++ ) {
-				old[i] = env.getVariable(parameters[i]);
+				old[i] = context.getVariable(parameters[i]);
 			}
 			try {
 				for( i = 0; i < paramCount; i++ ) {
-					env.setVariable(parameters[i], arguments[i]);
+					context.setVariable(parameters[i], arguments[i]);
 				}
 
 				emit(sb, context, env);
 			} finally {
 				for( i = 0; i < paramCount; i++ ) {
-					env.setVariable(parameters[i], old[i]);
+					context.setVariable(parameters[i], old[i]);
 				}
 			}
 		} else {

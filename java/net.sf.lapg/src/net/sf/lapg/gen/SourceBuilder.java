@@ -13,8 +13,8 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
-import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 import net.sf.lapg.templates.api.impl.TemplateEnvironment;
 
 public class SourceBuilder {
@@ -62,8 +62,6 @@ public class SourceBuilder {
 			if (output != null) {
 				try {
 					PrintStream ps = new PrintStream(output);
-//					OutputUtils.printTables(ps, l);
-//					OutputUtils.printTables(ps, r);
 					generateOutput(s,l,r,ps);
 
 				} catch (FileNotFoundException ex) {
@@ -88,9 +86,10 @@ public class SourceBuilder {
 		map.put("parser", r);
 		map.put("opts", grammar.getOptions() );
 
-		TemplateEnvironment env = new TemplateEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
-		env.setVariable("util", new TemplateStaticMethods());
-		ps.print(env.executeTemplate(myLanguage.template, map, null));
+		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+		EvaluationContext context = new EvaluationContext(map);
+		context.setVariable("util", new TemplateStaticMethods());
+		ps.print(env.executeTemplate(myLanguage.template, context, null));
 	}
 
 	public static TargetLanguage getLanguage(String id) {

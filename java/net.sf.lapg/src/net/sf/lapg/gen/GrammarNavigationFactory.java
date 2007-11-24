@@ -28,13 +28,16 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			Symbol[] array = ((Rule)obj).getRight();
 			if( index instanceof Integer ) {
-				return array[(Integer)index];
+				return new ActionSymbol(array[(Integer)index], false, array.length - (Integer)index - 1);
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
 		}
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
+
+
+
 			return javaNavigation.getProperty(obj, id);
 		}
 

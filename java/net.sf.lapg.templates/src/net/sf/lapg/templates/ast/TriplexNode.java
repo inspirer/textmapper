@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -18,7 +19,7 @@ public class TriplexNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		Object cond = env.evaluate(condition, context, false);
 		if( env.toBoolean(cond) ) {
 			return env.evaluate(thennode, context, false);

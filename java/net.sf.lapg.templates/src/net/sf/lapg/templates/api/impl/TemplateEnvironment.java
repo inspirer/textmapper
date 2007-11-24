@@ -2,6 +2,7 @@ package net.sf.lapg.templates.api.impl;
 
 import java.util.HashMap;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
@@ -79,7 +80,10 @@ public class TemplateEnvironment extends AbstractEnvironment {
 	}
 
 	@Override
-	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments) {
+	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments) {
+		if( context == null ) {
+			context = new EvaluationContext(null);
+		}
 		ITemplate t = getTemplate(referer, name);
 		if( t == null ) {
 			return "";
@@ -92,7 +96,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 		}
 	}
 
-	public String evaluateTemplate(ILocatedEntity referer, String template, Object context) {
+	public String evaluateTemplate(ILocatedEntity referer, String template, EvaluationContext context) {
 
 		// TODO replace hack with normal parser
 		ITemplate[] loaded = loadTemplates("${template temp}"+template+"${end}", "temp");

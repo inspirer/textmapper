@@ -2,6 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import java.util.List;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -20,12 +21,12 @@ public class MethodCallNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);
 		} else {
-			object = context;
+			object = context.getThisObject();
 		}
 
 		Object[] args = null;

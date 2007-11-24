@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -13,7 +14,7 @@ public class LiteralNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		return literal;
 	}
 

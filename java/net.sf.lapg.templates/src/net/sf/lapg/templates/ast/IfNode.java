@@ -2,6 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import java.util.ArrayList;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -23,7 +24,7 @@ public class IfNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
 		try {
 			ArrayList<Node> execute = env.toBoolean(env.evaluate(select, context, true)) ? instructions
 					: elseInstructions;

@@ -307,5 +307,11 @@ ${end}
 ${end}
 
 ${template parserAction-}
+// $0
 ${this.action.contents}
 ${end}
+
+
+${template leftSym}lapg_gg.sym${end}
+
+${template stackSym(offset)}${if type}((${type})lapg_m[lapg_head-${offset}].sym)${else}lapg_m[lapg_head-${offset}].sym${end}${end}

@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -20,7 +21,7 @@ public class UnaryExpression extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env)
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env)
 			throws EvaluationException {
 		if( kind == NOT ) {
 			Object value = env.evaluate(expr, context, true);

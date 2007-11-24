@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.test.cases;
 
 import junit.framework.Assert;
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.model.xml.XmlModel;
 import net.sf.lapg.templates.model.xml.XmlNavigationFactory;
@@ -15,11 +16,11 @@ public class XmlTest extends TemplateTestCase{
 		TestEnvironment env = new TestEnvironment(new XmlNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
-		String q = env.executeTemplate("loop.xmldo", n, null);
+		String q = env.executeTemplate("loop.xmldo", new EvaluationContext(n), null);
 		Assert.assertEquals("jone\r\ngo\r\n", q);
 		env.assertEmptyErrors();
 
-		q = env.executeTemplate("loop.selectit", n, null);
+		q = env.executeTemplate("loop.selectit", new EvaluationContext(n), null);
 		Assert.assertEquals("name=\"jone\"\r\n", q);
 		env.assertEmptyErrors();
 	}

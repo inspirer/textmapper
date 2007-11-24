@@ -3,6 +3,7 @@ package net.sf.lapg.templates.ast;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
@@ -16,7 +17,7 @@ public class ConcreteMapNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(Object context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		HashMap<Object,Object> result = new HashMap<Object,Object>();
 		for( Map.Entry<ExpressionNode,ExpressionNode> entry : fields.entrySet() ) {
 			result.put(env.evaluate(entry.getKey(), context, false), env.evaluate(entry.getValue(), context, false) );

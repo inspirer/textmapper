@@ -1,7 +1,6 @@
 package net.sf.lapg.templates.api.impl;
 
-import java.util.HashMap;
-
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.api.ILocatedEntity;
@@ -11,21 +10,10 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 
 public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
-	// TODO scope of variables
-
-	private final HashMap<String,Object> vars = new HashMap<String,Object>();
 	private final INavigationStrategy.Factory strategies;
 
 	public AbstractEnvironment(INavigationStrategy.Factory factory) {
 		this.strategies = factory;
-	}
-
-	public Object getVariable(String id) {
-		return vars.get(id);
-	}
-
-	public void setVariable(String id, Object value) {
-		vars.put(id, value);
 	}
 
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
@@ -47,16 +35,16 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		if( o instanceof Boolean ) {
 			return ((Boolean)o).booleanValue();
 		} else if( o instanceof String ) {
-			return ((String)o).length() > 0;
+			return ((String)o).trim().length() > 0;
 		}
 		return o != null;
 	}
 
-	public Object evaluate(ExpressionNode expr, Object context, boolean permitNull) throws EvaluationException {
+	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException {
 		try {
 			Object result = expr.evaluate(context, this);
 			if( result == null && !permitNull ) {
-				String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": null";
+				String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context.getThisObject()) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
 				fireError(expr, message);
 				throw ex;
@@ -66,29 +54,29 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			throw ex;
 		} catch( Throwable th ) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
-			String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context) + ": " + cause.getMessage();
+			String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
 			fireError(expr, message);
 			throw ex;
 		}
 	}
 
-	public String executeTemplate(ILocatedEntity referer, String name, Object context, Object[] arguments) {
+	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments) {
 		return "";
 	}
 
-	public String executeTemplate(String name, Object context, Object[] arguments) {
+	public String executeTemplate(String name, EvaluationContext context, Object[] arguments) {
 		return executeTemplate(null, name, context, arguments);
 	}
 
-	public String getTitle(Object context) {
-		if( context == null ) {
+	public String getTitle(Object object) {
+		if( object == null ) {
 			return "<unknown>";
 		}
-		if( context instanceof INamedEntity ) {
-			return ((INamedEntity)context).getTitle();
+		if( object instanceof INamedEntity ) {
+			return ((INamedEntity)object).getTitle();
 		}
-		return context.getClass().getCanonicalName();
+		return object.getClass().getCanonicalName();
 	}
 
 	public void fireError(ILocatedEntity referer, String error) {

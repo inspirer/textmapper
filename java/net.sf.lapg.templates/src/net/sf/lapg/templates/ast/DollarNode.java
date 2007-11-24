@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.ast;
 
+import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 
@@ -10,7 +11,7 @@ public class DollarNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, Object context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
 		sb.append("$");
 	}
 }
