@@ -12,6 +12,11 @@ public class DollarNode extends Node {
 
 	@Override
 	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
-		sb.append("$");
+		Object value = context.getVariable("$");
+		if( value != null ) {
+			sb.append(value.toString());
+		} else {
+			sb.append("$");
+		}
 	}
 }

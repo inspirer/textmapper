@@ -20,7 +20,7 @@ import net.sf.lapg.templates.api.impl.TemplateEnvironment;
 public class SourceBuilder {
 
 	private static final TargetLanguage[] allLanguages = new TargetLanguage[] {
-		new TargetLanguage("java", "java.main", "Parser.java")
+		new TargetLanguage("java", "java")
 	};
 
 	private TargetLanguage myLanguage;
@@ -86,15 +86,17 @@ public class SourceBuilder {
 		map.put("parser", r);
 		map.put("opts", grammar.getOptions() );
 
-		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+		String templatePackage = myLanguage.getTemplatePackage();
+		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(templatePackage), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
-		ps.print(env.executeTemplate(myLanguage.template, context, null));
+		context.setVariable("$", "lapg_gg.sym"); // TODO remove hack
+		ps.print(env.executeTemplate(templatePackage+".main", context, null));
 	}
 
 	public static TargetLanguage getLanguage(String id) {
 		for( TargetLanguage l : allLanguages ) {
-			if( l.id.equals(id) ) {
+			if( l.getId().equals(id) ) {
 				return l;
 			}
 		}

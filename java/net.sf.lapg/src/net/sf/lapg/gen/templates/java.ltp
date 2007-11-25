@@ -149,8 +149,8 @@ ${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[l
 ${if syntax.hasActions()-}
 					switch( lapg_i ) {
 ${foreach rule in syntax.rules-}
-${if rule.action-}
-						case ${rule.index}: // ${rule}
+${if rule.getAction()-}
+						case ${rule.getIndex()}: // ${rule}
 							${call parserAction for rule-}
 ${if opts.breaks == 'on'}							break;$/
 ${end-}
@@ -307,8 +307,7 @@ ${end}
 ${end}
 
 ${template parserAction-}
-// $0
-${this.action.contents}
+${eval getAction()}
 ${end}
 
 

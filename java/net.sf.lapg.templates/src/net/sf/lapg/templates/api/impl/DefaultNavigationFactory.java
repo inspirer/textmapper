@@ -7,9 +7,16 @@ import java.util.Collection;
 import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationEnvironment;
 import net.sf.lapg.templates.api.INavigationStrategy;
 
 public class DefaultNavigationFactory implements INavigationStrategy.Factory {
+
+	protected IEvaluationEnvironment environment;
+
+	public void setEnvironment(IEvaluationEnvironment environment) {
+		this.environment = environment;
+	}
 
 	public INavigationStrategy getStrategy(Object o) {
 
@@ -54,6 +61,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public Object callMethod( Object obj, String methodName, Object[] args ) throws EvaluationException {
 			try {
 				Class[] argClasses = null;

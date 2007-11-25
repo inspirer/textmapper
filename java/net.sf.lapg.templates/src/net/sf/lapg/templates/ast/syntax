@@ -15,7 +15,7 @@
 any:	/[^$]+/
 
 escdollar:		/$$/
-escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/			{ @ = new String(token,1,lapg_size-1); break; }
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ @ = new String(token,1,lapg_size-1); break; }
 escint(Integer):/$[0-9]+/							{ @ = Integer.parseInt(new String(token,1,lapg_size-1)); break; }
 
 '${':	/${/		{ group = @1; break; }
@@ -36,7 +36,7 @@ Leval:		/eval/
 Lfalse:		/false/
 Lfor:		/for/
 Lforeach:	/foreach/
-Lgrep:		/grep/
+#Lgrep:		/grep/
 Lif:		/if/
 Lin:		/in/
 Lmap:		/map/
@@ -127,7 +127,7 @@ instruction (Node) ::=
 	  control_instruction
 	| switch_instruction
 	| simple_instruction
-	| escid											{ $$ = new SelectNode(null, $escid,@0.line); }
+	| escid											{ $$ = createEscapedId($escid, @0.line); }
 	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint,@0.line), @0.line); }
 	| escdollar										{ $$ = new DollarNode(@0.line); }
 	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset),@0.line); }
@@ -233,7 +233,7 @@ unary_expression (ExpressionNode) ::=
 	| Lmap '(' expression ')' unary_expression		{ $$ = new MapNode(null,$expression,$unary_expression#1,@0.line); }
 	| Lmap '(' expression '->' expression ')' unary_expression		
                                                     { $$ = new MapNode($expression#0,$expression#1,$unary_expression#1,@0.line); }
-	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
+#	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
 	| Lcall '(' template_id expression_listopt ')' unary_expression	
                                                     { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,@0.line); }
 ;
@@ -339,6 +339,18 @@ private void applyElse(CompoundNode node, ArrayList<Node> instructions) {
 		((IfNode)node).setElseInstructions(instructions);
 	} else {
 		error("Unknown else node, instructions skipped");
+	}
+}
+
+private Node createEscapedId(String escid, int line) {
+	int sharp = escid.indexOf('#');
+	if( sharp >= 0 ) {
+		Integer index = new Integer(escid.substring(sharp+1));
+		escid = escid.substring(0, sharp);
+		return new IndexNode(new SelectNode(null,escid,line), new LiteralNode(index,line),line);
+	
+	} else {
+		return new SelectNode(null,escid,line);
 	}
 }
 

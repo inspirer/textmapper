@@ -14,6 +14,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	public AbstractEnvironment(INavigationStrategy.Factory factory) {
 		this.strategies = factory;
+		factory.setEnvironment(this);
 	}
 
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {

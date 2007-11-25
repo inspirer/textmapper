@@ -13,6 +13,7 @@ public interface INavigationStrategy {
 
 
 	public static interface Factory {
+		public void setEnvironment(IEvaluationEnvironment environment);
 		public INavigationStrategy getStrategy(Object o);
 	}
 }

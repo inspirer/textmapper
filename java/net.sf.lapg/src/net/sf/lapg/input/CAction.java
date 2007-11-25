@@ -27,4 +27,9 @@ public class CAction implements Action, ILocatedEntity {
 	int getLine() {
 		return line;
 	}
+
+	@Override
+	public String toString() {
+		return contents;
+	}
 }
