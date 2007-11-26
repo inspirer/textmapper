@@ -16,12 +16,12 @@ public class XmlTest extends TemplateTestCase{
 		TestEnvironment env = new TestEnvironment(new XmlNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp"));
 
 		// test 1
-		String q = env.executeTemplate("loop.xmldo", new EvaluationContext(n), null);
-		Assert.assertEquals("jone\r\ngo\r\n", q);
+		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null);
+		Assert.assertEquals("jone\ngo\n", q);
 		env.assertEmptyErrors();
 
-		q = env.executeTemplate("loop.selectit", new EvaluationContext(n), null);
-		Assert.assertEquals("name=\"jone\"\r\n", q);
+		q = env.executeTemplate("xmltest.selectit", new EvaluationContext(n), null);
+		Assert.assertEquals("name=\"jone\"\n", q);
 		env.assertEmptyErrors();
 	}
 }

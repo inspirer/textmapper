@@ -1,0 +1,9 @@
+${template xmldo-}
+${foreach u in r.first().user-}
+${u['@name'].value}
+${end-}
+${end}
+
+${template selectit-}
+${r.first().user.first()['@name']}
+${end}

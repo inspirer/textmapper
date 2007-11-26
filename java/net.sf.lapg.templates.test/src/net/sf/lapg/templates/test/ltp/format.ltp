@@ -22,15 +22,6 @@ static int a[] {
 
 ${end}
 
-${template assertit-}
-${assert list.length == 2-}
-${assert l == 'a'-}
-${assert list.length > 5-}
-${assert list[0] == 'w1'-}
-${assert list[1] == 'w4'-}
-${assert list[1] == 'w2'-}
-${end}
-
 ${template useCall1-}
 ${this} is mine
 ${end}
@@ -41,17 +32,4 @@ ${end}
 
 ${template useCall3-}
 ${call(useCall1) 'site'-}
-${end}
-
-${template testdollar-}
-$$ is dollar
-${end}
-
-
-${template testdollarindexRoutine-}
-$0-$1-$2
-${end}
-
-${template testdollarindex-}
-${call testdollarindexRoutine for ['ww','yt',7]-}
 ${end}
