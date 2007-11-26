@@ -2542,106 +2542,106 @@ public class pparser {
 					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
 					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 					switch( lapg_i ) {
-						case 24: // literal ::= Licon
+						case 24:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 25: // literal ::= Lfcon
+						case 25:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 26: // literal ::= Lccon
+						case 26:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 27: // literal ::= Lscon
+						case 27:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 28: // literal ::= Ltrue
+						case 28:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 29: // literal ::= Lfalse
+						case 29:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 30: // literal ::= Lnull
+						case 30:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 33: // ID ::= identifier
+						case 33:
 							 lapg_gg.sym = new Node( Kind.Identifier, null, null, null ); break; 
 							break;
-						case 76: // primary_expression_na ::= Lthis
+						case 76:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 77: // primary_expression_na ::= Lbase '.' ID
+						case 77:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 78: // primary_expression_na ::= Lbase '[' expression_list ']'
+						case 78:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 79: // primary_expression_na ::= Ltypeof '(' type ')'
+						case 79:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 80: // primary_expression_na ::= Lchecked '(' expression ')'
+						case 80:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 81: // primary_expression_na ::= Lunchecked '(' expression ')'
+						case 81:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 82: // primary_expression_na ::= Lsizeof '(' type ')'
+						case 82:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 83: // primary_expression_na ::= primary_expression '++'
+						case 83:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 84: // primary_expression_na ::= primary_expression '--'
+						case 84:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 85: // primary_expression_na ::= primary_expression '->' ID
+						case 85:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 86: // primary_expression_na ::= primary_expression '.' ID
+						case 86:
 							 lapg_gg.sym = new Node( Kind.Dot, ((Node)lapg_m[lapg_head-2].sym), null, null ); break; 
 							break;
-						case 87: // primary_expression_na ::= builtin_types '.' ID
+						case 87:
 							 lapg_gg.sym = new Node( Kind.TypeDot, null, null, null ); break; 
 							break;
-						case 90: // primary_expression_na ::= primary_expression '(' argument_listopt ')'
+						case 90:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 91: // primary_expression_na ::= primary_expression_na '[' expression_list ']'
+						case 91:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 92: // primary_expression_na ::= primary_expression_na rank_specifier
-							 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, <several objects> ); break; 
+						case 92:
+							 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, lapg_gg.sym ); break; 
 							break;
-						case 93: // primary_expression_na ::= object_or_delegate_creation_expression
+						case 93:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 98: // new_array_expression ::= Lnew non_array_type '[' expression_list ']' rank_specifiersopt array_initializeropt
+						case 98:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 99: // new_array_expression ::= Lnew array_type array_initializer
+						case 99:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 100: // object_or_delegate_creation_expression ::= Lnew type '(' argument_listopt ')'
+						case 100:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 102: // unary_expression ::= '+' unary_expression
+						case 102:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 103: // unary_expression ::= '-' unary_expression
+						case 103:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 104: // unary_expression ::= '!' unary_expression
+						case 104:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 105: // unary_expression ::= '~' unary_expression
+						case 105:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 106: // unary_expression ::= '++' unary_expression
+						case 106:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 107: // unary_expression ::= '--' unary_expression
+						case 107:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 109: // parenthesized ::= '(' expression ')'
+						case 109:
 							 lapg_gg.sym = ((Node)lapg_m[lapg_head-1].sym);
 		// HACK to resolve Cast ambiguity
 		if( CastExpr(((Node)lapg_m[lapg_head-1].sym),lapg_n) ) {
@@ -2663,76 +2663,76 @@ public class pparser {
 		}
 		break; 
 							break;
-						case 110: // cast_expression ::= parenthesized cast_token unary_expression
+						case 110:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 111: // cast_expression ::= '(' cast_type ')' unary_expression
+						case 111:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 113: // multiplicative_expression ::= multiplicative_expression '*' unary_expression
+						case 113:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 114: // multiplicative_expression ::= multiplicative_expression '/' unary_expression
+						case 114:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 115: // multiplicative_expression ::= multiplicative_expression '%' unary_expression
+						case 115:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 117: // additive_expression ::= additive_expression '+' multiplicative_expression
+						case 117:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 118: // additive_expression ::= additive_expression '-' multiplicative_expression
+						case 118:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 120: // shift_expression ::= shift_expression '<<' additive_expression
+						case 120:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 121: // shift_expression ::= shift_expression '>>' additive_expression
+						case 121:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 123: // relational_expression ::= relational_expression '<' shift_expression
+						case 123:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 124: // relational_expression ::= relational_expression '>' shift_expression
+						case 124:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 125: // relational_expression ::= relational_expression '<=' shift_expression
+						case 125:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 126: // relational_expression ::= relational_expression '>=' shift_expression
+						case 126:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 127: // relational_expression ::= relational_expression Lis type
+						case 127:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 128: // relational_expression ::= relational_expression Las type
+						case 128:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 130: // equality_expression ::= equality_expression '==' relational_expression
+						case 130:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 131: // equality_expression ::= equality_expression '!=' relational_expression
+						case 131:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 133: // and_expression ::= and_expression '&' equality_expression
+						case 133:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 135: // exclusive_or_expression ::= exclusive_or_expression '^' and_expression
+						case 135:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 137: // inclusive_or_expression ::= inclusive_or_expression '|' exclusive_or_expression
+						case 137:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 139: // conditional_and_expression ::= conditional_and_expression '&&' inclusive_or_expression
+						case 139:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 141: // conditional_or_expression ::= conditional_or_expression '||' conditional_and_expression
+						case 141:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 143: // conditional_expression ::= conditional_or_expression '?' expression ':' expression
+						case 143:
 							 lapg_gg.sym = new Node(); break; 
 							break;
-						case 144: // assignment ::= unary_expression assignment_operator expression
+						case 144:
 							 lapg_gg.sym = new Node(); break; 
 							break;
 					}

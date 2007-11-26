@@ -25,7 +25,7 @@ public class CSyntax implements Grammar {
 	private final int myError;
 	private final int myTerms;
 
-	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String,String> options, List<CLexem> lexems) {
+	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String,String> options, List<CLexem> lexems, String templates) {
 		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
 		this.rules = rules.toArray(new CRule[rules.size()]);
 		this.prios = prios.toArray(new CPrio[prios.size()]);

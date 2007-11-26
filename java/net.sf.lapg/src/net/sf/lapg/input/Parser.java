@@ -127,8 +127,9 @@ public class Parser {
 				return new CSyntax(p.errors);
 			}
 			p.getSymbol(CSyntax.INPUT, 1);
-		
-			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems);
+			
+			String templates = p.l < p.buff.length ? new String(p.buff,p.l,p.buff.length-p.l,"utf-8") : null;
+			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);
 		} catch( UnsupportedEncodingException ex ) {
 			return null;
 		}

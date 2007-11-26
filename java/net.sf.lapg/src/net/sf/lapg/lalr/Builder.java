@@ -141,11 +141,11 @@ public class Builder extends Lalr1 {
 	{
 		int i, cgroup, assoc = -1, rule_group = -1, next_group = -1, nextassoc = -1;
 
-		if( nprio == 0 ) {
+		if( priorul.length == 0 ) {
 			return 0;
 		}
 
-		for( cgroup = i = 0; i < nprio; i++ ) {
+		for( cgroup = i = 0; i < priorul.length; i++ ) {
 			if( priorul[i] < 0 ) {
 				assoc = -priorul[i];
 				cgroup++;

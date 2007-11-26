@@ -7,7 +7,7 @@ import java.util.Iterator;
 import net.sf.lapg.IError;
 
 public class RegexpParser {
-	
+
 	private IError err;
 
 	// result
@@ -18,7 +18,7 @@ public class RegexpParser {
 	private int[] sym;
 	private int[] stack;
 	private int[] set;
-	
+
 	public RegexpParser(IError err) {
 		this.err = err;
 		this.sym = new int[LexConstants.MAX_ENTRIES];
@@ -58,8 +58,9 @@ public class RegexpParser {
 
 	private int storeSet() {
 		int[] newSet = new int[LexConstants.SIZE_SYM];
-		for( int i = 0; i < LexConstants.SIZE_SYM; i++ )
+		for( int i = 0; i < LexConstants.SIZE_SYM; i++ ) {
 			newSet[i] = set[i];
+		}
 		int setIndex = setpool.size() * LexConstants.SIZE_SYM;
 		setpool.add(newSet);
 		return setIndex;
@@ -72,125 +73,129 @@ public class RegexpParser {
 		int i, e;
 		boolean invert = false;
 
-		switch( re[index] ) {
-			case '(': 
-				index++; 
-				return LexConstants.LBR;
+		switch (re[index]) {
+		case '(':
+			index++;
+			return LexConstants.LBR;
 
-			case ')': 
-				index++; 
-				return LexConstants.RBR;
+		case ')':
+			index++;
+			return LexConstants.RBR;
 
-			case '|': 
-				index++; 
-				return LexConstants.OR;
+		case '|':
+			index++;
+			return LexConstants.OR;
 
-			case '.':
-				index++; 
-				symbols[('\n')/LexConstants.BITS] |= (1<<(('\n')%LexConstants.BITS));
-				return LexConstants.ANY;
+		case '.':
+			index++;
+			symbols[('\n') / LexConstants.BITS] |= (1 << (('\n') % LexConstants.BITS));
+			return LexConstants.ANY;
 
-			case '[':
+		case '[':
+			index++;
+			invert = index < re.length && re[index] == '^';
+			if (invert) {
 				index++;
-				invert = index < re.length && re[index] == '^';
-				if( invert ) { 
-					index++; 
-				}
+			}
 
-				Arrays.fill( set, 0);
-				
-				while( index < re.length && re[index] != ']' ) {
-					i = re[index];
-					if( i == '\\' ) {
+			Arrays.fill(set, 0);
+
+			while (index < re.length && re[index] != ']') {
+				i = re[index];
+				if (i == '\\') {
+					index++;
+					if (index >= re.length) {
+						err.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
+						return -1;
+					}
+					// TODO accept \xfa
+					i = escape(re[index]);
+				}
+				set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+				index++;
+				if (index + 1 < re.length && re[index] == '-' && re[index + 1] != ']') {
+					e = re[++index];
+					if (e == '\\') {
 						index++;
-						if( index >= re.length ) {
-							err.error( "lex: \\ found at the end of expression: /"+regexp+"/\n" );
+						if (index >= re.length) {
+							err.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
 							return -1;
 						}
-						i = escape( re[index] );
+						// TODO accept \xfa
+						e = escape(re[index]);
 					}
-					set[(i)/LexConstants.BITS] |= (1<<((i)%LexConstants.BITS));
-					index++;
-					if( index+1 < re.length && re[index] == '-' ) {
-						index++;
-						e = re[index];
-						if( e != ']' ) {
-							if( e == '\\' ) {
-								index++;
-								if( index >= re.length ) {
-									err.error( "lex: \\ found at the end of expression: /"+regexp+"/\n" );
-									return -1;
-								}
-								e = escape( re[index] );
-							}
 
-							if( e > i )
-								for( i++; i <= e; i++ )
-									set[(i)/LexConstants.BITS] |= (1<<((i)%LexConstants.BITS));
-							else 
-								for( i--; i >= e; i-- )
-									set[(i)/LexConstants.BITS] |= (1<<((i)%LexConstants.BITS));
-
-							index++;
-						} else {
-							index--;
+					if (e > i) {
+						for (i++; i <= e; i++) {
+							set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+						}
+					} else {
+						for (i--; i >= e; i--) {
+							set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
 						}
 					}
+
+					index++;
 				}
+			}
 
-				if( index >= re.length ) {
-					err.error( "lex: enclosing square bracket not found: /"+regexp+"/\n" );
-					return -1;
+			if (index >= re.length) {
+				err.error("lex: enclosing square bracket not found: /" + regexp + "/\n");
+				return -1;
+			}
+
+			for (i = 0; i < LexConstants.SIZE_SYM; i++) {
+				symbols[i] |= set[i];
+			}
+
+			if (invert) {
+				for (i = 0; i < LexConstants.SIZE_SYM; i++) {
+					set[i] = ~set[i];
 				}
+				set[(0) / LexConstants.BITS] &= ~(1 << ((0) % LexConstants.BITS));
+			}
 
-				for( i = 0; i < LexConstants.SIZE_SYM; i++ )
-					symbols[i] |= set[i];
+			index++;
+			return storeSet();
 
-				if( invert ) {
-					for( i = 0; i < LexConstants.SIZE_SYM; i++ )
-						set[i] = ~set[i];
-					set[(0)/LexConstants.BITS] &= ~(1<<((0)%LexConstants.BITS));
-				}
+		case '\\':
+			index++;
+			if (index >= re.length) {
+				err.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
+				return -1;
+			}
+			// TODO support \xfa, \u6789
+			i = escape(re[index]);
+			symbols[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+			index++;
+			return i | LexConstants.SYM;
 
-				index++;
-				return storeSet();
-
-			case '\\':
-				index++;
-				if( index >= re.length ) {
-					err.error( "lex: \\ found at the end of expression: /"+regexp+"/\n" );
-					return -1;
-				}
-				i = escape( re[index] );
-				symbols[(i)/LexConstants.BITS] |= (1<<((i)%LexConstants.BITS));
-				index++; 
-				return i|LexConstants.SYM;
-
-			default:
-				i = re[index];
-				symbols[(i)/LexConstants.BITS] |= (1<<((i)%LexConstants.BITS));
-				index++;
-				return i|LexConstants.SYM;
+		default:
+			i = re[index];
+			// TODO support i > 256 (encode as utf-8)
+			symbols[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+			index++;
+			return i | LexConstants.SYM;
 		}
 	}
-	
+
 	/**
 	 * @return Engine representation of regular expression
 	 */
 	public int[] compile(int number, String name, String regexp) {
-		
+
 		int length = 0, deep = 1;
 		boolean addbrackets = false;
 
 		this.index = 0;
 		this.regexp = regexp;
 		this.re = this.regexp.toCharArray();
-		
+
 		if( re.length == 0 ) {
 			err.error( "lex: regexp for `"+name+"' does not contain symbols\n" );
 			return null;
 		}
-		
+
 		while( index < re.length ) {
 			if( length > LexConstants.MAX_ENTRIES-5 ) {
 				err.error( "lex: regexp for `"+name+"' is too long: /"+regexp+"/\n" );
@@ -209,7 +214,7 @@ public class RegexpParser {
 					break;
 				case LexConstants.OR:
 					if( deep == 1 ) {
-						addbrackets = true; 
+						addbrackets = true;
 					}
 					break;
 				case LexConstants.RBR:
@@ -226,8 +231,9 @@ public class RegexpParser {
 							case '*': sym[length] |= 2<<29; break;
 							case '?': sym[length] |= 3<<29; break;
 						}
-						if( re[index] != '?' ) 
+						if( re[index] != '?' ) {
 							sym[++length] = LexConstants.SPL;
+						}
 						index++;
 					}
 					break;
@@ -237,14 +243,14 @@ public class RegexpParser {
 			length++;
 		}
 
-		if( deep != 1 ) { 
+		if( deep != 1 ) {
 			err.error( "lex: error in `"+name+"', wrong parantheses: /"+regexp+"/\n");
 			return null;
 		}
 
 		int e;
 		if( addbrackets ) {
-			for( e = 0; e < length; e++ ) { 
+			for( e = 0; e < length; e++ ) {
 				if( (sym[e]&LexConstants.MASK) == LexConstants.LBR ) {
 					sym[e] = (sym[e]&~0xffff) | ((sym[e]&0xffff)+1);
 				}
@@ -257,11 +263,13 @@ public class RegexpParser {
 
 		e = 0;
 		int[] result = new int[length + (addbrackets ? 1 : 0)];
-		if( addbrackets )
+		if( addbrackets ) {
 			result[e++] = LexConstants.LBR|(length-1);
-		for( int i = 0; i < length; i++, e++ )
+		}
+		for( int i = 0; i < length; i++, e++ ) {
 			result[e] = sym[i];
-		
+		}
+
 		return result;
 	}
 
@@ -271,13 +279,14 @@ public class RegexpParser {
 	public int[] getSetpool() {
 		int[] result = new int[setpool.size() * LexConstants.SIZE_SYM];
 		int e = 0;
-		
+
 		for( Iterator<int[]> it = setpool.iterator(); it.hasNext(); ) {
 			int[] from = it.next();
-			for( int i = 0; i < LexConstants.SIZE_SYM; i++)
+			for( int i = 0; i < LexConstants.SIZE_SYM; i++) {
 				result[e++] = from[i];
+			}
 		}
-		
+
 		return result;
 	}
 

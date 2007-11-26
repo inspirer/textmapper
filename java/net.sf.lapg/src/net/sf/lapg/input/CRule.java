@@ -5,8 +5,9 @@ import java.util.List;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.api.INamedEntity;
 
-public class CRule implements ILocatedEntity, Rule {
+public class CRule implements ILocatedEntity, INamedEntity, Rule {
 
 	private CSymbol left;
 	private final CSymbol[] right;
@@ -83,5 +84,9 @@ public class CRule implements ILocatedEntity, Rule {
 			sb.append(priority.getName());
 		}
 		return sb.toString();
+	}
+
+	public String getTitle() {
+		return "Rule `" + toString() + "`";
 	}
 }

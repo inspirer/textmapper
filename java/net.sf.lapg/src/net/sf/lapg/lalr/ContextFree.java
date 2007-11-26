@@ -53,8 +53,6 @@ abstract class ContextFree {
 		this.situations = getSituations(g.getRules());
 
 		this.priorul = getPriorityRules(g.getPriorities());
-		this.nprio = this.priorul.length;
-
 
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];
@@ -90,7 +88,7 @@ abstract class ContextFree {
 	// grammar information
 
 	protected final int nsyms, nterms, input, eoi, errorn;
-	protected final int rules, situations, nprio;
+	protected final int rules, situations;
 	protected final Symbol[] sym;
 	protected final int[] priorul;
 	protected final int[] rleft, rindex, rright, rprio;

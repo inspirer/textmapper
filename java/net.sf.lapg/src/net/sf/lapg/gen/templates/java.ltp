@@ -150,7 +150,7 @@ ${if syntax.hasActions()-}
 					switch( lapg_i ) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction()-}
-						case ${rule.getIndex()}: // ${rule}
+						case ${rule.getIndex()}:
 							${call parserAction for rule-}
 ${if opts.breaks == 'on'}							break;$/
 ${end-}
@@ -307,7 +307,7 @@ ${end}
 ${end}
 
 ${template parserAction-}
-${eval getAction()}
+${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
 

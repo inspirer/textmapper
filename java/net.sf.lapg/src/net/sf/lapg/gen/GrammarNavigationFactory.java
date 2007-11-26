@@ -44,7 +44,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
 			Rule rule = (Rule) obj;
-			SymbolList result = new SymbolList();
+			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
 			if( rule.getLeft().getName().equals(id)) {
 				result.add(new ActionSymbol(rule.getLeft(), true, 0, environment, templatePackage));
 			}
@@ -65,14 +65,4 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			throw new EvaluationException("do not know symbol `"+id+"`");
 		}
 	};
-
-	private static class SymbolList extends ArrayList<ActionSymbol> {
-		private static final long serialVersionUID = 1176522415409277309L;
-
-		@Override
-		public String toString() {
-			// TODO some runtime exception
-			return "<several objects>";
-		}
-	}
 }

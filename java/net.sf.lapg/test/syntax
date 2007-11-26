@@ -336,7 +336,7 @@ primary_expression_na (Node) ::=
   | builtin_types '.' ID								{ $$ = new Node( Kind.TypeDot, null, null, null ); break; }
   | primary_expression '(' argument_listopt ')'         { $$ = new Node(); break; }
   | primary_expression_na '[' expression_list ']'       { $$ = new Node(); break; }
-  | primary_expression_na rank_specifier				{ $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na ); break; }
+  | primary_expression_na rank_specifier				{ $$ = new Node( Kind.DimmedExpr, null, null, $primary_expression_na#0 ); break; }
   | object_or_delegate_creation_expression				{ $$ = new Node(); break; }
 ;
 
