@@ -8,8 +8,8 @@ public class AssertNode extends Node {
 
 	private ExpressionNode expr;
 
-	public AssertNode(ExpressionNode expr, int line) {
-		super(line);
+	public AssertNode(ExpressionNode expr, String input, int line) {
+		super(input, line);
 		this.expr = expr;
 	}
 

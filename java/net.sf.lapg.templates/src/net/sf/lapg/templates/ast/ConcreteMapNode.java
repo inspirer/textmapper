@@ -11,8 +11,8 @@ public class ConcreteMapNode extends ExpressionNode {
 
 	private HashMap<ExpressionNode,ExpressionNode> fields;
 
-	public ConcreteMapNode(HashMap<ExpressionNode,ExpressionNode> fields, int line) {
-		super(line);
+	public ConcreteMapNode(HashMap<ExpressionNode,ExpressionNode> fields, String input, int line) {
+		super(input, line);
 		this.fields = fields;
 	}
 

@@ -1,5 +1,7 @@
 package net.sf.lapg.templates.api.impl;
 
+import java.util.Collection;
+
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationEnvironment;
@@ -39,6 +41,16 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 			return ((String)o).trim().length() > 0;
 		}
 		return o != null;
+	}
+
+	public String toString(Object o, ExpressionNode referer) throws EvaluationException {
+		if( o instanceof Collection || o instanceof Object[] ) {
+			String message = "Evaluation of `"+referer.toString()+"` results in collection, cannot convert to String";
+			EvaluationException ex = new HandledEvaluationException(message);
+			fireError(referer, message);
+			throw ex;
+		}
+		return o.toString();
 	}
 
 	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException {

@@ -7,8 +7,8 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class CompoundNode extends Node {
 
-	protected CompoundNode(int line) {
-		super(line);
+	protected CompoundNode(String input, int line) {
+		super(input, line);
 	}
 
 	protected ArrayList<Node> instructions;

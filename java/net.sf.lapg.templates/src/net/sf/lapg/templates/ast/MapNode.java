@@ -14,8 +14,8 @@ public class MapNode extends ExpressionNode {
 	private final ExpressionNode targetValue;
 	private final ExpressionNode sourceList;
 
-	public MapNode(ExpressionNode targetKey, ExpressionNode targetValue, ExpressionNode sourceList, int line) {
-		super(line);
+	public MapNode(ExpressionNode targetKey, ExpressionNode targetValue, ExpressionNode sourceList, String input, int line) {
+		super(input, line);
 		this.targetKey = targetKey;
 		this.targetValue = targetValue;
 		this.sourceList = sourceList;

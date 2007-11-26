@@ -6,8 +6,8 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class DollarNode extends Node {
 
-	protected DollarNode(int line) {
-		super(line);
+	protected DollarNode(String input, int line) {
+		super(input, line);
 	}
 
 	@Override

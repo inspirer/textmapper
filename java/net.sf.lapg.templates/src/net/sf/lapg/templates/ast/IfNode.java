@@ -10,8 +10,8 @@ public class IfNode extends CompoundNode {
 	private ExpressionNode select;
 	private ArrayList<Node> elseInstructions;
 
-	public IfNode(ExpressionNode select, int line) {
-		super(line);
+	public IfNode(ExpressionNode select, String input, int line) {
+		super(input, line);
 		this.select = select;
 	}
 

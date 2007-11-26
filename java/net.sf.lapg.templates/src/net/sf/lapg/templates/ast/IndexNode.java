@@ -10,8 +10,8 @@ public class IndexNode extends ExpressionNode {
 	private ExpressionNode objectExpr;
 	private ExpressionNode indexExpr;
 
-	public IndexNode(ExpressionNode objectExpr, ExpressionNode index, int line) {
-		super(line);
+	public IndexNode(ExpressionNode objectExpr, ExpressionNode index, String input, int line) {
+		super(input, line);
 		this.objectExpr = objectExpr;
 		this.indexExpr = index;
 	}
@@ -26,7 +26,11 @@ public class IndexNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		objectExpr.toString(sb);
+		if( objectExpr == null ) {
+			sb.append("this");
+		} else {
+			objectExpr.toString(sb);
+		}
 		sb.append("[");
 		indexExpr.toString(sb);
 		sb.append("]");

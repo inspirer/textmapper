@@ -11,8 +11,8 @@ public class TriplexNode extends ExpressionNode {
 	private final ExpressionNode thennode;
 	private final ExpressionNode condition;
 
-	protected TriplexNode(ExpressionNode condition, ExpressionNode thennode, ExpressionNode elsenode, int line) {
-		super(line);
+	protected TriplexNode(ExpressionNode condition, ExpressionNode thennode, ExpressionNode elsenode, String input, int line) {
+		super(input, line);
 		this.condition = condition;
 		this.thennode = thennode;
 		this.elsenode = elsenode;

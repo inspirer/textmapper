@@ -98,7 +98,7 @@ template_declaration_or_space ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate identifier template_parametersopt '[-]}'
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage,@0.line); }
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage,inputName, @0.line); }
 ;
 
 template_parameters (ArrayList) ::=
@@ -128,9 +128,9 @@ instruction (Node) ::=
 	| switch_instruction
 	| simple_instruction
 	| escid											{ $$ = createEscapedId($escid, @0.line); }
-	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint,@0.line), @0.line); }
-	| escdollar										{ $$ = new DollarNode(@0.line); }
-	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset),@0.line); }
+	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint,inputName, @0.line), inputName, @0.line); }
+	| escdollar										{ $$ = new DollarNode(inputName, @0.line); }
+	| any											{ $$ = new TextNode(rawText(@0.offset,@~0.offset),inputName, @0.line); }
 ;
 
 simple_instruction (Node) ::=
@@ -139,9 +139,13 @@ simple_instruction (Node) ::=
 
 sentence (Node) ::=
 	  expression
-	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage,@0.line); }
-	| Leval expression								{ $$ = new EvalNode($expression,@0.line); }
-	| Lassert expression							{ $$ = new AssertNode($expression,@0.line); }
+	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage,inputName, @0.line); }
+	| Leval expression comma_expropt				{ $$ = new EvalNode($expression,$comma_expropt,inputName,@0.line); }
+	| Lassert expression							{ $$ = new AssertNode($expression,inputName,@0.line); }
+;
+
+comma_expr (ExpressionNode) ::=
+	',' expression									{ $$ = $expression; }
 ;
 
 template_id (String) ::=
@@ -169,7 +173,7 @@ else_node (ElseNode) ::=
 
 switch_instruction (CompoundNode) ::=
 	'${' Lswitch expression '[-]}' anyopt 
-           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,@0.line); checkIsSpace(@4.offset,@~4.offset); }
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,inputName, @0.line); checkIsSpace(@4.offset,@~4.offset); }
 ;
 
 case_list (ArrayList) ::=
@@ -179,16 +183,16 @@ case_list (ArrayList) ::=
 ;
 
 one_case (CaseNode) ::=
-	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression,@0.line); } 
+	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression,inputName, @0.line); } 
 ;
 
 control_start (CompoundNode) ::=
 	'${' control_sentence '[-]}' 					{ $$ = $1; } ;
 
 control_sentence (CompoundNode) ::=
-	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression,@0.line); }
-	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1,@0.line); }
-	| Lif Lnotopt expression						{ $$ = new IfNode($expression,@0.line); }
+	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression,inputName, @0.line); }
+	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1,inputName, @0.line); }
+	| Lif Lnotopt expression						{ $$ = new IfNode($expression,inputName, @0.line); }
 ;
 
 control_end ::=
@@ -197,23 +201,23 @@ control_end ::=
 ;
 
 primary_expression (ExpressionNode) ::=
-  	  identifier									{ $$ = new SelectNode(null, $identifier,@0.line); }
+  	  identifier									{ $$ = new SelectNode(null, $identifier,inputName, @0.line); }
     | '(' expression ')'							{ $$ = $1; }
-	| icon 											{ $$ = new LiteralNode($0,@0.line); }
-	| bcon                                          { $$ = new LiteralNode($0,@0.line); }
-	| ccon 											{ $$ = new LiteralNode($0,@0.line); }
-  	| Lthis											{ $$ = new ThisNode(@0.line); }
-  	| Lnull											{ $$ = new LiteralNode(null, @0.line); }
-    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt,@0.line); }
-    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier,@0.line); }
-    | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,@0.line); }
-    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,@0.line); }
+	| icon 											{ $$ = new LiteralNode($0,inputName, @0.line); }
+	| bcon                                          { $$ = new LiteralNode($0,inputName, @0.line); }
+	| ccon 											{ $$ = new LiteralNode($0,inputName, @0.line); }
+  	| Lthis											{ $$ = new ThisNode(inputName, @0.line); }
+  	| Lnull											{ $$ = new LiteralNode(null, inputName, @0.line); }
+    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt,inputName, @0.line); }
+    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier,inputName, @0.line); }
+    | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,inputName, @0.line); }
+    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,inputName, @0.line); }
     | complex_data
 ;
 
 complex_data (ExpressionNode) ::=
-	'[' expression_listopt ']'						{ $$ = new ListNode($expression_listopt,@0.line); }
-    | '[' map_entries ']'							{ $$ = new ConcreteMapNode($map_entries,@0.line); }
+	'[' expression_listopt ']'						{ $$ = new ListNode($expression_listopt,inputName, @0.line); }
+    | '[' map_entries ']'							{ $$ = new ConcreteMapNode($map_entries,inputName, @0.line); }
  ;
 
 map_entries (HashMap<ExpressionNode,ExpressionNode>) ::=
@@ -228,57 +232,57 @@ bcon (Boolean) ::=
 
 unary_expression (ExpressionNode) ::=
 	primary_expression
-	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression#1,@0.line); }
-	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1,@0.line); }
-	| Lmap '(' expression ')' unary_expression		{ $$ = new MapNode(null,$expression,$unary_expression#1,@0.line); }
+	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression#1,inputName, @0.line); }
+	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1,inputName, @0.line); }
+	| Lmap '(' expression ')' unary_expression		{ $$ = new MapNode(null,$expression,$unary_expression#1,inputName, @0.line); }
 	| Lmap '(' expression '->' expression ')' unary_expression		
-                                                    { $$ = new MapNode($expression#0,$expression#1,$unary_expression#1,@0.line); }
+                                                    { $$ = new MapNode($expression#0,$expression#1,$unary_expression#1,inputName, @0.line); }
 #	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
 	| Lcall '(' template_id expression_listopt ')' unary_expression	
-                                                    { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,@0.line); }
+                                                    { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,inputName, @0.line); }
 ;
 
 mult_expression (ExpressionNode) ::=
 	unary_expression
-	| mult_expression '*' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $mult_expression, $unary_expression,@0.line); }
-	| mult_expression '/' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $mult_expression, $unary_expression,@0.line); }
-	| mult_expression '%' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.REM, $mult_expression, $unary_expression,@0.line); }
+	| mult_expression '*' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $mult_expression, $unary_expression,inputName, @0.line); }
+	| mult_expression '/' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $mult_expression, $unary_expression,inputName, @0.line); }
+	| mult_expression '%' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.REM, $mult_expression, $unary_expression,inputName, @0.line); }
 ;
 
 additive_expression (ExpressionNode) ::=
 	mult_expression
-	| additive_expression '+' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $additive_expression, $mult_expression,@0.line); }
-	| additive_expression '-' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $additive_expression, $mult_expression,@0.line); }
+	| additive_expression '+' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $additive_expression, $mult_expression,inputName, @0.line); }
+	| additive_expression '-' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $additive_expression, $mult_expression,inputName, @0.line); }
 ;
 
 
 relational_expression (ExpressionNode) ::=
       additive_expression
-    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $additive_expression,@0.line); }
-    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $additive_expression,@0.line); }
-    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $additive_expression,@0.line); }
-    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $additive_expression,@0.line); }
+    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression, $additive_expression,inputName, @0.line); }
+    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression, $additive_expression,inputName, @0.line); }
+    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression, $additive_expression,inputName, @0.line); }
+    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression, $additive_expression,inputName, @0.line); }
 ;
 
 equality_expression (ExpressionNode) ::=
       relational_expression
-    | equality_expression '==' relational_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression, $relational_expression,@0.line); }
-    | equality_expression '!=' relational_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression, $relational_expression,@0.line); }
+    | equality_expression '==' relational_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression, $relational_expression,inputName, @0.line); }
+    | equality_expression '!=' relational_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression, $relational_expression,inputName, @0.line); }
 ;
 
 conditional_and_expression (ExpressionNode) ::=
       equality_expression
-    | conditional_and_expression '&&' equality_expression { $$ = new ConditionalNode(ConditionalNode.AND, $conditional_and_expression, $equality_expression,@0.line); }
+    | conditional_and_expression '&&' equality_expression { $$ = new ConditionalNode(ConditionalNode.AND, $conditional_and_expression, $equality_expression,inputName, @0.line); }
 ;
 
 conditional_or_expression (ExpressionNode) ::=
       conditional_and_expression
-    | conditional_or_expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_or_expression, $conditional_and_expression,@0.line); }
+    | conditional_or_expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_or_expression, $conditional_and_expression,inputName, @0.line); }
 ;
 
 expression (ExpressionNode) ::=
     conditional_or_expression
-  | conditional_or_expression '?' expression ':' expression		{ $$ = new TriplexNode($conditional_or_expression, $expression#1, $expression#2, @0.line); }
+  | conditional_or_expression '?' expression ':' expression		{ $$ = new TriplexNode($conditional_or_expression, $expression#1, $expression#2, inputName, @0.line); }
 ;
 
 
@@ -306,9 +310,10 @@ public Parser() {
 
 private static final boolean DEBUG_SYNTAX = false;
 
-int killEnds = -1;
-byte[] buff;
-int l;
+private String inputName;
+private int killEnds = -1;
+private byte[] buff;
+private int l;
 
 private String rawText(int start, int end) {
 	if( killEnds == start ) {
@@ -347,10 +352,10 @@ private Node createEscapedId(String escid, int line) {
 	if( sharp >= 0 ) {
 		Integer index = new Integer(escid.substring(sharp+1));
 		escid = escid.substring(0, sharp);
-		return new IndexNode(new SelectNode(null,escid,line), new LiteralNode(index,line),line);
+		return new IndexNode(new SelectNode(null,escid,inputName,line), new LiteralNode(index,inputName,line),inputName,line);
 	
 	} else {
-		return new SelectNode(null,escid,line);
+		return new SelectNode(null,escid,inputName,line);
 	}
 }
 
@@ -362,9 +367,10 @@ void error( String s ) {
 	System.err.println(s);
 }
 
-public boolean parse(String s, String templatePackage) {
+public boolean parse(String s, String templatePackage, String inputName) {
 	l = 0;
 	this.templatePackage = templatePackage;
+	this.inputName = inputName;
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.getBytes("utf-8");

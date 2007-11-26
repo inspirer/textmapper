@@ -12,8 +12,8 @@ public class MethodCallNode extends ExpressionNode {
 	private String methodName;
 	private ExpressionNode[] arguments;
 
-	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments, int line) {
-		super(line);
+	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments, String input, int line) {
+		super(input, line);
 		this.objectExpr = objectExpr;
 		this.methodName = methodName;
 		this.arguments = arguments != null && arguments.size() > 0 ? (ExpressionNode[]) arguments

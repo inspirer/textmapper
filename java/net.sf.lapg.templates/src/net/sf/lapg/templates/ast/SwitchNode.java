@@ -11,8 +11,8 @@ public class SwitchNode extends Node {
 	ArrayList<CaseNode> cases;
 	ExpressionNode expression;
 
-	public SwitchNode(ExpressionNode expression, ArrayList<CaseNode> cases, int line) {
-		super(line);
+	public SwitchNode(ExpressionNode expression, ArrayList<CaseNode> cases, String input, int line) {
+		super(input, line);
 		this.expression = expression;
 		this.cases = cases;
 	}

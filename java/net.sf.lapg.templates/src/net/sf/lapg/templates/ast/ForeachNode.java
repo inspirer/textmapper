@@ -12,15 +12,12 @@ public class ForeachNode extends CompoundNode {
 	private String var;
 	private ExpressionNode selectExpr, targetExpr;
 
-	public ForeachNode(String var, ExpressionNode selectExpr, int line) {
-		super(line);
-		this.var = var;
-		this.selectExpr = selectExpr;
-		this.targetExpr = null;
+	public ForeachNode(String var, ExpressionNode selectExpr, String input, int line) {
+		this(var, selectExpr, null, input, line);
 	}
 
-	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, int line) {
-		super(line);
+	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, String input, int line) {
+		super(input, line);
 		this.var = var;
 		this.selectExpr = selectExpr;
 		this.targetExpr = targetExpr;

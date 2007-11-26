@@ -14,8 +14,8 @@ public class UnaryExpression extends ExpressionNode {
 	private int kind;
 	private ExpressionNode expr;
 
-	public UnaryExpression(int kind, ExpressionNode expr, int line) {
-		super(line);
+	public UnaryExpression(int kind, ExpressionNode expr, String input, int line) {
+		super(input, line);
 		this.kind = kind;
 		this.expr = expr;
 	}

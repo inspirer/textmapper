@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class CaseNode extends CompoundNode {
 	ExpressionNode caseExpr;
 
-	public CaseNode(ExpressionNode caseExpr, int line) {
-		super(line);
+	public CaseNode(ExpressionNode caseExpr, String input, int line) {
+		super(input, line);
 		this.caseExpr = caseExpr;
 	}
 

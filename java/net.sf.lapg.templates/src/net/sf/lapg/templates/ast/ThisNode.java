@@ -5,8 +5,8 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class ThisNode extends ExpressionNode {
 
-	protected ThisNode(int line) {
-		super(line);
+	protected ThisNode(String input, int line) {
+		super(input, line);
 	}
 
 	@Override

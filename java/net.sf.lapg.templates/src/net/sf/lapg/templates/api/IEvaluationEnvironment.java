@@ -8,11 +8,12 @@ public interface IEvaluationEnvironment {
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException;
 	public Object getByIndex(Object obj, Object index) throws EvaluationException;
 	public boolean toBoolean(Object o) throws EvaluationException;
+	public String toString(Object o, ExpressionNode referer) throws EvaluationException;
 
 	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
 	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments);
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments);
-	public String evaluateTemplate(ILocatedEntity referer, String template, EvaluationContext context);
+	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
 
 	public String getTitle(Object object);
 

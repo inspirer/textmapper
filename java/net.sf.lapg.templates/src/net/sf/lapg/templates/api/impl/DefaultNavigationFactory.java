@@ -3,6 +3,7 @@ package net.sf.lapg.templates.api.impl;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
@@ -115,7 +116,12 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			throw new EvaluationException("do not know how to calculate index");
+			ArrayList<?> array = (ArrayList<?>)obj;
+			if( index instanceof Integer ) {
+				return array.get((Integer)index);
+			} else {
+				throw new EvaluationException("index object should be integer");
+			}
 		}
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
@@ -145,7 +151,11 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			Object[] array = (Object[])obj;
 			if( index instanceof Integer ) {
-				return array[(Integer)index];
+				int i = (Integer)index;
+				if( i < 0 || i >= array.length ) {
+					throw new EvaluationException(i + " is out of 0.." + (array.length-1));
+				}
+				return array[i];
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}

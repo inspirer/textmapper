@@ -54,7 +54,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 			return null;
 		}
 
-		ITemplate[] loaded = loadTemplates(contents, templatePackage);
+		ITemplate[] loaded = loadTemplates(contents, templatePackage, templatePackage + ITemplateLoader.CONTAINER_EXT);
 		if( loaded == null || loaded.length == 0 ) {
 			fireError(referer, "Couldn't get templates from package " + templatePackage);
 			return null;
@@ -96,10 +96,10 @@ public class TemplateEnvironment extends AbstractEnvironment {
 		}
 	}
 
-	public String evaluateTemplate(ILocatedEntity referer, String template, EvaluationContext context) {
+	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
 
 		// TODO replace hack with normal parser
-		ITemplate[] loaded = loadTemplates("${template temp}"+template+"${end}", "temp");
+		ITemplate[] loaded = loadTemplates("${template temp}"+template+"${end}", "temp", templateId != null ? templateId : referer.getLocation());
 		ITemplate t = ( loaded != null && loaded.length == 1 && loaded[0].getName().equals("temp") ) ? loaded[0] : null;
 		if( t == null ) {
 			return "";
@@ -112,9 +112,9 @@ public class TemplateEnvironment extends AbstractEnvironment {
 		}
 	}
 
-	private static ITemplate[] loadTemplates(String templates, String templatePackage) {
+	private static ITemplate[] loadTemplates(String templates, String templatePackage, String inputName) {
 		Parser p = new Parser();
-		if( !p.parse(templates, templatePackage) ) {
+		if( !p.parse(templates, templatePackage, inputName) ) {
 			return new ITemplate[0];
 		}
 		return p.getResult();

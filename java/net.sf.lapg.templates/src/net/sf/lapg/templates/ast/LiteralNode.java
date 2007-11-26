@@ -8,8 +8,8 @@ public class LiteralNode extends ExpressionNode {
 
 	private Object literal;
 
-	public LiteralNode(Object literal, int line) {
-		super(line);
+	public LiteralNode(Object literal, String input, int line) {
+		super(input, line);
 		this.literal = literal;
 	}
 

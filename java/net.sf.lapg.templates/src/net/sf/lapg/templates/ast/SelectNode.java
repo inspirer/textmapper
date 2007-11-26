@@ -9,8 +9,8 @@ public class SelectNode extends ExpressionNode {
 	private ExpressionNode objectExpr;
 	private String identifier;
 
-	public SelectNode(ExpressionNode objectExpr, String identifier, int line) {
-		super(line);
+	public SelectNode(ExpressionNode objectExpr, String identifier, String input, int line) {
+		super(input, line);
 		this.objectExpr = objectExpr;
 		this.identifier = identifier;
 	}

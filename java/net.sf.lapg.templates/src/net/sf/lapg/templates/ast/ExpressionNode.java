@@ -6,14 +6,14 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public abstract class ExpressionNode extends Node {
 
-	protected ExpressionNode(int line) {
-		super(line);
+	protected ExpressionNode(String input, int line) {
+		super(input, line);
 	}
 
 	@Override
 	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
 		try {
-			sb.append(env.evaluate(this, context, false).toString());
+			sb.append(env.toString(env.evaluate(this, context, false), this));
 		} catch( EvaluationException ex ) {
 		}
 	}

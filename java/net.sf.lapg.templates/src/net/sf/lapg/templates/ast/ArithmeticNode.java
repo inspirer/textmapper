@@ -19,8 +19,8 @@ public class ArithmeticNode extends ExpressionNode {
 	private ExpressionNode leftExpr;
 	private ExpressionNode rightExpr;
 
-	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right, int line) {
-		super(line);
+	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right, String input, int line) {
+		super(input, line);
 		this.kind = kind;
 		this.leftExpr = left;
 		this.rightExpr = right;

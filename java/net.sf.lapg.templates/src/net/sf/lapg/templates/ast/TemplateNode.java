@@ -12,8 +12,8 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	private String[] parameters;
 	private String templatePackage;
 
-	public TemplateNode(String name, List<String> parameters, String templatePackage, int line) {
-		super(line);
+	public TemplateNode(String name, List<String> parameters, String templatePackage, String input, int line) {
+		super(input, line);
 		this.name = name;
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
 		this.templatePackage = templatePackage;

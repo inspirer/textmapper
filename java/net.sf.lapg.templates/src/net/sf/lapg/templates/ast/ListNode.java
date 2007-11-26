@@ -10,8 +10,8 @@ public class ListNode extends ExpressionNode {
 
 	private ExpressionNode[] expressions;
 
-	public ListNode(List<ExpressionNode> expressions, int line) {
-		super(line);
+	public ListNode(List<ExpressionNode> expressions, String input, int line) {
+		super(input, line);
 		this.expressions = expressions != null && expressions.size() > 0 ? (ExpressionNode[]) expressions
 				.toArray(new ExpressionNode[expressions.size()]) : null;
 	}
