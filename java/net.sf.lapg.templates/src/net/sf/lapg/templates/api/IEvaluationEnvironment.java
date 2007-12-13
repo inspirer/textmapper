@@ -18,4 +18,5 @@ public interface IEvaluationEnvironment {
 	public String getTitle(Object object);
 
 	public void fireError(ILocatedEntity referer, String error);
+	public void loadPackage(ILocatedEntity referer, String packageName);
 }

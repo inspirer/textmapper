@@ -16,7 +16,7 @@ public class CallTemplateNode extends ExpressionNode {
 		super(input, line);
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
-		this.templateId = identifier.indexOf('.') == -1 ? currentPackage + "." + identifier : identifier;
+		this.templateId = identifier.indexOf('.') == -1 && !identifier.equals("base") ? currentPackage + "." + identifier : identifier;
 	}
 
 	@Override
@@ -35,18 +35,34 @@ public class CallTemplateNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		sb.append("call (");
-		sb.append(templateId);
-		if( arguments != null && arguments.length > 0 ) {
-			sb.append(" ");
-			for( int i = 0; i < arguments.length; i++ ) {
-				if( i > 0 ) {
-					sb.append(",");
+		if( selectExpr != null ) {
+			sb.append("call (");
+			sb.append(templateId);
+			if( arguments != null && arguments.length > 0 ) {
+				sb.append(" ");
+				for( int i = 0; i < arguments.length; i++ ) {
+					if( i > 0 ) {
+						sb.append(",");
+					}
+					arguments[i].toString(sb);
 				}
-				arguments[i].toString(sb);
+			}
+	 		sb.append(") ");
+			selectExpr.toString(sb);
+		} else {
+			// statement
+			sb.append("call ");
+			sb.append(templateId);
+			if( arguments != null && arguments.length > 0 ) {
+				sb.append("(");
+				for( int i = 0; i < arguments.length; i++ ) {
+					if( i > 0 ) {
+						sb.append(",");
+					}
+					arguments[i].toString(sb);
+				}
+		 		sb.append(")");
 			}
 		}
- 		sb.append(") ");
-		selectExpr.toString(sb);
 	}
 }

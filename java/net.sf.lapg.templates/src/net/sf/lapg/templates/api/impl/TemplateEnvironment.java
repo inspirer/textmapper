@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.api.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
@@ -12,12 +13,16 @@ import net.sf.lapg.templates.ast.Parser;
 
 public class TemplateEnvironment extends AbstractEnvironment {
 
+	private HashSet<String> loadedPackages;
+	private HashMap<String,String> overrides;
 	private HashMap<String,ITemplate> templates;
 	private ITemplateLoader[] loaders;
 
 	public TemplateEnvironment(INavigationStrategy.Factory strategy, ITemplateLoader... loaders) {
 		super(strategy);
 		this.templates = new HashMap<String,ITemplate>();
+		this.overrides = new HashMap<String,String>();
+		this.loadedPackages = new HashSet<String>();
 		this.loaders = loaders;
 
 		if( loaders == null || loaders.length < 1) {
@@ -35,61 +40,88 @@ public class TemplateEnvironment extends AbstractEnvironment {
 		return null;
 	}
 
-	private ITemplate getTemplate(ILocatedEntity referer, String name) {
-
-		if( templates.containsKey(name) ) {
-			return templates.get(name);
+	public void loadPackage(ILocatedEntity referer, String packageName) {
+		if( loadedPackages.contains(packageName) ) {
+			return;
 		}
 
-		int lastDot = name.lastIndexOf('.');
+		String contents = getContainerContent(packageName);
+		if( contents == null ) {
+			fireError(referer, "Couldn't load template package `" + packageName + "`");
+			return;
+		}
+
+		ITemplate[] loaded = loadTemplates(contents, packageName, packageName + ITemplateLoader.CONTAINER_EXT);
+		if( loaded == null || loaded.length == 0 ) {
+			fireError(referer, "Couldn't get templates from package " + packageName);
+			return;
+		}
+
+		for( ITemplate t : loaded ) {
+			String templateId = packageName + "." + t.getName();
+			if( templates.containsKey(templateId)) {
+				fireError(t, "Template `"+templateId+"` was already defined");
+			}
+			String overridden = t.getOverridden();
+			if( overridden != null ) {
+				if( overridden.indexOf('.') == -1 ) {
+					overridden = packageName + "." + overridden;
+				}
+				if( overrides.containsKey(overridden)) {
+					fireError(t, "Template `"+overridden+"` was already redeclared with `"+overrides.get(overridden)+"`, cannot override in `"+templateId+"`");
+				} else {
+					overrides.put(overridden, templateId);
+				}
+			}
+			templates.put(templateId, t);
+		}
+		loadedPackages.add(packageName);
+	}
+
+	private ITemplate getTemplate(ILocatedEntity referer, String qualifiedName, boolean searchOverrides) {
+		int lastDot = qualifiedName.lastIndexOf('.');
 		if( lastDot == -1 ) {
 			fireError(referer, "Fully qualified template name should contain dot.");
 			return null;
 		}
 
-		String templatePackage = name.substring(0, lastDot);
-		String contents = getContainerContent(templatePackage);
-		if( contents == null ) {
-			fireError(referer, "Couldn't load template container for `" + name + "`");
-			return null;
-		}
+		String templatePackage = qualifiedName.substring(0, lastDot);
+		loadPackage(referer, templatePackage);
 
-		ITemplate[] loaded = loadTemplates(contents, templatePackage, templatePackage + ITemplateLoader.CONTAINER_EXT);
-		if( loaded == null || loaded.length == 0 ) {
-			fireError(referer, "Couldn't get templates from package " + templatePackage);
-			return null;
-		}
+		String resolvedName = qualifiedName;
 
-		String id = name.substring(lastDot+1);
-		ITemplate result = null;
-		for( ITemplate t : loaded ) {
-			if( t.getName().equals(id)) {
-				result = t;
+		if( searchOverrides ) {
+			while( overrides.containsKey(resolvedName)) {
+				resolvedName = overrides.get(resolvedName);
 			}
-			String templateId = templatePackage+"."+t.getName();
-			if( templates.containsKey(templateId)) {
-				fireError(t, "Template `"+templateId+"` was already defined");
-			}
-			templates.put(templateId, t);
 		}
 
-		if( result == null ) {
-			fireError(referer, "Template `"+id+"` was not found in package `" + templatePackage + "`");
+		if( !templates.containsKey(resolvedName) ) {
+			fireError(referer, "Template `"+resolvedName+"` was not found in package `" + templatePackage + "`");
 		}
-		return result;
+		return templates.get(resolvedName);
 	}
 
 	@Override
 	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments) {
-		if( context == null ) {
-			context = new EvaluationContext(null);
+		boolean searchOverrides = true;
+		if( name.equals("base")) {
+			ITemplate current = context.getCurrentTemplate();
+			if( current != null ) {
+				if( current.getOverridden() == null ) {
+					fireError(referer, "Cannot find overriden template for `"+current.getName()+"`");
+				} else {
+					name = current.getOverridden();
+					searchOverrides = false;
+				}
+			}
 		}
-		ITemplate t = getTemplate(referer, name);
+		ITemplate t = getTemplate(referer, name, searchOverrides);
 		if( t == null ) {
 			return "";
 		}
 		try {
-			return t.apply(context, this, arguments);
+			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 		} catch( EvaluationException ex ) {
 			fireError(t, ex.getMessage());
 			return "";

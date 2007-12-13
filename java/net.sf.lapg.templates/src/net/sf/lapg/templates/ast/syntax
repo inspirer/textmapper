@@ -97,9 +97,14 @@ template_declaration_or_space ::=
 ;
 
 template_start (TemplateNode) ::=
-	'${' Ltemplate identifier template_parametersopt '[-]}'
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage,inputName, @0.line); }
+	'${' Ltemplate identifier template_parametersopt template_overridesopt '[-]}'
+                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage, $template_overridesopt, inputName, @0.line); }
 ;
+
+template_overrides (String) ::=
+	':' template_id 								{ $$ = $1; }
+;
+ 
 
 template_parameters (ArrayList) ::=
 	'(' identifier_listopt ')' 						{ $$ = $1; }

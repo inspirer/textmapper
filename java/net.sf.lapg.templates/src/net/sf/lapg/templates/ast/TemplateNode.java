@@ -11,16 +11,22 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	private String name;
 	private String[] parameters;
 	private String templatePackage;
+	private String overriddenTemplate;
 
-	public TemplateNode(String name, List<String> parameters, String templatePackage, String input, int line) {
+	public TemplateNode(String name, List<String> parameters, String templatePackage, String overridden, String input, int line) {
 		super(input, line);
 		this.name = name;
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
 		this.templatePackage = templatePackage;
+		this.overriddenTemplate = overridden;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public String getOverridden() {
+		return overriddenTemplate;
 	}
 
 	public String apply(EvaluationContext context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException {
