@@ -151,4 +151,21 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		q = env.executeTemplate("format.useCall3", context, null);
 		Assert.assertEquals("site is mine\r\n", q);
 	}
+
+	public void testOverrides() {
+		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
+		h.put("list", new String[] { "a", "b" });
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		EvaluationContext context = new EvaluationContext(h);
+		context.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("overrides.my1", context, null);
+		Assert.assertEquals("my2\n", q);
+
+		// test 2
+		env.loadPackage(null, "overrides2");
+		q = env.executeTemplate("overrides.my1", context, null);
+		Assert.assertEquals("go next my2\n\n", q);
+	}
 }

@@ -1,0 +1,4 @@
+
+${template aa : overrides.my2-}
+go next ${call base}
+${end}
