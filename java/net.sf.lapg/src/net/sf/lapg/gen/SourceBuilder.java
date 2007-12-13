@@ -87,7 +87,9 @@ public class SourceBuilder {
 		map.put("opts", grammar.getOptions() );
 
 		String templatePackage = myLanguage.getTemplatePackage();
-		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(templatePackage), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+		TemplateEnvironment env = new TemplateEnvironment(
+				new GrammarNavigationFactory(templatePackage),
+				new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym"); // TODO remove hack
