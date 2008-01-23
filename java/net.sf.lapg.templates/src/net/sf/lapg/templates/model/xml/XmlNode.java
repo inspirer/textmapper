@@ -1,7 +1,9 @@
 package net.sf.lapg.templates.model.xml;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class XmlNode extends XmlElement {
 
@@ -29,6 +31,18 @@ public class XmlNode extends XmlElement {
 
 	public List<XmlAttribute> getAttributes() {
 		return attributes;
+	}
+
+	Map<String,XmlAttribute> attributesMap;
+
+	public Map<String,XmlAttribute> getAttributesMap() {
+		if( attributesMap == null ) {
+			attributesMap = new HashMap<String,XmlAttribute>();
+			for( XmlAttribute attr : attributes) {
+				attributesMap.put(attr.getName(), attr);
+			}
+		}
+		return attributesMap;
 	}
 
 	public List<XmlNode> getNodes() {
@@ -75,5 +89,23 @@ public class XmlNode extends XmlElement {
 			sb.append(">");
 		}
 
+	}
+
+	public List<XmlElement> getChildren() {
+		return data;
+	}
+
+	public String getNodeDeclaration() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<");
+		sb.append(tagName);
+		if( attributes != null ) {
+			for(XmlAttribute attr : attributes) {
+				sb.append(" ");
+				attr.toString(sb);
+			}
+		}
+		sb.append(">");
+		return sb.toString();
 	}
 }

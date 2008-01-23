@@ -36,9 +36,9 @@ Leval:		/eval/
 Lfalse:		/false/
 Lfor:		/for/
 Lforeach:	/foreach/
-#Lgrep:		/grep/
 Lif:		/if/
 Lin:		/in/
+#Lis:		/is/
 Lmap:		/map/
 Lnot:		/not/
 Lnull:		/null/
@@ -73,6 +73,7 @@ Lassert:	/assert/
 '>':		/>/
 ':':		/:/
 '?':		/?/
+'`':		/`/
 
 _skip:      /[\t\r\n ]+/    \ continue;
 
@@ -245,6 +246,8 @@ unary_expression (ExpressionNode) ::=
 #	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
 	| Lcall '(' template_id expression_listopt ')' unary_expression	
                                                     { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,inputName, @0.line); }
+	| Lcall '(' '`' expression '`' expression_listopt ')' unary_expression	
+                                                    { $$ = new CallTemplateNode($expression,$expression_listopt,$unary_expression#1,templatePackage,inputName, @0.line); }
 ;
 
 mult_expression (ExpressionNode) ::=

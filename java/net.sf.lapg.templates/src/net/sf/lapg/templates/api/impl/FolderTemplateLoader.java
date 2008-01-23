@@ -12,7 +12,7 @@ public class FolderTemplateLoader implements ITemplateLoader {
 
 	private File[] myFolders;
 
-	public FolderTemplateLoader(File[] folders) {
+	public FolderTemplateLoader(File ...folders) {
 		this.myFolders = folders;
 	}
 

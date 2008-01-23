@@ -20,7 +20,7 @@ _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/		\ continue;
 
 [1]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/ -1		{ @ = new String(token,0,lapg_size); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ @ = new String(token,0,lapg_size); break; }
 ccon(String):	/"[^\n"]*"/							{ @ = new String(token,1,lapg_size-2); break; }
 ccon:		/'[^\n']*'/
 

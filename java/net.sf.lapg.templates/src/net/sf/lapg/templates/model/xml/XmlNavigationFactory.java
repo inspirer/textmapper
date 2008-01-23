@@ -21,8 +21,7 @@ public class XmlNavigationFactory extends DefaultNavigationFactory {
 	private INavigationStrategy xmlNavigation = new INavigationStrategy() {
 
 		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-			// TODO Auto-generated method stub
-			return null;
+			return javaNavigation.callMethod(obj, methodName, args);
 		}
 
 		public Object getByIndex(Object obj, Object key) throws EvaluationException {
@@ -59,6 +58,9 @@ public class XmlNavigationFactory extends DefaultNavigationFactory {
 			}
 			if( property.equals("nodes")) {
 				return node.getNodes();
+			}
+			if( property.equals("children")) {
+				return node.getChildren();
 			}
 			if( property.equals("attrs")) {
 				return node.getAttributes();
