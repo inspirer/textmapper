@@ -120,6 +120,18 @@ public class Parser {
 		errors.add(s);
 	}
 	
+	private void propagateTypes() {
+		for( CSymbol s : symbols) {
+			String name = s.getName();
+			if( name.endsWith(CSyntax.OPTSUFFIX) && name.length() > CSyntax.OPTSUFFIX.length() ) {
+				CSymbol original = getSymbol(name.substring(0, name.length()-CSyntax.OPTSUFFIX.length()), -1);
+				if( original != null && s.getType() == null && original.getType() != null ) {
+					s.setType(original.getType());
+				}
+			}
+		}
+	}
+	
 	public static CSyntax process(String inputId, String contents, Map<String,String> defaultOptions) {
 		try {
 			Parser p = new Parser(inputId, contents.getBytes("utf-8"), defaultOptions);
@@ -127,6 +139,7 @@ public class Parser {
 				return new CSyntax(p.errors);
 			}
 			p.getSymbol(CSyntax.INPUT, 1);
+			p.propagateTypes();
 			
 			String templates = p.l < p.buff.length ? new String(p.buff,p.l,p.buff.length-p.l,"utf-8") : null;
 			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);

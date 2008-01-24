@@ -67,6 +67,10 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		setDefined(type, false, input, line);
 	}
 
+ 	void setType(String type) {
+ 		this.type = type;
+ 	}
+
 	public String getLocation() {
 		return input + "," + line;
 	}
