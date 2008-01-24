@@ -3,10 +3,10 @@ ${template main-}
 
 package ${opts.namespace};
 
-@nativecode
+${call input.imports}
 
 public class ${opts.class} {
-	@nativecodeall
+	${call input.classcode}
 
 ${call innerDeclarations-}
 
@@ -126,7 +126,7 @@ ${if syntax.hasLexemActions()-}
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
 				case ${lexem.symbol.index}:
-					${lexem.action.contents}
+					${call lexerAction for lexem-}
 ${end-}
 ${end-}
 			}
@@ -310,6 +310,9 @@ ${template parserAction-}
 ${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
+${template lexerAction-}
+${eval action.contents, '[lexem action in '+getAction().getLocation()+']'}
+${end}
 
 ${template getsym-}
 ${if this.isLeft}lapg_gg${else-}lapg_m[lapg_head-${this.rightOffset}]${end-}
@@ -326,3 +329,15 @@ ${call getsym}.pos.line${end}
 
 ${template sym_column-}
 ${call getsym}.pos.column${end}
+
+${template sym_offset-}
+${call getsym}.pos.offset${end}
+
+${template sym_endline-}
+${call getsym}.endpos.line${end}
+
+${template sym_endcolumn-}
+${call getsym}.endpos.column${end}
+
+${template sym_endoffset-}
+${call getsym}.endpos.offset${end}

@@ -20,6 +20,7 @@ public class CSyntax implements Grammar {
 	private final CPrio[] prios;
 	private final Map<String,String> options;
 	private final CLexem[] lexems;
+	private final String templates;
 
 	private final int myInput;
 	private final int myError;
@@ -31,6 +32,7 @@ public class CSyntax implements Grammar {
 		this.prios = prios.toArray(new CPrio[prios.size()]);
 		this.lexems = lexems.toArray(new CLexem[lexems.size()]);
 		this.options = options;
+		this.templates = templates;
 		sortSymbols();
 		enumerateAll();
 
@@ -99,6 +101,7 @@ public class CSyntax implements Grammar {
 		prios = null;
 		rules = null;
 		symbols = null;
+		templates = null;
 		myTerms = 0;
 		myInput = myError = -1;
 	}
@@ -145,6 +148,10 @@ public class CSyntax implements Grammar {
 
 	public Lexem[] getLexems() {
 		return lexems;
+	}
+
+	public String getTemplates() {
+		return templates;
 	}
 
 	public boolean hasActions() {

@@ -15,6 +15,7 @@ import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplateEnvironment;
 
 public class SourceBuilder {
@@ -92,7 +93,9 @@ public class SourceBuilder {
 		String templatePackage = myLanguage.getTemplatePackage();
 		TemplateEnvironment env = new TemplateEnvironment(
 				new GrammarNavigationFactory(templatePackage),
+				new StringTemplateLoader("input", grammar.getTemplates()), // TODO create with initial location
 				new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+		env.loadPackage(null, "input");
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym"); // TODO remove hack

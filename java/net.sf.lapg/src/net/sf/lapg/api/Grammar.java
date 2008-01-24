@@ -16,6 +16,8 @@ public interface Grammar {
 	public int getEoi();
 	public int getError();
 
+	public String getTemplates();
+
 	public boolean hasActions();
 	public boolean hasLexemActions();
 }
