@@ -2552,7 +2552,7 @@ public class pparser {
 							 lapg_gg.sym = new Node(); break; 
 							break;
 						case 27:
-							 lapg_gg.sym = new Node(); break; 
+							 lapg_gg.sym = new Node(lapg_m[lapg_head-0].pos.line); break; 
 							break;
 						case 28:
 							 lapg_gg.sym = new Node(); break; 
@@ -2609,7 +2609,7 @@ public class pparser {
 							 lapg_gg.sym = new Node(); break; 
 							break;
 						case 92:
-							 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, lapg_gg.sym ); break; 
+							 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, ((Node)lapg_gg.sym) ); break; 
 							break;
 						case 93:
 							 lapg_gg.sym = new Node(); break; 

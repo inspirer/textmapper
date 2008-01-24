@@ -311,6 +311,18 @@ ${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
 
-${template leftSym}lapg_gg.sym${end}
+${template getsym-}
+${if this.isLeft}lapg_gg${else-}lapg_m[lapg_head-${this.rightOffset}]${end-}
+${end}
 
-${template stackSym(offset)}${if type}((${type})lapg_m[lapg_head-${offset}].sym)${else}lapg_m[lapg_head-${offset}].sym${end}${end}
+${template symbol-}
+${if symbol.type-}
+((${symbol.type})${call getsym-}.sym)${else-}
+${call getsym-}.sym${end-}
+${end}
+
+${template sym_line-}
+${call getsym}.pos.line${end}
+
+${template sym_column-}
+${call getsym}.pos.column${end}
