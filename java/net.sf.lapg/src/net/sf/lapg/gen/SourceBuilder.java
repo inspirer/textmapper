@@ -51,6 +51,7 @@ public class SourceBuilder {
 	public boolean process(String sourceName, InputStream input, String output) {
 		try {
 			Grammar s = SyntaxUtil.parseSyntax(sourceName, input, err, getDefaultOptions());
+			// TODO check compilability
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), err, debuglev);
 			ParserTables r = Builder.compile(s, err, debuglev);
 
@@ -58,6 +59,8 @@ public class SourceBuilder {
 			if( myLanguage == null ) {
 				myLanguage = getLanguage("java"/* TODO s.getOptions().get("lang")*/);
 			}
+
+			// TODO generate Parser.java if output == null
 
 			if (output != null) {
 				try {
