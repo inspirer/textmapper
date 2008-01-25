@@ -1,11 +1,128 @@
-// @target
+// pparser.java
 
 package CSharpProcessor;
 
-@nativecode
+
+//#define DEBUG_syntax
+
+using System;
+using System.Collections;
+using System.IO;
+
+
 
 public class pparser {
-	@nativecodeall
+	
+
+public enum Kind {
+	Identifier, TypeDot, Dot, DimmedExpr, Other
+}
+
+public class Node {
+	public Kind kind;
+	public Node left;
+	public Node right;
+	public Node expr;
+
+	public Node() {
+		this.kind = Kind.Other;
+	}
+
+	public Node( Kind kind, Node left, Node right, Node expr ) {
+		this.kind = kind;
+		this.left = left;
+		this.right = right;
+		this.expr = expr;
+	}
+}
+
+// 14.6.6 Cast expressions =======
+// To resolve cast-expression ambiguities, the following rule exists: A sequence of one or
+// more tokens (§9.4) enclosed in parentheses is considered the start of a cast-expression only
+// if at least one of the following are true:
+//	• The sequence of tokens is correct grammar for a type, but not for an expression.
+//  • The sequence of tokens is correct grammar for a type, and the token immediately following
+//	  the closing parentheses is the token “~”, the token “!”, the token “(”, an identifier (§9.4.1),
+//	  a literal (§9.4.4), or any keyword (§9.4.3) except as and is.
+
+private static bool CastExpr( Node expr, lapg_symbol next ) {
+
+	// check if expression can be type
+	if( !CanBeType( expr ) )
+		return false;
+
+	// if expression is only type (contains dim_specifier)
+	if( ContainsDimSpec( expr ) )
+		return true;
+
+	// Type or Expr
+	switch( (Tokens)next.lexem ) {
+		case Tokens.TILDE:
+		case Tokens.EXCL:
+		case Tokens.LROUNDBRACKET:
+		case Tokens.identifier:
+		case Tokens.Licon:
+		case Tokens.Lfcon:
+		case Tokens.Lscon:
+		case Tokens.Lccon:
+		case Tokens.Lfalse:
+		case Tokens.Ltrue:
+		case Tokens.Lnull:
+			return true;
+		case Tokens.Lis:
+		case Tokens.Las:
+			return false;
+	}
+
+	// keyword
+	if( next.lexem >= (int)Tokens.Labstract && next.lexem <= (int)Tokens.Lwhile )
+		return true;
+
+	return false;
+}
+
+private static bool CanBeType( Node expr ) {
+	switch( expr.kind ) {
+		case Kind.Identifier: case Kind.TypeDot:
+			return true;
+		case Kind.Dot: 
+			return CanBeType( expr.left );
+		case Kind.DimmedExpr:
+			return CanBeType( expr.expr );
+	}
+	return false;
+}
+
+private static bool ContainsDimSpec( Node expr ) {
+	return expr.kind == Kind.DimmedExpr;
+}
+
+byte[] buff = new byte[1025];
+int l, end;
+BinaryReader r;
+
+void fillb() {
+	l = 0;
+	end = r.Read( buff, 0, 1024 );
+	buff[end] = 0;
+}
+
+void error( string s ) {
+	System.Console.WriteLine(s);
+}
+
+public static void Main(string[] args) {
+	parser p = new parser();
+	
+	if( args.Length > 0 ) 
+		p.r = new BinaryReader( new FileStream(args[0],FileMode.Open) );
+	else 
+		p.r = new BinaryReader( System.Console.OpenStandardInput() );
+
+	p.fillb();
+	p.parse();
+}
+
 
 
 	public class lapg_place {
@@ -2520,11 +2637,11 @@ public class pparser {
 				case 131:
 					 continue; 
 				case 132:
-					 group = @1;continue; 
+					 group = 1;continue; 
 				case 133:
 					 continue; 
 				case 134:
-					 group = @0;continue; 
+					 group = 0;continue; 
 			}
 
 			SKIPNEXTTOKEN: for(;;) {

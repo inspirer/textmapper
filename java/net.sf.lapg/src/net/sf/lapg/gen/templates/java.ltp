@@ -1,5 +1,5 @@
 ${template main-}
-// @target
+// ${opts.class}.java
 
 package ${opts.namespace};
 
@@ -126,7 +126,7 @@ ${if syntax.hasLexemActions()-}
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
 				case ${lexem.symbol.index}:
-					${call lexerAction for lexem-}
+					${call lexerAction('lapg_n.sym') for lexem-}
 ${end-}
 ${end-}
 			}
@@ -310,7 +310,7 @@ ${template parserAction-}
 ${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
-${template lexerAction-}
+${template lexerAction(lexem)-}
 ${eval action.contents, '[lexem action in '+getAction().getLocation()+']'}
 ${end}
 
