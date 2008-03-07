@@ -322,7 +322,7 @@ void GrammarBuilder::print_input( int s )
 }
 
 
-//  returns 0:unresolved 1:shift 2:reduce
+//  returns 0:unresolved 1:shift 2:reduce 3:error
 int GrammarBuilder::compare_prio( int rule, int next )
 {
 	int i, cgroup, assoc, rule_group = -1, next_group = -1, nextassoc = -1;
@@ -353,6 +353,8 @@ int GrammarBuilder::compare_prio( int rule, int next )
 		return 2;               // left => reduce
 	if( nextassoc == 2 )
 		return 1;               // right => shift
+	if( nextassoc == 3 )
+		return 3;               // nonassoc => error
 	return 0;
 }
 
@@ -429,7 +431,21 @@ void GrammarBuilder::action()
 									print_rule( 1, larule[i] );
 									next[sm] = larule[i];
 									break;
-								}
+								case 3: // error (non-assoc)
+									err->error( 1, "\ninput:" );
+									print_input( t->number );
+									err->error( 1, "\nfixed: `error': shift/reduce (%i, next %s)\n", t->number, sym[sm].name );
+									print_rule( 1, larule[i] );
+									next[sm] = -3;
+									break;
+								} 
+							} else if( next[sm] == -3 ) {	
+								err->error( 1, "\ninput:" );
+								print_input( t->number );
+								err->error( 1, "\nfixed: `error': shift/reduce (%i, next %s)\n", t->number, sym[sm].name );
+								print_rule( 1, larule[i] );
+								break;
+								
 							} else {
 								// reduce/reduce
 								err->error( 1, "\ninput:" );
@@ -443,6 +459,10 @@ void GrammarBuilder::action()
 						sm++;
 					}
 				}
+
+			for( i = 0; i < nterms; i++ )
+				if( next[i] == -3 )
+				    next[i] = -2;
 
 			// insert into action_table
 			int rpos = x_realloc( (void**)&action_table, nactions_used, nactions, 2*(setsize+1), sizeof(short));
