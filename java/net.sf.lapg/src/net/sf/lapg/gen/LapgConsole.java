@@ -143,7 +143,7 @@ public class LapgConsole {
 
 		new File(ErrorImpl.OUT_ERRORS).delete();
 		new File(ErrorImpl.OUT_TABLES).delete();
-		p.process(sourceName, stream, output);
+		p.process(sourceName, stream, output, template);
 	}
 
 	private void showHelp() {

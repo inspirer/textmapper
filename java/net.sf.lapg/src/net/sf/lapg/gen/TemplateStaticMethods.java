@@ -1,6 +1,7 @@
 package net.sf.lapg.gen;
 
 import net.sf.lapg.common.FormatUtil;
+import net.sf.lapg.lex.JavaArrayArchiver;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 
 public class TemplateStaticMethods extends DefaultStaticMethods {
@@ -61,6 +62,10 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(",\n");
 		}
 		return sb.toString();
+	}
+
+	public static String formatForJava(int[][] table, Integer leftpadding) {
+		return JavaArrayArchiver.emit_table_as_string(table, leftpadding);
 	}
 
 	public String toIdentifier(String s, Integer number) {

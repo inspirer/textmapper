@@ -1,5 +1,6 @@
 package net.sf.lapg.gen;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -15,6 +16,7 @@ import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplateEnvironment;
 
@@ -46,10 +48,11 @@ public class SourceBuilder {
 		defaults.put("lexemend","off");
 		defaults.put("maxtoken","2048");
 		defaults.put("stack","1024");
+		defaults.put("packLexems","false");
 		return defaults;
 	}
 
-	public boolean process(String sourceName, InputStream input, String output) {
+	public boolean process(String sourceName, InputStream input, String output, String template) {
 		try {
 			Grammar s = SyntaxUtil.parseSyntax(sourceName, input, err, getDefaultOptions());
 			// TODO check compilability
@@ -66,7 +69,7 @@ public class SourceBuilder {
 			if (output != null) {
 				try {
 					PrintStream ps = new PrintStream(output);
-					generateOutput(s,l,r,ps);
+					generateOutput(s,l,r,ps,template);
 
 				} catch (FileNotFoundException ex) {
 					err.error(ex.getLocalizedMessage());
@@ -83,18 +86,20 @@ public class SourceBuilder {
 		}
 	}
 
-	private void generateOutput(Grammar grammar, LexerTables l, ParserTables r, PrintStream ps) {
+	private void generateOutput(Grammar grammar, LexerTables l, ParserTables r, PrintStream ps, String template) {
 		HashMap<String,Object> map = new HashMap<String, Object>();
 		map.put("syntax", grammar);
 		map.put("lex", l);
 		map.put("parser", r);
 		map.put("opts", grammar.getOptions() );
 
-		String templatePackage = myLanguage.getTemplatePackage();
+		String templatePackage = template != null ? template : myLanguage.getTemplatePackage();
 		TemplateEnvironment env = new TemplateEnvironment(
 				new GrammarNavigationFactory(templatePackage),
 				new StringTemplateLoader("input", grammar.getTemplates()), // TODO create with initial location
-				new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+				template != null ?
+						new FolderTemplateLoader((File)null)
+						: new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
 		env.loadPackage(null, "input");
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
