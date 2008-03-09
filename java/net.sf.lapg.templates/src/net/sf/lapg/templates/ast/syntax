@@ -83,7 +83,7 @@ _skip:      /[\t\r\n ]+/    { continue; }
 # Grammar
 
 input ::=
-	templates 
+	templatesopt 
 ;
 
 templates ::=
@@ -93,6 +93,7 @@ templates ::=
 
 template_declaration_or_space ::=
 	template_start instructions template_end		{ $template_start.setInstructions($instructions); templates.add($template_start); }
+	| template_start template_end					{ templates.add($template_start); }
 	| any
 ;
 

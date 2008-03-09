@@ -20,7 +20,7 @@ public class TriplexNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
-		Object cond = env.evaluate(condition, context, false);
+		Object cond = env.evaluate(condition, context, true);
 		if( env.toBoolean(cond) ) {
 			return env.evaluate(thennode, context, false);
 		} else {
