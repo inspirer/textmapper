@@ -7,6 +7,7 @@
 .namespace	 "net.sf.lapg.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
+.packLexems  "true"
 
 # Vocabulary
 
@@ -36,6 +37,7 @@ Leval:		/eval/
 Lfalse:		/false/
 Lfor:		/for/
 Lforeach:	/foreach/
+Lgrep:		/grep/
 Lif:		/if/
 Lin:		/in/
 #Lis:		/is/
@@ -239,7 +241,7 @@ unary_expression (ExpressionNode) ::=
 	| Lmap '(' expression ')' unary_expression		{ $$ = new MapNode(null,$expression,$unary_expression#1,inputName, ${this[0].line}); }
 	| Lmap '(' expression '->' expression ')' unary_expression		
                                                     { $$ = new MapNode($expression#0,$expression#1,$unary_expression#1,inputName, ${this[0].line}); }
-#	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
+	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
 	| Lcall '(' template_id expression_listopt ')' unary_expression	
                                                     { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,inputName, ${this[0].line}); }
 	| Lcall '(' '`' expression '`' expression_listopt ')' unary_expression	
