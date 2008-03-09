@@ -136,7 +136,7 @@ public class Builder extends Lalr1 {
 		}
 	}
 
-	// returns 0:unresolved 1:shift 2:reduce
+	// returns 0:unresolved 1:shift 2:reduce 3:error
 	private int compare_prio( int rule, int next )
 	{
 		int i, cgroup, assoc = -1, rule_group = -1, next_group = -1, nextassoc = -1;
@@ -174,6 +174,9 @@ public class Builder extends Lalr1 {
 		}
 		if( nextassoc == 2 ) {
 			return 1;               // right => shift
+		}
+		if( nextassoc == 3 ) {
+			return 3;               // nonassoc => error
 		}
 		return 0;
 	}
@@ -265,7 +268,19 @@ public class Builder extends Lalr1 {
 											warn_rule(larule[i]);
 											next[termSym] = larule[i];
 											break;
+										case 3: // error (non-assoc)
+											err.warn( "\ninput:");
+											print_input(t.number);
+											err.warn( "\nfixed: <error>: shift/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
+											warn_rule(larule[i]);
+											next[termSym] = -3;
+											break;
 										}
+									} else if(next[termSym] == -3) {
+										err.warn( "\ninput:");
+										print_input(t.number);
+										err.warn( "\nfixed: <error>: shift/reduce (" + t.number + ", next " + sym[termSym].getName() + ")\n");
+										warn_rule(larule[i]);
 									} else {
 										// reduce/reduce
 										err.warn( "\ninput:");
@@ -279,6 +294,12 @@ public class Builder extends Lalr1 {
 								termSym++;
 							}
 						}
+					}
+				}
+
+				for( i = 0; i < nterms; i++ ) {
+					if( next[i] == -3 ) {
+						next[i] = -2;
 					}
 				}
 
