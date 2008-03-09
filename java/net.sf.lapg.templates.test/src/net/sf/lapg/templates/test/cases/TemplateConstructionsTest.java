@@ -1,5 +1,6 @@
 package net.sf.lapg.templates.test.cases;
 
+import java.util.HashMap;
 import java.util.Hashtable;
 
 import junit.framework.Assert;
@@ -167,5 +168,30 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		env.loadPackage(null, "overrides2");
 		q = env.executeTemplate("overrides.my1", context, null);
 		Assert.assertEquals("go next my2\n\n", q);
+	}
+
+	public void testFile() {
+		final HashMap<String,String> fileContent = new HashMap<String,String>();
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION)) {
+			@Override
+			public void createFile(String name, String contents) {
+				fileContent.put(name, contents);
+			}
+		};
+		EvaluationContext context = new EvaluationContext(new String[] { "aa", "bb" });
+
+		// test 1
+		String q = env.executeTemplate("file.file1", context, null);
+		Assert.assertEquals("", q);
+		Assert.assertEquals("Next\n", fileContent.get("aaaa.txt"));
+		Assert.assertEquals(1, fileContent.size());
+		fileContent.clear();
+
+		// test 2
+		q = env.executeTemplate("file.file2", context, null);
+		Assert.assertEquals("", q);
+		Assert.assertEquals(2, fileContent.size());
+		Assert.assertEquals("Next\n", fileContent.get("aa.txt"));
+		Assert.assertEquals("Next2\n", fileContent.get("bb.txt"));
 	}
 }

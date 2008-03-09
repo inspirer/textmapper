@@ -1,0 +1,15 @@
+
+${template file1-}
+${file 'aaaa.txt'-}
+Next
+${end-}
+${end}
+
+${template file2-}
+${file this[0]+'.txt'-}
+Next
+${end-}
+${file this[1]+'.txt'-}
+Next2
+${end-}
+${end}
