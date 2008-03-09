@@ -151,4 +151,8 @@ public class TemplateEnvironment extends AbstractEnvironment {
 		}
 		return p.getResult();
 	}
+
+	public void createFile(String name, String contents) {
+		// do nothing by default
+	}
 }

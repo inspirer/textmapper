@@ -19,4 +19,5 @@ public interface IEvaluationEnvironment {
 
 	public void fireError(ILocatedEntity referer, String error);
 	public void loadPackage(ILocatedEntity referer, String packageName);
+	public void createFile(String name, String contents);
 }

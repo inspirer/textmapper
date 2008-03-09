@@ -36,6 +36,7 @@ Lelse:		/else/
 Leval:		/eval/
 Lfalse:		/false/
 Lfor:		/for/
+Lfile:		/file/
 Lforeach:	/foreach/
 Lgrep:		/grep/
 Lif:		/if/
@@ -197,6 +198,7 @@ control_sentence (CompoundNode) ::=
 	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression,inputName, ${this[0].line}); }
 	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1,inputName, ${this[0].line}); }
 	| Lif Lnotopt expression						{ $$ = new IfNode($expression,inputName, ${this[0].line}); }
+	| Lfile expression								{ $$ = new FileNode($expression,inputName, ${this[0].line}); }
 ;
 
 control_end ::=
