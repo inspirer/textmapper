@@ -88,7 +88,7 @@ public class JavaArrayArchiver {
 		return sb.toString();
 	}
 
-	public int[][] unpackFromString(int size1, int size2, String st) {
+	public static int[][] unpackFromString(int size1, int size2, String st) {
 		int colonIndex = -1;
 		String lengthString;
 		int sequenceLength = 0;
