@@ -104,7 +104,7 @@ public class Parser {
 	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			try {
-				CSymbol sym = new CSymbol(null, inputId, 0);
+				CSymbol sym = new CSymbol("{}", inputId, 0);
 				sym.setNonTerminal(null, inputId, cmdopt.getLine());
 				symbols.add(sym);
 				addRule(new CRule(null, cmdopt, null, inputId, cmdopt.getLine()), sym);
