@@ -6,11 +6,9 @@ import net.sf.lapg.templates.internal.ui.editor.scan.TemplatesTextScanner;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
-import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
@@ -44,7 +42,6 @@ public class TemplatesConfiguration extends SourceViewerConfiguration {
 	protected TemplatesTextScanner getTextScanner() {
 		if (textScanner == null) {
 			textScanner = new TemplatesTextScanner(colorManager);
-			textScanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager.getTextColor())));
 		}
 		return textScanner;
 	}
@@ -52,7 +49,6 @@ public class TemplatesConfiguration extends SourceViewerConfiguration {
 	protected SentenceScanner getSentenceScanner() {
 		if (sentenceScanner == null) {
 			sentenceScanner = new SentenceScanner(colorManager);
-			sentenceScanner.setDefaultReturnToken(new Token(new TextAttribute(colorManager.getTemplateColor())));
 		}
 		return sentenceScanner;
 	}
