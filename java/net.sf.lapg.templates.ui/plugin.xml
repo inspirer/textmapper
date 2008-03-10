@@ -14,4 +14,21 @@
       </editor>
    </extension>
 
+	<extension
+	      point = "org.eclipse.ui.newWizards">
+		<category 
+		   id = "net.sf.lapg.templates.newWizards"
+		   name="Lapg templates">
+		</category>
+		 <wizard
+		   id = "net.sf.lapg.templates.internal.ui.NewTemplateFileWizardId"
+		   name = "Lapg Template"
+		   class="net.sf.lapg.templates.internal.ui.NewTemplateFileWizard"
+		   category="net.sf.lapg.templates.newWizards"
+		   icon="icons/ltpfile.gif">
+	       <description>Create a new Lapg Template File (.ltp)</description>
+		   <selection class="org.eclipse.core.resources.IResource"/>
+		</wizard>
+	</extension>      
+
 </plugin>
