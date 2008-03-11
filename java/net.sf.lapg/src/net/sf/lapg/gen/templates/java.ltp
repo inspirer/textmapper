@@ -3,14 +3,16 @@ ${template main-}
 
 package ${opts.namespace};
 
+import java.io.InputStream;
+import java.io.IOException;
 ${call input.imports}
 
 public class ${opts.class} {
-	${call input.classcode}
+${util.shiftRight($input.classcode(),1)}
 
 ${call innerDeclarations-}
 
-${call lexerTables-}
+${call lexer-}
 
 ${call parserTables-}
 
@@ -55,95 +57,34 @@ ${end-}
 		return -1;
 	}
 
-	public boolean parse() {
+	public boolean parse(InputStream input, String encoding) throws IOException {
 
-		byte[]        token = new byte[${opts.maxtoken}];
-		int           lapg_head = 0, group = 0, lapg_i, lapg_size, chr;
-		lapg_symbol[] lapg_m = new lapg_symbol[${opts.stack}];
-		lapg_symbol   lapg_n;
-${switch opts.positioning}
-${case 'line'}		int           lapg_current_line = 1;
-${case 'full'}		int           lapg_current_line = 1, lapg_current_column = 1;
-${case 'offset'}		int           lapg_current_line = 1, lapg_current_offset = 0;
-${end-}
+		Lexer lexer = new Lexer(input, encoding);
+		int           lapg_head = 0, lapg_i;
+		LapgSymbol[] lapg_m = new LapgSymbol[${opts.stack}];
+		LapgSymbol   lapg_n;
 ${if syntax.error!=-1}		int           lapg_symbols_ok = 4;$/
 
-		lapg_m[0] = new lapg_symbol();
+		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
-		${opts.getsym};
 
-${if syntax.error!=-1}		NEXTTOKEN:$/
+${if syntax.error!=-1}		NEXTTOKEN:
+${end-}
 		do {
-			lapg_n = new lapg_symbol();
-${switch opts.positioning}
-${case 'line'}			lapg_n.pos = new lapg_place( lapg_current_line );
-${case 'full'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_column );
-${case 'offset'}			lapg_n.pos = new lapg_place( lapg_current_line, lapg_current_offset );
+			lapg_n = lexer.next(); 
+${if syntax.error!=-1}			SKIPNEXTTOKEN: for(;;) {
 ${end-}
-			for( lapg_size = 0, lapg_i = group; lapg_i >= 0; ) {
-				if( lapg_size < ${opts.maxtoken-1} ) token[lapg_size++] = (byte)chr;
-				lapg_i = lapg_lexem[lapg_i][lapg_char2no[(chr+256)%256]];
-				if( lapg_i >= -1 && chr != 0 ) { 
-${switch opts.positioning}
-${case 'line'}					if( chr == '\n' ) lapg_current_line++;
-${case 'full'}					lapg_current_column++;
-					if( chr == '\n' ) { lapg_current_column = 1; lapg_current_line++; }
-${case 'offset'}					lapg_current_offset++;
-					if( chr == '\n' ) lapg_current_line++;
-${end-}
-					${opts.getsym};
-				}
-			}
-${if opts.lexemend == 'on'-}
-${switch opts.positioning}
-${case 'line'}			lapg_n.endpos = new lapg_place( lapg_current_line );
-${case 'full'}			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_column );
-${case 'offset'}			lapg_n.endpos = new lapg_place( lapg_current_line, lapg_current_offset );
-${end-}
-${end-}
-
-			if( lapg_i == -1 ) {
-				if( chr == 0 ) {
-					error(${opts.errorprefix} "Unexpected end of file reached");
-					break;
-				}
-${switch opts.positioning}
-${case 'none'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem: `{0}`, skipped", new String(token,0,lapg_size) ) );
-${case 'line'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
-${case 'full'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, new String(token,0,lapg_size) ) );
-${case 'offset'}				error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, new String(token,0,lapg_size) ) );
-${end-}
-				lapg_n.lexem = -1;
-				continue;
-			}
-
-			lapg_size--;
-			lapg_n.lexem = -lapg_i-2;
-			lapg_n.sym = null;
-
-${if syntax.hasLexemActions()-}
-			switch( lapg_n.lexem ) {
-${foreach lexem in syntax.lexems-}
-${if lexem.action-}
-				case ${lexem.symbol.index}:
-					${call lexerAction('lapg_n.sym') for lexem-}
-${end-}
-${end-}
-			}
-${end-}
-
-${if syntax.error!=-1}			SKIPNEXTTOKEN: for(;;) {$/
-
 			do {
 				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
 				if( lapg_i >= 0 ) {
-					lapg_symbol lapg_gg = new lapg_symbol();
+					LapgSymbol lapg_gg = new LapgSymbol();
 					lapg_gg.sym = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].sym:null;
 					lapg_gg.lexem = lapg_rlex[lapg_i];
 					lapg_gg.state = 0;
-					if( DEBUG_SYNTAX )
+					if( DEBUG_SYNTAX ) {
 						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
+					}
 ${if opts.positioning != 'none'}					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;$/
 ${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
 ${if syntax.hasActions()-}
@@ -157,16 +98,18 @@ ${end-}
 ${end-}
 					}
 ${end-}
-					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) 
+					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) { 
 						lapg_m[lapg_head--] = null;
+					}
 					lapg_m[++lapg_head] = lapg_gg;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
 				} else if( lapg_i == -1 ) {
 					lapg_m[++lapg_head] = lapg_n;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
 ${if syntax.error!=-1}					lapg_symbols_ok++;$/
-					if( DEBUG_SYNTAX )
-						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], new String(token,0,lapg_size) ) );
+					if( DEBUG_SYNTAX ) {
+						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+					}
 				}
 
 			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
@@ -178,29 +121,31 @@ ${if syntax.error!=-1-}
 					lapg_head--;
 				}
 				if( lapg_head >= 0 ) {
-					lapg_m[++lapg_head] = new lapg_symbol();
+					lapg_m[++lapg_head] = new LapgSymbol();
 					lapg_m[lapg_head].lexem = ${syntax.error};
 					lapg_m[lapg_head].sym = null;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, ${syntax.error} );
 ${if opts.positioning != 'none'-}
 					lapg_m[lapg_head].pos = lapg_n.pos;
 ${end-}
-					if( lapg_symbols_ok >= 4 )
+					if( lapg_symbols_ok >= 4 ) {
 ${switch opts.positioning}
 ${case 'none'}						error(${opts.errorprefix} "syntax error" );
 ${case 'line'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${case 'full'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
 ${case 'offset'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${end}
+					}
 					lapg_i = lapg_symbols_ok;
 					lapg_symbols_ok = 0;
-					if( lapg_i > 1 )
+					if( lapg_i > 1 ) {
 						continue SKIPNEXTTOKEN;
-					else
+					} else {
 						continue NEXTTOKEN;
+					}
 				} else {
 					lapg_head = 0;
-					lapg_m[0] = new lapg_symbol();
+					lapg_m[0] = new LapgSymbol();
 					lapg_m[0].state = 0;
 				}
 ${end-}
@@ -234,7 +179,7 @@ ${end}
 
 ${template innerDeclarations-}
 ${if opts.positioning != 'none'}
-	public class lapg_place {
+	public class LapgPlace {
 ${switch opts.positioning}
 ${case 'line'}		public int line;
 ${case 'full'}		public int line, column;
@@ -242,9 +187,9 @@ ${case 'offset'}		public int line, offset;
 ${end-}
 
 ${switch opts.positioning}
-${case 'line'}		public lapg_place( int line ) {
-${case 'full'}		public lapg_place( int line, int column ) {
-${case 'offset'}		public lapg_place( int line, int offset ) {
+${case 'line'}		public LapgPlace( int line ) {
+${case 'full'}		public LapgPlace( int line, int column ) {
+${case 'offset'}		public LapgPlace( int line, int offset ) {
 ${end-}
 			this.line = line;
 ${switch opts.positioning}
@@ -255,62 +200,62 @@ ${end-}
 	};
 ${end-}
 
-	public class lapg_symbol {
+	public class LapgSymbol {
 		public Object sym;
 		public int  lexem, state;
-${if opts.positioning != 'none'}		public lapg_place pos;$/
-${if opts.lexemend == 'on'}		public lapg_place endpos;$/
+${if opts.positioning != 'none'}		public LapgPlace pos;$/
+${if opts.lexemend == 'on'}		public LapgPlace endpos;$/
 	};
 ${end}
 
 
 ${template lexerTables-}
-	private static final short[] lapg_char2no = new short[] {
-		${util.format(lex.char2no, 16, 2)}
-	};
+private final short[] lapg_char2no = new short[] {
+	${util.format(lex.char2no, 16, 1)}
+};
 
 ${if opts.packLexems != 'true'-}
-	private static final short[][] lapg_lexem = new short[][] {
-		${util.format(lex.change, 2, '{', '}')}
-	};
+private static final short[][] lapg_lexem = new short[][] {
+	${util.format(lex.change, 1, '{', '}')}
+};
 ${else-}
-	private int lapg_lexem[][] = unpackFromString(${util.formatForJava(lex.change, 2)});
+private int lapg_lexem[][] = unpackFromString(${util.formatForJava(lex.change, 1)});
+		
+private int[][] unpackFromString(int size1, int size2, String st) {
+	int colonIndex = -1;
+	String lengthString;
+	int sequenceLength = 0;
+	int sequenceInteger = 0;
 	
-	private int[][] unpackFromString(int size1, int size2, String st) {
-		int colonIndex = -1;
-		String lengthString;
-		int sequenceLength = 0;
-		int sequenceInteger = 0;
-
-		int commaIndex;
-		String workString;
-
-		int res[][] = new int[size1][size2];
-		for (int i = 0; i < size1; i++) {
-			for (int j = 0; j < size2; j++) {
-				if (sequenceLength != 0) {
-					res[i][j] = sequenceInteger;
-					sequenceLength--;
-					continue;
-				}
-				commaIndex = st.indexOf(',');
-				workString = (commaIndex == -1) ? st : st.substring(0, commaIndex);
-				st = st.substring(commaIndex + 1);
-				colonIndex = workString.indexOf(':');
-				if (colonIndex == -1) {
-					res[i][j] = Integer.parseInt(workString);
-					continue;
-				}
-				lengthString = workString.substring(colonIndex + 1);
-				sequenceLength = Integer.parseInt(lengthString);
-				workString = workString.substring(0, colonIndex);
-				sequenceInteger = Integer.parseInt(workString);
+	int commaIndex;
+	String workString;
+	
+	int res[][] = new int[size1][size2];
+	for (int i = 0; i < size1; i++) {
+		for (int j = 0; j < size2; j++) {
+			if (sequenceLength != 0) {
 				res[i][j] = sequenceInteger;
 				sequenceLength--;
+				continue;
 			}
+			commaIndex = st.indexOf(',');
+			workString = (commaIndex == -1) ? st : st.substring(0, commaIndex);
+			st = st.substring(commaIndex + 1);
+			colonIndex = workString.indexOf(':');
+			if (colonIndex == -1) {
+				res[i][j] = Integer.parseInt(workString);
+				continue;
+			}
+			lengthString = workString.substring(colonIndex + 1);
+			sequenceLength = Integer.parseInt(lengthString);
+			workString = workString.substring(0, colonIndex);
+			sequenceInteger = Integer.parseInt(workString);
+			res[i][j] = sequenceInteger;
+			sequenceLength--;
 		}
-		return res;
 	}
+	return res;
+}
 ${end-}
 ${end}
 
@@ -381,3 +326,124 @@ ${call getsym}.endpos.column${end}
 
 ${template sym_endoffset-}
 ${call getsym}.endpos.offset${end}
+
+
+
+${template lexer}
+	public class Lexer {
+
+		final private InputStream stream;
+		final private String encoding;
+
+		final private byte[] token = new byte[${opts.maxtoken}];
+		private int len;
+		
+		final private byte[] data = new byte[512];
+		private int datalen, l, chr;
+
+		private int group = 0;
+		
+${switch opts.positioning}
+${case 'line'}		private int lapg_current_line = 1;
+${case 'full'}		private int lapg_current_line = 1, lapg_current_column = 1;
+${case 'offset'}		private int lapg_current_line = 1, lapg_current_offset = 0;
+${end-}
+
+		public Lexer(InputStream stream, String encoding) throws IOException {
+			this.stream = stream;
+			this.encoding = encoding;
+			this.datalen = stream.read(data);
+			this.l = 0;
+			chr = l < datalen ? data[l++] : 0;
+		}
+
+${util.shiftRight($lexerTables(),2)-}
+
+		public String current() throws UnsupportedEncodingException {
+			return new String(token,0,len,encoding);
+		}
+
+		public LapgSymbol next() throws IOException, UnsupportedEncodingException {
+			LapgSymbol lapg_n = new LapgSymbol();
+			int state;
+
+			do {			
+${switch opts.positioning}
+${case 'line'}				lapg_n.pos = new LapgPlace( lapg_current_line );
+${case 'full'}				lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_column );
+${case 'offset'}				lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
+${end-}
+				for( len = 0, state = group; state >= 0; ) {
+					if( len < ${opts.maxtoken-1} ) token[len++] = (byte)chr;
+					state = lapg_lexem[state][lapg_char2no[(chr+256)%256]];
+					if( state >= -1 && chr != 0 ) { 
+${switch opts.positioning}
+${case 'line'}						if( chr == '\n' ) {
+							lapg_current_line++;
+						}
+${case 'full'}						lapg_current_column++;
+						if( chr == '\n' ) {
+							lapg_current_column = 1;
+							lapg_current_line++;
+						}
+${case 'offset'}						lapg_current_offset++;
+						if( chr == '\n' ) {
+							lapg_current_line++;
+						}
+${end-}
+						if( l >= datalen ) {
+							this.datalen = stream.read(data);
+							l = 0;
+						}
+						chr = l < datalen ? data[l++] : 0;
+					}
+				}
+${if opts.lexemend == 'on'-}
+${switch opts.positioning}
+${case 'line'}				lapg_n.endpos = new LapgPlace( lapg_current_line );
+${case 'full'}				lapg_n.endpos = new LapgPlace( lapg_current_line, lapg_current_column );
+${case 'offset'}				lapg_n.endpos = new LapgPlace( lapg_current_line, lapg_current_offset );
+${end-}
+${end-}
+
+				if( state == -1 ) {
+					if( chr == 0 ) {
+						error(${opts.errorprefix} "Unexpected end of file reached");
+						break;
+					}
+${switch opts.positioning}
+${case 'none'}					error(${opts.errorprefix} MessageFormat.format( "invalid lexem: `{0}`, skipped", current() ) );
+${case 'line'}					error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current() ) );
+${case 'full'}					error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, current() ) );
+${case 'offset'}					error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current() ) );
+${end-}
+					lapg_n.lexem = -1;
+					continue;
+				}
+
+				len--;
+				lapg_n.lexem = -state-2;
+				lapg_n.sym = null;
+
+${if syntax.hasLexemActions()-}
+			} while(!createToken(lapg_n));
+${else-}
+			} while(false);
+${end-}
+			return lapg_n;
+		}
+${if syntax.hasLexemActions()}
+		private boolean createToken(LapgSymbol lapg_n) throws UnsupportedEncodingException {
+			switch( lapg_n.lexem ) {
+${foreach lexem in syntax.lexems-}
+${if lexem.action-}
+				case ${lexem.symbol.index}:
+					${call lexerAction('lapg_n.sym') for lexem-}
+${end-}
+${end-}
+			}
+			return true;
+		} 
+${end-}
+	}
+${end}
