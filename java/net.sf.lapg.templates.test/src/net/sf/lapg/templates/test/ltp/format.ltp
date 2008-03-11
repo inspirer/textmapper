@@ -27,9 +27,9 @@ ${this} is mine
 ${end}
 
 ${template useCall2-}
-${call(format.useCall1) 'Table'-}
+${'Table'.$format.useCall1()-}
 ${end}
 
 ${template useCall3-}
-${call(useCall1) 'site'-}
+${'site'.$useCall1()-}
 ${end}

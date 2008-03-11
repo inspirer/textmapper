@@ -29,5 +29,5 @@ $id#0 - $next#1
 ${end}
 
 ${template testsharp}
-${call(testsharpworker) ['id'->[77,88,99,00], 'next'->[45,54,67]]}
+${['id'->[77,88,99,00], 'next'->[45,54,67]].$testsharpworker()}
 ${end}
