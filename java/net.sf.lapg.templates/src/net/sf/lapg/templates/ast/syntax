@@ -16,18 +16,18 @@
 any:	/[^$]+/
 
 escdollar:		/$$/
-escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = new String(token,1,lapg_size-1); break; }
-escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(new String(token,1,lapg_size-1)); break; }
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = new String(token,1,len-1); break; }
+escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(new String(token,1,len-1)); break; }
 
 '${':	/${/		{ group = 1; break; }
 '$/':   /$\//
 
 [1]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = new String(token,0,lapg_size); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = new String(token,0,len); break; }
 
-icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(new String(token,0,lapg_size)); break; }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = new String(token,1,lapg_size-2); break; }
+icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(new String(token,0,len)); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = new String(token,1,len-2); break; }
 
 Lcall:		/call/
 Lcase:		/case/
@@ -77,8 +77,9 @@ Lassert:	/assert/
 ':':		/:/
 '?':		/?/
 '`':		/`/
+'$':		/$/
 
-_skip:      /[\t\r\n ]+/    { continue; }
+_skip:      /[\t\r\n ]+/    { return false; }
 
 # Grammar
 
@@ -216,8 +217,11 @@ primary_expression (ExpressionNode) ::=
   	| Lthis											{ $$ = new ThisNode(inputName, ${this[0].line}); }
   	| Lnull											{ $$ = new LiteralNode(null, inputName, ${this[0].line}); }
     | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt,inputName, ${this[0].line}); }
+    | '$' template_id '(' expression_listopt ')'	{ $$ = new CallTemplateNode($template_id,$expression_listopt,null,templatePackage,inputName, ${this[0].line}); }
     | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier,inputName, ${this[0].line}); }
     | primary_expression '.' identifier '(' expression_listopt ')'   { $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,inputName, ${this[0].line}); }
+    | primary_expression '.' '$' template_id '(' expression_listopt ')'  { $$ = new CallTemplateNode($template_id,$expression_listopt,$primary_expression#1,templatePackage,inputName, ${this[0].line}); }
+    | primary_expression '.' '$' '`' expression '`' '(' expression_listopt ')'  { $$ = new CallTemplateNode($expression,$expression_listopt,$primary_expression#1,templatePackage,inputName, ${this[0].line}); }
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,inputName, ${this[0].line}); }
     | complex_data
 ;
@@ -245,10 +249,6 @@ unary_expression (ExpressionNode) ::=
 	| Lmap '(' expression '->' expression ')' unary_expression		
                                                     { $$ = new MapNode($expression#0,$expression#1,$unary_expression#1,inputName, ${this[0].line}); }
 	| Lgrep '(' expression ')' unary_expression		{ error("TODO"); }
-	| Lcall '(' template_id expression_listopt ')' unary_expression	
-                                                    { $$ = new CallTemplateNode($template_id,$expression_listopt,$unary_expression#1,templatePackage,inputName, ${this[0].line}); }
-	| Lcall '(' '`' expression '`' expression_listopt ')' unary_expression	
-                                                    { $$ = new CallTemplateNode($expression,$expression_listopt,$unary_expression#1,templatePackage,inputName, ${this[0].line}); }
 ;
 
 mult_expression (ExpressionNode) ::=
@@ -303,6 +303,7 @@ expression_list (ArrayList) ::=
 ##################################################################################
 %%
 ${template imports}
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -323,7 +324,6 @@ private static final boolean DEBUG_SYNTAX = false;
 private String inputName;
 private int killEnds = -1;
 private byte[] buff;
-private int l;
 
 private String rawText(int start, int end) {
 	if( killEnds == start ) {
@@ -374,20 +374,19 @@ private void skipSpaces(int offset) {
 }
 
 void error( String s ) {
-	System.err.println(s);
+	System.err.println(inputName + ":" + s);
 }
 
 public boolean parse(String s, String templatePackage, String inputName) {
-	l = 0;
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.getBytes("utf-8");
-	} catch( UnsupportedEncodingException ex ) {
+		return parse(new ByteArrayInputStream(buff), "utf-8");
+	} catch( IOException ex ) {
 		return false;
 	}
-	return parse();
 }
 
 public ITemplate[] getResult() {
