@@ -5,6 +5,20 @@ import net.sf.lapg.lex.JavaArrayArchiver;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 
 public class TemplateStaticMethods extends DefaultStaticMethods {
+	public String shiftRight(String s, Integer padding) {
+		String[] sspl = s.split("\\n");
+		StringBuffer sb = new StringBuffer(s.length() + (padding+1)*sspl.length);
+		for( String q : sspl) {
+
+			for( int i = 0; i < padding; i++) {
+				sb.append('\t');
+			}
+			sb.append(q);
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
 	public String format(short[] table, Integer maxwidth, Integer leftpadding ) {
 		StringBuffer sb = new StringBuffer();
 		for( int i = 0; i < table.length; i++ ) {
