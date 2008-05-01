@@ -2,8 +2,12 @@ package net.sf.lapg.gen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -99,7 +103,20 @@ public class SourceBuilder {
 				new StringTemplateLoader("input", grammar.getTemplates()), // TODO create with initial location
 				template != null ?
 						new FolderTemplateLoader((File)null)
-						: new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+						: new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates")) {
+							@Override
+							public void createFile(String name, String contents) {
+								File file = new File(name);
+								try {
+									OutputStream os = new FileOutputStream(file);
+									os.write(contents.getBytes("utf8"));
+									os.close();
+								} catch (FileNotFoundException e) {
+								} catch (UnsupportedEncodingException e) {
+								} catch (IOException e) {
+								}
+							}
+		};
 		env.loadPackage(null, "input");
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
