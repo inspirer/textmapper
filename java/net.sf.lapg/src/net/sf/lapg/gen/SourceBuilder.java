@@ -43,6 +43,7 @@ public class SourceBuilder {
 	private Map<String,String> getDefaultOptions() {
 		HashMap<String, String> defaults = new HashMap<String, String>();
 		defaults.put("class","Parser");
+		defaults.put("lexer","Lexer");   // TODO
 		defaults.put("getsym","?");
 		defaults.put("errorprefix","");
 		defaults.put("breaks","on");
