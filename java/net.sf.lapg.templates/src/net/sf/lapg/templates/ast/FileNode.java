@@ -7,6 +7,7 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 
 public class FileNode extends CompoundNode {
 
+	// TODO encoding option (utf-8 by default)
 	private final ExpressionNode targetNameExpr;
 
 	public FileNode(ExpressionNode expressionNode, String inputName, int line) {

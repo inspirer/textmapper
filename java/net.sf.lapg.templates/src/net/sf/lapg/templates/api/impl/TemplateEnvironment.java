@@ -9,7 +9,7 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.ast.Parser;
+import net.sf.lapg.templates.ast.AstParser;
 
 public class TemplateEnvironment extends AbstractEnvironment {
 
@@ -145,7 +145,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 	}
 
 	private static ITemplate[] loadTemplates(String templates, String templatePackage, String inputName) {
-		Parser p = new Parser();
+		AstParser p = new AstParser();
 		if( !p.parse(templates, templatePackage, inputName) ) {
 			return new ITemplate[0];
 		}

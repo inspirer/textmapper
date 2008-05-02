@@ -3,7 +3,8 @@
 .lang        "java" 
 .getsym      "chr = l < buff.length ? buff[l++] : 0"
 .positioning "offset"
-.class       "Parser"
+.class       "AstParser"
+.lexer		 "AstLexer"
 .namespace	 "net.sf.lapg.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
@@ -316,7 +317,7 @@ ${template classcode}
 private ArrayList<ITemplate> templates;
 private String templatePackage;
 
-public Parser() {
+public AstParser() {
 }
 
 private static final boolean DEBUG_SYNTAX = false;
@@ -373,7 +374,7 @@ private void skipSpaces(int offset) {
 	killEnds = offset+1;
 }
 
-void error( String s ) {
+public void error( String s ) {
 	System.err.println(inputName + ":" + s);
 }
 
@@ -383,7 +384,8 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.getBytes("utf-8");
-		return parse(new ByteArrayInputStream(buff), "utf-8");
+		AstLexer lexer = new AstLexer(new ByteArrayInputStream(buff), this, "utf-8");
+		return parse(lexer);
 	} catch( IOException ex ) {
 		return false;
 	}
