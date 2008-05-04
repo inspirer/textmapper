@@ -218,8 +218,12 @@ ${end-}
 	public static class LapgSymbol {
 		public Object sym;
 		public int  lexem, state;
-${if opts.positioning != 'none'}		public LapgPlace pos;$/
-${if opts.lexemend == 'on'}		public LapgPlace endpos;$/
+${if opts.positioning != 'none'-}
+		public LapgPlace pos;
+${if opts.lexemend == 'on'-}
+		public LapgPlace endpos;
+${end-}
+${end-}
 	};
 	
 	public interface ErrorReporter {
