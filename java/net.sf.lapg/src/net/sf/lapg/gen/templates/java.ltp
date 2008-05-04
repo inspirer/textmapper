@@ -55,67 +55,36 @@ ${end-}
 		return -1;
 	}
 
-	@SuppressWarnings("unchecked")
+	private int lapg_head;
+	private LapgSymbol[] lapg_m;
+	private LapgSymbol lapg_n;
+
 	public boolean parse(${opts.lexer} lexer) throws IOException {
 
-		int          lapg_head = 0, lapg_i;
-		LapgSymbol[] lapg_m = new LapgSymbol[${opts.stack}];
-		LapgSymbol   lapg_n;
-${if syntax.error!=-1}		int           lapg_symbols_ok = 4;$/
+		lapg_m = new LapgSymbol[${opts.stack}];
+		lapg_head = 0;
+${if syntax.error!=-1}		int lapg_symbols_ok = 4;
+${end-}
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
+		lapg_n = lexer.next(); 
 
-${if syntax.error!=-1}		NEXTTOKEN:
-${end-}
-		do {
-			lapg_n = lexer.next(); 
-${if syntax.error!=-1}			SKIPNEXTTOKEN: for(;;) {
-${end-}
-			do {
-				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
+		while( lapg_m[lapg_head].state != ${parser.nstates-1} ) {
+			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
-				if( lapg_i >= 0 ) {
-					LapgSymbol lapg_gg = new LapgSymbol();
-					lapg_gg.sym = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].sym:null;
-					lapg_gg.lexem = lapg_rlex[lapg_i];
-					lapg_gg.state = 0;
-					if( DEBUG_SYNTAX ) {
-						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
-					}
-${if opts.positioning != 'none'}					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;$/
-${if opts.lexemend == 'on'}					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
-${if syntax.hasActions()-}
-					switch( lapg_i ) {
-${foreach rule in syntax.rules-}
-${if rule.getAction()-}
-						case ${rule.getIndex()}:
-							${call parserAction for rule-}
-${if opts.breaks == 'on'}							break;$/
+			if( lapg_i >= 0 ) {
+				reduce(lapg_i);
+			} else if( lapg_i == -1 ) {
+				shift(lexer);
+${if syntax.error!=-1}				lapg_symbols_ok++;
 ${end-}
-${end-}
-					}
-${end-}
-					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) { 
-						lapg_m[lapg_head--] = null;
-					}
-					lapg_m[++lapg_head] = lapg_gg;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
-				} else if( lapg_i == -1 ) {
-					lapg_m[++lapg_head] = lapg_n;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-${if syntax.error!=-1}					lapg_symbols_ok++;$/
-					if( DEBUG_SYNTAX ) {
-						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
-					}
-				}
+			}
 
-			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
-
-			if( (lapg_i == -2 || lapg_m[lapg_head].state == -1) && lapg_n.lexem != 0 ) {
+			if( lapg_i == -2 || lapg_m[lapg_head].state == -1 ) {
 ${if syntax.error!=-1-}
 				while( lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, ${syntax.error} ) == -1 ) {
-					lapg_m[lapg_head] = null;
+					lapg_m[lapg_head] = null; // TODO dispose?
 					lapg_head--;
 				}
 				if( lapg_head >= 0 ) {
@@ -124,7 +93,7 @@ ${if syntax.error!=-1-}
 					lapg_m[lapg_head].sym = null;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, ${syntax.error} );
 ${if opts.positioning != 'none'-}
-					lapg_m[lapg_head].pos = lapg_n.pos;
+					lapg_m[lapg_head].pos = lapg_n.pos; // TODO endpos?
 ${end-}
 					if( lapg_symbols_ok >= 4 ) {
 ${switch opts.positioning}
@@ -132,15 +101,13 @@ ${case 'none'}						error(${opts.errorprefix} "syntax error" );
 ${case 'line'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${case 'full'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
 ${case 'offset'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${end}
+${end-}
 					}
-					lapg_i = lapg_symbols_ok;
+					if( lapg_symbols_ok <= 1 ) {
+						lapg_n = lexer.next();
+					}
 					lapg_symbols_ok = 0;
-					if( lapg_i > 1 ) {
-						continue SKIPNEXTTOKEN;
-					} else {
-						continue NEXTTOKEN;
-					}
+					continue;
 				} else {
 					lapg_head = 0;
 					lapg_m[0] = new LapgSymbol();
@@ -149,12 +116,7 @@ ${end}
 ${end-}
 				break;
 			}
-${if syntax.error!=-1-}
-			break;
-			}
-${end-}
-
-		} while( lapg_n.lexem != 0 );
+		}
 
 ${if syntax.error!=-1-}
 		if( lapg_m[lapg_head].state != ${parser.nstates-1} && lapg_symbols_ok >= 4 ) {
@@ -171,8 +133,45 @@ ${end-}
 		};
 		return true;
 	}
-}
 
+	private void shift(${opts.lexer} lexer) throws IOException {
+		lapg_m[++lapg_head] = lapg_n;
+		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
+		if( DEBUG_SYNTAX ) {
+			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+		}
+		lapg_n = lexer.next();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void reduce(int rule) {
+		LapgSymbol lapg_gg = new LapgSymbol();
+		lapg_gg.sym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].sym:null;
+		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.state = 0;
+		if( DEBUG_SYNTAX ) {
+			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
+		}
+${if opts.positioning != 'none'}		lapg_gg.pos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].pos:lapg_n.pos;$/
+${if opts.lexemend == 'on'}		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;$/
+${if syntax.hasActions()-}
+		switch( rule ) {
+${foreach rule in syntax.rules-}
+${if rule.getAction()-}
+			case ${rule.getIndex()}:
+				${call parserAction for rule-}
+${if opts.breaks == 'on'}				break;$/
+${end-}
+${end-}
+		}
+${end-}
+		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+}
 ${end} 
 
 ${template parserTables-}
@@ -212,7 +211,7 @@ ${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
 ${template getsym-}
-${if this.isLeft}lapg_gg${else-}lapg_m[lapg_head-${this.rightOffset}]${end-}
+${if this.isLeft}lapg_gg${else}lapg_m[lapg_head-${this.rightOffset}]${end-}
 ${end}
 
 ${template symbol-}
