@@ -1981,136 +1981,192 @@ public class pparser implements Lexer.ErrorReporter {
 		return -1;
 	}
 
-	@SuppressWarnings("unchecked")
+	private int lapg_head;
+	private LapgSymbol[] lapg_m;
+	private LapgSymbol lapg_n;
+
 	public boolean parse(Lexer lexer) throws IOException {
 
-		int          lapg_head = 0, lapg_i;
-		LapgSymbol[] lapg_m = new LapgSymbol[1024];
-		LapgSymbol   lapg_n;
-		int           lapg_symbols_ok = 4;
+		lapg_m = new LapgSymbol[1024];
+		lapg_head = 0;
+		int lapg_symbols_ok = 4;
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
+		lapg_n = lexer.next(); 
 
-		NEXTTOKEN:
-		do {
-			lapg_n = lexer.next(); 
-			SKIPNEXTTOKEN: for(;;) {
-			do {
-				lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
+		while( lapg_m[lapg_head].state != 730 ) {
+			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
-				if( lapg_i >= 0 ) {
-					LapgSymbol lapg_gg = new LapgSymbol();
-					lapg_gg.sym = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].sym:null;
-					lapg_gg.lexem = lapg_rlex[lapg_i];
-					lapg_gg.state = 0;
-					if( DEBUG_SYNTAX ) {
-						System.out.println( "reduce to " + lapg_syms[lapg_rlex[lapg_i]] );
+			if( lapg_i >= 0 ) {
+				reduce(lapg_i);
+			} else if( lapg_i == -1 ) {
+				shift(lexer);
+				lapg_symbols_ok++;
+			}
+
+			if( lapg_i == -2 || lapg_m[lapg_head].state == -1 ) {
+				if (lapg_n.lexem == 0) {
+					break;
+				}
+				while (lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, 2 ) == -1) {
+					lapg_m[lapg_head] = null; // TODO dispose?
+					lapg_head--;
+				}
+				if (lapg_head >= 0) {
+					lapg_m[++lapg_head] = new LapgSymbol();
+					lapg_m[lapg_head].lexem = 2;
+					lapg_m[lapg_head].sym = null;
+					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, 2 );
+					lapg_m[lapg_head].pos = lapg_n.pos; // TODO endpos?
+					if( lapg_symbols_ok >= 4 ) {
+						error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 					}
-					lapg_gg.pos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head+1-lapg_rlen[lapg_i]].pos:lapg_n.pos;
-					lapg_gg.endpos = (lapg_rlen[lapg_i]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
-					switch( lapg_i ) {
-						case 24:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 25:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 26:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 27:
-							 lapg_gg.sym = new Node(lapg_m[lapg_head-0].pos.line); break; 
-							break;
-						case 28:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 29:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 30:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 33:
-							 lapg_gg.sym = new Node( Kind.Identifier, null, null, null ); break; 
-							break;
-						case 76:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 77:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 78:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 79:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 80:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 81:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 82:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 83:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 84:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 85:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 86:
-							 lapg_gg.sym = new Node( Kind.Dot, ((Node)lapg_m[lapg_head-2].sym), null, null ); break; 
-							break;
-						case 87:
-							 lapg_gg.sym = new Node( Kind.TypeDot, null, null, null ); break; 
-							break;
-						case 90:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 91:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 92:
-							 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, ((Node)lapg_gg.sym) ); break; 
-							break;
-						case 93:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 98:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 99:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 100:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 102:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 103:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 104:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 105:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 106:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 107:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 109:
-							 lapg_gg.sym = ((Node)lapg_m[lapg_head-1].sym);
+					if( lapg_symbols_ok <= 1 ) {
+						lapg_n = lexer.next();
+					}
+					lapg_symbols_ok = 0;
+					continue;
+				} else {
+					lapg_head = 0;
+					lapg_m[0] = new LapgSymbol();
+					lapg_m[0].state = 0;
+				}
+				break;
+			}
+		}
+
+		if( lapg_m[lapg_head].state != 730 && lapg_symbols_ok >= 4 ) {
+			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+			return false;
+		};
+		return true;
+	}
+
+	private void shift(Lexer lexer) throws IOException {
+		lapg_m[++lapg_head] = lapg_n;
+		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
+		if( DEBUG_SYNTAX ) {
+			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+		}
+		if( lapg_m[lapg_head].state != -1 ) {
+			lapg_n = lexer.next();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void reduce(int rule) {
+		LapgSymbol lapg_gg = new LapgSymbol();
+		lapg_gg.sym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].sym:null;
+		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.state = 0;
+		if( DEBUG_SYNTAX ) {
+			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
+		}
+		lapg_gg.pos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].pos:lapg_n.pos;
+		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
+		switch( rule ) {
+			case 24:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 25:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 26:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 27:
+				 lapg_gg.sym = new Node(lapg_m[lapg_head-0].pos.line); break; 
+				break;
+			case 28:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 29:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 30:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 33:
+				 lapg_gg.sym = new Node( Kind.Identifier, null, null, null ); break; 
+				break;
+			case 76:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 77:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 78:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 79:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 80:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 81:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 82:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 83:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 84:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 85:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 86:
+				 lapg_gg.sym = new Node( Kind.Dot, ((Node)lapg_m[lapg_head-2].sym), null, null ); break; 
+				break;
+			case 87:
+				 lapg_gg.sym = new Node( Kind.TypeDot, null, null, null ); break; 
+				break;
+			case 90:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 91:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 92:
+				 lapg_gg.sym = new Node( Kind.DimmedExpr, null, null, ((Node)lapg_gg.sym) ); break; 
+				break;
+			case 93:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 98:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 99:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 100:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 102:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 103:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 104:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 105:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 106:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 107:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 109:
+				 lapg_gg.sym = ((Node)lapg_m[lapg_head-1].sym);
 		// HACK to resolve Cast ambiguity
 		if( CastExpr(((Node)lapg_m[lapg_head-1].sym),lapg_n) ) {
 			// perform reduce
@@ -2130,135 +2186,84 @@ public class pparser implements Lexer.ErrorReporter {
 			continue;
 		}
 		break; 
-							break;
-						case 110:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 111:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 113:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 114:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 115:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 117:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 118:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 120:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 121:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 123:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 124:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 125:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 126:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 127:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 128:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 130:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 131:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 133:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 135:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 137:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 139:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 141:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 143:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-						case 144:
-							 lapg_gg.sym = new Node(); break; 
-							break;
-					}
-					for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) { 
-						lapg_m[lapg_head--] = null;
-					}
-					lapg_m[++lapg_head] = lapg_gg;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
-				} else if( lapg_i == -1 ) {
-					lapg_m[++lapg_head] = lapg_n;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-					lapg_symbols_ok++;
-					if( DEBUG_SYNTAX ) {
-						System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
-					}
-				}
-
-			} while( lapg_i >= 0 && lapg_m[lapg_head].state != -1 );
-
-			if( (lapg_i == -2 || lapg_m[lapg_head].state == -1) && lapg_n.lexem != 0 ) {
-				while( lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, 2 ) == -1 ) {
-					lapg_m[lapg_head] = null;
-					lapg_head--;
-				}
-				if( lapg_head >= 0 ) {
-					lapg_m[++lapg_head] = new LapgSymbol();
-					lapg_m[lapg_head].lexem = 2;
-					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, 2 );
-					lapg_m[lapg_head].pos = lapg_n.pos;
-					if( lapg_symbols_ok >= 4 ) {
-						error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-
-					}
-					lapg_i = lapg_symbols_ok;
-					lapg_symbols_ok = 0;
-					if( lapg_i > 1 ) {
-						continue SKIPNEXTTOKEN;
-					} else {
-						continue NEXTTOKEN;
-					}
-				} else {
-					lapg_head = 0;
-					lapg_m[0] = new LapgSymbol();
-					lapg_m[0].state = 0;
-				}
 				break;
-			}
-			break;
-			}
-
-		} while( lapg_n.lexem != 0 );
-
-		if( lapg_m[lapg_head].state != 730 && lapg_symbols_ok >= 4 ) {
-			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-			return false;
-		};
-		return true;
+			case 110:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 111:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 113:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 114:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 115:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 117:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 118:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 120:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 121:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 123:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 124:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 125:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 126:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 127:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 128:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 130:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 131:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 133:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 135:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 137:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 139:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 141:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 143:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+			case 144:
+				 lapg_gg.sym = new Node(); break; 
+				break;
+		}
+		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 }
-
