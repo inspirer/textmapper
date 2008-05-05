@@ -1,0 +1,38 @@
+%%
+${template imports}
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.MessageFormat;
+${end}
+
+${template classcode}
+private static final boolean DEBUG_SYNTAX = true;
+
+public void error( String s ) {
+	System.out.println(s);
+}
+
+void myprint( String s1 ) {
+	System.out.println(s1);
+}
+
+void myprint2( String s1, String s2 ) {
+	System.out.println(s1+s2);
+}
+
+public static void main(String[] args) throws FileNotFoundException, IOException {
+        parser p = new parser();
+
+        InputStream input;
+        if( args.length > 0 )
+                input = new FileInputStream( args[0] );
+        else
+                input = System.in;
+
+        mlexer lexer = new mlexer(input, p, "utf-8");
+
+        p.parse(lexer);
+}
+${end}
