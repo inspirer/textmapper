@@ -112,9 +112,9 @@ ${end-}
 			lapg_n.sym = null;
 
 ${if syntax.hasLexemActions()-}
-		} while(!createToken(lapg_n));
+		} while(lapg_n.lexem == -1 || !createToken(lapg_n));
 ${else-}
-		} while(false);
+		} while(lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
 	}
