@@ -647,7 +647,9 @@ public class AstParser implements AstLexer.ErrorReporter {
 		if( DEBUG_SYNTAX ) {
 			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
 		}
-		lapg_n = lexer.next();
+		if( lapg_m[lapg_head].state != -1 ) {
+			lapg_n = lexer.next();
+		}
 	}
 
 	@SuppressWarnings("unchecked")

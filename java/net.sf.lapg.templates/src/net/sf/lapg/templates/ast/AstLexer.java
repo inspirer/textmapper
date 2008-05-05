@@ -271,7 +271,7 @@ public class AstLexer {
 			lapg_n.lexem = -state-2;
 			lapg_n.sym = null;
 
-		} while(!createToken(lapg_n));
+		} while(lapg_n.lexem == -1 || !createToken(lapg_n));
 		return lapg_n;
 	}
 
