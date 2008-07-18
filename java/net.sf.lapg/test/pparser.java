@@ -1,5 +1,3 @@
-// pparser.java
-
 package CSharpProcessor;
 
 import java.io.IOException;
@@ -41,12 +39,12 @@ public class pparser implements Lexer.ErrorReporter {
 	
 	// 14.6.6 Cast expressions =======
 	// To resolve cast-expression ambiguities, the following rule exists: A sequence of one or
-	// more tokens (§9.4) enclosed in parentheses is considered the start of a cast-expression only
+	// more tokens (ï¿½9.4) enclosed in parentheses is considered the start of a cast-expression only
 	// if at least one of the following are true:
-	//	• The sequence of tokens is correct grammar for a type, but not for an expression.
-	//  • The sequence of tokens is correct grammar for a type, and the token immediately following
-	//	  the closing parentheses is the token “~”, the token “!”, the token “(”, an identifier (§9.4.1),
-	//	  a literal (§9.4.4), or any keyword (§9.4.3) except as and is.
+	//	ï¿½ The sequence of tokens is correct grammar for a type, but not for an expression.
+	//  ï¿½ The sequence of tokens is correct grammar for a type, and the token immediately following
+	//	  the closing parentheses is the token ï¿½~ï¿½, the token ï¿½!ï¿½, the token ï¿½(ï¿½, an identifier (ï¿½9.4.1),
+	//	  a literal (ï¿½9.4.4), or any keyword (ï¿½9.4.3) except as and is.
 	
 	private static bool CastExpr( Node expr, lapg_symbol next ) {
 	
@@ -125,7 +123,6 @@ public class pparser implements Lexer.ErrorReporter {
 		p.fillb();
 		p.parse();
 	}
-
 	private static final int[] lapg_action = new int[] {
 		-3, -1, -51, -97, 243, -147, -1, -1, -1, -1, 4, -167, -215, 249, 247, 250,
 		251, 252, 253, 254, 255, -259, 414, 244, -1, 246, -1, 31, -1, -299, 421, 422,

@@ -12,7 +12,7 @@
 .getsym      "chr = buff[l++];if( l == end ) fillb()"
 .positioning "offset"
 .class       "pparser"
-.namespace   "CSharpProcessor"
+.package   "CSharpProcessor"
 .lang        "java"
 .lexemend    "on"
 
