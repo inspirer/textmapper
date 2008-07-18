@@ -21,7 +21,7 @@ public class FolderTemplateLoader implements ITemplateLoader {
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(new FileInputStream(file));
+			Reader in = new InputStreamReader(new FileInputStream(file), "utf8");
 			try {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);

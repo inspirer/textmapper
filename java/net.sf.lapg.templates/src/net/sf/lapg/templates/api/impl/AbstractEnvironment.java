@@ -94,7 +94,7 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 
 	public void fireError(ILocatedEntity referer, String error) {
 		if( referer != null ) {
-			System.err.print(referer.getLocation() + ": ");
+			System.err.print(referer.getLocation() + ": ");   // FIXME
 		}
 		System.err.println(error);
 	}
