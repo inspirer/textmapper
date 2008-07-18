@@ -40,4 +40,7 @@ public class ErrorReporter implements IError {
 		Assert.assertEquals("", warns.toString());
 		Assert.assertEquals("", errors.toString());
 	}
+
+	public void dispose() {
+	}
 }
