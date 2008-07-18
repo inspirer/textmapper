@@ -5,7 +5,7 @@
 .positioning "offset"
 .class       "AstParser"
 .lexer		 "AstLexer"
-.namespace	 "net.sf.lapg.templates.ast"
+.package	 "net.sf.lapg.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
 .packLexems  "true"

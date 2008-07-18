@@ -1,5 +1,3 @@
-// AstParser.java
-
 package net.sf.lapg.templates.ast;
 
 import java.io.IOException;
@@ -97,7 +95,6 @@ public class AstParser implements AstLexer.ErrorReporter {
 	public ITemplate[] getResult() {
 		return templates.toArray(new ITemplate[templates.size()]);
 	}
-
 	private static final int[] lapg_action = new int[] {
 		-3, 7, -1, 2, -11, 4, -1, -1, 3, 30, 29, 27, 28, -1, -1, 6,
 		21, 24, 25, 26, -1, -19, -29, 70, 72, -1, -1, -1, 88, -1, -1, -1,
