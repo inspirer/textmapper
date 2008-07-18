@@ -27,7 +27,7 @@ public class SyntaxUtil {
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(stream);
+			Reader in = new InputStreamReader(stream, "utf8");
 			try {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);

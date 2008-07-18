@@ -1,6 +1,5 @@
-${template main-}
-${file opts.lexer+'.java'-}
-package ${opts.namespace};
+${template unit-}
+package ${call java.package};
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -132,7 +131,6 @@ ${end-}
 	} 
 ${end-}
 }
-${end}
 ${end}
 
 

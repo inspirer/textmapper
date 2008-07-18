@@ -5,19 +5,20 @@ import java.util.Map;
 
 public interface Grammar {
 
-	public Symbol[] getSymbols();
-	public Rule[] getRules();
-	public Prio[] getPriorities();
-	public Map<String,String> getOptions();
-	public Lexem[] getLexems();
+	Symbol[] getSymbols();
+	Rule[] getRules();
+	Prio[] getPriorities();
+	Map<String,String> getOptions();
+	Lexem[] getLexems();
 
-	public int getTerminals();
-	public int getInput();
-	public int getEoi();
-	public int getError();
+	int getTerminals();
+	int getInput();
+	int getEoi();
+	int getError();
 
-	public String getTemplates();
+	String getTemplates();
 
-	public boolean hasActions();
-	public boolean hasLexemActions();
+	boolean hasActions();
+	boolean hasLexemActions();
+	boolean hasErrors();
 }

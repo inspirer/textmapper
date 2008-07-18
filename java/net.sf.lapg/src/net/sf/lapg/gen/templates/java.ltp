@@ -1,16 +1,18 @@
 ${template main-}
-// ${opts.class}.java
+${file opts.class+'.java'}${call unit}${end-}
+${file opts.lexer+'.java'-}${call java_lexer.unit}${end-}
+${end}
 
-package ${opts.namespace};
+${template unit-}
+package ${call package};
 
 import java.io.IOException;
-import ${opts.namespace}.${opts.lexer}.Lexems;
-import ${opts.namespace}.${opts.lexer}.LapgSymbol;
+import ${call package}.${opts.lexer}.Lexems;
+import ${call package}.${opts.lexer}.LapgSymbol;
 ${call input.imports}
 
 public class ${opts.class} implements ${opts.lexer}.ErrorReporter {
 ${util.shiftRight($input.classcode(),1)-}
-${call java_lexer.main-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -247,3 +249,8 @@ ${call getsym}.endpos.column${end}
 ${template sym_endoffset-}
 ${call getsym}.endpos.offset${end}
 
+${template package-}
+${if opts.package-}
+${opts.package-}
+${else}com.test${end-}
+${end}
