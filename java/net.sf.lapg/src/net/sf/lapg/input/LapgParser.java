@@ -1,7 +1,10 @@
 package net.sf.lapg.input;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import net.sf.lapg.input.LapgLexer.Lexems;
+import net.sf.lapg.input.LapgLexer.LapgSymbol;
+
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -10,50 +13,47 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.input.LapgLexer.LapgSymbol;
-import net.sf.lapg.input.LapgLexer.Lexems;
-
 
 public class LapgParser implements LapgLexer.ErrorReporter {
-
+	
 	private LapgParser(String inputId, byte[] data, Map<String,String> defaultOptions) {
 		this.inputId = inputId;
 		this.buff = data;
 		this.l = 0;
-
+		
 		addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
 		options.putAll(defaultOptions);
 	}
-
+	
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int BITS = 32;
-
+	
 	private Map<String,CSymbol> symCash = new HashMap<String,CSymbol>();
 	private List<String> errors = new ArrayList<String>();
-
+	
 	private List<CSymbol> symbols = new ArrayList<CSymbol>();
 	private List<CRule> rules = new ArrayList<CRule>();
 	private List<CPrio> prios = new ArrayList<CPrio>();
 	private Map<String,String> options = new HashMap<String, String>();
 	private List<CLexem> lexems = new ArrayList<CLexem>();
-
+	
 	private String inputId;
 	private byte[] buff;
 	private int l;
-
+	
 	private int currentgroups = 1;
-
+	
 	private String rawData(int start, int end) {
 		return new String(buff, start, end-start);
 	}
-
+	
 	private CSymbol getSymbol(String name, int line) {
 		CSymbol res = symCash.get(name);
 		if( res == null ) {
 			res = new CSymbol(name, inputId, line);
 			symbols.add(res);
 			symCash.put(name,res);
-
+	
 			if( name.endsWith(CSyntax.OPTSUFFIX) && name.length() > CSyntax.OPTSUFFIX.length() ) {
 				try {
 					CSymbol original = getSymbol(name.substring(0, name.length()-CSyntax.OPTSUFFIX.length()), line);
@@ -67,7 +67,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 		return res;
 	}
-
+	
 	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
 		try {
 			sym.setTerminal(type, regexp != null, inputId, line);
@@ -78,7 +78,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			error(ex.getMessage());
 		}
 	}
-
+	
 	private void addNonterm(CSymbol sym, String type, int line ) {
 		try {
 			sym.setNonTerminal(type, inputId, line);
@@ -86,12 +86,12 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			error(ex.getMessage());
 		}
 	}
-
+	
 	private void addRule( CRule rule, CSymbol left ) {
 		rule.setLeft(left);
 		rules.add(rule);
 	}
-
+	
 	private void addPrio( String prio, List<CSymbol> list, int line ) {
 		if( prio.equals("left") ) {
 			prios.add(new CPrio(CPrio.LEFT, list,inputId,line));
@@ -103,7 +103,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			error("unknown priority identifier used: `"+prio+"` at " + line);
 		}
 	}
-
+	
 	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			try {
@@ -118,11 +118,11 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 		list.add(symbol);
 	}
-
+	
 	public void error( String s ) {
 		errors.add(s);
 	}
-
+	
 	private void propagateTypes() {
 		for( CSymbol s : symbols) {
 			String name = s.getName();
@@ -134,7 +134,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			}
 		}
 	}
-
+	
 	public static CSyntax process(String inputId, String contents, Map<String,String> defaultOptions) {
 		try {
 			byte[] buff = contents.getBytes("utf-8");
@@ -145,7 +145,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			}
 			p.getSymbol(CSyntax.INPUT, 1);
 			p.propagateTypes();
-
+	
 			int offset = lexer.getTemplatesStart();
 			String templates = offset < buff.length && offset != -1 ? new String(buff,offset,buff.length-offset,"utf-8") : null;
 			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);
@@ -154,10 +154,10 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 		return null;
 	}
-
+	
 	static class ParseException extends Exception {
 		private static final long serialVersionUID = 2811939050284758826L;
-
+	
 		public ParseException(String arg0) {
 			super(arg0);
 		}
@@ -296,11 +296,8 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private static int lapg_next( int state, int symbol ) {
 		int p;
 		if( lapg_action[state] < -2 ) {
-			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 ) {
-				if( lapg_lalr[p] == symbol ) {
-					break;
-				}
-			}
+			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 )
+				if( lapg_lalr[p] == symbol ) break;
 			return lapg_lalr[p+1];
 		}
 		return lapg_action[state];
@@ -313,13 +310,12 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		while( min <= max ) {
 			e = (min + max) >> 1;
 			i = lapg_sym_from[e];
-			if( i == state ) {
+			if( i == state )
 				return lapg_sym_to[e];
-			} else if( i < state ) {
+			else if( i < state )
 				min = e + 1;
-			} else {
+			else
 				max = e - 1;
-			}
 		}
 		return -1;
 	}
@@ -335,7 +331,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
-		lapg_n = lexer.next();
+		lapg_n = lexer.next(); 
 
 		while( lapg_m[lapg_head].state != 66 ) {
 			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
@@ -382,68 +378,64 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 		switch( rule ) {
 			case 5:  // directive ::= '.' identifier scon
-				 options.put(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym));
+				 options.put(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 6:  // directive ::= '.' identifier icon
-				 options.put(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString());
+				 options.put(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString()); 
 				break;
 			case 9:  // lexical_definition ::= '[' iconlist_in_bits ']'
-				 currentgroups = ((Integer)lapg_m[lapg_head-1].sym);
+				 currentgroups = ((Integer)lapg_m[lapg_head-1].sym); 
 				break;
 			case 12:  // lexical_definition ::= symbol typeopt ':'
-				 addLexem(((CSymbol)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, lapg_m[lapg_head-2].pos.line);
+				 addLexem(((CSymbol)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, lapg_m[lapg_head-2].pos.line); 
 				break;
 			case 17:  // lexical_definition ::= symbol typeopt ':' regexp iconopt commandopt
-				 addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CAction)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line);
+				 addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CAction)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line); 
 				break;
 			case 18:  // iconlist_in_bits ::= icon
-				 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) {
-					lapg_gg.sym = 0;
-				} else {
-					lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym);
-				}
+				 if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) lapg_gg.sym = 0; else lapg_gg.sym = 1 << ((Integer)lapg_m[lapg_head-0].sym); 
 				break;
 			case 19:  // iconlist_in_bits ::= iconlist_in_bits icon
-				 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym);
+				 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
 				break;
 			case 23:  // grammar_definition ::= '%' identifier symbol_list ';'
-				 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line);
+				 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
 				break;
 			case 24:  // rules_definition ::= symbol typeopt '::=' rule_def
-				 addNonterm(((CSymbol)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym));
+				 addNonterm(((CSymbol)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
 				break;
 			case 25:  // rules_definition ::= rules_definition '|' rule_def
-				 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym));
+				 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym)); 
 				break;
 			case 26:  // symbol_list ::= symbol_list symbol
-				 ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym));
+				 ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 27:  // symbol_list ::= symbol
-				 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym));
+				 lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 30:  // rule_def ::= rule_symbols commandopt rule_priorityopt
-				 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-2].pos.line);
+				 lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-2].pos.line); 
 				break;
 			case 31:  // rule_def ::= commandopt rule_priorityopt
-				 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-1].pos.line);
+				 lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-1].pos.line); 
 				break;
 			case 32:  // rule_symbols ::= rule_symbols commandopt symbol
-				 addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
+				 addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 33:  // rule_symbols ::= commandopt symbol
-				 lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
+				 lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 34:  // rule_priority ::= '<<' symbol
-				 lapg_gg.sym = (lapg_m[lapg_head-0].sym);
+				 lapg_gg.sym = ((CSymbol)lapg_m[lapg_head-0].sym); 
 				break;
 			case 37:  // command ::= '{' command_tokensopt '}'
-				 lapg_gg.sym = new CAction(rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset), inputId, lapg_m[lapg_head-2].pos.line);
+				 lapg_gg.sym = new CAction(rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset), inputId, lapg_m[lapg_head-2].pos.line); 
 				break;
 			case 41:  // symbol ::= identifier
-				 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line);
+				 lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line); 
 				break;
 		}
-		for( int e = lapg_rlen[rule]; e > 0; e-- ) {
+		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
