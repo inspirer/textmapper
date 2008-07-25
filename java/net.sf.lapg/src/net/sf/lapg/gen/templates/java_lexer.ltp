@@ -42,7 +42,7 @@ ${end-}
 		chr = l < datalen ? data[l++] : 0;
 	}
 
-${util.shiftRight($lexerTables(),1)-}
+${util.shiftRight(self->lexerTables(),1)-}
 
 	public String current() throws UnsupportedEncodingException {
 		return new String(token,0,len,encoding);

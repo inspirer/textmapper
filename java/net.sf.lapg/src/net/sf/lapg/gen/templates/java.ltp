@@ -12,7 +12,7 @@ import ${call package}.${opts.lexer}.LapgSymbol;
 ${call input.imports}
 
 public class ${opts.class} implements ${opts.lexer}.ErrorReporter {
-${util.shiftRight($input.classcode(),1)-}
+${util.shiftRight(self->input.classcode(),1)-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -169,7 +169,7 @@ ${if syntax.hasActions()-}
 		switch( rule ) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction()-}
-			case ${rule.getIndex()}:
+			case ${rule.getIndex()}:  // ${rule}
 				${call parserAction for rule-}
 ${if opts.breaks == 'on'}				break;$/
 ${end-}
@@ -222,7 +222,7 @@ ${eval getAction(), '[action in '+getAction().getLocation()+']'}
 ${end}
 
 ${template getsym-}
-${if this.isLeft}lapg_gg${else}lapg_m[lapg_head-${this.rightOffset}]${end-}
+${if self.isLeft}lapg_gg${else}lapg_m[lapg_head-${self.rightOffset}]${end-}
 ${end}
 
 ${template symbol-}

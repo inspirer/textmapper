@@ -72,6 +72,8 @@ public class Lapg {
 		}
 
 		ConsoleGenerator cg = new ConsoleGenerator(options);
-		cg.compileGrammar();
+		if(!cg.compileGrammar()) {
+			System.exit(1);
+		}
 	}
 }
