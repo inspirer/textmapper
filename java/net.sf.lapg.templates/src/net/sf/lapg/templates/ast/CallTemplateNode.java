@@ -9,31 +9,37 @@ import net.sf.lapg.templates.api.IEvaluationEnvironment;
 public class CallTemplateNode extends ExpressionNode {
 
 	private String templateId;
+
 	private ExpressionNode templateIdExpr;
+
 	private ExpressionNode[] arguments;
+
 	private ExpressionNode selectExpr;
 
-	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, String input, int line) {
+	private final boolean isStatement;
+
+	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, boolean isStatement, String input, int line) {
 		super(input, line);
+		this.isStatement = isStatement;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
 		this.templateId = identifier != null && identifier.indexOf('.') == -1 && !identifier.equals("base") ? currentPackage + "." + identifier : identifier;
 	}
 
 	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, String input, int line) {
-		this((String)null, args, selectExpr, currentPackage, input, line);
+		this((String) null, args, selectExpr, currentPackage, false, input, line);
 		this.templateIdExpr = identifier;
 	}
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
 		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), context) : context;
-		String tid = templateId != null ? templateId : (String/*TODO*/)env.evaluate(templateIdExpr, context, false);
+		String tid = templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false);
 
 		Object[] args = null;
-		if( arguments != null ) {
+		if (arguments != null) {
 			args = new Object[arguments.length];
-			for( int i = 0; i < arguments.length; i++ ) {
+			for (int i = 0; i < arguments.length; i++) {
 				args[i] = env.evaluate(arguments[i], context, false);
 			}
 		}
@@ -42,39 +48,47 @@ public class CallTemplateNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		if( selectExpr != null ) {
-			sb.append("call (");
-			if( templateId != null ) {
+		if (!isStatement) {
+			if(selectExpr != null) {
+				selectExpr.toString(sb);
+			} else {
+				sb.append("self");
+			}
+			sb.append("->");
+			if (templateId != null) {
 				sb.append(templateId);
 			} else {
-				sb.append("`");
+				sb.append("(");
 				templateIdExpr.toString(sb);
-				sb.append("`");
+				sb.append(")");
 			}
-			if( arguments != null && arguments.length > 0 ) {
-				sb.append(" ");
-				for( int i = 0; i < arguments.length; i++ ) {
-					if( i > 0 ) {
+			sb.append("(");
+			if (arguments != null) {
+				for (int i = 0; i < arguments.length; i++) {
+					if (i > 0) {
 						sb.append(",");
 					}
 					arguments[i].toString(sb);
 				}
 			}
-	 		sb.append(") ");
-			selectExpr.toString(sb);
+			sb.append(")");
 		} else {
 			// statement
 			sb.append("call ");
 			sb.append(templateId);
-			if( arguments != null && arguments.length > 0 ) {
+			if (arguments != null && arguments.length > 0) {
 				sb.append("(");
-				for( int i = 0; i < arguments.length; i++ ) {
-					if( i > 0 ) {
+				for (int i = 0; i < arguments.length; i++) {
+					if (i > 0) {
 						sb.append(",");
 					}
 					arguments[i].toString(sb);
 				}
-		 		sb.append(")");
+				sb.append(")");
+			}
+			if(selectExpr != null) {
+				sb.append(" for ");
+				selectExpr.toString(sb);
 			}
 		}
 	}

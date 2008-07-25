@@ -1,10 +1,15 @@
 package net.sf.lapg.templates.api.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class DefaultStaticMethods {
+
+	public String print(ArrayList<?> list, String separator, Integer maxwidth) {
+		return print(list.toArray(), separator, maxwidth);
+	}
 
 	public String print(Object[] list, String separator, Integer maxwidth) {
 		StringBuffer sb = new StringBuffer();

@@ -16,6 +16,6 @@ public class ThisNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		sb.append("this");
+		sb.append("self");
 	}
 }

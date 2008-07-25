@@ -27,7 +27,7 @@ public class IndexNode extends ExpressionNode {
 	@Override
 	public void toString(StringBuffer sb) {
 		if( objectExpr == null ) {
-			sb.append("this");
+			sb.append("self");
 		} else {
 			objectExpr.toString(sb);
 		}
