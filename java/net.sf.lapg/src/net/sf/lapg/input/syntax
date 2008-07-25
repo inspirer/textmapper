@@ -1,7 +1,7 @@
 #   syntax: lalr1 generator source grammar
 #
 #   Lapg (Lexical Analyzer and Parser Generator)
-#   Copyright (C) 2002-07  Evgeny Gryaznov (inspirer@inbox.ru)
+#   Copyright (C) 2002-08  Evgeny Gryaznov (inspirer@inbox.ru)
 #
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
@@ -19,8 +19,9 @@
 
 .lang        "java" 
 .getsym      "chr = l < buff.length ? buff[l++] : 0"
-.class       "Parser"
-.namespace	 "net.sf.lapg.input"
+.class       "LapgParser"
+.lexer		 "LapgLexer"
+.package	 "net.sf.lapg.input"
 .maxtoken    4096
 .breaks		 "on"
 .lexemend    "on"
@@ -30,14 +31,14 @@
 
 [0]
 
-identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { @ = new String(token,0,lapg_size); break; }
-regexp(String):	/\/([^\/\\]|\\.)*\//	{ @ = new String(token,1,lapg_size-2); break; }
-scon(String):	/"[^"\n\\]*"/			{ @ = new String(token,1,lapg_size-2); break; }
-type(String):	/\([^\)\n]+\)/			{ @ = new String(token,1,lapg_size-2); break; }
-icon(Integer):	/-?[0-9]+/				{ @ = Integer.parseInt(new String(token,0,lapg_size)); break; }
-eoi:           /\n%%.*/
+identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { $lexem = new String(token,0,len); break; }
+regexp(String):	/\/([^\/\\]|\\.)*\//	{ $lexem = new String(token,1,len-2); break; }
+scon(String):	/"[^"\n\\]*"/			{ $lexem = new String(token,1,len-2); break; }
+type(String):	/\([^\)\n]+\)/			{ $lexem = new String(token,1,len-2); break; }
+icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(new String(token,0,len)); break; }
+eoi:           /\n%%.*/					{ templatesStart = lapg_n.endpos.offset; break; }
 '%':           /\n%/
-_skip:         /\n|[\t\r ]+/    		{ continue; }
+_skip:         /\n|[\t\r ]+/    		{ return false; }
 _skip:  /#.*/
 '::=':  /::=/
 '|':    /\|/
@@ -48,7 +49,7 @@ _skip:  /#.*/
 ']':    /\]/
 '<<':   /<</
 
-'{':	/{/		{ deep = 1; group = @1; break; }
+'{':	/{/		{ deep = 1; group = 1; break; }
 
 [1]
 
@@ -56,11 +57,7 @@ _skip:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
 _skip:	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
 _skip:	/[^'"{}]+/
 'i{':	/{/				{ deep++; break; }
-'}':	/}/				{ if( --deep == 0 ) group = @0; break; }
-
-# Attributes
-
-[]
+'}':	/}/				{ if( --deep == 0 ) group = 0; break; }
 
 # Grammar
 
@@ -84,13 +81,13 @@ lexical_definitions ::=
 
 lexical_definition ::=
 	'[' iconlist_in_bits ']'							{ currentgroups = $iconlist_in_bits; }
-	| symbol typeopt ':'								{ addLexem($symbol, $typeopt, null, null, null, @0.line); }
-	| symbol typeopt ':' regexp iconopt commandopt		{ addLexem($symbol, $typeopt, $regexp, $iconopt, $commandopt, @0.line); }
+	| symbol typeopt ':'								{ addLexem($symbol, $typeopt, null, null, null, ${self[0].line}); }
+	| symbol typeopt ':' regexp iconopt commandopt		{ addLexem($symbol, $typeopt, $regexp, $iconopt, $commandopt, ${self[0].line}); }
 ;
 
 iconlist_in_bits(Integer) ::=
 	icon 												{ if( $icon < 0 || $icon >= BITS ) $$ = 0; else $$ = 1 << $icon; } 
-	| iconlist_in_bits icon  							{ $$ = $iconlist_in_bits | $icon; }
+	| iconlist_in_bits icon  							{ $$ = $iconlist_in_bits#0 | $icon; }
 ;
 
 grammar_definitions ::=
@@ -100,26 +97,26 @@ grammar_definitions ::=
 
 grammar_definition ::= 
 	rules_definition ';'
-	| '%' identifier symbol_list ';'					{ addPrio($identifier, $symbol_list, @1.line); }
+	| '%' identifier symbol_list ';'					{ addPrio($identifier, $symbol_list, ${self[1].line}); }
 ; 
 
 rules_definition (CSymbol) ::= 
-	symbol typeopt '::=' rule_def						{ addNonterm($symbol, $typeopt, @0.line); addRule($rule_def,$symbol); }
-	| rules_definition '|' rule_def						{ addRule($rule_def,$rules_definition); }
+	symbol typeopt '::=' rule_def						{ addNonterm($symbol, $typeopt, ${self[0].line}); addRule($rule_def,$symbol); }
+	| rules_definition '|' rule_def						{ addRule($rule_def,$rules_definition#0); }
 ;
 
 symbol_list (List<CSymbol>) ::= 
-	symbol_list symbol									{ $symbol_list.add($symbol); }
+	symbol_list symbol									{ $symbol_list#0.add($symbol); }
 	| symbol 											{ $$ = new ArrayList<CSymbol>(); $symbol_list.add($symbol); }
 ;
 
 rule_def (CRule) ::=
-	rule_symbols commandopt rule_priorityopt			{ $$ = new CRule($rule_symbols, $commandopt, $rule_priorityopt, inputId, @0.line); }
-	| commandopt rule_priorityopt 						{ $$ = new CRule(null, $commandopt, $rule_priorityopt, inputId, @0.line); }
+	rule_symbols commandopt rule_priorityopt			{ $$ = new CRule($rule_symbols, $commandopt, $rule_priorityopt, inputId, ${self[0].line}); }
+	| commandopt rule_priorityopt 						{ $$ = new CRule(null, $commandopt, $rule_priorityopt, inputId, ${self[0].line}); }
 ;
 
 rule_symbols (List<CSymbol>) ::=
-	rule_symbols commandopt symbol						{ addRuleSymbol($rule_symbols,$commandopt,$symbol); } 
+	rule_symbols commandopt symbol						{ addRuleSymbol($rule_symbols#0,$commandopt,$symbol); } 
 	| commandopt symbol									{ $$ = new ArrayList<CSymbol>(); addRuleSymbol($rule_symbols,$commandopt,$symbol); }
 ;
 
@@ -128,7 +125,7 @@ rule_priority (CSymbol) ::=
 ;
 
 command (CAction) ::=
-	'{' command_tokensopt '}'							{ $$ = new CAction(rawData(@0.offset+1,@2.offset), inputId, @0.line); }  
+	'{' command_tokensopt '}'							{ $$ = new CAction(rawData(${self[0].offset}+1,${self[2].offset}), inputId, ${self[0].line}); }  
 ;
 	
 command_tokens ::=
@@ -139,12 +136,14 @@ command_token ::=
 ;
 
 symbol (CSymbol) ::=
-	identifier											{ $$ = getSymbol($identifier, @0.line); }
+	identifier											{ $$ = getSymbol($identifier, ${self[0].line}); }
 ;
 
 ##################################################################################
 
 %%
+${template imports}
+import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -152,9 +151,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-%%
+${end}
 
-private Parser(String inputId, byte[] data, Map<String,String> defaultOptions) {
+${template lexercode}
+private int deep = 0;
+private int templatesStart = -1;
+
+int getTemplatesStart() {
+	return templatesStart;
+}
+${end}
+
+${template classcode}
+private LapgParser(String inputId, byte[] data, Map<String,String> defaultOptions) {
 	this.inputId = inputId;
 	this.buff = data;
 	this.l = 0;
@@ -180,7 +189,6 @@ private byte[] buff;
 private int l;
 
 private int currentgroups = 1;
-private int deep = 0;
 
 private String rawData(int start, int end) {
 	return new String(buff, start, end-start);
@@ -258,7 +266,7 @@ private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 	list.add(symbol);
 }
 
-private void error( String s ) {
+public void error( String s ) {
 	errors.add(s);
 }
 
@@ -276,18 +284,22 @@ private void propagateTypes() {
 
 public static CSyntax process(String inputId, String contents, Map<String,String> defaultOptions) {
 	try {
-		Parser p = new Parser(inputId, contents.getBytes("utf-8"), defaultOptions);
-		if( !p.parse() || !p.errors.isEmpty() ) {
+		byte[] buff = contents.getBytes("utf-8");
+		LapgParser p = new LapgParser(inputId, contents.getBytes("utf-8"), defaultOptions);
+		LapgLexer lexer = new LapgLexer(new ByteArrayInputStream(buff), p, "utf-8");
+		if( !p.parse(lexer) || !p.errors.isEmpty() ) {
 			return new CSyntax(p.errors);
 		}
 		p.getSymbol(CSyntax.INPUT, 1);
 		p.propagateTypes();
-		
-		String templates = p.l < p.buff.length ? new String(p.buff,p.l,p.buff.length-p.l,"utf-8") : null;
+
+		int offset = lexer.getTemplatesStart();
+		String templates = offset < buff.length && offset != -1 ? new String(buff,offset,buff.length-offset,"utf-8") : null;
 		return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);
 	} catch( UnsupportedEncodingException ex ) {
-		return null;
+	} catch( IOException ex ) {
 	}
+	return null;
 }
 
 static class ParseException extends Exception {
@@ -297,3 +309,4 @@ static class ParseException extends Exception {
 		super(arg0);
 	}
 }
+${end}

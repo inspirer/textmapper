@@ -179,6 +179,8 @@ public class Lexer {
 		public static final int MULTDIV = 134;
 	}
 
+	
+
 	public Lexer(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;

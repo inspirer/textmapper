@@ -33,6 +33,8 @@ ${for i : 0,parser.nterms-1 -}
 ${end-}
 	}
 
+${util.shiftRight(self->input.lexercode(),1)-}
+
 	public ${opts.lexer}(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;

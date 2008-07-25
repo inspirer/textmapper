@@ -2046,7 +2046,7 @@ public class pparser implements Lexer.ErrorReporter {
 		if( DEBUG_SYNTAX ) {
 			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
 		}
-		if( lapg_m[lapg_head].state != -1 ) {
+		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
 			lapg_n = lexer.next();
 		}
 	}

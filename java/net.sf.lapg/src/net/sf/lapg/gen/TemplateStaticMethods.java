@@ -101,7 +101,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			for (int i = 0; i < inner.length(); i++) {
 				int c = inner.charAt(i);
 				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_') {
-					res.append(c);
+					res.append((char)c);
 				} else {
 					String name;
 					switch (c) {
