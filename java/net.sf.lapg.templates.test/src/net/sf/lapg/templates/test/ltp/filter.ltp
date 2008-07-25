@@ -1,11 +1,11 @@
 
 
 ${template map1worker-}
-${util.print( map(name->value) this )-}
+${util.print( map(name->value) self )-}
 ${end}
 
 ${template map1-}
-${[['name'->'nbsss','value'->'a3'],
-   ['name'->'a45','value'->'943'],
-   ['name'->'ano','value'->'yes']].$map1worker() -}
+${[[name:'nbsss',value:'a3'],
+   [name:'a45',value:'943'],
+   [name:'ano',value:'yes']].$map1worker() -}
 ${end}

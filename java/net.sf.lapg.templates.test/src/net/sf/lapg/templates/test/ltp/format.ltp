@@ -23,13 +23,13 @@ static int a[] {
 ${end}
 
 ${template useCall1-}
-${this} is mine
+${self} is mine
 ${end}
 
 ${template useCall2-}
-${'Table'.$format.useCall1()-}
+${'Table'->format.useCall1()-}
 ${end}
 
 ${template useCall3-}
-${'site'.$useCall1()-}
+${'site'->useCall1()-}
 ${end}
