@@ -24,16 +24,16 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", new EvaluationContext(h), null);
-		Assert.assertEquals("Hmm: \r\n\r\n0: a\r\n1: b\r\n\r\n", q);
+		Assert.assertEquals("Hmm: \n\n0: a\n1: b\n\n", q);
 
 		// test 2
 		q = env.executeTemplate("loop.loop2", new EvaluationContext(h), null);
-		Assert.assertEquals("\r\nHmm: \r\n\r\n0: a\r\n1: b\r\n\r\n", q);
+		Assert.assertEquals("\nHmm: \n\n0: a\n1: b\n\n", q);
 
 		// test 3
 		h.put("list", new String[] {});
 		q = env.executeTemplate("loop.loop2", new EvaluationContext(h), null);
-		Assert.assertEquals("\r\nHmm: \r\n\r\n\r\n", q);
+		Assert.assertEquals("\nHmm: \n\n\n", q);
 	}
 
 	// eval.ltp
@@ -64,7 +64,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("ww-yt-7\n", q);
 
 		// test 4
-		env.addErrors("Evaluation of `this[2]` failed for java.lang.Object[]: 2 is out of 0..1");
+		env.addErrors("Evaluation of `self[2]` failed for java.lang.Object[]: 2 is out of 0..1");
 		q = env.executeTemplate("dollar.testdollarindexerr", null, null);
 		env.assertEmptyErrors();
 		Assert.assertEquals("ww-yt-\n", q);
@@ -82,7 +82,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 		// test 1
 		String q = env.executeTemplate("filter.map1", context, null);
-		Assert.assertEquals("[nbsss -> a3,ano -> yes,a45 -> 943]", q);
+		Assert.assertEquals("[nbsss -> a3,a45 -> 943q,ano -> yes]\n", q);
 	}
 
 	// arithm.ltp
@@ -138,19 +138,19 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 		// test 1
 		String q = env.executeTemplate("format.callTempl", context, null);
-		Assert.assertEquals("\r\nstatic int a[] {\r\n	0,\r\n1,\r\n2,\r\n3\r\n};\r\n\r\n", q);
+		Assert.assertEquals("\nstatic int a[] {\n	0,\n1,\n2,\n3\n};\n\n", q);
 
 		// test 2
 		q = env.executeTemplate("format.useformat", context, null);
-		Assert.assertEquals("\r\nstatic int a[] {\r\n	1,2,aa,4,5,\n6,7,8,9,10,\n11,12,13,14,\n15,16,17,19,\n20,21,22,23,\n24,25\r\n};\r\n\r\n", q);
+		Assert.assertEquals("\nstatic int a[] {\n	1,2,aa,4,5,\n6,7,8,9,10,\n11,12,13,14,\n15,16,17,19,\n20,21,22,23,\n24,25\n};\n\n", q);
 
 		// test 3
 		q = env.executeTemplate("format.useCall2", context, null);
-		Assert.assertEquals("Table is mine\r\n", q);
+		Assert.assertEquals("Table is mine\n", q);
 
 		// test 4
 		q = env.executeTemplate("format.useCall3", context, null);
-		Assert.assertEquals("site is mine\r\n", q);
+		Assert.assertEquals("site is mine\n", q);
 	}
 
 	public void testOverrides() {

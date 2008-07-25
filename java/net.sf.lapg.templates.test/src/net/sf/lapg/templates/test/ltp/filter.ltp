@@ -1,11 +1,11 @@
 
 
 ${template map1worker-}
-${util.print( map(name->value) self )-}
+[${util.print( self.collect(x|x.name+' -> '+x.value),',',1000)-}]
 ${end}
 
 ${template map1-}
 ${[[name:'nbsss',value:'a3'],
-   [name:'a45',value:'943'],
-   [name:'ano',value:'yes']].$map1worker() -}
+   [name:'a45',value:'943q'],
+   [name:'ano',value:'yes']]->map1worker() -}
 ${end}
