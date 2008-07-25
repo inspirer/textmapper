@@ -1002,14 +1002,11 @@ attribute_argument_list ::=
 ;
 
 %%
-
 //#define DEBUG_syntax
 
 using System;
 using System.Collections;
 using System.IO;
-
-%%
 
 public enum Kind {
 	Identifier, TypeDot, Dot, DimmedExpr, Other

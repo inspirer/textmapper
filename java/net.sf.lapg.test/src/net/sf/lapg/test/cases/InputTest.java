@@ -136,6 +136,8 @@ public class InputTest extends TestCase {
 
 		checkGenTables(g, "syntax_cs.tbl", er);
 		er.assertDone();
+
+		Assert.assertTrue(g.getTemplates().startsWith("\n//#define DEBUG_syntax"));
 	}
 
 	public void testLapgGrammar() {
