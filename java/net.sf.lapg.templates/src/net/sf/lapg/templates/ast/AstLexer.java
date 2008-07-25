@@ -102,6 +102,8 @@ public class AstLexer {
 		public static final int _skip = 57;
 	}
 
+	
+
 	public AstLexer(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;

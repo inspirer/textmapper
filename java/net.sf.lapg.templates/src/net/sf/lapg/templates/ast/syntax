@@ -313,6 +313,9 @@ import java.util.HashMap;
 import net.sf.lapg.templates.api.ITemplate;
 ${end}
 
+${template lexercode-}
+${end}
+
 ${template classcode}
 private ArrayList<ITemplate> templates;
 private String templatePackage;
