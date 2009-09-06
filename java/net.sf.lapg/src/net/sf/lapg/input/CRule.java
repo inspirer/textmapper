@@ -47,11 +47,11 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 	}
 
 	public int getPriority() {
-		if( priority != null ) {
+		if (priority != null) {
 			return priority.getIndex();
 		}
-		for( int i = right.length-1; i >= 0; i --) {
-			if( right[i].isTerm()) {
+		for (int i = right.length - 1; i >= 0; i--) {
+			if (right[i].isTerm()) {
 				return right[i].getIndex();
 			}
 		}
@@ -65,21 +65,21 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		if( left.getName() == null ) {
+		if (left.getName() == null) {
 			sb.append("<noname>");
 		} else {
 			sb.append(left.getName());
 		}
 		sb.append(" ::=");
-		for( CSymbol s : right ) {
+		for (CSymbol s : right) {
 			sb.append(" ");
-			if( s.getName() == null ) {
+			if (s.getName() == null) {
 				sb.append("{}");
 			} else {
 				sb.append(s.getName());
 			}
 		}
-		if( priority != null ) {
+		if (priority != null) {
 			sb.append(" << ");
 			sb.append(priority.getName());
 		}

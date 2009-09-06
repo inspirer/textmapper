@@ -18,7 +18,7 @@ public class CSyntax implements Grammar {
 	private final CSymbol[] symbols;
 	private final CRule[] rules;
 	private final CPrio[] prios;
-	private final Map<String,String> options;
+	private final Map<String, String> options;
 	private final CLexem[] lexems;
 	private final String templates;
 
@@ -26,7 +26,8 @@ public class CSyntax implements Grammar {
 	private final int myError;
 	private final int myTerms;
 
-	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String,String> options, List<CLexem> lexems, String templates) {
+	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String, String> options,
+			List<CLexem> lexems, String templates) {
 		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
 		this.rules = rules.toArray(new CRule[rules.size()]);
 		this.prios = prios.toArray(new CPrio[prios.size()]);
@@ -39,15 +40,15 @@ public class CSyntax implements Grammar {
 		myInput = findSymbol(INPUT);
 		myError = findSymbol(ERROR);
 		int i = 0;
-		for(; i < this.symbols.length && this.symbols[i].isTerm(); i++) {
+		for (; i < this.symbols.length && this.symbols[i].isTerm(); i++) {
 			;
 		}
 		myTerms = i;
 	}
 
 	private int findSymbol(String name) {
-		for( int i = 0; i < symbols.length; i++) {
-			if( symbols[i].getName().equals(name) ) {
+		for (int i = 0; i < symbols.length; i++) {
+			if (symbols[i].getName().equals(name)) {
 				return i;
 			}
 		}
@@ -55,27 +56,27 @@ public class CSyntax implements Grammar {
 	}
 
 	/**
-	 *  Inplace sort of symbols. [eoi term] [other terms] [all non-terminals]
+	 * Inplace sort of symbols. [eoi term] [other terms] [all non-terminals]
 	 */
 	private void sortSymbols() {
 		int first = 0, end = symbols.length - 1;
 
-		while( first < end ) {
-			while( symbols[first].isTerm() && first < end ) {
+		while (first < end) {
+			while (symbols[first].isTerm() && first < end) {
 				first++;
 			}
-			while( !symbols[end].isTerm() && first < end) {
+			while (!symbols[end].isTerm() && first < end) {
 				end--;
 			}
-			if( first < end ) {
+			if (first < end) {
 				CSymbol ex = symbols[end];
 				symbols[end] = symbols[first];
 				symbols[first] = ex;
 			}
 		}
-		if( symbols.length > 0 && !symbols[0].getName().equals(EOI) ) {
-			for( int i = 1; i < symbols.length; i++ ) {
-				if( symbols[i].getName().equals(EOI) ) {
+		if (symbols.length > 0 && !symbols[0].getName().equals(EOI)) {
+			for (int i = 1; i < symbols.length; i++) {
+				if (symbols[i].getName().equals(EOI)) {
 					CSymbol ex = symbols[i];
 					symbols[i] = symbols[0];
 					symbols[0] = ex;
@@ -86,10 +87,10 @@ public class CSyntax implements Grammar {
 	}
 
 	private void enumerateAll() {
-		for( int i = 0; i < symbols.length; i++ ) {
+		for (int i = 0; i < symbols.length; i++) {
 			symbols[i].index = i;
 		}
-		for( int i = 0; i < rules.length; i++ ) {
+		for (int i = 0; i < rules.length; i++) {
 			rules[i].index = i;
 		}
 	}
@@ -155,8 +156,8 @@ public class CSyntax implements Grammar {
 	}
 
 	public boolean hasActions() {
-		for( CRule r : rules ) {
-			if( r.getAction() != null ) {
+		for (CRule r : rules) {
+			if (r.getAction() != null) {
 				return true;
 			}
 		}
@@ -164,8 +165,8 @@ public class CSyntax implements Grammar {
 	}
 
 	public boolean hasLexemActions() {
-		for( int i = 0; i < lexems.length; i++ ) {
-			if( lexems[i].getAction() != null ) {
+		for (int i = 0; i < lexems.length; i++) {
+			if (lexems[i].getAction() != null) {
 				return true;
 			}
 		}

@@ -1,5 +1,5 @@
 /*************************************************************
- * Copyright (c) 2002-2008 Evgeny Gryaznov
+ * Copyright (c) 2002-2009 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,13 +16,12 @@ import net.sf.lapg.gen.ConsoleGenerator;
 import net.sf.lapg.gen.LapgOptions;
 
 /**
- * @author inspirer
  * Main console entry point for Lapg engine.
  */
 public class Lapg {
 
 	public static final String VERSION = "1.4.0/java";
-	public static final String BUILD = "2008";
+	public static final String BUILD = "2009";
 	public static final String DEFAULT_FILE = "syntax";
 
 	public static final String HELP_MESSAGE =
@@ -42,7 +41,7 @@ public class Lapg {
 
 	public static final String VERSION_MESSAGE =
 		"lapg v" + VERSION + " build " + BUILD + "\n" +
-		"Evgeny Gryaznov, 2002-08, egryaznov@gmail.com\n";
+		"Evgeny Gryaznov, 2002-09, egryaznov@gmail.com\n";
 
 
 	public static void main(String[] args) {
@@ -64,7 +63,7 @@ public class Lapg {
 			return;
 		}
 
-		LapgOptions options = LapgOptions.parseArguments(args);
+		LapgOptions options = LapgOptions.parseArguments(args, System.err);
 		if (options == null) {
 			System.err.println("Try 'lapg --help' for more information.");
 			System.exit(1);

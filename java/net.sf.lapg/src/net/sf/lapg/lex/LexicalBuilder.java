@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.common.FormatUtil;
@@ -20,7 +20,7 @@ public class LexicalBuilder {
 
 	// initial information
 	private Lexem[] myLexems;
-	private IError err;
+	private INotifier err;
 	int debuglev;
 
 	// lexical analyzer description
@@ -44,7 +44,7 @@ public class LexicalBuilder {
 	int[] groupset;
 
 
-	private LexicalBuilder(Lexem[] lexems, IError err, int debuglev) {
+	private LexicalBuilder(Lexem[] lexems, INotifier err, int debuglev) {
 		this.err = err;
 		this.debuglev = debuglev;
 		this.myLexems = lexems;
@@ -628,7 +628,7 @@ public class LexicalBuilder {
 	/**
 	 *  Generates lexer tables from lexems descriptions
 	 */
-	public static LexerTables compile(Lexem[] lexems, IError err, int debuglev) {
+	public static LexerTables compile(Lexem[] lexems, INotifier err, int debuglev) {
 		LexicalBuilder lb = new LexicalBuilder(lexems, err, debuglev);
 		return lb.generate();
 	}

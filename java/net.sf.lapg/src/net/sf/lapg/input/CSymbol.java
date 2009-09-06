@@ -22,54 +22,57 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		this.line = line;
 	}
 
-	private void setDefined( String ntype, boolean nisterm, String ninput, int nline ) throws ParseException {
-		if( isDefined ) {
-			if( nisterm != isTerm ) {
-				throw new ParseException(
-						(isTerm ?
-								"redeclaring terminal `" + name + "` as non-terminal"
-								: "redeclaring non-terminal `" + name + "` as terminal")
+	private void setDefined(String ntype, boolean nisterm, String ninput, int nline) throws ParseException {
+		if (isDefined) {
+			if (nisterm != isTerm) {
+				throw new ParseException((isTerm ? "redeclaring terminal `" + name + "` as non-terminal"
+						: "redeclaring non-terminal `" + name + "` as terminal")
 						+ " at line " + nline + " (previously declared at " + this.line + ")");
 			}
-			if( this.type != null && ntype != null && !this.type.equals(ntype) ) {
-				throw new ParseException("redeclaring type for `"+name+"` at line " + nline + " (previously declared at line " + this.line + ")");
+			if (this.type != null && ntype != null && !this.type.equals(ntype)) {
+				throw new ParseException("redeclaring type for `" + name + "` at line " + nline
+						+ " (previously declared at line " + this.line + ")");
 			}
 		} else {
-			if( line != 0) {
+			if (line != 0) {
 				input = ninput;
 				line = nline;
 			}
 			isDefined = true;
 			isTerm = nisterm;
 		}
-		if( type == null ) {
+		if (type == null) {
 			type = ntype;
 		}
 	}
 
-	void setTerminal( String type, boolean hasRegExp, String input, int line ) throws ParseException {
-		if( name.equals(CSyntax.INPUT) ) {
-			throw new ParseException("cannot declare terminal with name `"+name+"` (reserved non-terminal) at line " + line);
+	void setTerminal(String type, boolean hasRegExp, String input, int line) throws ParseException {
+		if (name.equals(CSyntax.INPUT)) {
+			throw new ParseException("cannot declare terminal with name `" + name
+					+ "` (reserved non-terminal) at line " + line);
 		}
-		if( name.equals(CSyntax.ERROR) && hasRegExp ) {
-			throw new ParseException("cannot have regexp for symbol with name `"+name+"` (reserved non-terminal) at line " + line);
+		if (name.equals(CSyntax.ERROR) && hasRegExp) {
+			throw new ParseException("cannot have regexp for symbol with name `" + name
+					+ "` (reserved non-terminal) at line " + line);
 		}
-		if( name.endsWith(CSyntax.OPTSUFFIX) ) {
-			throw new ParseException("cannot declare terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix is reserved for non-terms) at line " + line);
+		if (name.endsWith(CSyntax.OPTSUFFIX)) {
+			throw new ParseException("cannot declare terminal with name `" + name + "` (" + CSyntax.OPTSUFFIX
+					+ " suffix is reserved for non-terms) at line " + line);
 		}
 		setDefined(type, true, input, line);
 	}
 
- 	void setNonTerminal( String type, String input, int line ) throws ParseException {
-		if( name.endsWith(CSyntax.OPTSUFFIX) && line != 0 ) {
-			throw new ParseException("cannot declare non-terminal with name `"+name+"` ("+CSyntax.OPTSUFFIX+" suffix symbols are generated automatically) at line " + line);
+	void setNonTerminal(String type, String input, int line) throws ParseException {
+		if (name.endsWith(CSyntax.OPTSUFFIX) && line != 0) {
+			throw new ParseException("cannot declare non-terminal with name `" + name + "` (" + CSyntax.OPTSUFFIX
+					+ " suffix symbols are generated automatically) at line " + line);
 		}
 		setDefined(type, false, input, line);
 	}
 
- 	void setType(String type) {
- 		this.type = type;
- 	}
+	void setType(String type) {
+		this.type = type;
+	}
 
 	public String getLocation() {
 		return input + "," + line;
@@ -98,12 +101,12 @@ public class CSymbol implements Symbol, ILocatedEntity {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		if( name == null ) {
+		if (name == null) {
 			sb.append("<noname>");
 		} else {
 			sb.append(name);
 		}
-		if( type != null ) {
+		if (type != null) {
 			sb.append(" (");
 			sb.append(type);
 			sb.append(")");

@@ -2,14 +2,14 @@ package net.sf.lapg.lalr;
 
 import java.util.Vector;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 
 
 public class Builder extends Lalr1 {
 
-	private Builder(Grammar g, IError err, int debuglev) {
+	private Builder(Grammar g, INotifier err, int debuglev) {
 		super(g, err, debuglev);
 	}
 
@@ -378,7 +378,7 @@ public class Builder extends Lalr1 {
 		return r;
 	}
 
-	public static ParserTables compile(Grammar g, IError err, int debuglev) {
+	public static ParserTables compile(Grammar g, INotifier err, int debuglev) {
 		Builder en = new Builder(g, err, debuglev);
 		return en.generate();
 	}

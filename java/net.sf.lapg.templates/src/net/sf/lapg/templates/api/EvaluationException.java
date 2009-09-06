@@ -1,8 +1,7 @@
 package net.sf.lapg.templates.api;
 
-
 /**
- *  Some expression cannot be evaluated, all errors are shown.
+ * Failure of evaluation.
  */
 public class EvaluationException extends Exception {
 

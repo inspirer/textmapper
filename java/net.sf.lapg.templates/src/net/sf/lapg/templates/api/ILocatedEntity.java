@@ -1,8 +1,12 @@
 package net.sf.lapg.templates.api;
 
 /**
- *  Each entity in the model should be named and located.
+ * Model entity, which has a human-readable location.
  */
 public interface ILocatedEntity {
+
+	/**
+	 * @return human-readable location of the entity
+	 */
 	String getLocation();
 }

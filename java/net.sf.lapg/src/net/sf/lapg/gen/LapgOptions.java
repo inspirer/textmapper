@@ -1,5 +1,5 @@
 /*************************************************************
- * Copyright (c) 2002-2008 Evgeny Gryaznov
+ * Copyright (c) 2002-2009 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,6 +10,7 @@
  *************************************************************/
 package net.sf.lapg.gen;
 
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,20 +20,25 @@ import java.util.Set;
 
 import net.sf.lapg.Lapg;
 
-
+/**
+ * Represents generator options.
+ */
 public class LapgOptions {
 
 	public static final int DEBUG_AMBIG = 1;
 	public static final int DEBUG_TABLES = 2;
 
 	private int debug;
+	
 	private String input;
 	private String outputFolder;
 	private String templateName;
+	
 	private List<String> includeFolders;
+	private Map<String, String> templateOptions;
+	
 	private boolean useDefaultTemplates;
-	private Map<String,String> templateOptions;
-
+	
 	public LapgOptions() {
 		this.debug = 0;
 		this.input = Lapg.DEFAULT_FILE;
@@ -40,7 +46,7 @@ public class LapgOptions {
 		this.templateName = "java";
 		this.includeFolders = new LinkedList<String>();
 		this.useDefaultTemplates = true;
-		this.templateOptions = new HashMap<String,String>();
+		this.templateOptions = new HashMap<String, String>();
 	}
 
 	public String getInput() {
@@ -102,17 +108,17 @@ public class LapgOptions {
 	static final int OPT_TEMPLATE = 6 | HAS_VALUE;
 	static final int OPT_INPUT = 7 | HAS_VALUE;
 
-	public static final String HELP_OPTIONS =
-		"  -d,  --debug                   debug info\n"+
-		"  -e,  --extended-debug          extended debug info\n"+
-		"  -x,  --no-default-templates    removes default templates from engine\n"+
-		"  -o folder, --output=folder     target folder\n"+
-		"  -i folder, --include=folder    adds folder (or semicolon separated folder list) to the lapg.templates stack\n"+
-		"  -t templateId, --template=id   use template for generation\n"+
+	public static final String HELP_OPTIONS = 
+		"  -d,  --debug                   debug info\n" +
+		"  -e,  --extended-debug          extended debug info\n" +
+		"  -x,  --no-default-templates    removes default templates from engine\n" +
+		"  -o folder, --output=folder     target folder\n" +
+		"  -i folder, --include=folder    adds folder (or semicolon separated folder list) to the lapg.templates stack\n" +
+		"  -t templateId, --template=id   use template for generation\n" +
 		"  key=val                        any generation option\n";
-
+	
 	private static Map<String, Integer> buildOptionsHash() {
-		HashMap<String, Integer> res = new HashMap<String, Integer>();
+		Map<String, Integer> res = new HashMap<String, Integer>();
 		res.put("d", OPT_DEBUG);
 		res.put("-debug", OPT_DEBUG);
 		res.put("e", OPT_EXT_DEBUG);
@@ -128,7 +134,7 @@ public class LapgOptions {
 		return res;
 	}
 
-	public static LapgOptions parseArguments(String[] args) {
+	public static LapgOptions parseArguments(String[] args, PrintStream errorStream) {
 		LapgOptions opts = new LapgOptions();
 		Map<String, Integer> optionsHash = buildOptionsHash();
 		Set<Integer> usedOptions = new HashSet<Integer>();
@@ -140,34 +146,35 @@ public class LapgOptions {
 				int optionId = optionsHash.containsKey(option) ? optionsHash.get(option) : 0;
 				boolean hasValue = (optionId & HAS_VALUE) != 0;
 				if (optionId == 0 || equalIndex >= 0 && !hasValue) {
-					System.err.println("lapg: invalid option " + args[i]);
+					errorStream.println("lapg: invalid option " + args[i]);
 					return null;
 				}
-				if (hasValue && (equalIndex < 0 && i+1 == args.length || equalIndex+1 == args[i].length())) {
-					System.err.println("lapg: no value for option " + args[i]);
+				if (hasValue && (equalIndex < 0 && i + 1 == args.length || equalIndex + 1 == args[i].length())) {
+					errorStream.println("lapg: no value for option " + args[i]);
 					return null;
 				}
-				if(usedOptions.contains(optionId)) {
-					System.err.println("lapg: option cannot be used twice " + args[i]);
+				if (usedOptions.contains(optionId)) {
+					errorStream.println("lapg: option cannot be used twice " + args[i]);
 					return null;
 				}
-				if((optionId & MULTI_VALUE) == 0) {
+				if ((optionId & MULTI_VALUE) == 0) {
 					usedOptions.add(optionId);
 				}
-				setOption(opts, optionId, hasValue ? (equalIndex >= 0 ? args[i].substring(equalIndex + 1) : args[++i]) : null);
+				setOption(opts, optionId, hasValue ? (equalIndex >= 0 ? args[i].substring(equalIndex + 1) : args[++i])
+						: null);
 
 			} else if (equalIndex >= 0) {
 				String key = args[i].substring(0, equalIndex);
 				String value = args[i].substring(equalIndex + 1);
 				if (opts.getAdditionalOptions().containsKey(key)) {
-					System.err.println("lapg: key is used twice: " + key);
+					errorStream.println("lapg: key is used twice: " + key);
 					return null;
 				}
 				opts.getAdditionalOptions().put(key, value);
 
 			} else {
-				if(usedOptions.contains(OPT_INPUT)) {
-					System.err.println("lapg: should be only one input in arguments");
+				if (usedOptions.contains(OPT_INPUT)) {
+					errorStream.println("lapg: should be only one input in arguments");
 					return null;
 				}
 				usedOptions.add(OPT_INPUT);
@@ -178,7 +185,7 @@ public class LapgOptions {
 	}
 
 	private static void setOption(LapgOptions opts, int optionId, String value) {
-		switch(optionId) {
+		switch (optionId) {
 		case OPT_DEBUG:
 			opts.setDebug(LapgOptions.DEBUG_AMBIG);
 			break;
@@ -189,8 +196,8 @@ public class LapgOptions {
 			opts.setUseDefaultTemplates(false);
 			break;
 		case OPT_INCLUDE:
-			for(String s : value.split(";")) {
-				if(s.trim().length() > 0) {
+			for (String s : value.split(";")) {
+				if (s.trim().length() > 0) {
 					opts.getIncludeFolders().add(s);
 				}
 			}

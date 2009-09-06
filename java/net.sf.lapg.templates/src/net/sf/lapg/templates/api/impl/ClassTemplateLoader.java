@@ -7,23 +7,29 @@ import java.io.Reader;
 
 import net.sf.lapg.templates.api.ITemplateLoader;
 
+/**
+ * Loads templates stored along with java classes (using ClassLoader)
+ */
 public class ClassTemplateLoader implements ITemplateLoader {
 
 	private ClassLoader loader;
 
 	private String rootPackage;
 
-	public ClassTemplateLoader(ClassLoader loader, String rootPackage) {
+	private final String charsetName;
+
+	public ClassTemplateLoader(ClassLoader loader, String rootPackage, String charsetName) {
 		this.loader = loader;
 		this.rootPackage = rootPackage;
+		this.charsetName = charsetName;
 	}
 
-	private static String getStreamContents(InputStream stream) {
+	private static String getStreamContents(InputStream stream, String charsetName) {
 		StringBuffer contents = new StringBuffer();
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(stream);
+			Reader in = new InputStreamReader(stream, charsetName);
 			try {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);
@@ -43,6 +49,6 @@ public class ClassTemplateLoader implements ITemplateLoader {
 			return null;
 		}
 
-		return getStreamContents(s);
+		return getStreamContents(s, charsetName);
 	}
 }

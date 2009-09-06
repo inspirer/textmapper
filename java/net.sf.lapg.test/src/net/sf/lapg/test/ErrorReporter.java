@@ -1,9 +1,12 @@
 package net.sf.lapg.test;
 
-import junit.framework.Assert;
-import net.sf.lapg.IError;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-public class ErrorReporter implements IError {
+import junit.framework.Assert;
+import net.sf.lapg.INotifier;
+
+public class ErrorReporter implements INotifier {
 
 	private final StringBuffer warns = new StringBuffer();
 	private final StringBuffer errors = new StringBuffer();
@@ -42,5 +45,12 @@ public class ErrorReporter implements IError {
 	}
 
 	public void dispose() {
+	}
+
+	public void trace(Throwable ex) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw, true);
+		ex.printStackTrace(pw);
+		error(sw.getBuffer().toString());
 	}
 }

@@ -2,7 +2,11 @@ package net.sf.lapg;
 
 import net.sf.lapg.api.Symbol;
 
+/**
+ * Representation of generated parser tables.
+ */
 public class ParserTables {
+
 	public Symbol[] sym;
 	public int rules, nsyms, nterms, nstates, errorn;
 	public int[] rleft, rright, rindex, rprio;
@@ -12,9 +16,9 @@ public class ParserTables {
 
 	public int[] getRuleLength() {
 		int[] result = new int[rules];
-		for( int i = 0; i < rules; i++ ) {
+		for (int i = 0; i < rules; i++) {
 			int e = 0;
-			for(; rright[ rindex[i]+e ] >= 0; e++) {
+			for (; rright[rindex[i] + e] >= 0; e++) {
 			}
 			result[i] = e;
 		}

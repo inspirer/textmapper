@@ -15,12 +15,14 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	private static final String TEMPLATES_LOCATION = "net/sf/lapg/templates/test/ltp";
 
+	private static final String TEMPLATES_CHARSET = "utf8";
+	
 	// loop.ltp
 	public void testLoops() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
 
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", new EvaluationContext(h), null);
@@ -38,7 +40,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// eval.ltp
 	public void testEval() {
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("eval.eval1", null, null);
@@ -47,7 +49,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// dollar.ltp
 	public void testDollar() {
-		TestEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		TestEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("dollar.testdollar", null, null);
@@ -76,7 +78,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// filter.ltp
 	public void testMap() {
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -87,7 +89,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// arithm.ltp
 	public void testArithm() {
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("arithm.arithm1", new EvaluationContext(null), null);
@@ -118,7 +120,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testAssert() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "w1", "w2" });
-		TestEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		TestEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		env.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
@@ -132,7 +134,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testCall() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -156,7 +158,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testOverrides() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION));
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -172,7 +174,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testFile() {
 		final HashMap<String,String> fileContent = new HashMap<String,String>();
-		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION)) {
+		IEvaluationEnvironment env = new TestEnvironment(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
 			@Override
 			public void createFile(String name, String contents) {
 				fileContent.put(name, contents);

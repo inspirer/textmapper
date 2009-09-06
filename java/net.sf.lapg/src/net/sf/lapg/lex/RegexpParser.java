@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 
 public class RegexpParser {
 
-	private IError err;
+	private INotifier err;
 
 	// result
 	private int[] symbols;
@@ -19,7 +19,7 @@ public class RegexpParser {
 	private int[] stack;
 	private int[] set;
 
-	public RegexpParser(IError err) {
+	public RegexpParser(INotifier err) {
 		this.err = err;
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];

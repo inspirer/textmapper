@@ -2,13 +2,17 @@ package net.sf.lapg.api;
 
 import java.util.Map;
 
-
+/**
+ * Input grammar definition.
+ */
 public interface Grammar {
 
 	Symbol[] getSymbols();
 	Rule[] getRules();
 	Prio[] getPriorities();
-	Map<String,String> getOptions();
+
+	Map<String, String> getOptions();
+
 	Lexem[] getLexems();
 
 	int getTerminals();

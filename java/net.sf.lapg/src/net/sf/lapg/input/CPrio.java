@@ -35,7 +35,7 @@ public class CPrio implements Prio, ILocatedEntity {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		switch(prio) {
+		switch (prio) {
 		case LEFT:
 			sb.append("left");
 			break;
@@ -48,8 +48,8 @@ public class CPrio implements Prio, ILocatedEntity {
 		}
 		sb.append("=[");
 		boolean notfirst = false;
-		for( CSymbol s : symbols ) {
-			if( notfirst ) {
+		for (CSymbol s : symbols) {
+			if (notfirst) {
 				sb.append(", ");
 			} else {
 				notfirst = true;

@@ -1,5 +1,5 @@
 /*************************************************************
- * Copyright (c) 2002-2008 Evgeny Gryaznov
+ * Copyright (c) 2002-2009 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
@@ -53,7 +53,7 @@ public abstract class AbstractGenerator {
 	}
 
 	public boolean compileGrammar() {
-		IError err = openError();
+		INotifier err = createNotifier();
 		try {
 			InputStream is = openInput();
 			if (is == null) {
@@ -84,7 +84,7 @@ public abstract class AbstractGenerator {
 		} catch (Throwable t) {
 			err.error("lapg: internal error: " + t.getClass().getName() + "\n");
 			if (options.getDebug() >= 2) {
-				t.printStackTrace(System.err);
+				err.trace(t);
 			}
 			return false;
 		} finally {
@@ -103,7 +103,7 @@ public abstract class AbstractGenerator {
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates"));
+			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
 		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()])) {
@@ -122,7 +122,7 @@ public abstract class AbstractGenerator {
 
 	protected abstract ITemplateLoader createTemplateLoader(String path);
 
-	protected abstract IError openError();
+	protected abstract INotifier createNotifier();
 
 	protected abstract void createFile(String name, String contents);
 

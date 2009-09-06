@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * Default class to use as helper in templates.
+ */
 public class DefaultStaticMethods {
 
 	public String print(ArrayList<?> list, String separator, Integer maxwidth) {
@@ -14,12 +16,12 @@ public class DefaultStaticMethods {
 	public String print(Object[] list, String separator, Integer maxwidth) {
 		StringBuffer sb = new StringBuffer();
 		int i = 0, lineStart = 0;
-		for( Object a : list ) {
-			if( i > 0 ) {
+		for (Object a : list) {
+			if (i > 0) {
 				sb.append(separator);
 			}
 			String str = a.toString();
-			if( sb.length() + str.length() - lineStart >= maxwidth) {
+			if (sb.length() + str.length() - lineStart >= maxwidth) {
 				sb.append('\n');
 				lineStart = sb.length();
 			}
@@ -29,12 +31,12 @@ public class DefaultStaticMethods {
 		return sb.toString();
 	}
 
-	public String print(HashMap<?,?> map) {
+	public String print(HashMap<?, ?> map) {
 		StringBuffer sb = new StringBuffer();
 		int i = 0;
 		sb.append("[");
-		for( Map.Entry<?,?> a : map.entrySet() ) {
-			if( i > 0 ) {
+		for (Map.Entry<?, ?> a : map.entrySet()) {
+			if (i > 0) {
 				sb.append(",");
 			}
 			sb.append(a.getKey());

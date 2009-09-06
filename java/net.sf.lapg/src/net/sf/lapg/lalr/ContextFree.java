@@ -1,6 +1,6 @@
 package net.sf.lapg.lalr;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
 import net.sf.lapg.api.Rule;
@@ -37,7 +37,7 @@ abstract class ContextFree {
 		return result;
 	}
 
-	protected ContextFree(Grammar g, IError err, int debuglev) {
+	protected ContextFree(Grammar g, INotifier err, int debuglev) {
 		this.err = err;
 		this.debuglev = debuglev;
 
@@ -83,7 +83,7 @@ abstract class ContextFree {
 	// log
 
 	protected final int debuglev;
-	protected final IError err;
+	protected final INotifier err;
 
 	// grammar information
 

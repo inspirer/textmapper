@@ -11,7 +11,6 @@ import net.sf.lapg.gen.LapgOptions;
 import org.junit.Assert;
 
 /**
- * @author inspirer
  * Tests for {@link LapgOptions} command-line arguments parsing.
  */
 public class ConsoleArgsTest extends TestCase {
@@ -40,9 +39,18 @@ public class ConsoleArgsTest extends TestCase {
 			Assert.assertEquals("error not happened: " + new String(bytes, index, bytes.length-index, "utf8"), bytes.length, index);
 		}
 	}
+	
+	private static class FailingStream extends OutputStream {
+
+		@Override
+		public void write(int b) throws IOException {
+			Assert.fail("write-protected stream");
+		}
+	}
 
 	private CheckingErrorStream current;
 	private PrintStream originalErr = System.err;
+	private PrintStream failingStream = new PrintStream(new FailingStream());
 
 	private void expectError(String expect) {
 		try {
@@ -66,7 +74,7 @@ public class ConsoleArgsTest extends TestCase {
 	}
 
 	public void testCheckNoArgs() {
-		LapgOptions lo = LapgOptions.parseArguments(new String[0]);
+		LapgOptions lo = LapgOptions.parseArguments(new String[0], failingStream);
 		Assert.assertNotNull(lo);
 		Assert.assertEquals("syntax", lo.getInput());
 		Assert.assertNull(lo.getOutputFolder());
@@ -78,16 +86,16 @@ public class ConsoleArgsTest extends TestCase {
 	}
 
 	public void testCheckDebug() {
-		LapgOptions lo = LapgOptions.parseArguments("-e".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("-e".split(" "), failingStream);
 		Assert.assertNotNull(lo);
 		Assert.assertEquals("syntax", lo.getInput());
 		Assert.assertEquals(LapgOptions.DEBUG_TABLES, lo.getDebug());
-		lo = LapgOptions.parseArguments("-d".split(" "));
+		lo = LapgOptions.parseArguments("-d".split(" "), failingStream);
 		Assert.assertEquals(LapgOptions.DEBUG_AMBIG, lo.getDebug());
 	}
 
 	public void testInput() {
-		LapgOptions lo = LapgOptions.parseArguments("-e synt1".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("-e synt1".split(" "), failingStream);
 		Assert.assertNotNull(lo);
 		Assert.assertEquals("synt1", lo.getInput());
 		Assert.assertEquals(LapgOptions.DEBUG_TABLES, lo.getDebug());
@@ -95,62 +103,62 @@ public class ConsoleArgsTest extends TestCase {
 
 	public void testInput2() {
 		expectError("lapg: should be only one input in arguments\n");
-		LapgOptions lo = LapgOptions.parseArguments("synt2 synt1".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("synt2 synt1".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 	}
 
 	public void testTwiceArg() {
 		expectError("lapg: option cannot be used twice -e\n");
-		LapgOptions lo = LapgOptions.parseArguments("-e -e".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("-e -e".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: option cannot be used twice -x\n");
-		lo = LapgOptions.parseArguments("--no-default-templates -x".split(" "));
+		lo = LapgOptions.parseArguments("--no-default-templates -x".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: option cannot be used twice --no-default-templates\n");
-		lo = LapgOptions.parseArguments("-x --no-default-templates".split(" "));
+		lo = LapgOptions.parseArguments("-x --no-default-templates".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 	}
 
 	public void testError() {
 		expectError("lapg: no value for option -o\n");
-		LapgOptions lo = LapgOptions.parseArguments("-o".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("-o".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: no value for option --output\n");
-		lo = LapgOptions.parseArguments("--output".split(" "));
+		lo = LapgOptions.parseArguments("--output".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: no value for option --output=\n");
-		lo = LapgOptions.parseArguments("--output=".split(" "));
+		lo = LapgOptions.parseArguments("--output=".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: invalid option --output1=we\n");
-		lo = LapgOptions.parseArguments("--output1=we".split(" "));
+		lo = LapgOptions.parseArguments("--output1=we".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: invalid option -q\n");
-		lo = LapgOptions.parseArguments("-q".split(" "));
+		lo = LapgOptions.parseArguments("-q".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 
 		expectError("lapg: key is used twice: a\n");
-		lo = LapgOptions.parseArguments("a=2 a=5".split(" "));
+		lo = LapgOptions.parseArguments("a=2 a=5".split(" "), System.err);
 		Assert.assertNull(lo);
 		closeError();
 	}
 
 	public void testComplicated() {
-		LapgOptions lo = LapgOptions.parseArguments("-e -x -o outputY -i folder1;folder2 -i folder3 -t java2 a=5 b=6 syntax.g".split(" "));
+		LapgOptions lo = LapgOptions.parseArguments("-e -x -o outputY -i folder1;folder2 -i folder3 -t java2 a=5 b=6 syntax.g".split(" "), failingStream);
 		Assert.assertNotNull(lo);
 		Assert.assertEquals("syntax.g", lo.getInput());
 		Assert.assertEquals("outputY", lo.getOutputFolder());

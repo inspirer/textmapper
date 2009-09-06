@@ -8,6 +8,9 @@ import java.io.Reader;
 
 import net.sf.lapg.templates.api.ITemplateLoader;
 
+/**
+ * Loads templates from specified folders;
+ */
 public class FolderTemplateLoader implements ITemplateLoader {
 
 	private File[] myFolders;

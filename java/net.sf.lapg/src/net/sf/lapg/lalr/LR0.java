@@ -2,7 +2,7 @@ package net.sf.lapg.lalr;
 
 import java.util.Arrays;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 
 /**
@@ -35,7 +35,7 @@ class LR0 extends ContextFree {
 	protected State[] state;
 	protected State first;
 
-	protected LR0(Grammar g, IError err, int debuglev) {
+	protected LR0(Grammar g, INotifier err, int debuglev) {
 		super(g, err, debuglev);
 	}
 

@@ -1,5 +1,5 @@
 /*************************************************************
- * Copyright (c) 2002-2008 Evgeny Gryaznov
+ * Copyright (c) 2002-2009 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 
@@ -60,7 +60,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected IError openError() {
+	protected INotifier createNotifier() {
 		new File(ErrorImpl.OUT_ERRORS).delete();
 		new File(ErrorImpl.OUT_TABLES).delete();
 		return new ErrorImpl(options.getDebug());
@@ -75,7 +75,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		return null;
 	}
 
-	private static class ErrorImpl implements IError {
+	private static class ErrorImpl implements INotifier {
 
 		static final String OUT_ERRORS = "errors";
 		static final String OUT_TABLES = "tables";
@@ -102,6 +102,10 @@ public class ConsoleGenerator extends AbstractGenerator {
 			System.err.print(error);
 		}
 
+		public void trace(Throwable ex) {
+			ex.printStackTrace(System.err);
+		}
+		
 		public void debug(String info) {
 			if( debuglev < 2 ) {
 				return;

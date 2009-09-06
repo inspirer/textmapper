@@ -1,6 +1,6 @@
 ${template main-}
 ${file opts.class+'.java'}${call unit}${end-}
-${file opts.lexer+'.java'-}${call java_lexer.unit}${end-}
+${file opts.lexer+'.java'}${call java_lexer.unit}${end-}
 ${end}
 
 ${template unit-}

@@ -1,6 +1,10 @@
 package net.sf.lapg;
 
+/**
+ * Representation of generated lexer tables.
+ */
 public class LexerTables {
+
 	public final int nstates, nchars, nterms;
 	public final int[] lnum, char2no, groupset;
 	public final int[][] change;

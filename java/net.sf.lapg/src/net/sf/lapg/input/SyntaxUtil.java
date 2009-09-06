@@ -6,17 +6,17 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax( String sourceName, InputStream stream, IError err, Map<String,String> options) {
+	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err, Map<String, String> options) {
 		String contents = getFileContents(stream);
 		CSyntax cs = LapgParser.process(sourceName, contents, options);
-		if( cs.hasErrors() ) {
-			for( String s : cs.getErrors()) {
-				err.error(s+"\n");
+		if (cs.hasErrors()) {
+			for (String s : cs.getErrors()) {
+				err.error(s + "\n");
 			}
 		}
 		return cs;

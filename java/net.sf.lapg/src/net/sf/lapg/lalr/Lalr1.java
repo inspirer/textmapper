@@ -3,7 +3,7 @@ package net.sf.lapg.lalr;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import net.sf.lapg.IError;
+import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 
 class Lalr1 extends LR0 {
@@ -13,7 +13,7 @@ class Lalr1 extends LR0 {
 		Short next;
 	};
 
-	Lalr1(Grammar g, IError err, int debuglev) {
+	Lalr1(Grammar g, INotifier err, int debuglev) {
 		super(g, err, debuglev);
 	}
 

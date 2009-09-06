@@ -4,6 +4,9 @@ import java.util.Iterator;
 
 import net.sf.lapg.templates.ast.ExpressionNode;
 
+/**
+ * Defines environment for evaluating set of templates.
+ */
 public interface IEvaluationEnvironment {
 
 	/**

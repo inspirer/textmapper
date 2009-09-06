@@ -11,7 +11,6 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.gen.OutputUtils;
 import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;

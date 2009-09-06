@@ -2,7 +2,9 @@ package net.sf.lapg.templates.api.impl;
 
 import net.sf.lapg.templates.api.ITemplateLoader;
 
-
+/**
+ * In-memory template loader. 
+ */
 public class StringTemplateLoader implements ITemplateLoader {
 
 	String myContainer;
