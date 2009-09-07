@@ -6,15 +6,15 @@ import java.io.StringWriter;
 import junit.framework.Assert;
 import net.sf.lapg.INotifier;
 
-public class ErrorReporter implements INotifier {
+public class TestNotifier implements INotifier {
 
 	private final StringBuffer warns = new StringBuffer();
 	private final StringBuffer errors = new StringBuffer();
 
-	public ErrorReporter() {
+	public TestNotifier() {
 	}
 
-	public ErrorReporter(String warns, String errors) {
+	public TestNotifier(String warns, String errors) {
 		this.warns.append(warns);
 		this.errors.append(errors);
 	}

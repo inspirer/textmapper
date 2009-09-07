@@ -59,7 +59,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("$", "My");
 		q = env.executeTemplate("dollar.testdollarvar", context, null, null);
-		Assert.assertEquals("My is value\n", q);
+		Assert.assertEquals("My is value, $ is dollar\n", q);
 
 		// test 3
 		q = env.executeTemplate("dollar.testdollarindex", null, null, null);

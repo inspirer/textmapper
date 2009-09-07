@@ -14,7 +14,7 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
-import net.sf.lapg.test.ErrorReporter;
+import net.sf.lapg.test.TestNotifier;
 
 public class InputTest extends TestCase {
 
@@ -41,7 +41,7 @@ public class InputTest extends TestCase {
 		return new String(c, 0, to);
 	}
 
-	private void checkGenTables(Grammar g, String outputId, ErrorReporter er) {
+	private void checkGenTables(Grammar g, String outputId, TestNotifier er) {
 		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er, 0);
 		ParserTables pt = Builder.compile(g, er, 0);
 
@@ -57,7 +57,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckSimple1() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new ErrorReporter(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi());
@@ -88,11 +88,11 @@ public class InputTest extends TestCase {
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
-		checkGenTables(g, "syntax1.tbl", new ErrorReporter());
+		checkGenTables(g, "syntax1.tbl", new TestNotifier());
 	}
 
 	public void testCheckSimple2() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new ErrorReporter(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi());
@@ -111,15 +111,15 @@ public class InputTest extends TestCase {
 		Assert.assertEquals(8, g.getRules().length);
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
 
-		checkGenTables(g, "syntax2.tbl", new ErrorReporter());
+		checkGenTables(g, "syntax2.tbl", new TestNotifier());
 	}
 
 	public void testCheckCSharpGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new ErrorReporter(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		ErrorReporter er = new ErrorReporter(
+		TestNotifier er = new TestNotifier(
 				"lapg: symbol `error` is useless\n"
 						+ "lapg: symbol `Lfixed` is useless\n"
 						+ "lapg: symbol `Lstackalloc` is useless\n"
@@ -140,18 +140,18 @@ public class InputTest extends TestCase {
 	}
 
 	public void testLapgGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new ErrorReporter(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		checkGenTables(g, "syntax_lapg.tbl", new ErrorReporter());
+		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
 	}
 
 	public void testLapgTemplatesGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new ErrorReporter(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		checkGenTables(g, "syntax_tpl.tbl", new ErrorReporter());
+		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
 	}
 }

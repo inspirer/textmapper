@@ -150,8 +150,13 @@ public class TemplatesFacade extends AbstractTemplateFacade {
 		}
 	}
 
-	private static ITemplate[] loadTemplates(String templates, String templatePackage, String inputName) {
-		AstParser p = new AstParser();
+	private ITemplate[] loadTemplates(String templates, String templatePackage, final String inputName) {
+		AstParser p = new AstParser() {
+			@Override
+			public void error(String s) {
+				TemplatesFacade.this.fireError(null, inputName + ":" + s);
+			}
+		};
 		if (!p.parse(templates, templatePackage, inputName)) {
 			return new ITemplate[0];
 		}

@@ -103,7 +103,7 @@ private XmlData getData(int start, int end) {
 	return new XmlData(buff, start, end-start);
 }
 
-void error( String s ) {
+protected void error(String s) {
 	System.err.println(s);
 }
 

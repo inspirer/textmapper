@@ -90,7 +90,7 @@ public abstract class AbstractTemplateFacade implements ITemplatesFacade {
 
 	public void fireError(ILocatedEntity referer, String error) {
 		if( referer != null ) {
-			System.err.print(referer.getLocation() + ": ");   // FIXME
+			System.err.print(referer.getLocation() + ": ");
 		}
 		System.err.println(error);
 	}

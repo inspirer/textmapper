@@ -24,7 +24,9 @@ import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
+import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
@@ -37,6 +39,14 @@ public abstract class AbstractGenerator {
 		this.options = options;
 	}
 
+	protected abstract ITemplateLoader createTemplateLoader(String path);
+
+	protected abstract INotifier createNotifier();
+
+	protected abstract void createFile(String name, String contents);
+
+	protected abstract InputStream openInput();
+	
 	private Map<String, String> getDefaultOptions() {
 		Map<String, String> d = new HashMap<String, String>();
 		d.put("class", "Parser");
@@ -79,7 +89,7 @@ public abstract class AbstractGenerator {
 			map.put("lex", l);
 			map.put("parser", r);
 			map.put("opts", genOptions);
-			generateOutput(map, s.getTemplates());
+			generateOutput(map, s.getTemplates(), err);
 			return true;
 		} catch (Throwable t) {
 			err.error("lapg: internal error: " + t.getClass().getName() + "\n");
@@ -92,7 +102,7 @@ public abstract class AbstractGenerator {
 		}
 	}
 
-	private void generateOutput(Map<String, Object> map, String grammarTemplates) {
+	private void generateOutput(Map<String, Object> map, String grammarTemplates, final INotifier notifier) {
 
 		List<ITemplateLoader> loaders = new ArrayList<ITemplateLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
@@ -106,25 +116,34 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplatesFacade env = new TemplatesFacade(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()])) {
-
-			@Override
-			public void createFile(String name, String contents) {
-				AbstractGenerator.this.createFile(name, contents);
-			}
-		};
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
 		env.loadPackage(null, "input");
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
-		context.setVariable("$", "lapg_gg.sym"); // TODO remove hack
+		context.setVariable("$", "lapg_gg.sym");
 		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
-	protected abstract ITemplateLoader createTemplateLoader(String path);
+	private final class TemplatesFacadeExt extends TemplatesFacade {
+		
+		private final INotifier notifier;
 
-	protected abstract INotifier createNotifier();
+		private TemplatesFacadeExt(Factory strategy, ITemplateLoader[] loaders, INotifier notifier) {
+			super(strategy, loaders);
+			this.notifier = notifier;
+		}
 
-	protected abstract void createFile(String name, String contents);
+		@Override
+		public void createFile(String name, String contents) {
+			AbstractGenerator.this.createFile(name, contents);
+		}
 
-	protected abstract InputStream openInput();
+		@Override
+		public void fireError(ILocatedEntity referer, String error) {
+			if( referer != null ) {
+				notifier.error(referer.getLocation() + ": ");
+			}
+			notifier.error(error + "\n");
+		}
+	}
 }

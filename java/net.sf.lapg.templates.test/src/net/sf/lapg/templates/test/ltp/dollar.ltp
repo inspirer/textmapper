@@ -4,7 +4,7 @@ $$ is dollar
 ${end}
 
 ${template testdollarvar-}
-$$ is value
+$$ is value, ${'$'} is dollar
 ${end}
 
 

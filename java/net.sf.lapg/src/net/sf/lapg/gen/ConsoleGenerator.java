@@ -61,9 +61,9 @@ public class ConsoleGenerator extends AbstractGenerator {
 
 	@Override
 	protected INotifier createNotifier() {
-		new File(ErrorImpl.OUT_ERRORS).delete();
-		new File(ErrorImpl.OUT_TABLES).delete();
-		return new ErrorImpl(options.getDebug());
+		new File(ConsoleNotifier.OUT_ERRORS).delete();
+		new File(ConsoleNotifier.OUT_TABLES).delete();
+		return new ConsoleNotifier(options.getDebug());
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		return null;
 	}
 
-	private static class ErrorImpl implements INotifier {
+	private static class ConsoleNotifier implements INotifier {
 
 		static final String OUT_ERRORS = "errors";
 		static final String OUT_TABLES = "tables";
@@ -83,7 +83,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		private PrintStream debug, warn;
 		private int debuglev;
 
-		public ErrorImpl(int debuglev) {
+		public ConsoleNotifier(int debuglev) {
 			this.debuglev = debuglev;
 			this.debug = null;
 			this.warn = null;
