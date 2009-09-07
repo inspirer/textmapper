@@ -414,7 +414,7 @@ private void skipSpaces(int offset) {
 	killEnds = offset+1;
 }
 
-protected void error( String s ) {
+public void error( String s ) {
 	System.err.println(inputName + ":" + s);
 }
 
