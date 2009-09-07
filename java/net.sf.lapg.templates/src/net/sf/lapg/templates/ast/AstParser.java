@@ -152,79 +152,79 @@ public class AstParser implements AstLexer.ErrorReporter {
 
 	private static final short[] lapg_lalr = new short[] {
 		1, -1, 5, -1, 0, 1, -1, -2, 1, -1, 5, -1, 0, 0, -1, -2,
-		40, -1, 29, 9, 30, 9, 53, 9, -1, -2, 40, -1, 29, 66, 30, 66,
-		31, 66, 32, 66, 33, 66, 34, 66, 35, 66, 38, 66, 39, 66, 41, 66,
-		42, 66, 43, 66, 44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66,
-		50, 66, 51, 66, 52, 66, 53, 66, 54, 66, -1, -2, 7, -1, 8, -1,
-		9, -1, 15, -1, 23, -1, 26, -1, 27, -1, 32, -1, 36, -1, 38, -1,
-		40, -1, 39, 47, -1, -2, 38, -1, 42, -1, 48, -1, 29, 87, 30, 87,
-		31, 87, 32, 87, 33, 87, 34, 87, 35, 87, 39, 87, 41, 87, 43, 87,
-		44, 87, 45, 87, 46, 87, 47, 87, 49, 87, 50, 87, 51, 87, 52, 87,
-		53, 87, 54, 87, -1, -2, 33, -1, 34, -1, 35, -1, 29, 94, 30, 94,
-		31, 94, 32, 94, 39, 94, 41, 94, 43, 94, 44, 94, 45, 94, 46, 94,
-		47, 94, 49, 94, 50, 94, 51, 94, 52, 94, 53, 94, 54, 94, -1, -2,
-		31, -1, 32, -1, 29, 97, 30, 97, 39, 97, 41, 97, 43, 97, 44, 97,
-		45, 97, 46, 97, 47, 97, 49, 97, 50, 97, 51, 97, 52, 97, 53, 97,
-		54, 97, -1, -2, 49, -1, 50, -1, 51, -1, 52, -1, 29, 102, 30, 102,
-		39, 102, 41, 102, 43, 102, 44, 102, 45, 102, 46, 102, 47, 102, 53, 102,
-		54, 102, -1, -2, 46, -1, 47, -1, 29, 105, 30, 105, 39, 105, 41, 105,
-		43, 105, 44, 105, 45, 105, 53, 105, 54, 105, -1, -2, 44, -1, 29, 107,
-		30, 107, 39, 107, 41, 107, 43, 107, 45, 107, 53, 107, 54, 107, -1, -2,
-		45, -1, 54, -1, 29, 109, 30, 109, 39, 109, 41, 109, 43, 109, 53, 109,
-		-1, -2, 7, -1, 41, 15, -1, -2, 53, -1, 29, 11, 30, 11, -1, -2,
-		7, -1, 8, -1, 9, -1, 15, -1, 23, -1, 26, -1, 27, -1, 32, -1,
-		36, -1, 38, -1, 40, -1, 41, 47, -1, -2, 40, -1, 42, -1, 16, 34,
-		29, 34, 30, 34, -1, -2, 43, -1, 29, 39, 30, 39, -1, -2, 40, -1,
-		53, -1, 31, 66, 32, 66, 33, 66, 34, 66, 35, 66, 38, 66, 39, 66,
-		42, 66, 43, 66, 44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66,
-		50, 66, 51, 66, 52, 66, 54, 66, -1, -2, 43, -1, 39, 46, 41, 46,
-		-1, -2, 43, -1, 41, 14, -1, -2, 7, -1, 8, -1, 9, -1, 15, -1,
-		23, -1, 26, -1, 27, -1, 32, -1, 36, -1, 38, -1, 40, -1, 41, 47,
-		-1, -2, 16, -1, 29, 36, 30, 36, -1, -2, 1, -1, 5, 53, -1, -2,
-		40, -1, 29, 74, 30, 74, 31, 74, 32, 74, 33, 74, 34, 74, 35, 74,
-		38, 74, 39, 74, 41, 74, 42, 74, 43, 74, 44, 74, 45, 74, 46, 74,
-		47, 74, 48, 74, 49, 74, 50, 74, 51, 74, 52, 74, 53, 74, 54, 74,
-		-1, -2, 33, -1, 34, -1, 35, -1, 29, 95, 30, 95, 31, 95, 32, 95,
-		39, 95, 41, 95, 43, 95, 44, 95, 45, 95, 46, 95, 47, 95, 49, 95,
-		50, 95, 51, 95, 52, 95, 53, 95, 54, 95, -1, -2, 33, -1, 34, -1,
-		35, -1, 29, 96, 30, 96, 31, 96, 32, 96, 39, 96, 41, 96, 43, 96,
-		44, 96, 45, 96, 46, 96, 47, 96, 49, 96, 50, 96, 51, 96, 52, 96,
-		53, 96, 54, 96, -1, -2, 31, -1, 32, -1, 29, 100, 30, 100, 39, 100,
-		41, 100, 43, 100, 44, 100, 45, 100, 46, 100, 47, 100, 49, 100, 50, 100,
-		51, 100, 52, 100, 53, 100, 54, 100, -1, -2, 31, -1, 32, -1, 29, 101,
-		30, 101, 39, 101, 41, 101, 43, 101, 44, 101, 45, 101, 46, 101, 47, 101,
-		49, 101, 50, 101, 51, 101, 52, 101, 53, 101, 54, 101, -1, -2, 31, -1,
-		32, -1, 29, 98, 30, 98, 39, 98, 41, 98, 43, 98, 44, 98, 45, 98,
-		46, 98, 47, 98, 49, 98, 50, 98, 51, 98, 52, 98, 53, 98, 54, 98,
-		-1, -2, 31, -1, 32, -1, 29, 99, 30, 99, 39, 99, 41, 99, 43, 99,
-		44, 99, 45, 99, 46, 99, 47, 99, 49, 99, 50, 99, 51, 99, 52, 99,
-		53, 99, 54, 99, -1, -2, 49, -1, 50, -1, 51, -1, 52, -1, 29, 103,
-		30, 103, 39, 103, 41, 103, 43, 103, 44, 103, 45, 103, 46, 103, 47, 103,
-		53, 103, 54, 103, -1, -2, 49, -1, 50, -1, 51, -1, 52, -1, 29, 104,
-		30, 104, 39, 104, 41, 104, 43, 104, 44, 104, 45, 104, 46, 104, 47, 104,
-		53, 104, 54, 104, -1, -2, 46, -1, 47, -1, 29, 106, 30, 106, 39, 106,
-		41, 106, 43, 106, 44, 106, 45, 106, 53, 106, 54, 106, -1, -2, 44, -1,
-		29, 108, 30, 108, 39, 108, 41, 108, 43, 108, 45, 108, 53, 108, 54, 108,
-		-1, -2, 42, -1, 29, 13, 30, 13, -1, -2, 7, -1, 8, -1, 9, -1,
-		15, -1, 23, -1, 26, -1, 27, -1, 32, -1, 36, -1, 38, -1, 40, -1,
-		41, 47, -1, -2, 7, -1, 8, -1, 9, -1, 15, -1, 23, -1, 26, -1,
-		27, -1, 32, -1, 36, -1, 38, -1, 40, -1, 41, 47, -1, -2, 37, -1,
-		40, -1, 31, 66, 32, 66, 33, 66, 34, 66, 35, 66, 38, 66, 41, 66,
-		42, 66, 43, 66, 44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66,
-		50, 66, 51, 66, 52, 66, 54, 66, -1, -2, 7, -1, 8, -1, 9, -1,
-		15, -1, 23, -1, 26, -1, 27, -1, 32, -1, 36, -1, 38, -1, 40, -1,
-		41, 47, -1, -2,
+		42, -1, 31, 9, 32, 9, 55, 9, -1, -2, 42, -1, 31, 66, 32, 66,
+		33, 66, 34, 66, 35, 66, 36, 66, 37, 66, 40, 66, 41, 66, 43, 66,
+		44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66, 50, 66, 51, 66,
+		52, 66, 53, 66, 54, 66, 55, 66, 56, 66, -1, -2, 7, -1, 8, -1,
+		9, -1, 15, -1, 25, -1, 28, -1, 29, -1, 34, -1, 38, -1, 40, -1,
+		42, -1, 41, 47, -1, -2, 40, -1, 44, -1, 50, -1, 31, 87, 32, 87,
+		33, 87, 34, 87, 35, 87, 36, 87, 37, 87, 41, 87, 43, 87, 45, 87,
+		46, 87, 47, 87, 48, 87, 49, 87, 51, 87, 52, 87, 53, 87, 54, 87,
+		55, 87, 56, 87, -1, -2, 35, -1, 36, -1, 37, -1, 31, 94, 32, 94,
+		33, 94, 34, 94, 41, 94, 43, 94, 45, 94, 46, 94, 47, 94, 48, 94,
+		49, 94, 51, 94, 52, 94, 53, 94, 54, 94, 55, 94, 56, 94, -1, -2,
+		33, -1, 34, -1, 31, 97, 32, 97, 41, 97, 43, 97, 45, 97, 46, 97,
+		47, 97, 48, 97, 49, 97, 51, 97, 52, 97, 53, 97, 54, 97, 55, 97,
+		56, 97, -1, -2, 51, -1, 52, -1, 53, -1, 54, -1, 31, 102, 32, 102,
+		41, 102, 43, 102, 45, 102, 46, 102, 47, 102, 48, 102, 49, 102, 55, 102,
+		56, 102, -1, -2, 48, -1, 49, -1, 31, 105, 32, 105, 41, 105, 43, 105,
+		45, 105, 46, 105, 47, 105, 55, 105, 56, 105, -1, -2, 46, -1, 31, 107,
+		32, 107, 41, 107, 43, 107, 45, 107, 47, 107, 55, 107, 56, 107, -1, -2,
+		47, -1, 56, -1, 31, 109, 32, 109, 41, 109, 43, 109, 45, 109, 55, 109,
+		-1, -2, 7, -1, 43, 15, -1, -2, 55, -1, 31, 11, 32, 11, -1, -2,
+		7, -1, 8, -1, 9, -1, 15, -1, 25, -1, 28, -1, 29, -1, 34, -1,
+		38, -1, 40, -1, 42, -1, 43, 47, -1, -2, 42, -1, 44, -1, 16, 34,
+		31, 34, 32, 34, -1, -2, 45, -1, 31, 39, 32, 39, -1, -2, 42, -1,
+		55, -1, 33, 66, 34, 66, 35, 66, 36, 66, 37, 66, 40, 66, 41, 66,
+		44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66, 50, 66, 51, 66,
+		52, 66, 53, 66, 54, 66, 56, 66, -1, -2, 45, -1, 41, 46, 43, 46,
+		-1, -2, 45, -1, 43, 14, -1, -2, 7, -1, 8, -1, 9, -1, 15, -1,
+		25, -1, 28, -1, 29, -1, 34, -1, 38, -1, 40, -1, 42, -1, 43, 47,
+		-1, -2, 16, -1, 31, 36, 32, 36, -1, -2, 1, -1, 5, 53, -1, -2,
+		42, -1, 31, 74, 32, 74, 33, 74, 34, 74, 35, 74, 36, 74, 37, 74,
+		40, 74, 41, 74, 43, 74, 44, 74, 45, 74, 46, 74, 47, 74, 48, 74,
+		49, 74, 50, 74, 51, 74, 52, 74, 53, 74, 54, 74, 55, 74, 56, 74,
+		-1, -2, 35, -1, 36, -1, 37, -1, 31, 95, 32, 95, 33, 95, 34, 95,
+		41, 95, 43, 95, 45, 95, 46, 95, 47, 95, 48, 95, 49, 95, 51, 95,
+		52, 95, 53, 95, 54, 95, 55, 95, 56, 95, -1, -2, 35, -1, 36, -1,
+		37, -1, 31, 96, 32, 96, 33, 96, 34, 96, 41, 96, 43, 96, 45, 96,
+		46, 96, 47, 96, 48, 96, 49, 96, 51, 96, 52, 96, 53, 96, 54, 96,
+		55, 96, 56, 96, -1, -2, 33, -1, 34, -1, 31, 100, 32, 100, 41, 100,
+		43, 100, 45, 100, 46, 100, 47, 100, 48, 100, 49, 100, 51, 100, 52, 100,
+		53, 100, 54, 100, 55, 100, 56, 100, -1, -2, 33, -1, 34, -1, 31, 101,
+		32, 101, 41, 101, 43, 101, 45, 101, 46, 101, 47, 101, 48, 101, 49, 101,
+		51, 101, 52, 101, 53, 101, 54, 101, 55, 101, 56, 101, -1, -2, 33, -1,
+		34, -1, 31, 98, 32, 98, 41, 98, 43, 98, 45, 98, 46, 98, 47, 98,
+		48, 98, 49, 98, 51, 98, 52, 98, 53, 98, 54, 98, 55, 98, 56, 98,
+		-1, -2, 33, -1, 34, -1, 31, 99, 32, 99, 41, 99, 43, 99, 45, 99,
+		46, 99, 47, 99, 48, 99, 49, 99, 51, 99, 52, 99, 53, 99, 54, 99,
+		55, 99, 56, 99, -1, -2, 51, -1, 52, -1, 53, -1, 54, -1, 31, 103,
+		32, 103, 41, 103, 43, 103, 45, 103, 46, 103, 47, 103, 48, 103, 49, 103,
+		55, 103, 56, 103, -1, -2, 51, -1, 52, -1, 53, -1, 54, -1, 31, 104,
+		32, 104, 41, 104, 43, 104, 45, 104, 46, 104, 47, 104, 48, 104, 49, 104,
+		55, 104, 56, 104, -1, -2, 48, -1, 49, -1, 31, 106, 32, 106, 41, 106,
+		43, 106, 45, 106, 46, 106, 47, 106, 55, 106, 56, 106, -1, -2, 46, -1,
+		31, 108, 32, 108, 41, 108, 43, 108, 45, 108, 47, 108, 55, 108, 56, 108,
+		-1, -2, 44, -1, 31, 13, 32, 13, -1, -2, 7, -1, 8, -1, 9, -1,
+		15, -1, 25, -1, 28, -1, 29, -1, 34, -1, 38, -1, 40, -1, 42, -1,
+		43, 47, -1, -2, 7, -1, 8, -1, 9, -1, 15, -1, 25, -1, 28, -1,
+		29, -1, 34, -1, 38, -1, 40, -1, 42, -1, 43, 47, -1, -2, 39, -1,
+		42, -1, 33, 66, 34, 66, 35, 66, 36, 66, 37, 66, 40, 66, 43, 66,
+		44, 66, 45, 66, 46, 66, 47, 66, 48, 66, 49, 66, 50, 66, 51, 66,
+		52, 66, 53, 66, 54, 66, 56, 66, -1, -2, 7, -1, 8, -1, 9, -1,
+		15, -1, 25, -1, 28, -1, 29, -1, 34, -1, 38, -1, 40, -1, 42, -1,
+		43, 47, -1, -2,
 	};
 
 
 	private static final short[] lapg_sym_goto = new short[] {
 		0, 1, 11, 18, 25, 32, 42, 45, 102, 148, 194, 199, 201, 205, 206, 211,
-		257, 263, 268, 273, 273, 278, 279, 279, 325, 330, 331, 377, 423, 428, 436, 443,
-		448, 499, 502, 505, 508, 554, 555, 602, 605, 660, 669, 673, 678, 680, 681, 683,
-		685, 686, 689, 692, 695, 698, 703, 704, 704, 704, 704, 705, 706, 707, 709, 711,
-		714, 716, 717, 718, 719, 720, 727, 730, 731, 732, 739, 746, 753, 760, 765, 796,
-		797, 798, 799, 800, 801, 802, 808, 814, 821, 824, 825, 826, 827, 829, 834, 880,
-		926, 972, 973, 1019, 1060, 1099, 1134, 1167, 1199, 1230,
+		257, 263, 268, 273, 273, 278, 279, 279, 279, 279, 325, 330, 331, 377, 423, 428,
+		436, 443, 448, 499, 502, 505, 508, 554, 555, 602, 605, 660, 669, 673, 678, 680,
+		681, 683, 685, 686, 689, 692, 695, 698, 703, 704, 704, 704, 704, 705, 706, 707,
+		709, 711, 714, 716, 717, 718, 719, 720, 727, 730, 731, 732, 739, 746, 753, 760,
+		765, 796, 797, 798, 799, 800, 801, 802, 808, 814, 821, 824, 825, 826, 827, 829,
+		834, 880, 926, 972, 973, 1019, 1060, 1099, 1134, 1167, 1199, 1230,
 	};
 
 	private static final short[] lapg_sym_from = new short[] {
@@ -399,14 +399,14 @@ public class AstParser implements AstLexer.ErrorReporter {
 	};
 
 	private static final short[] lapg_rlex = new short[] {
-		59, 59, 58, 60, 60, 61, 61, 61, 65, 65, 67, 67, 62, 68, 71, 71,
-		66, 72, 72, 64, 63, 63, 69, 69, 73, 73, 73, 73, 73, 73, 73, 76,
-		77, 79, 79, 81, 81, 77, 83, 83, 77, 77, 84, 70, 70, 82, 85, 85,
-		80, 74, 74, 89, 90, 90, 75, 91, 91, 91, 92, 87, 93, 93, 93, 93,
-		88, 88, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94, 94,
-		94, 96, 96, 97, 97, 95, 95, 98, 98, 98, 99, 99, 99, 99, 100, 100,
-		100, 101, 101, 101, 101, 101, 102, 102, 102, 103, 103, 104, 104, 78, 78, 86,
-		86,
+		61, 61, 60, 62, 62, 63, 63, 63, 67, 67, 69, 69, 64, 70, 73, 73,
+		68, 74, 74, 66, 65, 65, 71, 71, 75, 75, 75, 75, 75, 75, 75, 78,
+		79, 81, 81, 83, 83, 79, 85, 85, 79, 79, 86, 72, 72, 84, 87, 87,
+		82, 76, 76, 91, 92, 92, 77, 93, 93, 93, 94, 89, 95, 95, 95, 95,
+		90, 90, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
+		96, 98, 98, 99, 99, 97, 97, 100, 100, 100, 101, 101, 101, 101, 102, 102,
+		102, 103, 103, 103, 103, 103, 104, 104, 104, 105, 105, 106, 106, 80, 80, 88,
+		88,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -432,6 +432,8 @@ public class AstParser implements AstLexer.ErrorReporter {
 		"Lgrep",
 		"Lif",
 		"Lin",
+		"Limport",
+		"Lis",
 		"Lmap",
 		"Lnull",
 		"Lswitch",
@@ -519,53 +521,53 @@ public class AstParser implements AstLexer.ErrorReporter {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int input = 58;
-		public static final int templatesopt = 59;
-		public static final int templates = 60;
-		public static final int template_declaration_or_space = 61;
-		public static final int template_start = 62;
-		public static final int instructions = 63;
-		public static final int template_end = 64;
-		public static final int template_parametersopt = 65;
-		public static final int template_parameters = 66;
-		public static final int template_overridesopt = 67;
-		public static final int template_overrides = 68;
-		public static final int LBRACKETMINUSRBRACKETRBRACE = 69;
-		public static final int template_id = 70;
-		public static final int identifier_listopt = 71;
-		public static final int identifier_list = 72;
-		public static final int instruction = 73;
-		public static final int control_instruction = 74;
-		public static final int switch_instruction = 75;
-		public static final int simple_instruction = 76;
-		public static final int sentence = 77;
-		public static final int expression = 78;
-		public static final int template_argumentsopt = 79;
-		public static final int template_arguments = 80;
-		public static final int template_for_expropt = 81;
-		public static final int template_for_expr = 82;
-		public static final int comma_expropt = 83;
-		public static final int comma_expr = 84;
-		public static final int expression_listopt = 85;
-		public static final int expression_list = 86;
-		public static final int control_start = 87;
-		public static final int control_end = 88;
-		public static final int else_node = 89;
-		public static final int anyopt = 90;
-		public static final int case_list = 91;
-		public static final int one_case = 92;
-		public static final int control_sentence = 93;
-		public static final int primary_expression = 94;
-		public static final int bcon = 95;
-		public static final int complex_data = 96;
-		public static final int map_entries = 97;
-		public static final int unary_expression = 98;
-		public static final int mult_expression = 99;
-		public static final int additive_expression = 100;
-		public static final int relational_expression = 101;
-		public static final int equality_expression = 102;
-		public static final int conditional_and_expression = 103;
-		public static final int conditional_or_expression = 104;
+		public static final int input = 60;
+		public static final int templatesopt = 61;
+		public static final int templates = 62;
+		public static final int template_declaration_or_space = 63;
+		public static final int template_start = 64;
+		public static final int instructions = 65;
+		public static final int template_end = 66;
+		public static final int template_parametersopt = 67;
+		public static final int template_parameters = 68;
+		public static final int template_overridesopt = 69;
+		public static final int template_overrides = 70;
+		public static final int LBRACKETMINUSRBRACKETRBRACE = 71;
+		public static final int template_id = 72;
+		public static final int identifier_listopt = 73;
+		public static final int identifier_list = 74;
+		public static final int instruction = 75;
+		public static final int control_instruction = 76;
+		public static final int switch_instruction = 77;
+		public static final int simple_instruction = 78;
+		public static final int sentence = 79;
+		public static final int expression = 80;
+		public static final int template_argumentsopt = 81;
+		public static final int template_arguments = 82;
+		public static final int template_for_expropt = 83;
+		public static final int template_for_expr = 84;
+		public static final int comma_expropt = 85;
+		public static final int comma_expr = 86;
+		public static final int expression_listopt = 87;
+		public static final int expression_list = 88;
+		public static final int control_start = 89;
+		public static final int control_end = 90;
+		public static final int else_node = 91;
+		public static final int anyopt = 92;
+		public static final int case_list = 93;
+		public static final int one_case = 94;
+		public static final int control_sentence = 95;
+		public static final int primary_expression = 96;
+		public static final int bcon = 97;
+		public static final int complex_data = 98;
+		public static final int map_entries = 99;
+		public static final int unary_expression = 100;
+		public static final int mult_expression = 101;
+		public static final int additive_expression = 102;
+		public static final int relational_expression = 103;
+		public static final int equality_expression = 104;
+		public static final int conditional_and_expression = 105;
+		public static final int conditional_or_expression = 106;
 	}
 
 	private static int lapg_next( int state, int symbol ) {

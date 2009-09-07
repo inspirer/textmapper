@@ -42,7 +42,8 @@ Lforeach:	/foreach/
 Lgrep:		/grep/
 Lif:		/if/
 Lin:		/in/
-#Lis:		/is/
+Limport:	/import/
+Lis:		/is/
 Lmap:		/map/
 Lnull:		/null/
 Lswitch:	/switch/
