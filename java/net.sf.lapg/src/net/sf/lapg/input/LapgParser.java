@@ -4,7 +4,7 @@ import java.io.IOException;
 import net.sf.lapg.input.LapgLexer.Lexems;
 import net.sf.lapg.input.LapgLexer.LapgSymbol;
 
-import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -16,10 +16,9 @@ import java.util.Map;
 
 public class LapgParser implements LapgLexer.ErrorReporter {
 	
-	private LapgParser(String inputId, byte[] data, Map<String,String> defaultOptions) {
+	private LapgParser(String inputId, char[] data, Map<String,String> defaultOptions) {
 		this.inputId = inputId;
 		this.buff = data;
-		this.l = 0;
 		
 		addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
 		options.putAll(defaultOptions);
@@ -38,8 +37,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private List<CLexem> lexems = new ArrayList<CLexem>();
 	
 	private String inputId;
-	private byte[] buff;
-	private int l;
+	private char[] buff;
 	
 	private int currentgroups = 1;
 	
@@ -137,9 +135,9 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	
 	public static CSyntax process(String inputId, String contents, Map<String,String> defaultOptions) {
 		try {
-			byte[] buff = contents.getBytes("utf-8");
-			LapgParser p = new LapgParser(inputId, contents.getBytes("utf-8"), defaultOptions);
-			LapgLexer lexer = new LapgLexer(new ByteArrayInputStream(buff), p, "utf-8");
+			char[] buff = contents.toCharArray();
+			LapgParser p = new LapgParser(inputId, buff, defaultOptions);
+			LapgLexer lexer = new LapgLexer(new CharArrayReader(buff), p);
 			if( !p.parse(lexer) || !p.errors.isEmpty() ) {
 				return new CSyntax(p.errors);
 			}
@@ -147,7 +145,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			p.propagateTypes();
 	
 			int offset = lexer.getTemplatesStart();
-			String templates = offset < buff.length && offset != -1 ? new String(buff,offset,buff.length-offset,"utf-8") : null;
+			String templates = offset < buff.length && offset != -1 ? new String(buff,offset,buff.length-offset) : null;
 			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);
 		} catch( UnsupportedEncodingException ex ) {
 		} catch( IOException ex ) {

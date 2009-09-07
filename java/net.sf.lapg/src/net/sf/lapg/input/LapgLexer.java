@@ -1,7 +1,7 @@
 package net.sf.lapg.input;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 
@@ -27,15 +27,15 @@ public class LapgLexer {
 		void error(String s);
 	};
 
-	final private InputStream stream;
+	final private Reader stream;
 	final private ErrorReporter reporter;
-	final private String encoding;
 
-	final private byte[] token = new byte[4096];
+	final private char[] token = new char[4096];
 	private int len;
 		
-	final private byte[] data = new byte[512];
-	private int datalen, l, chr;
+	final private char[] data = new char[2048];
+	private int datalen, l;
+	private char chr;
 
 	private int group = 0;
 		
@@ -71,16 +71,15 @@ public class LapgLexer {
 		return templatesStart;
 	}
 
-	public LapgLexer(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
+	public LapgLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;
-		this.encoding = encoding;
 		this.datalen = stream.read(data);
 		this.l = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
-	private final short[] lapg_char2no = new short[] {
+    private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 4, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		5, 1, 6, 7, 1, 8, 1, 9, 10, 11, 1, 1, 1, 12, 13, 14,
@@ -98,7 +97,7 @@ public class LapgLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	};
-	
+
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, -1, 2, 3, 2, 2, 4, 5, -1, 6, 7, -1, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 13, 14, -1, -1, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, -1, 17, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 18, 19, -1, },
 		{ -1, 20, 20, 20, 20, 20, 21, 20, 20, 22, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 23, 20, 24, },
@@ -149,11 +148,15 @@ public class LapgLexer {
 		{ -1, 21, 21, -1, 21, 21, 33, 21, 21, 21, 21, 21, 21, 21, 21, 46, 46, 46, 46, 46, 46, 46, 46, 46, 46, 21, 21, 21, 21, 21, 46, 46, 46, 46, 46, 46, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 34, 21, 21, 46, 46, 46, 46, 46, 46, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21, },
 		{ -1, 22, 22, -1, 22, 22, 22, 22, 22, 35, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 36, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, },
 		{ -1, 22, 22, -1, 22, 22, 22, 22, 22, 35, 22, 22, 22, 22, 22, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 22, 22, 22, 22, 22, 48, 48, 48, 48, 48, 48, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 36, 22, 22, 48, 48, 48, 48, 48, 48, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, },
-	
+
 	};
 
-	public String current() throws UnsupportedEncodingException {
-		return new String(token,0,len,encoding);
+	public String current() {
+		return new String(token,0,len);
+	}
+
+	private static int mapCharacter(int chr) {
+		return lapg_char2no[(chr+256)%256];
 	}
 
 	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
@@ -163,8 +166,8 @@ public class LapgLexer {
 		do {			
 			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
 			for( len = 0, state = group; state >= 0; ) {
-				if( len < 4095 ) token[len++] = (byte)chr;
-				state = lapg_lexem[state][lapg_char2no[(chr+256)%256]];
+				if( len < 4095 ) token[len++] = chr;
+				state = lapg_lexem[state][mapCharacter(chr)];
 				if( state >= -1 && chr != 0 ) { 
 					lapg_current_offset++;
 					if( chr == '\n' ) {
