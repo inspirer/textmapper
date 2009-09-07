@@ -4,9 +4,9 @@
 .getsym      "chr = buff[l++];if( l == end ) fillb()"
 .positioning "%%positioning%%"
 .lexemend    "%%lexemend%%"
-.class       "parser"
-.lexer       "mlexer"
-.namespace	 "mypackage"
+.class       "MParser"
+.lexer       "MLexer"
+.package	"com.mypackage"
 .breaks      "off"
 
 # Vocabulary

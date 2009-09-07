@@ -23,7 +23,7 @@ void myprint2( String s1, String s2 ) {
 }
 
 public static void main(String[] args) throws FileNotFoundException, IOException {
-        parser p = new parser();
+        MParser p = new MParser();
 
         InputStream input;
         if( args.length > 0 )
@@ -31,8 +31,11 @@ public static void main(String[] args) throws FileNotFoundException, IOException
         else
                 input = System.in;
 
-        mlexer lexer = new mlexer(input, p, "utf-8");
+        MLexer lexer = new MLexer(input, p, "utf-8");
 
         p.parse(lexer);
 }
+${end}
+
+${template lexercode}
 ${end}

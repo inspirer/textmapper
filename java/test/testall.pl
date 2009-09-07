@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
-$lapg = "/Users/evgeny/projects/bin/lapg.sh";
-$javaPath = $ENV{'JAVA_HOME'};
+$lapg = "lapg";
 
 sub mysubst($) {
 	my $s = $_[0];
@@ -62,14 +61,14 @@ sub rungrammar($$$) {
 	chomp $prevdir;	
 	
 	chdir $folder;
-	system( $lapg, "syntax", "parser.$lang" ) == 0 or die "not generated";
-	die "not generated2" if not -e "parser.$lang";
+	system( $lapg, "syntax") == 0 or die "not generated";
+	die "not generated2" if not -e "MParser.$lang";
 
 	unlink "errors" if -e "errors";
 
 	if( $lang eq "java" ) {
-		system( "\"$javaPath/bin/javac\" \"parser.java\" \"mlexer.java\" -d ." ) == 0 or die "not executed";
-		$result = `\"$javaPath/bin/java\" -cp \".\" mypackage.parser \"../../$inputfile\"` or die "no result";
+		system( "\"javac\" \"MParser.java\" \"MLexer.java\" -d ." ) == 0 or die "not executed";
+		$result = `\"java\" -cp \".\" com.mypackage.MParser \"../../$inputfile\"` or die "no result";
 
 	} else {
 		die "unknown lang";
