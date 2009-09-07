@@ -239,7 +239,7 @@ public class AstLexer {
 	public String current() {
 		return new String(token,0,len);
 	}
-	
+
 	private static int mapCharacter(int chr) {
 		return lapg_char2no[(chr+256)%256];
 	}

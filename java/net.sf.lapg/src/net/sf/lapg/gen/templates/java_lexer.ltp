@@ -1,23 +1,23 @@
 ${template unit-}
 package ${call java.package};
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 
 public class ${opts.lexer} {
 ${call innerDeclarations-}
 
-	final private InputStream stream;
+	final private Reader stream;
 	final private ErrorReporter reporter;
-	final private String encoding;
 
-	final private byte[] token = new byte[${opts.maxtoken}];
+	final private char[] token = new char[${opts.maxtoken}];
 	private int len;
 		
-	final private byte[] data = new byte[512];
-	private int datalen, l, chr;
+	final private char[] data = new char[2048];
+	private int datalen, l;
+	private char chr;
 
 	private int group = 0;
 		
@@ -35,19 +35,22 @@ ${end-}
 
 ${util.shiftRight(self->input.lexercode(),1)-}
 
-	public ${opts.lexer}(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
+	public ${opts.lexer}(Reader stream, ErrorReporter reporter) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;
-		this.encoding = encoding;
 		this.datalen = stream.read(data);
 		this.l = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
-${util.shiftRight(self->lexerTables(),1)-}
+${self->lexerTables()-}
 
-	public String current() throws UnsupportedEncodingException {
-		return new String(token,0,len,encoding);
+	public String current() {
+		return new String(token,0,len);
+	}
+
+	private static int mapCharacter(int chr) {
+		return lapg_char2no[(chr+256)%256];
 	}
 
 	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
@@ -61,8 +64,8 @@ ${case 'full'}			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_col
 ${case 'offset'}			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
 ${end-}
 			for( len = 0, state = group; state >= 0; ) {
-				if( len < ${opts.maxtoken-1} ) token[len++] = (byte)chr;
-				state = lapg_lexem[state][lapg_char2no[(chr+256)%256]];
+				if( len < ${opts.maxtoken-1} ) token[len++] = chr;
+				state = lapg_lexem[state][mapCharacter(chr)];
 				if( state >= -1 && chr != 0 ) { 
 ${switch opts.positioning}
 ${case 'line'}					if( chr == '\n' ) {
@@ -142,52 +145,50 @@ ${end}
 
 
 ${template lexerTables-}
-private final short[] lapg_char2no = new short[] {
-	${util.format(lex.char2no, 16, 1)}
-};
+${call java.parserTable(lex.char2no,'short','lapg_char2no','LapgCharMap')-}
 
 ${if opts.packLexems != 'true'-}
-private static final short[][] lapg_lexem = new short[][] {
-	${util.format(lex.change, 1, '{', '}')}
-};
+	private static final short[][] lapg_lexem = new short[][] {
+		${util.format(lex.change, 2, '{', '}')}
+	};
 ${else-}
-private int lapg_lexem[][] = unpackFromString(${util.formatForJava(lex.change, 1)});
+	private int lapg_lexem[][] = unpackFromString(${util.formatForJava(lex.change, 2)});
 		
-private int[][] unpackFromString(int size1, int size2, String st) {
-	int colonIndex = -1;
-	String lengthString;
-	int sequenceLength = 0;
-	int sequenceInteger = 0;
-	
-	int commaIndex;
-	String workString;
-	
-	int res[][] = new int[size1][size2];
-	for (int i = 0; i < size1; i++) {
-		for (int j = 0; j < size2; j++) {
-			if (sequenceLength != 0) {
+	private int[][] unpackFromString(int size1, int size2, String st) {
+		int colonIndex = -1;
+		String lengthString;
+		int sequenceLength = 0;
+		int sequenceInteger = 0;
+		
+		int commaIndex;
+		String workString;
+		
+		int res[][] = new int[size1][size2];
+		for (int i = 0; i < size1; i++) {
+			for (int j = 0; j < size2; j++) {
+				if (sequenceLength != 0) {
+					res[i][j] = sequenceInteger;
+					sequenceLength--;
+					continue;
+				}
+				commaIndex = st.indexOf(',');
+				workString = (commaIndex == -1) ? st : st.substring(0, commaIndex);
+				st = st.substring(commaIndex + 1);
+				colonIndex = workString.indexOf(':');
+				if (colonIndex == -1) {
+					res[i][j] = Integer.parseInt(workString);
+					continue;
+				}
+				lengthString = workString.substring(colonIndex + 1);
+				sequenceLength = Integer.parseInt(lengthString);
+				workString = workString.substring(0, colonIndex);
+				sequenceInteger = Integer.parseInt(workString);
 				res[i][j] = sequenceInteger;
 				sequenceLength--;
-				continue;
 			}
-			commaIndex = st.indexOf(',');
-			workString = (commaIndex == -1) ? st : st.substring(0, commaIndex);
-			st = st.substring(commaIndex + 1);
-			colonIndex = workString.indexOf(':');
-			if (colonIndex == -1) {
-				res[i][j] = Integer.parseInt(workString);
-				continue;
-			}
-			lengthString = workString.substring(colonIndex + 1);
-			sequenceLength = Integer.parseInt(lengthString);
-			workString = workString.substring(0, colonIndex);
-			sequenceInteger = Integer.parseInt(workString);
-			res[i][j] = sequenceInteger;
-			sequenceLength--;
 		}
+		return res;
 	}
-	return res;
-}
 ${end-}
 ${end}
 

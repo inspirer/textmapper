@@ -1,14 +1,15 @@
 package net.sf.lapg.templates.ast;
 
-import java.io.CharArrayReader;
 import java.io.IOException;
+import net.sf.lapg.templates.ast.AstLexer.Lexems;
+import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
+
+import java.io.CharArrayReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
-import net.sf.lapg.templates.ast.AstLexer.Lexems;
 
 
 public class AstParser implements AstLexer.ErrorReporter {
