@@ -29,7 +29,7 @@ public interface INavigationStrategy {
 		/**
 		 * Connects factory to the environment.
 		 */
-		public void setEnvironment(IEvaluationEnvironment environment);
+		public void setTemplatesFacade(ITemplatesFacade templatesFacade);
 
 		/**
 		 * Returns navigation strategy for object instance.

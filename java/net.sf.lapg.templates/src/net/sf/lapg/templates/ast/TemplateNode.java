@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.ITemplate;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
@@ -29,7 +29,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return overriddenTemplate;
 	}
 
-	public String apply(EvaluationContext context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException {
+	public String apply(EvaluationContext context, ITemplatesFacade env, Object[] arguments) throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0,
 			argsCount = arguments != null ? arguments.length : 0;
 

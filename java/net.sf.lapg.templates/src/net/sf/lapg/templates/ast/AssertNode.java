@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class AssertNode extends Node {
 
@@ -14,7 +14,7 @@ public class AssertNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
 		try {
 			Object res = env.evaluate(expr, context, true);
 			Boolean b = env.toBoolean(res);

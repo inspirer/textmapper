@@ -1,7 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class ThisNode extends ExpressionNode {
 
@@ -10,7 +10,7 @@ public class ThisNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) {
+	public Object evaluate(EvaluationContext context, ITemplatesFacade env) {
 		return context.getThisObject();
 	}
 

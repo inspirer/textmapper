@@ -4,19 +4,19 @@ import java.util.Collection;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.ast.ExpressionNode;
 
-public abstract class AbstractEnvironment implements IEvaluationEnvironment {
+public abstract class AbstractTemplateFacade implements ITemplatesFacade {
 
 	private final INavigationStrategy.Factory strategies;
 
-	public AbstractEnvironment(INavigationStrategy.Factory factory) {
+	public AbstractTemplateFacade(INavigationStrategy.Factory factory) {
 		this.strategies = factory;
-		factory.setEnvironment(this);
+		factory.setTemplatesFacade(this);
 	}
 
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
@@ -74,12 +74,8 @@ public abstract class AbstractEnvironment implements IEvaluationEnvironment {
 		}
 	}
 
-	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments) {
+	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
 		return "";
-	}
-
-	public String executeTemplate(String name, EvaluationContext context, Object[] arguments) {
-		return executeTemplate(null, name, context, arguments);
 	}
 
 	public String getTitle(Object object) {

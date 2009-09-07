@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class MethodCallNode extends ExpressionNode {
 
@@ -21,7 +21,7 @@ public class MethodCallNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
 		Object object;
 		if( objectExpr != null ) {
 			object = env.evaluate(objectExpr, context, false);

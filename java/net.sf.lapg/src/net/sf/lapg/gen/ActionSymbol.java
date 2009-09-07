@@ -12,26 +12,26 @@ package net.sf.lapg.gen;
 
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class ActionSymbol {
 
 	final Symbol symbol;
 	final boolean isLeft;
 	final int rightOffset;
-	private final IEvaluationEnvironment environment;
+	private final ITemplatesFacade facade;
 	private final String templatePackage;
 
-	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, IEvaluationEnvironment environment, String templatePackage) {
+	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, ITemplatesFacade facade, String templatePackage) {
 		this.symbol = symbol;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
-		this.environment = environment;
+		this.facade = facade;
 		this.templatePackage = templatePackage;
 	}
 
 	@Override
 	public String toString() {
-		return environment.executeTemplate(templatePackage+".symbol", new EvaluationContext(this), null);
+		return facade.executeTemplate(templatePackage+".symbol", new EvaluationContext(this), null, null);
 	}
 }

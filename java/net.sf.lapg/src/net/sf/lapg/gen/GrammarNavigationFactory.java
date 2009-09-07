@@ -62,7 +62,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			if( id.equals("rightOffset")) {
 				return ((ActionSymbol)obj).rightOffset;
 			}
-			return environment.executeTemplate(templatePackage+".sym_"+id, new EvaluationContext(obj), null);
+			return templatesFacade.executeTemplate(templatePackage+".sym_"+id, new EvaluationContext(obj), null, null);
 		}
 	};
 
@@ -75,7 +75,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
 			Symbol[] array = ((Rule)obj).getRight();
 			if( index instanceof Integer ) {
-				return new ActionSymbol(array[(Integer)index], false, array.length - (Integer)index - 1, environment, templatePackage);
+				return new ActionSymbol(array[(Integer)index], false, array.length - (Integer)index - 1, templatesFacade, templatePackage);
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
@@ -85,14 +85,14 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			Rule rule = (Rule) obj;
 			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
 			if( rule.getLeft().getName().equals(id)) {
-				result.add(new ActionSymbol(rule.getLeft(), true, 0, environment, templatePackage));
+				result.add(new ActionSymbol(rule.getLeft(), true, 0, templatesFacade, templatePackage));
 			}
 
 			Symbol[] right = rule.getRight();
 			for( int i = 0; i < right.length; i++ ) {
 				String name = right[i].getName();
 				if( id.equals(name)) {
-					result.add(new ActionSymbol(right[i], false, right.length - i - 1, environment, templatePackage));
+					result.add(new ActionSymbol(right[i], false, right.length - i - 1, templatesFacade, templatePackage));
 				}
 			}
 

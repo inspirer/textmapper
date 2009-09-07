@@ -14,7 +14,7 @@ import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.ast.AstParser;
 
-public class TemplateEnvironment extends AbstractEnvironment {
+public class TemplatesFacade extends AbstractTemplateFacade {
 
 	private HashSet<String> loadedPackages;
 
@@ -24,7 +24,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 
 	private ITemplateLoader[] loaders;
 
-	public TemplateEnvironment(INavigationStrategy.Factory strategy, ITemplateLoader... loaders) {
+	public TemplatesFacade(INavigationStrategy.Factory strategy, ITemplateLoader... loaders) {
 		super(strategy);
 		this.templates = new HashMap<String, ITemplate>();
 		this.overrides = new HashMap<String, String>();
@@ -109,7 +109,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 	}
 
 	@Override
-	public String executeTemplate(ILocatedEntity referer, String name, EvaluationContext context, Object[] arguments) {
+	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
 		boolean searchOverrides = true;
 		if (name.equals("base")) {
 			ITemplate current = context.getCurrentTemplate();
@@ -163,7 +163,7 @@ public class TemplateEnvironment extends AbstractEnvironment {
 	}
 
 	public Iterator<?> getCollectionIterator(Object o) {
-		if (o instanceof Collection) {
+		if (o instanceof Collection<?>) {
 			return ((Collection<?>) o).iterator();
 		}
 		if (o instanceof Object[]) {

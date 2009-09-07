@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class CallTemplateNode extends ExpressionNode {
 
@@ -32,7 +32,7 @@ public class CallTemplateNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
 		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), context) : context;
 		String tid = templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false);
 
@@ -43,7 +43,7 @@ public class CallTemplateNode extends ExpressionNode {
 				args[i] = env.evaluate(arguments[i], context, false);
 			}
 		}
-		return env.executeTemplate(this, tid, callContext, args);
+		return env.executeTemplate(tid, callContext, args, this);
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class ForeachNode extends CompoundNode {
 
@@ -24,7 +24,7 @@ public class ForeachNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
 		try {
 			Object select = env.evaluate(selectExpr, context, false);
 			Object prevVar = context.getVariable(var);

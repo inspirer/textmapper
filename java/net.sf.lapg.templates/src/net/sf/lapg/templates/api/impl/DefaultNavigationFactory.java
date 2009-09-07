@@ -8,15 +8,15 @@ import java.util.Collection;
 import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.INavigationStrategy;
 
 public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
-	protected IEvaluationEnvironment environment;
+	protected ITemplatesFacade templatesFacade;
 
-	public void setEnvironment(IEvaluationEnvironment environment) {
-		this.environment = environment;
+	public void setTemplatesFacade(ITemplatesFacade facade) {
+		this.templatesFacade = facade;
 	}
 
 	public INavigationStrategy getStrategy(Object o) {
@@ -25,7 +25,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			return arrayNavigation;
 		}
 
-		if( o instanceof Map ) {
+		if( o instanceof Map<?, ?> ) {
 			return mapNavigation;
 		}
 
@@ -33,7 +33,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			//return stringNavigation;
 		}
 
-		if( o instanceof Collection ) {
+		if( o instanceof Collection<?> ) {
 			return collectionNavigation;
 		}
 

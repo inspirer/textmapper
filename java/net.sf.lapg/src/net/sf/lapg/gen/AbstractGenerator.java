@@ -27,7 +27,7 @@ import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
-import net.sf.lapg.templates.api.impl.TemplateEnvironment;
+import net.sf.lapg.templates.api.impl.TemplatesFacade;
 
 public abstract class AbstractGenerator {
 
@@ -106,7 +106,7 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplateEnvironment env = new TemplateEnvironment(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()])) {
+		TemplatesFacade env = new TemplatesFacade(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()])) {
 
 			@Override
 			public void createFile(String name, String contents) {
@@ -117,7 +117,7 @@ public abstract class AbstractGenerator {
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym"); // TODO remove hack
-		env.executeTemplate(options.getTemplateName() + ".main", context, null);
+		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
 	protected abstract ITemplateLoader createTemplateLoader(String path);

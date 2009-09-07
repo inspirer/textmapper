@@ -3,7 +3,7 @@ package net.sf.lapg.templates.ast;
 import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class CompoundNode extends Node {
 
@@ -22,7 +22,7 @@ public class CompoundNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
 		if (instructions != null) {
 			for (Node n : instructions) {
 				n.emit(sb, context, env);

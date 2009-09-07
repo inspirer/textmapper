@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class ConcreteMapNode extends ExpressionNode {
 
@@ -17,7 +17,7 @@ public class ConcreteMapNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationEnvironment env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
 		HashMap<Object,Object> result = new HashMap<Object,Object>();
 		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {
 			result.put(entry.getKey(), env.evaluate(entry.getValue(), context, false) );

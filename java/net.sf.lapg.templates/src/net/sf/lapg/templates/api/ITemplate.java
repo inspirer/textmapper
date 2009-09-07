@@ -19,7 +19,7 @@ public interface ITemplate extends ILocatedEntity {
 	 * Evaluates template in context and environment.
 	 * @return result of invocation 
 	 */
-	String apply(EvaluationContext context, IEvaluationEnvironment env, Object[] arguments) throws EvaluationException;
+	String apply(EvaluationContext context, ITemplatesFacade env, Object[] arguments) throws EvaluationException;
 
 	/**
 	 * @return qualified name of overridden

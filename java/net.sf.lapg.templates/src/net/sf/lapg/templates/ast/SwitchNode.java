@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IEvaluationEnvironment;
+import net.sf.lapg.templates.api.ITemplatesFacade;
 
 public class SwitchNode extends Node {
 
@@ -18,7 +18,7 @@ public class SwitchNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationEnvironment env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
 		try {
 			Object value = env.evaluate(expression, context, false);
 			for( CaseNode n : cases ) {
