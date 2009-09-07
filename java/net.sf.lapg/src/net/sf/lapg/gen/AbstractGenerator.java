@@ -45,7 +45,7 @@ public abstract class AbstractGenerator {
 
 	protected abstract void createFile(String name, String contents);
 
-	protected abstract InputStream openInput();
+	protected abstract InputStream openInput(INotifier err);
 	
 	private Map<String, String> getDefaultOptions() {
 		Map<String, String> d = new HashMap<String, String>();
@@ -65,7 +65,7 @@ public abstract class AbstractGenerator {
 	public boolean compileGrammar() {
 		INotifier err = createNotifier();
 		try {
-			InputStream is = openInput();
+			InputStream is = openInput(err);
 			if (is == null) {
 				return false;
 			}
@@ -138,7 +138,6 @@ public abstract class AbstractGenerator {
 			AbstractGenerator.this.createFile(name, contents);
 		}
 
-		@Override
 		public void fireError(ILocatedEntity referer, String error) {
 			if( referer != null ) {
 				notifier.error(referer.getLocation() + ": ");

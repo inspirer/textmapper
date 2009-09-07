@@ -44,13 +44,13 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	public InputStream openInput() {
+	public InputStream openInput(INotifier notifier) {
 		InputStream stream;
-		if( options.getInput() != null && !options.getInput().startsWith("-") ) {
+		if (options.getInput() != null && !options.getInput().startsWith("-")) {
 			try {
-				stream = new FileInputStream( options.getInput() );
-			} catch( FileNotFoundException ex) {
-				System.err.println( "lapg: file not found: " + options.getInput());
+				stream = new FileInputStream(options.getInput());
+			} catch (FileNotFoundException ex) {
+				notifier.error("lapg: file not found: " + options.getInput() + "\n");
 				return null;
 			}
 		} else {
@@ -69,7 +69,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	@Override
 	protected ITemplateLoader createTemplateLoader(String path) {
 		File folder = new File(path);
-		if(folder.isDirectory()) {
+		if (folder.isDirectory()) {
 			return new FolderTemplateLoader(folder);
 		}
 		return null;
@@ -92,7 +92,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		private PrintStream openFile(String name) {
 			try {
 				return new PrintStream(new FileOutputStream(name));
-			} catch(FileNotFoundException ex) {
+			} catch (FileNotFoundException ex) {
 				error("lapg: IO error: " + ex.getMessage());
 				return System.err;
 			}
@@ -105,22 +105,22 @@ public class ConsoleGenerator extends AbstractGenerator {
 		public void trace(Throwable ex) {
 			ex.printStackTrace(System.err);
 		}
-		
+
 		public void debug(String info) {
-			if( debuglev < 2 ) {
+			if (debuglev < 2) {
 				return;
 			}
-			if( debug == null ) {
+			if (debug == null) {
 				debug = openFile(OUT_TABLES);
 			}
 			debug.print(info);
 		}
 
 		public void warn(String warning) {
-			if( debuglev < 1 ) {
+			if (debuglev < 1) {
 				return;
 			}
-			if( warn == null ) {
+			if (warn == null) {
 				warn = openFile(OUT_ERRORS);
 			}
 			warn.print(warning);

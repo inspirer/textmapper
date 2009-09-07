@@ -88,13 +88,6 @@ public abstract class AbstractTemplateFacade implements ITemplatesFacade {
 		return object.getClass().getCanonicalName();
 	}
 
-	public void fireError(ILocatedEntity referer, String error) {
-		if( referer != null ) {
-			System.err.print(referer.getLocation() + ": ");
-		}
-		System.err.println(error);
-	}
-
 	private static class HandledEvaluationException extends EvaluationException {
 
 		private static final long serialVersionUID = -718162932392225590L;

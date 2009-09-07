@@ -16,7 +16,6 @@ public class TestTemplatesFacade extends TemplatesFacade {
 
 	public ArrayList<String> nextErrors = new ArrayList<String>();
 
-	@Override
 	public void fireError(ILocatedEntity referer, String error) {
 		if( nextErrors.size() > 0 ) {
 			String next = nextErrors.remove(0);

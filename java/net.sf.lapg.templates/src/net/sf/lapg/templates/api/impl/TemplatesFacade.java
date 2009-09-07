@@ -14,7 +14,7 @@ import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.ast.AstParser;
 
-public class TemplatesFacade extends AbstractTemplateFacade {
+public abstract class TemplatesFacade extends AbstractTemplateFacade {
 
 	private HashSet<String> loadedPackages;
 
