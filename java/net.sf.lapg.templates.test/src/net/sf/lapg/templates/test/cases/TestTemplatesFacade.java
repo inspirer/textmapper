@@ -8,9 +8,9 @@ import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
 
-public class TestEnvironment extends TemplatesFacade {
+public class TestTemplatesFacade extends TemplatesFacade {
 
-	public TestEnvironment(Factory strategy, ITemplateLoader... loaders) {
+	public TestTemplatesFacade(Factory strategy, ITemplateLoader... loaders) {
 		super(strategy, loaders);
 	}
 

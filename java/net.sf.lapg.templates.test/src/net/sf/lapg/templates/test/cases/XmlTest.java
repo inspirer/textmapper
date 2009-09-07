@@ -13,7 +13,7 @@ public class XmlTest extends TemplateTestCase{
 	public void testSelector() {
 		XmlNode n = XmlModel.load(" <r><user name='jone'/>go<user name='go'/></r> ");
 
-		TestEnvironment env = new TestEnvironment(new XmlNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp", "utf8"));
+		TestTemplatesFacade env = new TestTemplatesFacade(new XmlNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp", "utf8"));
 
 		// test 1
 		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null, null);

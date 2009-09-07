@@ -27,7 +27,7 @@ public interface INavigationStrategy {
 	public static interface Factory {
 
 		/**
-		 * Connects factory to the environment.
+		 * Connects factory to the templates facade.
 		 */
 		public void setTemplatesFacade(ITemplatesFacade templatesFacade);
 
