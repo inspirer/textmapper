@@ -59,6 +59,7 @@ public abstract class AbstractGenerator {
 		d.put("maxtoken", "2048");
 		d.put("stack", "1024");
 		d.put("packLexems", "false");
+		d.put("packTables", "false");
 		return d;
 	}
 

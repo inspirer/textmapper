@@ -162,7 +162,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			super(arg0);
 		}
 	}
-	private static final int[] lapg_action = new int[] {
+    private static final int lapg_action[] = {
 		-3, -1, -1, -11, 4, -1, 41, -1, -1, 8, -19, 3, 5, 6, 18, -1,
 		-1, -25, 7, -33, 21, -1, 10, -1, 19, 9, -1, -41, 20, -1, -47, 22,
 		-59, 27, -1, -1, -69, -81, -87, 15, 25, -97, -109, 23, 26, 24, -121, -1,
@@ -170,8 +170,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		40, -1, -2,
 	};
 
-
-	private static final short[] lapg_lalr = new short[] {
+    private static final short lapg_lalr[] = {
 		11, -1, 1, 1, 13, 1, -1, -2, 11, -1, 1, 0, 13, 0, -1, -2,
 		4, -1, 12, 11, -1, -2, 1, -1, 6, -1, 0, 2, -1, -2, 4, -1,
 		8, 11, 12, 11, -1, -2, 4, -1, 8, 11, -1, -2, 16, -1, 1, 16,
@@ -184,14 +183,13 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		6, 16, 13, 16, -1, -2,
 	};
 
-
-	private static final short[] lapg_sym_goto = new short[] {
+    private static final short lapg_sym_goto[] = {
 		0, 1, 11, 12, 13, 16, 20, 22, 22, 24, 25, 27, 29, 31, 33, 34,
 		36, 40, 43, 45, 46, 47, 48, 49, 50, 52, 54, 55, 63, 66, 67, 71,
 		75, 77, 79, 80, 82, 84, 86, 88, 90, 92, 95,
 	};
 
-	private static final short[] lapg_sym_from = new short[] {
+    private static final short lapg_sym_from[] = {
 		65, 1, 2, 8, 16, 17, 26, 34, 38, 50, 54, 32, 5, 10, 19, 27,
 		5, 7, 15, 42, 8, 17, 29, 35, 21, 21, 34, 0, 3, 23, 29, 2,
 		8, 15, 38, 54, 30, 36, 41, 56, 37, 46, 48, 47, 57, 0, 0, 0,
@@ -200,7 +198,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		30, 36, 30, 36, 38, 54, 38, 54, 37, 46, 37, 46, 37, 46, 48,
 	};
 
-	private static final short[] lapg_sym_to = new short[] {
+    private static final short lapg_sym_to[] = {
 		66, 5, 6, 6, 26, 6, 6, 6, 6, 6, 6, 42, 12, 22, 22, 22,
 		13, 14, 24, 55, 16, 16, 36, 36, 30, 31, 43, 1, 1, 32, 32, 7,
 		7, 25, 50, 50, 37, 37, 37, 37, 46, 46, 46, 58, 64, 65, 2, 3,
@@ -209,13 +207,13 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		40, 45, 41, 41, 52, 62, 53, 53, 47, 57, 48, 48, 49, 49, 59,
 	};
 
-	private static final short[] lapg_rlen = new short[] {
+    private static final short lapg_rlen[] = {
 		1, 0, 3, 2, 1, 3, 3, 2, 1, 3, 1, 0, 3, 1, 0, 1,
 		0, 6, 1, 2, 2, 1, 2, 4, 4, 3, 2, 1, 1, 0, 3, 2,
 		3, 2, 2, 1, 0, 3, 2, 1, 3, 1,
 	};
 
-	private static final short[] lapg_rlex = new short[] {
+    private static final short lapg_rlex[] = {
 		20, 20, 19, 21, 21, 24, 24, 22, 22, 25, 28, 28, 25, 29, 29, 30,
 		30, 25, 26, 26, 23, 23, 32, 32, 33, 33, 34, 34, 37, 37, 35, 35,
 		36, 36, 38, 39, 39, 31, 40, 40, 41, 27,

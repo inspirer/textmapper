@@ -186,36 +186,38 @@ ${end-}
 ${end} 
 
 ${template parserTables-}
-	private static final int[] lapg_action = new int[] {
-		${util.format(parser.action_index, 16, 2)}
-	};
+${call parserTable(parser.action_index,'int','lapg_action','LapgAction')-}
 
-${if parser.nactions > 0}
-	private static final short[] lapg_lalr = new short[] {
-		${util.format(parser.action_table, 16, 2)}
-	};
+${if parser.nactions > 0-}
+${call parserTable(parser.action_table,'short','lapg_lalr','LapgLalr')}
+${end-}
+${call parserTable(parser.sym_goto,'short','lapg_sym_goto','LapgSymGoto')-}
+
+${call parserTable(parser.sym_from,'short','lapg_sym_from','LapgSymFrom')-}
+
+${call parserTable(parser.sym_to,'short','lapg_sym_to','LapgSymTo')-}
+
+${call parserTable(parser.ruleLength,'short','lapg_rlen','LapgRLen')-}
+
+${call parserTable(parser.rleft,'short','lapg_rlex','LapgRLex')-}
 ${end}
 
-	private static final short[] lapg_sym_goto = new short[] {
-		${util.format(parser.sym_goto, 16, 2)}
-	};
 
-	private static final short[] lapg_sym_from = new short[] {
-		${util.format(parser.sym_from, 16, 2)}
+${template parserTable(arr,atype,name,cname)-}
+${if opts.packTables == 'true'-}
+    public interface ${cname} {
+        public static final ${atype} ${name}[] = {
+			${util.format(arr, 16, 3)}
+		};
 	};
-
-	private static final short[] lapg_sym_to = new short[] {
-		${util.format(parser.sym_to, 16, 2)}
+	private static final ${atype}[] ${name} = ${cname}.${name};
+${else-}
+    private static final ${atype} ${name}[] = {
+		${util.format(arr, 16, 2)}
 	};
-
-	private static final short[] lapg_rlen = new short[] {
-		${util.format(parser.ruleLength, 16, 2)}
-	};
-
-	private static final short[] lapg_rlex = new short[] {
-		${util.format(parser.rleft, 16, 2)}
-	};
+${end-}
 ${end}
+
 
 ${template parserAction-}
 ${eval getAction(), '[action in '+getAction().getLocation()+']'}

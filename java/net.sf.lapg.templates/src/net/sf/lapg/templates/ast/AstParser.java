@@ -132,7 +132,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 	public ITemplate[] getResult() {
 		return templates.toArray(new ITemplate[templates.size()]);
 	}
-	private static final int[] lapg_action = new int[] {
+    private static final int lapg_action[] = {
 		-3, 7, -1, 2, -11, 4, -1, -1, 3, 30, 29, 27, 28, -1, -1, 6,
 		21, 24, 25, 26, -1, -19, -29, 68, 70, -1, -1, -1, 86, -1, -1, -1,
 		-1, 72, -1, 85, 71, -1, -1, -1, -79, -1, -1, 32, -1, -105, 69, 80,
@@ -149,8 +149,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		-2,
 	};
 
-
-	private static final short[] lapg_lalr = new short[] {
+    private static final short lapg_lalr[] = {
 		1, -1, 5, -1, 0, 1, -1, -2, 1, -1, 5, -1, 0, 0, -1, -2,
 		42, -1, 31, 9, 32, 9, 55, 9, -1, -2, 42, -1, 31, 66, 32, 66,
 		33, 66, 34, 66, 35, 66, 36, 66, 37, 66, 40, 66, 41, 66, 43, 66,
@@ -216,8 +215,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		43, 47, -1, -2,
 	};
 
-
-	private static final short[] lapg_sym_goto = new short[] {
+    private static final short lapg_sym_goto[] = {
 		0, 1, 11, 18, 25, 32, 42, 45, 102, 148, 194, 199, 201, 205, 206, 211,
 		257, 263, 268, 273, 273, 278, 279, 279, 279, 279, 325, 330, 331, 377, 423, 428,
 		436, 443, 448, 499, 502, 505, 508, 554, 555, 602, 605, 660, 669, 673, 678, 680,
@@ -227,7 +225,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		834, 880, 926, 972, 973, 1019, 1060, 1099, 1134, 1167, 1199, 1230,
 	};
 
-	private static final short[] lapg_sym_from = new short[] {
+    private static final short lapg_sym_from[] = {
 		207, 0, 4, 6, 14, 20, 58, 105, 122, 149, 182, 6, 14, 20, 58, 105,
 		149, 182, 6, 14, 20, 58, 105, 149, 182, 6, 14, 20, 58, 105, 149, 182,
 		0, 4, 6, 14, 20, 58, 105, 149, 164, 182, 58, 149, 182, 7, 13, 25,
@@ -307,7 +305,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		123, 125, 131, 157, 169, 171, 172, 175, 180, 184, 191, 192, 197, 199,
 	};
 
-	private static final short[] lapg_sym_to = new short[] {
+    private static final short lapg_sym_to[] = {
 		208, 1, 1, 9, 9, 9, 9, 9, 163, 9, 9, 10, 10, 10, 10, 10,
 		10, 10, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12,
 		2, 2, 13, 13, 57, 102, 57, 175, 181, 192, 103, 103, 103, 21, 22, 63,
@@ -387,7 +385,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
 	};
 
-	private static final short[] lapg_rlen = new short[] {
+    private static final short lapg_rlen[] = {
 		1, 0, 1, 2, 1, 3, 2, 1, 1, 0, 1, 0, 6, 2, 1, 0,
 		3, 1, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3,
 		1, 1, 0, 1, 0, 4, 1, 0, 3, 2, 2, 1, 3, 2, 1, 0,
@@ -398,7 +396,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		3,
 	};
 
-	private static final short[] lapg_rlex = new short[] {
+    private static final short lapg_rlex[] = {
 		61, 61, 60, 62, 62, 63, 63, 63, 67, 67, 69, 69, 64, 70, 73, 73,
 		68, 74, 74, 66, 65, 65, 71, 71, 75, 75, 75, 75, 75, 75, 75, 78,
 		79, 81, 81, 83, 83, 79, 85, 85, 79, 79, 86, 72, 72, 84, 87, 87,
