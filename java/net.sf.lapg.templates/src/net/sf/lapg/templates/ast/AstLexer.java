@@ -1,7 +1,7 @@
 package net.sf.lapg.templates.ast;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 
@@ -27,15 +27,15 @@ public class AstLexer {
 		void error(String s);
 	};
 
-	final private InputStream stream;
+	final private Reader stream;
 	final private ErrorReporter reporter;
-	final private String encoding;
 
-	final private byte[] token = new byte[2048];
+	final private char[] token = new char[2048];
 	private int len;
 		
-	final private byte[] data = new byte[512];
-	private int datalen, l, chr;
+	final private char[] data = new char[2048];
+	private int datalen, l;
+	private char chr;
 
 	private int group = 0;
 		
@@ -106,16 +106,15 @@ public class AstLexer {
 
 	
 
-	public AstLexer(InputStream stream, ErrorReporter reporter, String encoding) throws IOException {
+	public AstLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;
-		this.encoding = encoding;
 		this.datalen = stream.read(data);
 		this.l = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
-	private final short[] lapg_char2no = new short[] {
+    private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 4, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -133,7 +132,7 @@ public class AstLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	};
-	
+
 	private int lapg_lexem[][] = unpackFromString(126,96,
 		"-2,2:8,3,2:86,-1:2,4:4,5,-1:2,6,7,8,9,10,11,12,13,14,15,16,17,18:10,19,20,2" +
 		"1,22,23,24:26,25,-1,26,24,27,28,24,29,24,30,31,32,24,33,24:3,34,35,24:4,36," +
@@ -200,7 +199,7 @@ public class AstLexer {
 		":3,24,-9,24:19,124,24:6,-9:3,-20:21,24:10,-20:5,24:26,-20:3,24,-20,24:26,-2" +
 		"0:3,-9:21,24:10,-9:5,24:26,-9:3,24,-9,24:4,125,24:21,-9:3,-29:21,24:10,-29:" +
 		"5,24:26,-29:3,24,-29,24:26,-29:3");
-			
+		
 	private int[][] unpackFromString(int size1, int size2, String st) {
 		int colonIndex = -1;
 		String lengthString;
@@ -237,8 +236,12 @@ public class AstLexer {
 		return res;
 	}
 
-	public String current() throws UnsupportedEncodingException {
-		return new String(token,0,len,encoding);
+	public String current() {
+		return new String(token,0,len);
+	}
+	
+	private static int mapCharacter(int chr) {
+		return lapg_char2no[(chr+256)%256];
 	}
 
 	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
@@ -248,8 +251,8 @@ public class AstLexer {
 		do {			
 			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
 			for( len = 0, state = group; state >= 0; ) {
-				if( len < 2047 ) token[len++] = (byte)chr;
-				state = lapg_lexem[state][lapg_char2no[(chr+256)%256]];
+				if( len < 2047 ) token[len++] = chr;
+				state = lapg_lexem[state][mapCharacter(chr)];
 				if( state >= -1 && chr != 0 ) { 
 					lapg_current_offset++;
 					if( chr == '\n' ) {

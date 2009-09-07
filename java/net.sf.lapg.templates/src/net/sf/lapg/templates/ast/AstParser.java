@@ -1,16 +1,14 @@
 package net.sf.lapg.templates.ast;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
-import net.sf.lapg.templates.ast.AstLexer.Lexems;
-import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
-
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
+import net.sf.lapg.templates.ast.AstLexer.Lexems;
 
 
 public class AstParser implements AstLexer.ErrorReporter {
@@ -25,7 +23,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 	
 	private String inputName;
 	private int killEnds = -1;
-	private byte[] buff;
+	private char[] buff;
 	
 	private String rawText(int start, int end) {
 		if( killEnds == start ) {
@@ -38,11 +36,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 			if( start < end && buff[start] == '\n' )
 				start++;
 		}
-		try {
-			return new String(buff, start, end-start, "utf-8");
-		} catch(UnsupportedEncodingException ex) {
-			return "";
-		}
+		return new String(buff, start, end-start);
 	}
 	
 	private void checkIsSpace(int start, int end) {
@@ -121,8 +115,8 @@ public class AstParser implements AstLexer.ErrorReporter {
 		this.inputName = inputName;
 		templates = new ArrayList<ITemplate>();
 		try {
-			buff = s.getBytes("utf-8");
-			AstLexer lexer = new AstLexer(new ByteArrayInputStream(buff), this, "utf-8");
+			buff = s.toCharArray();
+			AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
 			return parse(lexer);
 		} catch( IOException ex ) {
 			return false;

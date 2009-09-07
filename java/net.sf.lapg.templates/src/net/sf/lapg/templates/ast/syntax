@@ -1,7 +1,6 @@
 #   Automatically generated grammar
 
 .lang        "java" 
-.getsym      "chr = l < buff.length ? buff[l++] : 0"
 .positioning "offset"
 .class       "AstParser"
 .lexer		 "AstLexer"
@@ -305,8 +304,7 @@ expression_list (ArrayList) ::=
 ##################################################################################
 %%
 ${template imports}
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.CharArrayReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -328,7 +326,7 @@ private static final boolean DEBUG_SYNTAX = false;
 
 private String inputName;
 private int killEnds = -1;
-private byte[] buff;
+private char[] buff;
 
 private String rawText(int start, int end) {
 	if( killEnds == start ) {
@@ -341,11 +339,7 @@ private String rawText(int start, int end) {
 		if( start < end && buff[start] == '\n' )
 			start++;
 	}
-	try {
-		return new String(buff, start, end-start, "utf-8");
-	} catch(UnsupportedEncodingException ex) {
-		return "";
-	}
+	return new String(buff, start, end-start);
 }
 
 private void checkIsSpace(int start, int end) {
@@ -424,8 +418,8 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	this.inputName = inputName;
 	templates = new ArrayList<ITemplate>();
 	try {
-		buff = s.getBytes("utf-8");
-		AstLexer lexer = new AstLexer(new ByteArrayInputStream(buff), this, "utf-8");
+		buff = s.toCharArray();
+		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
 		return parse(lexer);
 	} catch( IOException ex ) {
 		return false;
