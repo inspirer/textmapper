@@ -35,7 +35,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		File file = new File(name);
 		try {
 			OutputStream os = new FileOutputStream(file);
-			os.write(contents.getBytes("utf8"));
+			os.write(contents.getBytes("utf8")); // FIXME charset
 			os.close();
 		} catch (FileNotFoundException e) {
 		} catch (UnsupportedEncodingException e) {
