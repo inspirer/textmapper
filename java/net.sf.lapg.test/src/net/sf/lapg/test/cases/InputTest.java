@@ -14,6 +14,7 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
+import net.sf.lapg.lex.RegexpParser;
 import net.sf.lapg.test.TestNotifier;
 
 public class InputTest extends TestCase {
@@ -153,5 +154,32 @@ public class InputTest extends TestCase {
 		Assert.assertNotNull(g);
 
 		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
+	}
+	
+	public void testHexConverter() {
+		Assert.assertEquals(0, RegexpParser.parseHex("0"));
+		Assert.assertEquals(10, RegexpParser.parseHex("a"));
+		Assert.assertEquals(11, RegexpParser.parseHex("b"));
+		Assert.assertEquals(12, RegexpParser.parseHex("C"));
+		Assert.assertEquals(16, RegexpParser.parseHex("10"));
+		Assert.assertEquals(39664, RegexpParser.parseHex("9aF0"));
+		try {
+			Assert.assertEquals(39664, RegexpParser.parseHex("9aF0!"));
+			Assert.fail("no exception");
+		} catch(Throwable th) {
+			Assert.assertTrue(th instanceof NumberFormatException);
+		}
+		try {
+			Assert.assertEquals(39664, RegexpParser.parseHex("g"));
+			Assert.fail("no exception");
+		} catch(Throwable th) {
+			Assert.assertTrue(th instanceof NumberFormatException);
+		}
+		try {
+			Assert.assertEquals(39664, RegexpParser.parseHex("G"));
+			Assert.fail("no exception");
+		} catch(Throwable th) {
+			Assert.assertTrue(th instanceof NumberFormatException);
+		}
 	}
 }
