@@ -4,7 +4,7 @@ import java.io.IOException;
 import net.sf.lapg.templates.model.xml.XmlLexer.Lexems;
 import net.sf.lapg.templates.model.xml.XmlLexer.LapgSymbol;
 
-import java.io.ByteArrayInputStream;
+import java.io.CharArrayReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class XmlParser implements XmlLexer.ErrorReporter {
 	
 	private List<XmlElement> result;
 	
-	byte[] buff;
+	char[] buff;
 	
 	private XmlData getData(int start, int end) {
 		return new XmlData(buff, start, end-start);
@@ -32,8 +32,8 @@ public class XmlParser implements XmlLexer.ErrorReporter {
 	public List<XmlElement> parse(String s) {
 		result = null;
 		try {
-			buff = s.getBytes("utf-8");
-			XmlLexer lexer = new XmlLexer(new ByteArrayInputStream(buff), this, "utf-8");
+			buff = s.toCharArray();
+			XmlLexer lexer = new XmlLexer(new CharArrayReader(buff), this);
 			parse(lexer);
 		} catch( IOException ex ) {
 		}

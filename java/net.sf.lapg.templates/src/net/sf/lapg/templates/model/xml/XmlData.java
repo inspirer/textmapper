@@ -1,14 +1,13 @@
 package net.sf.lapg.templates.model.xml;
 
-import java.io.UnsupportedEncodingException;
 
 public class XmlData extends XmlElement {
 
-	private byte[] buffer;
+	private char[] buffer;
 	private int start;
 	private int len;
 
-	XmlData(byte[] buffer, int start, int len) {
+	XmlData(char[] buffer, int start, int len) {
 		this.buffer = buffer;
 		this.start = start;
 		this.len = len;
@@ -16,10 +15,7 @@ public class XmlData extends XmlElement {
 
 	@Override
 	public void toString(StringBuffer sb) {
-		try {
-			sb.append(new String(buffer, start, len, "utf-8"));
-		} catch (UnsupportedEncodingException e) {
-		}
+		sb.append(new String(buffer, start, len));
 	}
 
 	public String getTitle() {
