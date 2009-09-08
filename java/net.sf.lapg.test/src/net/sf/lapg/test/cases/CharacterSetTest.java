@@ -1,0 +1,162 @@
+package net.sf.lapg.test.cases;
+
+import junit.framework.TestCase;
+import net.sf.lapg.gen.LapgOptions;
+import net.sf.lapg.lex.CharacterSet;
+
+import org.junit.Assert;
+
+/**
+ * Tests for {@link LapgOptions} command-line arguments parsing.
+ */
+public class CharacterSetTest extends TestCase {
+
+	public void testCreation() {
+		
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		
+		b.addRange(1,10);
+		b.addRange(15,30);
+		b.addRange(12,12);
+		Assert.assertEquals("[1-10,12,15-30]", b.create().toString());
+		
+		b.clear();
+		b.addSymbol(10);
+		b.addSymbol(30);
+		b.addSymbol(20);
+		Assert.assertEquals("[10,20,30]", b.create().toString());
+
+		b.clear();
+		Assert.assertEquals("[]", b.create().toString());
+		
+		b.clear();
+		b.addSymbol(1);
+		Assert.assertEquals("[1]", b.create().toString());
+	}
+	
+	public void testSubtract1() {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		
+		b.clear();
+		b.addRange('a', 'z');
+		b.addSymbol('_');
+		CharacterSet set = b.create();
+		
+		b.clear();
+		b.addSymbol('i');
+		b.addSymbol('e');
+		b.addSymbol('c');
+		CharacterSet set2 = b.create();
+		Assert.assertEquals("[95,97-98,100,102-104,106-122]", b.subtract(set, set2).toString());
+	}
+
+	public void testSubtract2() {
+		subtract(new int[]{ 95,95,96,96,97,97}, new int[] {96,96}, "[95,97]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 80, 99}, "[100-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 80, 100}, "[101-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 80, 120}, "[121-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 140}, "[100-119,141-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 140, 200, 220}, "[100-119,141-199]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 140, 205, 220}, "[100-119,141-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 198}, "[100-119,199-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 199}, "[100-119,200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 200}, "[100-119]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 120, 240}, "[100-119]");
+		subtract(new int[]{ 100, 200 }, new int[] {80, 120}, "[121-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 140}, "[100-119,141-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 140, 200, 220}, "[100-119,141-199]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 140, 205, 220}, "[100-119,141-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 198}, "[100-119,199-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 199}, "[100-119,200]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 200}, "[100-119]");
+		subtract(new int[]{ 100, 200 }, new int[] {120, 240}, "[100-119]");
+
+		subtract(new int[]{ 100, 200 }, new int[] {1,1, 50,50, 150,150}, "[100-149,151-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,1, 50,50, 150,150, 250,250}, "[100-149,151-200]");
+		subtract(new int[]{ 100, 200 }, new int[] {1,1, 50,50, 150,151, 250,250}, "[100-149,152-200]");
+		
+		subtract(new int[]{ 7,7, 14,14, 21,21, 55,55 }, new int[] {1,100}, "[]");
+	}
+	
+	public void testRealloc() {
+		StringBuffer res = new StringBuffer();
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		res.append("[");
+		
+		for(int i = 0; i < 6000; i++) {
+			if(i > 0) {
+				res.append(",");
+			}
+			res.append(i*4);
+			b.addSymbol(i*4);
+		}
+		res.append("]");
+		Assert.assertEquals(res.toString(), b.create().toString());
+	}
+	
+	private static final int TESTLEN = 9;
+	
+	public void testSubtractGeneric() {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSet s1, s2, s3;
+		int[] array1 = new int[TESTLEN];
+		int[] array2 = new int[TESTLEN];
+		int[] array3 = new int[TESTLEN];
+		
+		fillArray(array1, 255);
+		Assert.assertEquals("[0-7]", fromArray(array1, b).toString());
+		fillArray(array1, 55);
+		Assert.assertEquals("[0-2,4-5]", fromArray(array1, b).toString());
+		fillArray(array1, 3);
+		Assert.assertEquals("[0-1]", fromArray(array1, b).toString());
+		fillArray(array1, 1);
+		Assert.assertEquals("[0]", fromArray(array1, b).toString());
+		fillArray(array1, 0);
+		Assert.assertEquals("[]", fromArray(array1, b).toString());
+		
+		for(int i = 0; i < (1<<TESTLEN); i++) {
+			fillArray(array1, i);
+			s1 = fromArray(array1,b);
+			for(int e = 0; e < (1<<TESTLEN); e++) {
+				fillArray(array2, e);
+				s2 = fromArray(array2,b);
+				for(int q = 0; q < TESTLEN; q++) {
+					array3[q] = array2[q] == 1 ? 0 : array1[q];
+				}
+				s3 = fromArray(array3,b);
+				Assert.assertEquals(// turn on for debug: s1.toString() + " - " + s2.toString(),
+						s3.toString(), b.subtract(s1, s2).toString());
+				
+			}
+		}
+	}	
+	
+	private static void subtract(int[] a1, int[] a2, String result) {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		Assert.assertEquals(result, b.subtract(new CharacterSet(a1, a1.length), new CharacterSet(a2, a2.length)).toString());
+	}
+	
+	private static CharacterSet fromArray(int[] arr, CharacterSet.Builder b) {
+		b.clear();
+		int i = 0;
+		while(i < arr.length) {
+			if(arr[i] == 1) {
+				int start = i;
+				while(i+1 < arr.length && arr[i+1] == 1) {
+					i++;
+				}
+				b.addRange(start, i);
+			}
+			i++;
+		}
+		
+		return b.create();
+	}
+	
+	private static void fillArray(int[] arr, int number) {
+		for(int i = 0; i < arr.length; i++) {
+			arr[i] = number & 1;
+			number >>= 1;
+		}
+	}
+}
