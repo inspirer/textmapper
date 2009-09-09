@@ -1,5 +1,7 @@
 package net.sf.lapg.test.cases;
 
+import java.util.Iterator;
+
 import junit.framework.TestCase;
 import net.sf.lapg.gen.LapgOptions;
 import net.sf.lapg.lex.CharacterSet;
@@ -50,6 +52,45 @@ public class CharacterSetTest extends TestCase {
 		Assert.assertEquals("[95,97-98,100,102-104,106-122]", b.subtract(set, set2).toString());
 	}
 
+	public void testIterator() {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		
+		b.clear();
+		b.addRange('a', 'l');
+		b.addSymbol('_');
+		CharacterSet set = b.create();
+		
+		b.clear();
+		b.addSymbol('i');
+		b.addSymbol('e');
+		b.addSymbol('c');
+		CharacterSet set2 = b.create();
+		
+		set = b.subtract(set, set2);
+		Iterator<int[]> it = set.iterator();
+		
+		Assert.assertEquals(true, it.hasNext());
+		int[] next = it.next();
+		Assert.assertEquals('_', next[0]);
+		Assert.assertEquals('_', next[1]);
+		next = it.next();
+		Assert.assertEquals('a', next[0]);
+		Assert.assertEquals('b', next[1]);
+		next = it.next();
+		Assert.assertEquals('d', next[0]);
+		Assert.assertEquals('d', next[1]);
+		next = it.next();
+		Assert.assertEquals('f', next[0]);
+		Assert.assertEquals('h', next[1]);
+		Assert.assertEquals(true, it.hasNext());
+		next = it.next();
+		Assert.assertEquals('j', next[0]);
+		Assert.assertEquals('l', next[1]);
+		Assert.assertEquals(false, it.hasNext());
+		Assert.assertNull(it.next());
+		Assert.assertNull(it.next());
+	}
+	
 	public void testSubtract2() {
 		subtract(new int[]{ 95,95,96,96,97,97}, new int[] {96,96}, "[95,97]");
 		subtract(new int[]{ 100, 200 }, new int[] {1,2,3,4, 80, 99}, "[100-200]");
@@ -127,6 +168,71 @@ public class CharacterSetTest extends TestCase {
 				Assert.assertEquals(// turn on for debug: s1.toString() + " - " + s2.toString(),
 						s3.toString(), b.subtract(s1, s2).toString());
 				
+			}
+		}
+	}	
+
+	public void testIntersectGeneric() {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSet s1, s2, s3;
+		int[] array1 = new int[TESTLEN];
+		int[] array2 = new int[TESTLEN];
+		int[] array3 = new int[TESTLEN];
+		
+		for(int i = 0; i < (1<<TESTLEN); i++) {
+			fillArray(array1, i);
+			s1 = fromArray(array1,b);
+			for(int e = 0; e < (1<<TESTLEN); e++) {
+				fillArray(array2, e);
+				s2 = fromArray(array2,b);
+				for(int q = 0; q < TESTLEN; q++) {
+					array3[q] = array2[q] == 1 && array1[q] == 1 ? 1 : 0;
+				}
+				s3 = fromArray(array3,b);
+				Assert.assertEquals(// turn on for debug: s1.toString() + " - " + s2.toString(),
+						s3.toString(), b.intersect(s1, s2).toString());
+				
+			}
+		}
+	}	
+
+	private static final int ARTESTLEN = 12;
+	
+	public void testAddRangeGeneric() {
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSet s2, s3;
+		int[] array1 = new int[ARTESTLEN];
+		int[] array2 = new int[ARTESTLEN];
+		
+		for(int i = 0; i < (1<<ARTESTLEN); i++) {
+			fillArray(array1, i);
+
+			for(int start = 0; start < ARTESTLEN; start++) {
+				for(int end = start; end < ARTESTLEN; end++) {
+					for(int e = 0; e < ARTESTLEN; e++) {
+						array2[e] = (e >= start && e <= end) ? 1 : array1[e];
+					}
+					b.clear();
+					
+					int q = 0;
+					while(q < array1.length) {
+						if(array1[q] == 1) {
+							int st = q;
+							while(q+1 < array1.length && array1[q+1] == 1) {
+								q++;
+							}
+							b.addRange(st, q);
+						}
+						q++;
+					}
+					
+					b.addRange(start, end);
+					s2 = b.create();
+					
+					s3 = fromArray(array2,b);
+					Assert.assertEquals(i+": "+start+"-"+end,
+							s3.toString(), s2.toString());
+				}
 			}
 		}
 	}	

@@ -2,7 +2,7 @@ package net.sf.lapg.lex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashSet;
 
 import net.sf.lapg.INotifier;
 
@@ -11,26 +11,29 @@ public class RegexpParser {
 	private INotifier err;
 
 	// result
-	private int[] symbols;
-	private ArrayList<int[]> setpool;
+	private int[] character2symbol;
+	private int symbolCount;
+	private ArrayList<CharacterSet> setpool;
+	private int[][] set2symbols;
 
 	// temporary variables
+	private CharacterSet.Builder builder;
 	private int[] sym;
 	private int[] stack;
-	private int[] set;
 
 	public RegexpParser(INotifier err) {
 		this.err = err;
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
-		this.set = new int[LexConstants.SIZE_SYM];
+		this.builder = new CharacterSet.Builder();
 
-		this.symbols = new int[LexConstants.SIZE_SYM];
-		this.setpool = new ArrayList<int[]>();
+		this.character2symbol = new int[128];
+		this.setpool = new ArrayList<CharacterSet>();
 
-		Arrays.fill(symbols, 0);
-		symbols[(0) / LexConstants.BITS] |= (1 << ((0) % LexConstants.BITS));
-		symbols[(1) / LexConstants.BITS] |= (1 << ((1) % LexConstants.BITS));
+		// 0 - eof, 1 - any
+		Arrays.fill(character2symbol, 1);
+		character2symbol[0] = 0;
+		symbolCount = 2;
 	}
 
 	private int index;
@@ -39,22 +42,25 @@ public class RegexpParser {
 
 	public static int parseHex(String s) {
 		int result = 0;
-		for(int i = 0; i < s.length(); i++) {
+		for (int i = 0; i < s.length(); i++) {
 			result <<= 4;
 			int c = s.codePointAt(i);
-			if(c >= 'a' && c <= 'f') {
+			if (c >= 'a' && c <= 'f') {
 				result |= 10 + c - 'a';
-			} else if(c >= 'A' && c <= 'F') {
+			} else if (c >= 'A' && c <= 'F') {
 				result |= 10 + c - 'A';
-			} else if(c >= '0' && c <= '9') {
-				result |= c - '0'; 
+			} else if (c >= '0' && c <= '9') {
+				result |= c - '0';
 			} else {
 				throw new NumberFormatException();
-			}			
+			}
 		}
 		return result;
 	}
 
+	/**
+	 * @return unicode character 0 - 0xffff, or -1 in case of error
+	 */
 	private int escape() {
 		index++;
 		if (index >= re.length) {
@@ -85,7 +91,7 @@ public class RegexpParser {
 			index += 4;
 			try {
 				return parseHex(new String(re, index - 3, 4));
-			} catch(NumberFormatException ex) {
+			} catch (NumberFormatException ex) {
 				err.error("lex: bad unicode symbol: /" + regexp + "/\n");
 				return -1;
 			}
@@ -96,18 +102,37 @@ public class RegexpParser {
 		}
 	}
 
-	private int storeSet() {
-		int[] newSet = new int[LexConstants.SIZE_SYM];
-		for (int i = 0; i < LexConstants.SIZE_SYM; i++) {
-			newSet[i] = set[i];
-		}
-		int setIndex = setpool.size() * LexConstants.SIZE_SYM;
-		setpool.add(newSet);
+	private int storeSet(CharacterSet set) {
+		int setIndex = setpool.size();
+		setpool.add(set);
 		return setIndex;
+	}
+	
+	private void useCharacter(int ch) {
+		if (ch <= 0 || ch >= 0x10000) {
+			return;
+		}
+		ensureCharacter(ch);
+		if (character2symbol[ch] == 1) {
+			character2symbol[ch] = symbolCount++;
+		}
+	}
+
+	private void ensureCharacter(int ch) {
+		if (character2symbol.length <= ch) {
+			int newsize = character2symbol.length * 2;
+			while (newsize <= ch) {
+				newsize *= 2;
+			}
+			int[] newc2sym = new int[newsize];
+			Arrays.fill(newc2sym, character2symbol.length, newc2sym.length, 1);
+			System.arraycopy(character2symbol, 0, newc2sym, 0, character2symbol.length);
+			character2symbol = newc2sym;
+		}
 	}
 
 	/**
-	 * regexp "tokenizer"
+	 * regular expression "tokenizer"
 	 */
 	private int getnext() {
 		int i, e;
@@ -128,7 +153,7 @@ public class RegexpParser {
 
 		case '.':
 			index++;
-			symbols[('\n') / LexConstants.BITS] |= (1 << (('\n') % LexConstants.BITS));
+			useCharacter('\n');
 			return LexConstants.ANY;
 
 		case '[':
@@ -138,7 +163,7 @@ public class RegexpParser {
 				index++;
 			}
 
-			Arrays.fill(set, 0);
+			builder.clear();
 
 			while (index < re.length && re[index] != ']') {
 				i = re[index];
@@ -148,7 +173,6 @@ public class RegexpParser {
 						return -1;
 					}
 				}
-				set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
 				index++;
 				if (index + 1 < re.length && re[index] == '-' && re[index + 1] != ']') {
 					e = re[++index];
@@ -160,16 +184,13 @@ public class RegexpParser {
 					}
 
 					if (e > i) {
-						for (i++; i <= e; i++) {
-							set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
-						}
+						builder.addRange(i, e);
 					} else {
-						for (i--; i >= e; i--) {
-							set[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
-						}
+						builder.addRange(e, i);
 					}
-
 					index++;
+				} else {
+					builder.addSymbol(i);
 				}
 			}
 
@@ -178,35 +199,23 @@ public class RegexpParser {
 				return -1;
 			}
 
-			for (i = 0; i < LexConstants.SIZE_SYM; i++) {
-				symbols[i] |= set[i];
-			}
-
-			if (invert) {
-				for (i = 0; i < LexConstants.SIZE_SYM; i++) {
-					set[i] = ~set[i];
-				}
-				set[(0) / LexConstants.BITS] &= ~(1 << ((0) % LexConstants.BITS));
-			}
-
 			index++;
-			return storeSet();
+			return storeSet(builder.create(invert));
 
 		case '\\':
 			i = escape();
 			if (i == -1) {
 				return -1;
 			}
-			symbols[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+			useCharacter(i);
 			index++;
-			return i | LexConstants.SYM;
+			return character2symbol[i] | LexConstants.SYM;
 
 		default:
 			i = re[index];
-			// TODO support i > 256 (encode as utf-8)
-			symbols[(i) / LexConstants.BITS] |= (1 << ((i) % LexConstants.BITS));
+			useCharacter(i);
 			index++;
-			return i | LexConstants.SYM;
+			return character2symbol[i] | LexConstants.SYM;
 		}
 	}
 
@@ -310,27 +319,97 @@ public class RegexpParser {
 		return result;
 	}
 
-	/**
-	 * @return array of sets of symbols
-	 */
-	public int[] getSetpool() {
-		int[] result = new int[setpool.size() * LexConstants.SIZE_SYM];
-		int e = 0;
+	public void buildSets() {
+		int base = symbolCount;
+		ArrayList<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
+		HashSet<Integer> values = new HashSet<Integer>();
 
-		for (Iterator<int[]> it = setpool.iterator(); it.hasNext();) {
-			int[] from = it.next();
-			for (int i = 0; i < LexConstants.SIZE_SYM; i++) {
-				result[e++] = from[i];
+		for (int setind = 0; setind < setpool.size(); setind++) {
+			CharacterSet set = setpool.get(setind);
+			int ownSymbol = -1;
+			values.clear();
+			builder.clear();
+			for(int[] range : set) {
+				for(int ch = range[0]; ch <= range[1]; ch++) {
+					int value;
+					try {
+						value = character2symbol[ch];
+					} catch(IndexOutOfBoundsException ex) {
+						ensureCharacter(ch);
+						value = character2symbol[ch];
+					}
+					if(value == 1) {
+						if(ownSymbol == -1) {
+							ownSymbol = symbolCount++;
+						}
+						character2symbol[ch] = ownSymbol;
+						builder.addSymbol(ch);
+					} else if(value >= base) {
+						values.add(value);
+					}
+				}
+			}
+			if(ownSymbol >= base) {
+				symbol2chars.add(builder.create());
+			}
+			for(Integer e : values) {
+				CharacterSet mset = symbol2chars.get(e - base);
+				CharacterSet extraItems = builder.subtract(mset, set);
+				if(!extraItems.isEmpty()) {
+					symbol2chars.set(e - base, extraItems);
+
+					// new symbol for intersection
+					CharacterSet intersection = builder.intersect(mset, set);
+					ownSymbol = symbolCount++;
+					symbol2chars.add(intersection);
+					
+					for(int[] range : intersection) {
+						for(int ch = range[0]; ch <= range[1]; ch++) {
+							character2symbol[ch] = ownSymbol;
+						}
+					}
+				}
 			}
 		}
 
-		return result;
+		set2symbols = new int[setpool.size()][];
+		for (int setind = 0; setind < setpool.size(); setind++) {
+			CharacterSet set = setpool.get(setind);
+			values.clear();
+			if(set.isInverted()) {
+				for(int i = 1; i < symbolCount; i++) {
+					values.add(i);
+				}
+				for(int[] range : set) {
+					for(int ch = range[0]; ch <= range[1]; ch++) {
+						values.remove(character2symbol[ch]);
+					}
+				}
+			} else {
+				for(int[] range : set) {
+					for(int ch = range[0]; ch <= range[1]; ch++) {
+						values.add(character2symbol[ch]);
+					}
+				}
+			}
+			set2symbols[setind] = new int[values.size()];
+			Integer[] arr = values.toArray(new Integer[values.size()]);
+			for(int l = 0; l < set2symbols[setind].length; l++) {
+				set2symbols[setind][l] = arr[l];
+			}
+			Arrays.sort(set2symbols[setind]);
+		}		
 	}
 
-	/**
-	 * @return set of used symbols
-	 */
-	public int[] getSymbolSet() {
-		return symbols;
+	public int[][] getSetToSymbolsMap() {
+		return set2symbols;
+	}
+
+	public int[] getCharacterMap() {
+		return character2symbol;
+	}
+
+	public int getSymbolCount() {
+		return symbolCount;
 	}
 }
