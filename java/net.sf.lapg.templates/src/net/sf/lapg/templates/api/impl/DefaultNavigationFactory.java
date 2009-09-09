@@ -25,6 +25,10 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			return arrayNavigation;
 		}
 
+		if( o instanceof int[] ) {
+			return intArrayNavigation;
+		}
+		
 		if( o instanceof Map<?, ?> ) {
 			return mapNavigation;
 		}
@@ -164,6 +168,43 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		public Object getProperty(Object obj, String id) throws EvaluationException {
 			if( id.equals("length") ) {
 				return ((Object[])obj).length;
+			}
+			throw new EvaluationException("do not know property `"+id+"`");
+		}
+	};
+
+	private INavigationStrategy intArrayNavigation = new INavigationStrategy() {
+
+		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
+			int[] array = (int[]) obj;
+			if( args == null ) {
+				if( methodName.equals("first") ) {
+					return array[0];
+				} else if( methodName.equals("last") ) {
+					return array[array.length-1];
+				} else if( methodName.equals("size") ) {
+					return array.length;
+				}
+			}
+			throw new EvaluationException("do not know method `"+methodName+"`");
+		}
+
+		public Object getByIndex(Object obj, Object index) throws EvaluationException {
+			int[] array = (int[])obj;
+			if( index instanceof Integer ) {
+				int i = (Integer)index;
+				if( i < 0 || i >= array.length ) {
+					throw new EvaluationException(i + " is out of 0.." + (array.length-1));
+				}
+				return array[i];
+			} else {
+				throw new EvaluationException("index object should be integer");
+			}
+		}
+
+		public Object getProperty(Object obj, String id) throws EvaluationException {
+			if( id.equals("length") ) {
+				return ((int[])obj).length;
 			}
 			throw new EvaluationException("do not know property `"+id+"`");
 		}

@@ -105,7 +105,10 @@ public class XmlLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		return lapg_char2no[(chr+256)%256];
+		if(chr >= 0 && chr < 128) {
+			return lapg_char2no[chr];
+		}
+		return 1;
 	}
 
 	public LapgSymbol next() throws IOException, UnsupportedEncodingException {

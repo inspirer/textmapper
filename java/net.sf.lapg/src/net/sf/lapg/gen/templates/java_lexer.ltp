@@ -50,7 +50,10 @@ ${self->lexerTables()-}
 	}
 
 	private static int mapCharacter(int chr) {
-		return lapg_char2no[(chr+256)%256];
+		if(chr >= 0 && chr < ${lex.char2no.length}) {
+			return lapg_char2no[chr];
+		}
+		return 1;
 	}
 
 	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
