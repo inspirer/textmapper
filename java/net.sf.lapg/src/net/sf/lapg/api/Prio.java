@@ -1,6 +1,8 @@
 package net.sf.lapg.api;
 
-
+/**
+ * Priority definition.
+ */
 public interface Prio {
 
 	public static final int NOPRIO = -1;

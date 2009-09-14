@@ -16,9 +16,9 @@ public interface Grammar {
 	Lexem[] getLexems();
 
 	int getTerminals();
-	int getInput();
-	int getEoi();
-	int getError();
+	Symbol[] getInput();
+	Symbol getEoi();
+	Symbol getError();
 
 	String getTemplates();
 

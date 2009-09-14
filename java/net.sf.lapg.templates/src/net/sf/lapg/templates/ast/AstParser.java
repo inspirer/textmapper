@@ -594,7 +594,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	public boolean parse(AstLexer lexer) throws IOException {
+	private boolean parse(AstLexer lexer) throws IOException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;

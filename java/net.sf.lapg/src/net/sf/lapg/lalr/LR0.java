@@ -46,7 +46,7 @@ class LR0 extends ContextFree {
 		initializeLR0();
 
 		while (current != null) {
-			build_closure(current.elems);
+			build_closure(current.number, current.elems);
 			if (!process_state()) {
 				err.error("syntax analyzer is too big ...\n");
 				freeLR0();
@@ -178,19 +178,25 @@ class LR0 extends ContextFree {
 	}
 
 	private void initializeLR0() {
-		nstates = 1;
-		first = last = current = new State();
-		current.nreduce = current.nshifts = current.number = current.symbol = current.fromstate = 0;
-		current.next = current.link = null;
-		current.shifts = current.reduce = null;
-		current.elems = new short[] { -1 };
+		for(nstates = 0; nstates < inputs.length; nstates++) {
+			if(nstates == 0) {
+				first = last = current = new State();
+			} else {
+				last = last.next = new State();
+			}
+			last.number = nstates;
+			last.nreduce = last.nshifts = last.symbol = last.fromstate = 0;
+			last.next = last.link = null;
+			last.shifts = last.reduce = null;
+			last.elems = new short[] { -1 };
+		}
 	}
 
-	private void build_closure(short[] prev) {
+	private void build_closure(int state, short[] prev) {
 		int e, i;
 
-		if (prev[0] == -1) {
-			int from = (input - nterms) * ruleset;
+		if (state < inputs.length) {
+			int from = (inputs[state] - nterms) * ruleset;
 			for (i = 0; i < ruleset; i++) {
 				closurebit[i] = ruleforvar[from++];
 			}
@@ -358,39 +364,43 @@ class LR0 extends ContextFree {
 	}
 
 	private void add_final_states() {
-		State next_to_final, final_state, t;
-		boolean created = false;
+		State[] next_to_final = new State[inputs.length];
+		boolean[] created = new boolean[inputs.length];
+		State[] final_state = new State[inputs.length];
 
-		// search for next_to_final
-		for (next_to_final = first.next; next_to_final != null && next_to_final.fromstate == 0; next_to_final = next_to_final.next) {
-			if (next_to_final.symbol == input) {
-				break;
+		// search next_to_final
+		Arrays.fill(created, false);
+		for(State t = first; t != null; t = t.next) {
+			if(t.number >= inputs.length && t.fromstate < inputs.length && t.symbol == inputs[t.fromstate]) {
+				next_to_final[t.fromstate] = t;
 			}
 		}
 
-		if (next_to_final != null && next_to_final.fromstate != 0) {
-			next_to_final = null;
-		}
-
 		// if not found then create
-		if (next_to_final == null) {
-			next_to_final = new_state(0, input, 0, 0);
-			created = true;
+		for(int i = 0; i < inputs.length; i++) {
+			if (next_to_final[i] == null) {
+				next_to_final[i] = new_state(i, inputs[i], 0, 0);
+				created[i] = true;
+			}
 		}
 
-		final_state = new_state(next_to_final.number, eoi, 0, 0);
+		for(int i = 0; i < inputs.length; i++) {
+			final_state[i] = new_state(next_to_final[i].number, eoi, 0, 0);
+		}
 
 		// create state array
 		state = new State[nstates];
-		for (t = first; t != null; t = t.next) {
+		for (State t = first; t != null; t = t.next) {
 			state[t.number] = t;
 		}
 
 		// insert shifts
-		if (created) {
-			insert_shift(first, next_to_final.number);
+		for(int i = 0; i < inputs.length; i++) {
+			if (created[i]) {
+				insert_shift(state[i], next_to_final[i].number);
+			}
+			insert_shift(next_to_final[i], final_state[i].number);
 		}
-		insert_shift(next_to_final, final_state.number);
 	}
 
 	private void show_debug() {
@@ -402,7 +412,7 @@ class LR0 extends ContextFree {
 					err.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
 				}
 
-				build_closure(t.elems);
+				build_closure(t.number, t.elems);
 
 				for (int i = 0; i < closureend; i++) {
 					print_situation(closure[i]);

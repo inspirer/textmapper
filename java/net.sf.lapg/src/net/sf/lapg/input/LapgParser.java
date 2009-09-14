@@ -33,6 +33,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private List<CSymbol> symbols = new ArrayList<CSymbol>();
 	private List<CRule> rules = new ArrayList<CRule>();
 	private List<CPrio> prios = new ArrayList<CPrio>();
+	private List<CInputDef> inputs = new ArrayList<CInputDef>();
 	private Map<String,String> options = new HashMap<String, String>();
 	private List<CLexem> lexems = new ArrayList<CLexem>();
 	
@@ -90,15 +91,17 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		rules.add(rule);
 	}
 	
-	private void addPrio( String prio, List<CSymbol> list, int line ) {
-		if( prio.equals("left") ) {
+	private void addGrammarDirective( String id, List<CSymbol> list, int line ) {
+		if( id.equals("left") ) {
 			prios.add(new CPrio(CPrio.LEFT, list,inputId,line));
-		} else if( prio.equals("right") ) {
+		} else if( id.equals("right") ) {
 			prios.add(new CPrio(CPrio.RIGHT, list,inputId,line));
-		} else if( prio.equals("nonassoc") ) {
+		} else if( id.equals("nonassoc") ) {
 			prios.add(new CPrio(CPrio.NONASSOC, list,inputId,line));
+		} else if( id.equals("input") ) {
+			inputs.add(new CInputDef(list,inputId,line));
 		} else {
-			error("unknown priority identifier used: `"+prio+"` at " + line);
+			error("unknown directive identifier used: `"+id+"` at " + line);
 		}
 	}
 	
@@ -141,12 +144,11 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			if( !p.parse(lexer) || !p.errors.isEmpty() ) {
 				return new CSyntax(p.errors);
 			}
-			p.getSymbol(CSyntax.INPUT, 1);
 			p.propagateTypes();
 	
 			int offset = lexer.getTemplatesStart();
 			String templates = offset < buff.length && offset != -1 ? new String(buff,offset,buff.length-offset) : null;
-			return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems,templates);
+			return new CSyntax(p.symbols,p.rules,p.prios,p.inputs,p.options,p.lexems,templates);
 		} catch( UnsupportedEncodingException ex ) {
 		} catch( IOException ex ) {
 		}
@@ -251,7 +253,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		"commandopt",
 		"command",
 		"grammar_definition",
-		"rules_definition",
+		"symbol_definition",
 		"symbol_list",
 		"rule_def",
 		"rule_symbols",
@@ -278,7 +280,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		public static final int commandopt = 30;
 		public static final int command = 31;
 		public static final int grammar_definition = 32;
-		public static final int rules_definition = 33;
+		public static final int symbol_definition = 33;
 		public static final int symbol_list = 34;
 		public static final int rule_def = 35;
 		public static final int rule_symbols = 36;
@@ -320,7 +322,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	public boolean parse(LapgLexer lexer) throws IOException {
+	private boolean parse(LapgLexer lexer) throws IOException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -395,12 +397,12 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				 lapg_gg.sym = ((Integer)lapg_gg.sym) | ((Integer)lapg_m[lapg_head-0].sym); 
 				break;
 			case 23:  // grammar_definition ::= '%' identifier symbol_list ';'
-				 addPrio(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
+				 addGrammarDirective(((String)lapg_m[lapg_head-2].sym), ((List<CSymbol>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-2].pos.line); 
 				break;
-			case 24:  // rules_definition ::= symbol typeopt '::=' rule_def
+			case 24:  // symbol_definition ::= symbol typeopt '::=' rule_def
 				 addNonterm(((CSymbol)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-3].pos.line); addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_m[lapg_head-3].sym)); 
 				break;
-			case 25:  // rules_definition ::= rules_definition '|' rule_def
+			case 25:  // symbol_definition ::= symbol_definition '|' rule_def
 				 addRule(((CRule)lapg_m[lapg_head-0].sym),((CSymbol)lapg_gg.sym)); 
 				break;
 			case 26:  // symbol_list ::= symbol_list symbol

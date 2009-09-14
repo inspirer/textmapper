@@ -151,7 +151,7 @@ public class XmlParser implements XmlLexer.ErrorReporter {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	public boolean parse(XmlLexer lexer) throws IOException {
+	private boolean parse(XmlLexer lexer) throws IOException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;

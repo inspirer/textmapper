@@ -18,24 +18,6 @@ public class Builder extends Lalr1 {
 	private int nactions;
 	private short[] action_table;
 
-	//
-
-//	private final int[] sym_opt;
-
-	private void fix_grammar() {
-
-		// TODO copy types
-//		for (int i = 0; i < nsyms; i++) {
-//			if (sym_opt[i] != -1) {
-//				sym[sym_opt[i]].type = sym[i].getType();
-//			}
-//
-//			if (sym[i].is_attr) {
-//				sym[i].type = sym[sym[i].sibling].type;
-//			}
-//		}
-	}
-
 	private void verify_grammar() {
 		int i, e, h;
 		boolean k;
@@ -95,7 +77,9 @@ public class Builder extends Lalr1 {
 		boolean[] sym_employed = new boolean[nsyms];
 		boolean[] sym_temp = new boolean[nsyms];
 		k = true;
-		sym_temp[input] = true;
+		for(i = 0; i < inputs.length; i++) {
+			sym_temp[inputs[i]] = true;
+		}
 		while (k) {
 			k = false;
 			for (i = 0; i < nsyms; i++) {
@@ -333,9 +317,16 @@ public class Builder extends Lalr1 {
 
 
 	private ParserTables generate() {
-		if (input == -1) {
+		if (inputs == null || inputs.length == 0) {
 			err.error("input symbol is not defined\n");
 			return null;
+		}
+		
+		for(int i = 0; i < inputs.length; i++) {
+			if (inputs[i] == -1) {
+				err.error("input symbol is not defined\n"); // FIXME
+				return null;
+			}
 		}
 
 		if (eoi == -1) {
@@ -344,7 +335,6 @@ public class Builder extends Lalr1 {
 		}
 
 		// grammar
-		fix_grammar();
 		verify_grammar();
 
 		 // engine

@@ -36,6 +36,14 @@ abstract class ContextFree {
 		assert curr_prio == counter;
 		return result;
 	}
+	
+	private static int[] toArray(Symbol[] input) {
+		int[] result = new int[input.length];
+		for(int i = 0; i < input.length; i++) {
+			result[i] = input[i].getIndex();
+		}
+		return result;
+	}
 
 	protected ContextFree(Grammar g, INotifier err, int debuglev) {
 		this.err = err;
@@ -46,9 +54,9 @@ abstract class ContextFree {
 		this.nsyms = sym.length;
 		this.rules = g.getRules().length;
 		this.nterms = g.getTerminals();
-		this.input = g.getInput();
-		this.eoi = g.getEoi();
-		this.errorn = g.getError();
+		this.inputs = toArray(g.getInput());
+		this.eoi = g.getEoi().getIndex();
+		this.errorn = g.getError() == null ? -1 : g.getError().getIndex();
 
 		this.situations = getSituations(g.getRules());
 
@@ -87,7 +95,8 @@ abstract class ContextFree {
 
 	// grammar information
 
-	protected final int nsyms, nterms, input, eoi, errorn;
+	protected final int nsyms, nterms, eoi, errorn;
+	protected final int[] inputs;
 	protected final int rules, situations;
 	protected final Symbol[] sym;
 	protected final int[] priorul;

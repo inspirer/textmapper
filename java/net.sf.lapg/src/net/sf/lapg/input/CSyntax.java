@@ -5,6 +5,7 @@ import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
+import net.sf.lapg.api.Symbol;
 
 public class CSyntax implements Grammar {
 
@@ -16,17 +17,17 @@ public class CSyntax implements Grammar {
 	private List<String> errors;
 
 	private final CSymbol[] symbols;
+	private CSymbol[] inputs;
 	private final CRule[] rules;
 	private final CPrio[] prios;
 	private final Map<String, String> options;
 	private final CLexem[] lexems;
 	private final String templates;
 
-	private final int myInput;
 	private final int myError;
 	private final int myTerms;
 
-	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, Map<String, String> options,
+	public CSyntax(List<CSymbol> symbols, List<CRule> rules, List<CPrio> prios, List<CInputDef> inputDefs, Map<String, String> options,
 			List<CLexem> lexems, String templates) {
 		this.symbols = symbols.toArray(new CSymbol[symbols.size()]);
 		this.rules = rules.toArray(new CRule[rules.size()]);
@@ -36,14 +37,40 @@ public class CSyntax implements Grammar {
 		this.templates = templates;
 		sortSymbols();
 		enumerateAll();
-
-		myInput = findSymbol(INPUT);
+		this.inputs = extractInputs(inputDefs);
+		if(this.inputs == null) {
+			int inputIndex = findSymbol(INPUT);
+			this.inputs = inputIndex >= 0 ? new CSymbol[] { this.symbols[inputIndex] } : new CSymbol[0];
+		}
+		
 		myError = findSymbol(ERROR);
 		int i = 0;
 		for (; i < this.symbols.length && this.symbols[i].isTerm(); i++) {
 			;
 		}
 		myTerms = i;
+	}
+	
+	private static CSymbol[] extractInputs(List<CInputDef> inputDefs) {
+		CSymbol[] result = null;
+		
+		if(inputDefs.size() > 0) {
+			int size = 0;
+			for(CInputDef idef : inputDefs) {
+				size += idef.getSymbols().length;
+			}
+			if(size > 0) {
+				result = new CSymbol[size];
+				int pos = 0;
+				for(CInputDef idef : inputDefs) {
+					CSymbol[] syms = idef.getSymbols();
+					System.arraycopy(syms, 0, result, pos, syms.length);
+					pos += syms.length;
+				}
+				assert pos == result.length;
+			}
+		}
+		return result;
 	}
 
 	private int findSymbol(String name) {
@@ -104,7 +131,8 @@ public class CSyntax implements Grammar {
 		symbols = null;
 		templates = null;
 		myTerms = 0;
-		myInput = myError = -1;
+		myError = -1;
+		inputs = null;
 	}
 
 	public boolean hasErrors() {
@@ -131,16 +159,16 @@ public class CSyntax implements Grammar {
 		return errors;
 	}
 
-	public int getEoi() {
-		return 0;
+	public Symbol getEoi() {
+		return symbols[0];
+
+	}
+	public Symbol getError() {
+		return myError >= 0 ? symbols[myError] : null;
 	}
 
-	public int getError() {
-		return myError;
-	}
-
-	public int getInput() {
-		return myInput;
+	public Symbol[] getInput() {
+		return inputs;
 	}
 
 	public int getTerminals() {

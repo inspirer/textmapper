@@ -141,7 +141,7 @@ public class InputTest extends TestCase {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
-		Assert.assertEquals(0, g.getEoi());
+		Assert.assertEquals(0, g.getEoi().getIndex());
 
 		Symbol[] syms = g.getSymbols();
 		Assert.assertEquals(7, syms.length);
@@ -176,7 +176,7 @@ public class InputTest extends TestCase {
 		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
-		Assert.assertEquals(0, g.getEoi());
+		Assert.assertEquals(0, g.getEoi().getIndex());
 
 		Symbol[] syms = g.getSymbols();
 		Assert.assertEquals(9, syms.length);
