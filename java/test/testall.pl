@@ -46,8 +46,8 @@ deltree("tmp") if -e "tmp";
 mkdir("tmp", 0777) or die "cannot create tmp: $!\n";
 $counter = 0;
 
-sub rungrammar($$$) {
-	my ($lang,$syntax,$inputfile) = @_;
+sub rungrammar($$$$) {
+	my ($lang,$syntax,$inputfile,$extraarg) = @_;
 	my ($result, $folder);
 
 	$folder = "tmp/".$lang.$counter;
@@ -68,7 +68,7 @@ sub rungrammar($$$) {
 
 	if( $lang eq "java" ) {
 		system( "\"javac\" \"MParser.java\" \"MLexer.java\" -d ." ) == 0 or die "not executed";
-		$result = `\"java\" -cp \".\" com.mypackage.MParser \"../../$inputfile\"` or die "no result";
+		$result = `\"java\" -cp \".\" com.mypackage.MParser \"../../$inputfile\" $extraarg` or die "no result";
 
 	} else {
 		die "unknown lang";
@@ -96,17 +96,22 @@ sub test($$%) {
 	$options{"error"} = exists $options{"err"} ? "error:" : "";
 	
 	print "$counter: $lang$textopts ($options{'out'})\n";
+	
+	my $templatePrefix = $lang;
+	if(exists $options{'template'}) {
+	    $templatePrefix = $options{'template'};
+	}
 
-	$file = content( "cases/".$lang.".prefix")
+	$file = content( "cases/".$templatePrefix.".prefix")
 			.content( $grammar."grammar" )
-			.content( "cases/".$lang.".postfix");
+			.content( "cases/".$templatePrefix.".postfix");
 
 
 	for( keys %options ) {
 	    $file =~ s/%%$_%%/$options{$_}/g;
 	}
 
-	my $res = rungrammar($lang,$file,$grammar.$options{'in'});
+	my $res = rungrammar($lang,$file,$grammar.$options{'in'},$options{'arg'});
 	my $original = content($grammar.$options{'out'});
 
 	$res =~ s/\r//g;

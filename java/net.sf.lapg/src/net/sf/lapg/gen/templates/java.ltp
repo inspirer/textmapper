@@ -61,7 +61,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private boolean parse(${opts.lexer} lexer) throws IOException {
+	private boolean parse(${opts.lexer} lexer${if syntax.input.length > 1}, int state${end}) throws IOException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -69,10 +69,10 @@ ${if syntax.error}		int lapg_symbols_ok = 4;
 ${end-}
 
 		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = 0;
+		lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
 		lapg_n = lexer.next(); 
 
-		while( lapg_m[lapg_head].state != ${parser.nstates-1} ) {
+		while( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
 			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
 
 			if( lapg_i >= 0 ) {
@@ -116,7 +116,7 @@ ${end-}
 				} else {
 					lapg_head = 0;
 					lapg_m[0] = new LapgSymbol();
-					lapg_m[0].state = 0;
+					lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
 				}
 ${end-}
 				break;
@@ -124,9 +124,9 @@ ${end-}
 		}
 
 ${if syntax.error-}
-		if( lapg_m[lapg_head].state != ${parser.nstates-1} && lapg_symbols_ok >= 4 ) {
+		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} && lapg_symbols_ok >= 4 ) {
 ${else-}
-		if( lapg_m[lapg_head].state != ${parser.nstates-1} ) {
+		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
 ${end-}
 ${switch opts.positioning}
 ${case 'none'}			error(${opts.errorprefix} "syntax error" );
@@ -182,6 +182,13 @@ ${end-}
 		lapg_m[++lapg_head] = lapg_gg;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
+${if syntax.input.length > 1-}
+${foreach inp in syntax.input}
+	private boolean parse${inp.name}(${opts.lexer} lexer) throws IOException {
+		return parse(lexer, ${index});
+	}
+${end-}
+${end-}
 }
 ${end} 
 

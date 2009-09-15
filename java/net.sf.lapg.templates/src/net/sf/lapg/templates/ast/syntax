@@ -211,7 +211,7 @@ control_end ::=
 
 primary_expression (ExpressionNode) ::=
   	  identifier									{ $$ = new SelectNode(null, $identifier,inputName, ${self[0].line}); }
-    | '(' expression ')'							{ $$ = $1; }
+    | '(' expression ')'							{ $$ = new ParenthesesNode($1,inputName,${self[0].line}); }
 	| icon 											{ $$ = new LiteralNode($0,inputName, ${self[0].line}); }
 	| bcon                                          { $$ = new LiteralNode($0,inputName, ${self[0].line}); }
 	| ccon 											{ $$ = new LiteralNode($0,inputName, ${self[0].line}); }

@@ -59,10 +59,10 @@ public class ArithmeticNode extends ExpressionNode {
 		} else if( kind == PLUS ) {
 			if( left instanceof Object[] && right instanceof Object[] ) {
 				return concatenate((Object[])left,(Object[])right);
-			} else if( left instanceof String && right instanceof String ) {
-				return ((String)left) + ((String)right);
+			} else if( left instanceof String || right instanceof String ) {
+				return left.toString() + right.toString();
 			} else {
-				throw new EvaluationException("arguments of plus should be arrays, strings or integers");
+				throw new EvaluationException("arguments of plus should be arrays, strings or integers ("+left.getClass().getCanonicalName() + " + "+right.getClass().getCanonicalName()+")");
 			}
 
 		} else {

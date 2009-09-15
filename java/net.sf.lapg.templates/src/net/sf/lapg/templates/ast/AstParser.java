@@ -753,7 +753,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 				 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].pos.line); 
 				break;
 			case 67:  // primary_expression ::= '(' expression ')'
-				 lapg_gg.sym = ((ExpressionNode)lapg_m[lapg_head-1].sym); 
+				 lapg_gg.sym = new ParenthesesNode(((ExpressionNode)lapg_m[lapg_head-1].sym),inputName,lapg_m[lapg_head-2].pos.line); 
 				break;
 			case 68:  // primary_expression ::= icon
 				 lapg_gg.sym = new LiteralNode(((Integer)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].pos.line); 
