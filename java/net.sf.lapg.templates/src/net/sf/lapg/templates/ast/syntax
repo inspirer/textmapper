@@ -301,6 +301,17 @@ expression_list (ArrayList) ::=
 	| expression_list ',' expression				{ $expression_list#0.add($expression); }
 ;
 
+body (TemplateNode) ::=
+	instructions
+						{
+							$$ = new TemplateNode("inline", null, templatePackage, null, inputName, ${self[0].line});
+							$body.setInstructions($instructions);
+							templates.add($body);
+						}
+;
+
+%input input body;
+
 ##################################################################################
 %%
 ${template imports}
@@ -324,7 +335,7 @@ public AstParser() {
 
 private static final boolean DEBUG_SYNTAX = false;
 
-private String inputName;
+protected String inputName;
 private int killEnds = -1;
 private char[] buff;
 
@@ -420,7 +431,20 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-		return parse(lexer);
+		return parseinput(lexer);
+	} catch( IOException ex ) {
+		return false;
+	}
+}
+
+public boolean parseBody(String s, String templatePackage, String inputName) {
+	this.templatePackage = templatePackage;
+	this.inputName = inputName;
+	templates = new ArrayList<ITemplate>();
+	try {
+		buff = s.toCharArray();
+		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
+		return parsebody(lexer);
 	} catch( IOException ex ) {
 		return false;
 	}

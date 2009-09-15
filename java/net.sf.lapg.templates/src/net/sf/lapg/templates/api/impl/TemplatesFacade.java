@@ -135,10 +135,20 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 	}
 
 	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
+		AstParser p = new AstParser() {
+			@Override
+			public void error(String s) {
+				TemplatesFacade.this.fireError(null, inputName + ":" + s);
+			}
+		};
+		ITemplate[] loaded = null;
+		if (!p.parseBody(template, "syntax", templateId != null ? templateId : referer.getLocation())) {
+			loaded = new ITemplate[0];
+		} else {
+			loaded = p.getResult();
+		}
 
-		// TODO replace hack with normal parser
-		ITemplate[] loaded = loadTemplates("${template temp}" + template + "${end}", "temp", templateId != null ? templateId : referer.getLocation());
-		ITemplate t = (loaded != null && loaded.length == 1 && loaded[0].getName().equals("temp")) ? loaded[0] : null;
+		ITemplate t = (loaded != null && loaded.length == 1 && loaded[0].getName().equals("inline")) ? loaded[0] : null;
 		if (t == null) {
 			return "";
 		}
@@ -150,7 +160,7 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 		}
 	}
 
-	private ITemplate[] loadTemplates(String templates, String templatePackage, final String inputName) {
+	private ITemplate[] loadTemplates(String templates, String templatePackage, String inputName) {
 		AstParser p = new AstParser() {
 			@Override
 			public void error(String s) {
