@@ -118,7 +118,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		try {
 			buff = s.toCharArray();
 			AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-			return parseinput(lexer);
+			return parseInput(lexer);
 		} catch( IOException ex ) {
 			return false;
 		}
@@ -131,7 +131,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		try {
 			buff = s.toCharArray();
 			AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-			return parsebody(lexer);
+			return parseBody(lexer);
 		} catch( IOException ex ) {
 			return false;
 		}
@@ -898,11 +898,11 @@ public class AstParser implements AstLexer.ErrorReporter {
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 
-	private boolean parseinput(AstLexer lexer) throws IOException {
+	private boolean parseInput(AstLexer lexer) throws IOException {
 		return parse(lexer, 0);
 	}
 
-	private boolean parsebody(AstLexer lexer) throws IOException {
+	private boolean parseBody(AstLexer lexer) throws IOException {
 		return parse(lexer, 1);
 	}
 }

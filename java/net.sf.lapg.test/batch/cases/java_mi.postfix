@@ -41,9 +41,9 @@ public static void main(String[] args) throws FileNotFoundException, IOException
         MLexer lexer = new MLexer(input, p);
 
 	if(args[1].equals("root")) {
-            p.parseroot(lexer);
+            p.parseRoot(lexer);
 	} else if(args[1].equals("body")) {
-	    p.parsebody(lexer);
+	    p.parseBody(lexer);
     	} else {
 	    System.out.println("wrong argument");
 	    System.exit(1);

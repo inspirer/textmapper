@@ -431,7 +431,7 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-		return parseinput(lexer);
+		return parseInput(lexer);
 	} catch( IOException ex ) {
 		return false;
 	}
@@ -444,7 +444,7 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-		return parsebody(lexer);
+		return parseBody(lexer);
 	} catch( IOException ex ) {
 		return false;
 	}

@@ -47,4 +47,11 @@ public class DefaultStaticMethods {
 		sb.append("]");
 		return sb.toString();
 	}
+	
+	public String toFirstUpper(String s) {
+		if(s.length() > 0) {
+			return Character.toUpperCase(s.charAt(0)) + s.substring(1);
+		}
+		return s;
+	}
 }

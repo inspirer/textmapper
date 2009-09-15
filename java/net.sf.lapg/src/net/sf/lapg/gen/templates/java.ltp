@@ -184,7 +184,7 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	private boolean parse${inp.name}(${opts.lexer} lexer) throws IOException {
+	private boolean parse${util.toFirstUpper(inp.name)}(${opts.lexer} lexer) throws IOException {
 		return parse(lexer, ${index});
 	}
 ${end-}
