@@ -1,0 +1,177 @@
+#   syntax: lalr1 generator source grammar
+#
+#   Lapg (Lexical Analyzer and Parser Generator)
+#   Copyright (C) 2002-08  Evgeny Gryaznov (inspirer@inbox.ru)
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+.lang        "java" 
+.class       "LapgParser"
+.lexer		 "LapgLexer"
+.package	 "net.sf.lapg.parser"
+.maxtoken    4096
+.breaks		 "on"
+.lexemend    "on"
+.positioning "offset"
+
+# Vocabulary
+
+[0]
+
+identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { $lexem = new String(token,0,len); break; }
+regexp(String):	/\/([^\/\\]|\\.)*\//	{ $lexem = new String(token,1,len-2); break; }
+scon(String):	/"[^"\n\\]*"/			{ $lexem = new String(token,1,len-2); break; }
+type(String):	/\([^\)\n]+\)/			{ $lexem = new String(token,1,len-2); break; }
+icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(new String(token,0,len)); break; }
+eoi:           /\n%%.*/					{ templatesStart = lapg_n.endpos.offset; break; }
+'%':           /\n%/
+_skip:         /\n|[\t\r ]+/    		{ return false; }
+_skip:  /#.*/
+'::=':  /::=/
+'|':    /\|/
+';':    /;/
+'.':    /\./
+':':    /:/
+'[':    /\[/
+']':    /\]/
+'<<':   /<</
+
+'{':	/{/		{ deep = 1; group = 1; break; }
+
+[1]
+
+_skip:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
+_skip:	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
+_skip:	/[^'"{}]+/
+'i{':	/{/				{ deep++; break; }
+'}':	/}/				{ if( --deep == 0 ) group = 0; break; }
+
+# Grammar
+
+input (LapgInput) ::=
+	optionsopt lexer_parts grammar_parts				{ $$ = new LapgInput($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+;
+
+options (List<AstOption>) ::= 
+	  options option									{ $options#1.add($option); } 
+	| option											{ $$ = new ArrayList<AstOption>(16); $options.add($option); }  
+;
+
+option (AstOption) ::=
+	  '.' identifier scon 								{ $$ = new AstOption($identifier, $scon, source, ${option.offset}, ${option.endoffset}); }
+	| '.' identifier icon								{ $$ = new AstOption($identifier, $icon.toString(), source, ${option.offset}, ${option.endoffset}); }
+;
+
+symbol (AstIdentifier) ::=
+	identifier											{ $$ = new AstIdentifier($identifier, source, ${symbol.offset}, ${symbol.endoffset}); } 
+;
+
+pattern (AstRegexp) ::=
+	regexp												{ $$ = new AstRegexp($regexp, source, ${pattern.offset}, ${pattern.endoffset}); } 
+;
+
+lexer_parts (List<AstLexerPart>) ::= 
+	  lexer_parts lexer_part							{ $lexer_parts#1.add($lexer_part); }
+	| lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); $lexer_parts.add($lexer_part); }
+;
+
+lexer_part (AstLexerPart) ::=
+	  '[' icon_list ']'									{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	| symbol typeopt ':' pattern iconopt commandopt		{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+;
+
+icon_list (List<Integer>) ::=
+	  icon_list icon  									{ $icon_list#1.add($icon); }
+	| icon 												{ $$ = new ArrayList<Integer>(4); $icon_list.add($icon); } 
+;
+
+grammar_parts (List<AstGrammarPart>) ::=
+	  grammar_parts grammar_part						{ $grammar_parts#1.add($grammar_part); }
+	| grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); $grammar_parts.add($grammar_part); }
+;
+
+grammar_part (AstGrammarPart) ::= 
+	  symbol typeopt '::=' rule_list ';'				{ $$ = new AstNonTerm($symbol, $typeopt, $rule_list, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| '%' identifier symbol_list ';'					{ $$ = new AstDirective($identifier, $symbol_list, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+; 
+
+rule_list (List<AstRuleRight>) ::= 
+	  rule_list '|' rule_right							{ $rule_list#1.add($rule_right); }
+	| rule_right										{ $$ = new ArrayList<AstRuleRight>(); $rule_list.add($rule_right); }
+;
+
+symbol_list (List<AstIdentifier>) ::= 
+	  symbol_list symbol								{ $symbol_list#1.add($symbol); }
+	| symbol 											{ $$ = new ArrayList<AstIdentifier>(); $symbol_list.add($symbol); }
+;
+
+rule_right (AstRuleRight) ::=
+	  rule_symbols commandopt rule_priorityopt			{ $$ = new AstRuleRight($rule_symbols, $commandopt, $rule_priorityopt, source, ${rule_right.offset}, ${rule_right.endoffset}); }
+	| commandopt rule_priorityopt 						{ $$ = new AstRuleRight(null, $commandopt, $rule_priorityopt, source, ${rule_right.offset}, ${rule_right.endoffset}); }
+;
+
+rule_symbols (List<AstRightSymbol>) ::=
+	  rule_symbols commandopt symbol 					{ $rule_symbols#1.add(new AstRightSymbol($commandopt, $symbol, source, ${commandopt.offset}, ${symbol.endoffset})); }
+	| commandopt symbol									{ $$ = new ArrayList<AstRightSymbol>(); $rule_symbols.add(new AstRightSymbol($commandopt, $symbol, source, ${commandopt.offset}, ${symbol.endoffset})); }
+;
+
+rule_priority (AstIdentifier) ::=
+	'<<' identifier										{ $$ = $identifier; } 
+;
+
+command (AstCode) ::=
+	'{' command_tokensopt '}'							{ $$ = new AstCode(source, ${self[0].offset}+1, ${self[2].endoffset}-1); }  
+;
+	
+command_tokens ::=
+	command_tokens command_token | command_token ;
+
+command_token ::=
+	'i{' command_tokensopt '}' 
+;
+
+##################################################################################
+
+%%
+${template imports}
+import java.io.CharArrayReader;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.sf.lapg.parser.ast.*;
+${end}
+
+${template lexercode}
+private int deep = 0;
+private int templatesStart = -1;
+
+int getTemplatesStart() {
+	return templatesStart;
+}
+${end}
+
+${template classcode}
+private static final boolean DEBUG_SYNTAX = false;
+TextSource source;
+
+public void error( String s ) {
+	System.err.println(s);
+}
+${end}
