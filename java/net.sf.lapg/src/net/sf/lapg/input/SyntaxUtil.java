@@ -40,4 +40,35 @@ public class SyntaxUtil {
 		}
 		return contents.toString();
 	}
+
+	public static int[] getLineOffsets(char[] contents) {
+		int size = 1;
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] == '\n') {
+				size++;
+			} else if(contents[i] == '\r') {
+				if(i+1 < contents.length && contents[i+1] == '\n') {
+					i++;
+				}
+				size++;
+			}
+		}
+		int[] result = new int[size];
+		result[0] = 0;
+		int e = 1;
+		for (int i = 0; i < contents.length; i++) {
+			if (contents[i] == '\n') {
+				result[e++] = i + 1;
+			} else if(contents[i] == '\r') {
+				if(i+1 < contents.length && contents[i+1] == '\n') {
+					i++;
+				}
+				result[e++] = i + 1;
+			}
+		}
+		if(e != size) {
+			throw new IllegalStateException();
+		}
+		return result;
+	}
 }
