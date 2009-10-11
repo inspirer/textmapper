@@ -54,6 +54,10 @@ public class ConsoleArgsTest extends TestCase {
 
 	private void expectError(String expect) {
 		try {
+			String nl = System.getProperty("line.separator");
+			if(nl != null && !nl.equals("\n")) {
+				expect = expect.replaceAll("\n", nl);
+			}
 			closeError();
 			System.setErr(new PrintStream(current = new CheckingErrorStream(expect), true, "utf8"));
 		} catch (UnsupportedEncodingException e) {
