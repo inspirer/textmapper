@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import net.sf.lapg.templates.api.EvaluationContext;
@@ -12,13 +14,12 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.TemplateSource;
 import net.sf.lapg.templates.ast.AstParser;
 
 public abstract class TemplatesFacade extends AbstractTemplateFacade {
 
 	private HashSet<String> loadedPackages;
-
-	private HashMap<String, String> overrides;
 
 	private HashMap<String, ITemplate> templates;
 
@@ -27,7 +28,6 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 	public TemplatesFacade(INavigationStrategy.Factory strategy, ITemplateLoader... loaders) {
 		super(strategy);
 		this.templates = new HashMap<String, ITemplate>();
-		this.overrides = new HashMap<String, String>();
 		this.loadedPackages = new HashSet<String>();
 		this.loaders = loaders;
 
@@ -36,14 +36,15 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 		}
 	}
 
-	private String getContainerContent(String containerName) {
+	private TemplateSource[] getContainerContent(String containerName) {
+		List<TemplateSource> result = new LinkedList<TemplateSource>();
 		for (ITemplateLoader loader : loaders) {
-			String result = loader.load(containerName);
-			if (result != null) {
-				return result;
+			TemplateSource source = loader.load(containerName, this);
+			if (source != null) {
+				result.add(source);
 			}
 		}
-		return null;
+		return result.size() > 0 ? result.toArray(new TemplateSource[result.size()]) : null;
 	}
 
 	public void loadPackage(ILocatedEntity referer, String packageName) {
@@ -51,40 +52,32 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 			return;
 		}
 
-		String contents = getContainerContent(packageName);
+		TemplateSource[] contents = getContainerContent(packageName);
 		if (contents == null) {
 			fireError(referer, "Couldn't load template package `" + packageName + "`");
 			return;
 		}
 
-		ITemplate[] loaded = loadTemplates(contents, packageName, packageName + ITemplateLoader.CONTAINER_EXT);
-		if (loaded == null || loaded.length == 0) {
-			fireError(referer, "Couldn't get templates from package " + packageName);
-			return;
-		}
+		for(int i = contents.length-1; i >= 0; i--) {
+			ITemplate[] loaded = contents[i].getTemplates();
+			if (loaded == null || loaded.length == 0) {
+				fireError(referer, "Couldn't get templates from " + contents[i].getName());
+				return;
+			}
 
-		for (ITemplate t : loaded) {
-			String templateId = packageName + "." + t.getName();
-			if (templates.containsKey(templateId)) {
-				fireError(t, "Template `" + templateId + "` was already defined");
-			}
-			String overridden = t.getOverridden();
-			if (overridden != null) {
-				if (overridden.indexOf('.') == -1) {
-					overridden = packageName + "." + overridden;
+			for (ITemplate t : loaded) {
+				// TODO
+				String templateId = packageName + "." + t.getName();
+				if (templates.containsKey(templateId)) {
+					fireError(t, "Template `" + templateId + "` was already defined");
 				}
-				if (overrides.containsKey(overridden)) {
-					fireError(t, "Template `" + overridden + "` was already redeclared with `" + overrides.get(overridden) + "`, cannot override in `" + templateId + "`");
-				} else {
-					overrides.put(overridden, templateId);
-				}
+				templates.put(templateId, t);
 			}
-			templates.put(templateId, t);
 		}
 		loadedPackages.add(packageName);
 	}
 
-	private ITemplate getTemplate(ILocatedEntity referer, String qualifiedName, boolean searchOverrides) {
+	private ITemplate getTemplate(ILocatedEntity referer, String qualifiedName) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
 			fireError(referer, "Fully qualified template name should contain dot.");
@@ -96,12 +89,6 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 
 		String resolvedName = qualifiedName;
 
-		if (searchOverrides) {
-			while (overrides.containsKey(resolvedName)) {
-				resolvedName = overrides.get(resolvedName);
-			}
-		}
-
 		if (!templates.containsKey(resolvedName)) {
 			fireError(referer, "Template `" + resolvedName + "` was not found in package `" + templatePackage + "`");
 		}
@@ -110,19 +97,21 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 
 	@Override
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
-		boolean searchOverrides = true;
+		ITemplate t = null;
+		boolean isBase = false;
 		if (name.equals("base")) {
 			ITemplate current = context.getCurrentTemplate();
 			if (current != null) {
-				if (current.getOverridden() == null) {
-					fireError(referer, "Cannot find overriden template for `" + current.getName() + "`");
-				} else {
-					name = current.getOverridden();
-					searchOverrides = false;
+				isBase = true;
+				t = current.getBase();
+				if (t == null) {
+					fireError(referer, "Cannot find base template for `" + current.getName() + "`");
 				}
 			}
 		}
-		ITemplate t = getTemplate(referer, name, searchOverrides);
+		if(!isBase) {
+			t = getTemplate(referer, name);
+		}
 		if (t == null) {
 			return "";
 		}
@@ -158,19 +147,6 @@ public abstract class TemplatesFacade extends AbstractTemplateFacade {
 			fireError(t, ex.getMessage());
 			return "";
 		}
-	}
-
-	private ITemplate[] loadTemplates(String templates, String templatePackage, String inputName) {
-		AstParser p = new AstParser() {
-			@Override
-			public void error(String s) {
-				TemplatesFacade.this.fireError(null, inputName + ":" + s);
-			}
-		};
-		if (!p.parse(templates, templatePackage, inputName)) {
-			return new ITemplate[0];
-		}
-		return p.getResult();
 	}
 
 	public void createFile(String name, String contents) {

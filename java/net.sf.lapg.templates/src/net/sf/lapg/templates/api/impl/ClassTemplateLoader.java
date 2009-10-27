@@ -6,16 +6,16 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.TemplateSource;
 
 /**
  * Loads templates stored along with java classes (using ClassLoader)
  */
 public class ClassTemplateLoader implements ITemplateLoader {
 
-	private ClassLoader loader;
-
-	private String rootPackage;
-
+	private final ClassLoader loader;
+	private final String rootPackage;
 	private final String charsetName;
 
 	public ClassTemplateLoader(ClassLoader loader, String rootPackage, String charsetName) {
@@ -43,12 +43,14 @@ public class ClassTemplateLoader implements ITemplateLoader {
 		return contents.toString();
 	}
 
-	public String load(String containerName) {
-		InputStream s = loader.getResourceAsStream(rootPackage + "/" + (containerName.replace('.', '/') + CONTAINER_EXT));
+	public TemplateSource load(String containerName, ITemplatesFacade facade) {
+		String resourceName = rootPackage + "/" + containerName.replace('.', '/') + CONTAINER_EXT;
+		InputStream s = loader.getResourceAsStream(resourceName);
 		if (s == null) {
 			return null;
 		}
-
-		return getStreamContents(s, charsetName);
+		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
+				: resourceName;
+		return TemplateSource.buildSource(name, getStreamContents(s, charsetName), containerName, facade);
 	}
 }

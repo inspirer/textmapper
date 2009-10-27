@@ -60,8 +60,8 @@ _skip:	/[^'"{}]+/
 
 # Grammar
 
-input (LapgInput) ::=
-	optionsopt lexer_parts grammar_parts				{ $$ = new LapgInput($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+input (AstRoot) ::=
+	optionsopt lexer_parts grammar_parts				{  $$ = result = new AstRoot($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
 ;
 
 options (List<AstOption>) ::= 
@@ -135,7 +135,7 @@ rule_priority (AstIdentifier) ::=
 command (AstCode) ::=
 	'{' command_tokensopt '}'							{ $$ = new AstCode(source, ${self[0].offset}+1, ${self[2].endoffset}-1); }  
 ;
-	
+
 command_tokens ::=
 	command_tokens command_token | command_token ;
 
@@ -168,10 +168,28 @@ int getTemplatesStart() {
 ${end}
 
 ${template classcode}
+private LapgParser(TextSource source) {
+	this.source = source;
+}
+
 private static final boolean DEBUG_SYNTAX = false;
-TextSource source;
+private final TextSource source;
+private AstRoot result;
 
 public void error( String s ) {
 	System.err.println(s);
+}
+
+public static LapgInput process(TextSource source) {
+	try {
+		LapgParser p = new LapgParser(source);
+		LapgLexer lexer = new LapgLexer(source.getStream(), p);
+		boolean result = p.parse(lexer);
+		return new LapgInput(source, result ? p.result : null, lexer.getTemplatesStart(), null);
+		
+	} catch( UnsupportedEncodingException ex ) {
+	} catch( IOException ex ) {
+	}
+	return null;
 }
 ${end}

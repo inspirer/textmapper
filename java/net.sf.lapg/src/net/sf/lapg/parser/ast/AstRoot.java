@@ -4,13 +4,13 @@ import java.util.List;
 
 import net.sf.lapg.parser.TextSource;
 
-public class LapgInput extends Node {
+public class AstRoot extends Node {
 
 	private final List<AstOption> options;
 	private final List<AstLexerPart> lexer;
 	private final List<AstGrammarPart> grammar;
 
-	public LapgInput(List<AstOption> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
+	public AstRoot(List<AstOption> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
 			int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;

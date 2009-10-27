@@ -100,14 +100,9 @@ template_declaration_or_space ::=
 ;
 
 template_start (TemplateNode) ::=
-	'${' Ltemplate identifier template_parametersopt template_overridesopt '[-]}'
-                                                    { $$ = new TemplateNode($identifier, $template_parametersopt, templatePackage, $template_overridesopt, inputName, ${self[0].line}); }
-;
-
-template_overrides (String) ::=
-	':' template_id 								{ $$ = $1; }
-;
- 
+	'${' Ltemplate template_id template_parametersopt '[-]}'
+                                                    { $$ = new TemplateNode($template_id, $template_parametersopt, templatePackage, inputName, ${self[0].line}); checkFqn($template_id); }
+; 
 
 template_parameters (ArrayList) ::=
 	'(' identifier_listopt ')' 						{ $$ = $1; }
@@ -304,7 +299,7 @@ expression_list (ArrayList) ::=
 body (TemplateNode) ::=
 	instructions
 						{
-							$$ = new TemplateNode("inline", null, templatePackage, null, inputName, ${self[0].line});
+							$$ = new TemplateNode("inline", null, templatePackage, inputName, ${self[0].line});
 							$body.setInstructions($instructions);
 							templates.add($body);
 						}
@@ -418,6 +413,12 @@ private Node createEscapedId(String escid, int line) {
 
 private void skipSpaces(int offset) {
 	killEnds = offset+1;
+}
+
+private void checkFqn(String templateName) {
+	if( templateName.indexOf('.') >= 0 && templatePackage != null) {
+		error("template name should be simple identifier");
+	}
 }
 
 public void error( String s ) {

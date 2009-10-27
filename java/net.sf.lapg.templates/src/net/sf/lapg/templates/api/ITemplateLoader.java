@@ -15,5 +15,5 @@ public interface ITemplateLoader {
 	 *            qualified name of templates package (separated with dots)
 	 * @return contents of the file with templates
 	 */
-	String load(String containerName);
+	TemplateSource load(String containerName, ITemplatesFacade facade);
 }

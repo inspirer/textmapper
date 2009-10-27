@@ -1,5 +1,7 @@
 package net.sf.lapg.parser;
 
+import java.io.CharArrayReader;
+import java.io.Reader;
 import java.util.Arrays;
 
 import net.sf.lapg.input.SyntaxUtil;
@@ -25,6 +27,10 @@ public class TextSource {
 		return initialLine;
 	}
 
+	public Reader getStream() {
+		return new CharArrayReader(contents);
+	}
+	
 	public String getLocation(int offset) {
 		return file + "," + (initialLine + lineForOffset(offset));
 	}

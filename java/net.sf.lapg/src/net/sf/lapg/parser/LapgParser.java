@@ -17,11 +17,29 @@ import net.sf.lapg.parser.ast.*;
 
 public class LapgParser implements LapgLexer.ErrorReporter {
 	
+	private LapgParser(TextSource source) {
+		this.source = source;
+	}
+	
 	private static final boolean DEBUG_SYNTAX = false;
-	TextSource source;
+	private final TextSource source;
+	private AstRoot result;
 	
 	public void error( String s ) {
 		System.err.println(s);
+	}
+	
+	public static LapgInput process(TextSource source) {
+		try {
+			LapgParser p = new LapgParser(source);
+			LapgLexer lexer = new LapgLexer(source.getStream(), p);
+			boolean result = p.parse(lexer);
+			return new LapgInput(source, result ? p.result : null, lexer.getTemplatesStart(), null);
+			
+		} catch( UnsupportedEncodingException ex ) {
+		} catch( IOException ex ) {
+		}
+		return null;
 	}
     private static final int lapg_action[] = {
 		-3, -1, -1, -11, 4, -1, 7, -1, -1, -19, 10, 3, 5, 6, 21, -1,
@@ -239,7 +257,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
 		switch( rule ) {
 			case 2:  // input ::= optionsopt lexer_parts grammar_parts
-				 lapg_gg.sym = new LapgInput(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				  lapg_gg.sym = result = new AstRoot(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
 				break;
 			case 3:  // options ::= options option
 				 ((List<AstOption>)lapg_m[lapg_head-1].sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 

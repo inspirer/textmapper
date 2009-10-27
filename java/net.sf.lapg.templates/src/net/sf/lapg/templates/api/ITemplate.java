@@ -22,7 +22,7 @@ public interface ITemplate extends ILocatedEntity {
 	String apply(EvaluationContext context, ITemplatesFacade env, Object[] arguments) throws EvaluationException;
 
 	/**
-	 * @return qualified name of overridden
+	 * Returns base template
 	 */
-	String getOverridden();
+	ITemplate getBase();
 }

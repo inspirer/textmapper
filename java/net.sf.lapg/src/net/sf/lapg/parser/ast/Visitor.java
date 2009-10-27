@@ -42,7 +42,7 @@ public class Visitor {
 		return true;
 	}
 
-	public boolean visit(LapgInput n) {
+	public boolean visit(AstRoot n) {
 		return true;
 	}
 }

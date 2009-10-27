@@ -70,7 +70,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	protected ITemplateLoader createTemplateLoader(String path) {
 		File folder = new File(path);
 		if (folder.isDirectory()) {
-			return new FolderTemplateLoader(folder);
+			return new FolderTemplateLoader(new File[] { folder }, "utf8"); // FIXME charset
 		}
 		return null;
 	}
