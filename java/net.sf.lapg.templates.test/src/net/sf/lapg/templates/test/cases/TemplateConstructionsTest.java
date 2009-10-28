@@ -9,6 +9,7 @@ import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
+import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.test.TemplateTestCase;
 
 public class TemplateConstructionsTest extends TemplateTestCase {
@@ -16,7 +17,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	private static final String TEMPLATES_LOCATION = "net/sf/lapg/templates/test/ltp";
 
 	private static final String TEMPLATES_CHARSET = "utf8";
-	
+
 	// loop.ltp
 	public void testLoops() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
@@ -158,18 +159,32 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testOverrides() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
+				new StringTemplateLoader("inline", "${template overrides.my2}go next my2\n\n${end}"),
+				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
 		// test 1
 		String q = env.executeTemplate("overrides.my1", context, null, null);
-		Assert.assertEquals("my2\n", q);
+		Assert.assertEquals("my1\n", q);
 
 		// test 2
-		env.loadPackage(null, "overrides2");
-		q = env.executeTemplate("overrides.my1", context, null, null);
+		q = env.executeTemplate("overrides.my2", context, null, null);
 		Assert.assertEquals("go next my2\n\n", q);
+	}
+
+	public void testOverrides2() {
+		TestTemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
+				new StringTemplateLoader("inline", "${template overrides.my1(aa)}go next my1\n\n${end}"),
+				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		EvaluationContext context = new EvaluationContext(null);
+
+		// test 1
+		env.addErrors("Template `my1(aa)` is not compatible with base template `my1`");
+		env.addErrors("Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
+		String q = env.executeTemplate("overrides.my1", context, null, null);
+		Assert.assertEquals("", q);
 	}
 
 	public void testFile() {

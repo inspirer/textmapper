@@ -21,11 +21,11 @@ public class TemplateSource {
 	}
 
 	public static TemplateSource buildSource(final String sourceName, String contents, String templatePackage,
-			final ITemplatesFacade facade) {
+			final IProblemCollector collector) {
 		AstParser p = new AstParser() {
 			@Override
 			public void error(String s) {
-				facade.fireError(null, sourceName + ":" + s);
+				collector.fireError(null, sourceName + ":" + s);
 			}
 		};
 		ITemplate[] templates;

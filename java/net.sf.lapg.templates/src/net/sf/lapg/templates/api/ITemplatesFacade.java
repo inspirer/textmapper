@@ -7,7 +7,7 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface ITemplatesFacade {
+public interface ITemplatesFacade extends IProblemCollector {
 
 	/**
 	 *   <obj> . <propertyName>
@@ -40,10 +40,6 @@ public interface ITemplatesFacade {
 	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
 
 	public String getTitle(Object object);
-
-	public void fireError(ILocatedEntity referer, String error);
-
-	public void loadPackage(ILocatedEntity referer, String packageName);
 
 	public void createFile(String name, String contents);
 }

@@ -46,7 +46,7 @@ public abstract class AbstractGenerator {
 	protected abstract void createFile(String name, String contents);
 
 	protected abstract InputStream openInput(INotifier err);
-	
+
 	private Map<String, String> getDefaultOptions() {
 		Map<String, String> d = new HashMap<String, String>();
 		d.put("class", "Parser");
@@ -118,7 +118,6 @@ public abstract class AbstractGenerator {
 		}
 
 		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
-		env.loadPackage(null, "input");
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym");
@@ -126,7 +125,7 @@ public abstract class AbstractGenerator {
 	}
 
 	private final class TemplatesFacadeExt extends TemplatesFacade {
-		
+
 		private final INotifier notifier;
 
 		private TemplatesFacadeExt(Factory strategy, ITemplateLoader[] loaders, INotifier notifier) {

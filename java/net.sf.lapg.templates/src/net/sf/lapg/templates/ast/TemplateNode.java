@@ -8,8 +8,8 @@ import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.ITemplate;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
-	private String name;
-	private String[] parameters;
+	private final String name;
+	private final String[] parameters;
 	private String templatePackage;
 	private ITemplate base;
 
@@ -83,12 +83,15 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return templatePackage;
 	}
 
-	@Override
+	public String[] getParameters() {
+		return parameters;
+	}
+
 	public ITemplate getBase() {
 		return base;
 	}
 
-	void setBase(ITemplate template) {
+	public void setBase(ITemplate template) {
 		this.base = template;
 	}
 }

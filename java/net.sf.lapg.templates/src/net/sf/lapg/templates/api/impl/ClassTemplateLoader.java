@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.TemplateSource;
 
 /**
@@ -43,7 +43,7 @@ public class ClassTemplateLoader implements ITemplateLoader {
 		return contents.toString();
 	}
 
-	public TemplateSource load(String containerName, ITemplatesFacade facade) {
+	public TemplateSource load(String containerName, IProblemCollector collector) {
 		String resourceName = rootPackage + "/" + containerName.replace('.', '/') + CONTAINER_EXT;
 		InputStream s = loader.getResourceAsStream(resourceName);
 		if (s == null) {
@@ -51,6 +51,6 @@ public class ClassTemplateLoader implements ITemplateLoader {
 		}
 		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
 				: resourceName;
-		return TemplateSource.buildSource(name, getStreamContents(s, charsetName), containerName, facade);
+		return TemplateSource.buildSource(name, getStreamContents(s, charsetName), containerName, collector);
 	}
 }

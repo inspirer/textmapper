@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.ITemplatesFacade;
 import net.sf.lapg.templates.api.TemplateSource;
 
 /**
@@ -42,14 +42,14 @@ public class FolderTemplateLoader implements ITemplateLoader {
 		return contents.toString();
 	}
 
-	public TemplateSource load(String containerName, ITemplatesFacade facade) {
+	public TemplateSource load(String containerName, IProblemCollector collector) {
 		String fileName = containerName +  CONTAINER_EXT;
 
 		for( File f : myFolders ) {
 			File file = new File(f, fileName);
 			if( file.exists() ) {
 				String name = file.toString();
-				return TemplateSource.buildSource(name, getFileContents(name, charsetName), containerName, facade);
+				return TemplateSource.buildSource(name, getFileContents(name, charsetName), containerName, collector);
 			}
 		}
 		return null;
