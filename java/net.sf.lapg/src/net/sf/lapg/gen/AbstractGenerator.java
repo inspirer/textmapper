@@ -24,12 +24,15 @@ import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.DefaultEvaluationStrategy;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
-import net.sf.lapg.templates.api.impl.EvaluationStrategy;
+import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.api.impl.TemplatesRegistry;
 
 public abstract class AbstractGenerator {
 
@@ -117,14 +120,14 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		EvaluationStrategy env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym");
 		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
-	private final class TemplatesFacadeExt extends EvaluationStrategy {
+	private final class TemplatesFacadeExt extends TemplatesFacade {
 
 		private final INotifier notifier;
 
@@ -134,10 +137,17 @@ public abstract class AbstractGenerator {
 		}
 
 		@Override
-		public void createFile(String name, String contents) {
-			AbstractGenerator.this.createFile(name, contents);
+		protected IEvaluationStrategy createEvaluationStrategy(Factory factory, TemplatesRegistry registry) {
+			// TODO Auto-generated method stub
+			return new DefaultEvaluationStrategy(this, factory, registry) {
+				@Override
+				public void createFile(String name, String contents) {
+					AbstractGenerator.this.createFile(name, contents);
+				}
+			};
 		}
 
+		@Override
 		public void fireError(ILocatedEntity referer, String error) {
 			if( referer != null ) {
 				notifier.error(referer.getLocation() + ": ");

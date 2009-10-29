@@ -10,34 +10,34 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.ExpressionNode;
 
-public abstract class EvaluationStrategy implements IEvaluationStrategy {
+public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
+	private final TemplatesFacade templatesFacade;
 	private final TemplatesRegistry registry;
+	private final INavigationStrategy.Factory navigationFactory;
 
-	private final INavigationStrategy.Factory strategies;
-
-	public EvaluationStrategy(INavigationStrategy.Factory factory, ITemplateLoader... loaders) {
-		this.strategies = factory;
-		factory.setTemplatesFacade(this);
-		registry = new TemplatesRegistry(this, loaders);
+	public DefaultEvaluationStrategy(TemplatesFacade facade, INavigationStrategy.Factory factory, TemplatesRegistry registry) {
+		this.templatesFacade = facade;
+		this.navigationFactory = factory;
+		this.registry = registry;
+		factory.setEvaluationStrategy(this);
 	}
 
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-		INavigationStrategy strategy = strategies.getStrategy(obj);
+		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.callMethod(obj, methodName, args);
 	}
 
 	public Object getByIndex(Object obj, Object index) throws EvaluationException {
-		INavigationStrategy strategy = strategies.getStrategy(obj);
+		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.getByIndex(obj, index);
 	}
 
 	public Object getProperty(Object obj, String id) throws EvaluationException {
-		INavigationStrategy strategy = strategies.getStrategy(obj);
+		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.getProperty(obj, id);
 	}
 
@@ -131,7 +131,7 @@ public abstract class EvaluationStrategy implements IEvaluationStrategy {
 		AstParser p = new AstParser() {
 			@Override
 			public void error(String s) {
-				EvaluationStrategy.this.fireError(null, inputName + ":" + s);
+				DefaultEvaluationStrategy.this.fireError(null, inputName + ":" + s);
 			}
 		};
 		ITemplate[] loaded = null;
@@ -199,5 +199,9 @@ public abstract class EvaluationStrategy implements IEvaluationStrategy {
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	public void fireError(ILocatedEntity referer, String error) {
+		templatesFacade.fireError(referer, error);
 	}
 }

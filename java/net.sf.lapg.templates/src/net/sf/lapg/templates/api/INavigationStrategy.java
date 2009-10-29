@@ -7,9 +7,9 @@ package net.sf.lapg.templates.api;
 public interface INavigationStrategy {
 
 	/**
-	 * Returns value of <id> property of <obj>.
+	 * Returns value of <propertyName> property of <obj>.
 	 */
-	public Object getProperty(Object obj, String id) throws EvaluationException;
+	public Object getProperty(Object obj, String propertyName) throws EvaluationException;
 
 	/**
 	 * Returns a result of <obj>.methodName(args) call.
@@ -27,9 +27,9 @@ public interface INavigationStrategy {
 	public static interface Factory {
 
 		/**
-		 * Connects factory to the templates facade.
+		 * Connects factory to the evaluation strategy.
 		 */
-		public void setTemplatesFacade(IEvaluationStrategy templatesFacade);
+		public void setEvaluationStrategy(IEvaluationStrategy strategy);
 
 		/**
 		 * Returns navigation strategy for object instance.

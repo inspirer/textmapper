@@ -13,10 +13,10 @@ import net.sf.lapg.templates.api.INavigationStrategy;
 
 public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
-	protected IEvaluationStrategy templatesFacade;
+	protected IEvaluationStrategy evaluationStrategy;
 
-	public void setTemplatesFacade(IEvaluationStrategy facade) {
-		this.templatesFacade = facade;
+	public void setEvaluationStrategy(IEvaluationStrategy strategy) {
+		this.evaluationStrategy = strategy;
 	}
 
 	public INavigationStrategy getStrategy(Object o) {

@@ -19,19 +19,19 @@ public class ActionSymbol {
 	final Symbol symbol;
 	final boolean isLeft;
 	final int rightOffset;
-	private final IEvaluationStrategy facade;
+	private final IEvaluationStrategy evaluationStrategy;
 	private final String templatePackage;
 
-	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, IEvaluationStrategy facade, String templatePackage) {
+	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, String templatePackage) {
 		this.symbol = symbol;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
-		this.facade = facade;
+		this.evaluationStrategy = strategy;
 		this.templatePackage = templatePackage;
 	}
 
 	@Override
 	public String toString() {
-		return facade.executeTemplate(templatePackage+".symbol", new EvaluationContext(this), null, null);
+		return evaluationStrategy.executeTemplate(templatePackage+".symbol", new EvaluationContext(this), null, null);
 	}
 }

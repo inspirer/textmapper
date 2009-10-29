@@ -7,26 +7,8 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface IEvaluationStrategy extends IProblemCollector {
+public interface IEvaluationStrategy extends INavigationStrategy, IProblemCollector {
 
-	/**
-	 *   <obj> . <propertyName>
-	 */
-	public Object getProperty(Object obj, String propertyName) throws EvaluationException;
-
-	/**
-	 *   <obj> . <methodName> ( <args> )
-	 */
-	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException;
-
-	/**
-	 *   <obj> [ <index> ]
-	 */
-	public Object getByIndex(Object obj, Object index) throws EvaluationException;
-
-	/**
-	 *    <obj> ? .. : ..
-	 */
 	public boolean toBoolean(Object o) throws EvaluationException;
 
 	public Iterator<?> getCollectionIterator(Object o);

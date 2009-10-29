@@ -6,16 +6,17 @@ import junit.framework.Assert;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
-import net.sf.lapg.templates.api.impl.EvaluationStrategy;
+import net.sf.lapg.templates.api.impl.TemplatesFacade;
 
-public class TestTemplatesFacade extends EvaluationStrategy {
+public class TestTemplatesFacade extends TemplatesFacade {
 
-	public TestTemplatesFacade(Factory strategy, ITemplateLoader... loaders) {
-		super(strategy, loaders);
+	public TestTemplatesFacade(Factory strategyFactory, ITemplateLoader... loaders) {
+		super(strategyFactory, loaders);
 	}
 
 	public ArrayList<String> nextErrors = new ArrayList<String>();
 
+	@Override
 	public void fireError(ILocatedEntity referer, String error) {
 		if( nextErrors.size() > 0 ) {
 			String next = nextErrors.remove(0);
