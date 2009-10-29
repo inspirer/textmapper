@@ -6,9 +6,9 @@ import junit.framework.Assert;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
-import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.api.impl.EvaluationStrategy;
 
-public class TestTemplatesFacade extends TemplatesFacade {
+public class TestTemplatesFacade extends EvaluationStrategy {
 
 	public TestTemplatesFacade(Factory strategy, ITemplateLoader... loaders) {
 		super(strategy, loaders);

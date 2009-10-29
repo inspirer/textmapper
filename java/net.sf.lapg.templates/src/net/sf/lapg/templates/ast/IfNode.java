@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class IfNode extends CompoundNode {
 	private ExpressionNode select;
@@ -24,7 +24,7 @@ public class IfNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			ArrayList<Node> execute = env.toBoolean(env.evaluate(select, context, true)) ? instructions
 					: elseInstructions;

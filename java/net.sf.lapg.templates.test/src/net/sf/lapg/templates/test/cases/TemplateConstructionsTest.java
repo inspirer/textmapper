@@ -5,7 +5,7 @@ import java.util.Hashtable;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
@@ -23,7 +23,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
 
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", new EvaluationContext(h), null, null);
@@ -41,7 +41,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// eval.ltp
 	public void testEval() {
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("eval.eval1", null, null, null);
@@ -79,7 +79,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// filter.ltp
 	public void testMap() {
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -90,7 +90,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// arithm.ltp
 	public void testArithm() {
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 
 		// test 1
 		String q = env.executeTemplate("arithm.arithm1", new EvaluationContext(null), null, null);
@@ -135,7 +135,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testCall() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -159,7 +159,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testOverrides() {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(),
 				new StringTemplateLoader("inline", "${template overrides.my2}go next my2\n\n${end}"),
 				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
@@ -189,7 +189,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testFile() {
 		final HashMap<String,String> fileContent = new HashMap<String,String>();
-		ITemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
+		IEvaluationStrategy env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
 			@Override
 			public void createFile(String name, String contents) {
 				fileContent.put(name, contents);

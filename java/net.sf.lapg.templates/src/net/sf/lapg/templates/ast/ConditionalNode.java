@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class ConditionalNode extends ExpressionNode {
 
@@ -29,7 +29,7 @@ public class ConditionalNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object left = env.evaluate(leftExpr, context, false);
 
 		switch( kind ) {

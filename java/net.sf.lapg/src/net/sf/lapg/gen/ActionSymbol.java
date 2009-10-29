@@ -12,17 +12,17 @@ package net.sf.lapg.gen;
 
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class ActionSymbol {
 
 	final Symbol symbol;
 	final boolean isLeft;
 	final int rightOffset;
-	private final ITemplatesFacade facade;
+	private final IEvaluationStrategy facade;
 	private final String templatePackage;
 
-	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, ITemplatesFacade facade, String templatePackage) {
+	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, IEvaluationStrategy facade, String templatePackage) {
 		this.symbol = symbol;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;

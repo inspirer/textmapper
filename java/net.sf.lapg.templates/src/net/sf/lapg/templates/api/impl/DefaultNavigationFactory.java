@@ -8,14 +8,14 @@ import java.util.Collection;
 import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.INavigationStrategy;
 
 public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
-	protected ITemplatesFacade templatesFacade;
+	protected IEvaluationStrategy templatesFacade;
 
-	public void setTemplatesFacade(ITemplatesFacade facade) {
+	public void setTemplatesFacade(IEvaluationStrategy facade) {
 		this.templatesFacade = facade;
 	}
 

@@ -1,7 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
 public abstract class Node implements ILocatedEntity {
@@ -14,7 +14,7 @@ public abstract class Node implements ILocatedEntity {
 		this.line = line;
 	}
 
-	protected abstract void emit( StringBuffer sb, EvaluationContext context, ITemplatesFacade env);
+	protected abstract void emit( StringBuffer sb, EvaluationContext context, IEvaluationStrategy env);
 
 	public String getLocation() {
 		return input + "," + line;

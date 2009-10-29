@@ -8,7 +8,7 @@ import java.io.Reader;
 
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.TemplateSource;
+import net.sf.lapg.templates.api.TemplatesPackage;
 
 /**
  * Loads templates from specified folders;
@@ -42,14 +42,14 @@ public class FolderTemplateLoader implements ITemplateLoader {
 		return contents.toString();
 	}
 
-	public TemplateSource load(String containerName, IProblemCollector collector) {
+	public TemplatesPackage load(String containerName, IProblemCollector collector) {
 		String fileName = containerName +  CONTAINER_EXT;
 
 		for( File f : myFolders ) {
 			File file = new File(f, fileName);
 			if( file.exists() ) {
 				String name = file.toString();
-				return TemplateSource.buildSource(name, getFileContents(name, charsetName), containerName, collector);
+				return new TemplatesPackage(name, TemplatesPackage.parse(name, getFileContents(name, charsetName), containerName, collector));
 			}
 		}
 		return null;

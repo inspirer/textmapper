@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 
 public class CollectionProcessorNode extends ExpressionNode {
@@ -32,7 +32,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object select = env.evaluate(selectExpression, context, false);
 		Object prevVar = context.getVariable(varName);
 		try {

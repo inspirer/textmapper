@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
 public class EvalNode extends Node {
@@ -17,7 +17,7 @@ public class EvalNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object toEvaluate = env.evaluate(templateExpr, context, false);
 			String id;

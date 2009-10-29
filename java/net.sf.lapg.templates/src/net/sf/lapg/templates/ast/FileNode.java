@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 
 public class FileNode extends CompoundNode {
@@ -16,7 +16,7 @@ public class FileNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		StringBuffer file = new StringBuffer();
 		try {
 			String fileName = env.toString(env.evaluate(targetNameExpr, context, false), targetNameExpr);

@@ -29,7 +29,7 @@ public interface INavigationStrategy {
 		/**
 		 * Connects factory to the templates facade.
 		 */
-		public void setTemplatesFacade(ITemplatesFacade templatesFacade);
+		public void setTemplatesFacade(IEvaluationStrategy templatesFacade);
 
 		/**
 		 * Returns navigation strategy for object instance.

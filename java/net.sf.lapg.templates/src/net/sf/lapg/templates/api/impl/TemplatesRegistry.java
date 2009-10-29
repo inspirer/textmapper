@@ -11,7 +11,7 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.TemplateSource;
+import net.sf.lapg.templates.api.TemplatesPackage;
 
 public class TemplatesRegistry {
 
@@ -34,15 +34,15 @@ public class TemplatesRegistry {
 		}
 	}
 
-	private TemplateSource[] getContainerContent(String containerName) {
-		List<TemplateSource> result = new LinkedList<TemplateSource>();
+	private TemplatesPackage[] getContainerContent(String containerName) {
+		List<TemplatesPackage> result = new LinkedList<TemplatesPackage>();
 		for (ITemplateLoader loader : loaders) {
-			TemplateSource source = loader.load(containerName, collector);
+			TemplatesPackage source = loader.load(containerName, collector);
 			if (source != null) {
 				result.add(source);
 			}
 		}
-		return result.size() > 0 ? result.toArray(new TemplateSource[result.size()]) : null;
+		return result.size() > 0 ? result.toArray(new TemplatesPackage[result.size()]) : null;
 	}
 
 	private void loadPackage(ILocatedEntity referer, String packageName) {
@@ -50,7 +50,7 @@ public class TemplatesRegistry {
 			return;
 		}
 
-		TemplateSource[] contents = getContainerContent(packageName);
+		TemplatesPackage[] contents = getContainerContent(packageName);
 		if (contents == null) {
 			collector.fireError(referer, "Couldn't load template package `" + packageName + "`");
 			return;
@@ -73,7 +73,7 @@ public class TemplatesRegistry {
 				} else {
 					ITemplate base = nameToTemplate.get(name);
 					if(base != null) {
-						boolean isCompatible = base.toString().equals(t.toString());
+						boolean isCompatible = base.getSignature().equals(t.getSignature());
 						if(isCompatible) {
 							t.setBase(base);
 						} else {

@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public abstract class ExpressionNode extends Node {
 
@@ -11,14 +11,14 @@ public abstract class ExpressionNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			sb.append(env.toString(env.evaluate(this, context, false), this));
 		} catch( EvaluationException ex ) {
 		}
 	}
 
-	public abstract Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException;
+	public abstract Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException;
 
 	@Override
 	public final String toString() {

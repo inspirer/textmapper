@@ -2,7 +2,7 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 
 public class ErrorNode extends ExpressionNode {
@@ -12,7 +12,7 @@ public class ErrorNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, ITemplatesFacade env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		throw new EvaluationException("illegal expression");
 	}
 
@@ -22,7 +22,7 @@ public class ErrorNode extends ExpressionNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, ITemplatesFacade env) {
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		/* ignore, errors are emited on parser stage */
 	}
 }

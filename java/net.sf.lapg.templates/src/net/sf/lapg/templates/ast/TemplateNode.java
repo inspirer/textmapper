@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.ITemplatesFacade;
+import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ITemplate;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
@@ -29,7 +29,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return name;
 	}
 
-	public String apply(EvaluationContext context, ITemplatesFacade env, Object[] arguments) throws EvaluationException {
+	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
 				: 0;
 
@@ -64,6 +64,14 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 
 	@Override
 	public String toString() {
+		return getSignature();
+	}
+
+	public String getPackage() {
+		return templatePackage;
+	}
+
+	public String getSignature() {
 		StringBuffer sb = new StringBuffer();
 		sb.append(name);
 		if (parameters != null) {
@@ -77,14 +85,6 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			sb.append(')');
 		}
 		return sb.toString();
-	}
-
-	public String getPackage() {
-		return templatePackage;
-	}
-
-	public String[] getParameters() {
-		return parameters;
 	}
 
 	public ITemplate getBase() {

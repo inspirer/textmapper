@@ -19,12 +19,12 @@ public interface ITemplate extends ILocatedEntity {
 	 * Evaluates template in context and environment.
 	 * @return result of invocation
 	 */
-	String apply(EvaluationContext context, ITemplatesFacade env, Object[] arguments) throws EvaluationException;
+	String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException;
 
 	/**
 	 * @return parameter names
 	 */
-	String[] getParameters();
+	String getSignature();
 
 	/**
 	 * Returns base template

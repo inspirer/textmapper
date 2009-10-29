@@ -29,7 +29,7 @@ import net.sf.lapg.templates.api.ITemplateLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
-import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.api.impl.EvaluationStrategy;
 
 public abstract class AbstractGenerator {
 
@@ -117,14 +117,14 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
+		EvaluationStrategy env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym");
 		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
-	private final class TemplatesFacadeExt extends TemplatesFacade {
+	private final class TemplatesFacadeExt extends EvaluationStrategy {
 
 		private final INotifier notifier;
 
