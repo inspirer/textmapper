@@ -25,10 +25,6 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private final TextSource source;
 	private AstRoot result;
 	
-	public void error( String s ) {
-		System.err.println(s);
-	}
-	
 	public static LapgInput process(TextSource source) {
 		try {
 			LapgParser p = new LapgParser(source);
@@ -40,6 +36,9 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		} catch( IOException ex ) {
 		}
 		return null;
+	}
+	public void error(LapgLexer.LapgPlace start, LapgLexer.LapgPlace end, String s) {
+		System.err.println(s);
 	}
     private static final int lapg_action[] = {
 		-3, -1, -1, -11, 4, -1, 7, -1, -1, -19, 10, 3, 5, 6, 21, -1,
@@ -227,7 +226,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 
 		if( lapg_m[lapg_head].state != 67 ) {
-			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+			error(lapg_n.pos, lapg_n.endpos, MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 			return false;
 		};
 		return true;

@@ -51,7 +51,6 @@ public abstract class AbstractGenerator {
 		Map<String, String> d = new HashMap<String, String>();
 		d.put("class", "Parser");
 		d.put("lexer", "Lexer");
-		d.put("errorprefix", "");
 		d.put("breaks", "on");
 		d.put("lang", "java");
 		d.put("positioning", "line");

@@ -13,6 +13,7 @@ ${call imports}
 
 public class ${opts.class} implements ${opts.lexer}.ErrorReporter {
 ${util.shiftRight(self->classcode(),1)-}
+${util.shiftRight(self->errorcode(),1)-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -102,10 +103,10 @@ ${if opts.positioning != 'none'-}
 ${end-}
 					if( lapg_symbols_ok >= 4 ) {
 ${switch opts.positioning}
-${case 'none'}						error(${opts.errorprefix} "syntax error" );
-${case 'line'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${case 'full'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
-${case 'offset'}						error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'none'}						error("syntax error");
+${case 'line'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ));
+${case 'full'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ));
+${case 'offset'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ));
 ${end-}
 					}
 					if( lapg_symbols_ok <= 1 ) {
@@ -129,10 +130,10 @@ ${else-}
 		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
 ${end-}
 ${switch opts.positioning}
-${case 'none'}			error(${opts.errorprefix} "syntax error" );
-${case 'line'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${case 'full'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
-${case 'offset'}			error(${opts.errorprefix} MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'none'}			error("syntax error" );
+${case 'line'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+${case 'full'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
+${case 'offset'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 ${end-}
 			return false;
 		};
@@ -264,8 +265,24 @@ ${opts.package-}
 ${else}com.test${end-}
 ${end}
 
+${template err_location(var)-}
+${if opts.positioning != 'none'-}
+${var}.pos, ${if opts.lexemend == 'on'}${var}.endpos, ${end}${end-}
+${end}
+
+${template err_parameters(fqn)-}
+${if opts.positioning != 'none'-}
+${if fqn}${opts.lexer}.${end}LapgPlace start, ${if opts.lexemend == 'on'}${if fqn}${opts.lexer}.${end}LapgPlace end, ${end}${end-}
+${end}
+
 ${template imports-}
 ${end}
 
 ${template classcode-}
+${end}
+
+${template errorcode-}
+public void error(${call err_parameters(true)}String s) {
+	System.err.println(s);
+}
 ${end}

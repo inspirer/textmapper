@@ -176,10 +176,6 @@ private static final boolean DEBUG_SYNTAX = false;
 private final TextSource source;
 private AstRoot result;
 
-public void error( String s ) {
-	System.err.println(s);
-}
-
 public static LapgInput process(TextSource source) {
 	try {
 		LapgParser p = new LapgParser(source);
@@ -192,4 +188,8 @@ public static LapgInput process(TextSource source) {
 	}
 	return null;
 }
+${end}
+
+${template java.errorcode-}
+${call base-}
 ${end}

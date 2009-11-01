@@ -101,14 +101,14 @@ ${end-}
 
 			if( state == -1 ) {
 				if( chr == 0 ) {
-					reporter.error(${opts.errorprefix} "Unexpected end of file reached");
+					reporter.error(${call java.err_location('lapg_n')}"Unexpected end of file reached");
 					break;
 				}
 ${switch opts.positioning}
-${case 'none'}				reporter.error(${opts.errorprefix} MessageFormat.format( "invalid lexem: `{0}`, skipped", current() ) );
-${case 'line'}				reporter.error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current() ) );
-${case 'full'}				reporter.error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, current() ) );
-${case 'offset'}				reporter.error(${opts.errorprefix} MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current() ) );
+${case 'none'}				reporter.error(MessageFormat.format("invalid lexem: `{0}`, skipped", current()));
+${case 'line'}				reporter.error(${call java.err_location('lapg_n')}MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current()));
+${case 'full'}				reporter.error(${call java.err_location('lapg_n')}MessageFormat.format("invalid lexem at line {0}, column {1}: `{2}`, skipped", lapg_n.pos.line, lapg_n.pos.column, current()));
+${case 'offset'}				reporter.error(${call java.err_location('lapg_n')}MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current()));
 ${end-}
 				lapg_n.lexem = -1;
 				continue;
@@ -231,7 +231,7 @@ ${end-}
 	};
 	
 	public interface ErrorReporter {
-		void error(String s);
+		void error(${call java.err_parameters(false)}String s);
 	};
 ${end}
 
