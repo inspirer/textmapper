@@ -153,10 +153,6 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
-	public void createFile(String name, String contents) {
-		// do nothing by default
-	}
-
 	public Iterator<?> getCollectionIterator(Object o) {
 		if (o instanceof Collection<?>) {
 			return ((Collection<?>) o).iterator();
@@ -203,5 +199,9 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	public void fireError(ILocatedEntity referer, String error) {
 		templatesFacade.fireError(referer, error);
+	}
+
+	public final void createFile(String name, String contents) {
+		templatesFacade.createFile(name,contents);
 	}
 }

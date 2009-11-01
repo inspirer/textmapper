@@ -10,23 +10,23 @@ import java.util.Set;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.TemplatesPackage;
+import net.sf.lapg.templates.api.IBundleLoader;
+import net.sf.lapg.templates.api.TemplatesBundle;
 
 public class TemplatesRegistry {
 
 	private final IProblemCollector collector;
 
-	private final HashSet<String> loadedPackages;
+	private final HashSet<String> loadedBundles;
 
 	private final HashMap<String, ITemplate> templates;
 
-	private final ITemplateLoader[] loaders;
+	private final IBundleLoader[] loaders;
 
-	public TemplatesRegistry(IProblemCollector collector, ITemplateLoader... loaders) {
+	public TemplatesRegistry(IProblemCollector collector, IBundleLoader... loaders) {
 		this.collector = collector;
 		this.templates = new HashMap<String, ITemplate>();
-		this.loadedPackages = new HashSet<String>();
+		this.loadedBundles = new HashSet<String>();
 		this.loaders = loaders;
 
 		if (loaders == null || loaders.length < 1) {
@@ -34,23 +34,23 @@ public class TemplatesRegistry {
 		}
 	}
 
-	private TemplatesPackage[] getContainerContent(String containerName) {
-		List<TemplatesPackage> result = new LinkedList<TemplatesPackage>();
-		for (ITemplateLoader loader : loaders) {
-			TemplatesPackage source = loader.load(containerName, collector);
+	private TemplatesBundle[] getContainerContent(String packageName) {
+		List<TemplatesBundle> result = new LinkedList<TemplatesBundle>();
+		for (IBundleLoader loader : loaders) {
+			TemplatesBundle source = loader.load(packageName, collector);
 			if (source != null) {
 				result.add(source);
 			}
 		}
-		return result.size() > 0 ? result.toArray(new TemplatesPackage[result.size()]) : null;
+		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
 	}
 
 	private void loadPackage(ILocatedEntity referer, String packageName) {
-		if (loadedPackages.contains(packageName)) {
+		if (loadedBundles.contains(packageName)) {
 			return;
 		}
 
-		TemplatesPackage[] contents = getContainerContent(packageName);
+		TemplatesBundle[] contents = getContainerContent(packageName);
 		if (contents == null) {
 			collector.fireError(referer, "Couldn't load template package `" + packageName + "`");
 			return;
@@ -85,7 +85,7 @@ public class TemplatesRegistry {
 			}
 		}
 
-		loadedPackages.add(packageName);
+		loadedBundles.add(packageName);
 		for(Map.Entry<String, ITemplate> entry : nameToTemplate.entrySet()) {
 			templates.put(packageName + "." + entry.getKey(), entry.getValue());
 		}

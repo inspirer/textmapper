@@ -24,15 +24,12 @@ import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
-import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
-import net.sf.lapg.templates.api.impl.DefaultEvaluationStrategy;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
-import net.sf.lapg.templates.api.impl.TemplatesRegistry;
 
 public abstract class AbstractGenerator {
 
@@ -42,7 +39,7 @@ public abstract class AbstractGenerator {
 		this.options = options;
 	}
 
-	protected abstract ITemplateLoader createTemplateLoader(String path);
+	protected abstract IBundleLoader createTemplateLoader(String path);
 
 	protected abstract INotifier createNotifier();
 
@@ -108,10 +105,10 @@ public abstract class AbstractGenerator {
 
 	private void generateOutput(Map<String, Object> map, String grammarTemplates, final INotifier notifier) {
 
-		List<ITemplateLoader> loaders = new ArrayList<ITemplateLoader>();
+		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
 		for (String path : options.getIncludeFolders()) {
-			ITemplateLoader tl = createTemplateLoader(path);
+			IBundleLoader tl = createTemplateLoader(path);
 			if (tl != null) {
 				loaders.add(tl);
 			}
@@ -120,7 +117,7 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new ITemplateLoader[loaders.size()]), notifier);
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new IBundleLoader[loaders.size()]), notifier);
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym");
@@ -131,20 +128,14 @@ public abstract class AbstractGenerator {
 
 		private final INotifier notifier;
 
-		private TemplatesFacadeExt(Factory strategy, ITemplateLoader[] loaders, INotifier notifier) {
+		private TemplatesFacadeExt(Factory strategy, IBundleLoader[] loaders, INotifier notifier) {
 			super(strategy, loaders);
 			this.notifier = notifier;
 		}
 
 		@Override
-		protected IEvaluationStrategy createEvaluationStrategy(Factory factory, TemplatesRegistry registry) {
-			// TODO Auto-generated method stub
-			return new DefaultEvaluationStrategy(this, factory, registry) {
-				@Override
-				public void createFile(String name, String contents) {
-					AbstractGenerator.this.createFile(name, contents);
-				}
-			};
+		public void createFile(String name, String contents) {
+			AbstractGenerator.this.createFile(name, contents);
 		}
 
 		@Override

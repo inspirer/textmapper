@@ -6,13 +6,13 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 
 import net.sf.lapg.templates.api.IProblemCollector;
-import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.TemplatesPackage;
+import net.sf.lapg.templates.api.IBundleLoader;
+import net.sf.lapg.templates.api.TemplatesBundle;
 
 /**
  * Loads templates stored along with java classes (using ClassLoader)
  */
-public class ClassTemplateLoader implements ITemplateLoader {
+public class ClassTemplateLoader implements IBundleLoader {
 
 	private final ClassLoader loader;
 	private final String rootPackage;
@@ -43,14 +43,14 @@ public class ClassTemplateLoader implements ITemplateLoader {
 		return contents.toString();
 	}
 
-	public TemplatesPackage load(String containerName, IProblemCollector collector) {
-		String resourceName = rootPackage + "/" + containerName.replace('.', '/') + CONTAINER_EXT;
+	public TemplatesBundle load(String containerName, IProblemCollector collector) {
+		String resourceName = rootPackage + "/" + containerName.replace('.', '/') + BUNDLE_EXT;
 		InputStream s = loader.getResourceAsStream(resourceName);
 		if (s == null) {
 			return null;
 		}
 		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
 				: resourceName;
-		return new TemplatesPackage(name, TemplatesPackage.parse(name, getStreamContents(s, charsetName), containerName, collector));
+		return new TemplatesBundle(name, TemplatesBundle.parse(name, getStreamContents(s, charsetName), containerName, collector));
 	}
 }

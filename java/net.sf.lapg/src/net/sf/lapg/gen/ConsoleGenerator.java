@@ -21,7 +21,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.lapg.INotifier;
-import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 
 public class ConsoleGenerator extends AbstractGenerator {
@@ -67,7 +67,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected ITemplateLoader createTemplateLoader(String path) {
+	protected IBundleLoader createTemplateLoader(String path) {
 		File folder = new File(path);
 		if (folder.isDirectory()) {
 			return new FolderTemplateLoader(new File[] { folder }, "utf8"); // FIXME charset

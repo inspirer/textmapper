@@ -5,15 +5,11 @@ import java.util.Hashtable;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IEvaluationStrategy;
-import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
-import net.sf.lapg.templates.api.impl.DefaultEvaluationStrategy;
 import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
-import net.sf.lapg.templates.api.impl.TemplatesRegistry;
 import net.sf.lapg.templates.test.TemplateTestCase;
 
 public class TemplateConstructionsTest extends TemplateTestCase {
@@ -194,15 +190,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testFile() {
 		final HashMap<String,String> fileContent = new HashMap<String,String>();
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
-
 			@Override
-			protected IEvaluationStrategy createEvaluationStrategy(Factory factory, TemplatesRegistry registry) {
-				return new DefaultEvaluationStrategy(this, factory, registry) {
-					@Override
-					public void createFile(String name, String contents) {
-						fileContent.put(name, contents);
-					}
-				};
+			public void createFile(String name, String contents) {
+				fileContent.put(name, contents);
 			}
 		};
 		EvaluationContext context = new EvaluationContext(new String[] { "aa", "bb" });

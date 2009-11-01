@@ -7,27 +7,27 @@ import java.util.Map;
 
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.api.ITemplateLoader;
-import net.sf.lapg.templates.api.TemplatesPackage;
+import net.sf.lapg.templates.api.IBundleLoader;
+import net.sf.lapg.templates.api.TemplatesBundle;
 
 /**
  * In-memory template loader.
  */
-public class StringTemplateLoader implements ITemplateLoader {
+public class StringTemplateLoader implements IBundleLoader {
 
 	private final String name;
 	private final String contents;
 
-	private Map<String,TemplatesPackage> sourceForPackage;
+	private Map<String,TemplatesBundle> sourceForPackage;
 
 	public StringTemplateLoader(String name, String contents) {
 		this.name = name;
 		this.contents = contents;
 	}
 
-	public TemplatesPackage load(String containerName, IProblemCollector collector) {
+	public TemplatesBundle load(String containerName, IProblemCollector collector) {
 		if(sourceForPackage == null) {
-			ITemplate[] templates = TemplatesPackage.parse(name, contents, null, collector);
+			ITemplate[] templates = TemplatesBundle.parse(name, contents, null, collector);
 
 			Map<String,List<ITemplate>> containerToTemplates = new HashMap<String, List<ITemplate>>();
 			for(ITemplate t : templates) {
@@ -40,10 +40,10 @@ public class StringTemplateLoader implements ITemplateLoader {
 				list.add(t);
 			}
 
-			sourceForPackage = new HashMap<String, TemplatesPackage>();
+			sourceForPackage = new HashMap<String, TemplatesBundle>();
 			for(Map.Entry<String, List<ITemplate>> entry : containerToTemplates.entrySet()) {
 				List<ITemplate> list = entry.getValue();
-				sourceForPackage.put(entry.getKey(), new TemplatesPackage(name, list.toArray(new ITemplate[list.size()])));
+				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new ITemplate[list.size()])));
 			}
 		}
 		return sourceForPackage.get(containerName);

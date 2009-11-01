@@ -7,7 +7,7 @@ import net.sf.lapg.templates.ast.ExpressionNode;
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface IEvaluationStrategy extends INavigationStrategy, IProblemCollector {
+public interface IEvaluationStrategy extends INavigationStrategy, IProblemCollector, IStreamHandler {
 
 	public boolean toBoolean(Object o) throws EvaluationException;
 
@@ -22,6 +22,4 @@ public interface IEvaluationStrategy extends INavigationStrategy, IProblemCollec
 	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
 
 	public String getTitle(Object object);
-
-	public void createFile(String name, String contents);
 }

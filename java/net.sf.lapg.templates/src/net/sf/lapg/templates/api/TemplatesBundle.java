@@ -2,12 +2,12 @@ package net.sf.lapg.templates.api;
 
 import net.sf.lapg.templates.ast.AstParser;
 
-public class TemplatesPackage {
+public class TemplatesBundle {
 
 	private final String sourceName;
 	private final ITemplate[] templates;
 
-	public TemplatesPackage(String sourceName, ITemplate[] templates) {
+	public TemplatesBundle(String sourceName, ITemplate[] templates) {
 		this.sourceName = sourceName;
 		this.templates = templates;
 	}

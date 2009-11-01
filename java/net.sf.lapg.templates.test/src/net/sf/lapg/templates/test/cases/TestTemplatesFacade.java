@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.ILocatedEntity;
-import net.sf.lapg.templates.api.ITemplateLoader;
+import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
 
 public class TestTemplatesFacade extends TemplatesFacade {
 
-	public TestTemplatesFacade(Factory strategyFactory, ITemplateLoader... loaders) {
+	public TestTemplatesFacade(Factory strategyFactory, IBundleLoader... loaders) {
 		super(strategyFactory, loaders);
 	}
 
