@@ -24,7 +24,7 @@ public class AstLexer {
 	};
 	
 	public interface ErrorReporter {
-		void error(String s);
+		void error(LapgPlace start, LapgPlace end, String s);
 	};
 
 	final private Reader stream;
@@ -250,10 +250,10 @@ public class AstLexer {
 
 			if( state == -1 ) {
 				if( chr == 0 ) {
-					reporter.error( "Unexpected end of file reached");
+					reporter.error(lapg_n.pos, lapg_n.endpos, "Unexpected end of file reached");
 					break;
 				}
-				reporter.error( MessageFormat.format( "invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current() ) );
+				reporter.error(lapg_n.pos, lapg_n.endpos, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}

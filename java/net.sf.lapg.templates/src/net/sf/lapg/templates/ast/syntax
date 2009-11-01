@@ -421,10 +421,6 @@ private void checkFqn(String templateName) {
 	}
 }
 
-public void error( String s ) {
-	System.err.println(inputName + ":" + s);
-}
-
 public boolean parse(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
@@ -453,5 +449,15 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 
 public ITemplate[] getResult() {
 	return templates.toArray(new ITemplate[templates.size()]);
+}
+${end}
+
+${template java.errorcode-}
+public void error( String s ) {
+	System.err.println(inputName + ":" + s);
+}
+
+public void error(${call err_parameters(true)}String s) {
+	error(s);
 }
 ${end}

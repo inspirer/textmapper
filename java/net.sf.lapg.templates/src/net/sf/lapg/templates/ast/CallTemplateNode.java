@@ -8,13 +8,13 @@ import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class CallTemplateNode extends ExpressionNode {
 
-	private String templateId;
+	private final String templateId;
 
 	private ExpressionNode templateIdExpr;
 
-	private ExpressionNode[] arguments;
+	private final ExpressionNode[] arguments;
 
-	private ExpressionNode selectExpr;
+	private final ExpressionNode selectExpr;
 
 	private final boolean isStatement;
 
@@ -23,7 +23,7 @@ public class CallTemplateNode extends ExpressionNode {
 		this.isStatement = isStatement;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
-		this.templateId = identifier != null && identifier.indexOf('.') == -1 && !identifier.equals("base") ? currentPackage + "." + identifier : identifier;
+		this.templateId = identifier;
 	}
 
 	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, String input, int line) {
@@ -31,10 +31,14 @@ public class CallTemplateNode extends ExpressionNode {
 		this.templateIdExpr = identifier;
 	}
 
+	private String getTemplateId(EvaluationContext context) {
+		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base") ? context.getCurrentTemplate().getPackage() + "." + templateId : templateId;
+	}
+
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), context) : context;
-		String tid = templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false);
+		String tid = templateId != null ? getTemplateId(context) : (String/* TODO */) env.evaluate(templateIdExpr, context, false);
 
 		Object[] args = null;
 		if (arguments != null) {

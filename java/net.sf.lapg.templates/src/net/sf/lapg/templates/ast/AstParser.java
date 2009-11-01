@@ -113,10 +113,6 @@ public class AstParser implements AstLexer.ErrorReporter {
 		}
 	}
 	
-	public void error( String s ) {
-		System.err.println(inputName + ":" + s);
-	}
-	
 	public boolean parse(String s, String templatePackage, String inputName) {
 		this.templatePackage = templatePackage;
 		this.inputName = inputName;
@@ -145,6 +141,13 @@ public class AstParser implements AstLexer.ErrorReporter {
 	
 	public ITemplate[] getResult() {
 		return templates.toArray(new ITemplate[templates.size()]);
+	}
+	public void error( String s ) {
+		System.err.println(inputName + ":" + s);
+	}
+	
+	public void error(AstLexer.LapgPlace start, AstLexer.LapgPlace end, String s) {
+		error(s);
 	}
     private static final int lapg_action[] = {
 		-3, -1, 7, -1, 2, -11, 4, -1, 27, 26, 24, 25, -1, -19, 18, 21,
@@ -637,7 +640,7 @@ public class AstParser implements AstLexer.ErrorReporter {
 		}
 
 		if( lapg_m[lapg_head].state != 207+state ) {
-			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+			error(lapg_n.pos, lapg_n.endpos, MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 			return false;
 		};
 		return true;

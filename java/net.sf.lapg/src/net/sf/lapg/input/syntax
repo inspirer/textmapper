@@ -220,7 +220,7 @@ private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, 
 			lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,inputId,line));
 		}
 	} catch( ParseException ex ) {
-		error(ex.getMessage());
+		error(null, null, ex.getMessage());
 	}
 }
 
@@ -228,7 +228,7 @@ private void addNonterm(CSymbol sym, String type, int line ) {
 	try {
 		sym.setNonTerminal(type, inputId, line);
 	} catch( ParseException ex ) {
-		error(ex.getMessage());
+		error(null, null, ex.getMessage());
 	}
 }
 
@@ -247,7 +247,7 @@ private void addGrammarDirective( String id, List<CSymbol> list, int line ) {
 	} else if( id.equals("input") ) {
 		inputs.add(new CInputDef(list,inputId,line));
 	} else {
-		error("unknown directive identifier used: `"+id+"` at " + line);
+		error(null, null, "unknown directive identifier used: `"+id+"` at " + line);
 	}
 }
 
@@ -260,14 +260,10 @@ private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
 			addRule(new CRule(null, cmdopt, null, inputId, cmdopt.getLine()), sym);
 			list.add(sym);
 		} catch( ParseException ex ) {
-			error(ex.getMessage());
+			error(null, null, ex.getMessage());
 		}
 	}
 	list.add(symbol);
-}
-
-public void error( String s ) {
-	errors.add(s);
 }
 
 private void propagateTypes() {
@@ -307,5 +303,11 @@ static class ParseException extends Exception {
 	public ParseException(String arg0) {
 		super(arg0);
 	}
+}
+${end}
+
+${template java.errorcode-}
+public void error(${call err_parameters(true)}String s) {
+	errors.add(s);
 }
 ${end}

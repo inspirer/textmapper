@@ -74,7 +74,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,inputId,line));
 			}
 		} catch( ParseException ex ) {
-			error(ex.getMessage());
+			error(null, null, ex.getMessage());
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		try {
 			sym.setNonTerminal(type, inputId, line);
 		} catch( ParseException ex ) {
-			error(ex.getMessage());
+			error(null, null, ex.getMessage());
 		}
 	}
 	
@@ -101,7 +101,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		} else if( id.equals("input") ) {
 			inputs.add(new CInputDef(list,inputId,line));
 		} else {
-			error("unknown directive identifier used: `"+id+"` at " + line);
+			error(null, null, "unknown directive identifier used: `"+id+"` at " + line);
 		}
 	}
 	
@@ -114,14 +114,10 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				addRule(new CRule(null, cmdopt, null, inputId, cmdopt.getLine()), sym);
 				list.add(sym);
 			} catch( ParseException ex ) {
-				error(ex.getMessage());
+				error(null, null, ex.getMessage());
 			}
 		}
 		list.add(symbol);
-	}
-	
-	public void error( String s ) {
-		errors.add(s);
 	}
 	
 	private void propagateTypes() {
@@ -161,6 +157,9 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		public ParseException(String arg0) {
 			super(arg0);
 		}
+	}
+	public void error(LapgLexer.LapgPlace start, LapgLexer.LapgPlace end, String s) {
+		errors.add(s);
 	}
     private static final int lapg_action[] = {
 		-3, -1, -1, -11, 4, -1, 41, -1, -1, 8, -19, 3, 5, 6, 18, -1,
@@ -346,7 +345,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 
 		if( lapg_m[lapg_head].state != 66 ) {
-			error( MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
+			error(lapg_n.pos, lapg_n.endpos, MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
 			return false;
 		};
 		return true;
