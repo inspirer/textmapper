@@ -22,7 +22,7 @@ public interface ITemplate extends ILocatedEntity {
 	String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException;
 
 	/**
-	 * @return parameter names
+	 * @return signature to map templates
 	 */
 	String getSignature();
 

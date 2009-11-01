@@ -160,7 +160,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
 		h.put("list", new String[] { "a", "b" });
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
-				new StringTemplateLoader("inline", "${template overrides.my2}go next my2\n\n${end}"),
+				new StringTemplateLoader("inline", "${template overrides.my2}go next my2(${call base})\n\n${end}"),
 				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -171,7 +171,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 		// test 2
 		q = env.executeTemplate("overrides.my2", context, null, null);
-		Assert.assertEquals("go next my2\n\n", q);
+		Assert.assertEquals("go next my2(my2\n)\n\n", q);
 	}
 
 	public void testOverrides2() {

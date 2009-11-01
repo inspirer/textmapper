@@ -34,10 +34,10 @@ public class TemplatesRegistry {
 		}
 	}
 
-	private TemplatesBundle[] getContainerContent(String packageName) {
+	private TemplatesBundle[] getBundleContents(String bundleName) {
 		List<TemplatesBundle> result = new LinkedList<TemplatesBundle>();
 		for (IBundleLoader loader : loaders) {
-			TemplatesBundle source = loader.load(packageName, collector);
+			TemplatesBundle source = loader.load(bundleName, collector);
 			if (source != null) {
 				result.add(source);
 			}
@@ -45,14 +45,14 @@ public class TemplatesRegistry {
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
 	}
 
-	private void loadPackage(ILocatedEntity referer, String packageName) {
-		if (loadedBundles.contains(packageName)) {
+	private void loadBundle(ILocatedEntity referer, String bundleName) {
+		if (loadedBundles.contains(bundleName)) {
 			return;
 		}
 
-		TemplatesBundle[] contents = getContainerContent(packageName);
+		TemplatesBundle[] contents = getBundleContents(bundleName);
 		if (contents == null) {
-			collector.fireError(referer, "Couldn't load template package `" + packageName + "`");
+			collector.fireError(referer, "Couldn't load template package `" + bundleName + "`");
 			return;
 		}
 
@@ -69,7 +69,7 @@ public class TemplatesRegistry {
 			for (ITemplate t : loaded) {
 				String name = t.getName();
 				if(seenNames.contains(name)) {
-					collector.fireError(t, "Template `" + packageName + "." + name + "` was already defined");
+					collector.fireError(t, "Template `" + bundleName + "." + name + "` was already defined");
 				} else {
 					ITemplate base = nameToTemplate.get(name);
 					if(base != null) {
@@ -85,9 +85,9 @@ public class TemplatesRegistry {
 			}
 		}
 
-		loadedBundles.add(packageName);
+		loadedBundles.add(bundleName);
 		for(Map.Entry<String, ITemplate> entry : nameToTemplate.entrySet()) {
-			templates.put(packageName + "." + entry.getKey(), entry.getValue());
+			templates.put(bundleName + "." + entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -99,7 +99,7 @@ public class TemplatesRegistry {
 		}
 
 		String templatePackage = qualifiedName.substring(0, lastDot);
-		loadPackage(referer, templatePackage);
+		loadBundle(referer, templatePackage);
 
 		String resolvedName = qualifiedName;
 

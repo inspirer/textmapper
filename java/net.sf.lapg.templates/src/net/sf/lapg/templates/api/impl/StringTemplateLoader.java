@@ -25,27 +25,27 @@ public class StringTemplateLoader implements IBundleLoader {
 		this.contents = contents;
 	}
 
-	public TemplatesBundle load(String containerName, IProblemCollector collector) {
+	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
 		if(sourceForPackage == null) {
 			ITemplate[] templates = TemplatesBundle.parse(name, contents, null, collector);
 
-			Map<String,List<ITemplate>> containerToTemplates = new HashMap<String, List<ITemplate>>();
+			Map<String,List<ITemplate>> bundleToTemplates = new HashMap<String, List<ITemplate>>();
 			for(ITemplate t : templates) {
-				String container = t.getPackage();
-				List<ITemplate> list = containerToTemplates.get(container);
+				String tbundle = t.getPackage();
+				List<ITemplate> list = bundleToTemplates.get(tbundle);
 				if(list == null) {
 					list = new LinkedList<ITemplate>();
-					containerToTemplates.put(container,	list);
+					bundleToTemplates.put(tbundle,	list);
 				}
 				list.add(t);
 			}
 
 			sourceForPackage = new HashMap<String, TemplatesBundle>();
-			for(Map.Entry<String, List<ITemplate>> entry : containerToTemplates.entrySet()) {
+			for(Map.Entry<String, List<ITemplate>> entry : bundleToTemplates.entrySet()) {
 				List<ITemplate> list = entry.getValue();
 				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new ITemplate[list.size()])));
 			}
 		}
-		return sourceForPackage.get(containerName);
+		return sourceForPackage.get(bundleName);
 	}
 }

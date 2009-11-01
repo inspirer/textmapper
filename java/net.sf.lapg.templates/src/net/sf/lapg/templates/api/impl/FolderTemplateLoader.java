@@ -42,14 +42,14 @@ public class FolderTemplateLoader implements IBundleLoader {
 		return contents.toString();
 	}
 
-	public TemplatesBundle load(String containerName, IProblemCollector collector) {
-		String fileName = containerName +  BUNDLE_EXT;
+	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
+		String fileName = bundleName +  BUNDLE_EXT;
 
 		for( File f : myFolders ) {
 			File file = new File(f, fileName);
 			if( file.exists() ) {
 				String name = file.toString();
-				return new TemplatesBundle(name, TemplatesBundle.parse(name, getFileContents(name, charsetName), containerName, collector));
+				return new TemplatesBundle(name, TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector));
 			}
 		}
 		return null;

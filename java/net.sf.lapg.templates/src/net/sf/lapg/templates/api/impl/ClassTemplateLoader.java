@@ -43,14 +43,14 @@ public class ClassTemplateLoader implements IBundleLoader {
 		return contents.toString();
 	}
 
-	public TemplatesBundle load(String containerName, IProblemCollector collector) {
-		String resourceName = rootPackage + "/" + containerName.replace('.', '/') + BUNDLE_EXT;
+	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
+		String resourceName = rootPackage + "/" + bundleName.replace('.', '/') + BUNDLE_EXT;
 		InputStream s = loader.getResourceAsStream(resourceName);
 		if (s == null) {
 			return null;
 		}
 		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
 				: resourceName;
-		return new TemplatesBundle(name, TemplatesBundle.parse(name, getStreamContents(s, charsetName), containerName, collector));
+		return new TemplatesBundle(name, TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector));
 	}
 }
