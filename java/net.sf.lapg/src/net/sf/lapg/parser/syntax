@@ -146,7 +146,7 @@ command_token ::=
 ##################################################################################
 
 %%
-${template imports}
+${template java.imports}
 import java.io.CharArrayReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
@@ -158,7 +158,7 @@ import java.util.Map;
 import net.sf.lapg.parser.ast.*;
 ${end}
 
-${template lexercode}
+${template java_lexer.lexercode}
 private int deep = 0;
 private int templatesStart = -1;
 
@@ -167,7 +167,7 @@ int getTemplatesStart() {
 }
 ${end}
 
-${template classcode}
+${template java.classcode}
 private LapgParser(TextSource source) {
 	this.source = source;
 }

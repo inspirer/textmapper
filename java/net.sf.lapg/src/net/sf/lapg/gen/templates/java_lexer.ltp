@@ -33,7 +33,7 @@ ${for i : 0,parser.nterms-1 -}
 ${end-}
 	}
 
-${util.shiftRight(self->input.lexercode(),1)-}
+${util.shiftRight(self->lexercode(),1)-}
 
 	public ${opts.lexer}(Reader stream, ErrorReporter reporter) throws IOException {
 		this.stream = stream;
@@ -233,4 +233,7 @@ ${end-}
 	public interface ErrorReporter {
 		void error(String s);
 	};
+${end}
+
+${template lexercode-}
 ${end}

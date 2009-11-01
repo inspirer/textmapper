@@ -309,7 +309,7 @@ body (TemplateNode) ::=
 
 ##################################################################################
 %%
-${template imports}
+${template java.imports}
 import java.io.CharArrayReader;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -318,10 +318,10 @@ import java.util.HashMap;
 import net.sf.lapg.templates.api.ITemplate;
 ${end}
 
-${template lexercode-}
+${template java_lexer.lexercode-}
 ${end}
 
-${template classcode}
+${template java.classcode}
 private ArrayList<ITemplate> templates;
 private String templatePackage;
 

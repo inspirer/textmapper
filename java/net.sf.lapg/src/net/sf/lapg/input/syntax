@@ -141,7 +141,7 @@ symbol (CSymbol) ::=
 ##################################################################################
 
 %%
-${template imports}
+${template java.imports}
 import java.io.CharArrayReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
@@ -152,7 +152,7 @@ import java.util.List;
 import java.util.Map;
 ${end}
 
-${template lexercode}
+${template java_lexer.lexercode}
 private int deep = 0;
 private int templatesStart = -1;
 
@@ -161,7 +161,7 @@ int getTemplatesStart() {
 }
 ${end}
 
-${template classcode}
+${template java.classcode}
 private LapgParser(String inputId, char[] data, Map<String,String> defaultOptions) {
 	this.inputId = inputId;
 	this.buff = data;

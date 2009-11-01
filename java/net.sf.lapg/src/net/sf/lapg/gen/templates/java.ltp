@@ -9,10 +9,10 @@ package ${call package};
 import java.io.IOException;
 import ${call package}.${opts.lexer}.Lexems;
 import ${call package}.${opts.lexer}.LapgSymbol;
-${call input.imports}
+${call imports}
 
 public class ${opts.class} implements ${opts.lexer}.ErrorReporter {
-${util.shiftRight(self->input.classcode(),1)-}
+${util.shiftRight(self->classcode(),1)-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -262,4 +262,10 @@ ${template package-}
 ${if opts.package-}
 ${opts.package-}
 ${else}com.test${end-}
+${end}
+
+${template imports-}
+${end}
+
+${template classcode-}
 ${end}
