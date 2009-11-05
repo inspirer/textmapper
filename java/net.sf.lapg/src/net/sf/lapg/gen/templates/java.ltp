@@ -1,17 +1,24 @@
 ${template main-}
-${file opts.class+'.java'}${call unit}${end-}
-${file opts.lexer+'.java'}${call java_lexer.unit}${end-}
+${file opts.prefix+'Parser.java'}${call unit}${end-}
+${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
+${if opts.gentree == 'on'-}
+${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
+${end-}
+${end}
+
+${template options-}
+${call java_options.options-}
 ${end}
 
 ${template unit-}
 package ${call package};
 
 import java.io.IOException;
-import ${call package}.${opts.lexer}.Lexems;
-import ${call package}.${opts.lexer}.LapgSymbol;
+import ${call package}.${opts.prefix}Lexer.Lexems;
+import ${call package}.${opts.prefix}Lexer.LapgSymbol;
 ${call imports}
 
-public class ${opts.class} implements ${opts.lexer}.ErrorReporter {
+public class ${opts.prefix}Parser implements ${opts.prefix}Lexer.ErrorReporter {
 ${util.shiftRight(self->classcode(),1)-}
 ${util.shiftRight(self->errorcode(),1)-}
 ${call parserTables-}
@@ -62,7 +69,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private boolean parse(${opts.lexer} lexer${if syntax.input.length > 1}, int state${end}) throws IOException {
+	private boolean parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -140,7 +147,7 @@ ${end-}
 		return true;
 	}
 
-	private void shift(${opts.lexer} lexer) throws IOException {
+	private void shift(${opts.prefix}Lexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
 		if( DEBUG_SYNTAX ) {
@@ -185,7 +192,7 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	private boolean parse${util.toFirstUpper(inp.name)}(${opts.lexer} lexer) throws IOException {
+	private boolean parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException {
 		return parse(lexer, ${index});
 	}
 ${end-}
@@ -272,17 +279,36 @@ ${end}
 
 ${template err_parameters(fqn)-}
 ${if opts.positioning != 'none'-}
-${if fqn}${opts.lexer}.${end}LapgPlace start, ${if opts.lexemend == 'on'}${if fqn}${opts.lexer}.${end}LapgPlace end, ${end}${end-}
+${if fqn}${opts.prefix}Lexer.${end}LapgPlace start, ${if opts.lexemend == 'on'}${if fqn}${opts.prefix}Lexer.${end}LapgPlace end, ${end}${end-}
 ${end}
 
 ${template imports-}
+import java.io.CharArrayReader;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import net.sf.lapg.parser.ast.*;
 ${end}
 
 ${template classcode-}
+private static final boolean DEBUG_SYNTAX = false;
 ${end}
 
 ${template errorcode-}
 public void error(${call err_parameters(true)}String s) {
 	System.err.println(s);
 }
+${end}
+
+${template ISource-}
+		public interface ISource {
+			public Reader getStream();
+		}
+${end}
+
+${template ParseException-}
 ${end}

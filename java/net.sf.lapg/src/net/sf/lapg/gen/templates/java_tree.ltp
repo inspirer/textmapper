@@ -1,0 +1,6 @@
+${template unit-}
+package ${call java.package};
+
+public class ${opts.prefix}Tree {
+}
+${end}

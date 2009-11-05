@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 
-public class ${opts.lexer} {
+public class ${opts.prefix}Lexer {
 ${call innerDeclarations-}
 
 	final private Reader stream;
@@ -20,7 +20,7 @@ ${call innerDeclarations-}
 	private char chr;
 
 	private int group = 0;
-		
+
 ${switch opts.positioning}
 ${case 'line'}	private int lapg_current_line = 1;
 ${case 'full'}	private int lapg_current_line = 1, lapg_current_column = 1;
@@ -35,7 +35,7 @@ ${end-}
 
 ${util.shiftRight(self->lexercode(),1)-}
 
-	public ${opts.lexer}(Reader stream, ErrorReporter reporter) throws IOException {
+	public ${opts.prefix}Lexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.stream = stream;
 		this.reporter = reporter;
 		this.datalen = stream.read(data);

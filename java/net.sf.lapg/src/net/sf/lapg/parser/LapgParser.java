@@ -3,7 +3,6 @@ package net.sf.lapg.parser;
 import java.io.IOException;
 import net.sf.lapg.parser.LapgLexer.Lexems;
 import net.sf.lapg.parser.LapgLexer.LapgSymbol;
-
 import java.io.CharArrayReader;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
@@ -17,26 +16,10 @@ import net.sf.lapg.parser.ast.*;
 
 public class LapgParser implements LapgLexer.ErrorReporter {
 	
-	private LapgParser(TextSource source) {
-		this.source = source;
-	}
-	
 	private static final boolean DEBUG_SYNTAX = false;
-	private final TextSource source;
-	private AstRoot result;
 	
-	public static LapgInput process(TextSource source) {
-		try {
-			LapgParser p = new LapgParser(source);
-			LapgLexer lexer = new LapgLexer(source.getStream(), p);
-			boolean result = p.parse(lexer);
-			return new LapgInput(source, result ? p.result : null, lexer.getTemplatesStart(), null);
-			
-		} catch( UnsupportedEncodingException ex ) {
-		} catch( IOException ex ) {
-		}
-		return null;
-	}
+	TextSource source;
+	AstRoot result;
 	public void error(LapgLexer.LapgPlace start, LapgLexer.LapgPlace end, String s) {
 		System.err.println(s);
 	}

@@ -1,0 +1,22 @@
+${template options-}
+group "general" {
+	[title=""]
+	prefix : string;
+
+	[title=""]
+	package : string;
+
+	[title=""; radio=4]
+	positioning : set(none,line,offset,full);
+
+	[title=""; check]
+	breaks : set(on,off);
+
+	[title=""; check]
+	lexemend : set(on,off);
+	
+	[title=""; check]
+	gentree : set(on,off);
+}
+
+${end}

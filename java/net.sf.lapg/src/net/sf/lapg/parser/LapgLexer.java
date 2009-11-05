@@ -38,7 +38,7 @@ public class LapgLexer {
 	private char chr;
 
 	private int group = 0;
-		
+
 	private int lapg_current_line = 1, lapg_current_offset = 0;
 
 	public interface Lexems {
