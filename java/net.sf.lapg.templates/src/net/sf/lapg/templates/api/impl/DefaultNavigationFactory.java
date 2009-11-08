@@ -76,15 +76,43 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 						argClasses[i] = args[i].getClass();
 					}
 				}
-				Method meth = obj.getClass().getMethod(methodName, argClasses);
+				Method meth = null;
+				try {
+					meth = obj.getClass().getMethod(methodName, argClasses);
+				} catch(NoSuchMethodException ex) {
+					meth = searchMethod(obj.getClass(), methodName, argClasses);
+					if(meth == null) {
+						throw new EvaluationException("no method: " + ex.toString() );
+					}
+				}
 				return meth.invoke(obj, args);
-			} catch( NoSuchMethodException ex ) {
-				throw new EvaluationException("nomethod: " + ex.toString() );
 			} catch( IllegalAccessException ex ) {
 				throw new EvaluationException("IllegalAccessException");
 			} catch( InvocationTargetException ex ) {
 				throw new EvaluationException("InvocationTargetException");
 			}
+		}
+
+		private Method searchMethod(Class<?> class1, String methodName, Class[] argClasses) {
+			for(Method m : class1.getMethods()) {
+				if(m.getName().equals(methodName)) {
+					Class<?>[] paramTypes = m.getParameterTypes();
+					if(paramTypes.length != argClasses.length) {
+						continue;
+					}
+					boolean good = true;
+					for(int i = 0; i < paramTypes.length; i++) {
+						if(!paramTypes[i].isAssignableFrom(argClasses[i])) {
+							good = false;
+							break;
+						}
+					}
+					if(good) {
+						return m;
+					}
+				}
+			}
+			return null;
 		}
 
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
