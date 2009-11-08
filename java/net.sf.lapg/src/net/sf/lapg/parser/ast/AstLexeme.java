@@ -4,11 +4,11 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class AstLexeme extends Node implements AstLexerPart {
 
-	private AstIdentifier name;
-	private String type;
-	private AstRegexp regexp;
-	private int priority;
-	private AstCode code;
+	private final AstIdentifier name;
+	private final String type;
+	private final AstRegexp regexp;
+	private final int priority;
+	private final AstCode code;
 
 	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp, Integer priority, AstCode code,
 			TextSource source, int offset, int endoffset) {
@@ -16,7 +16,7 @@ public class AstLexeme extends Node implements AstLexerPart {
 		this.name = name;
 		this.type = type;
 		this.regexp = regexp;
-		this.priority = priority;
+		this.priority = priority != null ? priority : 0;
 		this.code = code;
 	}
 

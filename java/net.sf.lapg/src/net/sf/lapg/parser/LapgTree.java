@@ -42,6 +42,10 @@ public class LapgTree {
 		return errors;
 	}
 
+	public boolean hasErrors() {
+		return errors.size() > 0;
+	}
+
 	public static LapgTree parse(TextSource source) {
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {

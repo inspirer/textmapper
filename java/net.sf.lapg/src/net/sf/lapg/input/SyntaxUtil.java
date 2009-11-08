@@ -8,6 +8,10 @@ import java.util.Map;
 
 import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.parser.LapgResolver;
+import net.sf.lapg.parser.LapgTree;
+import net.sf.lapg.parser.LapgTree.ParseProblem;
+import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class SyntaxUtil {
 
@@ -20,6 +24,23 @@ public class SyntaxUtil {
 			}
 		}
 		return cs;
+	}
+
+	public static Grammar parseSyntaxNew(String sourceName, InputStream stream, INotifier err, Map<String, String> options) {
+		String contents = getFileContents(stream);
+		LapgTree tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
+		Grammar result = null;
+		if(!tree.hasErrors()) {
+			result = new LapgResolver(tree).resolve();
+		}
+		if (tree.hasErrors()) {
+			result = null;
+			for (ParseProblem s : tree.getErrors()) {
+				err.error(s.getMessage() + "\n");
+			}
+		}
+		return result;
+
 	}
 
 	public static String getFileContents(InputStream stream) {
@@ -39,36 +60,5 @@ public class SyntaxUtil {
 			return null;
 		}
 		return contents.toString();
-	}
-
-	public static int[] getLineOffsets(char[] contents) {
-		int size = 1;
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] == '\n') {
-				size++;
-			} else if(contents[i] == '\r') {
-				if(i+1 < contents.length && contents[i+1] == '\n') {
-					i++;
-				}
-				size++;
-			}
-		}
-		int[] result = new int[size];
-		result[0] = 0;
-		int e = 1;
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] == '\n') {
-				result[e++] = i + 1;
-			} else if(contents[i] == '\r') {
-				if(i+1 < contents.length && contents[i+1] == '\n') {
-					i++;
-				}
-				result[e++] = i + 1;
-			}
-		}
-		if(e != size) {
-			throw new IllegalStateException();
-		}
-		return result;
 	}
 }
