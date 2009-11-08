@@ -2,7 +2,7 @@ package net.sf.lapg.parser.ast;
 
 import java.util.List;
 
-import net.sf.lapg.parser.TextSource;
+import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class AstDirective extends Node implements AstGrammarPart {
 

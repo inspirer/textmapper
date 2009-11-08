@@ -150,6 +150,7 @@ command_token ::=
 
 ${template java.imports-}
 ${call base-}
+import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.*;
 ${end}
 

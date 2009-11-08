@@ -8,6 +8,7 @@ import net.sf.lapg.parser.LapgLexer.LapgSymbol;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.*;
 
 
