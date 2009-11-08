@@ -165,7 +165,7 @@ ${if syntax.error-}
 ${end-}
 			throw new ParseException();
 		};
-		return lapg_m[lapg_head-1];
+		return lapg_m[lapg_head-1].sym;
 	}
 
 	private void shift(${opts.prefix}Lexer lexer) throws IOException {

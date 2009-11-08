@@ -219,7 +219,7 @@ public class LapgParser {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		};
-		return lapg_m[lapg_head-1];
+		return lapg_m[lapg_head-1].sym;
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
