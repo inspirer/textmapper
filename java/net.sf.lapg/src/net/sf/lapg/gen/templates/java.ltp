@@ -14,13 +14,23 @@ ${template unit-}
 package ${call package};
 
 import java.io.IOException;
+
+import ${call package}.${opts.prefix}Lexer.ErrorReporter;
 import ${call package}.${opts.prefix}Lexer.Lexems;
 import ${call package}.${opts.prefix}Lexer.LapgSymbol;
 ${call imports}
 
-public class ${opts.prefix}Parser implements ${opts.prefix}Lexer.ErrorReporter {
+public class ${opts.prefix}Parser {
+
+${call parseException-}
+
+	private final ErrorReporter reporter;
+
+	public ${opts.prefix}Parser(ErrorReporter reporter) {
+		this.reporter = reporter;
+	}
+
 ${util.shiftRight(self->classcode(),1)-}
-${util.shiftRight(self->errorcode(),1)-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -69,7 +79,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private boolean parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException {
+	${if syntax.input.length > 1}private${else}public${end} Object parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -105,15 +115,29 @@ ${if syntax.error-}
 					lapg_m[lapg_head].lexem = ${syntax.error.index};
 					lapg_m[lapg_head].sym = null;
 					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, ${syntax.error.index} );
-${if opts.positioning != 'none'-}
-					lapg_m[lapg_head].pos = lapg_n.pos; // TODO endpos?
+${if opts.positions.contains('line')-}
+					lapg_m[lapg_head].line = lapg_n.line;
+${end-}
+${if opts.positions.contains('column')-}
+					lapg_m[lapg_head].column = lapg_n.column;
+${end-}
+${if opts.positions.contains('offset')-}
+					lapg_m[lapg_head].offset = lapg_n.offset;
+${end-}
+${if opts.endpositions.contains('line')-}
+					lapg_m[lapg_head].endline = lapg_n.endline;
+${end-}
+${if opts.endpositions.contains('column')-}
+					lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
+${end-}
+${if opts.endpositions.contains('offset')-}
+					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
 ${end-}
 					if( lapg_symbols_ok >= 4 ) {
-${switch opts.positioning}
-${case 'none'}						error("syntax error");
-${case 'line'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ));
-${case 'full'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ));
-${case 'offset'}						error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ));
+${if opts.positions.contains('column')-}
+						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
+${else-}
+						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 ${end-}
 					}
 					if( lapg_symbols_ok <= 1 ) {
@@ -131,20 +155,17 @@ ${end-}
 			}
 		}
 
-${if syntax.error-}
-		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} && lapg_symbols_ok >= 4 ) {
-${else-}
 		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
+${if syntax.error-}
+			if(lapg_symbols_ok >= 4) {
+	${else-}
+${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
+${if syntax.error-}
+			}
 ${end-}
-${switch opts.positioning}
-${case 'none'}			error("syntax error" );
-${case 'line'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${case 'full'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}, column {1}", lapg_n.pos.line, lapg_n.pos.column ) );
-${case 'offset'}			error(${call err_location('lapg_n')}MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-${end-}
-			return false;
+			throw new ParseException();
 		};
-		return true;
+		return lapg_m[lapg_head-1];
 	}
 
 	private void shift(${opts.prefix}Lexer lexer) throws IOException {
@@ -167,11 +188,26 @@ ${end-}
 		if( DEBUG_SYNTAX ) {
 			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
 		}
-${if opts.positioning != 'none'-}
-		lapg_gg.pos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].pos:lapg_n.pos;
-${if opts.lexemend == 'on'-}
-		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
+${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
+		LapgSymbol startsym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]]:lapg_n;
+${if opts.positions.contains('line')-}
+		lapg_gg.line = startsym.line;
 ${end-}
+${if opts.positions.contains('column')-}
+		lapg_gg.column = startsym.column;
+${end-}
+${if opts.positions.contains('offset')-}
+		lapg_gg.offset = startsym.offset;
+${end-}
+${end-}
+${if opts.endpositions.contains('line')-}
+		lapg_gg.endline = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endline:lapg_n.line;
+${end-}
+${if opts.endpositions.contains('column')-}
+		lapg_gg.endcolumn = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endcolumn:lapg_n.column;
+${end-}
+${if opts.endpositions.contains('offset')-}
+		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 ${end-}
 ${if syntax.hasActions()-}
 		switch( rule ) {
@@ -249,22 +285,22 @@ ${call getsym-}.sym${end-}
 ${end}
 
 ${template sym_line-}
-${call getsym}.pos.line${end}
+${call getsym}.line${end}
 
 ${template sym_column-}
-${call getsym}.pos.column${end}
+${call getsym}.column${end}
 
 ${template sym_offset-}
-${call getsym}.pos.offset${end}
+${call getsym}.offset${end}
 
 ${template sym_endline-}
-${call getsym}.endpos.line${end}
+${call getsym}.endline${end}
 
 ${template sym_endcolumn-}
-${call getsym}.endpos.column${end}
+${call getsym}.endcolumn${end}
 
 ${template sym_endoffset-}
-${call getsym}.endpos.offset${end}
+${call getsym}.endoffset${end}
 
 ${template package-}
 ${if opts.package-}
@@ -273,42 +309,30 @@ ${else}com.test${end-}
 ${end}
 
 ${template err_location(var)-}
-${if opts.positioning != 'none'-}
-${var}.pos, ${if opts.lexemend == 'on'}${var}.endpos, ${end}${end-}
+${if opts.positions.contains('offset')}${var}.offset, ${end-} 
+${if opts.endpositions.contains('offset')}${var}.endoffset, ${end-} 
 ${end}
 
 ${template err_parameters(fqn)-}
-${if opts.positioning != 'none'-}
-${if fqn}${opts.prefix}Lexer.${end}LapgPlace start, ${if opts.lexemend == 'on'}${if fqn}${opts.prefix}Lexer.${end}LapgPlace end, ${end}${end-}
-${end}
+${if opts.positions.contains('offset')}int start, ${end-} 
+${if opts.endpositions.contains('offset')}int end, ${end-} 
+int line, ${end}
 
 ${template imports-}
-import java.io.CharArrayReader;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import net.sf.lapg.parser.ast.*;
 ${end}
 
 ${template classcode-}
 private static final boolean DEBUG_SYNTAX = false;
 ${end}
 
-${template errorcode-}
-public void error(${call err_parameters(true)}String s) {
-	System.err.println(s);
-}
-${end}
+${template parseException-}
+	public static class ParseException extends Exception {
+		private static final long serialVersionUID = 1L;
 
-${template ISource-}
-		public interface ISource {
-			public Reader getStream();
+		public ParseException() {
 		}
-${end}
-
-${template ParseException-}
+	}
 ${end}

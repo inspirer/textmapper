@@ -1,28 +1,34 @@
 package net.sf.lapg.parser;
 
 import java.io.IOException;
+
+import net.sf.lapg.parser.LapgLexer.ErrorReporter;
 import net.sf.lapg.parser.LapgLexer.Lexems;
 import net.sf.lapg.parser.LapgLexer.LapgSymbol;
-import java.io.CharArrayReader;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import net.sf.lapg.parser.ast.*;
 
 
-public class LapgParser implements LapgLexer.ErrorReporter {
+public class LapgParser {
+
+	public static class ParseException extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		public ParseException() {
+		}
+	}
+
+	private final ErrorReporter reporter;
+
+	public LapgParser(ErrorReporter reporter) {
+		this.reporter = reporter;
+	}
+
 	
 	private static final boolean DEBUG_SYNTAX = false;
-	
 	TextSource source;
-	AstRoot result;
-	public void error(LapgLexer.LapgPlace start, LapgLexer.LapgPlace end, String s) {
-		System.err.println(s);
-	}
     private static final int lapg_action[] = {
 		-3, -1, -1, -11, 4, -1, 7, -1, -1, -19, 10, 3, 5, 6, 21, -1,
 		-1, -25, -33, 9, 23, 12, -1, 20, 11, -1, -41, 22, -1, -47, 29, -1,
@@ -185,7 +191,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private boolean parse(LapgLexer lexer) throws IOException {
+	public Object parse(LapgLexer lexer) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -209,10 +215,10 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 
 		if( lapg_m[lapg_head].state != 67 ) {
-			error(lapg_n.pos, lapg_n.endpos, MessageFormat.format( "syntax error before line {0}", lapg_n.pos.line ) );
-			return false;
+			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+			throw new ParseException();
 		};
-		return true;
+		return lapg_m[lapg_head-1];
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
@@ -235,11 +241,13 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		if( DEBUG_SYNTAX ) {
 			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
 		}
-		lapg_gg.pos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].pos:lapg_n.pos;
-		lapg_gg.endpos = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endpos:lapg_n.pos;
+		LapgSymbol startsym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]]:lapg_n;
+		lapg_gg.line = startsym.line;
+		lapg_gg.offset = startsym.offset;
+		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 		switch( rule ) {
 			case 2:  // input ::= optionsopt lexer_parts grammar_parts
-				  lapg_gg.sym = result = new AstRoot(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				  lapg_gg.sym = new AstRoot(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 3:  // options ::= options option
 				 ((List<AstOption>)lapg_m[lapg_head-1].sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
@@ -248,16 +256,16 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				 lapg_gg.sym = new ArrayList<AstOption>(16); ((List<AstOption>)lapg_gg.sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 5:  // option ::= '.' identifier scon
-				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 6:  // option ::= '.' identifier icon
-				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString(), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString(), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 7:  // symbol ::= identifier
-				 lapg_gg.sym = new AstIdentifier(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstIdentifier(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 8:  // pattern ::= regexp
-				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 9:  // lexer_parts ::= lexer_parts lexer_part
 				 ((List<AstLexerPart>)lapg_m[lapg_head-1].sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
@@ -266,13 +274,13 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				 lapg_gg.sym = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 11:  // lexer_part ::= '[' icon_list ']'
-				 lapg_gg.sym = new AstGroupsSelector(((List<Integer>)lapg_m[lapg_head-1].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstGroupsSelector(((List<Integer>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 14:  // lexer_part ::= symbol typeopt ':'
-				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 19:  // lexer_part ::= symbol typeopt ':' pattern iconopt commandopt
-				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((AstRegexp)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((AstCode)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((AstRegexp)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((AstCode)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 20:  // icon_list ::= icon_list icon
 				 ((List<Integer>)lapg_m[lapg_head-1].sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
@@ -287,10 +295,10 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				 lapg_gg.sym = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 24:  // grammar_part ::= symbol typeopt '::=' rule_list ';'
-				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRuleRight>)lapg_m[lapg_head-1].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRuleRight>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 25:  // grammar_part ::= '%' identifier symbol_list ';'
-				 lapg_gg.sym = new AstDirective(((String)lapg_m[lapg_head-2].sym), ((List<AstIdentifier>)lapg_m[lapg_head-1].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstDirective(((String)lapg_m[lapg_head-2].sym), ((List<AstIdentifier>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 26:  // rule_list ::= rule_list '|' rule_right
 				 ((List<AstRuleRight>)lapg_m[lapg_head-2].sym).add(((AstRuleRight)lapg_m[lapg_head-0].sym)); 
@@ -305,22 +313,22 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 				 lapg_gg.sym = new ArrayList<AstIdentifier>(); ((List<AstIdentifier>)lapg_gg.sym).add(((AstIdentifier)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 32:  // rule_right ::= rule_symbols commandopt rule_priorityopt
-				 lapg_gg.sym = new AstRuleRight(((List<AstRightSymbol>)lapg_m[lapg_head-2].sym), ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstRuleRight(((List<AstRightSymbol>)lapg_m[lapg_head-2].sym), ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 33:  // rule_right ::= commandopt rule_priorityopt
-				 lapg_gg.sym = new AstRuleRight(null, ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.pos.offset, lapg_gg.endpos.offset); 
+				 lapg_gg.sym = new AstRuleRight(null, ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 34:  // rule_symbols ::= rule_symbols commandopt symbol
-				 ((List<AstRightSymbol>)lapg_m[lapg_head-2].sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].pos.offset, lapg_m[lapg_head-0].endpos.offset)); 
+				 ((List<AstRightSymbol>)lapg_m[lapg_head-2].sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
 			case 35:  // rule_symbols ::= commandopt symbol
-				 lapg_gg.sym = new ArrayList<AstRightSymbol>(); ((List<AstRightSymbol>)lapg_gg.sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].pos.offset, lapg_m[lapg_head-0].endpos.offset)); 
+				 lapg_gg.sym = new ArrayList<AstRightSymbol>(); ((List<AstRightSymbol>)lapg_gg.sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
 			case 36:  // rule_priority ::= '<<' identifier
 				 lapg_gg.sym = ((String)lapg_m[lapg_head-0].sym); 
 				break;
 			case 39:  // command ::= '{' command_tokensopt '}'
-				 lapg_gg.sym = new AstCode(source, lapg_m[lapg_head-2].pos.offset+1, lapg_m[lapg_head-0].endpos.offset-1); 
+				 lapg_gg.sym = new AstCode(source, lapg_m[lapg_head-2].offset+1, lapg_m[lapg_head-0].endoffset-1); 
 				break;
 		}
 		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 

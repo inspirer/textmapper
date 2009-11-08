@@ -20,22 +20,23 @@
 .lang        "java" 
 .prefix      "Lapg"
 .package	 "net.sf.lapg.parser"
-.maxtoken    4096
+.maxtoken    2048
 .breaks		 "on"
 .lexemend    "on"
 .gentree	 "on"
-.positioning "offset"
+.positions   "line,offset"
+.endpositions "offset"
 
 # Vocabulary
 
 [0]
 
-identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { $lexem = new String(token,0,len); break; }
-regexp(String):	/\/([^\/\\]|\\.)*\//	{ $lexem = new String(token,1,len-2); break; }
-scon(String):	/"[^"\n\\]*"/			{ $lexem = new String(token,1,len-2); break; }
-type(String):	/\([^\)\n]+\)/			{ $lexem = new String(token,1,len-2); break; }
-icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(new String(token,0,len)); break; }
-eoi:           /\n%%.*/					{ templatesStart = lapg_n.endpos.offset; break; }
+identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { $lexem = current(); break; }
+regexp(String):	/\/([^\/\\]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
+scon(String):	/"[^"\n\\]*"/			{ $lexem = token.toString().substring(1, token.length()-1); break; }
+type(String):	/\([^\)\n]+\)/			{ $lexem = token.toString().substring(1, token.length()-1); break; }
+icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
+eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
 '%':           /\n%/
 _skip:         /\n|[\t\r ]+/    		{ return false; }
 _skip:  /#.*/
@@ -61,7 +62,7 @@ _skip:	/[^'"{}]+/
 # Grammar
 
 input (AstRoot) ::=
-	optionsopt lexer_parts grammar_parts				{  $$ = result = new AstRoot($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+	optionsopt lexer_parts grammar_parts				{  $$ = new AstRoot($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
 ;
 
 options (List<AstOption>) ::= 
@@ -147,6 +148,11 @@ command_token ::=
 
 %%
 
+${template java.imports-}
+${call base-}
+import net.sf.lapg.parser.ast.*;
+${end}
+
 ${template java_lexer.lexercode}
 private int deep = 0;
 private int templatesStart = -1;
@@ -158,8 +164,6 @@ ${end}
 
 
 ${template java.classcode}
-${call base}
+${call base-}
 TextSource source;
-AstRoot result;
-
 ${end}
