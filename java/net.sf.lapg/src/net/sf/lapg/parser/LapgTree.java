@@ -144,6 +144,10 @@ public class LapgTree {
 			int line = Arrays.binarySearch(lineoffset, offset);
 			return line > 0 ? line : -line - 1;
 		}
+		
+		public char[] getContents() {
+			return contents;
+		}
 	}
 
 	private static int[] getLineOffsets(char[] contents) {

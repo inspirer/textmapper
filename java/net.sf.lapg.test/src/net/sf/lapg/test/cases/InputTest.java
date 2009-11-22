@@ -2,6 +2,7 @@ package net.sf.lapg.test.cases;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import junit.framework.Assert;
@@ -16,6 +17,9 @@ import net.sf.lapg.input.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.lex.RegexpParser;
+import net.sf.lapg.parser.LiGrammar;
+import net.sf.lapg.parser.LiRule;
+import net.sf.lapg.parser.LiSymbol;
 import net.sf.lapg.test.TestNotifier;
 
 public class InputTest extends TestCase {
@@ -266,40 +270,155 @@ public class InputTest extends TestCase {
 	public void testNewTemplatesGrammar() {
 		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		//Assert.assertNotNull(g);
+		Grammar go = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
 
-		//checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
+		sortGrammar((LiGrammar)g, go);
+		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
 	}
 
 	public void testNewLapgGrammar() {
 		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		//Assert.assertNotNull(g);
+		Grammar go = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
 
-		//checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
+		sortGrammar((LiGrammar)g, go);
+		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
 	}
 
 	public void testNewCheckCSharpGrammar() {
 		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		//Assert.assertNotNull(g);
+		Grammar go = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
+		sortGrammar((LiGrammar)g, go);
 
-		// TODO
+		TestNotifier er = new TestNotifier(
+				"lapg: symbol `error` is useless\n"
+				+ "lapg: symbol `Lfixed` is useless\n"
+				+ "lapg: symbol `Lstackalloc` is useless\n"
+				+ "lapg: symbol `comment` is useless\n"
+				+ "lapg: symbol `'/*'` is useless\n"
+				+ "lapg: symbol `anysym1` is useless\n"
+				+ "lapg: symbol `'*/'` is useless\n"
+				+ "\n"
+				+ "input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+				+ "conflict: shift/reduce (684, next Lelse)\n"
+				+ "  embedded_statement ::= Lif '(' expression ')' embedded_statement\n",
+		"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+
+		checkGenTables(g, "syntax_cs.tbl", er);
+		er.assertDone();
+
+		Assert.assertTrue(g.getTemplates().startsWith("\n//#define DEBUG_syntax"));
 	}
 
 	public void testNewCheckSimple1() {
 		Grammar g = SyntaxUtil.parseSyntaxNew("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		//Assert.assertNotNull(g);
+		Assert.assertNotNull(g);
+		Assert.assertEquals(0, g.getEoi().getIndex());
 
-		// TODO
+		Symbol[] syms = g.getSymbols();
+		Assert.assertEquals(7, syms.length);
+		Assert.assertEquals("eoi", syms[0].getName());
+		Assert.assertEquals("identifier", syms[1].getName());
+		Assert.assertEquals("Licon", syms[2].getName());
+		Assert.assertEquals("_skip", syms[3].getName()); // TODO do not
+		// collect skip
+		// symbols
+		Assert.assertEquals("input", syms[4].getName());
+		Assert.assertEquals("list", syms[5].getName());
+		Assert.assertEquals("list_item", syms[6].getName());
+
+		Rule[] rules = g.getRules();
+		Assert.assertEquals(5, rules.length);
+		Assert.assertEquals("input", rules[0].getLeft().getName());
+		Assert.assertEquals("list", rules[0].getRight()[0].getName());
+		Assert.assertEquals(1, rules[0].getRight().length);
+
+		Lexem[] lexems = g.getLexems();
+		Assert.assertEquals(3, lexems.length);
+		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp());
+		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
+		                                                                                                          .getRegexp());
+		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
+		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
+
+		checkGenTables(g, "syntax1.tbl", new TestNotifier());
 	}
 
 	public void testNewCheckSimple2() {
 		Grammar g = SyntaxUtil.parseSyntaxNew("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		// Assert.assertNotNull(g);
+		Grammar go = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, String>());
+		Assert.assertNotNull(g);
+		Assert.assertEquals(0, g.getEoi().getIndex());
 
-		// TODO
+		Symbol[] syms = g.getSymbols();
+		Assert.assertEquals(9, syms.length);
+		Assert.assertEquals("eoi", syms[0].getName());
+		Assert.assertEquals("a", syms[1].getName());
+		Assert.assertEquals("b", syms[2].getName());
+		Assert.assertEquals("'('", syms[3].getName());
+		Assert.assertEquals("')'", syms[4].getName());
+		Assert.assertEquals("input", syms[5].getName());
+		Assert.assertEquals("list", syms[6].getName());
+		Assert.assertEquals("item", syms[7].getName());
+		Assert.assertEquals("listopt", syms[8].getName());
+		Assert.assertEquals(8, g.getRules().length);
+		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
+
+		sortGrammar((LiGrammar)g, go);
+		checkGenTables(g, "syntax2.tbl", new TestNotifier());
+	}
+	
+	private void sortGrammar(LiGrammar g, Grammar go) {
+		final HashMap<String,Integer> index = new HashMap<String, Integer>();
+		for(Symbol s : go.getSymbols()) {
+			index.put(s.getName(), s.getIndex());
+		}
+		final HashMap<String,Integer> ruleind = new HashMap<String, Integer>();
+		for(Rule r : go.getRules()) {
+			String ind = getSignature(r);
+			ruleind.put(ind, r.getIndex());
+		}
+		
+		Arrays.sort(g.getSymbols(), new Comparator<Symbol>() {
+			@Override
+			public int compare(Symbol o1, Symbol o2) {
+				Integer i1 = index.get(o1.getName());
+				Integer i2 = index.get(o2.getName());
+				return i1.compareTo(i2);
+			}
+		});
+		for(int i = 0; i < g.getSymbols().length; i++) {
+			((LiSymbol)g.getSymbols()[i]).setIndex(i);
+		}
+		
+		Arrays.sort(g.getRules(), new Comparator<Rule>() {
+			@Override
+			public int compare(Rule o1, Rule o2) {
+				Integer i1 = ruleind.get(getSignature(o1));
+				Integer i2 = ruleind.get(getSignature(o2));
+				return i1.compareTo(i2);
+			}
+		});
+		for(int i = 0; i < g.getRules().length; i++) {
+			((LiRule)g.getRules()[i]).setIndex(i);
+		}
+	}
+
+	private String getSignature(Rule r) {
+		String ind = Integer.toString(r.getLeft().getIndex());
+		for(Symbol rt : r.getRight()) {
+			ind += ":" + rt.getIndex();
+		}
+		return ind;
 	}
 }

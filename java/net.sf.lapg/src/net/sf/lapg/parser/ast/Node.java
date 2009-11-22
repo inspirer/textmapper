@@ -17,6 +17,14 @@ public abstract class Node implements ILocatedEntity {
 	public String getLocation() {
 		return source.getLocation(offset);
 	}
+	
+	public int getOffset() {
+		return offset;
+	}
+	
+	public int getEndOffset() {
+		return endoffset;
+	}
 
 	@Override
 	public String toString() {
