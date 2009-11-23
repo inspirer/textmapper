@@ -1,13 +1,14 @@
 #   Automatically generated grammar
 
 .lang        "java" 
-.positioning "offset"
-.class       "AstParser"
-.lexer		 "AstLexer"
+.prefix      "Ast"
 .package	 "net.sf.lapg.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
 .packLexems  "true"
+.positions   "line,offset"
+.endpositions "offset"
+.gentree	 "off"
 
 # Vocabulary
 
@@ -16,18 +17,18 @@
 any:	/[^$]+/
 
 escdollar:		/$$/
-escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = new String(token,1,len-1); break; }
-escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(new String(token,1,len-1)); break; }
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); break; }
+escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); break; }
 
 '${':	/${/		{ group = 1; break; }
 '$/':   /$\//
 
 [1]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = new String(token,0,len); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = current(); break; }
 
-icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(new String(token,0,len)); break; }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = new String(token,1,len-2); break; }
+icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = token.toString().substring(1, token.length()-1); break; }
 
 Lcall:		/call/
 Lcase:		/case/
@@ -101,7 +102,7 @@ template_declaration_or_space ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate template_id template_parametersopt '[-]}'
-                                                    { $$ = new TemplateNode($template_id, $template_parametersopt, templatePackage, inputName, ${self[0].line}); checkFqn($template_id); }
+                                                    { $$ = new TemplateNode($template_id, $template_parametersopt, templatePackage, inputName, ${self[0].line}); checkFqn($template_id, ${template_start.offset}, ${template_start.endoffset}, ${self[0].line}); }
 ; 
 
 template_parameters (ArrayList) ::=
@@ -167,7 +168,7 @@ template_arguments (ArrayList) ::=
 control_instruction (CompoundNode) ::=
 	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
 	| control_start instructions else_node instructions control_end
-                  									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1); }
+                  									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1,${control_instruction.offset},${control_instruction.endoffset},${control_instruction.line}); }
 ;
 
 else_node (ElseNode) ::=
@@ -176,7 +177,7 @@ else_node (ElseNode) ::=
 
 switch_instruction (CompoundNode) ::=
 	'${' Lswitch expression '[-]}' anyopt 
-           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,inputName, ${self[0].line}); checkIsSpace(${self[4].offset},${self[4].endoffset}); }
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,inputName, ${self[0].line}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
 ;
 
 case_list (ArrayList) ::=
@@ -217,7 +218,7 @@ primary_expression (ExpressionNode) ::=
     | primary_expression '.' identifier '(' expression_listopt ')'   
     												{ $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,inputName, ${self[0].line}); }
     | primary_expression '.' identifier '(' identifier '|' expression ')'
-    												{ $$ = createCollectionProcessor($primary_expression#1, $identifier#0, $identifier#1, $expression, inputName, ${self[0].line}); }
+    												{ $$ = createCollectionProcessor($primary_expression#1, $identifier#0, $identifier#1, $expression, inputName, ${self[0].line}, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
     | primary_expression '->' template_id '(' expression_listopt ')'
     												{ $$ = new CallTemplateNode($template_id,$expression_listopt,$primary_expression#1,templatePackage,false,inputName, ${self[0].line}); }
     | primary_expression '->' '(' expression ')' '(' expression_listopt ')'  
@@ -318,17 +319,10 @@ import java.util.HashMap;
 import net.sf.lapg.templates.api.ITemplate;
 ${end}
 
-${template java_lexer.lexercode-}
-${end}
-
 ${template java.classcode}
+${call base-}
 private ArrayList<ITemplate> templates;
 private String templatePackage;
-
-public AstParser() {
-}
-
-private static final boolean DEBUG_SYNTAX = false;
 
 protected String inputName;
 private int killEnds = -1;
@@ -348,21 +342,21 @@ private String rawText(int start, int end) {
 	return new String(buff, start, end-start);
 }
 
-private void checkIsSpace(int start, int end) {
+private void checkIsSpace(int start, int end, int line) {
 	String val = rawText(start,end).trim();
 	if( val.length() > 0 )
-		error("Unknown text ignored: `"+val+"`");
+		reporter.error(start, end, line, "Unknown text ignored: `"+val+"`");
 }
 
-private void applyElse(CompoundNode node, ArrayList<Node> instructions) {
+private void applyElse(CompoundNode node, ArrayList<Node> instructions, int offset, int endoffset, int line) {
 	if( node instanceof IfNode ) {
 		((IfNode)node).setElseInstructions(instructions);
 	} else {
-		error("Unknown else node, instructions skipped");
+		reporter.error(offset, endoffset, line, "Unknown else node, instructions skipped");
 	}
 }
 
-private ExpressionNode createCollectionProcessor(ExpressionNode forExpr, String instruction, String varName, ExpressionNode foreachExpr, String input, int line) {
+private ExpressionNode createCollectionProcessor(ExpressionNode forExpr, String instruction, String varName, ExpressionNode foreachExpr, String input, int line, int offset, int endoffset) {
 	char first = instruction.charAt(0);
 	int kind = 0;
 	switch(first) {
@@ -393,7 +387,7 @@ private ExpressionNode createCollectionProcessor(ExpressionNode forExpr, String 
 		break;
 	}
 	if(kind == 0) {
-		error("unknown collection processing instruction: " + instruction);
+		reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
 		return new ErrorNode(input,line);
 	}
 	return new CollectionProcessorNode(forExpr,kind,varName,foreachExpr,input,line);
@@ -415,9 +409,9 @@ private void skipSpaces(int offset) {
 	killEnds = offset+1;
 }
 
-private void checkFqn(String templateName) {
+private void checkFqn(String templateName, int offset, int endoffset, int line) {
 	if( templateName.indexOf('.') >= 0 && templatePackage != null) {
-		error("template name should be simple identifier");
+		reporter.error(offset, endoffset, line, "template name should be simple identifier");
 	}
 }
 
@@ -427,8 +421,11 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.toCharArray();
-		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-		return parseInput(lexer);
+		AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
+		parseInput(lexer);
+		return true;
+	} catch( ParseException ex ) {
+		return false;
 	} catch( IOException ex ) {
 		return false;
 	}
@@ -440,8 +437,11 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	templates = new ArrayList<ITemplate>();
 	try {
 		buff = s.toCharArray();
-		AstLexer lexer = new AstLexer(new CharArrayReader(buff), this);
-		return parseBody(lexer);
+		AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
+		parseBody(lexer);
+		return true;
+	} catch( ParseException ex ) {
+		return false;
 	} catch( IOException ex ) {
 		return false;
 	}
@@ -449,15 +449,5 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 
 public ITemplate[] getResult() {
 	return templates.toArray(new ITemplate[templates.size()]);
-}
-${end}
-
-${template java.errorcode-}
-public void error( String s ) {
-	System.err.println(inputName + ":" + s);
-}
-
-public void error(${call err_parameters(true)}String s) {
-	error(s);
 }
 ${end}

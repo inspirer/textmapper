@@ -7,39 +7,14 @@ import java.text.MessageFormat;
 
 public class AstLexer {
 
-	public static class LapgPlace {
-		public int line, offset;
-
-		public LapgPlace( int line, int offset ) {
-			this.line = line;
-			this.offset = offset;
-		}
-	};
-
 	public static class LapgSymbol {
 		public Object sym;
-		public int  lexem, state;
-		public LapgPlace pos;
-		public LapgPlace endpos;
+		public int lexem;
+		public int state;
+		public int line;
+		public int offset;
+		public int endoffset;
 	};
-	
-	public interface ErrorReporter {
-		void error(LapgPlace start, LapgPlace end, String s);
-	};
-
-	final private Reader stream;
-	final private ErrorReporter reporter;
-
-	final private char[] token = new char[2048];
-	private int len;
-		
-	final private char[] data = new char[2048];
-	private int datalen, l;
-	private char chr;
-
-	private int group = 0;
-		
-	private int lapg_current_line = 1, lapg_current_offset = 0;
 
 	public interface Lexems {
 		public static final int eoi = 0;
@@ -103,7 +78,27 @@ public class AstLexer {
 		public static final int N24 = 58;
 		public static final int _skip = 59;
 	}
+	
+	public interface ErrorReporter {
+		void error(int start, int end, int line, String s);
+	};
 
+	public static final int TOKEN_SIZE = 2048;
+
+	final private Reader stream;
+	final private ErrorReporter reporter;
+
+	final private char[] data = new char[2048];
+	private int datalen, l;
+	private char chr;
+
+	private int group = 0;
+
+	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
+
+	private int tokenLine = 1;
+	private int currLine = 1;
+	private int currOffset = 0;
 	
 
 	public AstLexer(Reader stream, ErrorReporter reporter) throws IOException {
@@ -112,6 +107,22 @@ public class AstLexer {
 		this.datalen = stream.read(data);
 		this.l = 0;
 		chr = l < datalen ? data[l++] : 0;
+	}
+
+	public int getTokenLine() {
+		return tokenLine;
+	} 
+
+	public void setLine(int currLine) {
+		this.currLine = currLine;
+	}
+
+	public void setOffset(int currOffset) {
+		this.currOffset = currOffset;
+	}
+
+	public String current() {
+		return token.toString();
 	}
 
     private static final short lapg_char2no[] = {
@@ -214,10 +225,6 @@ public class AstLexer {
 		return res;
 	}
 
-	public String current() {
-		return new String(token,0,len);
-	}
-
 	private static int mapCharacter(int chr) {
 		if(chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
@@ -230,35 +237,46 @@ public class AstLexer {
 		int state;
 
 		do {			
-			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
-			for( len = 0, state = group; state >= 0; ) {
-				if( len < 2047 ) token[len++] = chr;
+			lapg_n.offset = currOffset;
+			tokenLine = lapg_n.line = currLine;
+			if(token.length() > TOKEN_SIZE) {
+				token.setLength(TOKEN_SIZE);
+				token.trimToSize();
+			}
+			token.setLength(0);
+			int tokenStart = l-1;
+
+			for( state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
 				if( state >= -1 && chr != 0 ) { 
-					lapg_current_offset++;
+					currOffset++;
 					if( chr == '\n' ) {
-						lapg_current_line++;
+						currLine++;
 					}
 					if( l >= datalen ) {
-						this.datalen = stream.read(data);
-						l = 0;
+						token.append(data, tokenStart, l - tokenStart);
+						datalen = stream.read(data);
+						tokenStart = l = 0;
 					}
 					chr = l < datalen ? data[l++] : 0;
 				}
 			}
-			lapg_n.endpos = new LapgPlace( lapg_current_line, lapg_current_offset );
+			lapg_n.endoffset = currOffset;
 
 			if( state == -1 ) {
 				if( chr == 0 ) {
-					reporter.error(lapg_n.pos, lapg_n.endpos, "Unexpected end of file reached");
+					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
 					break;
 				}
-				reporter.error(lapg_n.pos, lapg_n.endpos, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", lapg_n.pos.line, current()));
+				reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}
 
-			len--;
+			if(l - 1 > tokenStart) {
+				token.append(data, tokenStart, l - 1 - tokenStart);
+			}
+
 			lapg_n.lexem = -state-2;
 			lapg_n.sym = null;
 
@@ -269,17 +287,17 @@ public class AstLexer {
 	private boolean createToken(LapgSymbol lapg_n) throws UnsupportedEncodingException {
 		switch( lapg_n.lexem ) {
 			case 3:
-				 lapg_n.sym = new String(token,1,len-1); break; 
+				 lapg_n.sym = token.toString().substring(1, token.length()); break; 
 			case 4:
-				 lapg_n.sym = Integer.parseInt(new String(token,1,len-1)); break; 
+				 lapg_n.sym = Integer.parseInt(token.toString().substring(1, token.length())); break; 
 			case 5:
 				 group = 1; break; 
 			case 7:
-				 lapg_n.sym = new String(token,0,len); break; 
+				 lapg_n.sym = current(); break; 
 			case 8:
-				 lapg_n.sym = Integer.parseInt(new String(token,0,len)); break; 
+				 lapg_n.sym = Integer.parseInt(current()); break; 
 			case 9:
-				 lapg_n.sym = new String(token,1,len-2); break; 
+				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
 			case 31:
 				 group = 0; break; 
 			case 32:
@@ -288,5 +306,5 @@ public class AstLexer {
 				 return false; 
 		}
 		return true;
-	} 
+	}
 }

@@ -228,7 +228,7 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	private boolean parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException {
+	private Object parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException, ParseException {
 		return parse(lexer, ${index});
 	}
 ${end-}

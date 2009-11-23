@@ -1,6 +1,7 @@
 package net.sf.lapg.templates.api;
 
 import net.sf.lapg.templates.ast.AstParser;
+import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 
 public class TemplatesBundle {
 
@@ -22,12 +23,12 @@ public class TemplatesBundle {
 
 	public static ITemplate[] parse(final String sourceName, String contents, String templatePackage,
 			final IProblemCollector collector) {
-		AstParser p = new AstParser() {
+		AstParser p = new AstParser(new ErrorReporter() {
 			@Override
-			public void error(String s) {
+			public void error(int start, int end, int line, String s) {
 				collector.fireError(null, sourceName + ":" + s);
 			}
-		};
+		});
 		ITemplate[] templates;
 		if (!p.parse(contents, templatePackage, sourceName)) {
 			templates = new ITemplate[0];

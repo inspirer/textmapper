@@ -12,6 +12,7 @@ import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.ExpressionNode;
+import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 
 public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
@@ -51,7 +52,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public String toString(Object o, ExpressionNode referer) throws EvaluationException {
-		if( o instanceof Collection || o instanceof Object[] ) {
+		if( o instanceof Collection<?> || o instanceof Object[] ) {
 			String message = "Evaluation of `"+referer.toString()+"` results in collection, cannot convert to String";
 			EvaluationException ex = new HandledEvaluationException(message);
 			fireError(referer, message);
@@ -128,14 +129,15 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
-		AstParser p = new AstParser() {
+		final String inputName = templateId != null ? templateId : referer.getLocation();
+		AstParser p = new AstParser(new ErrorReporter() {
 			@Override
-			public void error(String s) {
+			public void error(int start, int end, int line, String s) {
 				DefaultEvaluationStrategy.this.fireError(null, inputName + ":" + s);
 			}
-		};
+		});
 		ITemplate[] loaded = null;
-		if (!p.parseBody(template, "syntax", templateId != null ? templateId : referer.getLocation())) {
+		if (!p.parseBody(template, "syntax", inputName)) {
 			loaded = new ITemplate[0];
 		} else {
 			loaded = p.getResult();
