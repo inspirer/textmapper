@@ -78,7 +78,7 @@ ${self->lexerTables()-}
 		LapgSymbol lapg_n = new LapgSymbol();
 		int state;
 
-		do {			
+		do {
 ${if opts.positions.contains('offset')-}
 			lapg_n.offset = currOffset;
 ${end-}

@@ -199,7 +199,7 @@ public class LapgParser {
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
-		lapg_n = lexer.next(); 
+		lapg_n = lexer.next();
 
 		while( lapg_m[lapg_head].state != 67 ) {
 			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );

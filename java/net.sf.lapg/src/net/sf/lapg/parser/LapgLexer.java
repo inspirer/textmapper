@@ -166,7 +166,7 @@ public class LapgLexer {
 		LapgSymbol lapg_n = new LapgSymbol();
 		int state;
 
-		do {			
+		do {
 			lapg_n.offset = currOffset;
 			tokenLine = lapg_n.line = currLine;
 			if(token.length() > TOKEN_SIZE) {

@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import net.sf.lapg.INotifier;
+import net.sf.lapg.common.FileCreator;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 
@@ -32,14 +33,10 @@ public class ConsoleGenerator extends AbstractGenerator {
 
 	@Override
 	public void createFile(String name, String contents) {
-		File file = new File(name);
 		try {
-			OutputStream os = new FileOutputStream(file);
-			os.write(contents.getBytes("utf8")); // FIXME charset
-			os.close();
-		} catch (FileNotFoundException e) {
-		} catch (UnsupportedEncodingException e) {
+			new FileCreator(name, contents, "utf8").create(); // FIXME encoding
 		} catch (IOException e) {
+			// TODO report
 		}
 	}
 

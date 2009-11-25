@@ -634,7 +634,7 @@ public class AstParser {
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = state;
-		lapg_n = lexer.next(); 
+		lapg_n = lexer.next();
 
 		while( lapg_m[lapg_head].state != 207+state ) {
 			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
