@@ -13,7 +13,7 @@ import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.ParseProblem;
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class SyntaxUtil {
+public class SyntaxUtilOld {
 
 	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err, Map<String, String> options) {
 		String contents = getFileContents(stream);
@@ -24,23 +24,6 @@ public class SyntaxUtil {
 			}
 		}
 		return cs;
-	}
-
-	public static Grammar parseSyntaxNew(String sourceName, InputStream stream, INotifier err, Map<String, String> options) {
-		String contents = getFileContents(stream);
-		LapgTree tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
-		Grammar result = null;
-		if(!tree.hasErrors()) {
-			result = new LapgResolver(tree).resolve();
-		}
-		if (tree.hasErrors()) {
-			result = null;
-			for (ParseProblem s : tree.getErrors()) {
-				err.error(s.getMessage() + "\n");
-			}
-		}
-		return result;
-
 	}
 
 	public static String getFileContents(InputStream stream) {

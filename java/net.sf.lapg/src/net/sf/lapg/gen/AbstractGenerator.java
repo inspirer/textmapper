@@ -20,7 +20,7 @@ import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.input.SyntaxUtil;
+import net.sf.lapg.parser.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;
@@ -69,7 +69,7 @@ public abstract class AbstractGenerator {
 				return false;
 			}
 
-			Grammar s = SyntaxUtil.parseSyntaxNew(options.getInput(), is, err, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, err, getDefaultOptions());
 			if (s.hasErrors()) {
 				return false;
 			}

@@ -13,13 +13,14 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.input.SyntaxUtil;
+import net.sf.lapg.input.SyntaxUtilOld;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.lex.RegexpParser;
 import net.sf.lapg.parser.LiGrammar;
 import net.sf.lapg.parser.LiRule;
 import net.sf.lapg.parser.LiSymbol;
+import net.sf.lapg.parser.SyntaxUtil;
 import net.sf.lapg.test.TestNotifier;
 
 public class InputTest extends TestCase {
@@ -56,7 +57,7 @@ public class InputTest extends TestCase {
 		OutputUtils.printTables(sb, lt);
 		OutputUtils.printTables(sb, pt);
 
-		String expected = removeSpaces(SyntaxUtil.getFileContents(openStream(outputId, RESULTCONTAINER)).trim());
+		String expected = removeSpaces(SyntaxUtilOld.getFileContents(openStream(outputId, RESULTCONTAINER)).trim());
 		String actual = removeSpaces(sb.toString().trim());
 
 		Assert.assertEquals(expected, actual);
@@ -142,7 +143,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckSimple1() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -177,7 +178,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckSimple2() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -200,7 +201,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testCheckCSharpGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
@@ -225,7 +226,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testLapgGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
@@ -233,7 +234,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testLapgTemplatesGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
@@ -268,9 +269,9 @@ public class InputTest extends TestCase {
 	}
 
 	public void testNewTemplatesGrammar() {
-		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		Grammar go = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
@@ -279,9 +280,9 @@ public class InputTest extends TestCase {
 	}
 
 	public void testNewLapgGrammar() {
-		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		Grammar go = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
@@ -290,9 +291,9 @@ public class InputTest extends TestCase {
 	}
 
 	public void testNewCheckCSharpGrammar() {
-		Grammar g = SyntaxUtil.parseSyntaxNew("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		Grammar go = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		sortGrammar((LiGrammar)g, go);
@@ -318,7 +319,7 @@ public class InputTest extends TestCase {
 	}
 
 	public void testNewCheckSimple1() {
-		Grammar g = SyntaxUtil.parseSyntaxNew("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -353,9 +354,9 @@ public class InputTest extends TestCase {
 	}
 
 	public void testNewCheckSimple2() {
-		Grammar g = SyntaxUtil.parseSyntaxNew("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
-		Grammar go = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
