@@ -69,7 +69,7 @@ public abstract class AbstractGenerator {
 				return false;
 			}
 
-			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, err, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntaxNew(options.getInput(), is, err, getDefaultOptions());
 			if (s.hasErrors()) {
 				return false;
 			}
