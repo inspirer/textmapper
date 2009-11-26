@@ -1,8 +1,8 @@
-package net.sf.lapg.input;
+package net.sf.lapg.test.oldparser;
 
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.input.LapgParser.ParseException;
 import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.test.oldparser.LapgParser.ParseException;
 
 public class CSymbol implements Symbol, ILocatedEntity {
 

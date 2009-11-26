@@ -1,4 +1,4 @@
-package net.sf.lapg.input;
+package net.sf.lapg.test.oldparser;
 
 import java.util.List;
 

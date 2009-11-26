@@ -1,4 +1,4 @@
-package net.sf.lapg.input;
+package net.sf.lapg.test.oldparser;
 
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;

@@ -1,8 +1,9 @@
-package net.sf.lapg.input;
+package net.sf.lapg.test.oldparser;
 
 import java.io.IOException;
-import net.sf.lapg.input.LapgLexer.Lexems;
-import net.sf.lapg.input.LapgLexer.LapgSymbol;
+
+import net.sf.lapg.test.oldparser.LapgLexer.LapgSymbol;
+import net.sf.lapg.test.oldparser.LapgLexer.Lexems;
 
 import java.io.CharArrayReader;
 import java.io.UnsupportedEncodingException;
