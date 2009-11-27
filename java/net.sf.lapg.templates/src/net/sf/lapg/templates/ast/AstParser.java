@@ -682,220 +682,220 @@ public class AstParser {
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 		switch( rule ) {
-			case 5:  // net.sf.lapg.parser.LiRule@15fea60
+			case 5:  // template_declaration_or_space ::= template_start instructions template_end
 				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); templates.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
 				break;
-			case 6:  // net.sf.lapg.parser.LiRule@a3bcc1
+			case 6:  // template_declaration_or_space ::= template_start template_end
 				 templates.add(((TemplateNode)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 10:  // net.sf.lapg.parser.LiRule@1bd4722
+			case 10:  // template_start ::= '${' Ltemplate template_id template_parametersopt '[-]}'
 				 lapg_gg.sym = new TemplateNode(((String)lapg_m[lapg_head-2].sym), ((ArrayList)lapg_m[lapg_head-1].sym), templatePackage, inputName, lapg_m[lapg_head-4].line); checkFqn(((String)lapg_m[lapg_head-2].sym), lapg_gg.offset, lapg_gg.endoffset, lapg_m[lapg_head-4].line); 
 				break;
-			case 13:  // net.sf.lapg.parser.LiRule@911f71
+			case 13:  // template_parameters ::= '(' identifier_listopt ')'
 				 lapg_gg.sym = ((ArrayList)lapg_m[lapg_head-1].sym); 
 				break;
-			case 14:  // net.sf.lapg.parser.LiRule@1f20eeb
+			case 14:  // identifier_list ::= identifier
 				 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((String)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 15:  // net.sf.lapg.parser.LiRule@1b10d42
+			case 15:  // identifier_list ::= identifier_list ',' identifier
 				 ((ArrayList)lapg_gg.sym).add(((String)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 17:  // net.sf.lapg.parser.LiRule@dd87b2
+			case 17:  // instructions ::= instructions instruction
 				 ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 18:  // net.sf.lapg.parser.LiRule@1f7d134
+			case 18:  // instructions ::= instruction
 				 lapg_gg.sym = new ArrayList<Node>(); ((ArrayList<Node>)lapg_gg.sym).add(((Node)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 19:  // net.sf.lapg.parser.LiRule@c7e553
+			case 19:  // '[-]}' ::= '-}'
 				 skipSpaces(lapg_m[lapg_head-0].offset+1); 
 				break;
-			case 24:  // net.sf.lapg.parser.LiRule@1a0c10f
+			case 24:  // instruction ::= escid
 				 lapg_gg.sym = createEscapedId(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].line); 
 				break;
-			case 25:  // net.sf.lapg.parser.LiRule@e2eec8
+			case 25:  // instruction ::= escint
 				 lapg_gg.sym = new IndexNode(null, new LiteralNode(((Integer)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].line), inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 26:  // net.sf.lapg.parser.LiRule@aa9835
+			case 26:  // instruction ::= escdollar
 				 lapg_gg.sym = new DollarNode(inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 27:  // net.sf.lapg.parser.LiRule@10dd1f7
+			case 27:  // instruction ::= any
 				 lapg_gg.sym = new TextNode(rawText(lapg_m[lapg_head-0].offset,lapg_m[lapg_head-0].endoffset),inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 28:  // net.sf.lapg.parser.LiRule@53c015
+			case 28:  // simple_instruction ::= '${' sentence '[-]}'
 				 lapg_gg.sym = ((Node)lapg_m[lapg_head-1].sym); 
 				break;
-			case 34:  // net.sf.lapg.parser.LiRule@67ac19
+			case 34:  // sentence ::= Lcall template_id template_argumentsopt template_for_expropt
 				 lapg_gg.sym = new CallTemplateNode(((String)lapg_m[lapg_head-2].sym),((ArrayList)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-0].sym),templatePackage,true,inputName, lapg_m[lapg_head-3].line); 
 				break;
-			case 37:  // net.sf.lapg.parser.LiRule@1ff5ea7
+			case 37:  // sentence ::= Leval expression comma_expropt
 				 lapg_gg.sym = new EvalNode(((ExpressionNode)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-0].sym),inputName,lapg_m[lapg_head-2].line); 
 				break;
-			case 38:  // net.sf.lapg.parser.LiRule@7b7072
+			case 38:  // sentence ::= Lassert expression
 				 lapg_gg.sym = new AssertNode(((ExpressionNode)lapg_m[lapg_head-0].sym),inputName,lapg_m[lapg_head-1].line); 
 				break;
-			case 39:  // net.sf.lapg.parser.LiRule@1c672d0
+			case 39:  // comma_expr ::= ',' expression
 				 lapg_gg.sym = ((ExpressionNode)lapg_m[lapg_head-0].sym); 
 				break;
-			case 41:  // net.sf.lapg.parser.LiRule@19bd03e
+			case 41:  // template_id ::= template_id '.' identifier
 				 lapg_gg.sym = ((String)lapg_gg.sym) + "." + ((String)lapg_m[lapg_head-0].sym); 
 				break;
-			case 42:  // net.sf.lapg.parser.LiRule@2a340e
+			case 42:  // template_for_expr ::= Lfor expression
 				 lapg_gg.sym = ((ExpressionNode)lapg_m[lapg_head-0].sym); 
 				break;
-			case 45:  // net.sf.lapg.parser.LiRule@bfbdb0
+			case 45:  // template_arguments ::= '(' expression_listopt ')'
 				 lapg_gg.sym = ((ArrayList)lapg_m[lapg_head-1].sym); 
 				break;
-			case 46:  // net.sf.lapg.parser.LiRule@3e86d0
+			case 46:  // control_instruction ::= control_start instructions control_end
 				 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 47:  // net.sf.lapg.parser.LiRule@1050169
+			case 47:  // control_instruction ::= control_start instructions else_node instructions control_end
 				 ((CompoundNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-3].sym)); applyElse(((CompoundNode)lapg_gg.sym),((ArrayList<Node>)lapg_m[lapg_head-1].sym),lapg_gg.offset,lapg_gg.endoffset,lapg_gg.line); 
 				break;
-			case 51:  // net.sf.lapg.parser.LiRule@253498
+			case 51:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list control_end
 				 lapg_gg.sym = new SwitchNode(((ExpressionNode)lapg_m[lapg_head-4].sym), ((ArrayList)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-6].line); checkIsSpace(lapg_m[lapg_head-2].offset,lapg_m[lapg_head-2].endoffset, lapg_m[lapg_head-2].line); 
 				break;
-			case 52:  // net.sf.lapg.parser.LiRule@9fef6f
+			case 52:  // case_list ::= one_case
 				 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((CaseNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 53:  // net.sf.lapg.parser.LiRule@209f4e
+			case 53:  // case_list ::= case_list one_case
 				 ((ArrayList)lapg_gg.sym).add(((CaseNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 54:  // net.sf.lapg.parser.LiRule@17172ea
+			case 54:  // case_list ::= case_list instruction
 				 CaseNode.add(((ArrayList)lapg_gg.sym), ((Node)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 55:  // net.sf.lapg.parser.LiRule@12f6684
+			case 55:  // one_case ::= '${' Lcase expression '[-]}'
 				 lapg_gg.sym = new CaseNode(((ExpressionNode)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-3].line); 
 				break;
-			case 56:  // net.sf.lapg.parser.LiRule@f38798
+			case 56:  // control_start ::= '${' control_sentence '[-]}'
 				 lapg_gg.sym = ((CompoundNode)lapg_m[lapg_head-1].sym); 
 				break;
-			case 57:  // net.sf.lapg.parser.LiRule@4b222f
+			case 57:  // control_sentence ::= Lforeach identifier Lin expression
 				 lapg_gg.sym = new ForeachNode(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-3].line); 
 				break;
-			case 58:  // net.sf.lapg.parser.LiRule@b169f8
+			case 58:  // control_sentence ::= Lfor identifier ':' expression ',' expression
 				 lapg_gg.sym = new ForeachNode(((String)lapg_m[lapg_head-4].sym), ((ExpressionNode)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-5].line); 
 				break;
-			case 59:  // net.sf.lapg.parser.LiRule@1a457b6
+			case 59:  // control_sentence ::= Lif expression
 				 lapg_gg.sym = new IfNode(((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-1].line); 
 				break;
-			case 60:  // net.sf.lapg.parser.LiRule@7a78d3
+			case 60:  // control_sentence ::= Lfile expression
 				 lapg_gg.sym = new FileNode(((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-1].line); 
 				break;
-			case 63:  // net.sf.lapg.parser.LiRule@b0f13d
+			case 63:  // primary_expression ::= identifier
 				 lapg_gg.sym = new SelectNode(null, ((String)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 64:  // net.sf.lapg.parser.LiRule@ae000d
+			case 64:  // primary_expression ::= '(' expression ')'
 				 lapg_gg.sym = new ParenthesesNode(((ExpressionNode)lapg_m[lapg_head-1].sym),inputName,lapg_m[lapg_head-2].line); 
 				break;
-			case 65:  // net.sf.lapg.parser.LiRule@1855af5
+			case 65:  // primary_expression ::= icon
 				 lapg_gg.sym = new LiteralNode(((Integer)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 66:  // net.sf.lapg.parser.LiRule@169e11
+			case 66:  // primary_expression ::= bcon
 				 lapg_gg.sym = new LiteralNode(((Boolean)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 67:  // net.sf.lapg.parser.LiRule@e39a3e
+			case 67:  // primary_expression ::= ccon
 				 lapg_gg.sym = new LiteralNode(((String)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 68:  // net.sf.lapg.parser.LiRule@a39137
+			case 68:  // primary_expression ::= Lself
 				 lapg_gg.sym = new ThisNode(inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 69:  // net.sf.lapg.parser.LiRule@92e78c
+			case 69:  // primary_expression ::= Lnull
 				 lapg_gg.sym = new LiteralNode(null, inputName, lapg_m[lapg_head-0].line); 
 				break;
-			case 70:  // net.sf.lapg.parser.LiRule@9fbe93
+			case 70:  // primary_expression ::= identifier '(' expression_listopt ')'
 				 lapg_gg.sym = new MethodCallNode(null, ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-3].line); 
 				break;
-			case 71:  // net.sf.lapg.parser.LiRule@1858610
+			case 71:  // primary_expression ::= primary_expression '.' identifier
 				 lapg_gg.sym = new SelectNode(((ExpressionNode)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 72:  // net.sf.lapg.parser.LiRule@12498b5
+			case 72:  // primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
 				 lapg_gg.sym = new MethodCallNode(((ExpressionNode)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-3].sym), ((ArrayList)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-5].line); 
 				break;
-			case 73:  // net.sf.lapg.parser.LiRule@1a5ab41
+			case 73:  // primary_expression ::= primary_expression '.' identifier '(' identifier '|' expression ')'
 				 lapg_gg.sym = createCollectionProcessor(((ExpressionNode)lapg_m[lapg_head-7].sym), ((String)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-3].sym), ((ExpressionNode)lapg_m[lapg_head-1].sym), inputName, lapg_m[lapg_head-7].line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 74:  // net.sf.lapg.parser.LiRule@18e3e60
+			case 74:  // primary_expression ::= primary_expression '->' template_id '(' expression_listopt ')'
 				 lapg_gg.sym = new CallTemplateNode(((String)lapg_m[lapg_head-3].sym),((ArrayList)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-5].sym),templatePackage,false,inputName, lapg_m[lapg_head-5].line); 
 				break;
-			case 75:  // net.sf.lapg.parser.LiRule@1a125f0
+			case 75:  // primary_expression ::= primary_expression '->' '(' expression ')' '(' expression_listopt ')'
 				 lapg_gg.sym = new CallTemplateNode(((ExpressionNode)lapg_m[lapg_head-4].sym),((ArrayList)lapg_m[lapg_head-1].sym),((ExpressionNode)lapg_m[lapg_head-7].sym),templatePackage,inputName, lapg_m[lapg_head-7].line); 
 				break;
-			case 76:  // net.sf.lapg.parser.LiRule@181afa3
+			case 76:  // primary_expression ::= primary_expression '[' expression ']'
 				 lapg_gg.sym = new IndexNode(((ExpressionNode)lapg_m[lapg_head-3].sym), ((ExpressionNode)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-3].line); 
 				break;
-			case 78:  // net.sf.lapg.parser.LiRule@15601ea
+			case 78:  // complex_data ::= '[' expression_listopt ']'
 				 lapg_gg.sym = new ListNode(((ArrayList)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 79:  // net.sf.lapg.parser.LiRule@197d257
+			case 79:  // complex_data ::= '[' map_entries ']'
 				 lapg_gg.sym = new ConcreteMapNode(((HashMap<String,ExpressionNode>)lapg_m[lapg_head-1].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 80:  // net.sf.lapg.parser.LiRule@7259da
+			case 80:  // map_entries ::= identifier ':' expression
 				 lapg_gg.sym = new HashMap(); ((HashMap<String,ExpressionNode>)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 81:  // net.sf.lapg.parser.LiRule@16930e2
+			case 81:  // map_entries ::= map_entries ',' identifier ':' expression
 				 ((HashMap<String,ExpressionNode>)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 82:  // net.sf.lapg.parser.LiRule@108786b
+			case 82:  // bcon ::= Ltrue
 				 lapg_gg.sym = Boolean.TRUE; 
 				break;
-			case 83:  // net.sf.lapg.parser.LiRule@119c082
+			case 83:  // bcon ::= Lfalse
 				 lapg_gg.sym = Boolean.FALSE; 
 				break;
-			case 85:  // net.sf.lapg.parser.LiRule@1add2dd
+			case 85:  // unary_expression ::= '!' unary_expression
 				 lapg_gg.sym = new UnaryExpression(UnaryExpression.NOT, ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-1].line); 
 				break;
-			case 86:  // net.sf.lapg.parser.LiRule@eee36c
+			case 86:  // unary_expression ::= '-' unary_expression
 				 lapg_gg.sym = new UnaryExpression(UnaryExpression.MINUS, ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-1].line); 
 				break;
-			case 88:  // net.sf.lapg.parser.LiRule@defa1a
+			case 88:  // mult_expression ::= mult_expression '*' unary_expression
 				 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MULT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 89:  // net.sf.lapg.parser.LiRule@f5da06
+			case 89:  // mult_expression ::= mult_expression '/' unary_expression
 				 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.DIV, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 90:  // net.sf.lapg.parser.LiRule@bd0108
+			case 90:  // mult_expression ::= mult_expression '%' unary_expression
 				 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.REM, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 92:  // net.sf.lapg.parser.LiRule@8ed465
+			case 92:  // additive_expression ::= additive_expression '+' mult_expression
 				 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.PLUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 93:  // net.sf.lapg.parser.LiRule@11a698a
+			case 93:  // additive_expression ::= additive_expression '-' mult_expression
 				 lapg_gg.sym = new ArithmeticNode(ArithmeticNode.MINUS, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 95:  // net.sf.lapg.parser.LiRule@107077e
+			case 95:  // relational_expression ::= relational_expression '<' additive_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.LT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 96:  // net.sf.lapg.parser.LiRule@7ced01
+			case 96:  // relational_expression ::= relational_expression '>' additive_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.GT, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 97:  // net.sf.lapg.parser.LiRule@765291
+			case 97:  // relational_expression ::= relational_expression '<=' additive_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.LE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 98:  // net.sf.lapg.parser.LiRule@26e431
+			case 98:  // relational_expression ::= relational_expression '>=' additive_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.GE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 100:  // net.sf.lapg.parser.LiRule@14f8dab
+			case 100:  // equality_expression ::= equality_expression '==' relational_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 101:  // net.sf.lapg.parser.LiRule@1ddebc3
+			case 101:  // equality_expression ::= equality_expression '!=' relational_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 103:  // net.sf.lapg.parser.LiRule@a18aa2
+			case 103:  // conditional_and_expression ::= conditional_and_expression '&&' equality_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.AND, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 105:  // net.sf.lapg.parser.LiRule@194ca6c
+			case 105:  // conditional_or_expression ::= conditional_or_expression '||' conditional_and_expression
 				 lapg_gg.sym = new ConditionalNode(ConditionalNode.OR, ((ExpressionNode)lapg_gg.sym), ((ExpressionNode)lapg_m[lapg_head-0].sym),inputName, lapg_m[lapg_head-2].line); 
 				break;
-			case 107:  // net.sf.lapg.parser.LiRule@17590db
+			case 107:  // expression ::= conditional_or_expression '?' expression ':' expression
 				 lapg_gg.sym = new TriplexNode(((ExpressionNode)lapg_m[lapg_head-4].sym), ((ExpressionNode)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym), inputName, lapg_m[lapg_head-4].line); 
 				break;
-			case 108:  // net.sf.lapg.parser.LiRule@480457
+			case 108:  // expression_list ::= expression
 				 lapg_gg.sym = new ArrayList(); ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 109:  // net.sf.lapg.parser.LiRule@14fe5c
+			case 109:  // expression_list ::= expression_list ',' expression
 				 ((ArrayList)lapg_gg.sym).add(((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 110:  // net.sf.lapg.parser.LiRule@19134f4
+			case 110:  // body ::= instructions
 				
 							lapg_gg.sym = new TemplateNode("inline", null, templatePackage, inputName, lapg_m[lapg_head-0].line);
 							((TemplateNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-0].sym));

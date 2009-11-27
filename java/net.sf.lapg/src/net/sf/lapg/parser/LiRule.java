@@ -4,8 +4,10 @@ import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.parser.ast.Node;
+import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.api.INamedEntity;
 
-public class LiRule implements Rule {
+public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 	
 	private static final LiSymbol[] EMPTY_RIGHT = new LiSymbol[0];
 	
@@ -63,5 +65,38 @@ public class LiRule implements Rule {
 	
 	public Node getNode() {
 		return node;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (left.getName() == null) {
+			sb.append("<noname>");
+		} else {
+			sb.append(left.getName());
+		}
+		sb.append(" ::=");
+		for (LiSymbol s : right) {
+			sb.append(" ");
+			if (s.getName() == null) {
+				sb.append("{}");
+			} else {
+				sb.append(s.getName());
+			}
+		}
+		if (priority != null) {
+			sb.append(" << ");
+			sb.append(priority.getName());
+		}
+		return sb.toString();
+	}
+
+	public String getTitle() {
+		return "Rule `" + toString() + "`";
+	}
+	
+	@Override
+	public String getLocation() {
+		return node.getLocation();
 	}
 }

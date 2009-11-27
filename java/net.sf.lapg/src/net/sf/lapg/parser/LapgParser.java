@@ -247,88 +247,88 @@ public class LapgParser {
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 		switch( rule ) {
-			case 2:  // net.sf.lapg.parser.LiRule@a401c2
+			case 2:  // input ::= optionsopt lexer_parts grammar_parts
 				  lapg_gg.sym = new AstRoot(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 3:  // net.sf.lapg.parser.LiRule@c51355
+			case 3:  // options ::= options option
 				 ((List<AstOption>)lapg_m[lapg_head-1].sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 4:  // net.sf.lapg.parser.LiRule@787171
+			case 4:  // options ::= option
 				 lapg_gg.sym = new ArrayList<AstOption>(16); ((List<AstOption>)lapg_gg.sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 5:  // net.sf.lapg.parser.LiRule@15fea60
+			case 5:  // option ::= '.' identifier scon
 				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 6:  // net.sf.lapg.parser.LiRule@a3bcc1
+			case 6:  // option ::= '.' identifier icon
 				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((Integer)lapg_m[lapg_head-0].sym).toString(), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 7:  // net.sf.lapg.parser.LiRule@911f71
+			case 7:  // symbol ::= identifier
 				 lapg_gg.sym = new AstIdentifier(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 8:  // net.sf.lapg.parser.LiRule@1a73d3c
+			case 8:  // pattern ::= regexp
 				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 9:  // net.sf.lapg.parser.LiRule@a56a7c
+			case 9:  // lexer_parts ::= lexer_parts lexer_part
 				 ((List<AstLexerPart>)lapg_m[lapg_head-1].sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 10:  // net.sf.lapg.parser.LiRule@1f20eeb
+			case 10:  // lexer_parts ::= lexer_part
 				 lapg_gg.sym = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 11:  // net.sf.lapg.parser.LiRule@b179c3
+			case 11:  // lexer_part ::= '[' icon_list ']'
 				 lapg_gg.sym = new AstGroupsSelector(((List<Integer>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 14:  // net.sf.lapg.parser.LiRule@1b10d42
+			case 14:  // lexer_part ::= symbol typeopt ':'
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 19:  // net.sf.lapg.parser.LiRule@dd87b2
+			case 19:  // lexer_part ::= symbol typeopt ':' pattern iconopt commandopt
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((AstRegexp)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((AstCode)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 20:  // net.sf.lapg.parser.LiRule@1a0c10f
+			case 20:  // icon_list ::= icon_list icon
 				 ((List<Integer>)lapg_m[lapg_head-1].sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 21:  // net.sf.lapg.parser.LiRule@e2eec8
+			case 21:  // icon_list ::= icon
 				 lapg_gg.sym = new ArrayList<Integer>(4); ((List<Integer>)lapg_gg.sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 22:  // net.sf.lapg.parser.LiRule@aa9835
+			case 22:  // grammar_parts ::= grammar_parts grammar_part
 				 ((List<AstGrammarPart>)lapg_m[lapg_head-1].sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 23:  // net.sf.lapg.parser.LiRule@53c015
+			case 23:  // grammar_parts ::= grammar_part
 				 lapg_gg.sym = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 24:  // net.sf.lapg.parser.LiRule@e80a59
+			case 24:  // grammar_part ::= symbol typeopt '::=' rule_list ';'
 				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRuleRight>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 25:  // net.sf.lapg.parser.LiRule@1ff5ea7
+			case 25:  // grammar_part ::= '%' identifier symbol_list ';'
 				 lapg_gg.sym = new AstDirective(((String)lapg_m[lapg_head-2].sym), ((List<AstIdentifier>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 26:  // net.sf.lapg.parser.LiRule@9f2a0b
+			case 26:  // rule_list ::= rule_list '|' rule_right
 				 ((List<AstRuleRight>)lapg_m[lapg_head-2].sym).add(((AstRuleRight)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 27:  // net.sf.lapg.parser.LiRule@7b7072
+			case 27:  // rule_list ::= rule_right
 				 lapg_gg.sym = new ArrayList<AstRuleRight>(); ((List<AstRuleRight>)lapg_gg.sym).add(((AstRuleRight)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 28:  // net.sf.lapg.parser.LiRule@136228
+			case 28:  // symbol_list ::= symbol_list symbol
 				 ((List<AstIdentifier>)lapg_m[lapg_head-1].sym).add(((AstIdentifier)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 29:  // net.sf.lapg.parser.LiRule@913750
+			case 29:  // symbol_list ::= symbol
 				 lapg_gg.sym = new ArrayList<AstIdentifier>(); ((List<AstIdentifier>)lapg_gg.sym).add(((AstIdentifier)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 32:  // net.sf.lapg.parser.LiRule@84abc9
+			case 32:  // rule_right ::= rule_symbols commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRuleRight(((List<AstRightSymbol>)lapg_m[lapg_head-2].sym), ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 33:  // net.sf.lapg.parser.LiRule@2a340e
+			case 33:  // rule_right ::= commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRuleRight(null, ((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 34:  // net.sf.lapg.parser.LiRule@3e86d0
+			case 34:  // rule_symbols ::= rule_symbols commandopt symbol
 				 ((List<AstRightSymbol>)lapg_m[lapg_head-2].sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 35:  // net.sf.lapg.parser.LiRule@1050169
+			case 35:  // rule_symbols ::= commandopt symbol
 				 lapg_gg.sym = new ArrayList<AstRightSymbol>(); ((List<AstRightSymbol>)lapg_gg.sym).add(new AstRightSymbol(((AstCode)lapg_m[lapg_head-1].sym), ((AstIdentifier)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 36:  // net.sf.lapg.parser.LiRule@253498
+			case 36:  // rule_priority ::= '<<' identifier
 				 lapg_gg.sym = ((String)lapg_m[lapg_head-0].sym); 
 				break;
-			case 39:  // net.sf.lapg.parser.LiRule@9fef6f
+			case 39:  // command ::= '{' command_tokensopt '}'
 				 lapg_gg.sym = new AstCode(source, lapg_m[lapg_head-2].offset+1, lapg_m[lapg_head-0].endoffset-1); 
 				break;
 		}
