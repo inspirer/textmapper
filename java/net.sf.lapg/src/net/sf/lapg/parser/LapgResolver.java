@@ -37,10 +37,11 @@ public class LapgResolver {
 	private LiSymbol eoi;
 	private LiSymbol error;
 	
-	private Map<String,String> options = new HashMap<String,String>();
+	private Map<String,String> options;
 
-	public LapgResolver(LapgTree tree) {
+	public LapgResolver(LapgTree tree, Map<String, String> options) {
 		this.tree = tree;
+		this.options = options;
 	}
 	
 	public Grammar resolve() {
@@ -150,12 +151,10 @@ public class LapgResolver {
 	}
 	
 	private Action convert(final AstCode code) {
-		return new Action() {
-			@Override
-			public String getContents() {
-				return code.toString();
-			}
-		};
+		if(code == null) {
+			return null;
+		}
+		return new LiAction(code.toString(), tree.getSource().getFile(), code.getLine());
 	}
 	
 	private String convert(AstRegexp regexp) {

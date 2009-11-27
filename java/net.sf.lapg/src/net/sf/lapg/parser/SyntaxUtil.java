@@ -19,7 +19,7 @@ public class SyntaxUtil {
 		LapgTree tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
 		Grammar result = null;
 		if (!tree.hasErrors()) {
-			result = new LapgResolver(tree).resolve();
+			result = new LapgResolver(tree, options).resolve();
 		}
 		if (tree.hasErrors()) {
 			result = null;

@@ -18,6 +18,10 @@ public abstract class Node implements ILocatedEntity {
 		return source.getLocation(offset);
 	}
 	
+	public int getLine() {
+		return source.lineForOffset(offset);
+	}
+	
 	public int getOffset() {
 		return offset;
 	}
