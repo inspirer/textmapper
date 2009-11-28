@@ -910,11 +910,11 @@ public class AstParser {
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 
-	private Object parseInput(AstLexer lexer) throws IOException, ParseException {
+	public Object parseInput(AstLexer lexer) throws IOException, ParseException {
 		return parse(lexer, 0);
 	}
 
-	private Object parseBody(AstLexer lexer) throws IOException, ParseException {
-		return parse(lexer, 1);
+	public TemplateNode parseBody(AstLexer lexer) throws IOException, ParseException {
+		return (TemplateNode) parse(lexer, 1);
 	}
 }

@@ -8,7 +8,7 @@
 .packLexems  "true"
 .positions   "line,offset"
 .endpositions "offset"
-.gentree	 "off"
+.gentree	 "on"
 
 # Vocabulary
 

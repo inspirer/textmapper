@@ -79,7 +79,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private${else}public${end} Object parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException, ParseException {
+	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().type}${syntax.input.first().type}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -228,8 +228,8 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	private Object parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException, ParseException {
-		return parse(lexer, ${index});
+	public ${if inp.type}${inp.type}${else}Object${end} parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException, ParseException {
+		return ${if inp.type}(${inp.type}) ${end}parse(lexer, ${index});
 	}
 ${end-}
 ${end-}

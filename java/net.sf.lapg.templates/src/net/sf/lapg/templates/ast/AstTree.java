@@ -1,5 +1,4 @@
-${template unit-}
-package ${call java.package};
+package net.sf.lapg.templates.ast;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -8,16 +7,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ${call java.package}.${opts.prefix}Lexer.ErrorReporter;
-import ${call java.package}.${opts.prefix}Parser.ParseException;
+import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
+import net.sf.lapg.templates.ast.AstParser.ParseException;
 
-public class ${opts.prefix}Tree<T> {
+public class AstTree<T> {
 
 	private final TextSource source;
 	private final T root;
 	private final List<ParseProblem> errors;
 
-	public ${opts.prefix}Tree(TextSource source, T root, List<ParseProblem> errors) {
+	public AstTree(TextSource source, T root, List<ParseProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -39,20 +38,8 @@ public class ${opts.prefix}Tree<T> {
 		return errors.size() > 0;
 	}
 
-${call parse}
-${call ParseProblemClass}
-${call TextSourceClass}
-${call getLineOffsets-}
-}
-${end}
 
-${template typeofsym-}
-${if type}${type}${else}Object${end-}
-${end}
-
-${template parse-}
-${foreach inp in syntax.input}
-	public static ${opts.prefix}Tree<${call typeofsym for inp}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(TextSource source) {
+	public static AstTree<Object> parseInput(TextSource source) {
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -61,23 +48,44 @@ ${foreach inp in syntax.input}
 		};
 
 		try {
-			${opts.prefix}Lexer lexer = new ${opts.prefix}Lexer(source.getStream(), reporter);
+			AstLexer lexer = new AstLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			${opts.prefix}Parser parser = new ${opts.prefix}Parser(reporter);
-			${call typeofsym for inp} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(lexer);
-			return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
+			AstParser parser = new AstParser(reporter);
+			Object result = parser.parseInput(lexer);
+			return new AstTree<Object>(source, result, list);
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
 			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, null, list);
+		return new AstTree<Object>(source, null, list);
 	}
-${end}
-${end}
 
-${template ParseProblemClass-}
+	public static AstTree<TemplateNode> parseBody(TextSource source) {
+		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		ErrorReporter reporter = new ErrorReporter() {
+			public void error(int start, int end, int line, String s) {
+				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+			}
+		};
+
+		try {
+			AstLexer lexer = new AstLexer(source.getStream(), reporter);
+			lexer.setLine(source.getInitialLine());
+
+			AstParser parser = new AstParser(reporter);
+			TemplateNode result = parser.parseBody(lexer);
+			return new AstTree<TemplateNode>(source, result, list);
+		} catch(ParseException ex) {
+			/* not parsed */
+		} catch(IOException ex) {
+			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+		}
+		return new AstTree<TemplateNode>(source, null, list);
+	}
+
+
 	public static final int KIND_FATAL = 0;
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
@@ -108,9 +116,7 @@ ${template ParseProblemClass-}
 			return end;
 		}
 	}
-${end}
 
-${template TextSourceClass-}
 	public static class TextSource {
 
 		private final String file;
@@ -159,9 +165,7 @@ ${template TextSourceClass-}
 			return contents;
 		}
 	}
-${end}
 
-${template getLineOffsets-}
 	private static int[] getLineOffsets(char[] contents) {
 		int size = 1;
 		for (int i = 0; i < contents.length; i++) {
@@ -192,4 +196,4 @@ ${template getLineOffsets-}
 		}
 		return result;
 	}
-${end}
+}
