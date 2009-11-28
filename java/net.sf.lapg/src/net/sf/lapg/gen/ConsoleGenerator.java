@@ -16,9 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 
 import net.sf.lapg.INotifier;
 import net.sf.lapg.common.FileCreator;
@@ -34,7 +32,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	@Override
 	public void createFile(String name, String contents) {
 		try {
-			new FileCreator(name, contents, "utf8").create(); // FIXME encoding
+			new FileCreator(name, contents, "utf8", true).create(); // FIXME encoding, newline
 		} catch (IOException e) {
 			// TODO report
 		}

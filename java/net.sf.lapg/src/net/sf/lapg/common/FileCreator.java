@@ -10,14 +10,15 @@ public class FileCreator {
 	private final String name;
 	private final String contents;
 	private final String charset;
+	private final boolean forceLF;
 	
 	public static String NL = System.getProperty("line.separator");
 	
-	public FileCreator(String name, String contents, String charset) {
+	public FileCreator(String name, String contents, String charset, boolean forceLF) {
 		this.name = name;
 		this.contents = contents;
 		this.charset = charset;
-		
+		this.forceLF = forceLF;
 	}
 		
 	protected String getData() {
@@ -36,15 +37,15 @@ public class FileCreator {
 		os.close();
 	}
 
-	private static String fixLineSeparators(String contents) {
+	private String fixLineSeparators(String contents) {
 		StringBuilder sb = new StringBuilder(contents.length());
 		int size = contents.length();
 		for(int i = 0; i < size; i++) {
 			char c = contents.charAt(i);
 			if(c == '\n') {
-				sb.append(NL);
+				sb.append(forceLF ? "\n" : NL);
 			} else if(c == '\r') {
-				sb.append(NL);
+				sb.append(forceLF ? "\n" : NL);
 				if(i+1 < size && contents.charAt(i+1) == '\n') {
 					i++;
 				}
