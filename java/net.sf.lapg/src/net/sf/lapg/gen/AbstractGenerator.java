@@ -52,12 +52,13 @@ public abstract class AbstractGenerator {
 		d.put("prefix", "");
 		d.put("breaks", "on");
 		d.put("lang", "java");
-		d.put("positioning", "line");
-		d.put("lexemend", "off");
 		d.put("maxtoken", "2048");
 		d.put("stack", "1024");
 		d.put("packLexems", "false");
 		d.put("packTables", "false");
+		d.put("positions", "line,offset");
+		d.put("endpositions", "");
+		d.put("gentree", "false");
 		return d;
 	}
 

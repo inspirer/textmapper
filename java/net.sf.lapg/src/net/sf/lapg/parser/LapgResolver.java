@@ -91,7 +91,7 @@ public class LapgResolver {
 	private String getTemplates() {
 		int offset = tree.getTemplatesStart();
 		char[] text = tree.getSource().getContents();
-		return offset < text.length && offset != -1 ? new String(text,offset,text.length-offset) : null;
+		return offset < text.length && offset != -1 ? new String(text,offset,text.length-offset) : "";
 	}
 
 	private LiSymbol create(AstIdentifier id, String type, boolean isTerm) {
