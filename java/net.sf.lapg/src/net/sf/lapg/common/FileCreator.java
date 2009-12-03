@@ -22,7 +22,11 @@ public class FileCreator {
 	}
 		
 	protected String getData() {
-		return fixLineSeparators(contents);
+		String data = contents;
+		if(name.endsWith(".java")) {
+			data = new JavaPostProcessor(data).process();
+		}
+		return fixLineSeparators(data);
 	}
 	
 	protected String getName() throws IOException {

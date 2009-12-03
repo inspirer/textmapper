@@ -40,6 +40,7 @@ public class ${opts.prefix}Tree<T> {
 	}
 
 ${call parse}
+${call constants}
 ${call ParseProblemClass}
 ${call TextSourceClass}
 ${call getLineOffsets-}
@@ -61,12 +62,9 @@ ${foreach inp in syntax.input}
 		};
 
 		try {
-			${opts.prefix}Lexer lexer = new ${opts.prefix}Lexer(source.getStream(), reporter);
-			lexer.setLine(source.getInitialLine());
-
-			${opts.prefix}Parser parser = new ${opts.prefix}Parser(reporter);
-			${call typeofsym for inp} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(lexer);
-			return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
+${util.shiftRight(self->createLexer(),3)-}
+${util.shiftRight(self->createParser(),3)-}
+${util.shiftRight(self->parseStatements(),3)-}
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
@@ -77,11 +75,27 @@ ${foreach inp in syntax.input}
 ${end}
 ${end}
 
-${template ParseProblemClass-}
+${template createLexer-}
+${opts.prefix}Lexer lexer = new ${opts.prefix}Lexer(source.getStream(), reporter);
+lexer.setLine(source.getInitialLine());
+${end}
+
+${template createParser-}
+${opts.prefix}Parser parser = new ${opts.prefix}Parser(reporter);
+${end}
+
+${template parseStatements-}
+${call typeofsym for inp} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(lexer);
+return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
+${end}
+
+${template constants-}
 	public static final int KIND_FATAL = 0;
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
+${end}
 
+${template ParseProblemClass-}
 	public static class ParseProblem extends Exception {
 		int kind;
 		int start;
