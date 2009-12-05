@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 import net.sf.lapg.templates.ast.AstParser.ParseException;
 
@@ -50,7 +49,6 @@ public class AstTree<T> {
 		try {
 			AstLexer lexer = new AstLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
-
 			AstParser parser = new AstParser(reporter);
 			Object result = parser.parseInput(lexer);
 			return new AstTree<Object>(source, result, list);
@@ -73,7 +71,6 @@ public class AstTree<T> {
 		try {
 			AstLexer lexer = new AstLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
-
 			AstParser parser = new AstParser(reporter);
 			TemplateNode result = parser.parseBody(lexer);
 			return new AstTree<TemplateNode>(source, result, list);

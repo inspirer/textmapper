@@ -16,6 +16,7 @@ public class JavaPostProcessor {
 
 	Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
 	Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
+	Pattern PACKAGE = Pattern.compile("package\\s*.*;[ \\t]*[\\n\\r]+");
 
 	private String text;
 	private Map<String, String> toimport = new HashMap<String, String>();
@@ -25,6 +26,7 @@ public class JavaPostProcessor {
 	private List<String> existingImports = new ArrayList<String>();
 	
 	private int lastImportLocation = 0;
+	private int nextAfterPackage = 0;
 
 	public JavaPostProcessor(String text) {
 		this.text = text;
@@ -56,7 +58,10 @@ public class JavaPostProcessor {
 				current = it.hasNext() ? it.next() : null;
 			}
 			int insertloc = current != null ? topos.get(current) : lastImportLocation;
-			String s = current != null ? "import " + i + ";\n" : "\nimport " + i + ";";
+			if(insertloc == 0) {
+				insertloc = nextAfterPackage;
+			}
+			String s = current != null || lastImportLocation == 0 ? "import " + i + ";\n" : "\nimport " + i + ";";
 			if(toinsert.containsKey(insertloc)) {
 				toinsert.put(insertloc, toinsert.get(insertloc) + s);
 			} else {
@@ -73,11 +78,19 @@ public class JavaPostProcessor {
 			lastStart = inspos;
 			sb.append(toinsert.get(inspos));
 		}
+		if(lastImportLocation == 0 && locations.size() > 0) {
+			sb.append('\n');
+		}
 		sb.append(text.substring(lastStart));
 		text = sb.toString();
 	}
 
 	private void collectExistingImports() {
+		Matcher p = PACKAGE.matcher(text);
+		if(p.find()) {
+			nextAfterPackage  = p.end();
+		}
+		
 		massimport.add("java.lang");
 		Matcher m = IMPORT.matcher(text);
 		while (m.find()) {

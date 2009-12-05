@@ -54,4 +54,18 @@ public class JavaPostProcessorTest extends TestCase {
 				"\n" +
 				"class B extends aaa.A implements qqq.A {}", res);
 	}
+
+	public void testNoImports() throws Exception {
+		String res = new JavaPostProcessor(
+				"package p;\n" +
+				"\n" +
+				"class B extends aaa.@A implements qqq.@B {}").process();
+		Assert.assertEquals(
+				"package p;\n" +
+				"\n" +
+				"import aaa.A;\n" +
+				"import qqq.B;\n" +
+				"\n" +
+				"class B extends A implements B {}", res);
+	}
 }

@@ -1,23 +1,13 @@
 ${template unit-}
 package ${call java.package};
 
-import java.io.CharArrayReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import ${call java.package}.${opts.prefix}Lexer.ErrorReporter;
-import ${call java.package}.${opts.prefix}Parser.ParseException;
-
 public class ${opts.prefix}Tree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<ParseProblem> errors;
+	private final java.util.@List<ParseProblem> errors;
 
-	public ${opts.prefix}Tree(TextSource source, T root, List<ParseProblem> errors) {
+	public ${opts.prefix}Tree(TextSource source, T root, java.util.@List<ParseProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -31,7 +21,7 @@ public class ${opts.prefix}Tree<T> {
 		return root;
 	}
 
-	public List<ParseProblem> getErrors() {
+	public java.util.@List<ParseProblem> getErrors() {
 		return errors;
 	}
 
@@ -54,8 +44,8 @@ ${end}
 ${template parse-}
 ${foreach inp in syntax.input}
 	public static ${opts.prefix}Tree<${call typeofsym for inp}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(TextSource source) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
+		final java.util.@List<ParseProblem> list = new java.util.@ArrayList<ParseProblem>();
+		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
 				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
 			}
@@ -65,9 +55,9 @@ ${foreach inp in syntax.input}
 ${util.shiftRight(self->createLexer(),3)-}
 ${util.shiftRight(self->createParser(),3)-}
 ${util.shiftRight(self->parseStatements(),3)-}
-		} catch(ParseException ex) {
+		} catch(${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
-		} catch(IOException ex) {
+		} catch(java.io.@IOException ex) {
 			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, null, list);
@@ -146,8 +136,8 @@ ${template TextSourceClass-}
 			return initialLine;
 		}
 
-		public Reader getStream() {
-			return new CharArrayReader(contents);
+		public java.io.@Reader getStream() {
+			return new java.io.@CharArrayReader(contents);
 		}
 
 		public String getLocation(int offset) {
@@ -165,7 +155,7 @@ ${template TextSourceClass-}
 			if (lineoffset == null) {
 				lineoffset = getLineOffsets(contents);
 			}
-			int line = Arrays.binarySearch(lineoffset, offset);
+			int line = java.util.@Arrays.binarySearch(lineoffset, offset);
 			return line > 0 ? line : -line - 1;
 		}
 		

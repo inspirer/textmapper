@@ -192,7 +192,7 @@ public class LapgParser {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	public Object parse(LapgLexer lexer) throws IOException, ParseException {
+	public AstRoot parse(LapgLexer lexer) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -218,8 +218,8 @@ public class LapgParser {
 		if( lapg_m[lapg_head].state != 67 ) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
-		};
-		return lapg_m[lapg_head-1].sym;
+		}
+		return (AstRoot) lapg_m[lapg_head-1].sym;
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
