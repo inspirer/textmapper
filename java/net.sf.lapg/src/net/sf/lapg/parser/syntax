@@ -42,6 +42,7 @@ _skip:         /\n|[\t\r ]+/    		{ return false; }
 _skip:  /#.*/
 '::=':  /::=/
 '|':    /\|/
+'=':	/=/
 ';':    /;/
 '.':    /\./
 ':':    /:/
@@ -125,12 +126,18 @@ rule_right (AstRuleRight) ::=
 ;
 
 rule_symbols (List<AstRightSymbol>) ::=
-	  rule_symbols commandopt symbol 					{ $rule_symbols#1.add(new AstRightSymbol($commandopt, $symbol, source, ${commandopt.offset}, ${symbol.endoffset})); }
-	| commandopt symbol									{ $$ = new ArrayList<AstRightSymbol>(); $rule_symbols.add(new AstRightSymbol($commandopt, $symbol, source, ${commandopt.offset}, ${symbol.endoffset})); }
+	  rule_symbols right_symbol 						{ $rule_symbols#1.add($right_symbol); }
+	| right_symbol										{ $$ = new ArrayList<AstRightSymbol>(); $rule_symbols.add($right_symbol); }
 ;
 
+right_symbol (AstRightSymbol) ::=
+	  commandopt identifier '=' symbol					{ $$ = new AstRightSymbol($commandopt, $identifier, $symbol, source, ${commandopt.offset}, ${symbol.endoffset}); }
+	| commandopt symbol									{ $$ = new AstRightSymbol($commandopt, null, $symbol, source, ${commandopt.offset}, ${symbol.endoffset}); }
+;
+
+
 rule_priority (AstIdentifier) ::=
-	'<<' identifier										{ $$ = $identifier; } 
+	'<<' symbol											{ $$ = $symbol; } 
 ;
 
 command (AstCode) ::=
