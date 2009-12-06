@@ -35,8 +35,8 @@ identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/
 			{ $lexem = current(); break; }
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = token.toString().substring(1, token.length()-1); break; }
-type(String):	/\([^\)\n]+\)/			{ $lexem = token.toString().substring(1, token.length()-1); break; }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); break; }
+type(String):	/\([^\)\n]+\)/			{ $lexem = unescape(current(), 1, token.length()-1); break; }
 icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 
 eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
@@ -150,11 +150,18 @@ map_entries (java.util.@Map<String,Object>) ::=
 	  identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $map_entries.put($identifier, $expression); }
 	| map_entries ',' identifier ':' expression			{ $map_entries#0.put($identifier, $expression); }
 ;
-  
+
 expression ::=
 	  scon
 	| icon
 	| symbol
+	| '[' map_entries ']'								{ $$ = $map_entries; }
+	| '[' expression_list ']'							{ $$ = $expression_list; }
+;
+
+expression_list (List<Object>) ::=
+	expression											{ $$ = new ArrayList(); $expression_list.add($expression); }
+	| expression_list ',' expression					{ $expression_list#0.add($expression); }
 ;
 
 rule_priority (AstIdentifier) ::=
@@ -187,6 +194,34 @@ private int templatesStart = -1;
 
 int getTemplatesStart() {
 	return templatesStart;
+}
+
+private String unescape(String s, int start, int end) {
+	StringBuilder sb = new StringBuilder();
+	end = Math.min(end, s.length());
+	for(int i = start; i < end; i++) {
+		char c = s.charAt(i);
+		if(c == '\\') {
+			if(++i == end) {
+				break;
+			}
+			c = s.charAt(i);
+			if(c == 'u' || c == 'x') {
+				// FIXME process unicode
+			} else if(c == 'n') {
+				sb.append('\n');
+			} else if(c == 'r') {
+				sb.append('\r');
+			} else if(c == 't') {
+				sb.append('\t');
+			} else {
+				sb.append(c);
+			}
+		} else {
+			sb.append(c);
+		}
+	} 
+	return sb.toString();
 }
 ${end}
 
