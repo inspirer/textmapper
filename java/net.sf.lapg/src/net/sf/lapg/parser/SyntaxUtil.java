@@ -10,13 +10,14 @@ import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.parser.LapgTree.ParseProblem;
 import net.sf.lapg.parser.LapgTree.TextSource;
+import net.sf.lapg.parser.ast.AstRoot;
 
 public class SyntaxUtil {
 
 	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err,
 			Map<String, String> options) {
 		String contents = getFileContents(stream);
-		LapgTree tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
+		LapgTree<AstRoot> tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
 		Grammar result = null;
 		if (!tree.hasErrors()) {
 			result = new LapgResolver(tree, options).resolve();

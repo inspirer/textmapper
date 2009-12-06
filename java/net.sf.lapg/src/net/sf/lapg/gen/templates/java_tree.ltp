@@ -1,6 +1,8 @@
 ${template unit-}
 package ${call java.package};
 
+${call java.imports-}
+
 public class ${opts.prefix}Tree<T> {
 
 	private final TextSource source;
@@ -53,8 +55,11 @@ ${foreach inp in syntax.input}
 
 		try {
 ${util.shiftRight(self->createLexer(),3)-}
+
 ${util.shiftRight(self->createParser(),3)-}
 ${util.shiftRight(self->parseStatements(),3)-}
+
+			return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
 		} catch(${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
 		} catch(java.io.@IOException ex) {
@@ -76,7 +81,6 @@ ${end}
 
 ${template parseStatements-}
 ${call typeofsym for inp} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(lexer);
-return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
 ${end}
 
 ${template constants-}

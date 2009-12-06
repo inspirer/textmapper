@@ -49,8 +49,10 @@ public class AstTree<T> {
 		try {
 			AstLexer lexer = new AstLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
+
 			AstParser parser = new AstParser(reporter);
 			Object result = parser.parseInput(lexer);
+
 			return new AstTree<Object>(source, result, list);
 		} catch(ParseException ex) {
 			/* not parsed */
@@ -71,8 +73,10 @@ public class AstTree<T> {
 		try {
 			AstLexer lexer = new AstLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
+
 			AstParser parser = new AstParser(reporter);
 			TemplateNode result = parser.parseBody(lexer);
+
 			return new AstTree<TemplateNode>(source, result, list);
 		} catch(ParseException ex) {
 			/* not parsed */

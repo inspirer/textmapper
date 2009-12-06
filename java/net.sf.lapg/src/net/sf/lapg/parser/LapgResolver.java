@@ -20,12 +20,13 @@ import net.sf.lapg.parser.ast.AstNonTerm;
 import net.sf.lapg.parser.ast.AstOption;
 import net.sf.lapg.parser.ast.AstRegexp;
 import net.sf.lapg.parser.ast.AstRightSymbol;
+import net.sf.lapg.parser.ast.AstRoot;
 import net.sf.lapg.parser.ast.AstRuleRight;
 import net.sf.lapg.parser.ast.Node;
 
 public class LapgResolver {
 
-	private final LapgTree tree;
+	private final LapgTree<AstRoot> tree;
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();;
 	
 	private List<LiSymbol> symbols = new ArrayList<LiSymbol>();
@@ -39,7 +40,7 @@ public class LapgResolver {
 	
 	private Map<String,String> options;
 
-	public LapgResolver(LapgTree tree, Map<String, String> options) {
+	public LapgResolver(LapgTree<AstRoot> tree, Map<String, String> options) {
 		this.tree = tree;
 		this.options = options;
 	}
@@ -89,7 +90,7 @@ public class LapgResolver {
 	}
 
 	private String getTemplates() {
-		int offset = tree.getTemplatesStart();
+		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
 		return offset < text.length && offset != -1 ? new String(text,offset,text.length-offset) : "";
 	}

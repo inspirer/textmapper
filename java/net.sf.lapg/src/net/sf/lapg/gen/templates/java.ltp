@@ -13,8 +13,9 @@ ${end}
 ${template unit-}
 package ${call package};
 
-import ${call package}.${opts.prefix}Lexer.LapgSymbol;
 ${call imports-}
+
+import ${call package}.${opts.prefix}Lexer.LapgSymbol;
 
 public class ${opts.prefix}Parser {
 
@@ -315,6 +316,8 @@ ${if opts.endpositions.contains('offset')}int end, ${end-}
 int line, ${end}
 
 ${template imports-}
+import java.util.ArrayList;
+import java.util.List;
 ${end}
 
 ${template classcode-}

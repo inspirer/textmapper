@@ -150,7 +150,6 @@ command_token ::=
 
 ${template java.imports-}
 ${call base-}
-import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.*;
 ${end}
 
@@ -166,5 +165,17 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-TextSource source;
+net.sf.lapg.parser.LapgTree.@TextSource source;
+${end}
+
+${template java_tree.createParser-}
+${call base-}
+parser.source = source;
+${end}
+
+${template java_tree.parseStatements-}
+${call base-}
+if(result != null) {
+	result.setTemplatesStart(lexer.getTemplatesStart());
+}
 ${end}

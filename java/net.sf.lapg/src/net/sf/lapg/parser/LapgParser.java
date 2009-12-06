@@ -1,16 +1,15 @@
 package net.sf.lapg.parser;
 
 import java.io.IOException;
-
-import net.sf.lapg.parser.LapgLexer.ErrorReporter;
-import net.sf.lapg.parser.LapgLexer.Lexems;
-import net.sf.lapg.parser.LapgLexer.LapgSymbol;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import net.sf.lapg.parser.LapgLexer.ErrorReporter;
+import net.sf.lapg.parser.LapgLexer.Lexems;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.*;
 
+import net.sf.lapg.parser.LapgLexer.LapgSymbol;
 
 public class LapgParser {
 
@@ -218,15 +217,15 @@ public class LapgParser {
 		if( lapg_m[lapg_head].state != 67 ) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
-		}
-		return (AstRoot) lapg_m[lapg_head-1].sym;
+		};
+		return (AstRoot)lapg_m[lapg_head-1].sym;
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
 		if( DEBUG_SYNTAX ) {
-			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+			System.out.println(MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
 		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
 			lapg_n = lexer.next();

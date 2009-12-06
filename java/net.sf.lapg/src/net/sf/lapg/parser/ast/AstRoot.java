@@ -9,6 +9,7 @@ public class AstRoot extends Node {
 	private final List<AstOption> options;
 	private final List<AstLexerPart> lexer;
 	private final List<AstGrammarPart> grammar;
+	private int templatesStart = -1;
 
 	public AstRoot(List<AstOption> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
 			int offset, int endoffset) {
@@ -39,5 +40,13 @@ public class AstRoot extends Node {
 				}
 			}
 		}
+	}
+
+	public int getTemplatesStart() {
+		return templatesStart;
+	}
+	
+	public void setTemplatesStart(int templatesStart) {
+		this.templatesStart = templatesStart;
 	}
 }

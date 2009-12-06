@@ -6,23 +6,19 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import net.sf.lapg.parser.LapgLexer.ErrorReporter;
 import net.sf.lapg.parser.LapgParser.ParseException;
-import net.sf.lapg.parser.ast.AstRoot;
+import net.sf.lapg.parser.ast.*;
 
-public class LapgTree {
+public class LapgTree<T> {
 
 	private final TextSource source;
-	private final AstRoot root;
-	private final int templatesStart;
+	private final T root;
 	private final List<ParseProblem> errors;
 
-	public LapgTree(TextSource source, AstRoot root, int templatesStart,
-			List<ParseProblem> errors) {
+	public LapgTree(TextSource source, T root, List<ParseProblem> errors) {
 		this.source = source;
 		this.root = root;
-		this.templatesStart = templatesStart;
 		this.errors = errors;
 	}
 
@@ -30,12 +26,8 @@ public class LapgTree {
 		return source;
 	}
 
-	public AstRoot getRoot() {
+	public T getRoot() {
 		return root;
-	}
-
-	public int getTemplatesStart() {
-		return templatesStart;
 	}
 
 	public List<ParseProblem> getErrors() {
@@ -46,7 +38,8 @@ public class LapgTree {
 		return errors.size() > 0;
 	}
 
-	public static LapgTree parse(TextSource source) {
+
+	public static LapgTree<AstRoot> parse(TextSource source) {
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -59,16 +52,21 @@ public class LapgTree {
 			lexer.setLine(source.getInitialLine());
 
 			LapgParser parser = new LapgParser(reporter);
-			parser.source = source;		// FIXME
-			AstRoot result = (AstRoot)parser.parse(lexer);
-			return new LapgTree(source, result, lexer.getTemplatesStart(), list);
+			parser.source = source;
+			AstRoot result = parser.parse(lexer);
+			if(result != null) {
+				result.setTemplatesStart(lexer.getTemplatesStart());
+			}
+
+			return new LapgTree<AstRoot>(source, result, list);
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
 			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new LapgTree(source, null, -1, list);
+		return new LapgTree<AstRoot>(source, null, list);
 	}
+
 
 	public static final int KIND_FATAL = 0;
 	public static final int KIND_ERROR = 1;
