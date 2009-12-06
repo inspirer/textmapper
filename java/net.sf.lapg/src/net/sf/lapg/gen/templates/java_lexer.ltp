@@ -1,18 +1,13 @@
 ${template unit-}
 package ${call java.package};
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-
 public class ${opts.prefix}Lexer {
 
 ${call innerDeclarations-}
 
 	public static final int TOKEN_SIZE = ${opts.maxtoken};
 
-	final private Reader stream;
+	final private java.io.@Reader stream;
 	final private ErrorReporter reporter;
 
 	final private char[] data = new char[2048];
@@ -33,7 +28,7 @@ ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 ${end-}
 ${util.shiftRight(self->lexercode(),1)-}
 
-	public ${opts.prefix}Lexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter) throws java.io.@IOException {
 		this.stream = stream;
 		this.reporter = reporter;
 		this.datalen = stream.read(data);
@@ -74,7 +69,7 @@ ${self->lexerTables()-}
 		return 1;
 	}
 
-	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
+	public LapgSymbol next() throws java.io.@IOException, java.io.@UnsupportedEncodingException {
 		LapgSymbol lapg_n = new LapgSymbol();
 		int state;
 
@@ -131,7 +126,7 @@ ${end-}
 					reporter.error(${call java.err_location('lapg_n')}currLine, "Unexpected end of file reached");
 					break;
 				}
-				reporter.error(${call java.err_location('lapg_n')}currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(${call java.err_location('lapg_n')}currLine, java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -151,7 +146,7 @@ ${end-}
 		return lapg_n;
 	}
 ${if syntax.hasLexemActions()}
-	private boolean createToken(LapgSymbol lapg_n) throws UnsupportedEncodingException {
+	private boolean createToken(LapgSymbol lapg_n) throws java.io.@UnsupportedEncodingException {
 		switch( lapg_n.lexem ) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}

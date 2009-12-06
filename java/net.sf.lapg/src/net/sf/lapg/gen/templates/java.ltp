@@ -13,20 +13,16 @@ ${end}
 ${template unit-}
 package ${call package};
 
-import java.io.IOException;
-
-import ${call package}.${opts.prefix}Lexer.ErrorReporter;
-import ${call package}.${opts.prefix}Lexer.Lexems;
 import ${call package}.${opts.prefix}Lexer.LapgSymbol;
-${call imports}
+${call imports-}
 
 public class ${opts.prefix}Parser {
 
 ${call parseException-}
 
-	private final ErrorReporter reporter;
+	private final ${call package}.${opts.prefix}Lexer.@ErrorReporter reporter;
 
-	public ${opts.prefix}Parser(ErrorReporter reporter) {
+	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter) {
 		this.reporter = reporter;
 	}
 
@@ -39,7 +35,7 @@ ${foreach s in parser.sym-}
 ${end-}
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
 		// non-terminals
 ${for i : parser.nterms, parser.nsyms-1 -}
 		public static final int ${util.toIdentifier(parser.sym[i].name,i)} = ${i};
@@ -79,7 +75,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().type}${syntax.input.first().type}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws IOException, ParseException {
+	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().type}${syntax.input.first().type}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws java.io.@IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -135,9 +131,9 @@ ${if opts.endpositions.contains('offset')-}
 ${end-}
 					if( lapg_symbols_ok >= 4 ) {
 ${if opts.positions.contains('column')-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
+						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
 ${else-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 ${end-}
 					}
 					if( lapg_symbols_ok <= 1 ) {
@@ -159,20 +155,20 @@ ${end-}
 ${if syntax.error-}
 			if(lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
+${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
 ${if syntax.error-}
 			}
 ${end-}
 			throw new ParseException();
 		};
-		return lapg_m[lapg_head-1].sym;
+		return ${if syntax.input.length == 1 && syntax.input.first().type}(${syntax.input.first().type})${end}lapg_m[lapg_head-1].sym;
 	}
 
-	private void shift(${opts.prefix}Lexer lexer) throws IOException {
+	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
 		if( DEBUG_SYNTAX ) {
-			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+			System.out.println(java.text.@MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
 		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
 			lapg_n = lexer.next();
@@ -228,7 +224,7 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	public ${if inp.type}${inp.type}${else}Object${end} parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws IOException, ParseException {
+	public ${if inp.type}${inp.type}${else}Object${end} parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
 		return ${if inp.type}(${inp.type}) ${end}parse(lexer, ${index});
 	}
 ${end-}
@@ -319,9 +315,6 @@ ${if opts.endpositions.contains('offset')}int end, ${end-}
 int line, ${end}
 
 ${template imports-}
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 ${end}
 
 ${template classcode-}

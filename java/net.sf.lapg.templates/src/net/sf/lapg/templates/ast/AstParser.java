@@ -1,9 +1,7 @@
 package net.sf.lapg.templates.ast;
 
 import java.io.IOException;
-
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
-import net.sf.lapg.templates.ast.AstLexer.Lexems;
 import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
 
 import java.io.CharArrayReader;
@@ -12,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.sf.lapg.templates.api.ITemplate;
-
+import net.sf.lapg.templates.ast.AstLexer.Lexems;
 
 public class AstParser {
 
@@ -661,7 +659,7 @@ public class AstParser {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
 		if( DEBUG_SYNTAX ) {
-			System.out.println( MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current() ) );
+			System.out.println(MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
 		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
 			lapg_n = lexer.next();
