@@ -19,9 +19,9 @@ import net.sf.lapg.parser.ast.AstLexerPart;
 import net.sf.lapg.parser.ast.AstNonTerm;
 import net.sf.lapg.parser.ast.AstOption;
 import net.sf.lapg.parser.ast.AstRegexp;
-import net.sf.lapg.parser.ast.AstRightSymbol;
+import net.sf.lapg.parser.ast.AstRuleSymbol;
 import net.sf.lapg.parser.ast.AstRoot;
-import net.sf.lapg.parser.ast.AstRuleRight;
+import net.sf.lapg.parser.ast.AstRule;
 import net.sf.lapg.parser.ast.Node;
 
 public class LapgResolver {
@@ -196,11 +196,11 @@ public class LapgResolver {
 		}
 	}
 
-	private void createRule(LiSymbol left, AstRuleRight right, List<LiSymbol> rightPart) {
-		List<AstRightSymbol> list = right.getList();
+	private void createRule(LiSymbol left, AstRule right, List<LiSymbol> rightPart) {
+		List<AstRuleSymbol> list = right.getList();
 		rightPart.clear();
 		if(list != null) {
-			for(AstRightSymbol rs : list) {
+			for(AstRuleSymbol rs : list) {
 				AstCode astCode = rs.getCode();
 				if(astCode != null) {
 					LiSymbol codeSym = new LiSymbol("{}", null, false);
@@ -225,7 +225,7 @@ public class LapgResolver {
 			if(clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
 				LiSymbol left = resolve(nonterm.getName());
-				for(AstRuleRight right : nonterm.getRight()) {
+				for(AstRule right : nonterm.getRules()) {
 					createRule(left, right, rightPart);
 				}
 			}

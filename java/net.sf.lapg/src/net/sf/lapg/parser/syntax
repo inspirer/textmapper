@@ -31,20 +31,25 @@
 
 [0]
 
-identifier(String):     /[a-zA-Z_][a-zA-Z_0-9]*|'[^'\n]+'/  { $lexem = current(); break; }
-regexp(String):	/\/([^\/\\]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
-scon(String):	/"[^"\n\\]*"/			{ $lexem = token.toString().substring(1, token.length()-1); break; }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/
+			{ $lexem = current(); break; }
+
+regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = token.toString().substring(1, token.length()-1); break; }
 type(String):	/\([^\)\n]+\)/			{ $lexem = token.toString().substring(1, token.length()-1); break; }
 icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
+
 eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
 '%':           /\n%/
 _skip:         /\n|[\t\r ]+/    		{ return false; }
 _skip:  /#.*/
+
 '::=':  /::=/
 '|':    /\|/
 '=':	/=/
 ';':    /;/
 '.':    /\./
+',':	/,/
 ':':    /:/
 '[':    /\[/
 ']':    /\]/
@@ -54,8 +59,8 @@ _skip:  /#.*/
 
 [1]
 
-_skip:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
-_skip:	/"([^\n\\"]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
+_skip:	/'([^\n\\']|\\.)*'/
+_skip:	/"([^\n\\"]|\\.)*"/
 _skip:	/[^'"{}]+/
 'i{':	/{/				{ deep++; break; }
 '}':	/}/				{ if( --deep == 0 ) group = 0; break; }
@@ -106,35 +111,51 @@ grammar_parts (List<AstGrammarPart>) ::=
 ;
 
 grammar_part (AstGrammarPart) ::= 
-	  symbol typeopt '::=' rule_list ';'				{ $$ = new AstNonTerm($symbol, $typeopt, $rule_list, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| '%' identifier symbol_list ';'					{ $$ = new AstDirective($identifier, $symbol_list, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| annotations symbol typeopt '::=' rules ';'		{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| '%' identifier symbols ';'						{ $$ = new AstDirective($identifier, $symbols, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 ; 
 
-rule_list (List<AstRuleRight>) ::= 
-	  rule_list '|' rule_right							{ $rule_list#1.add($rule_right); }
-	| rule_right										{ $$ = new ArrayList<AstRuleRight>(); $rule_list.add($rule_right); }
+symbols (List<AstIdentifier>) ::= 
+	  symbol 											{ $$ = new ArrayList<AstIdentifier>(); $symbols.add($symbol); }
+	| symbols symbol									{ $symbols#1.add($symbol); }
 ;
 
-symbol_list (List<AstIdentifier>) ::= 
-	  symbol_list symbol								{ $symbol_list#1.add($symbol); }
-	| symbol 											{ $$ = new ArrayList<AstIdentifier>(); $symbol_list.add($symbol); }
+rules (List<AstRule>) ::= 
+	  rule0												{ $$ = new ArrayList<AstRule>(); $rules.add($rule0); }
+	| rules '|' rule0									{ $rules#1.add($rule0); }
 ;
 
-rule_right (AstRuleRight) ::=
-	  rule_symbols commandopt rule_priorityopt			{ $$ = new AstRuleRight($rule_symbols, $commandopt, $rule_priorityopt, source, ${rule_right.offset}, ${rule_right.endoffset}); }
-	| commandopt rule_priorityopt 						{ $$ = new AstRuleRight(null, $commandopt, $rule_priorityopt, source, ${rule_right.offset}, ${rule_right.endoffset}); }
+rule0 (AstRule) ::=
+	  annotationsopt rulesyms commandopt rule_priorityopt
+														{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $annotationsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| annotationsopt commandopt rule_priorityopt  		{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $annotationsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
 ;
 
-rule_symbols (List<AstRightSymbol>) ::=
-	  rule_symbols right_symbol 						{ $rule_symbols#1.add($right_symbol); }
-	| right_symbol										{ $$ = new ArrayList<AstRightSymbol>(); $rule_symbols.add($right_symbol); }
+rulesyms (List<AstRuleSymbol>) ::=
+	  rulesym											{ $$ = new ArrayList<AstRuleSymbol>(); $rulesyms.add($rulesym); }
+	| rulesyms rulesym 									{ $rulesyms#1.add($rulesym); }
 ;
 
-right_symbol (AstRightSymbol) ::=
-	  commandopt identifier '=' symbol					{ $$ = new AstRightSymbol($commandopt, $identifier, $symbol, source, ${commandopt.offset}, ${symbol.endoffset}); }
-	| commandopt symbol									{ $$ = new AstRightSymbol($commandopt, null, $symbol, source, ${commandopt.offset}, ${symbol.endoffset}); }
+rulesym (AstRuleSymbol) ::=
+	  commandopt identifier '=' symbol annotationsopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $symbol, $annotationsopt, source, ${commandopt.offset}, ${symbol.endoffset}); }
+	| commandopt symbol annotationsopt					{ $$ = new AstRuleSymbol($commandopt, null, $symbol, $annotationsopt, source, ${commandopt.offset}, ${symbol.endoffset}); }
 ;
 
+annotations (java.util.@Map<String,Object>) ::=
+	'['	map_entries ']'									{ $$ = $map_entries; }
+;
+
+map_entries (java.util.@Map<String,Object>) ::=
+	  identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $map_entries.put($identifier, $expression); }
+	| map_entries ',' identifier ':' expression			{ $map_entries#0.put($identifier, $expression); }
+;
+  
+expression ::=
+	  scon
+	| icon
+	| symbol
+;
 
 rule_priority (AstIdentifier) ::=
 	'<<' symbol											{ $$ = $symbol; } 

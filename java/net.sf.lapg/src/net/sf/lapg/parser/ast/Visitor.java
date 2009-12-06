@@ -34,11 +34,11 @@ public class Visitor {
 		return true;
 	}
 
-	public boolean visit(AstRightSymbol n) {
+	public boolean visit(AstRuleSymbol n) {
 		return true;
 	}
 
-	public boolean visit(AstRuleRight n) {
+	public boolean visit(AstRule n) {
 		return true;
 	}
 
