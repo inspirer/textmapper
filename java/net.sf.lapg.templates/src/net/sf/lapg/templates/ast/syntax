@@ -311,17 +311,13 @@ body (TemplateNode) ::=
 ##################################################################################
 %%
 ${template java.imports}
-import java.io.CharArrayReader;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import net.sf.lapg.templates.api.ITemplate;
 ${end}
 
 ${template java.classcode}
 ${call base-}
-private ArrayList<ITemplate> templates;
+private ArrayList<net.sf.lapg.templates.api.@ITemplate> templates;
 private String templatePackage;
 
 protected String inputName;
@@ -418,10 +414,10 @@ private void checkFqn(String templateName, int offset, int endoffset, int line) 
 public boolean parse(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
-	templates = new ArrayList<ITemplate>();
+	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
 	try {
 		buff = s.toCharArray();
-		AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
+		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
 		parseInput(lexer);
 		return true;
 	} catch( ParseException ex ) {
@@ -434,10 +430,10 @@ public boolean parse(String s, String templatePackage, String inputName) {
 public boolean parseBody(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
-	templates = new ArrayList<ITemplate>();
+	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
 	try {
 		buff = s.toCharArray();
-		AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
+		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
 		parseBody(lexer);
 		return true;
 	} catch( ParseException ex ) {
@@ -447,7 +443,7 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	}
 }
 
-public ITemplate[] getResult() {
-	return templates.toArray(new ITemplate[templates.size()]);
+public net.sf.lapg.templates.api.@ITemplate[] getResult() {
+	return templates.toArray(new net.sf.lapg.templates.api.@ITemplate[templates.size()]);
 }
 ${end}
