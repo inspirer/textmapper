@@ -467,7 +467,7 @@ public class LexicalBuilder {
 						l = lsym[cset[p]];
 
 						if ((l & LexConstants.MASK) == LexConstants.ANY) {
-							if (sym != '\n') {
+							if (sym != char2no['\n']) {
 								next[nnext++] = cset[p] + 1;
 							}
 						} else if ((l & LexConstants.MASK) == LexConstants.SYM) {

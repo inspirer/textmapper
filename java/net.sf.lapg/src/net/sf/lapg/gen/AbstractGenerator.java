@@ -71,7 +71,7 @@ public abstract class AbstractGenerator {
 			}
 
 			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, err, getDefaultOptions());
-			if (s.hasErrors()) {
+			if (s == null || s.hasErrors()) {
 				return false;
 			}
 

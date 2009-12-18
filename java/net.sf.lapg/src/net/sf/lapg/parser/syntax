@@ -60,6 +60,7 @@ _skip:  /#.*/
 '*':	/*/
 '?':	/?/
 '&':	/&/
+'@':	/@/
 
 '{':	/{/		{ deep = 1; group = 1; break; }
 
@@ -100,7 +101,7 @@ type_part_list ::=
 	type_part_list type_part | type_part ;
 
 type_part ::=
-	'<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '&' | '(' type_part_listopt ')'
+	'<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')'
 ;
 
 pattern (AstRegexp) ::=
