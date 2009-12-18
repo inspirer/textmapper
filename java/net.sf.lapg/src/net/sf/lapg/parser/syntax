@@ -36,7 +36,6 @@ identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
 scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); break; }
-type(String):	/\([^\)\n]+\)/			{ $lexem = unescape(current(), 1, token.length()-1); break; }
 icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 
 eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
@@ -53,7 +52,14 @@ _skip:  /#.*/
 ':':    /:/
 '[':    /\[/
 ']':    /\]/
+'(':	/\(/
+')':	/\)/
 '<<':   /<</
+'<':	/</
+'>':	/>/
+'*':	/*/
+'?':	/?/
+'&':	/&/
 
 '{':	/{/		{ deep = 1; group = 1; break; }
 
@@ -83,6 +89,18 @@ option (AstOption) ::=
 
 symbol (AstIdentifier) ::=
 	identifier											{ $$ = new AstIdentifier($identifier, source, ${symbol.offset}, ${symbol.endoffset}); } 
+;
+
+type (String) ::=
+	  '(' scon ')'										{ $$ = $scon; }
+	| '(' type_part_list ')'							{ $$ = source.getText(${self[0].offset}+1, ${self[2].endoffset}-1); }
+;
+
+type_part_list ::=
+	type_part_list type_part | type_part ;
+
+type_part ::=
+	'<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '&' | '(' type_part_listopt ')'
 ;
 
 pattern (AstRegexp) ::=
