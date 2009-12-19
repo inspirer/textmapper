@@ -32,10 +32,10 @@ public class LapgParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
     private static final int lapg_action[] = {
-		-3, -1, -11, 4, -1, -1, 3, 7, -1, -19, -1, 28, 5, 6, 39, -1,
-		-1, 31, -1, -1, -1, -25, 27, -33, 41, -1, 38, 29, 16, -1, 18, 19,
+		-3, -1, -11, 3, -1, -1, 4, 7, -1, -19, -1, 27, 5, 6, 38, -1,
+		-1, 31, -1, -1, -1, -25, 28, -33, 40, -1, 39, 29, 16, -1, 18, 19,
 		14, 15, -43, 12, 13, 17, 20, 22, 21, -1, 11, -71, -1, -1, -1, -1,
-		-1, -81, 40, -87, 8, -93, -1, 9, 10, 26, -121, 45, -1, -1, -1, 59,
+		-1, -81, 41, -87, 8, -93, -1, 9, 10, 26, -121, 45, -1, -1, -1, 59,
 		-133, -1, -1, 25, 34, -147, 44, 46, 62, 63, -1, 64, 60, -1, -1, 47,
 		50, -157, -169, -183, 36, 37, -189, -1, 67, -1, -1, -197, 42, -211, 55, -223,
 		-1, -233, -239, 74, -1, 65, -1, 66, 61, 48, 56, -245, -255, -1, -271, 52,
@@ -108,9 +108,9 @@ public class LapgParser {
 	};
 
     private static final short lapg_rlen[] = {
-		0, 1, 3, 2, 1, 3, 3, 1, 3, 3, 2, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 0, 1, 3, 1, 2, 1, 3, 0, 1,
-		3, 0, 1, 0, 1, 6, 2, 1, 2, 1, 5, 6, 4, 1, 2, 1,
+		0, 1, 3, 1, 2, 3, 3, 1, 3, 3, 2, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 0, 1, 3, 1, 1, 2, 3, 0, 1,
+		3, 0, 1, 0, 1, 6, 1, 2, 1, 2, 5, 6, 4, 1, 2, 1,
 		3, 0, 1, 0, 1, 4, 3, 1, 2, 5, 3, 3, 3, 5, 1, 1,
 		1, 3, 3, 1, 3, 2, 0, 1, 3, 2, 1, 3,
 	};
@@ -315,11 +315,11 @@ public class LapgParser {
 			case 2:  // input ::= optionsopt lexer_parts grammar_parts
 				  lapg_gg.sym = new AstRoot(((List<AstOption>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 3:  // options ::= options option
-				 ((List<AstOption>)lapg_m[lapg_head-1].sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
-				break;
-			case 4:  // options ::= option
+			case 3:  // options ::= option
 				 lapg_gg.sym = new ArrayList<AstOption>(16); ((List<AstOption>)lapg_gg.sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
+				break;
+			case 4:  // options ::= options option
+				 ((List<AstOption>)lapg_m[lapg_head-1].sym).add(((AstOption)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 5:  // option ::= '.' identifier scon
 				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head-1].sym), ((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -339,11 +339,11 @@ public class LapgParser {
 			case 26:  // pattern ::= regexp
 				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 27:  // lexer_parts ::= lexer_parts lexer_part
-				 ((List<AstLexerPart>)lapg_m[lapg_head-1].sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
-				break;
-			case 28:  // lexer_parts ::= lexer_part
+			case 27:  // lexer_parts ::= lexer_part
 				 lapg_gg.sym = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
+				break;
+			case 28:  // lexer_parts ::= lexer_parts lexer_part
+				 ((List<AstLexerPart>)lapg_m[lapg_head-1].sym).add(((AstLexerPart)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 29:  // lexer_part ::= '[' icon_list ']'
 				 lapg_gg.sym = new AstGroupsSelector(((List<Integer>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -354,17 +354,17 @@ public class LapgParser {
 			case 37:  // lexer_part ::= symbol typeopt ':' pattern iconopt commandopt
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((AstRegexp)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((AstCode)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 38:  // icon_list ::= icon_list icon
-				 ((List<Integer>)lapg_m[lapg_head-1].sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
-				break;
-			case 39:  // icon_list ::= icon
+			case 38:  // icon_list ::= icon
 				 lapg_gg.sym = new ArrayList<Integer>(4); ((List<Integer>)lapg_gg.sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 40:  // grammar_parts ::= grammar_parts grammar_part
-				 ((List<AstGrammarPart>)lapg_m[lapg_head-1].sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
+			case 39:  // icon_list ::= icon_list icon
+				 ((List<Integer>)lapg_m[lapg_head-1].sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 41:  // grammar_parts ::= grammar_part
+			case 40:  // grammar_parts ::= grammar_part
 				 lapg_gg.sym = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
+				break;
+			case 41:  // grammar_parts ::= grammar_parts grammar_part
+				 ((List<AstGrammarPart>)lapg_m[lapg_head-1].sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 42:  // grammar_part ::= symbol typeopt '::=' rules ';'
 				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRule>)lapg_m[lapg_head-1].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 

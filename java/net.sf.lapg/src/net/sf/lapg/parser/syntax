@@ -79,8 +79,8 @@ input (AstRoot) ::=
 ;
 
 options (List<AstOption>) ::= 
-	  options option									{ $options#1.add($option); } 
-	| option											{ $$ = new ArrayList<AstOption>(16); $options.add($option); }  
+	  option											{ $$ = new ArrayList<AstOption>(16); $options.add($option); }  
+	| list=options option								{ $list.add($option); } 
 ;
 
 option (AstOption) ::=
@@ -109,8 +109,8 @@ pattern (AstRegexp) ::=
 ;
 
 lexer_parts (List<AstLexerPart>) ::= 
-	  lexer_parts lexer_part							{ $lexer_parts#1.add($lexer_part); }
-	| lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); $lexer_parts.add($lexer_part); }
+	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); $lexer_parts.add($lexer_part); }
+	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
 ;
 
 lexer_part (AstLexerPart) ::=
@@ -120,13 +120,13 @@ lexer_part (AstLexerPart) ::=
 ;
 
 icon_list (List<Integer>) ::=
-	  icon_list icon  									{ $icon_list#1.add($icon); }
-	| icon 												{ $$ = new ArrayList<Integer>(4); $icon_list.add($icon); } 
+	  icon 												{ $$ = new ArrayList<Integer>(4); $icon_list.add($icon); } 
+	| list=icon_list icon  								{ $list.add($icon); }
 ;
 
 grammar_parts (List<AstGrammarPart>) ::=
-	  grammar_parts grammar_part						{ $grammar_parts#1.add($grammar_part); }
-	| grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); $grammar_parts.add($grammar_part); }
+	  grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); $grammar_parts.add($grammar_part); }
+	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
 ;
 
 grammar_part (AstGrammarPart) ::= 
@@ -137,12 +137,12 @@ grammar_part (AstGrammarPart) ::=
 
 symbols (List<AstIdentifier>) ::= 
 	  symbol 											{ $$ = new ArrayList<AstIdentifier>(); $symbols.add($symbol); }
-	| symbols symbol									{ $symbols#1.add($symbol); }
+	| list=symbols symbol								{ $list.add($symbol); }
 ;
 
 rules (List<AstRule>) ::= 
 	  rule0												{ $$ = new ArrayList<AstRule>(); $rules.add($rule0); }
-	| rules '|' rule0									{ $rules#1.add($rule0); }
+	| list=rules '|' rule0								{ $list.add($rule0); }
 ;
 
 rule0 (AstRule) ::=
@@ -153,7 +153,7 @@ rule0 (AstRule) ::=
 
 rulesyms (List<AstRuleSymbol>) ::=
 	  rulesym											{ $$ = new ArrayList<AstRuleSymbol>(); $rulesyms.add($rulesym); }
-	| rulesyms rulesym 									{ $rulesyms#1.add($rulesym); }
+	| list=rulesyms rulesym 							{ $list.add($rulesym); }
 ;
 
 rulesym (AstRuleSymbol) ::=
