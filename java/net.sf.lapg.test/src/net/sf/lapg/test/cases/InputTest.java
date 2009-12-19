@@ -13,6 +13,7 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.lex.RegexpParser;
@@ -163,7 +164,7 @@ public class InputTest extends TestCase {
 		Rule[] rules = g.getRules();
 		Assert.assertEquals(5, rules.length);
 		Assert.assertEquals("input", rules[0].getLeft().getName());
-		Assert.assertEquals("list", rules[0].getRight()[0].getName());
+		Assert.assertEquals("list", rules[0].getRight()[0].getTarget().getName());
 		Assert.assertEquals(1, rules[0].getRight().length);
 
 		Lexem[] lexems = g.getLexems();
@@ -339,7 +340,7 @@ public class InputTest extends TestCase {
 		Rule[] rules = g.getRules();
 		Assert.assertEquals(5, rules.length);
 		Assert.assertEquals("input", rules[0].getLeft().getName());
-		Assert.assertEquals("list", rules[0].getRight()[0].getName());
+		Assert.assertEquals("list", rules[0].getRight()[0].getTarget().getName());
 		Assert.assertEquals(1, rules[0].getRight().length);
 
 		Lexem[] lexems = g.getLexems();
@@ -417,8 +418,8 @@ public class InputTest extends TestCase {
 
 	private String getSignature(Rule r) {
 		String ind = Integer.toString(r.getLeft().getIndex());
-		for(Symbol rt : r.getRight()) {
-			ind += ":" + rt.getIndex();
+		for(SymbolRef rt : r.getRight()) {
+			ind += ":" + rt.getTarget().getIndex();
 		}
 		return ind;
 	}

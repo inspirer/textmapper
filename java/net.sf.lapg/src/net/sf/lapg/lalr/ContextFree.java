@@ -5,6 +5,7 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.SymbolRef;
 
 abstract class ContextFree {
 
@@ -75,9 +76,9 @@ abstract class ContextFree {
 			this.rleft[i] = r.getLeft().getIndex();
 			this.rprio[i] = r.getPriority();
 			this.rindex[i] = curr_rindex;
-			Symbol[] wright = r.getRight();
+			SymbolRef[] wright = r.getRight();
 			for (int e = 0; e < wright.length; e++) {
-				this.rright[curr_rindex++] = wright[e].getIndex();
+				this.rright[curr_rindex++] = wright[e].getTarget().getIndex();
 			}
 			this.rright[curr_rindex++] = -1-i;
 			if( wright.length == 0 ) {

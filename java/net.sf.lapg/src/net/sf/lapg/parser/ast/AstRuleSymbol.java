@@ -7,14 +7,14 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 public class AstRuleSymbol extends Node {
 
 	private final AstCode action;
-	private final String astName;
+	private final String alias;
 	private final AstIdentifier symbol;
 	private final Map<String,Object> annotations;
 
-	public AstRuleSymbol(AstCode action, String name, AstIdentifier symbol, Map<String,Object> annotations, TextSource source, int offset, int endoffset) {
+	public AstRuleSymbol(AstCode action, String alias, AstIdentifier symbol, Map<String,Object> annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.action = action;
-		this.astName = name;
+		this.alias = alias;
 		this.symbol = symbol;
 		this.annotations = annotations;
 	}
@@ -27,8 +27,8 @@ public class AstRuleSymbol extends Node {
 		return symbol;
 	}
 	
-	public String getAstName() {
-		return astName;
+	public String getAlias() {
+		return alias;
 	}
 	
 	public Map<String, Object> getAnnotations() {

@@ -3,22 +3,23 @@ package net.sf.lapg.parser;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.parser.ast.Node;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 
 public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 	
-	private static final LiSymbol[] EMPTY_RIGHT = new LiSymbol[0];
+	private static final LiSymbolRef[] EMPTY_RIGHT = new LiSymbolRef[0];
 	
 	private int index;
 	private final LiSymbol left;
-	private final LiSymbol[] right;
+	private final LiSymbolRef[] right;
 	private final Action code;
 	private final LiSymbol priority;
 	private final Node node;
 	
-	public LiRule(LiSymbol left, LiSymbol[] right, Action code, LiSymbol priority, Node node) {
+	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, Node node) {
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right ;
 		this.code = code;
@@ -46,7 +47,7 @@ public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 	}
 
 	@Override
-	public Symbol[] getRight() {
+	public SymbolRef[] getRight() {
 		return right;
 	}
 	
@@ -56,8 +57,8 @@ public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 			return priority.getIndex();
 		}
 		for (int i = right.length - 1; i >= 0; i--) {
-			if (right[i].isTerm()) {
-				return right[i].getIndex();
+			if (right[i].getTarget().isTerm()) {
+				return right[i].getTarget().getIndex();
 			}
 		}
 		return -1;
@@ -76,12 +77,12 @@ public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 			sb.append(left.getName());
 		}
 		sb.append(" ::=");
-		for (LiSymbol s : right) {
+		for (LiSymbolRef s : right) {
 			sb.append(" ");
-			if (s.getName() == null) {
+			if (s.getTarget().getName() == null) {
 				sb.append("{}");
 			} else {
-				sb.append(s.getName());
+				sb.append(s.getTarget().getName());
 			}
 		}
 		if (priority != null) {

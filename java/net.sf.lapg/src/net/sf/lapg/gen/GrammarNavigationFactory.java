@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.INavigationStrategy;
@@ -73,9 +74,9 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		}
 
 		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			Symbol[] array = ((Rule)obj).getRight();
+			SymbolRef[] array = ((Rule)obj).getRight();
 			if( index instanceof Integer ) {
-				return new ActionSymbol(array[(Integer)index], false, array.length - (Integer)index - 1, evaluationStrategy, templatePackage);
+				return new ActionSymbol(array[(Integer)index].getTarget(), false, array.length - (Integer)index - 1, evaluationStrategy, templatePackage);
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
@@ -88,11 +89,14 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 				result.add(new ActionSymbol(rule.getLeft(), true, 0, evaluationStrategy, templatePackage));
 			}
 
-			Symbol[] right = rule.getRight();
+			SymbolRef[] right = rule.getRight();
 			for( int i = 0; i < right.length; i++ ) {
-				String name = right[i].getName();
+				String name = right[i].getTarget().getName();
+				if(right[i].getAlias() != null) {
+					name = right[i].getAlias();
+				}
 				if( id.equals(name)) {
-					result.add(new ActionSymbol(right[i], false, right.length - i - 1, evaluationStrategy, templatePackage));
+					result.add(new ActionSymbol(right[i].getTarget(), false, right.length - i - 1, evaluationStrategy, templatePackage));
 				}
 			}
 

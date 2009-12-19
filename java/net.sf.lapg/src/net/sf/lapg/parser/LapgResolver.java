@@ -121,8 +121,8 @@ public class LapgResolver {
 				sym = symbolsMap.get(name.substring(0, name.length()-3));
 				if(sym != null) {
 					LiSymbol symopt = create(id, sym.getType(), false);
-					rules.add(new LiRule(symopt, new LiSymbol[0], null, null, id));
-					rules.add(new LiRule(symopt, new LiSymbol[]{sym}, null, null, id));
+					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, id));
+					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null)}, null, null, id));
 					return symopt;
 				}
 			}			
@@ -196,7 +196,7 @@ public class LapgResolver {
 		}
 	}
 
-	private void createRule(LiSymbol left, AstRule right, List<LiSymbol> rightPart) {
+	private void createRule(LiSymbol left, AstRule right, List<LiSymbolRef> rightPart) {
 		List<AstRuleSymbol> list = right.getList();
 		rightPart.clear();
 		if(list != null) {
@@ -205,22 +205,22 @@ public class LapgResolver {
 				if(astCode != null) {
 					LiSymbol codeSym = new LiSymbol("{}", null, false);
 					symbols.add(codeSym);
-					rightPart.add(codeSym);
+					rightPart.add(new LiSymbolRef(codeSym, null));
 					rules.add(new LiRule(codeSym, null, convert(astCode), null, astCode));
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
 				if(sym != null) {
-					rightPart.add(sym);
+					rightPart.add(new LiSymbolRef(sym, rs.getAlias()));
 				}
 			}
 		}
 		LiSymbol prio = right.getPriority() != null ? resolve(right.getPriority()) : null;
-		rules.add(new LiRule(left, rightPart.toArray(new LiSymbol[rightPart.size()]), convert(right.getAction()), prio, right));
+		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, right));
 	}
 
 	private void collectRules() {
 		rules = new ArrayList<LiRule>();
-		ArrayList<LiSymbol> rightPart = new ArrayList<LiSymbol>(32);
+		ArrayList<LiSymbolRef> rightPart = new ArrayList<LiSymbolRef>(32);
 		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if(clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
