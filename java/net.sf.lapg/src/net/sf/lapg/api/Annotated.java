@@ -1,7 +1,8 @@
 package net.sf.lapg.api;
 
-import java.util.Map;
 
 public interface Annotated {
-	Map<String,Object> getAnnotations();
+
+	Object getAnnotation(String name);
+	void addAnnotation(String name, Object value);
 }

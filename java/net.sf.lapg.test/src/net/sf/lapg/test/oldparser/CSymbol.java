@@ -1,8 +1,5 @@
 package net.sf.lapg.test.oldparser;
 
-import java.util.Collections;
-import java.util.Map;
-
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.test.oldparser.LapgParser.ParseException;
@@ -101,8 +98,12 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		return type;
 	}
 
-	public Map<String, Object> getAnnotations() {
-		return Collections.<String,Object>emptyMap();
+	public void addAnnotation(String name, Object value) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Object getAnnotation(String name) {
+		return null;
 	}
 
 	@Override

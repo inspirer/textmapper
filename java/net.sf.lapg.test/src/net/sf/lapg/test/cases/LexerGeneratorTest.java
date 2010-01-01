@@ -1,8 +1,5 @@
 package net.sf.lapg.test.cases;
 
-import java.util.Collections;
-import java.util.Map;
-
 import junit.framework.TestCase;
 
 import org.junit.Assert;
@@ -18,23 +15,23 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class LexerGeneratorTest extends TestCase {
 
 	TestLexem[] INPUT1 = {
-		new TestLexem(0, 0, "string", "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
-		new TestLexem(1, 0, "number", "[0-9]+", "1", "12", "323", "2111111"),
-		new TestLexem(2, 0, "hex", "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
-		new TestLexem(3, 0, "hex", "\\n|\\t|\\r", "\n", "\t", "\r"),
-		new TestLexem(4, 0, "hex", "[\\xAAAA-\\xAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
+			new TestLexem(0, 0, "string", "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
+			new TestLexem(1, 0, "number", "[0-9]+", "1", "12", "323", "2111111"),
+			new TestLexem(2, 0, "hex", "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
+			new TestLexem(3, 0, "hex", "\\n|\\t|\\r", "\n", "\t", "\r"),
+			new TestLexem(4, 0, "hex", "[\\xAAAA-\\xAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
 	};
-	
+
 	public void testGenerator() {
 		LexerTables lt = LexicalBuilder.compile(INPUT1, new TestNotifier(), 0);
 		for(TestLexem tl : INPUT1) {
 			for(String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
 				Assert.assertEquals("For "+s+" Expected " + tl.getRegexp()+ ";",tl.index, res);
-			}			
-		}		
+			}
+		}
 	}
-	
+
 	private int nextToken(LexerTables lr, String s) {
 		int state = 0;
 		int index = 0;
@@ -51,12 +48,12 @@ public class LexerGeneratorTest extends TestCase {
 
 	private static class TestLexem implements Lexem {
 
-		private int index;
-		private int prio;
-		private String name;
-		private String regexp;
-		private String[] samples;
-		
+		private final int index;
+		private final int prio;
+		private final String name;
+		private final String regexp;
+		private final String[] samples;
+
 		public TestLexem(int index, int prio, String name, String regexp, String ... samples) {
 			this.index = index;
 			this.prio = prio;
@@ -80,7 +77,7 @@ public class LexerGeneratorTest extends TestCase {
 		public String getRegexp() {
 			return regexp;
 		}
-		
+
 		public String[] getSamples() {
 			return samples;
 		}
@@ -90,28 +87,32 @@ public class LexerGeneratorTest extends TestCase {
 				public boolean isTerm() {
 					throw new NotImplementedException();
 				}
-				
+
 				public boolean isDefined() {
 					throw new NotImplementedException();
 				}
-				
+
 				public String getType() {
 					throw new NotImplementedException();
 				}
-				
+
 				public String getName() {
 					return name;
 				}
-				
+
 				public int getIndex() {
 					return index;
 				}
 
-				public Map<String, Object> getAnnotations() {
-					return Collections.<String,Object>emptyMap();
+				public void addAnnotation(String name, Object value) {
+					throw new UnsupportedOperationException();
+				}
+
+				public Object getAnnotation(String name) {
+					return null;
 				}
 			};
 		}
 	}
-	
+
 }

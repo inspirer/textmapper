@@ -1,9 +1,6 @@
 package net.sf.lapg.test.oldparser;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
@@ -55,8 +52,12 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 		return action;
 	}
 
-	public Map<String, Object> getAnnotations() {
-		return Collections.<String,Object>emptyMap();
+	public void addAnnotation(String name, Object value) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Object getAnnotation(String name) {
+		return null;
 	}
 
 	public int getPriority() {
@@ -119,8 +120,12 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 			return target;
 		}
 
-		public Map<String, Object> getAnnotations() {
-			return Collections.<String,Object>emptyMap();
+		public void addAnnotation(String name, Object value) {
+			throw new UnsupportedOperationException();
+		}
+
+		public Object getAnnotation(String name) {
+			return null;
 		}
 	}
 }
