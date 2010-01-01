@@ -2,7 +2,7 @@ package net.sf.lapg.parser;
 
 import net.sf.lapg.api.Symbol;
 
-public class LiSymbol implements Symbol {
+public class LiSymbol extends LiAnnotated implements Symbol {
 
 	private int index;
 	private final String name;
@@ -10,6 +10,7 @@ public class LiSymbol implements Symbol {
 	private final boolean isTerm;
 	
 	public LiSymbol(String name, String type, boolean isTerm) {
+		super(null);
 		this.name = name;
 		this.type = type;
 		this.isTerm = isTerm;

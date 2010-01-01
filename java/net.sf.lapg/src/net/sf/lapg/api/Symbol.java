@@ -1,6 +1,6 @@
 package net.sf.lapg.api;
 
-public interface Symbol {
+public interface Symbol extends Annotated {
 
 	int getIndex();
 	String getName();

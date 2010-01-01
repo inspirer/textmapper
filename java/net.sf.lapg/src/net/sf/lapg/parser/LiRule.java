@@ -8,7 +8,7 @@ import net.sf.lapg.parser.ast.Node;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 
-public class LiRule implements Rule, ILocatedEntity, INamedEntity {
+public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedEntity {
 	
 	private static final LiSymbolRef[] EMPTY_RIGHT = new LiSymbolRef[0];
 	
@@ -20,6 +20,7 @@ public class LiRule implements Rule, ILocatedEntity, INamedEntity {
 	private final Node node;
 	
 	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, Node node) {
+		super(null);
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right ;
 		this.code = code;

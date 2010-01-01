@@ -1,5 +1,8 @@
 package net.sf.lapg.test.oldparser;
 
+import java.util.Collections;
+import java.util.Map;
+
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.test.oldparser.LapgParser.ParseException;
@@ -96,6 +99,10 @@ public class CSymbol implements Symbol, ILocatedEntity {
 
 	public String getType() {
 		return type;
+	}
+
+	public Map<String, Object> getAnnotations() {
+		return Collections.<String,Object>emptyMap();
 	}
 
 	@Override

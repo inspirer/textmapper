@@ -1,6 +1,6 @@
 package net.sf.lapg.api;
 
-public interface SymbolRef {
+public interface SymbolRef extends Annotated {
 	Symbol getTarget();
 	String getAlias();
 }

@@ -1,6 +1,8 @@
 package net.sf.lapg.test.oldparser;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
@@ -23,7 +25,7 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 		this.right = new SymbolRef[right != null ? right.size() : 0];
 		if(right != null) {
 			for(int i = 0; i < right.size(); i++) {
-				this.right[i] = new CSymbolRef(right.get(i)); 
+				this.right[i] = new CSymbolRef(right.get(i));
 			}
 		}
 		this.action = action;
@@ -51,6 +53,10 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 
 	public Action getAction() {
 		return action;
+	}
+
+	public Map<String, Object> getAnnotations() {
+		return Collections.<String,Object>emptyMap();
 	}
 
 	public int getPriority() {
@@ -96,23 +102,25 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 	public String getTitle() {
 		return "Rule `" + toString() + "`";
 	}
-	
+
 	private static class CSymbolRef implements SymbolRef {
-		
+
 		CSymbol target;
-		
+
 		public CSymbolRef(CSymbol target) {
 			this.target = target;
 		}
 
-		@Override
 		public String getAlias() {
 			return null;
 		}
 
-		@Override
 		public Symbol getTarget() {
 			return target;
+		}
+
+		public Map<String, Object> getAnnotations() {
+			return Collections.<String,Object>emptyMap();
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package net.sf.lapg.api;
 
 
-public interface Rule {
+public interface Rule extends Annotated {
 
 	public int getIndex();
 	public Symbol getLeft();

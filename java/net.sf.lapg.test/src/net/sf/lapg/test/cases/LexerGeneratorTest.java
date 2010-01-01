@@ -1,5 +1,8 @@
 package net.sf.lapg.test.cases;
 
+import java.util.Collections;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.junit.Assert;
@@ -102,6 +105,10 @@ public class LexerGeneratorTest extends TestCase {
 				
 				public int getIndex() {
 					return index;
+				}
+
+				public Map<String, Object> getAnnotations() {
+					return Collections.<String,Object>emptyMap();
 				}
 			};
 		}
