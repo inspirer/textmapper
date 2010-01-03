@@ -95,7 +95,7 @@ public class LapgResolver {
 		return offset < text.length && offset != -1 ? new String(text,offset,text.length-offset) : "";
 	}
 
-	private LiSymbol create(AstIdentifier id, String type, Map<String,Object> annotations, boolean isTerm) {
+	private LiSymbol create(AstIdentifier id, String type, boolean isTerm) {
 		String name = id.getName();
 		if(symbolsMap.containsKey(name)) {
 			LiSymbol sym = symbolsMap.get(name);
@@ -103,18 +103,10 @@ public class LapgResolver {
 				error(id, "redeclaration of " + (isTerm ? "non-terminal" : "terminal") + ": " + name);
 			} else if(!safeEquals(sym.getType(), type)) {
 				error(id, "redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of " + (sym.getType() == null ? "<empty>" : sym.getType()));
-			} else if(annotations != null){
-				for(Map.Entry<String, Object> ann : annotations.entrySet()) {
-					if(sym.getAnnotation(ann.getKey()) != null) {
-						error(id, "redeclaration of annotation `" + ann.getKey() + "' for " + (isTerm ? "terminal" : "non-terminal") + ": " + name);
-					} else {
-						sym.addAnnotation(ann.getKey(), ann.getValue());
-					}
-				}
 			}
 			return sym;
 		} else {
-			LiSymbol sym = new LiSymbol(name, type, annotations, isTerm);
+			LiSymbol sym = new LiSymbol(name, type, isTerm);
 			symbolsMap.put(name, sym);
 			symbols.add(sym);
 			return sym;
@@ -128,7 +120,7 @@ public class LapgResolver {
 			if(name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length()-3));
 				if(sym != null) {
-					LiSymbol symopt = create(id, sym.getType(), null, false);
+					LiSymbol symopt = create(id, sym.getType(), false);
 					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, id, null));
 					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null,null)}, null, null, id, null));
 					return symopt;
@@ -174,7 +166,7 @@ public class LapgResolver {
 	}
 
 	private void collectLexems() {
-		eoi = new LiSymbol("eoi", null, null, true);
+		eoi = new LiSymbol("eoi", null, true);
 		symbolsMap.put(eoi.getName(), eoi);
 		symbols.add(eoi);
 		int groups = 1;
@@ -184,7 +176,7 @@ public class LapgResolver {
 		for(AstLexerPart clause : tree.getRoot().getLexer()) {
 			if(clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				LiSymbol s = create(lexeme.getName(), lexeme.getType(), null, true);
+				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
 				if(lexeme.getRegexp() != null) {
 					LiLexem l = new LiLexem(s, convert(lexeme.getRegexp()), groups, lexeme.getPriority(), convert(lexeme.getCode()));
 					lexems.add(l);
@@ -195,11 +187,30 @@ public class LapgResolver {
 		}
 	}
 
+	private void addSymbolAnnotations(AstIdentifier id, Map<String,Object> annotations) {
+		if(annotations != null){
+			LiSymbol sym = symbolsMap.get(id.getName());
+			for(Map.Entry<String, Object> ann : annotations.entrySet()) {
+				if(sym.getAnnotation(ann.getKey()) != null) {
+					error(id, "redeclaration of annotation `" + ann.getKey() + "' for non-terminal: " + id.getName() + ", skipped");
+				} else {
+					sym.addAnnotation(ann.getKey(), ann.getValue());
+				}
+			}
+		}
+	}
+
 	private void collectNonTerminals() {
 		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if(clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), nonterm.getAnnotations(), false);
+				create(nonterm.getName(), nonterm.getType(), false);
+			}
+		}
+		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if(clause instanceof AstNonTerm) {
+				AstNonTerm nonterm = (AstNonTerm) clause;
+				addSymbolAnnotations(nonterm.getName(), convert(nonterm.getAnnotations()));
 			}
 		}
 	}
@@ -211,19 +222,19 @@ public class LapgResolver {
 			for(AstRuleSymbol rs : list) {
 				AstCode astCode = rs.getCode();
 				if(astCode != null) {
-					LiSymbol codeSym = new LiSymbol("{}", null, null, false);
+					LiSymbol codeSym = new LiSymbol("{}", null, false);
 					symbols.add(codeSym);
 					rightPart.add(new LiSymbolRef(codeSym, null, null));
 					rules.add(new LiRule(codeSym, null, convert(astCode), null, astCode, null));
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
 				if(sym != null) {
-					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), rs.getAnnotations()));
+					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations())));
 				}
 			}
 		}
 		LiSymbol prio = right.getPriority() != null ? resolve(right.getPriority()) : null;
-		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, right, right.getAnnotations()));
+		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, right, convert(right.getAnnotations())));
 	}
 
 	private void collectRules() {
@@ -290,5 +301,32 @@ public class LapgResolver {
 
 	private void error(Node n, String message) {
 		tree.getErrors().add(new ParseProblem(2, n.getOffset(), n.getEndOffset(), message, null));
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String,Object> convert(Map<String,Object> astAnnotations) {
+		return (Map<String, Object>) convertAnnotation(astAnnotations);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Object convertAnnotation(Object o) {
+		if(o instanceof Map) {
+			Map<String,Object> result = new HashMap<String,Object>();
+			for(Map.Entry<String, Object> entry : ((Map<String,Object>)o).entrySet()) {
+				result.put(entry.getKey(), convertAnnotation(entry.getValue()));
+			}
+			return result;
+		}
+		if(o instanceof List) {
+			ArrayList<Object> result = new ArrayList<Object>(((List)o).size());
+			for(Object v : ((List)o)) {
+				result.add(convertAnnotation(v));
+			}
+			return result;
+		}
+		if(o instanceof AstIdentifier) {
+			return resolve((AstIdentifier)o);
+		}
+		return o;
 	}
 }
