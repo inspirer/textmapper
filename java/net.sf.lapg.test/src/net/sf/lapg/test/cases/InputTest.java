@@ -1,12 +1,10 @@
 package net.sf.lapg.test.cases;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
@@ -24,30 +22,7 @@ import net.sf.lapg.parser.SyntaxUtil;
 import net.sf.lapg.test.TestNotifier;
 import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 
-public class InputTest extends TestCase {
-
-	private static final String TESTCONTAINER = "net/sf/lapg/test/cases/input";
-	private static final String RESULTCONTAINER = "net/sf/lapg/test/cases/expected";
-
-	private InputStream openStream(String name, String root) {
-		InputStream is = getClass().getClassLoader().getResourceAsStream(root + "/" + name);
-		Assert.assertNotNull(is);
-		return is;
-	}
-
-	private static String removeSpaces(String input) {
-		char[] c = new char[input.length()];
-		input.getChars(0, input.length(), c, 0);
-
-		int to = 0;
-		for (int i = 0; i < c.length; i++) {
-			if (c[i] != ' ' && c[i] != '\t') {
-				c[to++] = c[i];
-			}
-		}
-
-		return new String(c, 0, to);
-	}
+public class InputTest extends LapgTestCase {
 
 	private void checkGenTables(Grammar g, String outputId, TestNotifier er) {
 		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er, 0);
@@ -379,7 +354,7 @@ public class InputTest extends TestCase {
 		sortGrammar((LiGrammar)g, go);
 		checkGenTables(g, "syntax2.tbl", new TestNotifier());
 	}
-	
+
 	private void sortGrammar(LiGrammar g, Grammar go) {
 		final HashMap<String,Integer> index = new HashMap<String, Integer>();
 		for(Symbol s : go.getSymbols()) {
@@ -390,7 +365,7 @@ public class InputTest extends TestCase {
 			String ind = getSignature(r);
 			ruleind.put(ind, r.getIndex());
 		}
-		
+
 		Arrays.sort(g.getSymbols(), new Comparator<Symbol>() {
 			@Override
 			public int compare(Symbol o1, Symbol o2) {
@@ -402,7 +377,7 @@ public class InputTest extends TestCase {
 		for(int i = 0; i < g.getSymbols().length; i++) {
 			((LiSymbol)g.getSymbols()[i]).setIndex(i);
 		}
-		
+
 		Arrays.sort(g.getRules(), new Comparator<Rule>() {
 			@Override
 			public int compare(Rule o1, Rule o2) {

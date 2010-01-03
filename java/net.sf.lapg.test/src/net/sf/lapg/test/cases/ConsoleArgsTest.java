@@ -1,19 +1,26 @@
 package net.sf.lapg.test.cases;
 
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import junit.framework.TestCase;
 import net.sf.lapg.gen.LapgOptions;
-
 import org.junit.Assert;
 
 /**
  * Tests for {@link LapgOptions} command-line arguments parsing.
  */
-public class ConsoleArgsTest extends TestCase {
+public class ConsoleArgsTest extends LapgTestCase {
+
+	private static class FailingStream extends OutputStream {
+
+		@Override
+		public void write(int b) throws IOException {
+			Assert.fail("write-protected stream");
+		}
+	}
 
 	private static class CheckingErrorStream extends OutputStream {
 		byte[] bytes;
@@ -26,36 +33,29 @@ public class ConsoleArgsTest extends TestCase {
 
 		@Override
 		public void write(int b) throws IOException {
-			if(index >= bytes.length) {
+			if (index >= bytes.length) {
 				Assert.fail("unknown System.err message: starts with " + Character.toString((char) b));
 			}
-			if(b != bytes[index++]) {
+			if (b != bytes[index++]) {
 				Assert.fail("wrong message, expected: " + new String(bytes, "utf8"));
 			}
 		}
 
 		@Override
 		public void close() throws IOException {
-			Assert.assertEquals("error not happened: " + new String(bytes, index, bytes.length-index, "utf8"), bytes.length, index);
-		}
-	}
-	
-	private static class FailingStream extends OutputStream {
-
-		@Override
-		public void write(int b) throws IOException {
-			Assert.fail("write-protected stream");
+			Assert.assertEquals("error not happened: " + new String(bytes, index, bytes.length - index, "utf8"),
+					bytes.length, index);
 		}
 	}
 
 	private CheckingErrorStream current;
-	private PrintStream originalErr = System.err;
-	private PrintStream failingStream = new PrintStream(new FailingStream());
+	private final PrintStream originalErr = System.err;
+	protected PrintStream failingStream = new PrintStream(new FailingStream());
 
-	private void expectError(String expect) {
+	protected void expectError(String expect) {
 		try {
 			String nl = System.getProperty("line.separator");
-			if(nl != null && !nl.equals("\n")) {
+			if (nl != null && !nl.equals("\n")) {
 				expect = expect.replaceAll("\n", nl);
 			}
 			closeError();
@@ -65,7 +65,7 @@ public class ConsoleArgsTest extends TestCase {
 		}
 	}
 
-	private void closeError() {
+	protected void closeError() {
 		if (current != null) {
 			try {
 				System.setErr(originalErr);
