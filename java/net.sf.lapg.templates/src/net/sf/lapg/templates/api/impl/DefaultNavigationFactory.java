@@ -19,7 +19,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		this.evaluationStrategy = strategy;
 	}
 
-	public INavigationStrategy getStrategy(Object o) {
+	public INavigationStrategy<?> getStrategy(Object o) {
 
 		if( o instanceof Object[] ) {
 			return arrayNavigation;
@@ -28,7 +28,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		if( o instanceof int[] ) {
 			return intArrayNavigation;
 		}
-		
+
 		if( o instanceof Map<?, ?> ) {
 			return mapNavigation;
 		}
@@ -44,7 +44,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		return javaNavigation;
 	}
 
-	protected INavigationStrategy javaNavigation = new INavigationStrategy() {
+	protected INavigationStrategy<Object> javaNavigation = new INavigationStrategy<Object>() {
 
 		public Object getProperty(Object obj, String id) throws EvaluationException {
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
@@ -93,7 +93,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			}
 		}
 
-		private Method searchMethod(Class<?> class1, String methodName, Class[] argClasses) {
+		private Method searchMethod(Class<?> class1, String methodName, Class<?>[] argClasses) {
 			for(Method m : class1.getMethods()) {
 				if(m.getName().equals(methodName)) {
 					Class<?>[] paramTypes = m.getParameterTypes();
@@ -120,35 +120,34 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 	};
 
-	private INavigationStrategy mapNavigation = new INavigationStrategy() {
+	private final INavigationStrategy<Map<?,?>> mapNavigation = new INavigationStrategy<Map<?,?>>() {
 
-		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(Map<?,?> obj, String methodName, Object[] args) throws EvaluationException {
 			return javaNavigation.callMethod(obj, methodName, args);
 		}
 
-		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			return ((Map<?,?>)obj).get(index);
+		public Object getByIndex(Map<?,?> obj, Object index) throws EvaluationException {
+			return obj.get(index);
 		}
 
-		public Object getProperty(Object obj, String id) throws EvaluationException {
-			return ((Map<?, ?>)obj).get(id);
+		public Object getProperty(Map<?,?> obj, String id) throws EvaluationException {
+			return obj.get(id);
 		}
 	};
 
-	private INavigationStrategy collectionNavigation = new INavigationStrategy() {
+	private final INavigationStrategy<Collection<?>> collectionNavigation = new INavigationStrategy<Collection<?>>() {
 
-		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-			Collection<?> cl = (Collection<?>) obj;
+		public Object callMethod(Collection<?> cl, String methodName, Object[] args) throws EvaluationException {
 			if( args == null ) {
 				if( methodName.equals("first") ) {
 					return cl.isEmpty() ? null : cl.iterator().next();
 				}
 			}
-			return javaNavigation.callMethod(obj, methodName, args);
+			return javaNavigation.callMethod(cl, methodName, args);
 		}
 
-		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			ArrayList<?> array = (ArrayList<?>)obj;
+		public Object getByIndex(Collection<?> cl, Object index) throws EvaluationException {
+			ArrayList<?> array = (ArrayList<?>)cl; // FIXME support collection by index
 			if( index instanceof Integer ) {
 				return array.get((Integer)index);
 			} else {
@@ -156,18 +155,17 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			}
 		}
 
-		public Object getProperty(Object obj, String id) throws EvaluationException {
+		public Object getProperty(Collection<?> cl, String id) throws EvaluationException {
 			if( id.equals("length") ) {
-				return ((Collection<?>)obj).size();
+				return cl.size();
 			}
 			throw new EvaluationException("do not know property `"+id+"`");
 		}
 	};
 
-	private INavigationStrategy arrayNavigation = new INavigationStrategy() {
+	private final INavigationStrategy<Object[]> arrayNavigation = new INavigationStrategy<Object[]>() {
 
-		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-			Object[] array = (Object[]) obj;
+		public Object callMethod(Object[] array, String methodName, Object[] args) throws EvaluationException {
 			if( args == null ) {
 				if( methodName.equals("first") ) {
 					return array[0];
@@ -180,8 +178,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			throw new EvaluationException("do not know method `"+methodName+"`");
 		}
 
-		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			Object[] array = (Object[])obj;
+		public Object getByIndex(Object[] array, Object index) throws EvaluationException {
 			if( index instanceof Integer ) {
 				int i = (Integer)index;
 				if( i < 0 || i >= array.length ) {
@@ -193,18 +190,17 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			}
 		}
 
-		public Object getProperty(Object obj, String id) throws EvaluationException {
+		public Object getProperty(Object[] array, String id) throws EvaluationException {
 			if( id.equals("length") ) {
-				return ((Object[])obj).length;
+				return array.length;
 			}
 			throw new EvaluationException("do not know property `"+id+"`");
 		}
 	};
 
-	private INavigationStrategy intArrayNavigation = new INavigationStrategy() {
+	private final INavigationStrategy<int[]> intArrayNavigation = new INavigationStrategy<int[]>() {
 
-		public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-			int[] array = (int[]) obj;
+		public Object callMethod(int[] array, String methodName, Object[] args) throws EvaluationException {
 			if( args == null ) {
 				if( methodName.equals("first") ) {
 					return array[0];
@@ -217,8 +213,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			throw new EvaluationException("do not know method `"+methodName+"`");
 		}
 
-		public Object getByIndex(Object obj, Object index) throws EvaluationException {
-			int[] array = (int[])obj;
+		public Object getByIndex(int[] array, Object index) throws EvaluationException {
 			if( index instanceof Integer ) {
 				int i = (Integer)index;
 				if( i < 0 || i >= array.length ) {
@@ -230,9 +225,9 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			}
 		}
 
-		public Object getProperty(Object obj, String id) throws EvaluationException {
+		public Object getProperty(int[] array, String id) throws EvaluationException {
 			if( id.equals("length") ) {
-				return ((int[])obj).length;
+				return array.length;
 			}
 			throw new EvaluationException("do not know property `"+id+"`");
 		}

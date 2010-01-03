@@ -11,19 +11,22 @@
 package net.sf.lapg.gen;
 
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class ActionSymbol {
 
 	final Symbol symbol;
+	final SymbolRef ref;
 	final boolean isLeft;
 	final int rightOffset;
 	private final IEvaluationStrategy evaluationStrategy;
 	private final String templatePackage;
 
-	public ActionSymbol(Symbol symbol, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, String templatePackage) {
+	public ActionSymbol(Symbol symbol, SymbolRef ref, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, String templatePackage) {
 		this.symbol = symbol;
+		this.ref = ref;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
 		this.evaluationStrategy = strategy;
