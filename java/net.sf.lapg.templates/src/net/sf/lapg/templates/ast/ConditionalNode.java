@@ -17,9 +17,9 @@ public class ConditionalNode extends ExpressionNode {
 
 	private static String[] operators = new String[] { "", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || " };
 
-	private int kind;
-	private ExpressionNode leftExpr;
-	private ExpressionNode rightExpr;
+	private final int kind;
+	private final ExpressionNode leftExpr;
+	private final ExpressionNode rightExpr;
 
 	public ConditionalNode(int kind, ExpressionNode left, ExpressionNode right, String input, int line) {
 		super(input, line);
@@ -30,7 +30,7 @@ public class ConditionalNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		Object left = env.evaluate(leftExpr, context, false);
+		Object left = env.evaluate(leftExpr, context, kind == AND || kind == OR);
 
 		switch( kind ) {
 		case EQ:
@@ -38,9 +38,9 @@ public class ConditionalNode extends ExpressionNode {
 		case NE:
 			return !safeEqual(left,env.evaluate(rightExpr, context, false));
 		case AND:
-			return env.toBoolean(left) && env.toBoolean(env.evaluate(rightExpr, context, false));
+			return env.toBoolean(left) && env.toBoolean(env.evaluate(rightExpr, context, true));
 		case OR:
-			return env.toBoolean(left) || env.toBoolean(env.evaluate(rightExpr, context, false));
+			return env.toBoolean(left) || env.toBoolean(env.evaluate(rightExpr, context, true));
 		}
 
 		Object right = env.evaluate(rightExpr, context, false);

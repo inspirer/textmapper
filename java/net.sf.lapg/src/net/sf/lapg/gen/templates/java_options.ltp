@@ -1,22 +1,20 @@
 ${template options-}
-group "general" {
-	[title=""]
-	prefix : string;
 
-	[title=""]
-	package : string;
+group "General" {
 
-	[title=""; radio=4]
-	positions : set(line,column,offset);
+	prefix : identifier notempty default ""
+	package : qualified default ""
+	positions : set(line,column,offset) default "line,offset"
+	endpositions : set(line,column,offset) default ""
 
-	[title=""; check]
-	breaks : boolean(on,off);
+	breaks : bool(on,off) default "on"; title="Insert break after each semantic action"
+	gentree : bool(on,off) default "off"
 
-	[title=""; check]
-	lexemend : boolean(on,off);
-	
-	[title=""; check]
-	gentree : boolean(on,off);
+	maxtoken : uint default 2048
+	stack : uint default 2048
+
+	packLexems : bool default "false"; title "Pack lexems tables into string"
+	packTables : bool default "false"
 }
 
 ${end}

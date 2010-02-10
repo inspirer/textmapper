@@ -22,7 +22,6 @@
 .package	 "net.sf.lapg.parser"
 .maxtoken    2048
 .breaks		 "on"
-.lexemend    "on"
 .gentree	 "on"
 .positions   "line,offset"
 .endpositions "offset"
