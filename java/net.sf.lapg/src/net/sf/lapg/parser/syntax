@@ -83,8 +83,7 @@ options (List<AstOption>) ::=
 ;
 
 option (AstOption) ::=
-	  '.' identifier scon 								{ $$ = new AstOption($identifier, $scon, source, ${option.offset}, ${option.endoffset}); }
-	| '.' identifier icon								{ $$ = new AstOption($identifier, $icon.toString(), source, ${option.offset}, ${option.endoffset}); }
+	  '.' identifier expression 						{ $$ = new AstOption($identifier, $expression, source, ${option.offset}, ${option.endoffset}); }
 ;
 
 symbol (AstIdentifier) ::=

@@ -5,9 +5,9 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 public class AstOption extends Node {
 
 	private final String key;
-	private final String value;
+	private final Object value;
 
-	public AstOption(String key, String value, TextSource source, int offset, int endoffset) {
+	public AstOption(String key, Object value, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.key = key;
 		this.value = value;
@@ -17,7 +17,7 @@ public class AstOption extends Node {
 		return key;
 	}
 
-	public String getValue() {
+	public Object getValue() {
 		return value;
 	}
 }

@@ -15,7 +15,7 @@ import net.sf.lapg.parser.ast.AstRoot;
 public class SyntaxUtil {
 
 	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err,
-			Map<String, String> options) {
+			Map<String, Object> options) {
 		String contents = getFileContents(stream);
 		LapgTree<AstRoot> tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
 		Grammar result = null;

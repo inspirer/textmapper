@@ -11,7 +11,7 @@ public interface Grammar {
 	Rule[] getRules();
 	Prio[] getPriorities();
 
-	Map<String, String> getOptions();
+	Map<String, Object> getOptions();
 
 	Lexem[] getLexems();
 

@@ -29,16 +29,16 @@ public class LapgOptions {
 	public static final int DEBUG_TABLES = 2;
 
 	private int debug;
-	
+
 	private String input;
 	private String outputFolder;
 	private String templateName;
-	
-	private List<String> includeFolders;
-	private Map<String, String> templateOptions;
-	
+
+	private final List<String> includeFolders;
+	private final Map<String, Object> templateOptions;
+
 	private boolean useDefaultTemplates;
-	
+
 	public LapgOptions() {
 		this.debug = 0;
 		this.input = Lapg.DEFAULT_FILE;
@@ -46,7 +46,7 @@ public class LapgOptions {
 		this.templateName = "java";
 		this.includeFolders = new LinkedList<String>();
 		this.useDefaultTemplates = true;
-		this.templateOptions = new HashMap<String, String>();
+		this.templateOptions = new HashMap<String, Object>();
 	}
 
 	public String getInput() {
@@ -89,7 +89,7 @@ public class LapgOptions {
 		this.useDefaultTemplates = useDefaultTemplates;
 	}
 
-	public Map<String, String> getAdditionalOptions() {
+	public Map<String, Object> getAdditionalOptions() {
 		return templateOptions;
 	}
 
@@ -108,7 +108,7 @@ public class LapgOptions {
 	static final int OPT_TEMPLATE = 6 | HAS_VALUE;
 	static final int OPT_INPUT = 7 | HAS_VALUE;
 
-	public static final String HELP_OPTIONS = 
+	public static final String HELP_OPTIONS =
 		"  -d,  --debug                   debug info\n" +
 		"  -e,  --extended-debug          extended debug info\n" +
 		"  -x,  --no-default-templates    removes default templates from engine\n" +
@@ -116,7 +116,7 @@ public class LapgOptions {
 		"  -i folder, --include=folder    adds folder (or semicolon separated folder list) to the lapg.templates stack\n" +
 		"  -t templateId, --template=id   use template for generation\n" +
 		"  key=val                        any generation option\n";
-	
+
 	private static Map<String, Integer> buildOptionsHash() {
 		Map<String, Integer> res = new HashMap<String, Integer>();
 		res.put("d", OPT_DEBUG);

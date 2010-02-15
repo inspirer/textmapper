@@ -15,7 +15,7 @@ public class AnnotationsTest extends LapgTestCase {
 
 	public void testAllAnnotations() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1annotated", openStream("syntax1annotated", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, String>());
+				new TestNotifier(), new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 
 		Rule[] listItemRules = rulesForName(g.getRules(), "list_item");
@@ -52,7 +52,7 @@ public class AnnotationsTest extends LapgTestCase {
 		TestNotifier notifier = new TestNotifier("", "notexistingsym cannot be resolved\n"
 				+ "redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
-				notifier, new HashMap<String, String>());
+				notifier, new HashMap<String, Object>());
 		Assert.assertNull(g);
 	}
 

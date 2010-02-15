@@ -1,5 +1,6 @@
 package net.sf.lapg.test.oldparser;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +21,7 @@ public class CSyntax implements Grammar {
 	private CSymbol[] inputs;
 	private final CRule[] rules;
 	private final CPrio[] prios;
-	private final Map<String, String> options;
+	private final Map<String, Object> options;
 	private final CLexem[] lexems;
 	private final String templates;
 
@@ -33,7 +34,7 @@ public class CSyntax implements Grammar {
 		this.rules = rules.toArray(new CRule[rules.size()]);
 		this.prios = prios.toArray(new CPrio[prios.size()]);
 		this.lexems = lexems.toArray(new CLexem[lexems.size()]);
-		this.options = options;
+		this.options = new HashMap<String,Object>(options);
 		this.templates = templates;
 		sortSymbols();
 		enumerateAll();
@@ -42,7 +43,7 @@ public class CSyntax implements Grammar {
 			int inputIndex = findSymbol(INPUT);
 			this.inputs = inputIndex >= 0 ? new CSymbol[] { this.symbols[inputIndex] } : new CSymbol[0];
 		}
-		
+
 		myError = findSymbol(ERROR);
 		int i = 0;
 		for (; i < this.symbols.length && this.symbols[i].isTerm(); i++) {
@@ -50,10 +51,10 @@ public class CSyntax implements Grammar {
 		}
 		myTerms = i;
 	}
-	
+
 	private static CSymbol[] extractInputs(List<CInputDef> inputDefs) {
 		CSymbol[] result = null;
-		
+
 		if(inputDefs.size() > 0) {
 			int size = 0;
 			for(CInputDef idef : inputDefs) {
@@ -151,7 +152,7 @@ public class CSyntax implements Grammar {
 		return prios;
 	}
 
-	public Map<String, String> getOptions() {
+	public Map<String, Object> getOptions() {
 		return options;
 	}
 
@@ -193,8 +194,8 @@ public class CSyntax implements Grammar {
 	}
 
 	public boolean hasLexemActions() {
-		for (int i = 0; i < lexems.length; i++) {
-			if (lexems[i].getAction() != null) {
+		for (CLexem lexem : lexems) {
+			if (lexem.getAction() != null) {
 				return true;
 			}
 		}

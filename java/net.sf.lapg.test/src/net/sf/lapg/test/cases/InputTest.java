@@ -246,7 +246,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewTemplatesGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -257,7 +257,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewLapgGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -268,7 +268,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckCSharpGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -296,7 +296,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckSimple1() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+				new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
 
@@ -331,7 +331,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckSimple2() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);

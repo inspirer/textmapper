@@ -9,23 +9,23 @@ import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 
 public class LiGrammar implements Grammar {
-	
+
 	private final Symbol[] symbols;
 	private final Rule[] rules;
 	private final Prio[] priorities;
 	private final Lexem[] lexems;
-	
+
 	private final Symbol[] inputs;
 	private final Symbol eoi;
 	private final Symbol error;
-	
-	private final Map<String, String> options;
+
+	private final Map<String, Object> options;
 	private final String templates;
 	private final int terminals;
 	private final boolean hasErrors;
 
 	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, Symbol[] inputs, Symbol eoi,
-			Symbol error, Map<String, String> options, String templates, int terminals, boolean hasErrors) {
+			Symbol error, Map<String, Object> options, String templates, int terminals, boolean hasErrors) {
 		this.symbols = symbols;
 		this.rules = rules;
 		this.priorities = priorities;
@@ -48,7 +48,7 @@ public class LiGrammar implements Grammar {
 	public Rule[] getRules() {
 		return rules;
 	}
-	
+
 	@Override
 	public Prio[] getPriorities() {
 		return priorities;
@@ -58,12 +58,12 @@ public class LiGrammar implements Grammar {
 	public Lexem[] getLexems() {
 		return lexems;
 	}
-	
+
 	@Override
 	public Symbol[] getInput() {
 		return inputs;
 	}
-	
+
 	@Override
 	public Symbol getEoi() {
 		return eoi;
@@ -75,7 +75,7 @@ public class LiGrammar implements Grammar {
 	}
 
 	@Override
-	public Map<String, String> getOptions() {
+	public Map<String, Object> getOptions() {
 		return options;
 	}
 

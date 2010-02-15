@@ -8,10 +8,6 @@ import java.util.Map;
 
 import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.parser.LapgResolver;
-import net.sf.lapg.parser.LapgTree;
-import net.sf.lapg.parser.LapgTree.ParseProblem;
-import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class SyntaxUtilOld {
 

@@ -47,8 +47,8 @@ public abstract class AbstractGenerator {
 
 	protected abstract InputStream openInput(INotifier err);
 
-	private Map<String, String> getDefaultOptions() {
-		Map<String, String> d = new HashMap<String, String>();
+	private Map<String, Object> getDefaultOptions() {
+		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("prefix", "");
 		d.put("breaks", "on");
 		d.put("lang", "java");
@@ -75,8 +75,8 @@ public abstract class AbstractGenerator {
 				return false;
 			}
 
-			Map<String, String> genOptions = new HashMap<String, String>(s.getOptions());
-			Map<String, String> additional = options.getAdditionalOptions();
+			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
+			Map<String, Object> additional = options.getAdditionalOptions();
 			for (String key : additional.keySet()) {
 				genOptions.put(key, additional.get(key));
 			}

@@ -38,9 +38,9 @@ public class LapgResolver {
 	private LiSymbol eoi;
 	private LiSymbol error;
 
-	private final Map<String,String> options;
+	private final Map<String,Object> options;
 
-	public LapgResolver(LapgTree<AstRoot> tree, Map<String, String> options) {
+	public LapgResolver(LapgTree<AstRoot> tree, Map<String, Object> options) {
 		this.tree = tree;
 		this.options = options;
 	}
@@ -291,7 +291,7 @@ public class LapgResolver {
 			return;
 		}
 		for(AstOption option : tree.getRoot().getOptions()) {
-			options.put(option.getKey(), option.getValue());
+			options.put(option.getKey(), convertExpression(option.getValue()));
 		}
 	}
 
@@ -305,22 +305,22 @@ public class LapgResolver {
 
 	@SuppressWarnings("unchecked")
 	private Map<String,Object> convert(Map<String,Object> astAnnotations) {
-		return (Map<String, Object>) convertAnnotation(astAnnotations);
+		return (Map<String, Object>) convertExpression(astAnnotations);
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object convertAnnotation(Object o) {
+	private Object convertExpression(Object o) {
 		if(o instanceof Map) {
 			Map<String,Object> result = new HashMap<String,Object>();
 			for(Map.Entry<String, Object> entry : ((Map<String,Object>)o).entrySet()) {
-				result.put(entry.getKey(), convertAnnotation(entry.getValue()));
+				result.put(entry.getKey(), convertExpression(entry.getValue()));
 			}
 			return result;
 		}
 		if(o instanceof List) {
 			ArrayList<Object> result = new ArrayList<Object>(((List)o).size());
 			for(Object v : ((List)o)) {
-				result.add(convertAnnotation(v));
+				result.add(convertExpression(v));
 			}
 			return result;
 		}
