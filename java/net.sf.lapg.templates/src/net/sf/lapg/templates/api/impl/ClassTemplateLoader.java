@@ -51,6 +51,6 @@ public class ClassTemplateLoader implements IBundleLoader {
 		}
 		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
 				: resourceName;
-		return new TemplatesBundle(name, TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector));
+		return TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector);
 	}
 }

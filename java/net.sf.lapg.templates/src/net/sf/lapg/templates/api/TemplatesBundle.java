@@ -7,10 +7,12 @@ public class TemplatesBundle {
 
 	private final String sourceName;
 	private final ITemplate[] templates;
+	private final IQuery[] queries;
 
-	public TemplatesBundle(String sourceName, ITemplate[] templates) {
+	public TemplatesBundle(String sourceName, ITemplate[] templates, IQuery[] queries) {
 		this.sourceName = sourceName;
 		this.templates = templates;
+		this.queries = queries;
 	}
 
 	public String getName() {
@@ -21,7 +23,11 @@ public class TemplatesBundle {
 		return templates;
 	}
 
-	public static ITemplate[] parse(final String sourceName, String contents, String templatePackage,
+	public IQuery[] getQueries() {
+		return queries;
+	}
+
+	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
 			final IProblemCollector collector) {
 		AstParser p = new AstParser(new ErrorReporter() {
 			@Override
@@ -35,6 +41,6 @@ public class TemplatesBundle {
 		} else {
 			templates = p.getResult();
 		}
-		return templates;
+		return new TemplatesBundle(sourceName, templates, null);
 	}
 }

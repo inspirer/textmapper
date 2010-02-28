@@ -49,7 +49,7 @@ public class FolderTemplateLoader implements IBundleLoader {
 			File file = new File(f, fileName);
 			if( file.exists() ) {
 				String name = file.toString();
-				return new TemplatesBundle(name, TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector));
+				return TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector);
 			}
 		}
 		return null;

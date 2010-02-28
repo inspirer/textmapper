@@ -27,10 +27,10 @@ public class StringTemplateLoader implements IBundleLoader {
 
 	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
 		if(sourceForPackage == null) {
-			ITemplate[] templates = TemplatesBundle.parse(name, contents, null, collector);
+			TemplatesBundle compositeBundle = TemplatesBundle.parse(name, contents, null, collector);
 
 			Map<String,List<ITemplate>> bundleToTemplates = new HashMap<String, List<ITemplate>>();
-			for(ITemplate t : templates) {
+			for(ITemplate t : compositeBundle.getTemplates()) {
 				String tbundle = t.getPackage();
 				List<ITemplate> list = bundleToTemplates.get(tbundle);
 				if(list == null) {
@@ -43,7 +43,7 @@ public class StringTemplateLoader implements IBundleLoader {
 			sourceForPackage = new HashMap<String, TemplatesBundle>();
 			for(Map.Entry<String, List<ITemplate>> entry : bundleToTemplates.entrySet()) {
 				List<ITemplate> list = entry.getValue();
-				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new ITemplate[list.size()])));
+				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new ITemplate[list.size()]), null));
 			}
 		}
 		return sourceForPackage.get(bundleName);
