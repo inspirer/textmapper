@@ -5,15 +5,17 @@ import java.util.List;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
-import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.api.IQuery;
 
-public class TemplateNode extends CompoundNode implements ITemplate {
+public class QueryNode extends Node implements IQuery {
+
 	private final String name;
 	private final String[] parameters;
 	private final String templatePackage;
-	private ITemplate base;
+	private final ExpressionNode expr;
 
-	public TemplateNode(String name, List<String> parameters, String templatePackage, String input, int line) {
+	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, String input,
+			int line) {
 		super(input, line);
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
@@ -23,13 +25,20 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			this.templatePackage = templatePackage;
 		}
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
+		this.expr = expr;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException {
+	public String getPackage() {
+		return templatePackage;
+	}
+
+	@Override
+	public Object invoke(EvaluationContext context, IEvaluationStrategy env, Object[] arguments)
+			throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
 				: 0;
 
@@ -38,7 +47,6 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 					+ "`: should be " + paramCount + " instead of " + argsCount);
 		}
 
-		StringBuffer sb = new StringBuffer();
 		if (paramCount > 0) {
 			int i;
 			Object[] old = new Object[paramCount];
@@ -50,25 +58,15 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 					context.setVariable(parameters[i], arguments[i]);
 				}
 
-				emit(sb, context, env);
+				return env.evaluate(expr, context, false);
 			} finally {
 				for (i = 0; i < paramCount; i++) {
 					context.setVariable(parameters[i], old[i]);
 				}
 			}
 		} else {
-			emit(sb, context, env);
+			return env.evaluate(expr, context, false);
 		}
-		return sb.toString();
-	}
-
-	@Override
-	public String toString() {
-		return getSignature();
-	}
-
-	public String getPackage() {
-		return templatePackage;
 	}
 
 	public String getSignature() {
@@ -87,11 +85,17 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return sb.toString();
 	}
 
-	public ITemplate getBase() {
-		return base;
+	@Override
+	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+		/* declaration statement, nothing to emit */
 	}
 
-	public void setBase(ITemplate template) {
-		this.base = template;
+	@Override
+	public final String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getSignature());
+		sb.append(" = ");
+		expr.toString(sb);
+		return sb.toString();
 	}
 }

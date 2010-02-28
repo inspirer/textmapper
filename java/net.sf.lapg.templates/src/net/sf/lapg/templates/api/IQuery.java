@@ -17,4 +17,9 @@ public interface IQuery extends ILocatedEntity {
 	 * @return result of invocation
 	 */
 	Object invoke(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException;
+
+	/**
+	 * @return signature to map templates
+	 */
+	String getSignature();
 }
