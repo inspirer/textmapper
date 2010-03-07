@@ -140,7 +140,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		if (!p.parseBody(template, "syntax", inputName)) {
 			loaded = new ITemplate[0];
 		} else {
-			loaded = p.getResult();
+			loaded = p.getTemplates();
 		}
 
 		ITemplate t = loaded != null && loaded.length == 1 && loaded[0].getName().equals("inline") ? loaded[0] : null;

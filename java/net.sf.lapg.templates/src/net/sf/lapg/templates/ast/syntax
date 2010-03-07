@@ -46,6 +46,7 @@ Limport:	/import/
 Lis:		/is/
 Lmap:		/map/
 Lnull:		/null/
+Lquery:		/query/
 Lswitch:	/switch/
 Ltemplate:  /template/
 Ltrue:		/true/
@@ -70,6 +71,7 @@ Lassert:	/assert/
 '&&':		/&&/
 '||':		/\|\|/
 '==':		/==/
+'=':		/=/
 '!=':		/!=/
 '->':		/->/
 '<=':		/<=/
@@ -97,15 +99,21 @@ templates ::=
 template_declaration_or_space ::=
 	template_start instructions template_end		{ $template_start.setInstructions($instructions); templates.add($template_start); }
 	| template_start template_end					{ templates.add($template_start); }
+	| query											{ queries.add($query); }
 	| any
 ;
 
+query (QueryNode) ::=
+	'${' Lquery qualified_id parametersopt '=' expression '}'
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, inputName, ${self[0].line}); checkFqn($qualified_id, ${query.offset}, ${query.endoffset}, ${self[0].line}); }
+;
+
 template_start (TemplateNode) ::=
-	'${' Ltemplate template_id template_parametersopt '[-]}'
-                                                    { $$ = new TemplateNode($template_id, $template_parametersopt, templatePackage, inputName, ${self[0].line}); checkFqn($template_id, ${template_start.offset}, ${template_start.endoffset}, ${self[0].line}); }
+	'${' Ltemplate qualified_id parametersopt '[-]}'
+                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, templatePackage, inputName, ${self[0].line}); checkFqn($qualified_id, ${template_start.offset}, ${template_start.endoffset}, ${self[0].line}); }
 ; 
 
-template_parameters (ArrayList) ::=
+parameters (ArrayList) ::=
 	'(' identifier_listopt ')' 						{ $$ = $1; }
 ;
 
@@ -143,7 +151,7 @@ simple_instruction (Node) ::=
 
 sentence (Node) ::=
 	  expression
-	| Lcall template_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($template_id,$template_argumentsopt,$template_for_expropt,templatePackage,true,inputName, ${self[0].line}); }
+	| Lcall qualified_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($qualified_id,$template_argumentsopt,$template_for_expropt,templatePackage,true,inputName, ${self[0].line}); }
 	| Leval expression comma_expropt				{ $$ = new EvalNode($expression,$comma_expropt,inputName,${self[0].line}); }
 	| Lassert expression							{ $$ = new AssertNode($expression,inputName,${self[0].line}); }
 ;
@@ -152,9 +160,9 @@ comma_expr (ExpressionNode) ::=
 	',' expression									{ $$ = $expression; }
 ;
 
-template_id (String) ::=
+qualified_id (String) ::=
 	identifier
-	| template_id '.' identifier					{ $$ = $template_id#0 + "." + $identifier; }
+	| qualified_id '.' identifier					{ $$ = $qualified_id#0 + "." + $identifier; }
 ;
 
 template_for_expr (ExpressionNode) ::=
@@ -219,8 +227,8 @@ primary_expression (ExpressionNode) ::=
     												{ $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,inputName, ${self[0].line}); }
     | primary_expression '.' identifier '(' identifier '|' expression ')'
     												{ $$ = createCollectionProcessor($primary_expression#1, $identifier#0, $identifier#1, $expression, inputName, ${self[0].line}, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
-    | primary_expression '->' template_id '(' expression_listopt ')'
-    												{ $$ = new CallTemplateNode($template_id,$expression_listopt,$primary_expression#1,templatePackage,false,inputName, ${self[0].line}); }
+    | primary_expression '->' qualified_id '(' expression_listopt ')'
+    												{ $$ = new CallTemplateNode($qualified_id,$expression_listopt,$primary_expression#1,templatePackage,false,inputName, ${self[0].line}); }
     | primary_expression '->' '(' expression ')' '(' expression_listopt ')'  
     												{ $$ = new CallTemplateNode($expression,$expression_listopt,$primary_expression#1,templatePackage,inputName, ${self[0].line}); }
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression,inputName, ${self[0].line}); }
@@ -318,6 +326,7 @@ ${end}
 ${template java.classcode}
 ${call base-}
 private ArrayList<net.sf.lapg.templates.api.@ITemplate> templates;
+private ArrayList<net.sf.lapg.templates.api.@IQuery> queries;
 private String templatePackage;
 
 protected String inputName;
@@ -415,6 +424,7 @@ public boolean parse(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
 	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
+	queries = new ArrayList<net.sf.lapg.templates.api.@IQuery>();
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
@@ -431,6 +441,7 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
 	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
+	queries = new ArrayList<net.sf.lapg.templates.api.@IQuery>();
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
@@ -443,7 +454,11 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	}
 }
 
-public net.sf.lapg.templates.api.@ITemplate[] getResult() {
+public net.sf.lapg.templates.api.@ITemplate[] getTemplates() {
 	return templates.toArray(new net.sf.lapg.templates.api.@ITemplate[templates.size()]);
+}
+
+public net.sf.lapg.templates.api.@IQuery[] getQueries() {
+	return queries.toArray(new net.sf.lapg.templates.api.@IQuery[queries.size()]);
 }
 ${end}

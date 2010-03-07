@@ -39,7 +39,7 @@ public class TemplatesBundle {
 		if (!p.parse(contents, templatePackage, sourceName)) {
 			templates = new ITemplate[0];
 		} else {
-			templates = p.getResult();
+			templates = p.getTemplates();
 		}
 		return new TemplatesBundle(sourceName, templates, null);
 	}
