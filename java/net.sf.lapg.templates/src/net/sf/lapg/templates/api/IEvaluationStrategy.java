@@ -19,7 +19,7 @@ public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProbl
 
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer);
 
-	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
+	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
 
 	public String getTitle(Object object);
 }

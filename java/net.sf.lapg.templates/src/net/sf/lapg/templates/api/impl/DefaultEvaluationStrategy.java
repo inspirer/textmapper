@@ -136,7 +136,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
-	public String evaluateTemplate(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
+	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
 		final String inputName = templateId != null ? templateId : referer.getLocation();
 		AstParser p = new AstParser(new ErrorReporter() {
 			@Override

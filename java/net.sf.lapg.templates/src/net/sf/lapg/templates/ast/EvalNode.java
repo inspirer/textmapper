@@ -27,7 +27,7 @@ public class EvalNode extends Node {
 				id = toEvaluate instanceof ILocatedEntity ? ((ILocatedEntity)toEvaluate).getLocation() : null;
 			}
 			String templateCode = env.toString(toEvaluate, templateExpr);
-			sb.append(env.evaluateTemplate(this, templateCode, id, context));
+			sb.append(env.eval(this, templateCode, id, context));
 		} catch (EvaluationException ex) {
 		}
 	}
