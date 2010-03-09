@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IQuery;
 
 public class QueryNode extends Node implements IQuery {
@@ -13,6 +14,7 @@ public class QueryNode extends Node implements IQuery {
 	private final String[] parameters;
 	private final String templatePackage;
 	private final ExpressionNode expr;
+	private IQuery base;
 
 	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, String input,
 			int line) {
@@ -26,6 +28,14 @@ public class QueryNode extends Node implements IQuery {
 		}
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
 		this.expr = expr;
+	}
+
+	public int getKind() {
+		return KIND_QUERY;
+	}
+
+	public String getKindAsString() {
+		return "Query";
 	}
 
 	public String getName() {
@@ -97,5 +107,13 @@ public class QueryNode extends Node implements IQuery {
 		sb.append(" = ");
 		expr.toString(sb);
 		return sb.toString();
+	}
+
+	public IBundleEntity getBase() {
+		return base;
+	}
+
+	public void setBase(IBundleEntity template) {
+		this.base = (IQuery) template;
 	}
 }

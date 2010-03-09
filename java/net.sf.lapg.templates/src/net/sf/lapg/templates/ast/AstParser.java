@@ -7,8 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import net.sf.lapg.templates.api.IQuery;
-import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 import net.sf.lapg.templates.ast.AstLexer.LapgSymbol;
 import net.sf.lapg.templates.ast.AstLexer.Lexems;
@@ -30,8 +29,7 @@ public class AstParser {
 
 	
 	private static final boolean DEBUG_SYNTAX = false;
-	private ArrayList<ITemplate> templates;
-	private ArrayList<IQuery> queries;
+	private ArrayList<IBundleEntity> entities;
 	private String templatePackage;
 	
 	protected String inputName;
@@ -128,8 +126,7 @@ public class AstParser {
 	public boolean parse(String s, String templatePackage, String inputName) {
 		this.templatePackage = templatePackage;
 		this.inputName = inputName;
-		templates = new ArrayList<ITemplate>();
-		queries = new ArrayList<IQuery>();
+		entities = new ArrayList<IBundleEntity>();
 		try {
 			buff = s.toCharArray();
 			AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
@@ -145,8 +142,7 @@ public class AstParser {
 	public boolean parseBody(String s, String templatePackage, String inputName) {
 		this.templatePackage = templatePackage;
 		this.inputName = inputName;
-		templates = new ArrayList<ITemplate>();
-		queries = new ArrayList<IQuery>();
+		entities = new ArrayList<IBundleEntity>();
 		try {
 			buff = s.toCharArray();
 			AstLexer lexer = new AstLexer(new CharArrayReader(buff), reporter);
@@ -159,12 +155,8 @@ public class AstParser {
 		}
 	}
 	
-	public ITemplate[] getTemplates() {
-		return templates.toArray(new ITemplate[templates.size()]);
-	}
-	
-	public IQuery[] getQueries() {
-		return queries.toArray(new IQuery[queries.size()]);
+	public IBundleEntity[] getResult() {
+		return entities.toArray(new IBundleEntity[entities.size()]);
 	}
     private static final int lapg_action[] = {
 		-3, -1, 8, -1, -11, 4, 7, -1, 2, 29, 28, 26, 27, -1, -19, 20,
@@ -699,13 +691,13 @@ public class AstParser {
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 		switch( rule ) {
 			case 5:  // template_declaration_or_space ::= template_start instructions template_end
-				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); templates.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
+				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); entities.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
 				break;
 			case 6:  // template_declaration_or_space ::= template_start template_end
-				 templates.add(((TemplateNode)lapg_m[lapg_head-1].sym)); 
+				 entities.add(((TemplateNode)lapg_m[lapg_head-1].sym)); 
 				break;
 			case 7:  // template_declaration_or_space ::= query
-				 queries.add(((QueryNode)lapg_m[lapg_head-0].sym)); 
+				 entities.add(((QueryNode)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 11:  // query ::= '${' Lquery qualified_id parametersopt '=' expression '}'
 				 lapg_gg.sym = new QueryNode(((String)lapg_m[lapg_head-4].sym), ((ArrayList)lapg_m[lapg_head-3].sym), templatePackage, ((ExpressionNode)lapg_m[lapg_head-1].sym), inputName, lapg_m[lapg_head-6].line); checkFqn(((String)lapg_m[lapg_head-4].sym), lapg_gg.offset, lapg_gg.endoffset, lapg_m[lapg_head-6].line); 
@@ -921,7 +913,7 @@ public class AstParser {
 				
 							lapg_gg.sym = new TemplateNode("inline", null, templatePackage, inputName, lapg_m[lapg_head-0].line);
 							((TemplateNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-0].sym));
-							templates.add(((TemplateNode)lapg_gg.sym));
+							entities.add(((TemplateNode)lapg_gg.sym));
 						
 				break;
 		}

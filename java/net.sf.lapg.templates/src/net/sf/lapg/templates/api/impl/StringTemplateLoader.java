@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IProblemCollector;
-import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.TemplatesBundle;
 
@@ -29,21 +29,21 @@ public class StringTemplateLoader implements IBundleLoader {
 		if(sourceForPackage == null) {
 			TemplatesBundle compositeBundle = TemplatesBundle.parse(name, contents, null, collector);
 
-			Map<String,List<ITemplate>> bundleToTemplates = new HashMap<String, List<ITemplate>>();
-			for(ITemplate t : compositeBundle.getTemplates()) {
+			Map<String,List<IBundleEntity>> bundleToTemplates = new HashMap<String, List<IBundleEntity>>();
+			for(IBundleEntity t : compositeBundle.getEntities()) {
 				String tbundle = t.getPackage();
-				List<ITemplate> list = bundleToTemplates.get(tbundle);
+				List<IBundleEntity> list = bundleToTemplates.get(tbundle);
 				if(list == null) {
-					list = new LinkedList<ITemplate>();
+					list = new LinkedList<IBundleEntity>();
 					bundleToTemplates.put(tbundle,	list);
 				}
 				list.add(t);
 			}
 
 			sourceForPackage = new HashMap<String, TemplatesBundle>();
-			for(Map.Entry<String, List<ITemplate>> entry : bundleToTemplates.entrySet()) {
-				List<ITemplate> list = entry.getValue();
-				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new ITemplate[list.size()]), null));
+			for(Map.Entry<String, List<IBundleEntity>> entry : bundleToTemplates.entrySet()) {
+				List<IBundleEntity> list = entry.getValue();
+				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new IBundleEntity[list.size()])));
 			}
 		}
 		return sourceForPackage.get(bundleName);

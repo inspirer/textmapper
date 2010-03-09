@@ -48,6 +48,15 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("w1 is bad\nw2 is bad\nt4 is bad\n", q);
 	}
 
+	// query.ltp
+	public void testQuery() {
+		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+
+		// test 1
+		String q = env.executeTemplate("query.a", null, null, null);
+		Assert.assertEquals("w1 is bad\nw2 is bad\nt4 is bad\n", q);
+	}
+
 	// dollar.ltp
 	public void testDollar() {
 		TestTemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));

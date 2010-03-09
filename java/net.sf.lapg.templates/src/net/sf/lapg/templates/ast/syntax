@@ -97,9 +97,9 @@ templates ::=
 ;
 
 template_declaration_or_space ::=
-	template_start instructions template_end		{ $template_start.setInstructions($instructions); templates.add($template_start); }
-	| template_start template_end					{ templates.add($template_start); }
-	| query											{ queries.add($query); }
+	template_start instructions template_end		{ $template_start.setInstructions($instructions); entities.add($template_start); }
+	| template_start template_end					{ entities.add($template_start); }
+	| query											{ entities.add($query); }
 	| any
 ;
 
@@ -310,7 +310,7 @@ body (TemplateNode) ::=
 						{
 							$$ = new TemplateNode("inline", null, templatePackage, inputName, ${self[0].line});
 							$body.setInstructions($instructions);
-							templates.add($body);
+							entities.add($body);
 						}
 ;
 
@@ -325,8 +325,7 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-private ArrayList<net.sf.lapg.templates.api.@ITemplate> templates;
-private ArrayList<net.sf.lapg.templates.api.@IQuery> queries;
+private ArrayList<net.sf.lapg.templates.api.@IBundleEntity> entities;
 private String templatePackage;
 
 protected String inputName;
@@ -423,8 +422,7 @@ private void checkFqn(String templateName, int offset, int endoffset, int line) 
 public boolean parse(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
-	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
-	queries = new ArrayList<net.sf.lapg.templates.api.@IQuery>();
+	entities = new ArrayList<net.sf.lapg.templates.api.@IBundleEntity>();
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
@@ -440,8 +438,7 @@ public boolean parse(String s, String templatePackage, String inputName) {
 public boolean parseBody(String s, String templatePackage, String inputName) {
 	this.templatePackage = templatePackage;
 	this.inputName = inputName;
-	templates = new ArrayList<net.sf.lapg.templates.api.@ITemplate>();
-	queries = new ArrayList<net.sf.lapg.templates.api.@IQuery>();
+	entities = new ArrayList<net.sf.lapg.templates.api.@IBundleEntity>();
 	try {
 		buff = s.toCharArray();
 		AstLexer lexer = new AstLexer(new java.io.@CharArrayReader(buff), reporter);
@@ -454,11 +451,7 @@ public boolean parseBody(String s, String templatePackage, String inputName) {
 	}
 }
 
-public net.sf.lapg.templates.api.@ITemplate[] getTemplates() {
-	return templates.toArray(new net.sf.lapg.templates.api.@ITemplate[templates.size()]);
-}
-
-public net.sf.lapg.templates.api.@IQuery[] getQueries() {
-	return queries.toArray(new net.sf.lapg.templates.api.@IQuery[queries.size()]);
+public net.sf.lapg.templates.api.@IBundleEntity[] getResult() {
+	return entities.toArray(new net.sf.lapg.templates.api.@IBundleEntity[entities.size()]);
 }
 ${end}

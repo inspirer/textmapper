@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.ITemplate;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
@@ -23,6 +24,14 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			this.templatePackage = templatePackage;
 		}
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
+	}
+
+	public int getKind() {
+		return KIND_TEMPLATE;
+	}
+
+	public String getKindAsString() {
+		return "Template";
 	}
 
 	public String getName() {
@@ -87,11 +96,11 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return sb.toString();
 	}
 
-	public ITemplate getBase() {
+	public IBundleEntity getBase() {
 		return base;
 	}
 
-	public void setBase(ITemplate template) {
-		this.base = template;
+	public void setBase(IBundleEntity template) {
+		this.base = (ITemplate) template;
 	}
 }

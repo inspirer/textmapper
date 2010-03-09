@@ -9,13 +9,9 @@ import net.sf.lapg.templates.api.IEvaluationStrategy;
 public class CallTemplateNode extends ExpressionNode {
 
 	private final String templateId;
-
 	private ExpressionNode templateIdExpr;
-
 	private final ExpressionNode[] arguments;
-
 	private final ExpressionNode selectExpr;
-
 	private final boolean isStatement;
 
 	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, boolean isStatement, String input, int line) {
@@ -32,7 +28,7 @@ public class CallTemplateNode extends ExpressionNode {
 	}
 
 	private String getTemplateId(EvaluationContext context) {
-		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base") ? context.getCurrentTemplate().getPackage() + "." + templateId : templateId;
+		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base") ? context.getCurrent().getPackage() + "." + templateId : templateId;
 	}
 
 	@Override

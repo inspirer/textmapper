@@ -9,6 +9,7 @@ import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.ExpressionNode;
@@ -27,16 +28,19 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		factory.setEvaluationStrategy(this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
 		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.callMethod(obj, methodName, args);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getByIndex(Object obj, Object index) throws EvaluationException {
 		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.getByIndex(obj, index);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getProperty(Object obj, String id) throws EvaluationException {
 		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
 		return strategy.getProperty(obj, id);
@@ -102,10 +106,10 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
-		ITemplate t = null;
+		IBundleEntity t = null;
 		boolean isBase = false;
 		if (name.equals("base")) {
-			ITemplate current = context.getCurrentTemplate();
+			IBundleEntity current = context.getCurrent();
 			if (current != null) {
 				isBase = true;
 				t = current.getBase();
@@ -115,13 +119,17 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			}
 		}
 		if(!isBase) {
-			t = registry.getTemplate(referer, name);
+			t = registry.getEntity(referer, name);
+		}
+		if(!(t instanceof ITemplate)) {
+			fireError(referer, "`" + t.getName() + "' should be template");
+			return "";
 		}
 		if (t == null) {
 			return "";
 		}
 		try {
-			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
+			return ((ITemplate)t).apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 		} catch (EvaluationException ex) {
 			fireError(t, ex.getMessage());
 			return "";
@@ -136,14 +144,17 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 				DefaultEvaluationStrategy.this.fireError(null, inputName + ":" + s);
 			}
 		});
-		ITemplate[] loaded = null;
+		IBundleEntity[] loaded = null;
 		if (!p.parseBody(template, "syntax", inputName)) {
 			loaded = new ITemplate[0];
 		} else {
-			loaded = p.getTemplates();
+			loaded = p.getResult();
 		}
 
-		ITemplate t = loaded != null && loaded.length == 1 && loaded[0].getName().equals("inline") ? loaded[0] : null;
+		ITemplate t = loaded != null && loaded.length == 1
+				&& loaded[0].getKind() == IBundleEntity.KIND_TEMPLATE
+				&& loaded[0].getName().equals("inline")
+					? (ITemplate)loaded[0] : null;
 		if (t == null) {
 			return "";
 		}

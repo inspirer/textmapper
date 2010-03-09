@@ -6,25 +6,19 @@ import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 public class TemplatesBundle {
 
 	private final String sourceName;
-	private final ITemplate[] templates;
-	private final IQuery[] queries;
+	private final IBundleEntity[] entities;
 
-	public TemplatesBundle(String sourceName, ITemplate[] templates, IQuery[] queries) {
+	public TemplatesBundle(String sourceName, IBundleEntity[] entities) {
 		this.sourceName = sourceName;
-		this.templates = templates;
-		this.queries = queries;
+		this.entities = entities;
 	}
 
 	public String getName() {
 		return sourceName;
 	}
 
-	public ITemplate[] getTemplates() {
-		return templates;
-	}
-
-	public IQuery[] getQueries() {
-		return queries;
+	public IBundleEntity[] getEntities() {
+		return entities;
 	}
 
 	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
@@ -35,12 +29,12 @@ public class TemplatesBundle {
 				collector.fireError(null, sourceName + ":" + s);
 			}
 		});
-		ITemplate[] templates;
+		IBundleEntity[] entities;
 		if (!p.parse(contents, templatePackage, sourceName)) {
-			templates = new ITemplate[0];
+			entities = new IBundleEntity[0];
 		} else {
-			templates = p.getTemplates();
+			entities = p.getResult();
 		}
-		return new TemplatesBundle(sourceName, templates, null);
+		return new TemplatesBundle(sourceName, entities);
 	}
 }
