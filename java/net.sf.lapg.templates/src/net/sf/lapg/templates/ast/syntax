@@ -99,13 +99,13 @@ templates ::=
 template_declaration_or_space ::=
 	template_start instructions template_end		{ $template_start.setInstructions($instructions); entities.add($template_start); }
 	| template_start template_end					{ entities.add($template_start); }
-	| query											{ entities.add($query); }
+	| query_def										{ entities.add($query_def); }
 	| any
 ;
 
-query (QueryNode) ::=
+query_def (QueryNode) ::=
 	'${' Lquery qualified_id parametersopt '=' expression '}'
-                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, inputName, ${self[0].line}); checkFqn($qualified_id, ${query.offset}, ${query.endoffset}, ${self[0].line}); }
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, inputName, ${self[0].line}); checkFqn($qualified_id, ${query_def.offset}, ${query_def.endoffset}, ${self[0].line}); }
 ;
 
 template_start (TemplateNode) ::=

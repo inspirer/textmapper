@@ -507,7 +507,7 @@ public class AstParser {
 		"input",
 		"templates",
 		"template_declaration_or_space",
-		"query",
+		"query_def",
 		"template_start",
 		"parameters",
 		"identifier_list",
@@ -558,7 +558,7 @@ public class AstParser {
 		public static final int input = 62;
 		public static final int templates = 63;
 		public static final int template_declaration_or_space = 64;
-		public static final int query = 65;
+		public static final int query_def = 65;
 		public static final int template_start = 66;
 		public static final int parameters = 67;
 		public static final int identifier_list = 68;
@@ -696,10 +696,10 @@ public class AstParser {
 			case 6:  // template_declaration_or_space ::= template_start template_end
 				 entities.add(((TemplateNode)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 7:  // template_declaration_or_space ::= query
+			case 7:  // template_declaration_or_space ::= query_def
 				 entities.add(((QueryNode)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 11:  // query ::= '${' Lquery qualified_id parametersopt '=' expression '}'
+			case 11:  // query_def ::= '${' Lquery qualified_id parametersopt '=' expression '}'
 				 lapg_gg.sym = new QueryNode(((String)lapg_m[lapg_head-4].sym), ((ArrayList)lapg_m[lapg_head-3].sym), templatePackage, ((ExpressionNode)lapg_m[lapg_head-1].sym), inputName, lapg_m[lapg_head-6].line); checkFqn(((String)lapg_m[lapg_head-4].sym), lapg_gg.offset, lapg_gg.endoffset, lapg_m[lapg_head-6].line); 
 				break;
 			case 12:  // template_start ::= '${' Ltemplate qualified_id parametersopt '[-]}'
