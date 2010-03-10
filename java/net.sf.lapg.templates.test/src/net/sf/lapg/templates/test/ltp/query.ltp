@@ -1,5 +1,5 @@
 ${query calculate(a,b,c) = 123}
 
 ${template a}
-${this->calculate(1,2,3)}
+${self->calculate(1,2,3)}
 ${end}

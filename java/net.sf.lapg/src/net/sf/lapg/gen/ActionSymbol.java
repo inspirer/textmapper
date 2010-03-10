@@ -13,7 +13,9 @@ package net.sf.lapg.gen;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.templates.api.EvaluationContext;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.api.ITemplate;
 
 public class ActionSymbol {
 
@@ -35,6 +37,7 @@ public class ActionSymbol {
 
 	@Override
 	public String toString() {
-		return evaluationStrategy.executeTemplate(templatePackage+".symbol", new EvaluationContext(this), null, null);
+		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage+".symbol", IBundleEntity.KIND_TEMPLATE, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), null, null);
 	}
 }

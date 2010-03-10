@@ -9,17 +9,21 @@ import net.sf.lapg.templates.ast.ExpressionNode;
  */
 public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProblemCollector, IStreamHandler {
 
-	public boolean toBoolean(Object o) throws EvaluationException;
+	Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
 
-	public Iterator<?> getCollectionIterator(Object o);
+	String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, ILocatedEntity referer);
 
-	public String toString(Object o, ExpressionNode referer) throws EvaluationException;
+	Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) throws EvaluationException;
 
-	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
+	IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer);
 
-	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer);
+	String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
 
-	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context);
+	boolean toBoolean(Object o) throws EvaluationException;
 
-	public String getTitle(Object object);
+	Iterator<?> getCollectionIterator(Object o);
+
+	String toString(Object o, ExpressionNode referer) throws EvaluationException;
+
+	String getTitle(Object object);
 }

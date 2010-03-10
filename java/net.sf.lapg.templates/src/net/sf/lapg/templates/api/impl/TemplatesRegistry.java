@@ -67,17 +67,14 @@ public class TemplatesRegistry {
 				String name = t.getName();
 				IBundleEntity base = nameToEntity.get(name);
 				if (seenNames.contains(name)) {
-					String baseKind = base != null ? base.getKindAsString() : "Element";
+					String baseKind = base != null ? kindToString(base.getKind()) : "Element";
 					collector.fireError(t, baseKind + " `" + bundleName + "." + name + "` was already defined");
 				} else {
-					if (base != null) {
-						if (base.getKind() != t.getKind()) {
-							collector.fireError(t, t.getKindAsString() + " `" + t.toString()
-									+ "` is not compatible with base " + base.getKindAsString() + " `"
-									+ base.toString() + "`");
-						} else if (!base.getSignature().equals(t.getSignature())) {
-							collector.fireError(t, t.getKindAsString() + " `" + t.toString()
-									+ "` is not compatible with base `" + base.toString() + "`");
+					if (base != null ) {
+						if (base.getKind() != t.getKind() || !base.getSignature().equals(t.getSignature())) {
+							collector.fireError(t, kindToString(t.getKind()) + " `" + t.toString()
+									+ "` is not compatible with base " + kindToString(base.getKind()).toLowerCase()
+									+ " `" + base.toString() + "`");
 						} else {
 							t.setBase(base);
 						}
@@ -93,7 +90,7 @@ public class TemplatesRegistry {
 		}
 	}
 
-	public IBundleEntity getEntity(ILocatedEntity referer, String qualifiedName) {
+	public IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
 			collector.fireError(referer, "Fully qualified name should contain dot.");
@@ -105,10 +102,22 @@ public class TemplatesRegistry {
 
 		String resolvedName = qualifiedName;
 
-		if (!entities.containsKey(resolvedName)) {
-			collector.fireError(referer, "Element `" + resolvedName + "` was not found in package `" + templatePackage
-					+ "`");
+		IBundleEntity t = entities.get(resolvedName);
+		if (t == null || kind != IBundleEntity.KIND_ANY && t.getKind() != kind) {
+			collector.fireError(referer, kindToString(kind) + " `" + resolvedName + "` was not found in package `"
+					+ templatePackage + "`");
+			t = null;
 		}
-		return entities.get(resolvedName);
+		return t;
+	}
+
+	private static String kindToString(int kind) {
+		if (kind == IBundleEntity.KIND_QUERY) {
+			return "Query";
+		} else if (kind == IBundleEntity.KIND_TEMPLATE) {
+			return "Template";
+		} else {
+			return "Element";
+		}
 	}
 }

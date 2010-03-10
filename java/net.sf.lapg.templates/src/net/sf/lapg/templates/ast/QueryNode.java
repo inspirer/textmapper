@@ -34,10 +34,6 @@ public class QueryNode extends Node implements IQuery {
 		return KIND_QUERY;
 	}
 
-	public String getKindAsString() {
-		return "Query";
-	}
-
 	public String getName() {
 		return name;
 	}

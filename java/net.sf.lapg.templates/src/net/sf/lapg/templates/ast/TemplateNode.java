@@ -30,10 +30,6 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return KIND_TEMPLATE;
 	}
 
-	public String getKindAsString() {
-		return "Template";
-	}
-
 	public String getName() {
 		return name;
 	}

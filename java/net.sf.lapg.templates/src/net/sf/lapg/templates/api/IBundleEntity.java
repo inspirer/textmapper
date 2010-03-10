@@ -2,18 +2,14 @@ package net.sf.lapg.templates.api;
 
 public interface IBundleEntity extends ILocatedEntity {
 
-	public static final int KIND_TEMPLATE = 0;
-	public static final int KIND_QUERY = 1;
+	public static final int KIND_ANY = 0;
+	public static final int KIND_TEMPLATE = 1;
+	public static final int KIND_QUERY = 2;
 
 	/**
 	 * @return KIND_TEMPLATE or KIND_QUERY
 	 */
 	int getKind();
-
-	/**
-	 * @return Template or Query
-	 */
-	String getKindAsString();
 
 	/**
 	 * @return member name

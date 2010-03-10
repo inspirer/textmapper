@@ -4,7 +4,10 @@ import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.api.IQuery;
+import net.sf.lapg.templates.api.ITemplate;
 
 public class CallTemplateNode extends ExpressionNode {
 
@@ -43,7 +46,29 @@ public class CallTemplateNode extends ExpressionNode {
 				args[i] = env.evaluate(arguments[i], context, false);
 			}
 		}
-		return env.executeTemplate(tid, callContext, args, this);
+
+		IBundleEntity t = null;
+		boolean isBase = false;
+		IBundleEntity current = callContext.getCurrent();
+		if (tid.equals("base")) {
+			if (current != null) {
+				isBase = true;
+				t = current.getBase();
+				if (t == null) {
+					env.fireError(this, "Cannot find base template for `" + current.getName() + "`");
+				}
+			}
+		}
+		if(!isBase) {
+			t = env.loadEntity(tid, IBundleEntity.KIND_ANY, this);
+		}
+		if(t instanceof ITemplate) {
+			return env.evaluate((ITemplate)t, callContext, args, this);
+		} else if(t instanceof IQuery) {
+			return env.evaluate((IQuery)t, callContext, args, this);
+		} else {
+			return "";
+		}
 	}
 
 	@Override

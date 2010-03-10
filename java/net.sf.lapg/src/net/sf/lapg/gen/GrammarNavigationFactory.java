@@ -17,7 +17,9 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
+import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 
 public class GrammarNavigationFactory extends DefaultNavigationFactory {
@@ -69,8 +71,9 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			if (id.equals("rightOffset")) {
 				return obj.rightOffset;
 			}
-			return evaluationStrategy.executeTemplate(templatePackage + ".sym_" + id, new EvaluationContext(obj), null,
-					null);
+			ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".sym_" + id,
+					IBundleEntity.KIND_TEMPLATE, null);
+			return evaluationStrategy.evaluate(templ, new EvaluationContext(obj), null, null);
 		}
 	};
 
@@ -89,7 +92,8 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			} else if (index instanceof String) {
 				return rule.getAnnotation((String) index);
 			} else {
-				throw new EvaluationException("index object should be integer (right part index) or string (annotation name)");
+				throw new EvaluationException(
+						"index object should be integer (right part index) or string (annotation name)");
 			}
 		}
 

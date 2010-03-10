@@ -1,13 +1,14 @@
 package net.sf.lapg.templates.api;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Context for one template invocation. Contains variables and this object.
  */
 public class EvaluationContext {
 
-	private HashMap<String, Object> vars;
+	private Map<String, Object> vars;
 	private final Object thisObject;
 	private final EvaluationContext parent;
 	private final IBundleEntity current;
@@ -27,11 +28,9 @@ public class EvaluationContext {
 	}
 
 	public Object getVariable(String id) {
-
 		if (parent != null && (vars == null || !vars.containsKey(id))) {
 			return parent.getVariable(id);
 		}
-
 		return vars != null ? vars.get(id) : null;
 	}
 

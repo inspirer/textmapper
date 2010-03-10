@@ -10,6 +10,7 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.IBundleEntity;
+import net.sf.lapg.templates.api.IQuery;
 import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.ExpressionNode;
@@ -105,35 +106,25 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
-	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
-		IBundleEntity t = null;
-		boolean isBase = false;
-		if (name.equals("base")) {
-			IBundleEntity current = context.getCurrent();
-			if (current != null) {
-				isBase = true;
-				t = current.getBase();
-				if (t == null) {
-					fireError(referer, "Cannot find base template for `" + current.getName() + "`");
-				}
-			}
-		}
-		if(!isBase) {
-			t = registry.getEntity(referer, name);
-		}
-		if(!(t instanceof ITemplate)) {
-			fireError(referer, "`" + t.getName() + "' should be template");
-			return "";
-		}
+	@Override
+	public IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer) {
+		return registry.loadEntity(qualifiedName, kind, referer);
+	}
+
+	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
 		if (t == null) {
 			return "";
 		}
 		try {
-			return ((ITemplate)t).apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
+			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 		} catch (EvaluationException ex) {
 			fireError(t, ex.getMessage());
 			return "";
 		}
+	}
+
+	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) throws EvaluationException {
+		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
 	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {

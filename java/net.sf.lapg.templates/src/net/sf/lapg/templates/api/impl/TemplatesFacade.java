@@ -1,11 +1,13 @@
 package net.sf.lapg.templates.api.impl;
 
 import net.sf.lapg.templates.api.EvaluationContext;
+import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.IBundleLoader;
+import net.sf.lapg.templates.api.ITemplate;
 
 public class TemplatesFacade implements IProblemCollector {
 
@@ -35,7 +37,8 @@ public class TemplatesFacade implements IProblemCollector {
 	}
 
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
-		return getEvaluationStrategy().executeTemplate(name, context, arguments, referer);
+		ITemplate t = (ITemplate) getEvaluationStrategy().loadEntity(name, IBundleEntity.KIND_TEMPLATE, referer);
+		return getEvaluationStrategy().evaluate(t, context, arguments, referer);
 	}
 
 	public void fireError(ILocatedEntity referer, String error) {
