@@ -9,6 +9,7 @@
 .positions   "line,offset"
 .endpositions "offset"
 .gentree	 "on"
+.genast		 "off"
 
 # Vocabulary
 
@@ -31,6 +32,7 @@ icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); break; }
 ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = token.toString().substring(1, token.length()-1); break; }
 
 Lcall:		/call/
+Lcached:	/cached/
 Lcase:		/case/
 Lend:		/end/
 Lelse:		/else/
@@ -104,8 +106,12 @@ template_declaration_or_space ::=
 ;
 
 query_def (QueryNode) ::=
-	'${' Lquery qualified_id parametersopt '=' expression '}'
-                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, inputName, ${self[0].line}); checkFqn($qualified_id, ${query_def.offset}, ${query_def.endoffset}, ${self[0].line}); }
+	'${' cached_flagopt Lquery qualified_id parametersopt '=' expression '}'
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, templatePackage, $expression, $cached_flagopt != null, inputName, ${self[0].line}); checkFqn($qualified_id, ${query_def.offset}, ${query_def.endoffset}, ${self[0].line}); }
+;
+
+cached_flag (Boolean) ::=
+	Lcached											{ $$ = Boolean.TRUE; }
 ;
 
 template_start (TemplateNode) ::=

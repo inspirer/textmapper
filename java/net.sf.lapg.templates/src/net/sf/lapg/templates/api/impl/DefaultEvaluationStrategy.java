@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
+import net.sf.lapg.templates.api.IEvaluationCache;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
@@ -21,6 +22,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	private final TemplatesFacade templatesFacade;
 	private final TemplatesRegistry registry;
 	private final INavigationStrategy.Factory navigationFactory;
+	private IEvaluationCache myCache;
 
 	public DefaultEvaluationStrategy(TemplatesFacade facade, INavigationStrategy.Factory factory, TemplatesRegistry registry) {
 		this.templatesFacade = facade;
@@ -207,5 +209,13 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	public final void createFile(String name, String contents) {
 		templatesFacade.createFile(name,contents);
+	}
+
+	@Override
+	public IEvaluationCache getCache() {
+		if(myCache == null) {
+			myCache = new DefaultEvaluationCache();
+		}
+		return myCache;
 	}
 }

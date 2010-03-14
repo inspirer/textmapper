@@ -1,0 +1,73 @@
+
+${template unit-}
+${call astBaseInterface-}
+${call astBaseClass-}
+${for i : parser.nterms, parser.nsyms-1 -}
+${call astClass(parser.sym[i])-}
+${end-}
+${end}
+
+
+${query isInterface = true }
+
+${template astClass(psym)-}
+${file 'ast/' + psym.name + '.java'-}
+package ${call java.package}.ast;
+
+public class ${psym.name} {
+
+}
+${end-}
+${end}
+
+
+${template astBaseInterface-}
+${file 'I' + opts.astprefix + 'Node.java'-}
+package ${call java.package};
+
+public interface I${opts.astprefix}Node {
+	int getOffset();
+	int getEndOffset();
+	${opts.prefix}Tree.TextSource getInput();
+	//void accept(Visitor v);
+}
+${end-}
+${end}
+
+${template astBaseClass-}
+${file opts.astprefix + 'Node.java'-}
+package ${call java.package};
+
+public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
+	
+	protected ${opts.prefix}Tree.TextSource fInput;
+	protected int fStart;
+	protected int fEnd;
+
+	public ${opts.astprefix}Node(${opts.prefix}Tree.TextSource input, int start, int end) {
+		this.fStart = start;
+		this.fEnd = end;
+		this.fInput = input;
+	}
+
+	public int getOffset() {
+		return fStart;
+	}
+
+	public int getEndOffset() {
+		return fEnd;
+	}
+
+	public ${opts.prefix}Tree.TextSource getInput() {
+		return fInput;
+	}
+
+	public String toString() {
+		return fInput == null ? "" : fInput.getText(fStart, fEnd);
+	}
+
+	//public abstract void accept(Visitor v);
+}
+
+${end-}
+${end}

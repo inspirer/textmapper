@@ -38,7 +38,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 		try {
 			Iterator<?> it = env.getCollectionIterator(select);
 			if(it == null) {
-				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection");
+				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of "+select.getClass().getCanonicalName()+")");
 			}
 
 			if(instruction == SELECT || instruction == REJECT || instruction == COLLECT) {

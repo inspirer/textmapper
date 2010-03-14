@@ -26,4 +26,6 @@ public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProbl
 	String toString(Object o, ExpressionNode referer) throws EvaluationException;
 
 	String getTitle(Object object);
+
+	IEvaluationCache getCache();
 }

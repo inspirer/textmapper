@@ -14,9 +14,10 @@ public class QueryNode extends Node implements IQuery {
 	private final String[] parameters;
 	private final String templatePackage;
 	private final ExpressionNode expr;
+	private final boolean isCached;
 	private IQuery base;
 
-	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, String input,
+	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, boolean cache, String input,
 			int line) {
 		super(input, line);
 		int dot = name.lastIndexOf('.');
@@ -28,6 +29,7 @@ public class QueryNode extends Node implements IQuery {
 		}
 		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
 		this.expr = expr;
+		this.isCached = cache;
 	}
 
 	public int getKind() {
@@ -53,6 +55,14 @@ public class QueryNode extends Node implements IQuery {
 					+ "`: should be " + paramCount + " instead of " + argsCount);
 		}
 
+		Object result;
+		if(isCached) {
+			result = env.getCache().lookup(this, arguments);
+			if(result != null) {
+				return result;
+			}
+		}
+
 		if (paramCount > 0) {
 			int i;
 			Object[] old = new Object[paramCount];
@@ -64,15 +74,19 @@ public class QueryNode extends Node implements IQuery {
 					context.setVariable(parameters[i], arguments[i]);
 				}
 
-				return env.evaluate(expr, context, false);
+				result = env.evaluate(expr, context, false);
 			} finally {
 				for (i = 0; i < paramCount; i++) {
 					context.setVariable(parameters[i], old[i]);
 				}
 			}
 		} else {
-			return env.evaluate(expr, context, false);
+			result = env.evaluate(expr, context, false);
 		}
+		if(isCached) {
+			env.getCache().cache(result, this, arguments);
+		}
+		return result;
 	}
 
 	public String getSignature() {
