@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationException;
@@ -142,6 +143,15 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return cl.isEmpty() ? null : cl.iterator().next();
+				} else if(methodName.equals("last")) {
+					if(cl instanceof List<?>) {
+						return ((List<?>)cl).get(((List<?>)cl).size()-1);
+					}
+					Object last = null;
+					for(Object r : cl) {
+						last = r;
+					}
+					return last;
 				}
 			}
 			return javaNavigation.callMethod(cl, methodName, args);

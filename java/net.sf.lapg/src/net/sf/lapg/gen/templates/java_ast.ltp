@@ -14,10 +14,10 @@ package ${call java.package}.ast;
 
 public class ${psym.name} {
 
-// ${self->isList(psym)}
+// ${self->isLeftList(psym)}
 
 ${foreach rule in self->rules(psym)-}
-// $rule
+// $rule (${self->intListRuleKind(rule)})
 ${end-}
 	
 }
@@ -80,13 +80,31 @@ ${end}
 ${cached query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
 
 ${cached query isInterface(sym) = self->rules(sym).
-		forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
+	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
 
 ${cached query isEnum(sym) = self->rules(sym).
-		forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}
+	forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}
 
-${query isList(sym) = self->rules(sym).
-		select(
-				x|x.getRight().collect(x|x.target).contains(sym)
-			  ).size() > 0 }
+${cached query isLeftList(sym) = self->rules(sym).
+	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
 
+${cached query intListRuleKind(rule) = 
+	rule.getRight().length == 0 
+		? 'empty'
+		: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 1
+			? (rule.getRight().first().target == rule.getLeft() 
+				? 'leftrec'
+				: (rule.getRight().last().target == rule.getLeft()
+					? 'rightrec'
+					: 'unknown'
+				  )
+			  )
+			: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 0
+				? 'normal'
+				: 'unknown'
+			  )	
+		  )
+}
+
+${query containsBothOnly(x,y) = 
+	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
