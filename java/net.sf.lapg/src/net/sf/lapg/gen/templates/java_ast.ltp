@@ -14,8 +14,7 @@ package ${call java.package}.ast;
 
 public class ${psym.name} {
 
-// ${self->isInterface(psym)}
-// ${self->isEnum(psym)}
+// ${self->isList(psym)}
 
 ${foreach rule in self->rules(psym)-}
 // $rule
@@ -78,10 +77,16 @@ ${end-}
 ${end}
 
 
-${query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
+${cached query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
 
-${query isInterface(sym) = self->rules(sym).
+${cached query isInterface(sym) = self->rules(sym).
 		forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
 
-${query isEnum(sym) = self->rules(sym).
+${cached query isEnum(sym) = self->rules(sym).
 		forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}
+
+${query isList(sym) = self->rules(sym).
+		select(
+				x|x.getRight().collect(x|x.target).contains(sym)
+			  ).size() > 0 }
+
