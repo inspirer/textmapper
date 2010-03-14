@@ -30,11 +30,12 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	public void createFile(String name, String contents) {
+	public void createFile(String name, String contents, INotifier notifier) {
 		try {
-			new FileCreator(name, contents, "utf8", true).create(); // FIXME encoding, newline
+			// FIXME encoding, newline
+			new FileCreator(name, contents, "utf8", true).create();
 		} catch (IOException e) {
-			// TODO report
+			notifier.error("cannot create file `" + name + "': " + e.getMessage() + "\n");
 		}
 	}
 
@@ -65,7 +66,8 @@ public class ConsoleGenerator extends AbstractGenerator {
 	protected IBundleLoader createTemplateLoader(String path) {
 		File folder = new File(path);
 		if (folder.isDirectory()) {
-			return new FolderTemplateLoader(new File[] { folder }, "utf8"); // FIXME charset
+			// FIXME charset
+			return new FolderTemplateLoader(new File[] { folder }, "utf8");
 		}
 		return null;
 	}
@@ -76,7 +78,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 		static final String OUT_TABLES = "tables";
 
 		private PrintStream debug, warn;
-		private int debuglev;
+		private final int debuglev;
 
 		public ConsoleNotifier(int debuglev) {
 			this.debuglev = debuglev;

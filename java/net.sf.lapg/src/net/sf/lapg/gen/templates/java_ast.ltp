@@ -8,43 +8,48 @@ ${end-}
 ${end}
 
 
-${query isInterface = true }
-
 ${template astClass(psym)-}
 ${file 'ast/' + psym.name + '.java'-}
 package ${call java.package}.ast;
 
 public class ${psym.name} {
 
+// ${self->isInterface(psym)}
+// ${self->isEnum(psym)}
+
+${foreach rule in self->rules(psym)-}
+// $rule
+${end-}
+	
 }
 ${end-}
 ${end}
 
 
 ${template astBaseInterface-}
-${file 'I' + opts.astprefix + 'Node.java'-}
-package ${call java.package};
+${file 'ast/I' + opts.astprefix + 'Node.java'-}
+package ${call java.package}.ast;
 
 public interface I${opts.astprefix}Node {
 	int getOffset();
 	int getEndOffset();
-	${opts.prefix}Tree.TextSource getInput();
+	${call java.package}.${opts.prefix}Tree.@TextSource getInput();
 	//void accept(Visitor v);
 }
 ${end-}
 ${end}
 
 ${template astBaseClass-}
-${file opts.astprefix + 'Node.java'-}
-package ${call java.package};
+${file 'ast/' + opts.astprefix + 'Node.java'-}
+package ${call java.package}.ast;
 
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 	
-	protected ${opts.prefix}Tree.TextSource fInput;
+	protected ${call java.package}.${opts.prefix}Tree.@TextSource fInput;
 	protected int fStart;
 	protected int fEnd;
 
-	public ${opts.astprefix}Node(${opts.prefix}Tree.TextSource input, int start, int end) {
+	public ${opts.astprefix}Node(${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		this.fStart = start;
 		this.fEnd = end;
 		this.fInput = input;
@@ -58,7 +63,7 @@ public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 		return fEnd;
 	}
 
-	public ${opts.prefix}Tree.TextSource getInput() {
+	public ${call java.package}.${opts.prefix}Tree.@TextSource getInput() {
 		return fInput;
 	}
 
@@ -71,3 +76,12 @@ public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 
 ${end-}
 ${end}
+
+
+${query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
+
+${query isInterface(sym) = self->rules(sym).
+		forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
+
+${query isEnum(sym) = self->rules(sym).
+		forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}

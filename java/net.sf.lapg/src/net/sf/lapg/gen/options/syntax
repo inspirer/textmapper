@@ -22,6 +22,8 @@
 .package	 "net.sf.lapg.gen.options"
 .lexemend    "on"
 .gentree	 "on"
+.genast		 "on"
+.astprefix	 "AstOpt"
 .positions   "line,offset"
 .endpositions "offset"
 

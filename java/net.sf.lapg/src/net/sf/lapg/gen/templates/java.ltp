@@ -4,6 +4,9 @@ ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
 ${if opts.gentree == 'on'-}
 ${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
 ${end-}
+${if opts.genast == 'on'-}
+${call java_ast.unit-}
+${end-}
 ${end}
 
 ${template options-}

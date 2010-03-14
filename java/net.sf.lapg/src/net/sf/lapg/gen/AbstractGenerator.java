@@ -43,7 +43,7 @@ public abstract class AbstractGenerator {
 
 	protected abstract INotifier createNotifier();
 
-	protected abstract void createFile(String name, String contents);
+	protected abstract void createFile(String name, String contents, INotifier notifier);
 
 	protected abstract InputStream openInput(INotifier err);
 
@@ -134,7 +134,7 @@ public abstract class AbstractGenerator {
 
 		@Override
 		public void createFile(String name, String contents) {
-			AbstractGenerator.this.createFile(name, contents);
+			AbstractGenerator.this.createFile(name, contents, notifier);
 		}
 
 		@Override
