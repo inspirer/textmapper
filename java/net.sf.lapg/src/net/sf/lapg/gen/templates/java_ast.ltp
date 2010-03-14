@@ -85,8 +85,14 @@ ${cached query isInterface(sym) = self->rules(sym).
 ${cached query isEnum(sym) = self->rules(sym).
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}
 
+${cached query isOptional(sym) = self->rules(sym).size() == 2 &&
+	self->rules(sym).collect(x|x.getRight().length)->containsBothOnly(0,1)}
+
 ${cached query isLeftList(sym) = self->rules(sym).
 	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
+
+${cached query isRightList(sym) = self->rules(sym).
+	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
 
 ${cached query intListRuleKind(rule) = 
 	rule.getRight().length == 0 
