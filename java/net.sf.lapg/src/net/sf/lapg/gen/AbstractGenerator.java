@@ -59,6 +59,7 @@ public abstract class AbstractGenerator {
 		d.put("positions", "line,offset");
 		d.put("endpositions", "");
 		d.put("gentree", "false");
+		d.put("genast", "false");
 		return d;
 	}
 

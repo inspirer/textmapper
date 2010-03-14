@@ -9,7 +9,6 @@
 .positions   "line,offset"
 .endpositions "offset"
 .gentree	 "on"
-.genast		 "off"
 
 # Vocabulary
 
