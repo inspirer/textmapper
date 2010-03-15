@@ -1,6 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public class anno_kind {
+public enum anno_kind {
 
 // false
 

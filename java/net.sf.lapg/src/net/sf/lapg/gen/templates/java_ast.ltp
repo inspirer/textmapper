@@ -2,8 +2,12 @@
 ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
-${for i : parser.nterms, parser.nsyms-1 -}
-${call astClass(parser.sym[i])-}
+${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))-}
+${if self->symbolKind(psym) == 'enum'-}
+${call astEnum(psym)-}
+${else-}
+${call astClass(psym)-}
+${end-}
 ${end-}
 ${end}
 
@@ -13,6 +17,22 @@ ${file 'ast/' + psym.name + '.java'-}
 package ${call java.package}.ast;
 
 public class ${psym.name} {
+
+// ${self->isLeftList(psym)}
+
+${foreach rule in self->rules(psym)-}
+// $rule (${self->intListRuleKind(rule)})
+${end-}
+	
+}
+${end-}
+${end}
+
+${template astEnum(psym)-}
+${file 'ast/' + psym.name + '.java'-}
+package ${call java.package}.ast;
+
+public enum ${psym.name} {
 
 // ${self->isLeftList(psym)}
 
@@ -76,6 +96,11 @@ public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 ${end-}
 ${end}
 
+${cached query symbolKind(sym) =
+	self->isEnum(sym) ? 'enum' :
+	self->isLeftList(sym) ? 'leftlist' :
+	self->isRightList(sym) ? 'rightlist' :
+	self->isInterface(sym) ? 'interface' : 'class'}
 
 ${cached query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
 
@@ -83,7 +108,9 @@ ${cached query isInterface(sym) = self->rules(sym).
 	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
 
 ${cached query isEnum(sym) = self->rules(sym).
-	forAll(x|x.getRight().length == 1 && x.getRight().first().target.isTerm())}
+	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
+
+${query isSimpleTerm() = self.isTerm()}
 
 ${cached query isOptional(sym) = self->rules(sym).size() == 2 &&
 	self->rules(sym).collect(x|x.getRight().length)->containsBothOnly(0,1)}
