@@ -109,8 +109,8 @@ ${cached query isInterface(sym) = self->rules(sym).
 
 ${cached query isEnum(sym) = self->rules(sym).
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
-
-${query isSimpleTerm() = self.isTerm()}
+	
+${query isSimpleTerm() = self.isTerm() && !self.type}
 
 ${cached query isOptional(sym) = self->rules(sym).size() == 2 &&
 	self->rules(sym).collect(x|x.getRight().length)->containsBothOnly(0,1)}

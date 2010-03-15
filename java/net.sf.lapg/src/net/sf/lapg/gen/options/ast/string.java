@@ -1,6 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public enum string {
+public class string {
 
 // false
 
