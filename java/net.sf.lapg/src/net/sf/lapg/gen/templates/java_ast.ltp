@@ -34,8 +34,6 @@ package ${call java.package}.ast;
 
 public enum ${psym.name} {
 
-// ${self->isLeftList(psym)}
-
 ${foreach rule in self->rules(psym)-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
