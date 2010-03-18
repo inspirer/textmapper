@@ -141,5 +141,7 @@ ${cached query intListRuleKind(rule) =
 ${query containsBothOnly(x,y) = 
 	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
 
-${query escapeJavaReserved() = ['String'].contains(self) ? '_' + self : self }
+${query escapeJavaReserved() = 
+	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
+	 'List', 'ArrayList', 'LinkedList'].contains(self) ? '_' + self : self }
 
