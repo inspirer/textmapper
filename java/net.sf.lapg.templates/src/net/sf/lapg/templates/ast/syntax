@@ -184,13 +184,16 @@ control_instruction (CompoundNode) ::=
                   									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1,${control_instruction.offset},${control_instruction.endoffset},${control_instruction.line}); }
 ;
 
-else_node (ElseNode) ::=
+else_node ::=
 	'${' Lelse '[-]}'
 ;
 
 switch_instruction (CompoundNode) ::=
 	'${' Lswitch expression '[-]}' anyopt 
-           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list,inputName, ${self[0].line}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list, null, inputName, ${self[0].line}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
+	| '${' Lswitch expression '[-]}' anyopt 
+           case_list else_node instructions control_end
+													{ $$ = new SwitchNode($expression, $case_list, $instructions, inputName, ${self[0].line}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
 ;
 
 case_list (ArrayList) ::=

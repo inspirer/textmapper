@@ -1,6 +1,6 @@
 package net.sf.lapg.templates.ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
@@ -8,13 +8,15 @@ import net.sf.lapg.templates.api.IEvaluationStrategy;
 
 public class SwitchNode extends Node {
 
-	ArrayList<CaseNode> cases;
-	ExpressionNode expression;
+	private final List<CaseNode> cases;
+	private final ExpressionNode expression;
+	private final List<Node> elseInstructions;
 
-	public SwitchNode(ExpressionNode expression, ArrayList<CaseNode> cases, String input, int line) {
+	public SwitchNode(ExpressionNode expression, List<CaseNode> cases, List<Node> elseInstructions, String input, int line) {
 		super(input, line);
 		this.expression = expression;
 		this.cases = cases;
+		this.elseInstructions = elseInstructions;
 	}
 
 	@Override
@@ -27,6 +29,9 @@ public class SwitchNode extends Node {
 					n.emit(sb, context, env);
 					return;
 				}
+			}
+			for (Node n : elseInstructions) {
+				n.emit(sb, context, env);
 			}
 		} catch( EvaluationException ex ) {
 			/* ignore, statement will be skipped */

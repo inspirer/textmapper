@@ -2,6 +2,7 @@ package net.sf.lapg.templates.test.cases;
 
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.EvaluationContext;
@@ -197,7 +198,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testFile() {
-		final HashMap<String,String> fileContent = new HashMap<String,String>();
+		final Map<String,String> fileContent = new HashMap<String,String>();
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
 			@Override
 			public void createFile(String name, String contents) {
@@ -219,5 +220,27 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals(2, fileContent.size());
 		Assert.assertEquals("Next\n", fileContent.get("aa.txt"));
 		Assert.assertEquals("Next2\n", fileContent.get("bb.txt"));
+	}
+
+	// switch.ltp
+	public void testSwitch() {
+		final Map<String,Object> this_ = new HashMap<String,Object>();
+		this_.put("aa", new Integer(11));
+		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		EvaluationContext context = new EvaluationContext(this_);
+
+		// test 1
+		String q = env.executeTemplate("switch.check1", context, null, null);
+		Assert.assertEquals("Yo", q);
+
+		// test 2
+		this_.put("aa", "abcd");
+		q = env.executeTemplate("switch.check1", context, null, null);
+		Assert.assertEquals("Ye", q);
+
+		// test 3
+		this_.put("aa", new Integer(12));
+		q = env.executeTemplate("switch.check1", context, null, null);
+		Assert.assertEquals("No", q);
 	}
 }
