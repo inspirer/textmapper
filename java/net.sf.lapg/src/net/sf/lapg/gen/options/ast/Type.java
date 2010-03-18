@@ -2,8 +2,6 @@ package net.sf.lapg.gen.options.ast;
 
 public class Type {
 
-// false
-
 // type ::= identifier (normal)
 // type ::= Luint (normal)
 // type ::= Lstring (normal)

@@ -1,8 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public class Input {
-
-// false
+public interface IInput {
 
 // input ::= groups (normal)
 	

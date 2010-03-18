@@ -6,8 +6,27 @@ ${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))-}
 ${if self->symbolKind(psym) == 'enum'-}
 ${call astEnum(psym)-}
 ${else-}
+${if self->symbolKind(psym) == 'interface'-}
+${call astInterface(psym)-}
+${else-}
 ${call astClass(psym)-}
 ${end-}
+${end-}
+${end-}
+${end}
+
+
+${template astInterface(psym)-}
+${file 'ast/' + psym->interfaceName() + '.java'-}
+package ${call java.package}.ast;
+
+public interface ${psym->interfaceName()} {
+
+${foreach rule in self->rules(psym)-}
+// $rule (${self->intListRuleKind(rule)})
+${end-}
+	
+}
 ${end-}
 ${end}
 
@@ -18,8 +37,6 @@ package ${call java.package}.ast;
 
 public class ${psym->className()} {
 
-// ${self->isLeftList(psym)}
-
 ${foreach rule in self->rules(psym)-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
@@ -27,6 +44,7 @@ ${end-}
 }
 ${end-}
 ${end}
+
 
 ${template astEnum(psym)-}
 ${file 'ast/' + psym->className() + '.java'-}
@@ -53,6 +71,7 @@ public interface I${opts.astprefix}Node {
 }
 ${end-}
 ${end}
+
 
 ${template astBaseClass-}
 ${file 'ast/' + opts.astprefix + 'Node.java'-}
@@ -92,6 +111,8 @@ public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 ${end-}
 ${end}
 
+
+
 ${cached query symbolKind(sym) =
 	self->isEnum(sym) ? 'enum' :
 	self->isLeftList(sym) ? 'leftlist' :
@@ -119,6 +140,9 @@ ${cached query isRightList(sym) = self->rules(sym).
 	
 ${cached query className() = 
 	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+
+${cached query interfaceName() = 
+	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
 
 ${cached query intListRuleKind(rule) = 
 	rule.getRight().length == 0 
