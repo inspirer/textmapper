@@ -18,7 +18,7 @@ package ${call java.package}.ast;
 
 public interface ${psym->interfaceName()} {
 
-${foreach rule in self->rules(psym)-}
+${foreach rule in self->interfaceRules()-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
 	
@@ -164,4 +164,6 @@ ${query containsBothOnly(x,y) =
 ${query escapeJavaReserved() = 
 	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
 	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
+
+${cached query interfaceRules() = syntax.rules.select(x|self->isInterface(x.getLeft()))}
 

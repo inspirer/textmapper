@@ -96,7 +96,7 @@ public abstract class AbstractGenerator {
 			start = System.currentTimeMillis();
 			generateOutput(map, s.getTemplates(), notifier);
 			long textTime = System.currentTimeMillis() - start;
-			notifier.info("lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s");
+			notifier.info("lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s\n");
 			return true;
 		} catch (Throwable t) {
 			notifier.error("lapg: internal error: " + t.getClass().getName() + "\n");
