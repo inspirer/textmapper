@@ -57,7 +57,7 @@ public class DefaultStaticMethods {
 		return s;
 	}
 
-	public String toCamelCase(String s, boolean firstUpper) {
+	public String toCamelCase(String s, Boolean firstUpper) {
 		char[] string = s.toCharArray();
 		int len = 0;
 		boolean nextUpper = firstUpper;

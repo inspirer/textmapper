@@ -1,6 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public class modifiers {
+public class Modifiers {
 
 // true
 

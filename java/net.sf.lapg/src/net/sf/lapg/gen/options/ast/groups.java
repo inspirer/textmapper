@@ -1,6 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public class groups {
+public class Groups {
 
 // true
 

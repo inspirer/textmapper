@@ -13,10 +13,10 @@ ${end}
 
 
 ${template astClass(psym)-}
-${file 'ast/' + psym.name + '.java'-}
+${file 'ast/' + util.toCamelCase(psym.name,true) + '.java'-}
 package ${call java.package}.ast;
 
-public class ${psym.name} {
+public class ${util.toCamelCase(psym.name,true)} {
 
 // ${self->isLeftList(psym)}
 
@@ -29,15 +29,13 @@ ${end-}
 ${end}
 
 ${template astEnum(psym)-}
-${file 'ast/' + psym.name + '.java'-}
+${file 'ast/' + util.toCamelCase(psym.name,true) + '.java'-}
 package ${call java.package}.ast;
 
-public enum ${psym.name} {
-
+public enum ${util.toCamelCase(psym.name,true)} {	
 ${foreach rule in self->rules(psym)-}
-// $rule (${self->intListRuleKind(rule)})
+	${rule.getRight().first().target.name.toUpperCase()},
 ${end-}
-	
 }
 ${end-}
 ${end}
