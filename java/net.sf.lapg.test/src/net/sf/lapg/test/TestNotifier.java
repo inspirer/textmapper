@@ -23,6 +23,11 @@ public class TestNotifier implements INotifier {
 		Assert.fail(info);
 	}
 
+	@Override
+	public void info(String info) {
+		// ignore
+	}
+
 	public void error(String error) {
 		if( errors.toString().startsWith(error) ) {
 			errors.replace(0, error.length(), "");

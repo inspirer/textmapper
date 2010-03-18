@@ -163,5 +163,5 @@ ${query containsBothOnly(x,y) =
 
 ${query escapeJavaReserved() = 
 	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
-	 'List', 'ArrayList', 'LinkedList'].contains(self) ? '_' + self : self }
+	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
 

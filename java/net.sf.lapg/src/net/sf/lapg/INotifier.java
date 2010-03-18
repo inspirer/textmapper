@@ -23,5 +23,7 @@ public interface INotifier {
 
 	void debug(String info);
 
+	void info(String info);
+
 	void dispose();
 }

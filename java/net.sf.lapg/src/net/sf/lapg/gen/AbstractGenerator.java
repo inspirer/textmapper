@@ -64,14 +64,14 @@ public abstract class AbstractGenerator {
 	}
 
 	public boolean compileGrammar() {
-		INotifier err = createNotifier();
+		INotifier notifier = createNotifier();
 		try {
-			InputStream is = openInput(err);
+			InputStream is = openInput(notifier);
 			if (is == null) {
 				return false;
 			}
 
-			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, err, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, notifier, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
@@ -82,24 +82,30 @@ public abstract class AbstractGenerator {
 				genOptions.put(key, additional.get(key));
 			}
 
-			LexerTables l = LexicalBuilder.compile(s.getLexems(), err, options.getDebug());
-			ParserTables r = Builder.compile(s, err, options.getDebug());
+			long start = System.currentTimeMillis();
+			LexerTables l = LexicalBuilder.compile(s.getLexems(), notifier, options.getDebug());
+			ParserTables r = Builder.compile(s, notifier, options.getDebug());
+			long generationTime = System.currentTimeMillis() - start;
 
 			HashMap<String, Object> map = new HashMap<String, Object>();
 			map.put("syntax", s);
 			map.put("lex", l);
 			map.put("parser", r);
 			map.put("opts", genOptions);
-			generateOutput(map, s.getTemplates(), err);
+
+			start = System.currentTimeMillis();
+			generateOutput(map, s.getTemplates(), notifier);
+			long textTime = System.currentTimeMillis() - start;
+			notifier.info("lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s");
 			return true;
 		} catch (Throwable t) {
-			err.error("lapg: internal error: " + t.getClass().getName() + "\n");
+			notifier.error("lapg: internal error: " + t.getClass().getName() + "\n");
 			if (options.getDebug() >= 2) {
-				err.trace(t);
+				notifier.trace(t);
 			}
 			return false;
 		} finally {
-			err.dispose();
+			notifier.dispose();
 		}
 	}
 
