@@ -79,12 +79,16 @@ public class DefaultStaticMethods {
 	private final Set<String> usedIdentifiers = new HashSet<String>();
 
 	public String uniqueId(String s) {
+		return uniqueId(s, null);
+	}
+
+	public String uniqueId(String s, String context) {
 		String result = s;
 		int i = 2;
-		while(usedIdentifiers.contains(result)) {
+		while(usedIdentifiers.contains(context != null ? context + "#" + result : result)) {
 			result = s + i++;
 		}
-		usedIdentifiers.add(result);
+		usedIdentifiers.add(context != null ? context + "#" + result : result);
 		return result;
 	}
 }

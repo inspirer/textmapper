@@ -57,7 +57,7 @@ public class QueryNode extends Node implements IQuery {
 
 		Object result;
 		if(isCached) {
-			result = env.getCache().lookup(this, arguments);
+			result = env.getCache().lookup(this, context.getThisObject(), arguments);
 			if(result != null) {
 				return result;
 			}
@@ -84,7 +84,7 @@ public class QueryNode extends Node implements IQuery {
 			result = env.evaluate(expr, context, false);
 		}
 		if(isCached) {
-			env.getCache().cache(result, this, arguments);
+			env.getCache().cache(result, this, context.getThisObject(), arguments);
 		}
 		return result;
 	}

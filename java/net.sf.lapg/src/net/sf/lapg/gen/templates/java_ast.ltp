@@ -13,10 +13,10 @@ ${end}
 
 
 ${template astClass(psym)-}
-${file 'ast/' + util.toCamelCase(psym.name,true) + '.java'-}
+${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
-public class ${util.toCamelCase(psym.name,true)} {
+public class ${psym->className()} {
 
 // ${self->isLeftList(psym)}
 
@@ -29,10 +29,10 @@ ${end-}
 ${end}
 
 ${template astEnum(psym)-}
-${file 'ast/' + util.toCamelCase(psym.name,true) + '.java'-}
+${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
-public enum ${util.toCamelCase(psym.name,true)} {	
+public enum ${psym->className()} {	
 ${foreach rule in self->rules(psym)-}
 	${rule.getRight().first().target.name.toUpperCase()},
 ${end-}
@@ -116,6 +116,9 @@ ${cached query isLeftList(sym) = self->rules(sym).
 
 ${cached query isRightList(sym) = self->rules(sym).
 	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
+	
+${cached query className() = 
+	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
 
 ${cached query intListRuleKind(rule) = 
 	rule.getRight().length == 0 
@@ -137,3 +140,6 @@ ${cached query intListRuleKind(rule) =
 
 ${query containsBothOnly(x,y) = 
 	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
+
+${query escapeJavaReserved() = ['String'].contains(self) ? '_' + self : self }
+
