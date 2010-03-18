@@ -3,14 +3,10 @@ ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
 ${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))-}
-${if self->symbolKind(psym) == 'enum'-}
-${call astEnum(psym)-}
-${else-}
-${if self->symbolKind(psym) == 'interface'-}
-${call astInterface(psym)-}
-${else-}
-${call astClass(psym)-}
-${end-}
+${switch self->symbolKind(psym)-}
+${case 'enum'}${call astEnum(psym)-}
+${case 'interface'}${call astInterface(psym)-}
+${else}${call astClass(psym)-}
 ${end-}
 ${end-}
 ${end}
