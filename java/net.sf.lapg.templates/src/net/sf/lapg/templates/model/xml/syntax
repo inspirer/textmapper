@@ -1,12 +1,13 @@
 #   Automatically generated grammar
 
 .lang        "java" 
-.positioning "offset"
-.class       "XmlParser"
-.lexer	     "XmlLexer"
+.prefix      "Xml"
 .package	 "net.sf.lapg.templates.model.xml"
+.maxtoken    2048
 .breaks		 "on"
-.lexemend    "on"
+.gentree	 "on"
+.positions   "line,offset"
+.endpositions "offset"
 
 # Vocabulary
 
@@ -20,9 +21,9 @@ _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/		{ return false; }
 
 [1]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $lexem = new String(token,0,len); break; }
-ccon(String):	/"[^\n"]*"/							{ $lexem = new String(token,1,len-2); break; }
-ccon:		/'[^\n']*'/
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $lexem = current(); break; }
+ccon(String):	/"[^\n"]*"/							{ $lexem = token.toString().substring(1, token.length()-1); break; }
+ccon(String):	/'[^\n']*'/
 
 '>':	    />/          { group = 0; break; }
 '=':		/=/
@@ -33,8 +34,8 @@ _skip:      /[\t\r\n ]+/    { return false; }
 
 # Grammar
 
-input ::=
-	xml_tags										{ result = $xml_tags; } 
+input (XmlNode) ::=
+	xml_tags										{ $$ = new XmlNode("<root>", null, 1); $input.setData($xml_tags); }
 ;
 
 xml_tags (List<XmlElement>) ::=
@@ -43,8 +44,8 @@ xml_tags (List<XmlElement>) ::=
 ;
 
 xml_tag_or_space (XmlElement) ::=
-	tag_start tag_end								{ checkTag($tag_start,$tag_end,${self[1].line}); }
-	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,${self[2].line}); $tag_start.setData($xml_tags); }
+	tag_start tag_end								{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); }
+	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); $tag_start.setData($xml_tags); }
 	| no_body_tag
 	| any											{ $$ = getData(${self[0].offset},${self[0].endoffset}); }
 ;
@@ -79,47 +80,29 @@ attribute (XmlAttribute) ::=
 ##################################################################################
 
 %%
-${template imports}
-import java.io.CharArrayReader;
+
+${template java.imports-}
+${call base-}
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 ${end}
 
-${template lexercode-}
+${template java_tree.createParser-}
+${call base-}
+parser.source = source;
 ${end}
 
-${template classcode}
-public XmlParser() {
-}
 
-private static final boolean DEBUG_SYNTAX = false;
+${template java.classcode}
+${call base-}
 
-private List<XmlElement> result;
-
-char[] buff;
+net.sf.lapg.templates.model.xml.XmlTree.@TextSource source;
 
 private XmlData getData(int start, int end) {
-	return new XmlData(buff, start, end-start);
+	return new XmlData(source.getContents(), start, end-start);
 }
 
-public void error(String s) {
-	System.err.println(s);
-}
-
-public List<XmlElement> parse(String s) {
-	result = null;
-	try {
-		buff = s.toCharArray();
-		XmlLexer lexer = new XmlLexer(new CharArrayReader(buff), this);
-		parse(lexer);
-	} catch( IOException ex ) {
-	}
-	return result;
-}
-
-private void checkTag(XmlNode node, String endTag, int line) {
-	if( !node.getTagName().equals(endTag) )
-		error("Tag " + node.getTagName() + " is closed with " + endTag + " at line " + line);
+private void checkTag(XmlNode node, String endTag, int offset, int endoffset, int line) {
+	if (!node.getTagName().equals(endTag))
+		reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);
 }
 ${end}

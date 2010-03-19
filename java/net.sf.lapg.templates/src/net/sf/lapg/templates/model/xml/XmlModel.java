@@ -1,15 +1,11 @@
 package net.sf.lapg.templates.model.xml;
 
-import java.util.List;
+import net.sf.lapg.templates.model.xml.XmlTree.TextSource;
 
 public class XmlModel {
 
 	public static XmlNode load(String content) {
-		XmlParser p = new XmlParser();
-		List<XmlElement> result = p.parse(content);
-		XmlNode root = new XmlNode("<root>", null, 1);
-		root.setData(result);
-		return root;
+		XmlTree<XmlNode> tree = XmlTree.parse(new TextSource(".xml", content.toCharArray(), 1));
+		return tree.getRoot();
 	}
-
 }
