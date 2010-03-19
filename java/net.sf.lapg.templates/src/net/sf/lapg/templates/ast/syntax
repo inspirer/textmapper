@@ -235,6 +235,8 @@ primary_expression (ExpressionNode) ::=
     												{ $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt,inputName, ${self[0].line}); }
     | primary_expression '.' identifier '(' identifier '|' expression ')'
     												{ $$ = createCollectionProcessor($primary_expression#1, $identifier#0, $identifier#1, $expression, inputName, ${self[0].line}, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
+    | primary_expression '.' identifier '(' var=identifier '|' key=expression ':' value=expression ')'
+    												{ $$ = createMapCollect($primary_expression#1, $identifier, $var, $key, $value, inputName, ${self[0].line}, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
     | primary_expression '->' qualified_id '(' expression_listopt ')'
     												{ $$ = new CallTemplateNode($qualified_id,$expression_listopt,$primary_expression#1,templatePackage,false,inputName, ${self[0].line}); }
     | primary_expression '->' '(' expression ')' '(' expression_listopt ')'  
@@ -368,7 +370,15 @@ private void applyElse(CompoundNode node, ArrayList<Node> instructions, int offs
 	}
 }
 
-private ExpressionNode createCollectionProcessor(ExpressionNode forExpr, String instruction, String varName, ExpressionNode foreachExpr, String input, int line, int offset, int endoffset) {
+private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, String input, int line, int offset, int endoffset) {
+	if(!instruction.equals("collect")) {
+		reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
+		return new ErrorNode(input,line);
+	}
+	return new CollectMapNode(context,varName,key,value,input,line);
+}
+
+private ExpressionNode createCollectionProcessor(ExpressionNode context, String instruction, String varName, ExpressionNode foreachExpr, String input, int line, int offset, int endoffset) {
 	char first = instruction.charAt(0);
 	int kind = 0;
 	switch(first) {
@@ -402,7 +412,7 @@ private ExpressionNode createCollectionProcessor(ExpressionNode forExpr, String 
 		reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
 		return new ErrorNode(input,line);
 	}
-	return new CollectionProcessorNode(forExpr,kind,varName,foreachExpr,input,line);
+	return new CollectionProcessorNode(context,kind,varName,foreachExpr,input,line);
 }
 
 private Node createEscapedId(String escid, int line) {

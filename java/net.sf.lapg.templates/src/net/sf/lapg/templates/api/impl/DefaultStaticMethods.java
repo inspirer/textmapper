@@ -1,9 +1,10 @@
 package net.sf.lapg.templates.api.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,17 +34,22 @@ public class DefaultStaticMethods {
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	public String print(HashMap<?, ?> map) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int i = 0;
 		sb.append("[");
-		for (Map.Entry<?, ?> a : map.entrySet()) {
+		ArrayList keys = new ArrayList(map.keySet());
+		if(keys.size() > 0 && keys.get(0) instanceof Comparable<?>) {
+			Collections.sort((List<Comparable>)keys);
+		}
+		for (Object key : keys) {
 			if (i > 0) {
 				sb.append(",");
 			}
-			sb.append(a.getKey());
+			sb.append(key);
 			sb.append(" -> ");
-			sb.append(a.getValue());
+			sb.append(map.get(key));
 			i++;
 		}
 		sb.append("]");

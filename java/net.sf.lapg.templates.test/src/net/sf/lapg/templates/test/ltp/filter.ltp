@@ -9,3 +9,8 @@ ${[[name:'nbsss',value:'a3'],
    [name:'a45',value:'943q'],
    [name:'ano',value:'yes']]->map1worker() -}
 ${end}
+
+
+${template collector1-}
+${util.print(['1a','Bb','c','d'].collect(x| x : x.toUpperCase()))-}
+${end}
