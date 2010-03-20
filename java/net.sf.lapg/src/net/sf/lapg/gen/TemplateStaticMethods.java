@@ -79,8 +79,8 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(startrow);
 			sb.append(" ");
 			int[] row = table[i];
-			for (int e = 0; e < row.length; e++) {
-				sb.append(row[e]);
+			for (int element : row) {
+				sb.append(element);
 				sb.append(", ");
 			}
 			sb.append(endrow);

@@ -115,7 +115,9 @@ ${cached query symbolKind(sym) =
 	self->isRightList(sym) ? 'rightlist' :
 	self->isInterface(sym) ? 'interface' : 'class'}
 
-${cached query rules(sym) = syntax.rules.select(x|x.getLeft() == sym) }
+${cached query symrules = syntax.rulesBySymbol}
+
+${cached query rules(sym) = self->symrules()[sym].select(x|x.getLeft() == sym) }
 
 ${cached query isInterface(sym) = self->rules(sym).
 	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}

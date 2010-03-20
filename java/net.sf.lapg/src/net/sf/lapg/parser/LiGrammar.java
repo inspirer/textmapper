@@ -1,5 +1,8 @@
 package net.sf.lapg.parser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
@@ -99,5 +102,18 @@ public class LiGrammar implements Grammar {
 			}
 		}
 		return false;
+	}
+
+	public Map<Symbol,List<Rule>> getRulesBySymbol() {
+		Map<Symbol,List<Rule>> result = new HashMap<Symbol,List<Rule>>();
+		for(Rule r : rules) {
+			List<Rule> target = result.get(r.getLeft());
+			if(target == null) {
+				target = new ArrayList<Rule>();
+				result.put(r.getLeft(), target);
+			}
+			target.add(r);
+		}
+		return result;
 	}
 }
