@@ -6,6 +6,7 @@ import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
+import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 
 public class CSyntax implements Grammar {
@@ -200,5 +201,9 @@ public class CSyntax implements Grammar {
 			}
 		}
 		return false;
+	}
+
+	public Map<Symbol, List<Rule>> getRulesBySymbol() {
+		throw new UnsupportedOperationException();
 	}
 }
