@@ -13,12 +13,10 @@ public class LiPrio implements Prio {
 		this.symbols = symbols;
 	}
 
-	@Override
 	public int getPrio() {
 		return prio;
 	}
 
-	@Override
 	public Symbol[] getSymbols() {
 		return symbols;
 	}

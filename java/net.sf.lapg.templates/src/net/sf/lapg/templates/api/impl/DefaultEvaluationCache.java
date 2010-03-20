@@ -9,7 +9,6 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 
 	private final Map<CompositeKey, Object> globalCache = new HashMap<CompositeKey, Object>();
 
-	@Override
 	public void cache(Object value, Object... keys) {
 		if(value == null) {
 			return;
@@ -17,7 +16,6 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 		globalCache.put(new CompositeKey(keys), value);
 	}
 
-	@Override
 	public Object lookup(Object... keys) {
 		return globalCache.get(new CompositeKey(keys));
 	}

@@ -24,7 +24,6 @@ public class TemplatesBundle {
 	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
 			final IProblemCollector collector) {
 		AstParser p = new AstParser(new ErrorReporter() {
-			@Override
 			public void error(int start, int end, int line, String s) {
 				collector.fireError(null, sourceName + ":" + s);
 			}

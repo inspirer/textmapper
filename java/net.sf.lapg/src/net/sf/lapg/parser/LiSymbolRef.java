@@ -16,12 +16,10 @@ public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 		this.alias = alias;
 	}
 
-	@Override
 	public String getAlias() {
 		return alias;
 	}
 
-	@Override
 	public Symbol getTarget() {
 		return target;
 	}

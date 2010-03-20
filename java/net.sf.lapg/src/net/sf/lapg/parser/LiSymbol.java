@@ -16,7 +16,6 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		this.isTerm = isTerm;
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}
@@ -25,22 +24,18 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		this.index = index;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public String getType() {
 		return type;
 	}
 
-	@Override
 	public boolean isDefined() {
 		return true;
 	}
 
-	@Override
 	public boolean isTerm() {
 		return isTerm;
 	}

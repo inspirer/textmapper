@@ -108,7 +108,6 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
-	@Override
 	public IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer) {
 		return registry.loadEntity(qualifiedName, kind, referer);
 	}
@@ -132,7 +131,6 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
 		final String inputName = templateId != null ? templateId : referer.getLocation();
 		AstParser p = new AstParser(new ErrorReporter() {
-			@Override
 			public void error(int start, int end, int line, String s) {
 				DefaultEvaluationStrategy.this.fireError(null, inputName + ":" + s);
 			}
@@ -211,7 +209,6 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		templatesFacade.createFile(name,contents);
 	}
 
-	@Override
 	public IEvaluationCache getCache() {
 		if(myCache == null) {
 			myCache = new DefaultEvaluationCache();

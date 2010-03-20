@@ -99,7 +99,6 @@ public class ConsoleGenerator extends AbstractGenerator {
 			System.err.print(error);
 		}
 
-		@Override
 		public void info(String info) {
 			System.out.print(info);
 		}

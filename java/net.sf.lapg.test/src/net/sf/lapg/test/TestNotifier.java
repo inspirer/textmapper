@@ -23,7 +23,6 @@ public class TestNotifier implements INotifier {
 		Assert.fail(info);
 	}
 
-	@Override
 	public void info(String info) {
 		// ignore
 	}

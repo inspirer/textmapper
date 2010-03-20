@@ -367,7 +367,6 @@ public class InputTest extends LapgTestCase {
 		}
 
 		Arrays.sort(g.getSymbols(), new Comparator<Symbol>() {
-			@Override
 			public int compare(Symbol o1, Symbol o2) {
 				Integer i1 = index.get(o1.getName());
 				Integer i2 = index.get(o2.getName());
@@ -379,7 +378,6 @@ public class InputTest extends LapgTestCase {
 		}
 
 		Arrays.sort(g.getRules(), new Comparator<Rule>() {
-			@Override
 			public int compare(Rule o1, Rule o2) {
 				Integer i1 = ruleind.get(getSignature(o1));
 				Integer i2 = ruleind.get(getSignature(o2));

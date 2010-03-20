@@ -39,62 +39,50 @@ public class LiGrammar implements Grammar {
 		this.hasErrors = hasErrors;
 	}
 
-	@Override
 	public Symbol[] getSymbols() {
 		return symbols;
 	}
 
-	@Override
 	public Rule[] getRules() {
 		return rules;
 	}
 
-	@Override
 	public Prio[] getPriorities() {
 		return priorities;
 	}
 
-	@Override
 	public Lexem[] getLexems() {
 		return lexems;
 	}
 
-	@Override
 	public Symbol[] getInput() {
 		return inputs;
 	}
 
-	@Override
 	public Symbol getEoi() {
 		return eoi;
 	}
 
-	@Override
 	public Symbol getError() {
 		return error;
 	}
 
-	@Override
 	public Map<String, Object> getOptions() {
 		return options;
 	}
 
-	@Override
 	public String getTemplates() {
 		return templates;
 	}
 
-	@Override
 	public int getTerminals() {
 		return terminals;
 	}
 
-	@Override
 	public boolean hasErrors() {
 		return hasErrors;
 	}
 
-	@Override
 	public boolean hasActions() {
 		for (Rule r : rules) {
 			if (r.getAction() != null) {
@@ -104,7 +92,6 @@ public class LiGrammar implements Grammar {
 		return false;
 	}
 
-	@Override
 	public boolean hasLexemActions() {
 		for (Lexem l : lexems) {
 			if (l.getAction() != null) {

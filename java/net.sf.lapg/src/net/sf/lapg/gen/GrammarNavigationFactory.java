@@ -126,12 +126,10 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
 	private final INavigationStrategy<Symbol> symbolNavigation = new INavigationStrategy<Symbol>() {
 
-		@Override
 		public Object callMethod(Symbol obj, String methodName, Object[] args) throws EvaluationException {
 			return javaNavigation.callMethod(obj, methodName, args);
 		}
 
-		@Override
 		public Object getByIndex(Symbol sym, Object index) throws EvaluationException {
 			if (index instanceof String) {
 				return sym.getAnnotation((String) index);
@@ -140,7 +138,6 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			}
 		}
 
-		@Override
 		public Object getProperty(Symbol obj, String propertyName) throws EvaluationException {
 			return javaNavigation.getProperty(obj, propertyName);
 		}

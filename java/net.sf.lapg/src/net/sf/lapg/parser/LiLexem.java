@@ -20,29 +20,23 @@ public class LiLexem implements Lexem {
 		this.action = action;
 	}
 
-	@Override
 	public Action getAction() {
 		return action;
 	}
 
-	@Override
 	public int getGroups() {
 		return groups;
 	}
 
-	@Override
 	public int getPriority() {
 		return priority;
 	}
 
-	@Override
 	public String getRegexp() {
 		return regexp;
 	}
 
-	@Override
 	public Symbol getSymbol() {
 		return sym;
 	}
-
 }

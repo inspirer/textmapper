@@ -44,7 +44,6 @@ public class QueryNode extends Node implements IQuery {
 		return templatePackage;
 	}
 
-	@Override
 	public Object invoke(EvaluationContext context, IEvaluationStrategy env, Object[] arguments)
 			throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length

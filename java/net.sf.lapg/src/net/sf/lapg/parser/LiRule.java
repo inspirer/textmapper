@@ -30,12 +30,10 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		this.node = node;
 	}
 
-	@Override
 	public Action getAction() {
 		return code;
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}
@@ -44,17 +42,14 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		this.index = index;
 	}
 
-	@Override
 	public Symbol getLeft() {
 		return left;
 	}
 
-	@Override
 	public SymbolRef[] getRight() {
 		return right;
 	}
 
-	@Override
 	public int getPriority() {
 		if (priority != null) {
 			return priority.getIndex();
@@ -99,7 +94,6 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		return "Rule `" + toString() + "`";
 	}
 
-	@Override
 	public String getLocation() {
 		return node.getLocation();
 	}
