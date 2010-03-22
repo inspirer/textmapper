@@ -116,6 +116,10 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		// test 1
 		String q = env.executeTemplate("filter.sorted1", context, null, null);
 		Assert.assertEquals("1a -> yo4; a -> yo1; daa -> yo2; xb -> yo3; ", q);
+
+		// test 2
+		q = env.executeTemplate("filter.sorted2", context, null, null);
+		Assert.assertEquals("a -> yo1; daa -> yo2; xb -> yo3; 1a -> yo4; ", q);
 	}
 
 	// arithm.ltp

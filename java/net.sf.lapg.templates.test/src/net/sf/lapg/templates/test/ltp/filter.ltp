@@ -23,3 +23,12 @@ ${foreach x in [
 	[name:'a',   val:'yo1']].sort(x|x.name)-}
 ${x.name} -> ${x.val}; ${end-}
 ${end}
+
+${template sorted2-}
+${foreach x in [
+	[name:'1a',  val:'yo4'],
+	[name:'xb',  val:'yo3'],
+	[name:'daa', val:'yo2'],
+	[name:'a',   val:'yo1']].sort(x|x.val)-}
+${x.name} -> ${x.val}; ${end-}
+${end}
