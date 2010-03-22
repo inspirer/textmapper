@@ -167,5 +167,6 @@ ${query escapeJavaReserved() =
 	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
 	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
 
-${cached query interfaceRules() = syntax.rules.select(x|self->isInterface(x.getLeft()))}
+${cached query interfaceRules() = syntax.rules.select(x|
+	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
