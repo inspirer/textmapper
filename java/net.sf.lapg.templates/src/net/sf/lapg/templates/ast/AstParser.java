@@ -79,6 +79,8 @@ public class AstParser {
 		case 'c':
 			if(instruction.equals("collect")) {
 				kind = CollectionProcessorNode.COLLECT;
+			} else if(instruction.equals("collectUnique")) {
+				kind = CollectionProcessorNode.COLLECTUNIQUE;
 			}
 			break;
 		case 'r':

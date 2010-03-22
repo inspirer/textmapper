@@ -15,6 +15,16 @@ ${template collector1-}
 ${util.print(['1a','Bb','c','d'].collect(x| x : x.toUpperCase()))-}
 ${end}
 
+${template collectorUnique-}
+${foreach qq in ['1a','Bb','bB','c','d','d','C'].collectUnique(x| x.toUpperCase())-}
+${qq} ${end-}
+${end}
+
+${template collectorStd-}
+${foreach qq in ['1a','Bb','bB','c','d','d','C'].collect(x| x.toUpperCase())-}
+${qq} ${end-}
+${end}
+
 ${template sorted1-}
 ${foreach x in [
 	[name:'1a',  val:'yo4'],

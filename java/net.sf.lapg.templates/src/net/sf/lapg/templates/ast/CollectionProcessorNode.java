@@ -2,9 +2,11 @@ package net.sf.lapg.templates.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -16,13 +18,14 @@ import net.sf.lapg.templates.api.IEvaluationStrategy;
 public class CollectionProcessorNode extends ExpressionNode {
 
 	static final int COLLECT = 1;
-	static final int REJECT = 2;
-	static final int SELECT = 3;
-	static final int FORALL = 4;
-	static final int EXISTS = 5;
-	static final int SORT = 6;
+	static final int COLLECTUNIQUE = 2;
+	static final int REJECT = 3;
+	static final int SELECT = 4;
+	static final int FORALL = 5;
+	static final int EXISTS = 6;
+	static final int SORT = 7;
 
-	private static final String[] INSTR_WORDS = new String[] { null, "collect", "reject", "select", "forAll", "exists", "sort" };
+	private static final String[] INSTR_WORDS = new String[] { null, "collect", "collectUnique", "reject", "select", "forAll", "exists", "sort" };
 
 	private final ExpressionNode selectExpression;
 	private final int instruction;
@@ -47,13 +50,13 @@ public class CollectionProcessorNode extends ExpressionNode {
 				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of "+select.getClass().getCanonicalName()+")");
 			}
 
-			if(instruction == SELECT || instruction == REJECT || instruction == COLLECT) {
-				List<Object> result = new ArrayList<Object>();
+			if(instruction == SELECT || instruction == REJECT || instruction == COLLECT || instruction == COLLECTUNIQUE) {
+				Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
 				while(it.hasNext()) {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
 					Object val = env.evaluate(foreachExpr, context, false);
-					if(instruction != COLLECT) {
+					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
 						boolean b = env.toBoolean(val) ^ (instruction == REJECT);
 						if(b) {
 							result.add(curr);
@@ -62,7 +65,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 						result.add(val);
 					}
 				}
-				return result;
+				return instruction == COLLECTUNIQUE ? new ArrayList<Object>(result) : result;
 			} else if(instruction == SORT) {
 				List<Object> result = new ArrayList<Object>();
 				final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();

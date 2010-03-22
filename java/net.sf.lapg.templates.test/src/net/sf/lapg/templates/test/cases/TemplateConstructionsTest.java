@@ -98,6 +98,20 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("[nbsss -> a3,a45 -> 943q,ano -> yes]\n", q);
 	}
 
+	public void testCollect() {
+		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		EvaluationContext context = new EvaluationContext(null);
+		context.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("filter.collectorUnique", context, null, null);
+		Assert.assertEquals("1A BB C D ", q);
+
+		// test 2
+		q = env.executeTemplate("filter.collectorStd", context, null, null);
+		Assert.assertEquals("1A BB BB C D D C ", q);
+	}
+
 	public void testCollectMap() {
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		EvaluationContext context = new EvaluationContext(null);
