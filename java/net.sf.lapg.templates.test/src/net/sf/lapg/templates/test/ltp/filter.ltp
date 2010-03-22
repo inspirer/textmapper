@@ -14,3 +14,12 @@ ${end}
 ${template collector1-}
 ${util.print(['1a','Bb','c','d'].collect(x| x : x.toUpperCase()))-}
 ${end}
+
+${template sorted1-}
+${foreach x in [
+	[name:'1a',  val:'yo4'],
+	[name:'xb',  val:'yo3'],
+	[name:'daa', val:'yo2'],
+	[name:'a',   val:'yo1']].sort(x|x.name)-}
+${x.name} -> ${x.val}; ${end-}
+${end}

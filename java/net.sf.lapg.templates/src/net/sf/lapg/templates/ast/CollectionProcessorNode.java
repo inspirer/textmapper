@@ -1,7 +1,12 @@
 package net.sf.lapg.templates.ast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
@@ -15,8 +20,9 @@ public class CollectionProcessorNode extends ExpressionNode {
 	static final int SELECT = 3;
 	static final int FORALL = 4;
 	static final int EXISTS = 5;
+	static final int SORT = 6;
 
-	private static final String[] INSTR_WORDS = new String[] { null, "collect", "reject", "select", "forAll", "exists" };
+	private static final String[] INSTR_WORDS = new String[] { null, "collect", "reject", "select", "forAll", "exists", "sort" };
 
 	private final ExpressionNode selectExpression;
 	private final int instruction;
@@ -42,7 +48,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 			}
 
 			if(instruction == SELECT || instruction == REJECT || instruction == COLLECT) {
-				ArrayList<Object> result = new ArrayList<Object>();
+				List<Object> result = new ArrayList<Object>();
 				while(it.hasNext()) {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
@@ -57,6 +63,32 @@ public class CollectionProcessorNode extends ExpressionNode {
 					}
 				}
 				return result;
+			} else if(instruction == SORT) {
+				List<Object> result = new ArrayList<Object>();
+				final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
+				while(it.hasNext()) {
+					Object curr = it.next();
+					context.setVariable(varName, curr);
+					Object val = env.evaluate(foreachExpr, context, false);
+					if(!(val instanceof Comparable<?>)) {
+						throw new EvaluationException("`" + foreachExpr.toString() + "` should implement Comparable (instead of "+val.getClass().getCanonicalName()+")");
+					}
+					sortKey.put(curr, (Comparable<Object>)val);
+					result.add(curr);
+				}
+				Object[] arr = result.toArray();
+				Arrays.sort(arr, new Comparator<Object>() {
+					public int compare(Object o1, Object o2) {
+						if(o1 == null) {
+							return o2 == null ? 0 : -1;
+						}
+						if(o2 == null) {
+							return 1;
+						}
+						return sortKey.get(o1).compareTo(sortKey.get(o2));
+					}
+				});
+				return arr;
 			} else {
 				while(it.hasNext()) {
 					Object curr = it.next();

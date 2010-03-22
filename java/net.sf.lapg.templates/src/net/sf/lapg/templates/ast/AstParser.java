@@ -89,6 +89,8 @@ public class AstParser {
 		case 's':
 			if(instruction.equals("select")) {
 				kind = CollectionProcessorNode.SELECT;
+			} else if(instruction.equals("sort")) {
+				kind = CollectionProcessorNode.SORT;
 			}
 			break;
 		case 'f':

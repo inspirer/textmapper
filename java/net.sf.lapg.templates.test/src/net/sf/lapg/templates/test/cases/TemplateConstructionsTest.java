@@ -108,6 +108,16 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("[1a -> 1A,Bb -> BB,c -> C,d -> D]", q);
 	}
 
+	public void testSort() {
+		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		EvaluationContext context = new EvaluationContext(null);
+		context.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("filter.sorted1", context, null, null);
+		Assert.assertEquals("1a -> yo4; a -> yo1; daa -> yo2; xb -> yo3; ", q);
+	}
+
 	// arithm.ltp
 	public void testArithm() {
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
