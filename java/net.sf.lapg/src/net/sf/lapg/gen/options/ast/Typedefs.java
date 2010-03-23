@@ -4,5 +4,7 @@ public class Typedefs {
 
 // typedefs ::= typedefs typedef (leftrec)
 // typedefs ::= typedef (normal)
+// ! typedefs
+// ! typedef
 	
 }

@@ -73,14 +73,14 @@ public class QueryNode extends Node implements IQuery {
 					context.setVariable(parameters[i], arguments[i]);
 				}
 
-				result = env.evaluate(expr, context, false);
+				result = env.evaluate(expr, context, true);
 			} finally {
 				for (i = 0; i < paramCount; i++) {
 					context.setVariable(parameters[i], old[i]);
 				}
 			}
 		} else {
-			result = env.evaluate(expr, context, false);
+			result = env.evaluate(expr, context, true);
 		}
 		if(isCached) {
 			env.getCache().cache(result, this, context.getThisObject(), arguments);

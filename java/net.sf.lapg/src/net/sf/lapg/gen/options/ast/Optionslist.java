@@ -4,5 +4,7 @@ public class Optionslist {
 
 // optionslist ::= optionslist ',' option (leftrec)
 // optionslist ::= ';' option (normal)
+// ! optionslist
+// ! option
 	
 }

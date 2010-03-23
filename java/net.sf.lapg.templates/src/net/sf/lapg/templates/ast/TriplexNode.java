@@ -22,9 +22,9 @@ public class TriplexNode extends ExpressionNode {
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object cond = env.evaluate(condition, context, true);
 		if( env.toBoolean(cond) ) {
-			return env.evaluate(thennode, context, false);
+			return env.evaluate(thennode, context, true);
 		} else {
-			return env.evaluate(elsenode, context, false);
+			return env.evaluate(elsenode, context, true);
 		}
 	}
 

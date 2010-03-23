@@ -36,6 +36,9 @@ public class ${psym->className()} {
 ${foreach rule in self->rules(psym)-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
+${foreach prop in self->allFields(psym)-}
+// ! ${prop.name}
+${end-}
 	
 }
 ${end-}
@@ -170,3 +173,11 @@ ${query escapeJavaReserved() =
 ${cached query interfaceRules() = syntax.rules.select(x|
 	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
+
+${cached query propInternal(alias,target) =
+ target->isSimpleTerm() ? null : [name:target.name, alias:alias]}
+
+${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
+
+${query allFields(psym) = self->rules(psym).
+	collect(x|x.getRight()).collectUnique(x|self->property(x))}

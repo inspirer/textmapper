@@ -4,5 +4,8 @@ public class MapEntries {
 
 // map_entries ::= identifier ':' expression (normal)
 // map_entries ::= map_entries ',' identifier ':' expression (leftrec)
+// ! identifier
+// ! expression
+// ! map_entries
 	
 }

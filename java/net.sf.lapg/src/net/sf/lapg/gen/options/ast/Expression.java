@@ -6,5 +6,9 @@ public class Expression {
 // expression ::= icon (normal)
 // expression ::= '[' map_entries ']' (normal)
 // expression ::= '[' expression_list ']' (normal)
+// ! scon
+// ! icon
+// ! map_entries
+// ! expression_list
 	
 }

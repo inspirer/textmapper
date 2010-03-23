@@ -55,13 +55,25 @@ public class CollectionProcessorNode extends ExpressionNode {
 				while(it.hasNext()) {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, false);
+					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE);
 					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
 						boolean b = env.toBoolean(val) ^ (instruction == REJECT);
 						if(b) {
 							result.add(curr);
 						}
-					} else {
+					} else if(val instanceof Collection<?>) {
+						for(Object v : (Collection<?>) val) {
+							if(v!=null) {
+								result.add(v);
+							}
+						}
+					} else if(val instanceof Object[]) {
+						for(Object v : (Object[])val) {
+							if(v!=null) {
+								result.add(v);
+							}
+						}
+					} else if(val != null){
 						result.add(val);
 					}
 				}
