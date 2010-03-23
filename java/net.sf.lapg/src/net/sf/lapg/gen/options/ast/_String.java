@@ -4,7 +4,7 @@ public class _String {
 
 // string ::= identifier (normal)
 // string ::= scon (normal)
-// ! identifier
-// ! scon
+// ! String identifier
+// ! String scon
 	
 }

@@ -37,7 +37,7 @@ ${foreach rule in self->rules(psym)-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
 ${foreach prop in self->allFields(psym)-}
-// ! ${prop.name}
+// ! ${prop.type} ${prop.name}
 ${end-}
 	
 }
@@ -175,7 +175,7 @@ ${cached query interfaceRules() = syntax.rules.select(x|
 
 
 ${cached query propInternal(alias,target) =
- target->isSimpleTerm() ? null : [name:target.name, alias:alias]}
+ target->isSimpleTerm() ? null : [name:alias?alias:target.name, type:target.type?target.type:'Object']}
 
 ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
 

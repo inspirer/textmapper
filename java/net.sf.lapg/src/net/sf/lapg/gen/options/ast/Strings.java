@@ -4,7 +4,7 @@ public class Strings {
 
 // strings ::= strings ',' string (leftrec)
 // strings ::= string (normal)
-// ! strings
-// ! string
+// ! Object strings
+// ! Object string
 	
 }

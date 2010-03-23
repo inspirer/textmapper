@@ -5,9 +5,9 @@ public class Group {
 // group ::= Lglobal scon '{' declarations '}' (normal)
 // group ::= anno_kind '{' declarations '}' (normal)
 // group ::= Ltypes '{' typedefs '}' (normal)
-// ! scon
-// ! declarations
-// ! anno_kind
-// ! typedefs
+// ! String title
+// ! Object declarations
+// ! Object kind
+// ! Object typedefs
 	
 }

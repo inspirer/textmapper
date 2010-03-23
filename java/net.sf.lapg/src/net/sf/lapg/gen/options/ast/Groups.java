@@ -4,7 +4,7 @@ public class Groups {
 
 // groups ::= groups group (leftrec)
 // groups ::= group (normal)
-// ! groups
-// ! group
+// ! Object groups
+// ! Object group
 	
 }

@@ -3,7 +3,7 @@ package net.sf.lapg.gen.options.ast;
 public class Typedef {
 
 // typedef ::= identifier '=' type ';' (normal)
-// ! identifier
-// ! type
+// ! String identifier
+// ! Object type
 	
 }

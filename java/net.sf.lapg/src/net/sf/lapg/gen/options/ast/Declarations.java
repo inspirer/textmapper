@@ -4,7 +4,7 @@ public class Declarations {
 
 // declarations ::= declarations declaration (leftrec)
 // declarations ::= declaration (normal)
-// ! declarations
-// ! declaration
+// ! Object declarations
+// ! Object declaration
 	
 }

@@ -14,11 +14,11 @@ public class Type {
 // type ::= Lchoice '(' strings ')' (normal)
 // type ::= Larray '(' type ')' (unknown)
 // type ::= Lstruct '{' declarations '}' (normal)
-// ! identifier
-// ! string
-// ! string
-// ! strings
-// ! type
-// ! declarations
+// ! String identifier
+// ! Object trueVal
+// ! Object falseVal
+// ! Object strings
+// ! Object type
+// ! Object declarations
 	
 }
