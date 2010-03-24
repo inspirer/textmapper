@@ -1,6 +1,6 @@
 package net.sf.lapg.gen.options.ast;
 
-public interface IInput {
+public interface IExpression {
 
 // input ::= groups (normal)
 // modifiersopt ::= modifiers (normal)

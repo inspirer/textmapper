@@ -143,9 +143,15 @@ string ::=
 ##### EXPRESSIONS
 
 expression ::=
+	structural_expression | literal_expression ;
+
+literal_expression ::=
 	  scon
 	| icon
-	| '[' map_entries ']'
+;
+
+structural_expression ::=
+	  '[' map_entries ']'
 	| '[' expression_list ']'
 ;
 

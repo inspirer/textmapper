@@ -11,12 +11,18 @@ ${end-}
 ${end-}
 ${end}
 
+${template implementedInterfaces(sym, prefix)-}
+${if self->getImplemented(sym).size() > 0-}
+${prefix}${foreach impl in self->getImplemented(sym)}${if index > 0}, ${end}${self->refName(impl)}${end-}
+${end-}
+${end}
+
 
 ${template astInterface(psym)-}
 ${file 'ast/' + psym->interfaceName() + '.java'-}
 package ${call java.package}.ast;
 
-public interface ${psym->interfaceName()} {
+public interface ${psym->interfaceName()}${call implementedInterfaces(psym,' extends ')} {
 
 ${foreach rule in self->interfaceRules()-}
 // $rule (${self->intListRuleKind(rule)})
@@ -31,7 +37,7 @@ ${template astClass(psym)-}
 ${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
-public class ${psym->className()} {
+public class ${psym->className()}${call implementedInterfaces(psym,' implements ')} {
 
 ${foreach rule in self->rules(psym)-}
 // $rule (${self->intListRuleKind(rule)})
@@ -145,6 +151,8 @@ ${cached query className() =
 ${cached query interfaceName() = 
 	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
 
+${query refName(sym) = self->isInterface(sym) ? sym->interfaceName() : sym->className() }
+
 ${cached query intListRuleKind(rule) = 
 	rule.getRight().length == 0 
 		? 'empty'
@@ -181,3 +189,7 @@ ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias
 
 ${query allFields(psym) = self->rules(psym).
 	collect(x|x.getRight()).collectUnique(x|self->property(x))}
+
+${cached query getImplemented(sym) = syntax.rules.select(x|self->isInterface(x.getLeft())
+	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
+
