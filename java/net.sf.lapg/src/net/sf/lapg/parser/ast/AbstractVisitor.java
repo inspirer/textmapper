@@ -1,6 +1,6 @@
 package net.sf.lapg.parser.ast;
 
-public class Visitor {
+public class AbstractVisitor {
 
 	public boolean visit(AstCode n) {
 		return true;

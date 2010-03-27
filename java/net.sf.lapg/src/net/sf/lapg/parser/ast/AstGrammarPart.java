@@ -1,4 +1,4 @@
 package net.sf.lapg.parser.ast;
 
-public interface AstGrammarPart {
+public interface AstGrammarPart extends IAstNode {
 }

@@ -6,7 +6,7 @@ import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.parser.ast.Node;
+import net.sf.lapg.parser.ast.AstNode;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 
@@ -19,9 +19,9 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 	private final LiSymbolRef[] right;
 	private final Action code;
 	private final LiSymbol priority;
-	private final Node node;
+	private final AstNode node;
 
-	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, Node node, Map<String,Object> annotations) {
+	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, AstNode node, Map<String,Object> annotations) {
 		super(annotations);
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right ;
@@ -62,7 +62,7 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		return -1;
 	}
 
-	public Node getNode() {
+	public AstNode getNode() {
 		return node;
 	}
 

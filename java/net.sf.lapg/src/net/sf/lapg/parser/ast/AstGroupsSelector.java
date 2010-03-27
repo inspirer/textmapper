@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstGroupsSelector extends Node implements AstLexerPart {
+public class AstGroupsSelector extends AstNode implements AstLexerPart {
 
 	private final List<Integer> groups;
 

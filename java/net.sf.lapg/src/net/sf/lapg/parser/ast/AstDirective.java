@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstDirective extends Node implements AstGrammarPart {
+public class AstDirective extends AstNode implements AstGrammarPart {
 
 	private final String key;
 	private final List<AstIdentifier> symbols;
