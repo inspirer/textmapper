@@ -4,7 +4,7 @@ import java.util.Map;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstRuleSymbol extends Node {
+public class AstRuleSymbol extends AstNode {
 
 	private final AstCode action;
 	private final String alias;

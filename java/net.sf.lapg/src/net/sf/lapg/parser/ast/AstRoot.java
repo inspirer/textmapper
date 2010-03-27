@@ -4,7 +4,7 @@ import java.util.List;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstRoot extends Node {
+public class AstRoot extends AstNode {
 
 	private final List<AstOption> options;
 	private final List<AstLexerPart> lexer;
@@ -32,7 +32,7 @@ public class AstRoot extends Node {
 	}
 
 	@Override
-	public void accept(Visitor v) {
+	public void accept(AbstractVisitor v) {
 		if(v.visit(this)) {
 			if(options != null) {
 				for(AstOption o : options) {

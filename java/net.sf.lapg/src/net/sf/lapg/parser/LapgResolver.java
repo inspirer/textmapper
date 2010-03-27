@@ -22,7 +22,7 @@ import net.sf.lapg.parser.ast.AstRegexp;
 import net.sf.lapg.parser.ast.AstRuleSymbol;
 import net.sf.lapg.parser.ast.AstRoot;
 import net.sf.lapg.parser.ast.AstRule;
-import net.sf.lapg.parser.ast.Node;
+import net.sf.lapg.parser.ast.AstNode;
 
 public class LapgResolver {
 
@@ -299,7 +299,7 @@ public class LapgResolver {
 		return o1 == null || o2 == null ? o1 == o2 : o1.equals(o2);
 	}
 
-	private void error(Node n, String message) {
+	private void error(AstNode n, String message) {
 		tree.getErrors().add(new ParseProblem(2, n.getOffset(), n.getEndOffset(), message, null));
 	}
 

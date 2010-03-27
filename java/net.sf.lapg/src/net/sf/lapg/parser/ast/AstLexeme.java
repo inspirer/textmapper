@@ -2,7 +2,7 @@ package net.sf.lapg.parser.ast;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstLexeme extends Node implements AstLexerPart {
+public class AstLexeme extends AstNode implements AstLexerPart {
 
 	private final AstIdentifier name;
 	private final String type;

@@ -2,7 +2,7 @@ package net.sf.lapg.parser.ast;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstIdentifier extends Node {
+public class AstIdentifier extends AstNode {
 
 	private String name;
 

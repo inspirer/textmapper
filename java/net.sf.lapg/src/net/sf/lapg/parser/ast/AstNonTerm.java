@@ -5,7 +5,7 @@ import java.util.Map;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstNonTerm extends Node implements AstGrammarPart {
+public class AstNonTerm extends AstNode implements AstGrammarPart {
 
 	private AstIdentifier name;
 	private String type;

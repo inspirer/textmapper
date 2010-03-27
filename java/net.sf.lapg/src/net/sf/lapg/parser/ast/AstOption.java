@@ -2,7 +2,7 @@ package net.sf.lapg.parser.ast;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstOption extends Node {
+public class AstOption extends AstNode {
 
 	private final String key;
 	private final Object value;
