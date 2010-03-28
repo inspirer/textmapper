@@ -300,7 +300,7 @@ public class LapgResolver {
 	}
 
 	private void error(AstNode n, String message) {
-		tree.getErrors().add(new ParseProblem(2, n.getOffset(), n.getEndOffset(), message, null));
+		tree.getErrors().add(new ParseProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message, null));
 	}
 
 	@SuppressWarnings("unchecked")

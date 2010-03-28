@@ -47,7 +47,7 @@ public abstract class AbstractGenerator {
 
 	protected abstract InputStream openInput(INotifier err);
 
-	private Map<String, Object> getDefaultOptions() {
+	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("prefix", "");
 		d.put("breaks", "on");
