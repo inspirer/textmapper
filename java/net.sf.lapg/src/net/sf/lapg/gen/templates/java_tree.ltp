@@ -7,9 +7,9 @@ public class ${opts.prefix}Tree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final java.util.@List<ParseProblem> errors;
+	private final java.util.@List<${opts.prefix}Problem> errors;
 
-	public ${opts.prefix}Tree(TextSource source, T root, java.util.@List<ParseProblem> errors) {
+	public ${opts.prefix}Tree(TextSource source, T root, java.util.@List<${opts.prefix}Problem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -23,7 +23,7 @@ public class ${opts.prefix}Tree<T> {
 		return root;
 	}
 
-	public java.util.@List<ParseProblem> getErrors() {
+	public java.util.@List<${opts.prefix}Problem> getErrors() {
 		return errors;
 	}
 
@@ -46,10 +46,10 @@ ${end}
 ${template parse-}
 ${foreach inp in syntax.input}
 	public static ${opts.prefix}Tree<${call typeofsym for inp}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.name)}${else}parse${end}(TextSource source) {
-		final java.util.@List<ParseProblem> list = new java.util.@ArrayList<ParseProblem>();
+		final java.util.@List<${opts.prefix}Problem> list = new java.util.@ArrayList<${opts.prefix}Problem>();
 		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+				list.add(new ${opts.prefix}Problem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
@@ -63,7 +63,7 @@ ${util.shiftRight(self->parseStatements(),3)-}
 		} catch(${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
 		} catch(java.io.@IOException ex) {
-			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new ${opts.prefix}Problem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, null, list);
 	}
@@ -87,17 +87,19 @@ ${template constants-}
 	public static final int KIND_FATAL = 0;
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
+
+	public static final String DEFAULT_SOURCE = "parser";
 ${end}
 
 ${template ParseProblemClass-}
-	public static class ParseProblem extends Exception {
+	public static class ${opts.prefix}Problem extends Exception {
 		int kind;
 		int start;
 		int end;
 
 		private static final long serialVersionUID = 1L;
 
-		public ParseProblem(int kind, int start, int end, String message, Throwable cause) {
+		public ${opts.prefix}Problem(int kind, int start, int end, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.start = start;
@@ -114,6 +116,10 @@ ${template ParseProblemClass-}
 
 		public int getEnd() {
 			return end;
+		}
+
+		public String getSource() {
+			return DEFAULT_SOURCE;
 		}
 	}
 ${end}

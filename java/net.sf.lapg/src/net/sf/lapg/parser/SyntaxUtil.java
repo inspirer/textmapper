@@ -8,7 +8,7 @@ import java.util.Map;
 
 import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.parser.LapgTree.ParseProblem;
+import net.sf.lapg.parser.LapgTree.LapgProblem;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.AstRoot;
 
@@ -24,7 +24,7 @@ public class SyntaxUtil {
 		}
 		if (tree.hasErrors()) {
 			result = null;
-			for (ParseProblem s : tree.getErrors()) {
+			for (LapgProblem s : tree.getErrors()) {
 				err.error(s.getMessage() + "\n");
 			}
 		}

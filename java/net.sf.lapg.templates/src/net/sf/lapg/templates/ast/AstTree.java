@@ -15,9 +15,9 @@ public class AstTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<ParseProblem> errors;
+	private final List<AstProblem> errors;
 
-	public AstTree(TextSource source, T root, List<ParseProblem> errors) {
+	public AstTree(TextSource source, T root, List<AstProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -31,7 +31,7 @@ public class AstTree<T> {
 		return root;
 	}
 
-	public List<ParseProblem> getErrors() {
+	public List<AstProblem> getErrors() {
 		return errors;
 	}
 
@@ -41,10 +41,10 @@ public class AstTree<T> {
 
 
 	public static AstTree<Object> parseInput(TextSource source) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		final List<AstProblem> list = new ArrayList<AstProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+				list.add(new AstProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
@@ -59,16 +59,16 @@ public class AstTree<T> {
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
-			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new AstTree<Object>(source, null, list);
 	}
 
 	public static AstTree<TemplateNode> parseBody(TextSource source) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		final List<AstProblem> list = new ArrayList<AstProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+				list.add(new AstProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
@@ -83,7 +83,7 @@ public class AstTree<T> {
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
-			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new AstTree<TemplateNode>(source, null, list);
 	}
@@ -93,14 +93,16 @@ public class AstTree<T> {
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
 
-	public static class ParseProblem extends Exception {
+	public static final String DEFAULT_SOURCE = "parser";
+
+	public static class AstProblem extends Exception {
 		int kind;
 		int start;
 		int end;
 
 		private static final long serialVersionUID = 1L;
 
-		public ParseProblem(int kind, int start, int end, String message, Throwable cause) {
+		public AstProblem(int kind, int start, int end, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.start = start;
@@ -117,6 +119,10 @@ public class AstTree<T> {
 
 		public int getEnd() {
 			return end;
+		}
+
+		public String getSource() {
+			return DEFAULT_SOURCE;
 		}
 	}
 

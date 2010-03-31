@@ -14,9 +14,9 @@ public class LapgTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<ParseProblem> errors;
+	private final List<LapgProblem> errors;
 
-	public LapgTree(TextSource source, T root, List<ParseProblem> errors) {
+	public LapgTree(TextSource source, T root, List<LapgProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -30,7 +30,7 @@ public class LapgTree<T> {
 		return root;
 	}
 
-	public List<ParseProblem> getErrors() {
+	public List<LapgProblem> getErrors() {
 		return errors;
 	}
 
@@ -40,10 +40,10 @@ public class LapgTree<T> {
 
 
 	public static LapgTree<AstRoot> parse(TextSource source) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		final List<LapgProblem> list = new ArrayList<LapgProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+				list.add(new LapgProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
@@ -62,7 +62,7 @@ public class LapgTree<T> {
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
-			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new LapgTree<AstRoot>(source, null, list);
 	}
@@ -72,14 +72,16 @@ public class LapgTree<T> {
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
 
-	public static class ParseProblem extends Exception {
+	public static final String DEFAULT_SOURCE = "parser";
+
+	public static class LapgProblem extends Exception {
 		int kind;
 		int start;
 		int end;
 
 		private static final long serialVersionUID = 1L;
 
-		public ParseProblem(int kind, int start, int end, String message, Throwable cause) {
+		public LapgProblem(int kind, int start, int end, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.start = start;
@@ -96,6 +98,10 @@ public class LapgTree<T> {
 
 		public int getEnd() {
 			return end;
+		}
+
+		public String getSource() {
+			return DEFAULT_SOURCE;
 		}
 	}
 

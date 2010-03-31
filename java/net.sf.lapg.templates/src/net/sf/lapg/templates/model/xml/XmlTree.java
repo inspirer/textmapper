@@ -14,9 +14,9 @@ public class XmlTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<ParseProblem> errors;
+	private final List<XmlProblem> errors;
 
-	public XmlTree(TextSource source, T root, List<ParseProblem> errors) {
+	public XmlTree(TextSource source, T root, List<XmlProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -30,7 +30,7 @@ public class XmlTree<T> {
 		return root;
 	}
 
-	public List<ParseProblem> getErrors() {
+	public List<XmlProblem> getErrors() {
 		return errors;
 	}
 
@@ -40,10 +40,10 @@ public class XmlTree<T> {
 
 
 	public static XmlTree<XmlNode> parse(TextSource source) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		final List<XmlProblem> list = new ArrayList<XmlProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+				list.add(new XmlProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
@@ -59,7 +59,7 @@ public class XmlTree<T> {
 		} catch(ParseException ex) {
 			/* not parsed */
 		} catch(IOException ex) {
-			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new XmlProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new XmlTree<XmlNode>(source, null, list);
 	}
@@ -69,14 +69,16 @@ public class XmlTree<T> {
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
 
-	public static class ParseProblem extends Exception {
+	public static final String DEFAULT_SOURCE = "parser";
+
+	public static class XmlProblem extends Exception {
 		int kind;
 		int start;
 		int end;
 
 		private static final long serialVersionUID = 1L;
 
-		public ParseProblem(int kind, int start, int end, String message, Throwable cause) {
+		public XmlProblem(int kind, int start, int end, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.start = start;
@@ -93,6 +95,10 @@ public class XmlTree<T> {
 
 		public int getEnd() {
 			return end;
+		}
+
+		public String getSource() {
+			return DEFAULT_SOURCE;
 		}
 	}
 

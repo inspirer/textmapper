@@ -8,7 +8,7 @@ import java.util.Map;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
-import net.sf.lapg.parser.LapgTree.ParseProblem;
+import net.sf.lapg.parser.LapgTree.LapgProblem;
 import net.sf.lapg.parser.ast.AstCode;
 import net.sf.lapg.parser.ast.AstDirective;
 import net.sf.lapg.parser.ast.AstGrammarPart;
@@ -16,13 +16,13 @@ import net.sf.lapg.parser.ast.AstGroupsSelector;
 import net.sf.lapg.parser.ast.AstIdentifier;
 import net.sf.lapg.parser.ast.AstLexeme;
 import net.sf.lapg.parser.ast.AstLexerPart;
+import net.sf.lapg.parser.ast.AstNode;
 import net.sf.lapg.parser.ast.AstNonTerm;
 import net.sf.lapg.parser.ast.AstOption;
 import net.sf.lapg.parser.ast.AstRegexp;
-import net.sf.lapg.parser.ast.AstRuleSymbol;
 import net.sf.lapg.parser.ast.AstRoot;
 import net.sf.lapg.parser.ast.AstRule;
-import net.sf.lapg.parser.ast.AstNode;
+import net.sf.lapg.parser.ast.AstRuleSymbol;
 
 public class LapgResolver {
 
@@ -300,7 +300,7 @@ public class LapgResolver {
 	}
 
 	private void error(AstNode n, String message) {
-		tree.getErrors().add(new ParseProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message, null));
+		tree.getErrors().add(new LapgProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message, null));
 	}
 
 	@SuppressWarnings("unchecked")
