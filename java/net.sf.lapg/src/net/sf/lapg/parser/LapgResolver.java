@@ -26,6 +26,8 @@ import net.sf.lapg.parser.ast.AstRuleSymbol;
 
 public class LapgResolver {
 
+	public static final String SOURCE_ID = "source.resolver"; //$NON-NLS-1$
+	
 	private final LapgTree<AstRoot> tree;
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();;
 

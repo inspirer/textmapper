@@ -26,12 +26,24 @@ public class AstRuleSymbol extends AstNode {
 	public AstIdentifier getSymbol() {
 		return symbol;
 	}
-	
+
 	public String getAlias() {
 		return alias;
 	}
-	
+
 	public Map<String, Object> getAnnotations() {
 		return annotations;
+	}
+
+	public void accept(AbstractVisitor v) {
+		if(!v.visit(this)) {
+			return;
+		}
+		if(symbol != null) {
+			symbol.accept(v);
+		}
+		if(action != null) {
+			action.accept(v);
+		}
 	}
 }

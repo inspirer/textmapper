@@ -31,22 +31,32 @@ public class AstRoot extends AstNode {
 		return grammar;
 	}
 
-	@Override
-	public void accept(AbstractVisitor v) {
-		if(v.visit(this)) {
-			if(options != null) {
-				for(AstOption o : options) {
-					o.accept(v);
-				}
-			}
-		}
-	}
-
 	public int getTemplatesStart() {
 		return templatesStart;
 	}
-	
+
 	public void setTemplatesStart(int templatesStart) {
 		this.templatesStart = templatesStart;
+	}
+
+	public void accept(AbstractVisitor v) {
+		if(!v.visit(this)) {
+			return;
+		}
+		if(options != null) {
+			for(AstOption o : options) {
+				o.accept(v);
+			}
+		}
+		if(lexer != null) {
+			for(AstLexerPart l : lexer) {
+				l.accept(v);
+			}
+		}
+		if(grammar != null) {
+			for(AstGrammarPart g : grammar) {
+				g.accept(v);
+			}
+		}
 	}
 }

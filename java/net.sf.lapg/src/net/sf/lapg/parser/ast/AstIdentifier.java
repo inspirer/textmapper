@@ -14,4 +14,8 @@ public class AstIdentifier extends AstNode {
 	public String getName() {
 		return name;
 	}
+	
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
+	}
 }

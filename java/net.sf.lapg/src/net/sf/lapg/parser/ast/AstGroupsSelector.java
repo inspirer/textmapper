@@ -16,4 +16,8 @@ public class AstGroupsSelector extends AstNode implements AstLexerPart {
 	public List<Integer> getGroups() {
 		return groups;
 	}
+
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
+	}
 }

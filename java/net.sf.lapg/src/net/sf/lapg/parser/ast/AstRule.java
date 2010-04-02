@@ -32,8 +32,25 @@ public class AstRule extends AstNode {
 	public AstIdentifier getPriority() {
 		return priority;
 	}
-	
+
 	public Map<String, Object> getAnnotations() {
 		return annotations;
+	}
+
+	public void accept(AbstractVisitor v) {
+		if(!v.visit(this)) {
+			return;
+		}
+		if(list != null) {
+			for(AstRuleSymbol rsym : list) {
+				rsym.accept(v);
+			}
+		}
+		if(action != null) {
+			action.accept(v);
+		}
+		if(priority != null) {
+			priority.accept(v);
+		}
 	}
 }

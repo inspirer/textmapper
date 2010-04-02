@@ -20,4 +20,8 @@ public class AstOption extends AstNode {
 	public Object getValue() {
 		return value;
 	}
+
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
+	}
 }

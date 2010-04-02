@@ -22,4 +22,12 @@ public class AstDirective extends AstNode implements AstGrammarPart {
 	public List<AstIdentifier> getSymbols() {
 		return symbols;
 	}
+
+	public void accept(AbstractVisitor v) {
+		if(v.visit(this) && symbols != null) {
+			for(AstIdentifier id : symbols) {
+				id.accept(v);
+			}
+		}
+	}
 }

@@ -1,7 +1,6 @@
 package net.sf.lapg.parser.ast;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
-import net.sf.lapg.templates.api.ILocatedEntity;
 
 public abstract class AstNode implements IAstNode {
 
@@ -38,6 +37,4 @@ public abstract class AstNode implements IAstNode {
 	public String toString() {
 		return source.getText(offset, endoffset);
 	}
-
-	public void accept(AbstractVisitor v) { };
 }

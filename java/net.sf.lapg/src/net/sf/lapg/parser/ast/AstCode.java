@@ -7,4 +7,8 @@ public class AstCode extends AstNode {
 	public AstCode(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 	}
+
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
+	}
 }

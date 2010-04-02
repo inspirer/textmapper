@@ -40,7 +40,7 @@ icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
 '%':           /\n%/
 _skip:         /\n|[\t\r ]+/    		{ return false; }
-_skip:  /#.*/
+_skip_comment:  /#.*/					{ return !skipComments; }
 
 '::=':  /::=/
 '|':    /\|/
@@ -208,9 +208,14 @@ ${end}
 ${template java_lexer.lexercode}
 private int deep = 0;
 private int templatesStart = -1;
+private boolean skipComments = true;
 
 int getTemplatesStart() {
 	return templatesStart;
+}
+
+public void setSkipComments(boolean skip) {
+	this.skipComments = skip;
 }
 
 private String unescape(String s, int start, int end) {

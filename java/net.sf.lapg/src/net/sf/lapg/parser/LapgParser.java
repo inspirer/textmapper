@@ -43,32 +43,32 @@ public class LapgParser {
 	};
 
     private static final short lapg_lalr[] = {
-		11, -1, 1, 0, 14, 0, -1, -2, 11, -1, 1, 1, 14, 1, -1, -2,
-		16, -1, 13, 29, -1, -2, 16, -1, 7, 29, 13, 29, -1, -2, 1, -1,
-		5, -1, 14, -1, 0, 2, -1, -2, 13, -1, 12, 6, 15, 6, -1, -2,
-		1, -1, 11, -1, 12, -1, 14, -1, 15, -1, 16, -1, 19, -1, 20, -1,
-		21, -1, 22, -1, 23, -1, 24, -1, 17, 22, -1, -2, 2, -1, 1, 31,
-		5, 31, 14, 31, -1, -2, 16, -1, 7, 29, -1, -2, 16, -1, 7, 29,
-		-1, -2, 1, -1, 11, -1, 12, -1, 14, -1, 15, -1, 16, -1, 19, -1,
-		20, -1, 21, -1, 22, -1, 23, -1, 24, -1, 17, 23, -1, -2, 4, -1,
-		1, 32, 5, 32, 14, 32, 25, 32, -1, -2, 14, -1, 1, 48, 8, 48,
-		10, 48, 18, 48, 25, 48, -1, -2, 25, -1, 1, 34, 5, 34, 14, 34,
-		-1, -2, 25, -1, 1, 34, 8, 34, 10, 34, 18, 34, -1, -2, 14, -1,
-		1, 48, 8, 48, 10, 48, 18, 48, 25, 48, -1, -2, 26, -1, 27, 69,
-		-1, -2, 14, -1, 1, 48, 8, 48, 10, 48, 18, 48, 25, 48, -1, -2,
-		25, -1, 1, 34, 8, 34, 10, 34, 18, 34, -1, -2, 1, -1, 18, -1,
-		8, 50, 10, 50, -1, -2, 26, -1, 27, 69, -1, -2, 26, -1, 27, 70,
-		-1, -2, 1, -1, 18, -1, 8, 50, 10, 50, -1, -2, 9, -1, 1, 6,
-		8, 6, 10, 6, 14, 6, 18, 6, 25, 6, -1, -2, 14, -1, 1, 48,
-		8, 48, 10, 48, 18, 48, 25, 48, -1, -2, 14, -1, 1, 48, 8, 48,
-		10, 48, 18, 48, 25, 48, -1, -2,
+		12, -1, 1, 0, 15, 0, -1, -2, 12, -1, 1, 1, 15, 1, -1, -2,
+		17, -1, 14, 29, -1, -2, 17, -1, 8, 29, 14, 29, -1, -2, 1, -1,
+		5, -1, 15, -1, 0, 2, -1, -2, 14, -1, 13, 6, 16, 6, -1, -2,
+		1, -1, 12, -1, 13, -1, 15, -1, 16, -1, 17, -1, 20, -1, 21, -1,
+		22, -1, 23, -1, 24, -1, 25, -1, 18, 22, -1, -2, 2, -1, 1, 31,
+		5, 31, 15, 31, -1, -2, 17, -1, 8, 29, -1, -2, 17, -1, 8, 29,
+		-1, -2, 1, -1, 12, -1, 13, -1, 15, -1, 16, -1, 17, -1, 20, -1,
+		21, -1, 22, -1, 23, -1, 24, -1, 25, -1, 18, 23, -1, -2, 4, -1,
+		1, 32, 5, 32, 15, 32, 26, 32, -1, -2, 15, -1, 1, 48, 9, 48,
+		11, 48, 19, 48, 26, 48, -1, -2, 26, -1, 1, 34, 5, 34, 15, 34,
+		-1, -2, 26, -1, 1, 34, 9, 34, 11, 34, 19, 34, -1, -2, 15, -1,
+		1, 48, 9, 48, 11, 48, 19, 48, 26, 48, -1, -2, 27, -1, 28, 69,
+		-1, -2, 15, -1, 1, 48, 9, 48, 11, 48, 19, 48, 26, 48, -1, -2,
+		26, -1, 1, 34, 9, 34, 11, 34, 19, 34, -1, -2, 1, -1, 19, -1,
+		9, 50, 11, 50, -1, -2, 27, -1, 28, 69, -1, -2, 27, -1, 28, 70,
+		-1, -2, 1, -1, 19, -1, 9, 50, 11, 50, -1, -2, 10, -1, 1, 6,
+		9, 6, 11, 6, 15, 6, 19, 6, 26, 6, -1, -2, 15, -1, 1, 48,
+		9, 48, 11, 48, 19, 48, 26, 48, -1, -2, 15, -1, 1, 48, 9, 48,
+		11, 48, 19, 48, 26, 48, -1, -2,
 	};
 
     private static final short lapg_sym_goto[] = {
-		0, 1, 25, 26, 32, 41, 43, 43, 46, 48, 49, 52, 58, 65, 70, 87,
-		95, 103, 106, 108, 112, 116, 120, 124, 128, 132, 135, 138, 140, 141, 142, 144,
-		159, 163, 165, 169, 170, 171, 173, 175, 176, 178, 179, 181, 184, 185, 187, 194,
-		197, 202, 203, 205, 208, 210, 213, 214, 215, 219, 220, 223, 228, 230, 232,
+		0, 1, 25, 26, 32, 41, 43, 43, 43, 46, 48, 49, 52, 58, 65, 70,
+		87, 95, 103, 106, 108, 112, 116, 120, 124, 128, 132, 135, 138, 140, 141, 142,
+		144, 159, 163, 165, 169, 170, 171, 173, 175, 176, 178, 179, 181, 184, 185, 187,
+		194, 197, 202, 203, 205, 208, 210, 213, 214, 215, 219, 220, 223, 228, 230, 232,
 	};
 
     private static final short lapg_sym_from[] = {
@@ -116,11 +116,11 @@ public class LapgParser {
 	};
 
     private static final short lapg_rlex[] = {
-		54, 54, 28, 29, 29, 30, 31, 32, 32, 33, 33, 34, 34, 34, 34, 34,
-		34, 34, 34, 34, 34, 34, 55, 55, 34, 35, 36, 36, 37, 56, 56, 37,
-		57, 57, 58, 58, 37, 38, 38, 39, 39, 40, 40, 40, 41, 41, 42, 42,
-		59, 59, 60, 60, 43, 43, 44, 44, 45, 45, 46, 47, 47, 48, 48, 48,
-		48, 48, 49, 49, 50, 61, 61, 51, 52, 52, 53,
+		55, 55, 29, 30, 30, 31, 32, 33, 33, 34, 34, 35, 35, 35, 35, 35,
+		35, 35, 35, 35, 35, 35, 56, 56, 35, 36, 37, 37, 38, 57, 57, 38,
+		58, 58, 59, 59, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43,
+		60, 60, 61, 61, 44, 44, 45, 45, 46, 46, 47, 48, 48, 49, 49, 49,
+		49, 49, 50, 50, 51, 62, 62, 52, 53, 53, 54,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -131,6 +131,7 @@ public class LapgParser {
 		"icon",
 		"'%'",
 		"_skip",
+		"_skip_comment",
 		"'::='",
 		"'|'",
 		"'='",
@@ -190,40 +191,40 @@ public class LapgParser {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int input = 28;
-		public static final int options = 29;
-		public static final int option = 30;
-		public static final int symbol = 31;
-		public static final int type = 32;
-		public static final int type_part_list = 33;
-		public static final int type_part = 34;
-		public static final int pattern = 35;
-		public static final int lexer_parts = 36;
-		public static final int lexer_part = 37;
-		public static final int icon_list = 38;
-		public static final int grammar_parts = 39;
-		public static final int grammar_part = 40;
-		public static final int symbols = 41;
-		public static final int rules = 42;
-		public static final int rule0 = 43;
-		public static final int rulesyms = 44;
-		public static final int rulesym = 45;
-		public static final int annotations = 46;
-		public static final int map_entries = 47;
-		public static final int expression = 48;
-		public static final int expression_list = 49;
-		public static final int rule_priority = 50;
-		public static final int command = 51;
-		public static final int command_tokens = 52;
-		public static final int command_token = 53;
-		public static final int optionsopt = 54;
-		public static final int type_part_listopt = 55;
-		public static final int typeopt = 56;
-		public static final int iconopt = 57;
-		public static final int commandopt = 58;
-		public static final int annotationsopt = 59;
-		public static final int rule_priorityopt = 60;
-		public static final int command_tokensopt = 61;
+		public static final int input = 29;
+		public static final int options = 30;
+		public static final int option = 31;
+		public static final int symbol = 32;
+		public static final int type = 33;
+		public static final int type_part_list = 34;
+		public static final int type_part = 35;
+		public static final int pattern = 36;
+		public static final int lexer_parts = 37;
+		public static final int lexer_part = 38;
+		public static final int icon_list = 39;
+		public static final int grammar_parts = 40;
+		public static final int grammar_part = 41;
+		public static final int symbols = 42;
+		public static final int rules = 43;
+		public static final int rule0 = 44;
+		public static final int rulesyms = 45;
+		public static final int rulesym = 46;
+		public static final int annotations = 47;
+		public static final int map_entries = 48;
+		public static final int expression = 49;
+		public static final int expression_list = 50;
+		public static final int rule_priority = 51;
+		public static final int command = 52;
+		public static final int command_tokens = 53;
+		public static final int command_token = 54;
+		public static final int optionsopt = 55;
+		public static final int type_part_listopt = 56;
+		public static final int typeopt = 57;
+		public static final int iconopt = 58;
+		public static final int commandopt = 59;
+		public static final int annotationsopt = 60;
+		public static final int rule_priorityopt = 61;
+		public static final int command_tokensopt = 62;
 	}
 
 	private static int lapg_next( int state, int symbol ) {
