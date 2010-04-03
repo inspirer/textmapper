@@ -1,0 +1,3 @@
+syntax: regexp
+^net\.sf\.lapg(\.common)?\.ui/bin/
+.DS_Store
