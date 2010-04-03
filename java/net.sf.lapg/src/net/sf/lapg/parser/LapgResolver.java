@@ -242,7 +242,7 @@ public class LapgResolver {
 
 	private void collectRules() {
 		rules = new ArrayList<LiRule>();
-		ArrayList<LiSymbolRef> rightPart = new ArrayList<LiSymbolRef>(32);
+		List<LiSymbolRef> rightPart = new ArrayList<LiSymbolRef>(32);
 		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if(clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
@@ -258,7 +258,7 @@ public class LapgResolver {
 	}
 
 	private List<LiSymbol> resolve(List<AstReference> input) {
-		ArrayList<LiSymbol> result = new ArrayList<LiSymbol>(input.size());
+		List<LiSymbol> result = new ArrayList<LiSymbol>(input.size());
 		for(AstReference id : input) {
 			LiSymbol sym = resolve(id);
 			if(sym != null) {
@@ -324,7 +324,7 @@ public class LapgResolver {
 			return result;
 		}
 		if(o instanceof List) {
-			ArrayList<Object> result = new ArrayList<Object>(((List)o).size());
+			List<Object> result = new ArrayList<Object>(((List)o).size());
 			for(Object v : ((List)o)) {
 				result.add(convertExpression(v));
 			}

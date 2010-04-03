@@ -75,11 +75,11 @@ public class LapgTree<T> {
 	public static final String PARSER_SOURCE = "parser";
 
 	public static class LapgProblem extends Exception {
+		private static final long serialVersionUID = 4212207364075715072L;
+
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
-
-		private static final long serialVersionUID = 1L;
 
 		public LapgProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
@@ -148,7 +148,7 @@ public class LapgTree<T> {
 			int line = Arrays.binarySearch(lineoffset, offset);
 			return line > 0 ? line : -line - 1;
 		}
-		
+
 		public char[] getContents() {
 			return contents;
 		}

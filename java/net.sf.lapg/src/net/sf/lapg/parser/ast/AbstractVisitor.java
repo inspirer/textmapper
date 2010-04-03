@@ -30,15 +30,11 @@ public class AbstractVisitor {
 		return true;
 	}
 
+	public boolean visit(AstReference astSymbol) {
+		return true;
+	}
+
 	public boolean visit(AstRegexp n) {
-		return true;
-	}
-
-	public boolean visit(AstRuleSymbol n) {
-		return true;
-	}
-
-	public boolean visit(AstRule n) {
 		return true;
 	}
 
@@ -46,7 +42,11 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstReference astSymbol) {
+	public boolean visit(AstRule n) {
+		return true;
+	}
+
+	public boolean visit(AstRuleSymbol n) {
 		return true;
 	}
 }
