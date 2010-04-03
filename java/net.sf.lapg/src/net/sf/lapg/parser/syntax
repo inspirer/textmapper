@@ -90,6 +90,10 @@ symbol (AstIdentifier) ::=
 	identifier											{ $$ = new AstIdentifier($identifier, source, ${symbol.offset}, ${symbol.endoffset}); } 
 ;
 
+reference (AstReference) ::=
+	identifier											{ $$ = new AstReference($identifier, source, ${reference.offset}, ${reference.endoffset}); } 
+;
+
 type (String) ::=
 	  '(' scon ')'										{ $$ = $scon; }
 	| '(' type_part_list ')'							{ $$ = source.getText(${self[0].offset}+1, ${self[2].endoffset}-1); }
@@ -130,12 +134,12 @@ grammar_parts (List<AstGrammarPart>) ::=
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| annotations symbol typeopt '::=' rules ';'		{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| '%' identifier symbols ';'						{ $$ = new AstDirective($identifier, $symbols, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| '%' identifier references ';'						{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 ; 
 
-symbols (List<AstIdentifier>) ::= 
-	  symbol 											{ $$ = new ArrayList<AstIdentifier>(); $symbols.add($symbol); }
-	| list=symbols symbol								{ $list.add($symbol); }
+references (List<AstReference>) ::= 
+	  reference 										{ $$ = new ArrayList<AstReference>(); $references.add($reference); }
+	| list=references reference							{ $list.add($reference); }
 ;
 
 rules (List<AstRule>) ::= 
@@ -155,8 +159,8 @@ rulesyms (List<AstRuleSymbol>) ::=
 ;
 
 rulesym (AstRuleSymbol) ::=
-	  commandopt identifier '=' symbol annotationsopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $symbol, $annotationsopt, source, ${commandopt.offset}, ${symbol.endoffset}); }
-	| commandopt symbol annotationsopt					{ $$ = new AstRuleSymbol($commandopt, null, $symbol, $annotationsopt, source, ${commandopt.offset}, ${symbol.endoffset}); }
+	  commandopt identifier '=' reference annotationsopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $reference, $annotationsopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| commandopt reference annotationsopt					{ $$ = new AstRuleSymbol($commandopt, null, $reference, $annotationsopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 ;
 
 annotations (java.util.@Map<String,Object>) ::=
@@ -171,7 +175,7 @@ map_entries (java.util.@Map<String,Object>) ::=
 expression ::=
 	  scon
 	| icon
-	| symbol
+	| reference
 	| '[' map_entries ']'								{ $$ = $map_entries; }
 	| '[' expression_list ']'							{ $$ = $expression_list; }
 ;
@@ -181,8 +185,8 @@ expression_list (List<Object>) ::=
 	| expression_list ',' expression					{ $expression_list#0.add($expression); }
 ;
 
-rule_priority (AstIdentifier) ::=
-	'<<' symbol											{ $$ = $symbol; } 
+rule_priority (AstReference) ::=
+	'<<' reference										{ $$ = $reference; } 
 ;
 
 command (AstCode) ::=

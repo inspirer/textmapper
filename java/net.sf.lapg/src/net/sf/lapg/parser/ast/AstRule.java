@@ -9,10 +9,10 @@ public class AstRule extends AstNode {
 
 	private final List<AstRuleSymbol> list;
 	private final AstCode action;
-	private final AstIdentifier priority;
+	private final AstReference priority;
 	private final Map<String,Object> annotations;
 
-	public AstRule(List<AstRuleSymbol> list, AstCode action, AstIdentifier priority, Map<String,Object> annotations, TextSource source,
+	public AstRule(List<AstRuleSymbol> list, AstCode action, AstReference priority, Map<String,Object> annotations, TextSource source,
 			int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
@@ -29,7 +29,7 @@ public class AstRule extends AstNode {
 		return action;
 	}
 
-	public AstIdentifier getPriority() {
+	public AstReference getPriority() {
 		return priority;
 	}
 

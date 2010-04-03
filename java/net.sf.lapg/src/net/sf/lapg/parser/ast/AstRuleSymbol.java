@@ -8,10 +8,10 @@ public class AstRuleSymbol extends AstNode {
 
 	private final AstCode action;
 	private final String alias;
-	private final AstIdentifier symbol;
+	private final AstReference symbol;
 	private final Map<String,Object> annotations;
 
-	public AstRuleSymbol(AstCode action, String alias, AstIdentifier symbol, Map<String,Object> annotations, TextSource source, int offset, int endoffset) {
+	public AstRuleSymbol(AstCode action, String alias, AstReference symbol, Map<String,Object> annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.action = action;
 		this.alias = alias;
@@ -23,7 +23,7 @@ public class AstRuleSymbol extends AstNode {
 		return action;
 	}
 
-	public AstIdentifier getSymbol() {
+	public AstReference getSymbol() {
 		return symbol;
 	}
 

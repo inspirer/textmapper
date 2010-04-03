@@ -19,6 +19,7 @@ import net.sf.lapg.parser.ast.AstLexerPart;
 import net.sf.lapg.parser.ast.AstNode;
 import net.sf.lapg.parser.ast.AstNonTerm;
 import net.sf.lapg.parser.ast.AstOption;
+import net.sf.lapg.parser.ast.AstReference;
 import net.sf.lapg.parser.ast.AstRegexp;
 import net.sf.lapg.parser.ast.AstRoot;
 import net.sf.lapg.parser.ast.AstRule;
@@ -26,8 +27,8 @@ import net.sf.lapg.parser.ast.AstRuleSymbol;
 
 public class LapgResolver {
 
-	public static final String SOURCE_ID = "source.resolver"; //$NON-NLS-1$
-	
+	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
+
 	private final LapgTree<AstRoot> tree;
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();;
 
@@ -115,14 +116,14 @@ public class LapgResolver {
 		}
 	}
 
-	private LiSymbol resolve(AstIdentifier id) {
+	private LiSymbol resolve(AstReference id) {
 		String name = id.getName();
 		LiSymbol sym = symbolsMap.get(name);
 		if(sym == null) {
 			if(name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length()-3));
 				if(sym != null) {
-					LiSymbol symopt = create(id, sym.getType(), false);
+					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false);
 					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, id, null));
 					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null,null)}, null, null, id, null));
 					return symopt;
@@ -245,7 +246,10 @@ public class LapgResolver {
 		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if(clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				LiSymbol left = resolve(nonterm.getName());
+				LiSymbol left = symbolsMap.get(nonterm.getName().getName());
+				if(left == null) {
+					continue; /* error is already reported */
+				}
 				for(AstRule right : nonterm.getRules()) {
 					createRule(left, right, rightPart);
 				}
@@ -253,9 +257,9 @@ public class LapgResolver {
 		}
 	}
 
-	private List<LiSymbol> convert(List<AstIdentifier> input) {
+	private List<LiSymbol> resolve(List<AstReference> input) {
 		ArrayList<LiSymbol> result = new ArrayList<LiSymbol>(input.size());
-		for(AstIdentifier id : input) {
+		for(AstReference id : input) {
 			LiSymbol sym = resolve(id);
 			if(sym != null) {
 				result.add(sym);
@@ -272,7 +276,7 @@ public class LapgResolver {
 			if(clause instanceof AstDirective) {
 				AstDirective directive = (AstDirective) clause;
 				String key = directive.getKey();
-				List<LiSymbol> val = convert(directive.getSymbols());
+				List<LiSymbol> val = resolve(directive.getSymbols());
 				if(key.equals("input")) {
 					inputs.addAll(val);
 				} else if(key.equals("left")) {
@@ -302,7 +306,7 @@ public class LapgResolver {
 	}
 
 	private void error(AstNode n, String message) {
-		tree.getErrors().add(new LapgProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message, null));
+		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -326,9 +330,22 @@ public class LapgResolver {
 			}
 			return result;
 		}
-		if(o instanceof AstIdentifier) {
-			return resolve((AstIdentifier)o);
+		if(o instanceof AstReference) {
+			return resolve((AstReference)o);
 		}
 		return o;
+	}
+
+	private static class LapgResolverProblem extends LapgProblem {
+		private static final long serialVersionUID = 3810706800688899470L;
+
+		public LapgResolverProblem(int kind, int offset, int endoffset, String message) {
+			super(kind, offset, endoffset, message, null);
+		}
+
+		@Override
+		public String getSource() {
+			return RESOLVER_SOURCE;
+		}
 	}
 }

@@ -45,4 +45,8 @@ public class AbstractVisitor {
 	public boolean visit(AstRoot n) {
 		return true;
 	}
+
+	public boolean visit(AstReference astSymbol) {
+		return true;
+	}
 }
