@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: net.sf.lapg.ui; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
+Bundle-ClassPath: .
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ net.sf.lapg,
+ net.sf.lapg.common.ui
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: net.sf.lapg.ui.LapgUIActivator
+Export-Package: net.sf.lapg.ui,
+ net.sf.lapg.ui.editor
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
