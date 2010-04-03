@@ -93,11 +93,11 @@ ${end}
 
 ${template ParseProblemClass-}
 	public static class ${opts.prefix}Problem extends Exception {
+		private static final long serialVersionUID = 1L;
+
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
-
-		private static final long serialVersionUID = 1L;
 
 		public ${opts.prefix}Problem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
