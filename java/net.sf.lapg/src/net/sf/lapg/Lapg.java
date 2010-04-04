@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@ import net.sf.lapg.gen.LapgOptions;
 public class Lapg {
 
 	public static final String VERSION = "1.4.0/java";
-	public static final String BUILD = "2009";
+	public static final String BUILD = "2010";
 	public static final String DEFAULT_FILE = "syntax";
 
 	public static final String HELP_MESSAGE =
