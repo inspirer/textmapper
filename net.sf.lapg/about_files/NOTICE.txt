@@ -1,0 +1,15 @@
+   =========================================================================
+   ==  NOTICE file corresponding to the section 4 d of                    ==
+   ==  the Apache License, Version 2.0,                                   ==
+   ==  in this case for the Lexer and Parser Generator distribution.      ==
+   =========================================================================
+
+   Lexer and Parser Generator
+   http://sourceforge.net/projects/lapg/
+   Copyright 2002-2010 Evgeny Gryaznov
+
+   This product is developed by Evgeny Gryaznov, egryaznov@gmail.com
+
+   This product includes:
+     - emit_table_as_string/unpackFromString algorithm developed by Raimondas
+       Lencevicius for JLex
