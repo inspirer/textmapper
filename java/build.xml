@@ -4,31 +4,42 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.5"/>
     <property name="source" value="1.5"/>
-	
-	<path id="net.sf.lapg.templates.classpath">
+    
+    <path id="net.sf.lapg.templates.classpath">
         <pathelement location="bin"/>
     </path>
     <target name="init">
         <mkdir dir="bin"/>
         <copy includeemptydirs="false" todir="bin">
-			<fileset dir="net.sf.lapg/src" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="net.sf.lapg.templates/src" excludes="**/*.launch, **/*.java"/>
+            <fileset dir="net.sf.lapg/src" excludes="**/*.launch, **/*.java"/>
+            <fileset dir="net.sf.lapg.templates/src" excludes="**/*.launch, **/*.java"/>
         </copy>
     </target>
     <target name="clean">
         <delete dir="bin"/>
+	<delete dir="src"/>
     </target>
     <target depends="init" name="build">
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
-			<src path="net.sf.lapg/src"/>
-			<src path="net.sf.lapg.templates/src"/>
-		</javac>
-		<jar destfile="lapg.jar">
-			<fileset dir="bin"/>
-			<manifest>
-				<attribute name="Main-Class" value="net.sf.lapg.Lapg"/>
-			</manifest>
-		</jar>
-	</target>
+            <src path="net.sf.lapg/src"/>
+            <src path="net.sf.lapg.templates/src"/>
+        </javac>
+        <jar destfile="lapg.jar">
+            <fileset dir="bin"/>
+            <manifest>
+                <attribute name="Main-Class" value="net.sf.lapg.Lapg"/>
+            </manifest>
+        </jar>
+    </target>
+    <target name="buildsource">
+        <mkdir dir="src"/>
+        <copy includeemptydirs="false" todir="src">
+            <fileset dir="net.sf.lapg/src" includes="**/*.java"/>
+            <fileset dir="net.sf.lapg.templates/src" includes="**/*.java"/>
+        </copy>
+        <jar destfile="lapg-src.jar">
+            <fileset dir="src"/>
+        </jar>
+    </target>
 </project>
