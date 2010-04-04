@@ -42,6 +42,24 @@
       </context>
    </extension>
 
+   <extension point="org.eclipse.ui.editors.annotationTypes" id="textAnnotationTypes">
+      <type
+         name="net.sf.lapg.ui.editor.error"
+         super="org.eclipse.ui.workbench.texteditor.error"
+         markerSeverity="2">
+      </type>
+      <type
+         name="net.sf.lapg.ui.editor.warning"
+         super="org.eclipse.ui.workbench.texteditor.warning"
+         markerSeverity="1">
+      </type>
+      <type
+         name="net.sf.lapg.ui.editor.info"
+         super="org.eclipse.ui.workbench.texteditor.info"
+         markerSeverity="0">
+      </type>
+   </extension>
+   
    <extension point="org.eclipse.core.runtime.preferences" id="preferenceInitializers">
       <initializer class="net.sf.lapg.ui.preferences.LapgUIPreferencesInitializer"/>
    </extension>

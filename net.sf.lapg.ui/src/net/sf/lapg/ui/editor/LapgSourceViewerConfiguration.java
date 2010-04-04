@@ -12,22 +12,25 @@
  */
 package net.sf.lapg.ui.editor;
 
+import net.sf.lapg.common.ui.editor.StructuredTextSourceViewerConfiguration;
+import net.sf.lapg.common.ui.editor.colorer.CommentScanner;
+import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
+import net.sf.lapg.ui.editor.colorer.ILapgColors;
+import net.sf.lapg.ui.editor.colorer.LapgSourceScanner;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
-import net.sf.lapg.ui.editor.colorer.LapgSourceScanner;
-import net.sf.lapg.ui.editor.colorer.ILapgColors;
-import net.sf.lapg.common.ui.editor.StructuredTextSourceViewerConfiguration;
-import net.sf.lapg.common.ui.editor.colorer.CommentScanner;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
 
 public final class LapgSourceViewerConfiguration extends StructuredTextSourceViewerConfiguration {
 
@@ -130,5 +133,15 @@ public final class LapgSourceViewerConfiguration extends StructuredTextSourceVie
 	@Override
 	public String getConfiguredDocumentPartitioning(ISourceViewer sourceViewer) {
 		return IPartitions.LAPG_PARTITIONING;
+	}
+
+	@Override
+	public IAnnotationHover getAnnotationHover(final ISourceViewer sourceViewer) {
+		return new LapgProblemHover(sourceViewer);
+	}
+
+	@Override
+	public ITextHover getTextHover(final ISourceViewer sourceViewer, final String contentType) {
+		return new LapgProblemHover(sourceViewer);
 	}
 }
