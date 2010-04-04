@@ -77,4 +77,20 @@
             id="net.sf.lapg.ui.preferences.ColorPreferencePage">
       </page>
    </extension>
+   
+   <extension point="org.eclipse.ui.newWizards" id="newWizards">
+      <category
+            id="net.sf.lapg.ui.wizards"
+            name="%lapg_wizard_category">
+      </category>
+      <wizard
+            id="net.sf.lapg.ui.wizard.newSyntax"
+            name="%wizard_name"
+            class="net.sf.lapg.ui.wizard.CreateSyntaxFileWizard"
+            category="net.sf.lapg.ui.wizards"
+            icon="icons/syntax.gif">
+         <description>%wizard_description</description>
+         <selection class="org.eclipse.core.resources.IResource"/>
+      </wizard>
+   </extension>
 </plugin>
