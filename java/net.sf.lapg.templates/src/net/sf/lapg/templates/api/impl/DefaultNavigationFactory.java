@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.templates.api.impl;
 
 import java.lang.reflect.Field;
@@ -158,8 +173,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 
 		public Object getByIndex(Collection<?> cl, Object index) throws EvaluationException {
-			ArrayList<?> array = (ArrayList<?>) cl; // FIXME support collection
-													// by index
+			ArrayList<?> array = (ArrayList<?>) cl; // FIXME support collection by index
 			if (index instanceof Integer) {
 				return array.get((Integer) index);
 			} else {
