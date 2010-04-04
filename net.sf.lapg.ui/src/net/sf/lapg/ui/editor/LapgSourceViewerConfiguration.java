@@ -18,6 +18,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -58,6 +59,15 @@ public final class LapgSourceViewerConfiguration extends StructuredTextSourceVie
 	LapgSourceViewerConfiguration(LapgSourceEditor editor, IPreferenceStore preferenceStore) {
 		super(preferenceStore);
 		fEditor = editor;
+	}
+
+	@Override
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
+		LapgReconcilingStrategy strategy = new LapgReconcilingStrategy(fEditor);
+
+		LapgReconciler reconciler = new LapgReconciler(fEditor, strategy, false);
+		reconciler.setDelay(500);
+		return reconciler;
 	}
 
 	@Override

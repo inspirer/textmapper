@@ -20,15 +20,19 @@ import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.ISourceViewerExtension2;
+import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 
 public class LapgSourceEditor extends StructuredTextEditor {
@@ -64,6 +68,19 @@ public class LapgSourceEditor extends StructuredTextEditor {
 
 	private void internalDoSetInput(IEditorInput input) throws CoreException {
 		super.doSetInput(input);
+
+		LapgSourceViewer sourceViewer = null;
+		if (getSourceViewer() instanceof LapgSourceViewer) {
+			sourceViewer = (LapgSourceViewer) getSourceViewer();
+		}
+
+		if (sourceViewer != null && sourceViewer.getReconciler() == null) {
+			IReconciler reconciler = getSourceViewerConfiguration().getReconciler(sourceViewer);
+			if (reconciler != null) {
+				reconciler.install(sourceViewer);
+				sourceViewer.setReconciler(reconciler);
+			}
+		}
 	}
 
 	private IPreferenceStore createCombinedPreferenceStore(IEditorInput input) {
@@ -89,6 +106,17 @@ public class LapgSourceEditor extends StructuredTextEditor {
 	protected void setPreferenceStore(IPreferenceStore store) {
 		super.setPreferenceStore(store);
 		setSourceViewerConfiguration(new LapgSourceViewerConfiguration(this, getPreferenceStore()));
+	}
+
+	@Override
+	protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
+		fAnnotationAccess = getAnnotationAccess();
+		fOverviewRuler = createOverviewRuler(getSharedColors());
+
+		ISourceViewer viewer = new LapgSourceViewer(parent, ruler, getOverviewRuler(), isOverviewRulerVisible(), styles);
+		// ensure decoration support has been created and configured.
+		getSourceViewerDecorationSupport(viewer);
+		return viewer;
 	}
 
 	@Override
@@ -123,7 +151,8 @@ public class LapgSourceEditor extends StructuredTextEditor {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		fHighlightingManager = new LapgHighlightingManager(getPreferenceStore(), LapgUIActivator.getDefault().getColorManager());
+		fHighlightingManager = new LapgHighlightingManager(getPreferenceStore(), LapgUIActivator.getDefault()
+				.getColorManager());
 		super.createPartControl(parent);
 	}
 
@@ -139,5 +168,12 @@ public class LapgSourceEditor extends StructuredTextEditor {
 			}
 		}
 		return super.affectsTextPresentation(event);
+	}
+
+	public IFile getResource() {
+		if (getEditorInput() instanceof FileEditorInput) {
+			return ((FileEditorInput) getEditorInput()).getFile();
+		}
+		return null;
 	}
 }

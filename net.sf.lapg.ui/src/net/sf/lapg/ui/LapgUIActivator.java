@@ -32,6 +32,10 @@ public class LapgUIActivator extends AbstractUIPlugin {
 		return myDefault;
 	}
 
+	public static void log(Throwable e) {
+		logError("Internal error", e);
+	}
+
 	public static void log(IStatus status) {
 		getDefault().getLog().log(status);
 	}
