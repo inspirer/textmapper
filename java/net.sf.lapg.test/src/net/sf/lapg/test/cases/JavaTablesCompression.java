@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.test.cases;
 
 import junit.framework.TestCase;
@@ -17,13 +32,13 @@ public class JavaTablesCompression extends TestCase {
 		StringBuffer extractedString = new StringBuffer();
 		char[] chs = c.toCharArray();
 		boolean isstring = false;
-		for( int i = 0; i < chs.length; i++ ) {
-			if( chs[i] == '"') {
+		for (char ch : chs) {
+			if( ch == '"') {
 				isstring = !isstring;
 				continue;
 			}
 			if( isstring ) {
-				extractedString.append(chs[i]);
+				extractedString.append(ch);
 			}
 		}
 
@@ -41,41 +56,41 @@ public class JavaTablesCompression extends TestCase {
 		checkDecompression(new int[][] {
 				{1,2},
 				{3,3}
-			});
+		});
 	}
 
 	public void testCompression2() {
 		checkDecompression(new int[][] {
 				{1,1},
 				{1,1}
-			});
+		});
 	}
 
 	public void testCompression3() {
 		checkDecompression(new int[][] {
 				{0,0},
 				{0,1}
-			});
+		});
 	}
 
 	public void testCompression4() {
 		checkDecompression(new int[][] {
 				{0},
 				{0}
-			});
+		});
 	}
 
 	public void testCompression5() {
 		checkDecompression(new int[][] {
 				{-789}
-			});
+		});
 	}
 
 	public void testCompression6() {
 		checkDecompression(new int[][] {
 				{1,2,3,4,5,6,7,8},
 				{3,4,5,7,8,8,8,8}
-			});
+		});
 	}
 
 	public void testCompressionBig() {
@@ -99,6 +114,6 @@ public class JavaTablesCompression extends TestCase {
 				{1,2,3,4,5,6,7,8,4,4,4,4,4,4,4,4,5,6,2,1,1,1,1,1,1,43,345,345,345,34,34,345,34,345,34533,333},
 				{1,2,3,4,5,6,7,8,4,4,4,4,4,4,4,4,5,6,2,1,1,1,1,1,1,43,345,345,345,34,34,345,34,345,34533,333},
 				{1,2,3,4,5,6,7,8,4,4,4,4,4,4,4,4,5,6,2,1,1,1,1,1,1,43,345,345,345,34,34,345,34,345,34533,333},
-			});
+		});
 	}
 }

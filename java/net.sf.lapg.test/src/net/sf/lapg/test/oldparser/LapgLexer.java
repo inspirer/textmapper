@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.test.oldparser;
 
 import java.io.IOException;
@@ -22,7 +37,7 @@ public class LapgLexer {
 		public LapgPlace pos;
 		public LapgPlace endpos;
 	};
-	
+
 	public interface ErrorReporter {
 		void error(LapgPlace start, LapgPlace end, String s);
 	};
@@ -32,13 +47,13 @@ public class LapgLexer {
 
 	final private char[] token = new char[4096];
 	private int len;
-		
+
 	final private char[] data = new char[2048];
 	private int datalen, l;
 	private char chr;
 
 	private int group = 0;
-		
+
 	private int lapg_current_line = 1, lapg_current_offset = 0;
 
 	public interface Lexems {
@@ -63,10 +78,10 @@ public class LapgLexer {
 		public static final int RBRACE = 18;
 	}
 
-	
+
 	private int deep = 0;
 	private int templatesStart = -1;
-	
+
 	int getTemplatesStart() {
 		return templatesStart;
 	}
@@ -79,7 +94,7 @@ public class LapgLexer {
 		chr = l < datalen ? data[l++] : 0;
 	}
 
-    private static final short lapg_char2no[] = {
+	private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 25, 5, 1, 1, 25, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		25, 1, 6, 11, 1, 10, 1, 2, 7, 8, 1, 1, 1, 9, 16, 3,
@@ -159,12 +174,14 @@ public class LapgLexer {
 		LapgSymbol lapg_n = new LapgSymbol();
 		int state;
 
-		do {			
+		do {
 			lapg_n.pos = new LapgPlace( lapg_current_line, lapg_current_offset );
 			for( len = 0, state = group; state >= 0; ) {
-				if( len < 4095 ) token[len++] = chr;
+				if( len < 4095 ) {
+					token[len++] = chr;
+				}
 				state = lapg_lexem[state][mapCharacter(chr)];
-				if( state >= -1 && chr != 0 ) { 
+				if( state >= -1 && chr != 0 ) {
 					lapg_current_offset++;
 					if( chr == '\n' ) {
 						lapg_current_line++;
@@ -198,27 +215,29 @@ public class LapgLexer {
 
 	private boolean createToken(LapgSymbol lapg_n) throws UnsupportedEncodingException {
 		switch( lapg_n.lexem ) {
-			case 1:
-				 lapg_n.sym = new String(token,0,len); break; 
-			case 2:
-				 lapg_n.sym = new String(token,1,len-2); break; 
-			case 3:
-				 lapg_n.sym = new String(token,1,len-2); break; 
-			case 4:
-				 lapg_n.sym = new String(token,1,len-2); break; 
-			case 5:
-				 lapg_n.sym = Integer.parseInt(new String(token,0,len)); break; 
-			case 0:
-				 templatesStart = lapg_n.endpos.offset; break; 
-			case 7:
-				 return false; 
-			case 16:
-				 deep = 1; group = 1; break; 
-			case 17:
-				 deep++; break; 
-			case 18:
-				 if( --deep == 0 ) group = 0; break; 
+		case 1:
+			lapg_n.sym = new String(token,0,len); break;
+		case 2:
+			lapg_n.sym = new String(token,1,len-2); break;
+		case 3:
+			lapg_n.sym = new String(token,1,len-2); break;
+		case 4:
+			lapg_n.sym = new String(token,1,len-2); break;
+		case 5:
+			lapg_n.sym = Integer.parseInt(new String(token,0,len)); break;
+		case 0:
+			templatesStart = lapg_n.endpos.offset; break;
+		case 7:
+			return false;
+		case 16:
+			deep = 1; group = 1; break;
+		case 17:
+			deep++; break;
+		case 18:
+			if( --deep == 0 ) {
+				group = 0;
+			} break;
 		}
 		return true;
-	} 
+	}
 }

@@ -1,13 +1,18 @@
-/*************************************************************
- * Copyright (c) 2002-2009 Evgeny Gryaznov
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Contributors:
- *    Evgeny Gryaznov - initial API and implementation
- *************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.test.cases;
 
 import net.sf.lapg.LexerTables;
@@ -60,8 +65,8 @@ public class OutputUtils {
 			sb.append(startrow);
 			sb.append(" ");
 			int[] row = table[i];
-			for( int e = 0; e < row.length; e++ ) {
-				sb.append(row[e]);
+			for (int element : row) {
+				sb.append(element);
 				sb.append(", ");
 			}
 			sb.append(endrow);
@@ -94,31 +99,31 @@ public class OutputUtils {
 				} else {
 					String name;
 					switch( c ) {
-						case '{': name = "LBRACE"; break;
-						case '}': name = "RBRACE"; break;
-						case '[': name = "LBRACKET"; break;
-						case ']': name = "RBRACKET"; break;
-						case '(': name = "LROUNDBRACKET"; break;
-						case ')': name = "RROUNDBRACKET"; break;
-						case '.': name = "DOT"; break;
-						case ',': name = "COMMA"; break;
-						case ':': name = "COLON"; break;
-						case ';': name = "SEMICOLON"; break;
-						case '+': name = "PLUS"; break;
-						case '-': name = "MINUS"; break;
-						case '*': name = "MULT"; break;
-						case '/': name = "DIV"; break;
-						case '%': name = "PERC"; break;
-						case '&': name = "AMP"; break;
-						case '|': name = "OR"; break;
-						case '^': name = "XOR"; break;
-						case '!': name = "EXCL"; break;
-						case '~': name = "TILDE"; break;
-						case '=': name = "EQ"; break;
-						case '<': name = "LESS"; break;
-						case '>': name = "GREATER"; break;
-						case '?': name = "QUESTMARK"; break;
-						default: name = "N" + FormatUtil.asHex(c, 2);break;
+					case '{': name = "LBRACE"; break;
+					case '}': name = "RBRACE"; break;
+					case '[': name = "LBRACKET"; break;
+					case ']': name = "RBRACKET"; break;
+					case '(': name = "LROUNDBRACKET"; break;
+					case ')': name = "RROUNDBRACKET"; break;
+					case '.': name = "DOT"; break;
+					case ',': name = "COMMA"; break;
+					case ':': name = "COLON"; break;
+					case ';': name = "SEMICOLON"; break;
+					case '+': name = "PLUS"; break;
+					case '-': name = "MINUS"; break;
+					case '*': name = "MULT"; break;
+					case '/': name = "DIV"; break;
+					case '%': name = "PERC"; break;
+					case '&': name = "AMP"; break;
+					case '|': name = "OR"; break;
+					case '^': name = "XOR"; break;
+					case '!': name = "EXCL"; break;
+					case '~': name = "TILDE"; break;
+					case '=': name = "EQ"; break;
+					case '<': name = "LESS"; break;
+					case '>': name = "GREATER"; break;
+					case '?': name = "QUESTMARK"; break;
+					default: name = "N" + FormatUtil.asHex(c, 2);break;
 					}
 					res.append(name);
 				}
