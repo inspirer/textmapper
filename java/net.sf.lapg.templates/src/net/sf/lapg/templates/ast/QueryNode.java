@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.templates.ast;
 
 import java.util.List;
@@ -17,8 +32,8 @@ public class QueryNode extends Node implements IQuery {
 	private final boolean isCached;
 	private IQuery base;
 
-	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, boolean cache, String input,
-			int line) {
+	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, boolean cache,
+			String input, int line) {
 		super(input, line);
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
@@ -55,9 +70,9 @@ public class QueryNode extends Node implements IQuery {
 		}
 
 		Object result;
-		if(isCached) {
+		if (isCached) {
 			result = env.getCache().lookup(this, context.getThisObject(), arguments);
-			if(result != null) {
+			if (result != null) {
 				return result;
 			}
 		}
@@ -82,7 +97,7 @@ public class QueryNode extends Node implements IQuery {
 		} else {
 			result = env.evaluate(expr, context, true);
 		}
-		if(isCached) {
+		if (isCached) {
 			env.getCache().cache(result, this, context.getThisObject(), arguments);
 		}
 		return result;

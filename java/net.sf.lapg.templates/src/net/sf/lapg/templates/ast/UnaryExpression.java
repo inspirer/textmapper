@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
@@ -11,8 +26,8 @@ public class UnaryExpression extends ExpressionNode {
 
 	private static String[] operators = new String[] { "", "! ", "- " };
 
-	private int kind;
-	private ExpressionNode expr;
+	private final int kind;
+	private final ExpressionNode expr;
 
 	public UnaryExpression(int kind, ExpressionNode expr, String input, int line) {
 		super(input, line);
@@ -21,17 +36,16 @@ public class UnaryExpression extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
-			throws EvaluationException {
-		if( kind == NOT ) {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
+		if (kind == NOT) {
 			Object value = env.evaluate(expr, context, true);
 			return !env.toBoolean(value);
 		}
 
-		if( kind == MINUS ) {
+		if (kind == MINUS) {
 			Object value = env.evaluate(expr, context, false);
-			if( value instanceof Integer ) {
-				return -((Integer)value).intValue();
+			if (value instanceof Integer) {
+				return -((Integer) value).intValue();
 			} else {
 				throw new EvaluationException("unary minus expression should be Integer");
 			}
