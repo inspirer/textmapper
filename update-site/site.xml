@@ -3,12 +3,8 @@
    <description name="Lexer and Parser Generator" url="http://lapg-ui.googlecode.com/hg/update-site">
       Update site for Lapg integration plug-ins.
    </description>
-   <feature url="features/net.sf.lapg_1.0.0.201004041546.jar" id="net.sf.lapg" version="1.0.0.201004041546">
-      <category name="lapg"/>
+   <feature url="features/net.sf.lapg.feature_0.8.0.201004041721.jar" id="net.sf.lapg.feature" version="0.8.0.201004041721">
+      <category name="Lapg Integration"/>
    </feature>
-   <category-def name="lapg" label="Lexer and Parser Generator">
-      <description>
-         Integration plug-ins for Lapg. For more info see http://code.google.com/p/lapg-ui
-      </description>
-   </category-def>
+   <category-def name="Lapg Integration" label="Lapg Integration"/>
 </site>
