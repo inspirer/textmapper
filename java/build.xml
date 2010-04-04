@@ -30,6 +30,7 @@
             <manifest>
                 <attribute name="Main-Class" value="net.sf.lapg.Lapg"/>
             </manifest>
+            <metainf dir="." includes="*.txt"/>
         </jar>
     </target>
     <target name="buildsource">
@@ -40,6 +41,7 @@
         </copy>
         <jar destfile="lapg-src.jar">
             <fileset dir="src"/>
+            <metainf dir="." includes="*.txt"/>
         </jar>
     </target>
 </project>

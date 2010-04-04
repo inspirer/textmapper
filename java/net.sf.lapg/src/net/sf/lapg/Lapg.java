@@ -30,7 +30,7 @@ public class Lapg {
 	public static final String DEFAULT_FILE = "syntax";
 
 	public static final String HELP_MESSAGE =
-		"lapg - Lexical analyzer and parser generator\n"+
+		"lapg - Lexer and Parser generator\n"+
 		"usage: lapg [OPTIONS]... [inputfile]\n"+
 		"       lapg [-h|-v]\n"+
 		"\n"+
