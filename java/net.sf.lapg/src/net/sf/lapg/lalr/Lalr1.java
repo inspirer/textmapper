@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.lalr;
 
 import java.text.MessageFormat;
@@ -58,7 +73,7 @@ class Lalr1 extends LR0 {
 	}
 
 
-// fills: laindex, larules, maxrpart; creates: lookback, LA
+	// fills: laindex, larules, maxrpart; creates: lookback, LA
 	private void initializeLA()
 	{
 		int i, e, k;
@@ -110,7 +125,7 @@ class Lalr1 extends LR0 {
 	}
 
 
-//	 fills: term_goto, term_from, term_to
+	//	 fills: term_goto, term_from, term_to
 	private void init_goto()
 	{
 		State t;
@@ -292,7 +307,7 @@ class Lalr1 extends LR0 {
 	}
 
 
-//	 builds follow set
+	//	 builds follow set
 	private void build_follow()
 	{
 		int i, e, length, currstate, nedges = 0, rpart;
@@ -304,11 +319,11 @@ class Lalr1 extends LR0 {
 			int symbol = state[term_to[ntgotos+i]].symbol;
 
 			rule = derives[symbol-nterms];
-			for( int ri = 0; ri < rule.length; ri++ ) {
+			for (int element : rule) {
 				currstate = states[0] = (short)fstate;
 				length = 1;
 
-				for( rpart = rindex[rule[ri]]; rright[rpart] >= 0; rpart++ ) {
+				for( rpart = rindex[element]; rright[rpart] >= 0; rpart++ ) {
 					int nshifts = state[currstate].nshifts;
 					short[] shft = state[currstate].shifts;
 
@@ -323,7 +338,7 @@ class Lalr1 extends LR0 {
 				}
 
 				if( !state[currstate].LR0 ) {
-					add_lookback( currstate, rule[ri], (short)i );
+					add_lookback( currstate, element, (short)i );
 				}
 
 				for( length--;;) {
@@ -357,11 +372,6 @@ class Lalr1 extends LR0 {
 		show_graph();
 
 		graph_closure( graph );
-
-//		for( i = 0; i < ngotos; i++ )
-//			delete[] graph[i];
-//
-//		delete[] states;
 	}
 
 

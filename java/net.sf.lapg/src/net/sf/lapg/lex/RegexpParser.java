@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.lex;
 
 import java.util.ArrayList;
@@ -8,18 +23,18 @@ import net.sf.lapg.INotifier;
 
 public class RegexpParser {
 
-	private INotifier err;
+	private final INotifier err;
 
 	// result
 	private int[] character2symbol;
 	private int symbolCount;
-	private ArrayList<CharacterSet> setpool;
+	private final ArrayList<CharacterSet> setpool;
 	private int[][] set2symbols;
 
 	// temporary variables
-	private CharacterSet.Builder builder;
-	private int[] sym;
-	private int[] stack;
+	private final CharacterSet.Builder builder;
+	private final int[] sym;
+	private final int[] stack;
 
 	public RegexpParser(INotifier err) {
 		this.err = err;
@@ -107,7 +122,7 @@ public class RegexpParser {
 		setpool.add(set);
 		return setIndex;
 	}
-	
+
 	private void useCharacter(int ch) {
 		if (ch <= 0 || ch >= 0x10000) {
 			return;
@@ -362,7 +377,7 @@ public class RegexpParser {
 					CharacterSet intersection = builder.intersect(mset, set);
 					ownSymbol = symbolCount++;
 					symbol2chars.add(intersection);
-					
+
 					for(int[] range : intersection) {
 						for(int ch = range[0]; ch <= range[1]; ch++) {
 							character2symbol[ch] = ownSymbol;
@@ -398,7 +413,7 @@ public class RegexpParser {
 				set2symbols[setind][l] = arr[l];
 			}
 			Arrays.sort(set2symbols[setind]);
-		}		
+		}
 	}
 
 	public int[][] getSetToSymbolsMap() {

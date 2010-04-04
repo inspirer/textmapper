@@ -1,8 +1,22 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.lex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
@@ -19,8 +33,8 @@ public class LexicalBuilder {
 	};
 
 	// initial information
-	private Lexem[] myLexems;
-	private INotifier err;
+	private final Lexem[] myLexems;
+	private final INotifier err;
 	int debuglev;
 
 	// lexical analyzer description
@@ -572,10 +586,9 @@ public class LexicalBuilder {
 		lindex[nterms] = nsit;
 		lsym = new int[nsit];
 		int e = 0;
-		for (Iterator<int[]> it = syms.iterator(); it.hasNext();) {
-			int[] from = it.next();
-			for (int i = 0; i < from.length; i++) {
-				lsym[e++] = from[i];
+		for (int[] from : syms) {
+			for (int element : from) {
+				lsym[e++] = element;
 			}
 		}
 
