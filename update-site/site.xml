@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="Lexer and Parser Generator" url="http://lapg-ui.googlecode.com/hg/update-site">
-      Update site for Lapg integration plug-ins.
+   <description name="Lexer and Parser Generator for Eclipse" url="http://lapg-ui.googlecode.com/hg/update-site">
+      Update site for Lapg integration plug-ins
    </description>
-   <feature url="features/net.sf.lapg.feature_0.8.0.201004041721.jar" id="net.sf.lapg.feature" version="0.8.0.201004041721">
+   <feature url="features/net.sf.lapg.feature_0.8.0.201004041839.jar" id="net.sf.lapg.feature" version="0.8.0.201004041839">
       <category name="Lapg Integration"/>
    </feature>
    <category-def name="Lapg Integration" label="Lapg Integration"/>
