@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.sf.lapg.common;
 
 import java.util.ArrayList;
@@ -19,12 +34,12 @@ public class JavaPostProcessor {
 	Pattern PACKAGE = Pattern.compile("package\\s*.*;[ \\t]*[\\n\\r]+");
 
 	private String text;
-	private Map<String, String> toimport = new HashMap<String, String>();
-	private Set<String> massimport = new HashSet<String>();
+	private final Map<String, String> toimport = new HashMap<String, String>();
+	private final Set<String> massimport = new HashSet<String>();
 
-	private Map<String, Integer> topos = new HashMap<String, Integer>();
-	private List<String> existingImports = new ArrayList<String>();
-	
+	private final Map<String, Integer> topos = new HashMap<String, Integer>();
+	private final List<String> existingImports = new ArrayList<String>();
+
 	private int lastImportLocation = 0;
 	private int nextAfterPackage = 0;
 
@@ -48,11 +63,11 @@ public class JavaPostProcessor {
 			}
 		}
 		Collections.sort(imports);
-		
+
 		Map<Integer, String> toinsert = new HashMap<Integer, String>();
 		Iterator<String> it = existingImports.iterator();
 		String current = it.hasNext() ? it.next() : null;
-		
+
 		for(String i : imports) {
 			while(current != null && current.compareTo(i) < 0) {
 				current = it.hasNext() ? it.next() : null;
@@ -68,7 +83,7 @@ public class JavaPostProcessor {
 				toinsert.put(insertloc, s);
 			}
 		}
-		
+
 		List<Integer> locations = new ArrayList<Integer>(toinsert.keySet());
 		Collections.sort(locations);
 		StringBuffer sb = new StringBuffer(text.length());
@@ -90,7 +105,7 @@ public class JavaPostProcessor {
 		if(p.find()) {
 			nextAfterPackage  = p.end();
 		}
-		
+
 		massimport.add("java.lang");
 		Matcher m = IMPORT.matcher(text);
 		while (m.find()) {
