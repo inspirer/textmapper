@@ -93,36 +93,36 @@ public class AstTree<T> {
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
 
-	public static final String DEFAULT_SOURCE = "parser";
+	public static final String PARSER_SOURCE = "parser";
 
 	public static class AstProblem extends Exception {
-		int kind;
-		int start;
-		int end;
-
 		private static final long serialVersionUID = 1L;
 
-		public AstProblem(int kind, int start, int end, String message, Throwable cause) {
+		private final int kind;
+		private final int offset;
+		private final int endoffset;
+
+		public AstProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
-			this.start = start;
-			this.end = end;
+			this.offset = offset;
+			this.endoffset = endoffset;
 		}
 
 		public int getKind() {
 			return kind;
 		}
 
-		public int getStart() {
-			return start;
+		public int getOffset() {
+			return offset;
 		}
 
-		public int getEnd() {
-			return end;
+		public int getEndOffset() {
+			return endoffset;
 		}
 
 		public String getSource() {
-			return DEFAULT_SOURCE;
+			return PARSER_SOURCE;
 		}
 	}
 

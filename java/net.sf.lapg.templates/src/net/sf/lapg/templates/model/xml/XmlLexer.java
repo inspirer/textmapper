@@ -2,7 +2,6 @@ package net.sf.lapg.templates.model.xml;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 
 public class XmlLexer {
@@ -36,14 +35,14 @@ public class XmlLexer {
 
 	public static final int TOKEN_SIZE = 2048;
 
-	final private Reader stream;
+	private Reader stream;
 	final private ErrorReporter reporter;
 
 	final private char[] data = new char[2048];
 	private int datalen, l;
 	private char chr;
 
-	private int group = 0;
+	private int group;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -53,10 +52,15 @@ public class XmlLexer {
 	
 
 	public XmlLexer(Reader stream, ErrorReporter reporter) throws IOException {
-		this.stream = stream;
 		this.reporter = reporter;
+		reset(stream);
+	}
+
+	public void reset(Reader stream) throws IOException {
+		this.stream = stream;
 		this.datalen = stream.read(data);
 		this.l = 0;
+		this.group = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
@@ -118,7 +122,7 @@ public class XmlLexer {
 		return 1;
 	}
 
-	public LapgSymbol next() throws IOException, UnsupportedEncodingException {
+	public LapgSymbol next() throws IOException {
 		LapgSymbol lapg_n = new LapgSymbol();
 		int state;
 
@@ -170,7 +174,7 @@ public class XmlLexer {
 		return lapg_n;
 	}
 
-	private boolean createToken(LapgSymbol lapg_n) throws UnsupportedEncodingException {
+	protected boolean createToken(LapgSymbol lapg_n) {
 		switch( lapg_n.lexem ) {
 			case 2:
 				 group = 1; break; 
