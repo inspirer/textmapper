@@ -18,7 +18,7 @@ package net.sf.lapg.api;
 /**
  * Priority definition.
  */
-public interface Prio extends LocatedEntity {
+public interface Prio extends SourceElement {
 
 	public static final int NOPRIO = -1;
 

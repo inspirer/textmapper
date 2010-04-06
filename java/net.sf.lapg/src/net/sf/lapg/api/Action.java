@@ -18,7 +18,7 @@ package net.sf.lapg.api;
 /**
  * Semantic action representation.
  */
-public interface Action extends LocatedEntity {
+public interface Action extends SourceElement {
 
 	/**
 	 * @return action template

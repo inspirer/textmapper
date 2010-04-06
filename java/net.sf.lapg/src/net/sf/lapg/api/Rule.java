@@ -15,7 +15,7 @@
  */
 package net.sf.lapg.api;
 
-public interface Rule extends LocatedEntity, Annotated {
+public interface Rule extends SourceElement, Annotated {
 
 	public int getIndex();
 	public Symbol getLeft();

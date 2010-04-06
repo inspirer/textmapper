@@ -10,6 +10,8 @@ public interface ProcessingStatus {
 
 	void error(String error);
 
+	void error(SourceElement element, String error);
+
 	void warn(String warning);
 
 	void debug(String info);

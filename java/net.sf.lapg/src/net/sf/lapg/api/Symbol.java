@@ -15,7 +15,7 @@
  */
 package net.sf.lapg.api;
 
-public interface Symbol extends Annotated, LocatedEntity {
+public interface Symbol extends Annotated, SourceElement {
 
 	int getIndex();
 	String getName();

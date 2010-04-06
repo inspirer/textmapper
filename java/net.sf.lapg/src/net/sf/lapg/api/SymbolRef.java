@@ -15,7 +15,7 @@
  */
 package net.sf.lapg.api;
 
-public interface SymbolRef extends Annotated, LocatedEntity {
+public interface SymbolRef extends Annotated, SourceElement {
 
 	Symbol getTarget();
 	String getAlias();

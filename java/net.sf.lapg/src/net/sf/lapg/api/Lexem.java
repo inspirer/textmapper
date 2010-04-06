@@ -18,7 +18,7 @@ package net.sf.lapg.api;
 /**
  * Lexem rule.
  */
-public interface Lexem extends LocatedEntity {
+public interface Lexem extends SourceElement {
 
 	public Symbol getSymbol();
 	public String getRegexp();

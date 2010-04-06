@@ -1,10 +1,10 @@
 package net.sf.lapg.parser;
 
-import net.sf.lapg.api.LocatedEntity;
+import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.parser.ast.IAstNode;
 import net.sf.lapg.templates.api.ILocatedEntity;
 
-public class LiEntity implements LocatedEntity, ILocatedEntity {
+public class LiEntity implements SourceElement, ILocatedEntity {
 
 	private final IAstNode node;
 

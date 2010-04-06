@@ -1,6 +1,6 @@
 package net.sf.lapg.api;
 
-public interface LocatedEntity {
+public interface SourceElement {
 
 	String getResourceName();
 

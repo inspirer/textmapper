@@ -1,6 +1,7 @@
 package net.sf.lapg.gen;
 
 import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.SourceElement;
 
 public class ProcessingStatusAdapter implements ProcessingStatus {
 
@@ -30,5 +31,9 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 
 	public boolean isAnalysisMode() {
 		return debuglev >= 1;
+	}
+
+	public void error(SourceElement element, String error) {
+		notifier.error(error);
 	}
 }
