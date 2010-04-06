@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.parser.SyntaxUtil;
+import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.test.TestNotifier;
 
 public class AnnotationsTest extends LapgTestCase {

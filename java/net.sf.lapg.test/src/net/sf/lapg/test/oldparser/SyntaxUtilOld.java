@@ -21,8 +21,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.gen.INotifier;
 
 public class SyntaxUtilOld {
 

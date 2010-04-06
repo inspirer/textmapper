@@ -21,11 +21,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.parser.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.templates.api.EvaluationContext;

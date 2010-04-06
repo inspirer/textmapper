@@ -28,13 +28,13 @@ import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.gen.ProcessingStatusAdapter;
+import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.lex.RegexpParser;
 import net.sf.lapg.parser.LiGrammar;
 import net.sf.lapg.parser.LiRule;
 import net.sf.lapg.parser.LiSymbol;
-import net.sf.lapg.parser.SyntaxUtil;
 import net.sf.lapg.test.TestNotifier;
 import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 

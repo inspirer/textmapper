@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.parser;
+package net.sf.lapg.gen;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,8 +21,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.parser.LapgResolver;
+import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.AstRoot;

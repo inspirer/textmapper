@@ -1,6 +1,5 @@
 package net.sf.lapg.gen;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.ProcessingStatus;
 
 public class ProcessingStatusAdapter implements ProcessingStatus {

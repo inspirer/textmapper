@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.common.FileCreator;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;

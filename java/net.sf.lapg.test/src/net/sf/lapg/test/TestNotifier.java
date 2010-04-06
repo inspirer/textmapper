@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.Assert;
-import net.sf.lapg.INotifier;
+import net.sf.lapg.gen.INotifier;
 
 public class TestNotifier implements INotifier {
 
