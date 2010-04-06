@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,8 @@ package net.sf.lapg.lalr;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.ProcessingStatus;
 
 class Lalr1 extends LR0 {
 
@@ -28,8 +28,8 @@ class Lalr1 extends LR0 {
 		Short next;
 	};
 
-	Lalr1(Grammar g, INotifier err, int debuglev) {
-		super(g, err, debuglev);
+	Lalr1(Grammar g, ProcessingStatus status) {
+		super(g, status);
 	}
 
 	// LALR
@@ -418,43 +418,43 @@ class Lalr1 extends LR0 {
 
 	// debug
 	private void show_follow() {
-		if (debuglev < 2) {
+		if (!status.isDebugMode()) {
 			return;
 		}
 
 		int i, e;
 
-		err.debug( "\nFollow:\n");
+		status.debug( "\nFollow:\n");
 		for (i = 0; i < ngotos; i++) {
 
-			err.debug( format(term_from[ntgotos+i], false) + " -> " + format(term_to[ntgotos+i], true) + "\t");
+			status.debug( format(term_from[ntgotos+i], false) + " -> " + format(term_to[ntgotos+i], true) + "\t");
 			for (e = 0; e < nterms; e++) {
 				if (((follow[i*termset + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
-					err.debug( " " + sym[e].getName());
+					status.debug( " " + sym[e].getName());
 				}
 			}
 
-			err.debug( "\n");
+			status.debug( "\n");
 		}
 	}
 
 
 	// debug
 	private void show_graph() {
-		if (debuglev < 2) {
+		if (!status.isDebugMode()) {
 			return;
 		}
 
-		err.debug( "\nGraph:\n");
+		status.debug( "\nGraph:\n");
 
 		for (int i = 0; i < ngotos; i++) {
 			short[] p = graph[i];
 			if (p != null) {
-				err.debug( MessageFormat.format(" {0,number,####}: ", i));
+				status.debug( MessageFormat.format(" {0,number,####}: ", i));
 				for (int e = 0; p[e] >= 0; e++) {
-					err.debug( " " + p[e]);
+					status.debug( " " + p[e]);
 				}
-				err.debug( "\n");
+				status.debug( "\n");
 			}
 		}
 
@@ -463,34 +463,32 @@ class Lalr1 extends LR0 {
 
 	// debug
 	private void show_lookaheads() {
-		int i, e, k, max;
-
-		if (debuglev == 0) {
+		if (!status.isAnalysisMode()) {
 			return;
 		}
 
-		err.debug( "\nLookaheads:\n");
+		status.debug( "\nLookaheads:\n");
 
-		for (i = 0; i < nstates; i++) {
+		for (int i = 0; i < nstates; i++) {
 			if (laindex[i] < laindex[i + 1]) {
-				max = laindex[i + 1];
-				err.debug( i + ":\n");
+				int max = laindex[i + 1];
+				status.debug( i + ":\n");
 
-				for (e = laindex[i]; e < max; e++) {
-					k = rindex[larule[e]];
+				for (int e = laindex[i]; e < max; e++) {
+					int k = rindex[larule[e]];
 					while (rright[k] >= 0) {
 						k++;
 					}
 					print_situation(k);
 					int set = termset * e;
 
-					err.debug( "  >>>");
+					status.debug( "  >>>");
 					for (k = 0; k < nterms; k++) {
 						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0)) {
-							err.debug( " " + sym[k].getName());
+							status.debug( " " + sym[k].getName());
 						}
 					}
-					err.debug( "\n");
+					status.debug( "\n");
 				}
 			}
 		}

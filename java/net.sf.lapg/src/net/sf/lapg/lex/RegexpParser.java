@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import net.sf.lapg.INotifier;
+import net.sf.lapg.api.ProcessingStatus;
 
 public class RegexpParser {
 
-	private final INotifier err;
+	private final ProcessingStatus status;
 
 	// result
 	private int[] character2symbol;
@@ -36,8 +36,8 @@ public class RegexpParser {
 	private final int[] sym;
 	private final int[] stack;
 
-	public RegexpParser(INotifier err) {
-		this.err = err;
+	public RegexpParser(ProcessingStatus status) {
+		this.status = status;
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
 		this.builder = new CharacterSet.Builder();
@@ -79,7 +79,7 @@ public class RegexpParser {
 	private int escape() {
 		index++;
 		if (index >= re.length) {
-			err.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
+			status.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
 			return -1;
 		}
 
@@ -100,14 +100,14 @@ public class RegexpParser {
 		case 'u':
 		case 'x': {
 			if (index + 4 >= re.length) {
-				err.error("lex: unicode symbol is incomplete: /" + regexp + "/\n");
+				status.error("lex: unicode symbol is incomplete: /" + regexp + "/\n");
 				return -1;
 			}
 			index += 4;
 			try {
 				return parseHex(new String(re, index - 3, 4));
 			} catch (NumberFormatException ex) {
-				err.error("lex: bad unicode symbol: /" + regexp + "/\n");
+				status.error("lex: bad unicode symbol: /" + regexp + "/\n");
 				return -1;
 			}
 		}
@@ -210,7 +210,7 @@ public class RegexpParser {
 			}
 
 			if (index >= re.length) {
-				err.error("lex: enclosing square bracket not found: /" + regexp + "/\n");
+				status.error("lex: enclosing square bracket not found: /" + regexp + "/\n");
 				return -1;
 			}
 
@@ -247,13 +247,13 @@ public class RegexpParser {
 		this.re = this.regexp.toCharArray();
 
 		if (re.length == 0) {
-			err.error("lex: regexp for `" + name + "' does not contain symbols\n");
+			status.error("lex: regexp for `" + name + "' does not contain symbols\n");
 			return null;
 		}
 
 		while (index < re.length) {
 			if (length > LexConstants.MAX_ENTRIES - 5) {
-				err.error("lex: regexp for `" + name + "' is too long: /" + regexp + "/\n");
+				status.error("lex: regexp for `" + name + "' is too long: /" + regexp + "/\n");
 				return null;
 			}
 
@@ -263,7 +263,7 @@ public class RegexpParser {
 			case LexConstants.LBR:
 				stack[deep] = length;
 				if (++deep >= LexConstants.MAX_DEEP) {
-					err.error("lex: regexp for `" + name + "' is too deep: /" + regexp + "/\n");
+					status.error("lex: regexp for `" + name + "' is too deep: /" + regexp + "/\n");
 					return null;
 				}
 				break;
@@ -274,7 +274,7 @@ public class RegexpParser {
 				break;
 			case LexConstants.RBR:
 				if (--deep == 0) {
-					err.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
+					status.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
 					return null;
 				}
 				sym[stack[deep]] |= length;
@@ -305,7 +305,7 @@ public class RegexpParser {
 		}
 
 		if (deep != 1) {
-			err.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
+			status.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
 			return null;
 		}
 

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,9 +15,9 @@
  */
 package net.sf.lapg.lalr;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
+import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
@@ -41,8 +41,8 @@ abstract class ContextFree {
 		int[] result = new int[counter];
 
 		int curr_prio = 0;
-		for( int i = 0; i < prios.length; i++ ) {
-			result[curr_prio++] = - prios[i].getPrio();
+		for (int i = 0; i < prios.length; i++) {
+			result[curr_prio++] = -prios[i].getPrio();
 			Symbol[] list = prios[i].getSymbols();
 			for (Symbol element : list) {
 				result[curr_prio++] = element.getIndex();
@@ -55,15 +55,14 @@ abstract class ContextFree {
 
 	private static int[] toArray(Symbol[] input) {
 		int[] result = new int[input.length];
-		for(int i = 0; i < input.length; i++) {
+		for (int i = 0; i < input.length; i++) {
 			result[i] = input[i].getIndex();
 		}
 		return result;
 	}
 
-	protected ContextFree(Grammar g, INotifier err, int debuglev) {
-		this.err = err;
-		this.debuglev = debuglev;
+	protected ContextFree(Grammar g, ProcessingStatus status) {
+		this.status = status;
 
 		this.sym = g.getSymbols();
 
@@ -95,8 +94,8 @@ abstract class ContextFree {
 			for (SymbolRef element : wright) {
 				this.rright[curr_rindex++] = element.getTarget().getIndex();
 			}
-			this.rright[curr_rindex++] = -1-i;
-			if( wright.length == 0 ) {
+			this.rright[curr_rindex++] = -1 - i;
+			if (wright.length == 0) {
 				sym_empty[rleft[i]] = true;
 			}
 		}
@@ -106,8 +105,7 @@ abstract class ContextFree {
 
 	// log
 
-	protected final int debuglev;
-	protected final INotifier err;
+	protected final ProcessingStatus status;
 
 	// grammar information
 
@@ -130,29 +128,29 @@ abstract class ContextFree {
 		rulenum = -rright[i] - 1;
 
 		// left part of the rule
-		err.debug("  " + sym[rleft[rulenum]].getName() + " ::=");
+		status.debug("  " + sym[rleft[rulenum]].getName() + " ::=");
 
 		for (i = rindex[rulenum]; rright[i] >= 0; i++) {
 			if (i == situation) {
-				err.debug(" _");
+				status.debug(" _");
 			}
-			err.debug(" " + sym[rright[i]].getName());
+			status.debug(" " + sym[rright[i]].getName());
 		}
 		if (i == situation) {
-			err.debug(" _");
+			status.debug(" _");
 		}
-		err.debug("\n");
+		status.debug("\n");
 	}
 
 	protected void warn_rule(int rule) {
 		int rr = rindex[rule];
 
-		err.warn("  " + sym[rleft[rule]].getName() + " ::=");
+		status.warn("  " + sym[rleft[rule]].getName() + " ::=");
 
 		for (; rright[rr] >= 0; rr++) {
-			err.warn(" " + sym[rright[rr]].getName());
+			status.warn(" " + sym[rright[rr]].getName());
 		}
 
-		err.warn("\n");
+		status.warn("\n");
 	}
 }

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -88,8 +88,9 @@ public abstract class AbstractGenerator {
 			}
 
 			long start = System.currentTimeMillis();
-			LexerTables l = LexicalBuilder.compile(s.getLexems(), notifier, options.getDebug());
-			ParserTables r = Builder.compile(s, notifier, options.getDebug());
+			ProcessingStatusAdapter adapter = new ProcessingStatusAdapter(notifier, options.getDebug());
+			LexerTables l = LexicalBuilder.compile(s.getLexems(), adapter);
+			ParserTables r = Builder.compile(s, adapter);
 			long generationTime = System.currentTimeMillis() - start;
 
 			HashMap<String, Object> map = new HashMap<String, Object>();

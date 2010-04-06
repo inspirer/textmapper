@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,8 @@ package net.sf.lapg.lalr;
 
 import java.util.Arrays;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.ProcessingStatus;
 
 /**
  *  LR(0) states generator
@@ -50,8 +50,8 @@ class LR0 extends ContextFree {
 	protected State[] state;
 	protected State first;
 
-	protected LR0(Grammar g, INotifier err, int debuglev) {
-		super(g, err, debuglev);
+	protected LR0(Grammar g, ProcessingStatus status) {
+		super(g, status);
 	}
 
 	protected boolean buildLR0() {
@@ -63,7 +63,7 @@ class LR0 extends ContextFree {
 		while (current != null) {
 			build_closure(current.number, current.elems);
 			if (!process_state()) {
-				err.error("syntax analyzer is too big ...\n");
+				status.error("syntax analyzer is too big ...\n");
 				freeLR0();
 				return false;
 			}
@@ -419,22 +419,23 @@ class LR0 extends ContextFree {
 	}
 
 	private void show_debug() {
-		if (debuglev != 0) {
-			err.debug( "\nStates\n0:\n");
-
-			for (State t = first; t != null; t = t.next) {
-				if (t != first) {
-					err.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
-				}
-
-				build_closure(t.number, t.elems);
-
-				for (int i = 0; i < closureend; i++) {
-					print_situation(closure[i]);
-				}
-			}
+		if (!status.isAnalysisMode()) {
+			return;
 		}
 
+		status.debug( "\nStates\n0:\n");
+
+		for (State t = first; t != null; t = t.next) {
+			if (t != first) {
+				status.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
+			}
+
+			build_closure(t.number, t.elems);
+
+			for (int i = 0; i < closureend; i++) {
+				print_situation(closure[i]);
+			}
+		}
 	}
 
 	private void freeLR0() {

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.test.TestNotifier;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -38,7 +39,7 @@ public class LexerGeneratorTest extends TestCase {
 	};
 
 	public void testGenerator() {
-		LexerTables lt = LexicalBuilder.compile(INPUT1, new TestNotifier(), 0);
+		LexerTables lt = LexicalBuilder.compile(INPUT1, new ProcessingStatusAdapter(new TestNotifier(), 0));
 		for(TestLexem tl : INPUT1) {
 			for(String s : tl.getSamples()) {
 				int res = nextToken(lt, s);

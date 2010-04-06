@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,9 @@ package net.sf.lapg.lex;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import net.sf.lapg.INotifier;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Lexem;
+import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FormatUtil;
 
 public class LexicalBuilder {
@@ -34,8 +34,7 @@ public class LexicalBuilder {
 
 	// initial information
 	private final Lexem[] myLexems;
-	private final INotifier err;
-	int debuglev;
+	private final ProcessingStatus status;
 
 	// lexical analyzer description
 	int nsit, nterms, totalgroups;
@@ -56,9 +55,8 @@ public class LexicalBuilder {
 
 	int[] groupset;
 
-	private LexicalBuilder(Lexem[] lexems, INotifier err, int debuglev) {
-		this.err = err;
-		this.debuglev = debuglev;
+	private LexicalBuilder(Lexem[] lexems, ProcessingStatus status) {
+		this.status = status;
 		this.myLexems = lexems;
 	}
 
@@ -110,11 +108,11 @@ public class LexicalBuilder {
 		int k, l, m, word;
 
 		if (LEX_CLOSURE_DEBUG) {
-			err.debug("\tclosure of: ");
+			status.debug("\tclosure of: ");
 			for (n = 0; set[n] >= 0; n++) {
-				err.debug(" " + set[n]);
+				status.debug(" " + set[n]);
 			}
-			err.debug("\n");
+			status.debug("\n");
 		}
 
 		for (p = 0; set[p] >= 0;) {
@@ -139,13 +137,13 @@ public class LexicalBuilder {
 			}
 
 			if (LEX_CLOSURE_DEBUG) {
-				err.debug("\t\t\tcset (" + i + ", base=" + base + ") = ");
+				status.debug("\t\t\tcset (" + i + ", base=" + base + ") = ");
 				for (l = 0; l < slen * LexConstants.BITS; l++) {
 					if ((cset[(l) / LexConstants.BITS] & (1 << ((l) % LexConstants.BITS))) != 0) {
-						err.debug(" " + l + "(" + FormatUtil.asHex(lsym[base + l], 2) + ")");
+						status.debug(" " + l + "(" + FormatUtil.asHex(lsym[base + l], 2) + ")");
 					}
 				}
-				err.debug("\n");
+				status.debug("\n");
 			}
 
 			// save cset in closure (exclude LBR, RBR, SPL, OR)
@@ -171,11 +169,11 @@ public class LexicalBuilder {
 		set[clind] = -1;
 
 		if (LEX_CLOSURE_DEBUG) {
-			err.debug("\t\t\tis: ");
+			status.debug("\t\t\tis: ");
 			for (n = 0; set[n] >= 0; n++) {
-				err.debug(" " + set[n]);
+				status.debug(" " + set[n]);
 			}
-			err.debug("\n");
+			status.debug("\n");
 		}
 
 		return clind;
@@ -186,8 +184,8 @@ public class LexicalBuilder {
 		int i, k, lex;
 		int[] stack = new int[LexConstants.MAX_DEEP];
 
-		if (debuglev >= 2) {
-			err.debug("\nLexem jumps:\n");
+		if (status.isDebugMode()) {
+			status.debug("\nLexem jumps:\n");
 		}
 
 		for (lex = 0; lex < nterms; lex++) {
@@ -270,61 +268,61 @@ public class LexicalBuilder {
 			}
 
 			// extended debug information
-			if (debuglev >= 2) {
-				err.debug(FormatUtil.asDecimal(lex, 2, ' ') + ": ");
+			if (status.isDebugMode()) {
+				status.debug(FormatUtil.asDecimal(lex, 2, ' ') + ": ");
 				for (i = 0; i < len; i++) {
-					err.debug(" (" + i + ":");
+					status.debug(" (" + i + ":");
 					for (k = 0; k <= len; k++) {
 						if ((jumps[i * jmpset + (k) / LexConstants.BITS] & (1 << ((k) % LexConstants.BITS))) != 0) {
-							err.debug(" " + k);
+							status.debug(" " + k);
 						}
 					}
-					err.debug(") ");
+					status.debug(") ");
 					switch (lsym[sym_index + i] & LexConstants.MASK) {
 					case LexConstants.LBR:
-						err.debug("LEFT(" + (lsym[sym_index + i] & 0xffff) + ")");
+						status.debug("LEFT(" + (lsym[sym_index + i] & 0xffff) + ")");
 						break;
 					case LexConstants.RBR:
-						err.debug("RIGHT");
+						status.debug("RIGHT");
 						break;
 					case LexConstants.OR:
-						err.debug("OR");
+						status.debug("OR");
 						break;
 					case LexConstants.SPL:
-						err.debug("SPLIT");
+						status.debug("SPLIT");
 						break;
 					case LexConstants.ANY:
-						err.debug("ANY");
+						status.debug("ANY");
 						break;
 					case LexConstants.SYM:
 						if ((lsym[sym_index + i] & 0xffff) < 127 && (lsym[sym_index + i] & 0xffff) > 32) {
-							err.debug("\'" + (char) (lsym[sym_index + i] & 0xffff) + "\'");
+							status.debug("\'" + (char) (lsym[sym_index + i] & 0xffff) + "\'");
 						} else {
-							err.debug("#" + FormatUtil.asHex(lsym[sym_index + i] & 0xffff, 4));
+							status.debug("#" + FormatUtil.asHex(lsym[sym_index + i] & 0xffff, 4));
 						}
 						break;
 					default:
-						err.debug("SET#" + (lsym[sym_index + i] & ~LexConstants.HIGH_STORAGE));
+						status.debug("SET#" + (lsym[sym_index + i] & ~LexConstants.HIGH_STORAGE));
 						break;
 					}
 					switch ((lsym[sym_index + i] >> 29) & 3) {
 					case 1:
-						err.debug("+");
+						status.debug("+");
 						break;
 					case 2:
-						err.debug("*");
+						status.debug("*");
 						break;
 					case 3:
-						err.debug("?");
+						status.debug("?");
 						break;
 					}
 				}
-				err.debug("  [" + lname[lex] + "," + lnum[lex] + "]\n");
+				status.debug("  [" + lname[lex] + "," + lnum[lex] + "]\n");
 			}
 		}
 
-		if (debuglev >= 2) {
-			err.debug("\n");
+		if (status.isDebugMode()) {
+			status.debug("\n");
 		}
 	}
 
@@ -414,17 +412,17 @@ public class LexicalBuilder {
 					if (lexnum != -1 && lexnum != nlex) {
 
 						if (lprio[nlex] == lprio[lexnum]) {
-							err.error("lex: two lexems are identical: " + lname[lexnum] + " and " + lname[nlex] + "\n");
+							status.error("lex: two lexems are identical: " + lname[lexnum] + " and " + lname[nlex] + "\n");
 							lexemerrors++;
 
 						} else if (lprio[nlex] > lprio[lexnum]) {
-							if (debuglev != 0) {
-								err.warn("fixed: " + lname[nlex] + " > " + lname[lexnum] + "\n");
+							if (status.isAnalysisMode()) {
+								status.debug("fixed: " + lname[nlex] + " > " + lname[lexnum] + "\n");
 							}
 							lexnum = nlex;
 
-						} else if (debuglev != 0) {
-							err.warn("fixed: " + lname[lexnum] + " > " + lname[nlex] + "\n");
+						} else if (status.isAnalysisMode()) {
+							status.debug("fixed: " + lname[lexnum] + " > " + lname[nlex] + "\n");
 						}
 
 					} else {
@@ -463,7 +461,7 @@ public class LexicalBuilder {
 
 			// check for the empty lexem
 			if (current == first && lexnum != -1) {
-				err.error("lex: lexem is empty: `" + lname[lexnum] + "`\n");
+				status.error("lex: lexem is empty: `" + lname[lexnum] + "`\n");
 				lexemerrors++;
 			}
 
@@ -510,7 +508,7 @@ public class LexicalBuilder {
 
 					// Have we exceeded the limits?
 					if (current.change[i] == -1) {
-						err.error("lex: lexical analyzer is too big ...\n");
+						status.error("lex: lexical analyzer is too big ...\n");
 						return false;
 					}
 
@@ -534,13 +532,13 @@ public class LexicalBuilder {
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare() {
-		RegexpParser rp = new RegexpParser(err);
+		RegexpParser rp = new RegexpParser(status);
 		nsit = 0;
 		ArrayList<int[]> syms = new ArrayList<int[]>();
 		nterms = myLexems.length;
 
 		if (nterms >= LexConstants.MAX_LEXEMS) {
-			err.error("lex: too much lexems\n");
+			status.error("lex: too much lexems\n");
 			return false;
 		}
 
@@ -559,12 +557,12 @@ public class LexicalBuilder {
 			totalgroups |= l.getGroups();
 
 			if (l.getGroups() == 0) {
-				err.error("lex: lexem `" + l.getSymbol().getName() + "` does not belong to groups\n");
+				status.error("lex: lexem `" + l.getSymbol().getName() + "` does not belong to groups\n");
 				return false;
 			}
 
 			if (l.getSymbol().getName().equals("error")) {
-				err.error("lex: error token must be defined without regular expression\n");
+				status.error("lex: error token must be defined without regular expression\n");
 				return false;
 			}
 
@@ -593,7 +591,7 @@ public class LexicalBuilder {
 		}
 
 		if ((totalgroups & 1) == 0) {
-			err.error("lex: no lexems in the first group\n");
+			status.error("lex: no lexems in the first group\n");
 			return false;
 		}
 
@@ -603,43 +601,43 @@ public class LexicalBuilder {
 		set2symbols = rp.getSetToSymbolsMap();
 		charsetSize = (characters + LexConstants.BITS - 1) / LexConstants.BITS;
 
-		if (debuglev >= 2) {
-			err.debug("\nLexems:\n\n");
+		if (status.isDebugMode()) {
+			status.debug("\nLexems:\n\n");
 			for (int i = 0; i < nterms; i++) {
-				err.debug(lname[i] + "," + lnum[i] + ": ");
+				status.debug(lname[i] + "," + lnum[i] + ": ");
 				for (e = lindex[i]; e < lindex[i + 1]; e++) {
-					err.debug(" " + FormatUtil.asHex(lsym[e], 8));
+					status.debug(" " + FormatUtil.asHex(lsym[e], 8));
 				}
 
-				err.debug(" (" + myLexems[i].getRegexp() + ")\n");
+				status.debug(" (" + myLexems[i].getRegexp() + ")\n");
 			}
 
 			// only for small data
 			if (characters * char2no.length < 1000000) {
-				err.debug("\nSymbols:\n\n");
+				status.debug("\nSymbols:\n\n");
 				for (int i = 0; i < characters; i++) {
-					err.debug(i + ": ");
+					status.debug(i + ": ");
 					for (e = 0; e < char2no.length; e++) {
 						if (char2no[e] == i) {
 							if (e > 32 && e < 128) {
-								err.debug(Character.toString((char) e));
+								status.debug(Character.toString((char) e));
 							} else {
-								err.debug("\\x" + FormatUtil.asHex(e, 4));
+								status.debug("\\x" + FormatUtil.asHex(e, 4));
 							}
 						}
 					}
-					err.debug("\n");
+					status.debug("\n");
 				}
 			}
 
-			err.debug("\nSets:\n\n");
+			status.debug("\nSets:\n\n");
 			for (int i = 0; i < set2symbols.length; i++) {
-				err.debug(i + ": ");
+				status.debug(i + ": ");
 				for (e = 0; e < set2symbols[i].length; e++) {
-					err.debug(" " + set2symbols[i][e]);
+					status.debug(" " + set2symbols[i][e]);
 				}
 
-				err.debug("\n");
+				status.debug("\n");
 			}
 		}
 
@@ -649,7 +647,7 @@ public class LexicalBuilder {
 	private LexerTables generate() {
 
 		if (myLexems.length == 0) {
-			err.error("lex: no lexems\n");
+			status.error("lex: no lexems\n");
 			return null;
 		}
 
@@ -673,8 +671,8 @@ public class LexicalBuilder {
 	/**
 	 * Generates lexer tables from lexems descriptions
 	 */
-	public static LexerTables compile(Lexem[] lexems, INotifier err, int debuglev) {
-		LexicalBuilder lb = new LexicalBuilder(lexems, err, debuglev);
+	public static LexerTables compile(Lexem[] lexems, ProcessingStatus status) {
+		LexicalBuilder lb = new LexicalBuilder(lexems, status);
 		return lb.generate();
 	}
 }

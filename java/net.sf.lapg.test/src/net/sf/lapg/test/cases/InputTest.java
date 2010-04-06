@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,6 +27,7 @@ import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
+import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.lex.RegexpParser;
@@ -40,8 +41,8 @@ import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 public class InputTest extends LapgTestCase {
 
 	private void checkGenTables(Grammar g, String outputId, TestNotifier er) {
-		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er, 0);
-		ParserTables pt = Builder.compile(g, er, 0);
+		LexerTables lt = LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
+		ParserTables pt = Builder.compile(g, new ProcessingStatusAdapter(er, 0));
 
 		StringBuffer sb = new StringBuffer();
 
