@@ -125,10 +125,10 @@ public class Builder extends Lalr1 {
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
 			if (!sym[i].isTerm() && !sym[i].isDefined()) {
-				status.error("no rules for `" + sym[i].getName() + "`\n");
+				status.report(ProcessingStatus.KIND_ERROR, "no rules for `" + sym[i].getName() + "`\n", sym[i]);
 			} else if (!sym_good[i] || !sym_employed[i]) {
 				if (!sym[i].getName().startsWith("_skip")) {
-					status.warn("lapg: symbol `" + sym[i].getName() + "` is useless\n");
+					status.report(ProcessingStatus.KIND_WARN, "lapg: symbol `" + sym[i].getName() + "` is useless\n", sym[i]);
 				}
 			}
 		}
@@ -322,7 +322,7 @@ public class Builder extends Lalr1 {
 			}
 		}
 		if ((sr + rr) > 0) {
-			status.error("conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n");
+			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n", null);
 		}
 
 		e = 0;
@@ -336,19 +336,19 @@ public class Builder extends Lalr1 {
 
 	private ParserTables generate() {
 		if (inputs == null || inputs.length == 0) {
-			status.error("input symbol is not defined\n");
+			status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined\n", null);
 			return null;
 		}
 
 		for (int input : inputs) {
 			if (input == -1) {
-				status.error("input symbol is not defined\n"); // FIXME
+				status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined\n", null); // FIXME
 				return null;
 			}
 		}
 
 		if (eoi == -1) {
-			status.error("the end-of-input symbol is not defined\n");
+			status.report(ProcessingStatus.KIND_ERROR, "the end-of-input symbol is not defined\n", null);
 			return null;
 		}
 

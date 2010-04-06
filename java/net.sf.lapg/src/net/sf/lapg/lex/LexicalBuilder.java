@@ -508,7 +508,7 @@ public class LexicalBuilder {
 
 					// Have we exceeded the limits?
 					if (current.change[i] == -1) {
-						status.error("lex: lexical analyzer is too big ...\n");
+						status.report(ProcessingStatus.KIND_FATAL, "lex: lexical analyzer is too big ...\n", null);
 						return false;
 					}
 
@@ -647,7 +647,7 @@ public class LexicalBuilder {
 	private LexerTables generate() {
 
 		if (myLexems.length == 0) {
-			status.error("lex: no lexems\n");
+			status.report(ProcessingStatus.KIND_ERROR, "lex: no lexems\n", null);
 			return null;
 		}
 

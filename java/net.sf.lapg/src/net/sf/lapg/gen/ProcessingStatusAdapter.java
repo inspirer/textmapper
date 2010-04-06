@@ -13,6 +13,18 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 		this.debuglev = debuglev;
 	}
 
+	public void report(int kind, String message, SourceElement anchor) {
+		switch(kind) {
+		case KIND_FATAL:
+		case KIND_ERROR:
+			notifier.error(message);
+			break;
+		case KIND_WARN:
+			notifier.warn(message);
+			break;
+		}
+	}
+
 	public void debug(String info) {
 		notifier.debug(info);
 	}
