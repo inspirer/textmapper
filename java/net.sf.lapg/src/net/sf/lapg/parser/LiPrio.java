@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,13 +17,15 @@ package net.sf.lapg.parser;
 
 import net.sf.lapg.api.Prio;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.parser.ast.IAstNode;
 
-public class LiPrio implements Prio {
+public class LiPrio extends LiEntity implements Prio {
 
 	private final int prio;
 	private final LiSymbol[] symbols;
 
-	public LiPrio(int prio, LiSymbol[] symbols) {
+	public LiPrio(int prio, LiSymbol[] symbols, IAstNode node) {
+		super(node);
 		this.prio = prio;
 		this.symbols = symbols;
 	}

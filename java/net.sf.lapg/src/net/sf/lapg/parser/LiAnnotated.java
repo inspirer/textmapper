@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,14 +20,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.sf.lapg.api.Annotated;
+import net.sf.lapg.parser.ast.IAstNode;
 
-public class LiAnnotated implements Annotated {
+public class LiAnnotated extends LiEntity implements Annotated {
 
 	private static final Map<String,Object> EMPTY_ANN = Collections.<String,Object>emptyMap();
 
 	private Map<String,Object> myAnnotations;
 
-	public LiAnnotated(Map<String, Object> myAnnotations) {
+	public LiAnnotated(Map<String, Object> myAnnotations, IAstNode node) {
+		super(node);
 		this.myAnnotations = myAnnotations != null ? myAnnotations : EMPTY_ANN;
 	}
 

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -220,5 +220,9 @@ public class CSyntax implements Grammar {
 
 	public Map<Symbol, List<Rule>> getRulesBySymbol() {
 		throw new UnsupportedOperationException();
+	}
+
+	public String getLocation() {
+		return null;
 	}
 }

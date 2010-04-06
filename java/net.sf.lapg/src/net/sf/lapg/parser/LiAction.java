@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,31 +16,19 @@
 package net.sf.lapg.parser;
 
 import net.sf.lapg.api.Action;
-import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.parser.ast.IAstNode;
 
-public class LiAction implements Action, ILocatedEntity {
+public class LiAction extends LiEntity implements Action {
 
 	private final String contents;
 
-	private final String input;
-	private final int line;
-
-	public LiAction(String contents, String input, int line) {
+	public LiAction(String contents, IAstNode node) {
+		super(node);
 		this.contents = contents;
-		this.input = input;
-		this.line = line;
-	}
-
-	public String getLocation() {
-		return input + "," + line;
 	}
 
 	public String getContents() {
 		return contents;
-	}
-
-	int getLine() {
-		return line;
 	}
 
 	@Override

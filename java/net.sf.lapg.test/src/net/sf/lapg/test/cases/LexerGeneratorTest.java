@@ -127,7 +127,39 @@ public class LexerGeneratorTest extends TestCase {
 				public Object getAnnotation(String name) {
 					return null;
 				}
+
+				public int getEndOffset() {
+					return 0;
+				}
+
+				public int getLine() {
+					return 0;
+				}
+
+				public int getOffset() {
+					return 0;
+				}
+
+				public String getResourceName() {
+					return null;
+				}
 			};
+		}
+
+		public int getEndOffset() {
+			return 0;
+		}
+
+		public int getLine() {
+			return 0;
+		}
+
+		public int getOffset() {
+			return 0;
+		}
+
+		public String getResourceName() {
+			return null;
 		}
 	}
 

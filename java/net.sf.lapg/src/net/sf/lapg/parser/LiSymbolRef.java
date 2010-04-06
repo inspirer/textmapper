@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,14 +19,15 @@ import java.util.Map;
 
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
+import net.sf.lapg.parser.ast.IAstNode;
 
 public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 
 	Symbol target;
 	String alias;
 
-	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations) {
-		super(annotations);
+	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, IAstNode node) {
+		super(annotations, node);
 		this.target = target;
 		this.alias = alias;
 	}

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,6 +16,7 @@
 package net.sf.lapg.parser;
 
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.parser.ast.IAstNode;
 
 public class LiSymbol extends LiAnnotated implements Symbol {
 
@@ -24,8 +25,8 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	private final String type;
 	private final boolean isTerm;
 
-	public LiSymbol(String name, String type, boolean isTerm) {
-		super(null);
+	public LiSymbol(String name, String type, boolean isTerm, IAstNode node) {
+		super(null, node);
 		this.name = name;
 		this.type = type;
 		this.isTerm = isTerm;

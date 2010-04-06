@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@ package net.sf.lapg.api;
 /**
  * Semantic action representation.
  */
-public interface Action {
+public interface Action extends LocatedEntity {
 
 	/**
 	 * @return action template

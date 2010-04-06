@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -39,12 +39,24 @@ public class CAction implements Action, ILocatedEntity {
 		return contents;
 	}
 
-	int getLine() {
+	public int getLine() {
 		return line;
 	}
 
 	@Override
 	public String toString() {
 		return contents;
+	}
+
+	public int getEndOffset() {
+		return 0;
+	}
+
+	public int getOffset() {
+		return 0;
+	}
+
+	public String getResourceName() {
+		return null;
 	}
 }

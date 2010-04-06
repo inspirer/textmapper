@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -141,5 +141,25 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		sb.append(isDefined);
 		sb.append("]");
 		return sb.toString();
+	}
+
+	public int getEndOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getLine() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getOffset() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public String getResourceName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

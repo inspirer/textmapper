@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +31,6 @@ import net.sf.lapg.parser.ast.AstGroupsSelector;
 import net.sf.lapg.parser.ast.AstIdentifier;
 import net.sf.lapg.parser.ast.AstLexeme;
 import net.sf.lapg.parser.ast.AstLexerPart;
-import net.sf.lapg.parser.ast.AstNode;
 import net.sf.lapg.parser.ast.AstNonTerm;
 import net.sf.lapg.parser.ast.AstOption;
 import net.sf.lapg.parser.ast.AstReference;
@@ -39,6 +38,7 @@ import net.sf.lapg.parser.ast.AstRegexp;
 import net.sf.lapg.parser.ast.AstRoot;
 import net.sf.lapg.parser.ast.AstRule;
 import net.sf.lapg.parser.ast.AstRuleSymbol;
+import net.sf.lapg.parser.ast.IAstNode;
 
 public class LapgResolver {
 
@@ -124,7 +124,7 @@ public class LapgResolver {
 			}
 			return sym;
 		} else {
-			LiSymbol sym = new LiSymbol(name, type, isTerm);
+			LiSymbol sym = new LiSymbol(name, type, isTerm, id);
 			symbolsMap.put(name, sym);
 			symbols.add(sym);
 			return sym;
@@ -139,8 +139,8 @@ public class LapgResolver {
 				sym = symbolsMap.get(name.substring(0, name.length()-3));
 				if(sym != null) {
 					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false);
-					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, id, null));
-					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null,null)}, null, null, id, null));
+					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, null, id));
+					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null,null,null)}, null, null, null, id));
 					return symopt;
 				}
 			}
@@ -173,7 +173,7 @@ public class LapgResolver {
 		if(code == null) {
 			return null;
 		}
-		return new LiAction(code.toString(), tree.getSource().getFile(), code.getLine());
+		return new LiAction(code.toString(), code);
 	}
 
 	private String convert(AstRegexp regexp) {
@@ -184,7 +184,7 @@ public class LapgResolver {
 	}
 
 	private void collectLexems() {
-		eoi = new LiSymbol("eoi", null, true);
+		eoi = new LiSymbol("eoi", null, true, null);
 		symbolsMap.put(eoi.getName(), eoi);
 		symbols.add(eoi);
 		int groups = 1;
@@ -196,7 +196,7 @@ public class LapgResolver {
 				AstLexeme lexeme = (AstLexeme) clause;
 				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
 				if(lexeme.getRegexp() != null) {
-					LiLexem l = new LiLexem(s, convert(lexeme.getRegexp()), groups, lexeme.getPriority(), convert(lexeme.getCode()));
+					LiLexem l = new LiLexem(s, convert(lexeme.getRegexp()), groups, lexeme.getPriority(), convert(lexeme.getCode()), lexeme);
 					lexems.add(l);
 				}
 			} else if(clause instanceof AstGroupsSelector) {
@@ -240,19 +240,19 @@ public class LapgResolver {
 			for(AstRuleSymbol rs : list) {
 				AstCode astCode = rs.getCode();
 				if(astCode != null) {
-					LiSymbol codeSym = new LiSymbol("{}", null, false);
+					LiSymbol codeSym = new LiSymbol("{}", null, false, astCode);
 					symbols.add(codeSym);
-					rightPart.add(new LiSymbolRef(codeSym, null, null));
-					rules.add(new LiRule(codeSym, null, convert(astCode), null, astCode, null));
+					rightPart.add(new LiSymbolRef(codeSym, null, null, null));
+					rules.add(new LiRule(codeSym, null, convert(astCode), null, null, astCode));
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
 				if(sym != null) {
-					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations())));
+					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations()), rs.getSymbol()));
 				}
 			}
 		}
 		LiSymbol prio = right.getPriority() != null ? resolve(right.getPriority()) : null;
-		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, right, convert(right.getAnnotations())));
+		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, convert(right.getAnnotations()), right));
 	}
 
 	private void collectRules() {
@@ -295,11 +295,11 @@ public class LapgResolver {
 				if(key.equals("input")) {
 					inputs.addAll(val);
 				} else if(key.equals("left")) {
-					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()])));
+					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()]), directive));
 				} else if( key.equals("right") ) {
-					priorities.add(new LiPrio(Prio.RIGHT, val.toArray(new LiSymbol[val.size()])));
+					priorities.add(new LiPrio(Prio.RIGHT, val.toArray(new LiSymbol[val.size()]), directive));
 				} else if( key.equals("nonassoc") ) {
-					priorities.add(new LiPrio(Prio.NONASSOC, val.toArray(new LiSymbol[val.size()])));
+					priorities.add(new LiPrio(Prio.NONASSOC, val.toArray(new LiSymbol[val.size()]), directive));
 				} else {
 					error(directive, "unknown directive identifier used: `"+key+"`");
 				}
@@ -320,7 +320,7 @@ public class LapgResolver {
 		return o1 == null || o2 == null ? o1 == o2 : o1.equals(o2);
 	}
 
-	private void error(AstNode n, String message) {
+	private void error(IAstNode n, String message) {
 		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 

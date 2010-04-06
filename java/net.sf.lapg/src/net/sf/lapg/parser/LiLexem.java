@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,8 +18,9 @@ package net.sf.lapg.parser;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.parser.ast.IAstNode;
 
-public class LiLexem implements Lexem {
+public class LiLexem extends LiEntity implements Lexem {
 
 	private final Symbol sym;
 	private final String regexp;
@@ -27,7 +28,8 @@ public class LiLexem implements Lexem {
 	private final int priority;
 	private final Action action;
 
-	public LiLexem(Symbol sym, String regexp, int groups, int priority, Action action) {
+	public LiLexem(Symbol sym, String regexp, int groups, int priority, Action action, IAstNode node) {
+		super(node);
 		this.sym = sym;
 		this.regexp = regexp;
 		this.groups = groups;

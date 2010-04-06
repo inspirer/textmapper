@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,7 +18,7 @@ package net.sf.lapg.api;
 /**
  * Lexem rule.
  */
-public interface Lexem {
+public interface Lexem extends LocatedEntity {
 
 	public Symbol getSymbol();
 	public String getRegexp();

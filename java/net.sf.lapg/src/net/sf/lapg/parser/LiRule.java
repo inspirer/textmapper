@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,7 +21,7 @@ import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.parser.ast.AstNode;
+import net.sf.lapg.parser.ast.IAstNode;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INamedEntity;
 
@@ -34,10 +34,10 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 	private final LiSymbolRef[] right;
 	private final Action code;
 	private final LiSymbol priority;
-	private final AstNode node;
+	private final IAstNode node;
 
-	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, AstNode node, Map<String,Object> annotations) {
-		super(annotations);
+	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, Map<String,Object> annotations, IAstNode node) {
+		super(annotations, node);
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right ;
 		this.code = code;
@@ -77,7 +77,7 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		return -1;
 	}
 
-	public AstNode getNode() {
+	public IAstNode getNode() {
 		return node;
 	}
 
@@ -107,9 +107,5 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 
 	public String getTitle() {
 		return "Rule `" + toString() + "`";
-	}
-
-	public String getLocation() {
-		return node.getLocation();
 	}
 }
