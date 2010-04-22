@@ -1,0 +1,3 @@
+syntax: regexp
+^java/net\.sf\.lapg(\.\w+)*/bin/
+.DS_Store
