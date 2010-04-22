@@ -65,15 +65,16 @@ abstract class ContextFree {
 		this.status = status;
 
 		this.sym = g.getSymbols();
+		this.wrules = g.getRules();
 
 		this.nsyms = sym.length;
-		this.rules = g.getRules().length;
+		this.rules = wrules.length;
 		this.nterms = g.getTerminals();
 		this.inputs = toArray(g.getInput());
 		this.eoi = g.getEoi().getIndex();
 		this.errorn = g.getError() == null ? -1 : g.getError().getIndex();
 
-		this.situations = getSituations(g.getRules());
+		this.situations = getSituations(wrules);
 
 		this.priorul = getPriorityRules(g.getPriorities());
 
@@ -84,7 +85,6 @@ abstract class ContextFree {
 		this.sym_empty = new boolean[nsyms];
 
 		int curr_rindex = 0;
-		Rule[] wrules = g.getRules();
 		for (int i = 0; i < wrules.length; i++) {
 			Rule r = wrules[i];
 			this.rleft[i] = r.getLeft().getIndex();
@@ -113,6 +113,7 @@ abstract class ContextFree {
 	protected final int[] inputs;
 	protected final int rules, situations;
 	protected final Symbol[] sym;
+	protected final Rule[] wrules;
 	protected final int[] priorul;
 	protected final int[] rleft, rindex, rright, rprio;
 	protected final boolean[] sym_empty;

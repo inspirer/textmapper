@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import net.sf.lapg.test.cases.InputTest;
 import net.sf.lapg.test.cases.JavaPostProcessorTest;
 import net.sf.lapg.test.cases.JavaTablesCompression;
 import net.sf.lapg.test.cases.LexerGeneratorTest;
+import net.sf.lapg.test.cases.RegexpParseTest;
 
 
 public class TestRunner {
@@ -33,6 +34,7 @@ public class TestRunner {
 		ts.addTestSuite(JavaPostProcessorTest.class);
 		ts.addTestSuite(CharacterSetTest.class);
 		ts.addTestSuite(LexerGeneratorTest.class);
+		ts.addTestSuite(RegexpParseTest.class);
 		ts.addTestSuite(InputTest.class);
 		ts.addTestSuite(JavaTablesCompression.class);
 		ts.addTestSuite(ConsoleArgsTest.class);

@@ -151,7 +151,7 @@ ${template TextSourceClass-}
 		}
 
 		public String getLocation(int offset) {
-			return file + "," + (initialLine + lineForOffset(offset));
+			return file + "," + lineForOffset(offset);
 		}
 
 		public String getText(int start, int end) {
@@ -166,9 +166,9 @@ ${template TextSourceClass-}
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = java.util.@Arrays.binarySearch(lineoffset, offset);
-			return line > 0 ? line : -line - 1;
+			return initialLine + (line >= 0 ? line : -line-2);
 		}
-		
+
 		public char[] getContents() {
 			return contents;
 		}

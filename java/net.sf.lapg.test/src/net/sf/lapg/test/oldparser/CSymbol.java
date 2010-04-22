@@ -149,8 +149,7 @@ public class CSymbol implements Symbol, ILocatedEntity {
 	}
 
 	public int getLine() {
-		// TODO Auto-generated method stub
-		return 0;
+		return line;
 	}
 
 	public int getOffset() {
@@ -159,7 +158,6 @@ public class CSymbol implements Symbol, ILocatedEntity {
 	}
 
 	public String getResourceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return input;
 	}
 }

@@ -18,17 +18,14 @@ package net.sf.lapg.lex;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-
-import net.sf.lapg.api.ProcessingStatus;
+import java.util.List;
 
 public class RegexpParser {
-
-	private final ProcessingStatus status;
 
 	// result
 	private int[] character2symbol;
 	private int symbolCount;
-	private final ArrayList<CharacterSet> setpool;
+	private final List<CharacterSet> setpool;
 	private int[][] set2symbols;
 
 	// temporary variables
@@ -36,8 +33,7 @@ public class RegexpParser {
 	private final int[] sym;
 	private final int[] stack;
 
-	public RegexpParser(ProcessingStatus status) {
-		this.status = status;
+	public RegexpParser() {
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
 		this.builder = new CharacterSet.Builder();
@@ -76,11 +72,10 @@ public class RegexpParser {
 	/**
 	 * @return unicode character 0 - 0xffff, or -1 in case of error
 	 */
-	private int escape() {
+	private int escape() throws RegexpParseException {
 		index++;
 		if (index >= re.length) {
-			status.error("lex: \\ found at the end of expression: /" + regexp + "/\n");
-			return -1;
+			throw new RegexpParseException("regexp contains \\ at the end of expression", re.length);
 		}
 
 		int c = re[index];
@@ -100,15 +95,13 @@ public class RegexpParser {
 		case 'u':
 		case 'x': {
 			if (index + 4 >= re.length) {
-				status.error("lex: unicode symbol is incomplete: /" + regexp + "/\n");
-				return -1;
+				throw new RegexpParseException("regexp contains incomplete unicode symbol", re.length);
 			}
 			index += 4;
 			try {
 				return parseHex(new String(re, index - 3, 4));
 			} catch (NumberFormatException ex) {
-				status.error("lex: bad unicode symbol: /" + regexp + "/\n");
-				return -1;
+				throw new RegexpParseException("regexp contains incomplete unicode symbol", index-3);
 			}
 		}
 
@@ -149,7 +142,7 @@ public class RegexpParser {
 	/**
 	 * regular expression "tokenizer"
 	 */
-	private int getnext() {
+	private int getnext() throws RegexpParseException {
 		int i, e;
 		boolean invert = false;
 
@@ -210,12 +203,14 @@ public class RegexpParser {
 			}
 
 			if (index >= re.length) {
-				status.error("lex: enclosing square bracket not found: /" + regexp + "/\n");
-				return -1;
+				throw new RegexpParseException("regexp contains unpaired brackets", re.length);
 			}
 
 			index++;
 			return storeSet(builder.create(invert));
+
+		case ']':
+			throw new RegexpParseException("unexpected closing brace, escape it to use as character", index);
 
 		case '\\':
 			i = escape();
@@ -237,7 +232,7 @@ public class RegexpParser {
 	/**
 	 * @return Engine representation of regular expression
 	 */
-	public int[] compile(int number, String name, String regexp) {
+	public int[] compile(int number, String name, String regexp) throws RegexpParseException {
 
 		int length = 0, deep = 1;
 		boolean addbrackets = false;
@@ -247,14 +242,12 @@ public class RegexpParser {
 		this.re = this.regexp.toCharArray();
 
 		if (re.length == 0) {
-			status.error("lex: regexp for `" + name + "' does not contain symbols\n");
-			return null;
+			throw new RegexpParseException("regexp is empty", 0);
 		}
 
 		while (index < re.length) {
 			if (length > LexConstants.MAX_ENTRIES - 5) {
-				status.error("lex: regexp for `" + name + "' is too long: /" + regexp + "/\n");
-				return null;
+				throw new RegexpParseException("regexp is too long", index);
 			}
 
 			sym[length] = getnext();
@@ -263,8 +256,7 @@ public class RegexpParser {
 			case LexConstants.LBR:
 				stack[deep] = length;
 				if (++deep >= LexConstants.MAX_DEEP) {
-					status.error("lex: regexp for `" + name + "' is too deep: /" + regexp + "/\n");
-					return null;
+					throw new RegexpParseException("regexp contains too much parentheses", index-1);
 				}
 				break;
 			case LexConstants.OR:
@@ -274,8 +266,7 @@ public class RegexpParser {
 				break;
 			case LexConstants.RBR:
 				if (--deep == 0) {
-					status.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
-					return null;
+					throw new RegexpParseException("regexp contains unpaired parentheses", index-1);
 				}
 				sym[stack[deep]] |= length;
 				/* FALLTHROUGH */
@@ -305,8 +296,7 @@ public class RegexpParser {
 		}
 
 		if (deep != 1) {
-			status.error("lex: error in `" + name + "', wrong parantheses: /" + regexp + "/\n");
-			return null;
+			throw new RegexpParseException("regexp contains unpaired parentheses", re.length);
 		}
 
 		int e;

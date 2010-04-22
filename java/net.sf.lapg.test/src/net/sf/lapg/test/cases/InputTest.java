@@ -31,10 +31,10 @@ import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
-import net.sf.lapg.lex.RegexpParser;
 import net.sf.lapg.parser.LiGrammar;
 import net.sf.lapg.parser.LiRule;
 import net.sf.lapg.parser.LiSymbol;
+import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.test.TestNotifier;
 import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 
@@ -53,85 +53,6 @@ public class InputTest extends LapgTestCase {
 		String actual = removeSpaces(sb.toString().trim());
 
 		Assert.assertEquals(expected, actual);
-	}
-
-	private static char[] HEX = new char[] { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
-
-	private String toHex4(int i) {
-		return "" + HEX[i>>12&0xf] + HEX[i>>8&0xf] +HEX[i>>4&0xf]+HEX[i&0xf];
-	}
-
-	public void testRegexpParserTime() {
-
-		Assert.assertEquals("0000", toHex4(0));
-		Assert.assertEquals("abcf", toHex4(0xabcf));
-		Assert.assertEquals("75e1", toHex4(0x75e1));
-
-		RegexpParser rp = new RegexpParser(null);
-		for(int i = 0; i < 2000; i++) {
-			rp.compile(i, "n"+i, "[\\x"+toHex4(i*10)+"-\\x"+toHex4(i*10+6)+"]");
-		}
-		for(int i = 0; i < 2000; i++) {
-			rp.compile(i, "nb"+i, "[\\x"+toHex4(i*10+3)+"-\\x"+toHex4(i*10+8)+"]");
-		}
-		rp.buildSets();
-
-		Assert.assertEquals(6002, rp.getSymbolCount());
-	}
-
-	public void testRegexpParserInvertedSet() {
-		RegexpParser rp = new RegexpParser(null);
-
-		rp.compile(0, "string", "'[^'\n]+'");
-		rp.compile(1, "percent", "%");
-		rp.buildSets();
-		Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
-
-		int[] character2sym = rp.getCharacterMap();
-		Assert.assertEquals(character2sym['%'], 3);
-		Assert.assertEquals(character2sym['\''], 2);
-
-		int[][] res = rp.getSetToSymbolsMap();
-		Assert.assertEquals(1, res.length);
-		Assert.assertEquals("[1, 3]", Arrays.toString(res[0]));
-	}
-
-	public void testRegexpParser() {
-		RegexpParser rp = new RegexpParser(null);
-
-		rp.compile(0, "string", "[a-zA-Z_][a-zA-Z0-9_]*");
-		rp.buildSets();
-		Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
-
-		rp = new RegexpParser(null);
-		rp.compile(0, "string", "[a-zA-Z_][a-zA-Z0-9_]*");
-		rp.compile(1, "keyw", "do");
-		rp.buildSets();
-		Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
-
-		rp = new RegexpParser(null);
-		rp.compile(0, "string", "[a-w][p-z]");
-		rp.compile(1, "string2", "[b-c][y-z]");
-		rp.buildSets();
-		Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 6, 6, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
-		int[][] p = rp.getSetToSymbolsMap();
-		Assert.assertEquals("[2, 4, 5]", Arrays.toString(p[0]));
-		Assert.assertEquals("[3, 4, 6]", Arrays.toString(p[1]));
-		Assert.assertEquals("[5]", Arrays.toString(p[2]));
-		Assert.assertEquals("[6]", Arrays.toString(p[3]));
-	}
-
-	public void testUnicode() {
-		RegexpParser rp = new RegexpParser(null);
-
-		rp.compile(0, "string", "[\\x5151-\\x5252][\\x1000-\\x2000]");
-		int[] expected = new int[0x8000];
-		Arrays.fill(expected, 1);
-		Arrays.fill(expected, 0x5151, 0x5252+1, 2);
-		Arrays.fill(expected, 0x1000, 0x2000+1, 3);
-		expected[0] = 0;
-		rp.buildSets();
-		Assert.assertEquals(Arrays.toString(expected), Arrays.toString(rp.getCharacterMap()));
 	}
 
 	public void testCheckSimple1() {
@@ -162,7 +83,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals(3, lexems.length);
 		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp());
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
-		                                                                                                          .getRegexp());
+				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
@@ -198,18 +119,16 @@ public class InputTest extends LapgTestCase {
 		Assert.assertNotNull(g);
 
 		TestNotifier er = new TestNotifier(
-				"lapg: symbol `error` is useless\n"
-				+ "lapg: symbol `Lfixed` is useless\n"
-				+ "lapg: symbol `Lstackalloc` is useless\n"
-				+ "lapg: symbol `comment` is useless\n"
-				+ "lapg: symbol `'/*'` is useless\n"
-				+ "lapg: symbol `anysym1` is useless\n"
-				+ "lapg: symbol `'*/'` is useless\n"
-				+ "\n"
-				+ "input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
-				+ "conflict: shift/reduce (684, next Lelse)\n"
-				+ "  embedded_statement ::= Lif '(' expression ')' embedded_statement\n",
-		"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+				"syntax_cs,3: symbol `error` is useless\n" + "syntax_cs,44: symbol `Lfixed` is useless\n"
+						+ "syntax_cs,76: symbol `Lstackalloc` is useless\n"
+						+ "syntax_cs,149: symbol `comment` is useless\n" + "syntax_cs,155: symbol `'/*'` is useless\n"
+						+ "syntax_cs,157: symbol `anysym1` is useless\n" + "syntax_cs,159: symbol `'*/'` is useless\n",
+
+				"input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+						+ "shift/reduce conflict (next: Lelse)\n"
+						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
+						+ "\n"
+						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
 		checkGenTables(g, "syntax_cs.tbl", er);
 		er.assertDone();
@@ -218,67 +137,40 @@ public class InputTest extends LapgTestCase {
 	}
 
 	public void testLapgGrammar() {
-		Grammar g = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER),
+				new TestNotifier(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
 		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
 	}
 
 	public void testLapgTemplatesGrammar() {
-		Grammar g = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER),
+				new TestNotifier(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
 		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
 	}
 
-	public void testHexConverter() {
-		Assert.assertEquals(0, RegexpParser.parseHex("0"));
-		Assert.assertEquals(10, RegexpParser.parseHex("a"));
-		Assert.assertEquals(11, RegexpParser.parseHex("b"));
-		Assert.assertEquals(12, RegexpParser.parseHex("C"));
-		Assert.assertEquals(16, RegexpParser.parseHex("10"));
-		Assert.assertEquals(39664, RegexpParser.parseHex("9aF0"));
-		try {
-			Assert.assertEquals(39664, RegexpParser.parseHex("9aF0!"));
-			Assert.fail("no exception");
-		} catch(Throwable th) {
-			Assert.assertTrue(th instanceof NumberFormatException);
-		}
-		try {
-			Assert.assertEquals(39664, RegexpParser.parseHex("g"));
-			Assert.fail("no exception");
-		} catch(Throwable th) {
-			Assert.assertTrue(th instanceof NumberFormatException);
-		}
-		try {
-			Assert.assertEquals(39664, RegexpParser.parseHex("G"));
-			Assert.fail("no exception");
-		} catch(Throwable th) {
-			Assert.assertTrue(th instanceof NumberFormatException);
-		}
-	}
-
 	public void testNewTemplatesGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, Object>());
-		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER),
+				new TestNotifier(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		sortGrammar((LiGrammar)g, go);
+		sortGrammar((LiGrammar) g, go);
 		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
 	}
 
 	public void testNewLapgGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, Object>());
-		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
-				new HashMap<String, String>());
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER),
+				new TestNotifier(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		sortGrammar((LiGrammar)g, go);
+		sortGrammar((LiGrammar) g, go);
 		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
 	}
 
@@ -288,21 +180,21 @@ public class InputTest extends LapgTestCase {
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
-		sortGrammar((LiGrammar)g, go);
+		sortGrammar((LiGrammar) g, go);
 
 		TestNotifier er = new TestNotifier(
-				"lapg: symbol `error` is useless\n"
-				+ "lapg: symbol `Lfixed` is useless\n"
-				+ "lapg: symbol `Lstackalloc` is useless\n"
-				+ "lapg: symbol `comment` is useless\n"
-				+ "lapg: symbol `'/*'` is useless\n"
-				+ "lapg: symbol `anysym1` is useless\n"
-				+ "lapg: symbol `'*/'` is useless\n"
-				+ "\n"
-				+ "input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
-				+ "conflict: shift/reduce (684, next Lelse)\n"
-				+ "  embedded_statement ::= Lif '(' expression ')' embedded_statement\n",
-		"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+				"syntax_cs,3: symbol `error` is useless\n" + "syntax_cs,44: symbol `Lfixed` is useless\n"
+						+ "syntax_cs,76: symbol `Lstackalloc` is useless\n"
+						+ "syntax_cs,149: symbol `comment` is useless\n"
+						+ "syntax_cs,155: symbol `'/*'` is useless\n"
+						+ "syntax_cs,157: symbol `anysym1` is useless\n"
+						+ "syntax_cs,159: symbol `'*/'` is useless\n",
+
+				"syntax_cs,481: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+						+ "shift/reduce conflict (next: Lelse)\n"
+						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
+						+ "\n"
+						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
 		checkGenTables(g, "syntax_cs.tbl", er);
 		er.assertDone();
@@ -338,7 +230,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals(3, lexems.length);
 		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp());
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
-		                                                                                                          .getRegexp());
+				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
@@ -367,17 +259,17 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals(8, g.getRules().length);
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
 
-		sortGrammar((LiGrammar)g, go);
+		sortGrammar((LiGrammar) g, go);
 		checkGenTables(g, "syntax2.tbl", new TestNotifier());
 	}
 
 	private void sortGrammar(LiGrammar g, Grammar go) {
-		final HashMap<String,Integer> index = new HashMap<String, Integer>();
-		for(Symbol s : go.getSymbols()) {
+		final HashMap<String, Integer> index = new HashMap<String, Integer>();
+		for (Symbol s : go.getSymbols()) {
 			index.put(s.getName(), s.getIndex());
 		}
-		final HashMap<String,Integer> ruleind = new HashMap<String, Integer>();
-		for(Rule r : go.getRules()) {
+		final HashMap<String, Integer> ruleind = new HashMap<String, Integer>();
+		for (Rule r : go.getRules()) {
 			String ind = getSignature(r);
 			ruleind.put(ind, r.getIndex());
 		}
@@ -389,8 +281,8 @@ public class InputTest extends LapgTestCase {
 				return i1.compareTo(i2);
 			}
 		});
-		for(int i = 0; i < g.getSymbols().length; i++) {
-			((LiSymbol)g.getSymbols()[i]).setIndex(i);
+		for (int i = 0; i < g.getSymbols().length; i++) {
+			((LiSymbol) g.getSymbols()[i]).setIndex(i);
 		}
 
 		Arrays.sort(g.getRules(), new Comparator<Rule>() {
@@ -400,16 +292,25 @@ public class InputTest extends LapgTestCase {
 				return i1.compareTo(i2);
 			}
 		});
-		for(int i = 0; i < g.getRules().length; i++) {
-			((LiRule)g.getRules()[i]).setIndex(i);
+		for (int i = 0; i < g.getRules().length; i++) {
+			((LiRule) g.getRules()[i]).setIndex(i);
 		}
 	}
 
 	private String getSignature(Rule r) {
 		String ind = Integer.toString(r.getLeft().getIndex());
-		for(SymbolRef rt : r.getRight()) {
+		for (SymbolRef rt : r.getRight()) {
 			ind += ":" + rt.getTarget().getIndex();
 		}
 		return ind;
+	}
+
+	public void testTextSource() {
+		TextSource source = new TextSource("file", "aa\nbb\n\nc".toCharArray(), 7);
+		int[] expected = new int[] { 7, 7, 7, 8, 8, 8, 9, 10 };
+
+		for (int i = 0; i < expected.length; i++) {
+			Assert.assertEquals("offset #" + i, expected[i], source.lineForOffset(i));
+		}
 	}
 }

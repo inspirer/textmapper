@@ -63,7 +63,7 @@ class LR0 extends ContextFree {
 		while (current != null) {
 			build_closure(current.number, current.elems);
 			if (!process_state()) {
-				status.report(ProcessingStatus.KIND_FATAL, "syntax analyzer is too big ...\n", null);
+				status.report(ProcessingStatus.KIND_FATAL, "syntax analyzer is too big ...");
 				freeLR0();
 				return false;
 			}

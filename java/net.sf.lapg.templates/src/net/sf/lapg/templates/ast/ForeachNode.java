@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -60,7 +60,7 @@ public class ForeachNode extends CompoundNode {
 					} else {
 						env.fireError(this, "In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
 					}
-				} else if( select instanceof Collection ) {
+				} else if( select instanceof Collection<?> ) {
 					for( Object o : (Collection<?>)select ) {
 						context.setVariable(var, o);
 						context.setVariable(INDEX, index++);

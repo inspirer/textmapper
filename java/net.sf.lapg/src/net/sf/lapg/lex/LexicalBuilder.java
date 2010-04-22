@@ -412,7 +412,7 @@ public class LexicalBuilder {
 					if (lexnum != -1 && lexnum != nlex) {
 
 						if (lprio[nlex] == lprio[lexnum]) {
-							status.error("lex: two lexems are identical: " + lname[lexnum] + " and " + lname[nlex] + "\n");
+							status.report(ProcessingStatus.KIND_ERROR, "two lexems are identical: " + lname[lexnum] + " and " + lname[nlex], myLexems[lexnum], myLexems[nlex]);
 							lexemerrors++;
 
 						} else if (lprio[nlex] > lprio[lexnum]) {
@@ -461,7 +461,7 @@ public class LexicalBuilder {
 
 			// check for the empty lexem
 			if (current == first && lexnum != -1) {
-				status.error("lex: lexem is empty: `" + lname[lexnum] + "`\n");
+				status.report(ProcessingStatus.KIND_ERROR, lname[lexnum] + ": lexem is empty", myLexems[lexnum]);
 				lexemerrors++;
 			}
 
@@ -508,7 +508,7 @@ public class LexicalBuilder {
 
 					// Have we exceeded the limits?
 					if (current.change[i] == -1) {
-						status.report(ProcessingStatus.KIND_FATAL, "lex: lexical analyzer is too big ...\n", null);
+						status.report(ProcessingStatus.KIND_FATAL, "lexical analyzer is too big ...");
 						return false;
 					}
 
@@ -532,13 +532,15 @@ public class LexicalBuilder {
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare() {
-		RegexpParser rp = new RegexpParser(status);
+		RegexpParser rp = new RegexpParser();
+		boolean success = true;
+
 		nsit = 0;
 		ArrayList<int[]> syms = new ArrayList<int[]>();
 		nterms = myLexems.length;
 
 		if (nterms >= LexConstants.MAX_LEXEMS) {
-			status.error("lex: too much lexems\n");
+			status.report(ProcessingStatus.KIND_ERROR, "too much lexems", myLexems[LexConstants.MAX_LEXEMS-1]);
 			return false;
 		}
 
@@ -557,29 +559,38 @@ public class LexicalBuilder {
 			totalgroups |= l.getGroups();
 
 			if (l.getGroups() == 0) {
-				status.error("lex: lexem `" + l.getSymbol().getName() + "` does not belong to groups\n");
-				return false;
+				status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": defined lexem without a group", l);
+				success = false;
 			}
 
 			if (l.getSymbol().getName().equals("error")) {
-				status.error("lex: error token must be defined without regular expression\n");
-				return false;
+				status.report(ProcessingStatus.KIND_ERROR, "error token must be defined without regular expression", l);
+				success = false;
+				continue;
 			}
 
-			int[] lexem_sym = rp.compile(i, l.getSymbol().getName(), l.getRegexp());
+			try {
+				int[] lexem_sym = rp.compile(i, l.getSymbol().getName(), l.getRegexp());
 
-			lnum[i] = l.getSymbol().getIndex();
-			lprio[i] = l.getPriority();
-			group[i] = l.getGroups();
-			lindex[i] = nsit;
-			llen[i] = lexem_sym.length;
-			ljmpset[i] = (((lexem_sym.length) + LexConstants.BITS - 1) / LexConstants.BITS);
-			ljmp[i] = new int[lexem_sym.length * ljmpset[i]];
-			lname[i] = l.getSymbol().getName();
+				lnum[i] = l.getSymbol().getIndex();
+				lprio[i] = l.getPriority();
+				group[i] = l.getGroups();
+				lindex[i] = nsit;
+				llen[i] = lexem_sym.length;
+				ljmpset[i] = (((lexem_sym.length) + LexConstants.BITS - 1) / LexConstants.BITS);
+				ljmp[i] = new int[lexem_sym.length * ljmpset[i]];
+				lname[i] = l.getSymbol().getName();
 
-			Arrays.fill(ljmp[i], 0);
-			syms.add(lexem_sym);
-			nsit += lexem_sym.length;
+				Arrays.fill(ljmp[i], 0);
+				syms.add(lexem_sym);
+				nsit += lexem_sym.length;
+			} catch(RegexpParseException ex) {
+				status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
+				success = false;
+			}
+		}
+		if(!success) {
+			return false;
 		}
 		lindex[nterms] = nsit;
 		lsym = new int[nsit];
@@ -591,7 +602,7 @@ public class LexicalBuilder {
 		}
 
 		if ((totalgroups & 1) == 0) {
-			status.error("lex: no lexems in the first group\n");
+			status.report(ProcessingStatus.KIND_ERROR, "no lexems in the first group", myLexems.length > 0 ? myLexems[0] : null);
 			return false;
 		}
 
@@ -647,7 +658,7 @@ public class LexicalBuilder {
 	private LexerTables generate() {
 
 		if (myLexems.length == 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "lex: no lexems\n", null);
+			status.report(ProcessingStatus.KIND_ERROR, "no lexems");
 			return null;
 		}
 

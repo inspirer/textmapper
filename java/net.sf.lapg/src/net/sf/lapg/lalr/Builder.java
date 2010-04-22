@@ -15,11 +15,15 @@
  */
 package net.sf.lapg.lalr;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
+import net.sf.lapg.ParserConflict;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.Symbol;
 
 public class Builder extends Lalr1 {
 
@@ -125,10 +129,10 @@ public class Builder extends Lalr1 {
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
 			if (!sym[i].isTerm() && !sym[i].isDefined()) {
-				status.report(ProcessingStatus.KIND_ERROR, "no rules for `" + sym[i].getName() + "`\n", sym[i]);
+				status.report(ProcessingStatus.KIND_ERROR, "no rules for `" + sym[i].getName() + "`", sym[i]);
 			} else if (!sym_good[i] || !sym_employed[i]) {
 				if (!sym[i].getName().startsWith("_skip")) {
-					status.report(ProcessingStatus.KIND_WARN, "lapg: symbol `" + sym[i].getName() + "` is useless\n", sym[i]);
+					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getName() + "` is useless", sym[i]);
 				}
 			}
 		}
@@ -178,19 +182,25 @@ public class Builder extends Lalr1 {
 		return 0;
 	}
 
-	private void print_input(int s) {
-		if (state[s].number == 0) {
-			return;
+	private Symbol[] getInput(int s) {
+		Stack<Symbol> stack = new Stack<Symbol>();
+		while (state[s].number != 0) {
+			stack.push(sym[state[s].symbol]);
+			s = state[s].fromstate;
 		}
-		print_input(state[s].fromstate);
-		status.warn(" " + sym[state[s].symbol].getName());
+		Symbol[] result = new Symbol[stack.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = stack.pop();
+		}
+		return result;
 	}
 
 	private void action() {
 		State t;
-		Vector<short[]> actionTables = new Vector<short[]>();
+		List<short[]> actionTables = new ArrayList<short[]>();
 		int rr = 0, sr = 0;
 		short[] actionset = new short[nterms], next = new short[nterms];
+		ConflictBuilder conflicts = new ConflictBuilder(nterms);
 		int setsize;
 		int i, e;
 
@@ -227,6 +237,9 @@ public class Builder extends Lalr1 {
 					actionset[setsize++] = (short) termSym;
 				}
 
+				// reset conflicts
+				conflicts.clear();
+
 				// process reduces
 				for (i = laindex[t.number]; i < laindex[t.number + 1]; i++) {
 					int ai = i * termset;
@@ -243,55 +256,8 @@ public class Builder extends Lalr1 {
 										// OK
 										next[termSym] = larule[i];
 										actionset[setsize++] = (short) termSym;
-									} else if (next[termSym] == -1) {
-										switch (compare_prio(larule[i], termSym)) {
-										case 0: // shift/reduce
-											status.warn("\ninput:");
-											print_input(t.number);
-											status.warn("\nconflict: shift/reduce (" + t.number + ", next "
-													+ sym[termSym].getName() + ")\n");
-											warn_rule(larule[i]);
-											sr++;
-											break;
-										case 1: // shift
-											status.warn("\ninput:");
-											print_input(t.number);
-											status.warn("\nfixed: shift: shift/reduce (" + t.number + ", next "
-													+ sym[termSym].getName() + ")\n");
-											warn_rule(larule[i]);
-											break;
-										case 2: // reduce
-											status.warn("\ninput:");
-											print_input(t.number);
-											status.warn("\nfixed: reduce: shift/reduce (" + t.number + ", next "
-													+ sym[termSym].getName() + ")\n");
-											warn_rule(larule[i]);
-											next[termSym] = larule[i];
-											break;
-										case 3: // error (non-assoc)
-											status.warn("\ninput:");
-											print_input(t.number);
-											status.warn("\nfixed: <error>: shift/reduce (" + t.number + ", next "
-													+ sym[termSym].getName() + ")\n");
-											warn_rule(larule[i]);
-											next[termSym] = -3;
-											break;
-										}
-									} else if (next[termSym] == -3) {
-										status.warn("\ninput:");
-										print_input(t.number);
-										status.warn("\nfixed: <error>: shift/reduce (" + t.number + ", next "
-												+ sym[termSym].getName() + ")\n");
-										warn_rule(larule[i]);
 									} else {
-										// reduce/reduce
-										status.warn("\ninput:");
-										print_input(t.number);
-										status.warn("\nconflict: reduce/reduce (" + t.number + ", next "
-												+ sym[termSym].getName() + ")\n");
-										warn_rule(next[termSym]);
-										warn_rule(larule[i]);
-										rr++;
+										addReduce(next, termSym, larule[i], conflicts);
 									}
 								}
 								termSym++;
@@ -300,6 +266,21 @@ public class Builder extends Lalr1 {
 					}
 				}
 
+				// merge conflicts
+				List<ParserConflict> mergedConflicts = conflicts.getMergedConflicts(t.number, getInput(t.number));
+				for(ParserConflict conflict : mergedConflicts) {
+					status.report(conflict);
+					switch(conflict.getKind()) {
+					case ParserConflict.REDUCE_REDUCE:
+						rr++;
+						break;
+					case ParserConflict.SHIFT_REDUCE:
+						sr++;
+						break;
+					}
+				}
+
+				// process non-assoc syntax errors
 				for (i = 0; i < nterms; i++) {
 					if (next[i] == -3) {
 						next[i] = -2;
@@ -318,11 +299,11 @@ public class Builder extends Lalr1 {
 				stateActions[e++] = -2;
 				actionTables.add(stateActions);
 				nactions += stateActions.length;
-
 			}
 		}
 		if ((sr + rr) > 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and " + rr + " reduce/reduce\n", null);
+			status.report(ProcessingStatus.KIND_ERROR, "conflicts: " + sr + " shift/reduce and " + rr
+					+ " reduce/reduce");
 		}
 
 		e = 0;
@@ -334,21 +315,50 @@ public class Builder extends Lalr1 {
 		}
 	}
 
+	private void addReduce(short[] next, int termSym, short rule, ConflictBuilder builder) {
+		if (builder.hasConflict(termSym)) {
+			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+
+		} else if (next[termSym] == -1) {
+			switch (compare_prio(rule, termSym)) {
+			case 0: // shift/reduce
+				builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+				break;
+			case 1: // shift
+				builder.addReduce(termSym, sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
+				break;
+			case 2: // reduce
+				builder.addReduce(termSym, sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
+				next[termSym] = rule;
+				break;
+			case 3: // error (non-assoc)
+				builder.addReduce(termSym, sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
+				next[termSym] = -3;
+				break;
+			}
+		} else if(next[termSym] == -3) {
+			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+		} else {
+			// reduce/reduce
+			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], wrules[next[termSym]]);
+		}
+	}
+
 	private ParserTables generate() {
 		if (inputs == null || inputs.length == 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined\n", null);
+			status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined");
 			return null;
 		}
 
 		for (int input : inputs) {
 			if (input == -1) {
-				status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined\n", null); // FIXME
+				status.report(ProcessingStatus.KIND_ERROR, "input symbol is not defined"); // FIXME
 				return null;
 			}
 		}
 
 		if (eoi == -1) {
-			status.report(ProcessingStatus.KIND_ERROR, "the end-of-input symbol is not defined\n", null);
+			status.report(ProcessingStatus.KIND_ERROR, "the end-of-input symbol is not defined");
 			return null;
 		}
 

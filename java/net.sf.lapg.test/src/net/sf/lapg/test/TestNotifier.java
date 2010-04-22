@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -46,7 +46,7 @@ public class TestNotifier implements INotifier {
 		if( errors.toString().startsWith(error) ) {
 			errors.replace(0, error.length(), "");
 		} else {
-			Assert.fail(error);
+			Assert.assertEquals(errors.toString(), error);
 		}
 	}
 
@@ -54,13 +54,13 @@ public class TestNotifier implements INotifier {
 		if( warns.toString().startsWith(warning) ) {
 			warns.replace(0, warning.length(), "");
 		} else {
-			Assert.fail(warning);
+			Assert.assertEquals(warns.toString(), warning);
 		}
 	}
 
 	public void assertDone() {
-		Assert.assertEquals("", warns.toString());
-		Assert.assertEquals("", errors.toString());
+		Assert.assertEquals(warns.toString(), "");
+		Assert.assertEquals(errors.toString(), "");
 	}
 
 	public void dispose() {

@@ -89,6 +89,9 @@ public abstract class AbstractGenerator {
 			ProcessingStatusAdapter adapter = new ProcessingStatusAdapter(notifier, options.getDebug());
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), adapter);
 			ParserTables r = Builder.compile(s, adapter);
+			if(l == null || r == null) {
+				return false;
+			}
 			long generationTime = System.currentTimeMillis() - start;
 
 			HashMap<String, Object> map = new HashMap<String, Object>();

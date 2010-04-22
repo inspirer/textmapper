@@ -126,7 +126,7 @@ public class OptdefTree<T> {
 		}
 
 		public String getLocation(int offset) {
-			return file + "," + (initialLine + lineForOffset(offset));
+			return file + "," + lineForOffset(offset);
 		}
 
 		public String getText(int start, int end) {
@@ -141,9 +141,9 @@ public class OptdefTree<T> {
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = Arrays.binarySearch(lineoffset, offset);
-			return line > 0 ? line : -line - 1;
+			return initialLine + (line >= 0 ? line : -line-2);
 		}
-		
+
 		public char[] getContents() {
 			return contents;
 		}

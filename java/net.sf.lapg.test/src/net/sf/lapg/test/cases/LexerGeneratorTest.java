@@ -38,6 +38,12 @@ public class LexerGeneratorTest extends TestCase {
 			new TestLexem(4, 0, "hex", "[\\xAAAA-\\xAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
 	};
 
+	TestLexem[] ERRINPUT = {
+			new TestLexem(0, 0, "string", "[a-z0-9][A-Z]?"),
+			new TestLexem(1, 0, "number", "[0-9]+"),
+			new TestLexem(2, 0, "empty", "()"),
+	};
+
 	public void testGenerator() {
 		LexerTables lt = LexicalBuilder.compile(INPUT1, new ProcessingStatusAdapter(new TestNotifier(), 0));
 		for(TestLexem tl : INPUT1) {
@@ -46,6 +52,16 @@ public class LexerGeneratorTest extends TestCase {
 				Assert.assertEquals("For "+s+" Expected " + tl.getRegexp()+ ";",tl.index, res);
 			}
 		}
+	}
+
+	public void testLexGeneratorReporting() {
+		TestNotifier notifier = new TestNotifier(
+				"",
+				"lexemtest,3: empty: lexem is empty\n" +
+				"lexemtest,1: two lexems are identical: string and number\n");
+		LexicalBuilder.compile(ERRINPUT, new ProcessingStatusAdapter(notifier, 0));
+		notifier.assertDone();
+
 	}
 
 	private int nextToken(LexerTables lr, String s) {
@@ -151,7 +167,7 @@ public class LexerGeneratorTest extends TestCase {
 		}
 
 		public int getLine() {
-			return 0;
+			return index + 1;
 		}
 
 		public int getOffset() {
@@ -159,7 +175,7 @@ public class LexerGeneratorTest extends TestCase {
 		}
 
 		public String getResourceName() {
-			return null;
+			return "lexemtest";
 		}
 	}
 
