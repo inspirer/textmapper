@@ -4,13 +4,13 @@ import net.sf.lapg.ParserConflict;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 
-public class LalrConflict implements ParserConflict {
+public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 
 	private final int kind;
 	private final String kindtext;
 	private final Input input;
 
-	private final Symbol[] symbols;
+	private final Symbol[] symbols;	// sorted
 	private final Rule[] rules;
 
 	public LalrConflict(int kind, String kindtext, Input input, Symbol[] symbols, Rule[] rules) {
@@ -94,5 +94,28 @@ public class LalrConflict implements ParserConflict {
 			}
 			return sb.toString();
 		}
+	}
+
+	public int compareTo(LalrConflict o) {
+		if(input.getState() != o.input.getState()) {
+			return input.getState() < o.input.getState() ? -1 : 1;
+		}
+		for(int i = 0; i < symbols.length && i < o.symbols.length; i++) {
+			if(symbols[i].getIndex() != o.symbols[i].getIndex()) {
+				return symbols[i].getIndex() < o.symbols[i].getIndex() ? -1 : 1;
+			}
+		}
+		if(symbols.length != o.symbols.length) {
+			return symbols.length < o.symbols.length ? -1 : 1;
+		}
+		for(int i = 0; i < rules.length && i < o.rules.length; i++) {
+			if(rules[i].getIndex() != o.rules[i].getIndex()) {
+				return rules[i].getIndex() < o.rules[i].getIndex() ? -1 : 1;
+			}
+		}
+		if(rules.length != o.rules.length) {
+			return rules.length < o.rules.length ? -1 : 1;
+		}
+		return 0;
 	}
 }

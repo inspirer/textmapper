@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,9 +50,9 @@ public class ConflictBuilder {
 		nextconfl[termSym].addReduce(status, rule);
 	}
 
-	public List<ParserConflict> getMergedConflicts(int state, Symbol[] input) {
+	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input) {
 		if(conflicts.isEmpty()) {
-			return Collections.<ParserConflict>emptyList();
+			return Collections.<LalrConflict>emptyList();
 		}
 
 		Map<Object, ConflictData> map = new HashMap<Object, ConflictData>();
@@ -67,10 +68,11 @@ public class ConflictBuilder {
 		Input inp = new InputImpl(state, input);
 		Collection<ConflictData> values = map.values();
 
-		List<ParserConflict> result = new ArrayList<ParserConflict>(values.size());
+		List<LalrConflict> result = new ArrayList<LalrConflict>(values.size());
 		for(ConflictData data : values) {
 			result.add(new LalrConflict(data.getKind(), data.getKindAsText(), inp, data.getSymbols(), data.getRules()));
 		}
+		Collections.sort(result);
 		return result;
 	}
 
@@ -102,6 +104,11 @@ public class ConflictBuilder {
 			for(ConflictData curr = this; curr != null; curr = curr.linked) {
 				result[len++] = curr.termSym;
 			}
+			Arrays.sort(result, new Comparator<Symbol>() {
+				public int compare(Symbol o1, Symbol o2) {
+					return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
+				}
+			});
 			return result;
 		}
 

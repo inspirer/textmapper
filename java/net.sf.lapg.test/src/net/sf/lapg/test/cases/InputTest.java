@@ -313,4 +313,70 @@ public class InputTest extends LapgTestCase {
 			Assert.assertEquals("offset #" + i, expected[i], source.lineForOffset(i));
 		}
 	}
+
+	public void testCheckConflictsHandling() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, Object>());
+		Assert.assertNotNull(g);
+
+		TestNotifier er = new TestNotifier(
+				"",
+				"syntax_conflict1,17: input: Licon\n" +
+				"reduce/reduce conflict (next: fix1, fix2, fix3)\n" +
+				"    input1 ::= Licon\n" +
+				"    list_item ::= Licon\n" +
+				"\n" +
+				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
+		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
+		Builder.compile(g, new ProcessingStatusAdapter(er, 0));
+
+		er.assertDone();
+	}
+
+	public void testCheckConflictsResolving() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestNotifier(),
+				new HashMap<String, Object>());
+		Assert.assertNotNull(g);
+
+		TestNotifier er = new TestNotifier(
+				"",
+				"");
+		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
+		Builder.compile(g, new ProcessingStatusAdapter(er, 0));
+		er.assertDone();
+
+		er = new TestNotifier("syntax_conflict2resolved,46: input: Lid '=' expr '*' expr\n" +
+				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
+				"    expr ::= expr '*' expr\n" +
+				"\n" +
+				"syntax_conflict2resolved,48: input: Lid '=' expr '+' expr\n" +
+				"resolved as shift conflict (next: '*', '/')\n" +
+				"    expr ::= expr '+' expr\n" +
+				"\n" +
+				"syntax_conflict2resolved,48: input: Lid '=' expr '+' expr\n" +
+				"resolved as reduce conflict (next: '+', '-')\n" +
+				"    expr ::= expr '+' expr\n" +
+				"\n" +
+				"syntax_conflict2resolved,49: input: Lid '=' expr '-' expr\n" +
+				"resolved as shift conflict (next: '*', '/')\n" +
+				"    expr ::= expr '-' expr\n" +
+				"\n" +
+				"syntax_conflict2resolved,49: input: Lid '=' expr '-' expr\n" +
+				"resolved as reduce conflict (next: '+', '-')\n" +
+				"    expr ::= expr '-' expr\n" +
+				"\n" +
+				"syntax_conflict2resolved,47: input: Lid '=' expr '/' expr\n" +
+				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
+				"    expr ::= expr '/' expr\n" +
+				"\n", "") {
+			@Override
+			public void debug(String info) {
+				// ignore
+			}
+		};
+		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 1));
+		Builder.compile(g, new ProcessingStatusAdapter(er, 1));
+
+		er.assertDone();
+	}
 }
