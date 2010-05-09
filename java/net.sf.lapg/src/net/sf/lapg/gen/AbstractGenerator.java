@@ -15,7 +15,6 @@
  */
 package net.sf.lapg.gen;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
+import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IBundleLoader;
@@ -48,8 +48,6 @@ public abstract class AbstractGenerator {
 
 	protected abstract void createFile(String name, String contents, INotifier notifier);
 
-	protected abstract InputStream openInput(INotifier err);
-
 	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("prefix", "");
@@ -66,15 +64,10 @@ public abstract class AbstractGenerator {
 		return d;
 	}
 
-	public boolean compileGrammar() {
+	public boolean compileGrammar(TextSource input) {
 		INotifier notifier = createNotifier();
 		try {
-			InputStream is = openInput(notifier);
-			if (is == null) {
-				return false;
-			}
-
-			Grammar s = SyntaxUtil.parseSyntax(options.getInput(), is, notifier, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(input, notifier, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
 				return false;
 			}

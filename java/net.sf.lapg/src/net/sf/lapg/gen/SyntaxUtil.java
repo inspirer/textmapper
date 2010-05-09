@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,13 +15,11 @@
  */
 package net.sf.lapg.gen;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.parser.LapgResolver;
 import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
@@ -30,10 +28,8 @@ import net.sf.lapg.parser.ast.AstRoot;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err,
-			Map<String, Object> options) {
-		String contents = getFileContents(stream);
-		LapgTree<AstRoot> tree = LapgTree.parse(new TextSource(sourceName, contents.toCharArray(), 1));
+	public static Grammar parseSyntax(TextSource input, INotifier err, Map<String, Object> options) {
+		LapgTree<AstRoot> tree = LapgTree.parse(input);
 		Grammar result = null;
 		if (!tree.hasErrors()) {
 			result = new LapgResolver(tree, options).resolve();
@@ -48,22 +44,9 @@ public class SyntaxUtil {
 
 	}
 
-	public static String getFileContents(InputStream stream) {
-		StringBuffer contents = new StringBuffer();
-		char[] buffer = new char[2048];
-		int count;
-		try {
-			Reader in = new InputStreamReader(stream, "utf8");
-			try {
-				while ((count = in.read(buffer)) > 0) {
-					contents.append(buffer, 0, count);
-				}
-			} finally {
-				in.close();
-			}
-		} catch (IOException ioe) {
-			return null;
-		}
-		return contents.toString();
+	@Deprecated
+	public static Grammar parseSyntax(String inputName, InputStream stream, INotifier err, Map<String, Object> options) {
+		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
+		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), err, options);
 	}
 }

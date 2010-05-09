@@ -16,9 +16,14 @@
 package net.sf.lapg;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
+import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.gen.ConsoleGenerator;
 import net.sf.lapg.gen.LapgOptions;
+import net.sf.lapg.parser.LapgTree.TextSource;
 
 /**
  * Main console entry point for Lapg engine.
@@ -75,8 +80,23 @@ public class Lapg {
 			return;
 		}
 
+		InputStream stream;
+		if (options.getInput() != null && !options.getInput().startsWith("-")) {
+			try {
+				stream = new FileInputStream(options.getInput());
+			} catch (FileNotFoundException ex) {
+				System.err.println("lapg: file not found: " + options.getInput());
+				System.exit(1);
+				return;
+			}
+		} else {
+			stream = System.in;
+		}
+		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
+		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
+
 		ConsoleGenerator cg = new ConsoleGenerator(options);
-		if(!cg.compileGrammar()) {
+		if(!cg.compileGrammar(input)) {
 			System.exit(1);
 		}
 	}
