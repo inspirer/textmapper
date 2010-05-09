@@ -1,6 +1,6 @@
 package net.sf.lapg.lalr;
 
-import net.sf.lapg.ParserConflict;
+import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 

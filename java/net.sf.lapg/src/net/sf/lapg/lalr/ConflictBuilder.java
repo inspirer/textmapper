@@ -9,10 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.ParserConflict;
-import net.sf.lapg.ParserConflict.Input;
+import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.api.ParserConflict.Input;
 import net.sf.lapg.lalr.LalrConflict.InputImpl;
 
 public class ConflictBuilder {

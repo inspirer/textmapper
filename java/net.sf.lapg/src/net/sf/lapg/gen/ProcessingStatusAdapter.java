@@ -1,6 +1,6 @@
 package net.sf.lapg.gen;
 
-import net.sf.lapg.ParserConflict;
+import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.SourceElement;

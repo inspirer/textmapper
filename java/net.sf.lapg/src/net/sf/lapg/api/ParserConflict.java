@@ -1,7 +1,5 @@
-package net.sf.lapg;
+package net.sf.lapg.api;
 
-import net.sf.lapg.api.Rule;
-import net.sf.lapg.api.Symbol;
 
 public interface ParserConflict {
 

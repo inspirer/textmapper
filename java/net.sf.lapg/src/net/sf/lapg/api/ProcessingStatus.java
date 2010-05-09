@@ -1,6 +1,5 @@
 package net.sf.lapg.api;
 
-import net.sf.lapg.ParserConflict;
 
 public interface ProcessingStatus {
 
