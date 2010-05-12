@@ -23,6 +23,8 @@ import java.util.Map;
 import net.sf.lapg.LexerTables;
 import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.parser.LapgTree.TextSource;
@@ -46,7 +48,7 @@ public abstract class AbstractGenerator {
 
 	protected abstract INotifier createNotifier();
 
-	protected abstract void createFile(String name, String contents, INotifier notifier);
+	protected abstract void createFile(String name, String contents, ProcessingStatus status);
 
 	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
@@ -66,8 +68,9 @@ public abstract class AbstractGenerator {
 
 	public boolean compileGrammar(TextSource input) {
 		INotifier notifier = createNotifier();
+		ProcessingStatusAdapter status = new ProcessingStatusAdapter(notifier, options.getDebug());
 		try {
-			Grammar s = SyntaxUtil.parseSyntax(input, notifier, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(input, status, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
@@ -79,9 +82,8 @@ public abstract class AbstractGenerator {
 			}
 
 			long start = System.currentTimeMillis();
-			ProcessingStatusAdapter adapter = new ProcessingStatusAdapter(notifier, options.getDebug());
-			LexerTables l = LexicalBuilder.compile(s.getLexems(), adapter);
-			ParserTables r = Builder.compile(s, adapter);
+			LexerTables l = LexicalBuilder.compile(s.getLexems(), status);
+			ParserTables r = Builder.compile(s, status);
 			if(l == null || r == null) {
 				return false;
 			}
@@ -94,7 +96,7 @@ public abstract class AbstractGenerator {
 			map.put("opts", genOptions);
 
 			start = System.currentTimeMillis();
-			generateOutput(map, s.getTemplates(), notifier);
+			generateOutput(map, s.getTemplates(), status);
 			long textTime = System.currentTimeMillis() - start;
 			notifier.info("lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s\n");
 			return true;
@@ -109,7 +111,7 @@ public abstract class AbstractGenerator {
 		}
 	}
 
-	private void generateOutput(Map<String, Object> map, String grammarTemplates, final INotifier notifier) {
+	private void generateOutput(Map<String, Object> map, String grammarTemplates, final ProcessingStatus status) {
 
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
@@ -123,7 +125,7 @@ public abstract class AbstractGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new IBundleLoader[loaders.size()]), notifier);
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new IBundleLoader[loaders.size()]), status);
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("$", "lapg_gg.sym");
@@ -132,24 +134,27 @@ public abstract class AbstractGenerator {
 
 	private final class TemplatesFacadeExt extends TemplatesFacade {
 
-		private final INotifier notifier;
+		private final ProcessingStatus status;
 
-		private TemplatesFacadeExt(Factory strategy, IBundleLoader[] loaders, INotifier notifier) {
+		private TemplatesFacadeExt(Factory strategy, IBundleLoader[] loaders, ProcessingStatus status) {
 			super(strategy, loaders);
-			this.notifier = notifier;
+			this.status = status;
 		}
 
 		@Override
 		public void createFile(String name, String contents) {
-			AbstractGenerator.this.createFile(name, contents, notifier);
+			AbstractGenerator.this.createFile(name, contents, status);
 		}
 
 		@Override
 		public void fireError(ILocatedEntity referer, String error) {
-			if( referer != null ) {
-				notifier.error(referer.getLocation() + ": ");
+			SourceElement adapted = null; // TODO adapt
+
+			String text = error;
+			if (referer != null) {
+				text = referer.getLocation() + ": " + text;
 			}
-			notifier.error(error + "\n");
+			status.report(ProcessingStatus.KIND_ERROR, text);
 		}
 	}
 }

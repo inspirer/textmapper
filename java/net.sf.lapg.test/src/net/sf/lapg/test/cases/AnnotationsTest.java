@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,8 +64,8 @@ public class AnnotationsTest extends LapgTestCase {
 	}
 
 	public void testBadAnnotations() {
-		TestNotifier notifier = new TestNotifier("", "notexistingsym cannot be resolved\n"
-				+ "redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
+		TestNotifier notifier = new TestNotifier("", "syntax1errannotated,22: notexistingsym cannot be resolved\n"
+				+ "syntax1errannotated,28: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
 				notifier, new HashMap<String, Object>());
 		Assert.assertNull(g);

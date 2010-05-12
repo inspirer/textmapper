@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FileCreator;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
@@ -32,12 +33,12 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	public void createFile(String name, String contents, INotifier notifier) {
+	public void createFile(String name, String contents, ProcessingStatus status) {
 		try {
 			// FIXME encoding, newline
 			new FileCreator(name, contents, "utf8", true).create();
 		} catch (IOException e) {
-			notifier.error("cannot create file `" + name + "': " + e.getMessage() + "\n");
+			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
 		}
 	}
 

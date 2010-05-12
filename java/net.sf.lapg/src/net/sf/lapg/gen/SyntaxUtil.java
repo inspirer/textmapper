@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.parser.LapgResolver;
 import net.sf.lapg.parser.LapgTree;
@@ -28,7 +30,7 @@ import net.sf.lapg.parser.ast.AstRoot;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax(TextSource input, INotifier err, Map<String, Object> options) {
+	public static Grammar parseSyntax(TextSource input, ProcessingStatus status, Map<String, Object> options) {
 		LapgTree<AstRoot> tree = LapgTree.parse(input);
 		Grammar result = null;
 		if (!tree.hasErrors()) {
@@ -37,16 +39,52 @@ public class SyntaxUtil {
 		if (tree.hasErrors()) {
 			result = null;
 			for (LapgProblem s : tree.getErrors()) {
-				err.error(s.getMessage() + "\n");
+				status.report(lapgKindToProcessingKind(s.getKind()), s.getMessage(), new SourceElementAdapter(input, s));
 			}
 		}
 		return result;
 
 	}
 
+	private static int lapgKindToProcessingKind(int kind) {
+		switch(kind) {
+		case LapgTree.KIND_FATAL:
+			return ProcessingStatus.KIND_FATAL;
+		case LapgTree.KIND_WARN:
+			return ProcessingStatus.KIND_WARN;
+		}
+		return ProcessingStatus.KIND_ERROR;
+	}
+
+	private static class SourceElementAdapter implements SourceElement {
+		private final TextSource source;
+		private final LapgProblem problem;
+
+		public SourceElementAdapter(TextSource source, LapgProblem problem) {
+			this.source = source;
+			this.problem = problem;
+		}
+
+		public int getEndOffset() {
+			return problem.getEndOffset();
+		}
+
+		public int getLine() {
+			return source.lineForOffset(problem.getOffset());
+		}
+
+		public int getOffset() {
+			return problem.getOffset();
+		}
+
+		public String getResourceName() {
+			return source.getFile();
+		}
+	}
+
 	@Deprecated
 	public static Grammar parseSyntax(String inputName, InputStream stream, INotifier err, Map<String, Object> options) {
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), err, options);
+		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), new ProcessingStatusAdapter(err, 0), options);
 	}
 }

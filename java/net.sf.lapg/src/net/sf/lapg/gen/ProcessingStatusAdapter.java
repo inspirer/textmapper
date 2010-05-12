@@ -56,8 +56,4 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 	public boolean isAnalysisMode() {
 		return debuglev >= 1;
 	}
-
-	public void error(SourceElement element, String error) {
-		notifier.error(error);
-	}
 }
