@@ -66,9 +66,7 @@ public abstract class AbstractGenerator {
 		return d;
 	}
 
-	public boolean compileGrammar(TextSource input) {
-		INotifier notifier = createNotifier();
-		ProcessingStatusAdapter status = new ProcessingStatusAdapter(notifier, options.getDebug());
+	public boolean compileGrammar(TextSource input, ProcessingStatus status) {
 		try {
 			Grammar s = SyntaxUtil.parseSyntax(input, status, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
@@ -98,16 +96,12 @@ public abstract class AbstractGenerator {
 			start = System.currentTimeMillis();
 			generateOutput(map, s.getTemplates(), status);
 			long textTime = System.currentTimeMillis() - start;
-			notifier.info("lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s\n");
+			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s");
 			return true;
 		} catch (Throwable t) {
-			notifier.error("lapg: internal error: " + t.getClass().getName() + "\n");
-			if (options.getDebug() >= 2) {
-				notifier.trace(t);
-			}
+			String message = "lapg: internal error: " + t.getClass().getName();
+			status.report(message, options.getDebug() >= 2 ? t : null);
 			return false;
-		} finally {
-			notifier.dispose();
 		}
 	}
 

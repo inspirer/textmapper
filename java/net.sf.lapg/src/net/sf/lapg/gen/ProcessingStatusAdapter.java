@@ -15,6 +15,13 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 		this.debuglev = debuglev;
 	}
 
+	public void report(String message, Throwable th) {
+		notifier.error(message + "\n");
+		if(th != null) {
+			notifier.trace(th);
+		}
+	}
+
 	public void report(int kind, String message, SourceElement ...anchors) {
 		SourceElement anchor = anchors != null && anchors.length > 0 ? anchors[0] : null;
 		switch(kind) {
@@ -30,6 +37,12 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 				notifier.warn(anchor.getResourceName() + "," + anchor.getLine() + ": ");
 			}
 			notifier.warn(message + "\n");
+			break;
+		case KIND_INFO:
+			if(anchor != null && anchor.getResourceName() != null) {
+				notifier.info(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+			}
+			notifier.info(message + "\n");
 			break;
 		}
 	}

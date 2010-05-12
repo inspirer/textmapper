@@ -20,9 +20,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.gen.ConsoleGenerator;
+import net.sf.lapg.gen.INotifier;
 import net.sf.lapg.gen.LapgOptions;
+import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.parser.LapgTree.TextSource;
 
 /**
@@ -93,10 +96,23 @@ public class Lapg {
 			stream = System.in;
 		}
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
+		if(contents == null) {
+			System.err.println("lapg: cannot read file: " + options.getInput());
+			System.exit(1);
+			return;
+		}
 		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 
 		ConsoleGenerator cg = new ConsoleGenerator(options);
-		if(!cg.compileGrammar(input)) {
+		INotifier notifier = cg.createNotifier();
+		ProcessingStatus status = new ProcessingStatusAdapter(notifier, options.getDebug());
+		boolean success;
+		try {
+			success = cg.compileGrammar(input, status);
+		} finally {
+			notifier.dispose();
+		}
+		if(!success) {
 			System.exit(1);
 		}
 	}

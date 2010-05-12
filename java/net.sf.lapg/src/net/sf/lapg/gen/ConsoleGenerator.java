@@ -43,7 +43,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	protected INotifier createNotifier() {
+	public INotifier createNotifier() {
 		new File(ConsoleNotifier.OUT_ERRORS).delete();
 		new File(ConsoleNotifier.OUT_TABLES).delete();
 		return new ConsoleNotifier(options.getDebug());
