@@ -46,8 +46,6 @@ public abstract class AbstractGenerator {
 
 	protected abstract IBundleLoader createTemplateLoader(String path);
 
-	protected abstract INotifier createNotifier();
-
 	protected abstract void createFile(String name, String contents, ProcessingStatus status);
 
 	public static Map<String, Object> getDefaultOptions() {

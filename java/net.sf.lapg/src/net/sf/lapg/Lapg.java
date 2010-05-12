@@ -18,7 +18,9 @@ package net.sf.lapg;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FileUtil;
@@ -104,7 +106,7 @@ public class Lapg {
 		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 
 		ConsoleGenerator cg = new ConsoleGenerator(options);
-		INotifier notifier = cg.createNotifier();
+		INotifier notifier = createNotifier(options.getDebug());
 		ProcessingStatus status = new ProcessingStatusAdapter(notifier, options.getDebug());
 		boolean success;
 		try {
@@ -114,6 +116,79 @@ public class Lapg {
 		}
 		if(!success) {
 			System.exit(1);
+		}
+	}
+
+	public static INotifier createNotifier(int debuglev) {
+		new File(ConsoleNotifier.OUT_ERRORS).delete();
+		new File(ConsoleNotifier.OUT_TABLES).delete();
+		return new ConsoleNotifier(debuglev);
+	}
+
+	private static class ConsoleNotifier implements INotifier {
+
+		static final String OUT_ERRORS = "errors";
+		static final String OUT_TABLES = "tables";
+
+		private PrintStream debug, warn;
+		private final int debuglev;
+
+		public ConsoleNotifier(int debuglev) {
+			this.debuglev = debuglev;
+			this.debug = null;
+			this.warn = null;
+		}
+
+		private PrintStream openFile(String name) {
+			try {
+				return new PrintStream(new FileOutputStream(name));
+			} catch (FileNotFoundException ex) {
+				error("lapg: IO error: " + ex.getMessage());
+				return System.err;
+			}
+		}
+
+		public void error(String error) {
+			System.err.print(error);
+		}
+
+		public void info(String info) {
+			System.out.print(info);
+		}
+
+		public void trace(Throwable ex) {
+			ex.printStackTrace(System.err);
+		}
+
+		public void debug(String info) {
+			if (debuglev < 2) {
+				return;
+			}
+			if (debug == null) {
+				debug = openFile(OUT_TABLES);
+			}
+			debug.print(info);
+		}
+
+		public void warn(String warning) {
+			if (debuglev < 1) {
+				return;
+			}
+			if (warn == null) {
+				warn = openFile(OUT_ERRORS);
+			}
+			warn.print(warning);
+		}
+
+		public void dispose() {
+			if (debug != null) {
+				debug.close();
+				debug = null;
+			}
+			if (warn != null) {
+				warn.close();
+				warn = null;
+			}
 		}
 	}
 }

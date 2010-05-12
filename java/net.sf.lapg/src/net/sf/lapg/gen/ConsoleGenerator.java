@@ -16,11 +16,7 @@
 package net.sf.lapg.gen;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FileCreator;
 import net.sf.lapg.templates.api.IBundleLoader;
@@ -43,13 +39,6 @@ public class ConsoleGenerator extends AbstractGenerator {
 	}
 
 	@Override
-	public INotifier createNotifier() {
-		new File(ConsoleNotifier.OUT_ERRORS).delete();
-		new File(ConsoleNotifier.OUT_TABLES).delete();
-		return new ConsoleNotifier(options.getDebug());
-	}
-
-	@Override
 	protected IBundleLoader createTemplateLoader(String path) {
 		File folder = new File(path);
 		if (folder.isDirectory()) {
@@ -57,72 +46,5 @@ public class ConsoleGenerator extends AbstractGenerator {
 			return new FolderTemplateLoader(new File[] { folder }, "utf8");
 		}
 		return null;
-	}
-
-	private static class ConsoleNotifier implements INotifier {
-
-		static final String OUT_ERRORS = "errors";
-		static final String OUT_TABLES = "tables";
-
-		private PrintStream debug, warn;
-		private final int debuglev;
-
-		public ConsoleNotifier(int debuglev) {
-			this.debuglev = debuglev;
-			this.debug = null;
-			this.warn = null;
-		}
-
-		private PrintStream openFile(String name) {
-			try {
-				return new PrintStream(new FileOutputStream(name));
-			} catch (FileNotFoundException ex) {
-				error("lapg: IO error: " + ex.getMessage());
-				return System.err;
-			}
-		}
-
-		public void error(String error) {
-			System.err.print(error);
-		}
-
-		public void info(String info) {
-			System.out.print(info);
-		}
-
-		public void trace(Throwable ex) {
-			ex.printStackTrace(System.err);
-		}
-
-		public void debug(String info) {
-			if (debuglev < 2) {
-				return;
-			}
-			if (debug == null) {
-				debug = openFile(OUT_TABLES);
-			}
-			debug.print(info);
-		}
-
-		public void warn(String warning) {
-			if (debuglev < 1) {
-				return;
-			}
-			if (warn == null) {
-				warn = openFile(OUT_ERRORS);
-			}
-			warn.print(warning);
-		}
-
-		public void dispose() {
-			if (debug != null) {
-				debug.close();
-				debug = null;
-			}
-			if (warn != null) {
-				warn.close();
-				warn = null;
-			}
-		}
 	}
 }
