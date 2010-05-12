@@ -49,14 +49,6 @@ public class ProcessingStatusAdapter implements ProcessingStatus {
 		notifier.debug(info);
 	}
 
-	public void warn(String warning) {
-		notifier.warn(warning);
-	}
-
-	public void error(String error) {
-		notifier.error(error);
-	}
-
 	public boolean isDebugMode() {
 		return debuglev >= 2;
 	}

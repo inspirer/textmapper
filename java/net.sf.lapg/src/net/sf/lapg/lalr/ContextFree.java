@@ -142,16 +142,4 @@ abstract class ContextFree {
 		}
 		status.debug("\n");
 	}
-
-	protected void warn_rule(int rule) {
-		int rr = rindex[rule];
-
-		status.warn("  " + sym[rleft[rule]].getName() + " ::=");
-
-		for (; rright[rr] >= 0; rr++) {
-			status.warn(" " + sym[rright[rr]].getName());
-		}
-
-		status.warn("\n");
-	}
 }

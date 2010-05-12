@@ -12,10 +12,6 @@ public interface ProcessingStatus {
 
 	void report(ParserConflict conflict);
 
-	void error(String error);
-
-	void warn(String warning);
-
 	void debug(String info);
 
 	boolean isDebugMode();
