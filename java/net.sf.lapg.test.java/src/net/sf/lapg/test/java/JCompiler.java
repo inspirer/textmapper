@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.eclipse.jdt.internal.compiler.ClassFile;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 import org.eclipse.jdt.internal.compiler.Compiler;
@@ -37,13 +39,35 @@ public class JCompiler {
 				"UTF-8"));
 	}
 
+	private static String[] getClassPath() {
+		String javaHome = System.getProperty("java.home");
+		Assert.assertTrue("not a folder: " + javaHome, new File(javaHome).isDirectory());
+
+		String classesjar = null;
+		String os = System.getProperty("os.name");
+		if(os.equals("Mac OS X")) {
+			if(javaHome.endsWith("/Home")) {
+				classesjar = javaHome.substring(0, javaHome.length() - 4) + "Classes/classes.jar";
+			} else {
+				classesjar = javaHome + "/classes.jar";
+			}
+		} else if(os.equals("Windows XP")) {
+			// TODO
+		} else {
+			Assert.fail("unknown os, please patch: " + os);
+		}
+
+		Assert.assertTrue("not a file: " + classesjar, new File(classesjar).isFile());
+		return new String[] { classesjar };
+	}
+
 	public void compile() {
 		CompilerOptions options = new CompilerOptions();
 		options.sourceLevel = ClassFileConstants.JDK1_5;
 		options.targetJDK = ClassFileConstants.JDK1_5;
 		options.produceDebugAttributes = ClassFileConstants.ATTR_SOURCE | ClassFileConstants.ATTR_LINES
 				| ClassFileConstants.ATTR_VARS;
-		String[] classpath = new String[] { "/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar" };
+		String[] classpath = getClassPath();
 
 		Compiler c = new Compiler(getNameEnvironment(classpath), getErrorHandlingPolicy(), options, getCompilerRequestor(),
 				new DefaultProblemFactory());
