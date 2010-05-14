@@ -35,7 +35,7 @@ import org.eclipse.jface.text.source.IAnnotationModelExtension;
 
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.gen.AbstractGenerator;
+import net.sf.lapg.gen.LapgGenerator;
 import net.sf.lapg.parser.LapgResolver;
 import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
@@ -107,7 +107,7 @@ public class LapgReconcilingStrategy implements IReconcilingStrategy, IReconcili
 
 		List<LapgProblem> problems = ast.getErrors();
 		if(problems.size() == 0) {
-			LapgResolver resolver = new LapgResolver(ast, AbstractGenerator.getDefaultOptions());
+			LapgResolver resolver = new LapgResolver(ast, LapgGenerator.getDefaultOptions());
 			Grammar g = resolver.resolve();
 			sources.add(LapgResolver.RESOLVER_SOURCE);
 		}
