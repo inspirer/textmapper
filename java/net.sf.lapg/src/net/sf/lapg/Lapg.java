@@ -27,7 +27,7 @@ import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.common.FileUtil;
-import net.sf.lapg.gen.ConsoleGenerator;
+import net.sf.lapg.gen.LapgGenerator;
 import net.sf.lapg.gen.LapgOptions;
 import net.sf.lapg.parser.LapgTree.TextSource;
 
@@ -106,7 +106,7 @@ public class Lapg {
 		}
 		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 
-		ConsoleGenerator cg = new ConsoleGenerator(options);
+		LapgGenerator cg = new LapgGenerator(options);
 		ConsoleStatus status = createStatus(options.getDebug());
 		boolean success;
 		try {

@@ -15,6 +15,8 @@
  */
 package net.sf.lapg.gen;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.SourceElement;
+import net.sf.lapg.common.GeneratedFile;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.parser.LapgTree.TextSource;
@@ -33,11 +36,12 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
 import net.sf.lapg.templates.ast.Node;
 
-public abstract class LapgGenerator {
+public class LapgGenerator {
 
 	protected final LapgOptions options;
 
@@ -45,9 +49,25 @@ public abstract class LapgGenerator {
 		this.options = options;
 	}
 
-	protected abstract IBundleLoader createTemplateLoader(String path);
+	/** TODO extract */
+	public void createFile(String name, String contents, ProcessingStatus status) {
+		try {
+			// FIXME encoding, newline
+			new GeneratedFile(name, contents, "utf8", true).create();
+		} catch (IOException e) {
+			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
+		}
+	}
 
-	protected abstract void createFile(String name, String contents, ProcessingStatus status);
+	/** TODO extract */
+	protected IBundleLoader createTemplateLoader(String path) {
+		File folder = new File(path);
+		if (folder.isDirectory()) {
+			// FIXME charset
+			return new FolderTemplateLoader(new File[] { folder }, "utf8");
+		}
+		return null;
+	}
 
 	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
