@@ -35,6 +35,7 @@ import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.ast.Node;
 
 public abstract class AbstractGenerator {
 
@@ -140,13 +141,44 @@ public abstract class AbstractGenerator {
 
 		@Override
 		public void fireError(ILocatedEntity referer, String error) {
-			SourceElement adapted = null; // TODO adapt
-
-			String text = error;
-			if (referer != null) {
-				text = referer.getLocation() + ": " + text;
+			SourceElement adapted = null;
+			if(referer instanceof Node) {
+				adapted = new TemplateSourceElementAdapter((Node) referer);
 			}
-			status.report(ProcessingStatus.KIND_ERROR, text);
+			if(adapted != null) {
+				status.report(ProcessingStatus.KIND_ERROR, error, adapted);
+			} else {
+				if (referer != null) {
+					error = referer.getLocation() + ": " + error;
+				}
+				status.report(ProcessingStatus.KIND_ERROR, error);
+			}
+		}
+	}
+
+	private final class TemplateSourceElementAdapter implements SourceElement {
+
+		/** template node */
+		private final Node myNode;
+
+		public TemplateSourceElementAdapter(Node myNode) {
+			this.myNode = myNode;
+		}
+
+		public int getOffset() {
+			return myNode.getOffset();
+		}
+
+		public int getEndOffset() {
+			return myNode.getEndOffset();
+		}
+
+		public int getLine() {
+			return myNode.getLine();
+		}
+
+		public String getResourceName() {
+			return myNode.getInput().getFile();
 		}
 	}
 }

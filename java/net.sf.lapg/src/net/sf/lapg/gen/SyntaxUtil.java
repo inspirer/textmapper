@@ -83,8 +83,8 @@ public class SyntaxUtil {
 	}
 
 	@Deprecated
-	public static Grammar parseSyntax(String inputName, InputStream stream, INotifier err, Map<String, Object> options) {
+	public static Grammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, Map<String, Object> options) {
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), new ProcessingStatusAdapter(err, 0), options);
+		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), err, options);
 	}
 }

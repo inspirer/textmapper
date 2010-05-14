@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,11 +22,11 @@ import java.io.Reader;
 import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.gen.INotifier;
+import net.sf.lapg.test.TestStatus;
 
 public class SyntaxUtilOld {
 
-	public static Grammar parseSyntax(String sourceName, InputStream stream, INotifier err, Map<String, String> options) {
+	public static Grammar parseSyntax(String sourceName, InputStream stream, TestStatus err, Map<String, String> options) {
 		String contents = getFileContents(stream);
 		CSyntax cs = LapgParser.process(sourceName, contents, options);
 		if (cs.hasErrors()) {

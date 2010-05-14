@@ -24,13 +24,13 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.gen.SyntaxUtil;
-import net.sf.lapg.test.TestNotifier;
+import net.sf.lapg.test.TestStatus;
 
 public class AnnotationsTest extends LapgTestCase {
 
 	public void testAllAnnotations() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1annotated", openStream("syntax1annotated", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, Object>());
+				new TestStatus(), new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 
 		Rule[] listItemRules = rulesForName(g.getRules(), "list_item");
@@ -64,7 +64,7 @@ public class AnnotationsTest extends LapgTestCase {
 	}
 
 	public void testBadAnnotations() {
-		TestNotifier notifier = new TestNotifier("", "syntax1errannotated,22: notexistingsym cannot be resolved\n"
+		TestStatus notifier = new TestStatus("", "syntax1errannotated,22: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,28: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
 				notifier, new HashMap<String, Object>());

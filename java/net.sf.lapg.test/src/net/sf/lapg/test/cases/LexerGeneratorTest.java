@@ -23,9 +23,8 @@ import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.lex.LexicalBuilder;
-import net.sf.lapg.test.TestNotifier;
+import net.sf.lapg.test.TestStatus;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LexerGeneratorTest extends TestCase {
@@ -45,7 +44,7 @@ public class LexerGeneratorTest extends TestCase {
 	};
 
 	public void testGenerator() {
-		LexerTables lt = LexicalBuilder.compile(INPUT1, new ProcessingStatusAdapter(new TestNotifier(), 0));
+		LexerTables lt = LexicalBuilder.compile(INPUT1, new TestStatus());
 		for(TestLexem tl : INPUT1) {
 			for(String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
@@ -55,11 +54,11 @@ public class LexerGeneratorTest extends TestCase {
 	}
 
 	public void testLexGeneratorReporting() {
-		TestNotifier notifier = new TestNotifier(
+		TestStatus notifier = new TestStatus(
 				"",
 				"lexemtest,3: empty: lexem is empty\n" +
 				"lexemtest,1: two lexems are identical: string and number\n");
-		LexicalBuilder.compile(ERRINPUT, new ProcessingStatusAdapter(notifier, 0));
+		LexicalBuilder.compile(ERRINPUT, notifier);
 		notifier.assertDone();
 
 	}

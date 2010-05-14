@@ -27,7 +27,6 @@ import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lex.LexicalBuilder;
@@ -35,14 +34,14 @@ import net.sf.lapg.parser.LiGrammar;
 import net.sf.lapg.parser.LiRule;
 import net.sf.lapg.parser.LiSymbol;
 import net.sf.lapg.parser.LapgTree.TextSource;
-import net.sf.lapg.test.TestNotifier;
+import net.sf.lapg.test.TestStatus;
 import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 
 public class InputTest extends LapgTestCase {
 
-	private void checkGenTables(Grammar g, String outputId, TestNotifier er) {
-		LexerTables lt = LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
-		ParserTables pt = Builder.compile(g, new ProcessingStatusAdapter(er, 0));
+	private void checkGenTables(Grammar g, String outputId, TestStatus er) {
+		LexerTables lt = LexicalBuilder.compile(g.getLexems(), er);
+		ParserTables pt = Builder.compile(g, er);
 
 		StringBuffer sb = new StringBuffer();
 
@@ -56,7 +55,7 @@ public class InputTest extends LapgTestCase {
 	}
 
 	public void testCheckSimple1() {
-		Grammar g = SyntaxUtilOld.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -87,11 +86,11 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
-		checkGenTables(g, "syntax1.tbl", new TestNotifier());
+		checkGenTables(g, "syntax1.tbl", new TestStatus());
 	}
 
 	public void testCheckSimple2() {
-		Grammar g = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -110,15 +109,15 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals(8, g.getRules().length);
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
 
-		checkGenTables(g, "syntax2.tbl", new TestNotifier());
+		checkGenTables(g, "syntax2.tbl", new TestStatus());
 	}
 
 	public void testCheckCSharpGrammar() {
-		Grammar g = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		TestNotifier er = new TestNotifier(
+		TestStatus er = new TestStatus(
 				"syntax_cs,3: symbol `error` is useless\n" + "syntax_cs,44: symbol `Lfixed` is useless\n"
 						+ "syntax_cs,76: symbol `Lstackalloc` is useless\n"
 						+ "syntax_cs,149: symbol `comment` is useless\n" + "syntax_cs,155: symbol `'/*'` is useless\n"
@@ -138,51 +137,51 @@ public class InputTest extends LapgTestCase {
 
 	public void testLapgGrammar() {
 		Grammar g = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, String>());
+				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
+		checkGenTables(g, "syntax_lapg.tbl", new TestStatus());
 	}
 
 	public void testLapgTemplatesGrammar() {
 		Grammar g = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, String>());
+				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
-		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
+		checkGenTables(g, "syntax_tpl.tbl", new TestStatus());
 	}
 
 	public void testNewTemplatesGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, String>());
+				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
 		sortGrammar((LiGrammar) g, go);
-		checkGenTables(g, "syntax_tpl.tbl", new TestNotifier());
+		checkGenTables(g, "syntax_tpl.tbl", new TestStatus());
 	}
 
 	public void testNewLapgGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER),
-				new TestNotifier(), new HashMap<String, String>());
+				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
 
 		sortGrammar((LiGrammar) g, go);
-		checkGenTables(g, "syntax_lapg.tbl", new TestNotifier());
+		checkGenTables(g, "syntax_lapg.tbl", new TestStatus());
 	}
 
 	public void testNewCheckCSharpGrammar() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
-		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		sortGrammar((LiGrammar) g, go);
 
-		TestNotifier er = new TestNotifier(
+		TestStatus er = new TestStatus(
 				"syntax_cs,3: symbol `error` is useless\n" + "syntax_cs,44: symbol `Lfixed` is useless\n"
 						+ "syntax_cs,76: symbol `Lstackalloc` is useless\n"
 						+ "syntax_cs,149: symbol `comment` is useless\n"
@@ -203,7 +202,7 @@ public class InputTest extends LapgTestCase {
 	}
 
 	public void testNewCheckSimple1() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -234,13 +233,13 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
 
-		checkGenTables(g, "syntax1.tbl", new TestNotifier());
+		checkGenTables(g, "syntax1.tbl", new TestStatus());
 	}
 
 	public void testNewCheckSimple2() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
-		Grammar go = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestNotifier(),
+		Grammar go = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
@@ -260,7 +259,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
 
 		sortGrammar((LiGrammar) g, go);
-		checkGenTables(g, "syntax2.tbl", new TestNotifier());
+		checkGenTables(g, "syntax2.tbl", new TestStatus());
 	}
 
 	private void sortGrammar(LiGrammar g, Grammar go) {
@@ -315,11 +314,11 @@ public class InputTest extends LapgTestCase {
 	}
 
 	public void testCheckConflictsHandling() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 
-		TestNotifier er = new TestNotifier(
+		TestStatus er = new TestStatus(
 				"",
 				"syntax_conflict1,17: input: Licon\n" +
 				"reduce/reduce conflict (next: fix1, fix2, fix3)\n" +
@@ -327,25 +326,25 @@ public class InputTest extends LapgTestCase {
 				"    list_item ::= Licon\n" +
 				"\n" +
 				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
-		Builder.compile(g, new ProcessingStatusAdapter(er, 0));
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
 
 		er.assertDone();
 	}
 
 	public void testCheckConflictsResolving() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestNotifier(),
+		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, Object>());
 		Assert.assertNotNull(g);
 
-		TestNotifier er = new TestNotifier(
+		TestStatus er = new TestStatus(
 				"",
-				"");
-		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 0));
-		Builder.compile(g, new ProcessingStatusAdapter(er, 0));
+				"", 0);
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
 		er.assertDone();
 
-		er = new TestNotifier("syntax_conflict2resolved,46: input: Lid '=' expr '*' expr\n" +
+		er = new TestStatus("syntax_conflict2resolved,46: input: Lid '=' expr '*' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '*' expr\n" +
 				"\n" +
@@ -368,14 +367,14 @@ public class InputTest extends LapgTestCase {
 				"syntax_conflict2resolved,47: input: Lid '=' expr '/' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
-				"\n", "") {
+				"\n", "", 1) {
 			@Override
 			public void debug(String info) {
 				// ignore
 			}
 		};
-		LexicalBuilder.compile(g.getLexems(), new ProcessingStatusAdapter(er, 1));
-		Builder.compile(g, new ProcessingStatusAdapter(er, 1));
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
 
 		er.assertDone();
 	}

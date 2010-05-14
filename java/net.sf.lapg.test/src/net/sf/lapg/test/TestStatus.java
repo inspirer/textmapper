@@ -19,19 +19,28 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import junit.framework.Assert;
-import net.sf.lapg.gen.INotifier;
+import net.sf.lapg.api.ParserConflict;
+import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.Rule;
+import net.sf.lapg.api.SourceElement;
 
-public class TestNotifier implements INotifier {
+public class TestStatus implements ProcessingStatus {
 
 	private final StringBuffer warns = new StringBuffer();
 	private final StringBuffer errors = new StringBuffer();
+	private int debuglev;
 
-	public TestNotifier() {
+	public TestStatus() {
 	}
 
-	public TestNotifier(String warns, String errors) {
+	public TestStatus(String warns, String errors) {
+		this(warns,errors,0);
+	}
+
+	public TestStatus(String warns, String errors, int debuglev) {
 		this.warns.append(warns);
 		this.errors.append(errors);
+		this.debuglev = debuglev;
 	}
 
 	public void debug(String info) {
@@ -71,5 +80,56 @@ public class TestNotifier implements INotifier {
 		PrintWriter pw = new PrintWriter(sw, true);
 		ex.printStackTrace(pw);
 		error(sw.getBuffer().toString());
+	}
+
+	public boolean isDebugMode() {
+		return debuglev >= 2;
+	}
+
+	public boolean isAnalysisMode() {
+		return debuglev >= 1;
+	}
+
+	public void report(String message, Throwable th) {
+		error(message + "\n");
+		if(th != null) {
+			trace(th);
+		}
+	}
+
+	public void report(int kind, String message, SourceElement ...anchors) {
+		SourceElement anchor = anchors != null && anchors.length > 0 ? anchors[0] : null;
+		switch(kind) {
+		case KIND_FATAL:
+		case KIND_ERROR:
+			if(anchor != null && anchor.getResourceName() != null) {
+				error(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+			}
+			error(message + "\n");
+			break;
+		case KIND_WARN:
+			if(anchor != null && anchor.getResourceName() != null) {
+				warn(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+			}
+			warn(message + "\n");
+			break;
+		case KIND_INFO:
+			if(anchor != null && anchor.getResourceName() != null) {
+				info(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+			}
+			info(message + "\n");
+			break;
+		}
+	}
+
+	public void report(ParserConflict conflict) {
+		Rule rule = conflict.getRules()[0];
+		if(conflict.getKind() == ParserConflict.FIXED) {
+			if(isAnalysisMode()) {
+				report(KIND_WARN, conflict.getText(), rule);
+			}
+		} else {
+			report(KIND_ERROR, conflict.getText(), rule);
+		}
 	}
 }
