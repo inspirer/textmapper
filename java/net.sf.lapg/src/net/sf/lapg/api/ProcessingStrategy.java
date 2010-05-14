@@ -15,7 +15,11 @@
  */
 package net.sf.lapg.api;
 
-public interface FileCreator {
+import net.sf.lapg.templates.api.IBundleLoader;
+
+public interface ProcessingStrategy {
 
 	void createFile(String name, String contents, ProcessingStatus status);
+
+	IBundleLoader createTemplateLoader(String path);
 }

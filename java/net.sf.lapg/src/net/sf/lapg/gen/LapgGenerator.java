@@ -15,17 +15,15 @@
  */
 package net.sf.lapg.gen;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.sf.lapg.api.Grammar;
+import net.sf.lapg.api.ProcessingStrategy;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.SourceElement;
-import net.sf.lapg.common.GeneratedFile;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lalr.ParserTables;
 import net.sf.lapg.lex.LexerTables;
@@ -36,37 +34,20 @@ import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
-import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
 import net.sf.lapg.templates.ast.Node;
 
-public class LapgGenerator {
+public final class LapgGenerator {
 
-	protected final LapgOptions options;
+	private final LapgOptions options;
+	private final ProcessingStatus status;
+	private final ProcessingStrategy strategy;
 
-	public LapgGenerator(LapgOptions options) {
+	public LapgGenerator(LapgOptions options, ProcessingStatus status, ProcessingStrategy strategy) {
 		this.options = options;
-	}
-
-	/** TODO extract */
-	public void createFile(String name, String contents, ProcessingStatus status) {
-		try {
-			// FIXME encoding, newline
-			new GeneratedFile(name, contents, "utf8", true).create();
-		} catch (IOException e) {
-			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
-		}
-	}
-
-	/** TODO extract */
-	protected IBundleLoader createTemplateLoader(String path) {
-		File folder = new File(path);
-		if (folder.isDirectory()) {
-			// FIXME charset
-			return new FolderTemplateLoader(new File[] { folder }, "utf8");
-		}
-		return null;
+		this.status = status;
+		this.strategy = strategy;
 	}
 
 	/** TODO read from templates */
@@ -86,7 +67,7 @@ public class LapgGenerator {
 		return d;
 	}
 
-	public boolean compileGrammar(TextSource input, ProcessingStatus status) {
+	public boolean compileGrammar(TextSource input) {
 		try {
 			Grammar s = SyntaxUtil.parseSyntax(input, status, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
@@ -102,7 +83,7 @@ public class LapgGenerator {
 			long start = System.currentTimeMillis();
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), status);
 			ParserTables r = Builder.compile(s, status);
-			if(l == null || r == null) {
+			if (l == null || r == null) {
 				return false;
 			}
 			long generationTime = System.currentTimeMillis() - start;
@@ -114,9 +95,10 @@ public class LapgGenerator {
 			map.put("opts", genOptions);
 
 			start = System.currentTimeMillis();
-			generateOutput(map, s.getTemplates(), status);
+			generateOutput(map, s.getTemplates());
 			long textTime = System.currentTimeMillis() - start;
-			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime/1000. + "s, text: " + textTime/1000. + "s");
+			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
+					/ 1000. + "s");
 			return true;
 		} catch (Throwable t) {
 			String message = "lapg: internal error: " + t.getClass().getName();
@@ -125,12 +107,12 @@ public class LapgGenerator {
 		}
 	}
 
-	private void generateOutput(Map<String, Object> map, String grammarTemplates, final ProcessingStatus status) {
+	private void generateOutput(Map<String, Object> map, String grammarTemplates) {
 
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
 		for (String path : options.getIncludeFolders()) {
-			IBundleLoader tl = createTemplateLoader(path);
+			IBundleLoader tl = strategy.createTemplateLoader(path);
 			if (tl != null) {
 				loaders.add(tl);
 			}
@@ -157,16 +139,16 @@ public class LapgGenerator {
 
 		@Override
 		public void createFile(String name, String contents) {
-			LapgGenerator.this.createFile(name, contents, status);
+			strategy.createFile(name, contents, status);
 		}
 
 		@Override
 		public void fireError(ILocatedEntity referer, String error) {
 			SourceElement adapted = null;
-			if(referer instanceof Node) {
+			if (referer instanceof Node) {
 				adapted = new TemplateSourceElementAdapter((Node) referer);
 			}
-			if(adapted != null) {
+			if (adapted != null) {
 				status.report(ProcessingStatus.KIND_ERROR, error, adapted);
 			} else {
 				if (referer != null) {

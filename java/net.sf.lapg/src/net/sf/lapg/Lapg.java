@@ -26,6 +26,7 @@ import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.SourceElement;
+import net.sf.lapg.common.FileBasedStrategy;
 import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.gen.LapgGenerator;
 import net.sf.lapg.gen.LapgOptions;
@@ -104,13 +105,14 @@ public class Lapg {
 			System.exit(1);
 			return;
 		}
-		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 
-		LapgGenerator cg = new LapgGenerator(options);
 		ConsoleStatus status = createStatus(options.getDebug());
 		boolean success;
 		try {
-			success = cg.compileGrammar(input, status);
+			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
+			FileBasedStrategy strategy = new FileBasedStrategy();
+
+			success = new LapgGenerator(options, status, strategy).compileGrammar(input);
 		} finally {
 			status.dispose();
 		}
