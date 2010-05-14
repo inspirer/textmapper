@@ -22,12 +22,13 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
+import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.Rule;
+import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.common.FileUtil;
 import net.sf.lapg.gen.ConsoleGenerator;
-import net.sf.lapg.gen.INotifier;
 import net.sf.lapg.gen.LapgOptions;
-import net.sf.lapg.gen.ProcessingStatusAdapter;
 import net.sf.lapg.parser.LapgTree.TextSource;
 
 /**
@@ -106,26 +107,25 @@ public class Lapg {
 		TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 
 		ConsoleGenerator cg = new ConsoleGenerator(options);
-		INotifier notifier = createNotifier(options.getDebug());
-		ProcessingStatus status = new ProcessingStatusAdapter(notifier, options.getDebug());
+		ConsoleStatus status = createStatus(options.getDebug());
 		boolean success;
 		try {
 			success = cg.compileGrammar(input, status);
 		} finally {
-			notifier.dispose();
+			status.dispose();
 		}
 		if(!success) {
 			System.exit(1);
 		}
 	}
 
-	public static INotifier createNotifier(int debuglev) {
-		new File(ConsoleNotifier.OUT_ERRORS).delete();
-		new File(ConsoleNotifier.OUT_TABLES).delete();
-		return new ConsoleNotifier(debuglev);
+	private static ConsoleStatus createStatus(int debuglev) {
+		new File(ConsoleStatus.OUT_ERRORS).delete();
+		new File(ConsoleStatus.OUT_TABLES).delete();
+		return new ConsoleStatus(debuglev);
 	}
 
-	private static class ConsoleNotifier implements INotifier {
+	private static class ConsoleStatus implements ProcessingStatus {
 
 		static final String OUT_ERRORS = "errors";
 		static final String OUT_TABLES = "tables";
@@ -133,7 +133,7 @@ public class Lapg {
 		private PrintStream debug, warn;
 		private final int debuglev;
 
-		public ConsoleNotifier(int debuglev) {
+		public ConsoleStatus(int debuglev) {
 			this.debuglev = debuglev;
 			this.debug = null;
 			this.warn = null;
@@ -189,6 +189,57 @@ public class Lapg {
 				warn.close();
 				warn = null;
 			}
+		}
+
+		public void report(String message, Throwable th) {
+			error(message + "\n");
+			if(th != null) {
+				trace(th);
+			}
+		}
+
+		public void report(int kind, String message, SourceElement ...anchors) {
+			SourceElement anchor = anchors != null && anchors.length > 0 ? anchors[0] : null;
+			switch(kind) {
+			case KIND_FATAL:
+			case KIND_ERROR:
+				if(anchor != null && anchor.getResourceName() != null) {
+					error(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				}
+				error(message + "\n");
+				break;
+			case KIND_WARN:
+				if(anchor != null && anchor.getResourceName() != null) {
+					warn(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				}
+				warn(message + "\n");
+				break;
+			case KIND_INFO:
+				if(anchor != null && anchor.getResourceName() != null) {
+					info(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				}
+				info(message + "\n");
+				break;
+			}
+		}
+
+		public void report(ParserConflict conflict) {
+			Rule rule = conflict.getRules()[0];
+			if(conflict.getKind() == ParserConflict.FIXED) {
+				if(isAnalysisMode()) {
+					report(KIND_WARN, conflict.getText(), rule);
+				}
+			} else {
+				report(KIND_ERROR, conflict.getText(), rule);
+			}
+		}
+
+		public boolean isDebugMode() {
+			return debuglev >= 2;
+		}
+
+		public boolean isAnalysisMode() {
+			return debuglev >= 1;
 		}
 	}
 }
