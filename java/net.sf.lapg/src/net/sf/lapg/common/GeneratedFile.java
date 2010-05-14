@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileCreator {
+public class GeneratedFile {
 
 	private static final Pattern FILENAME = Pattern.compile("([\\w-]+/)*[\\w-]+(\\.\\w+)?");
 
@@ -33,7 +33,7 @@ public class FileCreator {
 
 	public static String NL = System.getProperty("line.separator");
 
-	public FileCreator(String name, String contents, String charset, boolean forceLF) {
+	public GeneratedFile(String name, String contents, String charset, boolean forceLF) {
 		this.name = name;
 		this.contents = contents;
 		this.charset = charset;

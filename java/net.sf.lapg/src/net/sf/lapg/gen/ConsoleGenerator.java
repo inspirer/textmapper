@@ -18,11 +18,11 @@ package net.sf.lapg.gen;
 import java.io.File;
 import java.io.IOException;
 import net.sf.lapg.api.ProcessingStatus;
-import net.sf.lapg.common.FileCreator;
+import net.sf.lapg.common.GeneratedFile;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.impl.FolderTemplateLoader;
 
-public class ConsoleGenerator extends AbstractGenerator {
+public class ConsoleGenerator extends LapgGenerator {
 
 	public ConsoleGenerator(LapgOptions options) {
 		super(options);
@@ -32,7 +32,7 @@ public class ConsoleGenerator extends AbstractGenerator {
 	public void createFile(String name, String contents, ProcessingStatus status) {
 		try {
 			// FIXME encoding, newline
-			new FileCreator(name, contents, "utf8", true).create();
+			new GeneratedFile(name, contents, "utf8", true).create();
 		} catch (IOException e) {
 			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
 		}

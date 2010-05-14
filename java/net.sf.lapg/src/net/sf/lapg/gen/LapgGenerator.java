@@ -37,11 +37,11 @@ import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
 import net.sf.lapg.templates.ast.Node;
 
-public abstract class AbstractGenerator {
+public abstract class LapgGenerator {
 
 	protected final LapgOptions options;
 
-	public AbstractGenerator(LapgOptions options) {
+	public LapgGenerator(LapgOptions options) {
 		this.options = options;
 	}
 
@@ -136,7 +136,7 @@ public abstract class AbstractGenerator {
 
 		@Override
 		public void createFile(String name, String contents) {
-			AbstractGenerator.this.createFile(name, contents, status);
+			LapgGenerator.this.createFile(name, contents, status);
 		}
 
 		@Override
