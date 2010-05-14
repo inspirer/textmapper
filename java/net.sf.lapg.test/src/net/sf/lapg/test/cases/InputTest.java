@@ -20,8 +20,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import junit.framework.Assert;
-import net.sf.lapg.LexerTables;
-import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Rule;
@@ -29,6 +27,8 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
 import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.lalr.Builder;
+import net.sf.lapg.lalr.ParserTables;
+import net.sf.lapg.lex.LexerTables;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.parser.LiGrammar;
 import net.sf.lapg.parser.LiRule;

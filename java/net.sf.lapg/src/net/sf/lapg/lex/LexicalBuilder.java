@@ -18,7 +18,6 @@ package net.sf.lapg.lex;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.common.FormatUtil;

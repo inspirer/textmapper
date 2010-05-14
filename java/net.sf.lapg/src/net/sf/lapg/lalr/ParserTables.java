@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg;
+package net.sf.lapg.lalr;
+
+import net.sf.lapg.api.Symbol;
 
 /**
- * Representation of generated lexer tables.
+ * Representation of generated parser tables.
  */
-public class LexerTables {
+public class ParserTables {
 
-	public final int nstates, nchars, nterms;
-	public final int[] lnum, char2no, groupset;
-	public final int[][] change;
+	public Symbol[] sym;
+	public int rules, nsyms, nterms, nstates, errorn;
+	public int[] rleft, rright, rindex, rprio;
+	public short[] sym_goto, sym_from, sym_to, action_table;
+	public int[] action_index;
+	public int nactions;
 
-	public LexerTables(int nstates, int nchars, int nterms, int[] lnum, int[] char2no, int[] groupset, int[][] change) {
-		this.nstates = nstates;
-		this.nchars = nchars;
-		this.nterms = nterms;
-		this.lnum = lnum;
-		this.char2no = char2no;
-		this.groupset = groupset;
-		this.change = change;
+	public int[] getRuleLength() {
+		int[] result = new int[rules];
+		for (int i = 0; i < rules; i++) {
+			int e = 0;
+			for (; rright[rindex[i] + e] >= 0; e++) {
+			}
+			result[i] = e;
+		}
+		return result;
 	}
 }

@@ -22,13 +22,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.LexerTables;
-import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.common.GeneratedFile;
 import net.sf.lapg.lalr.Builder;
+import net.sf.lapg.lalr.ParserTables;
+import net.sf.lapg.lex.LexerTables;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.templates.api.EvaluationContext;
@@ -69,6 +69,7 @@ public class LapgGenerator {
 		return null;
 	}
 
+	/** TODO read from templates */
 	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("prefix", "");

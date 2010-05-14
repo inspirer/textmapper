@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import net.sf.lapg.ParserTables;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ParserConflict;
 import net.sf.lapg.api.ProcessingStatus;

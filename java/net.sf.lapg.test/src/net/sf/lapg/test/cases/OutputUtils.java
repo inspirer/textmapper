@@ -15,9 +15,9 @@
  */
 package net.sf.lapg.test.cases;
 
-import net.sf.lapg.LexerTables;
-import net.sf.lapg.ParserTables;
 import net.sf.lapg.common.FormatUtil;
+import net.sf.lapg.lalr.ParserTables;
+import net.sf.lapg.lex.LexerTables;
 
 public class OutputUtils {
 

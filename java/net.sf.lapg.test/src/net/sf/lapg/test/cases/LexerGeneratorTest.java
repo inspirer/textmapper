@@ -19,10 +19,10 @@ import junit.framework.TestCase;
 
 import org.junit.Assert;
 
-import net.sf.lapg.LexerTables;
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
 import net.sf.lapg.api.Symbol;
+import net.sf.lapg.lex.LexerTables;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.test.TestStatus;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
