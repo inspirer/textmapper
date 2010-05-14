@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,11 +19,12 @@ import java.util.ArrayList;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class CompoundNode extends Node {
 
-	protected CompoundNode(String input, int line) {
-		super(input, line);
+	protected CompoundNode(TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 	}
 
 	protected ArrayList<Node> instructions;

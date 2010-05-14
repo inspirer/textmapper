@@ -22,6 +22,7 @@ import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IQuery;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class QueryNode extends Node implements IQuery {
 
@@ -33,8 +34,8 @@ public class QueryNode extends Node implements IQuery {
 	private IQuery base;
 
 	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, boolean cache,
-			String input, int line) {
-		super(input, line);
+			TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
 		if (templatePackage == null) {

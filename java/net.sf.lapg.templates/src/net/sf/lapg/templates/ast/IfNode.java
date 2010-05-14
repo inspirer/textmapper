@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class IfNode extends CompoundNode {
 	private final ExpressionNode select;
 	private ArrayList<Node> elseInstructions;
 
-	public IfNode(ExpressionNode select, String input, int line) {
-		super(input, line);
+	public IfNode(ExpressionNode select, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.select = select;
 	}
 

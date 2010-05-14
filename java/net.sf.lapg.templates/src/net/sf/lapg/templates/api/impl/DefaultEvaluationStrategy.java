@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,6 +31,7 @@ import net.sf.lapg.templates.api.ITemplate;
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.ExpressionNode;
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
@@ -143,7 +144,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
-	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context) {
+	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line) {
 		final String inputName = templateId != null ? templateId : referer.getLocation();
 		AstParser p = new AstParser(new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -151,7 +152,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			}
 		});
 		IBundleEntity[] loaded = null;
-		if (!p.parseBody(template, "syntax", inputName)) {
+		if (!p.parseBody(new TextSource(inputName, template.toCharArray(), line), "syntax")) {
 			loaded = new ITemplate[0];
 		} else {
 			loaded = p.getResult();

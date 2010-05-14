@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,7 @@ import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.IQuery;
 import net.sf.lapg.templates.api.ITemplate;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class CallTemplateNode extends ExpressionNode {
 
@@ -32,16 +33,16 @@ public class CallTemplateNode extends ExpressionNode {
 	private final ExpressionNode selectExpr;
 	private final boolean isStatement;
 
-	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, boolean isStatement, String input, int line) {
-		super(input, line);
+	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, boolean isStatement, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.isStatement = isStatement;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
 		this.selectExpr = selectExpr;
 		this.templateId = identifier;
 	}
 
-	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, String input, int line) {
-		this((String) null, args, selectExpr, currentPackage, false, input, line);
+	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, TextSource source, int offset, int endoffset) {
+		this((String) null, args, selectExpr, currentPackage, false, source, offset, endoffset);
 		this.templateIdExpr = identifier;
 	}
 

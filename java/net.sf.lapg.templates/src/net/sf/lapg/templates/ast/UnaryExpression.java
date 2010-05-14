@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@ package net.sf.lapg.templates.ast;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class UnaryExpression extends ExpressionNode {
 
@@ -29,8 +30,8 @@ public class UnaryExpression extends ExpressionNode {
 	private final int kind;
 	private final ExpressionNode expr;
 
-	public UnaryExpression(int kind, ExpressionNode expr, String input, int line) {
-		super(input, line);
+	public UnaryExpression(int kind, ExpressionNode expr, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.kind = kind;
 		this.expr = expr;
 	}

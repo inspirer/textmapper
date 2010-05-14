@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,13 +21,14 @@ import java.util.Map;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class ConcreteMapNode extends ExpressionNode {
 
 	private final HashMap<String,ExpressionNode> fields;
 
-	public ConcreteMapNode(HashMap<String,ExpressionNode> fields, String input, int line) {
-		super(input, line);
+	public ConcreteMapNode(HashMap<String,ExpressionNode> fields, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.fields = fields;
 	}
 

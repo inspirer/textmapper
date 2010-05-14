@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import java.util.List;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class MethodCallNode extends ExpressionNode {
 
@@ -27,8 +28,8 @@ public class MethodCallNode extends ExpressionNode {
 	private final String methodName;
 	private final ExpressionNode[] arguments;
 
-	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments, String input, int line) {
-		super(input, line);
+	public MethodCallNode(ExpressionNode objectExpr, String methodName, List<ExpressionNode> arguments, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.objectExpr = objectExpr;
 		this.methodName = methodName;
 		this.arguments = arguments != null && arguments.size() > 0 ? (ExpressionNode[]) arguments

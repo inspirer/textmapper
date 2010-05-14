@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,14 +19,15 @@ import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class EvalNode extends Node {
 
 	private final ExpressionNode templateExpr;
 	private final ExpressionNode templateLocation;
 
-	public EvalNode(ExpressionNode expr, ExpressionNode templateId, String input, int line) {
-		super(input, line);
+	public EvalNode(ExpressionNode expr, ExpressionNode templateId, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.templateExpr = expr;
 		this.templateLocation = templateId;
 	}
@@ -42,7 +43,7 @@ public class EvalNode extends Node {
 				id = toEvaluate instanceof ILocatedEntity ? ((ILocatedEntity)toEvaluate).getLocation() : null;
 			}
 			String templateCode = env.toString(toEvaluate, templateExpr);
-			sb.append(env.eval(this, templateCode, id, context));
+			sb.append(env.eval(this, templateCode, id, context, templateExpr.getLine()));
 		} catch (EvaluationException ex) {
 		}
 	}

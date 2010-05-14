@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,6 +17,7 @@ package net.sf.lapg.templates.api;
 
 import net.sf.lapg.templates.ast.AstParser;
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class TemplatesBundle {
 
@@ -38,13 +39,14 @@ public class TemplatesBundle {
 
 	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
 			final IProblemCollector collector) {
+		TextSource source = new TextSource(sourceName, contents.toCharArray(), 1);
 		AstParser p = new AstParser(new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
 				collector.fireError(null, sourceName + ":" + s);
 			}
 		});
 		IBundleEntity[] entities;
-		if (!p.parse(contents, templatePackage, sourceName)) {
+		if (!p.parse(source, templatePackage)) {
 			entities = new IBundleEntity[0];
 		} else {
 			entities = p.getResult();

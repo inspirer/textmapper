@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,6 +18,7 @@ package net.sf.lapg.templates.ast;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 
 public class TriplexNode extends ExpressionNode {
@@ -26,8 +27,8 @@ public class TriplexNode extends ExpressionNode {
 	private final ExpressionNode thennode;
 	private final ExpressionNode condition;
 
-	protected TriplexNode(ExpressionNode condition, ExpressionNode thennode, ExpressionNode elsenode, String input, int line) {
-		super(input, line);
+	protected TriplexNode(ExpressionNode condition, ExpressionNode thennode, ExpressionNode elsenode, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.condition = condition;
 		this.thennode = thennode;
 		this.elsenode = elsenode;

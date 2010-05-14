@@ -53,6 +53,7 @@ public class AstTree<T> {
 			lexer.setLine(source.getInitialLine());
 
 			AstParser parser = new AstParser(reporter);
+			parser.source = source;
 			Object result = parser.parseInput(lexer);
 
 			return new AstTree<Object>(source, result, list);
@@ -77,6 +78,7 @@ public class AstTree<T> {
 			lexer.setLine(source.getInitialLine());
 
 			AstParser parser = new AstParser(reporter);
+			parser.source = source;
 			TemplateNode result = parser.parseBody(lexer);
 
 			return new AstTree<TemplateNode>(source, result, list);

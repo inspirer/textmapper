@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,21 +17,19 @@ package net.sf.lapg.templates.ast;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class TextNode extends Node {
-	private final String text;
-
-	public TextNode(String text, String input, int line) {
-		super(input, line);
-		this.text = text;
+	public TextNode(TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 	}
 
 	public String getText() {
-		return text;
+		return toString();
 	}
 
 	@Override
 	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
-		sb.append(text);
+		sb.append(getText());
 	}
 }

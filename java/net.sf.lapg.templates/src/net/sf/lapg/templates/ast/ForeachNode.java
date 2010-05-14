@@ -20,6 +20,7 @@ import java.util.Collection;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
+import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class ForeachNode extends CompoundNode {
 
@@ -27,12 +28,12 @@ public class ForeachNode extends CompoundNode {
 	private final String var;
 	private final ExpressionNode selectExpr, targetExpr;
 
-	public ForeachNode(String var, ExpressionNode selectExpr, String input, int line) {
-		this(var, selectExpr, null, input, line);
+	public ForeachNode(String var, ExpressionNode selectExpr, TextSource source, int offset, int endoffset) {
+		this(var, selectExpr, null, source, offset, endoffset);
 	}
 
-	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, String input, int line) {
-		super(input, line);
+	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.var = var;
 		this.selectExpr = selectExpr;
 		this.targetExpr = targetExpr;
