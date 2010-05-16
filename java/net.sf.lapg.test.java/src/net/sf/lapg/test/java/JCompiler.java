@@ -52,7 +52,7 @@ public class JCompiler {
 				classesjar = javaHome + "/classes.jar";
 			}
 		} else if(os.equals("Windows XP")) {
-			// TODO
+			classesjar = javaHome + "\\lib\\rt.jar";
 		} else {
 			Assert.fail("unknown os, please patch: " + os);
 		}
