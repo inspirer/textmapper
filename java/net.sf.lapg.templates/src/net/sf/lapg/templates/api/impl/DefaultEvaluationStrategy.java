@@ -174,8 +174,8 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public Iterator<?> getCollectionIterator(Object o) {
-		if (o instanceof Collection<?>) {
-			return ((Collection<?>) o).iterator();
+		if (o instanceof Iterable<?>) {
+			return ((Iterable<?>) o).iterator();
 		}
 		if (o instanceof Object[]) {
 			return new ArrayIterator((Object[]) o);

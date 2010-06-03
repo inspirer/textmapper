@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -189,7 +189,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 	};
 
-	private final INavigationStrategy<Object[]> arrayNavigation = new INavigationStrategy<Object[]>() {
+	protected final INavigationStrategy<Object[]> arrayNavigation = new INavigationStrategy<Object[]>() {
 
 		public Object callMethod(Object[] array, String methodName, Object[] args) throws EvaluationException {
 			if (args == null) {

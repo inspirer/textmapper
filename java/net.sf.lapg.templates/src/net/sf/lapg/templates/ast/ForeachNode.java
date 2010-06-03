@@ -15,8 +15,6 @@
  */
 package net.sf.lapg.templates.ast;
 
-import java.util.Collection;
-
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
@@ -61,8 +59,8 @@ public class ForeachNode extends CompoundNode {
 					} else {
 						env.fireError(this, "In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
 					}
-				} else if( select instanceof Collection<?> ) {
-					for( Object o : (Collection<?>)select ) {
+				} else if( select instanceof Iterable<?> ) {
+					for( Object o : (Iterable<?>)select ) {
 						context.setVariable(var, o);
 						context.setVariable(INDEX, index++);
 						for( Node n : instructions ) {
@@ -78,7 +76,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError(this, "In foreach `"+selectExpr.toString()+"` should be Object[] or Collection for " + env.getTitle(context));
+					env.fireError(this, "In foreach `"+selectExpr.toString()+"` should be array or iterable for " + env.getTitle(context));
 				}
 			} finally {
 				context.setVariable(var, prevVar);
