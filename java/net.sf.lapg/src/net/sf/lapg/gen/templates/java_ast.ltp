@@ -186,5 +186,5 @@ ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias
 ${query allFields(psym) = syntax.rules[psym].
 	collect(x|x.getRight()).collectUnique(x|self->property(x))}
 
-${cached query getImplemented(sym) = syntax.rules.select(x|self->isInterface(x.getLeft())
+${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())
 	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}

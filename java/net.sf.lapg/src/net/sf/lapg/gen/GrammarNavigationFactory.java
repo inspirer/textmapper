@@ -16,6 +16,7 @@
 package net.sf.lapg.gen;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -193,14 +194,16 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
 		public Object callMethod(GrammarRules rules, String methodName, Object[] args) throws EvaluationException {
 			if(args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
-				return rules.getRulesBySymbol().get(args[0]);
+				List<Rule> list = rules.getRulesContainingSymbol().get(args[0]);
+				return list != null ? list : Collections.emptyList();
 			}
 			return arrayNavigation.callMethod(rules.myRules, methodName, args);
 		}
 
 		public Object getByIndex(GrammarRules rules, Object index) throws EvaluationException {
 			if(index instanceof Symbol) {
-				return rules.getRulesBySymbol().get(index);
+				List<Rule> list = rules.getRulesBySymbol().get(index);
+				return list != null ? list : Collections.emptyList();
 			}
 			return arrayNavigation.getByIndex(rules.myRules, index);
 		}
