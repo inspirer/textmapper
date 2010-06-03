@@ -6,7 +6,8 @@ ${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))-}
 ${switch self->symbolKind(psym)-}
 ${case 'enum'}${call astEnum(psym)-}
 ${case 'interface'}${call astInterface(psym)-}
-${else}${call astClass(psym)-}
+${case 'class'}${call astClass(psym)-}
+${else-}
 ${end-}
 ${end-}
 ${end}
@@ -37,15 +38,20 @@ ${template astClass(psym)-}
 ${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
-public class ${psym->className()}${call implementedInterfaces(psym,' implements ')} {
-
 ${foreach rule in syntax.rules[psym]-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
+public class ${psym->className()}${call implementedInterfaces(psym,' implements ')} {
+
 ${foreach prop in self->allFields(psym)-}
-// ! ${prop.type} ${prop.name}
+	private ${prop.type} ${util.toCamelCase(prop.name, false)};
 ${end-}
-	
+
+${foreach prop in self->allFields(psym)-}
+	public ${prop.type} get${util.toCamelCase(prop.name, true)}() {
+		return ${util.toCamelCase(prop.name, false)};
+	}
+${end-}	
 }
 ${end-}
 ${end}
@@ -124,6 +130,7 @@ ${cached query symbolKind(sym) =
 	self->isRightList(sym) ? 'rightlist' :
 	self->isInterface(sym) ? 'interface' : 'class'}
 
+
 ${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
 
@@ -140,14 +147,9 @@ ${cached query isLeftList(sym) = syntax.rules[sym].
 
 ${cached query isRightList(sym) = syntax.rules[sym].
 	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
-	
-${cached query className() = 
-	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
 
-${cached query interfaceName() = 
-	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
-
-${query refName(sym) = self->isInterface(sym) ? sym->interfaceName() : sym->className() }
+${query containsBothOnly(x,y) = 
+	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
 
 ${cached query intListRuleKind(rule) = 
 	rule.getRight().length == 0 
@@ -167,23 +169,33 @@ ${cached query intListRuleKind(rule) =
 		  )
 }
 
-${query containsBothOnly(x,y) = 
-	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
+
+
+	
+${cached query className() = 
+	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+
+${cached query interfaceName() = 
+	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+
+${query refName(sym) = self->isInterface(sym) ? sym->interfaceName() : sym->className() }
 
 ${query escapeJavaReserved() = 
 	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
 	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
 
+
+
+
 ${cached query interfaceRules() = syntax.rules.select(x|
 	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
-
 
 ${cached query propInternal(alias,target) =
  target->isSimpleTerm() ? null : [name:alias?alias:target.name, type:target.type?target.type:'Object']}
 
 ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
 
-${query allFields(psym) = syntax.rules[psym].
+${cached query allFields(psym) = syntax.rules[psym].
 	collect(x|x.getRight()).collectUnique(x|self->property(x))}
 
 ${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())

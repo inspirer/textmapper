@@ -1,8 +1,11 @@
 package net.sf.lapg.gen.options.ast;
 
+// option ::= Ltitle scon (normal)
 public class Option {
 
-// option ::= Ltitle scon (normal)
-// ! String scon
-	
+	private String scon;
+
+	public String getScon() {
+		return scon;
+	}
 }

@@ -1,7 +1,5 @@
 package net.sf.lapg.gen.options.ast;
 
-public class Type {
-
 // type ::= identifier (normal)
 // type ::= Luint (normal)
 // type ::= Lstring (normal)
@@ -14,11 +12,31 @@ public class Type {
 // type ::= Lchoice '(' strings ')' (normal)
 // type ::= Larray '(' type ')' (unknown)
 // type ::= Lstruct '{' declarations '}' (normal)
-// ! String identifier
-// ! Object trueVal
-// ! Object falseVal
-// ! Object strings
-// ! Object type
-// ! Object declarations
-	
+public class Type {
+
+	private String identifier;
+	private Object trueVal;
+	private Object falseVal;
+	private Object strings;
+	private Object type;
+	private Object declarations;
+
+	public String getIdentifier() {
+		return identifier;
+	}
+	public Object getTrueVal() {
+		return trueVal;
+	}
+	public Object getFalseVal() {
+		return falseVal;
+	}
+	public Object getStrings() {
+		return strings;
+	}
+	public Object getType() {
+		return type;
+	}
+	public Object getDeclarations() {
+		return declarations;
+	}
 }

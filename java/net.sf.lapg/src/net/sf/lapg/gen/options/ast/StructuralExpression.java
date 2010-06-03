@@ -1,10 +1,16 @@
 package net.sf.lapg.gen.options.ast;
 
-public class StructuralExpression implements IExpression {
-
 // structural_expression ::= '[' map_entries ']' (normal)
 // structural_expression ::= '[' expression_list ']' (normal)
-// ! Object map_entries
-// ! Object expression_list
-	
+public class StructuralExpression implements IExpression {
+
+	private Object mapEntries;
+	private Object expressionList;
+
+	public Object getMapEntries() {
+		return mapEntries;
+	}
+	public Object getExpressionList() {
+		return expressionList;
+	}
 }

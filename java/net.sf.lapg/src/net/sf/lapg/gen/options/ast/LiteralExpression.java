@@ -1,10 +1,16 @@
 package net.sf.lapg.gen.options.ast;
 
-public class LiteralExpression implements IExpression {
-
 // literal_expression ::= scon (normal)
 // literal_expression ::= icon (normal)
-// ! String scon
-// ! Integer icon
-	
+public class LiteralExpression implements IExpression {
+
+	private String scon;
+	private Integer icon;
+
+	public String getScon() {
+		return scon;
+	}
+	public Integer getIcon() {
+		return icon;
+	}
 }

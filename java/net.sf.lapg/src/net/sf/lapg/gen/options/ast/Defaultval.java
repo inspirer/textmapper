@@ -1,8 +1,11 @@
 package net.sf.lapg.gen.options.ast;
 
+// defaultval ::= Ldefault expression (normal)
 public class Defaultval {
 
-// defaultval ::= Ldefault expression (normal)
-// ! Object expression
-	
+	private Object expression;
+
+	public Object getExpression() {
+		return expression;
+	}
 }
