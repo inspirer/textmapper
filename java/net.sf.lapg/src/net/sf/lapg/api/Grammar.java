@@ -15,7 +15,6 @@
  */
 package net.sf.lapg.api;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,5 +40,4 @@ public interface Grammar {
 	boolean hasActions();
 	boolean hasLexemActions();
 	boolean hasErrors();
-	Map<Symbol,List<Rule>> getRulesBySymbol();
 }

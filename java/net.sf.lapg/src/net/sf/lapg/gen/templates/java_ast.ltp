@@ -39,7 +39,7 @@ package ${call java.package}.ast;
 
 public class ${psym->className()}${call implementedInterfaces(psym,' implements ')} {
 
-${foreach rule in self->rules(psym)-}
+${foreach rule in syntax.rules[psym]-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
 ${foreach prop in self->allFields(psym)-}
@@ -56,7 +56,7 @@ ${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
 public enum ${psym->className()} {	
-${foreach rule in self->rules(psym)-}
+${foreach rule in syntax.rules[psym]-}
 	${rule.getRight().first().target.name.toUpperCase()},
 ${end-}
 }
@@ -124,25 +124,21 @@ ${cached query symbolKind(sym) =
 	self->isRightList(sym) ? 'rightlist' :
 	self->isInterface(sym) ? 'interface' : 'class'}
 
-${cached query symrules = syntax.rulesBySymbol}
-
-${cached query rules(sym) = self->symrules()[sym]}
-
-${cached query isInterface(sym) = self->rules(sym).
+${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
 
-${cached query isEnum(sym) = self->rules(sym).
+${cached query isEnum(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
 	
 ${query isSimpleTerm() = self.isTerm() && !self.type}
 
-${cached query isOptional(sym) = self->rules(sym).size() == 2 &&
-	self->rules(sym).collect(x|x.getRight().length)->containsBothOnly(0,1)}
+${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
+	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
 
-${cached query isLeftList(sym) = self->rules(sym).
+${cached query isLeftList(sym) = syntax.rules[sym].
 	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
 
-${cached query isRightList(sym) = self->rules(sym).
+${cached query isRightList(sym) = syntax.rules[sym].
 	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
 	
 ${cached query className() = 
@@ -187,9 +183,8 @@ ${cached query propInternal(alias,target) =
 
 ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
 
-${query allFields(psym) = self->rules(psym).
+${query allFields(psym) = syntax.rules[psym].
 	collect(x|x.getRight()).collectUnique(x|self->property(x))}
 
 ${cached query getImplemented(sym) = syntax.rules.select(x|self->isInterface(x.getLeft())
 	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
-

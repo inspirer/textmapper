@@ -218,10 +218,6 @@ public class CSyntax implements Grammar {
 		return false;
 	}
 
-	public Map<Symbol, List<Rule>> getRulesBySymbol() {
-		throw new UnsupportedOperationException();
-	}
-
 	public String getLocation() {
 		return null;
 	}

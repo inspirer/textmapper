@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +16,14 @@
 package net.sf.lapg.gen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
@@ -48,6 +55,14 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
 		if (o instanceof Symbol) {
 			return symbolNavigation;
+		}
+
+		if(o instanceof Grammar) {
+			return grammarNavigation;
+		}
+
+		if(o instanceof GrammarRules) {
+			return grammarRulesNavigation;
 		}
 
 		return super.getStrategy(o);
@@ -147,4 +162,121 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			return javaNavigation.getProperty(obj, propertyName);
 		}
 	};
+
+	private final INavigationStrategy<Grammar> grammarNavigation = new INavigationStrategy<Grammar>() {
+
+		private final Map<Grammar,GrammarRules> rules = new HashMap<Grammar, GrammarRules>();
+
+		public Object callMethod(Grammar obj, String methodName, Object[] args) throws EvaluationException {
+			return javaNavigation.callMethod(obj, methodName, args);
+		}
+
+		public Object getByIndex(Grammar obj, Object index) throws EvaluationException {
+			return javaNavigation.getByIndex(obj, index);
+		}
+
+		public Object getProperty(Grammar grammar, String propertyName) throws EvaluationException {
+			if("rules".equals(propertyName)) {
+				GrammarRules gr = rules.get(grammar);
+				if(gr == null) {
+					gr = new GrammarRules(grammar);
+					rules.put(grammar, gr);
+				}
+				return gr;
+			}
+			return javaNavigation.getProperty(grammar, propertyName);
+		}
+	};
+
+
+	private final INavigationStrategy<GrammarRules> grammarRulesNavigation = new INavigationStrategy<GrammarRules>() {
+
+		public Object callMethod(GrammarRules rules, String methodName, Object[] args) throws EvaluationException {
+			if(args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
+				return rules.getRulesBySymbol().get(args[0]);
+			}
+			return arrayNavigation.callMethod(rules.myRules, methodName, args);
+		}
+
+		public Object getByIndex(GrammarRules rules, Object index) throws EvaluationException {
+			if(index instanceof Symbol) {
+				return rules.getRulesBySymbol().get(index);
+			}
+			return arrayNavigation.getByIndex(rules.myRules, index);
+		}
+
+		public Object getProperty(GrammarRules rules, String id) throws EvaluationException {
+			return arrayNavigation.getProperty(rules.myRules, id);
+		}
+	};
+
+	public static class GrammarRules implements Iterable<Rule> {
+
+		private final Rule[] myRules;
+		private Map<Symbol,List<Rule>> rulesBySymbol;
+		private Map<Symbol,List<Rule>> rulesWithSymbol;
+
+		public GrammarRules(Grammar grammar) {
+			myRules = grammar.getRules();
+		}
+
+		public Map<Symbol,List<Rule>> getRulesBySymbol() {
+			if(rulesBySymbol != null) {
+				return rulesBySymbol;
+			}
+			rulesBySymbol = new HashMap<Symbol,List<Rule>>();
+			for(Rule r : myRules) {
+				List<Rule> target = rulesBySymbol.get(r.getLeft());
+				if(target == null) {
+					target = new ArrayList<Rule>();
+					rulesBySymbol.put(r.getLeft(), target);
+				}
+				target.add(r);
+			}
+			return rulesBySymbol;
+		}
+
+		public Map<Symbol,List<Rule>> getRulesContainingSymbol() {
+			if(rulesWithSymbol != null) {
+				return rulesWithSymbol;
+			}
+			rulesWithSymbol = new HashMap<Symbol,List<Rule>>();
+			Set<Symbol> seen = new HashSet<Symbol>();
+			for(Rule r : myRules) {
+				seen.clear();
+				for(SymbolRef sref : r.getRight()) {
+					Symbol s = sref.getTarget();
+					if(seen.contains(s)) {
+						continue;
+					}
+					seen.add(s);
+					List<Rule> list = rulesWithSymbol.get(s);
+					if(list == null) {
+						list = new ArrayList<Rule>();
+						rulesWithSymbol.put(s, list);
+					}
+					list.add(r);
+				}
+			}
+			return rulesWithSymbol;
+		}
+
+		public Iterator<Rule> iterator() {
+			return new Iterator<Rule>() {
+				int index = 0;
+
+				public boolean hasNext() {
+					return index < myRules.length;
+				}
+
+				public Rule next() {
+					return index < myRules.length ? myRules[index++] : null;
+				}
+
+				public void remove() {
+					throw new UnsupportedOperationException();
+				}
+			};
+		}
+	}
 }
