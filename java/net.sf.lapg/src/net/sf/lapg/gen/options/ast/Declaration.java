@@ -1,15 +1,20 @@
 package net.sf.lapg.gen.options.ast;
 
 import java.util.List;
+import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 // declaration ::= identifier ':' type modifiersopt defaultval optionslistopt (normal)
-public class Declaration {
+public class Declaration extends AstOptNode {
 
 	private String identifier;
 	private Type type;
-	private List<Object> modifiersopt;
+	private List<Modifier> modifiersopt;
 	private Defaultval defaultval;
-	private List<Object> optionslistopt;
+	private List<Option> optionslistopt;
+
+	public Declaration(TextSource input, int start, int end) {
+		super(input, start, end);
+	}
 
 	public String getIdentifier() {
 		return identifier;
@@ -17,13 +22,13 @@ public class Declaration {
 	public Type getType() {
 		return type;
 	}
-	public List<Object> getModifiersopt() {
+	public List<Modifier> getModifiersopt() {
 		return modifiersopt;
 	}
 	public Defaultval getDefaultval() {
 		return defaultval;
 	}
-	public List<Object> getOptionslistopt() {
+	public List<Option> getOptionslistopt() {
 		return optionslistopt;
 	}
 }

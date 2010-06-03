@@ -1,27 +1,32 @@
 package net.sf.lapg.gen.options.ast;
 
 import java.util.List;
+import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 // group ::= Lglobal scon '{' declarations '}' (normal)
 // group ::= anno_kind '{' declarations '}' (normal)
 // group ::= Ltypes '{' typedefs '}' (normal)
-public class Group {
+public class Group extends AstOptNode {
 
 	private String title;
-	private List<Object> declarations;
+	private List<Declaration> declarations;
 	private AnnoKind kind;
-	private List<Object> typedefs;
+	private List<Typedef> typedefs;
+
+	public Group(TextSource input, int start, int end) {
+		super(input, start, end);
+	}
 
 	public String getTitle() {
 		return title;
 	}
-	public List<Object> getDeclarations() {
+	public List<Declaration> getDeclarations() {
 		return declarations;
 	}
 	public AnnoKind getKind() {
 		return kind;
 	}
-	public List<Object> getTypedefs() {
+	public List<Typedef> getTypedefs() {
 		return typedefs;
 	}
 }

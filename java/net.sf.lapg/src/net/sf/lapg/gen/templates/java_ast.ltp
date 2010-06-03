@@ -1,4 +1,3 @@
-
 ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
@@ -7,10 +6,15 @@ ${switch self->symbolKind(psym)-}
 ${case 'enum'}${call astEnum(psym)-}
 ${case 'interface'}${call astInterface(psym)-}
 ${case 'class'}${call astClass(psym)-}
-${else-}
+${else}${if self->symbolKind(psym)->isListKind() && self->hasItemClass(psym)}${call astListItemClass(psym)}${end-}
 ${end-}
 ${end-}
 ${end}
+
+
+
+${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())
+	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
 
 ${template implementedInterfaces(sym, prefix)-}
 ${if self->getImplemented(sym).size() > 0-}
@@ -19,6 +23,11 @@ ${end-}
 ${end}
 
 
+
+
+${cached query interfaceName() = 
+	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+	
 ${template astInterface(psym)-}
 ${file 'ast/' + psym->interfaceName() + '.java'-}
 package ${call java.package}.ast;
@@ -34,6 +43,11 @@ ${end-}
 ${end}
 
 
+
+
+${cached query className() = 
+	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+
 ${template astClass(psym)-}
 ${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
@@ -41,11 +55,15 @@ package ${call java.package}.ast;
 ${foreach rule in syntax.rules[psym]-}
 // $rule (${self->intListRuleKind(rule)})
 ${end-}
-public class ${psym->className()}${call implementedInterfaces(psym,' implements ')} {
+public class ${psym->className()} extends ${opts.astprefix}Node${call implementedInterfaces(psym,' implements ')} {
 
 ${foreach prop in self->allFields(psym)-}
 	private ${prop.type} ${util.toCamelCase(prop.name, false)};
 ${end-}
+
+	public ${psym->className()}(${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+		super(input, start, end);
+	}
 
 ${foreach prop in self->allFields(psym)-}
 	public ${prop.type} get${util.toCamelCase(prop.name, true)}() {
@@ -55,6 +73,24 @@ ${end-}
 }
 ${end-}
 ${end}
+
+
+
+
+${cached query listItemName() = 
+	util.uniqueId(util.toCamelCase(self.name, true) + 'Item', '__classes__')}
+
+${template astListItemClass(psym)-}
+${file 'ast/' + psym->listItemName() + '.java'-}
+package ${call java.package}.ast;
+
+public class ${psym->listItemName()} {
+	// TODO	
+}
+${end-}
+${end}
+
+
 
 
 ${template astEnum(psym)-}
@@ -70,6 +106,8 @@ ${end-}
 ${end}
 
 
+
+
 ${template astBaseInterface-}
 ${file 'ast/I' + opts.astprefix + 'Node.java'-}
 package ${call java.package}.ast;
@@ -82,6 +120,8 @@ public interface I${opts.astprefix}Node {
 }
 ${end-}
 ${end}
+
+
 
 
 ${template astBaseClass-}
@@ -130,6 +170,7 @@ ${cached query symbolKind(sym) =
 	self->isRightList(sym) ? 'rightlist' :
 	self->isInterface(sym) ? 'interface' : 'class'}
 
+${query isSimpleTerm() = self.isTerm() && !self.type}
 
 ${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
@@ -137,8 +178,6 @@ ${cached query isInterface(sym) = syntax.rules[sym].
 ${cached query isEnum(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
 	
-${query isSimpleTerm() = self.isTerm() && !self.type}
-
 ${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
 	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
 	
@@ -173,12 +212,6 @@ ${cached query intListRuleKind(rule) =
 
 
 
-	
-${cached query className() = 
-	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
-
-${cached query interfaceName() = 
-	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
 
 ${query refName(sym) = self->isInterface(sym) ? sym->interfaceName() : sym->className() }
 
@@ -187,6 +220,15 @@ ${query escapeJavaReserved() =
 	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
 
 
+
+
+${cached query getListItems(sym) = syntax.rules[sym].collect(x|x.getRight()).collectUnique(x|x.target).reject(x|x == sym || x->isSimpleTerm())}
+
+${query hasItemClass(sym) = self->getListItems(sym).length > 1}
+
+${query hasListItem(sym) = self->getListItems(sym).length == 1}
+
+${query getListItem(sym) = self->getListItems(sym).first()}
 
 
 ${cached query interfaceRules() = syntax.rules.select(x|
@@ -200,9 +242,6 @@ ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias
 ${cached query allFields(psym) = syntax.rules[psym].
 	collect(x|x.getRight()).collectUnique(x|self->property(x))}
 
-${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())
-	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
-
 ${query isClassifierKind() = self.equals('class') || self.equals('interface') || self.equals('enum')}
 
 ${query isListKind() = self.equals('leftlist') || self.equals('rightlist')}
@@ -211,7 +250,12 @@ ${cached query getType(sym) =
  	sym.type ? sym.type :
  	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
  	self->symbolKind(sym)->isClassifierKind() ? self->refName(sym) :
- 	self->symbolKind(sym)->isListKind() ? 'java.util.@List<' + 'Object' + '>' :
+ 	self->symbolKind(sym)->isListKind() ? 'java.util.@List<' + self->getListItemType(sym) + '>' :
  	'Object'
 }
  
+${query getListItemType(sym) =
+	self->hasItemClass(sym) ? sym->listItemName() :
+	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
+	'Object'
+}

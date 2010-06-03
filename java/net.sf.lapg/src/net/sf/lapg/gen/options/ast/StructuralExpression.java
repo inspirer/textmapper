@@ -1,18 +1,23 @@
 package net.sf.lapg.gen.options.ast;
 
 import java.util.List;
+import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 // structural_expression ::= '[' map_entries ']' (normal)
 // structural_expression ::= '[' expression_list ']' (normal)
-public class StructuralExpression implements IExpression {
+public class StructuralExpression extends AstOptNode implements IExpression {
 
-	private List<Object> mapEntries;
-	private List<Object> expressionList;
+	private List<MapEntriesItem> mapEntries;
+	private List<IExpression> expressionList;
 
-	public List<Object> getMapEntries() {
+	public StructuralExpression(TextSource input, int start, int end) {
+		super(input, start, end);
+	}
+
+	public List<MapEntriesItem> getMapEntries() {
 		return mapEntries;
 	}
-	public List<Object> getExpressionList() {
+	public List<IExpression> getExpressionList() {
 		return expressionList;
 	}
 }

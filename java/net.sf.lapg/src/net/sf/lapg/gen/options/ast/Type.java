@@ -1,6 +1,7 @@
 package net.sf.lapg.gen.options.ast;
 
 import java.util.List;
+import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 // type ::= identifier (normal)
 // type ::= Luint (normal)
@@ -14,14 +15,18 @@ import java.util.List;
 // type ::= Lchoice '(' strings ')' (normal)
 // type ::= Larray '(' type ')' (unknown)
 // type ::= Lstruct '{' declarations '}' (normal)
-public class Type {
+public class Type extends AstOptNode {
 
 	private String identifier;
 	private _String trueVal;
 	private _String falseVal;
-	private List<Object> strings;
+	private List<_String> strings;
 	private Type type;
-	private List<Object> declarations;
+	private List<Declaration> declarations;
+
+	public Type(TextSource input, int start, int end) {
+		super(input, start, end);
+	}
 
 	public String getIdentifier() {
 		return identifier;
@@ -32,13 +37,13 @@ public class Type {
 	public _String getFalseVal() {
 		return falseVal;
 	}
-	public List<Object> getStrings() {
+	public List<_String> getStrings() {
 		return strings;
 	}
 	public Type getType() {
 		return type;
 	}
-	public List<Object> getDeclarations() {
+	public List<Declaration> getDeclarations() {
 		return declarations;
 	}
 }
