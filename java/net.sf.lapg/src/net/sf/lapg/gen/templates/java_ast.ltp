@@ -141,6 +141,8 @@ ${query isSimpleTerm() = self.isTerm() && !self.type}
 
 ${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
 	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
+	
+${cached query getOptionalTarget(sym) = syntax.rules[sym].collect(x|x.getRight()).first().target}
 
 ${cached query isLeftList(sym) = syntax.rules[sym].
 	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
@@ -191,7 +193,7 @@ ${cached query interfaceRules() = syntax.rules.select(x|
 	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
 ${cached query propInternal(alias,target) =
- target->isSimpleTerm() ? null : [name:alias?alias:target.name, type:target.type?target.type:'Object']}
+ target->isSimpleTerm() ? null : [name:alias?alias:target.name, type:self->getType(target)]}
 
 ${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
 
@@ -200,3 +202,16 @@ ${cached query allFields(psym) = syntax.rules[psym].
 
 ${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())
 	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
+
+${query isClassifierKind() = self.equals('class') || self.equals('interface') || self.equals('enum')}
+
+${query isListKind() = self.equals('leftlist') || self.equals('rightlist')}
+	
+${cached query getType(sym) =
+ 	sym.type ? sym.type :
+ 	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
+ 	self->symbolKind(sym)->isClassifierKind() ? self->refName(sym) :
+ 	self->symbolKind(sym)->isListKind() ? 'java.util.@List<' + 'Object' + '>' :
+ 	'Object'
+}
+ 

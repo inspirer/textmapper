@@ -1,27 +1,29 @@
 package net.sf.lapg.gen.options.ast;
 
+import java.util.List;
+
 // declaration ::= identifier ':' type modifiersopt defaultval optionslistopt (normal)
 public class Declaration {
 
 	private String identifier;
-	private Object type;
-	private Object modifiersopt;
-	private Object defaultval;
-	private Object optionslistopt;
+	private Type type;
+	private List<Object> modifiersopt;
+	private Defaultval defaultval;
+	private List<Object> optionslistopt;
 
 	public String getIdentifier() {
 		return identifier;
 	}
-	public Object getType() {
+	public Type getType() {
 		return type;
 	}
-	public Object getModifiersopt() {
+	public List<Object> getModifiersopt() {
 		return modifiersopt;
 	}
-	public Object getDefaultval() {
+	public Defaultval getDefaultval() {
 		return defaultval;
 	}
-	public Object getOptionslistopt() {
+	public List<Object> getOptionslistopt() {
 		return optionslistopt;
 	}
 }

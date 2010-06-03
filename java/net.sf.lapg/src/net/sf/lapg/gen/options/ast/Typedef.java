@@ -4,12 +4,12 @@ package net.sf.lapg.gen.options.ast;
 public class Typedef {
 
 	private String identifier;
-	private Object type;
+	private Type type;
 
 	public String getIdentifier() {
 		return identifier;
 	}
-	public Object getType() {
+	public Type getType() {
 		return type;
 	}
 }

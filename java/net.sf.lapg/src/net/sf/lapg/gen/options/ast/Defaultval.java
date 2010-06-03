@@ -3,9 +3,9 @@ package net.sf.lapg.gen.options.ast;
 // defaultval ::= Ldefault expression (normal)
 public class Defaultval {
 
-	private Object expression;
+	private IExpression expression;
 
-	public Object getExpression() {
+	public IExpression getExpression() {
 		return expression;
 	}
 }

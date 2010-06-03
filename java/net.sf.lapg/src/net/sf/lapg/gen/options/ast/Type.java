@@ -1,5 +1,7 @@
 package net.sf.lapg.gen.options.ast;
 
+import java.util.List;
+
 // type ::= identifier (normal)
 // type ::= Luint (normal)
 // type ::= Lstring (normal)
@@ -15,28 +17,28 @@ package net.sf.lapg.gen.options.ast;
 public class Type {
 
 	private String identifier;
-	private Object trueVal;
-	private Object falseVal;
-	private Object strings;
-	private Object type;
-	private Object declarations;
+	private _String trueVal;
+	private _String falseVal;
+	private List<Object> strings;
+	private Type type;
+	private List<Object> declarations;
 
 	public String getIdentifier() {
 		return identifier;
 	}
-	public Object getTrueVal() {
+	public _String getTrueVal() {
 		return trueVal;
 	}
-	public Object getFalseVal() {
+	public _String getFalseVal() {
 		return falseVal;
 	}
-	public Object getStrings() {
+	public List<Object> getStrings() {
 		return strings;
 	}
-	public Object getType() {
+	public Type getType() {
 		return type;
 	}
-	public Object getDeclarations() {
+	public List<Object> getDeclarations() {
 		return declarations;
 	}
 }

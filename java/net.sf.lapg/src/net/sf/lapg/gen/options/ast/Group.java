@@ -1,25 +1,27 @@
 package net.sf.lapg.gen.options.ast;
 
+import java.util.List;
+
 // group ::= Lglobal scon '{' declarations '}' (normal)
 // group ::= anno_kind '{' declarations '}' (normal)
 // group ::= Ltypes '{' typedefs '}' (normal)
 public class Group {
 
 	private String title;
-	private Object declarations;
-	private Object kind;
-	private Object typedefs;
+	private List<Object> declarations;
+	private AnnoKind kind;
+	private List<Object> typedefs;
 
 	public String getTitle() {
 		return title;
 	}
-	public Object getDeclarations() {
+	public List<Object> getDeclarations() {
 		return declarations;
 	}
-	public Object getKind() {
+	public AnnoKind getKind() {
 		return kind;
 	}
-	public Object getTypedefs() {
+	public List<Object> getTypedefs() {
 		return typedefs;
 	}
 }
