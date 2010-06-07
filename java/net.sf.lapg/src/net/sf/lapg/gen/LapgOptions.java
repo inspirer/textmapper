@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -63,6 +63,7 @@ public class LapgOptions {
 	}
 
 	public String getOutputFolder() {
+		// FIXME not used
 		return outputFolder;
 	}
 
@@ -92,6 +93,10 @@ public class LapgOptions {
 
 	public void setUseDefaultTemplates(boolean useDefaultTemplates) {
 		this.useDefaultTemplates = useDefaultTemplates;
+	}
+
+	public void addTemplateOption(String key, String value) {
+		templateOptions.put(key, value);
 	}
 
 	public Map<String, Object> getAdditionalOptions() {

@@ -19,6 +19,7 @@
         </copy>
         <javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}">
             <src path="net.sf.lapg/src"/>
+            <src path="net.sf.lapg.ant/src"/>
             <src path="net.sf.lapg.templates/src"/>
         </javac>
         <jar destfile="build/lapg.jar">
@@ -82,4 +83,10 @@
         <copy file="build/lapg.jar" tofile="libs/lapg-${suffix}.jar"/>
         <copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
     </target>
+
+    <!--
+    <target name="grammars">
+    	<taskdef name="lapg" classname="net.sf.lapg.ant.Lapg" classpath="libs/lapg-1.4.0.jar"/>
+		<lapg source="syntax"/>
+    </target> -->
 </project>
