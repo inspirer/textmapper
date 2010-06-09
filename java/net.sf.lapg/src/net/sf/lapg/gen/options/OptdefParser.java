@@ -2,12 +2,11 @@ package net.sf.lapg.gen.options;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sf.lapg.gen.options.OptdefLexer.ErrorReporter;
 import net.sf.lapg.gen.options.OptdefLexer.LapgSymbol;
 import net.sf.lapg.gen.options.OptdefLexer.Lexems;
+import net.sf.lapg.gen.options.ast.AnnoKind;
+import net.sf.lapg.gen.options.ast.Modifier;
 
 public class OptdefParser {
 
@@ -261,6 +260,20 @@ public class OptdefParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
+		switch( rule ) {
+			case 6:  // anno_kind ::= Lsymbol
+				lapg_gg.sym = AnnoKind.LSYMBOL;
+				break;
+			case 7:  // anno_kind ::= Lrule
+				lapg_gg.sym = AnnoKind.LRULE;
+				break;
+			case 8:  // anno_kind ::= Lref
+				lapg_gg.sym = AnnoKind.LREF;
+				break;
+			case 22:  // modifier ::= Lnotempty
+				lapg_gg.sym = Modifier.LNOTEMPTY;
+				break;
+		}
 		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
 			lapg_m[lapg_head--] = null;
 		}

@@ -10,8 +10,10 @@ public class StructuralExpression extends AstOptNode implements IExpression {
 	private List<MapEntriesItem> mapEntries;
 	private List<IExpression> expressionList;
 
-	public StructuralExpression(TextSource input, int start, int end) {
+	public StructuralExpression(List<MapEntriesItem> mapEntries, List<IExpression> expressionList, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.mapEntries = mapEntries;
+		this.expressionList = expressionList;
 	}
 
 	public List<MapEntriesItem> getMapEntries() {

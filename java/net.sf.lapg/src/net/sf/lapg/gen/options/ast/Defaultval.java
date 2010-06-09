@@ -7,8 +7,9 @@ public class Defaultval extends AstOptNode {
 
 	private IExpression expression;
 
-	public Defaultval(TextSource input, int start, int end) {
+	public Defaultval(IExpression expression, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.expression = expression;
 	}
 
 	public IExpression getExpression() {

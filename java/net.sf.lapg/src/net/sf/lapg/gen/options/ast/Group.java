@@ -13,8 +13,12 @@ public class Group extends AstOptNode {
 	private AnnoKind kind;
 	private List<Typedef> typedefs;
 
-	public Group(TextSource input, int start, int end) {
+	public Group(String title, List<Declaration> declarations, AnnoKind kind, List<Typedef> typedefs, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.title = title;
+		this.declarations = declarations;
+		this.kind = kind;
+		this.typedefs = typedefs;
 	}
 
 	public String getTitle() {

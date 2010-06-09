@@ -7,8 +7,9 @@ public class Option extends AstOptNode {
 
 	private String scon;
 
-	public Option(TextSource input, int start, int end) {
+	public Option(String scon, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.scon = scon;
 	}
 
 	public String getScon() {

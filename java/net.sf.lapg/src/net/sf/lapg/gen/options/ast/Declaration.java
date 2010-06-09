@@ -12,8 +12,13 @@ public class Declaration extends AstOptNode {
 	private Defaultval defaultval;
 	private List<Option> optionslistopt;
 
-	public Declaration(TextSource input, int start, int end) {
+	public Declaration(String identifier, Type type, List<Modifier> modifiersopt, Defaultval defaultval, List<Option> optionslistopt, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.identifier = identifier;
+		this.type = type;
+		this.modifiersopt = modifiersopt;
+		this.defaultval = defaultval;
+		this.optionslistopt = optionslistopt;
 	}
 
 	public String getIdentifier() {

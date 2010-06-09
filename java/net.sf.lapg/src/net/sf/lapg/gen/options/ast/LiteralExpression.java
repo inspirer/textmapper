@@ -9,8 +9,10 @@ public class LiteralExpression extends AstOptNode implements IExpression {
 	private String scon;
 	private Integer icon;
 
-	public LiteralExpression(TextSource input, int start, int end) {
+	public LiteralExpression(String scon, Integer icon, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.scon = scon;
+		this.icon = icon;
 	}
 
 	public String getScon() {

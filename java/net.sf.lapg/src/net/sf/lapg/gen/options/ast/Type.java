@@ -24,8 +24,14 @@ public class Type extends AstOptNode {
 	private Type type;
 	private List<Declaration> declarations;
 
-	public Type(TextSource input, int start, int end) {
+	public Type(String identifier, _String trueVal, _String falseVal, List<_String> strings, Type type, List<Declaration> declarations, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.identifier = identifier;
+		this.trueVal = trueVal;
+		this.falseVal = falseVal;
+		this.strings = strings;
+		this.type = type;
+		this.declarations = declarations;
 	}
 
 	public String getIdentifier() {
