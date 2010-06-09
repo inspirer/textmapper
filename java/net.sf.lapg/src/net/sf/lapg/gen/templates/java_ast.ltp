@@ -95,6 +95,8 @@ ${end}
 
 
 
+${cached query enumLiteralName(enumname) = 
+	util.uniqueId(name.toUpperCase()->escapeJavaReserved(), '__classes__'+enumname)}
 
 ${template astEnum(psym)-}
 ${file 'ast/' + psym->className() + '.java'-}
@@ -102,7 +104,7 @@ package ${call java.package}.ast;
 
 public enum ${psym->className()} {	
 ${foreach rule in syntax.rules[psym]-}
-	${rule.getRight().first().target.name.toUpperCase()},
+	${rule.getRight().first().target->enumLiteralName(psym->className())},
 ${end-}
 }
 ${end-}
@@ -266,12 +268,24 @@ ${query getListItemType(sym) =
 	'Object'
 }
 
+
+
+
 ${template createEnum(rule)-}
-$$ = ${call java.package}.ast.@${rule.getLeft()->className()}.${rule.getRight().first().target.name.toUpperCase()};
+${'$'}${'$'} = ${call java.package}.ast.@${rule.getLeft()->className()}.${rule.getRight().first().target->enumLiteralName(rule.getLeft()->className())};
 ${end}
 
+${template createClass(rule)-}
+$$ = new ${call java.package}.ast.@${rule.getLeft()->className()}(
+${foreach prop in self->allFields(rule.getLeft())-}
+null /* ${prop.name} */,
+${end-}
+null /* input */, ${if rule.getRight().length == 0}0, 2 /*fixme*/${else}${'$'}{self[0].offset}, ${'$'}{self[${rule.getRight().length-1}].endoffset}${end});
+${end}
 
 ${cached query astcode(rule) =
 	self->isEnum(rule.getLeft()) ? self->createEnum(rule) :
+	self->isOptional(rule.getLeft()) ? null :
+	self->symbolKind(rule.getLeft()) == 'class' ? self->createClass(rule) : 
 	null 
 }
