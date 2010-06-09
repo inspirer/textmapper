@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +31,7 @@ public class JavaPostProcessor {
 
 	Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
 	Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
-	Pattern PACKAGE = Pattern.compile("package\\s*.*;[ \\t]*[\\n\\r]+");
+	Pattern PACKAGE = Pattern.compile("package\\s*.*;[ \\t]*[\\n\\r]{1,2}");
 
 	private String text;
 	private final Map<String, String> toimport = new HashMap<String, String>();
@@ -93,10 +93,11 @@ public class JavaPostProcessor {
 			lastStart = inspos;
 			sb.append(toinsert.get(inspos));
 		}
-		if(lastImportLocation == 0 && locations.size() > 0) {
+		String next = text.substring(lastStart);
+		if(lastImportLocation == 0 && locations.size() > 0 && !next.startsWith("\r") && !next.startsWith("\n")) {
 			sb.append('\n');
 		}
-		sb.append(text.substring(lastStart));
+		sb.append(next);
 		text = sb.toString();
 	}
 
