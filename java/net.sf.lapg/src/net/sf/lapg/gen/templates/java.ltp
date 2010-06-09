@@ -17,7 +17,6 @@ ${template unit-}
 package ${call package};
 
 ${call imports-}
-
 import ${call package}.${opts.prefix}Lexer.LapgSymbol;
 
 public class ${opts.prefix}Parser {
@@ -209,13 +208,18 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 ${end-}
-${if syntax.hasActions()-}
+${if syntax.hasActions() || opts.genast == 'on'-}
 		switch( rule ) {
 ${foreach rule in syntax.rules-}
-${if rule.getAction()-}
+${if rule.getAction() || opts.genast == 'on' && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
+${if rule.getAction()-}			
 				${call parserAction for rule-}
 ${if opts.breaks == 'on'}				break;$/
+${else-}
+				${call astAction(self->java_ast.astcode(rule)) for rule-}
+				break;
+${end-}
 ${end-}
 ${end-}
 		}
@@ -269,9 +273,12 @@ ${else-}
 ${end-}
 ${end}
 
-
 ${template parserAction-}
 ${eval getAction(), '[action in '+getAction().getLocation()+']'}
+${end}
+
+${template astAction(code)-}
+${eval code, '[generated action for '+self+']'-}
 ${end}
 
 ${template getsym-}
@@ -319,8 +326,6 @@ ${if opts.endpositions.contains('offset')}int end, ${end-}
 int line, ${end}
 
 ${template imports-}
-import java.util.ArrayList;
-import java.util.List;
 ${end}
 
 ${template classcode-}

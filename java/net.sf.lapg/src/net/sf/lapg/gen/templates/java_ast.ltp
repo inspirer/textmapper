@@ -58,16 +58,19 @@ ${end-}
 public class ${psym->className()} extends ${opts.astprefix}Node${call implementedInterfaces(psym,' implements ')} {
 
 ${foreach prop in self->allFields(psym)-}
-	private ${prop.type} ${util.toCamelCase(prop.name, false)};
+	private ${prop.type} ${prop.name};
 ${end-}
 
-	public ${psym->className()}(${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+	public ${psym->className()}(${foreach prop in self->allFields(psym)}${prop.type} ${prop.name}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		super(input, start, end);
+${foreach prop in self->allFields(psym)-}
+		this.${prop.name} = ${prop.name};
+${end-}
 	}
 
 ${foreach prop in self->allFields(psym)-}
 	public ${prop.type} get${util.toCamelCase(prop.name, true)}() {
-		return ${util.toCamelCase(prop.name, false)};
+		return ${prop.name};
 	}
 ${end-}	
 }
@@ -234,13 +237,16 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 ${cached query interfaceRules() = syntax.rules.select(x|
 	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
-${cached query propInternal(alias,target) =
- target->isSimpleTerm() ? null : [name:alias?alias:target.name, type:self->getType(target)]}
+${cached query propertyName(psym) = 
+	util.uniqueId(util.toCamelCase(self, false)->escapeJavaReserved(), '__prop__' + psym.name)}
 
-${cached query property(symref) = self->propInternal(symref.alias ? symref.alias : '', symref.target)}
+${cached query propInternal(alias,target,container) =
+	target->isSimpleTerm() ? null : [name:(alias?alias:target.name)->propertyName(container), type:self->getType(target)]}
+
+${cached query property(symref, container) = self->propInternal(symref.alias ? symref.alias : '', symref.target, container)}
 
 ${cached query allFields(psym) = syntax.rules[psym].
-	collect(x|x.getRight()).collectUnique(x|self->property(x))}
+	collect(x|x.getRight()).collectUnique(x|self->property(x, psym))}
 
 ${query isClassifierKind() = self.equals('class') || self.equals('interface') || self.equals('enum')}
 
@@ -258,4 +264,14 @@ ${query getListItemType(sym) =
 	self->hasItemClass(sym) ? sym->listItemName() :
 	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
 	'Object'
+}
+
+${template createEnum(rule)-}
+$$ = ${call java.package}.ast.@${rule.getLeft()->className()}.${rule.getRight().first().target.name.toUpperCase()};
+${end}
+
+
+${cached query astcode(rule) =
+	self->isEnum(rule.getLeft()) ? self->createEnum(rule) :
+	null 
 }
