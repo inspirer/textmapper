@@ -39,6 +39,7 @@ public class AnnotationsTest extends LapgTestCase {
 		Symbol s = listItemRules[0].getLeft();
 		Assert.assertEquals(5, s.getAnnotation("weight"));
 		Assert.assertEquals("wwo", s.getAnnotation("name"));
+		Assert.assertEquals(Boolean.TRUE, s.getAnnotation("noast"));
 
 		Assert.assertEquals("rule1", listItemRules[0].getAnnotation("name"));
 		Assert.assertEquals("rule2", listItemRules[1].getAnnotation("name"));

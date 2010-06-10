@@ -14,7 +14,7 @@ list ::=
 	| list list_item
 ;
 
-[weight:5,name:"wwo"]
+[weight:5,name:"wwo", noast]
 list_item ::=
 	[name:"rule1"] identifier [ids: [4,2,3]]
 	| [name:"rule2"] Licon

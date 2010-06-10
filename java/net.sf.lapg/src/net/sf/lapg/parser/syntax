@@ -131,7 +131,7 @@ grammar_parts (List<AstGrammarPart>) ::=
 
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| annotations symbol typeopt '::=' rules ';'		{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| annotations_decl symbol typeopt '::=' rules ';'	{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations_decl, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| '%' identifier references ';'						{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 ; 
 
@@ -146,9 +146,9 @@ rules (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  annotationsopt rulesyms commandopt rule_priorityopt
-														{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $annotationsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| annotationsopt commandopt rule_priorityopt  		{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $annotationsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  annotations_declopt rulesyms commandopt rule_priorityopt
+														{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| annotations_declopt commandopt rule_priorityopt  	{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
 ;
 
 rulesyms (List<AstRuleSymbol>) ::=
@@ -157,13 +157,21 @@ rulesyms (List<AstRuleSymbol>) ::=
 ;
 
 rulesym (AstRuleSymbol) ::=
-	  commandopt identifier '=' reference annotationsopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $reference, $annotationsopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| commandopt reference annotationsopt					{ $$ = new AstRuleSymbol($commandopt, null, $reference, $annotationsopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	  commandopt identifier '=' reference annotations_declopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $reference, $annotations_declopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| commandopt reference annotations_declopt					{ $$ = new AstRuleSymbol($commandopt, null, $reference, $annotations_declopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+;
+
+annotations_decl (java.util.@Map<String,Object>) ::=
+	'['	annotations ']'									{ $$ = $annotations; }
 ;
 
 annotations (java.util.@Map<String,Object>) ::=
-	'['	map_entries ']'									{ $$ = $map_entries; }
+	  identifier 										{ $$ = new java.util.@HashMap<String,Object>(); $annotations.put($identifier, Boolean.TRUE); }
+	| identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $annotations.put($identifier, $expression); }
+	| annotations ',' identifier ':' expression			{ $annotations#0.put($identifier, $expression); }
+	| annotations ',' identifier						{ $annotations#0.put($identifier, Boolean.TRUE); }
 ;
+
 
 map_entries (java.util.@Map<String,Object>) ::=
 	  identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $map_entries.put($identifier, $expression); }
