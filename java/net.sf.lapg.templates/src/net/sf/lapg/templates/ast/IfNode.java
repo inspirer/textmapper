@@ -15,38 +15,43 @@
  */
 package net.sf.lapg.templates.ast;
 
-import java.util.ArrayList;
-
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.ast.AstTree.TextSource;
 
 public class IfNode extends CompoundNode {
-	private final ExpressionNode select;
-	private ArrayList<Node> elseInstructions;
+	private final ExpressionNode condition;
+	private ElseIfNode elseClauses;
 
 	public IfNode(ExpressionNode select, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.select = select;
+		this.condition = select;
 	}
 
 	public ExpressionNode getSelect() {
-		return select;
+		return condition;
 	}
 
-	public void setElseInstructions(ArrayList<Node> elseInstructions) {
-		this.elseInstructions = elseInstructions;
+	public void applyElse(ElseIfNode elseNode) {
+		this.elseClauses = elseNode;
 	}
 
 	@Override
 	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
-			ArrayList<Node> execute = env.toBoolean(env.evaluate(select, context, true)) ? instructions
-					: elseInstructions;
-			if (execute != null) {
-				for (Node n : execute) {
-					n.emit(sb, context, env);
+			if(env.toBoolean(env.evaluate(condition, context, true))) {
+				super.emit(sb, context, env);
+				return;
+			}
+			if (elseClauses != null) {
+				ElseIfNode eif = elseClauses;
+				while(eif != null) {
+					if(eif.getCondition() == null || env.toBoolean(env.evaluate(eif.getCondition(), context, true))) {
+						eif.emit(sb, context, env);
+						return;
+					}
+					eif = eif.getNext();
 				}
 			}
 		} catch (EvaluationException ex) {

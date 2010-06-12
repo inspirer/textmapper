@@ -194,21 +194,24 @@ template_arguments (ArrayList) ::=
 ;
 
 control_instruction (CompoundNode) ::=
-	control_start instructions control_end 			{ $control_instruction.setInstructions($instructions); }
-	| control_start instructions else_node instructions control_end
-                  									{ $control_instruction.setInstructions($instructions#0); applyElse($control_instruction,$instructions#1,${control_instruction.offset},${control_instruction.endoffset},${control_instruction.line}); }
+	control_start instructions else_clause 			{ $control_instruction.setInstructions($instructions); applyElse($control_start,$else_clause, ${left().offset}, ${left().endoffset}, ${left().line}); }
 ;
 
-else_node ::=
-	'${' Lelse '[-]}'
-;
+else_clause (ElseIfNode) ::=
+	  '${' Lelse Lif expression '[-]}' instructions else_clause
+	  												{ $$ = new ElseIfNode($expression, $instructions, $else_clause#1, source, ${first().offset}, ${instructions.endoffset}); }
+	| '${' Lelse '[-]}' instructions control_end
+													{ $$ = new ElseIfNode(null, $instructions, null, source, ${first().offset}, ${instructions.endoffset}); }
+	| control_end
+													{ $$ = null; }
+;   
 
 switch_instruction (CompoundNode) ::=
 	'${' Lswitch expression '[-]}' anyopt 
-           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list, null, source, ${switch_instruction.offset},${switch_instruction.endoffset}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
+           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list, null, source, ${left().offset},${left().endoffset}); checkIsSpace(${anyopt.offset},${anyopt.endoffset}, ${anyopt.line}); }
 	| '${' Lswitch expression '[-]}' anyopt 
-           case_list else_node instructions control_end
-													{ $$ = new SwitchNode($expression, $case_list, $instructions, source, ${switch_instruction.offset},${switch_instruction.endoffset}); checkIsSpace(${self[4].offset},${self[4].endoffset}, ${self[4].line}); }
+           case_list '${' Lelse '[-]}' instructions control_end
+													{ $$ = new SwitchNode($expression, $case_list, $instructions, source, ${left().offset},${left().endoffset}); checkIsSpace(${anyopt.offset},${anyopt.endoffset}, ${anyopt.line}); }
 ;
 
 case_list (ArrayList) ::=
@@ -345,6 +348,7 @@ body (TemplateNode) ::=
 %%
 ${template java.imports}
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 ${end}
 
@@ -383,9 +387,12 @@ private void checkIsSpace(int start, int end, int line) {
 		reporter.error(start, end, line, "Unknown text ignored: `"+val+"`");
 }
 
-private void applyElse(CompoundNode node, ArrayList<Node> instructions, int offset, int endoffset, int line) {
-	if( node instanceof IfNode ) {
-		((IfNode)node).setElseInstructions(instructions);
+private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int endoffset, int line) {
+	if (elseNode == null ) {
+		return;
+	}
+	if (node instanceof IfNode) {
+		((IfNode)node).applyElse(elseNode);
 	} else {
 		reporter.error(offset, endoffset, line, "Unknown else node, instructions skipped");
 	}

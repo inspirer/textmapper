@@ -15,7 +15,7 @@
  */
 package net.sf.lapg.templates.ast;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
@@ -27,13 +27,13 @@ public class CompoundNode extends Node {
 		super(source, offset, endoffset);
 	}
 
-	protected ArrayList<Node> instructions;
+	protected List<Node> instructions;
 
-	public ArrayList<Node> getInstructions() {
+	public List<Node> getInstructions() {
 		return instructions;
 	}
 
-	public void setInstructions(ArrayList<Node> instructions) {
+	public void setInstructions(List<Node> instructions) {
 		this.instructions = instructions;
 	}
 
