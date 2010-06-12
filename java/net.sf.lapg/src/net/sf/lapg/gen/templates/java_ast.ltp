@@ -1,19 +1,19 @@
 ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
-${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))-}
-${switch self->symbolKind(psym)-}
+${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->ast.isOptional(x))-}
+${switch self->ast.symbolKind(psym)-}
 ${case 'enum'}${call astEnum(psym)-}
 ${case 'interface'}${call astInterface(psym)-}
 ${case 'class'}${call astClass(psym)-}
-${else}${if self->symbolKind(psym)->isListKind() && self->hasItemClass(psym)}${call astListItemClass(psym)}${end-}
+${else}${if self->ast.symbolKind(psym)->isListKind() && self->hasItemClass(psym)}${call astListItemClass(psym)}${end-}
 ${end-}
 ${end-}
 ${end}
 
 
 
-${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft())
+${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->ast.isInterface(x.getLeft())
 	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
 
 ${template implementedInterfaces(sym, prefix)-}
@@ -35,7 +35,7 @@ package ${call java.package}.ast;
 public interface ${psym->interfaceName()}${call implementedInterfaces(psym,' extends ')} {
 
 ${foreach rule in self->interfaceRules()-}
-// $rule (${self->intListRuleKind(rule)})
+// $rule (${self->ast.intListRuleKind(rule)})
 ${end-}
 	
 }
@@ -53,7 +53,7 @@ ${file 'ast/' + psym->className() + '.java'-}
 package ${call java.package}.ast;
 
 ${foreach rule in syntax.rules[psym]-}
-// $rule (${self->intListRuleKind(rule)})
+// $rule (${self->ast.intListRuleKind(rule)})
 ${end-}
 public class ${psym->className()} extends ${opts.astprefix}Node${call implementedInterfaces(psym,' implements ')} {
 
@@ -169,56 +169,8 @@ ${end}
 
 
 
-${cached query symbolKind(sym) =
-	self->isEnum(sym) ? 'enum' :
-	self->isLeftList(sym) ? 'leftlist' :
-	self->isRightList(sym) ? 'rightlist' :
-	self->isInterface(sym) ? 'interface' : 'class'}
 
-${query isSimpleTerm() = self.isTerm() && !self.type}
-
-${cached query isInterface(sym) = syntax.rules[sym].
-	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
-
-${cached query isEnum(sym) = syntax.rules[sym].
-	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
-	
-${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
-	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
-	
-${cached query getOptionalTarget(sym) = syntax.rules[sym].collect(x|x.getRight()).first().target}
-
-${cached query isLeftList(sym) = syntax.rules[sym].
-	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
-
-${cached query isRightList(sym) = syntax.rules[sym].
-	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
-
-${query containsBothOnly(x,y) = 
-	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
-
-${cached query intListRuleKind(rule) = 
-	rule.getRight().length == 0 
-		? 'empty'
-		: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 1
-			? (rule.getRight().first().target == rule.getLeft() 
-				? 'leftrec'
-				: (rule.getRight().last().target == rule.getLeft()
-					? 'rightrec'
-					: 'unknown'
-				  )
-			  )
-			: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 0
-				? 'normal'
-				: 'unknown'
-			  )	
-		  )
-}
-
-
-
-
-${query refName(sym) = self->isInterface(sym) ? sym->interfaceName() : sym->className() }
+${query refName(sym) = self->ast.isInterface(sym) ? sym->interfaceName() : sym->className() }
 
 ${query escapeJavaReserved() = 
 	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
@@ -227,7 +179,7 @@ ${query escapeJavaReserved() =
 
 
 
-${cached query getListItems(sym) = syntax.rules[sym].collect(x|x.getRight()).collectUnique(x|x.target).reject(x|x == sym || x->isSimpleTerm())}
+${cached query getListItems(sym) = syntax.rules[sym].collect(x|x.getRight()).collectUnique(x|x.target).reject(x|x == sym || x->ast.isSimpleTerm())}
 
 ${query hasItemClass(sym) = self->getListItems(sym).length > 1}
 
@@ -237,13 +189,13 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 
 
 ${cached query interfaceRules() = syntax.rules.select(x|
-	self->isInterface(x.getLeft()) || (self->isOptional(x.getLeft()) && x.getRight().size() == 1))}
+	self->ast.isInterface(x.getLeft()) || (self->ast.isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
 ${cached query propertyName(psym) = 
 	util.uniqueId(util.toCamelCase(self, false)->escapeJavaReserved(), '__prop__' + psym.name)}
 
 ${cached query propInternal(alias,target,container) =
-	target->isSimpleTerm() ? null : [name:(alias?alias:target.name)->propertyName(container), type:self->getType(target)]}
+	target->ast.isSimpleTerm() ? null : [name:(alias?alias:target.name)->propertyName(container), type:self->getType(target)]}
 
 ${cached query property(symref, container) = self->propInternal(symref.alias ? symref.alias : '', symref.target, container)}
 
@@ -256,9 +208,9 @@ ${query isListKind() = self.equals('leftlist') || self.equals('rightlist')}
 	
 ${cached query getType(sym) =
  	sym.type ? sym.type :
- 	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
- 	self->symbolKind(sym)->isClassifierKind() ? self->refName(sym) :
- 	self->symbolKind(sym)->isListKind() ? 'java.util.@List<' + self->getListItemType(sym) + '>' :
+ 	self->ast.isOptional(sym) ? self->getType(self->ast.getOptionalTarget(sym)) :
+ 	self->ast.symbolKind(sym)->isClassifierKind() ? self->refName(sym) :
+ 	self->ast.symbolKind(sym)->isListKind() ? 'java.util.@List<' + self->getListItemType(sym) + '>' :
  	'Object'
 }
  
@@ -284,8 +236,8 @@ null /* input */, ${if rule.getRight().length == 0}0, 2 /*fixme*/${else}${'$'}{s
 ${end}
 
 ${cached query astcode(rule) =
-	self->isEnum(rule.getLeft()) ? self->createEnum(rule) :
-	self->isOptional(rule.getLeft()) ? null :
-	self->symbolKind(rule.getLeft()) == 'class' ? self->createClass(rule) : 
+	self->ast.isEnum(rule.getLeft()) ? self->createEnum(rule) :
+	self->ast.isOptional(rule.getLeft()) ? null :
+	self->ast.symbolKind(rule.getLeft()) == 'class' ? self->createClass(rule) : 
 	null 
 }

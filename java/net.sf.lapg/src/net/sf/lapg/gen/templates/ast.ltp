@@ -1,0 +1,45 @@
+${cached query symbolKind(sym) =
+	self->isEnum(sym) ? 'enum' :
+	self->isLeftList(sym) ? 'leftlist' :
+	self->isRightList(sym) ? 'rightlist' :
+	self->isInterface(sym) ? 'interface' : 'class'}
+
+${query isSimpleTerm() = self.isTerm() && !self.type}
+
+${cached query isInterface(sym) = syntax.rules[sym].
+	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
+
+${cached query isEnum(sym) = syntax.rules[sym].
+	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
+	
+${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
+	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
+	
+${cached query getOptionalTarget(sym) = syntax.rules[sym].collect(x|x.getRight()).first().target}
+
+${cached query isLeftList(sym) = syntax.rules[sym].
+	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
+
+${cached query isRightList(sym) = syntax.rules[sym].
+	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
+
+${query containsBothOnly(x,y) = 
+	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}
+
+${cached query intListRuleKind(rule) = 
+	rule.getRight().length == 0 
+		? 'empty'
+		: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 1
+			? (rule.getRight().first().target == rule.getLeft() 
+				? 'leftrec'
+				: (rule.getRight().last().target == rule.getLeft()
+					? 'rightrec'
+					: 'unknown'
+				  )
+			  )
+			: (rule.getRight().select(x|x.target == rule.getLeft()).size() == 0
+				? 'normal'
+				: 'unknown'
+			  )	
+		  )
+}
