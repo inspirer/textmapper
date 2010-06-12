@@ -37,13 +37,19 @@ class string {
 class expression {
 }
  
-class literal_expression {
+class literal_expression implements expression {
 }
  
-class structural_expression {
+class structural_expression implements expression someB {
 }
  
 class map_entries_item {
+}
+ 
+class someA {
+}
+ 
+class someB {
 }
  
 

@@ -14,12 +14,9 @@ ${end}
 
 
 
-${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->ast.isInterface(x.getLeft())
-	&& x.getRight().first().target == sym).collectUnique(x|x.getLeft())}
-
 ${template implementedInterfaces(sym, prefix)-}
-${if self->getImplemented(sym).size() > 0-}
-${prefix}${foreach impl in self->getImplemented(sym)}${if index > 0}, ${end}${self->refName(impl)}${end-}
+${if self->ast.getImplemented(sym).size() > 0-}
+${prefix}${foreach impl in self->ast.getImplemented(sym)}${if index > 0}, ${end}${self->refName(impl)}${end-}
 ${end-}
 ${end}
 

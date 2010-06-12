@@ -19,11 +19,17 @@ ${end-}
 ${end}
 
 ${template handle_class(cl)-}
-class ${cl.name} {
+class ${cl.name} ${call implements(cl,'implements')}{
 }
 ${end}
 
 ${template handle_interface(cl)-}
-class ${cl.name} {
+class ${cl.name} ${call implements(cl,'extends')}{
 }
+${end}
+
+${template implements(cl,prefix)-}
+${if cl.implements.length > 0-}
+${prefix} ${foreach i in cl.implements.collect(x|self->ast.symbolClasses(x, self->ast.symbolKind(x)))-}
+${i.name} ${end}${end-}
 ${end}

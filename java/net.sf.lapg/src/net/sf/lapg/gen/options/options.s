@@ -163,6 +163,10 @@ map_entries ::=
 	| map_entries ',' identifier ':' expression
 ;
 
+someA ::= map_entries | structural_expression ;
+
+someB ::= structural_expressionopt ;
+
 ##################################################################################
 
 %%

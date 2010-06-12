@@ -18,19 +18,22 @@ ${cached query symbolClasses(sym, kind) =
 		[
 			kind: 'interface',
 			name: sym.name,
-			sym: sym
+			sym: sym,
+			implements: self->getImplemented(sym)
 		] :
 	kind == 'class' ?
 		[
 			kind: 'class',
 			name: sym.name,
-			sym: sym
+			sym: sym,
+			implements: self->getImplemented(sym)
 		] :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		[
 			kind: 'class',
 			name: sym.name + '_item',
-			sym: sym
+			sym: sym,
+			implements: []
 		] :
 	null }
 
@@ -43,7 +46,17 @@ ${cached query symbolKind(sym) =
 ${query isSimpleTerm() = self.isTerm() && !self.type}
 
 ${cached query isInterface(sym) = syntax.rules[sym].
-	forAll(x|x.getRight().length == 1 && !x.getRight().first().target.isTerm())}
+	forAll(x|x.getRight().length == 1 
+			&& self->supportsExtending(x.getRight().first().target) )}
+
+${query supportsExtending(sym) = 
+	!sym.isTerm() &&
+	!self->isEnum(sym) &&
+	!self->isList(sym) && 
+	(!self->isOptional(sym) || self->supportsExtending(self->getOptionalTarget(sym)))}
+
+${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft()) || self->isOptional(x.getLeft())
+	&& x.getRight().first().target == sym).collectUnique(x|self->isOptional(x.getLeft()) ? self->getImplemented(x.getLeft()) : x.getLeft())}
 
 ${cached query isEnum(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
@@ -52,6 +65,8 @@ ${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
 	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
 	
 ${cached query getOptionalTarget(sym) = syntax.rules[sym].collect(x|x.getRight()).first().target}
+
+${cached query isList(sym) = self->isLeftList(sym) || self->isRightList(sym)} 
 
 ${cached query isLeftList(sym) = syntax.rules[sym].
 	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}

@@ -9,9 +9,11 @@ import net.sf.lapg.gen.options.ast.AnnoKind;
 import net.sf.lapg.gen.options.ast.Declaration;
 import net.sf.lapg.gen.options.ast.Defaultval;
 import net.sf.lapg.gen.options.ast.Group;
+import net.sf.lapg.gen.options.ast.Input;
 import net.sf.lapg.gen.options.ast.LiteralExpression;
 import net.sf.lapg.gen.options.ast.Modifier;
 import net.sf.lapg.gen.options.ast.Option;
+import net.sf.lapg.gen.options.ast.SomeA;
 import net.sf.lapg.gen.options.ast.StructuralExpression;
 import net.sf.lapg.gen.options.ast.Type;
 import net.sf.lapg.gen.options.ast.Typedef;
@@ -54,7 +56,7 @@ public class OptdefParser {
 		0, 1, 19, 31, 36, 36, 38, 44, 47, 48, 52, 56, 60, 64, 69, 71,
 		74, 77, 80, 83, 86, 89, 91, 93, 94, 96, 98, 101, 106, 108, 110, 113,
 		116, 117, 118, 120, 122, 125, 131, 132, 134, 135, 136, 138, 139, 141, 144, 146,
-		151, 156, 161, 166, 167, 168, 169, 170,
+		151, 156, 161, 166, 167, 168, 168, 168, 169, 170, 170,
 	};
 
     private static final short lapg_sym_from[] = {
@@ -89,14 +91,14 @@ public class OptdefParser {
 		1, 2, 1, 5, 4, 4, 1, 1, 1, 2, 1, 0, 1, 0, 1, 6,
 		3, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 1, 1, 1, 1, 1,
 		1, 6, 4, 4, 4, 4, 3, 1, 1, 1, 1, 1, 1, 1, 3, 3,
-		1, 3, 3, 5,
+		1, 3, 3, 5, 1, 1, 0, 1, 1,
 	};
 
     private static final short lapg_rlex[] = {
-		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 53, 53, 54, 54, 37,
+		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 55, 55, 56, 56, 37,
 		38, 38, 39, 40, 41, 41, 42, 43, 43, 44, 45, 45, 45, 45, 45, 45,
 		45, 45, 45, 45, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50,
-		51, 51, 52, 52,
+		51, 51, 52, 52, 53, 53, 57, 57, 54,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -153,8 +155,11 @@ public class OptdefParser {
 		"structural_expression",
 		"expression_list",
 		"map_entries",
+		"someA",
+		"someB",
 		"modifiersopt",
 		"optionslistopt",
+		"structural_expressionopt",
 	};
 
 	public interface Tokens extends Lexems {
@@ -180,8 +185,11 @@ public class OptdefParser {
 		public static final int structural_expression = 50;
 		public static final int expression_list = 51;
 		public static final int map_entries = 52;
-		public static final int modifiersopt = 53;
-		public static final int optionslistopt = 54;
+		public static final int someA = 53;
+		public static final int someB = 54;
+		public static final int modifiersopt = 55;
+		public static final int optionslistopt = 56;
+		public static final int structural_expressionopt = 57;
 	}
 
 	private static int lapg_next( int state, int symbol ) {
@@ -270,6 +278,11 @@ public class OptdefParser {
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
 		switch( rule ) {
+			case 0:  // input ::= groups
+				lapg_gg.sym = new Input(
+null /* groups */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
 			case 3:  // group ::= Lglobal scon '{' declarations '}'
 				lapg_gg.sym = new Group(
 null /* title */,
@@ -486,6 +499,18 @@ null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 null /* mapEntries */,
 null /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 52:  // someA ::= map_entries
+				lapg_gg.sym = new SomeA(
+null /* mapEntries */,
+null /* structuralExpression */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 53:  // someA ::= structural_expression
+				lapg_gg.sym = new SomeA(
+null /* mapEntries */,
+null /* structuralExpression */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 		}
 		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 

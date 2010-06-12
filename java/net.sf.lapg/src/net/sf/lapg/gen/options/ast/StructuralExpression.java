@@ -5,7 +5,7 @@ import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 // structural_expression ::= '[' map_entries ']' (normal)
 // structural_expression ::= '[' expression_list ']' (normal)
-public class StructuralExpression extends AstOptNode implements IExpression {
+public class StructuralExpression extends AstOptNode implements IExpression, ISomeB {
 
 	private List<MapEntriesItem> mapEntries;
 	private List<IExpression> expressionList;
