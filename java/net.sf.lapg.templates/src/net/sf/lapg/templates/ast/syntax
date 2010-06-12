@@ -268,8 +268,8 @@ complex_data (ExpressionNode) ::=
     | '[' map_entries ']'							{ $$ = new ConcreteMapNode($map_entries, source, ${complex_data.offset}, ${complex_data.endoffset}); }
  ;
 
-map_entries (HashMap<String,ExpressionNode>) ::=
-	identifier ':' expression						{ $$ = new HashMap(); $map_entries.put($identifier, $expression); }
+map_entries (java.util.@HashMap<String,ExpressionNode>) ::=
+	identifier ':' expression						{ $$ = new java.util.@HashMap(); $map_entries.put($identifier, $expression); }
 	| map_entries ',' identifier ':' expression		{ $map_entries#0.put($identifier, $expression); }
 ;
 
@@ -349,7 +349,6 @@ body (TemplateNode) ::=
 ${template java.imports}
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
 ${end}
 
 ${template java_tree.createParser-}

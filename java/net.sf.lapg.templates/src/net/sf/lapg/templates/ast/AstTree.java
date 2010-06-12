@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.HashMap;
 import net.sf.lapg.templates.ast.AstLexer.ErrorReporter;
 import net.sf.lapg.templates.ast.AstParser.ParseException;
 

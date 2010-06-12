@@ -212,6 +212,8 @@ command_token ::=
 
 ${template java.imports-}
 ${call base-}
+import java.util.List;
+import java.util.ArrayList;
 import net.sf.lapg.parser.ast.*;
 ${end}
 

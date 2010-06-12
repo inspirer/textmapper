@@ -2,15 +2,14 @@ package net.sf.lapg.parser;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import net.sf.lapg.parser.LapgLexer.ErrorReporter;
 import net.sf.lapg.parser.LapgLexer.Lexems;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.*;
-
 import net.sf.lapg.parser.LapgLexer.LapgSymbol;
 
 public class LapgParser {

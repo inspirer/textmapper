@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.MessageFormat;
-
 import net.sf.lapg.templates.model.xml.XmlLexer.ErrorReporter;
 import net.sf.lapg.templates.model.xml.XmlLexer.LapgSymbol;
 import net.sf.lapg.templates.model.xml.XmlLexer.Lexems;
