@@ -1,0 +1,16 @@
+${template unit-}
+${file 'astmodel.txt'-}
+// sample ast in generic form
+
+${foreach cl in self->ast.classes()-}
+${self->('handle_' + cl.kind)(cl)} 
+${end-}
+
+${end-}
+${end}
+
+
+${template handle_enum(cl)-}
+enum ${cl.name} {
+}
+${end}

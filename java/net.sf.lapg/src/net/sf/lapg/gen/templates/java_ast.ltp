@@ -1,4 +1,5 @@
 ${template unit-}
+${call astmodel.unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
 ${foreach psym in syntax.symbols.select(x|!x.isTerm() && !self->ast.isOptional(x))-}

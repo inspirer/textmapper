@@ -46,14 +46,14 @@ public class CallTemplateNode extends ExpressionNode {
 		this.templateIdExpr = identifier;
 	}
 
-	private String getTemplateId(EvaluationContext context) {
+	private static String getTemplateId(EvaluationContext context, String templateId) {
 		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base") ? context.getCurrent().getPackage() + "." + templateId : templateId;
 	}
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), context) : context;
-		String tid = templateId != null ? getTemplateId(context) : (String/* TODO */) env.evaluate(templateIdExpr, context, false);
+		String tid = getTemplateId(context, templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false));
 
 		Object[] args = null;
 		if (arguments != null) {

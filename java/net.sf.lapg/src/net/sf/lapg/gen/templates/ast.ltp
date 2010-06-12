@@ -1,3 +1,16 @@
+${cached query classes() = 
+	syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))
+	.collect(x|self->symbolClasses(x, self->symbolKind(x))) }
+
+${cached query symbolClasses(sym, kind) =
+	kind == 'enum' ? 
+		[
+			kind: 'enum',
+			name: sym.name    
+		]
+	:
+	null }
+
 ${cached query symbolKind(sym) =
 	self->isEnum(sym) ? 'enum' :
 	self->isLeftList(sym) ? 'leftlist' :

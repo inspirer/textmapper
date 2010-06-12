@@ -1,0 +1,9 @@
+// sample ast in generic form
+
+enum anno_kind {
+}
+ 
+enum modifier {
+}
+ 
+
