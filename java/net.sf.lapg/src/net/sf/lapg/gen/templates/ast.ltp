@@ -6,9 +6,32 @@ ${cached query symbolClasses(sym, kind) =
 	kind == 'enum' ? 
 		[
 			kind: 'enum',
-			name: sym.name    
-		]
-	:
+			name: sym.name,
+			sym: sym,
+			values: syntax.rules[sym].collect(rule|rule.getRight().first().target).collect(s|
+				[
+					name: s.name,
+					sym: s
+				])
+		] :
+	kind == 'interface' ?
+		[
+			kind: 'interface',
+			name: sym.name,
+			sym: sym
+		] :
+	kind == 'class' ?
+		[
+			kind: 'class',
+			name: sym.name,
+			sym: sym
+		] :
+	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
+		[
+			kind: 'class',
+			name: sym.name + '_item',
+			sym: sym
+		] :
 	null }
 
 ${cached query symbolKind(sym) =
@@ -56,3 +79,11 @@ ${cached query intListRuleKind(rule) =
 			  )	
 		  )
 }
+
+${cached query getListItems(sym) = syntax.rules[sym].collect(x|x.getRight()).collectUnique(x|x.target).reject(x|x == sym || x->isSimpleTerm())}
+
+${query hasItemClass(sym) = self->getListItems(sym).length > 1}
+
+${query hasListItem(sym) = self->getListItems(sym).length == 1}
+
+${query getListItem(sym) = self->getListItems(sym).first()}

@@ -1,9 +1,49 @@
 // sample ast in generic form
 
+class input {
+}
+ 
+class group {
+}
+ 
 enum anno_kind {
+	Lsymbol, 
+	Lrule, 
+	Lref, 
+}
+ 
+class declaration {
+}
+ 
+class option {
+}
+ 
+class defaultval {
 }
  
 enum modifier {
+	Lnotempty, 
+}
+ 
+class typedef {
+}
+ 
+class type {
+}
+ 
+class string {
+}
+ 
+class expression {
+}
+ 
+class literal_expression {
+}
+ 
+class structural_expression {
+}
+ 
+class map_entries_item {
 }
  
 

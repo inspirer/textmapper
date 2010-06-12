@@ -12,5 +12,18 @@ ${end}
 
 ${template handle_enum(cl)-}
 enum ${cl.name} {
+${foreach const in cl.values-}
+	${const.name}, 
+${end-}
+}
+${end}
+
+${template handle_class(cl)-}
+class ${cl.name} {
+}
+${end}
+
+${template handle_interface(cl)-}
+class ${cl.name} {
 }
 ${end}

@@ -7,7 +7,7 @@ ${switch self->ast.symbolKind(psym)-}
 ${case 'enum'}${call astEnum(psym)-}
 ${case 'interface'}${call astInterface(psym)-}
 ${case 'class'}${call astClass(psym)-}
-${else}${if self->ast.symbolKind(psym)->isListKind() && self->hasItemClass(psym)}${call astListItemClass(psym)}${end-}
+${else}${if self->ast.symbolKind(psym)->isListKind() && self->ast.hasItemClass(psym)}${call astListItemClass(psym)}${end-}
 ${end-}
 ${end-}
 ${end}
@@ -180,15 +180,6 @@ ${query escapeJavaReserved() =
 
 
 
-${cached query getListItems(sym) = syntax.rules[sym].collect(x|x.getRight()).collectUnique(x|x.target).reject(x|x == sym || x->ast.isSimpleTerm())}
-
-${query hasItemClass(sym) = self->getListItems(sym).length > 1}
-
-${query hasListItem(sym) = self->getListItems(sym).length == 1}
-
-${query getListItem(sym) = self->getListItems(sym).first()}
-
-
 ${cached query interfaceRules() = syntax.rules.select(x|
 	self->ast.isInterface(x.getLeft()) || (self->ast.isOptional(x.getLeft()) && x.getRight().size() == 1))}
 
@@ -216,8 +207,8 @@ ${cached query getType(sym) =
 }
  
 ${query getListItemType(sym) =
-	self->hasItemClass(sym) ? sym->listItemName() :
-	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
+	self->ast.hasItemClass(sym) ? sym->listItemName() :
+	self->ast.hasListItem(sym) ? self->getType(self->ast.getListItem(sym)) :
 	'Object'
 }
 
