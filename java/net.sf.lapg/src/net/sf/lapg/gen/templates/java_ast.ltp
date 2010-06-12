@@ -232,7 +232,7 @@ $$ = new ${call java.package}.ast.@${rule.getLeft()->className()}(
 ${foreach prop in self->allFields(rule.getLeft())-}
 null /* ${prop.name} */,
 ${end-}
-null /* input */, ${if rule.getRight().length == 0}0, 2 /*fixme*/${else}${'$'}{self[0].offset}, ${'$'}{self[${rule.getRight().length-1}].endoffset}${end});
+null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end});
 ${end}
 
 ${cached query astcode(rule) =

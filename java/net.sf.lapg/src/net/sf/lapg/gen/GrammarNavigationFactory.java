@@ -101,6 +101,17 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 	private final INavigationStrategy<Rule> ruleNavigation = new INavigationStrategy<Rule>() {
 
 		public Object callMethod(Rule rule, String methodName, Object[] args) throws EvaluationException {
+			if(args == null || args.length == 0) {
+				if(methodName.equals("left")) {
+					return new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, templatePackage);
+				}
+				if(methodName.equals("last") || methodName.equals("first")) {
+					SymbolRef[] array = rule.getRight();
+					int i = methodName.charAt(0) == 'f' ? 0 : array.length-1;
+					return new ActionSymbol(array[i].getTarget(), array[i], false, array.length - i - 1,
+							evaluationStrategy, templatePackage);
+				}
+			}
 			return javaNavigation.callMethod(rule, methodName, args);
 		}
 
