@@ -25,7 +25,6 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.lex.LexerTables;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.test.TestStatus;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class LexerGeneratorTest extends TestCase {
 
@@ -116,15 +115,15 @@ public class LexerGeneratorTest extends TestCase {
 		public Symbol getSymbol() {
 			return new Symbol() {
 				public boolean isTerm() {
-					throw new NotImplementedException();
+					throw new UnsupportedOperationException();
 				}
 
 				public boolean isDefined() {
-					throw new NotImplementedException();
+					throw new UnsupportedOperationException();
 				}
 
 				public String getType() {
-					throw new NotImplementedException();
+					throw new UnsupportedOperationException();
 				}
 
 				public String getName() {

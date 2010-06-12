@@ -43,7 +43,7 @@ public class Lapg extends Task {
 	}
 
 	public void addConfiguredOption(Option option) {
-		options.addTemplateOption(option.getName(), option.getValue());
+		options.getAdditionalOptions().put(option.getName(), option.getValue());
 	}
 
 	@Override

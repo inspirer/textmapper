@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.lapg.Lapg;
-
 /**
  * Represents generator options.
  */
@@ -46,7 +44,7 @@ public class LapgOptions {
 
 	public LapgOptions() {
 		this.debug = 0;
-		this.input = Lapg.DEFAULT_FILE;
+		this.input = null;
 		this.outputFolder = null;
 		this.templateName = "java";
 		this.includeFolders = new LinkedList<String>();
@@ -93,10 +91,6 @@ public class LapgOptions {
 
 	public void setUseDefaultTemplates(boolean useDefaultTemplates) {
 		this.useDefaultTemplates = useDefaultTemplates;
-	}
-
-	public void addTemplateOption(String key, String value) {
-		templateOptions.put(key, value);
 	}
 
 	public Map<String, Object> getAdditionalOptions() {

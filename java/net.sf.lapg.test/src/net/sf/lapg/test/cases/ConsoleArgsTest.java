@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -94,7 +94,7 @@ public class ConsoleArgsTest extends LapgTestCase {
 	public void testCheckNoArgs() {
 		LapgOptions lo = LapgOptions.parseArguments(new String[0], failingStream);
 		Assert.assertNotNull(lo);
-		Assert.assertEquals("syntax", lo.getInput());
+		Assert.assertEquals(null, lo.getInput());
 		Assert.assertNull(lo.getOutputFolder());
 		Assert.assertEquals(0, lo.getDebug());
 		Assert.assertEquals("java", lo.getTemplateName());
@@ -106,7 +106,7 @@ public class ConsoleArgsTest extends LapgTestCase {
 	public void testCheckDebug() {
 		LapgOptions lo = LapgOptions.parseArguments("-e".split(" "), failingStream);
 		Assert.assertNotNull(lo);
-		Assert.assertEquals("syntax", lo.getInput());
+		Assert.assertEquals(null, lo.getInput());
 		Assert.assertEquals(LapgOptions.DEBUG_TABLES, lo.getDebug());
 		lo = LapgOptions.parseArguments("-d".split(" "), failingStream);
 		Assert.assertEquals(LapgOptions.DEBUG_AMBIG, lo.getDebug());

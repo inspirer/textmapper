@@ -16,6 +16,7 @@
 package net.sf.lapg;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -39,7 +40,6 @@ public class Lapg {
 
 	public static final String VERSION = "1.4.0/java";
 	public static final String BUILD = "2010";
-	public static final String DEFAULT_FILE = "syntax";
 
 	public static final String HELP_MESSAGE =
 		"lapg - Lexer and Parser generator\n"+
@@ -54,7 +54,7 @@ public class Lapg {
 		"  -v,  --version                 version information\n"+
 		"\n"+
 		"Defaults:\n"+
-		"  inputfile = "+DEFAULT_FILE+"\n";
+		"  inputfile = .s file in the current directory (if single)\n";
 
 	public static final String VERSION_MESSAGE =
 		"lapg v" + VERSION + " build " + BUILD + "\n" +
@@ -73,18 +73,31 @@ public class Lapg {
 			}
 		}
 
-		if (args.length == 0 && !new File(DEFAULT_FILE).exists()) {
-			System.err.println("lapg: file not found: " + DEFAULT_FILE);
-			System.out.println(HELP_MESSAGE);
-			System.exit(1);
-			return;
-		}
-
 		LapgOptions options = LapgOptions.parseArguments(args, System.err);
 		if (options == null) {
 			System.err.println("Try 'lapg --help' for more information.");
 			System.exit(1);
 			return;
+		}
+
+		if(options.getInput() == null) {
+			File[] grammars = new File(".").listFiles(new FileFilter() {
+				public boolean accept(File pathname) {
+					return pathname.isFile() && pathname.getName().endsWith(".s");
+				}
+			});
+			if(grammars == null || grammars.length != 1) {
+				if(grammars == null || grammars.length == 0) {
+					System.err.println("lapg: no syntax files found, please specify");
+				} else {
+					System.err.println("lapg: " + grammars.length + " syntax files found, please specify");
+				}
+				System.err.println("Try 'lapg --help' for more information.");
+				System.exit(1);
+				return;
+			} else {
+				options.setInput(grammars[0].getName());
+			}
 		}
 
 		InputStream stream;
