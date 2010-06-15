@@ -1,41 +1,55 @@
-${cached query classes() = 
+${cached query allClasses() = 
 	syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))
-	.collect(x|self->symbolClasses(x, self->symbolKind(x))) }
+	.collect(x|self->getClasses(x)) }
 
-${cached query symbolClasses(sym, kind) =
+${cached query getClasses(sym) =
+	self->getClassesInternal(sym, self->symbolKind(sym))} 
+
+${cached query getClassesInternal(sym, kind) =
 	kind == 'enum' ? 
 		[
 			kind: 'enum',
 			name: sym.name,
 			sym: sym,
-			values: syntax.rules[sym].collect(rule|rule.getRight().first().target).collect(s|
-				[
-					name: s.name,
-					sym: s
-				])
+			literals: syntax.rules[sym].collect(rule|rule.getRight().first())
 		] :
 	kind == 'interface' ?
 		[
 			kind: 'interface',
 			name: sym.name,
 			sym: sym,
-			implements: self->getImplemented(sym)
+			implements: self->getImplements(sym)
 		] :
 	kind == 'class' ?
 		[
 			kind: 'class',
 			name: sym.name,
 			sym: sym,
-			implements: self->getImplemented(sym)
+			implements: self->getImplements(sym),
+			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm())
 		] :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		[
 			kind: 'class',
 			name: sym.name + '_item',
 			sym: sym,
-			implements: []
+			implements: [],
+			properties: syntax.rules[sym].collect(x|x.getRight().select(y|y.target != x.getLeft()))
+								.reject(x|x.target->isSimpleTerm()) 
 		] :
 	null }
+
+${cached query getProperties(cl) = cl.properties.collectUnique(x|self->getProperty(x, cl))}
+
+${cached query getProperty(symref, cl) = self->propInternal(symref.alias ? symref.alias : '', symref.target, cl)}
+
+${cached query propInternal(alias,target, cl) =
+		[
+			kind: 'property',
+			name:  alias?alias:target.name,
+			type: self->getType(target),
+			container: cl
+		]}
 
 ${cached query symbolKind(sym) =
 	self->isEnum(sym) ? 'enum' :
@@ -44,6 +58,9 @@ ${cached query symbolKind(sym) =
 	self->isInterface(sym) ? 'interface' : 'class'}
 
 ${query isSimpleTerm() = self.isTerm() && !self.type}
+
+${cached query isEnum(sym) = syntax.rules[sym].
+	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
 
 ${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 
@@ -55,12 +72,11 @@ ${query supportsExtending(sym) =
 	!self->isList(sym) && 
 	(!self->isOptional(sym) || self->supportsExtending(self->getOptionalTarget(sym)))}
 
-${cached query getImplemented(sym) = syntax.rules.with(sym).select(x|self->isInterface(x.getLeft()) || self->isOptional(x.getLeft())
-	&& x.getRight().first().target == sym).collectUnique(x|self->isOptional(x.getLeft()) ? self->getImplemented(x.getLeft()) : x.getLeft())}
+${cached query getImplements(sym) = syntax.rules.with(sym).select(x|
+				self->isInterface(x.getLeft()) || 
+				self->isOptional(x.getLeft()) && x.getRight().first().target == sym
+			).collectUnique(x|self->isOptional(x.getLeft()) ? self->getImplements(x.getLeft()) : x.getLeft())}
 
-${cached query isEnum(sym) = syntax.rules[sym].
-	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
-	
 ${cached query isOptional(sym) = syntax.rules[sym].size() == 2 &&
 	syntax.rules[sym].collect(x|x.getRight().length)->containsBothOnly(0,1)}
 	
@@ -102,3 +118,28 @@ ${query hasItemClass(sym) = self->getListItems(sym).length > 1}
 ${query hasListItem(sym) = self->getListItems(sym).length == 1}
 
 ${query getListItem(sym) = self->getListItems(sym).first()}
+
+${cached query getType(sym) =
+ 	sym.type ? sym.type :
+ 	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
+ 	self->isList(sym) ? self->listType(self->getListItemType(sym)) :
+ 	self->getObjectType(sym) 
+}
+
+${query getObjectTypeInternal(classes) =
+	classes.first() ? self->objectType(classes.first()) : '<-bad-type->'}
+
+${query getObjectType(sym) = 
+	self->getObjectTypeInternal([self->getClasses(sym)].collect(x|x)) }
+
+${query getListItemType(sym) =
+	self->hasItemClass(sym) ? self->getObjectType(sym) :
+	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
+	'Object'
+}
+
+
+
+${query objectType(cl) = self->(opts.lang + '_ast.objectType')(cl)}
+
+${query listType(type) = self->(opts.lang + '_ast.listType')(type)}
