@@ -2,8 +2,6 @@ package net.sf.lapg.gen.options.ast;
 
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-// literal_expression ::= scon (normal)
-// literal_expression ::= icon (normal)
 public class LiteralExpression extends AstOptNode implements IExpression {
 
 	private String scon;

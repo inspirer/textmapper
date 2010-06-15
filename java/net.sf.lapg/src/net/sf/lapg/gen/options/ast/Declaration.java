@@ -3,7 +3,6 @@ package net.sf.lapg.gen.options.ast;
 import java.util.List;
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-// declaration ::= identifier ':' type modifiersopt defaultval optionslistopt (normal)
 public class Declaration extends AstOptNode {
 
 	private String identifier;

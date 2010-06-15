@@ -2,7 +2,6 @@ package net.sf.lapg.gen.options.ast;
 
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-// typedef ::= identifier '=' type ';' (normal)
 public class Typedef extends AstOptNode {
 
 	private String identifier;

@@ -3,7 +3,6 @@ package net.sf.lapg.gen.options.ast;
 import java.util.List;
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-// input ::= groups (normal)
 public class Input extends AstOptNode {
 
 	private List<Group> groups;

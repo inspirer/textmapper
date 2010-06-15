@@ -3,8 +3,6 @@ package net.sf.lapg.gen.options.ast;
 import java.util.List;
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-// someA ::= map_entries (normal)
-// someA ::= structural_expression (normal)
 public class SomeA extends AstOptNode {
 
 	private List<MapEntriesItem> mapEntries;
