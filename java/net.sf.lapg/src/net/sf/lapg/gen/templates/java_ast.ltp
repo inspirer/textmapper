@@ -144,18 +144,26 @@ ${end-}
 ${end}
 
 
-
+${query getClass(rule) = self->ast.getClasses(rule.getLeft())}
 
 ${template createEnum(rule)-}
-${'$'}${'$'} = ${call java.package}.ast.@${self->ast.getClasses(rule.getLeft())->className()}.${rule.getRight().first()->enumLiteralName(self->ast.getClasses(rule.getLeft())->className())};
+${'$$'} = ${call java.package}.ast.@${self->getClass(rule)->className()}.${rule.getRight().first()->enumLiteralName(self->getClass(rule)->className())};
+${end}
+
+${template call_ctor(rule,props,cl)-}
+${'$$'} = new ${call java.package}.ast.@${cl->className()}(
+${foreach prop in props-}
+${if self->ast.getPropertyIndex(prop,rule,cl) >= 0 -}
+${'$'+ self->ast.getPropertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
+${else-}
+null /* ${prop->propertyName()} */,
+${end-}
+${end-}
+null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end});
 ${end}
 
 ${template createClass(rule)-}
-$$ = new ${call java.package}.ast.@${self->ast.getClasses(rule.getLeft())->className()}(
-${foreach prop in self->ast.getProperties(self->ast.getClasses(rule.getLeft()))-}
-null /* ${prop->propertyName()} */,
-${end-}
-null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end});
+${call call_ctor(rule, self->ast.getProperties(self->getClass(rule)), self->getClass(rule))-} 
 ${end}
 
 ${cached query astcode(rule) =
@@ -167,7 +175,10 @@ ${cached query astcode(rule) =
 
 
 ${query objectType(cl) = 
-	cl.kind == 'interface' ? cl->interfaceName() :
-	cl->className()}
+	self->java.package() + '.ast.@' + (
+		cl.kind == 'interface' 
+			? cl->interfaceName()
+			: cl->className() 
+	)}
 
 ${query listType(type) = 'java.util.@List<' + type + '>'}

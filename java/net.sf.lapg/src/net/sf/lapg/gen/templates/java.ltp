@@ -78,7 +78,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().type}${syntax.input.first().type}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws java.io.@IOException, ParseException {
+	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first()->type()}${syntax.input.first()->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws java.io.@IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -164,7 +164,7 @@ ${if syntax.error-}
 ${end-}
 			throw new ParseException();
 		};
-		return ${if syntax.input.length == 1 && syntax.input.first().type}(${syntax.input.first().type})${end}lapg_m[lapg_head-1].sym;
+		return ${if syntax.input.length == 1 && syntax.input.first()->type()}(${syntax.input.first()->type()})${end}lapg_m[lapg_head-1].sym;
 	}
 
 	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
@@ -232,8 +232,8 @@ ${end-}
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	public ${if inp.type}${inp.type}${else}Object${end} parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.type}(${inp.type}) ${end}parse(lexer, ${index});
+	public ${if inp->type()}${inp->type()}${else}Object${end} parse${util.toFirstUpper(inp.name)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
+		return ${if inp->type()}(${inp->type()}) ${end}parse(lexer, ${index});
 	}
 ${end-}
 ${end-}
@@ -286,8 +286,8 @@ ${if self.isLeft}lapg_gg${else}lapg_m[lapg_head-${self.rightOffset}]${end-}
 ${end}
 
 ${template symbol-}
-${if symbol.type-}
-((${symbol.type})${call getsym-}.sym)${else-}
+${if symbol->type()-}
+((${symbol->type()})${call getsym-}.sym)${else-}
 ${call getsym-}.sym${end-}
 ${end}
 
@@ -308,12 +308,6 @@ ${call getsym}.endcolumn${end}
 
 ${template sym_endoffset-}
 ${call getsym}.endoffset${end}
-
-${template package-}
-${if opts.package-}
-${opts.package-}
-${else}com.test${end-}
-${end}
 
 ${template err_location(var)-}
 ${if opts.positions.contains('offset')}${var}.offset, ${end-} 
@@ -340,3 +334,7 @@ ${template parseException-}
 		}
 	}
 ${end}
+
+${query package() = opts.package ? opts.package : 'com.test' }
+
+${cached query type() = context.opts.genast == 'on' ? context->ast.getType(self) : self.type }

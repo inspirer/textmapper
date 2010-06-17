@@ -26,7 +26,7 @@ ${cached query getClassesInternal(sym, kind) =
 			name: sym.name,
 			sym: sym,
 			implements: self->getImplements(sym),
-			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm())
+			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm()).toSet()
 		] :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		[
@@ -35,21 +35,36 @@ ${cached query getClassesInternal(sym, kind) =
 			sym: sym,
 			implements: [],
 			properties: syntax.rules[sym].collect(x|x.getRight().select(y|y.target != x.getLeft()))
-								.reject(x|x.target->isSimpleTerm()) 
+								.reject(x|x.target->isSimpleTerm()).toSet() 
 		] :
 	null }
 
-${cached query getProperties(cl) = cl.properties.collectUnique(x|self->getProperty(x, cl))}
 
-${cached query getProperty(symref, cl) = self->propInternal(symref.alias ? symref.alias : '', symref.target, cl)}
+${cached query getProperties(cl) =
+		cl.properties.collectUnique(x|self->getProperty(x, cl))}
+
+${cached query getPropertySymbolRef(prop,rule,cl) =
+		rule.getRight().select(x|cl.properties.contains(x) && (!x.alias || prop.alias == x.alias) && prop.target == x.target)}
+		
+${query symRefIndex(rule, elementlist) =
+		elementlist.first() ? rule.getRight().indexOf(elementlist.first()) : -1 } 		
+		
+${cached query getPropertyIndex(prop,rule,cl) =
+		self->symRefIndex(rule, self->getPropertySymbolRef(prop,rule,cl)) }
+
+${cached query getProperty(symref, cl) =
+		symref.target->isSimpleTerm() ? null : self->propInternal(symref.alias ? symref.alias : '', symref.target, cl)}
 
 ${cached query propInternal(alias,target, cl) =
 		[
 			kind: 'property',
-			name:  alias?alias:target.name,
+			name:  alias ? alias : target.name,
 			type: self->getType(target),
-			container: cl
+			container: cl,
+			alias: alias,
+			target: target
 		]}
+
 
 ${cached query symbolKind(sym) =
 	self->isEnum(sym) ? 'enum' :
@@ -119,6 +134,7 @@ ${query hasListItem(sym) = self->getListItems(sym).length == 1}
 
 ${query getListItem(sym) = self->getListItems(sym).first()}
 
+
 ${cached query getType(sym) =
  	sym.type ? sym.type :
  	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
@@ -127,7 +143,7 @@ ${cached query getType(sym) =
 }
 
 ${query getObjectTypeInternal(classes) =
-	classes.first() ? self->objectType(classes.first()) : '<-bad-type->'}
+	classes.first() ? self->objectType(classes.first()) : null}
 
 ${query getObjectType(sym) = 
 	self->getObjectTypeInternal([self->getClasses(sym)].collect(x|x)) }
@@ -137,7 +153,6 @@ ${query getListItemType(sym) =
 	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
 	'Object'
 }
-
 
 
 ${query objectType(cl) = self->(opts.lang + '_ast.objectType')(cl)}
