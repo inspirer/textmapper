@@ -31,9 +31,10 @@ public class JavaPostProcessor {
 
 	Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
 	Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
-	Pattern PACKAGE = Pattern.compile("package\\s*.*;[ \\t]*[\\n\\r]{1,2}");
+	Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\s*\\.\\s*)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*[\\n\\r]{1,2}");
 
 	private String text;
+	private String currentPackage;
 	private final Map<String, String> toimport = new HashMap<String, String>();
 	private final Set<String> massimport = new HashSet<String>();
 
@@ -104,7 +105,9 @@ public class JavaPostProcessor {
 	private void collectExistingImports() {
 		Matcher p = PACKAGE.matcher(text);
 		if(p.find()) {
-			nextAfterPackage  = p.end();
+			nextAfterPackage = p.end();
+			currentPackage = p.group(1);
+			massimport.add(currentPackage);
 		}
 
 		massimport.add("java.lang");
