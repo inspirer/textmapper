@@ -38,9 +38,11 @@ import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
 public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
 	private final String templatePackage;
+	private final EvaluationContext rootContext;
 
-	public GrammarNavigationFactory(String templatePackage) {
+	public GrammarNavigationFactory(String templatePackage, EvaluationContext context) {
 		this.templatePackage = templatePackage;
+		this.rootContext = context;
 	}
 
 	@Override
@@ -103,13 +105,13 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		public Object callMethod(Rule rule, String methodName, Object[] args) throws EvaluationException {
 			if(args == null || args.length == 0) {
 				if(methodName.equals("left")) {
-					return new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, templatePackage);
+					return new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
 				}
 				if(methodName.equals("last") || methodName.equals("first")) {
 					SymbolRef[] array = rule.getRight();
 					int i = methodName.charAt(0) == 'f' ? 0 : array.length-1;
 					return new ActionSymbol(array[i].getTarget(), array[i], false, array.length - i - 1,
-							evaluationStrategy, templatePackage);
+							evaluationStrategy, rootContext, templatePackage);
 				}
 			}
 			return javaNavigation.callMethod(rule, methodName, args);
@@ -120,7 +122,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 				int i = (Integer) index;
 				SymbolRef[] array = rule.getRight();
 				return new ActionSymbol(array[i].getTarget(), array[i], false, array.length - i - 1,
-						evaluationStrategy, templatePackage);
+						evaluationStrategy, rootContext, templatePackage);
 			} else if (index instanceof String) {
 				return rule.getAnnotation((String) index);
 			} else {
@@ -132,7 +134,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		public Object getProperty(Rule rule, String id) throws EvaluationException {
 			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
 			if (rule.getLeft().getName().equals(id)) {
-				result.add(new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, templatePackage));
+				result.add(new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
 			}
 
 			SymbolRef[] right = rule.getRight();
@@ -143,7 +145,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 				}
 				if (id.equals(name)) {
 					result.add(new ActionSymbol(right[i].getTarget(), right[i], false, right.length - i - 1,
-							evaluationStrategy, templatePackage));
+							evaluationStrategy, rootContext, templatePackage));
 				}
 			}
 

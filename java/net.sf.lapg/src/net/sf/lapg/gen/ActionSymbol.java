@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,20 +29,22 @@ public class ActionSymbol {
 	final boolean isLeft;
 	final int rightOffset;
 	private final IEvaluationStrategy evaluationStrategy;
+	private final EvaluationContext context;
 	private final String templatePackage;
 
-	public ActionSymbol(Symbol symbol, SymbolRef ref, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, String templatePackage) {
+	public ActionSymbol(Symbol symbol, SymbolRef ref, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, EvaluationContext context, String templatePackage) {
 		this.symbol = symbol;
 		this.ref = ref;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
 		this.evaluationStrategy = strategy;
+		this.context = context;
 		this.templatePackage = templatePackage;
 	}
 
 	@Override
 	public String toString() {
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage+".symbol", IBundleEntity.KIND_TEMPLATE, null);
-		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), null, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), null, null);
 	}
 }

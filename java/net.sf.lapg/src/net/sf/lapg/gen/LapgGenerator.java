@@ -121,10 +121,11 @@ public final class LapgGenerator {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
 
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName()), loaders.toArray(new IBundleLoader[loaders.size()]), status);
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
+		context.setVariable("context", map);
 		context.setVariable("$", "lapg_gg.sym");
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), loaders.toArray(new IBundleLoader[loaders.size()]), status);
 		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
