@@ -2,6 +2,7 @@ package net.sf.lapg.gen.options;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.List;
 import net.sf.lapg.gen.options.OptdefLexer.ErrorReporter;
 import net.sf.lapg.gen.options.OptdefLexer.LapgSymbol;
 import net.sf.lapg.gen.options.OptdefLexer.Lexems;
@@ -9,8 +10,10 @@ import net.sf.lapg.gen.options.ast.AnnoKind;
 import net.sf.lapg.gen.options.ast.Declaration;
 import net.sf.lapg.gen.options.ast.Defaultval;
 import net.sf.lapg.gen.options.ast.Group;
+import net.sf.lapg.gen.options.ast.IExpression;
 import net.sf.lapg.gen.options.ast.Input;
 import net.sf.lapg.gen.options.ast.LiteralExpression;
+import net.sf.lapg.gen.options.ast.MapEntriesItem;
 import net.sf.lapg.gen.options.ast.Modifier;
 import net.sf.lapg.gen.options.ast.Option;
 import net.sf.lapg.gen.options.ast.SomeA;
@@ -280,13 +283,13 @@ public class OptdefParser {
 		switch( rule ) {
 			case 0:  // input ::= groups
 				lapg_gg.sym = new Input(
-null /* groups */,
+((List<Group>)lapg_m[lapg_head-0].sym) /* groups, 0groups  */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 3:  // group ::= Lglobal scon '{' declarations '}'
 				lapg_gg.sym = new Group(
-null /* title */,
-null /* declarations */,
+((String)lapg_m[lapg_head-3].sym) /* title, 0Lglobal 1title 2'{' 3declarations 4'}'  */,
+((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations, 0Lglobal 1title 2'{' 3declarations 4'}'  */,
 null /* kind */,
 null /* typedefs */,
 null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
@@ -294,8 +297,8 @@ null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 			case 4:  // group ::= anno_kind '{' declarations '}'
 				lapg_gg.sym = new Group(
 null /* title */,
-null /* declarations */,
-null /* kind */,
+((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations, 0kind 1'{' 2declarations 3'}'  */,
+((AnnoKind)lapg_m[lapg_head-3].sym) /* kind, 0kind 1'{' 2declarations 3'}'  */,
 null /* typedefs */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
@@ -304,7 +307,7 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 null /* title */,
 null /* declarations */,
 null /* kind */,
-null /* typedefs */,
+((List<Typedef>)lapg_m[lapg_head-1].sym) /* typedefs, 0Ltypes 1'{' 2typedefs 3'}'  */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 6:  // anno_kind ::= Lsymbol
@@ -318,21 +321,21 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 15:  // declaration ::= identifier ':' type modifiersopt defaultval optionslistopt
 				lapg_gg.sym = new Declaration(
-null /* identifier */,
-null /* type */,
-null /* modifiersopt */,
-null /* defaultval */,
-null /* optionslistopt */,
+((String)lapg_m[lapg_head-5].sym) /* identifier, 0identifier 1':' 2type 3modifiersopt 4defaultval 5optionslistopt  */,
+((Type)lapg_m[lapg_head-3].sym) /* type, 0identifier 1':' 2type 3modifiersopt 4defaultval 5optionslistopt  */,
+((List<Modifier>)lapg_m[lapg_head-2].sym) /* modifiersopt, 0identifier 1':' 2type 3modifiersopt 4defaultval 5optionslistopt  */,
+((Defaultval)lapg_m[lapg_head-1].sym) /* defaultval, 0identifier 1':' 2type 3modifiersopt 4defaultval 5optionslistopt  */,
+((List<Option>)lapg_m[lapg_head-0].sym) /* optionslistopt, 0identifier 1':' 2type 3modifiersopt 4defaultval 5optionslistopt  */,
 null /* input */, lapg_m[lapg_head-5].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 18:  // option ::= Ltitle scon
 				lapg_gg.sym = new Option(
-null /* scon */,
+((String)lapg_m[lapg_head-0].sym) /* scon, 0Ltitle 1scon  */,
 null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 19:  // defaultval ::= Ldefault expression
 				lapg_gg.sym = new Defaultval(
-null /* expression */,
+((IExpression)lapg_m[lapg_head-0].sym) /* expression, 0Ldefault 1expression  */,
 null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 22:  // modifier ::= Lnotempty
@@ -340,13 +343,13 @@ null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 25:  // typedef ::= identifier '=' type ';'
 				lapg_gg.sym = new Typedef(
-null /* identifier */,
-null /* type */,
+((String)lapg_m[lapg_head-3].sym) /* identifier, 0identifier 1'=' 2type 3';'  */,
+((Type)lapg_m[lapg_head-1].sym) /* type, 0identifier 1'=' 2type 3';'  */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 26:  // type ::= identifier
 				lapg_gg.sym = new Type(
-null /* identifier */,
+((String)lapg_m[lapg_head-0].sym) /* identifier, 0identifier  */,
 null /* trueVal */,
 null /* falseVal */,
 null /* strings */,
@@ -417,8 +420,8 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 			case 33:  // type ::= Lbool '(' string ',' string ')'
 				lapg_gg.sym = new Type(
 null /* identifier */,
-null /* trueVal */,
-null /* falseVal */,
+((_String)lapg_m[lapg_head-3].sym) /* trueVal, 0Lbool 1'(' 2trueVal 3',' 4falseVal 5')'  */,
+((_String)lapg_m[lapg_head-1].sym) /* falseVal, 0Lbool 1'(' 2trueVal 3',' 4falseVal 5')'  */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -429,7 +432,7 @@ null /* input */, lapg_m[lapg_head-5].offset, lapg_m[lapg_head-0].endoffset);
 null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
-null /* strings */,
+((List<_String>)lapg_m[lapg_head-1].sym) /* strings, 0Lset 1'(' 2strings 3')'  */,
 null /* type */,
 null /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
@@ -439,7 +442,7 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
-null /* strings */,
+((List<_String>)lapg_m[lapg_head-1].sym) /* strings, 0Lchoice 1'(' 2strings 3')'  */,
 null /* type */,
 null /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
@@ -450,7 +453,7 @@ null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
 null /* strings */,
-null /* type */,
+((Type)lapg_m[lapg_head-1].sym) /* type, 0Larray 1'(' 2type 3')'  */,
 null /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
@@ -461,55 +464,55 @@ null /* trueVal */,
 null /* falseVal */,
 null /* strings */,
 null /* type */,
-null /* declarations */,
+((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations, 0Lstruct 1'{' 2declarations 3'}'  */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 40:  // string ::= identifier
 				lapg_gg.sym = new _String(
-null /* identifier */,
+((String)lapg_m[lapg_head-0].sym) /* identifier, 0identifier  */,
 null /* scon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 41:  // string ::= scon
 				lapg_gg.sym = new _String(
 null /* identifier */,
-null /* scon */,
+((String)lapg_m[lapg_head-0].sym) /* scon, 0scon  */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 44:  // literal_expression ::= scon
 				lapg_gg.sym = new LiteralExpression(
-null /* scon */,
+((String)lapg_m[lapg_head-0].sym) /* scon, 0scon  */,
 null /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 45:  // literal_expression ::= icon
 				lapg_gg.sym = new LiteralExpression(
 null /* scon */,
-null /* icon */,
+((Integer)lapg_m[lapg_head-0].sym) /* icon, 0icon  */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 46:  // structural_expression ::= '[' map_entries ']'
 				lapg_gg.sym = new StructuralExpression(
-null /* mapEntries */,
+((List<MapEntriesItem>)lapg_m[lapg_head-1].sym) /* mapEntries, 0'[' 1map_entries 2']'  */,
 null /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 47:  // structural_expression ::= '[' expression_list ']'
 				lapg_gg.sym = new StructuralExpression(
 null /* mapEntries */,
-null /* expressionList */,
+((List<IExpression>)lapg_m[lapg_head-1].sym) /* expressionList, 0'[' 1expression_list 2']'  */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 52:  // someA ::= map_entries
 				lapg_gg.sym = new SomeA(
-null /* mapEntries */,
+((List<MapEntriesItem>)lapg_m[lapg_head-0].sym) /* mapEntries, 0map_entries  */,
 null /* structuralExpression */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 53:  // someA ::= structural_expression
 				lapg_gg.sym = new SomeA(
 null /* mapEntries */,
-null /* structuralExpression */,
+((StructuralExpression)lapg_m[lapg_head-0].sym) /* structuralExpression, 0structural_expression  */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 		}
