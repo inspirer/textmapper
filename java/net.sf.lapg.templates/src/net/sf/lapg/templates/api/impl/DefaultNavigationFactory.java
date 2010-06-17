@@ -21,8 +21,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.sf.lapg.templates.api.EvaluationException;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
@@ -167,6 +169,11 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 						last = r;
 					}
 					return last;
+				} else if(methodName.equals("toSet")) {
+					if(cl instanceof Set<?>) {
+						return cl;
+					}
+					return new LinkedHashSet<Object>(cl);
 				}
 			}
 			return javaNavigation.callMethod(cl, methodName, args);
@@ -203,9 +210,11 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			} else if(args.length == 1) {
 				if (methodName.equals("contains")) {
 					return Arrays.asList(array).contains(args[0]);
+				} else if(methodName.equals("indexOf")) {
+					return Arrays.asList(array).indexOf(args[0]);
 				}
 			}
-			throw new EvaluationException("do not know method `" + methodName + "`");
+			throw new EvaluationException("array, do not know method `" + methodName + "`");
 		}
 
 		public Object getByIndex(Object[] array, Object index) throws EvaluationException {
