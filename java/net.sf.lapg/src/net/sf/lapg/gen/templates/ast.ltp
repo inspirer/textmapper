@@ -43,17 +43,15 @@ ${cached query getClassesInternal(sym, kind) =
 ${cached query getProperties(cl) =
 		cl.properties.collectUnique(x|self->getProperty(x, cl))}
 
-${cached query getPropertySymbolRef(prop,rule,cl) =
+${cached query getPropertySymbolRefs(prop,rule,cl) =
 		rule.getRight().select(x|
 				cl.properties.contains(x) && 
 				(x.alias && prop.alias ? prop.alias == x.alias : (!x.alias && !prop.alias)) && 
 				prop.target == x.target)}
 		
-${query symRefIndex(rule, elementlist) =
-		elementlist.first() ? rule.getRight().indexOf(elementlist.first()) : -1 } 		
-		
 ${cached query getPropertyIndex(prop,rule,cl) =
-		self->symRefIndex(rule, self->getPropertySymbolRef(prop,rule,cl)) }
+		list = self->getPropertySymbolRefs(prop,rule,cl),
+		list.first() ? rule.getRight().indexOf(list.first()) : -1 }
 
 ${cached query getProperty(symref, cl) =
 		self->propInternal(symref.alias ? symref.alias : '', symref.target, cl)}
