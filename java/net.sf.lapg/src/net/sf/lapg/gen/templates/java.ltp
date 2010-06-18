@@ -40,7 +40,7 @@ ${end-}
 
 	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
 		// non-terminals
-${for i : parser.nterms, parser.nsyms-1 -}
+${for i in [parser.nterms, parser.nsyms-1]-}
 		public static final int ${util.toIdentifier(parser.sym[i].name,i)} = ${i};
 ${end-}
 	}

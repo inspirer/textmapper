@@ -90,14 +90,13 @@ Lassert:	/assert/
 '=':		/=/
 '!=':		/!=/
 '->':		/->/
+'=>':		/=>/
 '<=':		/<=/
 '>=':		/>=/
 '<':		/</
 '>':		/>/
 ':':		/:/
 '?':		/?/
-'`':		/`/
-'$':		/$/
 
 _skip:      /[\t\r\n ]+/    { return false; }
 
@@ -171,13 +170,14 @@ simple_instruction (Node) ::=
 
 sentence (Node) ::=
 	  expression
-	| Lcall qualified_id template_argumentsopt template_for_expropt	{ $$ = new CallTemplateNode($qualified_id, $template_argumentsopt, $template_for_expropt, templatePackage, true, source, ${sentence.offset},${sentence.endoffset}); }
-	| Leval expression comma_expropt				{ $$ = new EvalNode($expression,$comma_expropt,source, ${sentence.offset},${sentence.endoffset}); }
-	| Lassert expression							{ $$ = new AssertNode($expression,source, ${sentence.offset},${sentence.endoffset}); }
+	| Lcall qualified_id template_argumentsopt template_for_expropt
+													{ $$ = new CallTemplateNode($qualified_id, $template_argumentsopt, $template_for_expropt, templatePackage, true, source, ${sentence.offset},${sentence.endoffset}); }
+	| Leval conditional_expression comma_expropt	{ $$ = new EvalNode($conditional_expression, $comma_expropt, source, ${sentence.offset},${sentence.endoffset}); }
+	| Lassert expression							{ $$ = new AssertNode($expression, source, ${sentence.offset},${sentence.endoffset}); }
 ;
 
 comma_expr (ExpressionNode) ::=
-	',' expression									{ $$ = $expression; }
+	',' conditional_expression						{ $$ = $conditional_expression; }
 ;
 
 qualified_id (String) ::=
@@ -229,7 +229,8 @@ control_start (CompoundNode) ::=
 
 control_sentence (CompoundNode) ::=
 	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
-	| Lfor identifier ':' expression ',' expression { $$ = new ForeachNode($identifier, $expression#0, $expression#1, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
+	| Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']'
+													{ $$ = new ForeachNode($identifier, $conditional_expression#0, $conditional_expression#1, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
 	| Lif expression								{ $$ = new IfNode($expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
 	| Lfile expression								{ $$ = new FileNode($expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
 ;
@@ -269,8 +270,10 @@ complex_data (ExpressionNode) ::=
  ;
 
 map_entries (java.util.@HashMap<String,ExpressionNode>) ::=
-	identifier ':' expression						{ $$ = new java.util.@HashMap(); $map_entries.put($identifier, $expression); }
-	| map_entries ',' identifier ':' expression		{ $map_entries#0.put($identifier, $expression); }
+	identifier ':' conditional_expression						
+													{ $$ = new java.util.@HashMap(); $map_entries.put($identifier, $conditional_expression); }
+	| map_entries ',' identifier ':' conditional_expression
+													{ $map_entries#0.put($identifier, $conditional_expression); }
 ;
 
 bcon (Boolean) ::= 
@@ -322,15 +325,25 @@ conditional_or_expression (ExpressionNode) ::=
     | conditional_or_expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_or_expression#0, $conditional_and_expression, source, ${conditional_or_expression[0].offset}, ${conditional_or_expression[0].endoffset}); }
 ;
 
-expression (ExpressionNode) ::=
+conditional_expression (ExpressionNode) ::=
     conditional_or_expression
-  | conditional_or_expression '?' expression ':' expression		{ $$ = new TriplexNode($conditional_or_expression, $expression#1, $expression#2, source, ${expression[0].offset}, ${expression[0].endoffset}); }
+  | conditional_or_expression '?' conditional_expression ':' conditional_expression
+  													{ $$ = new TriplexNode($conditional_or_expression, $conditional_expression#1, $conditional_expression#2, source, ${left().offset}, ${left().endoffset}); }
 ;
 
+assignment_expression (ExpressionNode) ::=
+	conditional_expression
+  | identifier '=' conditional_expression			{ $$ = new AssignNode($identifier, $conditional_expression, source, ${left().offset}, ${left().endoffset}); }
+;
+
+expression (ExpressionNode) ::=
+	assignment_expression
+  | expression ',' assignment_expression			{ $$ = new CommaNode($expression#1, $assignment_expression, source, ${left().offset}, ${left().endoffset}); }
+;
 
 expression_list (ArrayList) ::=
-	expression										{ $$ = new ArrayList(); $expression_list.add($expression); }
-	| expression_list ',' expression				{ $expression_list#0.add($expression); }
+	conditional_expression							{ $$ = new ArrayList(); $expression_list.add($conditional_expression); }
+	| expression_list ',' conditional_expression	{ $expression_list#0.add($conditional_expression); }
 ;
 
 body (TemplateNode) ::=

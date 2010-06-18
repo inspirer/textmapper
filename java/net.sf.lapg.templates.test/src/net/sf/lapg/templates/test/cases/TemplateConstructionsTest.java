@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,6 +53,10 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		h.put("list", new String[] {});
 		q = env.executeTemplate("loop.loop2", new EvaluationContext(h), null, null);
 		Assert.assertEquals("\nHmm: \n\n\n", q);
+
+		// test 4
+		q = env.executeTemplate("loop.loop3", new EvaluationContext(h), null, null);
+		Assert.assertEquals("2\n3\n4\n5\n6\n", q);
 	}
 
 	// eval.ltp
@@ -178,6 +182,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		// test 6
 		q = env.executeTemplate("arithm.arithm6", new EvaluationContext(null), null, null);
 		Assert.assertEquals("uh: lite1\noh: okey\n", q);
+
+		q = env.executeTemplate("arithm.assign1", new EvaluationContext(null), null, null);
+		Assert.assertEquals("30\n42", q);
 	}
 
 	// assert.ltp

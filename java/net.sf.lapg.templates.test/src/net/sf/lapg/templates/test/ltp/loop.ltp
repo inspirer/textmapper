@@ -17,3 +17,10 @@ $index: $q
 ${end-}
 
 ${end}
+
+
+${template loop3-}
+${for q in [2, 6]-}
+$q
+${end-}
+${end}
