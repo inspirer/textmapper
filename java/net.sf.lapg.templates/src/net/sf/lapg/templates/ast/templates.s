@@ -303,16 +303,22 @@ additive_expression (ExpressionNode) ::=
 
 relational_expression (ExpressionNode) ::=
       additive_expression
-    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression#0, $additive_expression, source, ${relational_expression[0].offset}, ${relational_expression[0].endoffset}); }
-    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression#0, $additive_expression, source, ${relational_expression[0].offset}, ${relational_expression[0].endoffset}); }
-    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression#0, $additive_expression, source, ${relational_expression[0].offset}, ${relational_expression[0].endoffset}); }
-    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression#0, $additive_expression, source, ${relational_expression[0].offset}, ${relational_expression[0].endoffset}); }
+    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
+    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
+    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
+    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
+;
+
+instanceof_expression (ExpressionNode) ::=
+	  relational_expression
+	| instanceof_expression Lis qualified_id		{ $$ = new InstanceOfNode($instanceof_expression#0, $qualified_id, source, ${left().offset}, ${left().endoffset}); }
+	| instanceof_expression Lis ccon				{ $$ = new InstanceOfNode($instanceof_expression#0, $ccon, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 equality_expression (ExpressionNode) ::=
-      relational_expression
-    | equality_expression '==' relational_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression#0, $relational_expression, source, ${equality_expression[0].offset}, ${equality_expression[0].endoffset}); }
-    | equality_expression '!=' relational_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression#0, $relational_expression, source, ${equality_expression[0].offset}, ${equality_expression[0].endoffset}); }
+      instanceof_expression
+    | equality_expression '==' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression#0, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
+    | equality_expression '!=' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression#0, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 conditional_and_expression (ExpressionNode) ::=

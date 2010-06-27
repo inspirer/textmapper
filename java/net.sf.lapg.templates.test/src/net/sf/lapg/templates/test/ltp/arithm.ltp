@@ -39,3 +39,9 @@ ${template assign1-}
 ${x = 5, y = 6, x*y}
 ${(z=42,z)-}
 ${end}
+
+${template instanceof1-}
+${[1] is 'object[]'}
+${[a:'b'] is hashmap}
+${[a:'b'] is java.util.Map}
+${end}

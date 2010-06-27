@@ -183,8 +183,13 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		q = env.executeTemplate("arithm.arithm6", new EvaluationContext(null), null, null);
 		Assert.assertEquals("uh: lite1\noh: okey\n", q);
 
+		// assign
 		q = env.executeTemplate("arithm.assign1", new EvaluationContext(null), null, null);
 		Assert.assertEquals("30\n42", q);
+
+		// instanceof
+		q = env.executeTemplate("arithm.instanceof1", new EvaluationContext(null), null, null);
+		Assert.assertEquals("true\ntrue\ntrue\n", q);
 	}
 
 	// assert.ltp
