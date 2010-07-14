@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PLUGIN_MODULE" version="4">
+  <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/../net.sf.lapg.idea/META-INF/plugin.xml" />
+  <component name="NewModuleRootManager" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../net.sf.lapg.idea/bin" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../net.sf.lapg.idea">
+      <sourceFolder url="file://$MODULE_DIR$/../net.sf.lapg.idea/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../net.sf.lapg.idea/icons" isTestSource="false" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="IDEA IC-95.66" jdkType="IDEA JDK" />
+  </component>
+</module>
+

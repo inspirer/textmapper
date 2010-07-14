@@ -37,6 +37,7 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.test.TestStatus;
 import net.sf.lapg.test.oldparser.SyntaxUtilOld;
 
+@SuppressWarnings({"deprecation"})
 public class InputTest extends LapgTestCase {
 
 	private void checkGenTables(Grammar g, String outputId, TestStatus er) {

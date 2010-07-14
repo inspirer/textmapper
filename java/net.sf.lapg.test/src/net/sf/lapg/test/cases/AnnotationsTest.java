@@ -26,6 +26,7 @@ import net.sf.lapg.api.Symbol;
 import net.sf.lapg.gen.SyntaxUtil;
 import net.sf.lapg.test.TestStatus;
 
+@SuppressWarnings({"deprecation"})
 public class AnnotationsTest extends LapgTestCase {
 
 	public void testAllAnnotations() {
