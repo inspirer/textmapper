@@ -457,6 +457,11 @@ private ExpressionNode createCollectionProcessor(ExpressionNode context, String 
 			kind = CollectionProcessorNode.EXISTS;
 		}
 		break;
+	case 'g':
+		if(instruction.equals("groupBy")) {
+			kind = CollectionProcessorNode.GROUPBY;
+		}
+		break;
 	}
 	if(kind == 0) {
 		reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);

@@ -32,6 +32,9 @@ public class InstanceOfNode extends ExpressionNode {
 	}
 
 	private static boolean hasSupertype(Class<? extends Object> class_, String className) {
+		if(class_ == null) {
+			return false;
+		}
 		if(matches(class_.getCanonicalName(), className)) {
 			return true;
 		}

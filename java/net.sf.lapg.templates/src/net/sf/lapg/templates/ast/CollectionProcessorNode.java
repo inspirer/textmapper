@@ -40,8 +40,9 @@ public class CollectionProcessorNode extends ExpressionNode {
 	static final int FORALL = 5;
 	static final int EXISTS = 6;
 	static final int SORT = 7;
+	static final int GROUPBY = 8;
 
-	private static final String[] INSTR_WORDS = new String[] { null, "collect", "collectUnique", "reject", "select", "forAll", "exists", "sort" };
+	private static final String[] INSTR_WORDS = new String[] { null, "collect", "collectUnique", "reject", "select", "forAll", "exists", "sort", "groupBy" };
 
 	private final ExpressionNode selectExpression;
 	private final int instruction;
@@ -94,6 +95,30 @@ public class CollectionProcessorNode extends ExpressionNode {
 					}
 				}
 				return instruction == COLLECTUNIQUE ? new ArrayList<Object>(result) : result;
+			} else if(instruction == GROUPBY) {
+				List<Object> result = new ArrayList<Object>();
+				Map<Object,Integer> keyToIndex = new HashMap<Object, Integer>();
+				while(it.hasNext()) {
+					Object curr = it.next();
+					context.setVariable(varName, curr);
+					Object val = env.evaluate(foreachExpr, context, false);
+					Integer index = keyToIndex.get(val);
+					if(index == null) {
+						keyToIndex.put(val, result.size());
+						result.add(curr);
+					} else {
+						Object existing = result.get(index);
+						if(existing instanceof GroupList) {
+							((GroupList)existing).add(curr);
+						} else {
+							GroupList l = new GroupList();
+							l.add(existing);
+							l.add(curr);
+							result.set(index, l);
+						}
+					}
+				}
+				return result;
 			} else if(instruction == SORT) {
 				List<Object> result = new ArrayList<Object>();
 				final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
@@ -150,5 +175,8 @@ public class CollectionProcessorNode extends ExpressionNode {
 		sb.append("|");
 		foreachExpr.toString(sb);
 		sb.append(")");
+	}
+
+	private static class GroupList extends ArrayList<Object> {
 	}
 }
