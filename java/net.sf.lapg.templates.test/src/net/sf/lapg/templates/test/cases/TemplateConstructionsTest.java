@@ -155,6 +155,19 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("a -> yo1; daa -> yo2; xb -> yo3; 1a -> yo4; ", q);
 	}
 
+	public void testGroupBy() {
+		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		EvaluationContext context = new EvaluationContext(null);
+		context.setVariable("util", new DefaultStaticMethods());
+
+		// test 1
+		String q = env.executeTemplate("filter.grouped", context, null, null);
+		Assert.assertEquals("->  1a:yo1 a:yo1\n" +
+				"man:yo23\n" +
+				"->  xb:yo2 daa:yo2\n" +
+				"rtt:yo3\n", q);
+	}
+
 	// arithm.ltp
 	public void testArithm() {
 		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
