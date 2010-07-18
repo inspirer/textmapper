@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -98,6 +99,17 @@ public class DefaultStaticMethods {
 	}
 
 	private final Set<String> usedIdentifiers = new HashSet<String>();
+	private final Map<Object,String> objectIds = new HashMap<Object,String>();
+	int objectIdCounter = 1;
+
+	public String objectId(Object o) {
+		String s = objectIds.get(o);
+		if(s == null) {
+			s = "obj" + objectIdCounter++;
+			objectIds.put(o, s);
+		}
+		return s;
+	}
 
 	public String uniqueId(String s) {
 		return uniqueId(s, null);

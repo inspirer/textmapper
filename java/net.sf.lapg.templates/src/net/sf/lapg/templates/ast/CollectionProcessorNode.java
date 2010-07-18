@@ -72,7 +72,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 				while(it.hasNext()) {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE);
+					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
 					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
 						boolean b = env.toBoolean(val) ^ (instruction == REJECT);
 						if(b) {

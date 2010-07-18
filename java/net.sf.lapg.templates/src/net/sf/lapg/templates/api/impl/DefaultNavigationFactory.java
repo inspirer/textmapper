@@ -206,6 +206,8 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 					return array[array.length - 1];
 				} else if (methodName.equals("size")) {
 					return array.length;
+				} else if(methodName.equals("toSet")) {
+					return new LinkedHashSet<Object>(Arrays.asList(array));
 				}
 			} else if(args.length == 1) {
 				if (methodName.equals("contains")) {
