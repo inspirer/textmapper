@@ -26,7 +26,10 @@ ${cached query getClassesInternal(sym, kind) =
 			name: sym.name,
 			sym: sym,
 			implements: self->getImplements(sym),
-			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm()).toSet()
+			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm()).toSet(),
+			nproperties: syntax.rules[sym].collect(x|[
+				x.getRight().reject(x|x.target->isSimpleTerm())
+			])
 		] :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		[
@@ -35,7 +38,10 @@ ${cached query getClassesInternal(sym, kind) =
 			sym: sym,
 			implements: [],
 			properties: syntax.rules[sym].collect(x|x.getRight().select(y|y.target != x.getLeft()))
-								.reject(x|x.target->isSimpleTerm()).toSet() 
+								.reject(x|x.target->isSimpleTerm()).toSet(), 
+			nproperties: syntax.rules[sym].collect(x|[
+				x.getRight().select(y|y.target != x.getLeft()).reject(x|x.target->isSimpleTerm())
+			])
 		] :
 	null }
 
@@ -65,6 +71,38 @@ ${cached query propInternal(alias,target, cl) =
 			alias: alias,
 			target: target
 		]}
+
+
+${cached query propertiesNew(cl) =
+	propertiesWithAlias = cl.nproperties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
+		[
+			kind: 'property',
+			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
+			container: cl,
+			refs: (x is GroupList ? x : [x]).toSet()
+		]
+	),
+	withoutAlias = cl.nproperties.collect(rule|
+				rule.select(x|!x.alias).groupBy(x|x.target).collect(x|
+					x is GroupList
+					? x.collect(y|[
+						name: util.uniqueId(y.target.name, util.objectId(rule)),
+						ref: y
+					  ])					  
+					: [
+						name : x.target.name,
+						ref: x
+					  ])
+		).groupBy(x|x.name).collect(x|
+			[
+				kind: 'property',
+				name: util.uniqueId(x is GroupList ? x.first().name : x.name, 'prop#' + cl.name),
+				container: cl,
+				refs: (x is GroupList ? x.collect(y|y.ref) : [x.ref]).toSet()
+			]),
+	withoutAlias
+}
+
 
 
 ${cached query symbolKind(sym) =

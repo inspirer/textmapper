@@ -47,6 +47,9 @@ ${file 'ast/' + cl->className() + '.java'-}
 package ${call java.package}.ast;
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
+${foreach prop in self->ast.propertiesNew(cl)-}
+	// ${prop.name}:${foreach a in prop.refs} ${a.target.name}${end}
+${end-}
 
 ${foreach prop in self->ast.getProperties(cl)-}
 	private ${prop.type} ${prop->propertyName()};

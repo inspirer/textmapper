@@ -247,6 +247,7 @@ public class LapgResolver {
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
 				if(sym != null) {
+					// TODO check duplicate alias
 					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations()), rs.getSymbol()));
 				}
 			}
