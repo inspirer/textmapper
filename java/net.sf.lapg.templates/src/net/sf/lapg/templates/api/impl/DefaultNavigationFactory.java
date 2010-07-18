@@ -175,6 +175,37 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 					}
 					return new LinkedHashSet<Object>(cl);
 				}
+			} else if(args.length == 1) {
+				if(methodName.equals("contains")) {
+					return cl.contains(args[0]);
+				} else if(methodName.equals("indexOf")) {
+					if(cl instanceof List<?>) {
+						return ((List<?>)cl).indexOf(args[0]);
+					}
+					int i = 0;
+					for(Object o : cl) {
+						if(o != null && o.equals(args[0])) {
+							return i;
+						}
+						i++;
+					}
+					return -1;
+				} else if(methodName.equals("union")) {
+					if(args[0] != null) {
+						Collection<Object> result = cl instanceof Set<?> ? new LinkedHashSet<Object>(cl) : new ArrayList<Object>(cl);
+						if(args[0] instanceof Object[]) {
+							for(Object o : (Object[])args[0]) {
+								result.add(o);
+							}
+						} else if(args[0] instanceof Collection<?>) {
+							result.addAll((Collection<?>)args[0]);
+						} else {
+							result.add(args[0]);
+						}
+						return result;
+					}
+					return cl;
+				}
 			}
 			return javaNavigation.callMethod(cl, methodName, args);
 		}
