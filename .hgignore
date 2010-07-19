@@ -2,5 +2,5 @@ syntax: regexp
 ^java/idea/.idea/workspace.xml
 ^java/net\.sf\.lapg(\.\w+)*/bin/
 ^java/build/
-^java/libs/lapg-*
+^java/libs/lapg-1*
 .DS_Store
