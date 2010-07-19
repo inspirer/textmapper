@@ -289,24 +289,24 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 			case 3:  // group ::= Lglobal scon '{' declarations '}'
 				lapg_gg.sym = new Group(
 ((String)lapg_m[lapg_head-3].sym) /* title */,
-((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
 null /* kind */,
+((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
 null /* typedefs */,
 null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 4:  // group ::= anno_kind '{' declarations '}'
 				lapg_gg.sym = new Group(
 null /* title */,
-((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
 ((AnnoKind)lapg_m[lapg_head-3].sym) /* kind */,
+((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
 null /* typedefs */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 5:  // group ::= Ltypes '{' typedefs '}'
 				lapg_gg.sym = new Group(
 null /* title */,
-null /* declarations */,
 null /* kind */,
+null /* declarations */,
 ((List<Typedef>)lapg_m[lapg_head-1].sym) /* typedefs */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
@@ -349,9 +349,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 26:  // type ::= identifier
 				lapg_gg.sym = new Type(
-((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -359,9 +359,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 27:  // type ::= Luint
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -369,9 +369,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 28:  // type ::= Lstring
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -379,9 +379,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 29:  // type ::= Lidentifier
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -389,9 +389,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 30:  // type ::= Lqualified
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -399,9 +399,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 31:  // type ::= Lsymbol
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -409,9 +409,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 32:  // type ::= Lbool
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -419,9 +419,9 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 33:  // type ::= Lbool '(' string ',' string ')'
 				lapg_gg.sym = new Type(
-null /* identifier */,
 ((_String)lapg_m[lapg_head-3].sym) /* trueVal */,
 ((_String)lapg_m[lapg_head-1].sym) /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 null /* declarations */,
@@ -429,9 +429,9 @@ null /* input */, lapg_m[lapg_head-5].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 34:  // type ::= Lset '(' strings ')'
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
 null /* type */,
 null /* declarations */,
@@ -439,9 +439,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 35:  // type ::= Lchoice '(' strings ')'
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
 null /* type */,
 null /* declarations */,
@@ -449,9 +449,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 36:  // type ::= Larray '(' type ')'
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 ((Type)lapg_m[lapg_head-1].sym) /* type */,
 null /* declarations */,
@@ -459,9 +459,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 37:  // type ::= Lstruct '{' declarations '}'
 				lapg_gg.sym = new Type(
-null /* identifier */,
 null /* trueVal */,
 null /* falseVal */,
+null /* identifier */,
 null /* strings */,
 null /* type */,
 ((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,

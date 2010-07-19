@@ -15,6 +15,7 @@
  */
 package net.sf.lapg.templates.ast;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -55,7 +56,17 @@ public class CollectMapNode extends ExpressionNode {
 				context.setVariable(varName, curr);
 				Object key_ = env.evaluate(key, context, false);
 				Object value_ = env.evaluate(value, context, false);
-				result.put(key_, value_);
+                if(key_ instanceof Collection<?>) {
+                    for(Object k : (Collection<?>) key_) {
+                        result.put(k,value_);
+                    }
+                } else if(key_ instanceof Object[]) {
+                    for(Object k : (Object[]) key_) {
+                        result.put(k,value_);
+                    }
+                } else {
+                    result.put(key_, value_);
+                }
 			}
 			return result;
 		} finally {

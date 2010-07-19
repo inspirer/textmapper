@@ -26,8 +26,7 @@ ${cached query getClassesInternal(sym, kind) =
 			name: sym.name,
 			sym: sym,
 			implements: self->getImplements(sym),
-			properties: syntax.rules[sym].collect(x|x.getRight()).reject(x|x.target->isSimpleTerm()).toSet(),
-			nproperties: syntax.rules[sym].collect(x|[
+			properties: syntax.rules[sym].collect(x|[
 				x.getRight().reject(x|x.target->isSimpleTerm())
 			])
 		] :
@@ -37,72 +36,45 @@ ${cached query getClassesInternal(sym, kind) =
 			name: sym.name + '_item',
 			sym: sym,
 			implements: [],
-			properties: syntax.rules[sym].collect(x|x.getRight().select(y|y.target != x.getLeft()))
-								.reject(x|x.target->isSimpleTerm()).toSet(), 
-			nproperties: syntax.rules[sym].collect(x|[
+			properties: syntax.rules[sym].collect(x|[
 				x.getRight().select(y|y.target != x.getLeft()).reject(x|x.target->isSimpleTerm())
 			])
 		] :
 	null }
 
 
-${cached query getProperties(cl) =
-		cl.properties.collectUnique(x|self->getProperty(x, cl))}
-
-${cached query getPropertySymbolRefs(prop,rule,cl) =
-		rule.getRight().select(x|
-				cl.properties.contains(x) && 
-				(x.alias && prop.alias ? prop.alias == x.alias : (!x.alias && !prop.alias)) && 
-				prop.target == x.target)}
-		
-${cached query getPropertyIndex(prop,rule,cl) =
-		list = self->getPropertySymbolRefs(prop,rule,cl),
+${cached query propertyIndex(prop,rule,cl) =
+		list = rule.getRight().select(x|prop.refs.contains(x)),
 		list.first() ? rule.getRight().indexOf(list.first()) : -1 }
-
-${cached query getProperty(symref, cl) =
-		self->propInternal(symref.alias ? symref.alias : '', symref.target, cl)}
-
-${cached query propInternal(alias,target, cl) =
-		[
-			kind: 'property',
-			name:  alias ? alias : target.name,
-			type: self->getType(target),
-			container: cl,
-			alias: alias,
-			target: target
-		]}
 
 
 ${cached query propertiesNew(cl) =
-	propertiesWithAlias = cl.nproperties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
+	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		[
 			kind: 'property',
 			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
 			container: cl,
-			refs: (x is GroupList ? x : [x]).toSet()
+			refs: (x is GroupList ? x : [x]).toSet(),
+
+			type: self->getType((x is GroupList ? x : [x]).first().target)
 		]
 	),
-	withoutAlias = cl.nproperties.collect(rule|
+	withoutAlias = cl.properties.collect(rule|
 				rule.select(x|!x.alias).groupBy(x|x.target).collect(x|
 					x is GroupList
-					? x.collect(y|[
-						name: util.uniqueId(y.target.name, util.objectId(rule)),
-						ref: y
-					  ])					  
-					: [
-						name : x.target.name,
-						ref: x
-					  ])
+					? x.collect(y|[ name: util.uniqueId(y.target.name, util.objectId(rule)), ref: y ])
+					            : [ name : x.target.name, ref: x ])
 		).groupBy(x|x.name).collect(x|
 			[
 				kind: 'property',
 				name: util.uniqueId(x is GroupList ? x.first().name : x.name, 'prop#' + cl.name),
 				container: cl,
-				refs: (x is GroupList ? x.collect(y|y.ref) : [x.ref]).toSet()
+				refs: (x is GroupList ? x.collect(y|y.ref) : [x.ref]).toSet(),
+				
+				type: self->getType((x is GroupList ? x.collect(y|y.ref) : [x.ref]).first().target)
 			]),
-	withoutAlias
+	withAlias.union(withoutAlias)
 }
-
 
 
 ${cached query symbolKind(sym) =

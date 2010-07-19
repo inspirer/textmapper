@@ -47,22 +47,19 @@ ${file 'ast/' + cl->className() + '.java'-}
 package ${call java.package}.ast;
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
-${foreach prop in self->ast.propertiesNew(cl)-}
-	// ${prop.name}:${foreach a in prop.refs} ${a.target.name}${end}
-${end-}
 
-${foreach prop in self->ast.getProperties(cl)-}
+${foreach prop in self->ast.propertiesNew(cl)-}
 	private ${prop.type} ${prop->propertyName()};
 ${end-}
 
-	public ${cl->className()}(${foreach prop in self->ast.getProperties(cl)}${prop.type} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+	public ${cl->className()}(${foreach prop in self->ast.propertiesNew(cl)}${prop.type} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		super(input, start, end);
-${foreach prop in self->ast.getProperties(cl)-}
+${foreach prop in self->ast.propertiesNew(cl)-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
 	}
 
-${foreach prop in self->ast.getProperties(cl)-}
+${foreach prop in self->ast.propertiesNew(cl)-}
 	public ${prop.type} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
@@ -156,8 +153,8 @@ ${end}
 ${template call_ctor(rule,props,cl)-}
 ${'$$'} = new ${call java.package}.ast.@${cl->className()}(
 ${foreach prop in props-}
-${if self->ast.getPropertyIndex(prop,rule,cl) >= 0 -}
-${'$'+ self->ast.getPropertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
+${if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
+${'$'+ self->ast.propertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
 ${else-}
 null /* ${prop->propertyName()} */,
 ${end-}
@@ -166,7 +163,7 @@ null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}
 ${end}
 
 ${template createClass(rule)-}
-${call call_ctor(rule, self->ast.getProperties(self->getClass(rule)), self->getClass(rule))-} 
+${call call_ctor(rule, self->ast.propertiesNew(self->getClass(rule)), self->getClass(rule))-} 
 ${end}
 
 ${cached query astcode(rule) =
