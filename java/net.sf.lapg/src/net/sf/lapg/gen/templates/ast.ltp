@@ -3,10 +3,8 @@ ${cached query allClasses() =
 	.collect(x|self->getClasses(x)) }
 
 ${cached query getClasses(sym) =
-	self->getClassesInternal(sym, self->symbolKind(sym))} 
-
-${cached query getClassesInternal(sym, kind) =
-	kind == 'enum' ? 
+    kind = self->symbolKind(sym), 
+	kind == 'enum' ?
 		[
 			kind: 'enum',
 			name: sym.name,
@@ -42,12 +40,6 @@ ${cached query getClassesInternal(sym, kind) =
 		] :
 	null }
 
-
-${cached query propertyIndex(prop,rule,cl) =
-		list = rule.getRight().select(x|prop.refs.contains(x)),
-		list.first() ? rule.getRight().indexOf(list.first()) : -1 }
-
-
 ${cached query propertiesNew(cl) =
 	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		[
@@ -75,6 +67,10 @@ ${cached query propertiesNew(cl) =
 			]),
 	withAlias.union(withoutAlias)
 }
+
+${cached query propertyIndex(prop,rule,cl) =
+		list = rule.getRight().select(x|prop.refs.contains(x)),
+		list.first() ? rule.getRight().indexOf(list.first()) : -1 }
 
 
 ${cached query symbolKind(sym) =
@@ -153,11 +149,12 @@ ${cached query getType(sym) =
  	self->getObjectType(sym) 
 }
 
-${query getObjectTypeInternal(classes) =
-	classes.first() ? self->objectType(classes.first()) : null}
-
 ${query getObjectType(sym) = 
-	self->getObjectTypeInternal([self->getClasses(sym)].collect(x|x)) }
+	classes = [self->getClasses(sym)].collect(x|x),
+	classes.first()
+	    ? self->objectType(classes.first())
+	    : null
+}
 
 ${query getListItemType(sym) =
 	self->hasItemClass(sym) ? self->getObjectType(sym) :
