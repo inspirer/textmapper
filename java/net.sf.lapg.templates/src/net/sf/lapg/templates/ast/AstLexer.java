@@ -101,6 +101,33 @@ public class AstLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 	
+	private String unescape(String s, int start, int end) {
+		StringBuilder sb = new StringBuilder();
+		end = Math.min(end, s.length());
+		for(int i = start; i < end; i++) {
+			char c = s.charAt(i);
+			if(c == '\\') {
+				if(++i == end) {
+					break;
+				}
+				c = s.charAt(i);
+				if(c == 'u' || c == 'x') {
+					// FIXME process unicode
+				} else if(c == 'n') {
+					sb.append('\n');
+				} else if(c == 'r') {
+					sb.append('\r');
+				} else if(c == 't') {
+					sb.append('\t');
+				} else {
+					sb.append(c);
+				}
+			} else {
+				sb.append(c);
+			}
+		}
+		return sb.toString();
+	}
 
 	public AstLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
@@ -307,7 +334,7 @@ public class AstLexer {
 			case 8:
 				 lapg_n.sym = Integer.parseInt(current()); break; 
 			case 9:
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
+				 lapg_n.sym = unescape(current(), 1, token.length()-1); break; 
 			case 33:
 				 group = 0; break; 
 			case 34:

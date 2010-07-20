@@ -144,32 +144,42 @@ ${end-}
 ${end}
 
 
-${query getClass(rule) = self->ast.getClasses(rule.getLeft())}
+${query getClass(rule) =
+	[self->ast.getClasses(rule.getLeft())].collect(x|x).first()}
 
 ${template createEnum(rule)-}
 ${'$$'} = ${call java.package}.ast.@${self->getClass(rule)->className()}.${rule.getRight().first()->enumLiteralName(self->getClass(rule)->className())};
 ${end}
 
-${template call_ctor(rule,props,cl)-}
-${'$$'} = new ${call java.package}.ast.@${cl->className()}(
-${foreach prop in props-}
+${template createObject(rule,cl)-}
+new ${call java.package}.ast.@${cl->className()}(
+${foreach prop in self->ast.propertiesNew(cl)-}
 ${if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
 ${'$'+ self->ast.propertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
 ${else-}
 null /* ${prop->propertyName()} */,
 ${end-}
 ${end-}
-null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end});
-${end}
+null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
+)${end}
 
 ${template createClass(rule)-}
-${call call_ctor(rule, self->ast.propertiesNew(self->getClass(rule)), self->getClass(rule))-} 
+${'$$'} = ${call createObject(rule, self->getClass(rule))};
 ${end}
 
+${query createList(rule) =
+    kind = self->ast.intListRuleKind(rule),
+    kind == 'leftrec' && self->ast.hasItemClass(rule.getLeft())
+            ? '$0.add(' + self->createObject(rule, self->getClass(rule)) + ');\n'
+    : null
+}
+
 ${cached query astcode(rule) =
-	self->ast.isEnum(rule.getLeft()) ? self->createEnum(rule) :
-	self->ast.isOptional(rule.getLeft()) ? null :
-	self->ast.symbolKind(rule.getLeft()) == 'class' ? self->createClass(rule) : 
+	left = rule.getLeft(),
+	self->ast.isEnum(left) ? self->createEnum(rule) :
+	self->ast.isOptional(left) ? null :
+ 	self->ast.isList(left) ? self->createList(rule) :
+	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) : 
 	null 
 }
 

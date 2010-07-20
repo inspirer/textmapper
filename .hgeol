@@ -1,0 +1,3 @@
+[patterns]
+**.iml = native
+**.xml = native

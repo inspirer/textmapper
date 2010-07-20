@@ -503,6 +503,12 @@ null /* mapEntries */,
 ((List<IExpression>)lapg_m[lapg_head-1].sym) /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
+			case 51:  // map_entries ::= map_entries ',' identifier ':' expression
+				((List<MapEntriesItem>)lapg_m[lapg_head-4].sym).add(new MapEntriesItem(
+((String)lapg_m[lapg_head-2].sym) /* identifier */,
+((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
+null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset));
+				break;
 			case 52:  // someA ::= map_entries
 				lapg_gg.sym = new SomeA(
 ((List<MapEntriesItem>)lapg_m[lapg_head-0].sym) /* mapEntries */,

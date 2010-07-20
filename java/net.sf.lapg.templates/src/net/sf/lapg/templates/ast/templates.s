@@ -43,7 +43,7 @@ escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().sub
 identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = current(); break; }
 
 icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); break; }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = token.toString().substring(1, token.length()-1); break; }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = unescape(current(), 1, token.length()-1); break; }
 
 Lcall:		/call/
 Lcached:	/cached/
@@ -373,6 +373,36 @@ ${end}
 ${template java_tree.createParser-}
 ${call base-}
 parser.source = source;
+${end}
+
+${template java_lexer.lexercode}
+private String unescape(String s, int start, int end) {
+	StringBuilder sb = new StringBuilder();
+	end = Math.min(end, s.length());
+	for(int i = start; i < end; i++) {
+		char c = s.charAt(i);
+		if(c == '\\') {
+			if(++i == end) {
+				break;
+			}
+			c = s.charAt(i);
+			if(c == 'u' || c == 'x') {
+				// FIXME process unicode
+			} else if(c == 'n') {
+				sb.append('\n');
+			} else if(c == 'r') {
+				sb.append('\r');
+			} else if(c == 't') {
+				sb.append('\t');
+			} else {
+				sb.append(c);
+			}
+		} else {
+			sb.append(c);
+		}
+	}
+	return sb.toString();
+}
 ${end}
 
 ${template java.classcode}
