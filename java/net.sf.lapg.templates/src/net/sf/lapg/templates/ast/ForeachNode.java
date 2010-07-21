@@ -24,26 +24,27 @@ public class ForeachNode extends CompoundNode {
 
 	private static final String INDEX = "index";
 	private final String var;
-	private final ExpressionNode selectExpr, targetExpr;
+	private final ExpressionNode selectExpr;
+    private final ExpressionNode targetExpr;
+    private final ExpressionNode separatorExpr;
 
-	public ForeachNode(String var, ExpressionNode selectExpr, TextSource source, int offset, int endoffset) {
-		this(var, selectExpr, null, source, offset, endoffset);
-	}
-
-	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, TextSource source, int offset, int endoffset) {
+	public ForeachNode(String var, ExpressionNode selectExpr, ExpressionNode targetExpr, ExpressionNode separator, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.var = var;
 		this.selectExpr = selectExpr;
 		this.targetExpr = targetExpr;
+        this.separatorExpr = separator;
 	}
 
 	@Override
 	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object select = env.evaluate(selectExpr, context, false);
+            String separator = separatorExpr == null ? null : env.toString(env.evaluate(separatorExpr, context, false), separatorExpr);
 			Object prevVar = context.getVariable(var);
 			Object prevIndex = context.getVariable(INDEX);
 			int index = 0;
+            int lastSeparator = sb.length();
 			try {
 				if( targetExpr != null ) {
 					Object to = env.evaluate(targetExpr, context, false);
@@ -52,6 +53,10 @@ public class ForeachNode extends CompoundNode {
 						int delta = toInt >= (Integer)select ? 1 : -1;
 						for( int i = (Integer)select; (delta > 0 ? i <= toInt : i >= toInt); i += delta ) {
 							context.setVariable(var, i);
+                            if(separator != null && lastSeparator < sb.length()) {
+                                sb.append(separator);
+                                lastSeparator = sb.length();
+                            }
 							for( Node n : instructions ) {
 								n.emit(sb, context, env);
 							}
@@ -63,6 +68,10 @@ public class ForeachNode extends CompoundNode {
 					for( Object o : (Iterable<?>)select ) {
 						context.setVariable(var, o);
 						context.setVariable(INDEX, index++);
+                        if(separator != null && lastSeparator < sb.length()) {
+                            sb.append(separator);
+                            lastSeparator = sb.length();
+                        }
 						for( Node n : instructions ) {
 							n.emit(sb, context, env);
 						}
@@ -71,6 +80,10 @@ public class ForeachNode extends CompoundNode {
 					for( Object o : (Object[])select ) {
 						context.setVariable(var, o);
 						context.setVariable(INDEX, index++);
+                        if(separator != null && lastSeparator < sb.length()) {
+                            sb.append(separator);
+                            lastSeparator = sb.length();
+                        }
 						for( Node n : instructions ) {
 							n.emit(sb, context, env);
 						}

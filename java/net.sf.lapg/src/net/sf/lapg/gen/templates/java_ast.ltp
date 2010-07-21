@@ -14,7 +14,7 @@ ${query escapeJavaReserved() =
 
 ${template implementedInterfaces(cl, prefix)-}
 ${if cl.implements.length > 0-}
-${prefix}${foreach impl in cl.implements.collect(x|self->ast.getClasses(x))}${if index > 0}, ${end}${self->objectType(impl)}${end-}
+${prefix}${foreach impl in cl.implements.collect(x|self->ast.getClasses(x)) separator ', '}${self->objectType(impl)}${end-}
 ${end-}
 ${end}
 
@@ -78,7 +78,7 @@ ${template ast_enum(cl)-}
 ${file 'ast/' + cl->className() + '.java'-}
 package ${call java.package}.ast;
 
-public enum ${cl->className()} {	
+public enum ${cl->className()} {
 ${foreach const in cl.literals-}
 	${const->enumLiteralName(cl->className())},
 ${end-}

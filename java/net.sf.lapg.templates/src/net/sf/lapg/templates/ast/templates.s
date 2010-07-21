@@ -64,6 +64,7 @@ Lmap:		/map/
 Lnull:		/null/
 Lquery:		/query/
 Lswitch:	/switch/
+Lseparator:	/separator/
 Ltemplate:  /template/
 Ltrue:		/true/
 Lself:		/self/
@@ -228,11 +229,16 @@ control_start (CompoundNode) ::=
 	'${' control_sentence '[-]}' 					{ $$ = $1; } ;
 
 control_sentence (CompoundNode) ::=
-	  Lforeach identifier Lin expression			{ $$ = new ForeachNode($identifier, $expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
-	| Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']'
-													{ $$ = new ForeachNode($identifier, $conditional_expression#0, $conditional_expression#1, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
-	| Lif expression								{ $$ = new IfNode($expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
-	| Lfile expression								{ $$ = new FileNode($expression, source, ${control_sentence.offset}, ${control_sentence.endoffset}); }
+	  Lforeach identifier Lin expression separator_expropt
+                                                    { $$ = new ForeachNode($identifier, $expression, null, $separator_expropt, source, ${left().offset}, ${left().endoffset}); }
+	| Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']' separator_expropt
+													{ $$ = new ForeachNode($identifier, $conditional_expression#0, $conditional_expression#1, $separator_expropt, source, ${left().offset}, ${left().endoffset}); }
+	| Lif expression								{ $$ = new IfNode($expression, source, ${left().offset}, ${left().endoffset}); }
+	| Lfile expression								{ $$ = new FileNode($expression, source, ${left().offset}, ${left().endoffset}); }
+;
+
+separator_expr (ExpressionNode) ::=
+    Lseparator expression                           { $$ = $1; }
 ;
 
 control_end ::=

@@ -1,5 +1,5 @@
 package net.sf.lapg.gen.options.ast;
 
-public enum Modifier {	
+public enum Modifier {
 	LNOTEMPTY,
 }

@@ -57,6 +57,14 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		// test 4
 		q = env.executeTemplate("loop.loop3", new EvaluationContext(h), null, null);
 		Assert.assertEquals("2\n3\n4\n5\n6\n", q);
+
+        // test 5
+        q = env.executeTemplate("loop.loop4", new EvaluationContext(h), null, null);
+        Assert.assertEquals("2, 3, 4, 5, 6", q);
+
+        // test 6
+        q = env.executeTemplate("loop.loop5", new EvaluationContext(h), null, null);
+        Assert.assertEquals("2:1:6", q);
 	}
 
 	// eval.ltp
