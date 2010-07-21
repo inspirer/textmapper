@@ -42,16 +42,20 @@ public class ArithmeticNode extends ExpressionNode {
 		this.rightExpr = right;
 	}
 
-	private Object convertToInteger(Object s) {
-		if( s instanceof String ) {
-            // TODO FIXME rewrite
-			try {
-				return new Integer((String)s);
-			} catch(NumberFormatException ex) {
-				/* ignore */
-			}
+	private Object convertToInteger(Object obj) {
+		if( obj instanceof String ) {
+            String s = (String) obj;
+            if(s.length() > 0
+                    && Character.isDigit(s.charAt(s.length()-1)) 
+                    && (Character.isDigit(s.charAt(0)) || s.charAt(0) == '-')) {
+                try {
+                    return new Integer(s);
+                } catch(NumberFormatException ex) {
+                    /* ignore */
+                }
+            }
 		}
-		return s;
+		return obj;
 	}
 
 	@Override
