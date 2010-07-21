@@ -44,6 +44,7 @@ public class ArithmeticNode extends ExpressionNode {
 
 	private Object convertToInteger(Object s) {
 		if( s instanceof String ) {
+            // TODO FIXME rewrite
 			try {
 				return new Integer((String)s);
 			} catch(NumberFormatException ex) {

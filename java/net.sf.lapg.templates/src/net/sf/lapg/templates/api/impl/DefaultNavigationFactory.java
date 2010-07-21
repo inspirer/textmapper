@@ -104,6 +104,7 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 						throw new EvaluationException("no method: " + ex.toString());
 					}
 				}
+                meth.setAccessible(true);
 				return meth.invoke(obj, args);
 			} catch (IllegalAccessException ex) {
 				throw new EvaluationException("IllegalAccessException");
