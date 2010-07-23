@@ -7,10 +7,6 @@ ${end-}
 ${end}
 
 
-${query escapeJavaReserved() = 
-	['String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
-	 'List', 'ArrayList', 'LinkedList', 'TextSource'].contains(self) ? '_' + self : self }
-
 
 ${template implementedInterfaces(cl, prefix)-}
 ${if cl.implements.length > 0-}
@@ -22,7 +18,7 @@ ${end}
 
 
 ${cached query interfaceName() = 
-	util.uniqueId('I' + util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+	util.uniqueId('I' + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
 	
 ${template ast_interface(cl)-}
 ${file 'ast/' + cl->interfaceName() + '.java'-}
@@ -37,10 +33,10 @@ ${end}
 
 
 ${cached query className() = 
-	util.uniqueId(util.toCamelCase(self.name, true)->escapeJavaReserved(), '__classes__')}
+	util.uniqueId(util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
 
 ${cached query propertyName() = 
-	util.uniqueId(util.toCamelCase(self.name, false)->escapeJavaReserved(), '__prop__' + self.container.name)}
+	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
 
 ${template ast_class(cl)-}
 ${file 'ast/' + cl->className() + '.java'-}
@@ -72,7 +68,7 @@ ${end}
 
 
 ${cached query enumLiteralName(enumname) = 
-	util.uniqueId((alias ? alias : target.name).toUpperCase()->escapeJavaReserved(), '__classes__'+enumname)}
+	util.uniqueId((alias ? alias : target.id).toUpperCase()->java.escapeJavaReserved(), '__classes__'+enumname)}
 
 ${template ast_enum(cl)-}
 ${file 'ast/' + cl->className() + '.java'-}
@@ -192,3 +188,5 @@ ${query objectType(cl) =
 	)}
 
 ${query listType(type) = 'java.util.@List<' + type + '>'}
+
+${query booleanType() = 'Boolean'}

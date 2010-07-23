@@ -23,9 +23,9 @@ public class XmlLexer {
 		public static final int identifier = 4;
 		public static final int ccon = 5;
 		public static final int GREATER = 6;
-		public static final int EQ = 7;
+		public static final int EQUAL = 7;
 		public static final int COLON = 8;
-		public static final int DIV = 9;
+		public static final int SLASH = 9;
 		public static final int _skip = 10;
 	}
 	

@@ -15,14 +15,12 @@
  */
 package net.sf.lapg.parser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
+import net.sf.lapg.common.FormatUtil;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
 import net.sf.lapg.parser.ast.AstCode;
 import net.sf.lapg.parser.ast.AstDirective;
@@ -92,8 +90,14 @@ public class LapgResolver {
 			ruleArr[i].setIndex(i);
 		}
 		LiSymbol[] symbolArr = symbols.toArray(new LiSymbol[symbols.size()]);
+        for(LiSymbol s : symbolArr) {
+            String name = s.getName();
+            if(FormatUtil.isIdentifier(name)) {
+                usedIdentifiers.add(name);
+            }
+        }
 		for(int i = 0; i < symbolArr.length; i++) {
-			symbolArr[i].setIndex(i);
+			symbolArr[i].setId(i, generateId(symbolArr[i].getName(), i));
 		}
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
 		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
@@ -106,6 +110,23 @@ public class LapgResolver {
 				templates, terminals,
 				!tree.getErrors().isEmpty());
 	}
+
+
+    private final Set<String> usedIdentifiers = new HashSet<String>();
+
+    private String generateId(String name, int i) {
+        if(usedIdentifiers.contains(name)) {
+            return name;
+        }
+        name = FormatUtil.toIdentifier(name, i);
+        String result = name;
+        int i1 = 2;
+        while(usedIdentifiers.contains(result)) {
+            result = name + i1++;
+        }
+        usedIdentifiers.add(result);
+        return result;
+    }
 
 	private String getTemplates() {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;

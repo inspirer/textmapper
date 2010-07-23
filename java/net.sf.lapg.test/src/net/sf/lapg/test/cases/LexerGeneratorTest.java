@@ -130,7 +130,11 @@ public class LexerGeneratorTest extends TestCase {
 					return name;
 				}
 
-				public int getIndex() {
+                public String getId() {
+                    return name;
+                }
+
+                public int getIndex() {
 					return index;
 				}
 

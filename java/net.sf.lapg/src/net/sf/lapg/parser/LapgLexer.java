@@ -21,30 +21,30 @@ public class LapgLexer {
 		public static final int regexp = 2;
 		public static final int scon = 3;
 		public static final int icon = 4;
-		public static final int PERC = 5;
+		public static final int PERCENT = 5;
 		public static final int _skip = 6;
 		public static final int _skip_comment = 7;
-		public static final int COLONCOLONEQ = 8;
+		public static final int COLONCOLONEQUAL = 8;
 		public static final int OR = 9;
-		public static final int EQ = 10;
+		public static final int EQUAL = 10;
 		public static final int SEMICOLON = 11;
 		public static final int DOT = 12;
 		public static final int COMMA = 13;
 		public static final int COLON = 14;
-		public static final int LBRACKET = 15;
-		public static final int RBRACKET = 16;
-		public static final int LROUNDBRACKET = 17;
-		public static final int RROUNDBRACKET = 18;
+		public static final int LSQUARE = 15;
+		public static final int RSQUARE = 16;
+		public static final int LPAREN = 17;
+		public static final int RPAREN = 18;
 		public static final int LESSLESS = 19;
 		public static final int LESS = 20;
 		public static final int GREATER = 21;
 		public static final int MULT = 22;
-		public static final int QUESTMARK = 23;
-		public static final int AMP = 24;
-		public static final int N40 = 25;
-		public static final int LBRACE = 26;
-		public static final int iLBRACE = 27;
-		public static final int RBRACE = 28;
+		public static final int QUESTIONMARK = 23;
+		public static final int AMPERSAND = 24;
+		public static final int ATSIGN = 25;
+		public static final int LCURLY = 26;
+		public static final int iLCURLY = 27;
+		public static final int RCURLY = 28;
 	}
 	
 	public interface ErrorReporter {

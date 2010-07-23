@@ -646,7 +646,7 @@ public class AstParser {
 		public static final int identifier_list = 70;
 		public static final int template_end = 71;
 		public static final int instructions = 72;
-		public static final int LBRACKETMINUSRBRACKETRBRACE = 73;
+		public static final int LSQUAREMINUSRSQUARERCURLY = 73;
 		public static final int instruction = 74;
 		public static final int simple_instruction = 75;
 		public static final int sentence = 76;

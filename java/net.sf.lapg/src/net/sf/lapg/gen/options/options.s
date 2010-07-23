@@ -125,12 +125,14 @@ type ::=
   | Lqualified
   | Lsymbol
   | Lbool
-  | Lbool '(' trueVal = string ',' falseVal = string ')'
+  | Lbool '(' trueVal = string ',' falseVal = string Commaopt ')'
   | Lset '(' strings ')'
   | Lchoice '(' strings ')'
   | Larray '(' type ')'
   | Lstruct '{' declarations '}'
 ;
+
+Commaopt ::= ',' | ;
 
 strings ::=
 	strings ',' string | string ;
@@ -166,6 +168,8 @@ map_entries ::=
 someA ::= map_entries | structural_expression ;
 
 someB ::= structural_expressionopt ;
+
+kind1 ::= ',' | ';' ;
 
 ##################################################################################
 

@@ -7,21 +7,21 @@ ${cached query getClasses(sym) =
 	kind == 'enum' ?
 		[
 			kind: 'enum',
-			name: sym.name,
+			name: sym.id,
 			sym: sym,
 			literals: syntax.rules[sym].collect(rule|rule.getRight().first())
 		] :
 	kind == 'interface' ?
 		[
 			kind: 'interface',
-			name: sym.name,
+			name: sym.id,
 			sym: sym,
 			implements: self->getImplements(sym)
 		] :
 	kind == 'class' ?
 		[
 			kind: 'class',
-			name: sym.name,
+			name: sym.id,
 			sym: sym,
 			implements: self->getImplements(sym),
 			properties: syntax.rules[sym].collect(x|[
@@ -31,7 +31,7 @@ ${cached query getClasses(sym) =
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		[
 			kind: 'class',
-			name: sym.name + '_item',
+			name: sym.id + '_item',
 			sym: sym,
 			implements: [],
 			properties: syntax.rules[sym].collect(x|[
@@ -54,8 +54,8 @@ ${cached query propertiesNew(cl) =
 	withoutAlias = cl.properties.collect(rule|
 				rule.select(x|!x.alias).groupBy(x|x.target).collect(x|
 					x is GroupList
-					? x.collect(y|[ name: util.uniqueId(y.target.name, util.objectId(rule)), ref: y ])
-					            : [ name : x.target.name, ref: x ])
+					? x.collect(y|[ name: util.uniqueId(y.target.id, util.objectId(rule)), ref: y ])
+					            : [ name : x.target.id, ref: x ])
 		).groupBy(x|x.name).collect(x|
 			[
 				kind: 'property',
@@ -144,9 +144,14 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 
 ${cached query getType(sym) =
  	sym.type ? sym.type :
- 	self->isOptional(sym) ? self->getType(self->getOptionalTarget(sym)) :
+ 	self->isOptional(sym) ? self->getOptionalType(sym) :
  	self->isList(sym) ? self->listType(self->getListItemType(sym)) :
  	self->getObjectType(sym) 
+}
+
+${query getOptionalType(sym) =
+    target = self->getOptionalTarget(sym),
+    target->isSimpleTerm() ? self->booleanType() : self->getType(target)
 }
 
 ${query getObjectType(sym) = 
@@ -166,3 +171,5 @@ ${query getListItemType(sym) =
 ${query objectType(cl) = self->(opts.lang + '_ast.objectType')(cl)}
 
 ${query listType(type) = self->(opts.lang + '_ast.listType')(type)}
+
+${query booleanType() = self->(opts.lang + '_ast.booleanType')()}

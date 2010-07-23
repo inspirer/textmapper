@@ -8,15 +8,17 @@ public class Type extends AstOptNode {
 	private _String trueVal;
 	private _String falseVal;
 	private String identifier;
+	private Boolean Commaopt;
 	private List<_String> strings;
 	private Type type;
 	private List<Declaration> declarations;
 
-	public Type(_String trueVal, _String falseVal, String identifier, List<_String> strings, Type type, List<Declaration> declarations, TextSource input, int start, int end) {
+	public Type(_String trueVal, _String falseVal, String identifier, Boolean Commaopt, List<_String> strings, Type type, List<Declaration> declarations, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.trueVal = trueVal;
 		this.falseVal = falseVal;
 		this.identifier = identifier;
+		this.Commaopt = Commaopt;
 		this.strings = strings;
 		this.type = type;
 		this.declarations = declarations;
@@ -30,6 +32,9 @@ public class Type extends AstOptNode {
 	}
 	public String getIdentifier() {
 		return identifier;
+	}
+	public Boolean getCommaopt() {
+		return Commaopt;
 	}
 	public List<_String> getStrings() {
 		return strings;

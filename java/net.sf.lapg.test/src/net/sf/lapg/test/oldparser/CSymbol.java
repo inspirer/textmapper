@@ -109,7 +109,11 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		return name;
 	}
 
-	public String getType() {
+    public String getId() {
+        return name;
+    }
+
+    public String getType() {
 		return type;
 	}
 

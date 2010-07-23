@@ -282,7 +282,7 @@ public class InputTest extends LapgTestCase {
 			}
 		});
 		for (int i = 0; i < g.getSymbols().length; i++) {
-			((LiSymbol) g.getSymbols()[i]).setIndex(i);
+			((LiSymbol) g.getSymbols()[i]).setId(i, g.getSymbols()[i].getName());
 		}
 
 		Arrays.sort(g.getRules(), new Comparator<Rule>() {

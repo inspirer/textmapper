@@ -21,6 +21,7 @@ import net.sf.lapg.parser.ast.IAstNode;
 public class LiSymbol extends LiAnnotated implements Symbol {
 
 	private int index;
+    private String identifier;
 	private final String name;
 	private final String type;
 	private final boolean isTerm;
@@ -36,8 +37,9 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		return index;
 	}
 
-	public void setIndex(int index) {
+	public void setId(int index, String identifier) {
 		this.index = index;
+        this.identifier = identifier;
 	}
 
 	public String getName() {
@@ -55,4 +57,8 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	public boolean isTerm() {
 		return isTerm;
 	}
+
+    public String getId() {
+        return identifier;
+    }
 }

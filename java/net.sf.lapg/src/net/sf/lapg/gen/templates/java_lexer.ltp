@@ -248,7 +248,7 @@ ${end-}
 
 	public interface Lexems {
 ${for i in [0,parser.nterms-1]-}
-		public static final int ${util.toIdentifier(parser.sym[i].name,i)} = ${i};
+		public static final int ${parser.sym[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
 	
