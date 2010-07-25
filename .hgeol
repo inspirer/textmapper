@@ -1,4 +1,5 @@
 [patterns]
 **.iml = native
 **.xml = native
-**.ltp = native
+**.ltp = LF
+**.s = LF
