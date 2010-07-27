@@ -260,14 +260,14 @@ ${end}
 
 ${template parserTable(arr,atype,name,cname)-}
 ${if opts.packTables == 'true'-}
-    public interface ${cname} {
-        public static final ${atype} ${name}[] = {
+	public interface ${cname} {
+		public static final ${atype} ${name}[] = {
 			${util.format(arr, 16, 3)}
 		};
 	};
 	private static final ${atype}[] ${name} = ${cname}.${name};
 ${else-}
-    private static final ${atype} ${name}[] = {
+	private static final ${atype} ${name}[] = {
 		${util.format(arr, 16, 2)}
 	};
 ${end-}

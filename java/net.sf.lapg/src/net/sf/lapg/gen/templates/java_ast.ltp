@@ -164,10 +164,10 @@ ${'$$'} = ${call createObject(rule, self->getClass(rule))};
 ${end}
 
 ${query createList(rule) =
-    kind = self->ast.intListRuleKind(rule),
-    kind == 'leftrec' && self->ast.hasItemClass(rule.getLeft())
-            ? '$0.add(' + self->createObject(rule, self->getClass(rule)) + ');\n'
-    : null
+	kind = self->ast.intListRuleKind(rule),
+	kind == 'leftrec' && self->ast.hasItemClass(rule.getLeft())
+		? '$0.add(' + self->createObject(rule, self->getClass(rule)) + ');\n'
+	: null
 }
 
 ${cached query astcode(rule) =

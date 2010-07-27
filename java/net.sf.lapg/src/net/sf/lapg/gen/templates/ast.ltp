@@ -3,7 +3,7 @@ ${cached query allClasses() =
 	.collect(x|self->getClasses(x)) }
 
 ${cached query getClasses(sym) =
-    kind = self->symbolKind(sym), 
+	kind = self->symbolKind(sym),
 	kind == 'enum' ?
 		[
 			kind: 'enum',
@@ -55,7 +55,7 @@ ${cached query propertiesNew(cl) =
 				rule.select(x|!x.alias).groupBy(x|x.target).collect(x|
 					x is GroupList
 					? x.collect(y|[ name: util.uniqueId(y.target.id, util.objectId(rule)), ref: y ])
-					            : [ name : x.target.id, ref: x ])
+								: [ name : x.target.id, ref: x ])
 		).groupBy(x|x.name).collect(x|
 			[
 				kind: 'property',
@@ -150,15 +150,15 @@ ${cached query getType(sym) =
 }
 
 ${query getOptionalType(sym) =
-    target = self->getOptionalTarget(sym),
-    target->isSimpleTerm() ? self->booleanType() : self->getType(target)
+	target = self->getOptionalTarget(sym),
+	target->isSimpleTerm() ? self->booleanType() : self->getType(target)
 }
 
 ${query getObjectType(sym) = 
 	classes = [self->getClasses(sym)].collect(x|x),
 	classes.first()
-	    ? self->objectType(classes.first())
-	    : null
+		? self->objectType(classes.first())
+		: null
 }
 
 ${query getListItemType(sym) =
