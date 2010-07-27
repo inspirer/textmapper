@@ -48,6 +48,10 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			return intArrayNavigation;
 		}
 
+		if (o instanceof short[]) {
+			return shortArrayNavigation;
+		}
+
 		if (o instanceof Map<?, ?>) {
 			return mapNavigation;
 		}
@@ -291,6 +295,41 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 
 		public Object getProperty(int[] array, String id) throws EvaluationException {
+			if (id.equals("length")) {
+				return array.length;
+			}
+			throw new EvaluationException("do not know property `" + id + "`");
+		}
+	};
+
+	private final INavigationStrategy<short[]> shortArrayNavigation = new INavigationStrategy<short[]>() {
+
+		public Object callMethod(short[] array, String methodName, Object[] args) throws EvaluationException {
+			if (args == null) {
+				if (methodName.equals("first")) {
+					return array[0];
+				} else if (methodName.equals("last")) {
+					return array[array.length - 1];
+				} else if (methodName.equals("size")) {
+					return array.length;
+				}
+			}
+			throw new EvaluationException("do not know method `" + methodName + "`");
+		}
+
+		public Object getByIndex(short[] array, Object index) throws EvaluationException {
+			if (index instanceof Integer) {
+				int i = (Integer) index;
+				if (i < 0 || i >= array.length) {
+					throw new EvaluationException(i + " is out of 0.." + (array.length - 1));
+				}
+				return array[i];
+			} else {
+				throw new EvaluationException("index object should be integer");
+			}
+		}
+
+		public Object getProperty(short[] array, String id) throws EvaluationException {
 			if (id.equals("length")) {
 				return array.length;
 			}

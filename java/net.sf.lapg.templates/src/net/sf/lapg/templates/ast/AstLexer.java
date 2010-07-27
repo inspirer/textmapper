@@ -230,16 +230,16 @@ public class AstLexer {
 		"6:3,-9,-21:8,6:22,-21:19,6:2,-21:2,6:3,-21,-9:8,6:5,139,6:16,-9:19,6:2,-9:2" +
 		",6:3,-9:9,6:12,140,6:9,-9:19,6:2,-9:2,6:3,-9,-32:8,6:22,-32:19,6:2,-32:2,6:" +
 		"3,-32,-31:8,6:22,-31:19,6:2,-31:2,6:3,-31");
-		
-	private int[][] unpackFromString(int size1, int size2, String st) {
+
+	private static int[][] unpackFromString(int size1, int size2, String st) {
 		int colonIndex = -1;
 		String lengthString;
 		int sequenceLength = 0;
 		int sequenceInteger = 0;
-		
+
 		int commaIndex;
 		String workString;
-		
+
 		int res[][] = new int[size1][size2];
 		for (int i = 0; i < size1; i++) {
 			for (int j = 0; j < size2; j++) {

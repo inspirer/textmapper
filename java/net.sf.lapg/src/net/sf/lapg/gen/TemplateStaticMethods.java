@@ -94,7 +94,51 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return sb.toString();
 	}
 
-	public static String formatForJava(int[][] table, Integer leftpadding) {
+	public static String packIntInt(int[][] table, Integer leftpadding) {
 		return JavaArrayArchiver.emit_table_as_string(table, leftpadding);
+	}
+
+	public static String packInt(int[] table, Integer leftpadding) {
+		StringBuffer sb = new StringBuffer(table.length * 6);
+		sb.append('\"');
+		int lastBreak = 1;
+		for(int i = 0; i < table.length; i++) {
+			if(i > 0) {
+				sb.append(',');
+				if(sb.length() - lastBreak > 75) {
+					sb.append("\" +\n");
+					for (int e = 0; e < leftpadding; e++) {
+						sb.append("\t");
+					}
+					sb.append('\"');
+					lastBreak = sb.length();
+				}
+			}
+			sb.append(table[i]);
+		}
+		sb.append('\"');
+		return sb.toString();
+	}
+
+	public static String packShort(short[] table, Integer leftpadding) {
+		StringBuffer sb = new StringBuffer(table.length * 6);
+		sb.append('\"');
+		int lastBreak = 1;
+		for(int i = 0; i < table.length; i++) {
+			if(i > 0) {
+				sb.append(',');
+				if(sb.length() - lastBreak > 75) {
+					sb.append("\" +\n");
+					for (int e = 0; e < leftpadding; e++) {
+						sb.append("\t");
+					}
+					sb.append('\"');
+					lastBreak = sb.length();
+				}
+			}
+			sb.append(table[i]);
+		}
+		sb.append('\"');
+		return sb.toString();
 	}
 }

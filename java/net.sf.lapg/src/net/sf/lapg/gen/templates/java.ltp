@@ -255,15 +255,29 @@ ${call parserTable(parser.sym_to,'short','lapg_sym_to','LapgSymTo')-}
 ${call parserTable(parser.ruleLength,'short','lapg_rlen','LapgRLen')-}
 
 ${call parserTable(parser.rleft,'short','lapg_rlex','LapgRLex')-}
+${if opts.packTables == 'true'}
+${call java_pack.unpackInt-}
+${call java_pack.unpackShort-}
+${end-}
 ${end}
 
 
 ${template parserTable(arr,atype,name,cname)-}
 ${if opts.packTables == 'true'-}
 	public interface ${cname} {
+${if arr.size() > 8000-}
+${if atype == 'short'-}
+		public static final short ${name}[] = unpack_short(${arr.size()},
+			${util.packShort(arr, 3)});
+${else-}
+		public static final int ${name}[] = unpack_int(${arr.size()},
+			${util.packInt(arr, 3)});
+${end-}
+${else-}
 		public static final ${atype} ${name}[] = {
 			${util.format(arr, 16, 3)}
 		};
+${end-}
 	};
 	private static final ${atype}[] ${name} = ${cname}.${name};
 ${else-}
