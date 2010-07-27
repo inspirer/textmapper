@@ -173,7 +173,8 @@ ${query createList(rule) =
 ${cached query astcode(rule) =
 	left = rule.getLeft(),
 	self->ast.isEnum(left) ? self->createEnum(rule) :
-	self->ast.isOptional(left) ? null :
+	self->ast.isOptional(left) ?
+		(rule.getRight().size() == 1 && rule.getRight().first().target->ast.isSimpleTerm() ? '$$ = Boolean.TRUE;\n' : null) :
  	self->ast.isList(left) ? self->createList(rule) :
 	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) : 
 	null 

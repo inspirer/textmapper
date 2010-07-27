@@ -42,13 +42,13 @@ ${cached query getClasses(sym) =
 
 ${cached query propertiesNew(cl) =
 	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
+		allrefs = (x is GroupList ? x : [x]),
 		[
 			kind: 'property',
 			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
 			container: cl,
-			refs: (x is GroupList ? x : [x]).toSet(),
-
-			type: self->getType((x is GroupList ? x : [x]).first().target)
+			refs: allrefs.toSet(),
+			type: self->getType(allrefs.first().target)
 		]
 	),
 	withoutAlias = cl.properties.collect(rule|
@@ -57,13 +57,13 @@ ${cached query propertiesNew(cl) =
 					? x.collect(y|[ name: util.uniqueId(y.target.id, util.objectId(rule)), ref: y ])
 								: [ name : x.target.id, ref: x ])
 		).groupBy(x|x.name).collect(x|
+			allrefs = (x is GroupList ? x.collect(y|y.ref) : [x.ref]),
 			[
 				kind: 'property',
 				name: util.uniqueId(x is GroupList ? x.first().name : x.name, 'prop#' + cl.name),
 				container: cl,
-				refs: (x is GroupList ? x.collect(y|y.ref) : [x.ref]).toSet(),
-				
-				type: self->getType((x is GroupList ? x.collect(y|y.ref) : [x.ref]).first().target)
+				refs: allrefs.toSet(),
+				type: self->getType(allrefs.first().target)
 			]),
 	withAlias.union(withoutAlias)
 }
@@ -144,6 +144,7 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 
 ${cached query getType(sym) =
  	sym.type ? sym.type :
+ 	sym.isTerm() ? self->booleanType() :
  	self->isOptional(sym) ? self->getOptionalType(sym) :
  	self->isList(sym) ? self->listType(self->getListItemType(sym)) :
  	self->getObjectType(sym) 
@@ -151,7 +152,7 @@ ${cached query getType(sym) =
 
 ${query getOptionalType(sym) =
 	target = self->getOptionalTarget(sym),
-	target->isSimpleTerm() ? self->booleanType() : self->getType(target)
+	self->getType(target)
 }
 
 ${query getObjectType(sym) = 

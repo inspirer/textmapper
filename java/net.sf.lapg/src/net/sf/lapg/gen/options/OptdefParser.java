@@ -484,6 +484,9 @@ null /* type */,
 ((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
+			case 38:  // Commaopt ::= ','
+				lapg_gg.sym = Boolean.TRUE;
+				break;
 			case 42:  // string ::= identifier
 				lapg_gg.sym = new _String(
 ((String)lapg_m[lapg_head-0].sym) /* identifier */,
