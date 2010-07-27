@@ -165,7 +165,6 @@ ${end}
 
 
 ${query createList(rule) =
-	kind = self->ast.intListRuleKind(rule),
 	newexpr =
 		self->ast.hasItemClass(rule.getLeft()) ? self->createObject(rule, self->getClass(rule)) :
 		self->ast.hasListItem(rule.getLeft()) ? (
@@ -174,14 +173,14 @@ ${query createList(rule) =
 			index = refitem ? rule.getRight().indexOf(refitem) : -1,
 			index >= 0
 				? '$' + index
-				: 'null'
-		) : 'null',
-	kind == 'leftrec' && self->ast.hasItemClass(rule.getLeft())
-		? '$0.add(' + newexpr + ');\n' :
-	kind == 'rightrec'
-		? '$0.add(0, ' + newexpr + ');\n' :
-	kind == 'normal'
-		? '$$ = new ArrayList();\n${left()}.add(' + newexpr + ');\n' : 
+				: null
+		) : null,
+	kind = self->ast.intListRuleKind(rule),
+
+	!newexpr ? null :
+	kind == 'leftrec'	? '$0.add(' + newexpr + ');\n' :
+	kind == 'rightrec'	? '$'+(rule.getRight().size()-1)+'.add(0, ' + newexpr + ');\n' :
+	kind == 'normal'	? '$$ = new java.util.@ArrayList();\n${left()}.add(' + newexpr + ');\n' :
 	null
 }
 

@@ -2,6 +2,7 @@ package net.sf.lapg.gen.options;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import net.sf.lapg.gen.options.OptdefLexer.ErrorReporter;
 import net.sf.lapg.gen.options.OptdefLexer.LapgSymbol;
@@ -60,7 +61,7 @@ public class OptdefParser {
 		0, 1, 19, 31, 36, 36, 38, 45, 48, 49, 53, 57, 61, 65, 70, 72,
 		75, 78, 81, 84, 87, 90, 92, 94, 95, 97, 99, 102, 107, 109, 111, 114,
 		117, 118, 119, 121, 123, 126, 132, 133, 135, 136, 137, 139, 140, 142, 145, 146,
-		148, 153, 158, 163, 168, 169, 170, 170, 170, 170, 171, 172, 172,
+		148, 153, 158, 163, 168, 169, 170, 170, 170, 170, 170, 171, 172, 172,
 	};
 
 	private static final short lapg_sym_from[] = {
@@ -95,14 +96,14 @@ public class OptdefParser {
 		1, 2, 1, 5, 4, 4, 1, 1, 1, 2, 1, 0, 1, 0, 1, 6,
 		3, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 1, 1, 1, 1, 1,
 		1, 7, 4, 4, 4, 4, 1, 0, 3, 1, 1, 1, 1, 1, 1, 1,
-		3, 3, 1, 3, 3, 5, 1, 1, 0, 1, 1, 1, 1,
+		3, 3, 1, 3, 3, 5, 1, 1, 0, 1, 1, 1, 1, 1, 3,
 	};
 
 	private static final short lapg_rlex[] = {
-		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 57, 57, 58, 58, 37,
+		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 58, 58, 59, 59, 37,
 		38, 38, 39, 40, 41, 41, 42, 43, 43, 44, 45, 45, 45, 45, 45, 45,
 		45, 45, 45, 45, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50,
-		51, 51, 52, 52, 53, 53, 54, 54, 59, 59, 55, 56, 56,
+		51, 51, 52, 52, 53, 53, 54, 54, 60, 60, 55, 56, 56, 57, 57,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -163,6 +164,7 @@ public class OptdefParser {
 		"someA",
 		"someB",
 		"kind1",
+		"revlist",
 		"modifiersopt",
 		"optionslistopt",
 		"structural_expressionopt",
@@ -195,9 +197,10 @@ public class OptdefParser {
 		public static final int someA = 54;
 		public static final int someB = 55;
 		public static final int kind1 = 56;
-		public static final int modifiersopt = 57;
-		public static final int optionslistopt = 58;
-		public static final int structural_expressionopt = 59;
+		public static final int revlist = 57;
+		public static final int modifiersopt = 58;
+		public static final int optionslistopt = 59;
+		public static final int structural_expressionopt = 60;
 	}
 
 	private static int lapg_next( int state, int symbol ) {
@@ -291,6 +294,9 @@ public class OptdefParser {
 ((List<Group>)lapg_m[lapg_head-0].sym) /* groups */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
+			case 1:  // groups ::= groups group
+				((List<Group>)lapg_m[lapg_head-1].sym).add(((Group)lapg_m[lapg_head-0].sym));
+				break;
 			case 2:  // groups ::= group
 				lapg_gg.sym = new ArrayList();
 ((List<Group>)lapg_gg.sym).add(((Group)lapg_m[lapg_head-0].sym));
@@ -328,6 +334,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 			case 8:  // anno_kind ::= Lref
 				lapg_gg.sym = AnnoKind.LREF;
 				break;
+			case 9:  // declarations ::= declarations declaration
+				((List<Declaration>)lapg_m[lapg_head-1].sym).add(((Declaration)lapg_m[lapg_head-0].sym));
+				break;
 			case 10:  // declarations ::= declaration
 				lapg_gg.sym = new ArrayList();
 ((List<Declaration>)lapg_gg.sym).add(((Declaration)lapg_m[lapg_head-0].sym));
@@ -340,6 +349,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 ((Defaultval)lapg_m[lapg_head-1].sym) /* defaultval */,
 ((List<Option>)lapg_m[lapg_head-0].sym) /* optionslistopt */,
 null /* input */, lapg_m[lapg_head-5].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 16:  // optionslist ::= optionslist ',' option
+				((List<Option>)lapg_m[lapg_head-2].sym).add(((Option)lapg_m[lapg_head-0].sym));
 				break;
 			case 17:  // optionslist ::= ';' option
 				lapg_gg.sym = new ArrayList();
@@ -355,12 +367,18 @@ null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
 null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
+			case 20:  // modifiers ::= modifiers modifier
+				((List<Modifier>)lapg_m[lapg_head-1].sym).add(((Modifier)lapg_m[lapg_head-0].sym));
+				break;
 			case 21:  // modifiers ::= modifier
 				lapg_gg.sym = new ArrayList();
 ((List<Modifier>)lapg_gg.sym).add(((Modifier)lapg_m[lapg_head-0].sym));
 				break;
 			case 22:  // modifier ::= Lnotempty
 				lapg_gg.sym = Modifier.LNOTEMPTY;
+				break;
+			case 23:  // typedefs ::= typedefs typedef
+				((List<Typedef>)lapg_m[lapg_head-1].sym).add(((Typedef)lapg_m[lapg_head-0].sym));
 				break;
 			case 24:  // typedefs ::= typedef
 				lapg_gg.sym = new ArrayList();
@@ -507,6 +525,9 @@ null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 			case 38:  // Commaopt ::= ','
 				lapg_gg.sym = Boolean.TRUE;
 				break;
+			case 40:  // strings ::= strings ',' string
+				((List<_String>)lapg_m[lapg_head-2].sym).add(((_String)lapg_m[lapg_head-0].sym));
+				break;
 			case 41:  // strings ::= string
 				lapg_gg.sym = new ArrayList();
 ((List<_String>)lapg_gg.sym).add(((_String)lapg_m[lapg_head-0].sym));
@@ -551,6 +572,9 @@ null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				lapg_gg.sym = new ArrayList();
 ((List<IExpression>)lapg_gg.sym).add(((IExpression)lapg_m[lapg_head-0].sym));
 				break;
+			case 51:  // expression_list ::= expression_list ',' expression
+				((List<IExpression>)lapg_m[lapg_head-2].sym).add(((IExpression)lapg_m[lapg_head-0].sym));
+				break;
 			case 52:  // map_entries ::= identifier ':' expression
 				lapg_gg.sym = new ArrayList();
 ((List<MapEntriesItem>)lapg_gg.sym).add(new MapEntriesItem(
@@ -581,6 +605,13 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 60:  // kind1 ::= ';'
 				lapg_gg.sym = Kind1.SEMICOLON;
+				break;
+			case 61:  // revlist ::= kind1
+				lapg_gg.sym = new ArrayList();
+((List<Kind1>)lapg_gg.sym).add(((Kind1)lapg_m[lapg_head-0].sym));
+				break;
+			case 62:  // revlist ::= kind1 ',' revlist
+				((List<Kind1>)lapg_m[lapg_head-0].sym).add(0, ((Kind1)lapg_m[lapg_head-2].sym));
 				break;
 		}
 		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
