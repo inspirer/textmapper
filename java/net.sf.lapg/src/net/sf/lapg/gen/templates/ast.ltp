@@ -25,7 +25,7 @@ ${cached query getClasses(sym) =
 			sym: sym,
 			implements: self->getImplements(sym),
 			properties: syntax.rules[sym].collect(x|[
-				x.getRight().reject(x|x.target->isSimpleTerm())
+				x.getRight()
 			])
 		] :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
@@ -35,7 +35,7 @@ ${cached query getClasses(sym) =
 			sym: sym,
 			implements: [],
 			properties: syntax.rules[sym].collect(x|[
-				x.getRight().select(y|y.target != x.getLeft()).reject(x|x.target->isSimpleTerm())
+				x.getRight().select(y|y.target != x.getLeft())
 			])
 		] :
 	null }
@@ -52,7 +52,7 @@ ${cached query propertiesNew(cl) =
 		]
 	),
 	withoutAlias = cl.properties.collect(rule|
-				rule.select(x|!x.alias).groupBy(x|x.target).collect(x|
+				rule.select(x|!x.alias && !x.target->isSimpleTerm()).groupBy(x|x.target).collect(x|
 					x is GroupList
 					? x.collect(y|[ name: util.uniqueId(y.target.id, util.objectId(rule)), ref: y ])
 								: [ name : x.target.id, ref: x ])

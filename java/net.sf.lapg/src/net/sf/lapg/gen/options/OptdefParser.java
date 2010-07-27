@@ -39,7 +39,7 @@ public class OptdefParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-    private static final int lapg_action[] = {
+	private static final int lapg_action[] = {
 		-1, -1, -1, 6, 7, 8, -3, 2, -1, -1, -1, 1, -1, -1, -1, -1,
 		24, -1, -1, 10, -1, -1, 5, 23, -1, 4, 9, 3, 26, -1, -1, 27,
 		29, 30, -17, 28, 31, -1, -1, -1, -29, -1, -1, -1, -1, -1, 25, 22,
@@ -49,21 +49,21 @@ public class OptdefParser {
 		52, 51, -1, -1, 53, -1, -2,
 	};
 
-    private static final short lapg_lalr[] = {
+	private static final short lapg_lalr[] = {
 		21, -1, 25, -1, 27, -1, 28, -1, 29, -1, 0, 0, -1, -2, 11, -1,
 		5, 32, 12, 32, 23, 32, 24, 32, -1, -2, 24, -1, 23, 11, -1, -2,
 		24, -1, 23, 12, -1, -2, 5, -1, 1, 13, 10, 13, -1, -2, 6, -1,
 		1, 14, 10, 14, -1, -2, 6, -1, 12, 39, -1, -2,
 	};
 
-    private static final short lapg_sym_goto[] = {
+	private static final short lapg_sym_goto[] = {
 		0, 1, 19, 31, 36, 36, 38, 45, 48, 49, 53, 57, 61, 65, 70, 72,
 		75, 78, 81, 84, 87, 90, 92, 94, 95, 97, 99, 102, 107, 109, 111, 114,
 		117, 118, 119, 121, 123, 126, 132, 133, 135, 136, 137, 139, 140, 142, 145, 146,
 		148, 153, 158, 163, 168, 169, 170, 170, 170, 170, 171, 172, 172,
 	};
 
-    private static final short lapg_sym_from[] = {
+	private static final short lapg_sym_from[] = {
 		101, 10, 12, 13, 15, 18, 20, 21, 24, 41, 42, 43, 44, 45, 58, 62,
 		65, 70, 91, 1, 41, 42, 43, 60, 62, 65, 70, 83, 88, 89, 99, 60,
 		70, 88, 89, 99, 39, 61, 53, 55, 56, 75, 78, 81, 82, 17, 79, 98,
@@ -77,7 +77,7 @@ public class OptdefParser {
 		88, 89, 99, 60, 70, 88, 89, 99, 70, 70, 40, 61,
 	};
 
-    private static final short lapg_sym_to[] = {
+	private static final short lapg_sym_to[] = {
 		102, 14, 17, 17, 14, 17, 17, 28, 28, 51, 51, 51, 28, 17, 17, 51,
 		51, 79, 98, 9, 52, 52, 52, 68, 52, 52, 68, 93, 68, 68, 68, 69,
 		69, 69, 69, 69, 46, 74, 62, 62, 65, 85, 86, 89, 91, 24, 88, 99,
@@ -91,14 +91,14 @@ public class OptdefParser {
 		72, 72, 72, 73, 73, 73, 73, 73, 81, 82, 50, 76,
 	};
 
-    private static final short lapg_rlen[] = {
+	private static final short lapg_rlen[] = {
 		1, 2, 1, 5, 4, 4, 1, 1, 1, 2, 1, 0, 1, 0, 1, 6,
 		3, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 1, 1, 1, 1, 1,
 		1, 7, 4, 4, 4, 4, 1, 0, 3, 1, 1, 1, 1, 1, 1, 1,
 		3, 3, 1, 3, 3, 5, 1, 1, 0, 1, 1, 1, 1,
 	};
 
-    private static final short lapg_rlex[] = {
+	private static final short lapg_rlex[] = {
 		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 57, 57, 58, 58, 37,
 		38, 38, 39, 40, 41, 41, 42, 43, 43, 44, 45, 45, 45, 45, 45, 45,
 		45, 45, 45, 45, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50,

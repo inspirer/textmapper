@@ -37,40 +37,40 @@ public class XmlParser {
 		if (!node.getTagName().equals(endTag))
 			reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);
 	}
-    private static final int lapg_action[] = {
+	private static final int lapg_action[] = {
 		-1, 6, -1, -3, 2, -1, 5, -11, -21, 1, -1, -1, 3, -1, -1, -29,
 		15, -1, -1, 4, 8, -1, 14, 11, -1, -1, 16, 12, 13, -1, -2,
 	};
 
-    private static final short lapg_lalr[] = {
+	private static final short lapg_lalr[] = {
 		1, -1, 2, -1, 0, 0, -1, -2, 8, -1, 4, 7, 6, 7, 9, 7,
 		-1, -2, 4, -1, 6, 9, 9, 9, -1, -2, 4, -1, 6, 10, 9, 10,
 		-1, -2,
 	};
 
-    private static final short lapg_sym_goto[] = {
+	private static final short lapg_sym_goto[] = {
 		0, 1, 5, 9, 9, 15, 16, 19, 20, 21, 23, 23, 24, 26, 30, 33,
 		37, 41, 43, 44, 46, 47,
 	};
 
-    private static final short lapg_sym_from[] = {
+	private static final short lapg_sym_from[] = {
 		29, 0, 3, 5, 11, 0, 3, 5, 11, 2, 8, 10, 13, 15, 18, 21,
 		17, 24, 25, 14, 7, 10, 17, 0, 0, 5, 0, 3, 5, 11, 2, 10,
 		18, 0, 3, 5, 11, 0, 3, 5, 11, 5, 11, 8, 8, 15, 8,
 	};
 
-    private static final short lapg_sym_to[] = {
+	private static final short lapg_sym_to[] = {
 		30, 1, 1, 1, 1, 2, 2, 10, 10, 7, 14, 7, 20, 14, 7, 26,
 		23, 27, 28, 21, 13, 18, 24, 29, 3, 11, 4, 9, 4, 9, 8, 8,
 		25, 5, 5, 5, 5, 6, 6, 6, 6, 12, 19, 15, 16, 22, 17,
 	};
 
-    private static final short lapg_rlen[] = {
+	private static final short lapg_rlen[] = {
 		1, 2, 1, 2, 3, 1, 1, 1, 3, 0, 1, 4, 5, 4, 2, 1,
 		3,
 	};
 
-    private static final short lapg_rlex[] = {
+	private static final short lapg_rlex[] = {
 		11, 12, 12, 13, 13, 13, 13, 14, 14, 20, 20, 15, 16, 17, 18, 18,
 		19,
 	};

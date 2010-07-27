@@ -80,7 +80,7 @@ public class XmlLexer {
 		return token.toString();
 	}
 
-    private static final short lapg_char2no[] = {
+	private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 14, 13, 1, 1, 14, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		14, 3, 6, 1, 1, 1, 1, 7, 1, 1, 1, 1, 1, 4, 1, 10,

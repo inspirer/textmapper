@@ -159,7 +159,7 @@ public class AstLexer {
 		return token.toString();
 	}
 
-    private static final short lapg_char2no[] = {
+	private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 56, 51, 1, 1, 56, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		56, 35, 52, 3, 2, 34, 43, 6, 39, 40, 33, 32, 42, 31, 41, 5,

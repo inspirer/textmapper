@@ -128,7 +128,7 @@ public class OptdefLexer {
 		return token.toString();
 	}
 
-    private static final short lapg_char2no[] = {
+	private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 40, 4, 1, 1, 40, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		40, 1, 5, 7, 1, 1, 1, 2, 14, 15, 1, 1, 9, 6, 1, 1,

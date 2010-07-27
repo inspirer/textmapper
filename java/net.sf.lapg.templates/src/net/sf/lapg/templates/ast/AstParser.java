@@ -177,7 +177,7 @@ public class AstParser {
 	public IBundleEntity[] getResult() {
 		return entities.toArray(new IBundleEntity[entities.size()]);
 	}
-    private static final int lapg_action[] = {
+	private static final int lapg_action[] = {
 		-3, -1, 8, -11, -19, 4, 7, -1, 2, 32, 31, 29, 30, -1, -27, 23,
 		28, 26, 27, -1, 14, -1, 10, -1, 3, -1, 6, -1, -41, 75, 77, -1,
 		-1, 94, -1, -1, -1, -1, 79, -1, 93, 78, -1, -1, -1, -97, -1, -1,
@@ -196,7 +196,7 @@ public class AstParser {
 		67, -1, -1, 58, 84, -1, -1, -2, -2,
 	};
 
-    private static final short lapg_lalr[] = {
+	private static final short lapg_lalr[] = {
 		1, -1, 5, -1, 0, 0, -1, -2, 11, -1, 30, -1, 27, 9, -1, -2,
 		1, -1, 5, -1, 0, 1, -1, -2, 1, -1, 2, -1, 3, -1, 4, -1,
 		5, -1, 0, 128, -1, -2, 45, -1, 52, -1, 24, 73, 29, 73, 34, 73,
@@ -277,7 +277,7 @@ public class AstParser {
 		46, 48, -1, -2, 29, -1, 34, 64, 35, 64, -1, -2,
 	};
 
-    private static final short lapg_sym_goto[] = {
+	private static final short lapg_sym_goto[] = {
 		0, 2, 18, 31, 44, 57, 73, 78, 142, 194, 247, 252, 253, 255, 259, 261,
 		266, 318, 324, 329, 334, 334, 340, 342, 342, 345, 345, 397, 398, 403, 405, 406,
 		458, 510, 515, 526, 535, 540, 597, 600, 603, 606, 658, 659, 713, 717, 780, 790,
@@ -288,7 +288,7 @@ public class AstParser {
 		1548, 1549, 1550, 1556, 1557, 1559,
 	};
 
-    private static final short lapg_sym_from[] = {
+	private static final short lapg_sym_from[] = {
 		245, 246, 0, 1, 4, 7, 14, 19, 27, 64, 132, 188, 199, 208, 223, 232,
 		235, 241, 1, 7, 14, 19, 27, 64, 188, 199, 208, 223, 232, 235, 241, 1,
 		7, 14, 19, 27, 64, 188, 199, 208, 223, 232, 235, 241, 1, 7, 14, 19,
@@ -389,7 +389,7 @@ public class AstParser {
 		124, 182, 184, 221, 132, 175, 233,
 	};
 
-    private static final short lapg_sym_to[] = {
+	private static final short lapg_sym_to[] = {
 		247, 248, 2, 9, 2, 9, 9, 9, 9, 9, 176, 9, 9, 9, 9, 9,
 		9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11,
 		11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12,
@@ -490,7 +490,7 @@ public class AstParser {
 		169, 203, 205, 231, 177, 197, 240,
 	};
 
-    private static final short lapg_rlen[] = {
+	private static final short lapg_rlen[] = {
 		0, 1, 1, 2, 1, 3, 2, 1, 1, 0, 1, 0, 1, 8, 1, 5,
 		0, 1, 3, 1, 3, 3, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 3, 1, 0, 1, 0, 1, 4, 0, 1, 3, 2, 2, 1, 3, 2,
@@ -502,7 +502,7 @@ public class AstParser {
 		1,
 	};
 
-    private static final short lapg_rlex[] = {
+	private static final short lapg_rlex[] = {
 		107, 107, 63, 64, 64, 65, 65, 65, 65, 108, 108, 109, 109, 66, 67, 68,
 		110, 110, 69, 70, 70, 71, 72, 72, 73, 73, 74, 74, 74, 74, 74, 74,
 		74, 75, 76, 111, 111, 112, 112, 76, 113, 113, 76, 76, 77, 78, 78, 79,

@@ -137,7 +137,7 @@ public class LapgLexer {
 		return token.toString();
 	}
 
-    private static final short lapg_char2no[] = {
+	private static final short lapg_char2no[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 30, 4, 1, 1, 30, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		30, 1, 6, 9, 1, 8, 24, 2, 18, 19, 22, 1, 15, 7, 14, 5,
