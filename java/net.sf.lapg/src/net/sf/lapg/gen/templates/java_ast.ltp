@@ -163,11 +163,26 @@ ${template createClass(rule)-}
 ${'$$'} = ${call createObject(rule, self->getClass(rule))};
 ${end}
 
+
 ${query createList(rule) =
 	kind = self->ast.intListRuleKind(rule),
+	newexpr =
+		self->ast.hasItemClass(rule.getLeft()) ? self->createObject(rule, self->getClass(rule)) :
+		self->ast.hasListItem(rule.getLeft()) ? (
+			item = self->ast.getListItem(rule.getLeft()),
+			refitem = rule.getRight().select(x|x.target == item).first(),
+			index = refitem ? rule.getRight().indexOf(refitem) : -1,
+			index >= 0
+				? '$' + index
+				: 'null'
+		) : 'null',
 	kind == 'leftrec' && self->ast.hasItemClass(rule.getLeft())
-		? '$0.add(' + self->createObject(rule, self->getClass(rule)) + ');\n'
-	: null
+		? '$0.add(' + newexpr + ');\n' :
+	kind == 'rightrec'
+		? '$0.add(0, ' + newexpr + ');\n' :
+	kind == 'normal'
+		? '$$ = new ArrayList();\n${left()}.add(' + newexpr + ');\n' : 
+	null
 }
 
 ${cached query astcode(rule) =
