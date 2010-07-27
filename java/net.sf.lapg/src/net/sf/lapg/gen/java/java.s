@@ -5,6 +5,8 @@
 .lexemend    "on"
 .gentree	 "on"
 .genast		 "on"
+.packLexems  "true"
+.packTables  "true"
 .astprefix	 "Java"
 .positions   "line,offset"
 .endpositions "offset"
@@ -127,17 +129,17 @@ CharacterLiteral:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)
 '...': 	/\.\.\./
 
 
-comment:	/\/\/\/.*/		{ continue; }
+comment:	/\/\/\/.*/		{ return false; }
 
 _skip:      /\/\/([^\/\n\r].*)?/
 _skip:		/#.*/
-_skip:      /[\t\r\n ]+/    { continue; }
+_skip:      /[\t\r\n ]+/    { return false; }
 
-'/*':   /\/\*/          { group = @1;continue; }
+'/*':   /\/\*/          { group = 1; return false; }
 [1]
-anysym1: /[^*]+/		{ continue; }
+anysym1: /[^*]+/		{ return false; }
 anysym1: /*/
-'*/':    /\*\//         { group = @0;continue; }
+'*/':    /\*\//         { group = 0; return false; }
 
 input ::=
 	  CompilationUnit ;
