@@ -16,7 +16,7 @@
 package net.sf.lapg.test.cases;
 
 import junit.framework.TestCase;
-import net.sf.lapg.lex.JavaArrayArchiver;
+import net.sf.lapg.common.JavaArrayArchiver;
 
 import org.junit.Assert;
 
@@ -24,7 +24,7 @@ import org.junit.Assert;
 public class JavaTablesCompression extends TestCase {
 
 	private void checkDecompression(int[][] a) {
-		String c = JavaArrayArchiver.emit_table_as_string(a, 5);
+		String c = JavaArrayArchiver.packIntInt(a, 5);
 		String starts = a.length + "," + a[0].length + ",\n";
 		Assert.assertTrue( c.startsWith(starts));
 		c = c.substring(starts.length());
@@ -42,7 +42,7 @@ public class JavaTablesCompression extends TestCase {
 			}
 		}
 
-		int[][] b = JavaArrayArchiver.unpackFromString(a.length, a[0].length, extractedString.toString());
+		int[][] b = JavaArrayArchiver.unpackIntInt(a.length, a[0].length, extractedString.toString());
 		for( int i = 0; i < a.length; i++) {
 			for( int e = 0; e < a[0].length; e++ ) {
 				if( a[i][e] != b[i][e] ) {

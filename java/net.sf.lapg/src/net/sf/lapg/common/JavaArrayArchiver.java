@@ -1,4 +1,4 @@
-package net.sf.lapg.lex;
+package net.sf.lapg.common;
 
 public class JavaArrayArchiver {
 
@@ -11,7 +11,7 @@ public class JavaArrayArchiver {
 	 by printing integers and representing
 	 integer sequences as "value:length" pairs.
 	 **************************************************************/
-	public static String emit_table_as_string(int[][] ia, int leftpadding) {
+	public static String packIntInt(int[][] ia, int indent) {
 
 		StringBuffer sb = new StringBuffer("");
 
@@ -59,7 +59,7 @@ public class JavaArrayArchiver {
 				// CSA: output in 75 character chunks.
 				if (outstr.length() > 75) {
 					String s = outstr.toString();
-					for (int e = 0; e < leftpadding; e++) {
+					for (int e = 0; e < indent; e++) {
 						sb.append("\t");
 					}
 					sb.append("\"" + s.substring(0, 75) + "\" +\n");
@@ -75,20 +75,20 @@ public class JavaArrayArchiver {
 		// CSA: output in 75 character chunks.
 		if (outstr.length() > 75) {
 			String s = outstr.toString();
-			for (int e = 0; e < leftpadding; e++) {
+			for (int e = 0; e < indent; e++) {
 				sb.append("\t");
 			}
 			sb.append("\"" + s.substring(0, 75) + "\" +\n");
 			outstr = new StringBuffer(s.substring(75));
 		}
-		for (int e = 0; e < leftpadding; e++) {
+		for (int e = 0; e < indent; e++) {
 			sb.append("\t");
 		}
 		sb.append("\"" + outstr + "\"");
 		return sb.toString();
 	}
 
-	public static int[][] unpackFromString(int size1, int size2, String st) {
+	public static int[][] unpackIntInt(int size1, int size2, String st) {
 		int colonIndex = -1;
 		String lengthString;
 		int sequenceLength = 0;
@@ -124,4 +124,75 @@ public class JavaArrayArchiver {
 		return res;
 	}
 
+	/* array of int: pack/unpack */
+
+	public static String packInt(int[] table, int indent) {
+		StringBuffer sb = new StringBuffer(table.length * 6);
+		sb.append('\"');
+		int lastBreak = 1;
+		for(int i = 0; i < table.length; i++) {
+			if(i > 0) {
+				sb.append(',');
+				if(sb.length() - lastBreak > 75) {
+					sb.append("\" +\n");
+					for (int e = 0; e < indent; e++) {
+						sb.append("\t");
+					}
+					sb.append('\"');
+					lastBreak = sb.length();
+				}
+			}
+			sb.append(table[i]);
+		}
+		sb.append('\"');
+		return sb.toString();
+	}
+
+	public static int[] unpackInt(int size, String st) {
+		int[] res = new int[size];
+		int next = 0;
+		int comma;
+		for(int i = 0; i < size; i++) {
+			comma = st.indexOf(',', next);
+			res[i] = Integer.parseInt(comma == -1 ? st.substring(next) : st.substring(next, comma));
+			next = comma + 1;
+		}
+		return res;
+	}
+
+	/* array of short: pack/unpack */
+
+	public static String packShort(short[] table, int indent) {
+		StringBuffer sb = new StringBuffer(table.length * 6);
+		sb.append('\"');
+		int lastBreak = 1;
+		for(int i = 0; i < table.length; i++) {
+			if(i > 0) {
+				sb.append(',');
+				if(sb.length() - lastBreak > 75) {
+					sb.append("\" +\n");
+					for (int e = 0; e <  indent; e++) {
+						sb.append("\t");
+					}
+					sb.append('\"');
+					lastBreak = sb.length();
+				}
+			}
+			sb.append(table[i]);
+		}
+		sb.append('\"');
+		return sb.toString();
+	}
+
+	public static short[] unpackShort(int size, String st) {
+		short[] res = new short[size];
+		int next = 0;
+		int comma;
+		for(int i = 0; i < size; i++) {
+			comma = st.indexOf(',', next);
+			res[i] = Short.parseShort(comma == -1 ? st.substring(next) : st.substring(next, comma));
+			next = comma + 1;
+		}
+		return res;
+	}
 }
