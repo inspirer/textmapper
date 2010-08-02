@@ -749,7 +749,7 @@ public class AstParser {
 		if( lapg_m[lapg_head].state != 247+state ) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
-		};
+		}
 		return lapg_m[lapg_head-1].sym;
 	}
 

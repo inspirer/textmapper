@@ -163,7 +163,7 @@ ${if syntax.error-}
 			}
 ${end-}
 			throw new ParseException();
-		};
+		}
 		return ${if syntax.input.length == 1 && syntax.input.first()->type()}(${syntax.input.first()->type()})${end}lapg_m[lapg_head-1].sym;
 	}
 
@@ -278,7 +278,7 @@ ${else-}
 			${util.format(arr, 16, 3)}
 		};
 ${end-}
-	};
+	}
 	private static final ${atype}[] ${name} = ${cname}.${name};
 ${else-}
 	private static final ${atype} ${name}[] = {
