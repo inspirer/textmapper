@@ -54,14 +54,14 @@ public class LapgTree<T> {
 			LapgParser parser = new LapgParser(reporter);
 			parser.source = source;
 			AstRoot result = parser.parse(lexer);
-			if(result != null) {
+			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
 
 			return new LapgTree<AstRoot>(source, result, list);
-		} catch(ParseException ex) {
+		} catch (ParseException ex) {
 			/* not parsed */
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new LapgTree<AstRoot>(source, null, list);
@@ -146,7 +146,7 @@ public class LapgTree<T> {
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = Arrays.binarySearch(lineoffset, offset);
-			return initialLine + (line >= 0 ? line : -line-2);
+			return initialLine + (line >= 0 ? line : -line - 2);
 		}
 
 		public char[] getContents() {
@@ -160,7 +160,7 @@ public class LapgTree<T> {
 			if (contents[i] == '\n') {
 				size++;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				size++;
@@ -173,7 +173,7 @@ public class LapgTree<T> {
 			if (contents[i] == '\n') {
 				result[e++] = i + 1;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;

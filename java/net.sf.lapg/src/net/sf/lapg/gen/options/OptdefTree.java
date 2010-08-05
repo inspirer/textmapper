@@ -54,9 +54,9 @@ public class OptdefTree<T> {
 			Object result = parser.parse(lexer);
 
 			return new OptdefTree<Object>(source, result, list);
-		} catch(ParseException ex) {
+		} catch (ParseException ex) {
 			/* not parsed */
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			list.add(new OptdefProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new OptdefTree<Object>(source, null, list);
@@ -141,7 +141,7 @@ public class OptdefTree<T> {
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = Arrays.binarySearch(lineoffset, offset);
-			return initialLine + (line >= 0 ? line : -line-2);
+			return initialLine + (line >= 0 ? line : -line - 2);
 		}
 
 		public char[] getContents() {
@@ -155,7 +155,7 @@ public class OptdefTree<T> {
 			if (contents[i] == '\n') {
 				size++;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				size++;
@@ -168,7 +168,7 @@ public class OptdefTree<T> {
 			if (contents[i] == '\n') {
 				result[e++] = i + 1;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;

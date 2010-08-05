@@ -56,9 +56,9 @@ public class AstTree<T> {
 			Object result = parser.parseInput(lexer);
 
 			return new AstTree<Object>(source, result, list);
-		} catch(ParseException ex) {
+		} catch (ParseException ex) {
 			/* not parsed */
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new AstTree<Object>(source, null, list);
@@ -81,9 +81,9 @@ public class AstTree<T> {
 			TemplateNode result = parser.parseBody(lexer);
 
 			return new AstTree<TemplateNode>(source, result, list);
-		} catch(ParseException ex) {
+		} catch (ParseException ex) {
 			/* not parsed */
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new AstTree<TemplateNode>(source, null, list);
@@ -168,7 +168,7 @@ public class AstTree<T> {
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = Arrays.binarySearch(lineoffset, offset);
-			return initialLine + (line >= 0 ? line : -line-2);
+			return initialLine + (line >= 0 ? line : -line - 2);
 		}
 
 		public char[] getContents() {
@@ -182,7 +182,7 @@ public class AstTree<T> {
 			if (contents[i] == '\n') {
 				size++;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				size++;
@@ -195,7 +195,7 @@ public class AstTree<T> {
 			if (contents[i] == '\n') {
 				result[e++] = i + 1;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;

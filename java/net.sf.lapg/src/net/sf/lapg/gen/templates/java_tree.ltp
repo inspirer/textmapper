@@ -60,9 +60,9 @@ ${util.shiftRight(self->createParser(),3)-}
 ${util.shiftRight(self->parseStatements(),3)-}
 
 			return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
-		} catch(${call java.package}.${opts.prefix}Parser.@ParseException ex) {
+		} catch (${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
-		} catch(java.io.@IOException ex) {
+		} catch (java.io.@IOException ex) {
 			list.add(new ${opts.prefix}Problem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, null, list);
@@ -166,7 +166,7 @@ ${template TextSourceClass-}
 				lineoffset = getLineOffsets(contents);
 			}
 			int line = java.util.@Arrays.binarySearch(lineoffset, offset);
-			return initialLine + (line >= 0 ? line : -line-2);
+			return initialLine + (line >= 0 ? line : -line - 2);
 		}
 
 		public char[] getContents() {
@@ -182,7 +182,7 @@ ${template getLineOffsets-}
 			if (contents[i] == '\n') {
 				size++;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				size++;
@@ -195,7 +195,7 @@ ${template getLineOffsets-}
 			if (contents[i] == '\n') {
 				result[e++] = i + 1;
 			} else if (contents[i] == '\r') {
-				if (i+1 < contents.length && contents[i+1] == '\n') {
+				if (i + 1 < contents.length && contents[i + 1] == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;

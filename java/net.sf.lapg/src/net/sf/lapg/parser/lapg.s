@@ -69,7 +69,7 @@ _skip:	/'([^\n\\']|\\.)*'/
 _skip:	/"([^\n\\"]|\\.)*"/
 _skip:	/[^'"{}]+/
 'i{':	/{/				{ deep++; break; }
-'}':	/}/				{ if( --deep == 0 ) group = 0; break; }
+'}':	/}/				{ if (--deep == 0) { group = 0; } break; }
 
 # Grammar
 
@@ -250,18 +250,18 @@ private String unescape(String s, int start, int end) {
 	end = Math.min(end, s.length());
 	for(int i = start; i < end; i++) {
 		char c = s.charAt(i);
-		if(c == '\\') {
-			if(++i == end) {
+		if (c == '\\') {
+			if (++i == end) {
 				break;
 			}
 			c = s.charAt(i);
-			if(c == 'u' || c == 'x') {
+			if (c == 'u' || c == 'x') {
 				// FIXME process unicode
-			} else if(c == 'n') {
+			} else if (c == 'n') {
 				sb.append('\n');
-			} else if(c == 'r') {
+			} else if (c == 'r') {
 				sb.append('\r');
-			} else if(c == 't') {
+			} else if (c == 't') {
 				sb.append('\t');
 			} else {
 				sb.append(c);
@@ -287,7 +287,7 @@ ${end}
 
 ${template java_tree.parseStatements-}
 ${call base-}
-if(result != null) {
+if (result != null) {
 	result.setTemplatesStart(lexer.getTemplatesStart());
 }
 ${end}

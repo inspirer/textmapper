@@ -86,18 +86,18 @@ public class LapgLexer {
 		end = Math.min(end, s.length());
 		for(int i = start; i < end; i++) {
 			char c = s.charAt(i);
-			if(c == '\\') {
-				if(++i == end) {
+			if (c == '\\') {
+				if (++i == end) {
 					break;
 				}
 				c = s.charAt(i);
-				if(c == 'u' || c == 'x') {
+				if (c == 'u' || c == 'x') {
 					// FIXME process unicode
-				} else if(c == 'n') {
+				} else if (c == 'n') {
 					sb.append('\n');
-				} else if(c == 'r') {
+				} else if (c == 'r') {
 					sb.append('\r');
-				} else if(c == 't') {
+				} else if (c == 't') {
 					sb.append('\t');
 				} else {
 					sb.append(c);
@@ -281,7 +281,7 @@ public class LapgLexer {
 			case 28:
 				 deep++; break; 
 			case 29:
-				 if( --deep == 0 ) group = 0; break; 
+				 if (--deep == 0) { group = 0; } break; 
 		}
 		return true;
 	}
