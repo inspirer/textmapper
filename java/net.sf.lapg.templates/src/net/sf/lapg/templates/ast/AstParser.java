@@ -692,29 +692,33 @@ public class AstParser {
 		public static final int separator_expropt = 116;
 	}
 
-	private static int lapg_next( int state, int symbol ) {
+	private static int lapg_next(int state, int symbol) {
 		int p;
-		if( lapg_action[state] < -2 ) {
-			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 )
-				if( lapg_lalr[p] == symbol ) break;
+		if (lapg_action[state] < -2) {
+			for (p = -lapg_action[state]-3; lapg_lalr[p] >= 0; p += 2) {
+				if (lapg_lalr[p] == symbol) {
+					break;
+				}
+			}
 			return lapg_lalr[p+1];
 		}
 		return lapg_action[state];
 	}
 
-	private static int lapg_state_sym( int state, int symbol ) {
+	private static int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol+1]-1;
 		int i, e;
 
-		while( min <= max ) {
+		while (min <= max) {
 			e = (min + max) >> 1;
 			i = lapg_sym_from[e];
-			if( i == state )
+			if (i == state) {
 				return lapg_sym_to[e];
-			else if( i < state )
+			} else if (i < state) {
 				min = e + 1;
-			else
+			} else {
 				max = e - 1;
+			}
 		}
 		return -1;
 	}
@@ -732,21 +736,21 @@ public class AstParser {
 		lapg_m[0].state = state;
 		lapg_n = lexer.next();
 
-		while( lapg_m[lapg_head].state != 247+state ) {
-			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
+		while (lapg_m[lapg_head].state != 247+state) {
+			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
-			if( lapg_i >= 0 ) {
+			if (lapg_i >= 0) {
 				reduce(lapg_i);
-			} else if( lapg_i == -1 ) {
+			} else if (lapg_i == -1) {
 				shift(lexer);
 			}
 
-			if( lapg_i == -2 || lapg_m[lapg_head].state == -1 ) {
+			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 				break;
 			}
 		}
 
-		if( lapg_m[lapg_head].state != 247+state ) {
+		if (lapg_m[lapg_head].state != 247+state) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		}
@@ -755,11 +759,11 @@ public class AstParser {
 
 	private void shift(AstLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-		if( DEBUG_SYNTAX ) {
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_n.lexem);
+		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
-		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
 			lapg_n = lexer.next();
 		}
 	}
@@ -767,17 +771,17 @@ public class AstParser {
 	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].sym:null;
+		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
-		if( DEBUG_SYNTAX ) {
-			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
+		if (DEBUG_SYNTAX) {
+			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]]:lapg_n;
+		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
-		switch( rule ) {
+		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		switch (rule) {
 			case 5:  // template_declaration_or_space ::= template_start instructions template_end
 				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); entities.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
 				break;
@@ -1035,7 +1039,7 @@ public class AstParser {
 						
 				break;
 		}
-		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;

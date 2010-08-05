@@ -29,7 +29,7 @@ ${call parseException-}
 		this.reporter = reporter;
 	}
 
-${util.shiftRight(self->classcode(),1)-}
+${util.shiftRight(self->classcode(), 1)-}
 ${call parserTables-}
 
 	private static final String[] lapg_syms = new String[] {
@@ -45,31 +45,35 @@ ${for i in [parser.nterms, parser.nsyms-1]-}
 ${end-}
 	}
 
-	private static int lapg_next( int state, int symbol ) {
+	private static int lapg_next(int state, int symbol) {
 ${if parser.nactions > 0-}
 		int p;
-		if( lapg_action[state] < -2 ) {
-			for( p = - lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2 )
-				if( lapg_lalr[p] == symbol ) break;
+		if (lapg_action[state] < -2) {
+			for (p = -lapg_action[state]-3; lapg_lalr[p] >= 0; p += 2) {
+				if (lapg_lalr[p] == symbol) {
+					break;
+				}
+			}
 			return lapg_lalr[p+1];
 		}
 ${end-}
 		return lapg_action[state];
 	}
 
-	private static int lapg_state_sym( int state, int symbol ) {
+	private static int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol+1]-1;
 		int i, e;
 
-		while( min <= max ) {
+		while (min <= max) {
 			e = (min + max) >> 1;
 			i = lapg_sym_from[e];
-			if( i == state )
+			if (i == state) {
 				return lapg_sym_to[e];
-			else if( i < state )
+			} else if (i < state) {
 				min = e + 1;
-			else
+			} else {
 				max = e - 1;
+			}
 		}
 		return -1;
 	}
@@ -89,23 +93,23 @@ ${end-}
 		lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
 		lapg_n = lexer.next();
 
-		while( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
-			int lapg_i = lapg_next( lapg_m[lapg_head].state, lapg_n.lexem );
+		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
-			if( lapg_i >= 0 ) {
+			if (lapg_i >= 0) {
 				reduce(lapg_i);
-			} else if( lapg_i == -1 ) {
+			} else if (lapg_i == -1) {
 				shift(lexer);
 ${if syntax.error}				lapg_symbols_ok++;
 ${end-}
 			}
 
-			if( lapg_i == -2 || lapg_m[lapg_head].state == -1 ) {
+			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 ${if syntax.error-}
 				if (lapg_n.lexem == 0) {
 					break;
 				}
-				while (lapg_head >= 0 && lapg_state_sym( lapg_m[lapg_head].state, ${syntax.error.index} ) == -1) {
+				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${syntax.error.index})==-1) {
 					lapg_m[lapg_head] = null; // TODO dispose?
 					lapg_head--;
 				}
@@ -113,7 +117,7 @@ ${if syntax.error-}
 					lapg_m[++lapg_head] = new LapgSymbol();
 					lapg_m[lapg_head].lexem = ${syntax.error.index};
 					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, ${syntax.error.index} );
+					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, ${syntax.error.index});
 ${if opts.positions.contains('line')-}
 					lapg_m[lapg_head].line = lapg_n.line;
 ${end-}
@@ -132,14 +136,14 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
 ${end-}
-					if( lapg_symbols_ok >= 4 ) {
+					if (lapg_symbols_ok >= 4) {
 ${if opts.positions.contains('column')-}
 						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
 ${else-}
 						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 ${end-}
 					}
-					if( lapg_symbols_ok <= 1 ) {
+					if (lapg_symbols_ok <= 1) {
 						lapg_n = lexer.next();
 					}
 					lapg_symbols_ok = 0;
@@ -154,9 +158,9 @@ ${end-}
 			}
 		}
 
-		if( lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1} ) {
+		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
 ${if syntax.error-}
-			if(lapg_symbols_ok >= 4) {
+			if (lapg_symbols_ok >= 4) {
 	${else-}
 ${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
 ${if syntax.error-}
@@ -169,11 +173,11 @@ ${end-}
 
 	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_n.lexem );
-		if( DEBUG_SYNTAX ) {
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_n.lexem);
+		if (DEBUG_SYNTAX) {
 			System.out.println(java.text.@MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
-		if( lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0 ) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
 			lapg_n = lexer.next();
 		}
 	}
@@ -181,14 +185,14 @@ ${end-}
 	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]].sym:null;
+		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
-		if( DEBUG_SYNTAX ) {
-			System.out.println( "reduce to " + lapg_syms[lapg_rlex[rule]] );
+		if (DEBUG_SYNTAX) {
+			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
-		LapgSymbol startsym = (lapg_rlen[rule]!=0)?lapg_m[lapg_head+1-lapg_rlen[rule]]:lapg_n;
+		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 ${if opts.positions.contains('line')-}
 		lapg_gg.line = startsym.line;
 ${end-}
@@ -200,16 +204,16 @@ ${if opts.positions.contains('offset')-}
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		lapg_gg.endline = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endline:lapg_n.line;
+		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : lapg_n.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		lapg_gg.endcolumn = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endcolumn:lapg_n.column;
+		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : lapg_n.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		lapg_gg.endoffset = (lapg_rlen[rule]!=0)?lapg_m[lapg_head].endoffset:lapg_n.offset;
+		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 ${end-}
 ${if syntax.hasActions() || opts.genast == 'on'-}
-		switch( rule ) {
+		switch (rule) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction() || opts.genast == 'on' && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
@@ -224,7 +228,7 @@ ${end-}
 ${end-}
 		}
 ${end-}
-		for( int e = lapg_rlen[rule]; e > 0; e-- ) { 
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
@@ -241,20 +245,20 @@ ${end-}
 ${end} 
 
 ${template parserTables-}
-${call parserTable(parser.action_index,'int','lapg_action','LapgAction')-}
+${call parserTable(parser.action_index, 'int', 'lapg_action', 'LapgAction')-}
 
 ${if parser.nactions > 0-}
-${call parserTable(parser.action_table,'short','lapg_lalr','LapgLalr')}
+${call parserTable(parser.action_table, 'short', 'lapg_lalr', 'LapgLalr')}
 ${end-}
-${call parserTable(parser.sym_goto,'short','lapg_sym_goto','LapgSymGoto')-}
+${call parserTable(parser.sym_goto, 'short', 'lapg_sym_goto', 'LapgSymGoto')-}
 
-${call parserTable(parser.sym_from,'short','lapg_sym_from','LapgSymFrom')-}
+${call parserTable(parser.sym_from, 'short', 'lapg_sym_from', 'LapgSymFrom')-}
 
-${call parserTable(parser.sym_to,'short','lapg_sym_to','LapgSymTo')-}
+${call parserTable(parser.sym_to, 'short', 'lapg_sym_to', 'LapgSymTo')-}
 
-${call parserTable(parser.ruleLength,'short','lapg_rlen','LapgRLen')-}
+${call parserTable(parser.ruleLength, 'short', 'lapg_rlen', 'LapgRLen')-}
 
-${call parserTable(parser.rleft,'short','lapg_rlex','LapgRLex')-}
+${call parserTable(parser.rleft, 'short', 'lapg_rlex', 'LapgRLex')-}
 ${if opts.packTables == 'true'}
 ${call java_pack.unpackInt-}
 ${call java_pack.unpackShort-}
@@ -262,7 +266,7 @@ ${end-}
 ${end}
 
 
-${template parserTable(arr,atype,name,cname)-}
+${template parserTable(arr, atype, name, cname)-}
 ${if opts.packTables == 'true'-}
 	public interface ${cname} {
 ${if arr.size() > 8000-}

@@ -156,8 +156,8 @@ public class XmlTree<T> {
 		for (int i = 0; i < contents.length; i++) {
 			if (contents[i] == '\n') {
 				size++;
-			} else if(contents[i] == '\r') {
-				if(i+1 < contents.length && contents[i+1] == '\n') {
+			} else if (contents[i] == '\r') {
+				if (i+1 < contents.length && contents[i+1] == '\n') {
 					i++;
 				}
 				size++;
@@ -169,14 +169,14 @@ public class XmlTree<T> {
 		for (int i = 0; i < contents.length; i++) {
 			if (contents[i] == '\n') {
 				result[e++] = i + 1;
-			} else if(contents[i] == '\r') {
-				if(i+1 < contents.length && contents[i+1] == '\n') {
+			} else if (contents[i] == '\r') {
+				if (i+1 < contents.length && contents[i+1] == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;
 			}
 		}
-		if(e != size) {
+		if (e != size) {
 			throw new IllegalStateException();
 		}
 		return result;
