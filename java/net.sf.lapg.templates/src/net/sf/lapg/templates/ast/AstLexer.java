@@ -13,7 +13,7 @@ public class AstLexer {
 		public int line;
 		public int offset;
 		public int endoffset;
-	};
+	}
 
 	public interface Lexems {
 		public static final int eoi = 0;
@@ -83,7 +83,7 @@ public class AstLexer {
 	
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
-	};
+	}
 
 	public static final int TOKEN_SIZE = 2048;
 
@@ -268,7 +268,7 @@ public class AstLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if(chr >= 0 && chr < 128) {
+		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}
 		return 1;
@@ -281,7 +281,7 @@ public class AstLexer {
 		do {
 			lapg_n.offset = currOffset;
 			tokenLine = lapg_n.line = currLine;
-			if(token.length() > TOKEN_SIZE) {
+			if (token.length() > TOKEN_SIZE) {
 				token.setLength(TOKEN_SIZE);
 				token.trimToSize();
 			}
@@ -290,12 +290,12 @@ public class AstLexer {
 
 			for( state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
-				if( state >= -1 && chr != 0 ) { 
+				if (state >= -1 && chr != 0) {
 					currOffset++;
-					if( chr == '\n' ) {
+					if (chr == '\n') {
 						currLine++;
 					}
-					if( l >= datalen ) {
+					if (l >= datalen) {
 						token.append(data, tokenStart, l - tokenStart);
 						datalen = stream.read(data);
 						tokenStart = l = 0;
@@ -305,8 +305,8 @@ public class AstLexer {
 			}
 			lapg_n.endoffset = currOffset;
 
-			if( state == -1 ) {
-				if( chr == 0 ) {
+			if (state == -1) {
+				if (chr == 0) {
 					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
 					break;
 				}
@@ -315,19 +315,19 @@ public class AstLexer {
 				continue;
 			}
 
-			if(l - 1 > tokenStart) {
+			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
 			lapg_n.lexem = -state-2;
 			lapg_n.sym = null;
 
-		} while(lapg_n.lexem == -1 || !createToken(lapg_n));
+		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
 		return lapg_n;
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n) {
-		switch( lapg_n.lexem ) {
+		switch (lapg_n.lexem) {
 			case 3:
 				 lapg_n.sym = token.toString().substring(1, token.length()); break; 
 			case 4:

@@ -68,7 +68,7 @@ ${end-}
 ${self->lexerTables()-}
 
 	private static int mapCharacter(int chr) {
-		if(chr >= 0 && chr < ${lex.char2no.length}) {
+		if (chr >= 0 && chr < ${lex.char2no.length}) {
 			return lapg_char2no[chr];
 		}
 		return 1;
@@ -86,7 +86,7 @@ ${end-}
 ${if opts.positions.contains('column')-}
 			lapg_n.column = currColumn;
 ${end-}
-			if(token.length() > TOKEN_SIZE) {
+			if (token.length() > TOKEN_SIZE) {
 				token.setLength(TOKEN_SIZE);
 				token.trimToSize();
 			}
@@ -95,20 +95,20 @@ ${end-}
 
 			for( state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
-				if( state >= -1 && chr != 0 ) { 
+				if (state >= -1 && chr != 0) {
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 					currOffset++;
 ${end-}
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 					currColumn++;
 ${end-}
-					if( chr == '\n' ) {
+					if (chr == '\n') {
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 						currColumn = 1;
 ${end-}
 						currLine++;
 					}
-					if( l >= datalen ) {
+					if (l >= datalen) {
 						token.append(data, tokenStart, l - tokenStart);
 						datalen = stream.read(data);
 						tokenStart = l = 0;
@@ -126,8 +126,8 @@ ${if opts.endpositions.contains('column')-}
 			lapg_n.endcolumn = currColumn;
 ${end-}
 
-			if( state == -1 ) {
-				if( chr == 0 ) {
+			if (state == -1) {
+				if (chr == 0) {
 					reporter.error(${call java.err_location('lapg_n')}currLine, "Unexpected end of file reached");
 					break;
 				}
@@ -136,7 +136,7 @@ ${end-}
 				continue;
 			}
 
-			if(l - 1 > tokenStart) {
+			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
@@ -144,15 +144,15 @@ ${end-}
 			lapg_n.sym = null;
 
 ${if syntax.hasLexemActions()-}
-		} while(lapg_n.lexem == -1 || !createToken(lapg_n));
+		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
 ${else-}
-		} while(lapg_n.lexem == -1);
+		} while (lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
 	}
 ${if syntax.hasLexemActions()}
 	protected boolean createToken(LapgSymbol lapg_n) {
-		switch( lapg_n.lexem ) {
+		switch (lapg_n.lexem) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
 			case ${lexem.symbol.index}:
@@ -210,7 +210,7 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 		public int endoffset;
 ${end-}
-	};
+	}
 
 	public interface Lexems {
 ${for i in [0,parser.nterms-1]-}
@@ -220,7 +220,7 @@ ${end-}
 	
 	public interface ErrorReporter {
 		void error(${call java.err_parameters(false)}String s);
-	};
+	}
 ${end}
 
 ${template lexercode-}
