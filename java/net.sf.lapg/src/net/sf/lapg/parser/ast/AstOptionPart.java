@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,28 +15,5 @@
  */
 package net.sf.lapg.parser.ast;
 
-import net.sf.lapg.parser.LapgTree.TextSource;
-
-public class AstOption extends AstNode implements AstOptionPart {
-
-	private final String key;
-	private final Object value;
-
-	public AstOption(String key, Object value, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.key = key;
-		this.value = value;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public Object getValue() {
-		return value;
-	}
-
-	public void accept(AbstractVisitor v) {
-		v.visit(this);
-	}
+public interface AstOptionPart extends IAstNode {
 }

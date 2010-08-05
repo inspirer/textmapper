@@ -22,28 +22,14 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Prio;
 import net.sf.lapg.common.FormatUtil;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
-import net.sf.lapg.parser.ast.AstCode;
-import net.sf.lapg.parser.ast.AstDirective;
-import net.sf.lapg.parser.ast.AstGrammarPart;
-import net.sf.lapg.parser.ast.AstGroupsSelector;
-import net.sf.lapg.parser.ast.AstIdentifier;
-import net.sf.lapg.parser.ast.AstLexeme;
-import net.sf.lapg.parser.ast.AstLexerPart;
-import net.sf.lapg.parser.ast.AstNonTerm;
-import net.sf.lapg.parser.ast.AstOption;
-import net.sf.lapg.parser.ast.AstReference;
-import net.sf.lapg.parser.ast.AstRegexp;
-import net.sf.lapg.parser.ast.AstRoot;
-import net.sf.lapg.parser.ast.AstRule;
-import net.sf.lapg.parser.ast.AstRuleSymbol;
-import net.sf.lapg.parser.ast.IAstNode;
+import net.sf.lapg.parser.ast.*;
 
 public class LapgResolver {
 
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 
 	private final LapgTree<AstRoot> tree;
-	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();;
+	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();
 
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
 	private List<LiLexem> lexems;
@@ -259,6 +245,9 @@ public class LapgResolver {
 		rightPart.clear();
 		if(list != null) {
 			for(AstRuleSymbol rs : list) {
+				if(rs.hasSyntaxError()) {
+					continue;
+				}
 				AstCode astCode = rs.getCode();
 				if(astCode != null) {
 					LiSymbol codeSym = new LiSymbol("{}", null, false, astCode);
@@ -288,7 +277,9 @@ public class LapgResolver {
 					continue; /* error is already reported */
 				}
 				for(AstRule right : nonterm.getRules()) {
-					createRule(left, right, rightPart);
+					if(!right.hasSyntaxError()) {
+						createRule(left, right, rightPart);
+					}
 				}
 			}
 		}
@@ -333,8 +324,10 @@ public class LapgResolver {
 		if(tree.getRoot().getOptions() == null) {
 			return;
 		}
-		for(AstOption option : tree.getRoot().getOptions()) {
-			options.put(option.getKey(), convertExpression(option.getValue()));
+		for(AstOptionPart option : tree.getRoot().getOptions()) {
+			if(option instanceof AstOption) {
+				options.put(((AstOption)option).getKey(), convertExpression(((AstOption)option).getValue()));
+			}
 		}
 	}
 
@@ -347,22 +340,33 @@ public class LapgResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String,Object> convert(Map<String,Object> astAnnotations) {
+	private Map<String,Object> convert(AstAnnotations astAnnotations) {
 		return (Map<String, Object>) convertExpression(astAnnotations);
 	}
 
 	@SuppressWarnings("unchecked")
 	private Object convertExpression(Object o) {
-		if(o instanceof Map) {
+		if(o instanceof AstMap || o instanceof AstAnnotations) {
+			List<AstNamedEntry> list = o instanceof AstMap ? ((AstMap) o).getEntries() : ((AstAnnotations) o).getAnnotations();
 			Map<String,Object> result = new HashMap<String,Object>();
-			for(Map.Entry<String, Object> entry : ((Map<String,Object>)o).entrySet()) {
-				result.put(entry.getKey(), convertExpression(entry.getValue()));
+			for(AstNamedEntry entry : list) {
+				if(entry.hasSyntaxError()) {
+					continue;
+				}
+				AstExpression expr = entry.getExpression();
+				if(expr == null && o instanceof AstAnnotations) {
+					result.put(entry.getName(), Boolean.TRUE);
+				} else {
+					result.put(entry.getName(), convertExpression(expr));
+				}
 			}
 			return result;
 		}
-		if(o instanceof List) {
-			List<Object> result = new ArrayList<Object>(((List)o).size());
-			for(Object v : ((List)o)) {
+		if(o instanceof AstArray) {
+			List<AstExpression> list = ((AstArray) o).getExpressions();
+
+			List<Object> result = new ArrayList<Object>(list.size());
+			for(Object v : list) {
 				result.add(convertExpression(v));
 			}
 			return result;
@@ -370,7 +374,10 @@ public class LapgResolver {
 		if(o instanceof AstReference) {
 			return resolve((AstReference)o);
 		}
-		return o;
+		if(o instanceof AstLiteralExpression) {
+			return ((AstLiteralExpression) o).getLiteral();
+		}
+		return null;
 	}
 
 	private static class LapgResolverProblem extends LapgProblem {

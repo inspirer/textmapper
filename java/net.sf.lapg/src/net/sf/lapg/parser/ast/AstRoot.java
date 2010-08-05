@@ -21,12 +21,12 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class AstRoot extends AstNode {
 
-	private final List<AstOption> options;
+	private final List<AstOptionPart> options;
 	private final List<AstLexerPart> lexer;
 	private final List<AstGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public AstRoot(List<AstOption> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
+	public AstRoot(List<AstOptionPart> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
 			int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;
@@ -34,7 +34,7 @@ public class AstRoot extends AstNode {
 		this.grammar = grammar;
 	}
 
-	public List<AstOption> getOptions() {
+	public List<AstOptionPart> getOptions() {
 		return options;
 	}
 
@@ -59,7 +59,7 @@ public class AstRoot extends AstNode {
 			return;
 		}
 		if(options != null) {
-			for(AstOption o : options) {
+			for(AstOptionPart o : options) {
 				o.accept(v);
 			}
 		}

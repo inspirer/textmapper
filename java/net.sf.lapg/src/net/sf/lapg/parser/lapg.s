@@ -26,6 +26,8 @@
 
 # Vocabulary
 
+error:
+
 [0]
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/
@@ -75,13 +77,14 @@ input (AstRoot) ::=
 	optionsopt lexer_parts grammar_parts				{  $$ = new AstRoot($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
 ;
 
-options (List<AstOption>) ::= 
-	  option											{ $$ = new ArrayList<AstOption>(16); $options.add($option); }  
+options (List<AstOptionPart>) ::=
+	  option											{ $$ = new ArrayList<AstOptionPart>(16); $options.add($option); }
 	| list=options option								{ $list.add($option); } 
 ;
 
-option (AstOption) ::=
+option (AstOptionPart) ::=
 	  '.' identifier expression 						{ $$ = new AstOption($identifier, $expression, source, ${option.offset}, ${option.endoffset}); }
+	| syntax_problem
 ;
 
 symbol (AstIdentifier) ::=
@@ -111,6 +114,7 @@ pattern (AstRegexp) ::=
 lexer_parts (List<AstLexerPart>) ::= 
 	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); $lexer_parts.add($lexer_part); }
 	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
+	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
 lexer_part (AstLexerPart) ::=
@@ -127,13 +131,14 @@ icon_list (List<Integer>) ::=
 grammar_parts (List<AstGrammarPart>) ::=
 	  grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); $grammar_parts.add($grammar_part); }
 	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
+	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| annotations_decl symbol typeopt '::=' rules ';'	{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations_decl, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| '%' identifier references ';'						{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-; 
+;
 
 references (List<AstReference>) ::= 
 	  reference 										{ $$ = new ArrayList<AstReference>(); $references.add($reference); }
@@ -149,11 +154,13 @@ rule0 (AstRule) ::=
 	  annotations_declopt rulesyms commandopt rule_priorityopt
 														{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
 	| annotations_declopt commandopt rule_priorityopt  	{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
 rulesyms (List<AstRuleSymbol>) ::=
 	  rulesym											{ $$ = new ArrayList<AstRuleSymbol>(); $rulesyms.add($rulesym); }
 	| list=rulesyms rulesym 							{ $list.add($rulesym); }
+	| list=rulesyms syntax_problem						{ $list.add(new AstRuleSymbol($syntax_problem)); }
 ;
 
 rulesym (AstRuleSymbol) ::=
@@ -161,32 +168,36 @@ rulesym (AstRuleSymbol) ::=
 	| commandopt reference annotations_declopt					{ $$ = new AstRuleSymbol($commandopt, null, $reference, $annotations_declopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 ;
 
-annotations_decl (java.util.@Map<String,Object>) ::=
-	'['	annotations ']'									{ $$ = $annotations; }
+annotations_decl (AstAnnotations) ::=
+	'['	annotations ']'									{ $$ = new AstAnnotations($annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotations (java.util.@Map<String,Object>) ::=
-	  identifier 										{ $$ = new java.util.@HashMap<String,Object>(); $annotations.put($identifier, Boolean.TRUE); }
-	| identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $annotations.put($identifier, $expression); }
-	| annotations ',' identifier ':' expression			{ $annotations#0.put($identifier, $expression); }
-	| annotations ',' identifier						{ $annotations#0.put($identifier, Boolean.TRUE); }
+annotations (java.util.@List<AstNamedEntry>) ::=
+	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $annotations.add($annotation); }
+	| annotations ',' annotation						{ $annotations#0.add($annotation); }
 ;
 
-
-map_entries (java.util.@Map<String,Object>) ::=
-	  identifier ':' expression							{ $$ = new java.util.@HashMap<String,Object>(); $map_entries.put($identifier, $expression); }
-	| map_entries ',' identifier ':' expression			{ $map_entries#0.put($identifier, $expression); }
+annotation (AstNamedEntry) ::=
+	  identifier 										{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
+	| identifier ':' expression							{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| syntax_problem									{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
-expression ::=
-	  scon
-	| icon
+map_entries (java.util.@List<AstNamedEntry>) ::=
+	  identifier ':' expression							{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' identifier ':' expression			{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
+;
+
+expression (AstExpression) ::=
+	  scon                                              { $$ = new AstLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
+	| icon                                              { $$ = new AstLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
 	| reference
-	| '[' map_entries ']'								{ $$ = $map_entries; }
-	| '[' expression_list ']'							{ $$ = $expression_list; }
+	| '[' map_entries ']'								{ $$ = new AstMap($map_entries, source, ${left().offset}, ${left().endoffset}); }
+	| '[' expression_list ']'							{ $$ = new AstArray($expression_list, source, ${left().offset}, ${left().endoffset}); }
+	| syntax_problem
 ;
 
-expression_list (List<Object>) ::=
+expression_list (List<AstExpression>) ::=
 	expression											{ $$ = new ArrayList(); $expression_list.add($expression); }
 	| expression_list ',' expression					{ $expression_list#0.add($expression); }
 ;
@@ -204,6 +215,10 @@ command_tokens ::=
 
 command_token ::=
 	'i{' command_tokensopt '}' 
+;
+
+syntax_problem (AstError) ::=
+	error												{ $$ = new AstError(source, ${self[0].offset}, ${self[0].endoffset}); }
 ;
 
 ##################################################################################

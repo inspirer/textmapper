@@ -64,4 +64,28 @@ public class AbstractVisitor {
 	public boolean visit(AstRuleSymbol n) {
 		return true;
 	}
+
+	public boolean visit(AstError n) {
+		return true;
+	}
+
+	public boolean visit(AstAnnotations n) {
+		return true;
+	}
+
+	public boolean visit(AstArray n) {
+		return true;
+	}
+
+	public boolean visit(AstMap n) {
+		return true;
+	}
+
+	public boolean visit(AstNamedEntry n) {
+		return true;
+	}
+
+	public boolean visit(AstLiteralExpression n) {
+		return true;
+	}
 }

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,20 +17,49 @@ package net.sf.lapg.parser.ast;
 
 import net.sf.lapg.parser.LapgTree.TextSource;
 
-public class AstReference extends AstNode implements AstExpression {
+public class AstNamedEntry extends AstNode {
 
 	private final String name;
+	private final AstExpression expression;
 
-	public AstReference(String name, TextSource source, int offset, int endoffset) {
+	private final AstError error;
+
+	public AstNamedEntry(String name, AstExpression expression, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
+		this.expression = expression;
+		this.error = null;
+	}
+
+	public AstNamedEntry(AstError error) {
+		super(error.getInput(), error.getOffset(), error.getEndOffset());
+		this.name = null;
+		this.expression = null;
+		this.error = error; 
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public AstExpression getExpression() {
+		return expression;
+	}
+
+	public boolean hasSyntaxError() {
+		return error != null;
+	}
+
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if(error != null) {
+			v.visit(error);
+			return;
+		}
+		if(!v.visit(this)) {
+			return;
+		}
+		if(expression != null) {
+			expression.accept(v);
+		}
 	}
 }

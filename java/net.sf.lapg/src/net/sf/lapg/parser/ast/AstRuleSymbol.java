@@ -15,8 +15,6 @@
  */
 package net.sf.lapg.parser.ast;
 
-import java.util.Map;
-
 import net.sf.lapg.parser.LapgTree.TextSource;
 
 public class AstRuleSymbol extends AstNode {
@@ -24,14 +22,30 @@ public class AstRuleSymbol extends AstNode {
 	private final AstCode action;
 	private final String alias;
 	private final AstReference symbol;
-	private final Map<String,Object> annotations;
+	private final AstAnnotations annotations;
 
-	public AstRuleSymbol(AstCode action, String alias, AstReference symbol, Map<String,Object> annotations, TextSource source, int offset, int endoffset) {
+	private final AstError error;
+
+	public AstRuleSymbol(AstCode action, String alias, AstReference symbol, AstAnnotations annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.action = action;
 		this.alias = alias;
 		this.symbol = symbol;
 		this.annotations = annotations;
+		this.error = null;
+	}
+
+	public AstRuleSymbol(AstError error) {
+		super(error.getInput(), error.getOffset(), error.getEndOffset());
+		this.action = null;
+		this.alias = null;
+		this.symbol = null;
+		this.annotations = null;
+		this.error = error;
+	}
+
+	public boolean hasSyntaxError() {
+		return error != null;
 	}
 
 	public AstCode getCode() {
@@ -46,16 +60,23 @@ public class AstRuleSymbol extends AstNode {
 		return alias;
 	}
 
-	public Map<String, Object> getAnnotations() {
+	public AstAnnotations getAnnotations() {
 		return annotations;
 	}
 
 	public void accept(AbstractVisitor v) {
+		if(error != null) {
+			v.visit(error);
+			return;
+		}
 		if(!v.visit(this)) {
 			return;
 		}
 		if(symbol != null) {
 			symbol.accept(v);
+		}
+		if(annotations != null) {
+			annotations.accept(v);
 		}
 		if(action != null) {
 			action.accept(v);
