@@ -248,18 +248,18 @@ public class LapgParser {
 	private static int lapg_next(int state, int symbol) {
 		int p;
 		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state]-3; lapg_lalr[p] >= 0; p += 2) {
+			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
 				if (lapg_lalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p+1];
+			return lapg_lalr[p + 1];
 		}
 		return lapg_action[state];
 	}
 
 	private static int lapg_state_sym(int state, int symbol) {
-		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol+1]-1;
+		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
 		while (min <= max) {
@@ -304,7 +304,7 @@ public class LapgParser {
 				if (lapg_n.lexem == 0) {
 					break;
 				}
-				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1)==-1) {
+				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1) == -1) {
 					lapg_m[lapg_head] = null; // TODO dispose?
 					lapg_head--;
 				}
@@ -312,7 +312,7 @@ public class LapgParser {
 					lapg_m[++lapg_head] = new LapgSymbol();
 					lapg_m[lapg_head].lexem = 1;
 					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, 1);
+					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
 					lapg_m[lapg_head].line = lapg_n.line;
 					lapg_m[lapg_head].offset = lapg_n.offset;
 					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
@@ -339,14 +339,14 @@ public class LapgParser {
 			}
 			throw new ParseException();
 		}
-		return (AstRoot)lapg_m[lapg_head-1].sym;
+		return (AstRoot)lapg_m[lapg_head - 1].sym;
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format( "shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
 		}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
 			lapg_n = lexer.next();

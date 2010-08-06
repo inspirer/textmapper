@@ -84,7 +84,7 @@ public class LapgLexer {
 	private String unescape(String s, int start, int end) {
 		StringBuilder sb = new StringBuilder();
 		end = Math.min(end, s.length());
-		for(int i = start; i < end; i++) {
+		for (int i = start; i < end; i++) {
 			char c = s.charAt(i);
 			if (c == '\\') {
 				if (++i == end) {
@@ -105,7 +105,7 @@ public class LapgLexer {
 			} else {
 				sb.append(c);
 			}
-		} 
+		}
 		return sb.toString();
 	}
 
@@ -124,7 +124,7 @@ public class LapgLexer {
 
 	public int getTokenLine() {
 		return tokenLine;
-	} 
+	}
 
 	public void setLine(int currLine) {
 		this.currLine = currLine;
@@ -220,7 +220,7 @@ public class LapgLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l-1;
+			int tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -253,7 +253,7 @@ public class LapgLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = -state-2;
+			lapg_n.lexem = - state - 2;
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n));

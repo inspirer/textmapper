@@ -248,7 +248,7 @@ public void setSkipComments(boolean skip) {
 private String unescape(String s, int start, int end) {
 	StringBuilder sb = new StringBuilder();
 	end = Math.min(end, s.length());
-	for(int i = start; i < end; i++) {
+	for (int i = start; i < end; i++) {
 		char c = s.charAt(i);
 		if (c == '\\') {
 			if (++i == end) {
@@ -269,7 +269,7 @@ private String unescape(String s, int start, int end) {
 		} else {
 			sb.append(c);
 		}
-	} 
+	}
 	return sb.toString();
 }
 ${end}

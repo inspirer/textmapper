@@ -145,7 +145,7 @@ public class AstLexer {
 
 	public int getTokenLine() {
 		return tokenLine;
-	} 
+	}
 
 	public void setLine(int currLine) {
 		this.currLine = currLine;
@@ -286,7 +286,7 @@ public class AstLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l-1;
+			int tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -319,7 +319,7 @@ public class AstLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = -state-2;
+			lapg_n.lexem = - state - 2;
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
