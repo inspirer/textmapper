@@ -20,9 +20,9 @@ import net.sf.lapg.parser.LapgTree.TextSource;
 public class AstOption extends AstNode implements AstOptionPart {
 
 	private final String key;
-	private final Object value;
+	private final AstExpression value;
 
-	public AstOption(String key, Object value, TextSource source, int offset, int endoffset) {
+	public AstOption(String key, AstExpression value, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.key = key;
 		this.value = value;
@@ -32,7 +32,7 @@ public class AstOption extends AstNode implements AstOptionPart {
 		return key;
 	}
 
-	public Object getValue() {
+	public AstExpression getValue() {
 		return value;
 	}
 
