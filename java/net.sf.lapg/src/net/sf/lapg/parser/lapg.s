@@ -180,6 +180,8 @@ annotations (java.util.@List<AstNamedEntry>) ::=
 annotation (AstNamedEntry) ::=
 	  identifier 										{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
 	| identifier ':' expression							{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '=' expression							{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '(' expression ')'						{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
