@@ -52,5 +52,9 @@
 				key="Lapg Syntax"
 				implementationClass="net.sf.lapg.idea.editor.LapgSyntaxHighlighter"/>
 
+		<lang.parserDefinition
+				language="Lapg Syntax"
+				implementationClass="net.sf.lapg.idea.lang.parser.LapgParserDefinition"/>
+
 	</extensions>
 </idea-plugin>
