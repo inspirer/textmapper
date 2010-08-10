@@ -41,6 +41,14 @@ ${util.shiftRight(self->lexercode(), 1)-}
 		chr = l < datalen ? data[l++] : 0;
 	}
 
+	public int getState() {
+		return group;
+	}
+
+	public void setState(int state) {
+		this.group = state;
+	}
+
 	public int getTokenLine() {
 		return tokenLine;
 	}

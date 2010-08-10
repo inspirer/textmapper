@@ -143,6 +143,14 @@ public class AstLexer {
 		chr = l < datalen ? data[l++] : 0;
 	}
 
+	public int getState() {
+		return group;
+	}
+
+	public void setState(int state) {
+		this.group = state;
+	}
+
 	public int getTokenLine() {
 		return tokenLine;
 	}

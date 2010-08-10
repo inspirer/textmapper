@@ -30,7 +30,7 @@ error:
 
 [0]
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1
 			{ $lexem = current(); break; }
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
@@ -60,6 +60,9 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 '?':	/?/
 '&':	/&/
 '@':	/@/
+
+Ltrue:  /true/
+Lfalse: /false/
 
 '{':	/{/		{ deep = 1; group = 1; break; }
 
@@ -193,6 +196,8 @@ map_entries (java.util.@List<AstNamedEntry>) ::=
 expression (AstExpression) ::=
 	  scon                                              { $$ = new AstLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
 	| icon                                              { $$ = new AstLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
+	| Ltrue                                             { $$ = new AstLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
+	| Lfalse                                            { $$ = new AstLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 	| reference
 	| '[' map_entries ']'								{ $$ = new AstMap($map_entries, source, ${left().offset}, ${left().endoffset}); }
 	| '[' expression_list ']'							{ $$ = new AstArray($expression_list, source, ${left().offset}, ${left().endoffset}); }
