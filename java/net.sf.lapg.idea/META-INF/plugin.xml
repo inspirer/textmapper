@@ -46,6 +46,11 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<fileTypeFactory implementation="net.sf.lapg.idea.LapgFileTypeFactory"/>
+		<fileTypeFactory implementation="net.sf.lapg.idea.file.LapgFileTypeFactory"/>
+
+		<syntaxHighlighter
+				key="Lapg Syntax"
+				implementationClass="net.sf.lapg.idea.editor.LapgSyntaxHighlighter"/>
+
 	</extensions>
 </idea-plugin>
