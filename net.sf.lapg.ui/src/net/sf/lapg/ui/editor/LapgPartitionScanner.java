@@ -1,6 +1,6 @@
 /**
  * This file is part of Lapg.UI project.
- * 
+ *
  * Copyright (c) 2010 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -61,7 +61,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 			} else {
 				return fRegexp;
 			}
-		case Lexems.LBRACE:
+		case Lexems.LCURLY:
 			skipAction();
 			fTokenLength = lexem.endoffset - fTokenOffset;
 			lexem = null;
@@ -81,11 +81,11 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		while(lexem.lexem != Lexems.eoi && deep > 0) {
 			readNext();
 			switch(lexem.lexem) {
-			case Lexems.iLBRACE:
-			case Lexems.LBRACE:
+			case Lexems.iLCURLY:
+			case Lexems.LCURLY:
 				deep++;
 				break;
-			case Lexems.RBRACE:
+			case Lexems.RCURLY:
 				deep--;
 				break;
 			}
@@ -131,9 +131,9 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 			case Lexems.regexp:
 			case Lexems.eoi:
 				return true;
-			case Lexems.LBRACE:
-			case Lexems.RBRACE:
-			case Lexems.iLBRACE:
+			case Lexems.LCURLY:
+			case Lexems.RCURLY:
+			case Lexems.iLCURLY:
 				return super.createToken(lapg_n);
 			}
 			return false;
