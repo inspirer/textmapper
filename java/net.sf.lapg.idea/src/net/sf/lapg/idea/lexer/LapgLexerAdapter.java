@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.lang;
+package net.sf.lapg.idea.lexer;
 
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.util.text.CharSequenceReader;
 import net.sf.lapg.parser.LapgLexer;
 import net.sf.lapg.parser.LapgLexer.LapgSymbol;
 import net.sf.lapg.parser.LapgLexer.Lexems;

@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.lang.parser;
+package net.sf.lapg.idea.lexer;
 
-import com.intellij.lang.ASTFactory;
-import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.tree.IFileElementType;
 import net.sf.lapg.idea.file.LapgFileType;
+import org.jetbrains.annotations.NotNull;
 
-public interface LapgElementTypes {
-	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE) {
-		@Override
-		public ASTNode parseContents(ASTNode chameleon) {
-			return ASTFactory.leaf(TEXT, chameleon.getChars());
-		}
-	};
+public class LapgElementType extends IElementType {
+	public LapgElementType(@NotNull String debugName) {
+		super(debugName, LapgFileType.LAPG_LANGUAGE);
+	}
 
-	public static final IElementType TEXT = new IElementType("LAPG_TEXT", LapgFileType.LAPG_LANGUAGE);
+	@Override
+	public String toString() {
+		return "[lapg]" + super.toString();
+	}
 }

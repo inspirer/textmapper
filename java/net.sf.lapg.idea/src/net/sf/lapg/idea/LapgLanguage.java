@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.lang;
+package net.sf.lapg.idea;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.SingleLazyInstanceSyntaxHighlighterFactory;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
-import net.sf.lapg.idea.editor.LapgSyntaxHighlighter;
+import net.sf.lapg.idea.highlighter.LapgSyntaxHighlighter;
 import org.jetbrains.annotations.NotNull;
 
 public class LapgLanguage extends Language {

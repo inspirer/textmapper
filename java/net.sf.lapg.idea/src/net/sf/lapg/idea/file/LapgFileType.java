@@ -18,7 +18,7 @@ package net.sf.lapg.idea.file;
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.IconLoader;
-import net.sf.lapg.idea.lang.LapgLanguage;
+import net.sf.lapg.idea.LapgLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

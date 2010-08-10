@@ -13,19 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.lang;
+package net.sf.lapg.idea;
 
-import com.intellij.psi.tree.IElementType;
-import net.sf.lapg.idea.file.LapgFileType;
+import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class LapgElementType extends IElementType {
-	public LapgElementType(@NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
+public class LapgLoader implements ApplicationComponent {
+
+	public LapgLoader() {
 	}
 
-	@Override
-	public String toString() {
-		return "[lapg]" + super.toString();
+	public void initComponent() {
+		ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
+			public void projectOpened(final Project project) {
+			}
+		});
+	}
+
+	public void disposeComponent() {
+	}
+
+	@NotNull
+	public String getComponentName() {
+		return "lapg.support.loader";
 	}
 }
