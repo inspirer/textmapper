@@ -131,9 +131,5 @@
 			</mapper>
 		</pathconvert>
 		<replace token="{version.full}" value="${version.full}" file="${dropin}/site.xml" />
-
-		<java jar="${launcher.file.location}" fork="true" failonerror="yes">
-			<arg line="-application org.eclipse.equinox.p2.publisher.CategoryPublisher -nosplash -console -consolelog -metadataRepository file:${dropin} -categoryDefinition file:${dropin}/site.xml -categoryQualifier" />
-		</java>
 	</target>
 </project>
