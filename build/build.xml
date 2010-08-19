@@ -1,135 +1,67 @@
 <project name="net.sf.lapg">
 
-	<property environment="env" />
-	<property file="build.properties" />
-	
-	<target name="clean" depends="initProperties">
+	<property file="lapg.properties" />
+
+	<target name="clean">
 		<delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${buildDirectory}">
 				<include name="**/**"/>
 			</fileset>
 		</delete>
 	</target>
+	
+	<target name="eclipseVars">
+		<path id="launcher.plugin.id">
+			<fileset dir="${baseLocation}/plugins" includes="org.eclipse.equinox.launcher_*.jar"/>
+		</path>
+		<path id="builder.id">
+	    	<dirset dir="${baseLocation}/plugins" includes="org.eclipse.pde.build_*"/>
+	    </path>
+		<property name="launcher.plugin" location="${toString:launcher.plugin.id}"/>
+		<property name="builder.plugin" location="${toString:builder.id}"/>
+		<property name="template.build.properties" location="${builder.plugin}/templates/headless-build/build.properties"/>
+		<property name="build.xml.script" location="${builder.plugin}/scripts/build.xml"/>
+	</target>
 
-	<target name="init" depends="initProperties, clean">
-		<mkdir dir="${buildDirectory}/features"/>
-		<mkdir dir="${buildDirectory}/plugins"/>
+	<target name="init" depends="clean, eclipseVars">
+		<property name="deploy.dir" location="${deploy.target}"/>
+		<property name="buildDirectoryPath" location="${buildDirectory}"/>
+
+		<path id="buildDirectory.id">
+			<pathelement location="${buildDirectoryPath}"/>
+		</path>
+		<pathconvert property="buildDirectoryUnixPath" targetos="unix" refid="buildDirectory.id" />
+
+		<property name="p2.build.repo" location="${buildDirectoryUnixPath}/repo"/>
 		
-		<copy todir="${buildDirectory}/plugins" includeemptydirs="true">
-			<fileset refid="bundles.id"/>
-		</copy>
-
-		<copy todir="${buildDirectory}/features" includeemptydirs="true">
-			<fileset dir="${basedir}/../features">
-				<include name="net.sf.lapg/**"/>
+		<mkdir dir="${buildDirectory}"/>
+		
+		<copy todir="${buildDirectory}" includeemptydirs="true">
+			<fileset dir="${basedir}/..">
+				<include name="features/**"/>
+				<include name="plugins/**"/>
+				<exclude name="**/bin/**"/>
 			</fileset>
 		</copy>
 		
-		<copy file="${template.build.properties}" tofile="${buildDirectory}/build.properties"/>
-	</target>
-
-	<target name="initProperties">
-		<!-- all files to build -->
-		<fileset id="bundles.id" dir="${basedir}/../plugins">
-			<include name="net.sf.**/**"/>
-			<exclude name="**/bin/**"/>
-			<exclude name="**/*.iml"/>
-			<exclude name="**/*.ipr"/>
-		</fileset>
+		<copy file="${basedir}/customTargets.xml" todir="${buildDirectory}">
+			<fileset dir="${basedir}" includes="custom*.xml"/>
+		</copy>
+		<copy file="${basedir}/lapg.properties" tofile="${buildDirectory}/build.properties"/>
 		
-		<!-- list of bundles to build -->
-		<path id="bundles.dirs.id">
-			<dirset dir="${basedir}">
-				<include name="net.sf.lapg"/>
-				<include name="net.sf.lapg.common.ui"/>
-				<include name="net.sf.lapg.ui"/>
-			</dirset>
-		</path>
-		<pathconvert property="pluginList" pathsep="," refid="bundles.dirs.id">
-			<map from="${basedir}${file.separator}" to=""/>
-		</pathconvert>
-		
-		<!-- eclipse location and scripts -->
-		<path id="launcher.file.id"> 
-		    <fileset dir="${baseLocation}/plugins"> 
-		        <include name="org.eclipse.equinox.launcher_*.jar"/> 
-		     </fileset>
-		</path>
-		<path id="pde.dir.id"> 
-		    <dirset dir="${baseLocation}/plugins">
-	        	<include name="org.eclipse.pde.build_*"/>
-		     </dirset>
-		</path>
-		
-		<property name="launcher.file.location" location="${toString:launcher.file.id}"/>
-		<property name="pde.dir.location" location="${toString:pde.dir.id}"/>
-		<property name="template.build.properties" location="${pde.dir.location}/templates/headless-build/build.properties"/>
-		<property name="build.xml.script" location="${pde.dir.location}/scripts/build.xml"/>
-		
-		<property name="deploy.dir" location="${updatesite.dir}"/>
-
-		<!-- target repository location -->
-		<property name="abs.local.buildDirectory" location="${buildDirectory}"/>
-		<path id="buildDirectory.id">
-			<pathelement location="${abs.local.buildDirectory}"/>
-		</path>
-		<pathconvert property="abs.buildDirectory" targetos="unix" refid="buildDirectory.id" />
-
-		<property name="dropin" location="${abs.buildDirectory}/repo"/>
+		<propertyfile file="${buildDirectory}/build.properties">
+			<entry key="baseLocation" value="${baseLocation}"/>
+			<entry key="buildDirectory" value="${buildDirectoryUnixPath}"/>
+			<entry key="JavaSE-1.6" value="${java.home}/lib/rt.jar"/>
+			<entry key="p2.build.repo" value="file:${p2.build.repo}"/>
+			<entry key="p2.repo.path" value="${p2.build.repo}"/>
+			<entry key="deploy.target" value="${deploy.dir}"/>
+		</propertyfile>
 	</target>
 
 	<target name="deploy" depends="init">
-		<propertyfile file="${buildDirectory}/build.properties">
-			<entry key="topLevelElementType" value="feature"/>
-			<entry key="topLevelElementId" value="${topLevelElementId}"/>
-			<entry key="baseLocation" value="${baseLocation}"/>
-			<entry key="buildDirectory" value="${abs.buildDirectory}"/>
-
-			<entry key="skipFetch" value="true"/>
-			<entry key="skipBase" value="true"/>
-			<entry key="skipMaps" value="true"/>
-			<entry key="skipMirroring" value="true"/>
-			<entry key="skipDirector" value="true"/>
-
-			<entry key="JavaSE-1.6" value="${java.home}/lib/rt.jar"/>
-			<entry key="buildId" value="${buildId}"/>
-			
-			<entry key="javacSource" value="1.5"/>
-			<entry key="javacTarget" value="1.5"/>
-
-			<entry key="outputUpdateJars" value="true"/>
-			<entry key="javacDebugInfo" value="true"/>
-			<entry key="javacVerbose" value="false"/>
-			<entry key="javacFailOnError" value="true"/>
-
-			<entry key="runPackager" value="true"/>
-
-			<entry key="p2.gathering" value="true"/>
-			<entry key="p2.compress" value="true"/>
-			<entry key="p2.publish.artifacts" value="true"/>
-			<entry key="p2.build.repo" value="file:${dropin}"/>
-			<entry key="p2.metadata.repo" value="file:${dropin}"/>
-			<entry key="p2.metadata.repo.name" value="Lapg Update Site"/>
-			<entry key="p2.artifact.repo" value="file:${dropin}"/>
-			<entry key="p2.artifact.repo.name" value="Lapg Artifacts"/>
-		</propertyfile>
-
-		<java jar="${launcher.file.location}" fork="true">
-			<arg line="-application org.eclipse.ant.core.antRunner -buildfile ${build.xml.script} -Dbuilder=${abs.buildDirectory}"/>
+		<java jar="${launcher.plugin}" fork="true">
+			<arg line="-application org.eclipse.ant.core.antRunner -buildfile ${build.xml.script} -Dbuilder=${buildDirectoryUnixPath}"/>
 		</java>
-		
-		<copy file="${basedir}/site.xml" tofile="${dropin}/site.xml" />
-		<pathconvert property="version.full">
-			<fileset dir="${dropin}/features">
-				<include name="${topLevelElementId}_*.jar" />
-			</fileset>
-			<mapper>
-				<chainedmapper>
-					<flattenmapper />
-					<globmapper from="${topLevelElementId}_*.jar" to="*" casesensitive="yes" />
-				</chainedmapper>
-			</mapper>
-		</pathconvert>
-		<replace token="{version.full}" value="${version.full}" file="${dropin}/site.xml" />
 	</target>
 </project>
