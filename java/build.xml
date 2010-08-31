@@ -102,23 +102,23 @@
 	</target>
 
 	<target name="plugin">
-		<mkdir dir="build/plugin/classes"/>
-		<copy includeemptydirs="false" todir="build/plugin">
+		<mkdir dir="build/lapg/classes"/>
+		<copy includeemptydirs="false" todir="build/lapg">
 			<fileset dir="net.sf.lapg.idea" includes="lib/**"/>
 		</copy>
-		<copy includeemptydirs="false" todir="build/plugin/classes">
+		<copy includeemptydirs="false" todir="build/lapg/classes">
 			<fileset dir="net.sf.lapg.idea" includes="META-INF/plugin.xml"/>
 			<fileset dir="net.sf.lapg.idea/resources"/>
 		</copy>
-		<javac destdir="build/plugin/classes" source="${source}" target="${target}">
+		<javac destdir="build/lapg/classes" source="${source}" target="${target}">
 			<src path="net.sf.lapg.idea/src"/>
 			<classpath>
-				<fileset dir="build/plugin/lib" includes="*.jar"/>
+				<fileset dir="build/lapg/lib" includes="*.jar"/>
 				<fileset dir="${env.IDEA_PATH}/lib" includes="*.jar"/>
 			</classpath>
 		</javac>
-		<jar destfile="build/plugin/lib/lapg-plugin.jar">
-			<fileset dir="build/plugin/classes"/>
+		<jar destfile="build/lapg/lib/lapg-plugin.jar">
+			<fileset dir="build/lapg/classes"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
@@ -126,5 +126,6 @@
 			</manifest>
 			<metainf dir="." includes="LICENSE.txt"/>
 		</jar>
+		<delete dir="build/lapg/classes"/>
 	</target>
 </project>
