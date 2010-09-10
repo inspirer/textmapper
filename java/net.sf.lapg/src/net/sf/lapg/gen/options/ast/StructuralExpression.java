@@ -3,7 +3,7 @@ package net.sf.lapg.gen.options.ast;
 import java.util.List;
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
-public class StructuralExpression extends AstOptNode implements IExpression, ISomeB {
+public class StructuralExpression extends AstOptNode implements IExpression {
 
 	private List<MapEntriesItem> mapEntries;
 	private List<IExpression> expressionList;

@@ -10,18 +10,17 @@ import net.sf.lapg.gen.options.OptdefLexer.Lexems;
 import net.sf.lapg.gen.options.ast.AnnoKind;
 import net.sf.lapg.gen.options.ast.Declaration;
 import net.sf.lapg.gen.options.ast.Defaultval;
-import net.sf.lapg.gen.options.ast.Group;
+import net.sf.lapg.gen.options.ast.FeatureDeclaration;
+import net.sf.lapg.gen.options.ast.IConstraint;
 import net.sf.lapg.gen.options.ast.IExpression;
 import net.sf.lapg.gen.options.ast.Input;
-import net.sf.lapg.gen.options.ast.Kind1;
 import net.sf.lapg.gen.options.ast.LiteralExpression;
 import net.sf.lapg.gen.options.ast.MapEntriesItem;
-import net.sf.lapg.gen.options.ast.Modifier;
-import net.sf.lapg.gen.options.ast.Option;
-import net.sf.lapg.gen.options.ast.SomeA;
+import net.sf.lapg.gen.options.ast.Modifiers;
+import net.sf.lapg.gen.options.ast.Multiplicity;
+import net.sf.lapg.gen.options.ast.StringConstraint;
 import net.sf.lapg.gen.options.ast.StructuralExpression;
 import net.sf.lapg.gen.options.ast.Type;
-import net.sf.lapg.gen.options.ast.Typedef;
 import net.sf.lapg.gen.options.ast._String;
 
 public class OptdefParser {
@@ -41,69 +40,60 @@ public class OptdefParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int lapg_action[] = {
-		-1, -1, -1, 6, 7, 8, -3, 2, -1, -1, -1, 1, -1, -1, -1, -1,
-		24, -1, -1, 10, -1, -1, 5, 23, -1, 4, 9, 3, 26, -1, -1, 27,
-		29, 30, -17, 28, 31, -1, -1, -1, -29, -1, -1, -1, -1, -1, 25, 22,
-		-35, 21, -1, 42, 43, -1, 41, -1, -1, -1, -1, 20, -1, -41, -1, 34,
-		35, -1, 36, 37, 46, 47, -1, 19, 45, 44, -1, -49, 15, 40, -57, -1,
-		50, -1, -1, -1, 17, -1, 38, -1, -1, -1, 49, -1, 48, 18, 16, 33,
-		52, 51, -1, -1, 53, -1, -2,
+		-1, -1, -1, -3, 2, -1, 3, 4, 5, 6, -1, 1, -1, -1, -11, 31,
+		33, 32, -1, 10, -1, -1, 35, 8, 9, -17, 7, -1, 12, -25, -1, -1,
+		-1, 24, -1, 19, 20, 21, -1, 14, -1, -1, -1, -1, 17, 18, 38, 39,
+		-1, 40, 41, 16, 37, 36, 15, 30, 29, 27, 28, -1, 26, -1, -1, 44,
+		-1, -1, -1, 22, 23, -1, -1, 43, -1, 42, 25, 46, 45, -1, -1, 47,
+		-1, -2,
 	};
 
 	private static final short lapg_lalr[] = {
-		21, -1, 25, -1, 27, -1, 28, -1, 29, -1, 0, 0, -1, -2, 11, -1,
-		5, 32, 12, 32, 23, 32, 24, 32, -1, -2, 24, -1, 23, 11, -1, -2,
-		24, -1, 23, 12, -1, -2, 5, -1, 1, 13, 10, 13, -1, -2, 6, -1,
-		1, 14, 10, 14, -1, -2, 6, -1, 12, 39, -1, -2,
+		17, -1, 18, -1, 0, 0, -1, -2, 6, -1, 1, 34, -1, -2, 15, -1,
+		7, 11, 10, 11, -1, -2, 10, -1, 7, 13, -1, -2,
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 1, 19, 31, 36, 36, 38, 45, 48, 49, 53, 57, 61, 65, 70, 72,
-		75, 78, 81, 84, 87, 90, 92, 94, 95, 97, 99, 102, 107, 109, 111, 114,
-		117, 118, 119, 121, 123, 126, 132, 133, 135, 136, 137, 139, 140, 142, 145, 146,
-		148, 153, 158, 163, 168, 169, 170, 170, 170, 170, 170, 171, 172, 172,
+		0, 1, 12, 20, 28, 28, 29, 31, 32, 36, 38, 39, 41, 43, 45, 47,
+		53, 56, 58, 60, 64, 68, 72, 74, 76, 78, 79, 80, 81, 82, 87, 92,
+		93, 94, 95, 97, 99, 103, 104, 105, 106, 108, 110, 112, 115, 117, 121, 126,
+		131, 136, 137, 138, 139, 140,
 	};
 
 	private static final short lapg_sym_from[] = {
-		101, 10, 12, 13, 15, 18, 20, 21, 24, 41, 42, 43, 44, 45, 58, 62,
-		65, 70, 91, 1, 41, 42, 43, 60, 62, 65, 70, 83, 88, 89, 99, 60,
-		70, 88, 89, 99, 39, 61, 53, 55, 56, 75, 78, 81, 82, 17, 79, 98,
-		14, 2, 8, 9, 38, 15, 18, 20, 58, 29, 30, 34, 37, 53, 55, 57,
-		87, 60, 70, 88, 89, 99, 81, 82, 21, 24, 44, 21, 24, 44, 21, 24,
-		44, 21, 24, 44, 21, 24, 44, 21, 24, 44, 0, 6, 74, 85, 50, 40,
-		48, 0, 6, 21, 24, 44, 0, 6, 21, 24, 44, 0, 6, 0, 6, 21,
-		24, 44, 21, 24, 44, 0, 0, 0, 6, 0, 6, 12, 13, 45, 12, 13,
-		18, 20, 45, 58, 61, 74, 85, 50, 40, 40, 48, 10, 10, 15, 21, 24,
-		44, 78, 41, 42, 41, 42, 43, 62, 65, 60, 70, 88, 89, 99, 60, 70,
-		88, 89, 99, 60, 70, 88, 89, 99, 70, 70, 40, 61,
+		80, 1, 12, 13, 18, 20, 21, 42, 43, 48, 66, 72, 38, 42, 43, 48,
+		66, 69, 70, 78, 27, 34, 38, 41, 48, 69, 70, 78, 30, 14, 41, 40,
+		59, 61, 64, 65, 62, 77, 29, 5, 10, 18, 21, 31, 32, 59, 61, 25,
+		38, 48, 69, 70, 78, 34, 64, 65, 0, 3, 0, 3, 12, 13, 18, 21,
+		12, 13, 18, 21, 12, 13, 18, 21, 27, 34, 27, 34, 27, 34, 2, 2,
+		2, 2, 38, 48, 69, 70, 78, 38, 48, 69, 70, 78, 0, 0, 2, 0,
+		3, 12, 13, 12, 13, 18, 21, 29, 25, 27, 27, 34, 27, 34, 42, 43,
+		42, 43, 66, 27, 34, 12, 13, 18, 21, 38, 48, 69, 70, 78, 38, 48,
+		69, 70, 78, 38, 48, 69, 70, 78, 48, 48, 25, 29,
 	};
 
 	private static final short lapg_sym_to[] = {
-		102, 14, 17, 17, 14, 17, 17, 28, 28, 51, 51, 51, 28, 17, 17, 51,
-		51, 79, 98, 9, 52, 52, 52, 68, 52, 52, 68, 93, 68, 68, 68, 69,
-		69, 69, 69, 69, 46, 74, 62, 62, 65, 85, 86, 89, 91, 24, 88, 99,
-		21, 10, 12, 13, 45, 22, 25, 27, 67, 41, 42, 43, 44, 63, 64, 66,
-		95, 70, 70, 70, 70, 70, 90, 92, 29, 29, 29, 30, 30, 30, 31, 31,
-		31, 32, 32, 32, 33, 33, 33, 34, 34, 34, 1, 1, 83, 83, 60, 47,
-		47, 2, 2, 35, 35, 35, 3, 3, 36, 36, 36, 4, 4, 5, 5, 37,
-		37, 37, 38, 38, 38, 101, 6, 7, 11, 8, 8, 18, 20, 58, 19, 19,
-		26, 26, 19, 26, 75, 84, 94, 61, 48, 49, 59, 15, 16, 23, 39, 40,
-		57, 87, 53, 55, 54, 54, 56, 77, 78, 71, 80, 96, 97, 100, 72, 72,
-		72, 72, 72, 73, 73, 73, 73, 73, 81, 82, 50, 76,
+		81, 5, 14, 14, 14, 25, 14, 57, 57, 62, 57, 77, 46, 58, 58, 46,
+		58, 46, 46, 46, 30, 30, 47, 55, 47, 47, 47, 47, 41, 22, 56, 54,
+		66, 66, 70, 72, 69, 78, 38, 12, 13, 23, 26, 42, 43, 67, 68, 27,
+		48, 48, 48, 48, 48, 44, 71, 73, 1, 1, 2, 2, 15, 15, 15, 15,
+		16, 16, 16, 16, 17, 17, 17, 17, 31, 31, 32, 32, 33, 33, 6, 7,
+		8, 9, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 80, 3, 10, 4,
+		11, 18, 21, 19, 19, 24, 24, 39, 28, 34, 35, 45, 36, 36, 59, 61,
+		60, 60, 74, 37, 37, 20, 20, 20, 20, 51, 63, 75, 76, 79, 52, 52,
+		52, 52, 52, 53, 53, 53, 53, 53, 64, 65, 29, 40,
 	};
 
 	private static final short lapg_rlen[] = {
-		1, 2, 1, 5, 4, 4, 1, 1, 1, 2, 1, 0, 1, 0, 1, 6,
-		3, 2, 2, 2, 2, 1, 1, 2, 1, 4, 1, 1, 1, 1, 1, 1,
-		1, 7, 4, 4, 4, 4, 1, 0, 3, 1, 1, 1, 1, 1, 1, 1,
-		3, 3, 1, 3, 3, 5, 1, 1, 0, 1, 1, 1, 1, 1, 3,
+		1, 2, 1, 1, 1, 1, 1, 5, 5, 2, 1, 0, 1, 0, 1, 5,
+		2, 3, 2, 1, 1, 1, 4, 4, 1, 3, 1, 1, 1, 3, 3, 1,
+		1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3, 3, 5,
 	};
 
 	private static final short lapg_rlex[] = {
-		32, 33, 33, 34, 34, 34, 35, 35, 35, 36, 36, 58, 58, 59, 59, 37,
-		38, 38, 39, 40, 41, 41, 42, 43, 43, 44, 45, 45, 45, 45, 45, 45,
-		45, 45, 45, 45, 45, 45, 46, 46, 47, 47, 48, 48, 49, 49, 50, 50,
-		51, 51, 52, 52, 53, 53, 54, 54, 60, 60, 55, 56, 56, 57, 57,
+		31, 32, 32, 33, 33, 33, 33, 34, 34, 35, 35, 51, 51, 52, 52, 36,
+		37, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43, 44, 44, 45,
+		45, 45, 45, 45, 46, 46, 47, 47, 47, 47, 48, 48, 49, 49, 50, 50,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -112,6 +102,8 @@ public class OptdefParser {
 		"scon",
 		"icon",
 		"_skip",
+		"'..'",
+		"'*'",
 		"';'",
 		"','",
 		"':'",
@@ -122,85 +114,68 @@ public class OptdefParser {
 		"')'",
 		"'['",
 		"']'",
+		"Lclass",
+		"Lconstraints",
+		"Lint",
+		"Lbool",
+		"Lstring",
 		"Lset",
 		"Lchoice",
-		"Luint",
-		"Lidentifier",
-		"Lqualified",
-		"Lbool",
-		"Lglobal",
-		"Ltitle",
-		"Ldefault",
 		"Lnotempty",
-		"Ltypes",
-		"Lstring",
 		"Lsymbol",
 		"Lrule",
 		"Lref",
-		"Larray",
-		"Lstruct",
+		"Loption",
+		"Ltrue",
+		"Lfalse",
 		"input",
-		"groups",
-		"group",
-		"anno_kind",
 		"declarations",
+		"anno_kind",
 		"declaration",
-		"optionslist",
-		"option",
+		"feature_declarations",
+		"feature_declaration",
 		"defaultval",
 		"modifiers",
-		"modifier",
-		"typedefs",
-		"typedef",
-		"type",
-		"Commaopt",
+		"constraints",
+		"constraint",
+		"string_constraint",
 		"strings",
 		"string",
+		"multiplicity",
+		"type",
 		"expression",
 		"literal_expression",
 		"structural_expression",
 		"expression_list",
 		"map_entries",
-		"someA",
-		"someB",
-		"kind1",
-		"revlist",
 		"modifiersopt",
-		"optionslistopt",
-		"structural_expressionopt",
+		"defaultvalopt",
 	};
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int input = 32;
-		public static final int groups = 33;
-		public static final int group = 34;
-		public static final int anno_kind = 35;
-		public static final int declarations = 36;
-		public static final int declaration = 37;
-		public static final int optionslist = 38;
-		public static final int option = 39;
-		public static final int defaultval = 40;
-		public static final int modifiers = 41;
-		public static final int modifier = 42;
-		public static final int typedefs = 43;
-		public static final int typedef = 44;
+		public static final int input = 31;
+		public static final int declarations = 32;
+		public static final int anno_kind = 33;
+		public static final int declaration = 34;
+		public static final int feature_declarations = 35;
+		public static final int feature_declaration = 36;
+		public static final int defaultval = 37;
+		public static final int modifiers = 38;
+		public static final int constraints = 39;
+		public static final int constraint = 40;
+		public static final int string_constraint = 41;
+		public static final int strings = 42;
+		public static final int string = 43;
+		public static final int multiplicity = 44;
 		public static final int type = 45;
-		public static final int Commaopt = 46;
-		public static final int strings = 47;
-		public static final int string = 48;
-		public static final int expression = 49;
-		public static final int literal_expression = 50;
-		public static final int structural_expression = 51;
-		public static final int expression_list = 52;
-		public static final int map_entries = 53;
-		public static final int someA = 54;
-		public static final int someB = 55;
-		public static final int kind1 = 56;
-		public static final int revlist = 57;
-		public static final int modifiersopt = 58;
-		public static final int optionslistopt = 59;
-		public static final int structural_expressionopt = 60;
+		public static final int expression = 46;
+		public static final int literal_expression = 47;
+		public static final int structural_expression = 48;
+		public static final int expression_list = 49;
+		public static final int map_entries = 50;
+		public static final int modifiersopt = 51;
+		public static final int defaultvalopt = 52;
 	}
 
 	private static int lapg_next(int state, int symbol) {
@@ -247,7 +222,7 @@ public class OptdefParser {
 		lapg_m[0].state = 0;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 102) {
+		while (lapg_m[lapg_head].state != 81) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -261,7 +236,7 @@ public class OptdefParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 102) {
+		if (lapg_m[lapg_head].state != 81) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		}
@@ -293,329 +268,202 @@ public class OptdefParser {
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 		switch (rule) {
-			case 0:  // input ::= groups
+			case 0:  // input ::= declarations
 				lapg_gg.sym = new Input(
-((List<Group>)lapg_m[lapg_head-0].sym) /* groups */,
+((List<Declaration>)lapg_m[lapg_head-0].sym) /* declarations */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 1:  // groups ::= groups group
-				((List<Group>)lapg_m[lapg_head-1].sym).add(((Group)lapg_m[lapg_head-0].sym));
-				break;
-			case 2:  // groups ::= group
-				lapg_gg.sym = new ArrayList();
-((List<Group>)lapg_gg.sym).add(((Group)lapg_m[lapg_head-0].sym));
-				break;
-			case 3:  // group ::= Lglobal scon '{' declarations '}'
-				lapg_gg.sym = new Group(
-((String)lapg_m[lapg_head-3].sym) /* title */,
-null /* kind */,
-((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
-null /* typedefs */,
-null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 4:  // group ::= anno_kind '{' declarations '}'
-				lapg_gg.sym = new Group(
-null /* title */,
-((AnnoKind)lapg_m[lapg_head-3].sym) /* kind */,
-((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
-null /* typedefs */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 5:  // group ::= Ltypes '{' typedefs '}'
-				lapg_gg.sym = new Group(
-null /* title */,
-null /* kind */,
-null /* declarations */,
-((List<Typedef>)lapg_m[lapg_head-1].sym) /* typedefs */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 6:  // anno_kind ::= Lsymbol
-				lapg_gg.sym = AnnoKind.LSYMBOL;
-				break;
-			case 7:  // anno_kind ::= Lrule
-				lapg_gg.sym = AnnoKind.LRULE;
-				break;
-			case 8:  // anno_kind ::= Lref
-				lapg_gg.sym = AnnoKind.LREF;
-				break;
-			case 9:  // declarations ::= declarations declaration
+			case 1:  // declarations ::= declarations declaration
 				((List<Declaration>)lapg_m[lapg_head-1].sym).add(((Declaration)lapg_m[lapg_head-0].sym));
 				break;
-			case 10:  // declarations ::= declaration
+			case 2:  // declarations ::= declaration
 				lapg_gg.sym = new ArrayList();
 ((List<Declaration>)lapg_gg.sym).add(((Declaration)lapg_m[lapg_head-0].sym));
 				break;
-			case 15:  // declaration ::= identifier ':' type modifiersopt defaultval optionslistopt
+			case 3:  // anno_kind ::= Lsymbol
+				lapg_gg.sym = AnnoKind.LSYMBOL;
+				break;
+			case 4:  // anno_kind ::= Lrule
+				lapg_gg.sym = AnnoKind.LRULE;
+				break;
+			case 5:  // anno_kind ::= Lref
+				lapg_gg.sym = AnnoKind.LREF;
+				break;
+			case 6:  // anno_kind ::= Loption
+				lapg_gg.sym = AnnoKind.LOPTION;
+				break;
+			case 7:  // declaration ::= Lconstraints anno_kind '{' feature_declarations '}'
 				lapg_gg.sym = new Declaration(
-((String)lapg_m[lapg_head-5].sym) /* identifier */,
-((Type)lapg_m[lapg_head-3].sym) /* type */,
-((List<Modifier>)lapg_m[lapg_head-2].sym) /* modifiersopt */,
-((Defaultval)lapg_m[lapg_head-1].sym) /* defaultval */,
-((List<Option>)lapg_m[lapg_head-0].sym) /* optionslistopt */,
-null /* input */, lapg_m[lapg_head-5].offset, lapg_m[lapg_head-0].endoffset);
+((AnnoKind)lapg_m[lapg_head-3].sym) /* kind */,
+null /* name */,
+((List<FeatureDeclaration>)lapg_m[lapg_head-1].sym) /* featureDeclarations */,
+null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 16:  // optionslist ::= optionslist ',' option
-				((List<Option>)lapg_m[lapg_head-2].sym).add(((Option)lapg_m[lapg_head-0].sym));
+			case 8:  // declaration ::= Lclass identifier '{' feature_declarations '}'
+				lapg_gg.sym = new Declaration(
+null /* kind */,
+((String)lapg_m[lapg_head-3].sym) /* name */,
+((List<FeatureDeclaration>)lapg_m[lapg_head-1].sym) /* featureDeclarations */,
+null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 17:  // optionslist ::= ';' option
+			case 9:  // feature_declarations ::= feature_declarations feature_declaration
+				((List<FeatureDeclaration>)lapg_m[lapg_head-1].sym).add(((FeatureDeclaration)lapg_m[lapg_head-0].sym));
+				break;
+			case 10:  // feature_declarations ::= feature_declaration
 				lapg_gg.sym = new ArrayList();
-((List<Option>)lapg_gg.sym).add(((Option)lapg_m[lapg_head-0].sym));
+((List<FeatureDeclaration>)lapg_gg.sym).add(((FeatureDeclaration)lapg_m[lapg_head-0].sym));
 				break;
-			case 18:  // option ::= Ltitle scon
-				lapg_gg.sym = new Option(
-((String)lapg_m[lapg_head-0].sym) /* scon */,
-null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
+			case 15:  // feature_declaration ::= type identifier modifiersopt defaultvalopt ';'
+				lapg_gg.sym = new FeatureDeclaration(
+((String)lapg_m[lapg_head-3].sym) /* name */,
+((Type)lapg_m[lapg_head-4].sym) /* type */,
+((Modifiers)lapg_m[lapg_head-2].sym) /* modifiersopt */,
+((Defaultval)lapg_m[lapg_head-1].sym) /* defaultvalopt */,
+null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 19:  // defaultval ::= Ldefault expression
+			case 16:  // defaultval ::= '=' expression
 				lapg_gg.sym = new Defaultval(
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
 null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 20:  // modifiers ::= modifiers modifier
-				((List<Modifier>)lapg_m[lapg_head-1].sym).add(((Modifier)lapg_m[lapg_head-0].sym));
+			case 17:  // modifiers ::= '[' constraints ']'
+				lapg_gg.sym = new Modifiers(
+((List<IConstraint>)lapg_m[lapg_head-1].sym) /* constraints */,
+null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 21:  // modifiers ::= modifier
+			case 18:  // constraints ::= constraints constraint
+				((List<IConstraint>)lapg_m[lapg_head-1].sym).add(((IConstraint)lapg_m[lapg_head-0].sym));
+				break;
+			case 19:  // constraints ::= constraint
 				lapg_gg.sym = new ArrayList();
-((List<Modifier>)lapg_gg.sym).add(((Modifier)lapg_m[lapg_head-0].sym));
+((List<IConstraint>)lapg_gg.sym).add(((IConstraint)lapg_m[lapg_head-0].sym));
 				break;
-			case 22:  // modifier ::= Lnotempty
-				lapg_gg.sym = Modifier.LNOTEMPTY;
-				break;
-			case 23:  // typedefs ::= typedefs typedef
-				((List<Typedef>)lapg_m[lapg_head-1].sym).add(((Typedef)lapg_m[lapg_head-0].sym));
-				break;
-			case 24:  // typedefs ::= typedef
-				lapg_gg.sym = new ArrayList();
-((List<Typedef>)lapg_gg.sym).add(((Typedef)lapg_m[lapg_head-0].sym));
-				break;
-			case 25:  // typedef ::= identifier '=' type ';'
-				lapg_gg.sym = new Typedef(
-((String)lapg_m[lapg_head-3].sym) /* identifier */,
-((Type)lapg_m[lapg_head-1].sym) /* type */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 26:  // type ::= identifier
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-((String)lapg_m[lapg_head-0].sym) /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 27:  // type ::= Luint
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 28:  // type ::= Lstring
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 29:  // type ::= Lidentifier
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 30:  // type ::= Lqualified
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 31:  // type ::= Lsymbol
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 32:  // type ::= Lbool
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 33:  // type ::= Lbool '(' string ',' string Commaopt ')'
-				lapg_gg.sym = new Type(
-((_String)lapg_m[lapg_head-4].sym) /* trueVal */,
-((_String)lapg_m[lapg_head-2].sym) /* falseVal */,
-null /* identifier */,
-((Boolean)lapg_m[lapg_head-1].sym) /* Commaopt */,
-null /* strings */,
-null /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-6].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 34:  // type ::= Lset '(' strings ')'
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
+			case 22:  // string_constraint ::= Lset '(' strings ')'
+				lapg_gg.sym = new StringConstraint(
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
-null /* type */,
-null /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 35:  // type ::= Lchoice '(' strings ')'
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
+			case 23:  // string_constraint ::= Lchoice '(' strings ')'
+				lapg_gg.sym = new StringConstraint(
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
-null /* type */,
-null /* declarations */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 36:  // type ::= Larray '(' type ')'
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
+			case 24:  // string_constraint ::= Lnotempty
+				lapg_gg.sym = new StringConstraint(
 null /* strings */,
-((Type)lapg_m[lapg_head-1].sym) /* type */,
-null /* declarations */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 37:  // type ::= Lstruct '{' declarations '}'
-				lapg_gg.sym = new Type(
-null /* trueVal */,
-null /* falseVal */,
-null /* identifier */,
-null /* Commaopt */,
-null /* strings */,
-null /* type */,
-((List<Declaration>)lapg_m[lapg_head-1].sym) /* declarations */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 38:  // Commaopt ::= ','
-				lapg_gg.sym = Boolean.TRUE;
-				break;
-			case 40:  // strings ::= strings ',' string
+			case 25:  // strings ::= strings ',' string
 				((List<_String>)lapg_m[lapg_head-2].sym).add(((_String)lapg_m[lapg_head-0].sym));
 				break;
-			case 41:  // strings ::= string
+			case 26:  // strings ::= string
 				lapg_gg.sym = new ArrayList();
 ((List<_String>)lapg_gg.sym).add(((_String)lapg_m[lapg_head-0].sym));
 				break;
-			case 42:  // string ::= identifier
+			case 27:  // string ::= identifier
 				lapg_gg.sym = new _String(
 ((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* scon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 43:  // string ::= scon
+			case 28:  // string ::= scon
 				lapg_gg.sym = new _String(
 null /* identifier */,
 ((String)lapg_m[lapg_head-0].sym) /* scon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 46:  // literal_expression ::= scon
+			case 29:  // multiplicity ::= icon '..' '*'
+				lapg_gg.sym = new Multiplicity(
+((Integer)lapg_m[lapg_head-2].sym) /* icon */,
+null /* icon2 */,
+null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 30:  // multiplicity ::= icon '..' icon
+				lapg_gg.sym = new Multiplicity(
+((Integer)lapg_m[lapg_head-2].sym) /* icon */,
+((Integer)lapg_m[lapg_head-0].sym) /* icon2 */,
+null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 31:  // type ::= Lint
+				lapg_gg.sym = new Type(
+null /* identifier */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 32:  // type ::= Lstring
+				lapg_gg.sym = new Type(
+null /* identifier */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 33:  // type ::= Lbool
+				lapg_gg.sym = new Type(
+null /* identifier */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 34:  // type ::= identifier
+				lapg_gg.sym = new Type(
+((String)lapg_m[lapg_head-0].sym) /* identifier */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 35:  // type ::= identifier '*'
+				lapg_gg.sym = new Type(
+((String)lapg_m[lapg_head-1].sym) /* identifier */,
+null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 38:  // literal_expression ::= scon
 				lapg_gg.sym = new LiteralExpression(
 ((String)lapg_m[lapg_head-0].sym) /* scon */,
 null /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 47:  // literal_expression ::= icon
+			case 39:  // literal_expression ::= icon
 				lapg_gg.sym = new LiteralExpression(
 null /* scon */,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 48:  // structural_expression ::= '[' map_entries ']'
+			case 40:  // literal_expression ::= Ltrue
+				lapg_gg.sym = new LiteralExpression(
+null /* scon */,
+null /* icon */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 41:  // literal_expression ::= Lfalse
+				lapg_gg.sym = new LiteralExpression(
+null /* scon */,
+null /* icon */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 42:  // structural_expression ::= '[' map_entries ']'
 				lapg_gg.sym = new StructuralExpression(
 ((List<MapEntriesItem>)lapg_m[lapg_head-1].sym) /* mapEntries */,
 null /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 49:  // structural_expression ::= '[' expression_list ']'
+			case 43:  // structural_expression ::= '[' expression_list ']'
 				lapg_gg.sym = new StructuralExpression(
 null /* mapEntries */,
 ((List<IExpression>)lapg_m[lapg_head-1].sym) /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 50:  // expression_list ::= expression
+			case 44:  // expression_list ::= expression
 				lapg_gg.sym = new ArrayList();
 ((List<IExpression>)lapg_gg.sym).add(((IExpression)lapg_m[lapg_head-0].sym));
 				break;
-			case 51:  // expression_list ::= expression_list ',' expression
+			case 45:  // expression_list ::= expression_list ',' expression
 				((List<IExpression>)lapg_m[lapg_head-2].sym).add(((IExpression)lapg_m[lapg_head-0].sym));
 				break;
-			case 52:  // map_entries ::= identifier ':' expression
+			case 46:  // map_entries ::= identifier ':' expression
 				lapg_gg.sym = new ArrayList();
 ((List<MapEntriesItem>)lapg_gg.sym).add(new MapEntriesItem(
 ((String)lapg_m[lapg_head-2].sym) /* identifier */,
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset));
 				break;
-			case 53:  // map_entries ::= map_entries ',' identifier ':' expression
+			case 47:  // map_entries ::= map_entries ',' identifier ':' expression
 				((List<MapEntriesItem>)lapg_m[lapg_head-4].sym).add(new MapEntriesItem(
 ((String)lapg_m[lapg_head-2].sym) /* identifier */,
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
 null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset));
-				break;
-			case 54:  // someA ::= map_entries
-				lapg_gg.sym = new SomeA(
-((List<MapEntriesItem>)lapg_m[lapg_head-0].sym) /* mapEntries */,
-null /* structuralExpression */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 55:  // someA ::= structural_expression
-				lapg_gg.sym = new SomeA(
-null /* mapEntries */,
-((StructuralExpression)lapg_m[lapg_head-0].sym) /* structuralExpression */,
-null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 59:  // kind1 ::= ','
-				lapg_gg.sym = Kind1.COMMA;
-				break;
-			case 60:  // kind1 ::= ';'
-				lapg_gg.sym = Kind1.SEMICOLON;
-				break;
-			case 61:  // revlist ::= kind1
-				lapg_gg.sym = new ArrayList();
-((List<Kind1>)lapg_gg.sym).add(((Kind1)lapg_m[lapg_head-0].sym));
-				break;
-			case 62:  // revlist ::= kind1 ',' revlist
-				((List<Kind1>)lapg_m[lapg_head-0].sym).add(0, ((Kind1)lapg_m[lapg_head-2].sym));
 				break;
 		}
 		for (int e = lapg_rlen[rule]; e > 0; e--) {

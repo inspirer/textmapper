@@ -5,34 +5,24 @@ import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 public class Declaration extends AstOptNode {
 
-	private String identifier;
-	private Type type;
-	private List<Modifier> modifiersopt;
-	private Defaultval defaultval;
-	private List<Option> optionslistopt;
+	private AnnoKind kind;
+	private String name;
+	private List<FeatureDeclaration> featureDeclarations;
 
-	public Declaration(String identifier, Type type, List<Modifier> modifiersopt, Defaultval defaultval, List<Option> optionslistopt, TextSource input, int start, int end) {
+	public Declaration(AnnoKind kind, String name, List<FeatureDeclaration> featureDeclarations, TextSource input, int start, int end) {
 		super(input, start, end);
-		this.identifier = identifier;
-		this.type = type;
-		this.modifiersopt = modifiersopt;
-		this.defaultval = defaultval;
-		this.optionslistopt = optionslistopt;
+		this.kind = kind;
+		this.name = name;
+		this.featureDeclarations = featureDeclarations;
 	}
 
-	public String getIdentifier() {
-		return identifier;
+	public AnnoKind getKind() {
+		return kind;
 	}
-	public Type getType() {
-		return type;
+	public String getName() {
+		return name;
 	}
-	public List<Modifier> getModifiersopt() {
-		return modifiersopt;
-	}
-	public Defaultval getDefaultval() {
-		return defaultval;
-	}
-	public List<Option> getOptionslistopt() {
-		return optionslistopt;
+	public List<FeatureDeclaration> getFeatureDeclarations() {
+		return featureDeclarations;
 	}
 }

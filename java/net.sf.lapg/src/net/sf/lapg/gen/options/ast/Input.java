@@ -5,14 +5,14 @@ import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 public class Input extends AstOptNode {
 
-	private List<Group> groups;
+	private List<Declaration> declarations;
 
-	public Input(List<Group> groups, TextSource input, int start, int end) {
+	public Input(List<Declaration> declarations, TextSource input, int start, int end) {
 		super(input, start, end);
-		this.groups = groups;
+		this.declarations = declarations;
 	}
 
-	public List<Group> getGroups() {
-		return groups;
+	public List<Declaration> getDeclarations() {
+		return declarations;
 	}
 }

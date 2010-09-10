@@ -38,6 +38,8 @@ icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 _skip:         /[\n\t\r ]+/    		{ return false; }
 _skip:  /#.*/
 
+'..':    /\.\./
+'*':    /\*/
 ';':    /;/
 ',':	/,/
 ':':    /:/
@@ -49,96 +51,87 @@ _skip:  /#.*/
 '[':	/\[/
 ']':	/\]/
 
+Lclass:		 /class/
+Lconstraints:/constraints/
+
+Lint:		 /int/
+Lbool:		 /bool/
+Lstring:	 /string/
+
 Lset:		 /set/
 Lchoice:	 /choice/
-Luint:		 /uint/
-Lidentifier: /identifier/
-Lqualified:	 /qualified/
-Lbool:		 /bool/
-
-Lglobal:	 /global/
-Ltitle:		 /title/
-Ldefault:	 /default/
 Lnotempty:	 /notempty/
-Ltypes:		 /types/
-Lstring:	 /string/
 
 Lsymbol:	 /symbol/
 Lrule:		 /rule/
 Lref:		 /ref/
-Larray:		 /array/
-Lstruct:	 /struct/
+Loption:	 /option/
+
+Ltrue:		 /true/
+Lfalse:		 /false/
 
 # Grammar
 
 input ::=
-	groups ;
-
-groups ::=
-	groups group | group ;
-
-group ::=
-	Lglobal title=scon '{' declarations '}'
-  | kind=anno_kind '{' declarations '}'
-  | Ltypes '{' typedefs '}'
-;
-
-anno_kind ::=
-	Lsymbol | Lrule | Lref ;
-
-##### DECLARATIONS
+	declarations ;
 
 declarations ::=
 	declarations declaration | declaration ;
 
+anno_kind ::=
+	Lsymbol | Lrule | Lref | Loption ;
+
 declaration ::=
-	identifier ':' type modifiersopt defaultval optionslistopt ;
-
-optionslist ::=
-	optionslist ',' option | ';' option ;
-
-option ::=
-	Ltitle scon ;
-
-defaultval ::=
-	Ldefault expression ;
-
-modifiers ::=
-	modifiers modifier | modifier ;
-
-modifier ::=
-	Lnotempty ;
-
-##### TYPES
-
-typedefs ::=
-	typedefs typedef | typedef ;
-
-typedef ::=
-	identifier '=' type ';' ;
-
-type ::=
-	identifier
-  | Luint
-  | Lstring
-  | Lidentifier
-  | Lqualified
-  | Lsymbol
-  | Lbool
-  | Lbool '(' trueVal = string ',' falseVal = string Commaopt ')'
-  | Lset '(' strings ')'
-  | Lchoice '(' strings ')'
-  | Larray '(' type ')'
-  | Lstruct '{' declarations '}'
+	Lconstraints kind=anno_kind '{' feature_declarations '}'
+  | Lclass name=identifier '{' feature_declarations '}'
 ;
 
-Commaopt ::= ',' | ;
+##### DECLARATIONS
+
+feature_declarations ::=
+	feature_declarations feature_declaration | feature_declaration ;
+
+feature_declaration ::=
+	type name=identifier modifiersopt defaultvalopt ';' ;
+
+defaultval ::=
+	'=' expression ;
+
+modifiers ::=
+	'[' constraints ']' ;
+
+constraints ::=
+	constraints constraint | constraint ;
+
+constraint ::=
+	string_constraint | multiplicity ;
+
+string_constraint ::=
+	Lset '(' strings ')'
+  | Lchoice '(' strings ')'
+  | Lnotempty
+;
 
 strings ::=
 	strings ',' string | string ;
 	
 string ::=
 	identifier | scon ;	
+
+multiplicity ::=
+	icon '..' '*'
+  | icon '..' icon
+;
+
+##### TYPES
+
+type ::=
+	Lint
+  | Lstring
+  | Lbool
+  | identifier
+  | identifier '*'
+;
 
 ##### EXPRESSIONS
 
@@ -148,6 +141,8 @@ expression ::=
 literal_expression ::=
 	  scon
 	| icon
+	| Ltrue
+	| Lfalse
 ;
 
 structural_expression ::=
@@ -164,14 +159,6 @@ map_entries ::=
 	  identifier ':' expression
 	| map_entries ',' identifier ':' expression
 ;
-
-someA ::= map_entries | structural_expression ;
-
-someB ::= structural_expressionopt ;
-
-kind1 ::= ',' | ';' ;
-
-revlist ::= kind1 | kind1 ',' revlist ;
 
 ##################################################################################
 

@@ -4,4 +4,5 @@ public enum AnnoKind {
 	LSYMBOL,
 	LRULE,
 	LREF,
+	LOPTION,
 }
