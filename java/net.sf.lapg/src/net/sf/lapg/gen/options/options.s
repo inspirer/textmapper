@@ -118,7 +118,8 @@ string ::=
 	identifier | scon ;	
 
 multiplicity ::=
-	icon '..' hasNoUpperBound='*'
+	icon
+  | icon '..' hasNoUpperBound='*'
   | icon '..' icon
 ;
 

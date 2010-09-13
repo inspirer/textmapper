@@ -40,18 +40,19 @@ public class OptdefParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int lapg_action[] = {
-		-1, -1, -1, -3, 2, -1, 3, 4, 5, 6, -1, 1, -1, -1, -11, 31,
-		33, 32, -1, 10, -1, -1, 35, 8, 9, -17, 7, -1, 12, -25, 24, -1,
-		-1, -1, -1, 19, 20, 21, -1, 14, -1, -1, -1, -1, -1, 17, 38, 39,
-		-1, 40, 41, 16, 37, 36, 15, 30, 29, 27, 28, -31, 26, -39, 18, -1,
-		44, -1, -1, -1, -1, -1, 43, -1, 42, 25, 46, 45, -1, -1, 47, -1,
+		-1, -1, -1, -3, 2, -1, 3, 4, 5, 6, -1, 1, -1, -1, -11, 32,
+		34, 33, -1, 10, -1, -1, 36, 8, 9, -17, 7, -1, 12, -25, 24, -31,
+		-1, -1, -1, 19, 20, 21, -1, 14, -1, -1, -1, -1, -1, 17, 39, 40,
+		-1, 41, 42, 16, 38, 37, 15, 31, 30, 27, 28, -39, 26, -47, 18, -1,
+		45, -1, -1, -1, -1, -1, 44, -1, 43, 25, 47, 46, -1, -1, 48, -1,
 		-2,
 	};
 
 	private static final short lapg_lalr[] = {
-		17, -1, 18, -1, 0, 0, -1, -2, 6, -1, 1, 34, -1, -2, 15, -1,
-		7, 11, 10, 11, -1, -2, 10, -1, 7, 13, -1, -2, 8, -1, 7, 22,
-		16, 22, -1, -2, 8, -1, 7, 23, 16, 23, -1, -2,
+		17, -1, 18, -1, 0, 0, -1, -2, 6, -1, 1, 35, -1, -2, 15, -1,
+		7, 11, 10, 11, -1, -2, 10, -1, 7, 13, -1, -2, 5, -1, 7, 29,
+		16, 29, -1, -2, 8, -1, 7, 22, 16, 22, -1, -2, 8, -1, 7, 23,
+		16, 23, -1, -2,
 	};
 
 	private static final short lapg_sym_goto[] = {
@@ -87,14 +88,16 @@ public class OptdefParser {
 
 	private static final short lapg_rlen[] = {
 		1, 2, 1, 1, 1, 1, 1, 5, 5, 2, 1, 0, 1, 0, 1, 5,
-		2, 3, 3, 1, 1, 1, 3, 3, 1, 3, 1, 1, 1, 3, 3, 1,
-		1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3, 3, 5,
+		2, 3, 3, 1, 1, 1, 3, 3, 1, 3, 1, 1, 1, 1, 3, 3,
+		1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3, 3,
+		5,
 	};
 
 	private static final short lapg_rlex[] = {
 		30, 31, 31, 32, 32, 32, 32, 33, 33, 34, 34, 50, 50, 51, 51, 35,
-		36, 37, 38, 38, 39, 39, 40, 40, 40, 41, 41, 42, 42, 43, 43, 44,
-		44, 44, 44, 44, 45, 45, 46, 46, 46, 46, 47, 47, 48, 48, 49, 49,
+		36, 37, 38, 38, 39, 39, 40, 40, 40, 41, 41, 42, 42, 43, 43, 43,
+		44, 44, 44, 44, 44, 45, 45, 46, 46, 46, 46, 47, 47, 48, 48, 49,
+		49,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -378,96 +381,103 @@ null /* identifier */,
 ((String)lapg_m[lapg_head-0].sym) /* scon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 29:  // multiplicity ::= icon '..' '*'
+			case 29:  // multiplicity ::= icon
+				lapg_gg.sym = new Multiplicity(
+null /* hasNoUpperBound */,
+((Integer)lapg_m[lapg_head-0].sym) /* icon */,
+null /* icon2 */,
+null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
+				break;
+			case 30:  // multiplicity ::= icon '..' '*'
 				lapg_gg.sym = new Multiplicity(
 ((Boolean)lapg_m[lapg_head-0].sym) /* hasNoUpperBound */,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 null /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 30:  // multiplicity ::= icon '..' icon
+			case 31:  // multiplicity ::= icon '..' icon
 				lapg_gg.sym = new Multiplicity(
 null /* hasNoUpperBound */,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 31:  // type ::= Lint
+			case 32:  // type ::= Lint
 				lapg_gg.sym = new Type(
 null /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 32:  // type ::= Lstring
+			case 33:  // type ::= Lstring
 				lapg_gg.sym = new Type(
 null /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 33:  // type ::= Lbool
+			case 34:  // type ::= Lbool
 				lapg_gg.sym = new Type(
 null /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 34:  // type ::= identifier
+			case 35:  // type ::= identifier
 				lapg_gg.sym = new Type(
 ((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 35:  // type ::= identifier '*'
+			case 36:  // type ::= identifier '*'
 				lapg_gg.sym = new Type(
 ((String)lapg_m[lapg_head-1].sym) /* identifier */,
 null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 38:  // literal_expression ::= scon
+			case 39:  // literal_expression ::= scon
 				lapg_gg.sym = new LiteralExpression(
 ((String)lapg_m[lapg_head-0].sym) /* scon */,
 null /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 39:  // literal_expression ::= icon
+			case 40:  // literal_expression ::= icon
 				lapg_gg.sym = new LiteralExpression(
 null /* scon */,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 40:  // literal_expression ::= Ltrue
+			case 41:  // literal_expression ::= Ltrue
 				lapg_gg.sym = new LiteralExpression(
 null /* scon */,
 null /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 41:  // literal_expression ::= Lfalse
+			case 42:  // literal_expression ::= Lfalse
 				lapg_gg.sym = new LiteralExpression(
 null /* scon */,
 null /* icon */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 42:  // structural_expression ::= '[' map_entries ']'
+			case 43:  // structural_expression ::= '[' map_entries ']'
 				lapg_gg.sym = new StructuralExpression(
 ((List<MapEntriesItem>)lapg_m[lapg_head-1].sym) /* mapEntries */,
 null /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 43:  // structural_expression ::= '[' expression_list ']'
+			case 44:  // structural_expression ::= '[' expression_list ']'
 				lapg_gg.sym = new StructuralExpression(
 null /* mapEntries */,
 ((List<IExpression>)lapg_m[lapg_head-1].sym) /* expressionList */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 44:  // expression_list ::= expression
+			case 45:  // expression_list ::= expression
 				lapg_gg.sym = new ArrayList();
 ((List<IExpression>)lapg_gg.sym).add(((IExpression)lapg_m[lapg_head-0].sym));
 				break;
-			case 45:  // expression_list ::= expression_list ',' expression
+			case 46:  // expression_list ::= expression_list ',' expression
 				((List<IExpression>)lapg_m[lapg_head-2].sym).add(((IExpression)lapg_m[lapg_head-0].sym));
 				break;
-			case 46:  // map_entries ::= identifier ':' expression
+			case 47:  // map_entries ::= identifier ':' expression
 				lapg_gg.sym = new ArrayList();
 ((List<MapEntriesItem>)lapg_gg.sym).add(new MapEntriesItem(
 ((String)lapg_m[lapg_head-2].sym) /* identifier */,
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset));
 				break;
-			case 47:  // map_entries ::= map_entries ',' identifier ':' expression
+			case 48:  // map_entries ::= map_entries ',' identifier ':' expression
 				((List<MapEntriesItem>)lapg_m[lapg_head-4].sym).add(new MapEntriesItem(
 ((String)lapg_m[lapg_head-2].sym) /* identifier */,
 ((IExpression)lapg_m[lapg_head-0].sym) /* expression */,

@@ -1,6 +1,34 @@
+class Context {
+	Parser parser[1];
+}
+
+class Grammar {
+	Symbol symbols[1..*];
+}
+
+class Symbol {
+	int index;
+	string id;
+	string name;
+	string type;
+	bool term;
+}
+
+class Parser {
+	Symbol sym[1..*];
+	int rules;
+	int nsyms;
+	int nterms;
+	int nstates;
+	int errorn;
+	int rleft[0..*];
+	int rright[0..*];
+	int nactions;
+}
+
 constraints option {
 
-	string prefix[notempty; identifier] = "";
+	string prefix[notempty; identifier];
 	string package[qualified] = "";
 	string positions [set:line,column,offset] = "line,offset";
 	string endpositions [set:line,column,offset] = "";
