@@ -60,7 +60,6 @@ Lstring:	 /string/
 
 Lset:		 /set/
 Lchoice:	 /choice/
-Lnotempty:	 /notempty/
 
 Lsymbol:	 /symbol/
 Lrule:		 /rule/
@@ -101,15 +100,15 @@ modifiers ::=
 	'[' constraints ']' ;
 
 constraints ::=
-	constraints constraint | constraint ;
+	constraints ';' constraint | constraint ;
 
 constraint ::=
 	string_constraint | multiplicity ;
 
 string_constraint ::=
-	kind=Lset '(' strings ')'
-  | kind=Lchoice '(' strings ')'
-  | Lnotempty
+	kind=Lset ':' strings
+  | kind=Lchoice ':' strings
+  | identifier
 ;
 
 strings ::=

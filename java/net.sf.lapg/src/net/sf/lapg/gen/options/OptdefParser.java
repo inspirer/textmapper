@@ -41,59 +41,60 @@ public class OptdefParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int lapg_action[] = {
 		-1, -1, -1, -3, 2, -1, 3, 4, 5, 6, -1, 1, -1, -1, -11, 31,
-		33, 32, -1, 10, -1, -1, 35, 8, 9, -17, 7, -1, 12, -25, -1, -1,
-		-1, 24, -1, 19, 20, 21, -1, 14, -1, -1, -1, -1, 17, 18, 38, 39,
-		-1, 40, 41, 16, 37, 36, 15, 30, 29, 27, 28, -1, 26, -1, -1, 44,
-		-1, -1, -1, 22, 23, -1, -1, 43, -1, 42, 25, 46, 45, -1, -1, 47,
-		-1, -2,
+		33, 32, -1, 10, -1, -1, 35, 8, 9, -17, 7, -1, 12, -25, 24, -1,
+		-1, -1, -1, 19, 20, 21, -1, 14, -1, -1, -1, -1, -1, 17, 38, 39,
+		-1, 40, 41, 16, 37, 36, 15, 30, 29, 27, 28, -31, 26, -39, 18, -1,
+		44, -1, -1, -1, -1, -1, 43, -1, 42, 25, 46, 45, -1, -1, 47, -1,
+		-2,
 	};
 
 	private static final short lapg_lalr[] = {
 		17, -1, 18, -1, 0, 0, -1, -2, 6, -1, 1, 34, -1, -2, 15, -1,
-		7, 11, 10, 11, -1, -2, 10, -1, 7, 13, -1, -2,
+		7, 11, 10, 11, -1, -2, 10, -1, 7, 13, -1, -2, 8, -1, 7, 22,
+		16, 22, -1, -2, 8, -1, 7, 23, 16, 23, -1, -2,
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 1, 12, 20, 28, 28, 29, 31, 32, 36, 38, 39, 41, 43, 45, 47,
-		53, 56, 58, 60, 64, 68, 72, 74, 76, 78, 79, 80, 81, 82, 87, 92,
-		93, 94, 95, 97, 99, 103, 104, 105, 106, 108, 110, 112, 115, 117, 121, 126,
-		131, 136, 137, 138, 139, 140,
+		0, 1, 14, 22, 30, 30, 31, 33, 35, 39, 43, 44, 46, 48, 48, 48,
+		54, 57, 59, 61, 65, 69, 73, 75, 77, 78, 79, 80, 81, 86, 91, 92,
+		93, 94, 96, 98, 102, 103, 104, 105, 107, 109, 111, 114, 116, 120, 125, 130,
+		135, 136, 137, 138, 139,
 	};
 
 	private static final short lapg_sym_from[] = {
-		80, 1, 12, 13, 18, 20, 21, 42, 43, 48, 66, 72, 38, 42, 43, 48,
-		66, 69, 70, 78, 27, 34, 38, 41, 48, 69, 70, 78, 30, 14, 41, 40,
-		59, 61, 64, 65, 62, 77, 29, 5, 10, 18, 21, 31, 32, 59, 61, 25,
-		38, 48, 69, 70, 78, 34, 64, 65, 0, 3, 0, 3, 12, 13, 18, 21,
-		12, 13, 18, 21, 12, 13, 18, 21, 27, 34, 27, 34, 27, 34, 2, 2,
-		2, 2, 38, 48, 69, 70, 78, 38, 48, 69, 70, 78, 0, 0, 2, 0,
-		3, 12, 13, 12, 13, 18, 21, 29, 25, 27, 27, 34, 27, 34, 42, 43,
-		42, 43, 66, 27, 34, 12, 13, 18, 21, 38, 48, 69, 70, 78, 38, 48,
-		69, 70, 78, 38, 48, 69, 70, 78, 48, 48, 25, 29,
+		79, 1, 12, 13, 18, 20, 21, 27, 42, 43, 44, 48, 67, 71, 38, 42,
+		43, 48, 67, 68, 69, 77, 27, 38, 41, 44, 48, 68, 69, 77, 31, 14,
+		41, 34, 40, 59, 61, 65, 66, 32, 33, 63, 76, 29, 5, 10, 18, 21,
+		25, 38, 48, 68, 69, 77, 34, 65, 66, 0, 3, 0, 3, 12, 13, 18,
+		21, 12, 13, 18, 21, 12, 13, 18, 21, 27, 44, 27, 44, 2, 2, 2,
+		2, 38, 48, 68, 69, 77, 38, 48, 68, 69, 77, 0, 0, 2, 0, 3,
+		12, 13, 12, 13, 18, 21, 29, 25, 27, 27, 44, 27, 44, 42, 43, 42,
+		43, 67, 27, 44, 12, 13, 18, 21, 38, 48, 68, 69, 77, 38, 48, 68,
+		69, 77, 38, 48, 68, 69, 77, 48, 48, 25, 29,
 	};
 
 	private static final short lapg_sym_to[] = {
-		81, 5, 14, 14, 14, 25, 14, 57, 57, 62, 57, 77, 46, 58, 58, 46,
-		58, 46, 46, 46, 30, 30, 47, 55, 47, 47, 47, 47, 41, 22, 56, 54,
-		66, 66, 70, 72, 69, 78, 38, 12, 13, 23, 26, 42, 43, 67, 68, 27,
-		48, 48, 48, 48, 48, 44, 71, 73, 1, 1, 2, 2, 15, 15, 15, 15,
-		16, 16, 16, 16, 17, 17, 17, 17, 31, 31, 32, 32, 33, 33, 6, 7,
-		8, 9, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 80, 3, 10, 4,
-		11, 18, 21, 19, 19, 24, 24, 39, 28, 34, 35, 45, 36, 36, 59, 61,
-		60, 60, 74, 37, 37, 20, 20, 20, 20, 51, 63, 75, 76, 79, 52, 52,
-		52, 52, 52, 53, 53, 53, 53, 53, 64, 65, 29, 40,
+		80, 5, 14, 14, 14, 25, 14, 30, 57, 57, 30, 63, 57, 76, 46, 58,
+		58, 46, 58, 46, 46, 46, 31, 47, 55, 31, 47, 47, 47, 47, 41, 22,
+		56, 44, 54, 67, 67, 69, 71, 42, 43, 68, 77, 38, 12, 13, 23, 26,
+		27, 48, 48, 48, 48, 48, 45, 70, 72, 1, 1, 2, 2, 15, 15, 15,
+		15, 16, 16, 16, 16, 17, 17, 17, 17, 32, 32, 33, 33, 6, 7, 8,
+		9, 49, 49, 49, 49, 49, 50, 50, 50, 50, 50, 79, 3, 10, 4, 11,
+		18, 21, 19, 19, 24, 24, 39, 28, 34, 35, 62, 36, 36, 59, 61, 60,
+		60, 73, 37, 37, 20, 20, 20, 20, 51, 64, 74, 75, 78, 52, 52, 52,
+		52, 52, 53, 53, 53, 53, 53, 65, 66, 29, 40,
 	};
 
 	private static final short lapg_rlen[] = {
 		1, 2, 1, 1, 1, 1, 1, 5, 5, 2, 1, 0, 1, 0, 1, 5,
-		2, 3, 2, 1, 1, 1, 4, 4, 1, 3, 1, 1, 1, 3, 3, 1,
+		2, 3, 3, 1, 1, 1, 3, 3, 1, 3, 1, 1, 1, 3, 3, 1,
 		1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 3, 3, 1, 3, 3, 5,
 	};
 
 	private static final short lapg_rlex[] = {
-		31, 32, 32, 33, 33, 33, 33, 34, 34, 35, 35, 51, 51, 52, 52, 36,
-		37, 38, 39, 39, 40, 40, 41, 41, 41, 42, 42, 43, 43, 44, 44, 45,
-		45, 45, 45, 45, 46, 46, 47, 47, 47, 47, 48, 48, 49, 49, 50, 50,
+		30, 31, 31, 32, 32, 32, 32, 33, 33, 34, 34, 50, 50, 51, 51, 35,
+		36, 37, 38, 38, 39, 39, 40, 40, 40, 41, 41, 42, 42, 43, 43, 44,
+		44, 44, 44, 44, 45, 45, 46, 46, 46, 46, 47, 47, 48, 48, 49, 49,
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -121,7 +122,6 @@ public class OptdefParser {
 		"Lstring",
 		"Lset",
 		"Lchoice",
-		"Lnotempty",
 		"Lsymbol",
 		"Lrule",
 		"Lref",
@@ -154,28 +154,28 @@ public class OptdefParser {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int input = 31;
-		public static final int declarations = 32;
-		public static final int anno_kind = 33;
-		public static final int declaration = 34;
-		public static final int feature_declarations = 35;
-		public static final int feature_declaration = 36;
-		public static final int defaultval = 37;
-		public static final int modifiers = 38;
-		public static final int constraints = 39;
-		public static final int constraint = 40;
-		public static final int string_constraint = 41;
-		public static final int strings = 42;
-		public static final int string = 43;
-		public static final int multiplicity = 44;
-		public static final int type = 45;
-		public static final int expression = 46;
-		public static final int literal_expression = 47;
-		public static final int structural_expression = 48;
-		public static final int expression_list = 49;
-		public static final int map_entries = 50;
-		public static final int modifiersopt = 51;
-		public static final int defaultvalopt = 52;
+		public static final int input = 30;
+		public static final int declarations = 31;
+		public static final int anno_kind = 32;
+		public static final int declaration = 33;
+		public static final int feature_declarations = 34;
+		public static final int feature_declaration = 35;
+		public static final int defaultval = 36;
+		public static final int modifiers = 37;
+		public static final int constraints = 38;
+		public static final int constraint = 39;
+		public static final int string_constraint = 40;
+		public static final int strings = 41;
+		public static final int string = 42;
+		public static final int multiplicity = 43;
+		public static final int type = 44;
+		public static final int expression = 45;
+		public static final int literal_expression = 46;
+		public static final int structural_expression = 47;
+		public static final int expression_list = 48;
+		public static final int map_entries = 49;
+		public static final int modifiersopt = 50;
+		public static final int defaultvalopt = 51;
 	}
 
 	private static int lapg_next(int state, int symbol) {
@@ -222,7 +222,7 @@ public class OptdefParser {
 		lapg_m[0].state = 0;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 81) {
+		while (lapg_m[lapg_head].state != 80) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -236,7 +236,7 @@ public class OptdefParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 81) {
+		if (lapg_m[lapg_head].state != 80) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		}
@@ -331,29 +331,32 @@ null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
 ((List<IConstraint>)lapg_m[lapg_head-1].sym) /* constraints */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 18:  // constraints ::= constraints constraint
-				((List<IConstraint>)lapg_m[lapg_head-1].sym).add(((IConstraint)lapg_m[lapg_head-0].sym));
+			case 18:  // constraints ::= constraints ';' constraint
+				((List<IConstraint>)lapg_m[lapg_head-2].sym).add(((IConstraint)lapg_m[lapg_head-0].sym));
 				break;
 			case 19:  // constraints ::= constraint
 				lapg_gg.sym = new ArrayList();
 ((List<IConstraint>)lapg_gg.sym).add(((IConstraint)lapg_m[lapg_head-0].sym));
 				break;
-			case 22:  // string_constraint ::= Lset '(' strings ')'
+			case 22:  // string_constraint ::= Lset ':' strings
 				lapg_gg.sym = new StringConstraint(
-((Boolean)lapg_m[lapg_head-3].sym) /* kind */,
-((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
+((Boolean)lapg_m[lapg_head-2].sym) /* kind */,
+((List<_String>)lapg_m[lapg_head-0].sym) /* strings */,
+null /* identifier */,
+null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 23:  // string_constraint ::= Lchoice '(' strings ')'
+			case 23:  // string_constraint ::= Lchoice ':' strings
 				lapg_gg.sym = new StringConstraint(
-((Boolean)lapg_m[lapg_head-3].sym) /* kind */,
-((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
-null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
+((Boolean)lapg_m[lapg_head-2].sym) /* kind */,
+((List<_String>)lapg_m[lapg_head-0].sym) /* strings */,
+null /* identifier */,
+null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
-			case 24:  // string_constraint ::= Lnotempty
+			case 24:  // string_constraint ::= identifier
 				lapg_gg.sym = new StringConstraint(
 null /* kind */,
 null /* strings */,
+((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 25:  // strings ::= strings ',' string

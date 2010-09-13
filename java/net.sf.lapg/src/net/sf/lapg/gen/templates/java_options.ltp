@@ -1,20 +1,16 @@
-${template options-}
+constraints option {
 
-group "General" {
+	string prefix[notempty; identifier] = "";
+	string package[qualified] = "";
+	string positions [set:line,column,offset] = "line,offset";
+	string endpositions [set:line,column,offset] = "";
 
-	prefix : identifier notempty default ""
-	package : qualified default ""
-	positions : set(line,column,offset) default "line,offset"
-	endpositions : set(line,column,offset) default ""
+	bool breaks = true;
+	bool gentree = false;
 
-	breaks : bool(on,off) default "on"; title="Insert break after each semantic action"
-	gentree : bool(on,off) default "off"
+	int maxtoken = 2048;
+	int stack = 2048;
 
-	maxtoken : uint default 2048
-	stack : uint default 2048
-
-	packLexems : bool default "false"; title "Pack lexems tables into string"
-	packTables : bool default "false"
+	bool packLexems = false;
+	bool packTables = false;
 }
-
-${end}
