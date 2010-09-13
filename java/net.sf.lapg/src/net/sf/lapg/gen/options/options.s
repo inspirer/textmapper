@@ -107,8 +107,8 @@ constraint ::=
 	string_constraint | multiplicity ;
 
 string_constraint ::=
-	Lset '(' strings ')'
-  | Lchoice '(' strings ')'
+	kind=Lset '(' strings ')'
+  | kind=Lchoice '(' strings ')'
   | Lnotempty
 ;
 
@@ -119,7 +119,7 @@ string ::=
 	identifier | scon ;	
 
 multiplicity ::=
-	icon '..' '*'
+	icon '..' hasNoUpperBound='*'
   | icon '..' icon
 ;
 

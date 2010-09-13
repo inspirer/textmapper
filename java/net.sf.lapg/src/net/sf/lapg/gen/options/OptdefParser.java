@@ -340,16 +340,19 @@ null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 22:  // string_constraint ::= Lset '(' strings ')'
 				lapg_gg.sym = new StringConstraint(
+((Boolean)lapg_m[lapg_head-3].sym) /* kind */,
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 23:  // string_constraint ::= Lchoice '(' strings ')'
 				lapg_gg.sym = new StringConstraint(
+((Boolean)lapg_m[lapg_head-3].sym) /* kind */,
 ((List<_String>)lapg_m[lapg_head-1].sym) /* strings */,
 null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 24:  // string_constraint ::= Lnotempty
 				lapg_gg.sym = new StringConstraint(
+null /* kind */,
 null /* strings */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
@@ -374,12 +377,14 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 29:  // multiplicity ::= icon '..' '*'
 				lapg_gg.sym = new Multiplicity(
+((Boolean)lapg_m[lapg_head-0].sym) /* hasNoUpperBound */,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 null /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 30:  // multiplicity ::= icon '..' icon
 				lapg_gg.sym = new Multiplicity(
+null /* hasNoUpperBound */,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
