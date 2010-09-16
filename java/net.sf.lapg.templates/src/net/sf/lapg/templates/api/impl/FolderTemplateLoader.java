@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,13 +58,25 @@ public class FolderTemplateLoader implements IBundleLoader {
 	}
 
 	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
-		String fileName = bundleName +  BUNDLE_EXT;
+		String fileName = bundleName.replace('.', '/') +  BUNDLE_EXT;
 
 		for( File f : myFolders ) {
 			File file = new File(f, fileName);
 			if( file.exists() ) {
 				String name = file.toString();
 				return TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector);
+			}
+		}
+		return null;
+	}
+
+	public String loadResource(String resourceName, String extension) {
+		String fileName = resourceName.replace('.', '/') + "." + extension;
+		for( File f : myFolders ) {
+			File file = new File(f, fileName);
+			if( file.exists() ) {
+				String name = file.toString();
+				return getFileContents(name, charsetName);
 			}
 		}
 		return null;

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -67,5 +67,14 @@ public class ClassTemplateLoader implements IBundleLoader {
 		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
 				: resourceName;
 		return TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector);
+	}
+
+	public String loadResource(String resourceName, String extension) {
+		String name = rootPackage + "/" + resourceName.replace('.', '/') + "." + extension;
+		InputStream s = loader.getResourceAsStream(name);
+		if (s == null) {
+			return null;
+		}
+		return getStreamContents(s, charsetName);
 	}
 }

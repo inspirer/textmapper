@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,6 +54,16 @@ public class TemplatesFacade implements IProblemCollector {
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
 		ITemplate t = (ITemplate) getEvaluationStrategy().loadEntity(name, IBundleEntity.KIND_TEMPLATE, referer);
 		return getEvaluationStrategy().evaluate(t, context, arguments, referer);
+	}
+
+	public String loadResource(String resourceName, String extension) {
+		for (IBundleLoader loader : loaders) {
+			String content = loader.loadResource(resourceName, extension);
+			if (content != null) {
+				return content;
+			}
+		}
+		return null;
 	}
 
 	public void fireError(ILocatedEntity referer, String error) {
