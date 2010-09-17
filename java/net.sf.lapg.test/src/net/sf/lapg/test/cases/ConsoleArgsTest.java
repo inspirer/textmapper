@@ -97,7 +97,7 @@ public class ConsoleArgsTest extends LapgTestCase {
 		Assert.assertEquals(null, lo.getInput());
 		Assert.assertNull(lo.getOutputFolder());
 		Assert.assertEquals(0, lo.getDebug());
-		Assert.assertEquals("java", lo.getTemplateName());
+		Assert.assertNull(lo.getTemplateName());
 		Assert.assertEquals(0, lo.getAdditionalOptions().size());
 		Assert.assertEquals(0, lo.getIncludeFolders().size());
 		Assert.assertEquals(true, lo.isUseDefaultTemplates());

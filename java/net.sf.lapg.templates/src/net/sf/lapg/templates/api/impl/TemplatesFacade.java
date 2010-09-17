@@ -33,6 +33,10 @@ public class TemplatesFacade {
 	private final TemplatesRegistry registry;
 	private final IProblemCollector collector;
 
+	public TemplatesFacade(Factory factory, TemplatesRegistry registry) {
+		this(factory, registry, registry.getCollector());
+	}
+
 	public TemplatesFacade(Factory factory, TemplatesRegistry registry, IProblemCollector collector) {
 		this.factory = factory;
 		this.registry = registry;

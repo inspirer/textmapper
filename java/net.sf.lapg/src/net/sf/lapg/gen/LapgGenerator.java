@@ -76,12 +76,17 @@ public final class LapgGenerator {
 				return false;
 			}
 
+			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), new ProblemCollectorAdapter(status));
+			checkOptions(s, registry);
+
+			// prepare options
 			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
 			Map<String, Object> additional = options.getAdditionalOptions();
 			for (String key : additional.keySet()) {
 				genOptions.put(key, additional.get(key));
 			}
 
+			// Generate tables
 			long start = System.currentTimeMillis();
 			LexerTables l = LexicalBuilder.compile(s.getLexems(), status);
 			ParserTables r = Builder.compile(s, status);
@@ -90,14 +95,11 @@ public final class LapgGenerator {
 			}
 			long generationTime = System.currentTimeMillis() - start;
 
-			HashMap<String, Object> map = new HashMap<String, Object>();
-			map.put("syntax", s);
-			map.put("lex", l);
-			map.put("parser", r);
-			map.put("opts", genOptions);
-
+			// Generate text
 			start = System.currentTimeMillis();
-			generateOutput(map, s.getTemplates());
+			EvaluationContext context = createEvaluationContext(s, genOptions, l, r);
+			TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), registry);
+			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
 					/ 1000. + "s");
@@ -109,8 +111,36 @@ public final class LapgGenerator {
 		}
 	}
 
-	private void generateOutput(Map<String, Object> map, String grammarTemplates) {
+	private String getTemplatePackage(Grammar g) {
+		String result = options.getTemplateName();
+		if(result != null) {
+			return result;
+		}
 
+		result = (String) g.getOptions().get("lang");
+		if(result != null) {
+			return result;
+		}
+
+		return "java";
+	}
+
+	private void checkOptions(Grammar s, TemplatesRegistry registry) {
+		String templPackage = getTemplatePackage(s);
+		String[] optionsResource = registry.loadResource(templPackage, "options");
+		if(optionsResource == null) {
+			return;
+		}
+
+		if(optionsResource.length > 1) {
+			status.report(ProcessingStatus.KIND_ERROR, "two option models loaded: " + getTemplatePackage(s) + ".options; check template paths");
+			return;
+		}
+
+//		OptdefTree<Object> tree = OptdefTree.parse(new OptdefTree.TextSource(templPackage, optionsResource[0].toCharArray(), 1));
+	}
+
+	private TemplatesRegistry createTemplateRegistry(String grammarTemplates, IProblemCollector problemCollector) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
 		for (String path : options.getIncludeFolders()) {
@@ -122,21 +152,28 @@ public final class LapgGenerator {
 		if (options.isUseDefaultTemplates()) {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
-		IProblemCollector problemCollector = new ProblemCollectorAdapter(status);
 		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, loaders.toArray(new IBundleLoader[loaders.size()]));
+		return registry;
+	}
+
+	private EvaluationContext createEvaluationContext(Grammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("syntax", s);
+		map.put("lex", l);
+		map.put("parser", r);
+		map.put("opts", genOptions);
 
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("context", map);
 		context.setVariable("$", "lapg_gg.sym");
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), registry, problemCollector);
-		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
+		return context;
 	}
-
+	
 	private final class TemplatesFacadeExt extends TemplatesFacade {
 
-		private TemplatesFacadeExt(Factory factory, TemplatesRegistry registry, IProblemCollector collector) {
-			super(factory, registry, collector);
+		private TemplatesFacadeExt(Factory factory, TemplatesRegistry registry) {
+			super(factory, registry);
 		}
 
 		@Override

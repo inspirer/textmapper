@@ -46,7 +46,7 @@ public class LapgOptions {
 		this.debug = 0;
 		this.input = null;
 		this.outputFolder = null;
-		this.templateName = "java";
+		this.templateName = null;
 		this.includeFolders = new LinkedList<String>();
 		this.useDefaultTemplates = true;
 		this.templateOptions = new HashMap<String, Object>();

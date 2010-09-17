@@ -15,12 +15,7 @@
  */
 package net.sf.lapg.templates.api.impl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IBundleEntity;
@@ -57,14 +52,15 @@ public class TemplatesRegistry {
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
 	}
 
-	public String loadResource(String resourceName, String extension) {
+	public String[] loadResource(String resourceName, String extension) {
+		List<String> result = new ArrayList<String>(loaders.length);
 		for (IBundleLoader loader : loaders) {
 			String content = loader.loadResource(resourceName, extension);
 			if (content != null) {
-				return content;
+				result.add(content);
 			}
 		}
-		return null;
+		return result.isEmpty() ? null : result.toArray(new String[result.size()]);
 	}
 
 	private void loadBundle(ILocatedEntity referer, String bundleName) {
@@ -134,6 +130,10 @@ public class TemplatesRegistry {
 			t = null;
 		}
 		return t;
+	}
+
+	public IProblemCollector getCollector() {
+		return collector;
 	}
 
 	private static String kindToString(int kind) {
