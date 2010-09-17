@@ -98,7 +98,7 @@ public final class LapgGenerator {
 			// Generate text
 			start = System.currentTimeMillis();
 			EvaluationContext context = createEvaluationContext(s, genOptions, l, r);
-			TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), registry);
+			TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(getTemplatePackage(s), context), registry);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
