@@ -20,25 +20,28 @@ import net.sf.lapg.templates.api.IBundleEntity;
 import net.sf.lapg.templates.api.IEvaluationStrategy;
 import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy;
+import net.sf.lapg.templates.api.INavigationStrategy.Factory;
 import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.IBundleLoader;
 import net.sf.lapg.templates.api.ITemplate;
 
-public class TemplatesFacade implements IProblemCollector {
+public class TemplatesFacade {
 
 	private IEvaluationStrategy evaluationStrategy;
 
 	private final INavigationStrategy.Factory factory;
-	private final IBundleLoader[] loaders;
+	private final TemplatesRegistry registry;
+	private final IProblemCollector collector;
 
-	public TemplatesFacade(INavigationStrategy.Factory factory, IBundleLoader... loaders) {
+	public TemplatesFacade(Factory factory, TemplatesRegistry registry, IProblemCollector collector) {
 		this.factory = factory;
-		this.loaders = loaders;
+		this.registry = registry;
+		this.collector = collector;
 	}
 
 	private IEvaluationStrategy getEvaluationStrategy() {
 		if(evaluationStrategy == null) {
-			evaluationStrategy = createEvaluationStrategy(factory, createRegistry(loaders));
+			evaluationStrategy = createEvaluationStrategy(factory, registry);
 		}
 		return evaluationStrategy;
 	}
@@ -47,27 +50,13 @@ public class TemplatesFacade implements IProblemCollector {
 		return new DefaultEvaluationStrategy(this, factory, registry);
 	}
 
-	protected TemplatesRegistry createRegistry(IBundleLoader... loaders) {
-		return new TemplatesRegistry(this, loaders);
-	}
-
 	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
 		ITemplate t = (ITemplate) getEvaluationStrategy().loadEntity(name, IBundleEntity.KIND_TEMPLATE, referer);
 		return getEvaluationStrategy().evaluate(t, context, arguments, referer);
 	}
 
-	public String loadResource(String resourceName, String extension) {
-		for (IBundleLoader loader : loaders) {
-			String content = loader.loadResource(resourceName, extension);
-			if (content != null) {
-				return content;
-			}
-		}
-		return null;
-	}
-
-	public void fireError(ILocatedEntity referer, String error) {
-		// ignore
+	public final void fireError(ILocatedEntity referer, String error) {
+		collector.fireError(referer, error);
 	}
 
 	public void createFile(String name, String contents) {

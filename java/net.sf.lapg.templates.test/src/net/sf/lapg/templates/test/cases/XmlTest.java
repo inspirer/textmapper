@@ -18,6 +18,8 @@ package net.sf.lapg.templates.test.cases;
 import junit.framework.Assert;
 import net.sf.lapg.templates.api.EvaluationContext;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
+import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.api.impl.TemplatesRegistry;
 import net.sf.lapg.templates.model.xml.XmlModel;
 import net.sf.lapg.templates.model.xml.XmlNavigationFactory;
 import net.sf.lapg.templates.model.xml.XmlNode;
@@ -28,15 +30,16 @@ public class XmlTest extends TemplateTestCase{
 	public void testSelector() {
 		XmlNode n = XmlModel.load(" <r><user name='jone'/>go<user name='go'/></r> ");
 
-		TestTemplatesFacade env = new TestTemplatesFacade(new XmlNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp", "utf8"));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new XmlNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp", "utf8")), collector);
 
 		// test 1
 		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null, null);
 		Assert.assertEquals("jone\ngo\n", q);
-		env.assertEmptyErrors();
+		collector.assertEmptyErrors();
 
 		q = env.executeTemplate("xmltest.selectit", new EvaluationContext(n), null, null);
 		Assert.assertEquals("name=\"jone\"\n", q);
-		env.assertEmptyErrors();
+		collector.assertEmptyErrors();
 	}
 }

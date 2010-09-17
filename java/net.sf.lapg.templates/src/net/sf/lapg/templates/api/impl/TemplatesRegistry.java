@@ -57,6 +57,16 @@ public class TemplatesRegistry {
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
 	}
 
+	public String loadResource(String resourceName, String extension) {
+		for (IBundleLoader loader : loaders) {
+			String content = loader.loadResource(resourceName, extension);
+			if (content != null) {
+				return content;
+			}
+		}
+		return null;
+	}
+
 	private void loadBundle(ILocatedEntity referer, String bundleName) {
 		if (loadedBundles.contains(bundleName)) {
 			return;

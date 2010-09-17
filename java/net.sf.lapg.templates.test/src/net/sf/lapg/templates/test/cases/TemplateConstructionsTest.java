@@ -15,18 +15,14 @@
  */
 package net.sf.lapg.templates.test.cases;
 
+import junit.framework.Assert;
+import net.sf.lapg.templates.api.EvaluationContext;
+import net.sf.lapg.templates.api.impl.*;
+import net.sf.lapg.templates.test.TemplateTestCase;
+
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
-import junit.framework.Assert;
-import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
-import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
-import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
-import net.sf.lapg.templates.api.impl.StringTemplateLoader;
-import net.sf.lapg.templates.api.impl.TemplatesFacade;
-import net.sf.lapg.templates.test.TemplateTestCase;
 
 public class TemplateConstructionsTest extends TemplateTestCase {
 
@@ -36,10 +32,11 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// loop.ltp
 	public void testLoops() {
-		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
-		h.put("list", new String[] { "a", "b" });
+		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		h.put("list", new String[]{"a", "b"});
 
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", new EvaluationContext(h), null, null);
@@ -50,7 +47,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("\nHmm: \n\n0: a\n1: b\n\n", q);
 
 		// test 3
-		h.put("list", new String[] {});
+		h.put("list", new String[]{});
 		q = env.executeTemplate("loop.loop2", new EvaluationContext(h), null, null);
 		Assert.assertEquals("\nHmm: \n\n\n", q);
 
@@ -58,18 +55,19 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		q = env.executeTemplate("loop.loop3", new EvaluationContext(h), null, null);
 		Assert.assertEquals("2\n3\n4\n5\n6\n", q);
 
-        // test 5
-        q = env.executeTemplate("loop.loop4", new EvaluationContext(h), null, null);
-        Assert.assertEquals("2, 3, 4, 5, 6", q);
+		// test 5
+		q = env.executeTemplate("loop.loop4", new EvaluationContext(h), null, null);
+		Assert.assertEquals("2, 3, 4, 5, 6", q);
 
-        // test 6
-        q = env.executeTemplate("loop.loop5", new EvaluationContext(h), null, null);
-        Assert.assertEquals("2:1:6", q);
+		// test 6
+		q = env.executeTemplate("loop.loop5", new EvaluationContext(h), null, null);
+		Assert.assertEquals("2:1:6", q);
 	}
 
 	// eval.ltp
 	public void testEval() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
 		String q = env.executeTemplate("eval.eval1", null, null, null);
@@ -78,7 +76,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// query.ltp
 	public void testQuery() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
 		String q = env.executeTemplate("query.a", new EvaluationContext(new Object()), null, null);
@@ -87,7 +86,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// dollar.ltp
 	public void testDollar() {
-		TestTemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
 		String q = env.executeTemplate("dollar.testdollar", null, null, null);
@@ -104,9 +104,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("ww-yt-7\n", q);
 
 		// test 4
-		env.addErrors("Evaluation of `self[2]` failed for java.lang.Object[]: 2 is out of 0..1");
+		collector.addErrors("Evaluation of `self[2]` failed for java.lang.Object[]: 2 is out of 0..1");
 		q = env.executeTemplate("dollar.testdollarindexerr", null, null, null);
-		env.assertEmptyErrors();
+		collector.assertEmptyErrors();
 		Assert.assertEquals("ww-yt-\n", q);
 
 		// test 5
@@ -116,7 +116,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// filter.ltp
 	public void testMap() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -126,7 +128,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testCollect() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -140,7 +144,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testCollectMap() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -150,7 +156,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testSort() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -164,7 +172,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testGroupBy() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -178,7 +188,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// arithm.ltp
 	public void testArithm() {
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
 		String q = env.executeTemplate("arithm.arithm1", new EvaluationContext(null), null, null);
@@ -215,23 +226,27 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// assert.ltp
 	public void testAssert() {
-		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
-		h.put("list", new String[] { "w1", "w2" });
-		TestTemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		h.put("list", new String[]{"w1", "w2"});
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
 
 		// test 1
-		env.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
-		env.addErrors("Assertion `list.length > 5` failed for java.util.Hashtable");
-		env.addErrors("Assertion `list[1] == 'w4'` failed for java.util.Hashtable");
+		collector.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
+		collector.addErrors("Assertion `list.length > 5` failed for java.util.Hashtable");
+		collector.addErrors("Assertion `list[1] == 'w4'` failed for java.util.Hashtable");
 		env.executeTemplate("assert.assertit", new EvaluationContext(h), null, null);
-		env.assertEmptyErrors();
+		collector.assertEmptyErrors();
 	}
 
 	// TODO split call & format
 	public void testCall() {
-		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
-		h.put("list", new String[] { "a", "b" });
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		h.put("list", new String[]{"a", "b"});
+
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -253,11 +268,14 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testOverrides() {
-		Hashtable<String,String[]> h = new Hashtable<String,String[]>();
-		h.put("list", new String[] { "a", "b" });
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
+		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		h.put("list", new String[]{"a", "b"});
+
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector,
 				new StringTemplateLoader("inline", "${template overrides.my2}go next my2(${call base})\n\n${end}"),
-				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
 
@@ -271,27 +289,30 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	}
 
 	public void testOverrides2() {
-		TestTemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(),
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector,
 				new StringTemplateLoader("inline", "${template overrides.my1(aa)}go next my1\n\n${end}"),
-				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+				new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(null);
 
 		// test 1
-		env.addErrors("Template `my1(aa)` is not compatible with base template `my1`");
-		env.addErrors("Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
+		collector.addErrors("Template `my1(aa)` is not compatible with base template `my1`");
+		collector.addErrors("Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
 		String q = env.executeTemplate("overrides.my1", context, null, null);
 		Assert.assertEquals("", q);
 	}
 
 	public void testFile() {
-		final Map<String,String> fileContent = new HashMap<String,String>();
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)) {
+		final Map<String, String> fileContent = new HashMap<String, String>();
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector) {
 			@Override
 			public void createFile(String name, String contents) {
 				fileContent.put(name, contents);
 			}
 		};
-		EvaluationContext context = new EvaluationContext(new String[] { "aa", "bb" });
+		EvaluationContext context = new EvaluationContext(new String[]{"aa", "bb"});
 
 		// test 1
 		String q = env.executeTemplate("file.file1", context, null, null);
@@ -310,9 +331,12 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	// switch.ltp
 	public void testSwitch() {
-		final Map<String,Object> this_ = new HashMap<String,Object>();
+		final Map<String, Object> this_ = new HashMap<String, Object>();
 		this_.put("aa", new Integer(11));
-		TemplatesFacade env = new TestTemplatesFacade(new DefaultNavigationFactory(), new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new DefaultNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)), collector);
+
 		EvaluationContext context = new EvaluationContext(this_);
 
 		// test 1

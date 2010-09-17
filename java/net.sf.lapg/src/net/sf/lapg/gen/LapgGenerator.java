@@ -15,14 +15,9 @@
  */
 package net.sf.lapg.gen;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.lapg.api.Grammar;
-import net.sf.lapg.api.ProcessingStrategy;
 import net.sf.lapg.api.ProcessingStatus;
+import net.sf.lapg.api.ProcessingStrategy;
 import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lalr.ParserTables;
@@ -30,13 +25,20 @@ import net.sf.lapg.lex.LexerTables;
 import net.sf.lapg.lex.LexicalBuilder;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.IBundleLoader;
+import net.sf.lapg.templates.api.ILocatedEntity;
 import net.sf.lapg.templates.api.INavigationStrategy.Factory;
+import net.sf.lapg.templates.api.IProblemCollector;
 import net.sf.lapg.templates.api.impl.ClassTemplateLoader;
 import net.sf.lapg.templates.api.impl.StringTemplateLoader;
 import net.sf.lapg.templates.api.impl.TemplatesFacade;
+import net.sf.lapg.templates.api.impl.TemplatesRegistry;
 import net.sf.lapg.templates.ast.Node;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class LapgGenerator {
 
@@ -120,30 +122,37 @@ public final class LapgGenerator {
 		if (options.isUseDefaultTemplates()) {
 			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
 		}
+		IProblemCollector problemCollector = new ProblemCollectorAdapter(status);
+		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, loaders.toArray(new IBundleLoader[loaders.size()]));
 
 		EvaluationContext context = new EvaluationContext(map);
 		context.setVariable("util", new TemplateStaticMethods());
 		context.setVariable("context", map);
 		context.setVariable("$", "lapg_gg.sym");
-		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), loaders.toArray(new IBundleLoader[loaders.size()]), status);
+		TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(options.getTemplateName(), context), registry, problemCollector);
 		env.executeTemplate(options.getTemplateName() + ".main", context, null, null);
 	}
 
 	private final class TemplatesFacadeExt extends TemplatesFacade {
 
-		private final ProcessingStatus status;
-
-		private TemplatesFacadeExt(Factory strategy, IBundleLoader[] loaders, ProcessingStatus status) {
-			super(strategy, loaders);
-			this.status = status;
+		private TemplatesFacadeExt(Factory factory, TemplatesRegistry registry, IProblemCollector collector) {
+			super(factory, registry, collector);
 		}
 
 		@Override
 		public void createFile(String name, String contents) {
 			strategy.createFile(name, contents, status);
 		}
+	}
 
-		@Override
+	private static final class ProblemCollectorAdapter implements IProblemCollector {
+
+		private final ProcessingStatus status;
+
+		private ProblemCollectorAdapter(ProcessingStatus status) {
+			this.status = status;
+		}
+
 		public void fireError(ILocatedEntity referer, String error) {
 			SourceElement adapted = null;
 			if (referer instanceof Node) {
@@ -160,7 +169,7 @@ public final class LapgGenerator {
 		}
 	}
 
-	private final class TemplateSourceElementAdapter implements SourceElement {
+	private static final class TemplateSourceElementAdapter implements SourceElement {
 
 		/** template node */
 		private final Node myNode;
