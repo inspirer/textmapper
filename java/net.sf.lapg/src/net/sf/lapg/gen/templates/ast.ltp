@@ -42,7 +42,9 @@ ${cached query getClasses(sym) =
 
 ${query getPropertyKind() =
 	self.size() > 1 && self.forAll(x|x.target->isSimpleTerm())
-		? 'enumproperty' :
+		? ( self.collectUnique(x|x.target).size() == 1
+			? 'flagproperty'
+			: 'enumproperty') :
 	self.size() == 1 && self.first().target->isSimpleTerm()
 		? 'flagproperty' :
 	'property'}
