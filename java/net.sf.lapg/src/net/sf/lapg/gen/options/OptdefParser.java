@@ -383,21 +383,21 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 29:  // multiplicity ::= icon
 				lapg_gg.sym = new Multiplicity(
-null /* hasNoUpperBound */,
+false,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon */,
 null /* icon2 */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 30:  // multiplicity ::= icon '..' '*'
 				lapg_gg.sym = new Multiplicity(
-((Boolean)lapg_m[lapg_head-0].sym) /* hasNoUpperBound */,
+true,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 null /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 31:  // multiplicity ::= icon '..' icon
 				lapg_gg.sym = new Multiplicity(
-null /* hasNoUpperBound */,
+false,
 ((Integer)lapg_m[lapg_head-2].sym) /* icon */,
 ((Integer)lapg_m[lapg_head-0].sym) /* icon2 */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);

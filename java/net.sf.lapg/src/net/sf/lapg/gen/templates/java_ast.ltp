@@ -39,7 +39,12 @@ ${cached query propertyName() =
 	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
 
 ${query propertyType() =
-	self.kind == 'property' ? self.type : 'int'}
+	self.kind == 'enumproperty'
+		? 'int' :
+	self.kind == 'flagproperty'
+		? 'boolean' :
+	context->ast.getType(self.refs.first().target)
+}
 
 ${cached query enumpropertyName(prop) =
 	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
@@ -166,6 +171,10 @@ ${if prop.kind == 'enumproperty'-}
 ${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
 	? self->java.package() + '.ast.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop) 
 	: 0},
+${else if prop.kind == 'flagproperty'-}
+${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
+	? 'true' 
+	: 'false'},
 ${else if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
 ${'$'+ self->ast.propertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
 ${else-}

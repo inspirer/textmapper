@@ -40,22 +40,21 @@ ${cached query getClasses(sym) =
 		] :
 	null }
 
+${query getPropertyKind() =
+	self.size() > 1 && self.forAll(x|x.target->isSimpleTerm())
+		? 'enumproperty' :
+	self.size() == 1 && self.first().target->isSimpleTerm()
+		? 'flagproperty' :
+	'property'}
+
 ${cached query propertiesNew(cl) =
 	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		allrefs = (x is GroupList ? x : [x]),
-		allrefs->isSeveralTerms()
-		? [
-			kind: 'enumproperty',
+		[
+			kind: allrefs->getPropertyKind(),
 			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
 			container: cl,
 			refs: allrefs.toSet()
-		]
-		: [
-			kind: 'property',
-			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
-			container: cl,
-			refs: allrefs.toSet(),
-			type: self->getType(allrefs.first().target)
 		]
 	),
 	withoutAlias = cl.properties.collect(rule|
@@ -87,8 +86,6 @@ ${cached query symbolKind(sym) =
 	self->isInterface(sym) ? 'interface' : 'class'}
 
 ${query isSimpleTerm() = self.isTerm() && !self.type}
-
-${query isSeveralTerms() = self.size() > 1 && self.forAll(x|x.target->isSimpleTerm())}
 
 ${cached query isEnum(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
