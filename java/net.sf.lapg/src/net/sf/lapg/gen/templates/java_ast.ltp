@@ -38,17 +38,29 @@ ${cached query className() =
 ${cached query propertyName() = 
 	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
 
+${query propertyType() =
+	self.kind == 'property' ? self.type : 'int'}
+
+${cached query enumpropertyName(prop) =
+	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
+
 ${template ast_class(cl)-}
 ${file 'ast/' + cl->className() + '.java'-}
 package ${call java.package}.ast;
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
 
-${foreach prop in self->ast.propertiesNew(cl)-}
-	private ${prop.type} ${prop->propertyName()};
+${foreach prop in self->ast.propertiesNew(cl).select(x|x.kind=='enumproperty')-}
+${foreach enumliteral in prop.refs-}
+	public static final int ${enumliteral->enumpropertyName(prop)} = ${index+1};
 ${end-}
 
-	public ${cl->className()}(${foreach prop in self->ast.propertiesNew(cl)}${prop.type} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+${end-}
+${foreach prop in self->ast.propertiesNew(cl)-}
+	private ${prop->propertyType()} ${prop->propertyName()};
+${end-}
+
+	public ${cl->className()}(${foreach prop in self->ast.propertiesNew(cl)}${prop->propertyType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		super(input, start, end);
 ${foreach prop in self->ast.propertiesNew(cl)-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
@@ -56,7 +68,7 @@ ${end-}
 	}
 
 ${foreach prop in self->ast.propertiesNew(cl)-}
-	public ${prop.type} get${util.toCamelCase(prop->propertyName(), true)}() {
+	public ${prop->propertyType()} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
 ${end-}	
@@ -150,7 +162,11 @@ ${end}
 ${template createObject(rule,cl)-}
 new ${call java.package}.ast.@${cl->className()}(
 ${foreach prop in self->ast.propertiesNew(cl)-}
-${if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
+${if prop.kind == 'enumproperty'-}
+${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
+	? self->java.package() + '.ast.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop) 
+	: 0},
+${else if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
 ${'$'+ self->ast.propertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
 ${else-}
 null /* ${prop->propertyName()} */,

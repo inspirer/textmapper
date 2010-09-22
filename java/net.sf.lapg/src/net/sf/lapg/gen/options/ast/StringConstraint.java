@@ -5,18 +5,21 @@ import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 public class StringConstraint extends AstOptNode implements IConstraint {
 
-	private Boolean kind;
+	public static final int LSET = 1;
+	public static final int LCHOICE = 2;
+
+	private int kind;
 	private List<_String> strings;
 	private String identifier;
 
-	public StringConstraint(Boolean kind, List<_String> strings, String identifier, TextSource input, int start, int end) {
+	public StringConstraint(int kind, List<_String> strings, String identifier, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.strings = strings;
 		this.identifier = identifier;
 	}
 
-	public Boolean getKind() {
+	public int getKind() {
 		return kind;
 	}
 	public List<_String> getStrings() {

@@ -343,21 +343,21 @@ null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 22:  // string_constraint ::= Lset ':' strings
 				lapg_gg.sym = new StringConstraint(
-((Boolean)lapg_m[lapg_head-2].sym) /* kind */,
+StringConstraint.LSET,
 ((List<_String>)lapg_m[lapg_head-0].sym) /* strings */,
 null /* identifier */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 23:  // string_constraint ::= Lchoice ':' strings
 				lapg_gg.sym = new StringConstraint(
-((Boolean)lapg_m[lapg_head-2].sym) /* kind */,
+StringConstraint.LCHOICE,
 ((List<_String>)lapg_m[lapg_head-0].sym) /* strings */,
 null /* identifier */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 24:  // string_constraint ::= identifier
 				lapg_gg.sym = new StringConstraint(
-null /* kind */,
+0,
 null /* strings */,
 ((String)lapg_m[lapg_head-0].sym) /* identifier */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
