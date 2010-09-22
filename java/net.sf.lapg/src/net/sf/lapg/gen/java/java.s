@@ -32,7 +32,7 @@ double:     	/double/
 else:       	/else/
 enum:       	/enum/
 extends:    	/extends/
-false:      	/false/
+boolFalse:      /false/
 final:      	/final/
 finally:    	/finally/
 float:      	/float/
@@ -63,7 +63,7 @@ this:       	/this/
 throw:      	/throw/
 throws:     	/throws/
 transient:  	/transient/
-true:       	/true/
+boolTrue:       /true/
 try:        	/try/
 void:       	/void/
 volatile:   	/volatile/
@@ -154,8 +154,8 @@ Literal ::=
 ;
 
 BooleanLiteral ::=
-	  true
-	| false
+	  boolTrue
+	| boolFalse
 ;
 
 Type ::=
