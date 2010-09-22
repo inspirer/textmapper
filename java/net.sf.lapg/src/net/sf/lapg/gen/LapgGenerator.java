@@ -19,6 +19,7 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.ProcessingStrategy;
 import net.sf.lapg.api.SourceElement;
+import net.sf.lapg.gen.options.OptdefTree;
 import net.sf.lapg.lalr.Builder;
 import net.sf.lapg.lalr.ParserTables;
 import net.sf.lapg.lex.LexerTables;
@@ -77,7 +78,9 @@ public final class LapgGenerator {
 			}
 
 			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), new ProblemCollectorAdapter(status));
-			checkOptions(s, registry);
+			if(!checkOptions(s, registry)) {
+				return false;
+			}
 
 			// prepare options
 			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
@@ -125,19 +128,25 @@ public final class LapgGenerator {
 		return "java";
 	}
 
-	private void checkOptions(Grammar s, TemplatesRegistry registry) {
+	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
 		String[] optionsResource = registry.loadResource(templPackage, "options");
 		if(optionsResource == null) {
-			return;
+			return true;
 		}
 
+		String name = templPackage + ".options";
 		if(optionsResource.length > 1) {
-			status.report(ProcessingStatus.KIND_ERROR, "two option models loaded: " + getTemplatePackage(s) + ".options; check template paths");
-			return;
+			status.report(ProcessingStatus.KIND_ERROR, "two option models loaded: " + name + "; check template paths");
+			return false;
 		}
 
-//		OptdefTree<Object> tree = OptdefTree.parse(new OptdefTree.TextSource(templPackage, optionsResource[0].toCharArray(), 1));
+		OptdefTree<Object> tree = SyntaxUtil.parseOptions(new OptdefTree.TextSource(name, optionsResource[0].toCharArray(), 1), status);
+		if(tree == null) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private TemplatesRegistry createTemplateRegistry(String grammarTemplates, IProblemCollector problemCollector) {

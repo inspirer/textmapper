@@ -15,22 +15,23 @@
  */
 package net.sf.lapg.gen;
 
-import java.io.InputStream;
-import java.util.Map;
-
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.ProcessingStatus;
 import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.common.FileUtil;
+import net.sf.lapg.gen.options.OptdefTree;
+import net.sf.lapg.gen.options.OptdefTree.OptdefProblem;
 import net.sf.lapg.parser.LapgResolver;
 import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
-import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.AstRoot;
+
+import java.io.InputStream;
+import java.util.Map;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax(TextSource input, ProcessingStatus status, Map<String, Object> options) {
+	public static Grammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, Map<String, Object> options) {
 		LapgTree<AstRoot> tree = LapgTree.parse(input);
 		Grammar result = null;
 		if (!tree.hasErrors()) {
@@ -46,6 +47,29 @@ public class SyntaxUtil {
 
 	}
 
+	public static OptdefTree parseOptions(OptdefTree.TextSource input, ProcessingStatus status) {
+		OptdefTree<Object> tree = OptdefTree.parse(input);
+		if (tree.hasErrors()) {
+			status.report("Problems in templates bundle found:", null);
+			for (OptdefProblem s : tree.getErrors()) {
+				status.report(optdefKindToProcessingKind(s.getKind()), s.getMessage(), new OptionsElementAdapter(input, s));
+			}
+			tree = null;
+		}
+		return tree;
+
+	}
+
+	private static int optdefKindToProcessingKind(int kind) {
+		switch(kind) {
+		case OptdefTree.KIND_FATAL:
+			return ProcessingStatus.KIND_FATAL;
+		case OptdefTree.KIND_WARN:
+			return ProcessingStatus.KIND_WARN;
+		}
+		return ProcessingStatus.KIND_ERROR;
+	}
+
 	private static int lapgKindToProcessingKind(int kind) {
 		switch(kind) {
 		case LapgTree.KIND_FATAL:
@@ -57,10 +81,36 @@ public class SyntaxUtil {
 	}
 
 	private static class SourceElementAdapter implements SourceElement {
-		private final TextSource source;
+		private final LapgTree.TextSource source;
 		private final LapgProblem problem;
 
-		public SourceElementAdapter(TextSource source, LapgProblem problem) {
+		public SourceElementAdapter(LapgTree.TextSource source, LapgProblem problem) {
+			this.source = source;
+			this.problem = problem;
+		}
+
+		public int getEndOffset() {
+			return problem.getEndOffset();
+		}
+
+		public int getLine() {
+			return source.lineForOffset(problem.getOffset());
+		}
+
+		public int getOffset() {
+			return problem.getOffset();
+		}
+
+		public String getResourceName() {
+			return source.getFile();
+		}
+	}
+
+	private static class OptionsElementAdapter implements SourceElement {
+		private final OptdefTree.TextSource source;
+		private final OptdefProblem problem;
+
+		public OptionsElementAdapter(OptdefTree.TextSource source, OptdefProblem problem) {
 			this.source = source;
 			this.problem = problem;
 		}
@@ -85,6 +135,6 @@ public class SyntaxUtil {
 	@Deprecated
 	public static Grammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, Map<String, Object> options) {
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		return parseSyntax(new TextSource(inputName, contents.toCharArray(), 1), err, options);
+		return parseSyntax(new LapgTree.TextSource(inputName, contents.toCharArray(), 1), err, options);
 	}
 }
