@@ -1,4 +1,4 @@
 package net.sf.lapg.gen.options.ast;
 
-public interface IExpression {
+public interface IExpression extends IDefaultval {
 }

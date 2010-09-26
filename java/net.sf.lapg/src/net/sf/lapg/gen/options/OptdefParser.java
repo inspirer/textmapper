@@ -9,9 +9,9 @@ import net.sf.lapg.gen.options.OptdefLexer.LapgSymbol;
 import net.sf.lapg.gen.options.OptdefLexer.Lexems;
 import net.sf.lapg.gen.options.ast.AnnoKind;
 import net.sf.lapg.gen.options.ast.Declaration;
-import net.sf.lapg.gen.options.ast.Defaultval;
 import net.sf.lapg.gen.options.ast.FeatureDeclaration;
 import net.sf.lapg.gen.options.ast.IConstraint;
+import net.sf.lapg.gen.options.ast.IDefaultval;
 import net.sf.lapg.gen.options.ast.IExpression;
 import net.sf.lapg.gen.options.ast.Input;
 import net.sf.lapg.gen.options.ast.LiteralExpression;
@@ -321,13 +321,11 @@ null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 ((String)lapg_m[lapg_head-3].sym) /* name */,
 ((Type)lapg_m[lapg_head-4].sym) /* type */,
 ((Modifiers)lapg_m[lapg_head-2].sym) /* modifiersopt */,
-((Defaultval)lapg_m[lapg_head-1].sym) /* defaultvalopt */,
+((IDefaultval)lapg_m[lapg_head-1].sym) /* defaultvalopt */,
 null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 16:  // defaultval ::= '=' expression
-				lapg_gg.sym = new Defaultval(
-((IExpression)lapg_m[lapg_head-0].sym) /* expression */,
-null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head-0].endoffset);
+				lapg_gg.sym = ((IExpression)lapg_m[lapg_head-0].sym);
 				break;
 			case 17:  // modifiers ::= '[' constraints ']'
 				lapg_gg.sym = new Modifiers(

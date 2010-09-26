@@ -94,7 +94,13 @@ ${cached query isEnum(sym) = syntax.rules[sym].
 
 ${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 
-			&& self->supportsExtending(x.getRight().first().target) )}
+					&& self->supportsExtending(x.getRight().first().target)
+		  || x.getRight().length > 1
+		   			&& (
+		   				nonterm = x.getRight().select(y|!y.target->isSimpleTerm()),
+		   				nonterm.size() == 1 && nonterm.first()['pass'] && self->supportsExtending(nonterm.first().target)
+		   			)
+			)}
 
 ${query supportsExtending(sym) = 
 	!sym.isTerm() &&

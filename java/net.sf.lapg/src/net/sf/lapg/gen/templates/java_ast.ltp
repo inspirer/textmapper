@@ -209,13 +209,19 @@ ${query createList(rule) =
 	null
 }
 
+${template passArgument(rule)-}
+${'$$ = $' + (list = rule.getRight().select(x|x['pass']),
+	list.first() ? rule.getRight().indexOf(list.first()) : -1)};
+${end}
+
 ${cached query astcode(rule) =
 	left = rule.getLeft(),
 	self->ast.isEnum(left) ? self->createEnum(rule) :
 	self->ast.isOptional(left) ?
 		(rule.getRight().size() == 1 && rule.getRight().first().target->ast.isSimpleTerm() ? '$$ = Boolean.TRUE;\n' : null) :
  	self->ast.isList(left) ? self->createList(rule) :
-	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) : 
+	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) :
+	self->ast.symbolKind(left) == 'interface' && rule.getRight().size() > 1 && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
 	null 
 }
 

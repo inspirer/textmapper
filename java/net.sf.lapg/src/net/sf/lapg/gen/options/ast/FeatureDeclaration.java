@@ -7,9 +7,9 @@ public class FeatureDeclaration extends AstOptNode {
 	private String name;
 	private Type type;
 	private Modifiers modifiersopt;
-	private Defaultval defaultvalopt;
+	private IDefaultval defaultvalopt;
 
-	public FeatureDeclaration(String name, Type type, Modifiers modifiersopt, Defaultval defaultvalopt, TextSource input, int start, int end) {
+	public FeatureDeclaration(String name, Type type, Modifiers modifiersopt, IDefaultval defaultvalopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
 		this.type = type;
@@ -26,7 +26,7 @@ public class FeatureDeclaration extends AstOptNode {
 	public Modifiers getModifiersopt() {
 		return modifiersopt;
 	}
-	public Defaultval getDefaultvalopt() {
+	public IDefaultval getDefaultvalopt() {
 		return defaultvalopt;
 	}
 }
