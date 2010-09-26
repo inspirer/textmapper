@@ -60,6 +60,10 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			return symbolNavigation;
 		}
 
+		if (o instanceof SymbolRef) {
+			return symbolrefNavigation;
+		}
+
 		if(o instanceof Grammar) {
 			return grammarNavigation;
 		}
@@ -173,6 +177,25 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		}
 
 		public Object getProperty(Symbol obj, String propertyName) throws EvaluationException {
+			return javaNavigation.getProperty(obj, propertyName);
+		}
+	};
+
+	private final INavigationStrategy<SymbolRef> symbolrefNavigation = new INavigationStrategy<SymbolRef>() {
+
+		public Object callMethod(SymbolRef obj, String methodName, Object[] args) throws EvaluationException {
+			return javaNavigation.callMethod(obj, methodName, args);
+		}
+
+		public Object getByIndex(SymbolRef sym, Object index) throws EvaluationException {
+			if (index instanceof String) {
+				return sym.getAnnotation((String) index);
+			} else {
+				throw new EvaluationException("index object should be string (annotation name)");
+			}
+		}
+
+		public Object getProperty(SymbolRef obj, String propertyName) throws EvaluationException {
 			return javaNavigation.getProperty(obj, propertyName);
 		}
 	};
