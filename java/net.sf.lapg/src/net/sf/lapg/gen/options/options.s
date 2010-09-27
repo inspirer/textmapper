@@ -97,7 +97,7 @@ defaultval ::=
 	'=' expression [pass] ;
 
 modifiers ::=
-	'[' constraints ']' ;
+	'[' constraints [pass] ']' ;
 
 constraints ::=
 	constraints ';' constraint | constraint ;

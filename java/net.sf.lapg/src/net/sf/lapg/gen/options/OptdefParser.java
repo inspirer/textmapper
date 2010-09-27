@@ -11,12 +11,10 @@ import net.sf.lapg.gen.options.ast.AnnoKind;
 import net.sf.lapg.gen.options.ast.Declaration;
 import net.sf.lapg.gen.options.ast.FeatureDeclaration;
 import net.sf.lapg.gen.options.ast.IConstraint;
-import net.sf.lapg.gen.options.ast.IDefaultval;
 import net.sf.lapg.gen.options.ast.IExpression;
 import net.sf.lapg.gen.options.ast.Input;
 import net.sf.lapg.gen.options.ast.LiteralExpression;
 import net.sf.lapg.gen.options.ast.MapEntriesItem;
-import net.sf.lapg.gen.options.ast.Modifiers;
 import net.sf.lapg.gen.options.ast.Multiplicity;
 import net.sf.lapg.gen.options.ast.StringConstraint;
 import net.sf.lapg.gen.options.ast.StructuralExpression;
@@ -320,17 +318,15 @@ null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				lapg_gg.sym = new FeatureDeclaration(
 ((String)lapg_m[lapg_head-3].sym) /* name */,
 ((Type)lapg_m[lapg_head-4].sym) /* type */,
-((Modifiers)lapg_m[lapg_head-2].sym) /* modifiersopt */,
-((IDefaultval)lapg_m[lapg_head-1].sym) /* defaultvalopt */,
+((List<IConstraint>)lapg_m[lapg_head-2].sym) /* modifiersopt */,
+((IExpression)lapg_m[lapg_head-1].sym) /* defaultvalopt */,
 null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 16:  // defaultval ::= '=' expression
 				lapg_gg.sym = ((IExpression)lapg_m[lapg_head-0].sym);
 				break;
 			case 17:  // modifiers ::= '[' constraints ']'
-				lapg_gg.sym = new Modifiers(
-((List<IConstraint>)lapg_m[lapg_head-1].sym) /* constraints */,
-null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
+				lapg_gg.sym = ((List<IConstraint>)lapg_m[lapg_head-1].sym);
 				break;
 			case 18:  // constraints ::= constraints ';' constraint
 				((List<IConstraint>)lapg_m[lapg_head-2].sym).add(((IConstraint)lapg_m[lapg_head-0].sym));

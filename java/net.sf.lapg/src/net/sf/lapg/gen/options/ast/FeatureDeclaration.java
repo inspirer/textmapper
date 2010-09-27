@@ -1,15 +1,16 @@
 package net.sf.lapg.gen.options.ast;
 
+import java.util.List;
 import net.sf.lapg.gen.options.OptdefTree.TextSource;
 
 public class FeatureDeclaration extends AstOptNode {
 
 	private String name;
 	private Type type;
-	private Modifiers modifiersopt;
-	private IDefaultval defaultvalopt;
+	private List<IConstraint> modifiersopt;
+	private IExpression defaultvalopt;
 
-	public FeatureDeclaration(String name, Type type, Modifiers modifiersopt, IDefaultval defaultvalopt, TextSource input, int start, int end) {
+	public FeatureDeclaration(String name, Type type, List<IConstraint> modifiersopt, IExpression defaultvalopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
 		this.type = type;
@@ -23,10 +24,10 @@ public class FeatureDeclaration extends AstOptNode {
 	public Type getType() {
 		return type;
 	}
-	public Modifiers getModifiersopt() {
+	public List<IConstraint> getModifiersopt() {
 		return modifiersopt;
 	}
-	public IDefaultval getDefaultvalopt() {
+	public IExpression getDefaultvalopt() {
 		return defaultvalopt;
 	}
 }

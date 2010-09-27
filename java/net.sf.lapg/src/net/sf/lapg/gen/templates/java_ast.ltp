@@ -101,7 +101,6 @@ ${end}
 
 
 
-
 ${template astBaseInterface-}
 ${file 'ast/I' + opts.astprefix + 'Node.java'-}
 package ${call java.package}.ast;
@@ -221,6 +220,7 @@ ${cached query astcode(rule) =
 		(rule.getRight().size() == 1 && rule.getRight().first().target->ast.isSimpleTerm() ? '$$ = Boolean.TRUE;\n' : null) :
  	self->ast.isList(left) ? self->createList(rule) :
 	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) :
+	self->ast.symbolKind(left) == 'data' && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
 	self->ast.symbolKind(left) == 'interface' && rule.getRight().size() > 1 && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
 	null 
 }
