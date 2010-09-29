@@ -13,18 +13,18 @@ list ::=
 	| list list_item
 ;
 
-[weight:5,name:"wwo"]
+@weight(5) @name("wwo")
 list_item ::=
-	[name:"rule1"] identifier [ids: [4,2,3]]
-	| [name:"rule2"] Licon
+	@name("rule1"): @ids([4,2,3]) identifier
+	| @name("rule2"): Licon
 ;
 
-[name:"aaa", ref:notexistingsym]
+@name("aaa") @ref(notexistingsym)
 tempanno ::=
 	aaaa
 ;
 
-[name:"bbb"]
+@name("bbb")
 tempanno ::=
 	bbbb
 ;

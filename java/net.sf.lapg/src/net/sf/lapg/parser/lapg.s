@@ -57,6 +57,7 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 '<':	/</
 '>':	/>/
 '*':	/*/
+'+':	/+/
 '?':	/?/
 '&':	/&/
 '@':	/@/
@@ -154,10 +155,17 @@ rules (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  annotations_declopt rulesyms commandopt rule_priorityopt
-														{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| annotations_declopt commandopt rule_priorityopt  	{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $annotations_declopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  ruleprefix rulesyms commandopt rule_priorityopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 rulesyms commandopt rule_priorityopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| ruleprefix commandopt rule_priorityopt  			{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 commandopt rule_priorityopt  			{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
+;
+
+ruleprefix (AstRulePrefix) ::=
+	  annotations_decl ':'                              { $$ = new AstRulePrefix($annotations_decl, null); }
+	| annotations_decl identifier ':'					{ $$ = new AstRulePrefix($annotations_decl, $identifier); }
+	| identifier ':'									{ $$ = new AstRulePrefix(null, $identifier); }
 ;
 
 rulesyms (List<AstRuleSymbol>) ::=
@@ -167,25 +175,39 @@ rulesyms (List<AstRuleSymbol>) ::=
 ;
 
 rulesym (AstRuleSymbol) ::=
-	  commandopt identifier '=' reference annotations_declopt	{ $$ = new AstRuleSymbol($commandopt, $identifier, $reference, $annotations_declopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| commandopt reference annotations_declopt					{ $$ = new AstRuleSymbol($commandopt, null, $reference, $annotations_declopt, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	  command annotations_decl identifier '=' reference { $$ = new AstRuleSymbol($command, $identifier, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| command annotations_decl reference 				{ $$ = new AstRuleSymbol($command, null, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| command identifier '=' reference					{ $$ = new AstRuleSymbol($command, $identifier, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| command reference 								{ $$ = new AstRuleSymbol($command, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| annotations_decl identifier '=' reference			{ $$ = new AstRuleSymbol(null, $identifier, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| annotations_decl reference 						{ $$ = new AstRuleSymbol(null, null, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| identifier '=' reference							{ $$ = new AstRuleSymbol(null, $identifier, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+	| reference 										{ $$ = new AstRuleSymbol(null, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+
+	| '(' rulesyms_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| rulesym '?'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| rulesym '*'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| rulesym '+'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+;
+
+rulesyms_choice ::=
+	  rulesyms
+	| rulesyms_choice '|' rulesyms
 ;
 
 annotations_decl (AstAnnotations) ::=
-	'['	annotations ']'									{ $$ = new AstAnnotations($annotations, source, ${left().offset}, ${left().endoffset}); }
+	annotations											{ $$ = new AstAnnotations($annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 annotations (java.util.@List<AstNamedEntry>) ::=
 	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $annotations.add($annotation); }
-	| annotations ',' annotation						{ $annotations#0.add($annotation); }
+	| annotations annotation							{ $annotations#0.add($annotation); }
 ;
 
 annotation (AstNamedEntry) ::=
-	  identifier 										{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
-	| identifier ':' expression							{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| identifier '=' expression							{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| identifier '(' expression ')'						{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| syntax_problem									{ $$ = new AstNamedEntry($syntax_problem); }
+	  '@' identifier 									{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
+	| '@' identifier '(' expression ')'					{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
 map_entries (java.util.@List<AstNamedEntry>) ::=
