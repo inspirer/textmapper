@@ -94,10 +94,10 @@ feature_declaration ::=
 	type name=identifier modifiersopt defaultvalopt ';' ;
 
 defaultval ::=
-	'=' expression [pass] ;
+	'=' @pass expression ;
 
 modifiers ::=
-	'[' constraints [pass] ']' ;
+	'[' @pass constraints ']' ;
 
 constraints ::=
 	constraints ';' constraint | constraint ;
