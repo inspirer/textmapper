@@ -23,24 +23,17 @@ import org.eclipse.ui.IWorkbenchPartSite;
 
 /**
  * Semantic highlighting reconciler - Background thread implementation.
- *
- * @since 3.0
  */
 public class SemanticHighlightingReconciler implements ITextInputListener {
 
 	/**
 	 * Collects positions from the AST.
 	 */
-	private class PositionCollector extends GenericVisitor {
+	public class PositionCollector {
 
 		/** The semantic token */
 		private final SemanticToken fToken = new SemanticToken();
 
-		/*
-		 * @see
-		 * org.eclipse.jdt.internal.corext.dom.GenericVisitor#visitNode(org.
-		 * eclipse.jdt.core.dom.ASTNode)
-		 */
 		protected boolean visitNode(ASTNode node) {
 			if ((node.getFlags() & ASTNode.MALFORMED) == ASTNode.MALFORMED) {
 				retainPositions(node.getStartPosition(), node.getLength());
@@ -49,130 +42,11 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 			return true;
 		}
 
-		/*
-		 * @see
-		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
-		 * .BooleanLiteral)
-		 */
-		public boolean visit(BooleanLiteral node) {
-			return visitLiteral(node);
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
-		 * .CharacterLiteral)
-		 */
-		public boolean visit(CharacterLiteral node) {
-			return visitLiteral(node);
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
-		 * .NumberLiteral)
-		 */
-		public boolean visit(NumberLiteral node) {
-			return visitLiteral(node);
-		}
-
-		private boolean visitLiteral(Expression node) {
-			fToken.update(node);
-			for (int i = 0, n = fJobSemanticHighlightings.length; i < n; i++) {
-				SemanticHighlighting semanticHighlighting = fJobSemanticHighlightings[i];
-				if (fJobHighlightings[i].isEnabled() && semanticHighlighting.consumesLiteral(fToken)) {
-					int offset = node.getStartPosition();
-					int length = node.getLength();
-					if (offset > -1 && length > 0) {
-						addPosition(offset, length, fJobHighlightings[i]);
-					}
-					break;
-				}
-			}
-			fToken.clear();
-			return false;
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.jdt.internal.corext.dom.GenericVisitor#visit(org.eclipse
-		 * .jdt.core.dom.ConstructorInvocation)
-		 *
-		 * @since 3.5
-		 */
-		public boolean visit(ConstructorInvocation node) {
-			// XXX Hack for performance reasons (should loop over
-			// fJobSemanticHighlightings can call consumes(*))
-			if (fJobDeprecatedMemberHighlighting != null) {
-				IMethodBinding constructorBinding = node.resolveConstructorBinding();
-				if (constructorBinding != null && constructorBinding.isDeprecated()) {
-					int offset = node.getStartPosition();
-					int length = 4;
-					if (offset > -1 && length > 0) {
-						addPosition(offset, length, fJobDeprecatedMemberHighlighting);
-					}
-				}
-			}
-			return true;
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.jdt.internal.corext.dom.GenericVisitor#visit(org.eclipse
-		 * .jdt.core.dom.ConstructorInvocation)
-		 *
-		 * @since 3.5
-		 */
-		public boolean visit(SuperConstructorInvocation node) {
-			// XXX Hack for performance reasons (should loop over
-			// fJobSemanticHighlightings can call consumes(*))
-			if (fJobDeprecatedMemberHighlighting != null) {
-				IMethodBinding constructorBinding = node.resolveConstructorBinding();
-				if (constructorBinding != null && constructorBinding.isDeprecated()) {
-					int offset = node.getStartPosition();
-					int length = 5;
-					if (offset > -1 && length > 0) {
-						addPosition(offset, length, fJobDeprecatedMemberHighlighting);
-					}
-				}
-			}
-			return true;
-		}
-
-		/*
-		 * @see
-		 * org.eclipse.jdt.core.dom.ASTVisitor#visit(org.eclipse.jdt.core.dom
-		 * .SimpleName)
-		 */
-		public boolean visit(SimpleName node) {
-			fToken.update(node);
-			for (int i = 0, n = fJobSemanticHighlightings.length; i < n; i++) {
-				SemanticHighlighting semanticHighlighting = fJobSemanticHighlightings[i];
-				if (fJobHighlightings[i].isEnabled() && semanticHighlighting.consumes(fToken)) {
-					int offset = node.getStartPosition();
-					int length = node.getLength();
-					if (offset > -1 && length > 0) {
-						addPosition(offset, length, fJobHighlightings[i]);
-					}
-					break;
-				}
-			}
-			fToken.clear();
-			return false;
-		}
-
 		/**
 		 * Add a position with the given range and highlighting iff it does not
 		 * exist already.
-		 *
-		 * @param offset
-		 *            The range offset
-		 * @param length
-		 *            The range length
-		 * @param highlighting
-		 *            The highlighting
 		 */
-		private void addPosition(int offset, int length, Highlighting highlighting) {
+		public void addPosition(int offset, int length, Highlighting highlighting) {
 			boolean isExisting = false;
 			// TODO: use binary search
 			for (int i = 0, n = fRemovedPositions.size(); i < n; i++) {
@@ -196,16 +70,11 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 
 		/**
 		 * Retain the positions completely contained in the given range.
-		 *
-		 * @param offset
-		 *            The range offset
-		 * @param length
-		 *            The range length
 		 */
-		private void retainPositions(int offset, int length) {
+		public void retainPositions(int offset, int length) {
 			// TODO: use binary search
 			for (int i = 0, n = fRemovedPositions.size(); i < n; i++) {
-				HighlightedPosition position = (HighlightedPosition) fRemovedPositions.get(i);
+				HighlightedPosition position = fRemovedPositions.get(i);
 				if (position != null && position.isContained(offset, length)) {
 					fRemovedPositions.set(i, null);
 					fNOfRemovedPositions--;
@@ -217,21 +86,22 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	/** Position collector */
 	private final PositionCollector fCollector = new PositionCollector();
 
-	/** The Java editor this semantic highlighting reconciler is installed on */
+	/**
+	 * The StructuredText editor this semantic highlighting reconciler is
+	 * installed on
+	 */
 	private StructuredTextEditor fEditor;
 	/** The source viewer this semantic highlighting reconciler is installed on */
 	private ISourceViewer fSourceViewer;
 	/** The semantic highlighting presenter */
 	private SemanticHighlightingPresenter fPresenter;
 	/** Semantic highlightings */
-	private SemanticHighlighting[] fSemanticHighlightings;
-	/** Highlightings */
-	private Highlighting[] fHighlightings;
+	private ColorDescriptor[] fSemanticHighlightings;
 
 	/** Background job's added highlighted positions */
-	private final List fAddedPositions = new ArrayList();
+	private final List<HighlightedPosition> fAddedPositions = new ArrayList<HighlightedPosition>();
 	/** Background job's removed highlighted positions */
-	private List fRemovedPositions = new ArrayList();
+	private List<HighlightedPosition> fRemovedPositions = new ArrayList<HighlightedPosition>();
 	/** Number of removed positions */
 	private int fNOfRemovedPositions;
 
@@ -241,15 +111,10 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	private final Object fJobLock = new Object();
 	/**
 	 * Reconcile operation lock.
-	 *
-	 * @since 3.2
 	 */
 	private final Object fReconcileLock = new Object();
 	/**
 	 * <code>true</code> if any thread is executing <code>reconcile</code>,
-	 * <code>false</code> otherwise.
-	 *
-	 * @since 3.2
 	 */
 	private boolean fIsReconciling = false;
 
@@ -263,7 +128,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	 * Semantic highlightings - cache for background thread, only valid during
 	 * {@link #reconciled(CompilationUnit, boolean, IProgressMonitor)}
 	 */
-	private SemanticHighlighting[] fJobSemanticHighlightings;
+	private ColorDescriptor[] fJobSemanticHighlightings;
 	/**
 	 * Highlightings - cache for background thread, only valid during
 	 * {@link #reconciled(CompilationUnit, boolean, IProgressMonitor)}
@@ -278,20 +143,11 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	 */
 	private Highlighting fJobDeprecatedMemberHighlighting;
 
-	/*
-	 * @seeorg.eclipse.jdt.internal.ui.text.java.IJavaReconcilingListener#
-	 * aboutToBeReconciled()
-	 */
 	public void aboutToBeReconciled() {
 		// Do nothing
 	}
 
-	/*
-	 * @see
-	 * org.eclipse.jdt.internal.ui.text.java.IJavaReconcilingListener#reconciled
-	 * (CompilationUnit, boolean, IProgressMonitor)
-	 */
-	public void reconciled(CompilationUnit ast, boolean forced, IProgressMonitor progressMonitor) {
+	public void reconciled(ISourceStructure model, boolean forced, IProgressMonitor progressMonitor) {
 		// ensure at most one thread can be reconciling at any time
 		synchronized (fReconcileLock) {
 			if (fIsReconciling) {
@@ -312,11 +168,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 			fJobPresenter.setCanceled(progressMonitor.isCanceled());
 
 			if (ast == null || fJobPresenter.isCanceled()) {
-				return;
-			}
-
-			ASTNode[] subtrees = getAffectedSubtrees(ast);
-			if (subtrees.length == 0) {
 				return;
 			}
 
@@ -357,18 +208,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	}
 
 	/**
-	 * @param node
-	 *            Root node
-	 * @return Array of subtrees that may be affected by past document changes
-	 */
-	private ASTNode[] getAffectedSubtrees(ASTNode node) {
-		// TODO: only return nodes which are affected by document changes -
-		// would require an 'anchor' concept for taking distant effects into
-		// account
-		return new ASTNode[] { node };
-	}
-
-	/**
 	 * Start reconciling positions.
 	 */
 	private void startReconcilingPositions() {
@@ -378,9 +217,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 
 	/**
 	 * Reconcile positions based on the AST subtrees
-	 *
-	 * @param subtrees
-	 *            the AST subtrees
 	 */
 	private void reconcilePositions(ASTNode[] subtrees) {
 		// FIXME: remove positions not covered by subtrees
@@ -388,8 +224,8 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 		for (int i = 0, n = subtrees.length; i < n; i++) {
 			subtrees[i].accept(fCollector);
 		}
-		List oldPositions = fRemovedPositions;
-		List newPositions = new ArrayList(fNOfRemovedPositions);
+		List<HighlightedPosition> oldPositions = fRemovedPositions;
+		List<HighlightedPosition> newPositions = new ArrayList<HighlightedPosition>(fNOfRemovedPositions);
 		for (int i = 0, n = oldPositions.size(); i < n; i++) {
 			Object current = oldPositions.get(i);
 			if (current != null) {
@@ -401,21 +237,15 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 
 	/**
 	 * Update the presentation.
-	 *
-	 * @param textPresentation
-	 *            the text presentation
-	 * @param addedPositions
-	 *            the added positions
-	 * @param removedPositions
-	 *            the removed positions
 	 */
-	private void updatePresentation(TextPresentation textPresentation, List addedPositions, List removedPositions) {
+	private void updatePresentation(TextPresentation textPresentation, List<HighlightedPosition> addedPositions,
+			List<HighlightedPosition> removedPositions) {
 		Runnable runnable = fJobPresenter.createUpdateRunnable(textPresentation, addedPositions, removedPositions);
 		if (runnable == null) {
 			return;
 		}
 
-		JavaEditor editor = fEditor;
+		StructuredTextEditor editor = fEditor;
 		if (editor == null) {
 			return;
 		}
@@ -449,20 +279,10 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 
 	/**
 	 * Install this reconciler on the given editor, presenter and highlightings.
-	 *
-	 * @param editor
-	 *            the editor
-	 * @param sourceViewer
-	 *            the source viewer
-	 * @param presenter
-	 *            the semantic highlighting presenter
-	 * @param semanticHighlightings
-	 *            the semantic highlightings
-	 * @param highlightings
-	 *            the highlightings
 	 */
-	public void install(JavaEditor editor, ISourceViewer sourceViewer, SemanticHighlightingPresenter presenter,
-			SemanticHighlighting[] semanticHighlightings, Highlighting[] highlightings) {
+	public void install(StructuredTextEditor editor, ISourceViewer sourceViewer,
+			SemanticHighlightingPresenter presenter, SemanticHighlighting[] semanticHighlightings,
+			Highlighting[] highlightings) {
 		fPresenter = presenter;
 		fSemanticHighlightings = semanticHighlightings;
 		fHighlightings = highlightings;
@@ -487,11 +307,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 		}
 
 		if (fEditor != null) {
-			if (fEditor instanceof CompilationUnitEditor) {
-				((CompilationUnitEditor) fEditor).removeReconcileListener(this);
-			} else {
-				fSourceViewer.removeTextInputListener(this);
-			}
+			fEditor.removeReconcileListener(this);
 			fEditor = null;
 		}
 
@@ -506,8 +322,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	 * Semantic Highlighting model.
 	 */
 	private void scheduleJob() {
-		final ITypeRoot element = fEditor.getInputJavaElement();
-
 		synchronized (fJobLock) {
 			final Job oldJob = fJob;
 			if (fJob != null) {
@@ -515,44 +329,37 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 				fJob = null;
 			}
 
-			if (element != null) {
-				fJob = new Job(JavaEditorMessages.SemanticHighlighting_job) {
-					@Override
-					protected IStatus run(IProgressMonitor monitor) {
-						if (oldJob != null) {
-							try {
-								oldJob.join();
-							} catch (InterruptedException e) {
-								JavaPlugin.log(e);
-								return Status.CANCEL_STATUS;
-							}
-						}
-						if (monitor.isCanceled()) {
+			fJob = new Job("Semantic Highlighting Job") {
+				@Override
+				protected IStatus run(IProgressMonitor monitor) {
+					if (oldJob != null) {
+						try {
+							oldJob.join();
+						} catch (InterruptedException e) {
+							StructuredTextPlugin.log(e);
 							return Status.CANCEL_STATUS;
 						}
-						CompilationUnit ast = SharedASTProvider.getAST(element, SharedASTProvider.WAIT_YES, monitor);
-						reconciled(ast, false, monitor);
-						synchronized (fJobLock) {
-							// allow the job to be gc'ed
-							if (fJob == this) {
-								fJob = null;
-							}
-						}
-						return Status.OK_STATUS;
 					}
-				};
-				fJob.setSystem(true);
-				fJob.setPriority(Job.DECORATE);
-				fJob.schedule();
-			}
+					if (monitor.isCanceled()) {
+						return Status.CANCEL_STATUS;
+					}
+					CompilationUnit ast = SharedASTProvider.getAST(element, SharedASTProvider.WAIT_YES, monitor);
+					reconciled(ast, false, monitor);
+					synchronized (fJobLock) {
+						// allow the job to be gc'ed
+						if (fJob == this) {
+							fJob = null;
+						}
+					}
+					return Status.OK_STATUS;
+				}
+			};
+			fJob.setSystem(true);
+			fJob.setPriority(Job.DECORATE);
+			fJob.schedule();
 		}
 	}
 
-	/*
-	 * @see
-	 * org.eclipse.jface.text.ITextInputListener#inputDocumentAboutToBeChanged
-	 * (org.eclipse.jface.text.IDocument, org.eclipse.jface.text.IDocument)
-	 */
 	public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
 		synchronized (fJobLock) {
 			if (fJob != null) {
@@ -562,11 +369,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 		}
 	}
 
-	/*
-	 * @see
-	 * org.eclipse.jface.text.ITextInputListener#inputDocumentChanged(org.eclipse
-	 * .jface.text.IDocument, org.eclipse.jface.text.IDocument)
-	 */
 	public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
 		if (newInput != null) {
 			scheduleJob();
@@ -575,8 +377,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 
 	/**
 	 * Refreshes the highlighting.
-	 *
-	 * @since 3.2
 	 */
 	public void refresh() {
 		scheduleJob();

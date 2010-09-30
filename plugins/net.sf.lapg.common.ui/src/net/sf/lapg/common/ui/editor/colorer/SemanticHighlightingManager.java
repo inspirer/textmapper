@@ -3,6 +3,8 @@ package net.sf.lapg.common.ui.editor.colorer;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.resource.StringConverter;
@@ -18,63 +20,6 @@ import org.eclipse.swt.graphics.RGB;
 
 public class SemanticHighlightingManager implements IPropertyChangeListener {
 
-	/**
-	 * Highlighting.
-	 */
-	static class Highlighting { // TODO: rename to HighlightingStyle
-
-		/** Text attribute */
-		private TextAttribute fTextAttribute;
-		/** Enabled state */
-		private boolean fIsEnabled;
-
-		/**
-		 * Initialize with the given text attribute.
-		 *
-		 * @param textAttribute
-		 *            The text attribute
-		 * @param isEnabled
-		 *            the enabled state
-		 */
-		public Highlighting(TextAttribute textAttribute, boolean isEnabled) {
-			setTextAttribute(textAttribute);
-			setEnabled(isEnabled);
-		}
-
-		/**
-		 * @return Returns the text attribute.
-		 */
-		public TextAttribute getTextAttribute() {
-			return fTextAttribute;
-		}
-
-		/**
-		 * @param textAttribute
-		 *            The background to set.
-		 */
-		public void setTextAttribute(TextAttribute textAttribute) {
-			fTextAttribute = textAttribute;
-		}
-
-		/**
-		 * @return the enabled state
-		 */
-		public boolean isEnabled() {
-			return fIsEnabled;
-		}
-
-		/**
-		 * @param isEnabled
-		 *            the new enabled state
-		 */
-		public void setEnabled(boolean isEnabled) {
-			fIsEnabled = isEnabled;
-		}
-	}
-
-	/**
-	 * Highlighted Positions.
-	 */
 	static class HighlightedPosition extends Position {
 
 		/** Highlighting of the position */
@@ -86,15 +31,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		/**
 		 * Initialize the styled positions with the given offset, length and
 		 * foreground color.
-		 *
-		 * @param offset
-		 *            The position offset
-		 * @param length
-		 *            The position length
-		 * @param highlighting
-		 *            The position's highlighting
-		 * @param lock
-		 *            The lock object
 		 */
 		public HighlightedPosition(int offset, int length, Highlighting highlighting, Object lock) {
 			super(offset, length);
@@ -124,15 +60,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 
 		/**
 		 * Uses reference equality for the highlighting.
-		 *
-		 * @param off
-		 *            The offset
-		 * @param len
-		 *            The length
-		 * @param highlighting
-		 *            The highlighting
-		 * @return <code>true</code> iff the given offset, length and
-		 *         highlighting are equal to the internal ones.
 		 */
 		public boolean isEqual(int off, int len, Highlighting highlighting) {
 			synchronized (fLock) {
@@ -143,13 +70,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		/**
 		 * Is this position contained in the given range (inclusive)?
 		 * Synchronizes on position updater.
-		 *
-		 * @param off
-		 *            The range offset
-		 * @param len
-		 *            The range length
-		 * @return <code>true</code> iff this position is not delete and
-		 *         contained in the given range.
 		 */
 		public boolean isContained(int off, int len) {
 			synchronized (fLock) {
@@ -164,9 +84,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			}
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Position#setLength(int)
-		 */
 		@Override
 		public void setLength(int length) {
 			synchronized (fLock) {
@@ -174,9 +91,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			}
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Position#setOffset(int)
-		 */
 		@Override
 		public void setOffset(int offset) {
 			synchronized (fLock) {
@@ -184,9 +98,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			}
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Position#delete()
-		 */
 		@Override
 		public void delete() {
 			synchronized (fLock) {
@@ -194,9 +105,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			}
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Position#undelete()
-		 */
 		@Override
 		public void undelete() {
 			synchronized (fLock) {
@@ -224,14 +132,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 
 		/**
 		 * Initialize with the given offset, length and highlighting key.
-		 *
-		 * @param offset
-		 *            the offset
-		 * @param length
-		 *            the length
-		 * @param key
-		 *            the highlighting key as returned by
-		 *            {@link SemanticHighlighting#getPreferenceKey()}
 		 */
 		public HighlightedRange(int offset, int length, String key) {
 			super(offset, length);
@@ -246,17 +146,11 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			return fKey;
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Region#equals(java.lang.Object)
-		 */
 		@Override
 		public boolean equals(Object o) {
 			return super.equals(o) && o instanceof HighlightedRange && fKey.equals(((HighlightedRange) o).getKey());
 		}
 
-		/*
-		 * @see org.eclipse.jface.text.Region#hashCode()
-		 */
 		@Override
 		public int hashCode() {
 			return super.hashCode() | fKey.hashCode();
@@ -274,42 +168,33 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 	private Highlighting[] fHighlightings;
 
 	/** The editor */
-	private JavaEditor fEditor;
+	private StructuredTextEditor fEditor;
 	/** The source viewer */
-	private JavaSourceViewer fSourceViewer;
+	private StructuredTextSourceViewer fSourceViewer;
 	/** The color manager */
 	private IColorManager fColorManager;
 	/** The preference store */
 	private IPreferenceStore fPreferenceStore;
 	/** The source viewer configuration */
-	private JavaSourceViewerConfiguration fConfiguration;
+	private StructuredTextSourceViewerConfiguration fConfiguration;
 	/** The presentation reconciler */
-	private JavaPresentationReconciler fPresentationReconciler;
+	private StructuredTextPresentationReconciler fPresentationReconciler;
 
 	/** The hard-coded ranges */
 	private HighlightedRange[][] fHardcodedRanges;
 
 	/**
 	 * Install the semantic highlighting on the given editor infrastructure
-	 *
-	 * @param editor
-	 *            The Java editor
-	 * @param sourceViewer
-	 *            The source viewer
-	 * @param colorManager
-	 *            The color manager
-	 * @param preferenceStore
-	 *            The preference store
 	 */
-	public void install(JavaEditor editor, JavaSourceViewer sourceViewer, IColorManager colorManager,
-			IPreferenceStore preferenceStore) {
+	public void install(StructuredTextEditor editor, StructuredTextSourceViewer sourceViewer,
+			IColorManager colorManager, IPreferenceStore preferenceStore) {
 		fEditor = editor;
 		fSourceViewer = sourceViewer;
 		fColorManager = colorManager;
 		fPreferenceStore = preferenceStore;
 		if (fEditor != null) {
-			fConfiguration = editor.createJavaSourceViewerConfiguration();
-			fPresentationReconciler = (JavaPresentationReconciler) fConfiguration
+			fConfiguration = editor.createStructuredTextSourceViewerConfiguration();
+			fPresentationReconciler = (StructuredTextPresentationReconciler) fConfiguration
 					.getPresentationReconciler(sourceViewer);
 		} else {
 			fConfiguration = null;
@@ -326,18 +211,9 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 	/**
 	 * Install the semantic highlighting on the given source viewer
 	 * infrastructure. No reconciliation will be performed.
-	 *
-	 * @param sourceViewer
-	 *            the source viewer
-	 * @param colorManager
-	 *            the color manager
-	 * @param preferenceStore
-	 *            the preference store
-	 * @param hardcodedRanges
-	 *            the hard-coded ranges to be highlighted
 	 */
-	public void install(JavaSourceViewer sourceViewer, IColorManager colorManager, IPreferenceStore preferenceStore,
-			HighlightedRange[][] hardcodedRanges) {
+	public void install(StructuredTextSourceViewer sourceViewer, DefaultHighlightingManager colorManager,
+			IPreferenceStore preferenceStore, HighlightedRange[][] hardcodedRanges) {
 		fHardcodedRanges = hardcodedRanges;
 		install(null, sourceViewer, colorManager, preferenceStore);
 	}
@@ -498,20 +374,12 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		fHighlightings = null;
 	}
 
-	/*
-	 * @see
-	 * org.eclipse.jface.util.IPropertyChangeListener#propertyChange(org.eclipse
-	 * .jface.util.PropertyChangeEvent)
-	 */
 	public void propertyChange(PropertyChangeEvent event) {
 		handlePropertyChangeEvent(event);
 	}
 
 	/**
 	 * Handle the given property change event
-	 *
-	 * @param event
-	 *            The event
 	 */
 	private void handlePropertyChangeEvent(PropertyChangeEvent event) {
 		if (fPreferenceStore == null) {
@@ -668,12 +536,6 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		}
 	}
 
-	/**
-	 * Returns this hightlighter's reconciler.
-	 *
-	 * @return the semantic highlighter reconciler or <code>null</code> if none
-	 * @since 3.3
-	 */
 	public SemanticHighlightingReconciler getReconciler() {
 		return fReconciler;
 	}
