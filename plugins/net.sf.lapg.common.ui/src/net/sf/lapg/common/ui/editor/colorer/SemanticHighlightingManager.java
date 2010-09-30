@@ -19,7 +19,7 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 
-public class SemanticHighlightingManager implements IPropertyChangeListener {
+public class SemanticHighlightingManager implements IPropertyChangeListener, IHighlightingStyleListener {
 
 	static class HighlightedPosition extends Position {
 
@@ -198,8 +198,9 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		}
 
 		fPreferenceStore.addPropertyChangeListener(this);
+		highlightingManager.addHighlightingChangedListener(this);
 
-		if (isEnabled()) {
+		if (isSemanticHighlightingEnabled()) {
 			enable();
 		}
 	}
@@ -228,7 +229,7 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			fReconciler = new SemanticHighlightingReconciler();
 			fReconciler.install(fEditor, fSourceViewer, fPresenter, fSemanticHighlightings);
 		} else {
-			fPresenter.updatePresentation(null, createHardcodedPositions(), new HighlightedPosition[0]);
+			// fPresenter.updatePresentation(null, createHardcodedPositions(), new HighlightedPosition[0]);
 		}
 	}
 
@@ -241,6 +242,9 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 		if (fPreferenceStore != null) {
 			fPreferenceStore.removePropertyChangeListener(this);
 			fPreferenceStore = null;
+		}
+		if (fHighlightingManager != null) {
+			fHighlightingManager.removeHighlightingChangedListener(this);
 		}
 
 		fEditor = null;
@@ -289,153 +293,52 @@ public class SemanticHighlightingManager implements IPropertyChangeListener {
 			return; // Uninstalled during event notification
 		}
 
-		if (fConfiguration != null) {
-			fConfiguration.handlePropertyChangeEvent(event);
-		}
-
-		if (SemanticHighlightings.affectsEnablement(fPreferenceStore, event)) {
-			if (isEnabled()) {
+		if (affectsEnablement(fPreferenceStore, event)) {
+			if (isSemanticHighlightingEnabled()) {
 				enable();
+				if (fReconciler != null) {
+					fReconciler.refresh();
+				}
 			} else {
 				disable();
 			}
 		}
+	}
 
-		if (!isEnabled()) {
-			return;
+	public boolean affectsEnablement(IPreferenceStore store, PropertyChangeEvent event) {
+		String relevantKey = null;
+		ColorDescriptor[] highlightings = fSemanticHighlightings;
+		for (ColorDescriptor highlighting : highlightings) {
+			if (event.getProperty().equals(highlighting.getEnabledKey())) {
+				relevantKey = event.getProperty();
+				break;
+			}
+		}
+		if (relevantKey == null) {
+			return false;
 		}
 
-		boolean refreshNeeded = false;
-
-		for (int i = 0, n = fSemanticHighlightings.length; i < n; i++) {
-			SemanticHighlighting semanticHighlighting = fSemanticHighlightings[i];
-
-			String colorKey = SemanticHighlightings.getColorPreferenceKey(semanticHighlighting);
-			if (colorKey.equals(event.getProperty())) {
-				adaptToTextForegroundChange(fHighlightings[i], event);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
+		for (ColorDescriptor highlighting : highlightings) {
+			String key = highlighting.getEnabledKey();
+			if (key.equals(relevantKey)) {
 				continue;
 			}
-
-			String boldKey = SemanticHighlightings.getBoldPreferenceKey(semanticHighlighting);
-			if (boldKey.equals(event.getProperty())) {
-				adaptToTextStyleChange(fHighlightings[i], event, SWT.BOLD);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
-				continue;
-			}
-
-			String italicKey = SemanticHighlightings.getItalicPreferenceKey(semanticHighlighting);
-			if (italicKey.equals(event.getProperty())) {
-				adaptToTextStyleChange(fHighlightings[i], event, SWT.ITALIC);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
-				continue;
-			}
-
-			String strikethroughKey = SemanticHighlightings.getStrikethroughPreferenceKey(semanticHighlighting);
-			if (strikethroughKey.equals(event.getProperty())) {
-				adaptToTextStyleChange(fHighlightings[i], event, TextAttribute.STRIKETHROUGH);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
-				continue;
-			}
-
-			String underlineKey = SemanticHighlightings.getUnderlinePreferenceKey(semanticHighlighting);
-			if (underlineKey.equals(event.getProperty())) {
-				adaptToTextStyleChange(fHighlightings[i], event, TextAttribute.UNDERLINE);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
-				continue;
-			}
-
-			String enabledKey = SemanticHighlightings.getEnabledPreferenceKey(semanticHighlighting);
-			if (enabledKey.equals(event.getProperty())) {
-				adaptToEnablementChange(fHighlightings[i], event);
-				fPresenter.highlightingStyleChanged(fHighlightings[i]);
-				refreshNeeded = true;
-				continue;
+			if (store.getBoolean(key)) {
+				return false; // another is still enabled or was enabled before
 			}
 		}
 
-		if (refreshNeeded && fReconciler != null) {
+		// all others are disabled, so toggling relevantKey affects the
+		// enablement
+		return true;
+	}
+
+	public void highlightingStyleChanged(ColorDescriptor cd) {
+		if (fPresenter != null && cd.getHighlighting() != null) {
+			fPresenter.highlightingStyleChanged(cd.getHighlighting());
+		}
+		if (fReconciler != null) {
 			fReconciler.refresh();
-		}
-	}
-
-	private void adaptToEnablementChange(Highlighting highlighting, PropertyChangeEvent event) {
-		Object value = event.getNewValue();
-		boolean eventValue;
-		if (value instanceof Boolean) {
-			eventValue = ((Boolean) value).booleanValue();
-		} else if (IPreferenceStore.TRUE.equals(value)) {
-			eventValue = true;
-		} else {
-			eventValue = false;
-		}
-		highlighting.setEnabled(eventValue);
-	}
-
-	private void adaptToTextForegroundChange(Highlighting highlighting, PropertyChangeEvent event) {
-		RGB rgb = null;
-
-		Object value = event.getNewValue();
-		if (value instanceof RGB) {
-			rgb = (RGB) value;
-		} else if (value instanceof String) {
-			rgb = StringConverter.asRGB((String) value);
-		}
-
-		if (rgb != null) {
-
-			String property = event.getProperty();
-			Color color = fHighlightingManager.getColor(property);
-
-			if ((color == null || !rgb.equals(color.getRGB())) && fHighlightingManager instanceof IColorManagerExtension) {
-				IColorManagerExtension ext = (IColorManagerExtension) fHighlightingManager;
-				ext.unbindColor(property);
-				ext.bindColor(property, rgb);
-				color = fHighlightingManager.getColor(property);
-			}
-
-			TextAttribute oldAttr = highlighting.getTextAttribute();
-			highlighting.setTextAttribute(new TextAttribute(color, oldAttr.getBackground(), oldAttr.getStyle()));
-		}
-	}
-
-	private void adaptToTextStyleChange(Highlighting highlighting, PropertyChangeEvent event, int styleAttribute) {
-		boolean eventValue = false;
-		Object value = event.getNewValue();
-		if (value instanceof Boolean) {
-			eventValue = ((Boolean) value).booleanValue();
-		} else if (IPreferenceStore.TRUE.equals(value)) {
-			eventValue = true;
-		}
-
-		TextAttribute oldAttr = highlighting.getTextAttribute();
-		boolean activeValue = (oldAttr.getStyle() & styleAttribute) == styleAttribute;
-
-		if (activeValue != eventValue) {
-			highlighting.setTextAttribute(new TextAttribute(oldAttr.getForeground(), oldAttr.getBackground(),
-					eventValue ? oldAttr.getStyle() | styleAttribute : oldAttr.getStyle() & ~styleAttribute));
-		}
-	}
-
-	private void addColor(String colorKey) {
-		if (fHighlightingManager != null && colorKey != null && fHighlightingManager.getColor(colorKey) == null) {
-			RGB rgb = PreferenceConverter.getColor(fPreferenceStore, colorKey);
-			if (fHighlightingManager instanceof IColorManagerExtension) {
-				IColorManagerExtension ext = (IColorManagerExtension) fHighlightingManager;
-				ext.unbindColor(colorKey);
-				ext.bindColor(colorKey, rgb);
-			}
-		}
-	}
-
-	private void removeColor(String colorKey) {
-		if (fHighlightingManager instanceof IColorManagerExtension) {
-			((IColorManagerExtension) fHighlightingManager).unbindColor(colorKey);
 		}
 	}
 
