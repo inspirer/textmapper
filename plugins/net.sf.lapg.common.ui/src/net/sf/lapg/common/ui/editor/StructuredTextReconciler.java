@@ -1,16 +1,4 @@
-/**
- * This file is part of Lapg.UI project.
- *
- * Copyright (c) 2010 Evgeny Gryaznov
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    Evgeny Gryaznov - initial API and implementation
- */
-package net.sf.lapg.ui.editor;
+package net.sf.lapg.common.ui.editor;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.ITextViewer;
@@ -22,7 +10,13 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-public class LapgReconciler extends MonoReconciler {
+public class StructuredTextReconciler extends MonoReconciler {
+
+	public StructuredTextReconciler(final ITextEditor textEditor, final IReconcilingStrategy strategy,
+			final boolean isIncremental) {
+		super(strategy, isIncremental);
+		fEditor = textEditor;
+	}
 
 	public interface IReconcilingListener {
 		/**
@@ -33,13 +27,13 @@ public class LapgReconciler extends MonoReconciler {
 		/**
 		 * Called after reconciling has been finished.
 		 */
-		void reconciled(IProgressMonitor progressMonitor);
+		void reconciled(ISourceStructure model, IProgressMonitor progressMonitor);
 	}
 
 	private class PartListener implements IPartListener {
 		public void partActivated(final IWorkbenchPart part) {
 			if (part == fEditor) {
-				LapgReconciler.this.forceReconciling();
+				StructuredTextReconciler.this.forceReconciling();
 			}
 		}
 
@@ -56,13 +50,7 @@ public class LapgReconciler extends MonoReconciler {
 		}
 	}
 
-	public LapgReconciler(final ITextEditor textEditor, final IReconcilingStrategy strategy,
-			final boolean isIncremental) {
-		super(strategy, isIncremental);
-		fEditor = textEditor;
-	}
-
-	void performReconciling() {
+	public void performReconciling() {
 		super.forceReconciling();
 	}
 
@@ -89,4 +77,5 @@ public class LapgReconciler extends MonoReconciler {
 	private final ITextEditor fEditor;
 
 	private PartListener fPartListener;
+
 }

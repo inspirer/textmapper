@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.eclipse.swt.custom.StyleRange;
+import net.sf.lapg.common.ui.LapgCommonActivator;
+import net.sf.lapg.common.ui.editor.StructuredTextViewer;
+import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
+import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.BadPositionCategoryException;
@@ -19,6 +23,8 @@ import org.eclipse.jface.text.ITextPresentationListener;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.swt.custom.StyleRange;
 
 /**
  * Semantic highlighting presenter - UI thread implementation.
@@ -203,7 +209,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	private final IPositionUpdater fPositionUpdater = new HighlightingPositionUpdater(getPositionCategory());
 
 	/** The source viewer this semantic highlighting reconciler is installed on */
-	private StructuredTextSourceViewer fSourceViewer;
+	private StructuredTextViewer fSourceViewer;
 	/** The background presentation reconciler */
 	private StructuredTextPresentationReconciler fPresentationReconciler;
 
@@ -215,7 +221,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	/** UI position lock */
 	private final Object fPositionLock = new Object();
 
-	/** <code>true</code> iff the current reconcile is canceled. */
+	/** <code>true</code> if the current reconcile is canceled. */
 	private boolean fIsCanceled = false;
 
 	/**
@@ -249,7 +255,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * </p>
 	 */
 	public TextPresentation createPresentation(List addedPositions, List removedPositions) {
-		StructuredTextSourceViewer sourceViewer = fSourceViewer;
+		ISourceViewer sourceViewer = fSourceViewer;
 		StructuredTextPresentationReconciler presentationReconciler = fPresentationReconciler;
 		if (sourceViewer == null || presentationReconciler == null) {
 			return null;
@@ -297,8 +303,8 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * NOTE: Called from background thread.
 	 * </p>
 	 */
-	public Runnable createUpdateRunnable(final TextPresentation textPresentation, List addedPositions,
-			List removedPositions) {
+	public Runnable createUpdateRunnable(final TextPresentation textPresentation, List<HighlightedPosition> addedPositions,
+			List<HighlightedPosition> removedPositions) {
 		if (fSourceViewer == null || textPresentation == null) {
 			return null;
 		}
@@ -415,10 +421,10 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 			}
 		} catch (BadPositionCategoryException e) {
 			// Should not happen
-			StructuredTextPlugin.log(e);
+			LapgCommonActivator.log(e);
 		} catch (BadLocationException e) {
 			// Should not happen
-			StructuredTextPlugin.log(e);
+			LapgCommonActivator.log(e);
 		}
 		//		checkOrdering("new positions: ", fPositions); //$NON-NLS-1$
 
@@ -442,7 +448,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	/**
 	 * Returns <code>true</code> if the positions contain the position.
 	 */
-	private boolean contain(List positions, Position position) {
+	private boolean contain(List<Position> positions, Position position) {
 		return indexOf(positions, position) != -1;
 	}
 
@@ -592,7 +598,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * Install this presenter on the given source viewer and background
 	 * presentation reconciler.
 	 */
-	public void install(StructuredTextSourceViewer sourceViewer,
+	public void install(StructuredTextViewer sourceViewer,
 			StructuredTextPresentationReconciler backgroundPresentationReconciler) {
 		fSourceViewer = sourceViewer;
 		fPresentationReconciler = backgroundPresentationReconciler;
@@ -661,10 +667,10 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 			document.addPosition(positionCategory, position);
 		} catch (BadLocationException e) {
 			// Should not happen
-			StructuredTextPlugin.log(e);
+			LapgCommonActivator.log(e);
 		} catch (BadPositionCategoryException e) {
 			// Should not happen
-			StructuredTextPlugin.log(e);
+			LapgCommonActivator.log(e);
 		}
 	}
 
@@ -699,7 +705,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 				document.removePositionCategory(getPositionCategory());
 			} catch (BadPositionCategoryException e) {
 				// Should not happen
-				StructuredTextPlugin.log(e);
+				LapgCommonActivator.log(e);
 			}
 		}
 	}

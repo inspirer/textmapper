@@ -1,14 +1,13 @@
 package net.sf.lapg.common.ui.editor.colorer;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.sf.lapg.common.ui.editor.StructuredTextEditor;
+import net.sf.lapg.common.ui.editor.StructuredTextViewer;
+import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
 import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
 import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceConverter;
-import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextAttribute;
@@ -16,8 +15,6 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
 
 public class SemanticHighlightingManager implements IPropertyChangeListener, IHighlightingStyleListener {
 
@@ -169,27 +166,27 @@ public class SemanticHighlightingManager implements IPropertyChangeListener, IHi
 	/** The editor */
 	private StructuredTextEditor fEditor;
 	/** The source viewer */
-	private StructuredTextSourceViewer fSourceViewer;
+	private StructuredTextViewer fSourceViewer;
 	/** The color manager */
 	private DefaultHighlightingManager fHighlightingManager;
 	/** The preference store */
 	private IPreferenceStore fPreferenceStore;
 	/** The source viewer configuration */
-	private StructuredTextSourceViewerConfiguration fConfiguration;
+	private StructuredTextViewerConfiguration fConfiguration;
 	/** The presentation reconciler */
 	private StructuredTextPresentationReconciler fPresentationReconciler;
 
 	/**
 	 * Install the semantic highlighting on the given editor infrastructure
 	 */
-	public void install(StructuredTextEditor editor, StructuredTextSourceViewer sourceViewer,
+	public void install(StructuredTextEditor editor, StructuredTextViewer sourceViewer,
 			DefaultHighlightingManager highlightingManager, IPreferenceStore preferenceStore) {
 		fEditor = editor;
 		fSourceViewer = sourceViewer;
 		fHighlightingManager = highlightingManager;
 		fPreferenceStore = preferenceStore;
 		if (fEditor != null) {
-			fConfiguration = editor.createStructuredTextSourceViewerConfiguration();
+			fConfiguration = editor.createSourceViewerConfiguration();
 			fPresentationReconciler = (StructuredTextPresentationReconciler) fConfiguration
 					.getPresentationReconciler(sourceViewer);
 		} else {
@@ -209,7 +206,7 @@ public class SemanticHighlightingManager implements IPropertyChangeListener, IHi
 	 * Install the semantic highlighting on the given source viewer
 	 * infrastructure. No reconciliation will be performed.
 	 */
-	public void install(StructuredTextSourceViewer sourceViewer, DefaultHighlightingManager colorManager,
+	public void install(StructuredTextViewer sourceViewer, DefaultHighlightingManager colorManager,
 			IPreferenceStore preferenceStore) {
 		install(null, sourceViewer, colorManager, preferenceStore);
 	}

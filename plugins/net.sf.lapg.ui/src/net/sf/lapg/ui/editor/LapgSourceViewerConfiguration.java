@@ -12,7 +12,8 @@
  */
 package net.sf.lapg.ui.editor;
 
-import net.sf.lapg.common.ui.editor.StructuredTextSourceViewerConfiguration;
+import net.sf.lapg.common.ui.editor.StructuredTextReconciler;
+import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import net.sf.lapg.common.ui.editor.colorer.CommentScanner;
 import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
@@ -21,9 +22,7 @@ import net.sf.lapg.ui.editor.colorer.LapgSourceScanner;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextHover;
-import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
@@ -32,30 +31,7 @@ import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 
-public final class LapgSourceViewerConfiguration extends StructuredTextSourceViewerConfiguration {
-
-	public static final class LapgPresentationReconciler extends PresentationReconciler {
-		/**
-		 * Last used document
-		 */
-		private IDocument fLastDocument;
-
-		/**
-		 * Constructs a "repair description" for the given damage and returns
-		 * this description as a text presentation.
-		 * <p>
-		 * NOTE: Should not be used if this reconciler is installed on a viewer.
-		 * </p>
-		 */
-		public TextPresentation createRepairDescription(IRegion damage, IDocument document) {
-			if (document != fLastDocument) {
-				setDocumentToDamagers(document);
-				setDocumentToRepairers(document);
-				fLastDocument = document;
-			}
-			return createPresentation(damage, document);
-		}
-	}
+public final class LapgSourceViewerConfiguration extends StructuredTextViewerConfiguration {
 
 	private final LapgSourceEditor fEditor;
 
@@ -68,14 +44,14 @@ public final class LapgSourceViewerConfiguration extends StructuredTextSourceVie
 	public IReconciler getReconciler(ISourceViewer sourceViewer) {
 		LapgReconcilingStrategy strategy = new LapgReconcilingStrategy(fEditor);
 
-		LapgReconciler reconciler = new LapgReconciler(fEditor, strategy, false);
+		StructuredTextReconciler reconciler = new StructuredTextReconciler(fEditor, strategy, false);
 		reconciler.setDelay(500);
 		return reconciler;
 	}
 
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler = new LapgPresentationReconciler();
+		PresentationReconciler reconciler = new StructuredTextPresentationReconciler();
 		reconciler.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
 
 		final DefaultHighlightingManager cm = fEditor.getHighlightingManager();

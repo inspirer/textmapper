@@ -3,54 +3,74 @@ package net.sf.lapg.common.ui.editor.colorer;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sf.lapg.common.ui.LapgCommonActivator;
+import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.StructuredTextEditor;
-
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import net.sf.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextInputListener;
-import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.source.ISourceViewer;
-
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
 
 /**
  * Semantic highlighting reconciler - Background thread implementation.
  */
-public class SemanticHighlightingReconciler implements ITextInputListener {
+public class SemanticHighlightingReconciler implements ITextInputListener, IReconcilingListener {
 
 	/**
 	 * Collects positions from the AST.
 	 */
 	public class PositionCollector {
 
-		/** The semantic token */
-		private final SemanticToken fToken = new SemanticToken();
+		private final ISemanticHighlighter fHighlighter;
 
-		protected boolean visitNode(ASTNode node) {
-			if ((node.getFlags() & ASTNode.MALFORMED) == ASTNode.MALFORMED) {
-				retainPositions(node.getStartPosition(), node.getLength());
-				return false;
+		private PositionCollector(ISemanticHighlighter highlighter) {
+			fHighlighter = highlighter;
+			fHighlighter.setCollector(this);
+		}
+
+		public boolean isEnabled(int highlighting) {
+			if (highlighting >= 0 && highlighting < fJobSemanticHighlightings.length) {
+				ColorDescriptor semanticHighlighting = fJobSemanticHighlightings[highlighting];
+				Highlighting hl = semanticHighlighting.getHighlighting();
+				return hl.isEnabled();
 			}
-			return true;
+			return false;
+		}
+
+		public boolean addPosition(int offset, int length, int highlighting) {
+			if (highlighting >= 0 && highlighting < fJobSemanticHighlightings.length) {
+				ColorDescriptor semanticHighlighting = fJobSemanticHighlightings[highlighting];
+				Highlighting hl = semanticHighlighting.getHighlighting();
+				if (hl.isEnabled()) {
+					if (offset > -1 && length > 0) {
+						addPosition(offset, length, hl);
+					}
+				}
+			}
+			return false;
 		}
 
 		/**
-		 * Add a position with the given range and highlighting iff it does not
+		 * Add a position with the given range and highlighting if it does not
 		 * exist already.
 		 */
-		public void addPosition(int offset, int length, Highlighting highlighting) {
+		private void addPosition(int offset, int length, Highlighting highlighting) {
 			boolean isExisting = false;
 			// TODO: use binary search
 			for (int i = 0, n = fRemovedPositions.size(); i < n; i++) {
-				HighlightedPosition position = (HighlightedPosition) fRemovedPositions.get(i);
+				HighlightedPosition position = fRemovedPositions.get(i);
 				if (position == null) {
 					continue;
 				}
@@ -63,7 +83,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 			}
 
 			if (!isExisting) {
-				Position position = fJobPresenter.createHighlightedPosition(offset, length, highlighting);
+				HighlightedPosition position = fJobPresenter.createHighlightedPosition(offset, length, highlighting);
 				fAddedPositions.add(position);
 			}
 		}
@@ -81,10 +101,14 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 				}
 			}
 		}
+
+		public void enumerate(ISourceStructure model) {
+			fHighlighter.highlight(model);
+		}
 	}
 
 	/** Position collector */
-	private final PositionCollector fCollector = new PositionCollector();
+	private PositionCollector fCollector;
 
 	/**
 	 * The StructuredText editor this semantic highlighting reconciler is
@@ -129,25 +153,12 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	 * {@link #reconciled(CompilationUnit, boolean, IProgressMonitor)}
 	 */
 	private ColorDescriptor[] fJobSemanticHighlightings;
-	/**
-	 * Highlightings - cache for background thread, only valid during
-	 * {@link #reconciled(CompilationUnit, boolean, IProgressMonitor)}
-	 */
-	private Highlighting[] fJobHighlightings;
-
-	/**
-	 * XXX Hack for performance reasons (should loop over
-	 * fJobSemanticHighlightings can call consumes(*))
-	 *
-	 * @since 3.5
-	 */
-	private Highlighting fJobDeprecatedMemberHighlighting;
 
 	public void aboutToBeReconciled() {
 		// Do nothing
 	}
 
-	public void reconciled(ISourceStructure model, boolean forced, IProgressMonitor progressMonitor) {
+	public void reconciled(ISourceStructure model, IProgressMonitor progressMonitor) {
 		// ensure at most one thread can be reconciling at any time
 		synchronized (fReconcileLock) {
 			if (fIsReconciling) {
@@ -158,32 +169,22 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 		}
 		fJobPresenter = fPresenter;
 		fJobSemanticHighlightings = fSemanticHighlightings;
-		fJobHighlightings = fHighlightings;
 
 		try {
-			if (fJobPresenter == null || fJobSemanticHighlightings == null || fJobHighlightings == null) {
+			if (fJobPresenter == null || fJobSemanticHighlightings == null) {
 				return;
 			}
 
 			fJobPresenter.setCanceled(progressMonitor.isCanceled());
 
-			if (ast == null || fJobPresenter.isCanceled()) {
+			if (model == null || fJobPresenter.isCanceled()) {
 				return;
 			}
 
 			startReconcilingPositions();
 
 			if (!fJobPresenter.isCanceled()) {
-				fJobDeprecatedMemberHighlighting = null;
-				for (int i = 0, n = fJobSemanticHighlightings.length; i < n; i++) {
-					SemanticHighlighting semanticHighlighting = fJobSemanticHighlightings[i];
-					if (fJobHighlightings[i].isEnabled()
-							&& semanticHighlighting instanceof DeprecatedMemberHighlighting) {
-						fJobDeprecatedMemberHighlighting = fJobHighlightings[i];
-						break;
-					}
-				}
-				reconcilePositions(subtrees);
+				reconcilePositions(model);
 			}
 
 			TextPresentation textPresentation = null;
@@ -199,8 +200,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 		} finally {
 			fJobPresenter = null;
 			fJobSemanticHighlightings = null;
-			fJobHighlightings = null;
-			fJobDeprecatedMemberHighlighting = null;
 			synchronized (fReconcileLock) {
 				fIsReconciling = false;
 			}
@@ -218,16 +217,15 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	/**
 	 * Reconcile positions based on the AST subtrees
 	 */
-	private void reconcilePositions(ASTNode[] subtrees) {
-		// FIXME: remove positions not covered by subtrees
-
-		for (int i = 0, n = subtrees.length; i < n; i++) {
-			subtrees[i].accept(fCollector);
+	private void reconcilePositions(ISourceStructure model) {
+		if (!model.hasAst() || fCollector == null) {
+			return;
 		}
+		fCollector.enumerate(model);
 		List<HighlightedPosition> oldPositions = fRemovedPositions;
 		List<HighlightedPosition> newPositions = new ArrayList<HighlightedPosition>(fNOfRemovedPositions);
 		for (int i = 0, n = oldPositions.size(); i < n; i++) {
-			Object current = oldPositions.get(i);
+			HighlightedPosition current = oldPositions.get(i);
 			if (current != null) {
 				newPositions.add(current);
 			}
@@ -281,20 +279,16 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 	 * Install this reconciler on the given editor, presenter and highlightings.
 	 */
 	public void install(StructuredTextEditor editor, ISourceViewer sourceViewer,
-			SemanticHighlightingPresenter presenter, SemanticHighlighting[] semanticHighlightings,
-			Highlighting[] highlightings) {
+			SemanticHighlightingPresenter presenter, ColorDescriptor[] semanticHighlightings) {
 		fPresenter = presenter;
 		fSemanticHighlightings = semanticHighlightings;
-		fHighlightings = highlightings;
 
 		fEditor = editor;
 		fSourceViewer = sourceViewer;
 
-		if (fEditor instanceof CompilationUnitEditor) {
-			((CompilationUnitEditor) fEditor).addReconcileListener(this);
-		} else if (fEditor == null) {
-			fSourceViewer.addTextInputListener(this);
-			scheduleJob();
+		if (fEditor != null) {
+			fCollector = new PositionCollector(editor.createSemanticHighlighter());
+			fEditor.addReconcileListener(this);
 		}
 	}
 
@@ -311,9 +305,9 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 			fEditor = null;
 		}
 
+		fCollector = null;
 		fSourceViewer = null;
 		fSemanticHighlightings = null;
-		fHighlightings = null;
 		fPresenter = null;
 	}
 
@@ -336,15 +330,15 @@ public class SemanticHighlightingReconciler implements ITextInputListener {
 						try {
 							oldJob.join();
 						} catch (InterruptedException e) {
-							StructuredTextPlugin.log(e);
+							LapgCommonActivator.log(e);
 							return Status.CANCEL_STATUS;
 						}
 					}
 					if (monitor.isCanceled()) {
 						return Status.CANCEL_STATUS;
 					}
-					CompilationUnit ast = SharedASTProvider.getAST(element, SharedASTProvider.WAIT_YES, monitor);
-					reconciled(ast, false, monitor);
+					ISourceStructure model = fEditor.getModel();
+					reconciled(model, monitor);
 					synchronized (fJobLock) {
 						// allow the job to be gc'ed
 						if (fJob == this) {
