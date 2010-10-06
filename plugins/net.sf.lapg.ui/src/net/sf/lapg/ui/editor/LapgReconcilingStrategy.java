@@ -52,7 +52,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 	}
 
 	@Override
-	protected ISourceStructure validate(final StructuredTextEditor editor, final IDocument doc, IProgressMonitor monitor) {
+	protected ISourceStructure validate(boolean first, StructuredTextEditor editor, IDocument doc, IProgressMonitor monitor) {
 		if (!checkEditor(editor)) {
 			return null;
 		}

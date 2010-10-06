@@ -1,6 +1,7 @@
 package net.sf.lapg.common.ui.editor;
 
 import net.sf.lapg.common.ui.LapgCommonActivator;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -47,7 +48,7 @@ public abstract class StructuredTextReconcilingStrategy implements IReconcilingS
 		ISourceStructure result = null;
 		try {
 			fEditor.aboutToBeReconciled();
-			result = validate(fEditor, fDocument, fMonitor);
+			result = validate(first, fEditor, fDocument, fMonitor);
 
 		} catch (Throwable ex) {
 			ex.printStackTrace();
@@ -57,5 +58,5 @@ public abstract class StructuredTextReconcilingStrategy implements IReconcilingS
 		}
 	}
 
-	protected abstract ISourceStructure validate(final StructuredTextEditor editor, final IDocument doc, IProgressMonitor monitor);
+	protected abstract ISourceStructure validate(boolean first, StructuredTextEditor editor, IDocument doc, IProgressMonitor monitor);
 }

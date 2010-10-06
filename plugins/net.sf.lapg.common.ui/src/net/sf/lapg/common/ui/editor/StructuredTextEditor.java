@@ -21,6 +21,7 @@ import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -125,10 +126,32 @@ public abstract class StructuredTextEditor extends TextEditor {
 		super.createPartControl(parent);
 	}
 
+	private final ListenerList fReconcilingListeners = new ListenerList(ListenerList.IDENTITY);
+
 	public void aboutToBeReconciled() {
+
+		// Notify listeners
+		Object[] listeners = fReconcilingListeners.getListeners();
+		for (int i = 0, length = listeners.length; i < length; ++i) {
+			((IReconcilingListener) listeners[i]).aboutToBeReconciled();
+		}
 	}
 
-	public void reconciled(ISourceStructure result, IProgressMonitor progressMonitor) {
+	public void reconciled(ISourceStructure model, IProgressMonitor progressMonitor) {
+
+		// Notify listeners
+		Object[] listeners = fReconcilingListeners.getListeners();
+		for (int i = 0, length = listeners.length; i < length; ++i) {
+			((IReconcilingListener) listeners[i]).reconciled(model, progressMonitor);
+		}
+	}
+
+	public final void addReconcileListener(IReconcilingListener listener) {
+		fReconcilingListeners.add(listener);
+	}
+
+	public final void removeReconcileListener(IReconcilingListener listener) {
+		fReconcilingListeners.remove(listener);
 	}
 
 	public DefaultHighlightingManager getHighlightingManager() {
@@ -147,12 +170,6 @@ public abstract class StructuredTextEditor extends TextEditor {
 
 	public StructuredTextViewerConfiguration createSourceViewerConfiguration() {
 		return new StructuredTextViewerConfiguration(getPreferenceStore());
-	}
-
-	public final void addReconcileListener(IReconcilingListener listener) {
-	}
-
-	public final void removeReconcileListener(IReconcilingListener listener) {
 	}
 
 	public abstract ISemanticHighlighter createSemanticHighlighter();
