@@ -1,0 +1,4 @@
+*.xml text
+*.iml eol=crlf
+*.s eol=lf
+*.ltp eol=lf

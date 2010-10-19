@@ -1,7 +1,0 @@
-syntax: regexp
-^lapg/idea/.idea/workspace.xml
-^lapg/idea/.idea/dictionaries/
-^lapg/net\.sf\.lapg(\.\w+)*/bin/
-^lapg/build/
-^lapg/libs/lapg-1*
-.DS_Store

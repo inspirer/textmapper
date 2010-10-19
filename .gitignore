@@ -1,3 +1,6 @@
 .DS_Store
 /lapg/idea/.idea/workspace.xml
-classes
+/lapg/idea/.idea/dictionaries/
+/lapg/build/
+/lapg/libs/lapg-1*
+bin
