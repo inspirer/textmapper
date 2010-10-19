@@ -1,7 +1,7 @@
 syntax: regexp
-^java/idea/.idea/workspace.xml
-^java/idea/.idea/dictionaries/
-^java/net\.sf\.lapg(\.\w+)*/bin/
-^java/build/
-^java/libs/lapg-1*
+^lapg/idea/.idea/workspace.xml
+^lapg/idea/.idea/dictionaries/
+^lapg/net\.sf\.lapg(\.\w+)*/bin/
+^lapg/build/
+^lapg/libs/lapg-1*
 .DS_Store
