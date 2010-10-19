@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Generate Java AST" type="Application" factoryName="Application">
+  <configuration default="false" name="Generate Options AST" type="Application" factoryName="Application">
     <extension name="snapshooter" />
     <option name="MAIN_CLASS_NAME" value="net.sf.lapg.Lapg" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-x -i ../templates" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/../net.sf.lapg/src/net/sf/lapg/gen/java" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/net.sf.lapg/src/net/sf/lapg/gen/options" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
@@ -13,7 +13,7 @@
     <module name="net.sf.lapg" />
     <envs />
     <RunnerSettings RunnerId="Debug">
-      <option name="DEBUG_PORT" value="65396" />
+      <option name="DEBUG_PORT" value="51499" />
       <option name="TRANSPORT" value="0" />
       <option name="LOCAL" value="true" />
     </RunnerSettings>
