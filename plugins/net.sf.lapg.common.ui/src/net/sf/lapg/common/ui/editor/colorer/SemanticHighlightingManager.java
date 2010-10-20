@@ -185,6 +185,9 @@ public class SemanticHighlightingManager implements IPropertyChangeListener, IHi
 		fSourceViewer = sourceViewer;
 		fHighlightingManager = highlightingManager;
 		fPreferenceStore = preferenceStore;
+
+		fSemanticHighlightings = highlightingManager.getSemanticHighlightings();
+
 		if (fEditor != null) {
 			fConfiguration = editor.createSourceViewerConfiguration();
 			fPresentationReconciler = (StructuredTextPresentationReconciler) fConfiguration

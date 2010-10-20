@@ -439,4 +439,8 @@ public class DefaultHighlightingManager {
 		}
 		return false;
 	}
+
+	public ColorDescriptor[] getSemanticHighlightings() {
+		return new ColorDescriptor[0];
+	}
 }
