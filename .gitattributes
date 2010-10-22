@@ -1,4 +1,11 @@
 *.xml text
+*.java text
+*.cpp text
+*.sh eol=lf
+*.dsp text
+*.dsw text
+*.txt text
+.project text
 *.iml eol=crlf
 *.s eol=lf
 *.ltp eol=lf
