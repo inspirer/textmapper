@@ -187,7 +187,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 
 			fJobPresenter.setCanceled(progressMonitor.isCanceled());
 
-			if (model == null || fJobPresenter.isCanceled()) {
+			if (model == null || !model.hasAst() || fJobPresenter.isCanceled()) {
 				return;
 			}
 
