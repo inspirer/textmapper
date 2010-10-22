@@ -1,6 +1,6 @@
 /**
  * This file is part of Lapg.UI project.
- * 
+ *
  * Copyright (c) 2010 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -21,6 +21,7 @@ import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
+import net.sf.lapg.ui.editor.colorer.LapgSemanticHighlighter;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -35,6 +36,7 @@ import org.eclipse.ui.part.FileEditorInput;
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener {
 
 	public LapgSourceEditor() {
+		super();
 		setRulerContextMenuId("#LapgSourceEditorContext"); //$NON-NLS-1$
 		setEditorContextMenuId("#LapgSourceEditorContext"); //$NON-NLS-1$
 	}
@@ -100,13 +102,7 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 
 	@Override
 	public ISemanticHighlighter createSemanticHighlighter() {
-		return null;
-	}
-
-
-	@Override
-	public ISourceStructure getModel() {
-		return null;
+		return new LapgSemanticHighlighter();
 	}
 
 	@Override

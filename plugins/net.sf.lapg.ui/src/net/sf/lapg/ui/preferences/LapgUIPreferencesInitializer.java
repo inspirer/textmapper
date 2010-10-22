@@ -18,12 +18,15 @@ import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.editors.text.EditorsUI;
 
 public class LapgUIPreferencesInitializer extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = LapgUIActivator.getDefault().getPreferenceStore();
+
+		EditorsUI.useAnnotationsPreferencePage(store);
 
 		DefaultHighlightingManager manager = new LapgHighlightingManager(store, null);
 		manager.initializeDefaults();

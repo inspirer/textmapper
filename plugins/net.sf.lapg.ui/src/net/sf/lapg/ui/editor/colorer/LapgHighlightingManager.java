@@ -17,7 +17,6 @@ import java.util.List;
 import net.sf.lapg.common.ui.editor.colorer.ColorDefinition;
 import net.sf.lapg.common.ui.editor.colorer.DefaultColorManager;
 import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.RGB;
 
@@ -32,5 +31,13 @@ public class LapgHighlightingManager extends DefaultHighlightingManager {
 		super.initColors(colors);
 		colors.add(new ColorDefinition(ILapgColors.COLOR_REGEXP, "Regular Expressions", "main", false, new RGB(0, 69, 110), false, false, false, false));
 		colors.add(new ColorDefinition(ILapgColors.COLOR_ACTIONS, "Semantic Actions", "main", false, new RGB(16, 53, 62), false, false, false, false));
+		colors.add(new ColorDefinition(ILapgColors.COLOR_REFERENCE, "References", "main", true, new RGB(0, 0, 0), false, false, false, false));
+		colors.add(new ColorDefinition(ILapgColors.COLOR_ELEMENTID, "Element Identifiers", "main", true, new RGB(81, 3, 89), false, false, false, false));
+	}
+
+	@Override
+	public ColorDescriptor[] getSemanticHighlightings() {
+		return new ColorDescriptor[] { getColor(ILapgColors.COLOR_ELEMENTID),
+				getColor(ILapgColors.COLOR_REFERENCE), };
 	}
 }

@@ -20,17 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.IAnnotationModel;
-import org.eclipse.jface.text.source.IAnnotationModelExtension;
-
 import net.sf.lapg.api.Grammar;
 import net.sf.lapg.common.ui.editor.ISourceStructure;
+import net.sf.lapg.common.ui.editor.IStructuredDocumentProvider;
 import net.sf.lapg.common.ui.editor.StructuredTextEditor;
 import net.sf.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
 import net.sf.lapg.gen.LapgGenerator;
@@ -39,6 +31,16 @@ import net.sf.lapg.parser.LapgTree;
 import net.sf.lapg.parser.LapgTree.LapgProblem;
 import net.sf.lapg.parser.LapgTree.TextSource;
 import net.sf.lapg.parser.ast.AstRoot;
+import net.sf.lapg.ui.structure.LapgSourceStructure;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.Annotation;
+import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModelExtension;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
@@ -52,7 +54,8 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 	}
 
 	@Override
-	protected ISourceStructure validate(boolean first, StructuredTextEditor editor, IDocument doc, IProgressMonitor monitor) {
+	protected ISourceStructure validate(boolean first, StructuredTextEditor seditor, IDocument doc, IProgressMonitor monitor) {
+		LapgSourceEditor editor = (LapgSourceEditor) seditor;
 		if (!checkEditor(editor)) {
 			return null;
 		}
@@ -60,8 +63,10 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 			monitor = new NullProgressMonitor();
 		}
 
-		IFile mainResource = ((LapgSourceEditor)editor).getResource();
+		IFile mainResource = editor.getResource();
 		Set<String> sources = new HashSet<String>();
+
+		IStructuredDocumentProvider documentProvider = (IStructuredDocumentProvider) editor.getDocumentProvider();
 		String content = doc.get();
 
 		TextSource input = new TextSource(mainResource.getName(), content.toCharArray(), 1);
@@ -69,15 +74,18 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		sources.add(LapgTree.PARSER_SOURCE);
 
 		List<LapgProblem> problems = ast.getErrors();
-		if(problems.size() == 0) {
+		Grammar grammar = null;
+		if (problems.size() == 0) {
 			LapgResolver resolver = new LapgResolver(ast, LapgGenerator.getDefaultOptions());
-			Grammar g = resolver.resolve();
+			grammar = resolver.resolve();
 			sources.add(LapgResolver.RESOLVER_SOURCE);
 		}
+		LapgSourceStructure model = new LapgSourceStructure(grammar, ast, mainResource);
+		documentProvider.setStructure(model);
 
-		//System.out.println("reconciled, " + problems.size() + " errors");
-		reportProblems(problems, ((LapgSourceEditor) editor).getAnnotationModel(), sources);
-		return null;
+		// System.out.println("reconciled, " + problems.size() + " errors");
+		reportProblems(problems, editor.getAnnotationModel(), sources);
+		return model;
 	}
 
 	private void reportProblems(List<LapgProblem> compilationResult, IAnnotationModel model, Set<String> sources) {

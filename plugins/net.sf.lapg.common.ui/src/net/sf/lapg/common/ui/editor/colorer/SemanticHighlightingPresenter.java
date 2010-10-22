@@ -520,6 +520,12 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 		int i = computeIndexAtOffset(fPositions, region.getOffset()), n = computeIndexAtOffset(fPositions, region
 				.getOffset()
 				+ region.getLength());
+		if (i > 0) {
+			HighlightedPosition position = (HighlightedPosition) fPositions.get(i - 1);
+			if (position.getOffset() + position.getLength() > region.getOffset()) {
+				i--;
+			}
+		}
 		if (n - i > 2) {
 			List ranges = new ArrayList(n - i);
 			for (; i < n; i++) {

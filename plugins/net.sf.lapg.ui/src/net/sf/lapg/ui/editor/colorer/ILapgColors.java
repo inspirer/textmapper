@@ -20,4 +20,7 @@ public interface ILapgColors extends ICommonColors {
 
 	String COLOR_REGEXP = "color_regexp"; //$NON-NLS-1$
 	String COLOR_ACTIONS = "color_actions"; //$NON-NLS-1$
+
+	String COLOR_REFERENCE = "color_reference"; //$NON-NLS-1$
+	String COLOR_ELEMENTID = "color_elementid"; //$NON-NLS-1$
 }

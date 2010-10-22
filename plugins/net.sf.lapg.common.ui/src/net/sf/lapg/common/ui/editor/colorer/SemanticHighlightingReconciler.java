@@ -84,7 +84,15 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 
 			if (!isExisting) {
 				HighlightedPosition position = fJobPresenter.createHighlightedPosition(offset, length, highlighting);
-				fAddedPositions.add(position);
+				if (fAddedPositions.size() == 0 || fAddedPositions.get(fAddedPositions.size() - 1).offset < offset) {
+					fAddedPositions.add(position);
+				} else {
+					int insertIndex = fAddedPositions.size();
+					while (insertIndex > 0 && fAddedPositions.get(insertIndex - 1).getOffset() > offset) {
+						insertIndex--;
+					}
+					fAddedPositions.add(insertIndex, position);
+				}
 			}
 		}
 
@@ -154,10 +162,12 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 	 */
 	private ColorDescriptor[] fJobSemanticHighlightings;
 
+	@Override
 	public void aboutToBeReconciled() {
 		// Do nothing
 	}
 
+	@Override
 	public void reconciled(ISourceStructure model, IProgressMonitor progressMonitor) {
 		// ensure at most one thread can be reconciling at any time
 		synchronized (fReconcileLock) {
@@ -337,7 +347,11 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 					if (monitor.isCanceled()) {
 						return Status.CANCEL_STATUS;
 					}
-					ISourceStructure model = fEditor.getModel();
+					StructuredTextEditor editor = fEditor;
+					if (editor == null) {
+						return Status.CANCEL_STATUS;
+					}
+					ISourceStructure model = editor.getModel(5000);
 					reconciled(model, monitor);
 					synchronized (fJobLock) {
 						// allow the job to be gc'ed
@@ -354,6 +368,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 		}
 	}
 
+	@Override
 	public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
 		synchronized (fJobLock) {
 			if (fJob != null) {
@@ -363,6 +378,7 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 		}
 	}
 
+	@Override
 	public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
 		if (newInput != null) {
 			scheduleJob();
