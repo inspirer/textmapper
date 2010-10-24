@@ -25,7 +25,7 @@
 		<jar destfile="build/lapg.jar">
 			<fileset dir="build/bin"/>
 			<manifest>
-				<attribute name="Main-Class" value="org.textway.lapg.Lapg"/>
+				<attribute name="Main-Class" value="net.sf.lapg.Lapg"/>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
@@ -104,14 +104,14 @@
 	<target name="plugin">
 		<mkdir dir="build/lapg/classes"/>
 		<copy includeemptydirs="false" todir="build/lapg">
-			<fileset dir="org.textway.lapg.idea" includes="lib/**"/>
+			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="lib/**"/>
 		</copy>
 		<copy includeemptydirs="false" todir="build/lapg/classes">
-			<fileset dir="org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="org.textway.lapg.idea/resources"/>
+			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="../lapg-idea/org.textway.lapg.idea/resources"/>
 		</copy>
 		<javac destdir="build/lapg/classes" source="${source}" target="${target}">
-			<src path="org.textway.lapg.idea/src"/>
+			<src path="../lapg-idea/org.textway.lapg.idea/src"/>
 			<classpath>
 				<fileset dir="build/lapg/lib" includes="*.jar"/>
 				<fileset dir="${env.IDEA_PATH}/lib" includes="*.jar"/>
