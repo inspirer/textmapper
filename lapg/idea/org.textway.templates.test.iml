@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module" module-name="net.sf.lapg.templates" />
+    <orderEntry type="module" module-name="org.textway.templates" />
     <orderEntry type="module-library">
       <library name="junit4">
         <CLASSES>

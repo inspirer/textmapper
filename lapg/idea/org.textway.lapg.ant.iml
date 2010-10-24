@@ -8,7 +8,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="module" module-name="net.sf.lapg" />
+    <orderEntry type="module" module-name="org.textway.lapg" />
     <orderEntry type="library" name="ANT" level="project" />
   </component>
 </module>
