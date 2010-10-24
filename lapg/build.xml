@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="build" name="net.sf.lapg">
+<project basedir="." default="build" name="org.textway.lapg">
 	<property environment="env"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
@@ -14,18 +14,18 @@
 	<target name="build">
 		<mkdir dir="build/bin"/>
 		<copy includeemptydirs="false" todir="build/bin">
-			<fileset dir="net.sf.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
-			<fileset dir="net.sf.lapg.templates/src" excludes="**/*.launch, **/*.java, **/syntax"/>
+			<fileset dir="org.textway.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
+			<fileset dir="org.textway.templates/src" excludes="**/*.launch, **/*.java, **/syntax"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}">
-			<src path="net.sf.lapg/src"/>
-			<src path="net.sf.lapg.ant/src"/>
-			<src path="net.sf.lapg.templates/src"/>
+			<src path="org.textway.lapg/src"/>
+			<src path="org.textway.lapg.ant/src"/>
+			<src path="org.textway.templates/src"/>
 		</javac>
 		<jar destfile="build/lapg.jar">
 			<fileset dir="build/bin"/>
 			<manifest>
-				<attribute name="Main-Class" value="net.sf.lapg.Lapg"/>
+				<attribute name="Main-Class" value="org.textway.lapg.Lapg"/>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
@@ -38,8 +38,8 @@
 	<target name="buildsource">
 		<mkdir dir="build/src"/>
 		<copy includeemptydirs="false" todir="build/src">
-			<fileset dir="net.sf.lapg/src" includes="**/*.java, **/syntax, **/*.ltp"/>
-			<fileset dir="net.sf.lapg.templates/src" includes="**/*.java, **/syntax, **/*.ltp"/>
+			<fileset dir="org.textway.lapg/src" includes="**/*.java, **/syntax, **/*.ltp"/>
+			<fileset dir="org.textway.templates/src" includes="**/*.java, **/syntax, **/*.ltp"/>
 		</copy>
 		<jar destfile="build/lapg-src.jar">
 			<fileset dir="build/src"/>
@@ -56,16 +56,16 @@
 	<target name="test" depends="build">
 		<mkdir dir="build/bintests"/>
 		<copy includeemptydirs="false" todir="build/bintests">
-			<fileset dir="net.sf.lapg.test/src" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="net.sf.lapg.templates.test/src" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="org.textway.lapg.test/src" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="org.textway.templates.test/src" excludes="**/*.launch, **/*.java"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}">
 			<classpath>
 				<pathelement location="build/lapg.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
-			<src path="net.sf.lapg.test/src"/>
-			<src path="net.sf.lapg.templates.test/src"/>
+			<src path="org.textway.lapg.test/src"/>
+			<src path="org.textway.templates.test/src"/>
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
 			<test name="net.sf.lapg.test.TestRunner" />
@@ -86,32 +86,32 @@
 
 	<!-- TODO Lapg task
 	<target name="syntax">
-		<taskdef name="lapg" classname="net.sf.lapg.ant.Lapg" classpath="libs/lapg-1.4.0.jar"/>
+		<taskdef name="lapg" classname="org.textway.lapg.ant.Lapg" classpath="libs/lapg-1.4.0.jar"/>
 		<lapg source="syntax"/>
 	</target> -->
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="net.sf.lapg/src/net/sf/lapg/parser"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/net/sf/lapg/parser"/>
 		<echo message="Lapg options parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="net.sf.lapg/src/net/sf/lapg/gen/options"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/net/sf/lapg/gen/options"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="net.sf.lapg.templates/src/net/sf/lapg/templates/ast"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/net/sf/lapg/templates/ast"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="net.sf.lapg.templates/src/net/sf/lapg/templates/model/xml"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/net/sf/lapg/templates/model/xml"/>
 	</target>
 
 	<target name="plugin">
 		<mkdir dir="build/lapg/classes"/>
 		<copy includeemptydirs="false" todir="build/lapg">
-			<fileset dir="net.sf.lapg.idea" includes="lib/**"/>
+			<fileset dir="org.textway.lapg.idea" includes="lib/**"/>
 		</copy>
 		<copy includeemptydirs="false" todir="build/lapg/classes">
-			<fileset dir="net.sf.lapg.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="net.sf.lapg.idea/resources"/>
+			<fileset dir="org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="org.textway.lapg.idea/resources"/>
 		</copy>
 		<javac destdir="build/lapg/classes" source="${source}" target="${target}">
-			<src path="net.sf.lapg.idea/src"/>
+			<src path="org.textway.lapg.idea/src"/>
 			<classpath>
 				<fileset dir="build/lapg/lib" includes="*.jar"/>
 				<fileset dir="${env.IDEA_PATH}/lib" includes="*.jar"/>
