@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../net.sf.lapg.test/bin" />
+    <output url="file://$MODULE_DIR$/../org.textway.lapg.test/bin" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../net.sf.lapg.test">
-      <sourceFolder url="file://$MODULE_DIR$/../net.sf.lapg.test/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../org.textway.lapg.test">
+      <sourceFolder url="file://$MODULE_DIR$/../org.textway.lapg.test/src" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
