@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Lapg
-Bundle-SymbolicName: net.sf.lapg
+Bundle-SymbolicName: org.textway.lapg
 Bundle-Version: 1.0.0.qualifier
 Export-Package: net.sf.lapg,
  net.sf.lapg.api,
@@ -15,4 +15,4 @@ Export-Package: net.sf.lapg,
  net.sf.lapg.lex,
  net.sf.lapg.parser,
  net.sf.lapg.parser.ast
-Require-Bundle: net.sf.lapg.templates
+Require-Bundle: org.textway.templates

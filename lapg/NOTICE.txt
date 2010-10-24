@@ -5,7 +5,7 @@
    =========================================================================
 
    Lexer and Parser Generator
-   http://sourceforge.net/projects/lapg/
+   http://textway.org/
    Copyright 2002-2010 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com

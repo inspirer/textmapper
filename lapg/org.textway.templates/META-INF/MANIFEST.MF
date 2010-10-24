@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Lapg Templates
-Bundle-SymbolicName: net.sf.lapg.templates
+Bundle-SymbolicName: org.textway.templates
 Bundle-Version: 1.0.0.qualifier
 Export-Package: net.sf.lapg.templates.api,
  net.sf.lapg.templates.api.impl,
