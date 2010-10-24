@@ -6,6 +6,6 @@
 *.dsw text
 *.txt text
 .project text
-*.iml eol=crlf
+*.iml text
 *.s eol=lf
 *.ltp eol=lf
