@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JDT 3.5"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/net.sf.lapg"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/net.sf.lapg.templates"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.textway.lapg"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.textway.templates"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
