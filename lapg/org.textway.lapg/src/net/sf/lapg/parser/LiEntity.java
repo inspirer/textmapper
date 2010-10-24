@@ -17,7 +17,7 @@ package net.sf.lapg.parser;
 
 import net.sf.lapg.api.SourceElement;
 import net.sf.lapg.parser.ast.IAstNode;
-import net.sf.lapg.templates.api.ILocatedEntity;
+import org.textway.templates.api.ILocatedEntity;
 
 public class LiEntity implements SourceElement, ILocatedEntity {
 

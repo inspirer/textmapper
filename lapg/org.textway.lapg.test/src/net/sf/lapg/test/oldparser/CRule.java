@@ -20,8 +20,8 @@ import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.templates.api.ILocatedEntity;
-import net.sf.lapg.templates.api.INamedEntity;
+import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.api.INamedEntity;
 
 public class CRule implements ILocatedEntity, INamedEntity, Rule {
 

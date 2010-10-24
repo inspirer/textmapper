@@ -28,12 +28,12 @@ import net.sf.lapg.api.Grammar;
 import net.sf.lapg.api.Rule;
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.EvaluationException;
-import net.sf.lapg.templates.api.IBundleEntity;
-import net.sf.lapg.templates.api.INavigationStrategy;
-import net.sf.lapg.templates.api.ITemplate;
-import net.sf.lapg.templates.api.impl.DefaultNavigationFactory;
+import org.textway.templates.api.EvaluationContext;
+import org.textway.templates.api.EvaluationException;
+import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.api.INavigationStrategy;
+import org.textway.templates.api.ITemplate;
+import org.textway.templates.api.impl.DefaultNavigationFactory;
 
 public class GrammarNavigationFactory extends DefaultNavigationFactory {
 

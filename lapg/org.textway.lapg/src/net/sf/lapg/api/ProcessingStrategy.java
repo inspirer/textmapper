@@ -15,7 +15,7 @@
  */
 package net.sf.lapg.api;
 
-import net.sf.lapg.templates.api.IBundleLoader;
+import org.textway.templates.api.IBundleLoader;
 
 public interface ProcessingStrategy {
 

@@ -16,7 +16,7 @@
 package net.sf.lapg.gen;
 
 import net.sf.lapg.common.JavaArrayArchiver;
-import net.sf.lapg.templates.api.impl.DefaultStaticMethods;
+import org.textway.templates.api.impl.DefaultStaticMethods;
 
 public class TemplateStaticMethods extends DefaultStaticMethods {
 

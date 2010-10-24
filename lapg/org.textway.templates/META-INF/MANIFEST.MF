@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Lapg Templates
 Bundle-SymbolicName: org.textway.templates
 Bundle-Version: 1.0.0.qualifier
-Export-Package: net.sf.lapg.templates.api,
- net.sf.lapg.templates.api.impl,
- net.sf.lapg.templates.ast,
- net.sf.lapg.templates.model.xml
+Export-Package: org.textway.templates.api,
+ org.textway.templates.api.impl,
+ org.textway.templates.ast,
+ org.textway.templates.model.xml

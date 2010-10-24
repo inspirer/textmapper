@@ -16,7 +16,7 @@
 package net.sf.lapg.test.oldparser;
 
 import net.sf.lapg.api.Symbol;
-import net.sf.lapg.templates.api.ILocatedEntity;
+import org.textway.templates.api.ILocatedEntity;
 import net.sf.lapg.test.oldparser.LapgParser.ParseException;
 
 public class CSymbol implements Symbol, ILocatedEntity {

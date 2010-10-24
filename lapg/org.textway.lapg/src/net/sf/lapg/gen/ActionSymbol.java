@@ -17,10 +17,10 @@ package net.sf.lapg.gen;
 
 import net.sf.lapg.api.Symbol;
 import net.sf.lapg.api.SymbolRef;
-import net.sf.lapg.templates.api.EvaluationContext;
-import net.sf.lapg.templates.api.IBundleEntity;
-import net.sf.lapg.templates.api.IEvaluationStrategy;
-import net.sf.lapg.templates.api.ITemplate;
+import org.textway.templates.api.EvaluationContext;
+import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.ITemplate;
 
 public class ActionSymbol {
 

@@ -17,7 +17,7 @@ package net.sf.lapg.test.oldparser;
 
 import net.sf.lapg.api.Action;
 import net.sf.lapg.api.Lexem;
-import net.sf.lapg.templates.api.ILocatedEntity;
+import org.textway.templates.api.ILocatedEntity;
 
 public class CLexem implements ILocatedEntity, Lexem {
 
