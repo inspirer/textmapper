@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Lapg tests" type="JUnit" factoryName="JUnit">
     <extension name="snapshooter" />
-    <module name="net.sf.lapg.test" />
+    <module name="org.textway.lapg.test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="PACKAGE_NAME" value="net.sf.lapg.test" />
