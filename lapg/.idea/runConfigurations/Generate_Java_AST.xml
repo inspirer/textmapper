@@ -4,7 +4,7 @@
     <option name="MAIN_CLASS_NAME" value="net.sf.lapg.Lapg" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-x -i ../templates" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/net.sf.lapg/src/net/sf/lapg/gen/java" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/org.textway.lapg/src/net/sf/lapg/gen/java" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
