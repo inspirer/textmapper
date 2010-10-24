@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class TemplateConstructionsTest extends TemplateTestCase {
 
-	private static final String TEMPLATES_LOCATION = "net/sf/lapg/templates/test/ltp";
+	private static final String TEMPLATES_LOCATION = "org/textway/templates/test/ltp";
 
 	private static final String TEMPLATES_CHARSET = "utf8";
 

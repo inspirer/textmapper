@@ -31,7 +31,7 @@ public class XmlTest extends TemplateTestCase{
 		XmlNode n = XmlModel.load(" <r><user name='jone'/>go<user name='go'/></r> ");
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new XmlNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/templates/test/ltp", "utf8")), collector);
+		TemplatesFacade env = new TemplatesFacade(new XmlNavigationFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), "org/textway/templates/test/ltp", "utf8")), collector);
 
 		// test 1
 		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null, null);

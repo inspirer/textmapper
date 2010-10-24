@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.text.MessageFormat;
 import org.textway.templates.model.xml.XmlLexer.ErrorReporter;
 import org.textway.templates.model.xml.XmlParser.ParseException;
 

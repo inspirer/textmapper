@@ -69,7 +69,7 @@
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
 			<test name="net.sf.lapg.test.TestRunner" />
-			<test name="net.sf.lapg.templates.test.TestRunner" />
+			<test name="org.textway.templates.test.TestRunner" />
 			<formatter type="brief" usefile="false" />
 			<classpath>
 				<pathelement location="build/bintests"/>
@@ -96,9 +96,9 @@
 		<echo message="Lapg options parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/net/sf/lapg/gen/options"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/net/sf/lapg/templates/ast"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/net/sf/lapg/templates/model/xml"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/model/xml"/>
 	</target>
 
 	<target name="plugin">
