@@ -22,8 +22,8 @@ import junit.framework.TestCase;
 
 public abstract class LapgTestCase extends TestCase {
 
-	protected static final String TESTCONTAINER = "net/sf/lapg/test/cases/input";
-	protected static final String RESULTCONTAINER = "net/sf/lapg/test/cases/expected";
+	protected static final String TESTCONTAINER = "org/textway/lapg/test/cases/input";
+	protected static final String RESULTCONTAINER = "org/textway/lapg/test/cases/expected";
 
 	protected InputStream openStream(String name, String root) {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(root + "/" + name);

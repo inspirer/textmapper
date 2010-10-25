@@ -159,7 +159,7 @@ public final class LapgGenerator {
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "net/sf/lapg/gen/templates", "utf8"));
+			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
 		}
 		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, loaders.toArray(new IBundleLoader[loaders.size()]));
 		return registry;
