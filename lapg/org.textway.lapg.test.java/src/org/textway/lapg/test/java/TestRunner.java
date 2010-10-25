@@ -1,6 +1,6 @@
-package net.sf.lapg.test.java;
+package org.textway.lapg.test.java;
 
-import net.sf.lapg.test.java.cases.JavaGen;
+import org.textway.lapg.test.java.cases.JavaGen;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

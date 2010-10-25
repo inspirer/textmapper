@@ -1,4 +1,4 @@
-package net.sf.lapg.test.java;
+package org.textway.lapg.test.java;
 
 import java.io.File;
 import java.util.ArrayList;
