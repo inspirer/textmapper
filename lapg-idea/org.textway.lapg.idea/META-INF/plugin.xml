@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 <idea-plugin version="2">
-	<id>net.sf.lapg.idea</id>
+	<id>org.textway.lapg.idea</id>
 	<name>Lapg support</name>
 	<category>Custom Languages</category>
 	<version>0.9.0</version>
@@ -35,7 +35,7 @@
 
 	<application-components>
 		<component>
-			<implementation-class>net.sf.lapg.idea.LapgLoader</implementation-class>
+			<implementation-class>org.textway.lapg.idea.LapgLoader</implementation-class>
 		</component>
 	</application-components>
 
@@ -48,15 +48,15 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<fileTypeFactory implementation="net.sf.lapg.idea.file.LapgFileTypeFactory"/>
+		<fileTypeFactory implementation="org.textway.lapg.idea.file.LapgFileTypeFactory"/>
 
 		<syntaxHighlighter
 				key="Lapg Syntax"
-				implementationClass="net.sf.lapg.idea.highlighter.LapgSyntaxHighlighter"/>
+				implementationClass="org.textway.lapg.idea.highlighter.LapgSyntaxHighlighter"/>
 
 		<lang.parserDefinition
 				language="Lapg Syntax"
-				implementationClass="net.sf.lapg.idea.parser.LapgParserDefinition"/>
+				implementationClass="org.textway.lapg.idea.parser.LapgParserDefinition"/>
 
 	</extensions>
 </idea-plugin>

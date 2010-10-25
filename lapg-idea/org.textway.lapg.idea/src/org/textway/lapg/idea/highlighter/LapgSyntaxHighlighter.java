@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.highlighter;
+package org.textway.lapg.idea.highlighter;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.HighlighterColors;
@@ -21,8 +21,8 @@ import com.intellij.openapi.editor.SyntaxHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
-import net.sf.lapg.idea.lexer.LapgLexerAdapter;
-import net.sf.lapg.idea.lexer.LapgTokenTypes;
+import org.textway.lapg.idea.lexer.LapgLexerAdapter;
+import org.textway.lapg.idea.lexer.LapgTokenTypes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

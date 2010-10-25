@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.file;
+package org.textway.lapg.idea.file;
 
 import com.intellij.openapi.fileTypes.FileTypeConsumer;
 import com.intellij.openapi.fileTypes.FileTypeFactory;
-import net.sf.lapg.idea.file.LapgFileType;
 import org.jetbrains.annotations.NotNull;
 
 public class LapgFileTypeFactory extends FileTypeFactory {

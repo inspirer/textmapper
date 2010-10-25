@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea;
+package org.textway.lapg.idea;
 
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.project.Project;

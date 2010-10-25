@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.file;
+package org.textway.lapg.idea.file;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.IconLoader;
-import net.sf.lapg.idea.LapgLanguage;
+import org.textway.lapg.idea.LapgLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.parser;
+package org.textway.lapg.idea.parser;
 
 import com.intellij.lang.ASTFactory;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import net.sf.lapg.idea.file.LapgFileType;
+import org.textway.lapg.idea.file.LapgFileType;
 
 public interface LapgElementTypes {
 	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE) {

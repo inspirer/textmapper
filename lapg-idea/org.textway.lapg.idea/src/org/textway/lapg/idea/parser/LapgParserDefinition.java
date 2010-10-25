@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.parser;
+package org.textway.lapg.idea.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -27,7 +27,7 @@ import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.psi.util.PsiUtilBase;
-import net.sf.lapg.idea.lexer.LapgLexerAdapter;
+import org.textway.lapg.idea.lexer.LapgLexerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 public class LapgParserDefinition implements ParserDefinition {

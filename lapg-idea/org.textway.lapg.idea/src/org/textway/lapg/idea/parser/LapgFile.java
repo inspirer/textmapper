@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sf.lapg.idea.lexer;
+package org.textway.lapg.idea.parser;
 
-import com.intellij.psi.tree.IElementType;
-import net.sf.lapg.idea.file.LapgFileType;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElementVisitor;
+import com.intellij.psi.impl.source.PsiFileImpl;
+import org.textway.lapg.idea.file.LapgFileType;
 import org.jetbrains.annotations.NotNull;
 
-public class LapgElementType extends IElementType {
-	public LapgElementType(@NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
+public class LapgFile extends PsiFileImpl {
+	protected LapgFile(FileViewProvider viewProvider) {
+		super(LapgElementTypes.FILE, LapgElementTypes.FILE, viewProvider);
 	}
 
-	@Override
+	@NotNull
+	public FileType getFileType() {
+		return LapgFileType.LAPG_FILE_TYPE;
+	}
+
+	public void accept(@NotNull PsiElementVisitor visitor) {
+		visitor.visitFile(this);
+	}
+
 	public String toString() {
-		return "[lapg]" + super.toString();
+		return "LapgFile(syntax):" + getName();
 	}
 }
