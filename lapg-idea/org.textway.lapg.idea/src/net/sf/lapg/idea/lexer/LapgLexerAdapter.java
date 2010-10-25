@@ -17,9 +17,9 @@ package net.sf.lapg.idea.lexer;
 
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.tree.IElementType;
-import net.sf.lapg.parser.LapgLexer;
-import net.sf.lapg.parser.LapgLexer.LapgSymbol;
-import net.sf.lapg.parser.LapgLexer.Lexems;
+import org.textway.lapg.parser.LapgLexer;
+import org.textway.lapg.parser.LapgLexer.LapgSymbol;
+import org.textway.lapg.parser.LapgLexer.Lexems;
 
 import java.io.IOException;
 import java.io.Reader;
