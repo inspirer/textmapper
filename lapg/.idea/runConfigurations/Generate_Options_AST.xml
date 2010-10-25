@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Generate Options AST" type="Application" factoryName="Application">
     <extension name="snapshooter" />
-    <option name="MAIN_CLASS_NAME" value="net.sf.lapg.Lapg" />
+    <option name="MAIN_CLASS_NAME" value="org.textway.lapg.Lapg" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-x -i ../templates" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/org.textway.lapg/src/net/sf/lapg/gen/options" />

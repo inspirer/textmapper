@@ -1,0 +1,37 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.textway.lapg.api;
+
+
+public interface ProcessingStatus {
+
+	public static final int KIND_FATAL = 0;
+	public static final int KIND_ERROR = 1;
+	public static final int KIND_WARN = 2;
+	public static final int KIND_INFO = 3;
+
+	void report(int kind, String message, SourceElement ...anchors);
+
+	void report(String message, Throwable th);
+
+	void report(ParserConflict conflict);
+
+	void debug(String info);
+
+	boolean isDebugMode();
+
+	boolean isAnalysisMode();
+}
