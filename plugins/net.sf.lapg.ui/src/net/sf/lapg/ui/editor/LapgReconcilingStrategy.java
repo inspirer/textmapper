@@ -20,17 +20,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.lapg.api.Grammar;
+import org.textway.lapg.api.Grammar;
 import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.IStructuredDocumentProvider;
 import net.sf.lapg.common.ui.editor.StructuredTextEditor;
 import net.sf.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
-import net.sf.lapg.gen.LapgGenerator;
-import net.sf.lapg.parser.LapgResolver;
-import net.sf.lapg.parser.LapgTree;
-import net.sf.lapg.parser.LapgTree.LapgProblem;
-import net.sf.lapg.parser.LapgTree.TextSource;
-import net.sf.lapg.parser.ast.AstRoot;
+import org.textway.lapg.gen.LapgGenerator;
+import org.textway.lapg.parser.LapgResolver;
+import org.textway.lapg.parser.LapgTree;
+import org.textway.lapg.parser.LapgTree.LapgProblem;
+import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textway.lapg.parser.ast.AstRoot;
 import net.sf.lapg.ui.structure.LapgSourceStructure;
 
 import org.eclipse.core.resources.IFile;

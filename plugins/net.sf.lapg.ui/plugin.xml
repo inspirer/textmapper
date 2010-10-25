@@ -20,7 +20,7 @@
          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
          class="net.sf.lapg.ui.editor.LapgSourceEditor"
          id="net.sf.lapg.ui.editor.LapgSourceEditor">
-         <contentTypeBinding contentTypeId="net.sf.lapg.ui.lapgText"/> 
+         <contentTypeBinding contentTypeId="org.textway.lapg.ui.lapgText"/> 
       </editor>
    </extension>
    
@@ -29,7 +29,7 @@
          name="Lapg Source Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            contentTypeId="net.sf.lapg.ui.lapgText"
+            contentTypeId="org.textway.lapg.ui.lapgText"
             class="net.sf.lapg.ui.editor.LapgSourceSetupParticipant">
       </participant>
    </extension>

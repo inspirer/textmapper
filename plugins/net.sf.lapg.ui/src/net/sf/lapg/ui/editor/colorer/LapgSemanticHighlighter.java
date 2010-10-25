@@ -3,11 +3,11 @@ package net.sf.lapg.ui.editor.colorer;
 import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
-import net.sf.lapg.parser.ast.AbstractVisitor;
-import net.sf.lapg.parser.ast.AstError;
-import net.sf.lapg.parser.ast.AstIdentifier;
-import net.sf.lapg.parser.ast.AstNode;
-import net.sf.lapg.parser.ast.AstReference;
+import org.textway.lapg.parser.ast.AbstractVisitor;
+import org.textway.lapg.parser.ast.AstError;
+import org.textway.lapg.parser.ast.AstIdentifier;
+import org.textway.lapg.parser.ast.AstNode;
+import org.textway.lapg.parser.ast.AstReference;
 import net.sf.lapg.ui.structure.LapgSourceStructure;
 
 public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanticHighlighter {

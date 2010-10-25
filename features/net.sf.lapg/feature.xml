@@ -34,20 +34,20 @@ http://www.eclipse.org/legal/epl-v10.html
    </requires>
 
    <plugin
-         id="net.sf.lapg"
+         id="org.textway.lapg"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
 
    <plugin
-         id="net.sf.lapg.common.ui"
+         id="org.textway.common.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="net.sf.lapg.ui"
+         id="org.textway.lapg.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

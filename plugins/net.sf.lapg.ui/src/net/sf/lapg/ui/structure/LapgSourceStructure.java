@@ -3,13 +3,13 @@ package net.sf.lapg.ui.structure;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.lapg.api.Grammar;
+import org.textway.lapg.api.Grammar;
 import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import net.sf.lapg.parser.LapgTree;
-import net.sf.lapg.parser.LapgTree.LapgProblem;
-import net.sf.lapg.parser.ast.AbstractVisitor;
-import net.sf.lapg.parser.ast.AstRoot;
+import org.textway.lapg.parser.LapgTree;
+import org.textway.lapg.parser.LapgTree.LapgProblem;
+import org.textway.lapg.parser.ast.AbstractVisitor;
+import org.textway.lapg.parser.ast.AstRoot;
 import net.sf.lapg.ui.LapgUIActivator;
 
 import org.eclipse.core.resources.IFile;
