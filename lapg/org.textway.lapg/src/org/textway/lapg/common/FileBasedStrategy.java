@@ -28,7 +28,7 @@ public class FileBasedStrategy implements ProcessingStrategy {
 	public void createFile(String name, String contents, ProcessingStatus status) {
 		try {
 			// FIXME encoding, newline
-			new GeneratedFile(name, contents, "utf8", true).create();
+			new GeneratedFile(name, contents, "utf8", false).create();
 		} catch (IOException e) {
 			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
 		}
