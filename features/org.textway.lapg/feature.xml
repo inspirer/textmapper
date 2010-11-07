@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="net.sf.lapg"
+      id="org.textway.lapg"
       label="%featureName"
       version="0.8.0.qualifier"
       provider-name="%providerName">

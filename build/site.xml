@@ -3,7 +3,7 @@
    <description name="Lexer and Parser Generator for Eclipse" url="http://lapg-ui.googlecode.com/hg/update-site">
       Update site for Lapg integration plug-ins
    </description>
-   <feature url="features/net.sf.lapg.feature_{version.full}.jar" id="net.sf.lapg" version="{version.full}">
+   <feature url="features/org.textway.lapg.feature_{version.full}.jar" id="org.textway.lapg" version="{version.full}">
       <category name="Lapg Integration"/>
    </feature>
    <category-def name="Lapg Integration" label="Lapg Integration"/>

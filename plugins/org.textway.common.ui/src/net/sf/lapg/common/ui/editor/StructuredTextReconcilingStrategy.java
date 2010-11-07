@@ -19,27 +19,22 @@ public abstract class StructuredTextReconcilingStrategy implements IReconcilingS
 		fEditor = editor;
 	}
 
-	@Override
 	public void setDocument(final IDocument document) {
 		fDocument = document;
 	}
 
-	@Override
 	public void reconcile(final DirtyRegion dirtyRegion, final IRegion subRegion) {
 		reconcileInternal(false);
 	}
 
-	@Override
 	public void reconcile(final IRegion partition) {
 		reconcileInternal(false);
 	}
 
-	@Override
 	public void setProgressMonitor(final IProgressMonitor monitor) {
 		fMonitor = monitor;
 	}
 
-	@Override
 	public void initialReconcile() {
 		reconcileInternal(true);
 	}

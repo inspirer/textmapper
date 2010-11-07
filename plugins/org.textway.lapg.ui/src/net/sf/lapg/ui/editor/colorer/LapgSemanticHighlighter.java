@@ -50,12 +50,10 @@ public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanti
 		return false;
 	}
 
-	@Override
 	public void setCollector(PositionCollector positionCollector) {
 		fCollector = positionCollector;
 	}
 
-	@Override
 	public void highlight(ISourceStructure model) {
 		try {
 			setModel(model);

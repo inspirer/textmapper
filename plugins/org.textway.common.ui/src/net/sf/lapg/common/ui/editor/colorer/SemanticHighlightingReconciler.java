@@ -162,12 +162,10 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 	 */
 	private ColorDescriptor[] fJobSemanticHighlightings;
 
-	@Override
 	public void aboutToBeReconciled() {
 		// Do nothing
 	}
 
-	@Override
 	public void reconciled(ISourceStructure model, IProgressMonitor progressMonitor) {
 		// ensure at most one thread can be reconciling at any time
 		synchronized (fReconcileLock) {
@@ -368,7 +366,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 		}
 	}
 
-	@Override
 	public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
 		synchronized (fJobLock) {
 			if (fJob != null) {
@@ -378,7 +375,6 @@ public class SemanticHighlightingReconciler implements ITextInputListener, IReco
 		}
 	}
 
-	@Override
 	public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
 		if (newInput != null) {
 			scheduleJob();

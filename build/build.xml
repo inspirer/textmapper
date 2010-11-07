@@ -1,4 +1,4 @@
-<project name="net.sf.lapg">
+<project name="org.textway.lapg">
 
 	<property file="lapg.properties" />
 

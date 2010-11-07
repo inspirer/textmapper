@@ -263,7 +263,6 @@ public abstract class StructuredTextEditor extends TextEditor {
 			addReconcileListener(this);
 
 			fDocListener = new IDocumentListener() {
-				@Override
 				public void documentAboutToBeChanged(DocumentEvent event) {
 					synchronized (fLock) {
 						fNeedsReconciling = true;
@@ -271,7 +270,6 @@ public abstract class StructuredTextEditor extends TextEditor {
 					}
 				}
 
-				@Override
 				public void documentChanged(DocumentEvent event) {
 					// do nothing
 				}
@@ -298,14 +296,12 @@ public abstract class StructuredTextEditor extends TextEditor {
 			}
 		}
 
-		@Override
 		public void aboutToBeReconciled() {
 			synchronized (fLock) {
 				fStartReconcileTimeStamp = fModifyTimeStamp;
 			}
 		}
 
-		@Override
 		public void reconciled(ISourceStructure model, IProgressMonitor progressMonitor) {
 			synchronized (fLock) {
 				if (fModifyTimeStamp == fStartReconcileTimeStamp) {
@@ -342,16 +338,13 @@ public abstract class StructuredTextEditor extends TextEditor {
 			return new ResourceMarkerAnnotationModel(file);
 		}
 
-		@Override
 		public void setStructure(ISourceStructure model) {
 			fModel = model;
 		}
 
-		@Override
 		public ISourceStructure getStructure() {
 			return fModel;
 		}
-
 	}
 }
 
