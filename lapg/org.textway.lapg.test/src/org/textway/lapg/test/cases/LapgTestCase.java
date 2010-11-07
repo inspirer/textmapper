@@ -37,7 +37,7 @@ public abstract class LapgTestCase extends TestCase {
 
 		int to = 0;
 		for (int i = 0; i < c.length; i++) {
-			if (c[i] != ' ' && c[i] != '\t') {
+			if (c[i] != ' ' && c[i] != '\t' && c[i] != '\r') {
 				c[to++] = c[i];
 			}
 		}
