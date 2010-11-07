@@ -62,9 +62,9 @@ public class LapgProblemHover implements IAnnotationHover, ITextHover {
 		final IAnnotationModel model = sourceViewer.getAnnotationModel();
 		final List<String> messages = new ArrayList<String>();
 
-		final Iterator iterator = model.getAnnotationIterator();
+		final Iterator<Annotation> iterator = model.getAnnotationIterator();
 		while (iterator.hasNext()) {
-			final Annotation annotation = (Annotation) iterator.next();
+			final Annotation annotation = iterator.next();
 			if (!(annotation instanceof Annotation && annotation.getType().startsWith(LapgReconcilingStrategy.ANNOTATION_PREFIX))) {
 				continue;
 			}

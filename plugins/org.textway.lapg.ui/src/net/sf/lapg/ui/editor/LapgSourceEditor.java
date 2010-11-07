@@ -12,7 +12,6 @@
  */
 package net.sf.lapg.ui.editor;
 
-import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.StructuredTextEditor;
 import net.sf.lapg.common.ui.editor.StructuredTextReconciler;
 import net.sf.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;

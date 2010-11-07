@@ -22,10 +22,11 @@ public class StructuredTextViewer extends SourceViewer {
 	 *  registered with the viewer this call moves the listener to the beginning
 	 *  of the list.
 	 */
+	@SuppressWarnings("unchecked")
 	public void prependTextPresentationListener(ITextPresentationListener listener) {
 
 		if (fTextPresentationListeners == null) {
-			fTextPresentationListeners = new ArrayList();
+			fTextPresentationListeners = new ArrayList<ITextPresentationListener>();
 		}
 
 		fTextPresentationListeners.remove(listener);

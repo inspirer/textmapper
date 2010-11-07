@@ -217,7 +217,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * UI's current highlighted positions - can contain <code>null</code>
 	 * elements
 	 */
-	private List fPositions = new ArrayList();
+	private List<HighlightedPosition> fPositions = new ArrayList<HighlightedPosition>();
 	/** UI position lock */
 	private final Object fPositionLock = new Object();
 
@@ -242,7 +242,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * NOTE: Called from background thread.
 	 * </p>
 	 */
-	public void addAllPositions(List list) {
+	public void addAllPositions(List<HighlightedPosition> list) {
 		synchronized (fPositionLock) {
 			list.addAll(fPositions);
 		}
@@ -254,7 +254,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * NOTE: Called from background thread.
 	 * </p>
 	 */
-	public TextPresentation createPresentation(List addedPositions, List removedPositions) {
+	public TextPresentation createPresentation(List<HighlightedPosition> addedPositions, List<HighlightedPosition> removedPositions) {
 		ISourceViewer sourceViewer = fSourceViewer;
 		StructuredTextPresentationReconciler presentationReconciler = fPresentationReconciler;
 		if (sourceViewer == null || presentationReconciler == null) {
@@ -360,11 +360,11 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 
 		String positionCategory = getPositionCategory();
 
-		List removedPositionsList = Arrays.asList(removedPositions);
+		List<HighlightedPosition> removedPositionsList = Arrays.asList(removedPositions);
 
 		try {
 			synchronized (fPositionLock) {
-				List oldPositions = fPositions;
+				List<HighlightedPosition> oldPositions = fPositions;
 				int newSize = Math.max(fPositions.size() + addedPositions.length - removedPositions.length, 10);
 
 				/*
@@ -375,16 +375,16 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 				 * on the fly. The second of two is the list of added positions.
 				 * The result is stored in newPositions.
 				 */
-				List newPositions = new ArrayList(newSize);
-				Position position = null;
-				Position addedPosition = null;
+				List<HighlightedPosition> newPositions = new ArrayList<HighlightedPosition>(newSize);
+				HighlightedPosition position = null;
+				HighlightedPosition addedPosition = null;
 				for (int i = 0, j = 0, n = oldPositions.size(), m = addedPositions.length; i < n || position != null
 						|| j < m || addedPosition != null;) {
 					// loop variant: i + j < old(i + j)
 
 					// a) find the next non-deleted Position from the old list
 					while (position == null && i < n) {
-						position = (Position) oldPositions.get(i++);
+						position = oldPositions.get(i++);
 						if (position.isDeleted() || contain(removedPositionsList, position)) {
 							document.removePosition(positionCategory, position);
 							position = null;
@@ -448,7 +448,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	/**
 	 * Returns <code>true</code> if the positions contain the position.
 	 */
-	private boolean contain(List<Position> positions, Position position) {
+	private boolean contain(List<HighlightedPosition> positions, HighlightedPosition position) {
 		return indexOf(positions, position) != -1;
 	}
 
@@ -456,7 +456,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * Returns index of the position in the positions, <code>-1</code> if not
 	 * found.
 	 */
-	private int indexOf(List positions, Position position) {
+	private int indexOf(List<HighlightedPosition> positions, HighlightedPosition position) {
 		int index = computeIndexAtOffset(positions, position.getOffset());
 		int size = positions.size();
 		while (index < size) {
@@ -472,7 +472,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * Insert the given position in <code>fPositions</code>, s.t. the offsets
 	 * remain in linear order.
 	 */
-	private void insertPosition(Position position) {
+	private void insertPosition(HighlightedPosition position) {
 		int i = computeIndexAfterOffset(fPositions, position.getOffset());
 		fPositions.add(i, position);
 	}
@@ -481,7 +481,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * Returns the index of the first position with an offset greater than the
 	 * given offset.
 	 */
-	private int computeIndexAfterOffset(List positions, int offset) {
+	private int computeIndexAfterOffset(List<HighlightedPosition> positions, int offset) {
 		int i = -1;
 		int j = positions.size();
 		while (j - i > 1) {
@@ -500,7 +500,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * Returns the index of the first position with an offset equal or greater
 	 * than the given offset.
 	 */
-	private int computeIndexAtOffset(List positions, int offset) {
+	private int computeIndexAtOffset(List<HighlightedPosition> positions, int offset) {
 		int i = -1;
 		int j = positions.size();
 		while (j - i > 1) {
@@ -527,7 +527,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 			}
 		}
 		if (n - i > 2) {
-			List ranges = new ArrayList(n - i);
+			List<StyleRange> ranges = new ArrayList<StyleRange>(n - i);
 			for (; i < n; i++) {
 				HighlightedPosition position = (HighlightedPosition) fPositions.get(i);
 				if (!position.isDeleted()) {
@@ -535,7 +535,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 				}
 			}
 			StyleRange[] array = new StyleRange[ranges.size()];
-			array = (StyleRange[]) ranges.toArray(array);
+			array = ranges.toArray(array);
 			textPresentation.replaceStyleRanges(array);
 		} else {
 			for (; i < n; i++) {
@@ -659,7 +659,7 @@ public class SemanticHighlightingPresenter implements ITextPresentationListener,
 	 * document. The text presentation is not invalidated.
 	 */
 	private void addPositionFromUI(int offset, int length, Highlighting highlighting) {
-		Position position = createHighlightedPosition(offset, length, highlighting);
+		HighlightedPosition position = createHighlightedPosition(offset, length, highlighting);
 		synchronized (fPositionLock) {
 			insertPosition(position);
 		}
