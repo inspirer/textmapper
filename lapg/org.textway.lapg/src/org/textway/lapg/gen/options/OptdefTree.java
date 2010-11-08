@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.textway.lapg.gen.options.OptdefLexer.ErrorReporter;
 import org.textway.lapg.gen.options.OptdefParser.ParseException;
+import org.textway.lapg.gen.options.ast.Input;
 
 public class OptdefTree<T> {
 
@@ -38,7 +39,7 @@ public class OptdefTree<T> {
 	}
 
 
-	public static OptdefTree<Object> parse(TextSource source) {
+	public static OptdefTree<Input> parse(TextSource source) {
 		final List<OptdefProblem> list = new ArrayList<OptdefProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -51,15 +52,15 @@ public class OptdefTree<T> {
 			lexer.setLine(source.getInitialLine());
 
 			OptdefParser parser = new OptdefParser(reporter);
-			Object result = parser.parse(lexer);
+			Input result = parser.parse(lexer);
 
-			return new OptdefTree<Object>(source, result, list);
+			return new OptdefTree<Input>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new OptdefProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new OptdefTree<Object>(source, null, list);
+		return new OptdefTree<Input>(source, null, list);
 	}
 
 

@@ -40,7 +40,7 @@ ${call getLineOffsets-}
 ${end}
 
 ${template typeofsym-}
-${if type}${type}${else}Object${end-}
+${if self->java.type()}${self->java.type()}${else}Object${end-}
 ${end}
 
 ${template parse-}

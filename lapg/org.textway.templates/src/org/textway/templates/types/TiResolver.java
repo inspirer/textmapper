@@ -36,7 +36,7 @@ public class TiResolver {
 	}
 
 	public void build() {
-		final TypesTree<Object> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myContent.toCharArray(), 1));
+		final TypesTree<Input> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myContent.toCharArray(), 1));
 		if (tree.hasErrors()) {
 			myStatus.fireError(null, "Problems in templates bundle found:");
 			for (final TypesProblem s : tree.getErrors()) {
@@ -51,7 +51,7 @@ public class TiResolver {
 		}
 
 		myTree = tree;
-		Input input = (Input) tree.getRoot();
+		Input input = tree.getRoot();
 		Set<String> myFoundClasses = new HashSet<String>();
 		for (TypeDeclaration td : input.getDeclarations()) {
 			TiClass cl = convertClass(td);

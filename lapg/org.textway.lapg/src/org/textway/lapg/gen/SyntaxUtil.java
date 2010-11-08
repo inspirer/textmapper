@@ -21,6 +21,7 @@ import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.options.OptdefTree;
 import org.textway.lapg.gen.options.OptdefTree.OptdefProblem;
+import org.textway.lapg.gen.options.ast.Input;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
@@ -47,8 +48,8 @@ public class SyntaxUtil {
 
 	}
 
-	public static OptdefTree parseOptions(OptdefTree.TextSource input, ProcessingStatus status) {
-		OptdefTree<Object> tree = OptdefTree.parse(input);
+	public static OptdefTree<Input> parseOptions(OptdefTree.TextSource input, ProcessingStatus status) {
+		OptdefTree<Input> tree = OptdefTree.parse(input);
 		if (tree.hasErrors()) {
 			status.report("Problems in templates bundle found:", null);
 			for (OptdefProblem s : tree.getErrors()) {

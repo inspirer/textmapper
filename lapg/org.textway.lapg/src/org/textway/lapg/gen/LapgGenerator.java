@@ -20,6 +20,7 @@ import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.gen.options.OptdefTree;
+import org.textway.lapg.gen.options.ast.Input;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
@@ -141,7 +142,7 @@ public final class LapgGenerator {
 			return false;
 		}
 
-		OptdefTree<Object> tree = SyntaxUtil.parseOptions(new OptdefTree.TextSource(name, optionsResource[0].toCharArray(), 1), status);
+		OptdefTree<Input> tree = SyntaxUtil.parseOptions(new OptdefTree.TextSource(name, optionsResource[0].toCharArray(), 1), status);
 		if(tree == null) {
 			return false;
 		}

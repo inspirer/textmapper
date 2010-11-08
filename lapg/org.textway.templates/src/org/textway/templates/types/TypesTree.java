@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.textway.templates.types.TypesLexer.ErrorReporter;
 import org.textway.templates.types.TypesParser.ParseException;
+import org.textway.templates.types.ast.Input;
 
 public class TypesTree<T> {
 
@@ -38,7 +39,7 @@ public class TypesTree<T> {
 	}
 
 
-	public static TypesTree<Object> parse(TextSource source) {
+	public static TypesTree<Input> parse(TextSource source) {
 		final List<TypesProblem> list = new ArrayList<TypesProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -51,15 +52,15 @@ public class TypesTree<T> {
 			lexer.setLine(source.getInitialLine());
 
 			TypesParser parser = new TypesParser(reporter);
-			Object result = parser.parse(lexer);
+			Input result = parser.parse(lexer);
 
-			return new TypesTree<Object>(source, result, list);
+			return new TypesTree<Input>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TypesProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new TypesTree<Object>(source, null, list);
+		return new TypesTree<Input>(source, null, list);
 	}
 
 
