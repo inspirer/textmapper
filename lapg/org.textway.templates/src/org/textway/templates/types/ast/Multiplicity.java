@@ -4,24 +4,24 @@ import org.textway.templates.types.TypesTree.TextSource;
 
 public class Multiplicity extends AstNode implements IConstraint {
 
+	private Integer lo;
 	private boolean hasNoUpperBound;
-	private Integer icon;
-	private Integer icon2;
+	private Integer hi;
 
-	public Multiplicity(boolean hasNoUpperBound, Integer icon, Integer icon2, TextSource input, int start, int end) {
+	public Multiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.lo = lo;
 		this.hasNoUpperBound = hasNoUpperBound;
-		this.icon = icon;
-		this.icon2 = icon2;
+		this.hi = hi;
 	}
 
+	public Integer getLo() {
+		return lo;
+	}
 	public boolean getHasNoUpperBound() {
 		return hasNoUpperBound;
 	}
-	public Integer getIcon() {
-		return icon;
-	}
-	public Integer getIcon2() {
-		return icon2;
+	public Integer getHi() {
+		return hi;
 	}
 }

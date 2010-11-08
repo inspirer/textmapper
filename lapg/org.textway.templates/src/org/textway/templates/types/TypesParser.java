@@ -353,23 +353,23 @@ null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 27:  // multiplicity ::= icon
 				lapg_gg.sym = new Multiplicity(
+((Integer)lapg_m[lapg_head-0].sym) /* lo */,
 false,
-((Integer)lapg_m[lapg_head-0].sym) /* icon */,
-null /* icon2 */,
+null /* hi */,
 null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 28:  // multiplicity ::= icon '..' '*'
 				lapg_gg.sym = new Multiplicity(
+((Integer)lapg_m[lapg_head-2].sym) /* lo */,
 true,
-((Integer)lapg_m[lapg_head-2].sym) /* icon */,
-null /* icon2 */,
+null /* hi */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 29:  // multiplicity ::= icon '..' icon
 				lapg_gg.sym = new Multiplicity(
+((Integer)lapg_m[lapg_head-2].sym) /* lo */,
 false,
-((Integer)lapg_m[lapg_head-2].sym) /* icon */,
-((Integer)lapg_m[lapg_head-0].sym) /* icon2 */,
+((Integer)lapg_m[lapg_head-0].sym) /* hi */,
 null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 30:  // type ::= Lint
