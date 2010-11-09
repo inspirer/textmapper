@@ -36,7 +36,7 @@ public class SwitchNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object value = env.evaluate(expression, context, false);
 			for( CaseNode n : cases ) {

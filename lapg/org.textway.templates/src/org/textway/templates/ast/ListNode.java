@@ -47,7 +47,7 @@ public class ListNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append('[');
 		if( expressions != null ) {
 			for( int i = 0; i < expressions.length; i++ ) {

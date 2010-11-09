@@ -92,7 +92,7 @@ public class ConditionalNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		leftExpr.toString(sb);
 		sb.append(operators[kind]);
 		rightExpr.toString(sb);

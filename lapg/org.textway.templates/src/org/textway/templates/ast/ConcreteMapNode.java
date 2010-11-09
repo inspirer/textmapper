@@ -42,7 +42,7 @@ public class ConcreteMapNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append('[');
 		boolean notFirst = false;
 		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {

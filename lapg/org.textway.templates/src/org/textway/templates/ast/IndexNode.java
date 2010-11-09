@@ -41,7 +41,7 @@ public class IndexNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		if( objectExpr == null ) {
 			sb.append("self");
 		} else {

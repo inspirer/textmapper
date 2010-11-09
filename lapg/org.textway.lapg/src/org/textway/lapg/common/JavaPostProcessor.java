@@ -87,7 +87,7 @@ public class JavaPostProcessor {
 
 		List<Integer> locations = new ArrayList<Integer>(toinsert.keySet());
 		Collections.sort(locations);
-		StringBuffer sb = new StringBuffer(text.length());
+		StringBuilder sb = new StringBuilder(text.length());
 		int lastStart = 0;
 		for(Integer inspos : locations) {
 			sb.append(text.substring(lastStart, inspos));
@@ -127,7 +127,7 @@ public class JavaPostProcessor {
 	}
 
 	private void collectQualifiedNames() {
-		StringBuffer sb = new StringBuffer(text.length());
+		StringBuilder sb = new StringBuilder(text.length());
 		int lastStart = 0;
 		Matcher m = QUALIFIED_REFERENCE.matcher(text);
 		m.region(lastImportLocation, text.length());

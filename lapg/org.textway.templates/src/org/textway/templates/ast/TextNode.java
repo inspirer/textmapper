@@ -29,7 +29,7 @@ public class TextNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		sb.append(getText());
 	}
 }

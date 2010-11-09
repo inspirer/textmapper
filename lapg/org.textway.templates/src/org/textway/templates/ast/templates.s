@@ -133,13 +133,15 @@ template_start (TemplateNode) ::=
                                                     { $$ = new TemplateNode($qualified_id, $parametersopt, templatePackage, source, ${template_start.offset}, ${template_start.endoffset}); checkFqn($qualified_id, ${template_start.offset}, ${template_start.endoffset}, ${self[0].line}); }
 ; 
 
-parameters (ArrayList) ::=
-	'(' identifier_listopt ')' 						{ $$ = $1; }
+parameters (List<ParameterNode>) ::=
+	'(' parameter_listopt ')' 						{ $$ = $1; }
 ;
 
-identifier_list (ArrayList) ::=
-	  identifier                                    { $$ = new ArrayList(); $identifier_list.add($identifier); }
-	| identifier_list ',' identifier                { $identifier_list#0.add($identifier); }
+parameter_list (List<ParameterNode>) ::=
+	  identifier                       				{ $$ = new ArrayList(); $parameter_list.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
+	| qualified_id identifier                       { $$ = new ArrayList(); $parameter_list.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
+	| parameter_list ',' identifier                 { $parameter_list#0.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
+	| parameter_list ',' qualified_id identifier    { $parameter_list#0.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
 ;
 
 template_end ::=

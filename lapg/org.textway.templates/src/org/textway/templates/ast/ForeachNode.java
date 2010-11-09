@@ -37,7 +37,7 @@ public class ForeachNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object select = env.evaluate(selectExpr, context, false);
             String separator = separatorExpr == null ? null : env.toString(env.evaluate(separatorExpr, context, false), separatorExpr);

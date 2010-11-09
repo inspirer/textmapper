@@ -38,7 +38,7 @@ public class CompoundNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		if (instructions != null) {
 			for (Node n : instructions) {
 				n.emit(sb, context, env);

@@ -26,11 +26,11 @@ import org.textway.templates.ast.AstTree.TextSource;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
 	private final String name;
-	private final String[] parameters;
+	private final ParameterNode[] parameters;
 	private final String templatePackage;
 	private ITemplate base;
 
-	public TemplateNode(String name, List<String> parameters, String templatePackage, TextSource source, int offset, int endoffset) {
+	public TemplateNode(String name, List<ParameterNode> parameters, String templatePackage, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
@@ -39,7 +39,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		} else {
 			this.templatePackage = templatePackage;
 		}
-		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
+		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
 	}
 
 	public int getKind() {
@@ -59,22 +59,22 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 					+ "`: should be " + paramCount + " instead of " + argsCount);
 		}
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (paramCount > 0) {
 			int i;
 			Object[] old = new Object[paramCount];
 			for (i = 0; i < paramCount; i++) {
-				old[i] = context.getVariable(parameters[i]);
+				old[i] = context.getVariable(parameters[i].getName());
 			}
 			try {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i], arguments[i]);
+					context.setVariable(parameters[i].getName(), arguments[i]);
 				}
 
 				emit(sb, context, env);
 			} finally {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i], old[i]);
+					context.setVariable(parameters[i].getName(), old[i]);
 				}
 			}
 		} else {
@@ -93,7 +93,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	}
 
 	public String getSignature() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		if (parameters != null) {
 			sb.append('(');
@@ -101,7 +101,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 				if (i > 0) {
 					sb.append(',');
 				}
-				sb.append(parameters[i]);
+				parameters[i].toString(sb);
 			}
 			sb.append(')');
 		}

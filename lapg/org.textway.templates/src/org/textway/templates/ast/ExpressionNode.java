@@ -27,7 +27,7 @@ public abstract class ExpressionNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			sb.append(env.toString(env.evaluate(this, context, false), this));
 		} catch( EvaluationException ex ) {
@@ -38,10 +38,10 @@ public abstract class ExpressionNode extends Node {
 
 	@Override
 	public final String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		toString(sb);
 		return sb.toString();
 	}
 
-	public abstract void toString(StringBuffer sb);
+	public abstract void toString(StringBuilder sb);
 }

@@ -24,7 +24,7 @@ public class AssignNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append(identifier);
 		sb.append(" = ");
 		valueExpr.toString(sb);

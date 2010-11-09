@@ -88,7 +88,7 @@ public class CallTemplateNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		if (!isStatement) {
 			if(selectExpr != null) {
 				selectExpr.toString(sb);

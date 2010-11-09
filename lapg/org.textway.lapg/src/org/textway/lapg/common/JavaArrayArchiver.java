@@ -13,7 +13,7 @@ public class JavaArrayArchiver {
 	 **************************************************************/
 	public static String packIntInt(int[][] ia, int indent) {
 
-		StringBuffer sb = new StringBuffer("");
+		StringBuilder sb = new StringBuilder("");
 
 		int sequenceLength = 0; // RL - length of the number sequence
 		boolean sequenceStarted = false; // RL - has number sequence started?
@@ -25,7 +25,7 @@ public class JavaArrayArchiver {
 		sb.append(ia.length > 0 ? ia[0].length : 0);
 		sb.append(",\n");
 
-		StringBuffer outstr = new StringBuffer();
+		StringBuilder outstr = new StringBuilder();
 
 		//  RL - Output matrix
 		for (int elem = 0; elem < ia.length; ++elem) {
@@ -63,7 +63,7 @@ public class JavaArrayArchiver {
 						sb.append("\t");
 					}
 					sb.append("\"" + s.substring(0, 75) + "\" +\n");
-					outstr = new StringBuffer(s.substring(75));
+					outstr = new StringBuilder(s.substring(75));
 				}
 			}
 		}
@@ -79,7 +79,7 @@ public class JavaArrayArchiver {
 				sb.append("\t");
 			}
 			sb.append("\"" + s.substring(0, 75) + "\" +\n");
-			outstr = new StringBuffer(s.substring(75));
+			outstr = new StringBuilder(s.substring(75));
 		}
 		for (int e = 0; e < indent; e++) {
 			sb.append("\t");
@@ -127,7 +127,7 @@ public class JavaArrayArchiver {
 	/* array of int: pack/unpack */
 
 	public static String packInt(int[] table, int indent) {
-		StringBuffer sb = new StringBuffer(table.length * 6);
+		StringBuilder sb = new StringBuilder(table.length * 6);
 		sb.append('\"');
 		int lastBreak = 1;
 		for(int i = 0; i < table.length; i++) {
@@ -163,7 +163,7 @@ public class JavaArrayArchiver {
 	/* array of short: pack/unpack */
 
 	public static String packShort(short[] table, int indent) {
-		StringBuffer sb = new StringBuffer(table.length * 6);
+		StringBuilder sb = new StringBuilder(table.length * 6);
 		sb.append('\"');
 		int lastBreak = 1;
 		for(int i = 0; i < table.length; i++) {

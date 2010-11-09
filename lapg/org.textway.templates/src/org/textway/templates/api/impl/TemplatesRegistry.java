@@ -22,6 +22,8 @@ import org.textway.templates.api.IBundleEntity;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.IBundleLoader;
 import org.textway.templates.api.TemplatesBundle;
+import org.textway.templates.api.types.ITypesRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 public class TemplatesRegistry {
 
@@ -29,12 +31,14 @@ public class TemplatesRegistry {
 	private final Set<String> loadedBundles;
 	private final Map<String, IBundleEntity> entities;
 	private final IBundleLoader[] loaders;
+	private final ITypesRegistry typesRegistry;
 
 	public TemplatesRegistry(IProblemCollector collector, IBundleLoader... loaders) {
 		this.collector = collector;
 		this.entities = new HashMap<String, IBundleEntity>();
 		this.loadedBundles = new HashSet<String>();
 		this.loaders = loaders;
+		this.typesRegistry = new TypesRegistry(this);
 
 		if (loaders == null || loaders.length < 1) {
 			throw new IllegalArgumentException("no loaders provided");
@@ -134,6 +138,10 @@ public class TemplatesRegistry {
 
 	public IProblemCollector getCollector() {
 		return collector;
+	}
+
+	public ITypesRegistry getTypesRegistry() {
+		return typesRegistry;
 	}
 
 	private static String kindToString(int kind) {

@@ -31,7 +31,7 @@ public class ThisNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append("self");
 	}
 }

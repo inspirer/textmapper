@@ -25,7 +25,7 @@ public class FormatUtil {
 		if( s.length() >= width ) {
 			return s;
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for( int chars = width - s.length(); chars > 0; chars-- ) {
 			sb.append('0');
 		}
@@ -38,7 +38,7 @@ public class FormatUtil {
 		if( s.length() >= width ) {
 			return s;
 		}
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for( int chars = width - s.length(); chars > 0; chars-- ) {
 			sb.append(padding);
 		}
@@ -81,7 +81,7 @@ public class FormatUtil {
         }
 
         // convert
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             int c = s.charAt(i);
             if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9' && res.length() > 0) {

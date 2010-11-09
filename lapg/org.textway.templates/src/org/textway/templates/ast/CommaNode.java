@@ -23,7 +23,7 @@ public class CommaNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		leftExpr.toString(sb);
 		sb.append(", ");
 		rightExpr.toString(sb);

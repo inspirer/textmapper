@@ -75,7 +75,7 @@ public class CollectMapNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		selectExpression.toString(sb);
 		sb.append(".collect");
 		sb.append("(");

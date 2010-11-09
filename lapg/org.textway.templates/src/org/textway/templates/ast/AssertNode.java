@@ -30,7 +30,7 @@ public class AssertNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object res = env.evaluate(expr, context, true);
 			Boolean b = env.toBoolean(res);

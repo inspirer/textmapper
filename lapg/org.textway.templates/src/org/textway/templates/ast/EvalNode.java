@@ -33,7 +33,7 @@ public class EvalNode extends Node {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			Object toEvaluate = env.evaluate(templateExpr, context, false);
 			String id;

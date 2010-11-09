@@ -45,7 +45,7 @@ public class TriplexNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		condition.toString(sb);
 		sb.append(" ? ");
 		thennode.toString(sb);

@@ -16,29 +16,38 @@
 package org.textway.templates.ast;
 
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.ast.AstTree.TextSource;
 
-public class ParenthesesNode extends ExpressionNode {
+public class ParameterNode extends Node {
 
-	private final ExpressionNode expr;
+	private String type;
+	private String name;
 
-	public ParenthesesNode(ExpressionNode expr, TextSource source, int offset, int endoffset) {
+	public ParameterNode(String type, String name, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.expr = expr;
+		this.type = type;
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		return env.evaluate(expr, context, true);
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
+		/* declaration statement, nothing to emit */
 	}
 
-	@Override
-	public void toString(StringBuilder sb) {
-		sb.append('(');
-		expr.toString(sb);
-		sb.append(')');
+	void toString(StringBuilder sb) {
+		if(type != null) {
+			sb.append(type);
+			sb.append(' ');
+		}
+		sb.append(name);
 	}
-
 }

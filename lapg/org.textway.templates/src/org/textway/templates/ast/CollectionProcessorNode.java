@@ -166,7 +166,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		selectExpression.toString(sb);
 		sb.append(".");
 		sb.append(INSTR_WORDS[instruction]);

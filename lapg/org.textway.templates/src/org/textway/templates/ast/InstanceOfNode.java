@@ -63,7 +63,7 @@ public class InstanceOfNode extends ExpressionNode {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		expr.toString(sb);
 		sb.append(" is ");
 		sb.append(pattern);

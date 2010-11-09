@@ -32,8 +32,8 @@ public class FileNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
-		StringBuffer file = new StringBuffer();
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
+		StringBuilder file = new StringBuilder();
 		try {
 			String fileName = env.toString(env.evaluate(targetNameExpr, context, false), targetNameExpr);
 			super.emit(file, context, env);

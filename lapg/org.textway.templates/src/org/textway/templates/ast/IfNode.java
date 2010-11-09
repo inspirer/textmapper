@@ -38,7 +38,7 @@ public class IfNode extends CompoundNode {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			if(env.toBoolean(env.evaluate(condition, context, true))) {
 				super.emit(sb, context, env);

@@ -27,13 +27,13 @@ import org.textway.templates.ast.AstTree.TextSource;
 public class QueryNode extends Node implements IQuery {
 
 	private final String name;
-	private final String[] parameters;
+	private final ParameterNode[] parameters;
 	private final String templatePackage;
 	private final ExpressionNode expr;
 	private final boolean isCached;
 	private IQuery base;
 
-	public QueryNode(String name, List<String> parameters, String templatePackage, ExpressionNode expr, boolean cache,
+	public QueryNode(String name, List<ParameterNode> parameters, String templatePackage, ExpressionNode expr, boolean cache,
 			TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		int dot = name.lastIndexOf('.');
@@ -43,7 +43,7 @@ public class QueryNode extends Node implements IQuery {
 		} else {
 			this.templatePackage = templatePackage;
 		}
-		this.parameters = parameters != null ? parameters.toArray(new String[parameters.size()]) : null;
+		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
 		this.expr = expr;
 		this.isCached = cache;
 	}
@@ -82,17 +82,17 @@ public class QueryNode extends Node implements IQuery {
 			int i;
 			Object[] old = new Object[paramCount];
 			for (i = 0; i < paramCount; i++) {
-				old[i] = context.getVariable(parameters[i]);
+				old[i] = context.getVariable(parameters[i].getName());
 			}
 			try {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i], arguments[i]);
+					context.setVariable(parameters[i].getName(), arguments[i]);
 				}
 
 				result = env.evaluate(expr, context, true);
 			} finally {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i], old[i]);
+					context.setVariable(parameters[i].getName(), old[i]);
 				}
 			}
 		} else {
@@ -105,7 +105,7 @@ public class QueryNode extends Node implements IQuery {
 	}
 
 	public String getSignature() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(name);
 		if (parameters != null) {
 			sb.append('(');
@@ -113,7 +113,7 @@ public class QueryNode extends Node implements IQuery {
 				if (i > 0) {
 					sb.append(',');
 				}
-				sb.append(parameters[i]);
+				parameters[i].toString(sb);
 			}
 			sb.append(')');
 		}
@@ -121,13 +121,13 @@ public class QueryNode extends Node implements IQuery {
 	}
 
 	@Override
-	protected void emit(StringBuffer sb, EvaluationContext context, IEvaluationStrategy env) {
+	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		/* declaration statement, nothing to emit */
 	}
 
 	@Override
 	public final String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append(getSignature());
 		sb.append(" = ");
 		expr.toString(sb);
