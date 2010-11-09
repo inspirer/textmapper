@@ -15,11 +15,7 @@
  */
 package org.textway.templates.types;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.textway.templates.api.ILocatedEntity;
 import org.textway.templates.api.impl.TemplatesRegistry;
@@ -29,8 +25,8 @@ import org.textway.templates.api.types.ITypesRegistry;
 public class TypesRegistry implements ITypesRegistry {
 
 	private TemplatesRegistry myResourceRegistry;
-	private Set<String> myLoadedPackages;
-	private Map<String, TiClass> myClasses;
+	private Set<String> myLoadedPackages = new HashSet<String>();
+	private Map<String, TiClass> myClasses = new HashMap<String, TiClass>();
 
 	public TypesRegistry(TemplatesRegistry myResourceRegistry) {
 		this.myResourceRegistry = myResourceRegistry;
@@ -39,14 +35,14 @@ public class TypesRegistry implements ITypesRegistry {
 	public IClass loadClass(String qualifiedName, ILocatedEntity referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
-			myResourceRegistry.getCollector().fireError(referer, "Fully qualified name should contain dot.");
+			myResourceRegistry.getCollector().fireError(referer, "Fully qualified type name should contain dot.");
 			return null;
 		}
 
 		String package_ = qualifiedName.substring(0, lastDot);
 		if(!myLoadedPackages.contains(package_)) {
 			loadPackage(package_);
-		}		
+		}
 		return myClasses.get(qualifiedName);
 	}
 
@@ -54,7 +50,8 @@ public class TypesRegistry implements ITypesRegistry {
 		LinkedHashSet<String> queue = new LinkedHashSet<String>();
 		queue.add(name);
 		List<TiResolver> loaders = new ArrayList<TiResolver>();
-		
+
+		// 1-st stage: load types
 		while(!queue.isEmpty()) {
 			String current = queue.iterator().next();
 			queue.remove(current);
@@ -73,6 +70,7 @@ public class TypesRegistry implements ITypesRegistry {
 			}
 		}
 
+		// 2-nd stage: resolve references
 		for(TiResolver resolver : loaders) {
 			resolver.resolve();
 		}

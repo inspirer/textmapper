@@ -40,6 +40,7 @@ _skip:         /[\n\t\r ]+/    		{ return false; }
 _skip:  /#.*/
 
 '..':    /\.\./
+'.':    /\./
 '*':    /\*/
 ';':    /;/
 ',':	/,/
@@ -77,7 +78,7 @@ type_declaration ::=
 ;
 
 extends_clause ::=
-	Lextends @pass identifier ;
+	Lextends @pass name_list ;
 
 ##### DECLARATIONS
 
@@ -123,8 +124,8 @@ type ::=
 	kind=Lint
   | kind=Lstring
   | kind=Lbool
-  | identifier
-  | identifier isReference='*'
+  | name
+  | name isReference='*'
 ;
 
 ##### EXPRESSIONS
@@ -139,7 +140,7 @@ literal_expression ::=
 ;
 
 structural_expression ::=
-	  Lnew identifier '(' map_entries ')'
+	  Lnew name '(' map_entries ')'
 	| '[' expression_list ']'
 ;
 
@@ -151,6 +152,16 @@ expression_list ::=
 map_entries ::=
 	  identifier ':' expression
 	| map_entries ',' identifier ':' expression
+;
+
+name ::=
+	  identifier
+	| name '.' identifier
+;
+
+name_list ::=
+	  name
+	| name_list ',' name
 ;
 
 ##################################################################################

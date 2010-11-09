@@ -54,6 +54,10 @@ class TiResolver {
 	private TypesTree<Input> myTree;
 	private Set<String> requiredPackages = new HashSet<String>();
 
+	// 2-nd stage
+	List<ResolveBean> myResolveFeatureTypes = new ArrayList<ResolveBean>();
+	List<ResolveSuperBean> myResolveSuperTypes = new ArrayList<ResolveSuperBean>();
+
 	public TiResolver(String package_, String content, Map<String, TiClass> registryClasses,
 			IProblemCollector problemCollector) {
 		this.myPackage = package_;
@@ -97,8 +101,15 @@ class TiResolver {
 		for (FeatureDeclaration fd : td.getFeatureDeclarations()) {
 			features.add(convertFeature(fd));
 		}
-		// TODO extends
-		return new TiClass(td.getName(), new ArrayList<IClass>(), features);
+		TiClass result = new TiClass(td.getName(), new ArrayList<IClass>(), features);
+		if(td.getExtends() != null) {
+			List<String> superNames = new ArrayList<String>();
+			for(List<String> className : td.getExtends()) {
+				superNames.add(getQualifiedName(className));
+			}
+			myResolveSuperTypes.add(new ResolveSuperBean(result, td, superNames));
+		}
+		return result;
 	}
 
 	private TiFeature convertFeature(FeatureDeclaration fd) {
@@ -123,10 +134,10 @@ class TiResolver {
 				}
 			}
 			if (multiplicityCount > 1) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "two multiplicity constraints found (feature " + fd.getName() + ")");
+				myStatus.fireError(new LocatedNodeAdapter(fd), "two multiplicity constraints found (class_ " + fd.getName() + ")");
 			}
 			if (stringConstraints != null && fd.getType().getKind() != Type.LSTRING) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "only string type can have constraints (feature " + fd.getName() + ")");
+				myStatus.fireError(new LocatedNodeAdapter(fd), "only string type can have constraints (class_ " + fd.getName() + ")");
 			}
 		}
 		TiFeature feature = new TiFeature(fd.getName(), loBound, hiBound, fd.getType().getIsReference());
@@ -138,7 +149,7 @@ class TiResolver {
 	private void convertType(TiFeature feature, Type type, List<StringConstraint> constraints) {
 		if (type.getKind() == 0) {
 			// reference
-			resolveLater(feature, type, type.getIdentifier());
+			resolveLater(feature, type, getQualifiedName(type.getName()));
 		} else {
 			// datatype
 			DataTypeKind kind = DataTypeKind.STRING;
@@ -183,6 +194,17 @@ class TiResolver {
 		}
 	}
 
+	private String getQualifiedName(List<String> name) {
+		StringBuilder sb = new StringBuilder();
+		for(String s : name) {
+			if(sb.length() > 0) {
+				sb.append('.');
+			}
+			sb.append(s);
+		}
+		return sb.toString();
+	}
+
 	private void resolveLater(TiFeature feature, Type decl, String reference) {
 		int lastDot = reference.lastIndexOf('.');
 		if (lastDot == -1) {
@@ -194,8 +216,6 @@ class TiResolver {
 		myResolveFeatureTypes.add(new ResolveBean(feature, decl, reference));
 	}
 
-	List<ResolveBean> myResolveFeatureTypes = new ArrayList<ResolveBean>();
-
 	public void resolve() {
 		for (ResolveBean entry : myResolveFeatureTypes) {
 			TiClass tiClass = myRegistryClasses.get(entry.getReference());
@@ -204,6 +224,19 @@ class TiResolver {
 						"cannot resolve type: " + entry.getReference() + " in " + entry.getFeature().getName());
 			} else {
 				entry.getFeature().setType(tiClass);
+			}
+		}
+
+		for (ResolveSuperBean entry : myResolveSuperTypes) {
+			TiClass source = entry.getClassifier();
+			for(String ref : entry.getReferences()) {
+				TiClass target = myRegistryClasses.get(ref);
+				if (target == null) {
+					myStatus.fireError(new LocatedNodeAdapter(entry.getNode()),
+							"cannot resolve super type: " + ref + " for " + entry.getClassifier().getName());
+				} else {
+					source.getExtends().add(target);
+				}
 			}
 		}
 	}
@@ -242,6 +275,30 @@ class TiResolver {
 
 		public String getReference() {
 			return reference;
+		}
+
+		public IAstNode getNode() {
+			return node;
+		}
+	}
+
+	private static class ResolveSuperBean {
+		private TiClass class_;
+		private IAstNode node;
+		private Collection<String> references;
+
+		public ResolveSuperBean(TiClass tiClass, IAstNode node, Collection<String> references) {
+			this.class_ = tiClass;
+			this.node = node;
+			this.references = references;
+		}
+
+		public TiClass getClassifier() {
+			return class_;
+		}
+
+		public Collection<String> getReferences() {
+			return references;
 		}
 
 		public IAstNode getNode() {

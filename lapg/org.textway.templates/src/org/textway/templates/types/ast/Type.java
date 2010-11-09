@@ -1,5 +1,6 @@
 package org.textway.templates.types.ast;
 
+import java.util.List;
 import org.textway.templates.types.TypesTree.TextSource;
 
 public class Type extends AstNode {
@@ -10,13 +11,13 @@ public class Type extends AstNode {
 
 	private int kind;
 	private boolean isReference;
-	private String identifier;
+	private List<String> name;
 
-	public Type(int kind, boolean isReference, String identifier, TextSource input, int start, int end) {
+	public Type(int kind, boolean isReference, List<String> name, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.isReference = isReference;
-		this.identifier = identifier;
+		this.name = name;
 	}
 
 	public int getKind() {
@@ -25,7 +26,7 @@ public class Type extends AstNode {
 	public boolean getIsReference() {
 		return isReference;
 	}
-	public String getIdentifier() {
-		return identifier;
+	public List<String> getName() {
+		return name;
 	}
 }
