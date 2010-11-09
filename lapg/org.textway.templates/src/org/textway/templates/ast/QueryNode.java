@@ -32,8 +32,9 @@ public class QueryNode extends Node implements IQuery {
 	private final ExpressionNode expr;
 	private final boolean isCached;
 	private IQuery base;
+	private String contextType;
 
-	public QueryNode(String name, List<ParameterNode> parameters, String templatePackage, ExpressionNode expr, boolean cache,
+	public QueryNode(String name, List<ParameterNode> parameters, String contextType, String templatePackage, ExpressionNode expr, boolean cache,
 			TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		int dot = name.lastIndexOf('.');
@@ -44,6 +45,7 @@ public class QueryNode extends Node implements IQuery {
 			this.templatePackage = templatePackage;
 		}
 		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
+		this.contextType = contextType;
 		this.expr = expr;
 		this.isCached = cache;
 	}
@@ -54,6 +56,10 @@ public class QueryNode extends Node implements IQuery {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getContextType() {
+		return contextType;
 	}
 
 	public String getPackage() {

@@ -29,9 +29,11 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	private final ParameterNode[] parameters;
 	private final String templatePackage;
 	private ITemplate base;
+	private String contextType;
 
-	public TemplateNode(String name, List<ParameterNode> parameters, String templatePackage, TextSource source, int offset, int endoffset) {
+	public TemplateNode(String name, List<ParameterNode> parameters, String contextType, String templatePackage, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.contextType = contextType;
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
 		if (templatePackage == null) {
@@ -48,6 +50,10 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getContextType() {
+		return contextType;
 	}
 
 	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException {
