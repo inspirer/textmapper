@@ -1,3 +1,18 @@
+/**
+ * Copyright 2002-2010 Evgeny Gryaznov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.textway.templates.types;
 
 import java.util.ArrayList;
@@ -53,7 +68,6 @@ class TiResolver {
 			myStatus.fireError(null, "Problem(s) in type definitions:");
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.fireError(new ILocatedEntity() {
-					@Override
 					public String getLocation() {
 						return myPackage + "," + tree.getSource().lineForOffset(s.getOffset());
 					}
@@ -206,7 +220,6 @@ class TiResolver {
 			this.node = node;
 		}
 
-		@Override
 		public String getLocation() {
 			return myPackage + "," + myTree.getSource().lineForOffset(node.getOffset());
 		}
