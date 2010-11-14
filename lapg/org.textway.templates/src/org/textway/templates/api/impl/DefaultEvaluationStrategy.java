@@ -15,23 +15,16 @@
  */
 package org.textway.templates.api.impl;
 
+import org.textway.templates.api.*;
+import org.textway.templates.ast.AstTree;
+import org.textway.templates.ast.AstTree.AstProblem;
+import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.ExpressionNode;
+import org.textway.templates.ast.TemplateNode;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationCache;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.ILocatedEntity;
-import org.textway.templates.api.INamedEntity;
-import org.textway.templates.api.INavigationStrategy;
-import org.textway.templates.api.IBundleEntity;
-import org.textway.templates.api.IQuery;
-import org.textway.templates.api.ITemplate;
-import org.textway.templates.ast.AstParser;
-import org.textway.templates.ast.ExpressionNode;
-import org.textway.templates.ast.AstLexer.ErrorReporter;
-import org.textway.templates.ast.AstTree.TextSource;
 
 public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
@@ -66,17 +59,17 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public boolean toBoolean(Object o) {
-		if( o instanceof Boolean ) {
-			return ((Boolean)o).booleanValue();
-		} else if( o instanceof String ) {
-			return ((String)o).trim().length() > 0;
+		if (o instanceof Boolean) {
+			return ((Boolean) o).booleanValue();
+		} else if (o instanceof String) {
+			return ((String) o).trim().length() > 0;
 		}
 		return o != null;
 	}
 
 	public String toString(Object o, ExpressionNode referer) throws EvaluationException {
-		if( o instanceof Collection<?> || o instanceof Object[] ) {
-			String message = "Evaluation of `"+referer.toString()+"` results in collection, cannot convert to String";
+		if (o instanceof Collection<?> || o instanceof Object[]) {
+			String message = "Evaluation of `" + referer.toString() + "` results in collection, cannot convert to String";
 			EvaluationException ex = new HandledEvaluationException(message);
 			fireError(referer, message);
 			throw ex;
@@ -87,18 +80,18 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException {
 		try {
 			Object result = expr.evaluate(context, this);
-			if( result == null && !permitNull ) {
-				String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context.getThisObject()) + ": null";
+			if (result == null && !permitNull) {
+				String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
 				fireError(expr, message);
 				throw ex;
 			}
 			return result;
-		} catch( HandledEvaluationException ex ) {
+		} catch (HandledEvaluationException ex) {
 			throw ex;
-		} catch( Throwable th ) {
+		} catch (Throwable th) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
-			String message = "Evaluation of `"+expr.toString()+"` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
+			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
 			fireError(expr, message);
 			throw ex;
@@ -106,11 +99,11 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public String getTitle(Object object) {
-		if( object == null ) {
+		if (object == null) {
 			return "<unknown>";
 		}
-		if( object instanceof INamedEntity ) {
-			return ((INamedEntity)object).getTitle();
+		if (object instanceof INamedEntity) {
+			return ((INamedEntity) object).getTitle();
 		}
 		return object.getClass().getCanonicalName();
 	}
@@ -145,23 +138,18 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line) {
-		final String inputName = templateId != null ? templateId : referer.getLocation();
-		AstParser p = new AstParser(new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				DefaultEvaluationStrategy.this.fireError(null, inputName + ":" + s);
-			}
-		});
-		IBundleEntity[] loaded = null;
-		if (!p.parseBody(new TextSource(inputName, template.toCharArray(), line), "syntax")) {
-			loaded = new ITemplate[0];
-		} else {
-			loaded = p.getResult();
+		final String sourceName = templateId != null ? templateId : referer.getLocation();
+		AstTree<TemplateNode> tree = AstTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
+		for (AstProblem problem : tree.getErrors()) {
+			final int errline = tree.getSource().lineForOffset(problem.getOffset());
+			DefaultEvaluationStrategy.this.fireError(new ILocatedEntity() {
+				public String getLocation() {
+					return sourceName + "," + errline;
+				}
+			}, problem.getMessage());
 		}
 
-		ITemplate t = loaded != null && loaded.length == 1
-				&& loaded[0].getKind() == IBundleEntity.KIND_TEMPLATE
-				&& loaded[0].getName().equals("inline")
-					? (ITemplate)loaded[0] : null;
+		ITemplate t = tree.getRoot();
 		if (t == null) {
 			return "";
 		}
@@ -222,11 +210,11 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	public final void createFile(String name, String contents) {
-		templatesFacade.createFile(name,contents);
+		templatesFacade.createFile(name, contents);
 	}
 
 	public IEvaluationCache getCache() {
-		if(myCache == null) {
+		if (myCache == null) {
 			myCache = new DefaultEvaluationCache();
 		}
 		return myCache;

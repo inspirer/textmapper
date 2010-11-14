@@ -30,9 +30,7 @@ public class AstParser {
 	
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	
-	private ArrayList<IBundleEntity> entities;
-	private String templatePackage;
+	String templatePackage;
 	
 	private int killEnds = -1;
 	
@@ -143,43 +141,9 @@ public class AstParser {
 			reporter.error(offset, endoffset, line, "template name should be simple identifier");
 		}
 	}
-	
-	public boolean parse(TextSource source, String templatePackage) {
-		this.templatePackage = templatePackage;
-		this.entities = new ArrayList<IBundleEntity>();
-		this.source = source; 
-		try {
-			AstLexer lexer = new AstLexer(source.getStream(), reporter);
-			parseInput(lexer);
-			return true;
-		} catch( ParseException ex ) {
-			return false;
-		} catch( IOException ex ) {
-			return false;
-		}
-	}
-	
-	public boolean parseBody(TextSource source, String templatePackage) {
-		this.templatePackage = templatePackage;
-		this.entities = new ArrayList<IBundleEntity>();
-		this.source = source; 
-		try {
-			AstLexer lexer = new AstLexer(source.getStream(), reporter);
-			parseBody(lexer);
-			return true;
-		} catch( ParseException ex ) {
-			return false;
-		} catch( IOException ex ) {
-			return false;
-		}
-	}
-	
-	public IBundleEntity[] getResult() {
-		return entities.toArray(new IBundleEntity[entities.size()]);
-	}
 	private static final int lapg_action[] = {
-		-3, -1, 8, -11, -19, 4, 7, -1, 2, 37, 36, 34, 35, -1, -27, 28,
-		33, 31, 32, -1, 16, -1, 10, -1, 3, -1, 6, -1, -41, 80, 82, -1,
+		-3, -1, 8, -11, -19, 3, 7, -1, 2, 37, 36, 34, 35, -1, -27, 28,
+		33, 31, 32, -1, 16, -1, 10, -1, 4, -1, 6, -1, -41, 80, 82, -1,
 		-1, 99, -1, -1, -1, -1, 84, -1, 98, 83, -1, -1, -1, -97, -1, -1,
 		-1, -123, 93, 81, 103, -175, -221, -261, -297, -325, -351, -373, 127, 129, -393, 27,
 		-1, 50, -401, -1, -1, 5, -413, -1, -439, -451, -505, -1, -513, -1, -521, -1,
@@ -497,7 +461,7 @@ public class AstParser {
 	};
 
 	private static final short lapg_rlen[] = {
-		0, 1, 1, 2, 1, 3, 2, 1, 1, 0, 1, 0, 1, 0, 1, 9,
+		0, 1, 1, 1, 2, 3, 2, 1, 1, 0, 1, 0, 1, 0, 1, 9,
 		1, 6, 0, 1, 3, 1, 2, 3, 4, 2, 3, 2, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 3, 1, 0, 1, 0, 1, 4, 0, 1, 3,
 		2, 2, 1, 3, 2, 0, 1, 3, 3, 7, 5, 1, 0, 1, 7, 11,
@@ -585,8 +549,8 @@ public class AstParser {
 		"'?'",
 		"_skip",
 		"input",
-		"templates",
-		"template_declaration_or_space",
+		"definitions",
+		"definition",
 		"query_def",
 		"cached_flag",
 		"template_start",
@@ -629,7 +593,7 @@ public class AstParser {
 		"expression",
 		"expression_list",
 		"body",
-		"templatesopt",
+		"definitionsopt",
 		"cached_flagopt",
 		"parametersopt",
 		"context_typeopt",
@@ -645,8 +609,8 @@ public class AstParser {
 	public interface Tokens extends Lexems {
 		// non-terminals
 		public static final int input = 63;
-		public static final int templates = 64;
-		public static final int template_declaration_or_space = 65;
+		public static final int definitions = 64;
+		public static final int definition = 65;
 		public static final int query_def = 66;
 		public static final int cached_flag = 67;
 		public static final int template_start = 68;
@@ -689,7 +653,7 @@ public class AstParser {
 		public static final int expression = 105;
 		public static final int expression_list = 106;
 		public static final int body = 107;
-		public static final int templatesopt = 108;
+		public static final int definitionsopt = 108;
 		public static final int cached_flagopt = 109;
 		public static final int parametersopt = 110;
 		public static final int context_typeopt = 111;
@@ -792,14 +756,17 @@ public class AstParser {
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 		switch (rule) {
-			case 5:  // template_declaration_or_space ::= template_start instructions template_end
-				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); entities.add(((TemplateNode)lapg_m[lapg_head-2].sym)); 
+			case 3:  // definitions ::= definition
+				 lapg_gg.sym = new ArrayList(); if (((IBundleEntity)lapg_m[lapg_head-0].sym) != null) ((List<IBundleEntity>)lapg_gg.sym).add(((IBundleEntity)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 6:  // template_declaration_or_space ::= template_start template_end
-				 entities.add(((TemplateNode)lapg_m[lapg_head-1].sym)); 
+			case 4:  // definitions ::= definitions definition
+				 if (((IBundleEntity)lapg_m[lapg_head-0].sym) != null) ((List<IBundleEntity>)lapg_gg.sym).add(((IBundleEntity)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 7:  // template_declaration_or_space ::= query_def
-				 entities.add(((QueryNode)lapg_m[lapg_head-0].sym)); 
+			case 5:  // definition ::= template_start instructions template_end
+				 ((TemplateNode)lapg_m[lapg_head-2].sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-1].sym)); 
+				break;
+			case 8:  // definition ::= any
+				 lapg_gg.sym = null; 
 				break;
 			case 15:  // query_def ::= '${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
 				 lapg_gg.sym = new QueryNode(((String)lapg_m[lapg_head-5].sym), ((List<ParameterNode>)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), templatePackage, ((ExpressionNode)lapg_m[lapg_head-1].sym), ((Boolean)lapg_m[lapg_head-7].sym) != null, source, lapg_gg.offset, lapg_gg.endoffset); checkFqn(((String)lapg_m[lapg_head-5].sym), lapg_gg.offset, lapg_gg.endoffset, lapg_m[lapg_head-8].line); 
@@ -1054,7 +1021,6 @@ public class AstParser {
 				
 							lapg_gg.sym = new TemplateNode("inline", null, null, templatePackage, source, lapg_gg.offset, lapg_gg.endoffset);
 							((TemplateNode)lapg_gg.sym).setInstructions(((ArrayList<Node>)lapg_m[lapg_head-0].sym));
-							entities.add(((TemplateNode)lapg_gg.sym));
 						
 				break;
 		}
@@ -1065,8 +1031,8 @@ public class AstParser {
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 
-	public Object parseInput(AstLexer lexer) throws IOException, ParseException {
-		return parse(lexer, 0);
+	public List<IBundleEntity> parseInput(AstLexer lexer) throws IOException, ParseException {
+		return (List<IBundleEntity>) parse(lexer, 0);
 	}
 
 	public TemplateNode parseBody(AstLexer lexer) throws IOException, ParseException {

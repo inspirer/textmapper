@@ -103,20 +103,20 @@ _skip:      /[\t\r\n ]+/    { return false; }
 
 # Grammar
 
-input ::=
-	templatesopt 
+input (List<org.textway.templates.api.@IBundleEntity>) ::=
+	definitionsopt
 ;
 
-templates ::=
-	templates template_declaration_or_space 
-	| template_declaration_or_space 
+definitions (List<org.textway.templates.api.@IBundleEntity>) ::=
+	  definition									{ $$ = new ArrayList(); if ($definition != null) $definitions.add($definition); }
+	| definitions definition						{ if ($definition != null) $definitions#0.add($definition); }
 ;
 
-template_declaration_or_space ::=
-	template_start instructions template_end		{ $template_start.setInstructions($instructions); entities.add($template_start); }
-	| template_start template_end					{ entities.add($template_start); }
-	| query_def										{ entities.add($query_def); }
-	| any
+definition (org.textway.templates.api.@IBundleEntity) ::=
+	template_start instructions template_end		{ $template_start.setInstructions($instructions); }
+	| template_start template_end
+	| query_def
+	| any											{ $$ = null; }
 ;
 
 query_def (QueryNode) ::=
@@ -370,7 +370,6 @@ body (TemplateNode) ::=
 						{
 							$$ = new TemplateNode("inline", null, null, templatePackage, source, ${body.offset}, ${body.endoffset});
 							$body.setInstructions($instructions);
-							entities.add($body);
 						}
 ;
 
@@ -383,9 +382,13 @@ import java.util.ArrayList;
 import java.util.List;
 ${end}
 
+${template java_tree.parseParameters-}
+${call base}, String templatePackage${end}
+
 ${template java_tree.createParser-}
 ${call base-}
 parser.source = source;
+parser.templatePackage = templatePackage;
 ${end}
 
 ${template java_lexer.lexercode}
@@ -421,9 +424,7 @@ ${end}
 ${template java.classcode}
 ${call base-}
 org.textway.templates.ast.AstTree.@TextSource source;
-
-private ArrayList<org.textway.templates.api.@IBundleEntity> entities;
-private String templatePackage;
+String templatePackage;
 
 private int killEnds = -1;
 
@@ -534,38 +535,5 @@ private void checkFqn(String templateName, int offset, int endoffset, int line) 
 		reporter.error(offset, endoffset, line, "template name should be simple identifier");
 	}
 }
-
-public boolean parse(org.textway.templates.ast.AstTree.@TextSource source, String templatePackage) {
-	this.templatePackage = templatePackage;
-	this.entities = new ArrayList<org.textway.templates.api.@IBundleEntity>();
-	this.source = source; 
-	try {
-		AstLexer lexer = new AstLexer(source.getStream(), reporter);
-		parseInput(lexer);
-		return true;
-	} catch( ParseException ex ) {
-		return false;
-	} catch( IOException ex ) {
-		return false;
-	}
-}
-
-public boolean parseBody(org.textway.templates.ast.AstTree.@TextSource source, String templatePackage) {
-	this.templatePackage = templatePackage;
-	this.entities = new ArrayList<org.textway.templates.api.@IBundleEntity>();
-	this.source = source; 
-	try {
-		AstLexer lexer = new AstLexer(source.getStream(), reporter);
-		parseBody(lexer);
-		return true;
-	} catch( ParseException ex ) {
-		return false;
-	} catch( IOException ex ) {
-		return false;
-	}
-}
-
-public org.textway.templates.api.@IBundleEntity[] getResult() {
-	return entities.toArray(new org.textway.templates.api.@IBundleEntity[entities.size()]);
-}
 ${end}
+

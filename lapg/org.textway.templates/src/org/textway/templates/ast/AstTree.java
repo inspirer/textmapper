@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.textway.templates.api.IBundleEntity;
 import org.textway.templates.ast.AstLexer.ErrorReporter;
 import org.textway.templates.ast.AstParser.ParseException;
 
@@ -39,7 +40,7 @@ public class AstTree<T> {
 	}
 
 
-	public static AstTree<Object> parseInput(TextSource source) {
+	public static AstTree<List<IBundleEntity>> parseInput(TextSource source, String templatePackage) {
 		final List<AstProblem> list = new ArrayList<AstProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -53,18 +54,19 @@ public class AstTree<T> {
 
 			AstParser parser = new AstParser(reporter);
 			parser.source = source;
-			Object result = parser.parseInput(lexer);
+			parser.templatePackage = templatePackage;
+			List<IBundleEntity> result = parser.parseInput(lexer);
 
-			return new AstTree<Object>(source, result, list);
+			return new AstTree<List<IBundleEntity>>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new AstTree<Object>(source, null, list);
+		return new AstTree<List<IBundleEntity>>(source, null, list);
 	}
 
-	public static AstTree<TemplateNode> parseBody(TextSource source) {
+	public static AstTree<TemplateNode> parseBody(TextSource source, String templatePackage) {
 		final List<AstProblem> list = new ArrayList<AstProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -78,6 +80,7 @@ public class AstTree<T> {
 
 			AstParser parser = new AstParser(reporter);
 			parser.source = source;
+			parser.templatePackage = templatePackage;
 			TemplateNode result = parser.parseBody(lexer);
 
 			return new AstTree<TemplateNode>(source, result, list);

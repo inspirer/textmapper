@@ -15,9 +15,11 @@
  */
 package org.textway.templates.api;
 
-import org.textway.templates.ast.AstParser;
-import org.textway.templates.ast.AstLexer.ErrorReporter;
+import org.textway.templates.ast.AstTree;
+import org.textway.templates.ast.AstTree.AstProblem;
 import org.textway.templates.ast.AstTree.TextSource;
+
+import java.util.List;
 
 public class TemplatesBundle {
 
@@ -38,19 +40,18 @@ public class TemplatesBundle {
 	}
 
 	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
-			final IProblemCollector collector) {
-		TextSource source = new TextSource(sourceName, contents.toCharArray(), 1);
-		AstParser p = new AstParser(new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				collector.fireError(null, sourceName + ":" + s);
-			}
-		});
-		IBundleEntity[] entities;
-		if (!p.parse(source, templatePackage)) {
-			entities = new IBundleEntity[0];
-		} else {
-			entities = p.getResult();
+										final IProblemCollector collector) {
+
+		AstTree<List<IBundleEntity>> tree = AstTree.parseInput(new TextSource(sourceName, contents.toCharArray(), 1), templatePackage);
+		for (AstProblem problem : tree.getErrors()) {
+			final int line = tree.getSource().lineForOffset(problem.getOffset());
+			collector.fireError(new ILocatedEntity() {
+				public String getLocation() {
+					return sourceName + "," + line;
+				}
+			}, problem.getMessage());
 		}
+		IBundleEntity[] entities = tree.getRoot() != null ? tree.getRoot().toArray(new IBundleEntity[tree.getRoot().size()]) : new IBundleEntity[0];
 		return new TemplatesBundle(sourceName, entities);
 	}
 }
