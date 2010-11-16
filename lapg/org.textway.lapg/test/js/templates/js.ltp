@@ -2,7 +2,7 @@ ${template main-}
 ${file opts.prefix+'_parser.js'-}
 // generated parser
 
-(function( window, undefined ) {
+(function(window) {
 
 var ${opts.prefix} = {
 	TOKEN_SIZE: ${opts.maxtoken}
@@ -266,28 +266,9 @@ ${end}
 
 
 ${template parserTable(arr, atype, name, cname)-}
-${if opts.packTables == 'true'-}
-	public interface ${cname} {
-${if arr.size() > 8000-}
-${if atype == 'short'-}
-		public static final short ${name}[] = unpack_short(${arr.size()},
-			${util.packShort(arr, 3)});
-${else-}
-		public static final int ${name}[] = unpack_int(${arr.size()},
-			${util.packInt(arr, 3)});
-${end-}
-${else-}
-		public static final ${atype} ${name}[] = {
-			${util.format(arr, 16, 3)}
-		};
-${end-}
-	}
-	private static final ${atype}[] ${name} = ${cname}.${name};
-${else-}
-	private static final ${atype} ${name}[] = {
+	${name}: [
 		${util.format(arr, 16, 2)}
-	};
-${end-}
+	],
 ${end}
 
 ${template parserAction-}

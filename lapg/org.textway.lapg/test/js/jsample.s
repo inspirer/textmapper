@@ -7,7 +7,7 @@
 
 # Vocabulary
 
-Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/	{ $lexem = token; }
+Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/	{ $lexem = this.token; break; }
 _skip:      /\/\/.*/
 _skip:      /[\t\r\n ]+/    { return false; }
 
