@@ -48,7 +48,9 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 				}
 			}
 			sb.append(table[i]);
-			sb.append(",");
+			if (i + 1 < table.length) {
+				sb.append(",");
+			}
 		}
 		return sb.toString();
 	}
@@ -67,7 +69,9 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 				}
 			}
 			sb.append(table[i]);
-			sb.append(",");
+			if (i + 1 < table.length) {
+				sb.append(",");
+			}
 		}
 		return sb.toString();
 	}
@@ -83,12 +87,18 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(startrow);
 			sb.append(" ");
 			int[] row = table[i];
-			for (int element : row) {
-				sb.append(element);
-				sb.append(", ");
+			for (int e = 0; e < row.length; e++) {
+				if(e > 0) {
+					sb.append(", ");
+				}
+				sb.append(row[e]);
 			}
 			sb.append(endrow);
-			sb.append(",\n");
+			if (i + 1 < table.length) {
+				sb.append(",\n");
+			} else {
+				sb.append("\n");
+			}
 		}
 		return sb.toString();
 	}
