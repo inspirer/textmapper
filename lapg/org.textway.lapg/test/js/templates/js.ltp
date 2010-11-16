@@ -36,9 +36,8 @@ ${opts.prefix}.Parser.prototype = {
 ${call parserTables-}
 
 	lapg_syms: [
-${foreach s in parser.sym-}
-		"${s.name}",
-${end-}
+${foreach s in parser.sym separator ',\n'-}
+		"${s.name}"${end}
 	],
 
 	lapg_next: function(state,symbol) {

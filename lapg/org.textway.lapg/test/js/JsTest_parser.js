@@ -163,7 +163,7 @@ JsTest.Parser.prototype = {
 		"Lid",
 		"_skip",
 		"error",
-		"input",
+		"input"
 	],
 
 	lapg_next: function(state,symbol) {
