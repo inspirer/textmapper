@@ -9,7 +9,8 @@ var JsTest = {
 JsTest.Lexems = {
 	eoi: 0,
 	Lid: 1,
-	_skip: 2
+	_skip: 2,
+	error: 3
 };
 
 JsTest.Lexer = function(text,errorHandler) {
@@ -126,7 +127,7 @@ JsTest.Lexer.prototype = {
 };
 
 JsTest.NonTerm = {
-	input: 3
+	input: 4
 };
 
 JsTest.Parser = function() {
@@ -138,7 +139,7 @@ JsTest.Parser.prototype = {
 	],
 
 	lapg_sym_goto: [
-		0, 1, 2, 2, 3
+		0, 1, 2, 2, 2, 3
 	],
 
 	lapg_sym_from: [
@@ -154,13 +155,14 @@ JsTest.Parser.prototype = {
 	],
 
 	lapg_rlex: [
-		3
+		4
 	],
 
 	lapg_syms: [
 		"eoi",
 		"Lid",
 		"_skip",
+		"error",
 		"input",
 	],
 
@@ -189,6 +191,7 @@ JsTest.Parser.prototype = {
 	parse: function(lexer) {
 		this.lapg_m = new Array(1024);
 		this.lapg_head = 0;
+		var lapg_symbols_ok = 4;
 
 		this.lapg_m[0] = {
 			state: 0
@@ -202,15 +205,51 @@ JsTest.Parser.prototype = {
 				this.reduce(lapg_i);
 			} else if (lapg_i == -1) {
 				this.shift(lexer);
+				lapg_symbols_ok++;
 			}
 
 			if (lapg_i == -2 || this.lapg_m[this.lapg_head].state == -1) {
+				if (this.lapg_n.lexem == 0) {
+					break;
+				}
+				while (this.lapg_head >= 0 && this.lapg_state_sym(this.lapg_m[this.lapg_head].state, 3) == -1) {
+					this.lapg_m[this.lapg_head] = null; // TODO dispose?
+					this.lapg_head--;
+				}
+				if (this.lapg_head >= 0) {
+					this.lapg_m[++this.lapg_head] = {
+						lexem: 3,
+						state: this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, 3),
+						line: this.lapg_n.line,
+						column: this.lapg_n.column,
+						offset: this.lapg_n.offset,
+						endline: this.lapg_n.endline,
+						endcolumn: this.lapg_n.endcolumn,
+						endoffset: this.lapg_n.endoffset,
+						sym: null
+					};
+					if (lapg_symbols_ok >= 4) {
+						lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+					}
+					if (lapg_symbols_ok <= 1) {
+						this.lapg_n = lexer.next();
+					}
+					lapg_symbols_ok = 0;
+					continue;
+				} else {
+					this.lapg_head = 0;
+					this.lapg_m[0] = {
+						state: 0
+					};
+				}
 				break;
 			}
 		}
 
 		if (this.lapg_m[this.lapg_head].state != 3) {
-			lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+			if (lapg_symbols_ok >= 4) {
+				lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+			}
 			return null;
 		}
 		return this.lapg_m[this.lapg_head - 1].sym;

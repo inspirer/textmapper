@@ -106,28 +106,29 @@ ${if syntax.error-}
 					this.lapg_head--;
 				}
 				if (this.lapg_head >= 0) {
-					this.lapg_m[++this.lapg_head] = new LapgSymbol();
-					this.lapg_m[this.lapg_head].lexem = ${syntax.error.index};
-					this.lapg_m[this.lapg_head].sym = null;
-					this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, ${syntax.error.index});
+					this.lapg_m[++this.lapg_head] = {
+						lexem: ${syntax.error.index},
+						state: this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, ${syntax.error.index}),
 ${if opts.positions.contains('line')-}
-					this.lapg_m[this.lapg_head].line = this.lapg_n.line;
+						line: this.lapg_n.line,
 ${end-}
 ${if opts.positions.contains('column')-}
-					this.lapg_m[this.lapg_head].column = this.lapg_n.column;
+						column: this.lapg_n.column,
 ${end-}
 ${if opts.positions.contains('offset')-}
-					this.lapg_m[this.lapg_head].offset = this.lapg_n.offset;
+						offset: this.lapg_n.offset,
 ${end-}
 ${if opts.endpositions.contains('line')-}
-					this.lapg_m[this.lapg_head].endline = this.lapg_n.endline;
+						endline: this.lapg_n.endline,
 ${end-}
 ${if opts.endpositions.contains('column')-}
-					this.lapg_m[this.lapg_head].endcolumn = this.lapg_n.endcolumn;
+						endcolumn: this.lapg_n.endcolumn,
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-					this.lapg_m[this.lapg_head].endoffset = this.lapg_n.endoffset;
+						endoffset: this.lapg_n.endoffset,
 ${end-}
+						sym: null
+					};
 					if (lapg_symbols_ok >= 4) {
 ${if opts.positions.contains('column')-}
 						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
@@ -142,8 +143,9 @@ ${end-}
 					continue;
 				} else {
 					this.lapg_head = 0;
-					this.lapg_m[0] = new LapgSymbol();
-					this.lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
+					this.lapg_m[0] = {
+						state: ${syntax.input.length > 1 ? 'state' : 0}
+					};
 				}
 ${end-}
 				break;
