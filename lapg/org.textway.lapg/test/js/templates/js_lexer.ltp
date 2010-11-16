@@ -74,7 +74,7 @@ ${end-}
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 					this.currColumn++;
 ${end-}
-					if (this.chr == '\n') {
+					if (this.chr == 10) {
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 						this.currColumn = 1;
 ${end-}
