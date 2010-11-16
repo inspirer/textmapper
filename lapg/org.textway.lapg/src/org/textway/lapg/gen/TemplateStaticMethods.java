@@ -96,8 +96,6 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(endrow);
 			if (i + 1 < table.length) {
 				sb.append(",\n");
-			} else {
-				sb.append("\n");
 			}
 		}
 		return sb.toString();
