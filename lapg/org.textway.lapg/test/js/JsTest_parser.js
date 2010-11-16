@@ -229,7 +229,7 @@ JsTest.Parser.prototype = {
 						sym: null
 					};
 					if (lapg_symbols_ok >= 4) {
-						lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+						lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.tokenLine, "syntax error before line " + lexer.tokenLine + ", column " + this.lapg_n.column);
 					}
 					if (lapg_symbols_ok <= 1) {
 						this.lapg_n = lexer.next();
@@ -248,7 +248,7 @@ JsTest.Parser.prototype = {
 
 		if (this.lapg_m[this.lapg_head].state != 3) {
 			if (lapg_symbols_ok >= 4) {
-				lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+				lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.tokenLine, "syntax error before line " + lexer.tokenLine + ", column " + this.lapg_n.column);
 			}
 			return null;
 		}

@@ -130,9 +130,9 @@ ${end-}
 					};
 					if (lapg_symbols_ok >= 4) {
 ${if opts.positions.contains('column')-}
-						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.tokenLine, "syntax error before line " + lexer.tokenLine + ", column " + this.lapg_n.column);
 ${else-}
-						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine());
+						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.tokenLine, "syntax error before line " + lexer.tokenLine);
 ${end-}
 					}
 					if (lapg_symbols_ok <= 1) {
@@ -155,7 +155,7 @@ ${end-}
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine()${if opts.positions.contains('column')} + ", column " + this.lapg_n.column${end});
+${end}			lexer.errorHandler(${call err_location('this.lapg_n')}lexer.tokenLine, "syntax error before line " + lexer.tokenLine${if opts.positions.contains('column')} + ", column " + this.lapg_n.column${end});
 ${if syntax.error-}
 			}
 ${end-}
