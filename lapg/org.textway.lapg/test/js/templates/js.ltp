@@ -4,9 +4,7 @@ ${file opts.prefix+'_parser.js'-}
 
 (function(window) {
 
-var ${opts.prefix} = {
-	TOKEN_SIZE: ${opts.maxtoken}
-};
+var ${opts.prefix} = {};
 
 ${call js_lexer.unit}
 

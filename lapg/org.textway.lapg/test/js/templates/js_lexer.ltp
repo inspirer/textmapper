@@ -1,7 +1,7 @@
 ${template unit-}
 ${opts.prefix}.Lexems = {
 ${for i in [0, parser.nterms - 1]-}
-	${parser.sym[i].id->js.escapeJsReserved()}: ${i},
+	${parser.sym[i].id->js.escapeJsReserved()}: ${i}${if i < parser.nterms-1},${end}
 ${end-}
 };
 
@@ -37,7 +37,11 @@ ${opts.prefix}.Lexer.prototype = {
 		this.group = state;
 	},
 
-${self->lexerTables()-}
+${call js.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
+
+	lapg_lexem: [
+		${util.format(lex.change, 2, '[', ']')}
+	],
 
 	mapCharacter: function(chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
@@ -112,8 +116,8 @@ ${else-}
 		} while (lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
-	},
-${if syntax.hasLexemActions()}
+	}${if syntax.hasLexemActions()},
+
 	createToken: function(lapg_n) {
 		switch (lapg_n.lexem) {
 ${foreach lexem in syntax.lexems-}
@@ -124,21 +128,11 @@ ${end-}
 ${end-}
 		}
 		return true;
-	},
-${end-}
+	}${end}
 }
 ${end}
 
 
 ${template lexerAction(lexem)-}
 ${eval action.contents, '[lexem action in '+getAction().getLocation()+']'}
-${end}
-
-
-${template lexerTables-}
-${call js.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
-
-	lapg_lexem: [
-		${util.format(lex.change, 2, '[', ']')}
-	],
 ${end}

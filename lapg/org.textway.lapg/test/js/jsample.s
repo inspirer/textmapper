@@ -2,8 +2,8 @@
 
 .lang        "js" 
 .prefix      "JsTest"
-.positions   "line,offset"
-.endpositions "offset"
+.positions   "line,column,offset"
+.endpositions "line,column,offset"
 
 # Vocabulary
 
