@@ -1,14 +1,16 @@
 ${template unit-}
-package ${call java.package};
+${opts.prefix}.Lexems = {
+${for i in [0, parser.nterms - 1]-}
+	${parser.sym[i].id->js.escapeJsReserved()}: ${i},
+${end-}
+};
 
-public class ${opts.prefix}Lexer {
+${opts.prefix}.Lexer = function(text,errorHandler) {
+	this.text = text;
+	this.errorHandler = errorHandler;
+}
 
-${call innerDeclarations-}
-
-	public static final int TOKEN_SIZE = ${opts.maxtoken};
-
-	private java.io.@Reader stream;
-	final private ErrorReporter reporter;
+${opts.prefix}.Lexer.prototype = {
 
 	final private char[] data = new char[2048];
 	private int datalen, l;
@@ -26,79 +28,69 @@ ${end-}
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 	private int currOffset = 0;
 ${end-}
-${util.shiftRight(self->lexercode(), 1)-}
 
-	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter) throws java.io.@IOException {
-		this.reporter = reporter;
-		reset(stream);
-	}
-
-	public void reset(java.io.@Reader stream) throws java.io.@IOException {
+	reset: function(stream) {
 		this.stream = stream;
 		this.datalen = stream.read(data);
 		this.l = 0;
 		this.group = 0;
 		chr = l < datalen ? data[l++] : 0;
-	}
+	},
 
-	public int getState() {
+	getState: function() {
 		return group;
-	}
+	},
 
-	public void setState(int state) {
+	setState: function(state) {
 		this.group = state;
-	}
+	},
 
-	public int getTokenLine() {
+	getTokenLine: function() {
 		return tokenLine;
-	}
+	},
 
-	public void setLine(int currLine) {
+	setLine: function(int currLine) {
 		this.currLine = currLine;
-	}
+	},
 
 ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
-	public void setColumn(int currColumn) {
+	setColumn: function(currColumn) {
 		this.currColumn = currColumn;
-	}
+	},
 
 ${end-}
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
-	public void setOffset(int currOffset) {
+	setOffset: function(currOffset) {
 		this.currOffset = currOffset;
-	}
+	},
 
 ${end-}
-	public String current() {
+	current: function() {
 		return token.toString();
 	}
 
 ${self->lexerTables()-}
 
-	private static int mapCharacter(int chr) {
+	mapCharacter: function(chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
 			return lapg_char2no[chr];
 		}
 		return 1;
-	}
+	},
 
-	public LapgSymbol next() throws java.io.@IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
-		int state;
+	next: function() {
+		var lapg_n = {};
+		var state;
 
 		do {
 ${if opts.positions.contains('offset')-}
-			lapg_n.offset = currOffset;
+			lapg_n.offset = this.currOffset;
 ${end-}
-			tokenLine =${if opts.positions.contains('line')} lapg_n.line =${end} currLine;
+			this.tokenLine =${if opts.positions.contains('line')} lapg_n.line =${end} this.currLine;
 ${if opts.positions.contains('column')-}
-			lapg_n.column = currColumn;
+			lapg_n.column = this.currColumn;
 ${end-}
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
-			}
-			token.setLength(0);
+			this.token = "";
 			int tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
@@ -136,10 +128,10 @@ ${end-}
 
 			if (state == -1) {
 				if (chr == 0) {
-					reporter.error(${call java.err_location('lapg_n')}currLine, "Unexpected end of file reached");
+					reporter.error(${call js.err_location('lapg_n')}currLine, "Unexpected end of file reached");
 					break;
 				}
-				reporter.error(${call java.err_location('lapg_n')}currLine, java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(${call js.err_location('lapg_n')}currLine, java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -157,9 +149,9 @@ ${else-}
 		} while (lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
-	}
+	},
 ${if syntax.hasLexemActions()}
-	protected boolean createToken(LapgSymbol lapg_n) {
+	createToken: function(lapg_n) {
 		switch (lapg_n.lexem) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
@@ -169,7 +161,7 @@ ${end-}
 ${end-}
 		}
 		return true;
-	}
+	},
 ${end-}
 }
 ${end}
@@ -181,55 +173,9 @@ ${end}
 
 
 ${template lexerTables-}
-${call java.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
+${call js.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
 
-${if opts.packLexems != 'true'-}
 	private static final short[][] lapg_lexem = new short[][] {
 		${util.format(lex.change, 2, '{', '}')}
 	};
-${else-}
-	private int lapg_lexem[][] = unpackFromString(${util.packIntInt(lex.change, 2)});
-
-${call java_pack.unpackIntInt-}		
-${end-}
-${end}
-
-
-${template innerDeclarations-}
-	public static class LapgSymbol {
-		public Object sym;
-		public int lexem;
-		public int state;
-${if opts.positions.contains('line')-}
-		public int line;
-${end-}
-${if opts.positions.contains('column')-}
-		public int column;
-${end-}
-${if opts.positions.contains('offset')-}
-		public int offset;
-${end-}
-${if opts.endpositions.contains('line')-}
-		public int endline;
-${end-}
-${if opts.endpositions.contains('column')-}
-		public int endcolumn;
-${end-}
-${if opts.endpositions.contains('offset')-}
-		public int endoffset;
-${end-}
-	}
-
-	public interface Lexems {
-${for i in [0, parser.nterms - 1]-}
-		public static final int ${parser.sym[i].id->java.escapeJavaReserved()} = ${i};
-${end-}
-	}
-	
-	public interface ErrorReporter {
-		void error(${call java.err_parameters(false)}String s);
-	}
-${end}
-
-${template lexercode-}
 ${end}
