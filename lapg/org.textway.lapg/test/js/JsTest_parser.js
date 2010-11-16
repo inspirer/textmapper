@@ -2,7 +2,9 @@
 
 (function(window) {
 
-var JsTest = {};
+var JsTest = {
+	DEBUG_SYNTAX: false
+};
 
 JsTest.Lexems = {
 	eoi: 0,
@@ -18,7 +20,7 @@ JsTest.Lexer = function(text,errorHandler) {
 	this.currLine = 1;
 	this.currColumn = 1;
 	this.currOffset = 0;
-}
+};
 
 JsTest.Lexer.prototype = {
 
@@ -121,8 +123,132 @@ JsTest.Lexer.prototype = {
 		}
 		return true;
 	}
-}
+};
 
+JsTest.NonTerm = {
+	input: 3
+};
+
+JsTest.Parser = function() {
+};
+
+JsTest.Parser.prototype = {
+	lapg_action: [
+		-1, 0, -1, -2
+	],
+
+	lapg_sym_goto: [
+		0, 1, 2, 2, 3
+	],
+
+	lapg_sym_from: [
+		2, 0, 0
+	],
+
+	lapg_sym_to: [
+		3, 1, 2
+	],
+
+	lapg_rlen: [
+		1
+	],
+
+	lapg_rlex: [
+		3
+	],
+
+	lapg_syms: [
+		"eoi",
+		"Lid",
+		"_skip",
+		"input",
+	],
+
+	lapg_next: function(state,symbol) {
+		return this.lapg_action[state];
+	},
+
+	lapg_state_sym: function(state, symbol) {
+		var min = this.lapg_sym_goto[symbol], max = this.lapg_sym_goto[symbol + 1] - 1;
+		var i, e;
+
+		while (min <= max) {
+			e = (min + max) >> 1;
+			i = this.lapg_sym_from[e];
+			if (i == state) {
+				return this.lapg_sym_to[e];
+			} else if (i < state) {
+				min = e + 1;
+			} else {
+				max = e - 1;
+			}
+		}
+		return -1;
+	},
+
+	parse: function(lexer) {
+		this.lapg_m = new Array(1024);
+		this.lapg_head = 0;
+
+		this.lapg_m[0] = {
+			state: 0
+		};
+		this.lapg_n = lexer.next();
+
+		while (this.lapg_m[this.lapg_head].state != 3) {
+			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.lexem);
+
+			if (lapg_i >= 0) {
+				this.reduce(lapg_i);
+			} else if (lapg_i == -1) {
+				this.shift(lexer);
+			}
+
+			if (lapg_i == -2 || this.lapg_m[this.lapg_head].state == -1) {
+				break;
+			}
+		}
+
+		if (this.lapg_m[this.lapg_head].state != 3) {
+			lexer.errorHandler(this.lapg_n.offset, this.lapg_n.endoffset, lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
+			return null;
+		}
+		return this.lapg_m[this.lapg_head - 1].sym;
+	},
+
+	shift: function(lexer) {
+		this.lapg_m[++this.lapg_head] = this.lapg_n;
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.lexem);
+		if (JsTest.DEBUG_SYNTAX) {
+			JsTest.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.lexem] + " (" + lexer.token + ")");
+		}
+		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.lexem != 0) {
+			this.lapg_n = lexer.next();
+		}
+	},
+
+	reduce: function(rule) {
+		var lapg_gg = {};
+		lapg_gg.sym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]].sym : null;
+		lapg_gg.lexem = this.lapg_rlex[rule];
+		lapg_gg.state = 0;
+		if (JsTest.DEBUG_SYNTAX) {
+			JsTest.DEBUG_SYNTAX("reduce to " + this.lapg_syms[this.lapg_rlex[rule]]);
+		}
+		var startsym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]] : this.lapg_n;
+		lapg_gg.line = startsym.line;
+		lapg_gg.column = startsym.column;
+		lapg_gg.offset = startsym.offset;
+		lapg_gg.endline = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endline : this.lapg_n.line;
+		lapg_gg.endcolumn = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endcolumn : this.lapg_n.column;
+		lapg_gg.endoffset = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endoffset : this.lapg_n.offset;
+		for (var e = this.lapg_rlen[rule]; e > 0; e--) {
+			this.lapg_m[this.lapg_head--] = null;
+		}
+		this.lapg_m[++this.lapg_head] = lapg_gg;
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head-1].state, lapg_gg.lexem);
+	}
+};
 
 window.JsTest = JsTest;
 

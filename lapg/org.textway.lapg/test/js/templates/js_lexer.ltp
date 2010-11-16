@@ -17,7 +17,7 @@ ${end-}
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 	this.currOffset = 0;
 ${end-}
-}
+};
 
 ${opts.prefix}.Lexer.prototype = {
 
@@ -129,7 +129,7 @@ ${end-}
 		}
 		return true;
 	}${end}
-}
+};
 ${end}
 
 

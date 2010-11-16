@@ -4,9 +4,12 @@ ${file opts.prefix+'_parser.js'-}
 
 (function(window) {
 
-var ${opts.prefix} = {};
+var ${opts.prefix} = {
+	DEBUG_SYNTAX: false
+};
 
-${call js_lexer.unit}
+${call js_lexer.unit-}
+${call unit-}
 
 window.${opts.prefix} = ${opts.prefix};
 
@@ -14,27 +17,22 @@ window.${opts.prefix} = ${opts.prefix};
 ${end-}
 ${end}
 
+
+
+
+
 ${template unit-}
 
 ${opts.prefix}.NonTerm = {
 ${for i in [parser.nterms, parser.nsyms-1]-}
-	${parser.sym[i].id->escapeJsReserved()} = ${i},
+	${parser.sym[i].id->escapeJsReserved()}: ${i}${if i < parser.nsyms-1},${end}
 ${end-}
 };
 
 ${opts.prefix}.Parser = function() {
-}
+};
 
 ${opts.prefix}.Parser.prototype = {
-${call parseException-}
-
-	private final ${call package}.${opts.prefix}Lexer.@ErrorReporter reporter;
-
-	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter) {
-		this.reporter = reporter;
-	}
-
-${util.shiftRight(self->classcode(), 1)-}
 ${call parserTables-}
 
 	lapg_syms: [
@@ -76,120 +74,116 @@ ${end-}
 		return -1;
 	},
 
-	private int lapg_head;
-	private LapgSymbol[] lapg_m;
-	private LapgSymbol lapg_n;
-
-	parse: function(lexer${if syntax.input.length > 1}, int state${end}) {
-		var lapg_m = new Array(${opts.stack});
-		var lapg_head = 0;
+	parse: function(lexer${if syntax.input.length > 1}, state${end}) {
+		this.lapg_m = new Array(${opts.stack});
+		this.lapg_head = 0;
 ${if syntax.error}		var lapg_symbols_ok = 4;
 ${end-}
 
-		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
-		var lapg_n = lexer.next();
+		this.lapg_m[0] = {
+			state: ${syntax.input.length > 1 ? 'state' : 0}
+		};
+		this.lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
-			var lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
+		while (this.lapg_m[this.lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.lexem);
 
 			if (lapg_i >= 0) {
-				reduce(lapg_i);
+				this.reduce(lapg_i);
 			} else if (lapg_i == -1) {
-				shift(lexer);
+				this.shift(lexer);
 ${if syntax.error}				lapg_symbols_ok++;
 ${end-}
 			}
 
-			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
+			if (lapg_i == -2 || this.lapg_m[this.lapg_head].state == -1) {
 ${if syntax.error-}
-				if (lapg_n.lexem == 0) {
+				if (this.lapg_n.lexem == 0) {
 					break;
 				}
-				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${syntax.error.index}) == -1) {
-					lapg_m[lapg_head] = null; // TODO dispose?
-					lapg_head--;
+				while (this.lapg_head >= 0 && this.lapg_state_sym(this.lapg_m[this.lapg_head].state, ${syntax.error.index}) == -1) {
+					this.lapg_m[this.lapg_head] = null; // TODO dispose?
+					this.lapg_head--;
 				}
-				if (lapg_head >= 0) {
-					lapg_m[++lapg_head] = new LapgSymbol();
-					lapg_m[lapg_head].lexem = ${syntax.error.index};
-					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${syntax.error.index});
+				if (this.lapg_head >= 0) {
+					this.lapg_m[++this.lapg_head] = new LapgSymbol();
+					this.lapg_m[this.lapg_head].lexem = ${syntax.error.index};
+					this.lapg_m[this.lapg_head].sym = null;
+					this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, ${syntax.error.index});
 ${if opts.positions.contains('line')-}
-					lapg_m[lapg_head].line = lapg_n.line;
+					this.lapg_m[this.lapg_head].line = this.lapg_n.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-					lapg_m[lapg_head].column = lapg_n.column;
+					this.lapg_m[this.lapg_head].column = this.lapg_n.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-					lapg_m[lapg_head].offset = lapg_n.offset;
+					this.lapg_m[this.lapg_head].offset = this.lapg_n.offset;
 ${end-}
 ${if opts.endpositions.contains('line')-}
-					lapg_m[lapg_head].endline = lapg_n.endline;
+					this.lapg_m[this.lapg_head].endline = this.lapg_n.endline;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-					lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
+					this.lapg_m[this.lapg_head].endcolumn = this.lapg_n.endcolumn;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+					this.lapg_m[this.lapg_head].endoffset = this.lapg_n.endoffset;
 ${end-}
 					if (lapg_symbols_ok >= 4) {
 ${if opts.positions.contains('column')-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
+						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine() + ", column " + this.lapg_n.column);
 ${else-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+						lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine());
 ${end-}
 					}
 					if (lapg_symbols_ok <= 1) {
-						lapg_n = lexer.next();
+						this.lapg_n = lexer.next();
 					}
 					lapg_symbols_ok = 0;
 					continue;
 				} else {
-					lapg_head = 0;
-					lapg_m[0] = new LapgSymbol();
-					lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
+					this.lapg_head = 0;
+					this.lapg_m[0] = new LapgSymbol();
+					this.lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
 				}
 ${end-}
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+		if (this.lapg_m[this.lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
+${end}			lexer.errorHandler(${call err_location('this.lapg_n')}lexer.getTokenLine(), "syntax error before line " + lexer.getTokenLine()${if opts.positions.contains('column')} + ", column " + this.lapg_n.column${end});
 ${if syntax.error-}
 			}
 ${end-}
-			throw new ParseException();
+			return null;
 		}
-		return ${if syntax.input.length == 1 && syntax.input.first()->type()}(${syntax.input.first()->type()})${end}lapg_m[lapg_head - 1].sym;
-	}
+		return this.lapg_m[this.lapg_head - 1].sym;
+	},
 
-	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
-		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
-		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
+	shift: function(lexer) {
+		this.lapg_m[++this.lapg_head] = this.lapg_n;
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.lexem);
+		if (${opts.prefix}.DEBUG_SYNTAX) {
+			${opts.prefix}.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.lexem] + " (" + lexer.token + ")");
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
-			lapg_n = lexer.next();
+		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.lexem != 0) {
+			this.lapg_n = lexer.next();
 		}
-	}
+	},
 
-	@SuppressWarnings("unchecked")
-	private void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+	reduce: function(rule) {
+		var lapg_gg = {};
+		lapg_gg.sym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]].sym : null;
+		lapg_gg.lexem = this.lapg_rlex[rule];
 		lapg_gg.state = 0;
-		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+		if (${opts.prefix}.DEBUG_SYNTAX) {
+			${opts.prefix}.DEBUG_SYNTAX("reduce to " + this.lapg_syms[this.lapg_rlex[rule]]);
 		}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
+		var startsym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]] : this.lapg_n;
 ${if opts.positions.contains('line')-}
 		lapg_gg.line = startsym.line;
 ${end-}
@@ -201,13 +195,13 @@ ${if opts.positions.contains('offset')-}
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : lapg_n.line;
+		lapg_gg.endline = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endline : this.lapg_n.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : lapg_n.column;
+		lapg_gg.endcolumn = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endcolumn : this.lapg_n.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		lapg_gg.endoffset = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head].endoffset : this.lapg_n.offset;
 ${end-}
 ${if syntax.hasActions() || opts.genast == 'on'-}
 		switch (rule) {
@@ -225,20 +219,20 @@ ${end-}
 ${end-}
 		}
 ${end-}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
+		for (var e = this.lapg_rlen[rule]; e > 0; e--) {
+			this.lapg_m[this.lapg_head--] = null;
 		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		this.lapg_m[++this.lapg_head] = lapg_gg;
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head-1].state, lapg_gg.lexem);
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	public ${if inp->type()}${inp->type()}${else}Object${end} parse${util.toFirstUpper(inp.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp->type()}(${inp->type()}) ${end}parse(lexer, ${index});
+	parse${util.toFirstUpper(inp.id)}: function(lexer) {
+		return parse(lexer, ${index});
 	}
 ${end-}
 ${end-}
-}
+};
 ${end}
 
 ${template parserTables-}
@@ -278,7 +272,7 @@ ${eval code, '[generated action for '+self+']'-}
 ${end}
 
 ${template getsym-}
-${if self.isLeft}lapg_gg${else}lapg_m[lapg_head-${self.rightOffset}]${end-}
+${if self.isLeft}lapg_gg${else}this.lapg_m[this.lapg_head-${self.rightOffset}]${end-}
 ${end}
 
 ${template symbol-}
@@ -310,28 +304,6 @@ ${if opts.positions.contains('offset')}${var}.offset, ${end-}
 ${if opts.endpositions.contains('offset')}${var}.endoffset, ${end-}
 ${end}
 
-${template err_parameters(fqn)-}
-${if opts.positions.contains('offset')}int start, ${end-}
-${if opts.endpositions.contains('offset')}int end, ${end-}
-int line, ${end}
-
-${template imports-}
-${end}
-
-${template classcode-}
-private static final boolean DEBUG_SYNTAX = false;
-${end}
-
-${template parseException-}
-	public static class ParseException extends Exception {
-		private static final long serialVersionUID = 1L;
-
-		public ParseException() {
-		}
-	}
-${end}
-
-${query package() = opts.package ? opts.package : 'com.test' }
 
 ${cached query type() = context.opts.genast == 'on' ? context->ast.getType(self) : self.type }
 
