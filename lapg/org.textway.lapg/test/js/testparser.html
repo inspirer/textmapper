@@ -1,0 +1,43 @@
+<!DOCTYPE html PUBLIC>
+<html>
+<head>
+ <title>JS Parser test </title>
+ <script src="JsTest_parser.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+ <textarea id="sourcearea" rows="7" cols="80">
+
+     default
+     
+     text
+
+
+ </textarea>
+ <input type="button" id="button1" value="Parse"/>
+ <textarea id="log" rows="7" cols="80"></textarea>
+
+<script type="text/javascript"><!--
+var log = document.getElementById("log");
+var b1 = document.getElementById("button1");
+b1.onclick = function() {
+   var text = document.getElementById("sourcearea").value;
+
+   var logger = function(start,end,line,message) {
+      log.value += "[" + start + "," + end + "], line " + line + ": " + message + "\n";
+   }
+
+   var lexer = new JsTest.Lexer(text,logger);
+   var next = lexer.next();
+   while(next.lexem != JsTest.Lexems.eoi) {
+     log.value += "[lexem]" + next.offset + "," + next.endoffset + ": " + lexer.token + "\n";
+     next = lexer.next();
+   }
+}
+
+
+
+--></script>
+
+</body>
+</html>

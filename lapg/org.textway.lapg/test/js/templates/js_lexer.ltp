@@ -104,7 +104,7 @@ ${end-}
 			}
 
 			if (this.offset - 1 > tokenStart) {
-				this.token = this.text.slice(tokenStart, this.offset - 1 - tokenStart);
+				this.token = this.text.slice(tokenStart, this.offset - 1);
 			}
 
 			lapg_n.lexem = - state - 2;
