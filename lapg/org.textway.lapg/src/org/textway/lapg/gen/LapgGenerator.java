@@ -19,8 +19,6 @@ import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
 import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.gen.options.OptdefTree;
-import org.textway.lapg.gen.options.ast.Input;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
@@ -35,6 +33,7 @@ import org.textway.templates.api.impl.ClassTemplateLoader;
 import org.textway.templates.api.impl.StringTemplateLoader;
 import org.textway.templates.api.impl.TemplatesFacade;
 import org.textway.templates.api.impl.TemplatesRegistry;
+import org.textway.templates.api.types.IClass;
 import org.textway.templates.ast.Node;
 
 import java.util.ArrayList;
@@ -131,21 +130,8 @@ public final class LapgGenerator {
 
 	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
-		String[] optionsResource = registry.loadResource(templPackage, "options");
-		if(optionsResource == null) {
-			return true;
-		}
-
-		String name = templPackage + ".options";
-		if(optionsResource.length > 1) {
-			status.report(ProcessingStatus.KIND_ERROR, "two option models loaded: " + name + "; check template paths");
-			return false;
-		}
-
-		OptdefTree<Input> tree = SyntaxUtil.parseOptions(new OptdefTree.TextSource(name, optionsResource[0].toCharArray(), 1), status);
-		if(tree == null) {
-			return false;
-		}
+		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".GrammarOptions", null);
+		
 
 		return true;
 	}

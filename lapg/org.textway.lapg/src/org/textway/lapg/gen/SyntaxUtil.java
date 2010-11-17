@@ -19,9 +19,6 @@ import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.gen.options.OptdefTree;
-import org.textway.lapg.gen.options.OptdefTree.OptdefProblem;
-import org.textway.lapg.gen.options.ast.Input;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
@@ -47,30 +44,7 @@ public class SyntaxUtil {
 		return result;
 
 	}
-
-	public static OptdefTree<Input> parseOptions(OptdefTree.TextSource input, ProcessingStatus status) {
-		OptdefTree<Input> tree = OptdefTree.parse(input);
-		if (tree.hasErrors()) {
-			status.report("Problems in templates bundle found:", null);
-			for (OptdefProblem s : tree.getErrors()) {
-				status.report(optdefKindToProcessingKind(s.getKind()), s.getMessage(), new OptionsElementAdapter(input, s));
-			}
-			tree = null;
-		}
-		return tree;
-
-	}
-
-	private static int optdefKindToProcessingKind(int kind) {
-		switch(kind) {
-		case OptdefTree.KIND_FATAL:
-			return ProcessingStatus.KIND_FATAL;
-		case OptdefTree.KIND_WARN:
-			return ProcessingStatus.KIND_WARN;
-		}
-		return ProcessingStatus.KIND_ERROR;
-	}
-
+	
 	private static int lapgKindToProcessingKind(int kind) {
 		switch(kind) {
 		case LapgTree.KIND_FATAL:
@@ -86,32 +60,6 @@ public class SyntaxUtil {
 		private final LapgProblem problem;
 
 		public SourceElementAdapter(LapgTree.TextSource source, LapgProblem problem) {
-			this.source = source;
-			this.problem = problem;
-		}
-
-		public int getEndOffset() {
-			return problem.getEndOffset();
-		}
-
-		public int getLine() {
-			return source.lineForOffset(problem.getOffset());
-		}
-
-		public int getOffset() {
-			return problem.getOffset();
-		}
-
-		public String getResourceName() {
-			return source.getFile();
-		}
-	}
-
-	private static class OptionsElementAdapter implements SourceElement {
-		private final OptdefTree.TextSource source;
-		private final OptdefProblem problem;
-
-		public OptionsElementAdapter(OptdefTree.TextSource source, OptdefProblem problem) {
 			this.source = source;
 			this.problem = problem;
 		}
