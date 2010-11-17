@@ -29,6 +29,7 @@ import java.util.Set;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.api.INavigationStrategy;
+import org.textway.templates.api.IProxyObject;
 
 public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
@@ -40,6 +41,10 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
 	public INavigationStrategy<?> getStrategy(Object o) {
 
+		if(o instanceof IProxyObject) {
+			return proxyObjectNavigation;
+		}
+		
 		if (o instanceof Object[]) {
 			return arrayNavigation;
 		}
@@ -54,10 +59,6 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 
 		if (o instanceof Map<?, ?>) {
 			return mapNavigation;
-		}
-
-		if(o instanceof SmartObject) {
-			return smartObjectNavigation;
 		}
 
 		if (o instanceof String) {
@@ -341,16 +342,16 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 		}
 	};
 
-	private final INavigationStrategy<SmartObject> smartObjectNavigation = new INavigationStrategy<SmartObject>() {
-		public Object getProperty(SmartObject obj, String propertyName) throws EvaluationException {
+	private final INavigationStrategy<IProxyObject> proxyObjectNavigation = new INavigationStrategy<IProxyObject>() {
+		public Object getProperty(IProxyObject obj, String propertyName) throws EvaluationException {
 			return obj.getProperty(propertyName);
 		}
 
-		public Object callMethod(SmartObject obj, String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(IProxyObject obj, String methodName, Object[] args) throws EvaluationException {
 			return obj.callMethod(methodName, args);
 		}
 
-		public Object getByIndex(SmartObject obj, Object index) throws EvaluationException {
+		public Object getByIndex(IProxyObject obj, Object index) throws EvaluationException {
 			return obj.getByIndex(index);
 		}
 	};

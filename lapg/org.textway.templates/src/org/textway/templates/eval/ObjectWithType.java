@@ -17,19 +17,20 @@ package org.textway.templates.eval;
 
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.IProxyObject;
 import org.textway.templates.api.types.IArrayType;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
 import org.textway.templates.types.TiArrayType;
 
-public class SmartObject {
+public class ObjectWithType implements IProxyObject {
 
 	private final Object innerObject;
 	private final IEvaluationStrategy evaluationStrategy;
 	private final IType type;
 
-	public SmartObject(Object innerObject, IEvaluationStrategy evaluationStrategy, IType type) {
+	public ObjectWithType(Object innerObject, IEvaluationStrategy evaluationStrategy, IType type) {
 		this.innerObject = innerObject;
 		this.evaluationStrategy = evaluationStrategy;
 		this.type = type;
@@ -48,7 +49,7 @@ public class SmartObject {
 			}
 
 			IType resultType = feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getType()) : feature.getType();
-			return new SmartObject(result, evaluationStrategy, resultType);
+			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 		
 		return evaluationStrategy.getProperty(innerObject, propertyName);
@@ -66,9 +67,8 @@ public class SmartObject {
 			}
 
 			IType resultType = ((IArrayType)type).getInnerType();
-			return new SmartObject(result, evaluationStrategy, resultType);
+			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
-
 
 		return evaluationStrategy.getByIndex(innerObject, index);
 	}
