@@ -16,7 +16,7 @@
 #  limitations under the License.
 
 .lang        "java" 
-.prefix      "Ast"
+.prefix      "Templates"
 .package	 "org.textway.templates.ast"
 .breaks		 "on"
 .lexemend    "on"
@@ -103,16 +103,16 @@ _skip:      /[\t\r\n ]+/    { return false; }
 
 # Grammar
 
-input (List<org.textway.templates.api.@IBundleEntity>) ::=
+input (List<org.textway.templates.bundle.@IBundleEntity>) ::=
 	definitionsopt
 ;
 
-definitions (List<org.textway.templates.api.@IBundleEntity>) ::=
+definitions (List<org.textway.templates.bundle.@IBundleEntity>) ::=
 	  definition									{ $$ = new ArrayList(); if ($definition != null) $definitions.add($definition); }
 	| definitions definition						{ if ($definition != null) $definitions#0.add($definition); }
 ;
 
-definition (org.textway.templates.api.@IBundleEntity) ::=
+definition (org.textway.templates.bundle.@IBundleEntity) ::=
 	template_start instructions template_end		{ $template_start.setInstructions($instructions); }
 	| template_start template_end
 	| query_def
@@ -423,7 +423,7 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-org.textway.templates.ast.AstTree.@TextSource source;
+org.textway.templates.ast.TemplatesTree.@TextSource source;
 String templatePackage;
 
 private int killEnds = -1;
@@ -460,7 +460,7 @@ private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int e
 	}
 }
 
-private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, org.textway.templates.ast.AstTree.@TextSource source, int offset, int endoffset, int line) {
+private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, org.textway.templates.ast.TemplatesTree.@TextSource source, int offset, int endoffset, int line) {
 	if(!instruction.equals("collect")) {
 		reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
 		return new ErrorNode(source, offset, endoffset);
@@ -468,7 +468,7 @@ private ExpressionNode createMapCollect(ExpressionNode context, String instructi
 	return new CollectMapNode(context, varName, key, value, source, offset, endoffset);
 }
 
-private ExpressionNode createCollectionProcessor(ExpressionNode context, String instruction, String varName, ExpressionNode foreachExpr, org.textway.templates.ast.AstTree.@TextSource source, int offset, int endoffset, int line) {
+private ExpressionNode createCollectionProcessor(ExpressionNode context, String instruction, String varName, ExpressionNode foreachExpr, org.textway.templates.ast.TemplatesTree.@TextSource source, int offset, int endoffset, int line) {
 	char first = instruction.charAt(0);
 	int kind = 0;
 	switch(first) {

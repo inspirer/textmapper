@@ -7,17 +7,17 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.textway.templates.ast.TemplatesLexer.ErrorReporter;
+import org.textway.templates.ast.TemplatesParser.ParseException;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.ast.AstLexer.ErrorReporter;
-import org.textway.templates.ast.AstParser.ParseException;
 
-public class AstTree<T> {
+public class TemplatesTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<AstProblem> errors;
+	private final List<TemplatesProblem> errors;
 
-	public AstTree(TextSource source, T root, List<AstProblem> errors) {
+	public TemplatesTree(TextSource source, T root, List<TemplatesProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -31,7 +31,7 @@ public class AstTree<T> {
 		return root;
 	}
 
-	public List<AstProblem> getErrors() {
+	public List<TemplatesProblem> getErrors() {
 		return errors;
 	}
 
@@ -40,56 +40,56 @@ public class AstTree<T> {
 	}
 
 
-	public static AstTree<List<IBundleEntity>> parseInput(TextSource source, String templatePackage) {
-		final List<AstProblem> list = new ArrayList<AstProblem>();
+	public static TemplatesTree<List<IBundleEntity>> parseInput(TextSource source, String templatePackage) {
+		final List<TemplatesProblem> list = new ArrayList<TemplatesProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new AstProblem(KIND_ERROR, start, end, s, null));
+				list.add(new TemplatesProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			AstLexer lexer = new AstLexer(source.getStream(), reporter);
+			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			AstParser parser = new AstParser(reporter);
+			TemplatesParser parser = new TemplatesParser(reporter);
 			parser.source = source;
 			parser.templatePackage = templatePackage;
 			List<IBundleEntity> result = parser.parseInput(lexer);
 
-			return new AstTree<List<IBundleEntity>>(source, result, list);
+			return new TemplatesTree<List<IBundleEntity>>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TemplatesProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new AstTree<List<IBundleEntity>>(source, null, list);
+		return new TemplatesTree<List<IBundleEntity>>(source, null, list);
 	}
 
-	public static AstTree<TemplateNode> parseBody(TextSource source, String templatePackage) {
-		final List<AstProblem> list = new ArrayList<AstProblem>();
+	public static TemplatesTree<TemplateNode> parseBody(TextSource source, String templatePackage) {
+		final List<TemplatesProblem> list = new ArrayList<TemplatesProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new AstProblem(KIND_ERROR, start, end, s, null));
+				list.add(new TemplatesProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			AstLexer lexer = new AstLexer(source.getStream(), reporter);
+			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			AstParser parser = new AstParser(reporter);
+			TemplatesParser parser = new TemplatesParser(reporter);
 			parser.source = source;
 			parser.templatePackage = templatePackage;
 			TemplateNode result = parser.parseBody(lexer);
 
-			return new AstTree<TemplateNode>(source, result, list);
+			return new TemplatesTree<TemplateNode>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new AstProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TemplatesProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new AstTree<TemplateNode>(source, null, list);
+		return new TemplatesTree<TemplateNode>(source, null, list);
 	}
 
 
@@ -99,14 +99,14 @@ public class AstTree<T> {
 
 	public static final String PARSER_SOURCE = "parser";
 
-	public static class AstProblem extends Exception {
+	public static class TemplatesProblem extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
 
-		public AstProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public TemplatesProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;

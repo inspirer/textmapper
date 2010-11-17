@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
 
-public class AstLexer {
+public class TemplatesLexer {
 
 	public static class LapgSymbol {
 		public Object sym;
@@ -130,7 +130,7 @@ public class AstLexer {
 		return sb.toString();
 	}
 
-	public AstLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public TemplatesLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);
 	}

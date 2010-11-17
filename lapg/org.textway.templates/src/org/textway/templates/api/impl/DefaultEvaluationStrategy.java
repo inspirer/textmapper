@@ -16,9 +16,9 @@
 package org.textway.templates.api.impl;
 
 import org.textway.templates.api.*;
-import org.textway.templates.ast.AstTree;
-import org.textway.templates.ast.AstTree.AstProblem;
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree;
+import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.ast.TemplateNode;
 import org.textway.templates.bundle.IBundleEntity;
@@ -142,8 +142,8 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line) {
 		final String sourceName = templateId != null ? templateId : referer.getLocation();
-		AstTree<TemplateNode> tree = AstTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
-		for (AstProblem problem : tree.getErrors()) {
+		TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
+		for (TemplatesProblem problem : tree.getErrors()) {
 			final int errline = tree.getSource().lineForOffset(problem.getOffset());
 			DefaultEvaluationStrategy.this.fireError(new ILocatedEntity() {
 				public String getLocation() {

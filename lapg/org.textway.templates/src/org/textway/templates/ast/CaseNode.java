@@ -17,7 +17,7 @@ package org.textway.templates.ast;
 
 import java.util.ArrayList;
 
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class CaseNode extends CompoundNode {
 	ExpressionNode caseExpr;

@@ -16,9 +16,9 @@
 package org.textway.templates.bundle;
 
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.ast.AstTree;
-import org.textway.templates.ast.AstTree.AstProblem;
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree;
+import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 import java.util.List;
 
@@ -43,8 +43,8 @@ public class TemplatesBundle {
 	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
 										final IProblemCollector collector) {
 
-		AstTree<List<IBundleEntity>> tree = AstTree.parseInput(new TextSource(sourceName, contents.toCharArray(), 1), templatePackage);
-		for (AstProblem problem : tree.getErrors()) {
+		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(new TextSource(sourceName, contents.toCharArray(), 1), templatePackage);
+		for (TemplatesProblem problem : tree.getErrors()) {
 			final int line = tree.getSource().lineForOffset(problem.getOffset());
 			collector.fireError(new ILocatedEntity() {
 				public String getLocation() {

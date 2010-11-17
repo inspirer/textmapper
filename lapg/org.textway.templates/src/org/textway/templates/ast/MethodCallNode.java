@@ -20,7 +20,7 @@ import java.util.List;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class MethodCallNode extends ExpressionNode {
 

@@ -6,13 +6,13 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.textway.templates.ast.TemplatesLexer.ErrorReporter;
+import org.textway.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textway.templates.ast.TemplatesLexer.Lexems;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.ast.AstLexer.ErrorReporter;
-import org.textway.templates.ast.AstLexer.LapgSymbol;
-import org.textway.templates.ast.AstLexer.Lexems;
-import org.textway.templates.ast.AstTree.TextSource;
 
-public class AstParser {
+public class TemplatesParser {
 
 	public static class ParseException extends Exception {
 		private static final long serialVersionUID = 1L;
@@ -23,7 +23,7 @@ public class AstParser {
 
 	private final ErrorReporter reporter;
 
-	public AstParser(ErrorReporter reporter) {
+	public TemplatesParser(ErrorReporter reporter) {
 		this.reporter = reporter;
 	}
 
@@ -701,7 +701,7 @@ public class AstParser {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private Object parse(AstLexer lexer, int state) throws IOException, ParseException {
+	private Object parse(TemplatesLexer lexer, int state) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -731,7 +731,7 @@ public class AstParser {
 		return lapg_m[lapg_head - 1].sym;
 	}
 
-	private void shift(AstLexer lexer) throws IOException {
+	private void shift(TemplatesLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -1031,11 +1031,11 @@ public class AstParser {
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 
-	public List<IBundleEntity> parseInput(AstLexer lexer) throws IOException, ParseException {
+	public List<IBundleEntity> parseInput(TemplatesLexer lexer) throws IOException, ParseException {
 		return (List<IBundleEntity>) parse(lexer, 0);
 	}
 
-	public TemplateNode parseBody(AstLexer lexer) throws IOException, ParseException {
+	public TemplateNode parseBody(TemplatesLexer lexer) throws IOException, ParseException {
 		return (TemplateNode) parse(lexer, 1);
 	}
 }

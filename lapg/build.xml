@@ -93,14 +93,12 @@
 	<target name="syntax">
 		<echo message="Lapg parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser"/>
-		<echo message="Lapg options parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/gen/options"/>
 		<echo message="Lapg templates parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
 		<echo message="Types parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/types"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/model/xml"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 	</target>
 
 	<target name="plugin">

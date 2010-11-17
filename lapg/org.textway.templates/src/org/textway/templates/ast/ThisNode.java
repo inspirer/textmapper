@@ -17,7 +17,7 @@ package org.textway.templates.ast;
 
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class ThisNode extends ExpressionNode {
 

@@ -2,7 +2,7 @@ package org.textway.templates.ast;
 
 import java.util.List;
 
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class ElseIfNode extends CompoundNode {
 

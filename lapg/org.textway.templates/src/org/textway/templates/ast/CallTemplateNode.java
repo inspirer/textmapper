@@ -23,7 +23,7 @@ import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.api.IQuery;
 import org.textway.templates.api.ITemplate;
-import org.textway.templates.ast.AstTree.TextSource;
+import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class CallTemplateNode extends ExpressionNode {
 
