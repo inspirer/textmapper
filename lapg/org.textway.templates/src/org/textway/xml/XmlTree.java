@@ -1,4 +1,4 @@
-package org.textway.templates.model.xml;
+package org.textway.xml;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -6,9 +6,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.text.MessageFormat;
-import org.textway.templates.model.xml.XmlLexer.ErrorReporter;
-import org.textway.templates.model.xml.XmlParser.ParseException;
+
+import org.textway.xml.XmlLexer.ErrorReporter;
+import org.textway.xml.XmlParser.ParseException;
 
 public class XmlTree<T> {
 

@@ -17,7 +17,7 @@
 
 .lang        "java" 
 .prefix      "Xml"
-.package	 "org.textway.templates.model.xml"
+.package	 "org.textway.xml"
 .maxtoken    2048
 .breaks		 "on"
 .gentree	 "on"
@@ -112,7 +112,7 @@ ${end}
 ${template java.classcode}
 ${call base-}
 
-org.textway.templates.model.xml.XmlTree.@TextSource source;
+org.textway.xml.XmlTree.@TextSource source;
 
 private XmlData getData(int start, int end) {
 	return new XmlData(source.getContents(), start, end-start);

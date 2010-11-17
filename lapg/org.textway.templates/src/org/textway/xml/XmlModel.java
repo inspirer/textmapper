@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.model.xml;
+package org.textway.xml;
 
-import org.textway.templates.model.xml.XmlTree.TextSource;
+import org.textway.xml.XmlTree.TextSource;
 
 public class XmlModel {
 

@@ -20,9 +20,9 @@ import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.bundle.ClassTemplateLoader;
 import org.textway.templates.api.impl.TemplatesFacade;
 import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.model.xml.XmlModel;
-import org.textway.templates.model.xml.XmlNavigationFactory;
-import org.textway.templates.model.xml.XmlNode;
+import org.textway.xml.XmlModel;
+import org.textway.xml.XmlNavigationFactory;
+import org.textway.xml.XmlNode;
 import org.textway.templates.test.TemplateTestCase;
 
 public class XmlTest extends TemplateTestCase{

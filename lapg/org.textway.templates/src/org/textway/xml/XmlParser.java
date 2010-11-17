@@ -1,13 +1,13 @@
-package org.textway.templates.model.xml;
+package org.textway.xml;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.MessageFormat;
-import org.textway.templates.model.xml.XmlLexer.ErrorReporter;
-import org.textway.templates.model.xml.XmlLexer.LapgSymbol;
-import org.textway.templates.model.xml.XmlLexer.Lexems;
-import org.textway.templates.model.xml.XmlTree.TextSource;
+import org.textway.xml.XmlLexer.ErrorReporter;
+import org.textway.xml.XmlLexer.LapgSymbol;
+import org.textway.xml.XmlLexer.Lexems;
+import org.textway.xml.XmlTree.TextSource;
 
 public class XmlParser {
 

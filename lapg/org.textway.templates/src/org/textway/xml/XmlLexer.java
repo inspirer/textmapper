@@ -1,4 +1,4 @@
-package org.textway.templates.model.xml;
+package org.textway.xml;
 
 import java.io.IOException;
 import java.io.Reader;

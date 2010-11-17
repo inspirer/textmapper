@@ -6,4 +6,4 @@ Bundle-Version: 1.0.0.qualifier
 Export-Package: org.textway.templates.api,
  org.textway.templates.api.impl,
  org.textway.templates.ast,
- org.textway.templates.model.xml
+ org.textway.xml

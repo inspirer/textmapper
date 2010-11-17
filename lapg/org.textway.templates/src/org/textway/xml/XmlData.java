@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.model.xml;
+package org.textway.xml;
 
-import org.textway.templates.bundle.ILocatedEntity;
 
-public abstract class XmlElement implements ILocatedEntity {
+public class XmlData extends XmlElement {
 
-	public abstract void toString(StringBuffer sb);
+	private final char[] buffer;
+	private final int start;
+	private final int len;
 
-	@Override
-	public final String toString() {
-		StringBuffer sb = new StringBuffer();
-		toString(sb);
-		return sb.toString();
+	XmlData(char[] buffer, int start, int len) {
+		this.buffer = buffer;
+		this.start = start;
+		this.len = len;
 	}
 
-	public String getLocation() {
-		return null;
+	@Override
+	public void toString(StringBuffer sb) {
+		sb.append(new String(buffer, start, len));
+	}
+
+	public String getTitle() {
+		return "XMLDATA";
 	}
 }
