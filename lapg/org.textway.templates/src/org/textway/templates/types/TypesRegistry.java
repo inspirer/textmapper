@@ -41,12 +41,12 @@ public class TypesRegistry implements ITypesRegistry {
 
 		String package_ = qualifiedName.substring(0, lastDot);
 		if(!myLoadedPackages.contains(package_)) {
-			loadPackage(package_);
+			loadPackage(package_, referer);
 		}
 		return myClasses.get(qualifiedName);
 	}
 
-	private void loadPackage(String name) {
+	private void loadPackage(String name, ILocatedEntity referer) {
 		LinkedHashSet<String> queue = new LinkedHashSet<String>();
 		queue.add(name);
 		List<TiResolver> loaders = new ArrayList<TiResolver>();
@@ -59,6 +59,11 @@ public class TypesRegistry implements ITypesRegistry {
 			myLoadedPackages.add(current);
 			
 			String[] contentLayers = myResourceRegistry.loadResource(current, "types");
+			if(contentLayers == null || contentLayers.length < 1) {
+				myResourceRegistry.getCollector().fireError(referer, "Couldn't load types package `" + current + "`");
+				continue;
+			}
+
 			for(String content : contentLayers) {
 				TiResolver resolver = new TiResolver(current, content, myClasses, myResourceRegistry.getCollector());
 				resolver.build();
