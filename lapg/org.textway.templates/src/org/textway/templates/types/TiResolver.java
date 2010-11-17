@@ -101,7 +101,7 @@ class TiResolver {
 		for (FeatureDeclaration fd : td.getFeatureDeclarations()) {
 			features.add(convertFeature(fd));
 		}
-		TiClass result = new TiClass(td.getName(), new ArrayList<IClass>(), features);
+		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features);
 		if(td.getExtends() != null) {
 			List<String> superNames = new ArrayList<String>();
 			for(List<String> className : td.getExtends()) {

@@ -66,6 +66,10 @@ public class TiFeature implements IFeature {
 			return loBound;
 		}
 
+		public boolean isMultiple() {
+			return hiBound == -1 || hiBound > 1;
+		}
+
 		public int getHighBound() {
 			return hiBound;
 		}

@@ -56,6 +56,10 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 			return mapNavigation;
 		}
 
+		if(o instanceof SmartObject) {
+			return smartObjectNavigation;
+		}
+
 		if (o instanceof String) {
 			// return stringNavigation;
 		}
@@ -334,6 +338,20 @@ public class DefaultNavigationFactory implements INavigationStrategy.Factory {
 				return array.length;
 			}
 			throw new EvaluationException("do not know property `" + id + "`");
+		}
+	};
+
+	private final INavigationStrategy<SmartObject> smartObjectNavigation = new INavigationStrategy<SmartObject>() {
+		public Object getProperty(SmartObject obj, String propertyName) throws EvaluationException {
+			return obj.getProperty(propertyName);
+		}
+
+		public Object callMethod(SmartObject obj, String methodName, Object[] args) throws EvaluationException {
+			return obj.callMethod(methodName, args);
+		}
+
+		public Object getByIndex(SmartObject obj, Object index) throws EvaluationException {
+			return obj.getByIndex(index);
 		}
 	};
 }

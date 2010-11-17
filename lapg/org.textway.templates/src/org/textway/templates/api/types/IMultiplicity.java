@@ -5,4 +5,6 @@ public interface IMultiplicity {
 	int getHighBound();
 
 	int getLowBound();
+
+	boolean isMultiple();
 }

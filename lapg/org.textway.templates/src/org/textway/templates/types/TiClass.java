@@ -23,12 +23,14 @@ import org.textway.templates.api.types.IFeature;
 public class TiClass implements IClass {
 
 	private String name;
+	private String package_;
 	private Collection<IClass> _super;
 	private Collection<IFeature> features;
 	
-	public TiClass(String name, Collection<IClass> _super,
+	public TiClass(String name, String package_, Collection<IClass> _super,
 			Collection<IFeature> features) {
 		this.name = name;
+		this.package_ = package_;
 		this._super = _super;
 		this.features = features;
 	}
@@ -37,11 +39,24 @@ public class TiClass implements IClass {
 		return name;
 	}
 
+	public String getQualifiedName() {
+		return package_ + "." + name;
+	}
+
 	public Collection<IClass> getExtends() {
 		return _super;
 	}
 
 	public Collection<IFeature> getFeatures() {
 		return features;
+	}
+
+	public IFeature getFeature(String name) {
+		for(IFeature f : features) {
+			if(f.getName().equals(name)) {
+				return f;
+			}
+		}
+		return null;
 	}
 }
