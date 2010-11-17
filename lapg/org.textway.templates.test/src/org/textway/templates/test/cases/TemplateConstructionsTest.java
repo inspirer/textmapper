@@ -18,6 +18,9 @@ package org.textway.templates.test.cases;
 import junit.framework.Assert;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.impl.*;
+import org.textway.templates.bundle.ClassTemplateLoader;
+import org.textway.templates.bundle.StringTemplateLoader;
+import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.test.TemplateTestCase;
 
 import java.util.HashMap;

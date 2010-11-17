@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.ast.AstLexer.ErrorReporter;
 import org.textway.templates.ast.AstLexer.LapgSymbol;
 import org.textway.templates.ast.AstLexer.Lexems;

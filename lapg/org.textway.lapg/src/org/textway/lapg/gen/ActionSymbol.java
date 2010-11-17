@@ -18,7 +18,7 @@ package org.textway.lapg.gen;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.api.ITemplate;
 

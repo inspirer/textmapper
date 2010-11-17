@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api.impl;
+package org.textway.templates.bundle;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.textway.templates.api.IBundleEntity;
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.IBundleLoader;
-import org.textway.templates.api.TemplatesBundle;
 
 /**
  * In-memory template loader.

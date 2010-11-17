@@ -20,7 +20,7 @@ import org.textway.lapg.api.Action;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INamedEntity;
 
 public class CRule implements ILocatedEntity, INamedEntity, Rule {

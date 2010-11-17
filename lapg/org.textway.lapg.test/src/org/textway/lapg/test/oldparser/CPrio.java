@@ -18,7 +18,7 @@ package org.textway.lapg.test.oldparser;
 import java.util.List;
 
 import org.textway.lapg.api.Prio;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public class CPrio implements Prio, ILocatedEntity {
 

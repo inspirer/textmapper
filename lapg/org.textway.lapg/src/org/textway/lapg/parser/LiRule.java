@@ -22,7 +22,7 @@ import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INamedEntity;
 
 public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedEntity {

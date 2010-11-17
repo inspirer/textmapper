@@ -1,6 +1,6 @@
 package org.textway.templates.api.types;
 
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public interface ITypesRegistry {
 	

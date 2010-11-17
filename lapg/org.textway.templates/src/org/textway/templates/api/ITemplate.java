@@ -15,6 +15,8 @@
  */
 package org.textway.templates.api;
 
+import org.textway.templates.bundle.IBundleEntity;
+
 /**
  * Loaded and validated template.
  */

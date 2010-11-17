@@ -16,7 +16,7 @@
 package org.textway.templates.test.cases;
 
 import junit.framework.Assert;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.IProblemCollector;
 
 import java.util.ArrayList;

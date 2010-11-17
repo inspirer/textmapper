@@ -20,8 +20,8 @@ import java.io.IOException;
 
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
-import org.textway.templates.api.IBundleLoader;
-import org.textway.templates.api.impl.FolderTemplateLoader;
+import org.textway.templates.bundle.IBundleLoader;
+import org.textway.templates.bundle.FolderTemplateLoader;
 
 public class FileBasedStrategy implements ProcessingStrategy {
 

@@ -17,7 +17,7 @@ package org.textway.templates.ast;
 
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.ast.AstTree.TextSource;
 
 public abstract class Node implements ILocatedEntity {

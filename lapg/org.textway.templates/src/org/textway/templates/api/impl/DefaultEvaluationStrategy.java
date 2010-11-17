@@ -21,6 +21,9 @@ import org.textway.templates.ast.AstTree.AstProblem;
 import org.textway.templates.ast.AstTree.TextSource;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.ast.TemplateNode;
+import org.textway.templates.bundle.IBundleEntity;
+import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.bundle.TemplatesRegistry;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api;
+package org.textway.templates.bundle;
 
-/**
- * Abstraction of engine which is able to load templates.
- */
-public interface IBundleLoader {
+public interface IBundleEntity extends ILocatedEntity {
 
-	/**
-	 * Default templates extension
-	 */
-	public static final String BUNDLE_EXT = ".ltp";
+	public static final int KIND_ANY = 0;
+	public static final int KIND_TEMPLATE = 1;
+	public static final int KIND_QUERY = 2;
 
 	/**
-	 * @param bundleName
-	 *            qualified name of templates bundle (separated with dots)
-	 * @return contents of the file with templates
+	 * @return KIND_TEMPLATE or KIND_QUERY
 	 */
-	TemplatesBundle load(String bundleName, IProblemCollector collector);
+	int getKind();
 
 	/**
-	 * @return contents of the resource
+	 * @return member name
 	 */
-	String loadResource(String resourceName, String extension);
+	String getName();
+
+	/**
+	 * @return qualified name of package
+	 */
+	String getPackage();
+
+	/**
+	 * @return signature to map overrides
+	 */
+	String getSignature();
+
+	/**
+	 * Returns overridden member
+	 */
+	IBundleEntity getBase();
+
+	/**
+	 * Internal: Used for binding.
+	 */
+	void setBase(IBundleEntity base);
 }

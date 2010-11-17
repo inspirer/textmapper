@@ -18,6 +18,8 @@ package org.textway.templates.api;
 import java.util.Iterator;
 
 import org.textway.templates.ast.ExpressionNode;
+import org.textway.templates.bundle.IBundleEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 /**
  * Defines environment for evaluating set of templates.

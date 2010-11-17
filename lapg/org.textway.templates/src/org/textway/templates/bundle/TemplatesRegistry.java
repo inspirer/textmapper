@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api.impl;
+package org.textway.templates.bundle;
 
 import java.util.*;
 
-import org.textway.templates.api.ILocatedEntity;
-import org.textway.templates.api.IBundleEntity;
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.IBundleLoader;
-import org.textway.templates.api.TemplatesBundle;
 import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.types.TypesRegistry;
 

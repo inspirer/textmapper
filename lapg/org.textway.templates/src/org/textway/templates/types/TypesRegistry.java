@@ -17,8 +17,8 @@ package org.textway.templates.types;
 
 import java.util.*;
 
-import org.textway.templates.api.ILocatedEntity;
-import org.textway.templates.api.impl.TemplatesRegistry;
+import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.ITypesRegistry;
 

@@ -16,7 +16,7 @@
 package org.textway.lapg.test.oldparser;
 
 import org.textway.lapg.api.Action;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public class CAction implements Action, ILocatedEntity {
 

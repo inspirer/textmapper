@@ -13,38 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api.impl;
+package org.textway.templates.bundle;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.IBundleLoader;
-import org.textway.templates.api.TemplatesBundle;
 
 /**
- * Loads templates stored along with java classes (using ClassLoader)
+ * Loads templates from specified folders;
  */
-public class ClassTemplateLoader implements IBundleLoader {
+public class FolderTemplateLoader implements IBundleLoader {
 
-	private final ClassLoader loader;
-	private final String rootPackage;
+	private final File[] myFolders;
 	private final String charsetName;
 
-	public ClassTemplateLoader(ClassLoader loader, String rootPackage, String charsetName) {
-		this.loader = loader;
-		this.rootPackage = rootPackage;
+	public FolderTemplateLoader(File[] folders, String charsetName) {
+		this.myFolders = folders;
 		this.charsetName = charsetName;
 	}
 
-	private static String getStreamContents(InputStream stream, String charsetName) {
+	private static String getFileContents(String file, String charsetName) {
 		StringBuffer contents = new StringBuffer();
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(stream, charsetName);
+			Reader in = new InputStreamReader(new FileInputStream(file), charsetName);
 			try {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);
@@ -59,22 +56,27 @@ public class ClassTemplateLoader implements IBundleLoader {
 	}
 
 	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
-		String resourceName = rootPackage + "/" + bundleName.replace('.', '/') + BUNDLE_EXT;
-		InputStream s = loader.getResourceAsStream(resourceName);
-		if (s == null) {
-			return null;
+		String fileName = bundleName.replace('.', '/') +  BUNDLE_EXT;
+
+		for( File f : myFolders ) {
+			File file = new File(f, fileName);
+			if( file.exists() ) {
+				String name = file.toString();
+				return TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector);
+			}
 		}
-		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
-				: resourceName;
-		return TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector);
+		return null;
 	}
 
 	public String loadResource(String resourceName, String extension) {
-		String name = rootPackage + "/" + resourceName.replace('.', '/') + "." + extension;
-		InputStream s = loader.getResourceAsStream(name);
-		if (s == null) {
-			return null;
+		String fileName = resourceName.replace('.', '/') + "." + extension;
+		for( File f : myFolders ) {
+			File file = new File(f, fileName);
+			if( file.exists() ) {
+				String name = file.toString();
+				return getFileContents(name, charsetName);
+			}
 		}
-		return getStreamContents(s, charsetName);
+		return null;
 	}
 }

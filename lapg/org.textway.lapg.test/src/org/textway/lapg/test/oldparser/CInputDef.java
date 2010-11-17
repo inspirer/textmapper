@@ -17,7 +17,7 @@ package org.textway.lapg.test.oldparser;
 
 import java.util.List;
 
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public class CInputDef implements ILocatedEntity {
 

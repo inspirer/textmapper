@@ -16,7 +16,7 @@
 package org.textway.lapg.parser.ast;
 
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public interface IAstNode extends ILocatedEntity {
 

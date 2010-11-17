@@ -7,7 +7,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.ast.AstLexer.ErrorReporter;
 import org.textway.templates.ast.AstParser.ParseException;
 

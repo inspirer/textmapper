@@ -16,13 +16,14 @@
 package org.textway.templates.api.impl;
 
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.IBundleEntity;
+import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INavigationStrategy;
 import org.textway.templates.api.INavigationStrategy.Factory;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.ITemplate;
+import org.textway.templates.bundle.TemplatesRegistry;
 
 public class TemplatesFacade {
 

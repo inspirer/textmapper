@@ -15,6 +15,8 @@
  */
 package org.textway.templates.api;
 
+import org.textway.templates.bundle.ILocatedEntity;
+
 public interface IProblemCollector {
 
 	public void fireError(ILocatedEntity referer, String error);

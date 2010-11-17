@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IDataType.Constraint;

@@ -15,7 +15,7 @@
  */
 package org.textway.templates.model.xml;
 
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 
 public abstract class XmlElement implements ILocatedEntity {
 

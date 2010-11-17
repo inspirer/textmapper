@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.api;
 
-import org.textway.templates.api.IBundleLoader;
+import org.textway.templates.bundle.IBundleLoader;
 
 public interface ProcessingStrategy {
 

@@ -25,14 +25,13 @@ import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.IBundleLoader;
-import org.textway.templates.api.ILocatedEntity;
+import org.textway.templates.bundle.IBundleLoader;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INavigationStrategy.Factory;
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.impl.ClassTemplateLoader;
-import org.textway.templates.api.impl.StringTemplateLoader;
+import org.textway.templates.bundle.*;
 import org.textway.templates.api.impl.TemplatesFacade;
-import org.textway.templates.api.impl.TemplatesRegistry;
+import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.ast.Node;
 
