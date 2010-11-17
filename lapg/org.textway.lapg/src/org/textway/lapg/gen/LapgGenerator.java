@@ -30,7 +30,7 @@ import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INavigationStrategy.Factory;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.bundle.*;
-import org.textway.templates.api.impl.TemplatesFacade;
+import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.ast.Node;

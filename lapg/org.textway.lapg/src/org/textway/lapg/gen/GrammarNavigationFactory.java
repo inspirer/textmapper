@@ -33,7 +33,7 @@ import org.textway.templates.api.EvaluationException;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.INavigationStrategy;
 import org.textway.templates.api.ITemplate;
-import org.textway.templates.api.impl.DefaultNavigationFactory;
+import org.textway.templates.eval.DefaultNavigationFactory;
 
 public class GrammarNavigationFactory extends DefaultNavigationFactory {
 

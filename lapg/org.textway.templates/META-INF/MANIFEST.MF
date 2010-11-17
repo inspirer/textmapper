@@ -4,6 +4,6 @@ Bundle-Name: Lapg Templates
 Bundle-SymbolicName: org.textway.templates
 Bundle-Version: 1.0.0.qualifier
 Export-Package: org.textway.templates.api,
- org.textway.templates.api.impl,
+ org.textway.templates.eval,
  org.textway.templates.ast,
  org.textway.xml

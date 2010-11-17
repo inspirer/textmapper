@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.INavigationStrategy;
-import org.textway.templates.api.impl.DefaultNavigationFactory;
+import org.textway.templates.eval.DefaultNavigationFactory;
 
 public class XmlNavigationFactory extends DefaultNavigationFactory {
 

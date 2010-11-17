@@ -18,7 +18,7 @@ package org.textway.templates.test.cases;
 import junit.framework.Assert;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.bundle.ClassTemplateLoader;
-import org.textway.templates.api.impl.TemplatesFacade;
+import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.xml.XmlModel;
 import org.textway.xml.XmlNavigationFactory;

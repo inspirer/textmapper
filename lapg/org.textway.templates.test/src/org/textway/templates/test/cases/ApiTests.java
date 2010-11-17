@@ -16,8 +16,8 @@
 package org.textway.templates.test.cases;
 
 import junit.framework.Assert;
-import org.textway.templates.api.impl.DefaultEvaluationCache;
-import org.textway.templates.api.impl.DefaultStaticMethods;
+import org.textway.templates.eval.DefaultEvaluationCache;
+import org.textway.templates.eval.DefaultStaticMethods;
 import org.textway.templates.test.TemplateTestCase;
 
 public class ApiTests extends TemplateTestCase {
