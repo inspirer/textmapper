@@ -59,4 +59,9 @@ public class TiClass implements IClass {
 		}
 		return null;
 	}
+
+	@Override
+	public String toString() {
+		return package_ + "." + name;
+	}
 }

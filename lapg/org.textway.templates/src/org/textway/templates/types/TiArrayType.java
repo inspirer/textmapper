@@ -29,4 +29,9 @@ public class TiArrayType implements IArrayType {
 	public IType getInnerType() {
 		return innerType;
 	}
+
+	@Override
+	public String toString() {
+		return innerType.toString() + "[]";
+	}
 }

@@ -279,7 +279,7 @@ class TiResolver {
 		if(expression instanceof StructuralExpression) {
 			StructuralExpression expr = (StructuralExpression) expression;
 			if(expr.getExpressionListopt() != null) {
-				return convertArray(expr.getExpressionListopt(), type);
+				return convertArray(expr, expr.getExpressionListopt(), type);
 			}
 
 			String qualifiedName = getQualifiedName(expr.getName());
@@ -289,11 +289,27 @@ class TiResolver {
 
 			TiClass aClass = myRegistryClasses.get(qualifiedName);
 			if(aClass == null) {
-				myStatus.fireError(new LocatedNodeAdapter((IAstNode)expression), "Cannot instantiate `" + qualifiedName + "`: class not found");
+				myStatus.fireError(new LocatedNodeAdapter((IAstNode)expression), "cannot instantiate `" + qualifiedName + "`: class not found");
 				return null;
 			}
 
-			// TODO check all properties
+			Map<String, Object> result = new HashMap<String, Object>();
+			for (MapEntriesItem item : expr.getMapEntriesopt()) {
+				String key = item.getIdentifier();
+
+				IFeature feature = aClass.getFeature(key);
+				if(feature == null) {
+					myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
+					continue;
+				}
+
+				Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
+				if(value != null) {
+					result.put(key, value);
+				}
+			}
+
+			return new TiInstance(aClass, result);
 		}
 
 		return null;
@@ -304,8 +320,8 @@ class TiResolver {
 		return null;
 	}
 
-	private IInstanceObject convertArray(List<IExpression> array, IType type) {
-		// TODO check array type
+	private IInstanceObject convertArray(StructuralExpression node, List<IExpression> array, IType type) {
+		// TODO create array type
 		return null;
 	}
 

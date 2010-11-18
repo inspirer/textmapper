@@ -15,9 +15,9 @@
  */
 package org.textway.templates.types;
 
-import java.util.Collection;
-
 import org.textway.templates.api.types.IDataType;
+
+import java.util.Collection;
 
 public class TiDataType implements IDataType {
 
@@ -35,6 +35,19 @@ public class TiDataType implements IDataType {
 
 	public Collection<Constraint> getConstraints() {
 		return constraints;
+	}
+
+	@Override
+	public String toString() {
+		switch(kind) {
+			case BOOL:
+				return "bool";
+			case INT:
+				return "int";
+			case STRING:
+				return "string";
+		}
+		return "unknown";
 	}
 
 	public static class TiConstraint implements Constraint {

@@ -55,7 +55,6 @@ _skip:  /#.*/
 
 Lclass:		 /class/
 Lextends:	 /extends/
-Lnew:		 /new/
 
 Lint:		 /int/
 Lbool:		 /bool/
@@ -140,7 +139,7 @@ literal_expression ::=
 ;
 
 structural_expression ::=
-	  Lnew name '(' map_entriesopt ')'
+	  name '{' map_entriesopt '}'
 	| '[' expression_listopt ']'
 ;
 
