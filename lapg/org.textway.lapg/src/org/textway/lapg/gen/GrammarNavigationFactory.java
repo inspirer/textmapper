@@ -15,25 +15,17 @@
  */
 package org.textway.lapg.gen;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
-import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.INavigationStrategy;
-import org.textway.templates.api.ITemplate;
+import org.textway.templates.api.IProxyObject;
 import org.textway.templates.eval.DefaultNavigationFactory;
+
+import java.util.*;
 
 public class GrammarNavigationFactory extends DefaultNavigationFactory {
 
@@ -52,10 +44,6 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			return ruleNavigation;
 		}
 
-		if (o instanceof ActionSymbol) {
-			return actSymbolNavigation;
-		}
-
 		if (o instanceof Symbol) {
 			return symbolNavigation;
 		}
@@ -68,41 +56,8 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 			return grammarNavigation;
 		}
 
-		if(o instanceof GrammarRules) {
-			return grammarRulesNavigation;
-		}
-
 		return super.getStrategy(o);
 	}
-
-	private final INavigationStrategy<ActionSymbol> actSymbolNavigation = new INavigationStrategy<ActionSymbol>() {
-
-		public Object callMethod(ActionSymbol obj, String methodName, Object[] args) throws EvaluationException {
-			throw new EvaluationException("do not know method");
-		}
-
-		public Object getByIndex(ActionSymbol obj, Object index) throws EvaluationException {
-			if (index instanceof String && obj.ref != null) {
-				return obj.ref.getAnnotation((String) index);
-			}
-			throw new EvaluationException("do not know index");
-		}
-
-		public Object getProperty(ActionSymbol obj, String id) throws EvaluationException {
-			if (id.equals("symbol")) {
-				return obj.symbol;
-			}
-			if (id.equals("isLeft")) {
-				return obj.isLeft;
-			}
-			if (id.equals("rightOffset")) {
-				return obj.rightOffset;
-			}
-			ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".sym_" + id,
-					IBundleEntity.KIND_TEMPLATE, null);
-			return evaluationStrategy.evaluate(templ, new EvaluationContext(obj), null, null);
-		}
-	};
 
 	private final INavigationStrategy<Rule> ruleNavigation = new INavigationStrategy<Rule>() {
 
@@ -225,31 +180,7 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 		}
 	};
 
-
-	private final INavigationStrategy<GrammarRules> grammarRulesNavigation = new INavigationStrategy<GrammarRules>() {
-
-		public Object callMethod(GrammarRules rules, String methodName, Object[] args) throws EvaluationException {
-			if(args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
-				List<Rule> list = rules.getRulesContainingSymbol().get(args[0]);
-				return list != null ? list : Collections.emptyList();
-			}
-			return arrayNavigation.callMethod(rules.myRules, methodName, args);
-		}
-
-		public Object getByIndex(GrammarRules rules, Object index) throws EvaluationException {
-			if(index instanceof Symbol) {
-				List<Rule> list = rules.getRulesBySymbol().get(index);
-				return list != null ? list : Collections.emptyList();
-			}
-			return arrayNavigation.getByIndex(rules.myRules, index);
-		}
-
-		public Object getProperty(GrammarRules rules, String id) throws EvaluationException {
-			return arrayNavigation.getProperty(rules.myRules, id);
-		}
-	};
-
-	public static class GrammarRules implements Iterable<Rule> {
+	private class GrammarRules implements Iterable<Rule>, IProxyObject {
 
 		private final Rule[] myRules;
 		private Map<Symbol,List<Rule>> rulesBySymbol;
@@ -317,5 +248,26 @@ public class GrammarNavigationFactory extends DefaultNavigationFactory {
 				}
 			};
 		}
+
+		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+			if(args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
+				List<Rule> list = getRulesContainingSymbol().get(args[0]);
+				return list != null ? list : Collections.emptyList();
+			}
+			return arrayNavigation.callMethod(myRules, methodName, args);
+		}
+
+		public Object getByIndex(Object index) throws EvaluationException {
+			if(index instanceof Symbol) {
+				List<Rule> list = getRulesBySymbol().get(index);
+				return list != null ? list : Collections.emptyList();
+			}
+			return arrayNavigation.getByIndex(myRules, index);
+		}
+
+		public Object getProperty(String id) throws EvaluationException {
+			return arrayNavigation.getProperty(myRules, id);
+		}
+
 	}
 }

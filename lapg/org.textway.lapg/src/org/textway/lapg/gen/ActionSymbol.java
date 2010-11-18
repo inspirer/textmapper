@@ -17,12 +17,10 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
-import org.textway.templates.api.EvaluationContext;
+import org.textway.templates.api.*;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.ITemplate;
 
-public class ActionSymbol {
+public class ActionSymbol implements IProxyObject {
 
 	final Symbol symbol;
 	final SymbolRef ref;
@@ -44,7 +42,33 @@ public class ActionSymbol {
 
 	@Override
 	public String toString() {
-		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage+".symbol", IBundleEntity.KIND_TEMPLATE, null);
+		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symbol", IBundleEntity.KIND_TEMPLATE, null);
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), null, null);
+	}
+
+	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		throw new EvaluationException("do not know method");
+	}
+
+	public Object getByIndex(Object index) throws EvaluationException {
+		if (index instanceof String && ref != null) {
+			return ref.getAnnotation((String) index);
+		}
+		throw new EvaluationException("do not know index");
+	}
+
+	public Object getProperty(String id) throws EvaluationException {
+		if (id.equals("symbol")) {
+			return symbol;
+		}
+		if (id.equals("isLeft")) {
+			return isLeft;
+		}
+		if (id.equals("rightOffset")) {
+			return rightOffset;
+		}
+		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".sym_" + id,
+				IBundleEntity.KIND_TEMPLATE, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), null, null);
 	}
 }
