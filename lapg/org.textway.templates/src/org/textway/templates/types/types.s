@@ -140,8 +140,8 @@ literal_expression ::=
 ;
 
 structural_expression ::=
-	  Lnew name '(' map_entries ')'
-	| '[' expression_list ']'
+	  Lnew name '(' map_entriesopt ')'
+	| '[' expression_listopt ']'
 ;
 
 expression_list ::=

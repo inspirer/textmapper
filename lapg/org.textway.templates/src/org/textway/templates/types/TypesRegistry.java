@@ -79,5 +79,10 @@ public class TypesRegistry implements ITypesRegistry {
 		for(TiResolver resolver : loaders) {
 			resolver.resolve();
 		}
+
+		// 3-d stage: resolve expressions
+		for(TiResolver resolver : loaders) {
+			resolver.resolveExpressions();
+		}
 	}
 }

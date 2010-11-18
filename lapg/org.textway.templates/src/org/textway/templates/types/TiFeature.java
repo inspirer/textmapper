@@ -15,6 +15,7 @@
  */
 package org.textway.templates.types;
 
+import org.textway.templates.api.IInstanceObject;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IMultiplicity;
 import org.textway.templates.api.types.IType;
@@ -25,6 +26,7 @@ public class TiFeature implements IFeature {
 	private IType type;
 	private IMultiplicity multiplicity;
 	private boolean isReference;
+	private IInstanceObject defaultValue;
 
 	public TiFeature(String name, int loBound, int hiBound, boolean isReference) {
 		this.name = name;
@@ -50,6 +52,14 @@ public class TiFeature implements IFeature {
 
 	public boolean isReference() {
 		return isReference;
+	}
+
+	public IInstanceObject getDefaultValue() {
+		return defaultValue;
+	}
+
+	void setDefaultValue(IInstanceObject defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	private final static class TiMultiplicity implements IMultiplicity {

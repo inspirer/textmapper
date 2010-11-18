@@ -15,33 +15,22 @@
  */
 package org.textway.templates.types;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.api.IInstanceObject;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IDataType.Constraint;
 import org.textway.templates.api.types.IDataType.ConstraintKind;
 import org.textway.templates.api.types.IDataType.DataTypeKind;
 import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IType;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.types.TypesTree.TypesProblem;
-import org.textway.templates.types.ast.FeatureDeclaration;
-import org.textway.templates.types.ast.IAstNode;
-import org.textway.templates.types.ast.IConstraint;
-import org.textway.templates.types.ast.Input;
-import org.textway.templates.types.ast.Multiplicity;
-import org.textway.templates.types.ast.StringConstraint;
-import org.textway.templates.types.ast.Type;
-import org.textway.templates.types.ast.TypeDeclaration;
-import org.textway.templates.types.ast._String;
+import org.textway.templates.types.ast.*;
+
+import java.util.*;
 
 /**
- *  Two-pass types model loader. 
+ * Two-pass types model loader.
  */
 class TiResolver {
 
@@ -58,8 +47,11 @@ class TiResolver {
 	List<ResolveBean> myResolveFeatureTypes = new ArrayList<ResolveBean>();
 	List<ResolveSuperBean> myResolveSuperTypes = new ArrayList<ResolveSuperBean>();
 
+	// 3-d stage
+	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
+
 	public TiResolver(String package_, String content, Map<String, TiClass> registryClasses,
-			IProblemCollector problemCollector) {
+					  IProblemCollector problemCollector) {
 		this.myPackage = package_;
 		this.myContent = content;
 		this.myRegistryClasses = registryClasses;
@@ -102,9 +94,9 @@ class TiResolver {
 			features.add(convertFeature(fd));
 		}
 		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features);
-		if(td.getExtends() != null) {
+		if (td.getExtends() != null) {
 			List<String> superNames = new ArrayList<String>();
-			for(List<String> className : td.getExtends()) {
+			for (List<String> className : td.getExtends()) {
 				superNames.add(getQualifiedName(className));
 			}
 			myResolveSuperTypes.add(new ResolveSuperBean(result, td, superNames));
@@ -142,8 +134,41 @@ class TiResolver {
 		}
 		TiFeature feature = new TiFeature(fd.getName(), loBound, hiBound, fd.getType().getIsReference());
 		convertType(feature, fd.getType(), stringConstraints);
-		// TODO default value
+		convertDefautVal(feature, fd.getDefaultvalopt());
 		return feature;
+	}
+
+	private void convertDefautVal(TiFeature feature, IExpression defaultValue) {
+		if (defaultValue == null) {
+			return;
+		}
+		scanRequiredClasses(defaultValue);
+		myResolveDefaultValues.add(new ResolveDefaultValue(feature, defaultValue));
+	}
+
+	private void scanRequiredClasses(IExpression expression) {
+		if (expression instanceof StructuralExpression) {
+			StructuralExpression expr = (StructuralExpression) expression;
+			if (expr.getExpressionListopt() != null) {
+				for (IExpression inner : expr.getExpressionListopt()) {
+					scanRequiredClasses(inner);
+				}
+			}
+			if (expr.getMapEntriesopt() != null) {
+				for (MapEntriesItem item : expr.getMapEntriesopt()) {
+					scanRequiredClasses(item.getExpression());
+				}
+			}
+			if (expr.getName() != null) {
+				if (expr.getName().size() > 1) {
+					String reference = getQualifiedName(expr.getName());
+					int lastDot = reference.lastIndexOf('.');
+					if (lastDot >= 0) {
+						requiredPackages.add(reference.substring(0, lastDot));
+					}
+				}
+			}
+		}
 	}
 
 	private void convertType(TiFeature feature, Type type, List<StringConstraint> constraints) {
@@ -196,8 +221,8 @@ class TiResolver {
 
 	private String getQualifiedName(List<String> name) {
 		StringBuilder sb = new StringBuilder();
-		for(String s : name) {
-			if(sb.length() > 0) {
+		for (String s : name) {
+			if (sb.length() > 0) {
 				sb.append('.');
 			}
 			sb.append(s);
@@ -216,7 +241,7 @@ class TiResolver {
 		myResolveFeatureTypes.add(new ResolveBean(feature, decl, reference));
 	}
 
-	public void resolve() {
+	void resolve() {
 		for (ResolveBean entry : myResolveFeatureTypes) {
 			TiClass tiClass = myRegistryClasses.get(entry.getReference());
 			if (tiClass == null) {
@@ -229,7 +254,7 @@ class TiResolver {
 
 		for (ResolveSuperBean entry : myResolveSuperTypes) {
 			TiClass source = entry.getClassifier();
-			for(String ref : entry.getReferences()) {
+			for (String ref : entry.getReferences()) {
 				TiClass target = myRegistryClasses.get(ref);
 				if (target == null) {
 					myStatus.fireError(new LocatedNodeAdapter(entry.getNode()),
@@ -240,6 +265,51 @@ class TiResolver {
 			}
 		}
 	}
+
+	void resolveExpressions() {
+		for (ResolveDefaultValue entry : myResolveDefaultValues) {
+			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), TypesUtil.getFeatureType(entry.getFeature_())));
+		}
+	}
+
+	private IInstanceObject convertExpression(IExpression expression, IType type) {
+		if(expression instanceof LiteralExpression) {
+			return convertExpression((LiteralExpression)expression, type);
+		}
+		if(expression instanceof StructuralExpression) {
+			StructuralExpression expr = (StructuralExpression) expression;
+			if(expr.getExpressionListopt() != null) {
+				return convertArray(expr.getExpressionListopt(), type);
+			}
+
+			String qualifiedName = getQualifiedName(expr.getName());
+			if(qualifiedName.indexOf('.') == -1) {
+				qualifiedName = myPackage + "." + qualifiedName;
+			}
+
+			TiClass aClass = myRegistryClasses.get(qualifiedName);
+			if(aClass == null) {
+				myStatus.fireError(new LocatedNodeAdapter((IAstNode)expression), "Cannot instantiate `" + qualifiedName + "`: class not found");
+				return null;
+			}
+
+			// TODO check all properties
+		}
+
+		return null;
+	}
+
+	private IInstanceObject convertExpression(LiteralExpression expression, IType type) {
+		// TODO create literal expression
+		return null;
+	}
+
+	private IInstanceObject convertArray(List<IExpression> array, IType type) {
+		// TODO check array type
+		return null;
+	}
+
+
 
 	public Collection<String> getRequired() {
 		return requiredPackages;
@@ -303,6 +373,24 @@ class TiResolver {
 
 		public IAstNode getNode() {
 			return node;
+		}
+	}
+
+	private static class ResolveDefaultValue {
+		private final TiFeature feature_;
+		private final IExpression defaultValue;
+
+		public ResolveDefaultValue(TiFeature feature, IExpression defaultValue) {
+			this.feature_ = feature;
+			this.defaultValue = defaultValue;
+		}
+
+		public TiFeature getFeature_() {
+			return feature_;
+		}
+
+		public IExpression getDefaultValue() {
+			return defaultValue;
 		}
 	}
 }

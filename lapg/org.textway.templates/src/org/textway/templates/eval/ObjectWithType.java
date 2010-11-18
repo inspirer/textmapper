@@ -17,21 +17,23 @@ package org.textway.templates.eval;
 
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.IInstanceObject;
 import org.textway.templates.api.IProxyObject;
 import org.textway.templates.api.types.IArrayType;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
 import org.textway.templates.types.TiArrayType;
+import org.textway.templates.types.TypesUtil;
 
-public class ObjectWithType implements IProxyObject {
+public class ObjectWithType implements IProxyObject, IInstanceObject {
 
-	private final Object innerObject;
+	private final Object rawObject;
 	private final IEvaluationStrategy evaluationStrategy;
 	private final IType type;
 
-	public ObjectWithType(Object innerObject, IEvaluationStrategy evaluationStrategy, IType type) {
-		this.innerObject = innerObject;
+	public ObjectWithType(Object rawObject, IEvaluationStrategy evaluationStrategy, IType type) {
+		this.rawObject = rawObject;
 		this.evaluationStrategy = evaluationStrategy;
 		this.type = type;
 	}
@@ -43,25 +45,25 @@ public class ObjectWithType implements IProxyObject {
 				throw new EvaluationException("Property `" + propertyName + "` is absent in class " + ((IClass) type).getQualifiedName());
 			}
 
-			Object result = evaluationStrategy.getProperty(innerObject, propertyName);
+			Object result = evaluationStrategy.getProperty(rawObject, propertyName);
 			if(result == null) {
 				return null;
 			}
 
-			IType resultType = feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getType()) : feature.getType();
+			IType resultType = TypesUtil.getFeatureType(feature);
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 		
-		return evaluationStrategy.getProperty(innerObject, propertyName);
+		return evaluationStrategy.getProperty(rawObject, propertyName);
 	}
 
 	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
-		return evaluationStrategy.callMethod(innerObject, methodName, args);
+		return evaluationStrategy.callMethod(rawObject, methodName, args);
 	}
 
 	public Object getByIndex(Object index) throws EvaluationException {
 		if(type instanceof IArrayType) {
-			Object result = evaluationStrategy.getByIndex(innerObject, index);
+			Object result = evaluationStrategy.getByIndex(rawObject, index);
 			if(result == null) {
 				return null;
 			}
@@ -70,6 +72,10 @@ public class ObjectWithType implements IProxyObject {
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 
-		return evaluationStrategy.getByIndex(innerObject, index);
+		return evaluationStrategy.getByIndex(rawObject, index);
+	}
+
+	public IType getType() {
+		return type;
 	}
 }
