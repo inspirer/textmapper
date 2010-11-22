@@ -51,7 +51,7 @@ public class ConstraintUtil {
 					if(s.length() == 0) {
 						break;
 					}
-					for(String part : s.split(".")) {
+					for(String part : s.split("\\.")) {
 						if(!isIdentifier(part)) {
 							return "should be qualified identifier";
 						}
