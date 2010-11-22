@@ -15,14 +15,11 @@
  */
 package org.textway.templates.types;
 
-import org.textway.templates.api.IInstanceObject;
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.types.IClass;
+import org.textway.templates.api.types.*;
 import org.textway.templates.api.types.IDataType.Constraint;
 import org.textway.templates.api.types.IDataType.ConstraintKind;
 import org.textway.templates.api.types.IDataType.DataTypeKind;
-import org.textway.templates.api.types.IFeature;
-import org.textway.templates.api.types.IType;
 import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.types.TypesTree.TypesProblem;
 import org.textway.templates.types.ast.*;
@@ -272,60 +269,113 @@ class TiResolver {
 		}
 	}
 
-	private IInstanceObject convertExpression(IExpression expression, IType type) {
-		if(expression instanceof LiteralExpression) {
-			return convertExpression((LiteralExpression)expression, type);
+	private Object convertExpression(IExpression expression, IType type) {
+		if (expression instanceof LiteralExpression) {
+			return convertExpression((LiteralExpression) expression, type);
 		}
-		if(expression instanceof StructuralExpression) {
+		if (expression instanceof StructuralExpression) {
 			StructuralExpression expr = (StructuralExpression) expression;
-			if(expr.getExpressionListopt() != null) {
+			if (expr.getExpressionListopt() != null) {
 				return convertArray(expr, expr.getExpressionListopt(), type);
 			}
 
-			String qualifiedName = getQualifiedName(expr.getName());
-			if(qualifiedName.indexOf('.') == -1) {
-				qualifiedName = myPackage + "." + qualifiedName;
-			}
-
-			TiClass aClass = myRegistryClasses.get(qualifiedName);
-			if(aClass == null) {
-				myStatus.fireError(new LocatedNodeAdapter((IAstNode)expression), "cannot instantiate `" + qualifiedName + "`: class not found");
-				return null;
-			}
-
-			Map<String, Object> result = new HashMap<String, Object>();
-			for (MapEntriesItem item : expr.getMapEntriesopt()) {
-				String key = item.getIdentifier();
-
-				IFeature feature = aClass.getFeature(key);
-				if(feature == null) {
-					myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
-					continue;
-				}
-
-				Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
-				if(value != null) {
-					result.put(key, value);
-				}
-			}
-
-			return new TiInstance(aClass, result);
+			return convertNew(expr, type);
 		}
 
 		return null;
 	}
 
-	private IInstanceObject convertExpression(LiteralExpression expression, IType type) {
-		// TODO create literal expression
-		return null;
+	private Object convertNew(StructuralExpression expr, IType type) {
+		String qualifiedName = getQualifiedName(expr.getName());
+		if (qualifiedName.indexOf('.') == -1) {
+			qualifiedName = myPackage + "." + qualifiedName;
+		}
+
+		TiClass aClass = myRegistryClasses.get(qualifiedName);
+		if (aClass == null) {
+			myStatus.fireError(new LocatedNodeAdapter(expr), "cannot instantiate `" + qualifiedName + "`: class not found");
+			return null;
+		}
+
+		if (!aClass.isSubtypeOf(type)) {
+			myStatus.fireError(new LocatedNodeAdapter(expr), "`" + aClass.toString() + "` is not a subtype of `" + type.toString() + "`");
+			return null;
+		}
+
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (MapEntriesItem item : expr.getMapEntriesopt()) {
+			String key = item.getIdentifier();
+
+			IFeature feature = aClass.getFeature(key);
+			if (feature == null) {
+				myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
+				continue;
+			}
+
+			Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
+			if (value != null) {
+				result.put(key, value);
+			}
+		}
+
+		return new TiInstance(aClass, result);
 	}
 
-	private IInstanceObject convertArray(StructuralExpression node, List<IExpression> array, IType type) {
-		// TODO create array type
-		return null;
+	private Object convertExpression(LiteralExpression expression, IType type) {
+		if (!(type instanceof IDataType)) {
+			myStatus.fireError(new LocatedNodeAdapter(expression), "expected value of type `" + type.toString() + "` instead of literal");
+			return null;
+		}
+		IDataType dataType = (IDataType) type;
+		DataTypeKind kind;
+		Object result;
+		if (expression.getBcon() != null) {
+			result = expression.getBcon();
+			kind = DataTypeKind.BOOL;
+		} else if (expression.getIcon() != null) {
+			result = expression.getIcon();
+			kind = DataTypeKind.INT;
+		} else {
+			result = expression.getScon();
+			kind = DataTypeKind.STRING;
+		}
+
+		if (kind != dataType.getKind()) {
+			myStatus.fireError(new LocatedNodeAdapter(expression), "`" + dataType.toString() + "` is expected");
+			return null;
+		}
+
+		if (kind == DataTypeKind.STRING) {
+			String s = (String) result;
+			for (Constraint constraint : dataType.getConstraints()) {
+				String message = ConstraintUtil.validate(s, constraint);
+				if (message != null) {
+					myStatus.fireError(new LocatedNodeAdapter(expression), message);
+					return null;
+				}
+			}
+		}
+
+		return result;
 	}
 
+	private Object convertArray(StructuralExpression node, List<IExpression> array, IType type) {
+		if (!(type instanceof IArrayType)) {
+			myStatus.fireError(new LocatedNodeAdapter(node), "expected value of type `" + type.toString() + "` instead of array");
+			return null;
+		}
 
+		IType innerType = ((IArrayType) type).getInnerType();
+		List<Object> result = new ArrayList<Object>(array.size());
+		for (IExpression expression : array) {
+			Object subexpr = convertExpression(expression, innerType);
+			if (subexpr != null) {
+				result.add(subexpr);
+			}
+		}
+
+		return result;
+	}
 
 	public Collection<String> getRequired() {
 		return requiredPackages;

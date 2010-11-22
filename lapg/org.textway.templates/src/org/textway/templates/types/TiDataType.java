@@ -16,6 +16,7 @@
 package org.textway.templates.types;
 
 import org.textway.templates.api.types.IDataType;
+import org.textway.templates.api.types.IType;
 
 import java.util.Collection;
 
@@ -35,6 +36,18 @@ public class TiDataType implements IDataType {
 
 	public Collection<Constraint> getConstraints() {
 		return constraints;
+	}
+
+	public boolean isSubtypeOf(IType anotherType) {
+		if(!(anotherType instanceof IDataType)) {
+			return false;
+		}
+		IDataType another = (IDataType) anotherType;
+		if(kind != another.getKind()) {
+			return false;
+		}
+		// TODO compare constraints
+		return true;
 	}
 
 	@Override

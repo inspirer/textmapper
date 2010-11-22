@@ -15,10 +15,11 @@
  */
 package org.textway.templates.types;
 
-import java.util.Collection;
-
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IType;
+
+import java.util.Collection;
 
 public class TiClass implements IClass {
 
@@ -58,6 +59,18 @@ public class TiClass implements IClass {
 			}
 		}
 		return null;
+	}
+
+	public boolean isSubtypeOf(IType anotherType) {
+		if(!(anotherType instanceof IClass)) {
+			return false;
+		}
+		IClass another = (IClass) anotherType;
+		if(getQualifiedName().equals(another.getQualifiedName())) {
+			return true;
+		}
+		// TODO check super classes
+		return false;
 	}
 
 	@Override

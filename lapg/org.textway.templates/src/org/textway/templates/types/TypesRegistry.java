@@ -15,12 +15,12 @@
  */
 package org.textway.templates.types;
 
-import java.util.*;
-
-import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.ITypesRegistry;
+import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.bundle.TemplatesRegistry;
+
+import java.util.*;
 
 public class TypesRegistry implements ITypesRegistry {
 

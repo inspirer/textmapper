@@ -30,6 +30,13 @@ public class TiArrayType implements IArrayType {
 		return innerType;
 	}
 
+	public boolean isSubtypeOf(IType anotherType) {
+		if(anotherType instanceof IArrayType) {
+			return innerType.isSubtypeOf(((IArrayType) anotherType).getInnerType());
+		}
+		return false;
+	}
+
 	@Override
 	public String toString() {
 		return innerType.toString() + "[]";

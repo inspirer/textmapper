@@ -20,10 +20,6 @@ import org.textway.templates.api.types.IType;
 
 public class TypesUtil {
 
-	public static boolean canAssign(IType left, IType right) {
-		return true;
-	}
-
 	public static IType getFeatureType(IFeature feature) {
 		return feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getType()) : feature.getType();
 	}

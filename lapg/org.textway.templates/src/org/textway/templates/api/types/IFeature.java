@@ -12,5 +12,5 @@ public interface IFeature {
 
 	boolean isReference();
 
-	IInstanceObject getDefaultValue(); 
+	Object getDefaultValue(); 
 }
