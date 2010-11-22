@@ -27,11 +27,17 @@ public class ConstraintUtil {
 			String s = (String) literal;
 			switch(constraint.getKind()) {
 				case CHOICE:
-					if(!(constraint.getParameters().contains(s))) {
+					if(s.length() == 0) {
+						break;
+					}
+					if(!(constraint.getParameters().contains(s.trim()))) {
 						return "should be one of: " + join(constraint.getParameters(), ", ");
 					}
 					break;
 				case IDENTIFIER:
+					if(s.length() == 0) {
+						break;
+					}
 					if(!isIdentifier(s)) {
 						return "should be identifier";
 					}
@@ -42,20 +48,22 @@ public class ConstraintUtil {
 					}
 					break;
 				case QUALIFIED_IDENTIFIER:
-					if(s.indexOf('.') >= 0) {
-						for(String part : s.split(".")) {
-							if(!isIdentifier(part)) {
-								return "should be qualified identifier";
-							}
+					if(s.length() == 0) {
+						break;
+					}
+					for(String part : s.split(".")) {
+						if(!isIdentifier(part)) {
+							return "should be qualified identifier";
 						}
-					} else {
-						return "should be qualified identifier";
 					}
 					break;
 				case SET:
-					for(String part : s.split(",")) {
-						if(!(constraint.getParameters().contains(s))) {
-							return "invalid set option `" + part + "`, should be one of: " + join(constraint.getParameters(), ", ");
+					if(s.trim().length() > 0) {
+						for(String part : s.split(",")) {
+							part = part.trim();
+							if(!(constraint.getParameters().contains(part))) {
+								return "invalid set option `" + part + "`, should be one of: " + join(constraint.getParameters(), ", ");
+							}
 						}
 					}
 					break;
@@ -71,7 +79,7 @@ public class ConstraintUtil {
 			if(sb.length() != 0) {
 				sb.append(separator);
 			}
-			sb.append(c);
+			sb.append(s);
 		}
 		return sb.toString();
 	}

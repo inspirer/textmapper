@@ -57,7 +57,7 @@ public class TypesRegistry implements ITypesRegistry {
 			queue.remove(current);
 			assert !myLoadedPackages.contains(current);
 			myLoadedPackages.add(current);
-			
+
 			String[] contentLayers = myResourceRegistry.loadResource(current, "types");
 			if(contentLayers == null || contentLayers.length < 1) {
 				myResourceRegistry.getCollector().fireError(referer, "Couldn't load types package `" + current + "`");
@@ -72,6 +72,7 @@ public class TypesRegistry implements ITypesRegistry {
 						queue.add(package_);
 					}
 				}
+				loaders.add(resolver);
 			}
 		}
 
