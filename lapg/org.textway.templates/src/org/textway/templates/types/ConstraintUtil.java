@@ -21,7 +21,6 @@ import java.util.Collection;
 
 public class ConstraintUtil {
 
-
 	public static String validate(Object literal, Constraint constraint) {
 		if(literal instanceof String) {
 			String s = (String) literal;
