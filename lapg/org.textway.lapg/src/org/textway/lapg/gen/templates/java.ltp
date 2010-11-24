@@ -93,7 +93,7 @@ ${end-}
 		lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -158,7 +158,7 @@ ${end-}
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
