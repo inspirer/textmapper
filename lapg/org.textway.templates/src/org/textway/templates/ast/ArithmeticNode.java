@@ -19,6 +19,7 @@ import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.ast.TemplatesTree.TextSource;
+import org.textway.templates.objects.IxOperand;
 
 
 public class ArithmeticNode extends ExpressionNode {
@@ -42,55 +43,23 @@ public class ArithmeticNode extends ExpressionNode {
 		this.rightExpr = right;
 	}
 
-	private Object convertToInteger(Object obj) {
-		if( obj instanceof String ) {
-            String s = (String) obj;
-            if(s.length() > 0
-                    && Character.isDigit(s.charAt(s.length()-1)) 
-                    && (Character.isDigit(s.charAt(0)) || s.charAt(0) == '-')) {
-                try {
-                    return new Integer(s);
-                } catch(NumberFormatException ex) {
-                    /* ignore */
-                }
-            }
-		}
-		return obj;
-	}
-
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		Object left = convertToInteger(env.evaluate(leftExpr, context, false));
-		Object right = convertToInteger(env.evaluate(rightExpr, context, false));
-
-		if( left instanceof Integer && right instanceof Integer ) {
-			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
-			switch( kind ) {
+		IxOperand left = env.asOperand(env.evaluate(leftExpr, context, false));
+		Object right = env.evaluate(rightExpr, context, false);
+		switch(kind) {
 			case PLUS:
-				return new Integer(l+r);
+				return left.plus(right);
 			case MINUS:
-				return new Integer(l-r);
+				return left.minus(right);
 			case MULT:
-				return new Integer(l*r);
+				return left.multiply(right);
 			case DIV:
-				return new Integer(l/r);
+				return left.div(right);
 			case REM:
-				return new Integer(l%r);
-			}
-		} else if( kind == PLUS ) {
-			if( left instanceof Object[] && right instanceof Object[] ) {
-				return concatenate((Object[])left,(Object[])right);
-			} else if( left instanceof String || right instanceof String ) {
-				return left.toString() + right.toString();
-			} else {
-				throw new EvaluationException("arguments of plus should be arrays, strings or integers ("+left.getClass().getCanonicalName() + " + "+right.getClass().getCanonicalName()+")");
-			}
-
-		} else {
-			throw new EvaluationException("arithmetic arguments should be integer");
+				return left.mod(right);
 		}
-
-		return null;
+		throw new IllegalStateException();
 	}
 
 	@Override
@@ -98,20 +67,5 @@ public class ArithmeticNode extends ExpressionNode {
 		leftExpr.toString(sb);
 		sb.append(operators[kind]);
 		rightExpr.toString(sb);
-	}
-
-	private static Object[] concatenate(Object[] a1, Object[] a2) {
-		int a1Len= a1.length;
-		int a2Len= a2.length;
-		if (a1Len == 0) {
-			return a2;
-		}
-		if (a2Len == 0) {
-			return a1;
-		}
-		Object[] res= new Object[a1Len + a2Len];
-		System.arraycopy(a1, 0, res, 0, a1Len);
-		System.arraycopy(a2, 0, res, a1Len, a2Len);
-		return res;
 	}
 }

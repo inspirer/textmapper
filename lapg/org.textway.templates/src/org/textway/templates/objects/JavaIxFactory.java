@@ -30,7 +30,7 @@ public class JavaIxFactory implements IxFactory {
 		if(o instanceof String) {
 			return new JavaStringIxObject((String) o);
 		}
-		return null;
+		return new DefaultIxOperand(o);
 	}
 
 	public IxAdaptable asAdaptable(Object o) {
@@ -43,6 +43,6 @@ public class JavaIxFactory implements IxFactory {
 		if(o instanceof Collection) {
 			// TODO collection
 		}
-		return null;
+		return new DefaultIxObject(o);
 	}
 }

@@ -20,11 +20,12 @@ import java.util.Iterator;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.objects.IxFactory;
 
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProblemCollector, IStreamHandler {
+public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProblemCollector, IStreamHandler, IxFactory {
 
 	Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
 

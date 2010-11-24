@@ -38,4 +38,5 @@ public interface IxOperand {
 	Object rightShift(Object v) throws EvaluationException;
 
 	int compareTo(Object v) throws EvaluationException;
+	boolean equalsTo(Object v) throws EvaluationException;
 }

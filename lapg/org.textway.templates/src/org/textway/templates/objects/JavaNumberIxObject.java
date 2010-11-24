@@ -181,6 +181,10 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	public boolean equalsTo(Object v) throws EvaluationException {
+		return compareTo(v) == 0;
+	}
+
 	private Number asNumber(Object v) throws EvaluationException {
 		Object real = v instanceof IxWrapper ? ((IxWrapper) v).getObject() : v;
 		if (real == null) {

@@ -99,6 +99,10 @@ public class JavaStringIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		return myString.compareTo(asString(v));
 	}
 
+	public boolean equalsTo(Object v) throws EvaluationException {
+		return myString.equals(asString(v)); 
+	}
+
 	private String asString(Object v) throws EvaluationException {
 		if(v instanceof IxAdaptable) {
 			return ((IxAdaptable) v).asString();

@@ -31,7 +31,7 @@ public class ConditionalNode extends ExpressionNode {
 	public static final int AND = 7;
 	public static final int OR = 8;
 
-	private static String[] operators = new String[] { "", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || " };
+	private static String[] operators = new String[]{"", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || "};
 
 	private final int kind;
 	private final ExpressionNode leftExpr;
@@ -46,45 +46,44 @@ public class ConditionalNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		Object left = env.evaluate(leftExpr, context, kind == AND || kind == OR);
-
-		switch( kind ) {
-		case EQ:
-			return safeEqual(left,env.evaluate(rightExpr, context, false));
-		case NE:
-			return !safeEqual(left,env.evaluate(rightExpr, context, false));
-		case AND:
-			return env.toBoolean(left) && env.toBoolean(env.evaluate(rightExpr, context, true));
-		case OR:
-			return env.toBoolean(left) || env.toBoolean(env.evaluate(rightExpr, context, true));
-		}
-
-		Object right = env.evaluate(rightExpr, context, false);
-
-		if( left instanceof Integer && right instanceof Integer ) {
-			int l = ((Integer)left).intValue(), r = ((Integer)right).intValue();
-			switch( kind ) {
+		Object leftVal = env.evaluate(leftExpr, context, kind == AND || kind == OR);
+		switch (kind) {
 			case LT:
-				return l < r;
-			case LE:
-				return l <= r;
 			case GE:
-				return l >= r;
 			case GT:
-				return l > r;
+			case LE:
+			{
+				int result = env.asOperand(leftVal).compareTo(env.evaluate(rightExpr, context, false));
+				switch (kind) {
+					case LT:
+						return result < 0;
+					case LE:
+						return result <= 0;
+					case GT:
+						return result > 0;
+					case GE:
+						return result >= 0;
+				}
 			}
-		} else {
-			throw new EvaluationException("relational arguments should be integer");
+			case EQ:
+			case NE:
+			{
+				boolean equals = env.asOperand(leftVal).equalsTo(env.evaluate(rightExpr, context, false));
+				return kind == EQ ? equals : !equals;
+			}
+			case AND:
+				return env.asAdaptable(leftVal).asBoolean() && env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
+			case OR:
+				return env.asAdaptable(leftVal).asBoolean() || env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
 		}
-
 		throw new EvaluationException("internal error: unknown kind");
 	}
 
 	public static boolean safeEqual(Object a, Object b) {
-		if( a == null ) {
+		if (a == null) {
 			return b == null;
 		}
-		if( b == null ) {
+		if (b == null) {
 			return false;
 		}
 

@@ -24,12 +24,13 @@ import org.textway.templates.ast.TemplateNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
+import org.textway.templates.objects.JavaIxFactory;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class DefaultEvaluationStrategy implements IEvaluationStrategy {
+public class DefaultEvaluationStrategy extends JavaIxFactory implements IEvaluationStrategy {
 
 	private final TemplatesFacade templatesFacade;
 	private final TemplatesRegistry registry;
