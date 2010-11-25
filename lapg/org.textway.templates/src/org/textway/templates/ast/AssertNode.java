@@ -32,9 +32,7 @@ public class AssertNode extends Node {
 	@Override
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
-			Object res = env.evaluate(expr, context, true);
-			Boolean b = env.toBoolean(res);
-			if (!b.booleanValue()) {
+			if (!env.asAdaptable(env.evaluate(expr, context, true)).asBoolean()) {
 				env.fireError(this, "Assertion `" + expr.toString() + "` failed for " + env.getTitle(context.getThisObject()));
 			}
 		} catch (EvaluationException ex) {

@@ -165,49 +165,6 @@ public class DefaultEvaluationStrategy extends JavaIxFactory implements IEvaluat
 		}
 	}
 
-	public Iterator<?> getCollectionIterator(Object o) {
-		if (o instanceof Iterable<?>) {
-			return ((Iterable<?>) o).iterator();
-		}
-		if (o instanceof Object[]) {
-			return new ArrayIterator((Object[]) o);
-		}
-		return null;
-	}
-
-	private static class ArrayIterator implements Iterator<Object> {
-
-		Object[] elements;
-
-		int index;
-
-		int lastElement;
-
-		public ArrayIterator(Object[] elements) {
-			this(elements, 0, elements.length - 1);
-		}
-
-		public ArrayIterator(Object[] elements, int firstElement, int lastElement) {
-			this.elements = elements;
-			index = firstElement;
-			this.lastElement = lastElement;
-		}
-
-		public boolean hasNext() {
-			return elements != null && index <= lastElement;
-		}
-
-		public Object next() throws NoSuchElementException {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			return elements[index++];
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
 
 	public void fireError(ILocatedEntity referer, String error) {
 		templatesFacade.fireError(referer, error);

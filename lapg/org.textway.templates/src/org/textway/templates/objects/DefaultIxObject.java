@@ -57,7 +57,7 @@ public class DefaultIxObject implements IxAdaptable, IxObject, IxWrapper {
 			return ((Iterable<?>) wrapped).iterator();
 		}
 		if (wrapped instanceof Object[]) {
-			return new ArrayIterator((Object[]) wrapped);
+			return new JavaArrayAdapter((Object[]) wrapped).iterator();
 		}
 		return null;
 	}
@@ -142,37 +142,5 @@ public class DefaultIxObject implements IxAdaptable, IxObject, IxWrapper {
 
 	public Object getObject() {
 		return wrapped;
-	}
-
-	private static class ArrayIterator implements Iterator<Object> {
-
-		Object[] elements;
-		int index;
-		int lastElement;
-
-		public ArrayIterator(Object[] elements) {
-			this(elements, 0, elements.length - 1);
-		}
-
-		public ArrayIterator(Object[] elements, int firstElement, int lastElement) {
-			this.elements = elements;
-			index = firstElement;
-			this.lastElement = lastElement;
-		}
-
-		public boolean hasNext() {
-			return elements != null && index <= lastElement;
-		}
-
-		public Object next() throws NoSuchElementException {
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
-			return elements[index++];
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
 	}
 }

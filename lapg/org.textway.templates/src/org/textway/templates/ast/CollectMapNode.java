@@ -45,7 +45,7 @@ public class CollectMapNode extends ExpressionNode {
 		Object select = env.evaluate(selectExpression, context, false);
 		Object prevVar = context.getVariable(varName);
 		try {
-			Iterator<?> it = env.getCollectionIterator(select);
+			Iterator<?> it = env.asAdaptable(select).asSequence();
 			if(it == null) {
 				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of "+select.getClass().getCanonicalName()+")");
 			}
