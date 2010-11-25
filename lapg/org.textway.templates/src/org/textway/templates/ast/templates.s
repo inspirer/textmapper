@@ -300,30 +300,25 @@ unary_expression (ExpressionNode) ::=
 	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1, source, ${unary_expression[0].offset}, ${unary_expression[0].endoffset}); }
 ;
 
-mult_expression (ExpressionNode) ::=
+%left '>' '<' '<=' '>=';
+%left '-' '+';
+%left '*' '/' '%';
+
+binary_op (ExpressionNode) ::=
 	unary_expression
-	| mult_expression '*' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $mult_expression#0, $unary_expression, source, ${mult_expression[0].offset}, ${mult_expression[0].endoffset}); }
-	| mult_expression '/' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $mult_expression#0, $unary_expression, source, ${mult_expression[0].offset}, ${mult_expression[0].endoffset}); }
-	| mult_expression '%' unary_expression			{ $$ = new ArithmeticNode(ArithmeticNode.REM, $mult_expression#0, $unary_expression, source, ${mult_expression[0].offset}, ${mult_expression[0].endoffset}); }
-;
-
-additive_expression (ExpressionNode) ::=
-	mult_expression
-	| additive_expression '+' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $additive_expression#0, $mult_expression, source, ${additive_expression[0].offset}, ${additive_expression[0].endoffset}); }
-	| additive_expression '-' mult_expression		{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $additive_expression#0, $mult_expression, source, ${additive_expression[0].offset}, ${additive_expression[0].endoffset}); }
-;
-
-
-relational_expression (ExpressionNode) ::=
-      additive_expression
-    | relational_expression '<' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.LT, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
-    | relational_expression '>' additive_expression	{ $$ = new ConditionalNode(ConditionalNode.GT, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
-    | relational_expression '<=' additive_expression { $$ = new ConditionalNode(ConditionalNode.LE, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
-    | relational_expression '>=' additive_expression { $$ = new ConditionalNode(ConditionalNode.GE, $relational_expression#0, $additive_expression, source, ${left().offset}, ${left().endoffset}); }
+	| binary_op '*' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+	| binary_op '/' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+	| binary_op '%' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.REM, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+	| binary_op '+' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+	| binary_op '-' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | binary_op '<' binary_op						{ $$ = new ConditionalNode(ConditionalNode.LT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | binary_op '>' binary_op						{ $$ = new ConditionalNode(ConditionalNode.GT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | binary_op '<=' binary_op 						{ $$ = new ConditionalNode(ConditionalNode.LE, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | binary_op '>=' binary_op 						{ $$ = new ConditionalNode(ConditionalNode.GE, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 instanceof_expression (ExpressionNode) ::=
-	  relational_expression
+	  binary_op
 	| instanceof_expression Lis qualified_id		{ $$ = new InstanceOfNode($instanceof_expression#0, $qualified_id, source, ${left().offset}, ${left().endoffset}); }
 	| instanceof_expression Lis ccon				{ $$ = new InstanceOfNode($instanceof_expression#0, $ccon, source, ${left().offset}, ${left().endoffset}); }
 ;
