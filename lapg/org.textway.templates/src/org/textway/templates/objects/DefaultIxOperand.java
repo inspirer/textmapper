@@ -26,64 +26,68 @@ public class DefaultIxOperand implements IxOperand, IxWrapper {
 	}
 
 	public Object plus(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot add to an object");
+		throw new EvaluationException("'+' is not supported for `" + getType() + "`");
 	}
 
 	public Object minus(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot subtract from an object");
+		throw new EvaluationException("'-' is not supported for `" + getType() + "`");
 	}
 
 	public Object multiply(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot multiply an object");
+		throw new EvaluationException("'*' is not supported for `" + getType() + "`");
 	}
 
 	public Object div(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot divide an object");
+		throw new EvaluationException("'/' is not supported for `" + getType() + "`");
 	}
 
 	public Object mod(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot divide an object");
+		throw new EvaluationException("'%' is not supported for `" + getType() + "`");
 	}
 
 	public Object or(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot apply the bitwise operation to an object");
+		throw new EvaluationException("'|' is not supported for `" + getType() + "`");
 	}
 
 	public Object and(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot apply the bitwise operation to an object");
+		throw new EvaluationException("'&' is not supported for `" + getType() + "`");
 	}
 
 	public Object xor(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot apply the bitwise operation to an object");
+		throw new EvaluationException("'^' is not supported for `" + getType() + "`");
 	}
 
 	public Object next() throws EvaluationException {
-		throw new EvaluationException("cannot increment an object");
+		throw new EvaluationException("increment is not supported for `" + getType() + "`");
 	}
 
 	public Object previous() throws EvaluationException {
-		throw new EvaluationException("cannot decrement an object");
+		throw new EvaluationException("decrement is not supported for `" + getType() + "`");
 	}
 
 	public Object negative() throws EvaluationException {
-		throw new EvaluationException("cannot make an object negative");
+		throw new EvaluationException("negative is not supported for `" + getType() + "`");
 	}
 
 	public Object leftShift(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot shift an object");
+		throw new EvaluationException("left shift is not supported for `" + getType() + "`");
 	}
 
 	public Object rightShift(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot shift an object");
+		throw new EvaluationException("right shift is not supported for `" + getType() + "`");
 	}
 
 	public int compareTo(Object v) throws EvaluationException {
-		throw new EvaluationException("cannot compare objects");
+		throw new EvaluationException("compare is not supported for `" + getType() + "`");
 	}
 
 	public boolean equalsTo(Object v) throws EvaluationException {
 		Object real = v instanceof IxWrapper ? ((IxWrapper) v).getObject() : v;
 		return myObject == null ? real == null : myObject.equals(real);
+	}
+
+	protected String getType() {
+		return "Object";
 	}
 
 	public Object getObject() {

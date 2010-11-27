@@ -30,7 +30,7 @@ public abstract class ExpressionNode extends Node {
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			sb.append(env.toString(env.evaluate(this, context, false), this));
-		} catch( EvaluationException ex ) {
+		} catch (EvaluationException ex) {
 		}
 	}
 

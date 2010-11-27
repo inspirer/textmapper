@@ -37,7 +37,7 @@ public class TriplexNode extends ExpressionNode {
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object cond = env.evaluate(condition, context, true);
-		if( env.toBoolean(cond) ) {
+		if (env.asAdaptable(cond).asBoolean()) {
 			return env.evaluate(thennode, context, true);
 		} else {
 			return env.evaluate(elsenode, context, true);

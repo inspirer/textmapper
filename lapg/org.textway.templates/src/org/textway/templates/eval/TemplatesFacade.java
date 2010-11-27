@@ -16,41 +16,40 @@
 package org.textway.templates.eval;
 
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.api.INavigationStrategy;
-import org.textway.templates.api.INavigationStrategy.Factory;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.ITemplate;
+import org.textway.templates.bundle.IBundleEntity;
+import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
+import org.textway.templates.objects.IxFactory;
 
 public class TemplatesFacade {
 
 	private IEvaluationStrategy evaluationStrategy;
 
-	private final INavigationStrategy.Factory factory;
+	private final IxFactory factory;
 	private final TemplatesRegistry registry;
 	private final IProblemCollector collector;
 
-	public TemplatesFacade(Factory factory, TemplatesRegistry registry) {
+	public TemplatesFacade(IxFactory factory, TemplatesRegistry registry) {
 		this(factory, registry, registry.getCollector());
 	}
 
-	public TemplatesFacade(Factory factory, TemplatesRegistry registry, IProblemCollector collector) {
+	public TemplatesFacade(IxFactory factory, TemplatesRegistry registry, IProblemCollector collector) {
 		this.factory = factory;
 		this.registry = registry;
 		this.collector = collector;
 	}
 
 	private IEvaluationStrategy getEvaluationStrategy() {
-		if(evaluationStrategy == null) {
+		if (evaluationStrategy == null) {
 			evaluationStrategy = createEvaluationStrategy(factory, registry);
 		}
 		return evaluationStrategy;
 	}
 
-	protected IEvaluationStrategy createEvaluationStrategy(INavigationStrategy.Factory factory, TemplatesRegistry registry) {
+	protected IEvaluationStrategy createEvaluationStrategy(IxFactory factory, TemplatesRegistry registry) {
 		return new DefaultEvaluationStrategy(this, factory, registry);
 	}
 

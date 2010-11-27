@@ -16,45 +16,82 @@
 package org.textway.templates.objects;
 
 import org.textway.templates.api.EvaluationException;
+import org.textway.templates.api.IEvaluationStrategy;
 
 import java.util.*;
 
 public class JavaIxFactory implements IxFactory {
 
 	public IxObject asObject(Object o) {
-		return new DefaultIxObject(o);
+		if (o instanceof IxObject) {
+			return (IxObject) o;
+		}
+		if (o instanceof Map) {
+			return new JavaMapIxObject((Map) o);
+		}
+		if (o instanceof int[]) {
+			return new JavaIntArrayIxObject((int[]) o);
+		}
+		if (o instanceof short[]) {
+			return new JavaShortArrayIxObject((short[]) o);
+		}
+		if (o instanceof Object[]) {
+			return new JavaArrayIxObject((Object[]) o);
+		}
+		if (o instanceof List) {
+			return new JavaListIxObject((List) o);
+		}
+		if (o instanceof Collection) {
+			return new JavaCollectionIxObject((Collection) o);
+		}
+		return new DefaultJavaIxObject(o);
 	}
 
 	public IxOperand asOperand(Object o) {
-		if(o instanceof Number) {
+		if (o instanceof IxOperand) {
+			return (IxOperand) o;
+		}
+		if (o instanceof Number) {
 			return new JavaNumberIxObject((Number) o);
 		}
-		if(o instanceof String) {
+		if (o instanceof String) {
 			return new JavaStringIxObject((String) o);
 		}
 		return new DefaultIxOperand(o);
 	}
 
 	public IxAdaptable asAdaptable(Object o) {
-		if(o instanceof Number) {
+		if (o instanceof IxAdaptable) {
+			return (IxAdaptable) o;
+		}
+		if (o instanceof Number) {
 			return new JavaNumberIxObject((Number) o);
 		}
-		if(o instanceof String) {
+		if (o instanceof String) {
 			return new JavaStringIxObject((String) o);
 		}
-		if(o instanceof Object[]) {
+		if (o instanceof int[]) {
+			return new JavaIntArrayIxObject((int[]) o);
+		}
+		if (o instanceof short[]) {
+			return new JavaShortArrayIxObject((short[]) o);
+		}
+		if (o instanceof Object[]) {
 			return new JavaArrayIxObject((Object[]) o);
 		}
-		if(o instanceof List) {
+		if (o instanceof List) {
 			return new JavaListIxObject((List) o);
 		}
-		if(o instanceof Collection) {
+		if (o instanceof Collection) {
 			return new JavaCollectionIxObject((Collection) o);
 		}
-		return new DefaultIxObject(o);
+		return new DefaultJavaIxObject(o);
 	}
 
-	public static class JavaCollectionIxObject extends BaseIxObject {
+	public void setStrategy(IEvaluationStrategy strategy) {
+	}
+
+	public static class JavaCollectionIxObject extends DefaultIxObject {
 
 		protected Collection collection;
 
@@ -72,47 +109,47 @@ public class JavaIxFactory implements IxFactory {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return collection.isEmpty() ? null : collection.iterator().next();
-				} else if(methodName.equals("last")) {
-					if(collection instanceof List<?>) {
-						return ((List<?>)collection).get(((List<?>)collection).size()-1);
+				} else if (methodName.equals("last")) {
+					if (collection instanceof List<?>) {
+						return ((List<?>) collection).get(((List<?>) collection).size() - 1);
 					}
 					Object last = null;
-					for(Object r : collection) {
+					for (Object r : collection) {
 						last = r;
 					}
 					return last;
-				} else if(methodName.equals("toSet")) {
-					if(collection instanceof Set<?>) {
+				} else if (methodName.equals("toSet")) {
+					if (collection instanceof Set<?>) {
 						return collection;
 					}
 					return new LinkedHashSet<Object>(collection);
-				} else if(methodName.equals("size")) {
+				} else if (methodName.equals("size")) {
 					return collection.size();
 				}
-			} else if(args.length == 1) {
-				if(methodName.equals("contains")) {
+			} else if (args.length == 1) {
+				if (methodName.equals("contains")) {
 					return collection.contains(args[0]);
-				} else if(methodName.equals("indexOf")) {
-					if(collection instanceof List<?>) {
-						return ((List<?>)collection).indexOf(args[0]);
+				} else if (methodName.equals("indexOf")) {
+					if (collection instanceof List<?>) {
+						return ((List<?>) collection).indexOf(args[0]);
 					}
 					int i = 0;
-					for(Object o : collection) {
-						if(o != null && o.equals(args[0])) {
+					for (Object o : collection) {
+						if (o != null && o.equals(args[0])) {
 							return i;
 						}
 						i++;
 					}
 					return -1;
-				} else if(methodName.equals("union")) {
-					if(args[0] != null) {
+				} else if (methodName.equals("union")) {
+					if (args[0] != null) {
 						Collection<Object> result = collection instanceof Set<?> ? new LinkedHashSet<Object>(collection) : new ArrayList<Object>(collection);
-						if(args[0] instanceof Object[]) {
-							for(Object o : (Object[])args[0]) {
+						if (args[0] instanceof Object[]) {
+							for (Object o : (Object[]) args[0]) {
 								result.add(o);
 							}
-						} else if(args[0] instanceof Collection<?>) {
-							result.addAll((Collection<?>)args[0]);
+						} else if (args[0] instanceof Collection<?>) {
+							result.addAll((Collection<?>) args[0]);
 						} else {
 							result.add(args[0]);
 						}
@@ -151,7 +188,11 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Integer) {
-				return ((List)collection).get((Integer) index);
+				int i = (Integer) index;
+				if (i < 0 || i >= collection.size()) {
+					throw new EvaluationException(i + " is out of 0.." + (collection.size() - 1));
+				}
+				return ((List) collection).get(i);
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
@@ -177,6 +218,196 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
+		public Object getObject() {
+			return array;
+		}
+	}
+
+	private class JavaMapIxObject extends DefaultIxObject {
+		private Map map;
+
+		public JavaMapIxObject(Map map) {
+			this.map = map;
+		}
+
+		@Override
+		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+			return new DefaultJavaIxObject(map).callMethod(methodName, args);
+		}
+
+		@Override
+		public Object getByIndex(Object index) throws EvaluationException {
+			return map.get(index);
+		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			return map.get(propertyName);
+		}
+
+		@Override
+		protected String getType() {
+			return "Map";
+		}
+
+		public Object getObject() {
+			return map;
+		}
+	}
+
+	private class JavaIntArrayIxObject extends DefaultIxObject {
+		private int[] array;
+
+		public JavaIntArrayIxObject(int[] array) {
+			this.array = array;
+		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			if(propertyName.equals("length")) {
+				return array.length;
+			}
+			return super.getProperty(propertyName);
+		}
+
+		@Override
+		public boolean asBoolean() {
+			return array.length > 0;
+		}
+
+		@Override
+		public Object getByIndex(Object index) throws EvaluationException {
+			if (index instanceof Integer) {
+				int i = (Integer) index;
+				if (i < 0 || i >= array.length) {
+					throw new EvaluationException(i + " is out of 0.." + (array.length - 1));
+				}
+				return array[i];
+			} else {
+				throw new EvaluationException("index object should be integer");
+			}
+		}
+
+		@Override
+		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+			if (args == null) {
+				if (methodName.equals("first")) {
+					return array.length == 0 ? null : array[0];
+				} else if (methodName.equals("last")) {
+					return array.length == 0 ? null : array[array.length-1];
+				} else if (methodName.equals("toSet")) {
+					LinkedHashSet<Integer> set = new LinkedHashSet<Integer>();
+					for(int i : array) {
+						set.add(i);
+					}
+					return set;
+				} else if (methodName.equals("size")) {
+					return array.length;
+				}
+			} else if (args.length == 1) {
+				if (methodName.equals("contains")) {
+					for(int i : array) {
+						if(new Integer(i).equals(args[0])) {
+							return true;
+						}
+					}
+					return false;
+				} else if (methodName.equals("indexOf")) {
+					for(int i = 0; i < array.length; i++) {
+						if(new Integer(array[i]).equals(args[0])) {
+							return i;
+						}
+					}
+					return -1;
+				}
+			}
+			return super.callMethod(methodName, args);
+		}
+
+		@Override
+		protected String getType() {
+			return "int[]";
+		}
+
+		public Object getObject() {
+			return array;
+		}
+	}
+
+	private class JavaShortArrayIxObject extends DefaultIxObject {
+		private short[] array;
+
+		public JavaShortArrayIxObject(short[] array) {
+			this.array = array;
+		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			if(propertyName.equals("length")) {
+				return array.length;
+			}
+			return super.getProperty(propertyName);
+		}
+
+		@Override
+		public boolean asBoolean() {
+			return array.length > 0;
+		}
+
+		@Override
+		public Object getByIndex(Object index) throws EvaluationException {
+			if (index instanceof Integer) {
+				int i = (Integer) index;
+				if (i < 0 || i >= array.length) {
+					throw new EvaluationException(i + " is out of 0.." + (array.length - 1));
+				}
+				return array[i];
+			} else {
+				throw new EvaluationException("index object should be integer");
+			}
+		}
+
+		@Override
+		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+			if (args == null) {
+				if (methodName.equals("first")) {
+					return array.length == 0 ? null : array[0];
+				} else if (methodName.equals("last")) {
+					return array.length == 0 ? null : array[array.length-1];
+				} else if (methodName.equals("toSet")) {
+					LinkedHashSet<Integer> set = new LinkedHashSet<Integer>();
+					for(int i : array) {
+						set.add(i);
+					}
+					return set;
+				} else if (methodName.equals("size")) {
+					return array.length;
+				}
+			} else if (args.length == 1) {
+				if (methodName.equals("contains")) {
+					for(short i : array) {
+						if(new Short(i).equals(args[0])) {
+							return true;
+						}
+					}
+					return false;
+				} else if (methodName.equals("indexOf")) {
+					for(int i = 0; i < array.length; i++) {
+						if(new Short(array[i]).equals(args[0])) {
+							return i;
+						}
+					}
+					return -1;
+				}
+			}
+			return super.callMethod(methodName, args);
+		}
+
+		@Override
+		protected String getType() {
+			return "short[]";
+		}
+
 		public Object getObject() {
 			return array;
 		}

@@ -45,7 +45,7 @@ public class SelectNode extends ExpressionNode {
 			object = context.getThisObject();
 		}
 
-		return env.getProperty(object, identifier);
+		return env.asObject(object).getProperty(identifier);
 	}
 
 	@Override

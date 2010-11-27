@@ -40,14 +40,14 @@ public class IfNode extends CompoundNode {
 	@Override
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
-			if(env.toBoolean(env.evaluate(condition, context, true))) {
+			if(env.asAdaptable(env.evaluate(condition, context, true)).asBoolean()) {
 				super.emit(sb, context, env);
 				return;
 			}
 			if (elseClauses != null) {
 				ElseIfNode eif = elseClauses;
 				while(eif != null) {
-					if(eif.getCondition() == null || env.toBoolean(env.evaluate(eif.getCondition(), context, true))) {
+					if(eif.getCondition() == null || env.asAdaptable(env.evaluate(eif.getCondition(), context, true)).asBoolean()) {
 						eif.emit(sb, context, env);
 						return;
 					}

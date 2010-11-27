@@ -45,7 +45,7 @@ public class ObjectWithType implements IProxyObject, IInstanceObject {
 				throw new EvaluationException("Property `" + propertyName + "` is absent in class " + ((IClass) type).getQualifiedName());
 			}
 
-			Object result = evaluationStrategy.getProperty(rawObject, propertyName);
+			Object result = evaluationStrategy.asObject(rawObject).getProperty(propertyName);
 			if(result == null) {
 				return null;
 			}
@@ -54,16 +54,16 @@ public class ObjectWithType implements IProxyObject, IInstanceObject {
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 		
-		return evaluationStrategy.getProperty(rawObject, propertyName);
+		return evaluationStrategy.asObject(rawObject).getProperty(propertyName);
 	}
 
 	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
-		return evaluationStrategy.callMethod(rawObject, methodName, args);
+		return evaluationStrategy.asObject(rawObject).callMethod(methodName, args);
 	}
 
 	public Object getByIndex(Object index) throws EvaluationException {
 		if(type instanceof IArrayType) {
-			Object result = evaluationStrategy.getByIndex(rawObject, index);
+			Object result = evaluationStrategy.asObject(rawObject).getByIndex(index);
 			if(result == null) {
 				return null;
 			}
@@ -72,7 +72,7 @@ public class ObjectWithType implements IProxyObject, IInstanceObject {
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 
-		return evaluationStrategy.getByIndex(rawObject, index);
+		return evaluationStrategy.asObject(rawObject).getByIndex(index);
 	}
 
 	public IType getType() {

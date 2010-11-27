@@ -74,7 +74,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 					context.setVariable(varName, curr);
 					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
 					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
-						boolean b = env.toBoolean(val) ^ (instruction == REJECT);
+						boolean b = env.asAdaptable(val).asBoolean() ^ (instruction == REJECT);
 						if(b) {
 							result.add(curr);
 						}
@@ -150,7 +150,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
 					Object val = env.evaluate(foreachExpr, context, false);
-					boolean b = env.toBoolean(val);
+					boolean b = env.asAdaptable(val).asBoolean();
 					if( b && instruction == EXISTS) {
 						return true;
 					}

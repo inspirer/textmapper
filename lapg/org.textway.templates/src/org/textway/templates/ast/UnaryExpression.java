@@ -40,7 +40,7 @@ public class UnaryExpression extends ExpressionNode {
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		if (kind == NOT) {
 			Object value = env.evaluate(expr, context, true);
-			return !env.toBoolean(value);
+			return !env.asAdaptable(value).asBoolean();
 		}
 
 		if (kind == MINUS) {

@@ -25,15 +25,12 @@ import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.bundle.IBundleLoader;
-import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.api.INavigationStrategy.Factory;
 import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.bundle.*;
-import org.textway.templates.eval.TemplatesFacade;
-import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.ast.Node;
+import org.textway.templates.bundle.*;
+import org.textway.templates.eval.TemplatesFacade;
+import org.textway.templates.objects.IxFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +49,9 @@ public final class LapgGenerator {
 		this.strategy = strategy;
 	}
 
-	/** TODO read from templates */
+	/**
+	 * TODO read from templates
+	 */
 	public static Map<String, Object> getDefaultOptions() {
 		Map<String, Object> d = new HashMap<String, Object>();
 		d.put("prefix", "");
@@ -77,7 +76,7 @@ public final class LapgGenerator {
 			}
 
 			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), new ProblemCollectorAdapter(status));
-			if(!checkOptions(s, registry)) {
+			if (!checkOptions(s, registry)) {
 				return false;
 			}
 
@@ -100,7 +99,7 @@ public final class LapgGenerator {
 			// Generate text
 			start = System.currentTimeMillis();
 			EvaluationContext context = createEvaluationContext(s, genOptions, l, r);
-			TemplatesFacade env = new TemplatesFacadeExt(new GrammarNavigationFactory(getTemplatePackage(s), context), registry);
+			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(getTemplatePackage(s), context), registry);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
@@ -115,12 +114,12 @@ public final class LapgGenerator {
 
 	private String getTemplatePackage(Grammar g) {
 		String result = options.getTemplateName();
-		if(result != null) {
+		if (result != null) {
 			return result;
 		}
 
 		result = (String) g.getOptions().get("lang");
-		if(result != null) {
+		if (result != null) {
 			return result;
 		}
 
@@ -130,7 +129,7 @@ public final class LapgGenerator {
 	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
 		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".GrammarOptions", null);
-		
+
 
 		return true;
 	}
@@ -164,10 +163,10 @@ public final class LapgGenerator {
 		context.setVariable("$", "lapg_gg.sym");
 		return context;
 	}
-	
+
 	private final class TemplatesFacadeExt extends TemplatesFacade {
 
-		private TemplatesFacadeExt(Factory factory, TemplatesRegistry registry) {
+		private TemplatesFacadeExt(IxFactory factory, TemplatesRegistry registry) {
 			super(factory, registry);
 		}
 
@@ -203,7 +202,9 @@ public final class LapgGenerator {
 
 	private static final class TemplateSourceElementAdapter implements SourceElement {
 
-		/** template node */
+		/**
+		 * template node
+		 */
 		private final Node myNode;
 
 		public TemplateSourceElementAdapter(Node myNode) {

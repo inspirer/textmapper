@@ -24,51 +24,24 @@ import org.textway.templates.ast.TemplateNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.objects.JavaIxFactory;
+import org.textway.templates.objects.*;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class DefaultEvaluationStrategy extends JavaIxFactory implements IEvaluationStrategy {
+public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	private final TemplatesFacade templatesFacade;
 	private final TemplatesRegistry registry;
-	private final INavigationStrategy.Factory navigationFactory;
+	private final IxFactory navigationFactory;
 	private IEvaluationCache myCache;
 
-	public DefaultEvaluationStrategy(TemplatesFacade facade, INavigationStrategy.Factory factory, TemplatesRegistry registry) {
+	public DefaultEvaluationStrategy(TemplatesFacade facade, IxFactory factory, TemplatesRegistry registry) {
 		this.templatesFacade = facade;
 		this.navigationFactory = factory;
 		this.registry = registry;
-		factory.setEvaluationStrategy(this);
-	}
-
-	@SuppressWarnings("unchecked")
-	public Object callMethod(Object obj, String methodName, Object[] args) throws EvaluationException {
-		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
-		return strategy.callMethod(obj, methodName, args);
-	}
-
-	@SuppressWarnings("unchecked")
-	public Object getByIndex(Object obj, Object index) throws EvaluationException {
-		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
-		return strategy.getByIndex(obj, index);
-	}
-
-	@SuppressWarnings("unchecked")
-	public Object getProperty(Object obj, String id) throws EvaluationException {
-		INavigationStrategy strategy = navigationFactory.getStrategy(obj);
-		return strategy.getProperty(obj, id);
-	}
-
-	public boolean toBoolean(Object o) {
-		if (o instanceof Boolean) {
-			return ((Boolean) o).booleanValue();
-		} else if (o instanceof String) {
-			return ((String) o).trim().length() > 0;
-		}
-		return o != null;
+		factory.setStrategy(this);
 	}
 
 	public String toString(Object o, ExpressionNode referer) throws EvaluationException {
@@ -110,6 +83,21 @@ public class DefaultEvaluationStrategy extends JavaIxFactory implements IEvaluat
 			return ((INamedEntity) object).getTitle();
 		}
 		return object.getClass().getCanonicalName();
+	}
+
+	public IxObject asObject(Object o) {
+		return navigationFactory.asObject(o);
+	}
+
+	public IxOperand asOperand(Object o) {
+		return navigationFactory.asOperand(o);
+	}
+
+	public IxAdaptable asAdaptable(Object o) {
+		return navigationFactory.asAdaptable(o);
+	}
+
+	public void setStrategy(IEvaluationStrategy strategy) {
 	}
 
 	private static class HandledEvaluationException extends EvaluationException {

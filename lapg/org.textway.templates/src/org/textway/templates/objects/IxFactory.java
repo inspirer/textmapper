@@ -15,6 +15,8 @@
  */
 package org.textway.templates.objects;
 
+import org.textway.templates.api.IEvaluationStrategy;
+
 public interface IxFactory {
 
 	IxObject asObject(Object o);
@@ -22,4 +24,6 @@ public interface IxFactory {
 	IxOperand asOperand(Object o);
 
 	IxAdaptable asAdaptable(Object o);
+
+	void setStrategy(IEvaluationStrategy strategy);
 }

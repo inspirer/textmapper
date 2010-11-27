@@ -37,7 +37,7 @@ public class IndexNode extends ExpressionNode {
 		Object object = objectExpr != null ? env.evaluate(objectExpr, context, false) : context.getThisObject();
 		Object index = env.evaluate(indexExpr, context, false);
 
-		return env.getByIndex(object, index);
+		return env.asObject(object).getByIndex(index);
 	}
 
 	@Override

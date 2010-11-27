@@ -17,10 +17,14 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
-import org.textway.templates.api.*;
+import org.textway.templates.api.EvaluationContext;
+import org.textway.templates.api.EvaluationException;
+import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.ITemplate;
 import org.textway.templates.bundle.IBundleEntity;
+import org.textway.templates.objects.DefaultIxObject;
 
-public class ActionSymbol implements IProxyObject {
+public class ActionSymbol extends DefaultIxObject {
 
 	final Symbol symbol;
 	final SymbolRef ref;
@@ -46,15 +50,16 @@ public class ActionSymbol implements IProxyObject {
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), null, null);
 	}
 
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
-		throw new EvaluationException("do not know method");
-	}
-
 	public Object getByIndex(Object index) throws EvaluationException {
 		if (index instanceof String && ref != null) {
 			return ref.getAnnotation((String) index);
 		}
-		throw new EvaluationException("do not know index");
+		return super.getByIndex(index);
+	}
+
+	@Override
+	protected String getType() {
+		return "[rule symbol reference]";
 	}
 
 	public Object getProperty(String id) throws EvaluationException {
@@ -70,5 +75,9 @@ public class ActionSymbol implements IProxyObject {
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".sym_" + id,
 				IBundleEntity.KIND_TEMPLATE, null);
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), null, null);
+	}
+
+	public Object getObject() {
+		return ref;
 	}
 }

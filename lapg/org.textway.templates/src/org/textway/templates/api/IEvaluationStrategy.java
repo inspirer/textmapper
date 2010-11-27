@@ -25,7 +25,7 @@ import org.textway.templates.objects.IxFactory;
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProblemCollector, IStreamHandler, IxFactory {
+public interface IEvaluationStrategy extends IProblemCollector, IStreamHandler, IxFactory {
 
 	Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
 
@@ -36,8 +36,6 @@ public interface IEvaluationStrategy extends INavigationStrategy<Object>, IProbl
 	IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer);
 
 	String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line);
-
-	boolean toBoolean(Object o) throws EvaluationException;
 
 	String toString(Object o, ExpressionNode referer) throws EvaluationException;
 
