@@ -17,16 +17,14 @@ package org.textway.templates.eval;
 
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.IInstanceObject;
-import org.textway.templates.api.IProxyObject;
 import org.textway.templates.api.types.IArrayType;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
-import org.textway.templates.types.TiArrayType;
+import org.textway.templates.objects.DefaultIxObject;
 import org.textway.templates.types.TypesUtil;
 
-public class ObjectWithType implements IProxyObject, IInstanceObject {
+public class ObjectWithType extends DefaultIxObject {
 
 	private final Object rawObject;
 	private final IEvaluationStrategy evaluationStrategy;
@@ -39,21 +37,21 @@ public class ObjectWithType implements IProxyObject, IInstanceObject {
 	}
 
 	public Object getProperty(String propertyName) throws EvaluationException {
-		if(type instanceof IClass) {
+		if (type instanceof IClass) {
 			IFeature feature = ((IClass) type).getFeature(propertyName);
-			if(feature == null) {
+			if (feature == null) {
 				throw new EvaluationException("Property `" + propertyName + "` is absent in class " + ((IClass) type).getQualifiedName());
 			}
 
 			Object result = evaluationStrategy.asObject(rawObject).getProperty(propertyName);
-			if(result == null) {
+			if (result == null) {
 				return null;
 			}
 
 			IType resultType = TypesUtil.getFeatureType(feature);
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
-		
+
 		return evaluationStrategy.asObject(rawObject).getProperty(propertyName);
 	}
 
@@ -62,20 +60,25 @@ public class ObjectWithType implements IProxyObject, IInstanceObject {
 	}
 
 	public Object getByIndex(Object index) throws EvaluationException {
-		if(type instanceof IArrayType) {
+		if (type instanceof IArrayType) {
 			Object result = evaluationStrategy.asObject(rawObject).getByIndex(index);
-			if(result == null) {
+			if (result == null) {
 				return null;
 			}
 
-			IType resultType = ((IArrayType)type).getInnerType();
+			IType resultType = ((IArrayType) type).getInnerType();
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 
 		return evaluationStrategy.asObject(rawObject).getByIndex(index);
 	}
 
-	public IType getType() {
-		return type;
+	@Override
+	protected String getType() {
+		return type.toString();
+	}
+
+	public Object getObject() {
+		return rawObject;
 	}
 }
