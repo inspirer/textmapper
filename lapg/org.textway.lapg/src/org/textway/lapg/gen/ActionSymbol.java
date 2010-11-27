@@ -76,8 +76,4 @@ public class ActionSymbol extends DefaultIxObject {
 				IBundleEntity.KIND_TEMPLATE, null);
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), null, null);
 	}
-
-	public Object getObject() {
-		return ref;
-	}
 }

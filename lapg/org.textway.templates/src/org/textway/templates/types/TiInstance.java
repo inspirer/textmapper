@@ -18,13 +18,12 @@ package org.textway.templates.types;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
-import org.textway.templates.objects.IxAdaptable;
-import org.textway.templates.objects.IxObject;
+import org.textway.templates.objects.DefaultIxObject;
 
 import java.util.Iterator;
 import java.util.Map;
 
-public class TiInstance implements IxObject, IxAdaptable {
+public class TiInstance extends DefaultIxObject {
 
 	private final IClass myClass;
 	private final Map<String, Object> myValues;
@@ -45,33 +44,5 @@ public class TiInstance implements IxObject, IxAdaptable {
 		}
 
 		return myValues.get(propertyName);
-	}
-
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
-		throw new EvaluationException("method `" + methodName + "` is absent in `" + getType() + "`");
-	}
-
-	public Object getByIndex(Object index) throws EvaluationException {
-		throw new EvaluationException("index operator is not supported for `" + getType() + "`");
-	}
-
-	public boolean is(String qualifiedName) throws EvaluationException {
-		throw new EvaluationException("'is' (instanceof) operator is undefined for `" + getType() + "`");
-	}
-
-	public Object castTo(String qualifiedName) throws EvaluationException {
-		throw new EvaluationException("cast to '" + qualifiedName + "' is undefined for `" + getType() + "`");
-	}
-
-	public String asString() throws EvaluationException {
-		throw new EvaluationException("string representation is undefined for `" + getType() + "`");
-	}
-
-	public boolean asBoolean() {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public Iterator asSequence() throws EvaluationException {
-		throw new EvaluationException("iteration is not supported over `" + getType() + "`");
 	}
 }

@@ -91,7 +91,7 @@ public class JavaIxFactory implements IxFactory {
 	public void setStrategy(IEvaluationStrategy strategy) {
 	}
 
-	public static class JavaCollectionIxObject extends DefaultIxObject {
+	public static class JavaCollectionIxObject extends DefaultIxObject implements IxWrapper {
 
 		protected Collection collection;
 
@@ -223,7 +223,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 	}
 
-	private class JavaMapIxObject extends DefaultIxObject {
+	private class JavaMapIxObject extends DefaultIxObject implements IxWrapper {
 		private Map map;
 
 		public JavaMapIxObject(Map map) {
@@ -255,7 +255,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 	}
 
-	private class JavaIntArrayIxObject extends DefaultIxObject {
+	private class JavaIntArrayIxObject extends DefaultIxObject implements IxWrapper {
 		private int[] array;
 
 		public JavaIntArrayIxObject(int[] array) {
@@ -334,7 +334,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 	}
 
-	private class JavaShortArrayIxObject extends DefaultIxObject {
+	private class JavaShortArrayIxObject extends DefaultIxObject implements IxWrapper {
 		private short[] array;
 
 		public JavaShortArrayIxObject(short[] array) {

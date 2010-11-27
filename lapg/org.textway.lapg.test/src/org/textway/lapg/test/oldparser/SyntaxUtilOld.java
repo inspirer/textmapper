@@ -28,6 +28,7 @@ public class SyntaxUtilOld {
 
 	public static Grammar parseSyntax(String sourceName, InputStream stream, TestStatus err, Map<String, String> options) {
 		String contents = getFileContents(stream);
+		contents = contents.replaceAll("(\\w+)\\s*=\\s*(.*)", ".$1 $2");
 		CSyntax cs = LapgParser.process(sourceName, contents, options);
 		if (cs.hasErrors()) {
 			for (String s : cs.getErrors()) {

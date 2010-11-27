@@ -19,7 +19,7 @@ import org.textway.templates.api.EvaluationException;
 
 import java.util.Iterator;
 
-public abstract class DefaultIxObject implements IxWrapper, IxObject, IxAdaptable {
+public abstract class DefaultIxObject implements IxObject, IxAdaptable {
 
 	public Object castTo(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("cast to '" + qualifiedName + "' is undefined for `" + getType() + "`");

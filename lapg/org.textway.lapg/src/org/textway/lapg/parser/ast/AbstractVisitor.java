@@ -77,7 +77,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstMap n) {
+	public boolean visit(AstInstance n) {
 		return true;
 	}
 
@@ -86,6 +86,10 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(AstLiteralExpression n) {
+		return true;
+	}
+
+	public boolean visit(AstName n) {
 		return true;
 	}
 }

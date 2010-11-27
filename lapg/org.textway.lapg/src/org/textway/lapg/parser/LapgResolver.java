@@ -346,8 +346,8 @@ public class LapgResolver {
 
 	@SuppressWarnings("unchecked")
 	private Object convertExpression(Object o) {
-		if(o instanceof AstMap || o instanceof AstAnnotations) {
-			List<AstNamedEntry> list = o instanceof AstMap ? ((AstMap) o).getEntries() : ((AstAnnotations) o).getAnnotations();
+		if(o instanceof AstInstance || o instanceof AstAnnotations) {
+			List<AstNamedEntry> list = o instanceof AstInstance ? ((AstInstance) o).getEntries() : ((AstAnnotations) o).getAnnotations();
 			Map<String,Object> result = new HashMap<String,Object>();
 			for(AstNamedEntry entry : list) {
 				if(entry.hasSyntaxError()) {

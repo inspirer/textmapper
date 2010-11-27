@@ -15,15 +15,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-.lang        "java" 
-.prefix      "Templates"
-.package	 "org.textway.templates.ast"
-.breaks		 "on"
-.lexemend    "on"
-.packLexems  "true"
-.positions   "line,offset"
-.endpositions "offset"
-.gentree	 "on"
+lang = "java" 
+prefix = "Templates"
+package = "org.textway.templates.ast"
+breaks = "on"
+lexemend = "on"
+packLexems = "true"
+positions = "line,offset"
+endpositions = "offset"
+gentree = "on"
 
 # Vocabulary
 

@@ -15,14 +15,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-.lang        "java" 
-.prefix      "Xml"
-.package	 "org.textway.xml"
-.maxtoken    2048
-.breaks		 "on"
-.gentree	 "on"
-.positions   "line,offset"
-.endpositions "offset"
+lang = "java" 
+prefix = "Xml"
+package = "org.textway.xml"
+maxtoken = 2048
+breaks = "on"
+gentree = "on"
+positions = "line,offset"
+endpositions = "offset"
 
 # Vocabulary
 

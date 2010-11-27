@@ -1,13 +1,13 @@
 #   Automatically generated grammar
 
-.lang        "java" 
-.getsym      "chr = buff[l++];if( l == end ) fillb()"
-.positioning "%%positioning%%"
-.lexemend    "%%lexemend%%"
-.class       "MParser"
-.lexer       "MLexer"
-.package	"com.mypackage"
-.breaks      "off"
+lang       = "java"
+getsym     = "chr = buff[l++];if( l == end ) fillb()"
+positioning= "%%positioning%%"
+lexemend   = "%%lexemend%%"
+class      = "MParser"
+lexer      = "MLexer"
+package	   = "com.mypackage"
+breaks     = "off"
 
 # Vocabulary
 

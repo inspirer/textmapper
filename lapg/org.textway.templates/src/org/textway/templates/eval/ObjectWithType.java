@@ -22,9 +22,10 @@ import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
 import org.textway.templates.objects.DefaultIxObject;
+import org.textway.templates.objects.IxWrapper;
 import org.textway.templates.types.TypesUtil;
 
-public class ObjectWithType extends DefaultIxObject {
+public class ObjectWithType extends DefaultIxObject implements IxWrapper {
 
 	private final Object rawObject;
 	private final IEvaluationStrategy evaluationStrategy;

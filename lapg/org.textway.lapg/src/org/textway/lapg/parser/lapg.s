@@ -15,14 +15,14 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-.lang        "java" 
-.prefix      "Lapg"
-.package	 "org.textway.lapg.parser"
-.maxtoken    2048
-.breaks		 "on"
-.gentree	 "on"
-.positions   "line,offset"
-.endpositions "offset"
+lang = "java"
+prefix = "Lapg"
+package = "org.textway.lapg.parser"
+maxtoken = 2048
+breaks = "on"
+gentree = "on"
+positions = "line,offset"
+endpositions = "offset"
 
 # Vocabulary
 
@@ -78,7 +78,8 @@ _skip:	/[^'"{}]+/
 # Grammar
 
 input (AstRoot) ::=
-	optionsopt lexer_parts grammar_parts				{  $$ = new AstRoot($optionsopt, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+	options lexer_parts grammar_parts					{  $$ = new AstRoot($options, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+	| lexer_parts grammar_parts							{  $$ = new AstRoot(null, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
 ;
 
 options (List<AstOptionPart>) ::=
@@ -87,7 +88,7 @@ options (List<AstOptionPart>) ::=
 ;
 
 option (AstOptionPart) ::=
-	  '.' identifier expression 						{ $$ = new AstOption($identifier, $expression, source, ${option.offset}, ${option.endoffset}); }
+	  identifier '=' expression 						{ $$ = new AstOption($identifier, $expression, source, ${option.offset}, ${option.endoffset}); }
 	| syntax_problem
 ;
 
@@ -210,10 +211,8 @@ annotation (AstNamedEntry) ::=
 	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
-map_entries (java.util.@List<AstNamedEntry>) ::=
-	  identifier ':' expression							{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' identifier ':' expression			{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
-;
+
+##### EXPRESSIONS
 
 expression (AstExpression) ::=
 	  scon                                              { $$ = new AstLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
@@ -221,8 +220,8 @@ expression (AstExpression) ::=
 	| Ltrue                                             { $$ = new AstLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
 	| Lfalse                                            { $$ = new AstLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 	| reference
-	| '[' map_entries ']'								{ $$ = new AstMap($map_entries, source, ${left().offset}, ${left().endoffset}); }
-	| '[' expression_list ']'							{ $$ = new AstArray($expression_list, source, ${left().offset}, ${left().endoffset}); }
+	| name '{' map_entriesopt '}'						{ $$ = new AstInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
+	| '[' expression_listopt ']'						{ $$ = new AstArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 
@@ -231,8 +230,23 @@ expression_list (List<AstExpression>) ::=
 	| expression_list ',' expression					{ $expression_list#0.add($expression); }
 ;
 
+map_entries (java.util.@List<AstNamedEntry>) ::=
+	  identifier ':' expression							{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' identifier ':' expression			{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
+;
+
+name (AstName) ::=
+	qualified_id 										{ $$ = new AstName($qualified_id, source, ${left().offset}, ${left().endoffset}); }
+;
+
+qualified_id (String) ::=
+	  identifier
+	| qualified_id '.' identifier						{ $$ = $qualified_id#1 + "." + $identifier; }
+;
+
+
 rule_priority (AstReference) ::=
-	'<<' reference										{ $$ = $reference; } 
+	'<<' reference										{ $$ = $reference; }
 ;
 
 command (AstCode) ::=

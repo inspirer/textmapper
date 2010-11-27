@@ -1,11 +1,11 @@
-.lang        "text" 
-.getsym      "chr = l < buff.length ? buff[l++] : 0"
-.class       "Parser"
-.namespace	 "org.textway.lapg.input"
-.maxtoken    4096
-.breaks		 "on"
-.lexemend    "on"
-.positioning "offset"
+lang        = "text"
+getsym      = "chr = l < buff.length ? buff[l++] : 0"
+class       = "Parser"
+namespace	= "org.textway.lapg.input"
+maxtoken    = 4096
+breaks		= "on"
+lexemend    = "on"
+positioning = "offset"
 
 # Vocabulary
 

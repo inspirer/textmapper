@@ -19,12 +19,14 @@ import org.textway.lapg.parser.LapgTree.TextSource;
 
 import java.util.List;
 
-public class AstMap extends AstNode implements AstExpression {
+public class AstInstance extends AstNode implements AstExpression {
 
+	private final AstName className;
 	private final List<AstNamedEntry> mapEntries;
 
-	public AstMap(List<AstNamedEntry> mapEntries, TextSource source, int offset, int endoffset) {
+	public AstInstance(AstName className, List<AstNamedEntry> mapEntries, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.className = className;
 		this.mapEntries = mapEntries;
 	}
 
@@ -35,6 +37,9 @@ public class AstMap extends AstNode implements AstExpression {
 	public void accept(AbstractVisitor v) {
 		if(!v.visit(this)) {
 			return;
+		}
+		if(className != null) {
+			className.accept(v);
 		}
 		if(mapEntries != null) {
 			for(AstNamedEntry n : mapEntries) {
