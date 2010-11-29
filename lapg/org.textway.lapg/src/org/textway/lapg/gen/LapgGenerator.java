@@ -128,7 +128,7 @@ public final class LapgGenerator {
 
 	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
-		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".GrammarOptions", null);
+		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".Options", null);
 
 
 		return true;
