@@ -20,6 +20,7 @@
       <entry name="?*.ltp" />
       <entry name="*/cases/input/syntax*" />
       <entry name="?*.tbl" />
+      <entry name="?*.types" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>

@@ -19,11 +19,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.textway.templates.test.cases.ApiTests;
 import org.textway.templates.test.cases.TemplateConstructionsTest;
+import org.textway.templates.test.cases.TypesTest;
 import org.textway.templates.test.cases.XmlTest;
 
 public class TestRunner {
 	public static Test suite() {
 		TestSuite ts = new TestSuite("templates tests");
+		ts.addTestSuite(TypesTest.class);
 		ts.addTestSuite(ApiTests.class);
 		ts.addTestSuite(TemplateConstructionsTest.class);
 		ts.addTestSuite(XmlTest.class);

@@ -20,6 +20,9 @@ import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
 public class TiClass implements IClass {
 
@@ -66,10 +69,24 @@ public class TiClass implements IClass {
 			return false;
 		}
 		IClass another = (IClass) anotherType;
-		if(getQualifiedName().equals(another.getQualifiedName())) {
-			return true;
+		String anotherQualified = another.getQualifiedName();
+
+		Set<IClass> validated = new HashSet<IClass>();
+		LinkedList<IClass> queue = new LinkedList<IClass>();
+		queue.add(this);
+		validated.add(this);
+		while(!queue.isEmpty()) {
+			IClass next = queue.remove();
+			if(next.getQualifiedName().equals(anotherQualified)) {
+				return true;
+			}
+			for(IClass cl : next.getExtends()) {
+				if(!validated.contains(cl)) {
+					validated.add(cl);
+					queue.add(cl);
+				}
+			}
 		}
-		// TODO check super classes
 		return false;
 	}
 

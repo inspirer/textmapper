@@ -87,14 +87,20 @@ class TiResolver {
 
 	private TiClass convertClass(TypeDeclaration td) {
 		List<IFeature> features = new ArrayList<IFeature>();
-		for (FeatureDeclaration fd : td.getFeatureDeclarations()) {
-			features.add(convertFeature(fd));
+		if(td.getFeatureDeclarationsopt() != null) {
+			for (FeatureDeclaration fd : td.getFeatureDeclarationsopt()) {
+				features.add(convertFeature(fd));
+			}
 		}
 		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features);
 		if (td.getExtends() != null) {
 			List<String> superNames = new ArrayList<String>();
 			for (List<String> className : td.getExtends()) {
-				superNames.add(getQualifiedName(className));
+				String s = getQualifiedName(className);
+				if(s.indexOf('.') == -1) {
+					s = myPackage + "." + s;
+				}
+				superNames.add(s);
 			}
 			myResolveSuperTypes.add(new ResolveSuperBean(result, td, superNames));
 		}
@@ -123,10 +129,10 @@ class TiResolver {
 				}
 			}
 			if (multiplicityCount > 1) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "two multiplicity constraints found (class_ " + fd.getName() + ")");
+				myStatus.fireError(new LocatedNodeAdapter(fd), "two multiplicity constraints found (feature `" + fd.getName() + "`)");
 			}
 			if (stringConstraints != null && fd.getType().getKind() != Type.LSTRING) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "only string type can have constraints (class_ " + fd.getName() + ")");
+				myStatus.fireError(new LocatedNodeAdapter(fd), "only string type can have constraints (feature `" + fd.getName() + "`)");
 			}
 		}
 		TiFeature feature = new TiFeature(fd.getName(), loBound, hiBound, fd.getType().getIsReference());
@@ -275,11 +281,11 @@ class TiResolver {
 		}
 		if (expression instanceof StructuralExpression) {
 			StructuralExpression expr = (StructuralExpression) expression;
-			if (expr.getExpressionListopt() != null) {
+			if (expr.getName() != null) {
+				return convertNew(expr, type);
+			} else {
 				return convertArray(expr, expr.getExpressionListopt(), type);
 			}
-
-			return convertNew(expr, type);
 		}
 
 		return null;
@@ -303,18 +309,20 @@ class TiResolver {
 		}
 
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (MapEntriesItem item : expr.getMapEntriesopt()) {
-			String key = item.getIdentifier();
+		if(expr.getMapEntriesopt() != null) {
+			for (MapEntriesItem item : expr.getMapEntriesopt()) {
+				String key = item.getIdentifier();
 
-			IFeature feature = aClass.getFeature(key);
-			if (feature == null) {
-				myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
-				continue;
-			}
+				IFeature feature = aClass.getFeature(key);
+				if (feature == null) {
+					myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
+					continue;
+				}
 
-			Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
-			if (value != null) {
-				result.put(key, value);
+				Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
+				if (value != null) {
+					result.put(key, value);
+				}
 			}
 		}
 
@@ -341,7 +349,8 @@ class TiResolver {
 		}
 
 		if (kind != dataType.getKind()) {
-			myStatus.fireError(new LocatedNodeAdapter(expression), "`" + dataType.toString() + "` is expected");
+			String kindValue = kind == DataTypeKind.BOOL ? "bool" : kind == DataTypeKind.INT ? "int" : "string";
+			myStatus.fireError(new LocatedNodeAdapter(expression), "expected value of type `" + dataType.toString() + "` instead of `" + kindValue + "`");
 			return null;
 		}
 
@@ -363,6 +372,10 @@ class TiResolver {
 		if (!(type instanceof IArrayType)) {
 			myStatus.fireError(new LocatedNodeAdapter(node), "expected value of type `" + type.toString() + "` instead of array");
 			return null;
+		}
+
+		if(array == null) {
+			return new ArrayList();
 		}
 
 		IType innerType = ((IArrayType) type).getInnerType();

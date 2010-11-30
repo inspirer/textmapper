@@ -73,7 +73,7 @@ declarations ::=
 	declarations type_declaration | type_declaration ;
 
 type_declaration ::=
-	Lclass name=identifier extends=extends_clauseopt '{' feature_declarations '}'
+	Lclass name=identifier extends=extends_clauseopt '{' feature_declarationsopt '}'
 ;
 
 extends_clause ::=
