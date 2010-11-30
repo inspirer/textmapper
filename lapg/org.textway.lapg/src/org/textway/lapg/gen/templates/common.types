@@ -1,3 +1,78 @@
+##
+
+class Grammar {
+	Symbol symbols[1..*];
+	Rule rules[1..*];
+	Prio priorities[0..*];
+
+	Lexem lexems[0..*];
+	int terminals;
+	Symbol* input[1..*];
+	Symbol* eoi;
+	Symbol* error;
+}
+
+class Action {
+	string contents;
+}
+
+class Lexem {
+	Symbol* symbol;
+	string regexp;
+
+	int priority;
+	int groups;
+
+	Action action;
+}
+
+class Rule {
+	int index;
+	Symbol left[1];
+	SymbolRef right[0..*];
+	int priority;
+	Action action;
+}
+
+class Prio {
+	int prio;
+	Symbol* symbols[1..*];
+}
+
+class Symbol {
+	int index;
+	string id;
+	string name;
+	string type;
+	bool term;
+}
+
+class SymbolRef {
+	Symbol* target;
+	string alias;
+}
+
+class Parser {
+	Symbol sym[1..*];
+	int rules;
+	int nsyms;
+	int nterms;
+	int nstates;
+	int errorn;
+	int rleft[0..*];
+	int rright[0..*];
+	int nactions;
+}
+
+class Lexer {
+	int nstates;
+	int nchars;
+	int nterms;
+	int lnum[0..*];
+	int char2no[0..*];
+	int groupset[0..*];
+}
+
 class List {
     int length;
 }

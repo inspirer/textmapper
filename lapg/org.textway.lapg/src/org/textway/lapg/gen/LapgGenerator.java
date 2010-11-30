@@ -130,6 +130,7 @@ public final class LapgGenerator {
 		String templPackage = getTemplatePackage(s);
 		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".Options", null);
 
+		// TODO
 
 		return true;
 	}

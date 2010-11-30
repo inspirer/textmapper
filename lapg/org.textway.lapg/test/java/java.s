@@ -1,15 +1,15 @@
 
-.lang        "java" 
-.prefix      "Java"
-.package	 "org.textway.lapg.gen.java"
-.lexemend    "on"
-.gentree	 "on"
-.genast		 "on"
-.packLexems  "true"
-.packTables  "true"
-.astprefix	 "Java"
-.positions   "line,offset"
-.endpositions "offset"
+lang = "java"
+prefix = "Java"
+package = "org.textway.lapg.gen.java"
+lexemend = "on"
+gentree = "on"
+genast = "on"
+packLexems = "true"
+packTables = "true"
+astprefix = "Java"
+positions = "line,offset"
+endpositions = "offset"
 
 [0]
 
