@@ -49,7 +49,7 @@ public class TypesRegistry implements ITypesRegistry {
 	private void loadPackage(String name, ILocatedEntity referer) {
 		LinkedHashSet<String> queue = new LinkedHashSet<String>();
 		queue.add(name);
-		List<TiResolver> loaders = new ArrayList<TiResolver>();
+		List<TypesResolver> loaders = new ArrayList<TypesResolver>();
 
 		// 1-st stage: load types
 		while(!queue.isEmpty()) {
@@ -65,7 +65,7 @@ public class TypesRegistry implements ITypesRegistry {
 			}
 
 			for(String content : contentLayers) {
-				TiResolver resolver = new TiResolver(current, content, myClasses, myResourceRegistry.getCollector());
+				TypesResolver resolver = new TypesResolver(current, content, myClasses, myResourceRegistry.getCollector());
 				resolver.build();
 				for(String package_ : resolver.getRequired()) {
 					if(!myLoadedPackages.contains(package_)) {
@@ -77,12 +77,12 @@ public class TypesRegistry implements ITypesRegistry {
 		}
 
 		// 2-nd stage: resolve references
-		for(TiResolver resolver : loaders) {
+		for(TypesResolver resolver : loaders) {
 			resolver.resolve();
 		}
 
 		// 3-d stage: resolve expressions
-		for(TiResolver resolver : loaders) {
+		for(TypesResolver resolver : loaders) {
 			resolver.resolveExpressions();
 		}
 	}

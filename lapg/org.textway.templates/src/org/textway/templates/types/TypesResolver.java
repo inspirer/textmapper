@@ -29,7 +29,7 @@ import java.util.*;
 /**
  * Two-pass types model loader.
  */
-class TiResolver {
+class TypesResolver {
 
 	private final String myPackage;
 	private final String myContent;
@@ -47,7 +47,7 @@ class TiResolver {
 	// 3-d stage
 	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
 
-	public TiResolver(String package_, String content, Map<String, TiClass> registryClasses,
+	public TypesResolver(String package_, String content, Map<String, TiClass> registryClasses,
 					  IProblemCollector problemCollector) {
 		this.myPackage = package_;
 		this.myContent = content;
