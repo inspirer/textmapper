@@ -26,10 +26,10 @@ public class GeneratedFile {
 
 	private static final Pattern FILENAME = Pattern.compile("([\\w-]+/)*[\\w-]+(\\.\\w+)?");
 
-	private final String name;
-	private final String contents;
-	private final String charset;
-	private final boolean forceLF;
+	protected final String name;
+	protected final String contents;
+	protected final String charset;
+	protected final boolean forceLF;
 
 	public static String NL = System.getProperty("line.separator");
 
@@ -61,7 +61,7 @@ public class GeneratedFile {
 		os.close();
 	}
 
-	private void checkName(String name) throws IOException {
+	protected void checkName(String name) throws IOException {
 		Matcher m = FILENAME.matcher(name);
 		if (!m.matches()) {
 			throw new IOException("bad file name");

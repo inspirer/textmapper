@@ -36,32 +36,6 @@ public class ConsoleArgsTest extends LapgTestCase {
 		}
 	}
 
-	private static class CheckingErrorStream extends OutputStream {
-		byte[] bytes;
-		int index;
-
-		public CheckingErrorStream(String expect) throws UnsupportedEncodingException {
-			bytes = expect.getBytes("utf8");
-			index = 0;
-		}
-
-		@Override
-		public void write(int b) throws IOException {
-			if (index >= bytes.length) {
-				Assert.fail("unknown System.err message: starts with " + Character.toString((char) b));
-			}
-			if (b != bytes[index++]) {
-				Assert.fail("wrong message, expected: " + new String(bytes, "utf8"));
-			}
-		}
-
-		@Override
-		public void close() throws IOException {
-			Assert.assertEquals("error not happened: " + new String(bytes, index, bytes.length - index, "utf8"),
-					bytes.length, index);
-		}
-	}
-
 	private CheckingErrorStream current;
 	private final PrintStream originalErr = System.err;
 	protected PrintStream failingStream = new PrintStream(new FailingStream());

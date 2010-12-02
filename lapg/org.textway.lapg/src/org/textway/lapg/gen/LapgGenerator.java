@@ -105,7 +105,7 @@ public final class LapgGenerator {
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
 					/ 1000. + "s");
 			return true;
-		} catch (Throwable t) {
+		} catch (Exception t) {
 			String message = "lapg: internal error: " + t.getClass().getName();
 			status.report(message, options.getDebug() >= 2 ? t : null);
 			return false;

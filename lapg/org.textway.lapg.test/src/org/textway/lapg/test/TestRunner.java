@@ -17,19 +17,13 @@ package org.textway.lapg.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.textway.lapg.test.cases.AnnotationsTest;
-import org.textway.lapg.test.cases.CharacterSetTest;
-import org.textway.lapg.test.cases.ConsoleArgsTest;
-import org.textway.lapg.test.cases.InputTest;
-import org.textway.lapg.test.cases.JavaPostProcessorTest;
-import org.textway.lapg.test.cases.JavaTablesCompression;
-import org.textway.lapg.test.cases.LexerGeneratorTest;
-import org.textway.lapg.test.cases.RegexpParseTest;
+import org.textway.lapg.test.cases.*;
 
 
 public class TestRunner {
 	public static Test suite() {
 		TestSuite ts = new TestSuite("lapg tests");
+		ts.addTestSuite(BootstrapTest.class);
 		ts.addTestSuite(AnnotationsTest.class);
 		ts.addTestSuite(JavaPostProcessorTest.class);
 		ts.addTestSuite(CharacterSetTest.class);
