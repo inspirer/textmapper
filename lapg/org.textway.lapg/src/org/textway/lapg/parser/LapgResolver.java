@@ -15,14 +15,17 @@
  */
 package org.textway.lapg.parser;
 
-import java.util.*;
-
 import org.textway.lapg.api.Action;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Prio;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class LapgResolver {
 
@@ -38,9 +41,9 @@ public class LapgResolver {
 
 	private List<LiSymbol> inputs;
 	private LiSymbol eoi;
-	private LiSymbol error;
 
-	private final Map<String,Object> options;
+	private final Map<String, Object> options;
+	private LapgResolverHelper helper = new LapgResolverHelper();
 
 	public LapgResolver(LapgTree<AstRoot> tree, Map<String, Object> options) {
 		this.tree = tree;
@@ -48,7 +51,7 @@ public class LapgResolver {
 	}
 
 	public Grammar resolve() {
-		if(tree.getRoot() == null) {
+		if (tree.getRoot() == null) {
 			return null;
 		}
 		collectLexems();
@@ -60,11 +63,11 @@ public class LapgResolver {
 		collectOptions();
 		String templates = getTemplates();
 
-		if(inputs.size() == 0) {
+		if (inputs.size() == 0) {
 			LiSymbol input = symbolsMap.get("input");
-			if(input == null) {
+			if (input == null) {
 				error(tree.getRoot(), "no input non-terminal");
-			} else if(input.isTerm()) {
+			} else if (input.isTerm()) {
 				error(tree.getRoot(), "input should be non-terminal");
 			} else {
 				inputs.add(input);
@@ -72,24 +75,24 @@ public class LapgResolver {
 		}
 
 		LiRule[] ruleArr = rules.toArray(new LiRule[rules.size()]);
-		for(int i = 0; i < ruleArr.length; i++) {
+		for (int i = 0; i < ruleArr.length; i++) {
 			ruleArr[i].setIndex(i);
 		}
 		LiSymbol[] symbolArr = symbols.toArray(new LiSymbol[symbols.size()]);
-        for(LiSymbol s : symbolArr) {
-            String name = s.getName();
-            if(FormatUtil.isIdentifier(name)) {
-                usedIdentifiers.add(name);
-            }
-        }
-		for(int i = 0; i < symbolArr.length; i++) {
-			symbolArr[i].setId(i, generateId(symbolArr[i].getName(), i));
+		for (LiSymbol s : symbolArr) {
+			String name = s.getName();
+			if (FormatUtil.isIdentifier(name)) {
+				helper.markUsed(name);
+			}
+		}
+		for (int i = 0; i < symbolArr.length; i++) {
+			symbolArr[i].setId(i, helper.generateId(symbolArr[i].getName(), i));
 		}
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
 		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
 		LiSymbol[] inputArr = inputs.toArray(new LiSymbol[inputs.size()]);
 
-		error = symbolsMap.get("error");
+		LiSymbol error = symbolsMap.get("error");
 
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr,
 				inputArr, eoi, error, options,
@@ -97,36 +100,19 @@ public class LapgResolver {
 				!tree.getErrors().isEmpty());
 	}
 
-
-    private final Set<String> usedIdentifiers = new HashSet<String>();
-
-    private String generateId(String name, int i) {
-        if(usedIdentifiers.contains(name)) {
-            return name;
-        }
-        name = FormatUtil.toIdentifier(name, i);
-        String result = name;
-        int i1 = 2;
-        while(usedIdentifiers.contains(result)) {
-            result = name + i1++;
-        }
-        usedIdentifiers.add(result);
-        return result;
-    }
-
 	private String getTemplates() {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
-		return offset < text.length && offset != -1 ? new String(text,offset,text.length-offset) : "";
+		return offset < text.length && offset != -1 ? new String(text, offset, text.length - offset) : "";
 	}
 
 	private LiSymbol create(AstIdentifier id, String type, boolean isTerm) {
 		String name = id.getName();
-		if(symbolsMap.containsKey(name)) {
+		if (symbolsMap.containsKey(name)) {
 			LiSymbol sym = symbolsMap.get(name);
-			if(sym.isTerm() != isTerm) {
+			if (sym.isTerm() != isTerm) {
 				error(id, "redeclaration of " + (isTerm ? "non-terminal" : "terminal") + ": " + name);
-			} else if(!safeEquals(sym.getType(), type)) {
+			} else if (!LapgResolverHelper.safeEquals(sym.getType(), type)) {
 				error(id, "redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of " + (sym.getType() == null ? "<empty>" : sym.getType()));
 			}
 			return sym;
@@ -141,13 +127,13 @@ public class LapgResolver {
 	private LiSymbol resolve(AstReference id) {
 		String name = id.getName();
 		LiSymbol sym = symbolsMap.get(name);
-		if(sym == null) {
-			if(name.length() > 3 && name.endsWith("opt")) {
-				sym = symbolsMap.get(name.substring(0, name.length()-3));
-				if(sym != null) {
+		if (sym == null) {
+			if (name.length() > 3 && name.endsWith("opt")) {
+				sym = symbolsMap.get(name.substring(0, name.length() - 3));
+				if (sym != null) {
 					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false);
 					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, null, id));
-					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym,null,null,null)}, null, null, null, id));
+					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null)}, null, null, null, id));
 					return symopt;
 				}
 			}
@@ -158,18 +144,18 @@ public class LapgResolver {
 
 	private int convert(AstGroupsSelector selector) {
 		int result = 0;
-		for(Integer i : selector.getGroups()) {
-			if(i == null || i < 0 || i > 31) {
+		for (Integer i : selector.getGroups()) {
+			if (i == null || i < 0 || i > 31) {
 				error(selector, "group id should be in range 0..31");
 				return 1;
-			} else if((result & (1 << i)) != 0) {
+			} else if ((result & (1 << i)) != 0) {
 				error(selector, "duplicate group id: " + i);
 				return 1;
 			} else {
-				result |= (1<<i);
+				result |= (1 << i);
 			}
 		}
-		if(result == 0) {
+		if (result == 0) {
 			error(selector, "empty group set");
 			return 1;
 		}
@@ -177,17 +163,10 @@ public class LapgResolver {
 	}
 
 	private Action convert(final AstCode code) {
-		if(code == null) {
+		if (code == null) {
 			return null;
 		}
 		return new LiAction(code.toString(), code);
-	}
-
-	private String convert(AstRegexp regexp) {
-		if(regexp == null) {
-			return null;
-		}
-		return regexp.getRegexp();
 	}
 
 	private void collectLexems() {
@@ -196,27 +175,32 @@ public class LapgResolver {
 		symbols.add(eoi);
 		int groups = 1;
 
-		lexems = new ArrayList<LiLexem>(tree.getRoot().getLexer().size());
+		List<AstLexerPart> lexerParts = tree.getRoot().getLexer();
+		lexems = new ArrayList<LiLexem>(lexerParts.size());
 
-		for(AstLexerPart clause : tree.getRoot().getLexer()) {
-			if(clause instanceof AstLexeme) {
+		for (AstLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
 				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
-				if(lexeme.getRegexp() != null) {
-					LiLexem l = new LiLexem(s, convert(lexeme.getRegexp()), groups, lexeme.getPriority(), convert(lexeme.getCode()), lexeme);
-					lexems.add(l);
+				if (lexeme.getRegexp() != null) {
+					lexems.add(
+							new LiLexem(s,
+									lexeme.getRegexp().getRegexp(),
+									groups, lexeme.getPriority(),
+									convert(lexeme.getCode()),
+									lexeme));
 				}
-			} else if(clause instanceof AstGroupsSelector) {
+			} else if (clause instanceof AstGroupsSelector) {
 				groups = convert((AstGroupsSelector) clause);
 			}
 		}
 	}
 
-	private void addSymbolAnnotations(AstIdentifier id, Map<String,Object> annotations) {
-		if(annotations != null){
+	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {
+		if (annotations != null) {
 			LiSymbol sym = symbolsMap.get(id.getName());
-			for(Map.Entry<String, Object> ann : annotations.entrySet()) {
-				if(sym.getAnnotation(ann.getKey()) != null) {
+			for (Map.Entry<String, Object> ann : annotations.entrySet()) {
+				if (sym.getAnnotation(ann.getKey()) != null) {
 					error(id, "redeclaration of annotation `" + ann.getKey() + "' for non-terminal: " + id.getName() + ", skipped");
 				} else {
 					sym.addAnnotation(ann.getKey(), ann.getValue());
@@ -226,16 +210,16 @@ public class LapgResolver {
 	}
 
 	private void collectNonTerminals() {
-		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if(clause instanceof AstNonTerm) {
+		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
 				create(nonterm.getName(), nonterm.getType(), false);
 			}
 		}
-		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if(clause instanceof AstNonTerm) {
+		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				addSymbolAnnotations(nonterm.getName(), convert(nonterm.getAnnotations()));
+				addSymbolAnnotations(nonterm.getName(), convert(nonterm.getAnnotations(), "AnnotateSymbol"));
 			}
 		}
 	}
@@ -243,41 +227,48 @@ public class LapgResolver {
 	private void createRule(LiSymbol left, AstRule right, List<LiSymbolRef> rightPart) {
 		List<AstRuleSymbol> list = right.getList();
 		rightPart.clear();
-		if(list != null) {
-			for(AstRuleSymbol rs : list) {
-				if(rs.hasSyntaxError()) {
+		if (list != null) {
+			for (AstRuleSymbol rs : list) {
+				if (rs.hasSyntaxError()) {
 					continue;
 				}
 				AstCode astCode = rs.getCode();
-				if(astCode != null) {
+				if (astCode != null) {
 					LiSymbol codeSym = new LiSymbol("{}", null, false, astCode);
 					symbols.add(codeSym);
 					rightPart.add(new LiSymbolRef(codeSym, null, null, null));
 					rules.add(new LiRule(codeSym, null, convert(astCode), null, null, astCode));
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
-				if(sym != null) {
+				if (sym != null) {
 					// TODO check duplicate alias
-					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations()), rs.getSymbol()));
+					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations(), "AnnotateReference"), rs.getSymbol()));
 				}
 			}
 		}
 		LiSymbol prio = right.getPriority() != null ? resolve(right.getPriority()) : null;
-		rules.add(new LiRule(left, rightPart.toArray(new LiSymbolRef[rightPart.size()]), convert(right.getAction()), prio, convert(right.getAnnotations()), right));
+		// TODO check prio is term
+		rules.add(
+				new LiRule(left,
+						rightPart.toArray(new LiSymbolRef[rightPart.size()]),
+						convert(right.getAction()),
+						prio,
+						convert(right.getAnnotations(), "AnnotateRule"),
+						right));
 	}
 
 	private void collectRules() {
 		rules = new ArrayList<LiRule>();
 		List<LiSymbolRef> rightPart = new ArrayList<LiSymbolRef>(32);
-		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if(clause instanceof AstNonTerm) {
+		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
 				LiSymbol left = symbolsMap.get(nonterm.getName().getName());
-				if(left == null) {
+				if (left == null) {
 					continue; /* error is already reported */
 				}
-				for(AstRule right : nonterm.getRules()) {
-					if(!right.hasSyntaxError()) {
+				for (AstRule right : nonterm.getRules()) {
+					if (!right.hasSyntaxError()) {
 						createRule(left, right, rightPart);
 					}
 				}
@@ -287,9 +278,9 @@ public class LapgResolver {
 
 	private List<LiSymbol> resolve(List<AstReference> input) {
 		List<LiSymbol> result = new ArrayList<LiSymbol>(input.size());
-		for(AstReference id : input) {
+		for (AstReference id : input) {
 			LiSymbol sym = resolve(id);
-			if(sym != null) {
+			if (sym != null) {
 				result.add(sym);
 			}
 		}
@@ -300,39 +291,35 @@ public class LapgResolver {
 		priorities = new ArrayList<LiPrio>();
 		inputs = new ArrayList<LiSymbol>();
 
-		for(AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if(clause instanceof AstDirective) {
+		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof AstDirective) {
 				AstDirective directive = (AstDirective) clause;
 				String key = directive.getKey();
 				List<LiSymbol> val = resolve(directive.getSymbols());
-				if(key.equals("input")) {
+				if (key.equals("input")) {
 					inputs.addAll(val);
-				} else if(key.equals("left")) {
+				} else if (key.equals("left")) {
 					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()]), directive));
-				} else if( key.equals("right") ) {
+				} else if (key.equals("right")) {
 					priorities.add(new LiPrio(Prio.RIGHT, val.toArray(new LiSymbol[val.size()]), directive));
-				} else if( key.equals("nonassoc") ) {
+				} else if (key.equals("nonassoc")) {
 					priorities.add(new LiPrio(Prio.NONASSOC, val.toArray(new LiSymbol[val.size()]), directive));
 				} else {
-					error(directive, "unknown directive identifier used: `"+key+"`");
+					error(directive, "unknown directive identifier used: `" + key + "`");
 				}
 			}
 		}
 	}
 
 	private void collectOptions() {
-		if(tree.getRoot().getOptions() == null) {
+		if (tree.getRoot().getOptions() == null) {
 			return;
 		}
-		for(AstOptionPart option : tree.getRoot().getOptions()) {
-			if(option instanceof AstOption) {
-				options.put(((AstOption)option).getKey(), convertExpression(((AstOption)option).getValue()));
+		for (AstOptionPart option : tree.getRoot().getOptions()) {
+			if (option instanceof AstOption) {
+				options.put(((AstOption) option).getKey(), convertExpression(((AstOption) option).getValue()));
 			}
 		}
-	}
-
-	private static boolean safeEquals(Object o1, Object o2) {
-		return o1 == null || o2 == null ? o1 == o2 : o1.equals(o2);
 	}
 
 	private void error(IAstNode n, String message) {
@@ -340,41 +327,54 @@ public class LapgResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String,Object> convert(AstAnnotations astAnnotations) {
-		return (Map<String, Object>) convertExpression(astAnnotations);
+	private Map<String, Object> convert(AstAnnotations astAnnotations, String kind) {
+		if (astAnnotations == null) {
+			return null;
+		}
+		List<AstNamedEntry> list = astAnnotations.getAnnotations();
+		Map<String, Object> result = new HashMap<String, Object>();
+		for (AstNamedEntry entry : list) {
+			if (entry.hasSyntaxError()) {
+				continue;
+			}
+			String name = entry.getName();
+			AstExpression expr = entry.getExpression();
+			if (expr == null) {
+				result.put(name, Boolean.TRUE);
+			} else {
+				result.put(name, convertExpression(expr));
+			}
+		}
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")
 	private Object convertExpression(Object o) {
-		if(o instanceof AstInstance || o instanceof AstAnnotations) {
-			List<AstNamedEntry> list = o instanceof AstInstance ? ((AstInstance) o).getEntries() : ((AstAnnotations) o).getAnnotations();
-			Map<String,Object> result = new HashMap<String,Object>();
-			for(AstNamedEntry entry : list) {
-				if(entry.hasSyntaxError()) {
+		if (o instanceof AstInstance) {
+			List<AstNamedEntry> list = ((AstInstance) o).getEntries();
+			Map<String, Object> result = new HashMap<String, Object>();
+			for (AstNamedEntry entry : list) {
+				if (entry.hasSyntaxError()) {
 					continue;
 				}
 				AstExpression expr = entry.getExpression();
-				if(expr == null && o instanceof AstAnnotations) {
-					result.put(entry.getName(), Boolean.TRUE);
-				} else {
-					result.put(entry.getName(), convertExpression(expr));
-				}
+				result.put(entry.getName(), convertExpression(expr));
 			}
 			return result;
 		}
-		if(o instanceof AstArray) {
+		if (o instanceof AstArray) {
 			List<AstExpression> list = ((AstArray) o).getExpressions();
 
 			List<Object> result = new ArrayList<Object>(list.size());
-			for(Object v : list) {
+			for (Object v : list) {
 				result.add(convertExpression(v));
 			}
 			return result;
 		}
-		if(o instanceof AstReference) {
-			return resolve((AstReference)o);
+		if (o instanceof AstReference) {
+			return resolve((AstReference) o);
 		}
-		if(o instanceof AstLiteralExpression) {
+		if (o instanceof AstLiteralExpression) {
 			return ((AstLiteralExpression) o).getLiteral();
 		}
 		return null;
