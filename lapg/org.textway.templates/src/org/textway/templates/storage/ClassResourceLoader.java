@@ -13,36 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textway.templates.storage;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import org.textway.templates.api.IProblemCollector;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 /**
- * Loads templates stored along with java classes (using ClassLoader)
+ * Evgeny, Dec 4, 2010
  */
-public class ClassTemplateLoader implements IBundleLoader {
+public class ClassResourceLoader implements IResourceLoader {
 
 	private final ClassLoader loader;
 	private final String rootPackage;
 	private final String charsetName;
 
-	public ClassTemplateLoader(ClassLoader loader, String rootPackage, String charsetName) {
+	public ClassResourceLoader(ClassLoader loader, String rootPackage, String charsetName) {
 		this.loader = loader;
 		this.rootPackage = rootPackage;
 		this.charsetName = charsetName;
 	}
 
-	private static String getStreamContents(InputStream stream, String charsetName) {
+	private static String getStreamContents(URL url, String charsetName) {
 		StringBuffer contents = new StringBuffer();
 		char[] buffer = new char[2048];
 		int count;
 		try {
-			Reader in = new InputStreamReader(stream, charsetName);
+			Reader in = new InputStreamReader(url.openStream(), charsetName);
 			try {
 				while ((count = in.read(buffer)) > 0) {
 					contents.append(buffer, 0, count);
@@ -56,23 +55,17 @@ public class ClassTemplateLoader implements IBundleLoader {
 		return contents.toString();
 	}
 
-	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
-		String resourceName = rootPackage + "/" + bundleName.replace('.', '/') + BUNDLE_EXT;
-		InputStream s = loader.getResourceAsStream(resourceName);
-		if (s == null) {
+	public Resource loadResource(String qualifiedName, String kind) {
+		String name = rootPackage + "/" + qualifiedName.replace('.', '/') + "." + kind;
+		URL url = loader.getResource(name);
+		if (url == null) {
 			return null;
 		}
-		String name = resourceName.indexOf('/') >= 0 ? resourceName.substring(resourceName.lastIndexOf('/'))
-				: resourceName;
-		return TemplatesBundle.parse(name, getStreamContents(s, charsetName), bundleName, collector);
-	}
-
-	public String loadResource(String resourceName, String extension) {
-		String name = rootPackage + "/" + resourceName.replace('.', '/') + "." + extension;
-		InputStream s = loader.getResourceAsStream(name);
-		if (s == null) {
+		String contents = getStreamContents(url, charsetName);
+		try {
+			return contents != null ? new Resource(url.toURI(), contents) : null;
+		} catch (URISyntaxException e) {
 			return null;
 		}
-		return getStreamContents(s, charsetName);
 	}
 }

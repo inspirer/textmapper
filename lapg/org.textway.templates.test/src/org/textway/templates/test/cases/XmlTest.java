@@ -17,9 +17,10 @@ package org.textway.templates.test.cases;
 
 import junit.framework.Assert;
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.bundle.ClassTemplateLoader;
+import org.textway.templates.bundle.DefaultTemplateLoader;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.eval.TemplatesFacade;
+import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.test.TemplateTestCase;
 import org.textway.xml.XmlIxFactory;
 import org.textway.xml.XmlModel;
@@ -31,7 +32,7 @@ public class XmlTest extends TemplateTestCase {
 		XmlNode n = XmlModel.load(" <r><user name='jone'/>go<user name='go'/></r> ");
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new XmlIxFactory(), new TemplatesRegistry(collector, new ClassTemplateLoader(getClass().getClassLoader(), "org/textway/templates/test/ltp", "utf8")), collector);
+		TemplatesFacade env = new TemplatesFacade(new XmlIxFactory(), new TemplatesRegistry(collector, new DefaultTemplateLoader(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/templates/test/ltp", "utf8"))), collector);
 
 		// test 1
 		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null, null);

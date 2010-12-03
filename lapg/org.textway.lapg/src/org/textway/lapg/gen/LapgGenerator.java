@@ -31,6 +31,7 @@ import org.textway.templates.ast.Node;
 import org.textway.templates.bundle.*;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.IxFactory;
+import org.textway.templates.storage.ClassResourceLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,7 +146,7 @@ public final class LapgGenerator {
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new ClassTemplateLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+			loaders.add(new DefaultTemplateLoader(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")));
 		}
 		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, loaders.toArray(new IBundleLoader[loaders.size()]));
 		return registry;

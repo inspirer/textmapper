@@ -13,30 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textway.templates.storage;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
 
-import org.textway.templates.api.IProblemCollector;
-
-/**
- * Loads templates from specified folders;
- */
-public class FolderTemplateLoader implements IBundleLoader {
+public class FileBasedResourceLoader implements IResourceLoader {
 
 	private final File[] myFolders;
 	private final String charsetName;
 
-	public FolderTemplateLoader(File[] folders, String charsetName) {
+	public FileBasedResourceLoader(File[] folders, String charsetName) {
 		this.myFolders = folders;
 		this.charsetName = charsetName;
 	}
 
-	private static String getFileContents(String file, String charsetName) {
+	private static String getFileContents(File file, String charsetName) {
 		StringBuffer contents = new StringBuffer();
 		char[] buffer = new char[2048];
 		int count;
@@ -55,26 +46,15 @@ public class FolderTemplateLoader implements IBundleLoader {
 		return contents.toString();
 	}
 
-	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
-		String fileName = bundleName.replace('.', '/') +  BUNDLE_EXT;
-
-		for( File f : myFolders ) {
+	public Resource loadResource(String resourceName, String kind) {
+		String fileName = resourceName.replace('.', '/') + "." + kind;
+		for (File f : myFolders) {
 			File file = new File(f, fileName);
-			if( file.exists() ) {
-				String name = file.toString();
-				return TemplatesBundle.parse(name, getFileContents(name, charsetName), bundleName, collector);
-			}
-		}
-		return null;
-	}
-
-	public String loadResource(String resourceName, String extension) {
-		String fileName = resourceName.replace('.', '/') + "." + extension;
-		for( File f : myFolders ) {
-			File file = new File(f, fileName);
-			if( file.exists() ) {
-				String name = file.toString();
-				return getFileContents(name, charsetName);
+			if (file.exists()) {
+				String contents = getFileContents(file, charsetName);
+				if (contents != null) {
+					return new Resource(file.toURI(), contents);
+				}
 			}
 		}
 		return null;
