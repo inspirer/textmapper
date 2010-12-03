@@ -26,9 +26,8 @@ import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.templates.bundle.DefaultTemplateLoader;
-import org.textway.templates.bundle.IBundleLoader;
 import org.textway.templates.storage.FileBasedResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
 
 import java.io.*;
 import java.util.HashSet;
@@ -186,11 +185,10 @@ public class BootstrapTest extends TestCase {
 			}
 		}
 
-		public IBundleLoader createTemplateLoader(String path) {
-			File folder = new File(path);
+		public IResourceLoader createResourceLoader(String qualifiedName) {
+			File folder = new File(qualifiedName);
 			if (folder.isDirectory()) {
-				// FIXME charset
-				return new DefaultTemplateLoader(new FileBasedResourceLoader(new File[]{folder}, "utf8"));
+				return new FileBasedResourceLoader(new File[]{folder}, "utf8");
 			}
 			return null;
 		}

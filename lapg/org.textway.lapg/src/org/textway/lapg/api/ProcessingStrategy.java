@@ -15,11 +15,11 @@
  */
 package org.textway.lapg.api;
 
-import org.textway.templates.bundle.IBundleLoader;
+import org.textway.templates.storage.IResourceLoader;
 
 public interface ProcessingStrategy {
 
 	void createFile(String name, String contents, ProcessingStatus status);
 
-	IBundleLoader createTemplateLoader(String path);
+	IResourceLoader createResourceLoader(String path);
 }

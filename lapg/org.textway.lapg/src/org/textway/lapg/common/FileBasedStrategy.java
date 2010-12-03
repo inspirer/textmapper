@@ -20,9 +20,8 @@ import java.io.IOException;
 
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
-import org.textway.templates.bundle.DefaultTemplateLoader;
-import org.textway.templates.bundle.IBundleLoader;
 import org.textway.templates.storage.FileBasedResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
 
 public class FileBasedStrategy implements ProcessingStrategy {
 
@@ -35,11 +34,11 @@ public class FileBasedStrategy implements ProcessingStrategy {
 		}
 	}
 
-	public IBundleLoader createTemplateLoader(String path) {
-		File folder = new File(path);
+	public IResourceLoader createResourceLoader(String qualifiedName) {
+		File folder = new File(qualifiedName);
 		if (folder.isDirectory()) {
 			// FIXME charset
-			return new DefaultTemplateLoader(new FileBasedResourceLoader(new File[] { folder }, "utf8"));
+			return new FileBasedResourceLoader(new File[] { folder }, "utf8");
 		}
 		return null;
 	}

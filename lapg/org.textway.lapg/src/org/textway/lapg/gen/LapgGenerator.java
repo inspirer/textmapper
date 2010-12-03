@@ -32,6 +32,7 @@ import org.textway.templates.bundle.*;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.IxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,9 +141,9 @@ public final class LapgGenerator {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
 		for (String path : options.getIncludeFolders()) {
-			IBundleLoader tl = strategy.createTemplateLoader(path);
+			IResourceLoader tl = strategy.createResourceLoader(path);
 			if (tl != null) {
-				loaders.add(tl);
+				loaders.add(new DefaultTemplateLoader(tl));
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
