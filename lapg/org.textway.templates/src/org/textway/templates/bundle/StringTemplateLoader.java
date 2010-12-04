@@ -37,7 +37,7 @@ public class StringTemplateLoader implements IBundleLoader {
 		this.contents = contents;
 	}
 
-	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
+	public TemplatesBundle[] load(String bundleName, IProblemCollector collector) {
 		if(sourceForPackage == null) {
 			TemplatesBundle compositeBundle = TemplatesBundle.parse(name, contents, null, collector);
 
@@ -58,10 +58,7 @@ public class StringTemplateLoader implements IBundleLoader {
 				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new IBundleEntity[list.size()])));
 			}
 		}
-		return sourceForPackage.get(bundleName);
-	}
-
-	public String loadResource(String resourceName, String extension) {
-		return null;
+		TemplatesBundle result = sourceForPackage.get(bundleName);
+		return result == null ? null : new TemplatesBundle[] { result };
 	}
 }

@@ -15,27 +15,32 @@
  */
 package org.textway.templates.types;
 
+import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.bundle.TemplatesRegistry;
+import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.Resource;
+import org.textway.templates.storage.ResourceRegistry;
 
 import java.util.*;
 
 public class TypesRegistry implements ITypesRegistry {
 
-	private TemplatesRegistry myResourceRegistry;
-	private Set<String> myLoadedPackages = new HashSet<String>();
-	private Map<String, TiClass> myClasses = new HashMap<String, TiClass>();
+	private final ResourceRegistry myResourceRegistry;
+	private final IProblemCollector myCollector;
+	private final Set<String> myLoadedPackages = new HashSet<String>();
+	private final Map<String, TiClass> myClasses = new HashMap<String, TiClass>();
 
-	public TypesRegistry(TemplatesRegistry myResourceRegistry) {
-		this.myResourceRegistry = myResourceRegistry;
+	public TypesRegistry(ResourceRegistry resourceRegistry, IProblemCollector collector) {
+		myResourceRegistry = resourceRegistry;
+		myCollector = collector;
 	}
 
 	public IClass loadClass(String qualifiedName, ILocatedEntity referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
-			myResourceRegistry.getCollector().fireError(referer, "Fully qualified type name should contain dot.");
+			myCollector.fireError(referer, "Fully qualified type name should contain dot.");
 			return null;
 		}
 
@@ -58,14 +63,14 @@ public class TypesRegistry implements ITypesRegistry {
 			assert !myLoadedPackages.contains(current);
 			myLoadedPackages.add(current);
 
-			String[] contentLayers = myResourceRegistry.loadResource(current, "types");
+			Resource[] contentLayers = myResourceRegistry.loadResources(current, IResourceLoader.KIND_TYPES);
 			if(contentLayers == null || contentLayers.length < 1) {
-				myResourceRegistry.getCollector().fireError(referer, "Couldn't load types package `" + current + "`");
+				myCollector.fireError(referer, "Couldn't load types package `" + current + "`");
 				continue;
 			}
 
-			for(String content : contentLayers) {
-				TypesResolver resolver = new TypesResolver(current, content, myClasses, myResourceRegistry.getCollector());
+			for(Resource content : contentLayers) {
+				TypesResolver resolver = new TypesResolver(current, content, myClasses, myCollector);
 				resolver.build();
 				for(String package_ : resolver.getRequired()) {
 					if(!myLoadedPackages.contains(package_)) {

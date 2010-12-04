@@ -21,6 +21,7 @@ import org.textway.templates.api.types.IDataType.Constraint;
 import org.textway.templates.api.types.IDataType.ConstraintKind;
 import org.textway.templates.api.types.IDataType.DataTypeKind;
 import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.storage.Resource;
 import org.textway.templates.types.TypesTree.TypesProblem;
 import org.textway.templates.types.ast.*;
 
@@ -32,7 +33,7 @@ import java.util.*;
 class TypesResolver {
 
 	private final String myPackage;
-	private final String myContent;
+	private final Resource myResource;
 	private final Map<String, TiClass> myRegistryClasses;
 	private final IProblemCollector myStatus;
 
@@ -47,22 +48,22 @@ class TypesResolver {
 	// 3-d stage
 	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
 
-	public TypesResolver(String package_, String content, Map<String, TiClass> registryClasses,
+	public TypesResolver(String package_, Resource resource, Map<String, TiClass> registryClasses,
 					  IProblemCollector problemCollector) {
 		this.myPackage = package_;
-		this.myContent = content;
+		this.myResource = resource;
 		this.myRegistryClasses = registryClasses;
 		this.myStatus = problemCollector;
 	}
 
 	public void build() {
-		final TypesTree<Input> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myContent.toCharArray(), 1));
+		final TypesTree<Input> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents().toCharArray(), 1));
 		if (tree.hasErrors()) {
 			myStatus.fireError(null, "Problem(s) in type definitions:");
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.fireError(new ILocatedEntity() {
 					public String getLocation() {
-						return myPackage + "," + tree.getSource().lineForOffset(s.getOffset());
+						return myResource.getUri().getPath() + "," + tree.getSource().lineForOffset(s.getOffset());
 					}
 				}, s.getMessage());
 			}

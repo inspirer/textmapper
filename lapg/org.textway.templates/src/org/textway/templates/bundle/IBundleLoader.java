@@ -23,19 +23,9 @@ import org.textway.templates.api.IProblemCollector;
 public interface IBundleLoader {
 
 	/**
-	 * Default templates extension
-	 */
-	public static final String BUNDLE_EXT = ".ltp";
-
-	/**
 	 * @param bundleName
 	 *            qualified name of templates bundle (separated with dots)
-	 * @return contents of the file with templates
+	 * @return contents of the files with templates
 	 */
-	TemplatesBundle load(String bundleName, IProblemCollector collector);
-
-	/**
-	 * @return contents of the resource
-	 */
-	String loadResource(String resourceName, String extension);
+	TemplatesBundle[] load(String bundleName, IProblemCollector collector);
 }

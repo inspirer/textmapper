@@ -17,14 +17,18 @@ package org.textway.templates.test.cases;
 
 import junit.framework.Assert;
 import org.textway.templates.api.EvaluationContext;
+import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.bundle.DefaultTemplateLoader;
+import org.textway.templates.bundle.IBundleLoader;
 import org.textway.templates.bundle.StringTemplateLoader;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.eval.DefaultStaticMethods;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.JavaIxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.test.TemplateTestCase;
+import org.textway.templates.types.TypesRegistry;
 
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -36,15 +40,13 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	private static final String TEMPLATES_CHARSET = "utf8";
 
-	private DefaultTemplateLoader defaultTemplateLoader = new DefaultTemplateLoader(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
-
 	// loop.ltp
 	public void testLoops() {
 		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		String q = env.executeTemplate("loop.loop1", new EvaluationContext(h), null, null);
@@ -75,7 +77,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	// eval.ltp
 	public void testEval() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		String q = env.executeTemplate("eval.eval1", null, null, null);
@@ -85,7 +87,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	// query.ltp
 	public void testQuery() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		String q = env.executeTemplate("query.a", new EvaluationContext(new Object()), null, null);
@@ -95,7 +97,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	// dollar.ltp
 	public void testDollar() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		String q = env.executeTemplate("dollar.testdollar", null, null, null);
@@ -125,7 +127,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	// filter.ltp
 	public void testMap() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -137,7 +139,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testCollect() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -153,7 +155,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testCollectMap() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -165,7 +167,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testSort() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -181,7 +183,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testGroupBy() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -197,7 +199,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	// arithm.ltp
 	public void testArithm() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		String q = env.executeTemplate("arithm.arithm1", new EvaluationContext(null), null, null);
@@ -237,7 +239,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
 		h.put("list", new String[]{"w1", "w2"});
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
 		collector.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
@@ -253,7 +255,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -280,9 +282,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector,
-				new StringTemplateLoader("inline", "${template overrides.my2}go next my2(${call base})\n\n${end}"),
-				defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector,
+				"${template overrides.my2}go next my2(${call base})\n\n${end}"), collector);
 
 		EvaluationContext context = new EvaluationContext(h);
 		context.setVariable("util", new DefaultStaticMethods());
@@ -298,9 +299,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 
 	public void testOverrides2() {
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector,
-				new StringTemplateLoader("inline", "${template overrides.my1(aa)}go next my1\n\n${end}"),
-				defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector,
+				"${template overrides.my1(aa)}go next my1\n\n${end}"), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
 
@@ -314,7 +314,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	public void testFile() {
 		final Map<String, String> fileContent = new HashMap<String, String>();
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector) {
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector) {
 			@Override
 			public void createFile(String name, String contents) {
 				fileContent.put(name, contents);
@@ -343,7 +343,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		this_.put("aa", new Integer(11));
 
 		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), new TemplatesRegistry(collector, defaultTemplateLoader), collector);
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(this_);
 
@@ -360,5 +360,17 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		this_.put("aa", new Integer(12));
 		q = env.executeTemplate("switch.check1", context, null, null);
 		Assert.assertEquals("No", q);
+	}
+
+	private TemplatesRegistry createRegistry(TestProblemCollector collector) {
+		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		ITypesRegistry types = new TypesRegistry(resources, collector);
+		return new TemplatesRegistry(collector, types, (IBundleLoader) new DefaultTemplateLoader(resources));
+	}
+
+	private TemplatesRegistry createRegistry(TestProblemCollector collector, String inlineCode) {
+		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		ITypesRegistry types = new TypesRegistry(resources, collector);
+		return new TemplatesRegistry(collector, types, new StringTemplateLoader("inline", inlineCode), new DefaultTemplateLoader(resources));
 	}
 }

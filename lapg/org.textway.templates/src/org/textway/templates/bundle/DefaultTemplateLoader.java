@@ -18,27 +18,28 @@ package org.textway.templates.bundle;
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.storage.IResourceLoader;
 import org.textway.templates.storage.Resource;
+import org.textway.templates.storage.ResourceRegistry;
 
 /**
  * Loads templates from specified folders;
  */
 public class DefaultTemplateLoader implements IBundleLoader {
-	private IResourceLoader loader;
+	private ResourceRegistry resources;
 
-	public DefaultTemplateLoader(IResourceLoader loader) {
-		this.loader = loader;
+	public DefaultTemplateLoader(ResourceRegistry resources) {
+		this.resources = resources;
 	}
 
-	public TemplatesBundle load(String bundleName, IProblemCollector collector) {
-		Resource resource = loader.loadResource(bundleName, IResourceLoader.KIND_TEMPLATE);
-		if (resource == null) {
+	public TemplatesBundle[] load(String bundleName, IProblemCollector collector) {
+		Resource[] loaded = resources.loadResources(bundleName, IResourceLoader.KIND_TEMPLATE);
+		if (loaded == null) {
 			return null;
 		}
-		return TemplatesBundle.parse(resource.getUri().getPath(), resource.getContents(), bundleName, collector);
-	}
-
-	public String loadResource(String resourceName, String extension) {
-		Resource resource = loader.loadResource(resourceName, extension);
-		return resource != null ? resource.getContents() : null;
+		TemplatesBundle[] result = new TemplatesBundle[loaded.length];
+		for(int i = 0; i < loaded.length; i++) {
+			Resource resource = loaded[i];
+			result[i] = TemplatesBundle.parse(resource.getUri().getPath(), resource.getContents(), bundleName, collector);
+		}
+		return result;
 	}
 }

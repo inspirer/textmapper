@@ -33,6 +33,8 @@ import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.IxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,12 +74,16 @@ public final class LapgGenerator {
 
 	public boolean compileGrammar(TextSource input) {
 		try {
+			ProblemCollectorAdapter collector = new ProblemCollectorAdapter(status);
+			ResourceRegistry resources = createResourceRegistry();
+			TypesRegistry types = new TypesRegistry(resources, collector);
+
 			Grammar s = SyntaxUtil.parseSyntax(input, status, getDefaultOptions());
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
 
-			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), new ProblemCollectorAdapter(status));
+			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, collector);
 			if (!checkOptions(s, registry)) {
 				return false;
 			}
@@ -137,19 +143,25 @@ public final class LapgGenerator {
 		return true;
 	}
 
-	private TemplatesRegistry createTemplateRegistry(String grammarTemplates, IProblemCollector problemCollector) {
-		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
-		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
+	private ResourceRegistry createResourceRegistry() {
+		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
 		for (String path : options.getIncludeFolders()) {
-			IResourceLoader tl = strategy.createResourceLoader(path);
-			if (tl != null) {
-				loaders.add(new DefaultTemplateLoader(tl));
+			IResourceLoader resourceLoader = strategy.createResourceLoader(path);
+			if (resourceLoader != null) {
+				loaders.add(resourceLoader);
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new DefaultTemplateLoader(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")));
+			loaders.add(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
 		}
-		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, loaders.toArray(new IBundleLoader[loaders.size()]));
+		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
+	}
+
+	private TemplatesRegistry createTemplateRegistry(String grammarTemplates, ResourceRegistry resources, TypesRegistry types, IProblemCollector problemCollector) {
+		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
+		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
+		loaders.add(new DefaultTemplateLoader(resources));
+		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 		return registry;
 	}
 

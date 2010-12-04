@@ -17,10 +17,9 @@ package org.textway.templates.test.cases;
 
 import org.junit.Assert;
 import org.textway.templates.api.types.IClass;
-import org.textway.templates.bundle.DefaultTemplateLoader;
 import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.test.TemplateTestCase;
 import org.textway.templates.types.TypesRegistry;
 
@@ -50,12 +49,11 @@ public class TypesTest extends TemplateTestCase {
 			"test1,32: `test1.Parser` is not a subtype of `test1.Symbol`"
 		);
 
-		TemplatesRegistry registry = new TemplatesRegistry(collector, new DefaultTemplateLoader(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET)));
-		TypesRegistry types = new TypesRegistry(registry);
+		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
+		TypesRegistry types = new TypesRegistry(resources, collector);
 
 		IClass iClass = types.loadClass("test1.Defaults", null);
 		Assert.assertNotNull(iClass);
 		collector.assertEmptyErrors();
 	}
-
 }

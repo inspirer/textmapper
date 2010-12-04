@@ -19,7 +19,6 @@ import java.util.*;
 
 import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.types.TypesRegistry;
 
 public class TemplatesRegistry {
 
@@ -29,12 +28,12 @@ public class TemplatesRegistry {
 	private final IBundleLoader[] loaders;
 	private final ITypesRegistry typesRegistry;
 
-	public TemplatesRegistry(IProblemCollector collector, IBundleLoader... loaders) {
+	public TemplatesRegistry(IProblemCollector collector, ITypesRegistry typesRegistry, IBundleLoader... loaders) {
 		this.collector = collector;
+		this.typesRegistry = typesRegistry;
 		this.entities = new HashMap<String, IBundleEntity>();
 		this.loadedBundles = new HashSet<String>();
 		this.loaders = loaders;
-		this.typesRegistry = new TypesRegistry(this);
 
 		if (loaders == null || loaders.length < 1) {
 			throw new IllegalArgumentException("no loaders provided");
@@ -44,23 +43,14 @@ public class TemplatesRegistry {
 	private TemplatesBundle[] getBundleContents(String bundleName) {
 		List<TemplatesBundle> result = new LinkedList<TemplatesBundle>();
 		for (IBundleLoader loader : loaders) {
-			TemplatesBundle source = loader.load(bundleName, collector);
-			if (source != null) {
-				result.add(source);
+			TemplatesBundle[] sources = loader.load(bundleName, collector);
+			if (sources != null) {
+				for(TemplatesBundle source : sources) {
+					result.add(source);
+				}
 			}
 		}
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
-	}
-
-	public String[] loadResource(String resourceName, String extension) {
-		List<String> result = new ArrayList<String>(loaders.length);
-		for (IBundleLoader loader : loaders) {
-			String content = loader.loadResource(resourceName, extension);
-			if (content != null) {
-				result.add(content);
-			}
-		}
-		return result.isEmpty() ? null : result.toArray(new String[result.size()]);
 	}
 
 	private void loadBundle(ILocatedEntity referer, String bundleName) {
