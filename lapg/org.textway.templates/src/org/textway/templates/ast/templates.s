@@ -18,12 +18,11 @@
 lang = "java" 
 prefix = "Templates"
 package = "org.textway.templates.ast"
-breaks = "on"
-lexemend = "on"
-packLexems = "true"
+breaks = true
+gentree = true
+packLexems = true
 positions = "line,offset"
 endpositions = "offset"
-gentree = "on"
 
 # Vocabulary
 

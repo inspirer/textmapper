@@ -16,7 +16,6 @@
 package org.textway.lapg.test.cases;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -25,13 +24,28 @@ import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.test.TestStatus;
+import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 @SuppressWarnings({"deprecation"})
 public class AnnotationsTest extends LapgTestCase {
 
+	private TypesRegistry createDefaultTypesRegistry() {
+		ResourceRegistry resources = new ResourceRegistry(new IResourceLoader[]{new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")});
+		return new TypesRegistry(resources, new IProblemCollector() {
+			public void fireError(ILocatedEntity referer, String error) {
+				Assert.fail(error);
+			}
+		});
+	}
+
 	public void testAllAnnotations() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1annotated", openStream("syntax1annotated", TESTCONTAINER),
-				new TestStatus(), new HashMap<String, Object>());
+				new TestStatus(), createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
 		Rule[] listItemRules = rulesForName(g.getRules(), "list_item");
@@ -69,7 +83,7 @@ public class AnnotationsTest extends LapgTestCase {
 		TestStatus notifier = new TestStatus("", "syntax1errannotated,22: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,28: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
-				notifier, new HashMap<String, Object>());
+				notifier, createDefaultTypesRegistry());
 		Assert.assertNull(g);
 	}
 

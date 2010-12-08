@@ -2,12 +2,10 @@
 lang = "java"
 prefix = "Java"
 package = "org.textway.lapg.gen.java"
-lexemend = "on"
-gentree = "on"
-genast = "on"
-packLexems = "true"
-packTables = "true"
-astprefix = "Java"
+gentree = true
+genast = true
+packLexems = true
+packTables = true
 positions = "line,offset"
 endpositions = "offset"
 

@@ -18,9 +18,8 @@
 lang = "java" 
 prefix = "Types"
 package = "org.textway.templates.types"
-lexemend = "on"
-gentree = "on"
-genast = "on"
+gentree = true
+genast = true
 astprefix = "Ast"
 positions = "line,offset"
 endpositions = "offset"

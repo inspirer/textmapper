@@ -53,32 +53,13 @@ public final class LapgGenerator {
 		this.strategy = strategy;
 	}
 
-	/**
-	 * TODO read from templates
-	 */
-	public static Map<String, Object> getDefaultOptions() {
-		Map<String, Object> d = new HashMap<String, Object>();
-		d.put("prefix", "");
-		d.put("breaks", "on");
-		d.put("lang", "java");
-		d.put("maxtoken", "2048");
-		d.put("stack", "1024");
-		d.put("packLexems", "false");
-		d.put("packTables", "false");
-		d.put("positions", "line,offset");
-		d.put("endpositions", "");
-		d.put("gentree", "false");
-		d.put("genast", "false");
-		return d;
-	}
-
 	public boolean compileGrammar(TextSource input) {
 		try {
 			ProblemCollectorAdapter collector = new ProblemCollectorAdapter(status);
 			ResourceRegistry resources = createResourceRegistry();
 			TypesRegistry types = new TypesRegistry(resources, collector);
 
-			Grammar s = SyntaxUtil.parseSyntax(input, status, getDefaultOptions());
+			Grammar s = SyntaxUtil.parseSyntax(input, status, types);
 			if (s == null || s.hasErrors()) {
 				return false;
 			}

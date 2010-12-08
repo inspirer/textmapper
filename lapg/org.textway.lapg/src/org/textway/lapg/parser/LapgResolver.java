@@ -21,6 +21,9 @@ import org.textway.lapg.api.Prio;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
+import org.textway.templates.api.types.IClass;
+import org.textway.templates.api.types.IFeature;
+import org.textway.templates.types.TypesRegistry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +35,8 @@ public class LapgResolver {
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 
 	private final LapgTree<AstRoot> tree;
+	private final TypesRegistry types;
+
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();
 
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
@@ -42,12 +47,12 @@ public class LapgResolver {
 	private List<LiSymbol> inputs;
 	private LiSymbol eoi;
 
-	private final Map<String, Object> options;
+	private Map<String, Object> options;
 	private LapgResolverHelper helper = new LapgResolverHelper();
 
-	public LapgResolver(LapgTree<AstRoot> tree, Map<String, Object> options) {
+	public LapgResolver(LapgTree<AstRoot> tree, TypesRegistry types) {
 		this.tree = tree;
-		this.options = options;
+		this.types = types;
 	}
 
 	public Grammar resolve() {
@@ -311,13 +316,51 @@ public class LapgResolver {
 		}
 	}
 
+	private AstLiteralExpression getLangValue() {
+		if(tree.getRoot().getOptions() != null) {
+			for (AstOptionPart option : tree.getRoot().getOptions()) {
+				if (option instanceof AstOption && ((AstOption) option).getKey().equals("lang")) {
+					AstExpression expression = ((AstOption) option).getValue();
+					if(expression instanceof AstLiteralExpression) {
+						return (AstLiteralExpression) expression;
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
 	private void collectOptions() {
+		options = new HashMap<String, Object>();
+
+		// Load class
+		AstLiteralExpression expression = getLangValue();
+		String optionsClassName = (expression != null ? expression.getLiteral().toString() : "common") + ".Options";
+		IClass iClass = types.loadClass(optionsClassName, null);
+		if(iClass == null) {
+			error(expression != null ? expression : tree.getRoot(), "cannot load class `" + optionsClassName + "`");
+			return;
+		}
+
+		// fill default values
+		for (IFeature feature : iClass.getFeatures()) {
+			Object value = feature.getDefaultValue();
+			if(value != null) {
+				options.put(feature.getName(), value);
+			}
+		}
+
+		// overrides
 		if (tree.getRoot().getOptions() == null) {
 			return;
 		}
 		for (AstOptionPart option : tree.getRoot().getOptions()) {
 			if (option instanceof AstOption) {
-				options.put(((AstOption) option).getKey(), convertExpression(((AstOption) option).getValue()));
+				String key = ((AstOption) option).getKey();
+				AstExpression value = ((AstOption) option).getValue();
+				
+				options.put(key, convertExpression(value));
 			}
 		}
 	}

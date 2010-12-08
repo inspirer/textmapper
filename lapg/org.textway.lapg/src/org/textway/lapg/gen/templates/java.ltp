@@ -1,10 +1,10 @@
 ${template main-}
 ${file opts.prefix+'Parser.java'}${call unit}${end-}
 ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
-${if opts.gentree == 'on'-}
+${if opts.gentree-}
 ${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
 ${end-}
-${if opts.genast == 'on'-}
+${if opts.genast-}
 ${call java_ast.unit-}
 ${end-}
 ${end}
@@ -212,14 +212,14 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 ${end-}
-${if syntax.hasActions() || opts.genast == 'on'-}
+${if syntax.hasActions() || opts.genast -}
 		switch (rule) {
 ${foreach rule in syntax.rules-}
-${if rule.getAction() || opts.genast == 'on' && self->java_ast.astcode(rule)-}
+${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
 ${if rule.getAction()-}			
 				${call parserAction for rule-}
-${if opts.breaks == 'on'}				break;$/
+${if opts.breaks }				break;$/
 ${else-}
 				${call astAction(self->java_ast.astcode(rule)) for rule-}
 				break;
@@ -259,7 +259,7 @@ ${call parserTable(parser.sym_to, 'short', 'lapg_sym_to', 'LapgSymTo')-}
 ${call parserTable(parser.ruleLength, 'short', 'lapg_rlen', 'LapgRLen')-}
 
 ${call parserTable(parser.rleft, 'short', 'lapg_rlex', 'LapgRLex')-}
-${if opts.packTables == 'true'}
+${if opts.packTables }
 ${call java_pack.unpackInt-}
 ${call java_pack.unpackShort-}
 ${end-}
@@ -267,7 +267,7 @@ ${end}
 
 
 ${template parserTable(arr, atype, name, cname)-}
-${if opts.packTables == 'true'-}
+${if opts.packTables -}
 	public interface ${cname} {
 ${if arr.size() > 8000-}
 ${if atype == 'short'-}
@@ -355,7 +355,7 @@ ${end}
 
 ${query package() = opts.package ? opts.package : 'com.test' }
 
-${cached query type() = context.opts.genast == 'on' ? context->ast.getType(self) : self.type }
+${cached query type() = context.opts.genast ? context->ast.getType(self) : self.type }
 
 
 ${query escapeJavaReserved() =

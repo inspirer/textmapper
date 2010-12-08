@@ -36,6 +36,12 @@ import org.textway.lapg.parser.LiSymbol;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
 import org.textway.lapg.test.oldparser.SyntaxUtilOld;
+import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 @SuppressWarnings({"deprecation"})
 public class InputTest extends LapgTestCase {
@@ -53,6 +59,15 @@ public class InputTest extends LapgTestCase {
 		String actual = removeSpaces(sb.toString().trim());
 
 		Assert.assertEquals(expected, actual);
+	}
+
+	private TypesRegistry createDefaultTypesRegistry() {
+		ResourceRegistry resources = new ResourceRegistry(new IResourceLoader[]{new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")});
+		return new TypesRegistry(resources, new IProblemCollector() {
+			public void fireError(ILocatedEntity referer, String error) {
+				Assert.fail(error);
+			}
+		});
 	}
 
 	public void testCheckSimple1() {
@@ -154,7 +169,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewTemplatesGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_tpl", openStream("syntax_tpl", TESTCONTAINER),
 				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -165,7 +180,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewLapgGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_lapg", openStream("syntax_lapg", TESTCONTAINER),
 				new TestStatus(), new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -176,7 +191,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckCSharpGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax_cs", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -204,7 +219,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckSimple1() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 		Assert.assertEquals(0, g.getEoi().getIndex());
 
@@ -239,7 +254,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testNewCheckSimple2() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Grammar go = SyntaxUtilOld.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
 				new HashMap<String, String>());
 		Assert.assertNotNull(g);
@@ -316,7 +331,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testCheckConflictsHandling() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
 		TestStatus er = new TestStatus(
@@ -335,7 +350,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testCheckConflictsResolving() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestStatus(),
-				new HashMap<String, Object>());
+				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
 		TestStatus er = new TestStatus(

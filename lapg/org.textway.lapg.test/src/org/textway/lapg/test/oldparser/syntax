@@ -20,8 +20,7 @@
 .lexer		 "LapgLexer"
 .package	 "org.textway.lapg.input"
 .maxtoken    4096
-.breaks		 "on"
-.lexemend    "on"
+.breaks		 true
 .positioning "offset"
 
 # Vocabulary

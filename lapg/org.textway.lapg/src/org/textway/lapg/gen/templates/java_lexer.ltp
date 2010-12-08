@@ -183,7 +183,7 @@ ${end}
 ${template lexerTables-}
 ${call java.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
 
-${if opts.packLexems != 'true'-}
+${if !opts.packLexems-}
 	private static final short[][] lapg_lexem = new short[][] {
 		${util.format(lex.change, 2, '{', '}')}
 	};

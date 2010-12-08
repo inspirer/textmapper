@@ -19,8 +19,8 @@ lang = "java"
 prefix = "Xml"
 package = "org.textway.xml"
 maxtoken = 2048
-breaks = "on"
-gentree = "on"
+breaks = true
+gentree = true
 positions = "line,offset"
 endpositions = "offset"
 

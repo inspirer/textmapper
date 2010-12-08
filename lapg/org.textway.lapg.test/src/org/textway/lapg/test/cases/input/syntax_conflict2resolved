@@ -7,7 +7,7 @@ lexemend   = "%%lexemend%%"
 class      = "MParser"
 lexer      = "MLexer"
 package	   = "com.mypackage"
-breaks     = "off"
+breaks     = false
 
 # Vocabulary
 

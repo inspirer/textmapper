@@ -76,3 +76,7 @@ class Lexer {
 class List {
     int length;
 }
+
+class Options {
+	string lang[identifier] = "";
+}

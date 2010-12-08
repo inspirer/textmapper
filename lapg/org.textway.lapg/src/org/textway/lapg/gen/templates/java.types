@@ -12,6 +12,7 @@ class Context {
 }
 
 class Options {
+	string lang[identifier] = "";
 
 	string prefix[notempty; identifier];
 	string package[qualified] = "";
@@ -20,9 +21,10 @@ class Options {
 
 	bool breaks = true;
 	bool gentree = false;
+	bool genast = false;
 
 	int maxtoken = 2048;
-	int stack = 2048;
+	int stack = 1024;
 
 	bool packLexems = false;
 	bool packTables = false;

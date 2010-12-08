@@ -19,8 +19,8 @@ lang = "java"
 prefix = "Lapg"
 package = "org.textway.lapg.parser"
 maxtoken = 2048
-breaks = "on"
-gentree = "on"
+breaks = true
+gentree = true
 positions = "line,offset"
 endpositions = "offset"
 

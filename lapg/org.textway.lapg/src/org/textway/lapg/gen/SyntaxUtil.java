@@ -23,17 +23,18 @@ import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.AstRoot;
+import org.textway.templates.types.TypesRegistry;
 
 import java.io.InputStream;
 import java.util.Map;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, Map<String, Object> options) {
+	public static Grammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, TypesRegistry types) {
 		LapgTree<AstRoot> tree = LapgTree.parse(input);
 		Grammar result = null;
 		if (!tree.hasErrors()) {
-			result = new LapgResolver(tree, options).resolve();
+			result = new LapgResolver(tree, types).resolve();
 		}
 		if (tree.hasErrors()) {
 			result = null;
@@ -82,8 +83,8 @@ public class SyntaxUtil {
 	}
 
 	@Deprecated
-	public static Grammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, Map<String, Object> options) {
+	public static Grammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, TypesRegistry types) {
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		return parseSyntax(new LapgTree.TextSource(inputName, contents.toCharArray(), 1), err, options);
+		return parseSyntax(new LapgTree.TextSource(inputName, contents.toCharArray(), 1), err, types);
 	}
 }
