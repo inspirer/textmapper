@@ -433,11 +433,13 @@ public class LapgResolver {
 				if (expression instanceof AstInstance) {
 					List<AstNamedEntry> list = ((AstInstance) expression).getEntries();
 					Map<String, AstExpression> props = new HashMap<String, AstExpression>();
-					for (AstNamedEntry entry : list) {
-						if (entry.hasSyntaxError()) {
-							continue;
+					if(list != null) {
+						for (AstNamedEntry entry : list) {
+							if (entry.hasSyntaxError()) {
+								continue;
+							}
+							props.put(entry.getName(), entry.getExpression());
 						}
-						props.put(entry.getName(), entry.getExpression());
 					}
 					String name = ((AstInstance) expression).getClassName().getName();
 					if(name.indexOf('.') < 0) {

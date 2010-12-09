@@ -62,12 +62,26 @@ public class InputTest extends LapgTestCase {
 	}
 
 	private TypesRegistry createDefaultTypesRegistry() {
-		ResourceRegistry resources = new ResourceRegistry(new IResourceLoader[]{new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")});
+		ResourceRegistry resources = new ResourceRegistry(
+				new IResourceLoader[]{
+						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
+						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"),
+				});
 		return new TypesRegistry(resources, new IProblemCollector() {
 			public void fireError(ILocatedEntity referer, String error) {
 				Assert.fail(error);
 			}
 		});
+	}
+
+	public void testOptions() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax1options", openStream("syntax1options", TESTCONTAINER), new TestStatus(),
+				createDefaultTypesRegistry());
+		Assert.assertNotNull(g);
+		Assert.assertEquals(0, g.getEoi().getIndex());
+
+		Object container = g.getOptions().get("container");
+		Assert.assertNotNull(container);
 	}
 
 	public void testCheckSimple1() {

@@ -1,5 +1,6 @@
 class Options {
 	string lang[identifier] = "";
+	Container container;
 }
 
 class AnnotateReference {
@@ -17,4 +18,16 @@ class AnnotateSymbol {
 
 class AnnotateRule {
 	string name;
+}
+
+
+class Container {
+	string name;
+	Container left;
+	Container right;
+	Container child[0..*];
+}
+
+class SubContainer extends Container {
+	int age = 78;
 }
