@@ -23,7 +23,10 @@ import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IType;
+import org.textway.templates.types.TiExpressionBuilder;
 import org.textway.templates.types.TypesRegistry;
+import org.textway.templates.types.TypesUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +39,7 @@ public class LapgResolver {
 
 	private final LapgTree<AstRoot> tree;
 	private final TypesRegistry types;
+	private String myTypesPackage;
 
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();
 
@@ -59,6 +63,8 @@ public class LapgResolver {
 		if (tree.getRoot() == null) {
 			return null;
 		}
+		myTypesPackage = getTypesPackage();
+
 		collectLexems();
 		int terminals = symbols.size();
 
@@ -316,37 +322,35 @@ public class LapgResolver {
 		}
 	}
 
-	private AstLiteralExpression getLangValue() {
-		if(tree.getRoot().getOptions() != null) {
+	private String getTypesPackage() {
+		if (tree.getRoot().getOptions() != null) {
 			for (AstOptionPart option : tree.getRoot().getOptions()) {
 				if (option instanceof AstOption && ((AstOption) option).getKey().equals("lang")) {
 					AstExpression expression = ((AstOption) option).getValue();
-					if(expression instanceof AstLiteralExpression) {
-						return (AstLiteralExpression) expression;
+					if (expression instanceof AstLiteralExpression) {
+						return ((AstLiteralExpression) expression).getLiteral().toString();
 					}
 				}
 			}
 		}
 
-		return null;
+		return "common";
 	}
 
 	private void collectOptions() {
 		options = new HashMap<String, Object>();
 
 		// Load class
-		AstLiteralExpression expression = getLangValue();
-		String optionsClassName = (expression != null ? expression.getLiteral().toString() : "common") + ".Options";
-		IClass iClass = types.loadClass(optionsClassName, null);
-		if(iClass == null) {
-			error(expression != null ? expression : tree.getRoot(), "cannot load class `" + optionsClassName + "`");
+		IClass optionsClass = types.loadClass(myTypesPackage + ".Options", null);
+		if (optionsClass == null) {
+			error(tree.getRoot(), "cannot load options class `" + myTypesPackage + ".Options`");
 			return;
 		}
 
 		// fill default values
-		for (IFeature feature : iClass.getFeatures()) {
+		for (IFeature feature : optionsClass.getFeatures()) {
 			Object value = feature.getDefaultValue();
-			if(value != null) {
+			if (value != null) {
 				options.put(feature.getName(), value);
 			}
 		}
@@ -358,9 +362,14 @@ public class LapgResolver {
 		for (AstOptionPart option : tree.getRoot().getOptions()) {
 			if (option instanceof AstOption) {
 				String key = ((AstOption) option).getKey();
+				IFeature feature = optionsClass.getFeature(key);
+				if (feature == null) {
+					error(option, "unknown option `" + key + "`");
+					continue;
+				}
+
 				AstExpression value = ((AstOption) option).getValue();
-				
-				options.put(key, convertExpression(value));
+				options.put(key, convertExpression(value, TypesUtil.getFeatureType(feature)));
 			}
 		}
 	}
@@ -374,6 +383,14 @@ public class LapgResolver {
 		if (astAnnotations == null) {
 			return null;
 		}
+
+		// Load class
+		IClass annoClass = types.loadClass(myTypesPackage + "." + kind, null);
+		if (annoClass == null) {
+			error(astAnnotations, "cannot load class `" + myTypesPackage + "." + kind + "`");
+			return null;
+		}
+
 		List<AstNamedEntry> list = astAnnotations.getAnnotations();
 		Map<String, Object> result = new HashMap<String, Object>();
 		for (AstNamedEntry entry : list) {
@@ -381,46 +398,80 @@ public class LapgResolver {
 				continue;
 			}
 			String name = entry.getName();
+			IFeature feature = annoClass.getFeature(name);
+			if (feature == null) {
+				error(entry, "unknown annotation `" + name + "`");
+				continue;
+			}
+
+			IType expected = TypesUtil.getFeatureType(feature);
+
 			AstExpression expr = entry.getExpression();
 			if (expr == null) {
+				if (!TypesUtil.isBooleanType(expected)) {
+					error(entry, "expected value of type `" + expected.toString() + "` instead of boolean");
+					continue;
+				}
 				result.put(name, Boolean.TRUE);
 			} else {
-				result.put(name, convertExpression(expr));
+				result.put(name, convertExpression(expr, expected));
 			}
 		}
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object convertExpression(Object o) {
-		if (o instanceof AstInstance) {
-			List<AstNamedEntry> list = ((AstInstance) o).getEntries();
-			Map<String, Object> result = new HashMap<String, Object>();
-			for (AstNamedEntry entry : list) {
-				if (entry.hasSyntaxError()) {
-					continue;
-				}
-				AstExpression expr = entry.getExpression();
-				result.put(entry.getName(), convertExpression(expr));
+	private Object convertExpression(AstExpression expression, IType type) {
+		return new TiExpressionBuilder<AstExpression>() {
+			@Override
+			public IClass resolveType(String className) {
+				return types.loadClass(className, null);
 			}
-			return result;
-		}
-		if (o instanceof AstArray) {
-			List<AstExpression> list = ((AstArray) o).getExpressions();
 
-			List<Object> result = new ArrayList<Object>(list.size());
-			for (Object v : list) {
-				result.add(convertExpression(v));
+			@Override
+			public Object resolve(AstExpression expression, IType type) {
+				if (expression instanceof AstInstance) {
+					List<AstNamedEntry> list = ((AstInstance) expression).getEntries();
+					Map<String, AstExpression> props = new HashMap<String, AstExpression>();
+					for (AstNamedEntry entry : list) {
+						if (entry.hasSyntaxError()) {
+							continue;
+						}
+						props.put(entry.getName(), entry.getExpression());
+					}
+					String name = ((AstInstance) expression).getClassName().getName();
+					if(name.indexOf('.') < 0) {
+						name = myTypesPackage + "." + name;
+					}
+					return convertNew(expression, name, props, type);
+				}
+				if (expression instanceof AstArray) {
+					List<AstExpression> list = ((AstArray) expression).getExpressions();
+					return convertArray(expression, list, type);
+				}
+				if (expression instanceof AstReference) {
+					IClass symbolClass = types.loadClass("common.Symbol", null);
+					if(symbolClass == null) {
+						report(expression, "cannot load class `common.Symbol`");
+					}
+					if(!symbolClass.isSubtypeOf(type)) {
+						report(expression, "`" + symbolClass.toString() + "` is not a subtype of `" + type.toString() + "`");
+						return null;
+					}
+					return LapgResolver.this.resolve((AstReference) expression);
+				}
+				if (expression instanceof AstLiteralExpression) {
+					Object literal = ((AstLiteralExpression) expression).getLiteral();
+					return convertLiteral(expression, literal, type);
+				}
+				return null;
 			}
-			return result;
-		}
-		if (o instanceof AstReference) {
-			return resolve((AstReference) o);
-		}
-		if (o instanceof AstLiteralExpression) {
-			return ((AstLiteralExpression) o).getLiteral();
-		}
-		return null;
+
+			@Override
+			public void report(AstExpression expression, String message) {
+				error(expression, message);
+			}
+		}.resolve(expression, type);
 	}
 
 	private static class LapgResolverProblem extends LapgProblem {

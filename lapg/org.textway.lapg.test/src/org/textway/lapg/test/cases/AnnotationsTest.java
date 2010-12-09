@@ -35,7 +35,11 @@ import org.textway.templates.types.TypesRegistry;
 public class AnnotationsTest extends LapgTestCase {
 
 	private TypesRegistry createDefaultTypesRegistry() {
-		ResourceRegistry resources = new ResourceRegistry(new IResourceLoader[]{new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8")});
+		ResourceRegistry resources = new ResourceRegistry(
+				new IResourceLoader[]{
+						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
+						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"),
+				});
 		return new TypesRegistry(resources, new IProblemCollector() {
 			public void fireError(ILocatedEntity referer, String error) {
 				Assert.fail(error);
@@ -80,8 +84,8 @@ public class AnnotationsTest extends LapgTestCase {
 	}
 
 	public void testBadAnnotations() {
-		TestStatus notifier = new TestStatus("", "syntax1errannotated,22: notexistingsym cannot be resolved\n"
-				+ "syntax1errannotated,28: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
+		TestStatus notifier = new TestStatus("", "syntax1errannotated,23: notexistingsym cannot be resolved\n"
+				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
 		Assert.assertNull(g);

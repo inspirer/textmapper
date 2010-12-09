@@ -23,9 +23,15 @@ class Options {
 	bool gentree = false;
 	bool genast = false;
 
+	string astprefix = "Ast";
+
 	int maxtoken = 2048;
 	int stack = 1024;
 
 	bool packLexems = false;
 	bool packTables = false;
+}
+
+class AnnotateReference {
+	bool pass;
 }

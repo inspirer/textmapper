@@ -15,6 +15,8 @@
  */
 package org.textway.templates.types;
 
+import org.textway.templates.api.types.IDataType;
+import org.textway.templates.api.types.IDataType.DataTypeKind;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
 
@@ -22,5 +24,9 @@ public class TypesUtil {
 
 	public static IType getFeatureType(IFeature feature) {
 		return feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getType()) : feature.getType();
+	}
+
+	public static boolean isBooleanType(IType type) {
+		return type instanceof IDataType && ((IDataType) type).getKind() == DataTypeKind.BOOL;
 	}
 }

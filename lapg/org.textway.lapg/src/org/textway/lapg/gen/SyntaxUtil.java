@@ -22,6 +22,8 @@ import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
+import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textway.lapg.parser.ast.AstExpression;
 import org.textway.lapg.parser.ast.AstRoot;
 import org.textway.templates.types.TypesRegistry;
 
@@ -31,7 +33,7 @@ import java.util.Map;
 public class SyntaxUtil {
 
 	public static Grammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, TypesRegistry types) {
-		LapgTree<AstRoot> tree = LapgTree.parse(input);
+		LapgTree<AstRoot> tree = LapgTree.parseInput(input);
 		Grammar result = null;
 		if (!tree.hasErrors()) {
 			result = new LapgResolver(tree, types).resolve();
@@ -43,7 +45,14 @@ public class SyntaxUtil {
 			}
 		}
 		return result;
+	}
 
+	public static AstExpression parseExpression(String input, TypesRegistry registry) {
+		LapgTree<AstExpression> tree = LapgTree.parseExpression(new TextSource("", input.toCharArray(), 1));
+		if (!tree.hasErrors()) {
+			return tree.getRoot();
+		}
+		return null;
 	}
 	
 	private static int lapgKindToProcessingKind(int kind) {

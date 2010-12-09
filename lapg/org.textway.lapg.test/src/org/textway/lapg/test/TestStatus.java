@@ -103,19 +103,19 @@ public class TestStatus implements ProcessingStatus {
 		case KIND_FATAL:
 		case KIND_ERROR:
 			if(anchor != null && anchor.getResourceName() != null) {
-				error(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				message = anchor.getResourceName() + "," + anchor.getLine() + ": " + message;
 			}
 			error(message + "\n");
 			break;
 		case KIND_WARN:
 			if(anchor != null && anchor.getResourceName() != null) {
-				warn(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				message = anchor.getResourceName() + "," + anchor.getLine() + ": " + message;
 			}
 			warn(message + "\n");
 			break;
 		case KIND_INFO:
 			if(anchor != null && anchor.getResourceName() != null) {
-				info(anchor.getResourceName() + "," + anchor.getLine() + ": ");
+				message = anchor.getResourceName() + "," + anchor.getLine() + ": " + message;
 			}
 			info(message + "\n");
 			break;

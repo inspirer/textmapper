@@ -360,27 +360,27 @@ public class InputTest extends LapgTestCase {
 		Builder.compile(g, er);
 		er.assertDone();
 
-		er = new TestStatus("syntax_conflict2resolved,46: input: Lid '=' expr '*' expr\n" +
+		er = new TestStatus("syntax_conflict2resolved,42: input: Lid '=' expr '*' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '*' expr\n" +
 				"\n" +
-				"syntax_conflict2resolved,48: input: Lid '=' expr '+' expr\n" +
+				"syntax_conflict2resolved,44: input: Lid '=' expr '+' expr\n" +
 				"resolved as shift conflict (next: '*', '/')\n" +
 				"    expr ::= expr '+' expr\n" +
 				"\n" +
-				"syntax_conflict2resolved,48: input: Lid '=' expr '+' expr\n" +
+				"syntax_conflict2resolved,44: input: Lid '=' expr '+' expr\n" +
 				"resolved as reduce conflict (next: '+', '-')\n" +
 				"    expr ::= expr '+' expr\n" +
 				"\n" +
-				"syntax_conflict2resolved,49: input: Lid '=' expr '-' expr\n" +
+				"syntax_conflict2resolved,45: input: Lid '=' expr '-' expr\n" +
 				"resolved as shift conflict (next: '*', '/')\n" +
 				"    expr ::= expr '-' expr\n" +
 				"\n" +
-				"syntax_conflict2resolved,49: input: Lid '=' expr '-' expr\n" +
+				"syntax_conflict2resolved,45: input: Lid '=' expr '-' expr\n" +
 				"resolved as reduce conflict (next: '+', '-')\n" +
 				"    expr ::= expr '-' expr\n" +
 				"\n" +
-				"syntax_conflict2resolved,47: input: Lid '=' expr '/' expr\n" +
+				"syntax_conflict2resolved,43: input: Lid '=' expr '/' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
 				"\n", "", 1) {

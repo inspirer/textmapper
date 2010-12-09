@@ -23,7 +23,6 @@ import org.textway.lapg.test.cases.*;
 public class TestRunner {
 	public static Test suite() {
 		TestSuite ts = new TestSuite("lapg tests");
-		ts.addTestSuite(BootstrapTest.class);
 		ts.addTestSuite(AnnotationsTest.class);
 		ts.addTestSuite(JavaPostProcessorTest.class);
 		ts.addTestSuite(CharacterSetTest.class);
@@ -32,6 +31,7 @@ public class TestRunner {
 		ts.addTestSuite(InputTest.class);
 		ts.addTestSuite(JavaTablesCompression.class);
 		ts.addTestSuite(ConsoleArgsTest.class);
+		ts.addTestSuite(BootstrapTest.class);
 		return ts;
 	}
 

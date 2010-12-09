@@ -38,7 +38,7 @@ public class LapgOptions {
 	private String templateName;
 
 	private final List<String> includeFolders;
-	private final Map<String, Object> templateOptions;
+	private final Map<String, String> templateOptions;
 
 	private boolean useDefaultTemplates;
 
@@ -49,7 +49,7 @@ public class LapgOptions {
 		this.templateName = null;
 		this.includeFolders = new LinkedList<String>();
 		this.useDefaultTemplates = true;
-		this.templateOptions = new HashMap<String, Object>();
+		this.templateOptions = new HashMap<String, String>();
 	}
 
 	public String getInput() {
@@ -93,7 +93,7 @@ public class LapgOptions {
 		this.useDefaultTemplates = useDefaultTemplates;
 	}
 
-	public Map<String, Object> getAdditionalOptions() {
+	public Map<String, String> getAdditionalOptions() {
 		return templateOptions;
 	}
 

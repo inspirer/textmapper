@@ -1,0 +1,20 @@
+class Options {
+	string lang[identifier] = "";
+}
+
+class AnnotateReference {
+	bool pass;
+    int ids[0..*];
+}
+
+class AnnotateSymbol {
+	string name;
+	int weight;
+	bool noast;
+
+	common.Symbol ref;
+}
+
+class AnnotateRule {
+	string name;
+}

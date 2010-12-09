@@ -277,118 +277,49 @@ class TypesResolver {
 	}
 
 	private Object convertExpression(IExpression expression, IType type) {
-		if (expression instanceof LiteralExpression) {
-			return convertExpression((LiteralExpression) expression, type);
-		}
-		if (expression instanceof StructuralExpression) {
-			StructuralExpression expr = (StructuralExpression) expression;
-			if (expr.getName() != null) {
-				return convertNew(expr, type);
-			} else {
-				return convertArray(expr, expr.getExpressionListopt(), type);
+		return new TiExpressionBuilder<IExpression>() {
+
+			@Override
+			public IClass resolveType(String className) {
+				return myRegistryClasses.get(className);
 			}
-		}
 
-		return null;
-	}
-
-	private Object convertNew(StructuralExpression expr, IType type) {
-		String qualifiedName = getQualifiedName(expr.getName());
-		if (qualifiedName.indexOf('.') == -1) {
-			qualifiedName = myPackage + "." + qualifiedName;
-		}
-
-		TiClass aClass = myRegistryClasses.get(qualifiedName);
-		if (aClass == null) {
-			myStatus.fireError(new LocatedNodeAdapter(expr), "cannot instantiate `" + qualifiedName + "`: class not found");
-			return null;
-		}
-
-		if (!aClass.isSubtypeOf(type)) {
-			myStatus.fireError(new LocatedNodeAdapter(expr), "`" + aClass.toString() + "` is not a subtype of `" + type.toString() + "`");
-			return null;
-		}
-
-		Map<String, Object> result = new HashMap<String, Object>();
-		if(expr.getMapEntriesopt() != null) {
-			for (MapEntriesItem item : expr.getMapEntriesopt()) {
-				String key = item.getIdentifier();
-
-				IFeature feature = aClass.getFeature(key);
-				if (feature == null) {
-					myStatus.fireError(new LocatedNodeAdapter(item), "trying to initialize unknown feature `" + key + "` in class `" + qualifiedName + "`");
-					continue;
+			@Override
+			public Object resolve(IExpression expression, IType type) {
+				if (expression instanceof LiteralExpression) {
+					LiteralExpression literal = (LiteralExpression) expression;
+					Object val = literal.getBcon() != null ? literal.getBcon()
+							: literal.getIcon() != null ? literal.getIcon()
+							: literal.getScon();
+					return convertLiteral(expression, val, type);
 				}
-
-				Object value = convertExpression(item.getExpression(), TypesUtil.getFeatureType(feature));
-				if (value != null) {
-					result.put(key, value);
+				if (expression instanceof StructuralExpression) {
+					StructuralExpression expr = (StructuralExpression) expression;
+					if (expr.getName() != null) {
+						String qualifiedName = getQualifiedName(expr.getName());
+						if (qualifiedName.indexOf('.') == -1) {
+							qualifiedName = myPackage + "." + qualifiedName;
+						}
+						Map<String, IExpression> props = null;
+						if(expr.getMapEntriesopt() != null) {
+							props = new HashMap<String, IExpression>();
+							for(MapEntriesItem i : expr.getMapEntriesopt()) {
+								props.put(i.getIdentifier(), i.getExpression());
+							}
+						}
+						return convertNew(expr, qualifiedName, props, type);
+					} else {
+						return convertArray(expr, expr.getExpressionListopt(), type);
+					}
 				}
+				return null;
 			}
-		}
 
-		return new TiInstance(aClass, result);
-	}
-
-	private Object convertExpression(LiteralExpression expression, IType type) {
-		if (!(type instanceof IDataType)) {
-			myStatus.fireError(new LocatedNodeAdapter(expression), "expected value of type `" + type.toString() + "` instead of literal");
-			return null;
-		}
-		IDataType dataType = (IDataType) type;
-		DataTypeKind kind;
-		Object result;
-		if (expression.getBcon() != null) {
-			result = expression.getBcon();
-			kind = DataTypeKind.BOOL;
-		} else if (expression.getIcon() != null) {
-			result = expression.getIcon();
-			kind = DataTypeKind.INT;
-		} else {
-			result = expression.getScon();
-			kind = DataTypeKind.STRING;
-		}
-
-		if (kind != dataType.getKind()) {
-			String kindValue = kind == DataTypeKind.BOOL ? "bool" : kind == DataTypeKind.INT ? "int" : "string";
-			myStatus.fireError(new LocatedNodeAdapter(expression), "expected value of type `" + dataType.toString() + "` instead of `" + kindValue + "`");
-			return null;
-		}
-
-		if (kind == DataTypeKind.STRING) {
-			String s = (String) result;
-			for (Constraint constraint : dataType.getConstraints()) {
-				String message = ConstraintUtil.validate(s, constraint);
-				if (message != null) {
-					myStatus.fireError(new LocatedNodeAdapter(expression), message);
-					return null;
-				}
+			@Override
+			public void report(IExpression expression, String message) {
+				myStatus.fireError(new LocatedNodeAdapter((IAstNode) expression), message);
 			}
-		}
-
-		return result;
-	}
-
-	private Object convertArray(StructuralExpression node, List<IExpression> array, IType type) {
-		if (!(type instanceof IArrayType)) {
-			myStatus.fireError(new LocatedNodeAdapter(node), "expected value of type `" + type.toString() + "` instead of array");
-			return null;
-		}
-
-		if(array == null) {
-			return new ArrayList();
-		}
-
-		IType innerType = ((IArrayType) type).getInnerType();
-		List<Object> result = new ArrayList<Object>(array.size());
-		for (IExpression expression : array) {
-			Object subexpr = convertExpression(expression, innerType);
-			if (subexpr != null) {
-				result.add(subexpr);
-			}
-		}
-
-		return result;
+		}.resolve(expression, type);
 	}
 
 	public Collection<String> getRequired() {

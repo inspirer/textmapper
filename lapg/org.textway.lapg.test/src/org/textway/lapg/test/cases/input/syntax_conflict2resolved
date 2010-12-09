@@ -1,11 +1,7 @@
 #   Automatically generated grammar
 
 lang       = "java"
-getsym     = "chr = buff[l++];if( l == end ) fillb()"
-positioning= "%%positioning%%"
-lexemend   = "%%lexemend%%"
-class      = "MParser"
-lexer      = "MLexer"
+positions = "line,offset"
 package	   = "com.mypackage"
 breaks     = false
 

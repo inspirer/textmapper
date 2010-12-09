@@ -30,6 +30,10 @@ public class AstInstance extends AstNode implements AstExpression {
 		this.mapEntries = mapEntries;
 	}
 
+	public AstName getClassName() {
+		return className;
+	}
+
 	public List<AstNamedEntry> getEntries() {
 		return mapEntries;
 	}

@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public final class LapgGenerator {
 
@@ -71,9 +72,10 @@ public final class LapgGenerator {
 
 			// prepare options
 			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
-			Map<String, Object> additional = options.getAdditionalOptions();
-			for (String key : additional.keySet()) {
-				genOptions.put(key, additional.get(key));
+			for (Entry<String,String> entry : options.getAdditionalOptions().entrySet()) {
+
+				// TODO parse value, check type
+				genOptions.put(entry.getKey(), entry.getValue());
 			}
 
 			// Generate tables

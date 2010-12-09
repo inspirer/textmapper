@@ -39,7 +39,7 @@ public class LapgTree<T> {
 	}
 
 
-	public static LapgTree<AstRoot> parse(TextSource source) {
+	public static LapgTree<AstRoot> parseInput(TextSource source) {
 		final List<LapgProblem> list = new ArrayList<LapgProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -53,7 +53,7 @@ public class LapgTree<T> {
 
 			LapgParser parser = new LapgParser(reporter);
 			parser.source = source;
-			AstRoot result = parser.parse(lexer);
+			AstRoot result = parser.parseInput(lexer);
 			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
@@ -65,6 +65,31 @@ public class LapgTree<T> {
 			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
 		return new LapgTree<AstRoot>(source, null, list);
+	}
+
+	public static LapgTree<AstExpression> parseExpression(TextSource source) {
+		final List<LapgProblem> list = new ArrayList<LapgProblem>();
+		ErrorReporter reporter = new ErrorReporter() {
+			public void error(int start, int end, int line, String s) {
+				list.add(new LapgProblem(KIND_ERROR, start, end, s, null));
+			}
+		};
+
+		try {
+			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
+			lexer.setLine(source.getInitialLine());
+
+			LapgParser parser = new LapgParser(reporter);
+			parser.source = source;
+			AstExpression result = parser.parseExpression(lexer);
+
+			return new LapgTree<AstExpression>(source, result, list);
+		} catch (ParseException ex) {
+			/* not parsed */
+		} catch (IOException ex) {
+			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+		}
+		return new LapgTree<AstExpression>(source, null, list);
 	}
 
 

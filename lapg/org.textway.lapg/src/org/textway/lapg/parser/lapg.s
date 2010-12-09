@@ -77,6 +77,8 @@ _skip:	/[^'"{}]+/
 
 # Grammar
 
+%input input expression;
+
 input (AstRoot) ::=
 	options lexer_parts grammar_parts					{  $$ = new AstRoot($options, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
 	| lexer_parts grammar_parts							{  $$ = new AstRoot(null, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
@@ -330,7 +332,9 @@ ${end}
 
 ${template java_tree.parseStatements-}
 ${call base-}
+${if inp.id == 'input'-}
 if (result != null) {
 	result.setTemplatesStart(lexer.getTemplatesStart());
 }
+${end-}
 ${end}
