@@ -1,6 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Templates tests" type="JUnit" factoryName="JUnit">
-    <extension name="snapshooter" />
     <module name="org.textway.templates.test" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -17,6 +16,7 @@
       <value defaultName="moduleWithDependencies" />
     </option>
     <envs />
+    <patterns />
     <RunnerSettings RunnerId="Debug">
       <option name="DEBUG_PORT" value="58287" />
       <option name="TRANSPORT" value="0" />
