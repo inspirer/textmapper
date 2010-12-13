@@ -45,6 +45,7 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 '::=':  /::=/
 '|':    /\|/
 '=':	/=/
+'=>':	/=>/
 ';':    /;/
 '.':    /\./
 ',':	/,/
@@ -233,9 +234,12 @@ expression_list (List<AstExpression>) ::=
 ;
 
 map_entries (java.util.@List<AstNamedEntry>) ::=
-	  identifier ':' expression							{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' identifier ':' expression			{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
+	  identifier map_separator expression				{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' identifier map_separator expression	{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
 ;
+
+map_separator ::=
+	':' | '=' | '=>' ;
 
 name (AstName) ::=
 	qualified_id 										{ $$ = new AstName($qualified_id, source, ${left().offset}, ${left().endoffset}); }

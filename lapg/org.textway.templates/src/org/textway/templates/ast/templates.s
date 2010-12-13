@@ -60,6 +60,7 @@ Lin:		/in/
 Limport:	/import/
 Lis:		/is/
 Lmap:		/map/
+Lnew:		/new/
 Lnull:		/null/
 Lquery:		/query/
 Lswitch:	/switch/
@@ -279,14 +280,18 @@ primary_expression (ExpressionNode) ::=
 complex_data (ExpressionNode) ::=
 	'[' expression_listopt ']'						{ $$ = new ListNode($expression_listopt, source, ${complex_data.offset}, ${complex_data.endoffset}); }
     | '[' map_entries ']'							{ $$ = new ConcreteMapNode($map_entries, source, ${complex_data.offset}, ${complex_data.endoffset}); }
+    | Lnew qualified_id '(' map_entriesopt ')'		{ $$ = null; /* todo */ }
  ;
 
-map_entries (java.util.@HashMap<String,ExpressionNode>) ::=
-	identifier ':' conditional_expression						
+map_entries (java.util.@Map<String,ExpressionNode>) ::=
+	identifier map_separator conditional_expression
 													{ $$ = new java.util.@HashMap(); $map_entries.put($identifier, $conditional_expression); }
-	| map_entries ',' identifier ':' conditional_expression
+	| map_entries ',' identifier map_separator conditional_expression
 													{ $map_entries#0.put($identifier, $conditional_expression); }
 ;
+
+map_separator ::=
+	':' | '=' | '=>' ;
 
 bcon (Boolean) ::= 
 	Ltrue 											{ $$ = Boolean.TRUE; }

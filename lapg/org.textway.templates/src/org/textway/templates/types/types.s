@@ -45,6 +45,7 @@ _skip:  /#.*/
 ',':	/,/
 ':':    /:/
 '=':    /=/
+'=>':	/=>/
 '{':	/\{/
 '}':	/\}/
 '(':	/\(/
@@ -138,7 +139,7 @@ literal_expression ::=
 ;
 
 structural_expression ::=
-	  name '{' map_entriesopt '}'
+	  name '(' map_entriesopt ')'
 	| '[' expression_listopt ']'
 ;
 
@@ -148,9 +149,12 @@ expression_list ::=
 ;
 
 map_entries ::=
-	  identifier ':' expression
-	| map_entries ',' identifier ':' expression
+	  identifier map_separator expression
+	| map_entries ',' identifier map_separator expression
 ;
+
+map_separator ::=
+	':' | '=' | '=>' ;
 
 name ::=
 	  identifier

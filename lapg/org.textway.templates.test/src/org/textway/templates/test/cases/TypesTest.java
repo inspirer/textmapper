@@ -34,7 +34,7 @@ public class TypesTest extends TemplateTestCase {
 		TestProblemCollector collector = new TestProblemCollector() {
 			@Override
 			public void fireError(ILocatedEntity referer, String error) {
-				super.fireError(null, referer.getLocation() + ": " + error);
+				super.fireError(null, (referer != null ? referer.getLocation() + ": " : "") + error);
 			}
 		};
 

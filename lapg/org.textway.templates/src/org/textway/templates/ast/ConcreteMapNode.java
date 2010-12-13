@@ -25,9 +25,9 @@ import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class ConcreteMapNode extends ExpressionNode {
 
-	private final HashMap<String,ExpressionNode> fields;
+	private final Map<String,ExpressionNode> fields;
 
-	public ConcreteMapNode(HashMap<String,ExpressionNode> fields, TextSource source, int offset, int endoffset) {
+	public ConcreteMapNode(Map<String,ExpressionNode> fields, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.fields = fields;
 	}
