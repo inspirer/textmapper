@@ -29,161 +29,161 @@ public class LapgParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	private static final int lapg_action[] = {
-		-1, -1, 113, -3, -1, -1, 2, -11, -1, 27, 5, -17, 84, 85, -37, 86,
-		87, 88, -1, -55, 95, -1, 39, -1, 3, -1, -1, 32, -1, 6, -1, -1,
-		-61, 28, -69, 41, -1, -81, 79, 29, 96, -89, -1, -95, -1, 4, 40, 30,
-		-101, 16, -1, 18, 19, 14, 15, -113, 12, 13, 17, 20, 22, 21, -1, 11,
-		-141, -1, -155, 83, -1, -165, 42, 43, -171, 80, -1, 94, -1, -177, -1, 105,
-		8, -183, -1, 9, 10, 26, -211, 7, 47, -1, -1, -227, -1, -1, 97, 101,
-		102, 100, -1, -1, 91, 25, 35, -245, 46, 48, -1, -259, -1, -287, 71, -1,
-		49, -293, -309, -327, -1, -353, 57, -365, -373, 98, -1, 37, 38, 82, -1, 60,
-		-391, -419, -1, -1, -1, -435, -441, 111, -1, -447, 44, -465, -483, -491, 63, -517,
-		74, 75, 73, -525, 58, 69, -553, 67, -1, -1, 52, 56, -1, -1, 70, -1,
-		72, -581, -1, 110, 109, 50, -609, 55, 54, -1, 59, -1, -617, 65, 106, 45,
-		99, -645, 112, 53, 68, 66, -1, 64, -1, -1, -2, -2
+		-1, -1, 114, -3, -1, -1, 2, -11, -1, 27, 5, -17, 85, 86, -37, 87,
+		88, 89, -1, -55, 96, -1, 40, -1, 3, -1, -1, 32, -1, -61, -1, -1,
+		-71, 28, -79, 42, -1, -91, 80, 29, 97, -99, -1, -105, -1, 26, 34, 4,
+		41, 30, -111, 16, -1, 18, 19, 14, 15, -123, 12, 13, 17, 20, 22, 21,
+		-1, 11, -151, -1, -1, -165, 84, -1, 6, -175, 43, 44, -181, 81, -1, 95,
+		-1, -187, -1, 106, 8, -193, -1, 9, 10, -221, 7, 48, -1, -1, -237, -1,
+		-1, 98, 102, 103, 101, -1, -1, 92, 25, 36, -255, 47, 49, -1, -269, -1,
+		-297, 72, -1, 50, -303, -319, -337, -1, -363, 58, -375, -383, 99, -1, 38, 39,
+		83, -1, 61, -401, -429, -1, -1, -1, -445, -451, 112, -1, -457, 45, -475, -493,
+		-501, 64, -527, 75, 76, 74, -535, 59, 70, -563, 68, -1, -1, 53, 57, -1,
+		-1, 71, -1, 73, -591, -1, 111, 110, 51, -619, 56, 55, -1, 60, -1, -627,
+		66, 107, 46, 100, -655, 113, 54, 69, 67, -1, 65, -1, -1, -2, -2
 	};
 
 	private static final short lapg_lalr[] = {
 		11, -1, 16, 6, 19, 6, -1, -2, 19, -1, 16, 31, -1, -2, 0, 7,
-		1, 7, 2, 7, 15, 7, 17, 7, 18, 7, 20, 7, 14, 104, 19, 104,
+		1, 7, 2, 7, 15, 7, 17, 7, 18, 7, 20, 7, 14, 105, 19, 105,
 		-1, -2, 1, -1, 2, -1, 4, -1, 5, -1, 17, -1, 29, -1, 30, -1,
-		18, 92, -1, -2, 14, -1, 19, 103, -1, -2, 19, -1, 9, 31, 16, 31,
-		-1, -2, 1, -1, 2, -1, 6, -1, 28, -1, 0, 1, -1, -2, 28, -1,
-		2, 78, 16, 78, -1, -2, 15, -1, 18, 93, -1, -2, 2, -1, 20, 89,
-		-1, -2, 1, -1, 2, -1, 6, -1, 28, -1, 0, 0, -1, -2, 2, -1,
+		18, 93, -1, -2, 14, -1, 19, 104, -1, -2, 11, -1, 9, 6, 16, 6,
+		19, 6, -1, -2, 19, -1, 9, 31, 16, 31, -1, -2, 1, -1, 2, -1,
+		6, -1, 28, -1, 0, 1, -1, -2, 28, -1, 2, 79, 16, 79, -1, -2,
+		15, -1, 18, 94, -1, -2, 2, -1, 20, 90, -1, -2, 1, -1, 2, -1,
+		6, -1, 28, -1, 0, 0, -1, -2, 2, -1, 14, -1, 15, -1, 17, -1,
+		18, -1, 19, -1, 22, -1, 23, -1, 24, -1, 26, -1, 27, -1, 28, -1,
+		20, 23, -1, -2, 3, -1, 1, 33, 2, 33, 6, 33, 17, 33, 28, 33,
+		-1, -2, 19, -1, 2, 82, 16, 82, 28, 82, -1, -2, 19, -1, 9, 31,
+		-1, -2, 19, -1, 9, 31, -1, -2, 15, -1, 20, 91, -1, -2, 2, -1,
 		14, -1, 15, -1, 17, -1, 18, -1, 19, -1, 22, -1, 23, -1, 24, -1,
-		26, -1, 27, -1, 28, -1, 20, 23, -1, -2, 3, -1, 1, 33, 2, 33,
-		6, 33, 17, 33, 28, 33, -1, -2, 19, -1, 2, 81, 16, 81, 28, 81,
-		-1, -2, 19, -1, 9, 31, -1, -2, 19, -1, 9, 31, -1, -2, 15, -1,
-		20, 90, -1, -2, 2, -1, 14, -1, 15, -1, 17, -1, 18, -1, 19, -1,
-		22, -1, 23, -1, 24, -1, 26, -1, 27, -1, 28, -1, 20, 24, -1, -2,
-		5, -1, 1, 34, 2, 34, 6, 34, 17, 34, 28, 34, 31, 34, -1, -2,
-		1, -1, 2, -1, 19, -1, 28, -1, 31, -1, 10, 36, 13, 36, 21, 36,
-		-1, -2, 31, -1, 1, 36, 2, 36, 6, 36, 17, 36, 28, 36, -1, -2,
-		11, -1, 16, -1, 1, 7, 2, 7, 10, 7, 13, 7, 19, 7, 21, 7,
-		24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2, 32, -1, 33, 107,
-		-1, -2, 2, -1, 19, -1, 28, -1, 31, -1, 10, 36, 13, 36, 21, 36,
-		-1, -2, 1, -1, 2, -1, 19, -1, 28, -1, 31, -1, 10, 36, 13, 36,
-		21, 36, -1, -2, 24, -1, 25, -1, 26, -1, 1, 61, 2, 61, 10, 61,
-		13, 61, 19, 61, 20, 61, 21, 61, 28, 61, 31, 61, -1, -2, 2, -1,
-		28, -1, 10, 37, 13, 37, 21, 37, -1, -2, 21, -1, 10, 51, 13, 51,
-		-1, -2, 1, -1, 2, -1, 19, -1, 28, -1, 31, -1, 10, 36, 13, 36,
-		21, 36, -1, -2, 11, -1, 1, 7, 2, 7, 10, 7, 13, 7, 19, 7,
-		20, 7, 21, 7, 24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2,
-		1, -1, 2, -1, 19, -1, 28, -1, 31, -1, 10, 76, 20, 76, -1, -2,
-		32, -1, 33, 107, -1, -2, 32, -1, 33, 108, -1, -2, 1, -1, 2, -1,
-		19, -1, 28, -1, 31, -1, 10, 36, 13, 36, 21, 36, -1, -2, 1, -1,
-		2, -1, 19, -1, 28, -1, 31, -1, 10, 36, 13, 36, 21, 36, -1, -2,
-		21, -1, 10, 51, 13, 51, -1, -2, 24, -1, 25, -1, 26, -1, 1, 62,
-		2, 62, 10, 62, 13, 62, 19, 62, 20, 62, 21, 62, 28, 62, 31, 62,
-		-1, -2, 21, -1, 10, 51, 13, 51, -1, -2, 11, -1, 16, -1, 1, 7,
+		26, -1, 27, -1, 28, -1, 20, 24, -1, -2, 5, -1, 1, 35, 2, 35,
+		6, 35, 17, 35, 28, 35, 31, 35, -1, -2, 1, -1, 2, -1, 19, -1,
+		28, -1, 31, -1, 10, 37, 13, 37, 21, 37, -1, -2, 31, -1, 1, 37,
+		2, 37, 6, 37, 17, 37, 28, 37, -1, -2, 11, -1, 16, -1, 1, 7,
 		2, 7, 10, 7, 13, 7, 19, 7, 21, 7, 24, 7, 25, 7, 26, 7,
-		28, 7, 31, 7, -1, -2, 11, -1, 1, 7, 2, 7, 10, 7, 13, 7,
-		19, 7, 20, 7, 21, 7, 24, 7, 25, 7, 26, 7, 28, 7, 31, 7,
-		-1, -2, 11, -1, 1, 7, 2, 7, 10, 7, 13, 7, 19, 7, 20, 7,
-		21, 7, 24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2, 21, -1,
-		10, 51, 13, 51, -1, -2, 11, -1, 1, 7, 2, 7, 10, 7, 13, 7,
-		19, 7, 20, 7, 21, 7, 24, 7, 25, 7, 26, 7, 28, 7, 31, 7,
-		-1, -2, 1, -1, 2, -1, 19, -1, 28, -1, 31, -1, 10, 77, 20, 77,
-		-1, -2
+		28, 7, 31, 7, -1, -2, 32, -1, 33, 108, -1, -2, 2, -1, 19, -1,
+		28, -1, 31, -1, 10, 37, 13, 37, 21, 37, -1, -2, 1, -1, 2, -1,
+		19, -1, 28, -1, 31, -1, 10, 37, 13, 37, 21, 37, -1, -2, 24, -1,
+		25, -1, 26, -1, 1, 62, 2, 62, 10, 62, 13, 62, 19, 62, 20, 62,
+		21, 62, 28, 62, 31, 62, -1, -2, 2, -1, 28, -1, 10, 38, 13, 38,
+		21, 38, -1, -2, 21, -1, 10, 52, 13, 52, -1, -2, 1, -1, 2, -1,
+		19, -1, 28, -1, 31, -1, 10, 37, 13, 37, 21, 37, -1, -2, 11, -1,
+		1, 7, 2, 7, 10, 7, 13, 7, 19, 7, 20, 7, 21, 7, 24, 7,
+		25, 7, 26, 7, 28, 7, 31, 7, -1, -2, 1, -1, 2, -1, 19, -1,
+		28, -1, 31, -1, 10, 77, 20, 77, -1, -2, 32, -1, 33, 108, -1, -2,
+		32, -1, 33, 109, -1, -2, 1, -1, 2, -1, 19, -1, 28, -1, 31, -1,
+		10, 37, 13, 37, 21, 37, -1, -2, 1, -1, 2, -1, 19, -1, 28, -1,
+		31, -1, 10, 37, 13, 37, 21, 37, -1, -2, 21, -1, 10, 52, 13, 52,
+		-1, -2, 24, -1, 25, -1, 26, -1, 1, 63, 2, 63, 10, 63, 13, 63,
+		19, 63, 20, 63, 21, 63, 28, 63, 31, 63, -1, -2, 21, -1, 10, 52,
+		13, 52, -1, -2, 11, -1, 16, -1, 1, 7, 2, 7, 10, 7, 13, 7,
+		19, 7, 21, 7, 24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2,
+		11, -1, 1, 7, 2, 7, 10, 7, 13, 7, 19, 7, 20, 7, 21, 7,
+		24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2, 11, -1, 1, 7,
+		2, 7, 10, 7, 13, 7, 19, 7, 20, 7, 21, 7, 24, 7, 25, 7,
+		26, 7, 28, 7, 31, 7, -1, -2, 21, -1, 10, 52, 13, 52, -1, -2,
+		11, -1, 1, 7, 2, 7, 10, 7, 13, 7, 19, 7, 20, 7, 21, 7,
+		24, 7, 25, 7, 26, 7, 28, 7, 31, 7, -1, -2, 1, -1, 2, -1,
+		19, -1, 28, -1, 31, -1, 10, 78, 20, 78, -1, -2
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 2, 23, 68, 69, 77, 87, 91, 91, 91, 94, 97, 106, 108, 111, 116,
-		122, 129, 144, 150, 170, 176, 180, 184, 188, 194, 196, 202, 206, 227, 234, 241,
-		252, 255, 257, 258, 259, 261, 268, 297, 301, 303, 307, 308, 310, 314, 315, 317,
-		321, 322, 324, 327, 330, 336, 346, 347, 363, 379, 396, 403, 404, 405, 407, 414,
-		421, 425, 436, 438, 441, 462, 463, 467, 468, 475, 479, 480, 481, 483
+		0, 2, 23, 68, 71, 79, 89, 93, 93, 93, 96, 99, 109, 111, 114, 119,
+		125, 132, 147, 153, 173, 179, 183, 187, 191, 197, 199, 205, 209, 230, 237, 244,
+		255, 258, 260, 261, 262, 264, 271, 300, 304, 306, 310, 313, 315, 319, 320, 322,
+		326, 327, 329, 332, 335, 341, 351, 352, 368, 384, 401, 408, 409, 410, 412, 419,
+		426, 430, 441, 443, 446, 467, 468, 472, 473, 480, 484, 485, 486, 488
 	};
 
 	private static final short lapg_sym_from[] = {
-		184, 185, 0, 1, 5, 8, 14, 21, 25, 31, 34, 48, 74, 90, 91, 98,
-		114, 120, 129, 137, 139, 157, 177, 0, 1, 5, 8, 14, 21, 25, 26, 30,
-		31, 34, 36, 43, 44, 48, 55, 62, 65, 74, 81, 89, 90, 91, 98, 99,
-		108, 113, 114, 116, 117, 120, 126, 129, 131, 132, 137, 139, 152, 153, 157, 159,
-		169, 171, 177, 182, 64, 1, 14, 21, 26, 74, 90, 98, 157, 1, 4, 14,
-		21, 23, 74, 86, 90, 98, 157, 8, 25, 34, 48, 68, 92, 93, 111, 130,
-		156, 3, 76, 107, 122, 128, 147, 150, 161, 172, 76, 122, 89, 111, 156, 19,
-		26, 55, 62, 81, 26, 41, 55, 62, 77, 81, 28, 68, 76, 107, 116, 122,
-		147, 0, 1, 5, 8, 14, 21, 25, 26, 55, 62, 74, 81, 90, 98, 157,
-		23, 26, 42, 55, 62, 81, 7, 18, 26, 32, 55, 62, 66, 69, 72, 81,
-		91, 108, 113, 114, 120, 129, 137, 139, 159, 177, 50, 62, 78, 82, 106, 130,
-		119, 140, 143, 166, 26, 55, 62, 81, 26, 55, 62, 81, 26, 55, 62, 81,
-		115, 141, 115, 141, 26, 55, 62, 81, 115, 141, 26, 55, 62, 81, 8, 25,
-		26, 34, 37, 48, 55, 62, 81, 91, 108, 113, 114, 117, 120, 129, 132, 137,
-		139, 159, 177, 1, 14, 21, 74, 90, 98, 157, 1, 14, 21, 74, 90, 98,
-		157, 91, 103, 108, 113, 114, 120, 129, 137, 139, 159, 177, 109, 133, 134, 136,
-		162, 0, 0, 0, 5, 0, 5, 8, 25, 34, 36, 48, 1, 14, 21, 65,
-		74, 89, 90, 91, 98, 108, 113, 114, 116, 117, 120, 126, 129, 131, 132, 137,
-		139, 152, 153, 157, 159, 169, 171, 177, 182, 7, 32, 69, 72, 26, 55, 26,
-		55, 62, 81, 64, 0, 5, 0, 5, 8, 25, 4, 8, 25, 8, 25, 34,
-		48, 65, 91, 120, 91, 120, 137, 91, 120, 137, 91, 108, 113, 120, 137, 159,
-		91, 108, 113, 114, 120, 129, 137, 139, 159, 177, 108, 8, 25, 34, 48, 91,
-		108, 113, 114, 117, 120, 129, 132, 137, 139, 159, 177, 8, 25, 34, 48, 91,
-		108, 113, 114, 117, 120, 129, 132, 137, 139, 159, 177, 8, 25, 34, 37, 48,
-		91, 108, 113, 114, 117, 120, 129, 132, 137, 139, 159, 177, 1, 14, 21, 74,
-		90, 98, 157, 14, 43, 76, 122, 1, 14, 21, 74, 90, 98, 157, 1, 14,
-		21, 74, 90, 98, 157, 119, 140, 143, 166, 91, 103, 108, 113, 114, 120, 129,
-		137, 139, 159, 177, 109, 133, 109, 133, 134, 0, 1, 5, 8, 14, 21, 25,
-		31, 34, 48, 74, 90, 91, 98, 114, 120, 129, 137, 139, 157, 177, 55, 7,
-		32, 69, 72, 86, 91, 103, 113, 114, 120, 137, 139, 119, 140, 143, 166, 43,
-		14, 109, 133
+		187, 188, 0, 1, 5, 8, 14, 21, 25, 31, 34, 50, 78, 93, 94, 101,
+		117, 123, 132, 140, 142, 160, 180, 0, 1, 5, 8, 14, 21, 25, 26, 30,
+		31, 34, 36, 43, 44, 50, 57, 64, 68, 78, 85, 92, 93, 94, 101, 102,
+		111, 116, 117, 119, 120, 123, 129, 132, 134, 135, 140, 142, 155, 156, 160, 162,
+		172, 174, 180, 185, 21, 66, 67, 1, 14, 21, 26, 78, 93, 101, 160, 1,
+		4, 14, 21, 23, 78, 89, 93, 101, 160, 8, 25, 34, 50, 71, 95, 96,
+		114, 133, 159, 3, 29, 80, 110, 125, 131, 150, 153, 164, 175, 80, 125, 92,
+		114, 159, 19, 26, 57, 64, 85, 26, 41, 57, 64, 81, 85, 28, 71, 80,
+		110, 119, 125, 150, 0, 1, 5, 8, 14, 21, 25, 26, 57, 64, 78, 85,
+		93, 101, 160, 23, 26, 42, 57, 64, 85, 7, 18, 26, 32, 57, 64, 69,
+		73, 76, 85, 94, 111, 116, 117, 123, 132, 140, 142, 162, 180, 52, 64, 82,
+		86, 109, 133, 122, 143, 146, 169, 26, 57, 64, 85, 26, 57, 64, 85, 26,
+		57, 64, 85, 118, 144, 118, 144, 26, 57, 64, 85, 118, 144, 26, 57, 64,
+		85, 8, 25, 26, 34, 37, 50, 57, 64, 85, 94, 111, 116, 117, 120, 123,
+		132, 135, 140, 142, 162, 180, 1, 14, 21, 78, 93, 101, 160, 1, 14, 21,
+		78, 93, 101, 160, 94, 106, 111, 116, 117, 123, 132, 140, 142, 162, 180, 112,
+		136, 137, 139, 165, 0, 0, 0, 5, 0, 5, 8, 25, 34, 36, 50, 1,
+		14, 21, 68, 78, 92, 93, 94, 101, 111, 116, 117, 119, 120, 123, 129, 132,
+		134, 135, 140, 142, 155, 156, 160, 162, 172, 174, 180, 185, 7, 32, 73, 76,
+		26, 57, 26, 57, 64, 85, 21, 66, 67, 0, 5, 0, 5, 8, 25, 4,
+		8, 25, 8, 25, 34, 50, 68, 94, 123, 94, 123, 140, 94, 123, 140, 94,
+		111, 116, 123, 140, 162, 94, 111, 116, 117, 123, 132, 140, 142, 162, 180, 111,
+		8, 25, 34, 50, 94, 111, 116, 117, 120, 123, 132, 135, 140, 142, 162, 180,
+		8, 25, 34, 50, 94, 111, 116, 117, 120, 123, 132, 135, 140, 142, 162, 180,
+		8, 25, 34, 37, 50, 94, 111, 116, 117, 120, 123, 132, 135, 140, 142, 162,
+		180, 1, 14, 21, 78, 93, 101, 160, 14, 43, 80, 125, 1, 14, 21, 78,
+		93, 101, 160, 1, 14, 21, 78, 93, 101, 160, 122, 143, 146, 169, 94, 106,
+		111, 116, 117, 123, 132, 140, 142, 162, 180, 112, 136, 112, 136, 137, 0, 1,
+		5, 8, 14, 21, 25, 31, 34, 50, 78, 93, 94, 101, 117, 123, 132, 140,
+		142, 160, 180, 57, 7, 32, 73, 76, 89, 94, 106, 116, 117, 123, 140, 142,
+		122, 143, 146, 169, 43, 14, 112, 136
 	};
 
 	private static final short lapg_sym_to[] = {
-		186, 187, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-		2, 2, 2, 2, 2, 2, 2, 3, 11, 3, 29, 11, 11, 29, 49, 65,
-		66, 29, 29, 76, 79, 29, 49, 49, 87, 11, 49, 87, 11, 107, 11, 122,
-		128, 128, 128, 147, 150, 107, 87, 128, 161, 150, 107, 128, 172, 87, 11, 128,
-		87, 87, 128, 87, 85, 12, 12, 12, 50, 12, 12, 12, 12, 13, 22, 13,
-		13, 46, 13, 102, 13, 13, 13, 30, 30, 30, 30, 91, 91, 120, 137, 159,
-		137, 21, 95, 126, 95, 126, 169, 171, 169, 182, 96, 96, 104, 138, 175, 44,
-		51, 51, 51, 51, 52, 74, 52, 52, 99, 52, 64, 64, 97, 127, 148, 97,
-		170, 4, 14, 4, 4, 14, 14, 4, 53, 53, 53, 14, 53, 14, 14, 14,
-		47, 54, 75, 54, 54, 54, 26, 43, 55, 26, 55, 55, 90, 26, 26, 55,
-		108, 108, 108, 108, 108, 108, 108, 108, 108, 108, 80, 83, 100, 101, 125, 160,
-		153, 153, 153, 153, 56, 56, 56, 56, 57, 57, 57, 57, 58, 58, 58, 58,
-		144, 144, 145, 145, 59, 59, 59, 59, 146, 146, 60, 60, 60, 60, 31, 31,
-		61, 31, 31, 31, 61, 61, 61, 31, 31, 31, 31, 31, 31, 31, 31, 31,
-		31, 31, 31, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16,
-		16, 109, 109, 109, 109, 109, 109, 109, 109, 109, 109, 109, 133, 133, 133, 164,
-		178, 184, 5, 6, 24, 7, 7, 32, 32, 69, 72, 69, 17, 17, 17, 88,
-		17, 105, 17, 110, 17, 110, 110, 110, 149, 151, 110, 158, 110, 149, 151, 110,
-		110, 173, 174, 17, 110, 180, 181, 110, 183, 27, 27, 27, 27, 62, 81, 63,
-		63, 84, 84, 86, 8, 25, 9, 9, 33, 33, 23, 34, 48, 35, 35, 70,
-		70, 89, 111, 156, 112, 112, 165, 113, 113, 113, 114, 129, 139, 114, 114, 177,
-		115, 115, 115, 141, 115, 141, 115, 141, 115, 141, 130, 36, 36, 36, 36, 116,
-		131, 131, 131, 152, 116, 131, 152, 116, 131, 131, 131, 37, 37, 37, 37, 37,
-		37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 38, 38, 38, 73, 38,
-		38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 185, 40, 45, 94,
-		106, 121, 176, 41, 77, 98, 157, 18, 18, 18, 18, 18, 18, 18, 19, 19,
-		19, 19, 19, 19, 19, 154, 154, 154, 154, 117, 123, 132, 117, 117, 117, 132,
-		117, 117, 132, 132, 134, 134, 135, 135, 163, 10, 20, 10, 39, 20, 20, 39,
-		67, 71, 71, 20, 20, 118, 20, 142, 118, 142, 118, 142, 20, 142, 82, 28,
-		68, 92, 93, 103, 119, 124, 140, 143, 119, 119, 166, 155, 167, 168, 179, 78,
-		42, 136, 162
+		189, 190, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+		2, 2, 2, 2, 2, 2, 2, 3, 11, 3, 29, 11, 11, 29, 51, 68,
+		69, 72, 72, 80, 83, 72, 51, 51, 90, 11, 51, 90, 11, 110, 11, 125,
+		131, 131, 131, 150, 153, 110, 90, 131, 164, 153, 110, 131, 175, 90, 11, 131,
+		90, 90, 131, 90, 45, 45, 45, 12, 12, 12, 52, 12, 12, 12, 12, 13,
+		22, 13, 13, 48, 13, 105, 13, 13, 13, 30, 30, 30, 30, 94, 94, 123,
+		140, 162, 140, 21, 67, 98, 129, 98, 129, 172, 174, 172, 185, 99, 99, 107,
+		141, 178, 44, 53, 53, 53, 53, 54, 78, 54, 54, 102, 54, 66, 66, 100,
+		130, 151, 100, 173, 4, 14, 4, 4, 14, 14, 4, 55, 55, 55, 14, 55,
+		14, 14, 14, 49, 56, 79, 56, 56, 56, 26, 43, 57, 26, 57, 57, 93,
+		26, 26, 57, 111, 111, 111, 111, 111, 111, 111, 111, 111, 111, 84, 87, 103,
+		104, 128, 163, 156, 156, 156, 156, 58, 58, 58, 58, 59, 59, 59, 59, 60,
+		60, 60, 60, 147, 147, 148, 148, 61, 61, 61, 61, 149, 149, 62, 62, 62,
+		62, 31, 31, 63, 31, 31, 31, 63, 63, 63, 31, 31, 31, 31, 31, 31,
+		31, 31, 31, 31, 31, 31, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16,
+		16, 16, 16, 16, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 136,
+		136, 136, 167, 181, 187, 5, 6, 24, 7, 7, 32, 32, 73, 76, 73, 17,
+		17, 17, 91, 17, 108, 17, 113, 17, 113, 113, 113, 152, 154, 113, 161, 113,
+		152, 154, 113, 113, 176, 177, 17, 113, 183, 184, 113, 186, 27, 27, 27, 27,
+		64, 85, 65, 65, 88, 88, 46, 89, 46, 8, 25, 9, 9, 33, 33, 23,
+		34, 50, 35, 35, 74, 74, 92, 114, 159, 115, 115, 168, 116, 116, 116, 117,
+		132, 142, 117, 117, 180, 118, 118, 118, 144, 118, 144, 118, 144, 118, 144, 133,
+		36, 36, 36, 36, 119, 134, 134, 134, 155, 119, 134, 155, 119, 134, 134, 134,
+		37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37, 37,
+		38, 38, 38, 77, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38, 38,
+		38, 188, 40, 47, 97, 109, 124, 179, 41, 81, 101, 160, 18, 18, 18, 18,
+		18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 157, 157, 157, 157, 120, 126,
+		135, 120, 120, 120, 135, 120, 120, 135, 135, 137, 137, 138, 138, 166, 10, 20,
+		10, 39, 20, 20, 39, 70, 75, 75, 20, 20, 121, 20, 145, 121, 145, 121,
+		145, 20, 145, 86, 28, 71, 95, 96, 106, 122, 127, 143, 146, 122, 122, 169,
+		158, 170, 171, 182, 82, 42, 139, 165
 	};
 
 	private static final short lapg_rlen[] = {
 		3, 2, 1, 2, 3, 1, 1, 1, 3, 3, 2, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 0, 1, 3, 1, 1, 2, 2, 3, 0,
-		1, 3, 0, 1, 0, 1, 6, 1, 2, 1, 2, 2, 5, 6, 4, 1,
-		2, 1, 3, 0, 1, 4, 3, 3, 2, 1, 2, 3, 2, 1, 2, 2,
-		5, 3, 4, 2, 4, 2, 3, 1, 3, 2, 2, 2, 1, 3, 1, 1,
-		2, 2, 5, 2, 1, 1, 1, 1, 1, 0, 1, 4, 0, 1, 3, 1,
-		1, 3, 3, 5, 1, 1, 1, 1, 1, 3, 2, 0, 1, 3, 2, 1,
-		3, 1
+		1, 3, 3, 0, 1, 0, 1, 6, 1, 2, 1, 2, 2, 5, 6, 4,
+		1, 2, 1, 3, 0, 1, 4, 3, 3, 2, 1, 2, 3, 2, 1, 2,
+		2, 5, 3, 4, 2, 4, 2, 3, 1, 3, 2, 2, 2, 1, 3, 1,
+		1, 2, 2, 5, 2, 1, 1, 1, 1, 1, 0, 1, 4, 0, 1, 3,
+		1, 1, 3, 3, 5, 1, 1, 1, 1, 1, 3, 2, 0, 1, 3, 2,
+		1, 3, 1
 	};
 
 	private static final short lapg_rlex[] = {
 		34, 34, 35, 35, 36, 36, 37, 38, 39, 39, 40, 40, 41, 41, 41, 41,
 		41, 41, 41, 41, 41, 41, 41, 69, 69, 41, 42, 43, 43, 43, 44, 70,
-		70, 44, 71, 71, 72, 72, 44, 45, 45, 46, 46, 46, 47, 47, 47, 48,
-		48, 49, 49, 73, 73, 50, 50, 50, 50, 50, 51, 51, 51, 52, 52, 52,
-		53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 54, 54, 55, 56,
-		56, 57, 57, 57, 58, 58, 58, 58, 58, 74, 74, 58, 75, 75, 58, 58,
-		59, 59, 60, 60, 61, 61, 61, 62, 63, 63, 64, 76, 76, 65, 66, 66,
-		67, 68
+		70, 44, 44, 71, 71, 72, 72, 44, 45, 45, 46, 46, 46, 47, 47, 47,
+		48, 48, 49, 49, 73, 73, 50, 50, 50, 50, 50, 51, 51, 51, 52, 52,
+		52, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 53, 54, 54, 55,
+		56, 56, 57, 57, 57, 58, 58, 58, 58, 58, 74, 74, 58, 75, 75, 58,
+		58, 59, 59, 60, 60, 61, 61, 61, 62, 63, 63, 64, 76, 76, 65, 66,
+		66, 67, 68
 	};
 
 	private static final String[] lapg_syms = new String[] {
@@ -358,7 +358,7 @@ public class LapgParser {
 		lapg_m[0].state = state;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 186+state) {
+		while (lapg_m[lapg_head].state != 189+state) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -401,7 +401,7 @@ public class LapgParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 186+state) {
+		if (lapg_m[lapg_head].state != 189+state) {
 			if (lapg_symbols_ok >= 4) {
 				reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			}
@@ -480,175 +480,178 @@ public class LapgParser {
 			case 33:  // lexer_part ::= symbol typeopt ':'
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 38:  // lexer_part ::= symbol typeopt ':' pattern iconopt commandopt
+			case 34:  // lexer_part ::= identifier '=' pattern
+				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
+				break;
+			case 39:  // lexer_part ::= symbol typeopt ':' pattern iconopt commandopt
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((AstRegexp)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((AstCode)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 39:  // icon_list ::= icon
+			case 40:  // icon_list ::= icon
 				 lapg_gg.sym = new ArrayList<Integer>(4); ((List<Integer>)lapg_gg.sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 40:  // icon_list ::= icon_list icon
+			case 41:  // icon_list ::= icon_list icon
 				 ((List<Integer>)lapg_m[lapg_head-1].sym).add(((Integer)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 41:  // grammar_parts ::= grammar_part
+			case 42:  // grammar_parts ::= grammar_part
 				 lapg_gg.sym = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 42:  // grammar_parts ::= grammar_parts grammar_part
+			case 43:  // grammar_parts ::= grammar_parts grammar_part
 				 ((List<AstGrammarPart>)lapg_m[lapg_head-1].sym).add(((AstGrammarPart)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 43:  // grammar_parts ::= grammar_parts syntax_problem
+			case 44:  // grammar_parts ::= grammar_parts syntax_problem
 				 ((List<AstGrammarPart>)lapg_m[lapg_head-1].sym).add(((AstError)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 44:  // grammar_part ::= symbol typeopt '::=' rules ';'
+			case 45:  // grammar_part ::= symbol typeopt '::=' rules ';'
 				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRule>)lapg_m[lapg_head-1].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 45:  // grammar_part ::= annotations_decl symbol typeopt '::=' rules ';'
+			case 46:  // grammar_part ::= annotations_decl symbol typeopt '::=' rules ';'
 				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-3].sym), ((List<AstRule>)lapg_m[lapg_head-1].sym), ((AstAnnotations)lapg_m[lapg_head-5].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 46:  // grammar_part ::= '%' identifier references ';'
+			case 47:  // grammar_part ::= '%' identifier references ';'
 				 lapg_gg.sym = new AstDirective(((String)lapg_m[lapg_head-2].sym), ((List<AstReference>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 47:  // references ::= reference
+			case 48:  // references ::= reference
 				 lapg_gg.sym = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.sym).add(((AstReference)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 48:  // references ::= references reference
+			case 49:  // references ::= references reference
 				 ((List<AstReference>)lapg_m[lapg_head-1].sym).add(((AstReference)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 49:  // rules ::= rule0
+			case 50:  // rules ::= rule0
 				 lapg_gg.sym = new ArrayList<AstRule>(); ((List<AstRule>)lapg_gg.sym).add(((AstRule)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 50:  // rules ::= rules '|' rule0
+			case 51:  // rules ::= rules '|' rule0
 				 ((List<AstRule>)lapg_m[lapg_head-2].sym).add(((AstRule)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 53:  // rule0 ::= ruleprefix rulesyms commandopt rule_priorityopt
+			case 54:  // rule0 ::= ruleprefix rulesyms commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRule(((List<AstRuleSymbol>)lapg_m[lapg_head-2].sym), ((AstCode)lapg_m[lapg_head-1].sym), ((AstReference)lapg_m[lapg_head-0].sym), ((AstRulePrefix)lapg_m[lapg_head-3].sym).getAnnotations(), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 54:  // rule0 ::= rulesyms commandopt rule_priorityopt
+			case 55:  // rule0 ::= rulesyms commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRule(((List<AstRuleSymbol>)lapg_m[lapg_head-2].sym), ((AstCode)lapg_m[lapg_head-1].sym), ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 55:  // rule0 ::= ruleprefix commandopt rule_priorityopt
+			case 56:  // rule0 ::= ruleprefix commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRule(null, ((AstCode)lapg_m[lapg_head-1].sym), ((AstReference)lapg_m[lapg_head-0].sym), ((AstRulePrefix)lapg_m[lapg_head-2].sym).getAnnotations(), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 56:  // rule0 ::= commandopt rule_priorityopt
+			case 57:  // rule0 ::= commandopt rule_priorityopt
 				 lapg_gg.sym = new AstRule(null, ((AstCode)lapg_m[lapg_head-1].sym), ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 57:  // rule0 ::= syntax_problem
+			case 58:  // rule0 ::= syntax_problem
 				 lapg_gg.sym = new AstRule(((AstError)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 58:  // ruleprefix ::= annotations_decl ':'
+			case 59:  // ruleprefix ::= annotations_decl ':'
 				 lapg_gg.sym = new AstRulePrefix(((AstAnnotations)lapg_m[lapg_head-1].sym), null); 
 				break;
-			case 59:  // ruleprefix ::= annotations_decl identifier ':'
+			case 60:  // ruleprefix ::= annotations_decl identifier ':'
 				 lapg_gg.sym = new AstRulePrefix(((AstAnnotations)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 60:  // ruleprefix ::= identifier ':'
+			case 61:  // ruleprefix ::= identifier ':'
 				 lapg_gg.sym = new AstRulePrefix(null, ((String)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 61:  // rulesyms ::= rulesym
+			case 62:  // rulesyms ::= rulesym
 				 lapg_gg.sym = new ArrayList<AstRuleSymbol>(); ((List<AstRuleSymbol>)lapg_gg.sym).add(((AstRuleSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 62:  // rulesyms ::= rulesyms rulesym
+			case 63:  // rulesyms ::= rulesyms rulesym
 				 ((List<AstRuleSymbol>)lapg_m[lapg_head-1].sym).add(((AstRuleSymbol)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 63:  // rulesyms ::= rulesyms syntax_problem
+			case 64:  // rulesyms ::= rulesyms syntax_problem
 				 ((List<AstRuleSymbol>)lapg_m[lapg_head-1].sym).add(new AstRuleSymbol(((AstError)lapg_m[lapg_head-0].sym))); 
 				break;
-			case 64:  // rulesym ::= command annotations_decl identifier '=' reference
+			case 65:  // rulesym ::= command annotations_decl identifier '=' reference
 				 lapg_gg.sym = new AstRuleSymbol(((AstCode)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((AstReference)lapg_m[lapg_head-0].sym), ((AstAnnotations)lapg_m[lapg_head-3].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 65:  // rulesym ::= command annotations_decl reference
+			case 66:  // rulesym ::= command annotations_decl reference
 				 lapg_gg.sym = new AstRuleSymbol(((AstCode)lapg_m[lapg_head-2].sym), null, ((AstReference)lapg_m[lapg_head-0].sym), ((AstAnnotations)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 66:  // rulesym ::= command identifier '=' reference
+			case 67:  // rulesym ::= command identifier '=' reference
 				 lapg_gg.sym = new AstRuleSymbol(((AstCode)lapg_m[lapg_head-3].sym), ((String)lapg_m[lapg_head-2].sym), ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 67:  // rulesym ::= command reference
+			case 68:  // rulesym ::= command reference
 				 lapg_gg.sym = new AstRuleSymbol(((AstCode)lapg_m[lapg_head-1].sym), null, ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 68:  // rulesym ::= annotations_decl identifier '=' reference
+			case 69:  // rulesym ::= annotations_decl identifier '=' reference
 				 lapg_gg.sym = new AstRuleSymbol(null, ((String)lapg_m[lapg_head-2].sym), ((AstReference)lapg_m[lapg_head-0].sym), ((AstAnnotations)lapg_m[lapg_head-3].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 69:  // rulesym ::= annotations_decl reference
+			case 70:  // rulesym ::= annotations_decl reference
 				 lapg_gg.sym = new AstRuleSymbol(null, null, ((AstReference)lapg_m[lapg_head-0].sym), ((AstAnnotations)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 70:  // rulesym ::= identifier '=' reference
+			case 71:  // rulesym ::= identifier '=' reference
 				 lapg_gg.sym = new AstRuleSymbol(null, ((String)lapg_m[lapg_head-2].sym), ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 71:  // rulesym ::= reference
+			case 72:  // rulesym ::= reference
 				 lapg_gg.sym = new AstRuleSymbol(null, null, ((AstReference)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 72:  // rulesym ::= '(' rulesyms_choice ')'
+			case 73:  // rulesym ::= '(' rulesyms_choice ')'
 				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
 				break;
-			case 73:  // rulesym ::= rulesym '?'
+			case 74:  // rulesym ::= rulesym '?'
 				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
 				break;
-			case 74:  // rulesym ::= rulesym '*'
+			case 75:  // rulesym ::= rulesym '*'
 				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
 				break;
-			case 75:  // rulesym ::= rulesym '+'
+			case 76:  // rulesym ::= rulesym '+'
 				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
 				break;
-			case 78:  // annotations_decl ::= annotations
+			case 79:  // annotations_decl ::= annotations
 				 lapg_gg.sym = new AstAnnotations(((List<AstNamedEntry>)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 79:  // annotations ::= annotation
+			case 80:  // annotations ::= annotation
 				 lapg_gg.sym = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.sym).add(((AstNamedEntry)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 80:  // annotations ::= annotations annotation
+			case 81:  // annotations ::= annotations annotation
 				 ((List<AstNamedEntry>)lapg_gg.sym).add(((AstNamedEntry)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 81:  // annotation ::= '@' identifier
+			case 82:  // annotation ::= '@' identifier
 				 lapg_gg.sym = new AstNamedEntry(((String)lapg_m[lapg_head-0].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 82:  // annotation ::= '@' identifier '(' expression ')'
+			case 83:  // annotation ::= '@' identifier '(' expression ')'
 				 lapg_gg.sym = new AstNamedEntry(((String)lapg_m[lapg_head-3].sym), ((AstExpression)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 83:  // annotation ::= '@' syntax_problem
+			case 84:  // annotation ::= '@' syntax_problem
 				 lapg_gg.sym = new AstNamedEntry(((AstError)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 84:  // expression ::= scon
+			case 85:  // expression ::= scon
 				 lapg_gg.sym = new AstLiteralExpression(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 85:  // expression ::= icon
+			case 86:  // expression ::= icon
 				 lapg_gg.sym = new AstLiteralExpression(((Integer)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 86:  // expression ::= Ltrue
+			case 87:  // expression ::= Ltrue
 				 lapg_gg.sym = new AstLiteralExpression(Boolean.TRUE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 87:  // expression ::= Lfalse
+			case 88:  // expression ::= Lfalse
 				 lapg_gg.sym = new AstLiteralExpression(Boolean.FALSE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 91:  // expression ::= name '(' map_entriesopt ')'
+			case 92:  // expression ::= name '(' map_entriesopt ')'
 				 lapg_gg.sym = new AstInstance(((AstName)lapg_m[lapg_head-3].sym), ((List<AstNamedEntry>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 94:  // expression ::= '[' expression_listopt ']'
+			case 95:  // expression ::= '[' expression_listopt ']'
 				 lapg_gg.sym = new AstArray(((List<AstExpression>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 96:  // expression_list ::= expression
+			case 97:  // expression_list ::= expression
 				 lapg_gg.sym = new ArrayList(); ((List<AstExpression>)lapg_gg.sym).add(((AstExpression)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 97:  // expression_list ::= expression_list ',' expression
+			case 98:  // expression_list ::= expression_list ',' expression
 				 ((List<AstExpression>)lapg_gg.sym).add(((AstExpression)lapg_m[lapg_head-0].sym)); 
 				break;
-			case 98:  // map_entries ::= identifier map_separator expression
+			case 99:  // map_entries ::= identifier map_separator expression
 				 lapg_gg.sym = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.sym).add(new AstNamedEntry(((String)lapg_m[lapg_head-2].sym), ((AstExpression)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset)); 
 				break;
-			case 99:  // map_entries ::= map_entries ',' identifier map_separator expression
+			case 100:  // map_entries ::= map_entries ',' identifier map_separator expression
 				 ((List<AstNamedEntry>)lapg_gg.sym).add(new AstNamedEntry(((String)lapg_m[lapg_head-2].sym), ((AstExpression)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 103:  // name ::= qualified_id
+			case 104:  // name ::= qualified_id
 				 lapg_gg.sym = new AstName(((String)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 105:  // qualified_id ::= qualified_id '.' identifier
+			case 106:  // qualified_id ::= qualified_id '.' identifier
 				 lapg_gg.sym = ((String)lapg_m[lapg_head-2].sym) + "." + ((String)lapg_m[lapg_head-0].sym); 
 				break;
-			case 106:  // rule_priority ::= '<<' reference
+			case 107:  // rule_priority ::= '<<' reference
 				 lapg_gg.sym = ((AstReference)lapg_m[lapg_head-0].sym); 
 				break;
-			case 109:  // command ::= '{' command_tokensopt '}'
+			case 110:  // command ::= '{' command_tokensopt '}'
 				 lapg_gg.sym = new AstCode(source, lapg_m[lapg_head-2].offset+1, lapg_m[lapg_head-0].endoffset-1); 
 				break;
-			case 113:  // syntax_problem ::= error
+			case 114:  // syntax_problem ::= error
 				 lapg_gg.sym = new AstError(source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset); 
 				break;
 		}
