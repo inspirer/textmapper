@@ -15,9 +15,9 @@
  */
 package org.textway.lapg.parser.ast;
 
-import java.util.List;
-
 import org.textway.lapg.parser.LapgTree.TextSource;
+
+import java.util.List;
 
 public class AstRule extends AstNode {
 

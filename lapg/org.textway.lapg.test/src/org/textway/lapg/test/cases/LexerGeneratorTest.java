@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 
 import org.junit.Assert;
 
-import org.textway.lapg.api.Action;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.lex.LexerTables;
@@ -92,7 +92,7 @@ public class LexerGeneratorTest extends TestCase {
 			this.samples = samples;
 		}
 
-		public Action getAction() {
+		public SourceElement getAction() {
 			return null;
 		}
 
@@ -154,6 +154,10 @@ public class LexerGeneratorTest extends TestCase {
 					return 0;
 				}
 
+				public String getText() {
+					return null;  //To change body of implemented methods use File | Settings | File Templates.
+				}
+
 				public int getOffset() {
 					return 0;
 				}
@@ -170,6 +174,10 @@ public class LexerGeneratorTest extends TestCase {
 
 		public int getLine() {
 			return index + 1;
+		}
+
+		public String getText() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public int getOffset() {

@@ -21,10 +21,16 @@ public class Resource {
 
 	private final URI uri;
 	private final String contents;
+	private final int line;
 
 	public Resource(URI uri, String contents) {
+		this(uri, contents, 1);
+	}
+
+	public Resource(URI uri, String contents, int line) {
 		this.uri = uri;
 		this.contents = contents;
+		this.line = line;
 	}
 
 	public URI getUri() {
@@ -33,5 +39,9 @@ public class Resource {
 
 	public String getContents() {
 		return contents;
+	}
+
+	public int getInitialLine() {
+		return line;
 	}
 }

@@ -114,7 +114,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
 				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
-		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
+		Assert.assertEquals(" continue; ", lexems[2].getAction().getText());
 
 		checkGenTables(g, "syntax1.tbl", new TestStatus());
 	}
@@ -137,7 +137,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("item", syms[7].getName());
 		Assert.assertEquals("listopt", syms[8].getName());
 		Assert.assertEquals(8, g.getRules().length);
-		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
+		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getText());
 
 		checkGenTables(g, "syntax2.tbl", new TestStatus());
 	}
@@ -162,7 +162,7 @@ public class InputTest extends LapgTestCase {
 		checkGenTables(g, "syntax_cs.tbl", er);
 		er.assertDone();
 
-		Assert.assertTrue(g.getTemplates().startsWith("\n//#define DEBUG_syntax"));
+		Assert.assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
 	}
 
 	public void testLapgGrammar() {
@@ -228,7 +228,7 @@ public class InputTest extends LapgTestCase {
 		checkGenTables(g, "syntax_cs.tbl", er);
 		er.assertDone();
 
-		Assert.assertTrue(g.getTemplates().startsWith("\n//#define DEBUG_syntax"));
+		Assert.assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
 	}
 
 	public void testNewCheckSimple1() {
@@ -261,7 +261,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
 				.getRegexp());
 		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
-		Assert.assertEquals(" continue; ", lexems[2].getAction().getContents());
+		Assert.assertEquals(" continue; ", lexems[2].getAction().getText());
 
 		checkGenTables(g, "syntax1.tbl", new TestStatus());
 	}
@@ -286,7 +286,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("item", syms[7].getName());
 		Assert.assertEquals("listopt", syms[8].getName());
 		Assert.assertEquals(8, g.getRules().length);
-		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getContents());
+		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getText());
 
 		sortGrammar((LiGrammar) g, go);
 		checkGenTables(g, "syntax2.tbl", new TestStatus());

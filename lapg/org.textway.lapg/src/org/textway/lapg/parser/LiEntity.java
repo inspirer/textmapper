@@ -39,11 +39,20 @@ public class LiEntity implements SourceElement, ILocatedEntity {
 		return node == null ? 1 : node.getLine();
 	}
 
+	public String getText() {
+		return node == null ? "" : node.toString();
+	}
+
 	public String getResourceName() {
 		return node == null ? null : node.getInput().getFile();
 	}
 
 	public String getLocation() {
 		return node == null ? "<unknown>" : getResourceName() + "," + getLine();
+	}
+
+	@Override
+	public String toString() {
+		return getText();
 	}
 }

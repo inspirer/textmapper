@@ -13,26 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.test.oldparser;
 
-import org.textway.lapg.api.Action;
-import org.textway.lapg.parser.ast.IAstNode;
+import org.textway.lapg.api.SourceElement;
+import org.textway.templates.bundle.ILocatedEntity;
 
-public class LiAction extends LiEntity implements Action {
+public class CSourcePart implements SourceElement, ILocatedEntity {
 
 	private final String contents;
 
-	public LiAction(String contents, IAstNode node) {
-		super(node);
+	private final String input;
+	private final int line;
+
+	public CSourcePart(String contents, String input, int line) {
 		this.contents = contents;
+		this.input = input;
+		this.line = line;
 	}
 
-	public String getContents() {
+	public String getLocation() {
+		return input + "," + line;
+	}
+
+	public String getText() {
 		return contents;
+	}
+
+	public int getLine() {
+		return line;
 	}
 
 	@Override
 	public String toString() {
 		return contents;
+	}
+
+	public int getEndOffset() {
+		return 0;
+	}
+
+	public int getOffset() {
+		return 0;
+	}
+
+	public String getResourceName() {
+		return null;
 	}
 }

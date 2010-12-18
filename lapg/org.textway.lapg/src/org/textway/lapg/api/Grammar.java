@@ -35,7 +35,7 @@ public interface Grammar {
 	Symbol getEoi();
 	Symbol getError();
 
-	String getTemplates();
+	SourceElement getTemplates();
 
 	boolean hasActions();
 	boolean hasLexemActions();

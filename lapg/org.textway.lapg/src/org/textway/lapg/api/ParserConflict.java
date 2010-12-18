@@ -23,16 +23,22 @@ public interface ParserConflict {
 	public static final int REDUCE_REDUCE = 2;
 
 	int getKind();
+
 	String getKindAsText();
+
 	Rule[] getRules();
+
 	Symbol[] getSymbols();
+
 	Input getInput();
 
 	String getText();
 
 	public interface Input {
 		int getState();
+
 		Symbol[] getSymbols();
+
 		String getText();
 	}
 }

@@ -15,12 +15,12 @@
  */
 package org.textway.lapg.parser;
 
+import org.textway.lapg.api.Annotated;
+import org.textway.lapg.parser.ast.IAstNode;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.textway.lapg.api.Annotated;
-import org.textway.lapg.parser.ast.IAstNode;
 
 public class LiAnnotated extends LiEntity implements Annotated {
 

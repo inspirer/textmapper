@@ -24,4 +24,6 @@ public interface SourceElement {
 	int getEndOffset();
 
 	int getLine();
+
+	String getText();
 }

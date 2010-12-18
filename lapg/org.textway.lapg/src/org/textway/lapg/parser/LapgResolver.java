@@ -15,9 +15,9 @@
  */
 package org.textway.lapg.parser;
 
-import org.textway.lapg.api.Action;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Prio;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
@@ -72,7 +72,7 @@ public class LapgResolver {
 		collectRules();
 		collectDirectives();
 		collectOptions();
-		String templates = getTemplates();
+		SourceElement templates = getTemplates();
 
 		if (inputs.size() == 0) {
 			LiSymbol input = symbolsMap.get("input");
@@ -111,10 +111,17 @@ public class LapgResolver {
 				!tree.getErrors().isEmpty());
 	}
 
-	private String getTemplates() {
+	private SourceElement getTemplates() {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
-		return offset < text.length && offset != -1 ? new String(text, offset, text.length - offset) : "";
+		if (offset < text.length && offset != -1) {
+			IAstNode n = new AstNode(tree.getSource(), offset, text.length) {
+				public void accept(AbstractVisitor v) {
+				}
+			};
+			return new LiEntity(n);
+		}
+		return null;
 	}
 
 	private LiSymbol create(AstIdentifier id, String type, boolean isTerm) {
@@ -173,11 +180,11 @@ public class LapgResolver {
 		return result;
 	}
 
-	private Action convert(final AstCode code) {
+	private SourceElement convert(final AstCode code) {
 		if (code == null) {
 			return null;
 		}
-		return new LiAction(code.toString(), code);
+		return new LiEntity(code);
 	}
 
 	private void collectLexems() {
@@ -433,7 +440,7 @@ public class LapgResolver {
 				if (expression instanceof AstInstance) {
 					List<AstNamedEntry> list = ((AstInstance) expression).getEntries();
 					Map<String, AstExpression> props = new HashMap<String, AstExpression>();
-					if(list != null) {
+					if (list != null) {
 						for (AstNamedEntry entry : list) {
 							if (entry.hasSyntaxError()) {
 								continue;
@@ -442,7 +449,7 @@ public class LapgResolver {
 						}
 					}
 					String name = ((AstInstance) expression).getClassName().getName();
-					if(name.indexOf('.') < 0) {
+					if (name.indexOf('.') < 0) {
 						name = myTypesPackage + "." + name;
 					}
 					return convertNew(expression, name, props, type);
@@ -453,10 +460,11 @@ public class LapgResolver {
 				}
 				if (expression instanceof AstReference) {
 					IClass symbolClass = types.loadClass("common.Symbol", null);
-					if(symbolClass == null) {
+					if (symbolClass == null) {
 						report(expression, "cannot load class `common.Symbol`");
+						return null;
 					}
-					if(!symbolClass.isSubtypeOf(type)) {
+					if (!symbolClass.isSubtypeOf(type)) {
 						report(expression, "`" + symbolClass.toString() + "` is not a subtype of `" + type.toString() + "`");
 						return null;
 					}

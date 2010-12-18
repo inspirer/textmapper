@@ -21,5 +21,5 @@ public interface Rule extends SourceElement, Annotated {
 	public Symbol getLeft();
 	public SymbolRef[] getRight();
 	public int getPriority();
-	public Action getAction();
+	public SourceElement getAction();
 }

@@ -38,7 +38,7 @@ public class DefaultTemplateLoader implements IBundleLoader {
 		TemplatesBundle[] result = new TemplatesBundle[loaded.length];
 		for(int i = 0; i < loaded.length; i++) {
 			Resource resource = loaded[i];
-			result[i] = TemplatesBundle.parse(resource.getUri().getPath(), resource.getContents(), bundleName, collector);
+			result[i] = TemplatesBundle.parse(resource, bundleName, collector);
 		}
 		return result;
 	}

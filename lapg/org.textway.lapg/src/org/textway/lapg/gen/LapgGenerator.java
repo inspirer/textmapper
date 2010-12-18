@@ -15,10 +15,7 @@
  */
 package org.textway.lapg.gen;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.ProcessingStrategy;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.*;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
@@ -33,9 +30,11 @@ import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.IxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.Resource;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,9 +139,11 @@ public final class LapgGenerator {
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private TemplatesRegistry createTemplateRegistry(String grammarTemplates, ResourceRegistry resources, TypesRegistry types, IProblemCollector problemCollector) {
+	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, IProblemCollector problemCollector) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
-		loaders.add(new StringTemplateLoader("input", grammarTemplates)); // TODO create with initial location
+		if(grammarTemplates != null) {
+			loaders.add(new StringTemplateLoader(new Resource(URI.create("input"), grammarTemplates.getText(), grammarTemplates.getLine())));
+		}
 		loaders.add(new DefaultTemplateLoader(resources));
 		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 		return registry;
@@ -219,6 +220,10 @@ public final class LapgGenerator {
 
 		public int getLine() {
 			return myNode.getLine();
+		}
+
+		public String getText() {
+			return myNode.toString();
 		}
 
 		public String getResourceName() {

@@ -16,10 +16,8 @@
 package org.textway.lapg.test.oldparser;
 
 import java.util.List;
-import org.textway.lapg.api.Action;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+
+import org.textway.lapg.api.*;
 import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INamedEntity;
 
@@ -27,13 +25,13 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 
 	private CSymbol left;
 	private final SymbolRef[] right;
-	private final CAction action;
+	private final CSourcePart action;
 	private final CSymbol priority;
 	private final String input;
 	private final int line;
 	int index;
 
-	public CRule(List<CSymbol> right, CAction action, CSymbol priority, String input, int line) {
+	public CRule(List<CSymbol> right, CSourcePart action, CSymbol priority, String input, int line) {
 		this.right = new SymbolRef[right != null ? right.size() : 0];
 		if(right != null) {
 			for(int i = 0; i < right.size(); i++) {
@@ -63,7 +61,7 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 		return right;
 	}
 
-	public Action getAction() {
+	public SourceElement getAction() {
 		return action;
 	}
 
@@ -153,6 +151,10 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 			return 0;
 		}
 
+		public String getText() {
+			return null;  //To change body of implemented methods use File | Settings | File Templates.
+		}
+
 		public int getOffset() {
 			// TODO Auto-generated method stub
 			return 0;
@@ -177,6 +179,10 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 	public int getLine() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public String getText() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public int getOffset() {

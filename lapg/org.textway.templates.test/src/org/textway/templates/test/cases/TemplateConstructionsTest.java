@@ -26,10 +26,12 @@ import org.textway.templates.eval.DefaultStaticMethods;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.JavaIxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.Resource;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.test.TemplateTestCase;
 import org.textway.templates.types.TypesRegistry;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -371,6 +373,6 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	private TemplatesRegistry createRegistry(TestProblemCollector collector, String inlineCode) {
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		ITypesRegistry types = new TypesRegistry(resources, collector);
-		return new TemplatesRegistry(collector, types, new StringTemplateLoader("inline", inlineCode), new DefaultTemplateLoader(resources));
+		return new TemplatesRegistry(collector, types, new StringTemplateLoader(new Resource(URI.create("inline"), inlineCode, 1)), new DefaultTemplateLoader(resources));
 	}
 }

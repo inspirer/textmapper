@@ -15,8 +15,8 @@
  */
 package org.textway.lapg.parser;
 
-import org.textway.lapg.api.Action;
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.parser.ast.IAstNode;
 
@@ -26,9 +26,9 @@ public class LiLexem extends LiEntity implements Lexem {
 	private final String regexp;
 	private final int groups;
 	private final int priority;
-	private final Action action;
+	private final SourceElement action;
 
-	public LiLexem(Symbol sym, String regexp, int groups, int priority, Action action, IAstNode node) {
+	public LiLexem(Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
 		super(node);
 		this.sym = sym;
 		this.regexp = regexp;
@@ -37,7 +37,7 @@ public class LiLexem extends LiEntity implements Lexem {
 		this.action = action;
 	}
 
-	public Action getAction() {
+	public SourceElement getAction() {
 		return action;
 	}
 

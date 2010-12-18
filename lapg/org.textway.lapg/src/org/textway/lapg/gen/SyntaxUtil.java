@@ -82,6 +82,10 @@ public class SyntaxUtil {
 			return source.lineForOffset(problem.getOffset());
 		}
 
+		public String getText() {
+			return source.getText(problem.getOffset(), problem.getEndOffset());
+		}
+
 		public int getOffset() {
 			return problem.getOffset();
 		}

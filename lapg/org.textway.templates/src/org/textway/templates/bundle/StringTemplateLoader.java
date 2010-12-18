@@ -21,25 +21,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.storage.Resource;
 
 /**
  * In-memory template loader.
  */
 public class StringTemplateLoader implements IBundleLoader {
 
-	private final String name;
-	private final String contents;
-
+	private final Resource resource;
 	private Map<String,TemplatesBundle> sourceForPackage;
 
-	public StringTemplateLoader(String name, String contents) {
-		this.name = name;
-		this.contents = contents;
+	public StringTemplateLoader(Resource resource) {
+		this.resource = resource;
 	}
 
 	public TemplatesBundle[] load(String bundleName, IProblemCollector collector) {
 		if(sourceForPackage == null) {
-			TemplatesBundle compositeBundle = TemplatesBundle.parse(name, contents, null, collector);
+			TemplatesBundle compositeBundle = TemplatesBundle.parse(resource, null, collector);
 
 			Map<String,List<IBundleEntity>> bundleToTemplates = new HashMap<String, List<IBundleEntity>>();
 			for(IBundleEntity t : compositeBundle.getEntities()) {
@@ -55,7 +53,7 @@ public class StringTemplateLoader implements IBundleLoader {
 			sourceForPackage = new HashMap<String, TemplatesBundle>();
 			for(Map.Entry<String, List<IBundleEntity>> entry : bundleToTemplates.entrySet()) {
 				List<IBundleEntity> list = entry.getValue();
-				sourceForPackage.put(entry.getKey(), new TemplatesBundle(name, list.toArray(new IBundleEntity[list.size()])));
+				sourceForPackage.put(entry.getKey(), new TemplatesBundle(resource.getUri().getPath(), list.toArray(new IBundleEntity[list.size()])));
 			}
 		}
 		TemplatesBundle result = sourceForPackage.get(bundleName);

@@ -85,6 +85,10 @@ public class CPrio implements Prio, ILocatedEntity {
 		return 0;
 	}
 
+	public String getText() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	public int getOffset() {
 		// TODO Auto-generated method stub
 		return 0;

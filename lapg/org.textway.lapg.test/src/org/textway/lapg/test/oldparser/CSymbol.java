@@ -156,6 +156,10 @@ public class CSymbol implements Symbol, ILocatedEntity {
 		return line;
 	}
 
+	public String getText() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	public int getOffset() {
 		// TODO Auto-generated method stub
 		return 0;

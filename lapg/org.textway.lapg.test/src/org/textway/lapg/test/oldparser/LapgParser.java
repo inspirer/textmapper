@@ -84,7 +84,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		return res;
 	}
 
-	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
+	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CSourcePart command, int line) {
 		try {
 			sym.setTerminal(type, regexp != null, inputId, line);
 			if( regexp != null ) {
@@ -122,7 +122,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		}
 	}
 
-	private void addRuleSymbol(List<CSymbol> list, CAction cmdopt, CSymbol symbol) {
+	private void addRuleSymbol(List<CSymbol> list, CSourcePart cmdopt, CSymbol symbol) {
 		if( cmdopt != null ) {
 			try {
 				CSymbol sym = new CSymbol("{}", inputId, 0);
@@ -408,7 +408,7 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			addLexem(((CSymbol)lapg_m[lapg_head-2].sym), ((String)lapg_m[lapg_head-1].sym), null, null, null, lapg_m[lapg_head-2].pos.line);
 			break;
 		case 17:  // lexical_definition ::= symbol typeopt ':' regexp iconopt commandopt
-			addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CAction)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line);
+			addLexem(((CSymbol)lapg_m[lapg_head-5].sym), ((String)lapg_m[lapg_head-4].sym), ((String)lapg_m[lapg_head-2].sym), ((Integer)lapg_m[lapg_head-1].sym), ((CSourcePart)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-5].pos.line);
 			break;
 		case 18:  // iconlist_in_bits ::= icon
 			if( ((Integer)lapg_m[lapg_head-0].sym) < 0 || ((Integer)lapg_m[lapg_head-0].sym) >= BITS ) {
@@ -436,22 +436,22 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 			lapg_gg.sym = new ArrayList<CSymbol>(); ((List<CSymbol>)lapg_gg.sym).add(((CSymbol)lapg_m[lapg_head-0].sym));
 			break;
 		case 30:  // rule_def ::= rule_symbols commandopt rule_priorityopt
-			lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-2].pos.line);
+			lapg_gg.sym = new CRule(((List<CSymbol>)lapg_m[lapg_head-2].sym), ((CSourcePart)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-2].pos.line);
 			break;
 		case 31:  // rule_def ::= commandopt rule_priorityopt
-			lapg_gg.sym = new CRule(null, ((CAction)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-1].pos.line);
+			lapg_gg.sym = new CRule(null, ((CSourcePart)lapg_m[lapg_head-1].sym), ((CSymbol)lapg_m[lapg_head-0].sym), inputId, lapg_m[lapg_head-1].pos.line);
 			break;
 		case 32:  // rule_symbols ::= rule_symbols commandopt symbol
-			addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
+			addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CSourcePart)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
 			break;
 		case 33:  // rule_symbols ::= commandopt symbol
-			lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CAction)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
+			lapg_gg.sym = new ArrayList<CSymbol>(); addRuleSymbol(((List<CSymbol>)lapg_gg.sym),((CSourcePart)lapg_m[lapg_head-1].sym),((CSymbol)lapg_m[lapg_head-0].sym));
 			break;
 		case 34:  // rule_priority ::= '<<' symbol
 			lapg_gg.sym = (lapg_m[lapg_head-0].sym);
 			break;
 		case 37:  // command ::= '{' command_tokensopt '}'
-			lapg_gg.sym = new CAction(rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset), inputId, lapg_m[lapg_head-2].pos.line);
+			lapg_gg.sym = new CSourcePart(rawData(lapg_m[lapg_head-2].pos.offset+1,lapg_m[lapg_head-0].pos.offset), inputId, lapg_m[lapg_head-2].pos.line);
 			break;
 		case 41:  // symbol ::= identifier
 			lapg_gg.sym = getSymbol(((String)lapg_m[lapg_head-0].sym), lapg_m[lapg_head-0].pos.line);

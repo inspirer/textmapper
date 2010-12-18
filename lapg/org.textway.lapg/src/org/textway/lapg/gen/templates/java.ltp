@@ -292,7 +292,7 @@ ${end-}
 ${end}
 
 ${template parserAction-}
-${eval getAction(), '[action in '+getAction().getLocation()+']'}
+${eval getAction().text, '[action in '+getAction().getLocation()+']'}
 ${end}
 
 ${template astAction(code)-}

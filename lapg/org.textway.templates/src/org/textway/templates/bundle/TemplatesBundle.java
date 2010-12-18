@@ -19,6 +19,7 @@ import org.textway.templates.api.IProblemCollector;
 import org.textway.templates.ast.TemplatesTree;
 import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
 import org.textway.templates.ast.TemplatesTree.TextSource;
+import org.textway.templates.storage.Resource;
 
 import java.util.List;
 
@@ -40,19 +41,19 @@ public class TemplatesBundle {
 		return entities;
 	}
 
-	public static TemplatesBundle parse(final String sourceName, String contents, String templatePackage,
+	public static TemplatesBundle parse(final Resource resource, String templatePackage,
 										final IProblemCollector collector) {
 
-		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(new TextSource(sourceName, contents.toCharArray(), 1), templatePackage);
+		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine()), templatePackage);
 		for (TemplatesProblem problem : tree.getErrors()) {
 			final int line = tree.getSource().lineForOffset(problem.getOffset());
 			collector.fireError(new ILocatedEntity() {
 				public String getLocation() {
-					return sourceName + "," + line;
+					return resource.getUri().getPath() + "," + line;
 				}
 			}, problem.getMessage());
 		}
 		IBundleEntity[] entities = tree.getRoot() != null ? tree.getRoot().toArray(new IBundleEntity[tree.getRoot().size()]) : new IBundleEntity[0];
-		return new TemplatesBundle(sourceName, entities);
+		return new TemplatesBundle(resource.getUri().getPath(), entities);
 	}
 }

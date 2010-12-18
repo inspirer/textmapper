@@ -19,9 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.Lexem;
-import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.*;
 
 public class CSyntax implements Grammar {
 
@@ -195,8 +193,28 @@ public class CSyntax implements Grammar {
 		return lexems;
 	}
 
-	public String getTemplates() {
-		return templates;
+	public SourceElement getTemplates() {
+		return templates == null ? null : new SourceElement() {
+			public String getText() {
+				return templates;
+			}
+
+			public String getResourceName() {
+				return null;
+			}
+
+			public int getOffset() {
+				return 0;
+			}
+
+			public int getEndOffset() {
+				return templates.length();
+			}
+
+			public int getLine() {
+				return 1;
+			}
+		};
 	}
 
 	public boolean hasActions() {

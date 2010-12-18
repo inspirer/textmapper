@@ -15,15 +15,15 @@
  */
 package org.textway.lapg.parser;
 
-import java.util.Map;
-
-import org.textway.lapg.api.Action;
 import org.textway.lapg.api.Rule;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INamedEntity;
+import org.textway.templates.bundle.ILocatedEntity;
+
+import java.util.Map;
 
 public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedEntity {
 
@@ -32,11 +32,11 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 	private int index;
 	private final LiSymbol left;
 	private final LiSymbolRef[] right;
-	private final Action code;
+	private final SourceElement code;
 	private final LiSymbol priority;
 	private final IAstNode node;
 
-	public LiRule(LiSymbol left, LiSymbolRef[] right, Action code, LiSymbol priority, Map<String,Object> annotations, IAstNode node) {
+	public LiRule(LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String,Object> annotations, IAstNode node) {
 		super(annotations, node);
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right ;
@@ -45,7 +45,7 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 		this.node = node;
 	}
 
-	public Action getAction() {
+	public SourceElement getAction() {
 		return code;
 	}
 

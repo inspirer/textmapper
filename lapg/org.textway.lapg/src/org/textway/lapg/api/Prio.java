@@ -27,5 +27,6 @@ public interface Prio extends SourceElement {
 	public static final int NONASSOC = 3;
 
 	public int getPrio();
+
 	public Symbol[] getSymbols();
 }

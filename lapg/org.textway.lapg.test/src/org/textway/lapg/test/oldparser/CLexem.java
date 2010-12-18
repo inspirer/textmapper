@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.oldparser;
 
-import org.textway.lapg.api.Action;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Lexem;
 import org.textway.templates.bundle.ILocatedEntity;
 
@@ -23,14 +23,14 @@ public class CLexem implements ILocatedEntity, Lexem {
 
 	private final CSymbol sym;
 	private final String regexp;
-	private final CAction action;
+	private final CSourcePart action;
 	private final int priority;
 	private final int groups;
 
 	private final String input;
 	private final int line;
 
-	public CLexem(CSymbol sym, String regexp, CAction action, int priority, int groups, String input, int line) {
+	public CLexem(CSymbol sym, String regexp, CSourcePart action, int priority, int groups, String input, int line) {
 		this.sym = sym;
 		this.regexp = regexp;
 		this.action = action;
@@ -52,7 +52,7 @@ public class CLexem implements ILocatedEntity, Lexem {
 		return regexp;
 	}
 
-	public Action getAction() {
+	public SourceElement getAction() {
 		return action;
 	}
 
@@ -72,6 +72,10 @@ public class CLexem implements ILocatedEntity, Lexem {
 	public int getLine() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public String getText() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	public int getOffset() {

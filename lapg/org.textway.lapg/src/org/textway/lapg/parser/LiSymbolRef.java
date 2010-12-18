@@ -15,11 +15,11 @@
  */
 package org.textway.lapg.parser;
 
-import java.util.Map;
-
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
+
+import java.util.Map;
 
 public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 
