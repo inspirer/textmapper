@@ -373,6 +373,6 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 	private TemplatesRegistry createRegistry(TestProblemCollector collector, String inlineCode) {
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		ITypesRegistry types = new TypesRegistry(resources, collector);
-		return new TemplatesRegistry(collector, types, new StringTemplateLoader(new Resource(URI.create("inline"), inlineCode, 1)), new DefaultTemplateLoader(resources));
+		return new TemplatesRegistry(collector, types, new StringTemplateLoader(new Resource(URI.create("inline"), inlineCode)), new DefaultTemplateLoader(resources));
 	}
 }

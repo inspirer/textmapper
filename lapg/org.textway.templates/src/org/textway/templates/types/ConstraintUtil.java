@@ -42,7 +42,7 @@ public class ConstraintUtil {
 					}
 					break;
 				case NOTEMPTY:
-					if(s.isEmpty()) {
+					if(s.trim().length() == 0) {
 						return "should be non-empty string";
 					}
 					break;

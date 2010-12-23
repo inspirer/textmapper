@@ -25,16 +25,16 @@ import java.util.List;
 
 public class TemplatesBundle {
 
-	private final String sourceName;
+	private final Resource resource;
 	private final IBundleEntity[] entities;
 
-	public TemplatesBundle(String sourceName, IBundleEntity[] entities) {
-		this.sourceName = sourceName;
+	public TemplatesBundle(Resource resource, IBundleEntity[] entities) {
+		this.resource = resource;
 		this.entities = entities;
 	}
 
 	public String getName() {
-		return sourceName;
+		return resource.getUri().getPath();
 	}
 
 	public IBundleEntity[] getEntities() {
@@ -44,7 +44,8 @@ public class TemplatesBundle {
 	public static TemplatesBundle parse(final Resource resource, String templatePackage,
 										final IProblemCollector collector) {
 
-		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine()), templatePackage);
+		TextSource source = new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine());
+		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
 		for (TemplatesProblem problem : tree.getErrors()) {
 			final int line = tree.getSource().lineForOffset(problem.getOffset());
 			collector.fireError(new ILocatedEntity() {
@@ -54,6 +55,6 @@ public class TemplatesBundle {
 			}, problem.getMessage());
 		}
 		IBundleEntity[] entities = tree.getRoot() != null ? tree.getRoot().toArray(new IBundleEntity[tree.getRoot().size()]) : new IBundleEntity[0];
-		return new TemplatesBundle(resource.getUri().getPath(), entities);
+		return new TemplatesBundle(resource, entities);
 	}
 }

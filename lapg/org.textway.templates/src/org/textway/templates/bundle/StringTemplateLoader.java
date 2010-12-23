@@ -53,7 +53,7 @@ public class StringTemplateLoader implements IBundleLoader {
 			sourceForPackage = new HashMap<String, TemplatesBundle>();
 			for(Map.Entry<String, List<IBundleEntity>> entry : bundleToTemplates.entrySet()) {
 				List<IBundleEntity> list = entry.getValue();
-				sourceForPackage.put(entry.getKey(), new TemplatesBundle(resource.getUri().getPath(), list.toArray(new IBundleEntity[list.size()])));
+				sourceForPackage.put(entry.getKey(), new TemplatesBundle(resource, list.toArray(new IBundleEntity[list.size()])));
 			}
 		}
 		TemplatesBundle result = sourceForPackage.get(bundleName);
