@@ -22,5 +22,7 @@ public interface Symbol extends Annotated, SourceElement {
 	String getName();
 	String getType();
 	boolean isTerm();
+
+	@Deprecated
 	boolean isDefined();
 }

@@ -6,17 +6,30 @@ class Grammar {
 	Prio priorities[0..*];
 
 	Lexem lexems[0..*];
+
 	int terminals;
 	Symbol* input[1..*];
 	Symbol* eoi;
 	Symbol* error;
+
+	SourceElement templates;
+
+# TODO:
+#	Map<String, Object> getOptions();
+#	boolean hasActions();
+#	boolean hasLexemActions();
+#	boolean hasErrors();
 }
 
 class SourceElement {
 	string text;
+	string resourceName;
+	int line;
+	int offset;
+	int endOffset;
 }
 
-class Lexem {
+class Lexem extends SourceElement {
 	Symbol* symbol;
 	string regexp;
 
@@ -26,7 +39,7 @@ class Lexem {
 	SourceElement action;
 }
 
-class Rule {
+class Rule extends SourceElement {
 	int index;
 	Symbol left[1];
 	SymbolRef right[0..*];
@@ -34,12 +47,12 @@ class Rule {
 	SourceElement action;
 }
 
-class Prio {
+class Prio extends SourceElement {
 	int prio;
 	Symbol* symbols[1..*];
 }
 
-class Symbol {
+class Symbol extends SourceElement {
 	int index;
 	string id;
 	string name;
@@ -47,13 +60,13 @@ class Symbol {
 	bool term;
 }
 
-class SymbolRef {
+class SymbolRef extends SourceElement {
 	Symbol* target;
 	string alias;
 }
 
 class Parser {
-	Symbol sym[1..*];
+	Symbol* sym[1..*];
 	int rules;
 	int nsyms;
 	int nterms;
@@ -62,6 +75,12 @@ class Parser {
 	int rleft[0..*];
 	int rright[0..*];
 	int nactions;
+
+# TODO
+#	public int[] rindex, rprio;
+#	public short[] sym_goto, sym_from, sym_to, action_table;
+#	public int[] action_index;
+
 }
 
 class Lexer {
@@ -71,10 +90,15 @@ class Lexer {
 	int lnum[0..*];
 	int char2no[0..*];
 	int groupset[0..*];
+
+# TODO
+#	public final int[][] change;
 }
 
 class List {
     int length;
+
+# first(), last(), toSet(), size(), contains(x), indexOf(x), union(c)
 }
 
 class Options {
