@@ -186,6 +186,9 @@ rulesyms (List<AstRuleSymbol>) ::=
 	| list=rulesyms syntax_problem						{ $list.add(new AstRuleSymbol($syntax_problem)); }
 ;
 
+%left '&';
+%nonassoc '?' '*' '+';
+
 rulesym (AstRuleSymbol) ::=
 	  command annotations_decl identifier '=' reference { $$ = new AstRuleSymbol($command, $identifier, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 	| command annotations_decl reference 				{ $$ = new AstRuleSymbol($command, null, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
@@ -197,6 +200,7 @@ rulesym (AstRuleSymbol) ::=
 	| reference 										{ $$ = new AstRuleSymbol(null, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 
 	| '(' rulesyms_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| rulesym '&' rulesym								{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
 	| rulesym '?'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
 	| rulesym '*'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
 	| rulesym '+'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }

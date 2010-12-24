@@ -42,7 +42,7 @@ public class BootstrapTest extends TestCase {
 				new String[0],
 				new String[]{
 						"LapgParser.java", "LapgLexer.java", "LapgTree.java"
-				}, 0);
+				}, 2);
 	}
 
 	public void testTypesS() {
