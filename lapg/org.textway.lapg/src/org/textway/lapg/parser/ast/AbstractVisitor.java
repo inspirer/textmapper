@@ -92,4 +92,12 @@ public class AbstractVisitor {
 	public boolean visit(AstName n) {
 		return true;
 	}
+
+	public boolean visit(AstPrioClause n) {
+		return true;
+	}
+
+	public boolean visit(AstShiftClause n) {
+		return true;
+	}
 }

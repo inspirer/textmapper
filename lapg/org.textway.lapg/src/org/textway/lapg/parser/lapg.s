@@ -66,6 +66,13 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 Ltrue:  /true/
 Lfalse: /false/
 
+Lprio:  /prio/
+Lshift: /shift/
+
+# reserved
+
+Lreduce: /reduce/
+
 '{':	/{/		{ deep = 1; group = 1; break; }
 
 [1]
@@ -160,10 +167,10 @@ rules (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix rulesyms commandopt rule_priorityopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 rulesyms commandopt rule_priorityopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_priorityopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| ruleprefix commandopt rule_priorityopt  			{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 commandopt rule_priorityopt  			{ $$ = new AstRule(null, $commandopt, $rule_priorityopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  ruleprefix rulesyms commandopt rule_attrsopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_attrsopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 rulesyms commandopt rule_attrsopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_attrsopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| ruleprefix commandopt rule_attrsopt  			{ $$ = new AstRule(null, $commandopt, $rule_attrsopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 commandopt rule_attrsopt  			{ $$ = new AstRule(null, $commandopt, $rule_attrsopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
@@ -252,8 +259,9 @@ qualified_id (String) ::=
 ;
 
 
-rule_priority (AstReference) ::=
-	'<<' reference										{ $$ = $reference; }
+rule_attrs (AstRuleAttribute) ::=
+	'%' Lprio reference									{ $$ = new AstPrioClause($reference, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 command (AstCode) ::=

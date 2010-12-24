@@ -264,7 +264,10 @@ public class LapgResolver {
 				}
 			}
 		}
-		LiSymbol prio = right.getPriority() != null ? resolve(right.getPriority()) : null;
+		AstRuleAttribute ruleAttribute = right.getAttribute();
+		AstReference rulePrio = ruleAttribute instanceof AstPrioClause ? ((AstPrioClause)ruleAttribute).getReference() : null;
+		LiSymbol prio = rulePrio != null ? resolve(rulePrio) : null;
+		// TODO store %shift attribute
 		// TODO check prio is term
 		rules.add(
 				new LiRule(left,

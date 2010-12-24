@@ -23,17 +23,17 @@ public class AstRule extends AstNode {
 
 	private final List<AstRuleSymbol> list;
 	private final AstCode action;
-	private final AstReference priority;
+	private final AstRuleAttribute attribute;
 	private final AstAnnotations annotations;
 
 	private final AstError error;
 
-	public AstRule(List<AstRuleSymbol> list, AstCode action, AstReference priority, AstAnnotations annotations, TextSource source,
+	public AstRule(List<AstRuleSymbol> list, AstCode action, AstRuleAttribute attr, AstAnnotations annotations, TextSource source,
 			int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
 		this.action = action;
-		this.priority = priority;
+		this.attribute = attr;
 		this.annotations = annotations;
 		this.error = null;
 	}
@@ -42,7 +42,7 @@ public class AstRule extends AstNode {
 		super(err.getInput(), err.getOffset(), err.getEndOffset());
 		this.list = null;
 		this.action = null;
-		this.priority = null;
+		this.attribute = null;
 		this.annotations = null;
 		this.error = err;
 	}
@@ -59,8 +59,8 @@ public class AstRule extends AstNode {
 		return action;
 	}
 
-	public AstReference getPriority() {
-		return priority;
+	public AstRuleAttribute getAttribute() {
+		return attribute;
 	}
 
 	public AstAnnotations getAnnotations() {
@@ -86,8 +86,8 @@ public class AstRule extends AstNode {
 		if(action != null) {
 			action.accept(v);
 		}
-		if(priority != null) {
-			priority.accept(v);
+		if(attribute != null) {
+			attribute.accept(v);
 		}
 	}
 }
