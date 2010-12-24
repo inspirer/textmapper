@@ -304,6 +304,8 @@ unary_expression (ExpressionNode) ::=
 	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1, source, ${unary_expression[0].offset}, ${unary_expression[0].endoffset}); }
 ;
 
+%left '||';
+%left '&&';
 %left '>' '<' '<=' '>=';
 %left '-' '+';
 %left '*' '/' '%';
@@ -333,20 +335,16 @@ equality_expression (ExpressionNode) ::=
     | equality_expression '!=' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression#0, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-conditional_and_expression (ExpressionNode) ::=
+conditional_op (ExpressionNode) ::=
       equality_expression
-    | conditional_and_expression '&&' equality_expression { $$ = new ConditionalNode(ConditionalNode.AND, $conditional_and_expression#0, $equality_expression, source, ${conditional_and_expression[0].offset}, ${conditional_and_expression[0].endoffset}); }
-;
-
-conditional_or_expression (ExpressionNode) ::=
-      conditional_and_expression
-    | conditional_or_expression '||' conditional_and_expression	{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_or_expression#0, $conditional_and_expression, source, ${conditional_or_expression[0].offset}, ${conditional_or_expression[0].endoffset}); }
+    | conditional_op '&&' conditional_op			{ $$ = new ConditionalNode(ConditionalNode.AND, $conditional_op#1, $conditional_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | conditional_op '||' conditional_op			{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_op#1, $conditional_op#2, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 conditional_expression (ExpressionNode) ::=
-    conditional_or_expression
-  | conditional_or_expression '?' conditional_expression ':' conditional_expression
-  													{ $$ = new TriplexNode($conditional_or_expression, $conditional_expression#1, $conditional_expression#2, source, ${left().offset}, ${left().endoffset}); }
+    conditional_op
+  | conditional_op '?' conditional_expression ':' conditional_expression
+  													{ $$ = new TriplexNode($conditional_op, $conditional_expression#1, $conditional_expression#2, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 assignment_expression (ExpressionNode) ::=

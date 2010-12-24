@@ -67,7 +67,7 @@ public class BootstrapTest extends TestCase {
 				new String[0],
 				new String[]{
 						"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"
-				}, 15);
+				}, 18);
 	}
 
 	public void testXmlS() {
