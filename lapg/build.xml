@@ -79,7 +79,7 @@
 		</junit>
 	</target>
 
-	<target name="deploy" depends="build,buildsource">
+	<target name="deploy" depends="test,build,buildsource">
 		<copy file="build/lapg.jar" tofile="libs/lapg-${suffix}.jar"/>
 		<copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
 	</target>
