@@ -30,7 +30,7 @@ public abstract class DefaultIxObject implements IxObject, IxAdaptable {
 	}
 
 	public boolean asBoolean() {
-		return false;
+		return true;
 	}
 
 	public Object getProperty(String propertyName) throws EvaluationException {

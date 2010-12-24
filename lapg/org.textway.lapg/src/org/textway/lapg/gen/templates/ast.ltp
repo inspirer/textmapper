@@ -5,39 +5,39 @@ ${cached query allClasses() =
 ${cached query getClasses(sym) =
 	kind = self->symbolKind(sym),
 	kind == 'enum' ?
-		[
-			kind: 'enum',
-			name: sym.id,
-			sym: sym,
-			literals: syntax.rules[sym].collect(rule|rule.getRight().first())
-		] :
+		new AstEnum(
+			kind => 'enum',
+			name => sym.id,
+			sym => sym,
+			literals => syntax.rules[sym].collect(rule|rule.getRight().first())
+		) :
 	kind == 'interface' ?
-		[
-			kind: 'interface',
-			name: sym.id,
-			sym: sym,
-			implements: self->getImplements(sym)
-		] :
+		new AstInterface(
+			kind => 'interface',
+			name => sym.id,
+			sym => sym,
+			implements => self->getImplements(sym)
+		) :
 	kind == 'class' ?
-		[
-			kind: 'class',
-			name: sym.id,
-			sym: sym,
-			implements: self->getImplements(sym),
-			properties: syntax.rules[sym].collect(x|[
+		new AstClass(
+			kind => 'class',
+			name => sym.id,
+			sym => sym,
+			implements => self->getImplements(sym),
+			properties => syntax.rules[sym].collect(x|[
 				x.getRight()
 			])
-		] :
+		) :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
-		[
-			kind: 'class',
-			name: sym.id + '_item',
-			sym: sym,
-			implements: [],
-			properties: syntax.rules[sym].collect(x|[
+		new AstClass(
+			kind => 'class',
+			name => sym.id + '_item',
+			sym => sym,
+			implements => [],
+			properties => syntax.rules[sym].collect(x|[
 				x.getRight().select(y|y.target != x.getLeft())
 			])
-		] :
+		) :
 	null }
 
 ${query getPropertyKind() =
@@ -52,12 +52,12 @@ ${query getPropertyKind() =
 ${cached query propertiesNew(cl) =
 	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		allrefs = (x is GroupList ? x : [x]),
-		[
-			kind: allrefs->getPropertyKind(),
-			name: util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
-			container: cl,
-			refs: allrefs.toSet()
-		]
+		new AstProperty(
+			kind => allrefs->getPropertyKind(),
+			name => util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
+			container => cl,
+			refs => allrefs.toSet()
+		)
 	),
 	withoutAlias = cl.properties.collect(rule|
 				rule.select(x|!x.alias && !x.target->isSimpleTerm()).groupBy(x|x.target).collect(x|
@@ -66,13 +66,13 @@ ${cached query propertiesNew(cl) =
 								: [ name : x.target.id, ref: x ])
 		).groupBy(x|x.name).collect(x|
 			allrefs = (x is GroupList ? x.collect(y|y.ref) : [x.ref]),
-			[
-				kind: 'property',
-				name: util.uniqueId(x is GroupList ? x.first().name : x.name, 'prop#' + cl.name),
-				container: cl,
-				refs: allrefs.toSet(),
-				type: self->getType(allrefs.first().target)
-			]),
+			new AstProperty(
+				kind => 'property',
+				name => util.uniqueId(x is GroupList ? x.first().name : x.name, 'prop#' + cl.name),
+				container => cl,
+				refs => allrefs.toSet(),
+				type => self->getType(allrefs.first().target)
+			)),
 	withAlias.union(withoutAlias)
 }
 

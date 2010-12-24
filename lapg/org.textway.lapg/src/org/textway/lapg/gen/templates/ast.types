@@ -1,0 +1,27 @@
+#
+
+class AstEntity {
+	string kind[set:"enum","interface","class"];
+	string name[notempty; identifier];
+	common.Symbol* sym[1];
+}
+
+class AstInterface extends AstEntity {
+    common.Symbol* implements[0..*];
+}
+
+class AstClass extends AstInterface {
+    common.SymbolRef* properties[0..*];
+}
+
+class AstEnum extends AstEntity {
+	common.SymbolRef* literals;
+}
+
+class AstProperty {
+	string kind[set:flagproperty,enumproperty,property];
+	AstClass container[1];
+	string name[notempty; identifier];
+	common.SymbolRef* refs[1..*];
+	string type;
+}

@@ -24,6 +24,7 @@ import org.textway.templates.ast.TemplatesTree.TextSource;
 import org.textway.templates.types.TiExpressionBuilder;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -65,7 +66,8 @@ public class CreateClassNode extends ExpressionNode {
 					return convertNew(newexpr, newexpr.getClassName(), newexpr.getFieldInitializers(), type);
 				}
 				if(expression instanceof ListNode) {
-					List<ExpressionNode> content = Arrays.asList(((ListNode) expression).getExpressions());
+					ExpressionNode[] exprlist = ((ListNode) expression).getExpressions();
+					List<ExpressionNode> content = exprlist == null ? Collections.<ExpressionNode>emptyList() :  Arrays.asList(exprlist);
 					return convertArray(expression, content, type);
 				}
 				if(expression instanceof LiteralNode) {

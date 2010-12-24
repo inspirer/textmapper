@@ -174,6 +174,11 @@ public class JavaIxFactory implements IxFactory {
 			return collection.iterator();
 		}
 
+		@Override
+		public boolean asBoolean() {
+			return collection.size() > 0;
+		}
+
 		public Object getObject() {
 			return collection;
 		}
@@ -243,6 +248,11 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			return map.get(propertyName);
+		}
+
+		@Override
+		public boolean asBoolean() {
+			return map.size() > 0;
 		}
 
 		@Override
