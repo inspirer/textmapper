@@ -61,6 +61,28 @@ public class TiClass implements IClass {
 				return f;
 			}
 		}
+		LinkedList<IClass> queue = new LinkedList<IClass>(this.getExtends());
+		if(queue.isEmpty()) {
+			return null;
+		}
+
+		Set<IClass> processed = new HashSet<IClass>();
+		processed.add(this);
+		processed.addAll(queue);
+		while(!queue.isEmpty()) {
+			IClass next = queue.remove();
+			for(IFeature f : next.getFeatures()) {
+				if(f.getName().equals(name)) {
+					return f;
+				}
+			}
+			for(IClass cl : next.getExtends()) {
+				if(!processed.contains(cl)) {
+					processed.add(cl);
+					queue.add(cl);
+				}
+			}
+		}
 		return null;
 	}
 

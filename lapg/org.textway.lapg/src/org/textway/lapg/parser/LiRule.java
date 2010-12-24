@@ -99,7 +99,7 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 			}
 		}
 		if (priority != null) {
-			sb.append(" << ");
+			sb.append(" %prio ");
 			sb.append(priority.getName());
 		}
 		return sb.toString();

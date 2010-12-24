@@ -17,6 +17,7 @@ package org.textway.templates.api;
 
 import java.util.Iterator;
 
+import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.bundle.ILocatedEntity;
@@ -40,6 +41,8 @@ public interface IEvaluationStrategy extends IProblemCollector, IStreamHandler, 
 	String toString(Object o, ExpressionNode referer) throws EvaluationException;
 
 	String getTitle(Object object);
+
+	ITypesRegistry getTypesRegistry();
 
 	IEvaluationCache getCache();
 }

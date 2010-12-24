@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.textway.templates.eval;
 
 import org.textway.templates.api.*;
+import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.ast.TemplatesTree;
 import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
 import org.textway.templates.ast.TemplatesTree.TextSource;
@@ -27,8 +29,6 @@ import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.objects.*;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
@@ -66,7 +66,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			return result;
 		} catch (HandledEvaluationException ex) {
 			throw ex;
-		} catch (Throwable th) {
+		} catch (Exception th) {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
 			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
@@ -160,6 +160,10 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	public final void createFile(String name, String contents) {
 		templatesFacade.createFile(name, contents);
+	}
+
+	public ITypesRegistry getTypesRegistry() {
+		return registry.getTypesRegistry();
 	}
 
 	public IEvaluationCache getCache() {

@@ -78,7 +78,7 @@ public abstract class TiExpressionBuilder<Node> {
 			return null;
 		}
 
-		if (!aClass.isSubtypeOf(type)) {
+		if (type != null && !aClass.isSubtypeOf(type)) {
 			report(node, "`" + aClass.toString() + "` is not a subtype of `" + type.toString() + "`");
 			return null;
 		}

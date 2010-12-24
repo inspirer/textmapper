@@ -4,7 +4,7 @@ package org.textway.templates.ast;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.textway.templates.ast.TemplatesLexer.ErrorReporter;
@@ -948,10 +948,10 @@ public class TemplatesParser {
 				 lapg_gg.sym = new ConcreteMapNode(((Map<String,ExpressionNode>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 98:  // complex_data ::= Lnew qualified_id '(' map_entriesopt ')'
-				 lapg_gg.sym = null; /* todo */ 
+				 lapg_gg.sym = new CreateClassNode(((String)lapg_m[lapg_head-3].sym), ((Map<String,ExpressionNode>)lapg_m[lapg_head-1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 99:  // map_entries ::= identifier map_separator conditional_expression
-				 lapg_gg.sym = new HashMap(); ((Map<String,ExpressionNode>)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
+				 lapg_gg.sym = new LinkedHashMap(); ((Map<String,ExpressionNode>)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 
 				break;
 			case 100:  // map_entries ::= map_entries ',' identifier map_separator conditional_expression
 				 ((Map<String,ExpressionNode>)lapg_gg.sym).put(((String)lapg_m[lapg_head-2].sym), ((ExpressionNode)lapg_m[lapg_head-0].sym)); 

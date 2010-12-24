@@ -43,8 +43,10 @@ public class EvalNode extends Node {
 				id = toEvaluate instanceof ILocatedEntity ? ((ILocatedEntity)toEvaluate).getLocation() : null;
 			}
 			String templateCode = env.toString(toEvaluate, templateExpr);
+			// TODO fix location in template
 			sb.append(env.eval(this, templateCode, id, context, templateExpr.getLine()));
 		} catch (EvaluationException ex) {
+			/* already handled, ignore */
 		}
 	}
 }

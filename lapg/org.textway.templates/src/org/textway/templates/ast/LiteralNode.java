@@ -29,6 +29,10 @@ public class LiteralNode extends ExpressionNode {
 		this.literal = literal;
 	}
 
+	public Object getLiteral() {
+		return literal;
+	}
+
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		return literal;

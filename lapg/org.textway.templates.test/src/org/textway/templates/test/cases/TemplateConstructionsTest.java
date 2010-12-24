@@ -364,6 +364,30 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("No", q);
 	}
 
+	// types.ltp
+	public void testTypes() {
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
+
+		EvaluationContext context = new EvaluationContext(null);
+
+		// test 1
+		collector.addErrors("`types.Symbol` is not a subtype of `types.Symbol[]`");
+		String q = env.executeTemplate("types.newClass", context, null, null);
+		Assert.assertEquals("template process\n", q);
+		collector.assertEmptyErrors();
+
+		// test 2
+		q = env.executeTemplate("types.newClassCorrect", context, null, null);
+		Assert.assertEquals("template process\n", q);
+
+		// test 3
+		collector.addErrors("`types.Symbol` is not a subtype of `types.SubSymbol`");
+		q = env.executeTemplate("types.newClassInvalidSubclassing", context, null, null);
+		Assert.assertEquals("template process\n", q);
+		collector.assertEmptyErrors();
+	}
+
 	private TemplatesRegistry createRegistry(TestProblemCollector collector) {
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		ITypesRegistry types = new TypesRegistry(resources, collector);

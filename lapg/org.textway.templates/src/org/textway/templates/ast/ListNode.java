@@ -15,12 +15,12 @@
  */
 package org.textway.templates.ast;
 
-import java.util.List;
-
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.ast.TemplatesTree.TextSource;
+
+import java.util.List;
 
 public class ListNode extends ExpressionNode {
 
@@ -30,6 +30,10 @@ public class ListNode extends ExpressionNode {
 		super(source, offset, endoffset);
 		this.expressions = expressions != null && expressions.size() > 0 ? (ExpressionNode[]) expressions
 				.toArray(new ExpressionNode[expressions.size()]) : null;
+	}
+
+	public ExpressionNode[] getExpressions() {
+		return expressions;
 	}
 
 	@Override
