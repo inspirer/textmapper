@@ -125,7 +125,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			} else if (result.size() > 1) {
 				return result;
 			}
-			throw new EvaluationException("do not know symbol `" + id + "`");
+			throw new EvaluationException("symbol `" + id + "` is undefined");
 		}
 	}
 

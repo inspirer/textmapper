@@ -74,7 +74,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 			Method meth = wrapped.getClass().getMethod(getAccessor);
 			return meth.invoke(wrapped);
 		} catch (NoSuchMethodException ex) {
-			throw new EvaluationException("nomethod: " + ex.toString());
+			throw new EvaluationException("symbol `" + id + "` is undefined");
 		} catch (IllegalAccessException ex) {
 			throw new EvaluationException("IllegalAccessException");
 		} catch (InvocationTargetException ex) {
@@ -92,7 +92,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 					argClasses[i] = args[i].getClass();
 				}
 			}
-			Method meth = null;
+			Method meth;
 			try {
 				meth = wrapped.getClass().getMethod(methodName, argClasses);
 			} catch (NoSuchMethodException ex) {
