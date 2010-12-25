@@ -19,8 +19,9 @@ import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.parser.ast.IAstNode;
+import org.textway.templates.api.INamedEntity;
 
-public class LiLexem extends LiEntity implements Lexem {
+public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 
 	private final Symbol sym;
 	private final String regexp;
@@ -55,5 +56,9 @@ public class LiLexem extends LiEntity implements Lexem {
 
 	public Symbol getSymbol() {
 		return sym;
+	}
+
+	public String getTitle() {
+		return "Lexem `" + sym.getName() + "`";
 	}
 }
