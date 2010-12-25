@@ -1,5 +1,12 @@
 ##
 
+class Context {
+	common.Grammar syntax[1];
+	common.Lexer lex[1];
+	common.Parser parser[1];
+	Options opts[1];
+}
+
 class Grammar {
 	Symbol symbols[1..*];
 	Rule rules[1..*];

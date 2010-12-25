@@ -1,14 +1,7 @@
 ##
 
 class Global {
-	Context* context[1];
-}
-
-class Context {
-	common.Grammar syntax[1];
-	common.Lexer lex[1]; 
-	common.Parser parser[1];
-	Options opts[1];
+	common.Context* context[1];
 }
 
 class Options {
