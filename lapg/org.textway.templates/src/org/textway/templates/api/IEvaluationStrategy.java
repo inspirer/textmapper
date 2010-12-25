@@ -19,6 +19,7 @@ import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.objects.IxFactory;
+import org.textway.templates.storage.Resource;
 
 /**
  * Defines environment for evaluating set of templates.
@@ -33,7 +34,7 @@ public interface IEvaluationStrategy extends TemplatesStatus, IStreamHandler, Ix
 
 	IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer);
 
-	String eval(SourceElement referer, String template, String templateId, EvaluationContext context, int line);
+	String eval(Resource resource, EvaluationContext context);
 
 	String toString(Object o, ExpressionNode referer) throws EvaluationException;
 

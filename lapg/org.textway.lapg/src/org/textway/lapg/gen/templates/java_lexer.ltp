@@ -176,7 +176,7 @@ ${end}
 
 
 ${template lexerAction(lexem)-}
-${eval action.text, '[lexem action in '+getAction().getLocation()+']'}
+${eval action}
 ${end}
 
 

@@ -26,6 +26,7 @@ import org.textway.templates.ast.TemplateNode;
 import org.textway.templates.bundle.IBundleEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.objects.*;
+import org.textway.templates.storage.Resource;
 
 import java.util.Collection;
 
@@ -128,21 +129,21 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
-	public String eval(SourceElement referer, String template, String templateId, EvaluationContext context, int line) {
-		final String sourceName = templateId != null ? templateId : referer.getResourceName()+","+referer.getLine();
-		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
+	public String eval(final Resource resource, EvaluationContext context) {
+		TextSource source = new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine());
+		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(source, "syntax");
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			DefaultEvaluationStrategy.this.report(KIND_ERROR, problem.getMessage(), new SourceElement() {
 				public String getResourceName() {
-					return sourceName;
+					return resource.getUri().getPath();
 				}
 
 				public int getOffset() {
-					return problem.getOffset();
+					return resource.getInitialOffset() + problem.getOffset();
 				}
 
 				public int getEndOffset() {
-					return problem.getEndOffset();
+					return resource.getInitialOffset() + problem.getEndOffset();
 				}
 
 				public int getLine() {

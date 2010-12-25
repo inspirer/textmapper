@@ -292,11 +292,11 @@ ${end-}
 ${end}
 
 ${template parserAction-}
-${eval getAction().text, '[action in '+getAction().getLocation()+']'}
+${eval getAction()}
 ${end}
 
 ${template astAction(code)-}
-${eval code, '[generated action for '+self+']'-}
+${eval code, '#[generated action for '+self+']'-}
 ${end}
 
 ${template getsym-}
