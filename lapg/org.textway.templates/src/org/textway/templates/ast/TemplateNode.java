@@ -74,7 +74,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 			}
 			try {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), arguments[i]);
+					context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 				}
 
 				emit(sb, context, env);

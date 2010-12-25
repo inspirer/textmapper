@@ -128,6 +128,9 @@ public class BootstrapTest extends TestCase {
 			if(kind == ProcessingStatus.KIND_WARN && message.startsWith("symbol") && message.endsWith("is useless")) {
 				return;
 			}
+			if(anchors != null && anchors.length >= 1 && anchors[0] != null) {
+				message = anchors[0].getResourceName() + "," + anchors[0].getLine() + ": " + message;
+			}
 			Assert.fail("error reported: " + message);
 		}
 

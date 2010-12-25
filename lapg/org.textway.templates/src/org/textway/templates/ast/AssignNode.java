@@ -19,7 +19,7 @@ public class AssignNode extends ExpressionNode {
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object value = env.evaluate(valueExpr, context, true);
-		context.setVariable(identifier, value);
+		context.setVariable(identifier, value != null ? value : EvaluationContext.NULL_VALUE);
 		return value;
 	}
 

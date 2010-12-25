@@ -26,6 +26,9 @@ public class JavaIxFactory implements IxFactory {
 		if (o instanceof IxObject) {
 			return (IxObject) o;
 		}
+		if (o instanceof IxWrapper) {
+			o = ((IxWrapper)o).getObject();
+		}
 		if (o instanceof Map) {
 			return new JavaMapIxObject((Map) o);
 		}
@@ -51,6 +54,9 @@ public class JavaIxFactory implements IxFactory {
 		if (o instanceof IxOperand) {
 			return (IxOperand) o;
 		}
+		if (o instanceof IxWrapper) {
+			o = ((IxWrapper)o).getObject();
+		}
 		if (o instanceof Number) {
 			return new JavaNumberIxObject((Number) o);
 		}
@@ -63,6 +69,9 @@ public class JavaIxFactory implements IxFactory {
 	public IxAdaptable asAdaptable(Object o) {
 		if (o instanceof IxAdaptable) {
 			return (IxAdaptable) o;
+		}
+		if (o instanceof IxWrapper) {
+			o = ((IxWrapper)o).getObject();
 		}
 		if (o instanceof Number) {
 			return new JavaNumberIxObject((Number) o);

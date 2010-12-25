@@ -92,7 +92,7 @@ public class QueryNode extends Node implements IQuery {
 			}
 			try {
 				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), arguments[i]);
+					context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 				}
 
 				result = env.evaluate(expr, context, true);

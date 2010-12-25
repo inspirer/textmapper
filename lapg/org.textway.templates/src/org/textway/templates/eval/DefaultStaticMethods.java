@@ -15,6 +15,8 @@
  */
 package org.textway.templates.eval;
 
+import org.textway.templates.objects.IxWrapper;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -103,6 +105,9 @@ public class DefaultStaticMethods {
 	int objectIdCounter = 1;
 
 	public String objectId(Object o) {
+		if(o instanceof IxWrapper) {
+			o = ((IxWrapper)o).getObject();
+		}
 		String s = objectIds.get(o);
 		if(s == null) {
 			s = "obj" + objectIdCounter++;

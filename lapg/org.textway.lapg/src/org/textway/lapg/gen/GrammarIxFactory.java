@@ -24,6 +24,7 @@ import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
 import org.textway.templates.objects.DefaultJavaIxObject;
 import org.textway.templates.objects.IxObject;
+import org.textway.templates.objects.IxWrapper;
 import org.textway.templates.objects.JavaIxFactory;
 
 import java.util.*;
@@ -45,18 +46,21 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 	@Override
 	public IxObject asObject(Object o) {
+		if (o instanceof IxObject) {
+			return (IxObject) o;
+		}
+		if (o instanceof IxWrapper) {
+			o = ((IxWrapper)o).getObject();
+		}
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);
 		}
-
 		if (o instanceof Symbol) {
 			return new SymbolIxObject((Symbol) o);
 		}
-
 		if (o instanceof SymbolRef) {
 			return new SymbolRefIxObject((SymbolRef) o);
 		}
-
 		if (o instanceof Grammar) {
 			return new GrammarIxObject((Grammar) o);
 		}

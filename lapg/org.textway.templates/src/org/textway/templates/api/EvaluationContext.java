@@ -25,6 +25,13 @@ import java.util.Map;
  */
 public class EvaluationContext {
 
+	public static Object NULL_VALUE = new Object() {
+		@Override
+		public String toString() {
+			return "null";
+		}
+	};
+
 	private Map<String, Object> vars;
 	private final Object thisObject;
 	private final EvaluationContext parent;
@@ -55,7 +62,11 @@ public class EvaluationContext {
 		if (vars == null) {
 			vars = new HashMap<String, Object>();
 		}
-		vars.put(id, value);
+		if(value != null) {
+			vars.put(id, value);
+		} else {
+			vars.remove(id);
+		}
 	}
 
 	public Object getThisObject() {

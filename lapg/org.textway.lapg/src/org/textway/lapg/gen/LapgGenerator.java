@@ -37,6 +37,7 @@ import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
 import org.textway.templates.storage.Resource;
 import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TiInstance;
 import org.textway.templates.types.TypesRegistry;
 
 import java.net.URI;
@@ -93,7 +94,7 @@ public final class LapgGenerator {
 
 			// Generate text
 			start = System.currentTimeMillis();
-			EvaluationContext context = createEvaluationContext(s, genOptions, l, r);
+			EvaluationContext context = createEvaluationContext(types, s, genOptions, l, r);
 			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(getTemplatePackage(s), context), registry);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
@@ -153,18 +154,27 @@ public final class LapgGenerator {
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(Grammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, Grammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
-		map.put("lex", l);
+		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
 		map.put("parser", r);
-		map.put("opts", genOptions);
 
-		EvaluationContext context = new EvaluationContext(map);
-		context.setVariable("util", new TemplateStaticMethods());
-		context.setVariable("context", map);
-		context.setVariable("$", "lapg_gg.sym");
-		return context;
+		String templPackage = getTemplatePackage(s);
+		IClass optsClass = types.getClass(templPackage + ".Options", null);
+		if(optsClass != null) {
+			map.put("opts", new TiInstance(optsClass, genOptions));
+		} else {
+			map.put("opts", genOptions);
+		}
+
+
+		TiInstance context = new TiInstance(types.getClass("common.Context", null), map);
+		EvaluationContext evaluationContext = new EvaluationContext(context);
+		evaluationContext.setVariable("util", new TemplateStaticMethods());
+		evaluationContext.setVariable("context", context);
+		evaluationContext.setVariable("$", "lapg_gg.sym");
+		return evaluationContext;
 	}
 
 	private final class TemplatesFacadeExt extends TemplatesFacade {

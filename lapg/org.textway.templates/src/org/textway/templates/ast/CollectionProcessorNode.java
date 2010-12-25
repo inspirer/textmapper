@@ -71,7 +71,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 				Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
 				while(it.hasNext()) {
 					Object curr = it.next();
-					context.setVariable(varName, curr);
+					context.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
 					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
 					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
 						boolean b = env.asAdaptable(val).asBoolean() ^ (instruction == REJECT);

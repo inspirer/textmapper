@@ -13,35 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textway.templates.objects;
 
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
-import org.textway.templates.objects.DefaultIxObject;
+import org.textway.templates.api.types.IType;
+import org.textway.templates.types.TypesUtil;
 
-import java.util.Map;
+public class JavaIxObjectWithType extends DefaultJavaIxObject {
 
-public class TiInstance extends DefaultIxObject {
+	private final IClass type;
 
-	private final IClass myClass;
-	private final Map<String, Object> myValues;
-
-	public TiInstance(IClass myClass, Map<String, Object> myValues) {
-		this.myClass = myClass;
-		this.myValues = myValues;
-	}
-
-	public String getType() {
-		return myClass.getQualifiedName();
+	public JavaIxObjectWithType(Object wrapped, IClass type) {
+		super(wrapped);
+		this.type = type;
 	}
 
 	public Object getProperty(String propertyName) throws EvaluationException {
-		IFeature feature = myClass.getFeature(propertyName);
-		if (feature == null) {
-			throw new EvaluationException("Property `" + propertyName + "` is absent in class " + myClass.getQualifiedName());
+		if(type == null) {
+			return super.getProperty(propertyName);
 		}
 
-		return myValues.get(propertyName);
+		IFeature feature = type.getFeature(propertyName);
+		if (feature == null) {
+			throw new EvaluationException("Property `" + propertyName + "` is absent in class " + type.getQualifiedName());
+		}
+
+		Object result = super.getProperty(propertyName);
+		if (result == null || result instanceof IxWrapper) {
+			return result;
+		}
+
+		IType resultType = TypesUtil.getType(feature);
+		if(resultType instanceof IClass) {
+			return new JavaIxObjectWithType(result, (IClass) resultType);
+		}
+
+		return result;
 	}
 }

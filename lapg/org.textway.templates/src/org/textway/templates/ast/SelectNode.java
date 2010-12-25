@@ -34,11 +34,14 @@ public class SelectNode extends ExpressionNode {
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object object;
-		if( objectExpr != null ) {
+		if (objectExpr != null) {
 			object = env.evaluate(objectExpr, context, false);
 		} else {
 			Object value = context.getVariable(identifier);
-			if( value != null ) {
+			if (value != null) {
+				if (value == EvaluationContext.NULL_VALUE) {
+					return null;
+				}
 				return value;
 			}
 
@@ -50,7 +53,7 @@ public class SelectNode extends ExpressionNode {
 
 	@Override
 	public void toString(StringBuilder sb) {
-		if( objectExpr != null ) {
+		if (objectExpr != null) {
 			objectExpr.toString(sb);
 			sb.append(".");
 		}
