@@ -37,7 +37,7 @@ public class TiFeature implements IFeature {
 		return name;
 	}
 
-	public IType getType() {
+	public IType getTarget() {
 		return type;
 	}
 

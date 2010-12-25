@@ -22,8 +22,8 @@ import org.textway.templates.api.types.IType;
 
 public class TypesUtil {
 
-	public static IType getFeatureType(IFeature feature) {
-		return feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getType()) : feature.getType();
+	public static IType getType(IFeature feature) {
+		return feature.getMultiplicity().isMultiple() ? new TiArrayType(feature.getTarget()) : feature.getTarget();
 	}
 
 	public static boolean isBooleanType(IType type) {

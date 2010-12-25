@@ -158,8 +158,8 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		templatesFacade.fireError(referer, error);
 	}
 
-	public final void createFile(String name, String contents) {
-		templatesFacade.createFile(name, contents);
+	public final void createStream(String name, String contents) {
+		templatesFacade.createStream(name, contents);
 	}
 
 	public ITypesRegistry getTypesRegistry() {

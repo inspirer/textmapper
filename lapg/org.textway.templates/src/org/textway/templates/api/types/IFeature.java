@@ -1,12 +1,10 @@
 package org.textway.templates.api.types;
 
-import org.textway.templates.api.IInstanceObject;
-
 public interface IFeature {
 
 	String getName();
 
-	IType getType();
+	IType getTarget();
 
 	IMultiplicity getMultiplicity();
 

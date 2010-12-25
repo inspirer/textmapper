@@ -318,7 +318,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector) {
 			@Override
-			public void createFile(String name, String contents) {
+			public void createStream(String name, String contents) {
 				fileContent.put(name, contents);
 			}
 		};

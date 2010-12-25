@@ -17,5 +17,5 @@ package org.textway.templates.api;
 
 public interface IStreamHandler {
 
-	public void createFile(String name, String contents);
+	public void createStream(String name, String contents);
 }

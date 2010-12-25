@@ -62,7 +62,7 @@ public class TemplatesFacade {
 		collector.fireError(referer, error);
 	}
 
-	public void createFile(String name, String contents) {
+	public void createStream(String name, String contents) {
 		// ignore
 	}
 }

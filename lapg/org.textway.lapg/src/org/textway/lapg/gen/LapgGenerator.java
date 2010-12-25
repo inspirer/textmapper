@@ -170,7 +170,7 @@ public final class LapgGenerator {
 		}
 
 		@Override
-		public void createFile(String name, String contents) {
+		public void createStream(String name, String contents) {
 			strategy.createFile(name, contents, status);
 		}
 	}

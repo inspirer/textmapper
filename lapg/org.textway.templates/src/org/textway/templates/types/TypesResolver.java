@@ -272,7 +272,7 @@ class TypesResolver {
 
 	void resolveExpressions() {
 		for (ResolveDefaultValue entry : myResolveDefaultValues) {
-			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), TypesUtil.getFeatureType(entry.getFeature_())));
+			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), TypesUtil.getType(entry.getFeature_())));
 		}
 	}
 

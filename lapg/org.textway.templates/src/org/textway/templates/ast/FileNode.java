@@ -38,7 +38,7 @@ public class FileNode extends CompoundNode {
 			String fileName = env.toString(env.evaluate(targetNameExpr, context, false), targetNameExpr);
 			super.emit(file, context, env);
 
-			env.createFile(fileName, file.toString());
+			env.createStream(fileName, file.toString());
 		} catch (EvaluationException ex) {
 			/* ignore, skip if */
 		}

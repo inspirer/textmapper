@@ -49,7 +49,7 @@ public class ObjectWithType extends DefaultIxObject implements IxWrapper {
 				return null;
 			}
 
-			IType resultType = TypesUtil.getFeatureType(feature);
+			IType resultType = TypesUtil.getType(feature);
 			return new ObjectWithType(result, evaluationStrategy, resultType);
 		}
 

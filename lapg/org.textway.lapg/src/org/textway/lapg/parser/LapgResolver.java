@@ -379,7 +379,7 @@ public class LapgResolver {
 				}
 
 				AstExpression value = ((AstOption) option).getValue();
-				options.put(key, convertExpression(value, TypesUtil.getFeatureType(feature)));
+				options.put(key, convertExpression(value, TypesUtil.getType(feature)));
 			}
 		}
 	}
@@ -414,7 +414,7 @@ public class LapgResolver {
 				continue;
 			}
 
-			IType expected = TypesUtil.getFeatureType(feature);
+			IType expected = TypesUtil.getType(feature);
 
 			AstExpression expr = entry.getExpression();
 			if (expr == null) {
