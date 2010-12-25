@@ -17,9 +17,8 @@ package org.textway.lapg.test.oldparser;
 
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Lexem;
-import org.textway.templates.bundle.ILocatedEntity;
 
-public class CLexem implements ILocatedEntity, Lexem {
+public class CLexem implements Lexem {
 
 	private final CSymbol sym;
 	private final String regexp;

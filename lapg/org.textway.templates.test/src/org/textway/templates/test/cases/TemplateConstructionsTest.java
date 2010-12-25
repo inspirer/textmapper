@@ -116,7 +116,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("ww-yt-7\n", q);
 
 		// test 4
-		collector.addErrors("Evaluation of `self[2]` failed for java.lang.Object[]: 2 is out of 0..1");
+		collector.addErrors("dollar.ltp,12: Evaluation of `self[2]` failed for java.lang.Object[]: 2 is out of 0..1");
 		q = env.executeTemplate("dollar.testdollarindexerr", null, null, null);
 		collector.assertEmptyErrors();
 		Assert.assertEquals("ww-yt-\n", q);
@@ -244,9 +244,9 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		// test 1
-		collector.addErrors("Evaluation of `l` failed for java.util.Hashtable: null");
-		collector.addErrors("Assertion `list.length > 5` failed for java.util.Hashtable");
-		collector.addErrors("Assertion `list[1] == 'w4'` failed for java.util.Hashtable");
+		collector.addErrors("assert.ltp,4: Evaluation of `l` failed for java.util.Hashtable: null");
+		collector.addErrors("assert.ltp,5: Assertion `list.length > 5` failed for java.util.Hashtable");
+		collector.addErrors("assert.ltp,7: Assertion `list[1] == 'w4'` failed for java.util.Hashtable");
 		env.executeTemplate("assert.assertit", new EvaluationContext(h), null, null);
 		collector.assertEmptyErrors();
 	}
@@ -307,8 +307,8 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		EvaluationContext context = new EvaluationContext(null);
 
 		// test 1
-		collector.addErrors("Template `my1(aa)` is not compatible with base template `my1`");
-		collector.addErrors("Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
+		collector.addErrors("inline,1: Template `my1(aa)` is not compatible with base template `my1`");
+		collector.addErrors("inline,1: Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
 		String q = env.executeTemplate("overrides.my1", context, null, null);
 		Assert.assertEquals("", q);
 	}
@@ -372,7 +372,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		EvaluationContext context = new EvaluationContext(null);
 
 		// test 1
-		collector.addErrors("`types.Symbol` is not a subtype of `types.Symbol[]`");
+		collector.addErrors("types.ltp,2: `types.Symbol` is not a subtype of `types.Symbol[]`");
 		String q = env.executeTemplate("types.newClass", context, null, null);
 		Assert.assertEquals("template process\n", q);
 		collector.assertEmptyErrors();
@@ -382,7 +382,7 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		Assert.assertEquals("template process\n", q);
 
 		// test 3
-		collector.addErrors("`types.Symbol` is not a subtype of `types.SubSymbol`");
+		collector.addErrors("types.ltp,10: `types.Symbol` is not a subtype of `types.SubSymbol`");
 		q = env.executeTemplate("types.newClassInvalidSubclassing", context, null, null);
 		Assert.assertEquals("template process\n", q);
 		collector.assertEmptyErrors();

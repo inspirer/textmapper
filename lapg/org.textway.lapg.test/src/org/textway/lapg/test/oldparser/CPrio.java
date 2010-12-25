@@ -18,9 +18,8 @@ package org.textway.lapg.test.oldparser;
 import java.util.List;
 
 import org.textway.lapg.api.Prio;
-import org.textway.templates.bundle.ILocatedEntity;
 
-public class CPrio implements Prio, ILocatedEntity {
+public class CPrio implements Prio {
 
 	private final int prio;
 	private final CSymbol[] symbols;

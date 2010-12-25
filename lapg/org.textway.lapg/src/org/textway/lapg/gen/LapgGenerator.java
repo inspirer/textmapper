@@ -15,17 +15,22 @@
  */
 package org.textway.lapg.gen;
 
-import org.textway.lapg.api.*;
+import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.ProcessingStatus;
+import org.textway.lapg.api.ProcessingStrategy;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;
-import org.textway.templates.ast.Node;
-import org.textway.templates.bundle.*;
+import org.textway.templates.bundle.DefaultTemplateLoader;
+import org.textway.templates.bundle.IBundleLoader;
+import org.textway.templates.bundle.StringTemplateLoader;
+import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.objects.IxFactory;
 import org.textway.templates.storage.ClassResourceLoader;
@@ -55,16 +60,16 @@ public final class LapgGenerator {
 
 	public boolean compileGrammar(TextSource input) {
 		try {
-			ProblemCollectorAdapter collector = new ProblemCollectorAdapter(status);
+			TemplatesStatusAdapter templatesStatus = new TemplatesStatusAdapter(status);
 			ResourceRegistry resources = createResourceRegistry();
-			TypesRegistry types = new TypesRegistry(resources, collector);
+			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 
 			Grammar s = SyntaxUtil.parseSyntax(input, status, types);
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
 
-			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, collector);
+			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, templatesStatus);
 			if (!checkOptions(s, registry)) {
 				return false;
 			}
@@ -118,7 +123,7 @@ public final class LapgGenerator {
 
 	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
-		IClass cl = registry.getTypesRegistry().loadClass(templPackage + ".Options", null);
+		IClass cl = registry.getTypesRegistry().getClass(templPackage + ".Options", null);
 
 		// TODO
 
@@ -139,14 +144,13 @@ public final class LapgGenerator {
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, IProblemCollector problemCollector) {
+	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		if(grammarTemplates != null) {
 			loaders.add(new StringTemplateLoader(new Resource(URI.create("input"), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));
-		TemplatesRegistry registry = new TemplatesRegistry(problemCollector, types, loaders.toArray(new IBundleLoader[loaders.size()]));
-		return registry;
+		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
 	private EvaluationContext createEvaluationContext(Grammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
@@ -175,26 +179,23 @@ public final class LapgGenerator {
 		}
 	}
 
-	private static final class ProblemCollectorAdapter implements IProblemCollector {
+	private static final class TemplatesStatusAdapter implements TemplatesStatus {
 
 		private final ProcessingStatus status;
 
-		private ProblemCollectorAdapter(ProcessingStatus status) {
+		private TemplatesStatusAdapter(ProcessingStatus status) {
 			this.status = status;
 		}
 
-		public void fireError(ILocatedEntity referer, String error) {
-			SourceElement adapted = null;
-			if (referer instanceof Node) {
-				adapted = new TemplateSourceElementAdapter((Node) referer);
-			}
-			if (adapted != null) {
-				status.report(ProcessingStatus.KIND_ERROR, error, adapted);
-			} else {
-				if (referer != null) {
-					error = referer.getLocation() + ": " + error;
+		public void report(int kind, String message, org.textway.templates.api.SourceElement... anchors) {
+			if(anchors != null) {
+				SourceElement[] n = new SourceElement[anchors.length];
+				for(int i = 0; i < n.length; i++) {
+					n[i] = new TemplateSourceElementAdapter(anchors[i]);
 				}
-				status.report(ProcessingStatus.KIND_ERROR, error);
+				status.report(kind, message, n);
+			} else {
+				status.report(kind, message);
 			}
 		}
 	}
@@ -204,30 +205,30 @@ public final class LapgGenerator {
 		/**
 		 * template node
 		 */
-		private final Node myNode;
+		private final org.textway.templates.api.SourceElement myWrapped;
 
-		public TemplateSourceElementAdapter(Node myNode) {
-			this.myNode = myNode;
+		public TemplateSourceElementAdapter(org.textway.templates.api.SourceElement element) {
+			this.myWrapped = element;
 		}
 
 		public int getOffset() {
-			return myNode.getOffset();
+			return myWrapped.getOffset();
 		}
 
 		public int getEndOffset() {
-			return myNode.getEndOffset();
+			return myWrapped.getEndOffset();
 		}
 
 		public int getLine() {
-			return myNode.getLine();
+			return myWrapped.getLine();
 		}
 
 		public String getText() {
-			return myNode.toString();
+			return myWrapped.toString();
 		}
 
 		public String getResourceName() {
-			return myNode.getInput().getFile();
+			return myWrapped.getResourceName();
 		}
 	}
 }

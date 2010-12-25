@@ -16,9 +16,8 @@
 package org.textway.lapg.test.oldparser;
 
 import org.textway.lapg.api.SourceElement;
-import org.textway.templates.bundle.ILocatedEntity;
 
-public class CSourcePart implements SourceElement, ILocatedEntity {
+public class CSourcePart implements SourceElement {
 
 	private final String contents;
 

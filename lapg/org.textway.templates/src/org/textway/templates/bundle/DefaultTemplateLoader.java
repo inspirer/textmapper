@@ -15,7 +15,7 @@
  */
 package org.textway.templates.bundle;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.IResourceLoader;
 import org.textway.templates.storage.Resource;
 import org.textway.templates.storage.ResourceRegistry;
@@ -30,7 +30,7 @@ public class DefaultTemplateLoader implements IBundleLoader {
 		this.resources = resources;
 	}
 
-	public TemplatesBundle[] load(String bundleName, IProblemCollector collector) {
+	public TemplatesBundle[] load(String bundleName, TemplatesStatus status) {
 		Resource[] loaded = resources.loadResources(bundleName, IResourceLoader.KIND_TEMPLATE);
 		if (loaded == null) {
 			return null;
@@ -38,7 +38,7 @@ public class DefaultTemplateLoader implements IBundleLoader {
 		TemplatesBundle[] result = new TemplatesBundle[loaded.length];
 		for(int i = 0; i < loaded.length; i++) {
 			Resource resource = loaded[i];
-			result[i] = TemplatesBundle.parse(resource, bundleName, collector);
+			result[i] = TemplatesBundle.parse(resource, bundleName, status);
 		}
 		return result;
 	}

@@ -351,7 +351,7 @@ public class LapgResolver {
 		options = new HashMap<String, Object>();
 
 		// Load class
-		IClass optionsClass = types.loadClass(myTypesPackage + ".Options", null);
+		IClass optionsClass = types.getClass(myTypesPackage + ".Options", null);
 		if (optionsClass == null) {
 			error(tree.getRoot(), "cannot load options class `" + myTypesPackage + ".Options`");
 			return;
@@ -395,7 +395,7 @@ public class LapgResolver {
 		}
 
 		// Load class
-		IClass annoClass = types.loadClass(myTypesPackage + "." + kind, null);
+		IClass annoClass = types.getClass(myTypesPackage + "." + kind, null);
 		if (annoClass == null) {
 			error(astAnnotations, "cannot load class `" + myTypesPackage + "." + kind + "`");
 			return null;
@@ -435,7 +435,7 @@ public class LapgResolver {
 		return new TiExpressionBuilder<AstExpression>() {
 			@Override
 			public IClass resolveType(String className) {
-				return types.loadClass(className, null);
+				return types.getClass(className, null);
 			}
 
 			@Override
@@ -462,7 +462,7 @@ public class LapgResolver {
 					return convertArray(expression, list, type);
 				}
 				if (expression instanceof AstReference) {
-					IClass symbolClass = types.loadClass("common.Symbol", null);
+					IClass symbolClass = types.getClass("common.Symbol", null);
 					if (symbolClass == null) {
 						report(expression, "cannot load class `common.Symbol`");
 						return null;

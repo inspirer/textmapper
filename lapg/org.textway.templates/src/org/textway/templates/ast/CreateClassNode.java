@@ -18,6 +18,7 @@ package org.textway.templates.ast;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IType;
 import org.textway.templates.ast.TemplatesTree.TextSource;
@@ -56,7 +57,7 @@ public class CreateClassNode extends ExpressionNode {
 				if(className.indexOf('.') == -1) {
 					className = context.getCurrent().getPackage() + "." + className;
 				}
-				return env.getTypesRegistry().loadClass(className, CreateClassNode.this);
+				return env.getTypesRegistry().getClass(className, CreateClassNode.this);
 			}
 
 			@Override
@@ -91,7 +92,7 @@ public class CreateClassNode extends ExpressionNode {
 
 			@Override
 			public void report(ExpressionNode expression, String message) {
-				env.fireError(expression, message);
+				env.report(TemplatesStatus.KIND_ERROR, message, expression);
 			}
 		}.resolve(this, null);
 	}

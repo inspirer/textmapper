@@ -15,7 +15,8 @@
  */
 package org.textway.templates.bundle;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.ast.TemplatesTree;
 import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
 import org.textway.templates.ast.TemplatesTree.TextSource;
@@ -42,17 +43,28 @@ public class TemplatesBundle {
 	}
 
 	public static TemplatesBundle parse(final Resource resource, String templatePackage,
-										final IProblemCollector collector) {
+										final TemplatesStatus status) {
 
 		TextSource source = new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine());
-		TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
-		for (TemplatesProblem problem : tree.getErrors()) {
-			final int line = tree.getSource().lineForOffset(problem.getOffset());
-			collector.fireError(new ILocatedEntity() {
-				public String getLocation() {
-					return resource.getUri().getPath() + "," + line;
+		final TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
+		for (final TemplatesProblem problem : tree.getErrors()) {
+			status.report(TemplatesStatus.KIND_ERROR, problem.getMessage(), new SourceElement() {
+				public String getResourceName() {
+					return resource.getUri().getPath();
 				}
-			}, problem.getMessage());
+
+				public int getOffset() {
+					return problem.getOffset();
+				}
+
+				public int getEndOffset() {
+					return problem.getEndOffset();
+				}
+
+				public int getLine() {
+					return tree.getSource().lineForOffset(problem.getOffset());
+				}
+			});
 		}
 		IBundleEntity[] entities = tree.getRoot() != null ? tree.getRoot().toArray(new IBundleEntity[tree.getRoot().size()]) : new IBundleEntity[0];
 		return new TemplatesBundle(resource, entities);

@@ -15,9 +15,9 @@
  */
 package org.textway.xml;
 
-import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.api.SourceElement;
 
-public abstract class XmlElement implements ILocatedEntity {
+public abstract class XmlElement implements SourceElement {
 
 	public abstract void toString(StringBuffer sb);
 
@@ -28,7 +28,21 @@ public abstract class XmlElement implements ILocatedEntity {
 		return sb.toString();
 	}
 
-	public String getLocation() {
+	// TODO ?
+
+	public String getResourceName() {
 		return null;
+	}
+
+	public int getOffset() {
+		return 0;
+	}
+
+	public int getEndOffset() {
+		return 0;
+	}
+
+	public int getLine() {
+		return 0;
 	}
 }

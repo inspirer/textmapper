@@ -15,12 +15,12 @@
  */
 package org.textway.templates.types;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.*;
 import org.textway.templates.api.types.IDataType.Constraint;
 import org.textway.templates.api.types.IDataType.ConstraintKind;
 import org.textway.templates.api.types.IDataType.DataTypeKind;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.storage.Resource;
 import org.textway.templates.types.TypesTree.TypesProblem;
 import org.textway.templates.types.ast.*;
@@ -35,7 +35,7 @@ class TypesResolver {
 	private final String myPackage;
 	private final Resource myResource;
 	private final Map<String, TiClass> myRegistryClasses;
-	private final IProblemCollector myStatus;
+	private final TemplatesStatus myStatus;
 
 	// 1-st stage
 	private TypesTree<Input> myTree;
@@ -49,23 +49,34 @@ class TypesResolver {
 	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
 
 	public TypesResolver(String package_, Resource resource, Map<String, TiClass> registryClasses,
-					  IProblemCollector problemCollector) {
+					  TemplatesStatus status) {
 		this.myPackage = package_;
 		this.myResource = resource;
 		this.myRegistryClasses = registryClasses;
-		this.myStatus = problemCollector;
+		this.myStatus = status;
 	}
 
 	public void build() {
 		final TypesTree<Input> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents().toCharArray(), 1));
 		if (tree.hasErrors()) {
-			myStatus.fireError(null, "Problem(s) in type definitions:");
 			for (final TypesProblem s : tree.getErrors()) {
-				myStatus.fireError(new ILocatedEntity() {
-					public String getLocation() {
-						return myResource.getUri().getPath() + "," + tree.getSource().lineForOffset(s.getOffset());
+				myStatus.report(TemplatesStatus.KIND_ERROR, s.getMessage(), new SourceElement() {
+					public String getResourceName() {
+						return myResource.getUri().getPath();
 					}
-				}, s.getMessage());
+
+					public int getOffset() {
+						return s.getOffset();
+					}
+
+					public int getEndOffset() {
+						return s.getEndOffset();
+					}
+
+					public int getLine() {
+						return tree.getSource().lineForOffset(s.getOffset());
+					}
+				});
 			}
 			return;
 		}
@@ -77,8 +88,9 @@ class TypesResolver {
 			TiClass cl = convertClass(td);
 			String fqName = myPackage + "." + cl.getName();
 			if (myRegistryClasses.containsKey(fqName)) {
-				myStatus.fireError(new LocatedNodeAdapter(td), "class is declared twice: " + fqName
-						+ (myFoundClasses.contains(fqName) ? " (in one file)" : ""));
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"class is declared twice: " + fqName + (myFoundClasses.contains(fqName) ? " (in one file)" : ""),
+						new LocatedNodeAdapter(td));
 			} else {
 				myRegistryClasses.put(fqName, cl);
 			}
@@ -130,10 +142,14 @@ class TypesResolver {
 				}
 			}
 			if (multiplicityCount > 1) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "two multiplicity constraints found (feature `" + fd.getName() + "`)");
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"two multiplicity constraints found (feature `" + fd.getName() + "`)",
+						new LocatedNodeAdapter(fd));
 			}
 			if (stringConstraints != null && fd.getType().getKind() != Type.LSTRING) {
-				myStatus.fireError(new LocatedNodeAdapter(fd), "only string type can have constraints (feature `" + fd.getName() + "`)");
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"only string type can have constraints (feature `" + fd.getName() + "`)",
+						new LocatedNodeAdapter(fd));
 			}
 		}
 		TiFeature feature = new TiFeature(fd.getName(), loBound, hiBound, fd.getType().getIsReference());
@@ -218,7 +234,9 @@ class TypesResolver {
 		} else if (constraintId.equals("identifier")) {
 			return new TiDataType.TiConstraint(ConstraintKind.IDENTIFIER, null);
 		} else {
-			myStatus.fireError(new LocatedNodeAdapter(c), "unknown string constraint: " + constraintId);
+			myStatus.report(TemplatesStatus.KIND_ERROR,
+					"unknown string constraint: " + constraintId,
+					new LocatedNodeAdapter(c));
 			return null;
 		}
 	}
@@ -249,8 +267,9 @@ class TypesResolver {
 		for (ResolveBean entry : myResolveFeatureTypes) {
 			TiClass tiClass = myRegistryClasses.get(entry.getReference());
 			if (tiClass == null) {
-				myStatus.fireError(new LocatedNodeAdapter(entry.getNode()),
-						"cannot resolve type: " + entry.getReference() + " in " + entry.getFeature().getName());
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"cannot resolve type: " + entry.getReference() + " in " + entry.getFeature().getName(),
+						new LocatedNodeAdapter(entry.getNode()));
 			} else {
 				entry.getFeature().setType(tiClass);
 			}
@@ -261,8 +280,9 @@ class TypesResolver {
 			for (String ref : entry.getReferences()) {
 				TiClass target = myRegistryClasses.get(ref);
 				if (target == null) {
-					myStatus.fireError(new LocatedNodeAdapter(entry.getNode()),
-							"cannot resolve super type: " + ref + " for " + entry.getClassifier().getName());
+					myStatus.report(TemplatesStatus.KIND_ERROR,
+							"cannot resolve super type: " + ref + " for " + entry.getClassifier().getName(),
+							new LocatedNodeAdapter(entry.getNode()));
 				} else {
 					source.getExtends().add(target);
 				}
@@ -317,7 +337,7 @@ class TypesResolver {
 
 			@Override
 			public void report(IExpression expression, String message) {
-				myStatus.fireError(new LocatedNodeAdapter((IAstNode) expression), message);
+				myStatus.report(TemplatesStatus.KIND_ERROR, message, new LocatedNodeAdapter((IAstNode) expression));
 			}
 		}.resolve(expression, type);
 	}
@@ -326,7 +346,7 @@ class TypesResolver {
 		return requiredPackages;
 	}
 
-	private class LocatedNodeAdapter implements ILocatedEntity {
+	private class LocatedNodeAdapter implements SourceElement {
 
 		IAstNode node;
 
@@ -334,8 +354,20 @@ class TypesResolver {
 			this.node = node;
 		}
 
-		public String getLocation() {
-			return myPackage + "," + myTree.getSource().lineForOffset(node.getOffset());
+		public String getResourceName() {
+			return myResource.getUri().getPath();
+		}
+
+		public int getOffset() {
+			return node.getOffset();
+		}
+
+		public int getEndOffset() {
+			return node.getEndOffset();
+		}
+
+		public int getLine() {
+			return myTree.getSource().lineForOffset(node.getOffset());
 		}
 	}
 

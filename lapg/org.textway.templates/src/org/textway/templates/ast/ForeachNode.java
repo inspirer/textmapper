@@ -18,6 +18,7 @@ package org.textway.templates.ast;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class ForeachNode extends CompoundNode {
@@ -62,7 +63,7 @@ public class ForeachNode extends CompoundNode {
 							}
 						}
 					} else {
-						env.fireError(this, "In for `"+selectExpr.toString()+"` and `"+targetExpr.toString()+"` should be Integers for " + env.getTitle(context));
+						env.report(TemplatesStatus.KIND_ERROR, "In for `" + selectExpr.toString() + "` and `" + targetExpr.toString() + "` should be Integers for " + env.getTitle(context), this);
 					}
 				} else if( select instanceof Iterable<?> ) {
 					for( Object o : (Iterable<?>)select ) {
@@ -89,7 +90,7 @@ public class ForeachNode extends CompoundNode {
 						}
 					}
 				} else {
-					env.fireError(this, "In foreach `"+selectExpr.toString()+"` should be array or iterable for " + env.getTitle(context));
+					env.report(TemplatesStatus.KIND_ERROR, "In foreach `" + selectExpr.toString() + "` should be array or iterable for " + env.getTitle(context), this);
 				}
 			} finally {
 				context.setVariable(var, prevVar);

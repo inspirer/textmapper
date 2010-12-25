@@ -21,11 +21,10 @@ import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
 import org.textway.templates.api.INamedEntity;
-import org.textway.templates.bundle.ILocatedEntity;
 
 import java.util.Map;
 
-public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedEntity {
+public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 
 	private static final LiSymbolRef[] EMPTY_RIGHT = new LiSymbolRef[0];
 
@@ -36,10 +35,10 @@ public class LiRule extends LiAnnotated implements Rule, ILocatedEntity, INamedE
 	private final LiSymbol priority;
 	private final IAstNode node;
 
-	public LiRule(LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String,Object> annotations, IAstNode node) {
+	public LiRule(LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String, Object> annotations, IAstNode node) {
 		super(annotations, node);
 		this.left = left;
-		this.right = right == null ? EMPTY_RIGHT : right ;
+		this.right = right == null ? EMPTY_RIGHT : right;
 		this.code = code;
 		this.priority = priority;
 		this.node = node;

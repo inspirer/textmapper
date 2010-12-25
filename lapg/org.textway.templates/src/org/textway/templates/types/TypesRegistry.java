@@ -15,10 +15,10 @@
  */
 package org.textway.templates.types;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.storage.IResourceLoader;
 import org.textway.templates.storage.Resource;
 import org.textway.templates.storage.ResourceRegistry;
@@ -28,19 +28,19 @@ import java.util.*;
 public class TypesRegistry implements ITypesRegistry {
 
 	private final ResourceRegistry myResourceRegistry;
-	private final IProblemCollector myCollector;
+	private final TemplatesStatus myStatus;
 	private final Set<String> myLoadedPackages = new HashSet<String>();
 	private final Map<String, TiClass> myClasses = new HashMap<String, TiClass>();
 
-	public TypesRegistry(ResourceRegistry resourceRegistry, IProblemCollector collector) {
+	public TypesRegistry(ResourceRegistry resourceRegistry, TemplatesStatus status) {
 		myResourceRegistry = resourceRegistry;
-		myCollector = collector;
+		myStatus = status;
 	}
 
-	public IClass loadClass(String qualifiedName, ILocatedEntity referer) {
+	public IClass getClass(String qualifiedName, SourceElement referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
-			myCollector.fireError(referer, "Fully qualified type name should contain dot.");
+			myStatus.report(TemplatesStatus.KIND_ERROR, "Fully qualified type name should contain dot.", referer);
 			return null;
 		}
 
@@ -51,7 +51,7 @@ public class TypesRegistry implements ITypesRegistry {
 		return myClasses.get(qualifiedName);
 	}
 
-	private void loadPackage(String name, ILocatedEntity referer) {
+	private void loadPackage(String name, SourceElement referer) {
 		LinkedHashSet<String> queue = new LinkedHashSet<String>();
 		queue.add(name);
 		List<TypesResolver> loaders = new ArrayList<TypesResolver>();
@@ -65,12 +65,12 @@ public class TypesRegistry implements ITypesRegistry {
 
 			Resource[] contentLayers = myResourceRegistry.loadResources(current, IResourceLoader.KIND_TYPES);
 			if(contentLayers == null || contentLayers.length < 1) {
-				myCollector.fireError(referer, "Couldn't load types package `" + current + "`");
+				myStatus.report(TemplatesStatus.KIND_ERROR, "Couldn't load types package `" + current + "`", referer);
 				continue;
 			}
 
 			for(Resource content : contentLayers) {
-				TypesResolver resolver = new TypesResolver(current, content, myClasses, myCollector);
+				TypesResolver resolver = new TypesResolver(current, content, myClasses, myStatus);
 				resolver.build();
 				for(String package_ : resolver.getRequired()) {
 					if(!myLoadedPackages.contains(package_)) {

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Context for one template invocation. Contains variables and this object.
+ * Context for one template invocation. Contains variables and `this' reference.
  */
 public class EvaluationContext {
 

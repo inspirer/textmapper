@@ -18,10 +18,9 @@ package org.textway.lapg.test.oldparser;
 import java.util.List;
 
 import org.textway.lapg.api.*;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.api.INamedEntity;
 
-public class CRule implements ILocatedEntity, INamedEntity, Rule {
+public class CRule implements INamedEntity, Rule {
 
 	private CSymbol left;
 	private final SymbolRef[] right;
@@ -117,7 +116,7 @@ public class CRule implements ILocatedEntity, INamedEntity, Rule {
 		return "Rule `" + toString() + "`";
 	}
 
-	private static class CSymbolRef implements SymbolRef, ILocatedEntity {
+	private static class CSymbolRef implements SymbolRef {
 
 		CSymbol target;
 

@@ -17,10 +17,10 @@ package org.textway.templates.ast;
 
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.api.SourceElement;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
-public abstract class Node implements ILocatedEntity {
+public abstract class Node implements SourceElement {
 
 	private final TextSource source;
 	private final int offset, endoffset;
@@ -51,6 +51,10 @@ public abstract class Node implements ILocatedEntity {
 
 	public TextSource getInput() {
 		return source;
+	}
+
+	public String getResourceName() {
+		return source.getFile();
 	}
 
 	@Override

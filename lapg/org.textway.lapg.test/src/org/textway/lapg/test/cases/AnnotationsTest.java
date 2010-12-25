@@ -24,10 +24,9 @@ import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.test.TestStatus;
-import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
@@ -36,13 +35,11 @@ public class AnnotationsTest extends LapgTestCase {
 
 	private TypesRegistry createDefaultTypesRegistry() {
 		ResourceRegistry resources = new ResourceRegistry(
-				new IResourceLoader[]{
-						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
-						new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"),
-				});
-		return new TypesRegistry(resources, new IProblemCollector() {
-			public void fireError(ILocatedEntity referer, String error) {
-				Assert.fail(error);
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		return new TypesRegistry(resources, new TemplatesStatus() {
+			public void report(int kind, String message, SourceElement... anchors) {
+				Assert.fail(message);
 			}
 		});
 	}

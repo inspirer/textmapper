@@ -18,7 +18,7 @@ package org.textway.templates.ast;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.bundle.ILocatedEntity;
+import org.textway.templates.api.SourceElement;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class EvalNode extends Node {
@@ -40,7 +40,8 @@ public class EvalNode extends Node {
 			if( templateLocation != null ) {
 				id = env.toString(env.evaluate(templateLocation, context, false), templateLocation);
 			} else {
-				id = toEvaluate instanceof ILocatedEntity ? ((ILocatedEntity)toEvaluate).getLocation() : null;
+				// TODO
+				id = toEvaluate instanceof SourceElement ? ((SourceElement)toEvaluate).getResourceName() + "," + ((SourceElement)toEvaluate).getLine() : null;
 			}
 			String templateCode = env.toString(toEvaluate, templateExpr);
 			// TODO fix location in template

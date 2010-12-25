@@ -17,12 +17,8 @@ package org.textway.templates.ast;
 
 import java.util.List;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
+import org.textway.templates.api.*;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.IQuery;
-import org.textway.templates.api.ITemplate;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class CallTemplateNode extends ExpressionNode {
@@ -71,7 +67,7 @@ public class CallTemplateNode extends ExpressionNode {
 				isBase = true;
 				t = current.getBase();
 				if (t == null) {
-					env.fireError(this, "Cannot find base template for `" + current.getName() + "`");
+					env.report(TemplatesStatus.KIND_ERROR, "Cannot find base template for `" + current.getName() + "`", this);
 				}
 			}
 		}

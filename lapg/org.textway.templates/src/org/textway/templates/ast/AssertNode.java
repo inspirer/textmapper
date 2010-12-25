@@ -18,6 +18,7 @@ package org.textway.templates.ast;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class AssertNode extends Node {
@@ -33,7 +34,7 @@ public class AssertNode extends Node {
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			if (!env.asAdaptable(env.evaluate(expr, context, true)).asBoolean()) {
-				env.fireError(this, "Assertion `" + expr.toString() + "` failed for " + env.getTitle(context.getThisObject()));
+				env.report(TemplatesStatus.KIND_ERROR, "Assertion `" + expr.toString() + "` failed for " + env.getTitle(context.getThisObject()), this);
 			}
 		} catch (EvaluationException ex) {
 		}

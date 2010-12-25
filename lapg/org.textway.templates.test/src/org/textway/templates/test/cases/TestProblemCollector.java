@@ -16,12 +16,13 @@
 package org.textway.templates.test.cases;
 
 import junit.framework.Assert;
-import org.textway.templates.bundle.ILocatedEntity;
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class TestProblemCollector implements IProblemCollector {
+public class TestProblemCollector implements TemplatesStatus {
 	public ArrayList<String> nextErrors = new ArrayList<String>();
 
 	public void addErrors(String... errors) {
@@ -36,12 +37,21 @@ public class TestProblemCollector implements IProblemCollector {
 		}
 	}
 
-	public void fireError(ILocatedEntity referer, String error) {
-		if (nextErrors.size() > 0) {
-			String next = nextErrors.remove(0);
-			Assert.assertEquals(next, error);
-		} else {
-			Assert.fail(error);
+	public void report(int kind, String message, SourceElement... anchors) {
+		if(kind == KIND_ERROR || kind == KIND_FATAL) {
+			if(anchors != null && anchors.length >= 1 && anchors[0] != null) {
+				String resourceName = anchors[0].getResourceName();
+				if(resourceName.indexOf(File.separatorChar) != -1) {
+					resourceName = resourceName.substring(resourceName.lastIndexOf(File.separatorChar) + 1);
+				}
+				message = resourceName + "," + anchors[0].getLine() + ": " + message;
+			}
+			if (nextErrors.size() > 0) {
+				String next = nextErrors.remove(0);
+				Assert.assertEquals(next, message);
+			} else {
+				Assert.fail(message);
+			}
 		}
 	}
 }

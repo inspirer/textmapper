@@ -17,19 +17,20 @@ package org.textway.templates.bundle;
 
 import java.util.*;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.ITypesRegistry;
 
 public class TemplatesRegistry {
 
-	private final IProblemCollector collector;
+	private final TemplatesStatus status;
 	private final Set<String> loadedBundles;
 	private final Map<String, IBundleEntity> entities;
 	private final IBundleLoader[] loaders;
 	private final ITypesRegistry typesRegistry;
 
-	public TemplatesRegistry(IProblemCollector collector, ITypesRegistry typesRegistry, IBundleLoader... loaders) {
-		this.collector = collector;
+	public TemplatesRegistry(TemplatesStatus status, ITypesRegistry typesRegistry, IBundleLoader... loaders) {
+		this.status = status;
 		this.typesRegistry = typesRegistry;
 		this.entities = new HashMap<String, IBundleEntity>();
 		this.loadedBundles = new HashSet<String>();
@@ -43,7 +44,7 @@ public class TemplatesRegistry {
 	private TemplatesBundle[] getBundleContents(String bundleName) {
 		List<TemplatesBundle> result = new LinkedList<TemplatesBundle>();
 		for (IBundleLoader loader : loaders) {
-			TemplatesBundle[] sources = loader.load(bundleName, collector);
+			TemplatesBundle[] sources = loader.load(bundleName, status);
 			if (sources != null) {
 				for(TemplatesBundle source : sources) {
 					result.add(source);
@@ -53,14 +54,14 @@ public class TemplatesRegistry {
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;
 	}
 
-	private void loadBundle(ILocatedEntity referer, String bundleName) {
+	private void loadBundle(SourceElement referer, String bundleName) {
 		if (loadedBundles.contains(bundleName)) {
 			return;
 		}
 
 		TemplatesBundle[] contents = getBundleContents(bundleName);
 		if (contents == null) {
-			collector.fireError(referer, "Couldn't load package `" + bundleName + "`");
+			status.report(TemplatesStatus.KIND_ERROR, "Couldn't load package `" + bundleName + "`", referer);
 			return;
 		}
 
@@ -69,7 +70,7 @@ public class TemplatesRegistry {
 		for (int i = contents.length - 1; i >= 0; i--) {
 			IBundleEntity[] loaded = contents[i].getEntities();
 			if (loaded == null || loaded.length == 0) {
-				collector.fireError(referer, "Couldn't get templates from " + contents[i].getName());
+				status.report(TemplatesStatus.KIND_ERROR, "Couldn't get templates from " + contents[i].getName(), referer);
 				return;
 			}
 
@@ -79,13 +80,13 @@ public class TemplatesRegistry {
 				IBundleEntity base = nameToEntity.get(name);
 				if (seenNames.contains(name)) {
 					String baseKind = base != null ? kindToString(base.getKind()) : "Element";
-					collector.fireError(t, baseKind + " `" + bundleName + "." + name + "` was already defined");
+					status.report(TemplatesStatus.KIND_ERROR, baseKind + " `" + bundleName + "." + name + "` was already defined", t);
 				} else {
 					if (base != null ) {
 						if (base.getKind() != t.getKind() || !base.getSignature().equals(t.getSignature())) {
-							collector.fireError(t, kindToString(t.getKind()) + " `" + t.toString()
+							status.report(TemplatesStatus.KIND_ERROR, kindToString(t.getKind()) + " `" + t.toString()
 									+ "` is not compatible with base " + kindToString(base.getKind()).toLowerCase()
-									+ " `" + base.toString() + "`");
+									+ " `" + base.toString() + "`", t);
 						} else {
 							t.setBase(base);
 						}
@@ -101,10 +102,10 @@ public class TemplatesRegistry {
 		}
 	}
 
-	public IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer) {
+	public IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
-			collector.fireError(referer, "Fully qualified name should contain dot.");
+			status.report(TemplatesStatus.KIND_ERROR, "Fully qualified name should contain dot.", referer);
 			return null;
 		}
 
@@ -115,15 +116,16 @@ public class TemplatesRegistry {
 
 		IBundleEntity t = entities.get(resolvedName);
 		if (t == null || kind != IBundleEntity.KIND_ANY && t.getKind() != kind) {
-			collector.fireError(referer, kindToString(kind) + " `" + resolvedName + "` was not found in package `"
-					+ templatePackage + "`");
+			status.report(TemplatesStatus.KIND_ERROR,
+					kindToString(kind) + " `" + resolvedName + "` was not found in package `" + templatePackage + "`",
+					referer);
 			t = null;
 		}
 		return t;
 	}
 
-	public IProblemCollector getCollector() {
-		return collector;
+	public TemplatesStatus getStatus() {
+		return status;
 	}
 
 	public ITypesRegistry getTypesRegistry() {

@@ -24,7 +24,6 @@ import org.textway.templates.ast.TemplatesTree.TextSource;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.ast.TemplateNode;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.objects.*;
 
@@ -48,7 +47,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		if (o instanceof Collection<?> || o instanceof Object[]) {
 			String message = "Evaluation of `" + referer.toString() + "` results in collection, cannot convert to String";
 			EvaluationException ex = new HandledEvaluationException(message);
-			fireError(referer, message);
+			report(KIND_ERROR, message, referer);
 			throw ex;
 		}
 		return o.toString();
@@ -60,7 +59,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			if (result == null && !permitNull) {
 				String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
-				fireError(expr, message);
+				report(KIND_ERROR, message, expr);
 				throw ex;
 			}
 			return result;
@@ -70,7 +69,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			Throwable cause = th.getCause() != null ? th.getCause() : th;
 			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
-			fireError(expr, message);
+			report(KIND_ERROR, message, expr);
 			throw ex;
 		}
 	}
@@ -109,36 +108,47 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
-	public IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer) {
+	public IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer) {
 		return registry.loadEntity(qualifiedName, kind, referer);
 	}
 
-	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
+	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement referer) {
 		if (t == null) {
 			return "";
 		}
 		try {
 			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 		} catch (EvaluationException ex) {
-			fireError(t, ex.getMessage());
+			report(KIND_ERROR, ex.getMessage(), t);
 			return "";
 		}
 	}
 
-	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) throws EvaluationException {
+	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, SourceElement referer) throws EvaluationException {
 		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
-	public String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line) {
-		final String sourceName = templateId != null ? templateId : referer.getLocation();
-		TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
-		for (TemplatesProblem problem : tree.getErrors()) {
-			final int errline = tree.getSource().lineForOffset(problem.getOffset());
-			DefaultEvaluationStrategy.this.fireError(new ILocatedEntity() {
-				public String getLocation() {
-					return sourceName + "," + errline;
+	public String eval(SourceElement referer, String template, String templateId, EvaluationContext context, int line) {
+		final String sourceName = templateId != null ? templateId : referer.getResourceName()+","+referer.getLine();
+		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(new TextSource(sourceName, template.toCharArray(), line), "syntax");
+		for (final TemplatesProblem problem : tree.getErrors()) {
+			DefaultEvaluationStrategy.this.report(KIND_ERROR, problem.getMessage(), new SourceElement() {
+				public String getResourceName() {
+					return sourceName;
 				}
-			}, problem.getMessage());
+
+				public int getOffset() {
+					return problem.getOffset();
+				}
+
+				public int getEndOffset() {
+					return problem.getEndOffset();
+				}
+
+				public int getLine() {
+					return tree.getSource().lineForOffset(problem.getOffset());
+				}
+			});
 		}
 
 		ITemplate t = tree.getRoot();
@@ -148,14 +158,14 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		try {
 			return t.apply(context, this, null);
 		} catch (EvaluationException ex) {
-			fireError(t, ex.getMessage());
+			report(KIND_ERROR, ex.getMessage(), t);
 			return "";
 		}
 	}
 
 
-	public void fireError(ILocatedEntity referer, String error) {
-		templatesFacade.fireError(referer, error);
+	public void report(int kind, String message, SourceElement... anchors) {
+		templatesFacade.report(kind, message, anchors);
 	}
 
 	public final void createStream(String name, String contents) {

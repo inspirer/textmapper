@@ -1,6 +1,6 @@
 /**
  * Copyright 2002-2010 Evgeny Gryaznov
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textway.templates.api;
 
-/**
- * Model entity, which has a human-readable location.
- */
-public interface ILocatedEntity {
+public interface TemplatesStatus {
 
-	/**
-	 * @return human-readable location of the entity
-	 */
-	String getLocation();
+	public static final int KIND_FATAL = 0;
+	public static final int KIND_ERROR = 1;
+	public static final int KIND_WARN = 2;
+	public static final int KIND_INFO = 3;
+
+	void report(int kind, String message, SourceElement...anchors);
 }

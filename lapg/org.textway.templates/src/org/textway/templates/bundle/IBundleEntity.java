@@ -15,7 +15,9 @@
  */
 package org.textway.templates.bundle;
 
-public interface IBundleEntity extends ILocatedEntity {
+import org.textway.templates.api.SourceElement;
+
+public interface IBundleEntity extends SourceElement {
 
 	public static final int KIND_ANY = 0;
 	public static final int KIND_TEMPLATE = 1;

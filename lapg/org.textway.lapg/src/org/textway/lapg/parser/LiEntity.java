@@ -17,9 +17,8 @@ package org.textway.lapg.parser;
 
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.templates.bundle.ILocatedEntity;
 
-public class LiEntity implements SourceElement, ILocatedEntity {
+public class LiEntity implements SourceElement, org.textway.templates.api.SourceElement {
 
 	private final IAstNode node;
 

@@ -15,7 +15,7 @@
  */
 package org.textway.templates.bundle;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.TemplatesStatus;
 
 /**
  * Abstraction of engine which is able to load templates.
@@ -27,5 +27,5 @@ public interface IBundleLoader {
 	 *            qualified name of templates bundle (separated with dots)
 	 * @return contents of the files with templates
 	 */
-	TemplatesBundle[] load(String bundleName, IProblemCollector collector);
+	TemplatesBundle[] load(String bundleName, TemplatesStatus status);
 }

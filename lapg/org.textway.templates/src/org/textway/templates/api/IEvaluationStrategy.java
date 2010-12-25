@@ -15,28 +15,25 @@
  */
 package org.textway.templates.api;
 
-import java.util.Iterator;
-
 import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.objects.IxFactory;
 
 /**
  * Defines environment for evaluating set of templates.
  */
-public interface IEvaluationStrategy extends IProblemCollector, IStreamHandler, IxFactory {
+public interface IEvaluationStrategy extends TemplatesStatus, IStreamHandler, IxFactory {
 
 	Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException;
 
-	String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, ILocatedEntity referer);
+	String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement referer);
 
-	Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, ILocatedEntity referer) throws EvaluationException;
+	Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, SourceElement referer) throws EvaluationException;
 
-	IBundleEntity loadEntity(String qualifiedName, int kind, ILocatedEntity referer);
+	IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer);
 
-	String eval(ILocatedEntity referer, String template, String templateId, EvaluationContext context, int line);
+	String eval(SourceElement referer, String template, String templateId, EvaluationContext context, int line);
 
 	String toString(Object o, ExpressionNode referer) throws EvaluationException;
 

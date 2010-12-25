@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.textway.templates.api.IProblemCollector;
+import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.Resource;
 
 /**
@@ -35,9 +35,9 @@ public class StringTemplateLoader implements IBundleLoader {
 		this.resource = resource;
 	}
 
-	public TemplatesBundle[] load(String bundleName, IProblemCollector collector) {
+	public TemplatesBundle[] load(String bundleName, TemplatesStatus status) {
 		if(sourceForPackage == null) {
-			TemplatesBundle compositeBundle = TemplatesBundle.parse(resource, null, collector);
+			TemplatesBundle compositeBundle = TemplatesBundle.parse(resource, null, status);
 
 			Map<String,List<IBundleEntity>> bundleToTemplates = new HashMap<String, List<IBundleEntity>>();
 			for(IBundleEntity t : compositeBundle.getEntities()) {

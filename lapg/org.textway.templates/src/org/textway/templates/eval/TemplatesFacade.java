@@ -15,12 +15,8 @@
  */
 package org.textway.templates.eval;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.IProblemCollector;
-import org.textway.templates.api.ITemplate;
+import org.textway.templates.api.*;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.objects.IxFactory;
 
@@ -30,16 +26,16 @@ public class TemplatesFacade {
 
 	private final IxFactory factory;
 	private final TemplatesRegistry registry;
-	private final IProblemCollector collector;
+	private final TemplatesStatus status;
 
 	public TemplatesFacade(IxFactory factory, TemplatesRegistry registry) {
-		this(factory, registry, registry.getCollector());
+		this(factory, registry, registry.getStatus());
 	}
 
-	public TemplatesFacade(IxFactory factory, TemplatesRegistry registry, IProblemCollector collector) {
+	public TemplatesFacade(IxFactory factory, TemplatesRegistry registry, TemplatesStatus status) {
 		this.factory = factory;
 		this.registry = registry;
-		this.collector = collector;
+		this.status = status;
 	}
 
 	private IEvaluationStrategy getEvaluationStrategy() {
@@ -53,13 +49,13 @@ public class TemplatesFacade {
 		return new DefaultEvaluationStrategy(this, factory, registry);
 	}
 
-	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, ILocatedEntity referer) {
+	public String executeTemplate(String name, EvaluationContext context, Object[] arguments, SourceElement referer) {
 		ITemplate t = (ITemplate) getEvaluationStrategy().loadEntity(name, IBundleEntity.KIND_TEMPLATE, referer);
 		return getEvaluationStrategy().evaluate(t, context, arguments, referer);
 	}
 
-	public final void fireError(ILocatedEntity referer, String error) {
-		collector.fireError(referer, error);
+	public void report(int kind, String message, SourceElement... anchors) {
+		status.report(kind, message, anchors);
 	}
 
 	public void createStream(String name, String contents) {

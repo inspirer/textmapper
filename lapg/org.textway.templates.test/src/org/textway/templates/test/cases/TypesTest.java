@@ -17,7 +17,6 @@ package org.textway.templates.test.cases;
 
 import org.junit.Assert;
 import org.textway.templates.api.types.IClass;
-import org.textway.templates.bundle.ILocatedEntity;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.test.TemplateTestCase;
@@ -31,28 +30,23 @@ public class TypesTest extends TemplateTestCase {
 
 	// eval.ltp
 	public void testEval() {
-		TestProblemCollector collector = new TestProblemCollector() {
-			@Override
-			public void fireError(ILocatedEntity referer, String error) {
-				super.fireError(null, (referer != null ? referer.getLocation() + ": " : "") + error);
-			}
-		};
+		TestProblemCollector collector = new TestProblemCollector();
 
 		collector.addErrors(
-			"test1,14: two multiplicity constraints found (feature `name`)",
-			"test1,16: only string type can have constraints (feature `term`)",
-			"test1,23: trying to initialize unknown feature `a` in class `test1.Symbol`",
-			"test1,24: expected value of type `string` instead of `int`",
-			"test1,25: expected value of type `test1.Symbol[]` instead of literal",
-			"test1,26: expected value of type `test1.Parser` instead of array",
-			"test1,31: cannot instantiate `test1.Parser1`: class not found",
-			"test1,32: `test1.Parser` is not a subtype of `test1.Symbol`"
+			"test1.types,14: two multiplicity constraints found (feature `name`)",
+			"test1.types,16: only string type can have constraints (feature `term`)",
+			"test1.types,23: trying to initialize unknown feature `a` in class `test1.Symbol`",
+			"test1.types,24: expected value of type `string` instead of `int`",
+			"test1.types,25: expected value of type `test1.Symbol[]` instead of literal",
+			"test1.types,26: expected value of type `test1.Parser` instead of array",
+			"test1.types,31: cannot instantiate `test1.Parser1`: class not found",
+			"test1.types,32: `test1.Parser` is not a subtype of `test1.Symbol`"
 		);
 
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		TypesRegistry types = new TypesRegistry(resources, collector);
 
-		IClass iClass = types.loadClass("test1.Defaults", null);
+		IClass iClass = types.getClass("test1.Defaults", null);
 		Assert.assertNotNull(iClass);
 		collector.assertEmptyErrors();
 	}
