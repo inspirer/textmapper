@@ -12,5 +12,7 @@ public interface IClass extends IType {
 
 	Collection<IFeature> getFeatures();
 
+	Collection<IMethod> getMethods();
+
 	IFeature getFeature(String name);
 }

@@ -33,14 +33,15 @@ public class TypesTest extends TemplateTestCase {
 		TestProblemCollector collector = new TestProblemCollector();
 
 		collector.addErrors(
-			"test1.types,14: two multiplicity constraints found (feature `name`)",
-			"test1.types,16: only string type can have constraints (feature `term`)",
-			"test1.types,23: trying to initialize unknown feature `a` in class `test1.Symbol`",
-			"test1.types,24: expected value of type `string` instead of `int`",
-			"test1.types,25: expected value of type `test1.Symbol[]` instead of literal",
-			"test1.types,26: expected value of type `test1.Parser` instead of array",
-			"test1.types,31: cannot instantiate `test1.Parser1`: class not found",
-			"test1.types,32: `test1.Parser` is not a subtype of `test1.Symbol`"
+			"test1.types,14: several multiplicity constraints found (feature `name`)",
+			"test1.types,15: cannot combine 1 or 0..1 with other multiplicities",
+			"test1.types,17: only string type can have constraints (feature `term`)",
+			"test1.types,24: trying to initialize unknown feature `a` in class `test1.Symbol`",
+			"test1.types,25: expected value of type `string` instead of `int`",
+			"test1.types,26: expected value of type `test1.Symbol[]` instead of literal",
+			"test1.types,27: expected value of type `test1.Parser` instead of array",
+			"test1.types,32: cannot instantiate `test1.Parser1`: class not found",
+			"test1.types,33: `test1.Parser` is not a subtype of `test1.Symbol`"
 		);
 
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));

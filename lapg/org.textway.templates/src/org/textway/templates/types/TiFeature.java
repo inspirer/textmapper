@@ -23,13 +23,13 @@ public class TiFeature implements IFeature {
 
 	private String name;
 	private IType type;
-	private IMultiplicity multiplicity;
+	private IMultiplicity[] multiplicities;
 	private boolean isReference;
 	private Object defaultValue;
 
-	public TiFeature(String name, int loBound, int hiBound, boolean isReference) {
+	public TiFeature(String name, boolean isReference, IMultiplicity... multiplicities) {
 		this.name = name;
-		this.multiplicity = new TiMultiplicity(loBound, hiBound);
+		this.multiplicities = multiplicities;
 		this.isReference = isReference;
 	}
 
@@ -41,12 +41,24 @@ public class TiFeature implements IFeature {
 		return type;
 	}
 
+	public IType getType() {
+		IType type = getTarget();
+		if (multiplicities != null) {
+			for (int i = multiplicities.length - 1; i >= 0; i--) {
+				if (multiplicities[i].isMultiple()) {
+					type = new TiArrayType(type);
+				}
+			}
+		}
+		return type;
+	}
+
 	public void setType(IType type) {
 		this.type = type;
 	}
 
-	public IMultiplicity getMultiplicity() {
-		return multiplicity;
+	public IMultiplicity[] getMultiplicities() {
+		return multiplicities;
 	}
 
 	public boolean isReference() {
@@ -61,7 +73,7 @@ public class TiFeature implements IFeature {
 		this.defaultValue = defaultValue;
 	}
 
-	private final static class TiMultiplicity implements IMultiplicity {
+	public final static class TiMultiplicity implements IMultiplicity {
 
 		private int loBound;
 		private int hiBound;

@@ -17,12 +17,10 @@ package org.textway.templates.types;
 
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IMethod;
 import org.textway.templates.api.types.IType;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class TiClass implements IClass {
 
@@ -30,13 +28,15 @@ public class TiClass implements IClass {
 	private String package_;
 	private Collection<IClass> _super;
 	private Collection<IFeature> features;
-	
+	private List<IMethod> methods;
+
 	public TiClass(String name, String package_, Collection<IClass> _super,
-			Collection<IFeature> features) {
+				   Collection<IFeature> features, List<IMethod> methods) {
 		this.name = name;
 		this.package_ = package_;
 		this._super = _super;
 		this.features = features;
+		this.methods = methods;
 	}
 
 	public String getName() {
@@ -53,6 +53,10 @@ public class TiClass implements IClass {
 
 	public Collection<IFeature> getFeatures() {
 		return features;
+	}
+
+	public Collection<IMethod> getMethods() {
+		return methods;
 	}
 
 	public IFeature getFeature(String name) {

@@ -22,6 +22,7 @@ import org.textway.templates.api.types.IDataType.Constraint;
 import org.textway.templates.api.types.IDataType.ConstraintKind;
 import org.textway.templates.api.types.IDataType.DataTypeKind;
 import org.textway.templates.storage.Resource;
+import org.textway.templates.types.TiFeature.TiMultiplicity;
 import org.textway.templates.types.TypesTree.TypesProblem;
 import org.textway.templates.types.ast.*;
 
@@ -49,7 +50,7 @@ class TypesResolver {
 	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
 
 	public TypesResolver(String package_, Resource resource, Map<String, TiClass> registryClasses,
-					  TemplatesStatus status) {
+						 TemplatesStatus status) {
 		this.myPackage = package_;
 		this.myResource = resource;
 		this.myRegistryClasses = registryClasses;
@@ -100,17 +101,22 @@ class TypesResolver {
 
 	private TiClass convertClass(TypeDeclaration td) {
 		List<IFeature> features = new ArrayList<IFeature>();
-		if(td.getFeatureDeclarationsopt() != null) {
-			for (FeatureDeclaration fd : td.getFeatureDeclarationsopt()) {
-				features.add(convertFeature(fd));
+		List<IMethod> methods = new ArrayList<IMethod>();
+		if (td.getMemberDeclarationsopt() != null) {
+			for (IMemberDeclaration memberDeclaration : td.getMemberDeclarationsopt()) {
+				if (memberDeclaration instanceof FeatureDeclaration) {
+					features.add(convertFeature((FeatureDeclaration) memberDeclaration));
+				} else if (memberDeclaration instanceof MethodDeclaration) {
+					methods.add(convertMethod((MethodDeclaration) memberDeclaration));
+				}
 			}
 		}
-		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features);
+		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features, methods);
 		if (td.getExtends() != null) {
 			List<String> superNames = new ArrayList<String>();
 			for (List<String> className : td.getExtends()) {
 				String s = getQualifiedName(className);
-				if(s.indexOf('.') == -1) {
+				if (s.indexOf('.') == -1) {
 					s = myPackage + "." + s;
 				}
 				superNames.add(s);
@@ -120,42 +126,67 @@ class TypesResolver {
 		return result;
 	}
 
+	private IMethod convertMethod(MethodDeclaration memberDeclaration) {
+		// TODO
+
+		return new TiMethod(memberDeclaration.getName(), null, null);
+	}
+
 	private TiFeature convertFeature(FeatureDeclaration fd) {
 		// constraints
-		int loBound = 0;
-		int hiBound = 1;
 		List<StringConstraint> stringConstraints = null;
+		List<IMultiplicity> multiplicities = null;
+		if (fd.getTypeEx().getMultiplicityList() != null) {
+			myStatus.report(TemplatesStatus.KIND_ERROR,
+					"feature cannot have multiplicity in type (feature `" + fd.getName() + "`)",
+					new LocatedNodeAdapter(fd.getTypeEx()));
+		}
 		if (fd.getModifiersopt() != null) {
-			int multiplicityCount = 0;
-			for (IConstraint c : fd.getModifiersopt()) {
-				if (c instanceof Multiplicity) {
-					Multiplicity multiplicity = (Multiplicity) c;
-					loBound = multiplicity.getLo();
-					hiBound = multiplicity.getHasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
-							.getHi() : loBound;
-					multiplicityCount++;
-				} else if (c instanceof StringConstraint) {
+			for (org.textway.templates.types.ast.Constraint c : fd.getModifiersopt()) {
+				if (c.getMultiplicityList() != null) {
+					if (multiplicities != null) {
+						myStatus.report(TemplatesStatus.KIND_ERROR,
+								"several multiplicity constraints found (feature `" + fd.getName() + "`)",
+								new LocatedNodeAdapter(fd));
+					} else {
+						multiplicities = convertMultiplicities(c.getMultiplicityList());
+					}
+				} else if (c.getStringConstraint() != null) {
 					if (stringConstraints == null) {
 						stringConstraints = new ArrayList<StringConstraint>();
 					}
-					stringConstraints.add((StringConstraint) c);
+					stringConstraints.add(c.getStringConstraint());
 				}
 			}
-			if (multiplicityCount > 1) {
-				myStatus.report(TemplatesStatus.KIND_ERROR,
-						"two multiplicity constraints found (feature `" + fd.getName() + "`)",
-						new LocatedNodeAdapter(fd));
-			}
-			if (stringConstraints != null && fd.getType().getKind() != Type.LSTRING) {
+			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != Type.LSTRING) {
 				myStatus.report(TemplatesStatus.KIND_ERROR,
 						"only string type can have constraints (feature `" + fd.getName() + "`)",
 						new LocatedNodeAdapter(fd));
 			}
 		}
-		TiFeature feature = new TiFeature(fd.getName(), loBound, hiBound, fd.getType().getIsReference());
-		convertType(feature, fd.getType(), stringConstraints);
+		TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().getIsReference(),
+				multiplicities == null
+						? new IMultiplicity[0]
+						: multiplicities.toArray(new IMultiplicity[multiplicities.size()]));
+		convertType(feature, fd.getTypeEx().getType(), stringConstraints);
 		convertDefautVal(feature, fd.getDefaultvalopt());
 		return feature;
+	}
+
+	private List<IMultiplicity> convertMultiplicities(List<Multiplicity> list) {
+		List<IMultiplicity> multiplicities = new ArrayList<IMultiplicity>();
+		for (Multiplicity multiplicity : list) {
+			int loBound = multiplicity.getLo();
+			int hiBound = multiplicity.getHasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
+					.getHi() : loBound;
+			TiMultiplicity new_ = new TiMultiplicity(loBound, hiBound);
+			if(list.size() > 1 && !new_.isMultiple()) {
+				myStatus.report(TemplatesStatus.KIND_ERROR, "cannot combine 1 or 0..1 with other multiplicities", new LocatedNodeAdapter(multiplicity));
+				return null;
+			}
+			multiplicities.add(new_);
+		}
+		return multiplicities;
 	}
 
 	private void convertDefautVal(TiFeature feature, IExpression defaultValue) {
@@ -292,7 +323,7 @@ class TypesResolver {
 
 	void resolveExpressions() {
 		for (ResolveDefaultValue entry : myResolveDefaultValues) {
-			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), TypesUtil.getType(entry.getFeature_())));
+			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), entry.getFeature_().getType()));
 		}
 	}
 
@@ -321,9 +352,9 @@ class TypesResolver {
 							qualifiedName = myPackage + "." + qualifiedName;
 						}
 						Map<String, IExpression> props = null;
-						if(expr.getMapEntriesopt() != null) {
+						if (expr.getMapEntriesopt() != null) {
 							props = new HashMap<String, IExpression>();
-							for(MapEntriesItem i : expr.getMapEntriesopt()) {
+							for (MapEntriesItem i : expr.getMapEntriesopt()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}
 						}

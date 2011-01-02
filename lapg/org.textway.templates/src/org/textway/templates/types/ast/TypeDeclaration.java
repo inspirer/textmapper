@@ -7,13 +7,13 @@ public class TypeDeclaration extends AstNode {
 
 	private String name;
 	private List<List<String>> _extends;
-	private List<FeatureDeclaration> featureDeclarationsopt;
+	private List<IMemberDeclaration> memberDeclarationsopt;
 
-	public TypeDeclaration(String name, List<List<String>> _extends, List<FeatureDeclaration> featureDeclarationsopt, TextSource input, int start, int end) {
+	public TypeDeclaration(String name, List<List<String>> _extends, List<IMemberDeclaration> memberDeclarationsopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
 		this._extends = _extends;
-		this.featureDeclarationsopt = featureDeclarationsopt;
+		this.memberDeclarationsopt = memberDeclarationsopt;
 	}
 
 	public String getName() {
@@ -22,7 +22,7 @@ public class TypeDeclaration extends AstNode {
 	public List<List<String>> getExtends() {
 		return _extends;
 	}
-	public List<FeatureDeclaration> getFeatureDeclarationsopt() {
-		return featureDeclarationsopt;
+	public List<IMemberDeclaration> getMemberDeclarationsopt() {
+		return memberDeclarationsopt;
 	}
 }

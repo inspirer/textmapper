@@ -94,7 +94,7 @@ public abstract class TiExpressionBuilder<Node> {
 					continue;
 				}
 
-				Object value = resolve(item.getValue(), TypesUtil.getType(feature));
+				Object value = resolve(item.getValue(), feature.getType());
 				if (value != null) {
 					result.put(key, value);
 				}

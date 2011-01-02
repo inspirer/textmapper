@@ -19,7 +19,6 @@ import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
-import org.textway.templates.types.TypesUtil;
 
 public class JavaIxObjectWithType extends DefaultJavaIxObject {
 
@@ -45,7 +44,7 @@ public class JavaIxObjectWithType extends DefaultJavaIxObject {
 			return result;
 		}
 
-		IType resultType = TypesUtil.getType(feature);
+		IType resultType = feature.getType();
 		if(resultType instanceof IClass) {
 			return new JavaIxObjectWithType(result, (IClass) resultType);
 		}

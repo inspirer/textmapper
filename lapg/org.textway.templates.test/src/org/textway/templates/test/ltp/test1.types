@@ -11,7 +11,8 @@ class Grammar {
 class Symbol {
 	int index;
 	string id;
-	string name[1..*; 1];
+	string name[1; 1..*];
+	string wrong[1, 1..*];
 	string type;
 	bool term[identifier];
 }

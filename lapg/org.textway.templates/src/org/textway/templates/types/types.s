@@ -73,7 +73,7 @@ declarations ::=
 	declarations type_declaration | type_declaration ;
 
 type_declaration ::=
-	Lclass name=identifier extends=extends_clauseopt '{' feature_declarationsopt '}'
+	Lclass name=identifier extends=extends_clauseopt '{' member_declarationsopt '}'
 ;
 
 extends_clause ::=
@@ -81,11 +81,22 @@ extends_clause ::=
 
 ##### DECLARATIONS
 
-feature_declarations ::=
-	feature_declarations feature_declaration | feature_declaration ;
+member_declarations ::=
+	member_declarations member_declaration | member_declaration ;
+
+member_declaration ::=
+	feature_declaration
+  | method_declaration
+;
 
 feature_declaration ::=
-	type name=identifier modifiersopt defaultvalopt ';' ;
+	type_ex name=identifier modifiersopt defaultvalopt ';' ;
+
+method_declaration ::=
+	returnType=type_ex name=identifier '(' parametersopt ')' ;
+
+parameters ::=
+	type_ex | parameters ',' type_ex ;
 
 defaultval ::=
 	'=' @pass expression ;
@@ -97,7 +108,7 @@ constraints ::=
 	constraints ';' constraint | constraint ;
 
 constraint ::=
-	string_constraint | multiplicity ;
+	string_constraint | multiplicity_list ;
 
 string_constraint ::=
 	kind=Lset ':' strings
@@ -111,6 +122,11 @@ strings ::=
 string ::=
 	identifier | scon ;	
 
+multiplicity_list ::=
+	multiplicity
+  | multiplicity_list ',' multiplicity
+;
+
 multiplicity ::=
 	lo=icon
   | lo=icon '..' hasNoUpperBound='*'
@@ -118,6 +134,11 @@ multiplicity ::=
 ;
 
 ##### TYPES
+
+type_ex ::=
+	type
+  |	type '[' multiplicity_list ']'
+;
 
 type ::=
 	kind=Lint

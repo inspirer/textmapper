@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +15,30 @@
  */
 package org.textway.templates.types;
 
-import org.textway.templates.api.types.IDataType;
-import org.textway.templates.api.types.IDataType.DataTypeKind;
-import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IMethod;
 import org.textway.templates.api.types.IType;
 
-public class TypesUtil {
+public class TiMethod implements IMethod {
 
-	public static boolean isBooleanType(IType type) {
-		return type instanceof IDataType && ((IDataType) type).getKind() == DataTypeKind.BOOL;
+	private final String name;
+	private final IType returnType;
+	private final IType[] parameterTypes;
+
+	public TiMethod(String name, IType returnType, IType[] parameterTypes) {
+		this.name = name;
+		this.returnType = returnType;
+		this.parameterTypes = parameterTypes;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public IType getReturnType() {
+		return returnType;
+	}
+
+	public IType[] getParameterTypes() {
+		return parameterTypes;
 	}
 }

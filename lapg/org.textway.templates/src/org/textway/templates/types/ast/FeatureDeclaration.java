@@ -3,17 +3,17 @@ package org.textway.templates.types.ast;
 import java.util.List;
 import org.textway.templates.types.TypesTree.TextSource;
 
-public class FeatureDeclaration extends AstNode {
+public class FeatureDeclaration extends AstNode implements IMemberDeclaration {
 
 	private String name;
-	private Type type;
-	private List<IConstraint> modifiersopt;
+	private TypeEx typeEx;
+	private List<Constraint> modifiersopt;
 	private IExpression defaultvalopt;
 
-	public FeatureDeclaration(String name, Type type, List<IConstraint> modifiersopt, IExpression defaultvalopt, TextSource input, int start, int end) {
+	public FeatureDeclaration(String name, TypeEx typeEx, List<Constraint> modifiersopt, IExpression defaultvalopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
-		this.type = type;
+		this.typeEx = typeEx;
 		this.modifiersopt = modifiersopt;
 		this.defaultvalopt = defaultvalopt;
 	}
@@ -21,10 +21,10 @@ public class FeatureDeclaration extends AstNode {
 	public String getName() {
 		return name;
 	}
-	public Type getType() {
-		return type;
+	public TypeEx getTypeEx() {
+		return typeEx;
 	}
-	public List<IConstraint> getModifiersopt() {
+	public List<Constraint> getModifiersopt() {
 		return modifiersopt;
 	}
 	public IExpression getDefaultvalopt() {

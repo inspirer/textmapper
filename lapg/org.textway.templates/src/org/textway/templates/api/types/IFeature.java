@@ -6,7 +6,9 @@ public interface IFeature {
 
 	IType getTarget();
 
-	IMultiplicity getMultiplicity();
+	IType getType();
+
+	IMultiplicity[] getMultiplicities();
 
 	boolean isReference();
 

@@ -1,4 +1,4 @@
 package org.textway.templates.types.ast;
 
-public interface IConstraint {
+public interface IMemberDeclaration {
 }

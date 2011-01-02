@@ -2,7 +2,7 @@ package org.textway.templates.types.ast;
 
 import org.textway.templates.types.TypesTree.TextSource;
 
-public class Multiplicity extends AstNode implements IConstraint {
+public class Multiplicity extends AstNode {
 
 	private Integer lo;
 	private boolean hasNoUpperBound;
