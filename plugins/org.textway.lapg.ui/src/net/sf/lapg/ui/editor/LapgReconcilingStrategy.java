@@ -20,17 +20,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.textway.lapg.api.Grammar;
 import net.sf.lapg.common.ui.editor.ISourceStructure;
 import net.sf.lapg.common.ui.editor.IStructuredDocumentProvider;
 import net.sf.lapg.common.ui.editor.StructuredTextEditor;
 import net.sf.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.parser.LapgResolver;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.ast.AstRoot;
 import net.sf.lapg.ui.structure.LapgSourceStructure;
 
 import org.eclipse.core.resources.IFile;
@@ -41,6 +34,19 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
+import org.textway.lapg.Lapg;
+import org.textway.lapg.api.Grammar;
+import org.textway.lapg.parser.LapgResolver;
+import org.textway.lapg.parser.LapgTree;
+import org.textway.lapg.parser.LapgTree.LapgProblem;
+import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textway.lapg.parser.ast.AstRoot;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
+import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.IResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
@@ -53,6 +59,13 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		super(editor);
 	}
 
+	private ResourceRegistry createResourceRegistry() {
+		// TODO use project options
+		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
+		loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
+	}
+	
 	@Override
 	protected ISourceStructure validate(boolean first, StructuredTextEditor seditor, IDocument doc, IProgressMonitor monitor) {
 		LapgSourceEditor editor = (LapgSourceEditor) seditor;
@@ -70,13 +83,23 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		String content = doc.get();
 
 		TextSource input = new TextSource(mainResource.getName(), content.toCharArray(), 1);
-		LapgTree<AstRoot> ast = LapgTree.parse(input);
+		LapgTree<AstRoot> ast = LapgTree.parseInput(input);
 		sources.add(LapgTree.PARSER_SOURCE);
 
 		List<LapgProblem> problems = ast.getErrors();
 		Grammar grammar = null;
 		if (problems.size() == 0) {
-			LapgResolver resolver = new LapgResolver(ast, LapgGenerator.getDefaultOptions());
+			
+			TemplatesStatus templatesStatus = new TemplatesStatus() {
+				public void report(int kind, String message,
+						SourceElement... anchors) {
+					// ignore, TODO fix
+				}
+			};
+			ResourceRegistry resources = createResourceRegistry();
+			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
+			
+			LapgResolver resolver = new LapgResolver(ast, types);
 			grammar = resolver.resolve();
 			sources.add(LapgResolver.RESOLVER_SOURCE);
 		}
