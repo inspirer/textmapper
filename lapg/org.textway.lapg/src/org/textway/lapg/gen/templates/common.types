@@ -21,11 +21,12 @@ class Grammar {
 
 	SourceElement templates;
 
+	bool hasActions();
+	bool hasLexemActions();
+	bool hasErrors();
+
 # TODO:
 #	Map<String, Object> getOptions();
-#	boolean hasActions();
-#	boolean hasLexemActions();
-#	boolean hasErrors();
 }
 
 class SourceElement {
@@ -82,11 +83,14 @@ class Parser {
 	int rleft[0..*];
 	int rright[0..*];
 	int nactions;
+	int rindex[0..*];
+	int rprio[0..*];
+	int action_index[0..*];
 
-# TODO
-#	public int[] rindex, rprio;
-#	public short[] sym_goto, sym_from, sym_to, action_table;
-#	public int[] action_index;
+	int sym_goto[0..*];
+	int sym_from[0..*];
+	int sym_to[0..*];
+	int action_table[0..*];
 
 }
 
@@ -98,8 +102,7 @@ class Lexer {
 	int char2no[0..*];
 	int groupset[0..*];
 
-# TODO
-#	public final int[][] change;
+	int change[0..*,0..*];
 }
 
 class List {

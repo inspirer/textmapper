@@ -93,7 +93,7 @@ feature_declaration ::=
 	type_ex name=identifier modifiersopt defaultvalopt ';' ;
 
 method_declaration ::=
-	returnType=type_ex name=identifier '(' parametersopt ')' ;
+	returnType=type_ex name=identifier '(' parametersopt ')' ';' ;
 
 parameters ::=
 	type_ex | parameters ',' type_ex ;
