@@ -1,4 +1,4 @@
-package net.sf.lapg.ui.structure;
+package org.textway.lapg.ui.structure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.AbstractVisitor;
 import org.textway.lapg.parser.ast.AstRoot;
-import net.sf.lapg.ui.LapgUIActivator;
+import org.textway.lapg.ui.LapgUIActivator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;

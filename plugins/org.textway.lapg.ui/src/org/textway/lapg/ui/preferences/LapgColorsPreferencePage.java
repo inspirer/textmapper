@@ -10,10 +10,8 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.preferences;
+package org.textway.lapg.ui.preferences;
 
-import net.sf.lapg.ui.LapgUIActivator;
-import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -26,6 +24,8 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
 import org.textway.lapg.common.ui.preferences.DefaultColoringConfigurationBlock;
 import org.textway.lapg.common.ui.preferences.OverlayPreferenceStore;
+import org.textway.lapg.ui.LapgUIActivator;
+import org.textway.lapg.ui.editor.colorer.LapgHighlightingManager;
 
 public class LapgColorsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 

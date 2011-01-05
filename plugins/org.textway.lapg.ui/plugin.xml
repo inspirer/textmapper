@@ -18,8 +18,8 @@
          name="%source_editor"
          icon="icons/syntax.gif"
          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-         class="net.sf.lapg.ui.editor.LapgSourceEditor"
-         id="net.sf.lapg.ui.editor.LapgSourceEditor">
+         class="org.textway.lapg.ui.editor.LapgSourceEditor"
+         id="org.textway.lapg.ui.editor.LapgSourceEditor">
          <contentTypeBinding contentTypeId="org.textway.lapg.ui.lapgText"/> 
       </editor>
    </extension>
@@ -30,13 +30,13 @@
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
             contentTypeId="org.textway.lapg.ui.lapgText"
-            class="net.sf.lapg.ui.editor.LapgSourceSetupParticipant">
+            class="org.textway.lapg.ui.editor.LapgSourceSetupParticipant">
       </participant>
    </extension>
 
    <extension point="org.eclipse.ui.contexts" id="textEditorContexts">
       <context
-            id="net.sf.lapg.ui.scope"
+            id="org.textway.lapg.ui.scope"
             name="%editor_context_name"
             parentId="org.eclipse.ui.textEditorScope">
       </context>
@@ -44,50 +44,50 @@
 
    <extension point="org.eclipse.ui.editors.annotationTypes" id="textAnnotationTypes">
       <type
-         name="net.sf.lapg.ui.editor.error"
+         name="org.textway.lapg.ui.editor.error"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerSeverity="2">
       </type>
       <type
-         name="net.sf.lapg.ui.editor.warning"
+         name="org.textway.lapg.ui.editor.warning"
          super="org.eclipse.ui.workbench.texteditor.warning"
          markerSeverity="1">
       </type>
       <type
-         name="net.sf.lapg.ui.editor.info"
+         name="org.textway.lapg.ui.editor.info"
          super="org.eclipse.ui.workbench.texteditor.info"
          markerSeverity="0">
       </type>
    </extension>
    
    <extension point="org.eclipse.core.runtime.preferences" id="preferenceInitializers">
-      <initializer class="net.sf.lapg.ui.preferences.LapgUIPreferencesInitializer"/>
+      <initializer class="org.textway.lapg.ui.preferences.LapgUIPreferencesInitializer"/>
    </extension>
 
    <extension point="org.eclipse.ui.preferencePages" id="preferencePages">
       <page
             name="%pref_root_name"
-            class="net.sf.lapg.ui.preferences.LapgPreferencePage"
-            id="net.sf.lapg.ui.preferences.RootPreferencePage">
+            class="org.textway.lapg.ui.preferences.LapgPreferencePage"
+            id="org.textway.lapg.ui.preferences.RootPreferencePage">
       </page>
       <page
             name="%pref_syntaxcoloring_name"
-            category="net.sf.lapg.ui.preferences.RootPreferencePage"
-            class="net.sf.lapg.ui.preferences.LapgColorsPreferencePage"
-            id="net.sf.lapg.ui.preferences.ColorPreferencePage">
+            category="org.textway.lapg.ui.preferences.RootPreferencePage"
+            class="org.textway.lapg.ui.preferences.LapgColorsPreferencePage"
+            id="org.textway.lapg.ui.preferences.ColorPreferencePage">
       </page>
    </extension>
    
    <extension point="org.eclipse.ui.newWizards" id="newWizards">
       <category
-            id="net.sf.lapg.ui.wizards"
+            id="org.textway.lapg.ui.wizards"
             name="%lapg_wizard_category">
       </category>
       <wizard
-            id="net.sf.lapg.ui.wizard.newSyntax"
+            id="org.textway.lapg.ui.wizard.newSyntax"
             name="%wizard_name"
-            class="net.sf.lapg.ui.wizard.CreateSyntaxFileWizard"
-            category="net.sf.lapg.ui.wizards"
+            class="org.textway.lapg.ui.wizard.CreateSyntaxFileWizard"
+            category="org.textway.lapg.ui.wizards"
             icon="icons/syntax.gif">
          <description>%wizard_description</description>
          <selection class="org.eclipse.core.resources.IResource"/>

@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.wizard;
+package org.textway.lapg.ui.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

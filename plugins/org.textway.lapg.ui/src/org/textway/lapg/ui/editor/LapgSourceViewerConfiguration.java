@@ -10,10 +10,8 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.editor;
+package org.textway.lapg.ui.editor;
 
-import net.sf.lapg.ui.editor.colorer.ILapgColors;
-import net.sf.lapg.ui.editor.colorer.LapgSourceScanner;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
@@ -30,6 +28,8 @@ import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.colorer.CommentScanner;
 import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textway.lapg.ui.editor.colorer.ILapgColors;
+import org.textway.lapg.ui.editor.colorer.LapgSourceScanner;
 
 public final class LapgSourceViewerConfiguration extends StructuredTextViewerConfiguration {
 

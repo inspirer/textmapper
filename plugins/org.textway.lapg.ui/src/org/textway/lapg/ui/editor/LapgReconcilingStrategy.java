@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.editor;
+package org.textway.lapg.ui.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.lapg.ui.structure.LapgSourceStructure;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -41,6 +40,7 @@ import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.parser.ast.AstRoot;
+import org.textway.lapg.ui.structure.LapgSourceStructure;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.ClassResourceLoader;
@@ -50,7 +50,7 @@ import org.textway.templates.types.TypesRegistry;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
-	public static final String ANNOTATION_PREFIX = "net.sf.lapg.ui.editor"; //$NON-NLS-1$
+	public static final String ANNOTATION_PREFIX = "org.textway.lapg.ui.editor"; //$NON-NLS-1$
 	public static final String ANNOTATION_ERROR = ANNOTATION_PREFIX + ".error"; //$NON-NLS-1$
 	public static final String ANNOTATION_WARN = ANNOTATION_PREFIX + ".warning"; //$NON-NLS-1$
 	public static final String ANNOTATION_INFO = ANNOTATION_PREFIX + ".info"; //$NON-NLS-1$

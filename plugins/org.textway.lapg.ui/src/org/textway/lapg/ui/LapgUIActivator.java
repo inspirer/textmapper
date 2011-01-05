@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui;
+package org.textway.lapg.ui;
 
 
 import org.eclipse.core.runtime.IStatus;
@@ -20,7 +20,7 @@ import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
 
 public class LapgUIActivator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "net.sf.lapg.ui";
+	public static final String PLUGIN_ID = "org.textway.lapg.ui";
 
 	private static LapgUIActivator myDefault;
 

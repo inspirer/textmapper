@@ -1,4 +1,4 @@
-package net.sf.lapg.ui.editor.colorer;
+package org.textway.lapg.ui.editor.colorer;
 
 import org.textway.lapg.common.ui.editor.ISourceStructure;
 import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
@@ -8,7 +8,7 @@ import org.textway.lapg.parser.ast.AstError;
 import org.textway.lapg.parser.ast.AstIdentifier;
 import org.textway.lapg.parser.ast.AstNode;
 import org.textway.lapg.parser.ast.AstReference;
-import net.sf.lapg.ui.structure.LapgSourceStructure;
+import org.textway.lapg.ui.structure.LapgSourceStructure;
 
 public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanticHighlighter {
 

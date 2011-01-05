@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.editor.colorer;
+package org.textway.lapg.ui.editor.colorer;
 
 import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
 

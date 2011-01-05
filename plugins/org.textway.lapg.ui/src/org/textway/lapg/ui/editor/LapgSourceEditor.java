@@ -10,11 +10,8 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.ui.editor;
+package org.textway.lapg.ui.editor;
 
-import net.sf.lapg.ui.LapgUIActivator;
-import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
-import net.sf.lapg.ui.editor.colorer.LapgSemanticHighlighter;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -31,6 +28,9 @@ import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
 import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textway.lapg.ui.LapgUIActivator;
+import org.textway.lapg.ui.editor.colorer.LapgHighlightingManager;
+import org.textway.lapg.ui.editor.colorer.LapgSemanticHighlighter;
 
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener {
 
@@ -42,7 +42,7 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 
 	@Override
 	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { "net.sf.lapg.ui.scope" }); //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { "org.textway.lapg.ui.scope" }); //$NON-NLS-1$
 	}
 
 	public IAnnotationModel getAnnotationModel() {
@@ -76,8 +76,8 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 	protected String[] collectContextMenuPreferencePages() {
 		String[] inheritedPages = super.collectContextMenuPreferencePages();
 		String[] result = new String[inheritedPages.length + 2];
-		result[0] = "net.sf.lapg.ui.preferences.RootPreferencePage"; //$NON-NLS-1$
-		result[1] = "net.sf.lapg.ui.preferences.ColorPreferencePage"; //$NON-NLS-1$
+		result[0] = "org.textway.lapg.ui.preferences.RootPreferencePage"; //$NON-NLS-1$
+		result[1] = "org.textway.lapg.ui.preferences.ColorPreferencePage"; //$NON-NLS-1$
 		System.arraycopy(inheritedPages, 0, result, 2, inheritedPages.length);
 		return result;
 	}
