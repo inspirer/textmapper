@@ -1,4 +1,4 @@
-package net.sf.lapg.common.ui.preferences;
+package org.textway.lapg.common.ui.preferences;
 
 import org.eclipse.core.runtime.Assert;
 

@@ -1,8 +1,8 @@
 package net.sf.lapg.ui.editor.colorer;
 
-import net.sf.lapg.common.ui.editor.ISourceStructure;
-import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
+import org.textway.lapg.common.ui.editor.ISourceStructure;
+import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textway.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
 import org.textway.lapg.parser.ast.AbstractVisitor;
 import org.textway.lapg.parser.ast.AstError;
 import org.textway.lapg.parser.ast.AstIdentifier;

@@ -23,11 +23,11 @@ import org.eclipse.jface.text.rules.NumberRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textway.lapg.common.ui.editor.colorer.CommentScanner.DefaultKeywordDetector;
+import org.textway.lapg.common.ui.editor.colorer.CommentScanner.WhitespaceDetector;
 
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
-import net.sf.lapg.common.ui.editor.colorer.CommentScanner.DefaultKeywordDetector;
-import net.sf.lapg.common.ui.editor.colorer.CommentScanner.WhitespaceDetector;
 
 public class LapgSourceScanner extends BufferedRuleBasedScanner {
 

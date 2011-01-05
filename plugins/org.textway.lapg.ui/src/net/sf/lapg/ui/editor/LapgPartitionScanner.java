@@ -14,7 +14,8 @@ package net.sf.lapg.ui.editor;
 
 import java.io.IOException;
 import java.io.Reader;
-import net.sf.lapg.common.ui.editor.LexerBasedPartitionScanner;
+
+import org.textway.lapg.common.ui.editor.LexerBasedPartitionScanner;
 import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
 import org.textway.lapg.parser.LapgLexer.Lexems;

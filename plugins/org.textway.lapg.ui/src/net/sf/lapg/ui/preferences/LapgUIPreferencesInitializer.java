@@ -12,13 +12,13 @@
  */
 package net.sf.lapg.ui.preferences;
 
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 
 public class LapgUIPreferencesInitializer extends AbstractPreferenceInitializer {
 

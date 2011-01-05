@@ -12,11 +12,11 @@
  */
 package net.sf.lapg.ui.editor;
 
-import net.sf.lapg.common.ui.editor.StructuredTextViewer;
 
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
+import org.textway.lapg.common.ui.editor.StructuredTextViewer;
 
 public class LapgSourceViewer extends StructuredTextViewer {
 

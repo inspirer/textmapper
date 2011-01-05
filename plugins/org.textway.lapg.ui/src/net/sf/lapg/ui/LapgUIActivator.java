@@ -12,11 +12,11 @@
  */
 package net.sf.lapg.ui;
 
-import net.sf.lapg.common.ui.editor.colorer.DefaultColorManager;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
 
 public class LapgUIActivator extends AbstractUIPlugin {
 

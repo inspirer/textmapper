@@ -12,12 +12,6 @@
  */
 package net.sf.lapg.ui.editor;
 
-import net.sf.lapg.common.ui.editor.StructuredTextEditor;
-import net.sf.lapg.common.ui.editor.StructuredTextReconciler;
-import net.sf.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 import net.sf.lapg.ui.editor.colorer.LapgSemanticHighlighter;
@@ -31,6 +25,12 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.FileEditorInput;
+import org.textway.lapg.common.ui.editor.StructuredTextEditor;
+import org.textway.lapg.common.ui.editor.StructuredTextReconciler;
+import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener {
 

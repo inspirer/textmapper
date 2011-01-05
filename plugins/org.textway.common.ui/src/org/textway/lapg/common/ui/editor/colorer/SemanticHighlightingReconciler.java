@@ -1,15 +1,8 @@
-package net.sf.lapg.common.ui.editor.colorer;
+package org.textway.lapg.common.ui.editor.colorer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.lapg.common.ui.LapgCommonActivator;
-import net.sf.lapg.common.ui.editor.ISourceStructure;
-import net.sf.lapg.common.ui.editor.StructuredTextEditor;
-import net.sf.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
-import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -22,6 +15,13 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.textway.lapg.common.ui.LapgCommonActivator;
+import org.textway.lapg.common.ui.editor.ISourceStructure;
+import org.textway.lapg.common.ui.editor.StructuredTextEditor;
+import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+import org.textway.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
 
 /**
  * Semantic highlighting reconciler - Background thread implementation.

@@ -10,15 +10,11 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.common.ui.editor;
+package org.textway.lapg.common.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import net.sf.lapg.common.ui.editor.colorer.SemanticHighlightingManager;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -41,6 +37,10 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
+import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textway.lapg.common.ui.editor.colorer.SemanticHighlightingManager;
 
 public abstract class StructuredTextEditor extends TextEditor {
 

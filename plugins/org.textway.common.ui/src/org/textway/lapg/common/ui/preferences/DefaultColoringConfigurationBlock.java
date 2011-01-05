@@ -10,18 +10,13 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.common.ui.preferences;
+package org.textway.lapg.common.ui.preferences;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.sf.lapg.common.ui.editor.colorer.ColorDefinition;
-import net.sf.lapg.common.ui.editor.colorer.ColorGroupDefinition;
-import net.sf.lapg.common.ui.editor.colorer.DefaultColorManager;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -52,6 +47,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.textway.lapg.common.ui.editor.colorer.ColorDefinition;
+import org.textway.lapg.common.ui.editor.colorer.ColorGroupDefinition;
+import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
 
 public abstract class DefaultColoringConfigurationBlock {
 

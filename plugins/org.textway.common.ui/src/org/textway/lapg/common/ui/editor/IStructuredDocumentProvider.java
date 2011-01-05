@@ -1,4 +1,4 @@
-package net.sf.lapg.common.ui.editor;
+package org.textway.lapg.common.ui.editor;
 
 import org.eclipse.ui.texteditor.IDocumentProvider;
 

@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.lapg.common.ui.editor.ISourceStructure;
-import net.sf.lapg.common.ui.editor.IStructuredDocumentProvider;
-import net.sf.lapg.common.ui.editor.StructuredTextEditor;
-import net.sf.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
 import net.sf.lapg.ui.structure.LapgSourceStructure;
 
 import org.eclipse.core.resources.IFile;
@@ -36,6 +32,10 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.textway.lapg.Lapg;
 import org.textway.lapg.api.Grammar;
+import org.textway.lapg.common.ui.editor.ISourceStructure;
+import org.textway.lapg.common.ui.editor.IStructuredDocumentProvider;
+import org.textway.lapg.common.ui.editor.StructuredTextEditor;
+import org.textway.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;

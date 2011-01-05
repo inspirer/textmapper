@@ -12,11 +12,6 @@
  */
 package net.sf.lapg.ui.editor;
 
-import net.sf.lapg.common.ui.editor.StructuredTextReconciler;
-import net.sf.lapg.common.ui.editor.StructuredTextViewerConfiguration;
-import net.sf.lapg.common.ui.editor.colorer.CommentScanner;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
 import net.sf.lapg.ui.editor.colorer.ILapgColors;
 import net.sf.lapg.ui.editor.colorer.LapgSourceScanner;
 
@@ -30,6 +25,11 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.textway.lapg.common.ui.editor.StructuredTextReconciler;
+import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import org.textway.lapg.common.ui.editor.colorer.CommentScanner;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
 
 public final class LapgSourceViewerConfiguration extends StructuredTextViewerConfiguration {
 

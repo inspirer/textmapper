@@ -12,9 +12,6 @@
  */
 package net.sf.lapg.ui.preferences;
 
-import net.sf.lapg.common.ui.editor.colorer.DefaultColorManager;
-import net.sf.lapg.common.ui.preferences.DefaultColoringConfigurationBlock;
-import net.sf.lapg.common.ui.preferences.OverlayPreferenceStore;
 import net.sf.lapg.ui.LapgUIActivator;
 import net.sf.lapg.ui.editor.colorer.LapgHighlightingManager;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -26,6 +23,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.osgi.service.prefs.BackingStoreException;
+import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textway.lapg.common.ui.preferences.DefaultColoringConfigurationBlock;
+import org.textway.lapg.common.ui.preferences.OverlayPreferenceStore;
 
 public class LapgColorsPreferencePage extends PreferencePage implements IWorkbenchPreferencePage {
 

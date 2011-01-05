@@ -14,11 +14,11 @@ package net.sf.lapg.ui.editor.colorer;
 
 import java.util.List;
 
-import net.sf.lapg.common.ui.editor.colorer.ColorDefinition;
-import net.sf.lapg.common.ui.editor.colorer.DefaultColorManager;
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.RGB;
+import org.textway.lapg.common.ui.editor.colorer.ColorDefinition;
+import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 
 public class LapgHighlightingManager extends DefaultHighlightingManager {
 

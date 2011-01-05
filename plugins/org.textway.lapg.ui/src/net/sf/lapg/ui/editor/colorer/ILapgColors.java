@@ -12,7 +12,7 @@
  */
 package net.sf.lapg.ui.editor.colorer;
 
-import net.sf.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
 
 public interface ILapgColors extends ICommonColors {
 

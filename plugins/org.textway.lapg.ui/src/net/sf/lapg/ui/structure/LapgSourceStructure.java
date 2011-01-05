@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.textway.lapg.api.Grammar;
-import net.sf.lapg.common.ui.editor.ISourceStructure;
-import net.sf.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textway.lapg.common.ui.editor.ISourceStructure;
+import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.AbstractVisitor;

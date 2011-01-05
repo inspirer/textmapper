@@ -10,14 +10,23 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.common.ui.editor.colorer;
+package org.textway.lapg.common.ui.editor.colorer;
 
-import net.sf.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+public class ColorGroupDefinition {
 
-public interface IHighlightingStyleListener {
+	private final String id;
+	private final String label;
 
-	/**
-	 *  Text presentation options changed for the given descriptor.
-	 */
-	void highlightingStyleChanged(ColorDescriptor cd);
+	public ColorGroupDefinition(String id, String label) {
+		this.id = id;
+		this.label = label;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getLabel() {
+		return label;
+	}
 }

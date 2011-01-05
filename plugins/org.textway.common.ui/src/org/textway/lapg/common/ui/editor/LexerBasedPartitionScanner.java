@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package net.sf.lapg.common.ui.editor;
+package org.textway.lapg.common.ui.editor;
 
 import java.io.IOException;
 import java.io.Reader;
