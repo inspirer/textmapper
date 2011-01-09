@@ -12,18 +12,18 @@
  */
 package org.textway.lapg.ui.editor;
 
-
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextHover;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.textway.lapg.common.ui.editor.StructuredTextReconciler;
+import org.textway.lapg.common.ui.editor.StructuredTextEditor;
 import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.colorer.CommentScanner;
 import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
@@ -36,17 +36,13 @@ public final class LapgSourceViewerConfiguration extends StructuredTextViewerCon
 	private final LapgSourceEditor fEditor;
 
 	LapgSourceViewerConfiguration(LapgSourceEditor editor, IPreferenceStore preferenceStore) {
-		super(preferenceStore);
+		super(editor, preferenceStore);
 		fEditor = editor;
 	}
 
 	@Override
-	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		LapgReconcilingStrategy strategy = new LapgReconcilingStrategy(fEditor);
-
-		StructuredTextReconciler reconciler = new StructuredTextReconciler(fEditor, strategy, false);
-		reconciler.setDelay(500);
-		return reconciler;
+	protected IReconcilingStrategy createReconcilingStrategy() {
+		return new LapgReconcilingStrategy(fEditor);
 	}
 
 	@Override
@@ -119,5 +115,10 @@ public final class LapgSourceViewerConfiguration extends StructuredTextViewerCon
 	@Override
 	public ITextHover getTextHover(final ISourceViewer sourceViewer, final String contentType) {
 		return new LapgProblemHover(sourceViewer);
+	}
+
+	@Override
+	protected IHyperlinkDetector[] getSourceHyperlinkDetectors(StructuredTextEditor context) {
+		return new IHyperlinkDetector[] { new LapgSourceHyperlinkDetector(context) };
 	}
 }

@@ -15,7 +15,6 @@ package org.textway.lapg.common.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -23,6 +22,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.source.IAnnotationModel;
@@ -35,6 +35,7 @@ import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.ITextEditorHelpContextIds;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.editors.text.TextFileDocumentProvider;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
 import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
@@ -121,7 +122,6 @@ public abstract class StructuredTextEditor extends TextEditor {
 		}
 	}
 
-
 	@Override
 	public void createPartControl(Composite parent) {
 		fHighlightingManager = createHighlightingManager();
@@ -134,7 +134,8 @@ public abstract class StructuredTextEditor extends TextEditor {
 	private void installSemanticHighlighting() {
 		if (fSemanticManager == null) {
 			fSemanticManager = new SemanticHighlightingManager();
-			fSemanticManager.install(this, (StructuredTextViewer) getSourceViewer(), getHighlightingManager(), getPreferenceStore());
+			fSemanticManager.install(this, (StructuredTextViewer) getSourceViewer(), getHighlightingManager(),
+					getPreferenceStore());
 		}
 	}
 
@@ -202,13 +203,42 @@ public abstract class StructuredTextEditor extends TextEditor {
 		return super.affectsTextPresentation(event);
 	}
 
-	public StructuredTextViewerConfiguration createSourceViewerConfiguration() {
-		return new StructuredTextViewerConfiguration(getPreferenceStore());
+	public synchronized void forceReconciling() {
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer instanceof StructuredTextViewer) {
+			IReconciler reconciler = ((StructuredTextViewer) viewer).getReconciler();
+			if (reconciler instanceof StructuredTextReconciler) {
+				((StructuredTextReconciler) reconciler).performReconciling();
+			}
+		}
 	}
 
 	protected IStructuredDocumentProvider createDocumentProvider() {
 		return new StructuredDocumentProvider();
 	}
+
+	public IFile getResource() {
+		if (getEditorInput() instanceof FileEditorInput) {
+			return ((FileEditorInput) getEditorInput()).getFile();
+		}
+		return null;
+	}
+
+	public boolean reveal(int start, int selStart, int selEnd, int end) {
+		ISourceViewer viewer = getSourceViewer();
+		if (viewer == null || viewer.getTextWidget().isDisposed()) {
+			return false;
+		}
+
+		if (!(start <= selStart && selStart <= selEnd && selEnd <= end)) {
+			return false;
+		}
+
+		selectAndReveal(selStart, selEnd - selStart, start, end - start);
+		return true;
+	}
+
+	public abstract StructuredTextViewerConfiguration createSourceViewerConfiguration();
 
 	public abstract ISemanticHighlighter createSemanticHighlighter();
 
@@ -218,6 +248,9 @@ public abstract class StructuredTextEditor extends TextEditor {
 	 * return YourPluginActivator.getInstance().getPreferenceStore()
 	 */
 	protected abstract IPreferenceStore getPluginPreferenceStore();
+
+	public void setup(IDocument document) {
+	}
 
 	private StructureProvider fStructureProvider;
 	private final Object fProviderLock = new Object();
@@ -329,9 +362,18 @@ public abstract class StructuredTextEditor extends TextEditor {
 		}
 	}
 
-	public static class StructuredDocumentProvider extends TextFileDocumentProvider implements IStructuredDocumentProvider {
+	public class StructuredDocumentProvider extends TextFileDocumentProvider implements IStructuredDocumentProvider {
 
 		private ISourceStructure fModel;
+
+		@Override
+		public void connect(Object element) throws CoreException {
+			super.connect(element);
+			IDocument document = getDocument(element);
+			if (document instanceof IDocumentExtension3) {
+				setup(document);
+			}
+		}
 
 		@Override
 		protected IAnnotationModel createAnnotationModel(IFile file) {
@@ -347,4 +389,3 @@ public abstract class StructuredTextEditor extends TextEditor {
 		}
 	}
 }
-

@@ -16,10 +16,14 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextPresentation;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
+import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
+import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
-public class StructuredTextViewerConfiguration extends TextSourceViewerConfiguration {
+public abstract class StructuredTextViewerConfiguration extends TextSourceViewerConfiguration {
 
 	public static final class StructuredTextPresentationReconciler extends PresentationReconciler {
 		/**
@@ -44,7 +48,41 @@ public class StructuredTextViewerConfiguration extends TextSourceViewerConfigura
 		}
 	}
 
-	public StructuredTextViewerConfiguration(IPreferenceStore preferenceStore) {
+	private final StructuredTextEditor fEditor;
+
+	public StructuredTextViewerConfiguration(StructuredTextEditor editor, IPreferenceStore preferenceStore) {
 		super(preferenceStore);
+		fEditor = editor;
+	}
+
+	@Override
+	public IReconciler getReconciler(ISourceViewer sourceViewer) {
+		IReconcilingStrategy strategy = createReconcilingStrategy();
+
+		StructuredTextReconciler reconciler = new StructuredTextReconciler(fEditor, strategy, false);
+		reconciler.setDelay(500);
+		return reconciler;
+	}
+
+	protected abstract IReconcilingStrategy createReconcilingStrategy();
+
+	protected abstract IHyperlinkDetector[] getSourceHyperlinkDetectors(StructuredTextEditor context);
+
+	@Override
+	public final IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+		IHyperlinkDetector[] registered = super.getHyperlinkDetectors(sourceViewer);
+		return merge(registered, getSourceHyperlinkDetectors(fEditor));
+	}
+
+	private IHyperlinkDetector[] merge(IHyperlinkDetector[] array1, IHyperlinkDetector[] array2) {
+		if (array1 != null && array2 != null) {
+			IHyperlinkDetector[] allHyperlinkDetectors;
+			int size = array1.length + array2.length;
+			allHyperlinkDetectors = new IHyperlinkDetector[size];
+			System.arraycopy(array1, 0, allHyperlinkDetectors, 0, array1.length);
+			System.arraycopy(array2, 0, allHyperlinkDetectors, array1.length, array2.length);
+			return allHyperlinkDetectors;
+		}
+		return array2 != null ? array2 : array1;
 	}
 }

@@ -12,20 +12,17 @@
  */
 package org.textway.lapg.ui.editor;
 
-
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.text.reconciler.IReconciler;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.FileEditorInput;
 import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextReconciler;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textway.lapg.ui.LapgUIActivator;
@@ -82,23 +79,6 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 		return result;
 	}
 
-	public IFile getResource() {
-		if (getEditorInput() instanceof FileEditorInput) {
-			return ((FileEditorInput) getEditorInput()).getFile();
-		}
-		return null;
-	}
-
-	public synchronized void forceReconciling() {
-		ISourceViewer viewer = getSourceViewer();
-		if (viewer instanceof LapgSourceViewer) {
-			IReconciler reconciler = ((LapgSourceViewer) viewer).getReconciler();
-			if (reconciler instanceof StructuredTextReconciler) {
-				((StructuredTextReconciler) reconciler).performReconciling();
-			}
-		}
-	}
-
 	@Override
 	public ISemanticHighlighter createSemanticHighlighter() {
 		return new LapgSemanticHighlighter();
@@ -106,12 +86,18 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 
 	@Override
 	protected DefaultHighlightingManager createHighlightingManager() {
-		return new LapgHighlightingManager(getPreferenceStore(), LapgUIActivator.getDefault()
-				.getColorManager());
+		return new LapgHighlightingManager(getPreferenceStore(), LapgUIActivator.getDefault().getColorManager());
 	}
 
 	@Override
 	protected IPreferenceStore getPluginPreferenceStore() {
 		return LapgUIActivator.getDefault().getPreferenceStore();
+	}
+
+	@Override
+	public void setup(IDocument document) {
+		IDocumentExtension3 extension = (IDocumentExtension3) document;
+		if (extension.getDocumentPartitioner(IPartitions.LAPG_PARTITIONING) == null)
+			new LapgSourceSetupParticipant().setup(document);
 	}
 }

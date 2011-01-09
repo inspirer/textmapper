@@ -41,9 +41,9 @@ public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 			String defaultContent =
 				"# lapg syntax file\n" +
 				"\n" +
-				".lang \"java\"\n" +
-				".prefix \"Lang\"\n" +
-				".package \"org.example.mylang.parser\"\n" +
+				"lang = \"java\"\n" +
+				"prefix = \"Lang\"\n" +
+				"package = \"org.example.mylang.parser\"\n" +
 				"\n" +
 				"identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $lexem = current(); break; }\n" +
 				"icon(Integer):  /-?[0-9]+/                     { $lexem = Integer.parseInt(current()); break; }\n" +
