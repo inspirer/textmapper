@@ -18,11 +18,11 @@ ${end}
 
 
 ${cached query interfaceName() = 
-	util.uniqueId('I' + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+	util.uniqueId('I' + context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
 	
 ${template ast_interface(cl)-}
-${file 'ast/' + cl->interfaceName() + '.java'-}
-package ${call java.package}.ast;
+${file self->astPath() + cl->interfaceName() + '.java'-}
+package ${self->astPackage()};
 
 public interface ${cl->interfaceName()}${call implementedInterfaces(cl,' extends ')} {
 }
@@ -33,7 +33,7 @@ ${end}
 
 
 ${cached query className() = 
-	util.uniqueId(util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+	util.uniqueId(context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
 
 ${cached query propertyName() = 
 	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
@@ -50,8 +50,8 @@ ${cached query enumpropertyName(prop) =
 	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
 
 ${template ast_class(cl)-}
-${file 'ast/' + cl->className() + '.java'-}
-package ${call java.package}.ast;
+${file self->astPath() + cl->className() + '.java'-}
+package ${self->astPackage()};
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
 
@@ -88,8 +88,8 @@ ${cached query enumLiteralName(enumname) =
 	util.uniqueId((alias ? alias : target.id).toUpperCase()->java.escapeJavaReserved(), '__classes__'+enumname)}
 
 ${template ast_enum(cl)-}
-${file 'ast/' + cl->className() + '.java'-}
-package ${call java.package}.ast;
+${file self->astPath() + cl->className() + '.java'-}
+package ${self->astPackage()};
 
 public enum ${cl->className()} {
 ${foreach const in cl.literals-}
@@ -102,8 +102,8 @@ ${end}
 
 
 ${template astBaseInterface-}
-${file 'ast/I' + opts.astprefix + 'Node.java'-}
-package ${call java.package}.ast;
+${file self->astPath() + 'I' + opts.astprefix + 'Node.java'-}
+package ${self->astPackage()};
 
 public interface I${opts.astprefix}Node {
 	int getOffset();
@@ -118,8 +118,8 @@ ${end}
 
 
 ${template astBaseClass-}
-${file 'ast/' + opts.astprefix + 'Node.java'-}
-package ${call java.package}.ast;
+${file self->astPath() + opts.astprefix + 'Node.java'-}
+package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 	
@@ -160,15 +160,15 @@ ${query getClass(rule) =
 	[self->ast.getClasses(rule.getLeft())].collect(x|x).first()}
 
 ${template createEnum(rule)-}
-${'$$'} = ${call java.package}.ast.@${self->getClass(rule)->className()}.${rule.getRight().first()->enumLiteralName(self->getClass(rule)->className())};
+${'$$'} = ${self->astPackage()}.@${self->getClass(rule)->className()}.${rule.getRight().first()->enumLiteralName(self->getClass(rule)->className())};
 ${end}
 
 ${template createObject(rule,cl)-}
-new ${call java.package}.ast.@${cl->className()}(
+new ${self->astPackage()}.@${cl->className()}(
 ${foreach prop in self->ast.propertiesNew(cl)-}
 ${if prop.kind == 'enumproperty'-}
 ${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
-	? self->java.package() + '.ast.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop) 
+	? self->astPackage() + '.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)
 	: 0},
 ${else if prop.kind == 'flagproperty'-}
 ${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
@@ -227,7 +227,7 @@ ${cached query astcode(rule) =
 
 
 ${query objectType(cl) = 
-	self->java.package() + '.ast.@' + (
+	self->astPackage() + '.@' + (
 		cl.kind == 'interface' 
 			? cl->interfaceName()
 			: cl->className() 
@@ -236,3 +236,7 @@ ${query objectType(cl) =
 ${query listType(type) = 'java.util.@List<' + type + '>'}
 
 ${query booleanType() = 'Boolean'}
+
+${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '.' + context.opts.astsubpackage : '')}
+
+${query astPath() = context.opts.astsubpackage ? context.opts.astsubpackage.replaceAll('\\.','/') + '/' : ''}

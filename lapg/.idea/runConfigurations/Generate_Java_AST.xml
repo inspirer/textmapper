@@ -1,5 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Generate Java AST" type="Application" factoryName="Application">
+    <extension name="coverage" enabled="false" merge="false" />
     <option name="MAIN_CLASS_NAME" value="org.textway.lapg.Lapg" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-x -i ../../src/org/textway/lapg/gen/templates" />

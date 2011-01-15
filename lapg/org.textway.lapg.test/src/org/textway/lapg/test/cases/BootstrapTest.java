@@ -53,11 +53,11 @@ public class BootstrapTest extends TestCase {
 				new String[]{
 						"TypesParser.java", "TypesLexer.java", "TypesTree.java",
 						"ast/AstNode.java", "ast/AstNode.java",
-						"ast/Type.java", "ast/FeatureDeclaration.java",
-						"ast/Constraint.java", "ast/IExpression.java",
-						"ast/Input.java", "ast/LiteralExpression.java",
-						"ast/MapEntriesItem.java", "ast/Multiplicity.java",
-						"ast/TypeEx.java", "ast/MethodDeclaration.java"
+						"ast/AstType.java", "ast/AstFeatureDeclaration.java",
+						"ast/AstConstraint.java", "ast/IAstExpression.java",
+						"ast/AstInput.java", "ast/AstLiteralExpression.java",
+						"ast/AstMapEntriesItem.java", "ast/AstMultiplicity.java",
+						"ast/AstTypeEx.java", "ast/AstMethodDeclaration.java"
 				}, 0);
 	}
 

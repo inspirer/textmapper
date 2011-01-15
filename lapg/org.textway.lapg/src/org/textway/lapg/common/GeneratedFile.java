@@ -64,7 +64,7 @@ public class GeneratedFile {
 	protected void checkName(String name) throws IOException {
 		Matcher m = FILENAME.matcher(name);
 		if (!m.matches()) {
-			throw new IOException("bad file name");
+			throw new IOException("bad file name: " + name);
 		}
 		int lastSlash = name.lastIndexOf('/');
 		if (lastSlash != -1) {

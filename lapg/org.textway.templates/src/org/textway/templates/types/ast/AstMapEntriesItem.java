@@ -2,13 +2,13 @@ package org.textway.templates.types.ast;
 
 import org.textway.templates.types.TypesTree.TextSource;
 
-public class MapEntriesItem extends AstNode {
+public class AstMapEntriesItem extends AstNode {
 
 	private String identifier;
-	private MapSeparator mapSeparator;
-	private IExpression expression;
+	private AstMapSeparator mapSeparator;
+	private IAstExpression expression;
 
-	public MapEntriesItem(String identifier, MapSeparator mapSeparator, IExpression expression, TextSource input, int start, int end) {
+	public AstMapEntriesItem(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.identifier = identifier;
 		this.mapSeparator = mapSeparator;
@@ -18,10 +18,10 @@ public class MapEntriesItem extends AstNode {
 	public String getIdentifier() {
 		return identifier;
 	}
-	public MapSeparator getMapSeparator() {
+	public AstMapSeparator getMapSeparator() {
 		return mapSeparator;
 	}
-	public IExpression getExpression() {
+	public IAstExpression getExpression() {
 		return expression;
 	}
 }

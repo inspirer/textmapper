@@ -3,7 +3,7 @@ package org.textway.templates.types.ast;
 import java.util.List;
 import org.textway.templates.types.TypesTree.TextSource;
 
-public class Type extends AstNode {
+public class AstType extends AstNode {
 
 	public static final int LINT = 1;
 	public static final int LSTRING = 2;
@@ -13,7 +13,7 @@ public class Type extends AstNode {
 	private boolean isReference;
 	private List<String> name;
 
-	public Type(int kind, boolean isReference, List<String> name, TextSource input, int start, int end) {
+	public AstType(int kind, boolean isReference, List<String> name, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.isReference = isReference;

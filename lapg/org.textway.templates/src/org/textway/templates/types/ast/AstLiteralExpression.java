@@ -2,13 +2,13 @@ package org.textway.templates.types.ast;
 
 import org.textway.templates.types.TypesTree.TextSource;
 
-public class LiteralExpression extends AstNode implements IExpression {
+public class AstLiteralExpression extends AstNode implements IAstExpression {
 
 	private String scon;
 	private Integer icon;
 	private Boolean bcon;
 
-	public LiteralExpression(String scon, Integer icon, Boolean bcon, TextSource input, int start, int end) {
+	public AstLiteralExpression(String scon, Integer icon, Boolean bcon, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.scon = scon;
 		this.icon = icon;

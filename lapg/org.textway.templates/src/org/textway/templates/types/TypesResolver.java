@@ -39,7 +39,7 @@ class TypesResolver {
 	private final TemplatesStatus myStatus;
 
 	// 1-st stage
-	private TypesTree<Input> myTree;
+	private TypesTree<AstInput> myTree;
 	private Set<String> requiredPackages = new HashSet<String>();
 
 	// 2-nd stage
@@ -58,7 +58,7 @@ class TypesResolver {
 	}
 
 	public void build() {
-		final TypesTree<Input> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents().toCharArray(), 1));
+		final TypesTree<AstInput> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents().toCharArray(), 1));
 		if (tree.hasErrors()) {
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.report(TemplatesStatus.KIND_ERROR, s.getMessage(), new SourceElement() {
@@ -83,9 +83,9 @@ class TypesResolver {
 		}
 
 		myTree = tree;
-		Input input = tree.getRoot();
+		AstInput input = tree.getRoot();
 		Set<String> myFoundClasses = new HashSet<String>();
-		for (TypeDeclaration td : input.getDeclarations()) {
+		for (AstTypeDeclaration td : input.getDeclarations()) {
 			TiClass cl = convertClass(td);
 			String fqName = myPackage + "." + cl.getName();
 			if (myRegistryClasses.containsKey(fqName)) {
@@ -99,15 +99,15 @@ class TypesResolver {
 		}
 	}
 
-	private TiClass convertClass(TypeDeclaration td) {
+	private TiClass convertClass(AstTypeDeclaration td) {
 		List<IFeature> features = new ArrayList<IFeature>();
 		List<IMethod> methods = new ArrayList<IMethod>();
 		if (td.getMemberDeclarationsopt() != null) {
-			for (IMemberDeclaration memberDeclaration : td.getMemberDeclarationsopt()) {
-				if (memberDeclaration instanceof FeatureDeclaration) {
-					features.add(convertFeature((FeatureDeclaration) memberDeclaration));
-				} else if (memberDeclaration instanceof MethodDeclaration) {
-					methods.add(convertMethod((MethodDeclaration) memberDeclaration));
+			for (IAstMemberDeclaration memberDeclaration : td.getMemberDeclarationsopt()) {
+				if (memberDeclaration instanceof AstFeatureDeclaration) {
+					features.add(convertFeature((AstFeatureDeclaration) memberDeclaration));
+				} else if (memberDeclaration instanceof AstMethodDeclaration) {
+					methods.add(convertMethod((AstMethodDeclaration) memberDeclaration));
 				}
 			}
 		}
@@ -126,15 +126,15 @@ class TypesResolver {
 		return result;
 	}
 
-	private IMethod convertMethod(MethodDeclaration memberDeclaration) {
+	private IMethod convertMethod(AstMethodDeclaration memberDeclaration) {
 		// TODO
 
 		return new TiMethod(memberDeclaration.getName(), null, null);
 	}
 
-	private TiFeature convertFeature(FeatureDeclaration fd) {
+	private TiFeature convertFeature(AstFeatureDeclaration fd) {
 		// constraints
-		List<StringConstraint> stringConstraints = null;
+		List<AstStringConstraint> stringConstraints = null;
 		List<IMultiplicity> multiplicities = null;
 		if (fd.getTypeEx().getMultiplicityList() != null) {
 			myStatus.report(TemplatesStatus.KIND_ERROR,
@@ -142,7 +142,7 @@ class TypesResolver {
 					new LocatedNodeAdapter(fd.getTypeEx()));
 		}
 		if (fd.getModifiersopt() != null) {
-			for (org.textway.templates.types.ast.Constraint c : fd.getModifiersopt()) {
+			for (AstConstraint c : fd.getModifiersopt()) {
 				if (c.getMultiplicityList() != null) {
 					if (multiplicities != null) {
 						myStatus.report(TemplatesStatus.KIND_ERROR,
@@ -153,12 +153,12 @@ class TypesResolver {
 					}
 				} else if (c.getStringConstraint() != null) {
 					if (stringConstraints == null) {
-						stringConstraints = new ArrayList<StringConstraint>();
+						stringConstraints = new ArrayList<AstStringConstraint>();
 					}
 					stringConstraints.add(c.getStringConstraint());
 				}
 			}
-			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != Type.LSTRING) {
+			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != AstType.LSTRING) {
 				myStatus.report(TemplatesStatus.KIND_ERROR,
 						"only string type can have constraints (feature `" + fd.getName() + "`)",
 						new LocatedNodeAdapter(fd));
@@ -173,9 +173,9 @@ class TypesResolver {
 		return feature;
 	}
 
-	private List<IMultiplicity> convertMultiplicities(List<Multiplicity> list) {
+	private List<IMultiplicity> convertMultiplicities(List<AstMultiplicity> list) {
 		List<IMultiplicity> multiplicities = new ArrayList<IMultiplicity>();
-		for (Multiplicity multiplicity : list) {
+		for (AstMultiplicity multiplicity : list) {
 			int loBound = multiplicity.getLo();
 			int hiBound = multiplicity.getHasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
 					.getHi() : loBound;
@@ -189,7 +189,7 @@ class TypesResolver {
 		return multiplicities;
 	}
 
-	private void convertDefautVal(TiFeature feature, IExpression defaultValue) {
+	private void convertDefautVal(TiFeature feature, IAstExpression defaultValue) {
 		if (defaultValue == null) {
 			return;
 		}
@@ -197,16 +197,16 @@ class TypesResolver {
 		myResolveDefaultValues.add(new ResolveDefaultValue(feature, defaultValue));
 	}
 
-	private void scanRequiredClasses(IExpression expression) {
-		if (expression instanceof StructuralExpression) {
-			StructuralExpression expr = (StructuralExpression) expression;
+	private void scanRequiredClasses(IAstExpression expression) {
+		if (expression instanceof AstStructuralExpression) {
+			AstStructuralExpression expr = (AstStructuralExpression) expression;
 			if (expr.getExpressionListopt() != null) {
-				for (IExpression inner : expr.getExpressionListopt()) {
+				for (IAstExpression inner : expr.getExpressionListopt()) {
 					scanRequiredClasses(inner);
 				}
 			}
 			if (expr.getMapEntriesopt() != null) {
-				for (MapEntriesItem item : expr.getMapEntriesopt()) {
+				for (AstMapEntriesItem item : expr.getMapEntriesopt()) {
 					scanRequiredClasses(item.getExpression());
 				}
 			}
@@ -222,22 +222,22 @@ class TypesResolver {
 		}
 	}
 
-	private void convertType(TiFeature feature, Type type, List<StringConstraint> constraints) {
+	private void convertType(TiFeature feature, AstType type, List<AstStringConstraint> constraints) {
 		if (type.getKind() == 0) {
 			// reference
 			resolveLater(feature, type, getQualifiedName(type.getName()));
 		} else {
 			// datatype
 			DataTypeKind kind = DataTypeKind.STRING;
-			if (type.getKind() == Type.LINT) {
+			if (type.getKind() == AstType.LINT) {
 				kind = DataTypeKind.INT;
-			} else if (type.getKind() == Type.LBOOL) {
+			} else if (type.getKind() == AstType.LBOOL) {
 				kind = DataTypeKind.BOOL;
 			}
 
 			List<Constraint> convertedConstraints = new ArrayList<Constraint>();
 			if (constraints != null) {
-				for (StringConstraint c : constraints) {
+				for (AstStringConstraint c : constraints) {
 					Constraint convertConstraint = convertConstraint(c);
 					if (convertConstraint != null) {
 						convertedConstraints.add(convertConstraint);
@@ -248,13 +248,13 @@ class TypesResolver {
 		}
 	}
 
-	private Constraint convertConstraint(StringConstraint c) {
+	private Constraint convertConstraint(AstStringConstraint c) {
 		if (c.getKind() != 0) {
 			List<String> strings = new ArrayList<String>();
-			for (_String s : c.getStrings()) {
+			for (Ast_String s : c.getStrings()) {
 				strings.add(s.getIdentifier() != null ? s.getIdentifier() : s.getScon());
 			}
-			return new TiDataType.TiConstraint(c.getKind() == StringConstraint.LCHOICE ? ConstraintKind.CHOICE
+			return new TiDataType.TiConstraint(c.getKind() == AstStringConstraint.LCHOICE ? ConstraintKind.CHOICE
 					: ConstraintKind.SET, strings);
 		}
 		String constraintId = c.getIdentifier();
@@ -283,7 +283,7 @@ class TypesResolver {
 		return sb.toString();
 	}
 
-	private void resolveLater(TiFeature feature, Type decl, String reference) {
+	private void resolveLater(TiFeature feature, AstType decl, String reference) {
 		int lastDot = reference.lastIndexOf('.');
 		if (lastDot == -1) {
 			reference = myPackage + "." + reference;
@@ -327,8 +327,8 @@ class TypesResolver {
 		}
 	}
 
-	private Object convertExpression(IExpression expression, IType type) {
-		return new TiExpressionBuilder<IExpression>() {
+	private Object convertExpression(IAstExpression expression, IType type) {
+		return new TiExpressionBuilder<IAstExpression>() {
 
 			@Override
 			public IClass resolveType(String className) {
@@ -336,25 +336,25 @@ class TypesResolver {
 			}
 
 			@Override
-			public Object resolve(IExpression expression, IType type) {
-				if (expression instanceof LiteralExpression) {
-					LiteralExpression literal = (LiteralExpression) expression;
+			public Object resolve(IAstExpression expression, IType type) {
+				if (expression instanceof AstLiteralExpression) {
+					AstLiteralExpression literal = (AstLiteralExpression) expression;
 					Object val = literal.getBcon() != null ? literal.getBcon()
 							: literal.getIcon() != null ? literal.getIcon()
 							: literal.getScon();
 					return convertLiteral(expression, val, type);
 				}
-				if (expression instanceof StructuralExpression) {
-					StructuralExpression expr = (StructuralExpression) expression;
+				if (expression instanceof AstStructuralExpression) {
+					AstStructuralExpression expr = (AstStructuralExpression) expression;
 					if (expr.getName() != null) {
 						String qualifiedName = getQualifiedName(expr.getName());
 						if (qualifiedName.indexOf('.') == -1) {
 							qualifiedName = myPackage + "." + qualifiedName;
 						}
-						Map<String, IExpression> props = null;
+						Map<String, IAstExpression> props = null;
 						if (expr.getMapEntriesopt() != null) {
-							props = new HashMap<String, IExpression>();
-							for (MapEntriesItem i : expr.getMapEntriesopt()) {
+							props = new HashMap<String, IAstExpression>();
+							for (AstMapEntriesItem i : expr.getMapEntriesopt()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}
 						}
@@ -367,7 +367,7 @@ class TypesResolver {
 			}
 
 			@Override
-			public void report(IExpression expression, String message) {
+			public void report(IAstExpression expression, String message) {
 				myStatus.report(TemplatesStatus.KIND_ERROR, message, new LocatedNodeAdapter((IAstNode) expression));
 			}
 		}.resolve(expression, type);
@@ -452,9 +452,9 @@ class TypesResolver {
 
 	private static class ResolveDefaultValue {
 		private final TiFeature feature_;
-		private final IExpression defaultValue;
+		private final IAstExpression defaultValue;
 
-		public ResolveDefaultValue(TiFeature feature, IExpression defaultValue) {
+		public ResolveDefaultValue(TiFeature feature, IAstExpression defaultValue) {
 			this.feature_ = feature;
 			this.defaultValue = defaultValue;
 		}
@@ -463,7 +463,7 @@ class TypesResolver {
 			return feature_;
 		}
 
-		public IExpression getDefaultValue() {
+		public IAstExpression getDefaultValue() {
 			return defaultValue;
 		}
 	}
