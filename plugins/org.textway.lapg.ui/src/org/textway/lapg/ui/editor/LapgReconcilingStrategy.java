@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.text.IDocument;
@@ -35,11 +35,13 @@ import org.textway.lapg.common.ui.editor.ISourceStructure;
 import org.textway.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textway.lapg.common.ui.editor.StructuredTextEditor;
 import org.textway.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
+import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.parser.ast.AstRoot;
+import org.textway.lapg.ui.WorkspaceResourceLoader;
 import org.textway.lapg.ui.structure.LapgSourceStructure;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
@@ -59,10 +61,21 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		super(editor);
 	}
 
-	private ResourceRegistry createResourceRegistry() {
-		// TODO use project options
+	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<LapgProblem> problems) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
-		loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		if(options.getIncludeFolders() != null) {
+			for (String path : options.getIncludeFolders()) {
+				IResourceLoader resourceLoader = WorkspaceResourceLoader.create(project, path);
+				if (resourceLoader != null) {
+					loaders.add(resourceLoader);
+				} else {
+					problems.add(new LapgProblem(LapgTree.KIND_ERROR, 0, 0, "cannot find template folder: " + path, null));
+				}
+			}
+		}
+		if (options.isUseDefaultTemplates()) {
+			loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 	
@@ -89,6 +102,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		List<LapgProblem> problems = ast.getErrors();
 		Grammar grammar = null;
 		if (problems.size() == 0) {
+			LapgOptions options = editor.getOptions();
 			
 			TemplatesStatus templatesStatus = new TemplatesStatus() {
 				public void report(int kind, String message,
@@ -96,7 +110,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 					// ignore, TODO fix
 				}
 			};
-			ResourceRegistry resources = createResourceRegistry();
+			ResourceRegistry resources = createResourceRegistry(options, mainResource.getProject(), problems);
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 			
 			LapgResolver resolver = new LapgResolver(ast, types);

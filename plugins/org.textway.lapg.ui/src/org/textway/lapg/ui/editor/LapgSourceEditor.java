@@ -12,6 +12,12 @@
  */
 package org.textway.lapg.ui.editor;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
@@ -25,11 +31,13 @@ import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingLi
 import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.ui.LapgUIActivator;
+import org.textway.lapg.ui.LapgUIActivator.LapgSettingsListener;
 import org.textway.lapg.ui.editor.colorer.LapgHighlightingManager;
 import org.textway.lapg.ui.editor.colorer.LapgSemanticHighlighter;
 
-public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener {
+public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener, LapgSettingsListener {
 
 	public LapgSourceEditor() {
 		super();
@@ -67,6 +75,51 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 	protected void performSave(boolean overwrite, IProgressMonitor progressMonitor) {
 		super.performSave(overwrite, progressMonitor);
 		forceReconciling();
+	}
+	
+	public void settingsChanged(Set<IProject> projects) {
+		IFile file = getResource();
+		if(file == null || !file.exists()) {
+			return;
+		}
+		
+		IProject p = file.getProject();
+		if(p == null || !p.isAccessible() || !projects.contains(p)) {
+			return;
+		}
+
+		forceReconciling();
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		LapgUIActivator.getDefault().addSettingsChangedListener(this);
+	}
+
+	@Override
+	public void dispose() {
+		LapgUIActivator.getDefault().removeSettingsChangedListener(this);
+		super.dispose();
+	}
+	
+	public LapgOptions getOptions() {
+		IFile file = getResource();
+		if(file == null || !file.exists()) {
+			return null;
+		}
+		
+		IProject p = file.getProject();
+		if(p == null || !p.isAccessible()) {
+			return null;
+		}
+		
+		Map<IPath, LapgOptions> settings = LapgUIActivator.getDefault().getProjectSettings(p).getSettings();
+		if(settings != null) {
+			IPath ourPath = file.getProjectRelativePath();
+			return settings.get(ourPath);
+		}
+		return null;
 	}
 
 	@Override
