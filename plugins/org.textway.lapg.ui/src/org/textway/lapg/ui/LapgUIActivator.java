@@ -32,6 +32,7 @@ import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
 public class LapgUIActivator extends AbstractUIPlugin {
 
 	public static final String PLUGIN_ID = "org.textway.lapg.ui";
+	public static final String PROBLEM_MARKER = PLUGIN_ID + ".lapgProblem";
 
 	private static LapgUIActivator myDefault;
 	private ListenerList mySettingsListeners = new ListenerList();
@@ -69,6 +70,10 @@ public class LapgUIActivator extends AbstractUIPlugin {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, text));
 	}
 
+	public static void logWarning(String text, Throwable e) {
+		log(new Status(IStatus.WARNING, PLUGIN_ID, 0, text, e));
+	}
+	
 	public static void logError(String text, Throwable e) {
 		log(new Status(IStatus.ERROR, PLUGIN_ID, 0, text, e));
 	}
@@ -123,7 +128,7 @@ public class LapgUIActivator extends AbstractUIPlugin {
 					} else {
 						IResourceDelta configFileDelta = projectDelta.findMember(LapgProjectSettings.SETTINGS_FILE);
 						if (configFileDelta != null && myProjectSettings.containsKey(affectedProject)
-								&& affectsFile(configFileDelta)) {
+								&& FileUtil.affectsFile(configFileDelta)) {
 							if (affectedSettings == null) {
 								affectedSettings = new HashSet<LapgProjectSettings>();
 							}
@@ -142,17 +147,6 @@ public class LapgUIActivator extends AbstractUIPlugin {
 				affectedProjects.add(settings.getProject());
 			}
 			notifySettingsChanged(affectedProjects);
-		}
-
-		private boolean affectsFile(IResourceDelta fileDelta) {
-			if ((fileDelta.getKind() & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) > 0) {
-				return true;
-			}
-			if ((fileDelta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.ENCODING | IResourceDelta.SYNC
-					| IResourceDelta.TYPE | IResourceDelta.REPLACED)) > 0) {
-				return true;
-			}
-			return false;
 		}
 
 		private boolean isRemovedOrClosed(IResourceDelta projectDelta) {

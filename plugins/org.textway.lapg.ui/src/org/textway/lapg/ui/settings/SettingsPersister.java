@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class SettingsPersister {
 		if (tree.getRoot() == null) {
 			return Collections.emptyMap();
 		}
-		Map<IPath, LapgOptions> result = new HashMap<IPath, LapgOptions>();
+		Map<IPath, LapgOptions> result = new LinkedHashMap<IPath, LapgOptions>();
 		for (AstSettings s : tree.getRoot().getSettingsList()) {
 			IPath p = new Path(s.getScon());
 			LapgOptions opts = new LapgOptions();

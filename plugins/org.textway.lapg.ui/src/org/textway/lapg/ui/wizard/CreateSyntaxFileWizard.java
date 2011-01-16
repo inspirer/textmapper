@@ -20,7 +20,9 @@ import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -28,6 +30,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
+import org.textway.lapg.ui.LapgUIActivator;
+import org.textway.lapg.ui.build.IncrementalLapgBuilder;
 
 public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 
@@ -80,28 +84,29 @@ public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 
 	@Override
 	public boolean performFinish() {
-        IFile file = mainPage.createNewFile();
-        if (file == null) {
+		IFile file = mainPage.createNewFile();
+		if (file == null) {
 			return false;
 		}
 
-        selectAndReveal(file);
+		selectAndReveal(file);
 
-        // Open editor on new file.
-        IWorkbenchWindow dw = getWorkbench().getActiveWorkbenchWindow();
-        try {
-            if (dw != null) {
-                IWorkbenchPage page = dw.getActivePage();
-                if (page != null) {
-                    IDE.openEditor(page, file, true);
-                }
-            }
-        } catch (PartInitException e) {
-//            DialogUtil.openError(dw.getShell(), ResourceMessages.FileResource_errorMessage,
-//                    e.getMessage(), e);
-        }
+		// Open editor on new file.
+		IWorkbenchWindow dw = getWorkbench().getActiveWorkbenchWindow();
+		try {
+			if (dw != null) {
+				IWorkbenchPage page = dw.getActivePage();
+				if (page != null) {
+					IDE.openEditor(page, file, true);
+				}
+			}
+		} catch (PartInitException e) {
+			// DialogUtil.openError(dw.getShell(),
+			// ResourceMessages.FileResource_errorMessage,
+			// e.getMessage(), e);
+		}
 
-        IFile f = mainPage.createNewFile();
+		IFile f = mainPage.createNewFile();
 		configureBuilder(f.getProject());
 		return true;
 	}
@@ -112,26 +117,25 @@ public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 			final ICommand[] commands = desc.getBuildSpec();
 
 			for (ICommand element : commands) {
-				if (element.getBuilderName().equals("lapg_builder")) {
+				if (element.getBuilderName().equals(IncrementalLapgBuilder.BUILDER_ID)) {
 					return;
 				}
 			}
 
-			// project.getWorkspace().run(new IWorkspaceRunnable() {
-			//
-			// public void run(IProgressMonitor monitor) throws CoreException {
-			// final ICommand[] newCommands = new ICommand[commands.length + 1];
-			// System.arraycopy(commands, 0, newCommands, 0, commands.length);
-			// final ICommand command = desc.newCommand();
-			// command.setBuilderName("ltp_builder");
-			// newCommands[commands.length] = command;
-			// desc.setBuildSpec(newCommands);
-			// project.setDescription(desc, monitor);
-			// }
-			//
-			// }, project.getWorkspace().getRoot(), 0, null);
+			project.getWorkspace().run(new IWorkspaceRunnable() {
+				public void run(IProgressMonitor monitor) throws CoreException {
+					final ICommand[] newCommands = new ICommand[commands.length + 1];
+					System.arraycopy(commands, 0, newCommands, 0, commands.length);
+					final ICommand command = desc.newCommand();
+					command.setBuilderName(IncrementalLapgBuilder.BUILDER_ID);
+					newCommands[commands.length] = command;
+					desc.setBuildSpec(newCommands);
+					project.setDescription(desc, monitor);
+				}
+
+			}, project.getWorkspace().getRoot(), 0, null);
 		} catch (CoreException ex) {
-			/* ignore */
+			LapgUIActivator.log(ex.getStatus());
 		}
 	}
 }

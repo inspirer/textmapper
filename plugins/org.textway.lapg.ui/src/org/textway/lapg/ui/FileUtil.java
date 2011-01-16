@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.eclipse.core.resources.IResourceDelta;
+
 public class FileUtil {
 
 	public static String getStreamContents(InputStream stream, String charset) throws IOException {
@@ -29,5 +31,16 @@ public class FileUtil {
 			} catch (Exception e) {
 			}
 		}
+	}
+
+	public static boolean affectsFile(IResourceDelta fileDelta) {
+		if ((fileDelta.getKind() & (IResourceDelta.ADDED | IResourceDelta.REMOVED)) > 0) {
+			return true;
+		}
+		if ((fileDelta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.ENCODING | IResourceDelta.SYNC
+				| IResourceDelta.TYPE | IResourceDelta.REPLACED)) > 0) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -93,4 +93,18 @@
          <selection class="org.eclipse.core.resources.IResource"/>
       </wizard>
    </extension>
+   
+   <extension point="org.eclipse.core.resources.builders" id="lapgBuilder" name="%lapgBuilder.name">
+      <builder hasNature="false">
+      	<run
+             class="org.textway.lapg.ui.build.IncrementalLapgBuilder">
+      	</run>
+      </builder>
+   </extension>
+
+   <extension point="org.eclipse.core.resources.markers" id="lapgProblem" name="%lapgProblem.name">
+      <persistent value="true"/>
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
+   </extension>
 </plugin>

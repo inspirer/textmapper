@@ -1,11 +1,17 @@
 package org.textway.lapg.ui;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -25,6 +31,29 @@ public class LapgProjectSettings {
 	
 	public IProject getProject() {
 		return myFile.getProject();
+	}
+	
+	public IProject[] getReferencedProjects() {
+		Collection<IProject> usedProjects = new LinkedHashSet<IProject>();
+		for(LapgOptions opts : getSettings().values()) {
+			List<String> folders = opts.getIncludeFolders();
+			if(folders == null) {
+				continue;
+			}
+			for(String folder : folders) {
+				Path path = new Path(folder);
+				if(path.isAbsolute()) {
+					IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(path);
+					if(resource instanceof IFolder) {
+						IProject p = resource.getProject();
+						if(p != null && p.isAccessible()) {
+							usedProjects.add(p);
+						}
+					}
+				}					
+			}
+		}		
+		return usedProjects.isEmpty() ? null : usedProjects.toArray(new IProject[usedProjects.size()]);
 	}
 
 	public Map<IPath, LapgOptions> getSettings() {

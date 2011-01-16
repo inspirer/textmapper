@@ -63,7 +63,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
 	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<LapgProblem> problems) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
-		if(options.getIncludeFolders() != null) {
+		if(options != null && options.getIncludeFolders() != null) {
 			for (String path : options.getIncludeFolders()) {
 				IResourceLoader resourceLoader = WorkspaceResourceLoader.create(project, path);
 				if (resourceLoader != null) {
@@ -73,7 +73,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 				}
 			}
 		}
-		if (options.isUseDefaultTemplates()) {
+		if (options == null || options.isUseDefaultTemplates()) {
 			loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
