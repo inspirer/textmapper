@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResourceDelta;
 
 public class FileUtil {
@@ -42,5 +43,15 @@ public class FileUtil {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isTemplateFile(IFile file) {
+		String ext = file.getFileExtension();
+		return ext != null && (ext.equals("ltp") || ext.equals("types"));
+	}
+
+	public static boolean isSyntaxFile(IFile file) {
+		String ext = file.getFileExtension();
+		return ext != null && ext.equals("s");
 	}
 }

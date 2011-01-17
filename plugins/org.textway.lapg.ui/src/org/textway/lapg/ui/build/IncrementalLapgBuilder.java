@@ -1,9 +1,12 @@
 package org.textway.lapg.ui.build;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -11,14 +14,17 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceProxy;
 import org.eclipse.core.resources.IResourceProxyVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
@@ -51,31 +57,34 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 			monitor = new NullProgressMonitor();
 		}
 
+		monitor.beginTask("Building lapg grammars in " + getProject().getName(), 10);
 		LapgProjectSettings settings = LapgUIActivator.getDefault().getProjectSettings(getProject());
 		if (settings == null) {
 			return null;
 		}
 
-		monitor.beginTask("Building lapg grammars in " + getProject().getName(), 10);
 		Collection<IPath> resources = collectResourcesToBuild(kind == FULL_BUILD, settings);
 		monitor.worked(1);
 		checkCanceled(monitor);
 		if (!resources.isEmpty()) {
-			SubProgressMonitor compiling = new SubProgressMonitor(monitor, 9);
-			compiling.beginTask("Building " + resources.size() + " file(s)", resources.size());
-			for (IPath p : resources) {
-				checkCanceled(monitor);
-				compileSyntax(p, settings.getSettings().get(p), new SubProgressMonitor(compiling, 1));
-			}
-			compiling.done();
+			buildResources(resources, settings, new SubProgressMonitor(monitor, 9));
 		}
 
 		monitor.done();
 		return settings.getReferencedProjects();
 	}
 
-	private void compileSyntax(IPath p, LapgOptions lapgOptions, IProgressMonitor monitor) {
-		monitor.beginTask("Building " + p.lastSegment(), 10);
+	private void buildResources(Collection<IPath> resources, LapgProjectSettings settings, IProgressMonitor monitor) {
+		monitor.beginTask("Building " + resources.size() + " file(s)", resources.size());
+		for (IPath p : resources) {
+			checkCanceled(monitor);
+			buildSyntax(p, settings.getSettings().get(p), new SubProgressMonitor(monitor, 1));
+		}
+		monitor.done();
+	}
+
+	private void buildSyntax(IPath p, LapgOptions lapgOptions, IProgressMonitor monitor) {
+		monitor.beginTask("Building " + p.lastSegment(), 12);
 		IFile file = getProject().getFile(p);
 		if(file == null || !file.exists()) {
 			return;
@@ -83,15 +92,19 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 		
 		try {
 			String content = FileUtil.getStreamContents(file.getContents(),	file.getCharset());
+			monitor.worked(1);
 			TextSource source = new TextSource(file.getName(), content.toCharArray(), 1);
 			BuilderStrategy strategy = new BuilderStrategy(file);
 			BuilderStatus status = new BuilderStatus(file, lapgOptions);
 
 			deleteMarkers(file);
+			monitor.worked(1);
 			boolean result = new LapgGenerator(lapgOptions, status, strategy).compileGrammar(source);
+			monitor.worked(9);
 
 			if(result) {
-				// TODO store files				
+				// TODO store files
+				monitor.worked(1);
 			}
 		} catch (IOException e) {
 		} catch (CoreException e) {
@@ -109,12 +122,77 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 	}
 
 	private Collection<IPath> collectResourcesToBuild(boolean fullBuild, LapgProjectSettings settings) {
-		if (!fullBuild) {
-			IResourceDelta delta = getDelta(getProject());
-			// TODO optimize
+		IResourceDelta delta = fullBuild ? null : getDelta(getProject());
+		if(delta == null) {
+			return settings.getSettings().keySet();
 		}
+		
+		// settings changed, rebuild
+		IResourceDelta settingsDelta = delta.findMember(LapgProjectSettings.SETTINGS_FILE);
+		if(settingsDelta != null && FileUtil.affectsFile(settingsDelta)) {
+			return settings.getSettings().keySet();
+		}
+		
+		Collection<IPath> changedFiles = new ArrayList<IPath>();
+		for(Entry<IPath,LapgOptions> entry : settings.getSettings().entrySet()) {
+			IPath p = entry.getKey();
+			IResourceDelta fileDelta = delta.findMember(p);
+			if(fileDelta != null && FileUtil.affectsFile(fileDelta)) {
+				changedFiles.add(p);
+				continue;
+			}
+			
+			List<String> folders = entry.getValue().getIncludeFolders();
+			if(folders == null) {
+				continue;
+			}
+			for(String folder : folders) {
+				IPath path = new Path(folder);
+				IResourceDelta projectDelta = delta;
+				if(path.isAbsolute()) {
+					projectDelta = getDelta(ResourcesPlugin.getWorkspace().getRoot().getProject(path.segment(0)));
+					path = path.removeFirstSegments(1);
+				}
+				if(projectDelta == null || isChanged(path, projectDelta)) {
+					changedFiles.add(p);
+					break;
+				}					
+			}
+		}					
 
-		return settings.getSettings().keySet();
+		return changedFiles;
+	}
+	
+	private boolean isChanged(IPath pathInProject, IResourceDelta projectDelta) {
+		IResourceDelta delta = projectDelta.findMember(pathInProject);
+		if(delta == null) {
+			return false;
+		}
+		
+		final boolean[] clean = new boolean[] { true };
+		try {
+			delta.accept(new IResourceDeltaVisitor() {
+				public boolean visit(IResourceDelta delta) throws CoreException {
+					IResource resource = delta.getResource();
+					if (resource.isDerived()) {
+						return false;
+					}
+					if(resource instanceof IFile) {
+						if(!FileUtil.isTemplateFile((IFile) resource)) {
+							return false;
+						}
+						if(FileUtil.affectsFile(delta)) {
+							clean[0] = false;
+						}
+					}
+					return clean[0];
+				}
+			});
+		} catch (CoreException e) {
+			LapgUIActivator.logError("exception while analyzing delta", e);
+			return true;
+		}
+		return !clean[0];
 	}
 
 	@Override
@@ -155,7 +233,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 			LapgUIActivator.logWarning("lapgBuilder: cannot create marker", ex);
 		}
 	}
-
+		
 	private void createMarker(IFile file, LapgProblem p, TextSource source) {
 		createMarker(file, p.getOffset(), p.getEndOffset(), source.lineForOffset(p.getOffset()),
 				p.getKind() == LapgTree.KIND_WARN, p.getMessage());
