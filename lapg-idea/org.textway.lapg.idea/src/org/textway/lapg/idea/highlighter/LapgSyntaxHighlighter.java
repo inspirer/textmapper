@@ -34,11 +34,26 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 	static {
 		attributes = new HashMap<IElementType, TextAttributesKey>();
-		fillMap(attributes, SyntaxHighlighterColors.JAVA_BLOCK_COMMENT, COMMENT);
+
+		fillMap(attributes, SyntaxHighlighterColors.LINE_COMMENT, COMMENT);
 		fillMap(attributes, SyntaxHighlighterColors.STRING, STRING);
-		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, ACTION);
-		fillMap(attributes, HighlighterColors.TEXT, TEMPLATES, TEXT);
-		fillMap(attributes, SyntaxHighlighterColors.VALID_STRING_ESCAPE, REGEXP);
+		fillMap(attributes, SyntaxHighlighterColors.NUMBER, ICON);
+		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);  // TODO fix
+		fillMap(attributes, SyntaxHighlighterColors.VALID_STRING_ESCAPE, REGEXP); // TODO fix
+		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, TEMPLATES, ACTION); // TODO fix
+
+		// [] ()
+		fillMap(attributes, SyntaxHighlighterColors.BRACKETS, OP_LBRACKET, OP_RBRACKET);
+		fillMap(attributes, SyntaxHighlighterColors.PARENTHS, OP_LPAREN, OP_RPAREN);
+
+		// punctuation
+		fillMap(attributes, SyntaxHighlighterColors.DOT, OP_DOT);
+		fillMap(attributes, SyntaxHighlighterColors.COMMA, OP_COMMA);
+		fillMap(attributes, SyntaxHighlighterColors.JAVA_SEMICOLON, OP_SEMICOLON);
+
+		// operators/keywords
+		fillMap(attributes, operators, SyntaxHighlighterColors.OPERATION_SIGN);
+		fillMap(attributes, keywords, SyntaxHighlighterColors.KEYWORD);
 	}
 
 	@NotNull

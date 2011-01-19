@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.idea.parser;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -23,14 +24,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.psi.util.PsiUtil;
-import com.intellij.psi.util.PsiUtilBase;
-import org.textway.lapg.idea.lexer.LapgLexerAdapter;
 import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.idea.lexer.LapgLexerAdapter;
+import org.textway.lapg.idea.lexer.LapgTokenTypes;
+import org.textway.lapg.idea.psi.LapgElement;
+import org.textway.lapg.idea.psi.PsiLexem;
+import org.textway.lapg.idea.psi.PsiOption;
 
-public class LapgParserDefinition implements ParserDefinition {
+public class LapgParserDefinition implements ParserDefinition, LapgElementTypes {
 
 	@NotNull
 	public Lexer createLexer(Project project) {
@@ -38,7 +42,7 @@ public class LapgParserDefinition implements ParserDefinition {
 	}
 
 	public PsiParser createParser(Project project) {
-		return PsiUtil.NULL_PARSER;
+		return new LapgParser();
 	}
 
 	public IFileElementType getFileNodeType() {
@@ -47,22 +51,29 @@ public class LapgParserDefinition implements ParserDefinition {
 
 	@NotNull
 	public TokenSet getWhitespaceTokens() {
-		return TokenSet.EMPTY;
+		return LapgTokenTypes.whitespaces;
 	}
 
 	@NotNull
 	public TokenSet getCommentTokens() {
-		return TokenSet.EMPTY;
+		return LapgTokenTypes.comments;
 	}
 
 	@NotNull
 	public TokenSet getStringLiteralElements() {
-		return TokenSet.EMPTY;
+		return LapgTokenTypes.strings;
 	}
 
 	@NotNull
 	public PsiElement createElement(ASTNode node) {
-		return PsiUtilBase.NULL_PSI_ELEMENT;
+		IElementType type = node.getElementType();
+//		if (type == LEXEME) {
+//			return new PsiLexem(node);
+//		} else if (type == OPTION) {
+//			return new PsiOption(node);
+//		}
+
+		return new LapgElement(node);
 	}
 
 	public PsiFile createFile(FileViewProvider viewProvider) {

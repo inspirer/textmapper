@@ -45,7 +45,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 
 		try {
 			if (lexer == null) {
-				lexer = new SkippingLapgLexer(reader);
+				lexer = new IdeaLapgLexer(reader);
 			} else {
 				lexer.reset(reader);
 			}
@@ -92,7 +92,9 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	}
 
 	private void locateToken() {
-		if(current == null) { current = nextToken(); }
+		if (current == null) {
+			current = nextToken();
+		}
 	}
 
 	public IElementType nextToken() {
@@ -102,29 +104,94 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 		if (fTokenOffset < lexem.offset) {
 			fTokenLength = lexem.offset - fTokenOffset;
-			return TEXT;
+			/* TODO debug, shouldn't happen */
+			assert false;
+			return WHITESPACE;
 		}
 		int token = lexem.lexem;
-		switch (token) {
-			case Lexems._skip_comment:
-			case Lexems.scon:
-			case Lexems.regexp:
-				fTokenLength = lexem.endoffset - fTokenOffset;
-				lexem = null;
-				if (token == Lexems._skip_comment) {
-					return COMMENT;
-				} else if (token == Lexems.scon) {
-					return STRING;
-				} else {
-					return REGEXP;
-				}
-			case Lexems.LCURLY:
-				skipAction();
-				fTokenLength = lexem.endoffset - fTokenOffset;
-				lexem = null;
-				return ACTION;
+		if (token == Lexems.LCURLY) {
+			skipAction();
+			fTokenLength = lexem.endoffset - fTokenOffset;
+			lexem = null;
+			return ACTION;
 		}
+		fTokenLength = lexem.endoffset - fTokenOffset;
+		LapgSymbol currentLexem = lexem;
+		lexem = null;
+		switch (token) {
+			case Lexems._skip:
+				return WHITESPACE;
+			case Lexems._skip_comment:
+				return COMMENT;
+			case Lexems.scon:
+				return STRING;
+			case Lexems.icon:
+				return ICON;
+			case Lexems.identifier:
+				return IDENTIFIER;
+			case Lexems.regexp:
+				return REGEXP;
+
+			// operators
+			case Lexems.PERCENT:
+				return OP_PERCENT;
+			case Lexems.COLONCOLONEQUAL:
+				return OP_CCEQ;
+			case Lexems.OR:
+				return OP_OR;
+			case Lexems.EQUAL:
+				return OP_EQ;
+			case Lexems.EQUALGREATER:
+				return OP_EQGT;
+			case Lexems.SEMICOLON:
+				return OP_SEMICOLON;
+			case Lexems.DOT:
+				return OP_DOT;
+			case Lexems.COMMA:
+				return OP_COMMA;
+			case Lexems.COLON:
+				return OP_COLON;
+			case Lexems.LSQUARE:
+				return OP_LBRACKET;
+			case Lexems.RSQUARE:
+				return OP_RBRACKET;
+			case Lexems.LPAREN:
+				return OP_LPAREN;
+			case Lexems.RPAREN:
+				return OP_RPAREN;
+			case Lexems.LESSLESS:
+				return OP_LTLT;
+			case Lexems.LESS:
+				return OP_LT;
+			case Lexems.GREATER:
+				return OP_GT;
+			case Lexems.MULT:
+				return OP_STAR;
+			case Lexems.PLUS:
+				return OP_PLUS;
+			case Lexems.QUESTIONMARK:
+				return OP_QMARK;
+			case Lexems.AMPERSAND:
+				return OP_AND;
+			case Lexems.ATSIGN:
+				return OP_AT;
+
+			// keywords
+			case Lexems.Ltrue:
+				return KW_TRUE;
+			case Lexems.Lfalse:
+				return KW_FALSE;
+			case Lexems.Lprio:
+				return KW_PRIO;
+			case Lexems.Lshift:
+				return KW_SHIFT;
+			case Lexems.Lreduce:
+				return KW_REDUCE;
+		}
+
 		/* default, eoi */
+		lexem = currentLexem;
+		assert lexem.lexem == Lexems.eoi;
 		if (lexem.endoffset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
 			lexem.offset = lexem.endoffset = fDocumentLength;
@@ -157,8 +224,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 	}
 
-	private static class SkippingLapgLexer extends LapgLexer {
-		public SkippingLapgLexer(Reader stream) throws IOException {
+	private static class IdeaLapgLexer extends LapgLexer {
+		public IdeaLapgLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				public void error(int start, int end, int line, String s) {
 				}
@@ -167,18 +234,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 
 		@Override
 		protected boolean createToken(LapgSymbol lapg_n) {
-			switch (lapg_n.lexem) {
-				case Lexems._skip_comment:
-				case Lexems.scon:
-				case Lexems.regexp:
-				case Lexems.eoi:
-					return true;
-				case Lexems.LCURLY:
-				case Lexems.RCURLY:
-				case Lexems.iLCURLY:
-					return super.createToken(lapg_n);
-			}
-			return false;
+			super.createToken(lapg_n);
+			return true;
 		}
 	}
 }
