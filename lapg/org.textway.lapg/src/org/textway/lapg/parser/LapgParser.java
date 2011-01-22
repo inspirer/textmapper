@@ -358,17 +358,17 @@ public class LapgParser {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private Object parse(LapgLexer lexer, int state) throws IOException, ParseException {
+	private Object parse(LapgLexer lexer, int initialState) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
 		int lapg_symbols_ok = 4;
 
 		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = state;
+		lapg_m[0].state = initialState;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 193+state) {
+		while (lapg_m[lapg_head].state != 193+initialState) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -379,21 +379,7 @@ public class LapgParser {
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
-				if (lapg_n.lexem == 0) {
-					break;
-				}
-				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1) == -1) {
-					lapg_m[lapg_head] = null; // TODO dispose?
-					lapg_head--;
-				}
-				if (lapg_head >= 0) {
-					lapg_m[++lapg_head] = new LapgSymbol();
-					lapg_m[lapg_head].lexem = 1;
-					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
-					lapg_m[lapg_head].line = lapg_n.line;
-					lapg_m[lapg_head].offset = lapg_n.offset;
-					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
 						reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 					}
@@ -402,22 +388,45 @@ public class LapgParser {
 					}
 					lapg_symbols_ok = 0;
 					continue;
-				} else {
+				}
+				if (lapg_head < 0) {
 					lapg_head = 0;
 					lapg_m[0] = new LapgSymbol();
-					lapg_m[0].state = state;
+					lapg_m[0].state = initialState;
 				}
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 193+state) {
+		if (lapg_m[lapg_head].state != 193+initialState) {
 			if (lapg_symbols_ok >= 4) {
 				reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			}
 			throw new ParseException();
 		}
 		return lapg_m[lapg_head - 1].sym;
+	}
+
+	protected boolean restore() {
+		if (lapg_n.lexem == 0) {
+			return false;
+		}
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1) == -1) {
+			dispose(lapg_m[lapg_head]);
+			lapg_m[lapg_head] = null;
+			lapg_head--;
+		}
+		if (lapg_head >= 0) {
+			lapg_m[++lapg_head] = new LapgSymbol();
+			lapg_m[lapg_head].lexem = 1;
+			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
+			lapg_m[lapg_head].line = lapg_n.line;
+			lapg_m[lapg_head].offset = lapg_n.offset;
+			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+			return true;
+		}
+		return false;
 	}
 
 	private void shift(LapgLexer lexer) throws IOException {
@@ -431,7 +440,6 @@ public class LapgParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
@@ -444,6 +452,16 @@ public class LapgParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		applyRule(lapg_gg, rule);
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void applyRule(LapgSymbol lapg_gg, int rule) {
 		switch (rule) {
 			case 0:  // input ::= options lexer_parts grammar_parts
 				  lapg_gg.sym = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head-2].sym), ((List<AstLexerPart>)lapg_m[lapg_head-1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -671,11 +689,12 @@ public class LapgParser {
 				 lapg_gg.sym = new AstError(source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset); 
 				break;
 		}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
-		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	/**
+	 *  disposes a symbol dropped by error recovery mechanism
+	 */
+	protected void dispose(LapgSymbol sym) {
 	}
 
 	public AstRoot parseInput(LapgLexer lexer) throws IOException, ParseException {

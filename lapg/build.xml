@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="build" name="org.textway.lapg">
+<project basedir="." default="all" name="org.textway.lapg">
 	<property environment="env"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
 	<property name="source" value="1.5"/>
 	<property name="lapg.ver" value="1.4.0alpha1"/>
 	<property name="suffix" value="1.4.0"/>
+
+	<target name="all" depends="clean,test,deploy">
+	</target>
 
 	<target name="clean">
 		<delete dir="build"/>
@@ -79,9 +82,11 @@
 		</junit>
 	</target>
 
-	<target name="deploy" depends="test,build,buildsource">
+	<target name="deploy" depends="build,buildsource">
 		<copy file="build/lapg.jar" tofile="libs/lapg-${suffix}.jar"/>
 		<copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
+		<copy file="build/lapg.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}.jar"/>
+		<copy file="build/lapg-src.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}-src.jar"/>
 	</target>
 
 	<!-- TODO Lapg task

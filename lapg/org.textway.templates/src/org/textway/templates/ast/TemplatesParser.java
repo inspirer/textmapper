@@ -709,16 +709,16 @@ public class TemplatesParser {
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	private Object parse(TemplatesLexer lexer, int state) throws IOException, ParseException {
+	private Object parse(TemplatesLexer lexer, int initialState) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
 
 		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = state;
+		lapg_m[0].state = initialState;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 263+state) {
+		while (lapg_m[lapg_head].state != 263+initialState) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -732,7 +732,7 @@ public class TemplatesParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 263+state) {
+		if (lapg_m[lapg_head].state != 263+initialState) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		}
@@ -750,7 +750,6 @@ public class TemplatesParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
@@ -763,6 +762,16 @@ public class TemplatesParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		applyRule(lapg_gg, rule);
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void applyRule(LapgSymbol lapg_gg, int rule) {
 		switch (rule) {
 			case 3:  // definitions ::= definition
 				 lapg_gg.sym = new ArrayList(); if (((IBundleEntity)lapg_m[lapg_head-0].sym) != null) ((List<IBundleEntity>)lapg_gg.sym).add(((IBundleEntity)lapg_m[lapg_head-0].sym)); 
@@ -1035,11 +1044,6 @@ public class TemplatesParser {
 						
 				break;
 		}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
-		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 
 	public List<IBundleEntity> parseInput(TemplatesLexer lexer) throws IOException, ParseException {

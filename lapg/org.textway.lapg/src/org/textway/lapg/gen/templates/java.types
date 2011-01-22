@@ -24,6 +24,7 @@ class Options {
 
 	bool packLexems = false;
 	bool packTables = false;
+	bool genCleanup = false;
 }
 
 class AnnotateReference {

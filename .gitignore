@@ -3,4 +3,5 @@ workspace.xml
 dictionaries
 /lapg/build/
 /lapg/libs/lapg-1*
+/lapg-idea/org.textway.lapg.idea/lib/lapg-1*
 bin

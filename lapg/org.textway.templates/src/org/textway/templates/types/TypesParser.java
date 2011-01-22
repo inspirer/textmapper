@@ -298,7 +298,6 @@ public class TypesParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
@@ -311,6 +310,16 @@ public class TypesParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		applyRule(lapg_gg, rule);
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void applyRule(LapgSymbol lapg_gg, int rule) {
 		switch (rule) {
 			case 0:  // input ::= declarations
 				lapg_gg.sym = new AstInput(
@@ -584,10 +593,5 @@ null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset));
 				((List<List<String>>)lapg_m[lapg_head-2].sym).add(((List<String>)lapg_m[lapg_head-0].sym));
 				break;
 		}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
-		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 }

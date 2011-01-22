@@ -189,7 +189,6 @@ public class XmlParser {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
@@ -202,6 +201,16 @@ public class XmlParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		applyRule(lapg_gg, rule);
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void applyRule(LapgSymbol lapg_gg, int rule) {
 		switch (rule) {
 			case 0:  // input ::= xml_tags
 				 lapg_gg.sym = new XmlNode("<root>", null, 1); ((XmlNode)lapg_gg.sym).setData(((List<XmlElement>)lapg_m[lapg_head-0].sym)); 
@@ -246,10 +255,5 @@ public class XmlParser {
 				 lapg_gg.sym = new XmlAttribute(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head-0].sym)); 
 				break;
 		}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
-		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
 }

@@ -82,7 +82,7 @@ ${end-}
 	private LapgSymbol[] lapg_m;
 	private LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first()->type()}${syntax.input.first()->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int state${end}) throws java.io.@IOException, ParseException {
+	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first()->type()}${syntax.input.first()->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}) throws java.io.@IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -90,10 +90,10 @@ ${if syntax.error}		int lapg_symbols_ok = 4;
 ${end-}
 
 		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
+		lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+initialState' : parser.nstates-1}) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -106,59 +106,27 @@ ${end-}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 ${if syntax.error-}
-				if (lapg_n.lexem == 0) {
-					break;
-				}
-				while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${syntax.error.index}) == -1) {
-					lapg_m[lapg_head] = null; // TODO dispose?
-					lapg_head--;
-				}
-				if (lapg_head >= 0) {
-					lapg_m[++lapg_head] = new LapgSymbol();
-					lapg_m[lapg_head].lexem = ${syntax.error.index};
-					lapg_m[lapg_head].sym = null;
-					lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${syntax.error.index});
-${if opts.positions.contains('line')-}
-					lapg_m[lapg_head].line = lapg_n.line;
-${end-}
-${if opts.positions.contains('column')-}
-					lapg_m[lapg_head].column = lapg_n.column;
-${end-}
-${if opts.positions.contains('offset')-}
-					lapg_m[lapg_head].offset = lapg_n.offset;
-${end-}
-${if opts.endpositions.contains('line')-}
-					lapg_m[lapg_head].endline = lapg_n.endline;
-${end-}
-${if opts.endpositions.contains('column')-}
-					lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
-${end-}
-${if opts.endpositions.contains('offset')-}
-					lapg_m[lapg_head].endoffset = lapg_n.endoffset;
-${end-}
+				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-${if opts.positions.contains('column')-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
-${else-}
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
-${end-}
+						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}", lexer.getTokenLine(), lapg_n.column)${else}", lexer.getTokenLine())${end});
 					}
 					if (lapg_symbols_ok <= 1) {
 						lapg_n = lexer.next();
 					}
 					lapg_symbols_ok = 0;
 					continue;
-				} else {
+				}
+				if (lapg_head < 0) {
 					lapg_head = 0;
 					lapg_m[0] = new LapgSymbol();
-					lapg_m[0].state = ${syntax.input.length > 1 ? 'state' : 0};
+					lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
 				}
 ${end-}
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
+		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+initialState' : parser.nstates-1}) {
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
@@ -170,6 +138,44 @@ ${end-}
 		}
 		return ${if syntax.input.length == 1 && syntax.input.first()->type()}(${syntax.input.first()->type()})${end}lapg_m[lapg_head - 1].sym;
 	}
+${if syntax.error}
+	protected boolean restore() {
+		if (lapg_n.lexem == 0) {
+			return false;
+		}
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${syntax.error.index}) == -1) {
+			dispose(lapg_m[lapg_head]);
+			lapg_m[lapg_head] = null;
+			lapg_head--;
+		}
+		if (lapg_head >= 0) {
+			lapg_m[++lapg_head] = new LapgSymbol();
+			lapg_m[lapg_head].lexem = ${syntax.error.index};
+			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${syntax.error.index});
+${if opts.positions.contains('line')-}
+			lapg_m[lapg_head].line = lapg_n.line;
+${end-}
+${if opts.positions.contains('column')-}
+			lapg_m[lapg_head].column = lapg_n.column;
+${end-}
+${if opts.positions.contains('offset')-}
+			lapg_m[lapg_head].offset = lapg_n.offset;
+${end-}
+${if opts.endpositions.contains('line')-}
+			lapg_m[lapg_head].endline = lapg_n.endline;
+${end-}
+${if opts.endpositions.contains('column')-}
+			lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
+${end-}
+${if opts.endpositions.contains('offset')-}
+			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+${end-}
+			return true;
+		}
+		return false;
+	}
+${end-}
 
 	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
 		lapg_m[++lapg_head] = lapg_n;
@@ -182,7 +188,6 @@ ${end-}
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
@@ -212,12 +217,25 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 ${end-}
+		applyRule(lapg_gg, rule);
+		for (int e = lapg_rlen[rule]; e > 0; e--) {
+${if opts.genCleanup-}
+			cleanup(lapg_m[lapg_head]);
+${end-}
+			lapg_m[lapg_head--] = null;
+		}
+		lapg_m[++lapg_head] = lapg_gg;
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected void applyRule(LapgSymbol lapg_gg, int rule) {
 ${if syntax.hasActions() || opts.genast -}
 		switch (rule) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
-${if rule.getAction()-}			
+${if rule.getAction()-}
 				${call parserAction for rule-}
 ${if opts.breaks }				break;$/
 ${else-}
@@ -228,12 +246,21 @@ ${end-}
 ${end-}
 		}
 ${end-}
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
-		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
 	}
+${if syntax.error}
+	/**
+	 *  disposes a symbol dropped by error recovery mechanism
+	 */
+	protected void dispose(LapgSymbol sym) {
+	}
+${end-}
+${if opts.genCleanup}
+	/**
+	 *  cleans
+	 */
+	protected void cleanup(LapgSymbol sym) {
+	}
+${end-}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
 	public ${if inp->type()}${inp->type()}${else}Object${end} parse${util.toFirstUpper(inp.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
