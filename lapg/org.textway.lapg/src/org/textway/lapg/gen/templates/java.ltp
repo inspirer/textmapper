@@ -32,7 +32,7 @@ ${call parseException-}
 ${util.shiftRight(self->classcode(), 1)-}
 ${call parserTables-}
 
-	private static final String[] lapg_syms = new String[] {
+	protected static final String[] lapg_syms = new String[] {
 ${foreach s in parser.sym-}
 		"${s.name}",
 ${end-}
@@ -78,9 +78,9 @@ ${end-}
 		return -1;
 	}
 
-	private int lapg_head;
-	private LapgSymbol[] lapg_m;
-	private LapgSymbol lapg_n;
+	protected int lapg_head;
+	protected LapgSymbol[] lapg_m;
+	protected LapgSymbol lapg_n;
 
 	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first()->type()}${syntax.input.first()->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}) throws java.io.@IOException, ParseException {
 
@@ -177,7 +177,7 @@ ${end-}
 	}
 ${end-}
 
-	private void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
+	protected final void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -188,7 +188,7 @@ ${end-}
 		}
 	}
 
-	private void reduce(int rule) {
+	protected final void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
@@ -249,14 +249,14 @@ ${end-}
 	}
 ${if syntax.error}
 	/**
-	 *  disposes a symbol dropped by error recovery mechanism
+	 *  disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(LapgSymbol sym) {
 	}
 ${end-}
 ${if opts.genCleanup}
 	/**
-	 *  cleans
+	 *  cleans node removed from the stack
 	 */
 	protected void cleanup(LapgSymbol sym) {
 	}

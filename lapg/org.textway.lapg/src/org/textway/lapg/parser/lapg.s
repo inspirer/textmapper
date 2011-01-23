@@ -23,6 +23,7 @@ breaks = true
 gentree = true
 positions = "line,offset"
 endpositions = "offset"
+genCleanup = true
 
 # Vocabulary
 

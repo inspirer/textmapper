@@ -75,7 +75,7 @@ public class XmlParser {
 		19
 	};
 
-	private static final String[] lapg_syms = new String[] {
+	protected static final String[] lapg_syms = new String[] {
 		"eoi",
 		"any",
 		"'<'",
@@ -144,9 +144,9 @@ public class XmlParser {
 		return -1;
 	}
 
-	private int lapg_head;
-	private LapgSymbol[] lapg_m;
-	private LapgSymbol lapg_n;
+	protected int lapg_head;
+	protected LapgSymbol[] lapg_m;
+	protected LapgSymbol lapg_n;
 
 	public XmlNode parse(XmlLexer lexer) throws IOException, ParseException {
 
@@ -178,7 +178,7 @@ public class XmlParser {
 		return (XmlNode)lapg_m[lapg_head - 1].sym;
 	}
 
-	private void shift(XmlLexer lexer) throws IOException {
+	protected final void shift(XmlLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -189,7 +189,7 @@ public class XmlParser {
 		}
 	}
 
-	private void reduce(int rule) {
+	protected final void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];

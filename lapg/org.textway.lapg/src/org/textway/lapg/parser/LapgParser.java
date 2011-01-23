@@ -193,7 +193,7 @@ public class LapgParser {
 		68, 69, 69, 70, 71
 	};
 
-	private static final String[] lapg_syms = new String[] {
+	protected static final String[] lapg_syms = new String[] {
 		"eoi",
 		"error",
 		"identifier",
@@ -354,9 +354,9 @@ public class LapgParser {
 		return -1;
 	}
 
-	private int lapg_head;
-	private LapgSymbol[] lapg_m;
-	private LapgSymbol lapg_n;
+	protected int lapg_head;
+	protected LapgSymbol[] lapg_m;
+	protected LapgSymbol lapg_n;
 
 	private Object parse(LapgLexer lexer, int initialState) throws IOException, ParseException {
 
@@ -429,7 +429,7 @@ public class LapgParser {
 		return false;
 	}
 
-	private void shift(LapgLexer lexer) throws IOException {
+	protected final void shift(LapgLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -440,7 +440,7 @@ public class LapgParser {
 		}
 	}
 
-	private void reduce(int rule) {
+	protected final void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
@@ -454,6 +454,7 @@ public class LapgParser {
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 		applyRule(lapg_gg, rule);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
+			cleanup(lapg_m[lapg_head]);
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
@@ -692,9 +693,15 @@ public class LapgParser {
 	}
 
 	/**
-	 *  disposes a symbol dropped by error recovery mechanism
+	 *  disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(LapgSymbol sym) {
+	}
+
+	/**
+	 *  cleans node removed from the stack
+	 */
+	protected void cleanup(LapgSymbol sym) {
 	}
 
 	public AstRoot parseInput(LapgLexer lexer) throws IOException, ParseException {
