@@ -222,7 +222,7 @@ public class TypesParser {
 		public static final int expression_listopt = 61;
 	}
 
-	private static int lapg_next(int state, int symbol) {
+	protected final static int lapg_next(int state, int symbol) {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
@@ -235,7 +235,7 @@ public class TypesParser {
 		return lapg_action[state];
 	}
 
-	private static int lapg_state_sym(int state, int symbol) {
+	protected final static int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -287,7 +287,7 @@ public class TypesParser {
 		return (AstInput)lapg_m[lapg_head - 1].sym;
 	}
 
-	protected final void shift(TypesLexer lexer) throws IOException {
+	protected void shift(TypesLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -298,7 +298,7 @@ public class TypesParser {
 		}
 	}
 
-	protected final void reduce(int rule) {
+	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
@@ -310,7 +310,7 @@ public class TypesParser {
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
-		applyRule(lapg_gg, rule);
+		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
 			lapg_m[lapg_head--] = null;
 		}
@@ -319,7 +319,7 @@ public class TypesParser {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule) {
+	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 0:  // input ::= declarations
 				lapg_gg.sym = new AstInput(

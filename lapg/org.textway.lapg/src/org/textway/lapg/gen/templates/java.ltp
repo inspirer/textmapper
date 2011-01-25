@@ -45,7 +45,7 @@ ${for i in [parser.nterms, parser.nsyms-1]-}
 ${end-}
 	}
 
-	private static int lapg_next(int state, int symbol) {
+	protected final static int lapg_next(int state, int symbol) {
 ${if parser.nactions > 0-}
 		int p;
 		if (lapg_action[state] < -2) {
@@ -60,7 +60,7 @@ ${end-}
 		return lapg_action[state];
 	}
 
-	private static int lapg_state_sym(int state, int symbol) {
+	protected final static int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -177,7 +177,7 @@ ${end-}
 	}
 ${end-}
 
-	protected final void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
+	protected void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
@@ -188,7 +188,7 @@ ${end-}
 		}
 	}
 
-	protected final void reduce(int rule) {
+	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
@@ -217,7 +217,7 @@ ${end-}
 ${if opts.endpositions.contains('offset')-}
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
 ${end-}
-		applyRule(lapg_gg, rule);
+		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
 ${if opts.genCleanup-}
 			cleanup(lapg_m[lapg_head]);
@@ -229,7 +229,7 @@ ${end-}
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule) {
+	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 ${if syntax.hasActions() || opts.genast -}
 		switch (rule) {
 ${foreach rule in syntax.rules-}
