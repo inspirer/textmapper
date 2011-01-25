@@ -23,52 +23,89 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.lexer.LapgElementType;
-import org.textway.lapg.idea.lexer.LapgTokenTypes;
 import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
-import org.textway.lapg.parser.LapgLexer.Lexems;
 import org.textway.lapg.parser.LapgParser.ParseException;
 import org.textway.lapg.parser.LapgParser.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 public class LapgParser implements PsiParser {
+
+	private static final Map<Integer, IElementType> types = initTypes();
+
+	private static Map<Integer, IElementType> initTypes() {
+		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
+		for (IElementType t : LapgElementTypes.allElements) {
+			result.put(((LapgElementType) t).getSymbol(), t);
+		}
+		result.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
+		return result;
+	}
 
 	@NotNull
 	public ASTNode parse(IElementType root, PsiBuilder builder) {
 		final PsiBuilder.Marker file = builder.mark();
-		new Parser(builder).parseGrammar();
+		parseGrammar(builder);
 		file.done(root);
 		return builder.getTreeBuilt();
 	}
 
-	private static class Parser implements LapgTokenTypes, LapgElementTypes {
+	private void parseGrammar(PsiBuilder builder) {
+		Marker grammar = builder.mark();
+
+		LapgParserEx parser = new LapgParserEx(builder);
+		try {
+			parser.parseInput(new LapgLexerEx(builder));
+		} catch (IOException e) {
+			/* cannot happen */
+		} catch (ParseException e) {
+			/* syntax error, ok */
+		}
+
+		assert parser.markers.isEmpty();
+
+		while (!builder.eof()) {
+			builder.advanceLexer();
+		}
+		grammar.done(LapgElementTypes.GRAMMAR);
+	}
+
+	private static class LapgParserEx extends org.textway.lapg.parser.LapgParser {
 
 		private final PsiBuilder myBuilder;
-		private LapgSymbol next;
-		private Stack<Marker> markers = new Stack<Marker>();
-		private Map<Integer, IElementType> types = new HashMap<Integer, IElementType>();
+		private final Stack<Marker> markers = new Stack<Marker>();
 
-		public Parser(PsiBuilder myBuilder) {
-			this.myBuilder = myBuilder;
-			for (IElementType t : LapgElementTypes.allElements) {
-				types.put(((LapgElementType) t).getSymbol(), t);
-			}
-			types.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
+		public LapgParserEx(PsiBuilder builder) {
+			super(new ErrorReporter() {
+				public void error(int start, int end, int line, String s) {
+					// ignore, errors are reported as syntax_problem productions
+				}
+			});
+			myBuilder = builder;
 		}
 
 		private Marker mark() {
 			Marker m = myBuilder.mark();
-			markers.add(m);
+			markers.push(m);
 			return m;
+		}
+
+		private Marker clone(Marker inner) {
+			Marker outer = inner.precede();
+			free(inner, false);
+			markers.push(outer);
+			return outer;
 		}
 
 		private void free(Marker m, boolean drop) {
 			assert m == markers.pop();
-			if(drop) {
+			if (drop) {
 				m.drop();
 			}
 		}
@@ -81,7 +118,80 @@ public class LapgParser implements PsiParser {
 			}
 		}
 
-		private LapgSymbol next() {
+		@Override
+		protected void shift(LapgLexer lexer) throws IOException {
+			Marker marker = lapg_n.lexem != Tokens.eoi ? mark() : null;
+			super.shift(lexer);
+			lapg_m[lapg_head].sym = marker;
+		}
+
+		@Override
+		protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
+			for (int i = 0; i < rulelen - 1; i++) {
+				drop(lapg_m[lapg_head - i]);
+			}
+			if (rulelen > 0) {
+				lapg_m[lapg_head - (rulelen - 1)].sym = null;
+			}
+
+			Marker m = (Marker) lapg_gg.sym;
+			if (m != null) {
+				IElementType elementType = types.get(lapg_gg.lexem);
+				if (elementType != null) {
+					lapg_gg.sym = clone(m);
+
+					if (lapg_gg.lexem == Tokens.syntax_problem) {
+						m.error("syntax error");
+					} else {
+						m.done(elementType);
+					}
+				}
+			}
+			if (lapg_gg.lexem == Tokens.input) {
+				drop(lapg_gg);
+			}
+		}
+
+		@Override
+		protected boolean restore() {
+			boolean restored = super.restore();
+			if (restored) {
+				/* restored after syntax error - mark the location */
+				lapg_m[lapg_head].sym = mark();
+			}
+			return restored;
+		}
+
+		@Override
+		protected void dispose(LapgSymbol sym) {
+			drop(sym);
+		}
+
+		@Override
+		protected void cleanup(LapgSymbol sym) {
+			assert sym.sym == null;
+		}
+	}
+
+	private static class LapgLexerEx extends LapgLexer {
+		private final PsiBuilder myBuilder;
+		private LapgSymbol next;
+
+		public LapgLexerEx(PsiBuilder builder) throws IOException {
+			super(null, null);
+			myBuilder = builder;
+		}
+
+		@Override
+		public LapgSymbol next() throws IOException {
+			return nextInternal();
+		}
+
+		@Override
+		public void reset(Reader stream) throws IOException {
+		}
+
+		private LapgSymbol nextInternal() {
 			if (next != null && !myBuilder.eof()) {
 				myBuilder.advanceLexer();
 			}
@@ -92,117 +202,11 @@ public class LapgParser implements PsiParser {
 				LapgElementType tokenType = (LapgElementType) myBuilder.getTokenType();
 				next.lexem = tokenType.getSymbol();
 				if (next.lexem == Tokens.command) {
-					drop(next);
 					// temp hack
-					return next();
+					return nextInternal();
 				}
 			}
 			return next;
-		}
-
-		public void parseGrammar() {
-			Marker grammar = myBuilder.mark();
-
-			LapgParserEx parser = new LapgParserEx(new ErrorReporter() {
-				public void error(int start, int end, int line, String s) {
-					// ignore
-				}
-			});
-			try {
-				parser.parseInput(new LapgLexerEx());
-			} catch (IOException e) {
-			} catch (ParseException e) {
-			}
-
-			assert markers.isEmpty();
-
-			while (!myBuilder.eof()) {
-				next();
-			}
-			grammar.done(GRAMMAR);
-		}
-
-		private class LapgLexerEx extends LapgLexer {
-			public LapgLexerEx() throws IOException {
-				super(null, null);
-			}
-
-			@Override
-			public LapgSymbol next() throws IOException {
-				return Parser.this.next();
-			}
-
-			@Override
-			public void reset(Reader stream) throws IOException {
-			}
-		}
-
-		private class LapgParserEx extends org.textway.lapg.parser.LapgParser {
-
-			public LapgParserEx(ErrorReporter reporter) {
-				super(reporter);
-			}
-
-			@Override
-			protected void shift(LapgLexer lexer) throws IOException {
-				if(lapg_n.lexem != Tokens.eoi) {
-					Marker marker = mark();
-					super.shift(lexer);
-					lapg_m[lapg_head].sym = marker;
-				} else {
-					super.shift(lexer);
-				}
-			}
-
-			@Override
-			protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
-				for(int i = 0; i < rulelen - 1; i++) {
-					Parser.this.drop(lapg_m[lapg_head - i]);
-				}
-				if(rulelen > 0) {
-					lapg_m[lapg_head - (rulelen - 1)].sym = null;
-				}
-
-				Marker m = (Marker) lapg_gg.sym;
-				if (m != null) {
-					IElementType elementType = types.get(lapg_gg.lexem);
-					if (elementType != null) {
-						Marker outer = m.precede();
-						free(m, false);
-						markers.push(outer);
-						lapg_gg.sym = outer;
-
-//						System.out.println("reducing " + lapg_syms[lapg_gg.lexem] + " " + m + " before " + lapg_syms[next.lexem]);
-						if (lapg_gg.lexem == Tokens.syntax_problem) {
-							m.error("syntax error");
-						} else {
-							m.done(elementType);
-						}
-					}
-				}
-				if (lapg_gg.lexem == Tokens.input) {
-					drop(lapg_gg);
-				}
-			}
-
-			@Override
-			protected boolean restore() {
-				boolean restored = super.restore();
-				if (restored) {
-					lapg_m[lapg_head].sym = mark();
-				}
-				return restored;
-			}
-
-			@Override
-			protected void dispose(LapgSymbol sym) {
-				Parser.this.drop(sym);
-			}
-
-			@Override
-			protected void cleanup(LapgSymbol sym) {
-				assert sym.sym == null;
-			}
 		}
 	}
 }
