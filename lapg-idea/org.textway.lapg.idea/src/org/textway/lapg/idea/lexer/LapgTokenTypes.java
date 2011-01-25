@@ -18,53 +18,52 @@ package org.textway.lapg.idea.lexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
+import org.textway.lapg.parser.LapgLexer.Lexems;
+import org.textway.lapg.parser.LapgParser.Tokens;
 
 public interface LapgTokenTypes {
 
-	IElementType WHITESPACE = TokenType.WHITE_SPACE;
-	TokenSet whitespaces = TokenSet.create(WHITESPACE);
-
-	IElementType COMMENT = new LapgElementType("comment");
+	IElementType COMMENT = new LapgElementType(Lexems._skip_comment, "comment");
 	TokenSet comments = TokenSet.create(COMMENT);
 
 	// tokens
-	IElementType STRING = new LapgElementType("string");
-	IElementType ICON = new LapgElementType("int");
-	IElementType IDENTIFIER = new LapgElementType("identifier");
-	IElementType REGEXP = new LapgElementType("regexp");
+	IElementType STRING = new LapgElementType(Lexems.scon, "string");
+	IElementType ICON = new LapgElementType(Lexems.icon, "int");
+	IElementType IDENTIFIER = new LapgElementType(Lexems.identifier, "identifier");
+	IElementType REGEXP = new LapgElementType(Lexems.regexp, "regexp");
 
 	TokenSet strings = TokenSet.create(STRING);
 
 	// inner tokens
-	IElementType ACTION = new LapgElementType("action");
-	IElementType TEMPLATES = new LapgElementType("templates");
+	IElementType ACTION = new LapgElementType(Tokens.command, "action");
+	IElementType TEMPLATES = new LapgElementType(Lexems.eoi, "templates");
 
 	// [] ()
-	IElementType OP_LBRACKET = new LapgElementType("[");
-	IElementType OP_RBRACKET = new LapgElementType("]");
-	IElementType OP_LPAREN = new LapgElementType("(");
-	IElementType OP_RPAREN = new LapgElementType(")");
+	IElementType OP_LBRACKET = new LapgElementType(Lexems.LSQUARE, "[");
+	IElementType OP_RBRACKET = new LapgElementType(Lexems.RSQUARE, "]");
+	IElementType OP_LPAREN = new LapgElementType(Lexems.LPAREN, "(");
+	IElementType OP_RPAREN = new LapgElementType(Lexems.RPAREN, ")");
 
 	// punctuation
-	IElementType OP_SEMICOLON = new LapgElementType(";");
-	IElementType OP_DOT = new LapgElementType(".");
-	IElementType OP_COMMA = new LapgElementType(",");
+	IElementType OP_SEMICOLON = new LapgElementType(Lexems.SEMICOLON, ";");
+	IElementType OP_DOT = new LapgElementType(Lexems.DOT, ".");
+	IElementType OP_COMMA = new LapgElementType(Lexems.COMMA, ",");
 
 	// operators
-	IElementType OP_PERCENT = new LapgElementType("%");
-	IElementType OP_CCEQ = new LapgElementType("::=");
-	IElementType OP_OR = new LapgElementType("|");
-	IElementType OP_EQ = new LapgElementType("=");
-	IElementType OP_EQGT = new LapgElementType("=>");
-	IElementType OP_COLON = new LapgElementType(":");
-	IElementType OP_LTLT = new LapgElementType("<<");
-	IElementType OP_LT = new LapgElementType("<");
-	IElementType OP_GT = new LapgElementType(">");
-	IElementType OP_STAR = new LapgElementType("*");
-	IElementType OP_PLUS = new LapgElementType("+");
-	IElementType OP_QMARK = new LapgElementType("?");
-	IElementType OP_AND = new LapgElementType("&");
-	IElementType OP_AT = new LapgElementType("@");
+	IElementType OP_PERCENT = new LapgElementType(Lexems.PERCENT, "%");
+	IElementType OP_CCEQ = new LapgElementType(Lexems.COLONCOLONEQUAL, "::=");
+	IElementType OP_OR = new LapgElementType(Lexems.OR, "|");
+	IElementType OP_EQ = new LapgElementType(Lexems.EQUAL, "=");
+	IElementType OP_EQGT = new LapgElementType(Lexems.EQUALGREATER, "=>");
+	IElementType OP_COLON = new LapgElementType(Lexems.COLON, ":");
+	IElementType OP_LTLT = new LapgElementType(Lexems.LESSLESS, "<<");
+	IElementType OP_LT = new LapgElementType(Lexems.LESS, "<");
+	IElementType OP_GT = new LapgElementType(Lexems.GREATER, ">");
+	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
+	IElementType OP_PLUS = new LapgElementType(Lexems.PLUS, "+");
+	IElementType OP_QMARK = new LapgElementType(Lexems.QUESTIONMARK, "?");
+	IElementType OP_AND = new LapgElementType(Lexems.AMPERSAND, "&");
+	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
@@ -72,11 +71,16 @@ public interface LapgTokenTypes {
 	);
 
 	// keywords
-	IElementType KW_TRUE = new LapgElementType("true");
-	IElementType KW_FALSE = new LapgElementType("false");
-	IElementType KW_PRIO = new LapgElementType("prio");
-	IElementType KW_SHIFT = new LapgElementType("shift");
-	IElementType KW_REDUCE = new LapgElementType("reduce");
+	IElementType KW_TRUE = new LapgElementType(Lexems.Ltrue, "true");
+	IElementType KW_FALSE = new LapgElementType(Lexems.Lfalse, "false");
+	IElementType KW_PRIO = new LapgElementType(Lexems.Lprio, "prio");
+	IElementType KW_SHIFT = new LapgElementType(Lexems.Lshift, "shift");
+	IElementType KW_REDUCE = new LapgElementType(Lexems.Lreduce, "reduce");
 
 	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE);
+
+	IElementType WHITESPACE = TokenType.WHITE_SPACE;
+
+	// TODO FIXME ACTION is not a whitespace
+	TokenSet whitespaces = TokenSet.create(WHITESPACE, ACTION);
 }

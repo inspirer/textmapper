@@ -20,8 +20,15 @@ import org.textway.lapg.idea.file.LapgFileType;
 import org.jetbrains.annotations.NotNull;
 
 public class LapgElementType extends IElementType {
-	public LapgElementType(@NotNull String debugName) {
+	private final int symbol;
+
+	public LapgElementType(int symbol, @NotNull String debugName) {
 		super(debugName, LapgFileType.LAPG_LANGUAGE);
+		this.symbol = symbol;
+	}
+
+	public int getSymbol() {
+		return symbol;
 	}
 
 	@Override

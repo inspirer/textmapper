@@ -16,6 +16,7 @@
 package org.textway.lapg.idea.lexer;
 
 import com.intellij.lexer.LexerBase;
+import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
@@ -104,9 +105,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 		if (fTokenOffset < lexem.offset) {
 			fTokenLength = lexem.offset - fTokenOffset;
-			/* TODO debug, shouldn't happen */
-			assert false;
-			return WHITESPACE;
+			return TokenType.BAD_CHARACTER;
 		}
 		int token = lexem.lexem;
 		if (token == Lexems.LCURLY) {
