@@ -49,6 +49,7 @@ class Lexem extends SourceElement {
 
 class Rule extends SourceElement {
 	int index;
+	string alias;
 	Symbol left[1];
 	SymbolRef right[0..*];
 	int priority;

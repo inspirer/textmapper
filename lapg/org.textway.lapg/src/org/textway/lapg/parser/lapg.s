@@ -134,9 +134,9 @@ lexer_parts (List<AstLexerPart>) ::=
 ;
 
 lexer_part (AstLexerPart) ::=
-	  '[' icon_list ']'									{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	  group_selector: '[' icon_list ']'					{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	| alias: identifier '=' pattern						{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
 	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| identifier '=' pattern							{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
 	| symbol typeopt ':' pattern iconopt commandopt		{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 ;
 
@@ -154,7 +154,7 @@ grammar_parts (List<AstGrammarPart>) ::=
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| annotations_decl symbol typeopt '::=' rules ';'	{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations_decl, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| '%' identifier references ';'						{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| directive: '%' identifier references ';'			{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 ;
 
 references (List<AstReference>) ::= 

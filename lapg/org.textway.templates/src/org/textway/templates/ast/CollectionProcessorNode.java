@@ -149,7 +149,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 				while(it.hasNext()) {
 					Object curr = it.next();
 					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, false);
+					Object val = env.evaluate(foreachExpr, context, true);
 					boolean b = env.asAdaptable(val).asBoolean();
 					if( b && instruction == EXISTS) {
 						return true;

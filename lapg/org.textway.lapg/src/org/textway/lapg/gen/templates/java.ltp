@@ -44,7 +44,15 @@ ${for i in [parser.nterms, parser.nsyms-1]-}
 		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
 ${end-}
 	}
-
+${if syntax.rules.exists(x|x.getAlias())}
+	public interface Rules {
+${foreach rule in syntax.rules-}
+${if rule.getAlias()-}
+		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
+${end-}
+${end-}
+	}
+${end}
 	protected final static int lapg_next(int state, int symbol) {
 ${if parser.nactions > 0-}
 		int p;
