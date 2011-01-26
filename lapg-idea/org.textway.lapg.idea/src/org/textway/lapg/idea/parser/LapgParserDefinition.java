@@ -78,6 +78,8 @@ public class LapgParserDefinition implements ParserDefinition {
 			return new LpsNonTerm(node);
 		} else if (type == LapgElementTypes.LEXEM) {
 			return new LpsLexem(node);
+		} else if (type == LapgElementTypes.ACTION) {
+			return new LpsAction(node);
 		}
 
 		return new LpsElement(node);

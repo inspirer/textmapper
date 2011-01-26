@@ -40,7 +40,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 		fillMap(attributes, SyntaxHighlighterColors.NUMBER, ICON);
 		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);  // TODO fix
 		fillMap(attributes, SyntaxHighlighterColors.VALID_STRING_ESCAPE, REGEXP); // TODO fix
-		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, TEMPLATES, ACTION); // TODO fix
+		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, TEMPLATES, TOKEN_ACTION); // TODO fix
 
 		// [] ()
 		fillMap(attributes, SyntaxHighlighterColors.BRACKETS, OP_LBRACKET, OP_RBRACKET);

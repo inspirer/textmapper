@@ -26,6 +26,7 @@ public interface LapgElementTypes {
 
 	public static final IElementType GRAMMAR = new LapgElementType(Tokens.input, "grammar");
 
+	public static final IElementType ACTION = new LapgElementType(Tokens.command, "action");
 	public static final IElementType OPTION = new LapgElementType(Tokens.option, "option");
 	public static final IElementType EXPRESSION = new LapgElementType(Tokens.expression, "expression");
 	public static final IElementType REFERENCE = new LapgElementType(Tokens.reference, "reference");
@@ -35,7 +36,7 @@ public interface LapgElementTypes {
 	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
 
 	public static final IElementType[] allElements = {
-		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, ANNOTATION
+		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, ANNOTATION, ACTION
 	};
 
 	public static final IElementType LEXEM = new LapgElementType(Tokens.lexer_part, "lexem");

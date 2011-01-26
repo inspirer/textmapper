@@ -23,6 +23,9 @@ import org.textway.lapg.parser.LapgParser.Tokens;
 
 public interface LapgTokenTypes {
 
+	IElementType WHITESPACE = TokenType.WHITE_SPACE;
+	TokenSet whitespaces = TokenSet.create(WHITESPACE);
+
 	IElementType COMMENT = new LapgElementType(Lexems._skip_comment, "comment");
 	TokenSet comments = TokenSet.create(COMMENT);
 
@@ -35,7 +38,7 @@ public interface LapgTokenTypes {
 	TokenSet strings = TokenSet.create(STRING);
 
 	// inner tokens
-	IElementType ACTION = new LapgElementType(Tokens.command, "action");
+	IElementType TOKEN_ACTION = new LapgElementType(Tokens.LCURLY, "action");
 	IElementType TEMPLATES = new LapgElementType(Lexems.eoi, "templates");
 
 	// [] ()
@@ -78,9 +81,4 @@ public interface LapgTokenTypes {
 	IElementType KW_REDUCE = new LapgElementType(Lexems.Lreduce, "reduce");
 
 	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE);
-
-	IElementType WHITESPACE = TokenType.WHITE_SPACE;
-
-	// TODO FIXME ACTION is not a whitespace
-	TokenSet whitespaces = TokenSet.create(WHITESPACE, ACTION);
 }

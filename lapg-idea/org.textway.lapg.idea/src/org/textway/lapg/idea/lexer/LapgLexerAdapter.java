@@ -112,7 +112,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 			skipAction();
 			fTokenLength = lexem.endoffset - fTokenOffset;
 			lexem = null;
-			return ACTION;
+			return TOKEN_ACTION;
 		}
 		fTokenLength = lexem.endoffset - fTokenOffset;
 		LapgSymbol currentLexem = lexem;
