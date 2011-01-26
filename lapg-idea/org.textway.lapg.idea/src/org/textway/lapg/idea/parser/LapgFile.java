@@ -15,12 +15,15 @@
  */
 package org.textway.lapg.idea.parser;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.impl.source.PsiFileImpl;
+import com.intellij.psi.tree.TokenSet;
 import org.textway.lapg.idea.file.LapgFileType;
 import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.idea.psi.LpsGrammar;
 
 public class LapgFile extends PsiFileImpl {
 	protected LapgFile(FileViewProvider viewProvider) {
@@ -34,6 +37,14 @@ public class LapgFile extends PsiFileImpl {
 
 	public void accept(@NotNull PsiElementVisitor visitor) {
 		visitor.visitFile(this);
+	}
+
+	public LpsGrammar getGrammar() {
+		ASTNode[] children = getNode().getChildren(TokenSet.create(LapgElementTypes.GRAMMAR));
+		if(children != null && children.length == 1) {
+			return (LpsGrammar) children[0].getPsi();
+		}
+		return null;
 	}
 
 	public String toString() {

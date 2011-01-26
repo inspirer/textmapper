@@ -68,7 +68,7 @@ public class LpsReference extends LpsElement implements PsiReference {
 	}
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-		throw new IncorrectOperationException("Rename cannot be performed for " + getClass());
+		return replace(LpsElementsFactory.createReference(getProject(), newElementName));
 	}
 
 	public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
@@ -81,6 +81,14 @@ public class LpsReference extends LpsElement implements PsiReference {
 
 	@NotNull
 	public Object[] getVariants() {
+		PsiElement context = this.getContext();
+		while (context != null) {
+			if (context instanceof LpsGrammar) {
+				LpsGrammar grammar = (LpsGrammar) context;
+				return grammar.getSymbols();
+			}
+			context = context.getContext();
+		}
 		return new Object[0];
 	}
 

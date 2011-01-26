@@ -194,6 +194,9 @@ public class LapgParser implements PsiParser {
 		private LapgSymbol nextInternal() {
 			if (next != null && !myBuilder.eof()) {
 				myBuilder.advanceLexer();
+				while(!myBuilder.eof() && myBuilder.getTokenType() == TokenType.BAD_CHARACTER) {
+					myBuilder.advanceLexer();
+				}
 			}
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
