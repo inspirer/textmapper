@@ -16,29 +16,14 @@
 package org.textway.lapg.idea.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.parser.LapgElementTypes;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class LpsRule extends LpsElement {
+public class LpsLexem extends LpsNamedElement {
 
-	public LpsRule(@NotNull ASTNode node) {
+	public LpsLexem(@NotNull ASTNode node) {
 		super(node);
 	}
-
-	public LpsReference[] getRuleRefs() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.REFERENCE));
-		List<LpsReference> result = new ArrayList<LpsReference>(nodes.length);
-		for (ASTNode node : nodes) {
-			result.add((LpsReference) node.getPsi());
-		}
-		return result.toArray(new LpsReference[result.size()]);
-	}
-
 }

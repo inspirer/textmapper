@@ -26,19 +26,18 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class LpsRule extends LpsElement {
+public class LpsNonTerm extends LpsNamedElement {
 
-	public LpsRule(@NotNull ASTNode node) {
+	public LpsNonTerm(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public LpsReference[] getRuleRefs() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.REFERENCE));
-		List<LpsReference> result = new ArrayList<LpsReference>(nodes.length);
+	public LpsRule[] getRules() {
+		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.RULE));
+		List<LpsRule> result = new ArrayList<LpsRule>(nodes.length);
 		for (ASTNode node : nodes) {
-			result.add((LpsReference) node.getPsi());
+			result.add((LpsRule) node.getPsi());
 		}
-		return result.toArray(new LpsReference[result.size()]);
+		return result.toArray(new LpsRule[result.size()]);
 	}
-
 }

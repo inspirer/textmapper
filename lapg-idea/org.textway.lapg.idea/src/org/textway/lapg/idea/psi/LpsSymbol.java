@@ -16,27 +16,14 @@
 package org.textway.lapg.idea.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Gryaznov Evgeny, 1/25/11
  */
-public class LpsSymbol extends LpsElement implements PsiNamedElement {
+public class LpsSymbol extends LpsElement {
 
 	public LpsSymbol(@NotNull ASTNode node) {
 		super(node);
 	}
-
-	public String getName() {
-		return getText();
-	}
-
-	public PsiElement setName(@NonNls String name) throws IncorrectOperationException {
-		return replace(LpsElementsFactory.createSymbol(getProject(), name));
-	}
-
 }

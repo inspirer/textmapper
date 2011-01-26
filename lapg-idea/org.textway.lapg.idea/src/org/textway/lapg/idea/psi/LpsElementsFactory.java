@@ -33,22 +33,33 @@ public class LpsElementsFactory {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
 		LapgFile aFile = createDummyFile(p, text);
 		LpsGrammar grammar = aFile.getGrammar();
-		LpsSymbol[] s = grammar.getSymbols();
-		if (s.length != 2) {
+		LpsNonTerm[] s = grammar.getNonTerms();
+		if (s == null || s.length != 1 || s[0].getNameSymbol() == null) {
 			throw new IncorrectOperationException();
 		}
-		return s[1];
+		return s[0].getNameSymbol();
 	}
 
 	public static LpsReference createReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "aa = " + name + "\n" + name + ": / /\ninput ::= " + name + " ;";
+		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
 		LapgFile aFile = createDummyFile(p, text);
 		LpsGrammar grammar = aFile.getGrammar();
+		LpsNonTerm[] s = grammar.getNonTerms();
+		if (s == null || s.length != 1) {
+			throw new IncorrectOperationException();
+		}
 
-		// TODO fix
-		return (LpsReference)grammar.getFirstChild().getFirstChild().getNextSibling().getNextSibling().getNextSibling().getNextSibling().getFirstChild();
+		LpsRule[] rules = s[0].getRules();
+		if (rules == null || rules.length != 1) {
+			throw new IncorrectOperationException();
+		}
+
+		LpsReference[] references = rules[0].getRuleRefs();
+		if (references == null || references.length != 1) {
+			throw new IncorrectOperationException();
+		}
+		return references[0];
 	}
-
 
 	private static LapgFile createDummyFile(Project p, String text) {
 		String ext = LapgFileType.DEFAULT_EXTENSION;

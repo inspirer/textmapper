@@ -37,4 +37,7 @@ public interface LapgElementTypes {
 	public static final IElementType[] allElements = {
 		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, ANNOTATION
 	};
+
+	public static final IElementType LEXEM = new LapgElementType(Tokens.lexer_part, "lexem");
+	public static final IElementType NONTERM = new LapgElementType(Tokens.grammar_part, "non-terminal declaration");
 }

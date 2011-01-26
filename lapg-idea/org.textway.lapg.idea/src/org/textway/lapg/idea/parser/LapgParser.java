@@ -27,6 +27,7 @@ import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
 import org.textway.lapg.parser.LapgParser.ParseException;
+import org.textway.lapg.parser.LapgParser.Rules;
 import org.textway.lapg.parser.LapgParser.Tokens;
 
 import java.io.IOException;
@@ -46,6 +47,20 @@ public class LapgParser implements PsiParser {
 		}
 		result.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
 		return result;
+	}
+
+	private static IElementType reduceType(int token, int rule) {
+		IElementType type = types.get(token);
+		if (type != null) {
+			return type;
+		}
+
+		if (token == Tokens.lexer_part && (rule != Rules.lexer_part_alias && rule != Rules.lexer_part_group_selector)) {
+			return LapgElementTypes.LEXEM;
+		} else if(token == Tokens.grammar_part && rule != Rules.grammar_part_directive) {
+			return LapgElementTypes.NONTERM;
+		}
+		return null;
 	}
 
 	@NotNull
@@ -136,7 +151,7 @@ public class LapgParser implements PsiParser {
 
 			Marker m = (Marker) lapg_gg.sym;
 			if (m != null) {
-				IElementType elementType = types.get(lapg_gg.lexem);
+				IElementType elementType = reduceType(lapg_gg.lexem, rule);
 				if (elementType != null) {
 					lapg_gg.sym = clone(m);
 
@@ -194,7 +209,7 @@ public class LapgParser implements PsiParser {
 		private LapgSymbol nextInternal() {
 			if (next != null && !myBuilder.eof()) {
 				myBuilder.advanceLexer();
-				while(!myBuilder.eof() && myBuilder.getTokenType() == TokenType.BAD_CHARACTER) {
+				while (!myBuilder.eof() && myBuilder.getTokenType() == TokenType.BAD_CHARACTER) {
 					myBuilder.advanceLexer();
 				}
 			}

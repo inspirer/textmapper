@@ -42,7 +42,7 @@ public class LpsReference extends LpsElement implements PsiReference {
 		while (context != null) {
 			if (context instanceof LpsGrammar) {
 				LpsGrammar grammar = (LpsGrammar) context;
-				return grammar.getSymbol(referenceText);
+				return grammar.resolve(referenceText);
 			}
 			context = context.getContext();
 		}
@@ -85,7 +85,7 @@ public class LpsReference extends LpsElement implements PsiReference {
 		while (context != null) {
 			if (context instanceof LpsGrammar) {
 				LpsGrammar grammar = (LpsGrammar) context;
-				return grammar.getSymbols();
+				return grammar.getNamedElements();
 			}
 			context = context.getContext();
 		}

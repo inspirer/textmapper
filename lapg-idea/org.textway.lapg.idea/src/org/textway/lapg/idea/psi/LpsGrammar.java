@@ -32,23 +32,43 @@ public class LpsGrammar extends LpsElement {
 		super(node);
 	}
 
-	public LpsSymbol[] getSymbols() {
-		List<LpsSymbol> result = new ArrayList<LpsSymbol>();
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.SYMBOL));
-		for (int i = 0; i < nodes.length; i++) {
-		  result.add((LpsSymbol)nodes[i].getPsi());
+	public LpsNamedElement[] getNamedElements() {
+		List<LpsNamedElement> result = new ArrayList<LpsNamedElement>();
+		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM, LapgElementTypes.LEXEM));
+		for (ASTNode node : nodes) {
+			LpsNamedElement named = (LpsNamedElement) node.getPsi();
+			if (named == null) {
+				continue;
+			}
+			result.add(named);
 		}
-		return result.toArray(new LpsSymbol[result.size()]);
+		return result.toArray(new LpsNamedElement[result.size()]);
 	}
 
-	public LpsSymbol getSymbol(String name) {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.SYMBOL));
+	public LpsNamedElement resolve(String name) {
+		if(name.endsWith("opt") && name.length() > 3) {
+			name = name.substring(0, name.length() - 3);
+		}
+
+		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM, LapgElementTypes.LEXEM));
 		for (ASTNode node : nodes) {
-			LpsSymbol sym = (LpsSymbol) node.getPsi();
-			if (sym != null && name.equals(sym.getName())) {
-				return sym;
+			LpsNamedElement named = (LpsNamedElement) node.getPsi();
+			if (named == null) {
+				continue;
+			}
+			if (name.equals(named.getName())) {
+				return named;
 			}
 		}
 		return null;
+	}
+
+	public LpsNonTerm[] getNonTerms() {
+		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM));
+		List<LpsNonTerm> result = new ArrayList<LpsNonTerm>(nodes.length);
+		for (ASTNode node : nodes) {
+			result.add((LpsNonTerm) node.getPsi());
+		}
+		return result.toArray(new LpsNonTerm[result.size()]);
 	}
 }
