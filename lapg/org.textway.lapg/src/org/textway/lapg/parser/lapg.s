@@ -168,10 +168,10 @@ rules (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix rulesyms commandopt rule_attrsopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_attrsopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 rulesyms commandopt rule_attrsopt	{ $$ = new AstRule($rulesyms, $commandopt, $rule_attrsopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| ruleprefix commandopt rule_attrsopt  			{ $$ = new AstRule(null, $commandopt, $rule_attrsopt, $ruleprefix.getAnnotations(), source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 commandopt rule_attrsopt  			{ $$ = new AstRule(null, $commandopt, $rule_attrsopt, null, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  ruleprefix rulesyms commandopt rule_attrsopt		{ $$ = new AstRule($ruleprefix, $rulesyms, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 rulesyms commandopt rule_attrsopt		{ $$ = new AstRule(null, $rulesyms, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| ruleprefix commandopt rule_attrsopt  				{ $$ = new AstRule($ruleprefix, null, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 commandopt rule_attrsopt  				{ $$ = new AstRule(null, null, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 

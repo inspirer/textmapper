@@ -25,16 +25,22 @@ public class AstRule extends AstNode {
 	private final AstCode action;
 	private final AstRuleAttribute attribute;
 	private final AstAnnotations annotations;
-
+	private final String ruleAlias;
 	private final AstError error;
 
-	public AstRule(List<AstRuleSymbol> list, AstCode action, AstRuleAttribute attr, AstAnnotations annotations, TextSource source,
-			int offset, int endoffset) {
+	public AstRule(AstRulePrefix prefix, List<AstRuleSymbol> list, AstCode action, AstRuleAttribute attr, TextSource source,
+				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
 		this.action = action;
 		this.attribute = attr;
-		this.annotations = annotations;
+		if (prefix != null) {
+			this.annotations = prefix.getAnnotations();
+			this.ruleAlias = prefix.getAlias();
+		} else {
+			this.annotations = null;
+			this.ruleAlias = null;
+		}
 		this.error = null;
 	}
 
@@ -43,6 +49,7 @@ public class AstRule extends AstNode {
 		this.list = null;
 		this.action = null;
 		this.attribute = null;
+		this.ruleAlias = null;
 		this.annotations = null;
 		this.error = err;
 	}
@@ -63,30 +70,34 @@ public class AstRule extends AstNode {
 		return attribute;
 	}
 
+	public String getAlias() {
+		return ruleAlias;
+	}
+
 	public AstAnnotations getAnnotations() {
 		return annotations;
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(error != null) {
+		if (error != null) {
 			v.visit(error);
 			return;
 		}
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(annotations != null) {
+		if (annotations != null) {
 			annotations.accept(v);
 		}
-		if(list != null) {
-			for(AstRuleSymbol rsym : list) {
+		if (list != null) {
+			for (AstRuleSymbol rsym : list) {
 				rsym.accept(v);
 			}
 		}
-		if(action != null) {
+		if (action != null) {
 			action.accept(v);
 		}
-		if(attribute != null) {
+		if (attribute != null) {
 			attribute.accept(v);
 		}
 	}

@@ -29,19 +29,21 @@ public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 	private static final LiSymbolRef[] EMPTY_RIGHT = new LiSymbolRef[0];
 
 	private int index;
+	private final String alias;
 	private final LiSymbol left;
 	private final LiSymbolRef[] right;
 	private final SourceElement code;
 	private final LiSymbol priority;
 	private final IAstNode node;
 
-	public LiRule(LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String, Object> annotations, IAstNode node) {
+	public LiRule(String alias, LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String, Object> annotations, IAstNode node) {
 		super(annotations, node);
 		this.left = left;
 		this.right = right == null ? EMPTY_RIGHT : right;
 		this.code = code;
 		this.priority = priority;
 		this.node = node;
+		this.alias = alias;
 	}
 
 	public SourceElement getAction() {
@@ -54,6 +56,10 @@ public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public String getAlias() {
+		return alias;
 	}
 
 	public Symbol getLeft() {

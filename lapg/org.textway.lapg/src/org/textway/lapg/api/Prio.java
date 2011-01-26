@@ -20,13 +20,12 @@ package org.textway.lapg.api;
  */
 public interface Prio extends SourceElement {
 
-	public static final int NOPRIO = -1;
+	static final int NOPRIO = -1;
+	static final int LEFT = 1;
+	static final int RIGHT = 2;
+	static final int NONASSOC = 3;
 
-	public static final int LEFT = 1;
-	public static final int RIGHT = 2;
-	public static final int NONASSOC = 3;
+	int getPrio();
 
-	public int getPrio();
-
-	public Symbol[] getSymbols();
+	Symbol[] getSymbols();
 }

@@ -18,9 +18,9 @@ package org.textway.lapg.api;
 
 public interface ParserConflict {
 
-	public static final int FIXED = 0;
-	public static final int SHIFT_REDUCE = 1;
-	public static final int REDUCE_REDUCE = 2;
+	static final int FIXED = 0;
+	static final int SHIFT_REDUCE = 1;
+	static final int REDUCE_REDUCE = 2;
 
 	int getKind();
 

@@ -17,9 +17,10 @@ package org.textway.lapg.api;
 
 public interface Rule extends SourceElement, Annotated {
 
-	public int getIndex();
-	public Symbol getLeft();
-	public SymbolRef[] getRight();
-	public int getPriority();
-	public SourceElement getAction();
+	int getIndex();
+	String getAlias();
+	Symbol getLeft();
+	SymbolRef[] getRight();
+	int getPriority();
+	SourceElement getAction();
 }

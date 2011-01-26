@@ -88,6 +88,10 @@ public class CRule implements INamedEntity, Rule {
 		return index;
 	}
 
+	public String getAlias() {
+		return null;
+	}
+
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();

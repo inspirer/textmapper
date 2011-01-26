@@ -150,8 +150,8 @@ public class LapgResolver {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
 					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false);
-					rules.add(new LiRule(symopt, new LiSymbolRef[0], null, null, null, id));
-					rules.add(new LiRule(symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null)}, null, null, null, id));
+					rules.add(new LiRule(null, symopt, new LiSymbolRef[0], null, null, null, id));
+					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null)}, null, null, null, id));
 					return symopt;
 				}
 			}
@@ -255,7 +255,7 @@ public class LapgResolver {
 					LiSymbol codeSym = new LiSymbol("{}", null, false, astCode);
 					symbols.add(codeSym);
 					rightPart.add(new LiSymbolRef(codeSym, null, null, null));
-					rules.add(new LiRule(codeSym, null, convert(astCode), null, null, astCode));
+					rules.add(new LiRule(null, codeSym, null, convert(astCode), null, null, astCode));
 				}
 				LiSymbol sym = resolve(rs.getSymbol());
 				if (sym != null) {
@@ -270,7 +270,9 @@ public class LapgResolver {
 		// TODO store %shift attribute
 		// TODO check prio is term
 		rules.add(
-				new LiRule(left,
+				new LiRule(
+						right.getAlias(),
+						left,
 						rightPart.toArray(new LiSymbolRef[rightPart.size()]),
 						convert(right.getAction()),
 						prio,
