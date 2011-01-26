@@ -18,9 +18,12 @@ package org.textway.lapg.idea.psi;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-public class PsiLexem extends LapgElement {
+/**
+ * Gryaznov Evgeny, 1/26/11
+ */
+public class LpsRule extends LpsElement {
 
-	public PsiLexem(@NotNull ASTNode node) {
+	public LpsRule(@NotNull ASTNode node) {
 		super(node);
 	}
 }

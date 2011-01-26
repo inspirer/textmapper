@@ -15,38 +15,19 @@
  */
 package org.textway.lapg.idea.psi;
 
-import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.lang.Language;
-import com.intellij.psi.search.LocalSearchScope;
-import com.intellij.psi.search.SearchScope;
-import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.file.LapgFileType;
 
-public class LapgElement extends ASTWrapperPsiElement {
+/**
+ * Gryaznov Evgeny, 1/25/11
+ */
+public class LpsSymbol extends LpsElement {
 
-	IElementType type;
-
-	public LapgElement(@NotNull ASTNode node) {
+	public LpsSymbol(@NotNull ASTNode node) {
 		super(node);
-		type = node.getElementType();
 	}
 
-	@NotNull
-	@Override
-	public Language getLanguage() {
-		return LapgFileType.LAPG_LANGUAGE;
-	}
-
-	@NotNull
-	@Override
-	public SearchScope getUseScope() {
-		return new LocalSearchScope(getContainingFile());
-	}
-
-	@Override
-	public String toString() {
-		return "lapg psi: " + type;
+	public String getName() {
+		return getText();
 	}
 }
