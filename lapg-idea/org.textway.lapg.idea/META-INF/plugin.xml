@@ -65,5 +65,9 @@
 		<annotator
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgAnnotator"/>
+
+		<lang.commenter
+				language="Lapg Syntax"
+				implementationClass="org.textway.lapg.idea.editor.LapgCommenter"/>
 	</extensions>
 </idea-plugin>
