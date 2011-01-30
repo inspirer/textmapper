@@ -18,7 +18,7 @@
 	<name>Lapg support</name>
 	<category>Custom Languages</category>
 	<version>0.9.0</version>
-	<vendor url="http://code.google.com/p/lapg/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
+	<vendor url="http://github.com/inspirer/lapg/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 	<idea-version since-build="95.66"/>
 
 	<description><![CDATA[
@@ -62,5 +62,8 @@
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgFoldingBuilder"/>
 
+		<annotator
+				language="Lapg Syntax"
+				implementationClass="org.textway.lapg.idea.editor.LapgAnnotator"/>
 	</extensions>
 </idea-plugin>
