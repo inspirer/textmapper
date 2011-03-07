@@ -15,6 +15,7 @@ class Options {
 	bool breaks = true;
 	bool gentree = false;
 	bool genast = false;
+	bool genastdef = false;
 
 	string astprefix = "Ast";
 	string astsubpackage[qualified] = "ast";

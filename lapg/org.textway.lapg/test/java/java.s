@@ -4,6 +4,7 @@ prefix = "Java"
 package = "org.textway.lapg.gen.java"
 gentree = true
 genast = true
+genastdef = true
 packLexems = true
 packTables = true
 positions = "line,offset"
@@ -11,7 +12,7 @@ endpositions = "offset"
 
 [0]
 
-Identifier:     /[a-zA-Z_][A-Za-z_0-9]*/ -1
+Identifier(String):     /[a-zA-Z_][A-Za-z_0-9]*/ -1
 
 abstract:   	/abstract/
 assert:     	/assert/
@@ -67,14 +68,14 @@ void:       	/void/
 volatile:   	/volatile/
 while:      	/while/
 
-IntegerLiteral:			/([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?/
+IntegerLiteral(String):			/([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?/
 
-FloatingPointLiteral:		/([0-9]*\.[0-9]+|[0-9]+\.)([eE][+-]?[0-9]+)?[flFL]?/
-FloatingPointLiteral:		/[0-9]+[eE][+-]?[0-9]+[flFL]?|[0-9]+[fF]/
-FloatingPointLiteral:		/0[xX]([0-9a-fA-F]*\.[0-9a-fA-F]+|[0-9a-fA-F]+\.?)[pP][+-]?[0-9]+[flFL]?/
+FloatingPointLiteral(String):		/([0-9]*\.[0-9]+|[0-9]+\.)([eE][+-]?[0-9]+)?[flFL]?/
+FloatingPointLiteral(String):		/[0-9]+[eE][+-]?[0-9]+[flFL]?|[0-9]+[fF]/
+FloatingPointLiteral(String):		/0[xX]([0-9a-fA-F]*\.[0-9a-fA-F]+|[0-9a-fA-F]+\.?)[pP][+-]?[0-9]+[flFL]?/
 
-StringLiteral:      /"([^"\\]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
-CharacterLiteral:	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))+'/
+StringLiteral(String):      /"([^"\\]|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*"/
+CharacterLiteral(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))+'/
 
 
 '++':  	/\+\+/

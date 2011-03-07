@@ -4,7 +4,34 @@ ${call astBaseClass-}
 ${foreach cl in self->ast.allClasses()-}
 ${self->('ast_' + cl.kind)(cl)} 
 ${end-}
+${if opts.genastdef-}
+${file opts.prefix+'Ast.last'}${call ast_text.unit}${end-}
+${end-}
 ${end}
+
+
+${cached query interfaceName() =
+	util.uniqueId('I' + context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+
+${cached query className() =
+	util.uniqueId(context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+
+${cached query enumLiteralName(enumname) =
+	util.uniqueId((alias ? alias : target.id).toUpperCase()->java.escapeJavaReserved(), '__classes__'+enumname)}
+
+${cached query enumpropertyName(prop) =
+	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
+
+${cached query propertyName() =
+	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
+
+${query propertyType() =
+	self.kind == 'enumproperty'
+		? 'int' :
+	self.kind == 'flagproperty'
+		? 'boolean' :
+	context->ast.getType(self.refs.first().target)
+}
 
 
 
@@ -17,9 +44,7 @@ ${end}
 
 
 
-${cached query interfaceName() = 
-	util.uniqueId('I' + context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
-	
+
 ${template ast_interface(cl)-}
 ${file self->astPath() + cl->interfaceName() + '.java'-}
 package ${self->astPackage()};
@@ -30,24 +55,6 @@ ${end-}
 ${end}
 
 
-
-
-${cached query className() = 
-	util.uniqueId(context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
-
-${cached query propertyName() = 
-	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
-
-${query propertyType() =
-	self.kind == 'enumproperty'
-		? 'int' :
-	self.kind == 'flagproperty'
-		? 'boolean' :
-	context->ast.getType(self.refs.first().target)
-}
-
-${cached query enumpropertyName(prop) =
-	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
 
 ${template ast_class(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
@@ -82,10 +89,6 @@ ${end-}
 ${end}
 
 
-
-
-${cached query enumLiteralName(enumname) = 
-	util.uniqueId((alias ? alias : target.id).toUpperCase()->java.escapeJavaReserved(), '__classes__'+enumname)}
 
 ${template ast_enum(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
