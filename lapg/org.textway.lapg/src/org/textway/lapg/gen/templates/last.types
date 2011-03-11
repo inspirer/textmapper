@@ -1,0 +1,11 @@
+##
+
+class Global {
+	common.Context* context[1];
+}
+
+class Options extends java.Options {
+}
+
+class AnnotateReference extends java.AnnotateReference {
+}

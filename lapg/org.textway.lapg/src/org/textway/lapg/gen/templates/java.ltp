@@ -390,7 +390,7 @@ ${end}
 
 ${query package() = opts.package ? opts.package : 'com.test' }
 
-${cached query type() = context.opts.genast ? context->ast.getType(self) : self.type }
+${cached query type() = context.opts.genast ? context->java_ast.getType(self) : self.type }
 
 
 ${query escapeJavaReserved() =

@@ -62,6 +62,11 @@ public class ActionSymbol extends DefaultIxObject {
 		return "[rule symbol reference]";
 	}
 
+	@Override
+	public boolean is(String qualifiedName) throws EvaluationException {
+		return false;
+	}
+
 	public Object getProperty(String id) throws EvaluationException {
 		if (id.equals("symbol")) {
 			return symbol;

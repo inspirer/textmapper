@@ -30,14 +30,25 @@ ${query propertyType() =
 		? 'int' :
 	self.kind == 'flagproperty'
 		? 'boolean' :
-	context->ast.getType(self.refs.first().target)
+	context->getType(self.refs.first().target)
 }
 
+${query getType(q) =
+	asttype = q is ast.AstType ? q : context->ast.getType(q),
+	asttype is ast.AstList ? 'java.util.@List<' + self->getType(asttype.target) + '>' :
+	asttype is ast.AstBool ? 'Boolean' :
+	asttype is ast.AstObject ? 'Object' :
+	asttype is ast.AstUserType ? asttype.text :
+	self->astPackage() + '.@' + (
+		asttype.kind == 'interface'
+			? asttype->interfaceName()
+			: asttype->className()
+	)}
 
 
 ${template implementedInterfaces(cl, prefix)-}
 ${if cl.implements.length > 0-}
-${prefix}${foreach impl in cl.implements.collect(x|self->ast.getClasses(x)) separator ', '}${self->objectType(impl)}${end-}
+${prefix}${foreach impl in cl.implements.collect(x|self->ast.getClasses(x)) separator ', '}${self->getType(impl)}${end-}
 ${end-}
 ${end}
 
@@ -227,18 +238,6 @@ ${cached query astcode(rule) =
 	self->ast.symbolKind(left) == 'interface' && rule.getRight().size() > 1 && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
 	null 
 }
-
-
-${query objectType(cl) = 
-	self->astPackage() + '.@' + (
-		cl.kind == 'interface' 
-			? cl->interfaceName()
-			: cl->className() 
-	)}
-
-${query listType(type) = 'java.util.@List<' + type + '>'}
-
-${query booleanType() = 'Boolean'}
 
 ${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '.' + context.opts.astsubpackage : '')}
 

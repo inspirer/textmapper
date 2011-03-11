@@ -1,3 +1,7 @@
+${template main-}
+${file opts.prefix.toLowerCase()+'.last'}${call unit}${end-}
+${end}
+
 ${template unit-}
 
 // Ast
@@ -26,7 +30,7 @@ class ${cl.name}${call implementedInterfaces(cl)} {
 ${foreach prop in self->ast.propertiesNew(cl)-}
 	property ${prop.name} : ${prop.kind == 'enumproperty' ? 'integer' :
 							  prop.kind == 'flagproperty' ? 'boolean' :
-							  context->ast.getType(prop.refs.first().target)};
+							  context->getType(prop.refs.first().target)};
 ${end-}
 }
 ${end}
@@ -38,3 +42,14 @@ ${foreach const in cl.literals-}
 ${end-}
 }
 ${end}
+
+
+${query getType(q) =
+	asttype = q is ast.AstType ? q : context->ast.getType(q),
+	asttype is ast.AstList ? 'list[' + self->getType(asttype.target) + ']' :
+	asttype is ast.AstBool ? 'boolean' :
+	asttype is ast.AstObject ? 'any' :
+	asttype is ast.AstUserType ? asttype.text :
+	asttype.name
+
+}

@@ -1,0 +1,1330 @@
+
+// Ast
+
+
+interface input {
+}
+
+
+class Literal {
+	property IntegerLiteral : String;
+	property FloatingPointLiteral : String;
+	property CharacterLiteral : String;
+	property StringLiteral : String;
+	property BooleanLiteral : BooleanLiteral;
+}
+
+
+enum BooleanLiteral {
+	BOOLTRUE,
+	BOOLFALSE,
+}
+
+
+interface Type {
+}
+
+
+class PrimitiveType : Type {
+	property NumericType : NumericType;
+}
+
+
+class NumericType {
+	property IntegralType : IntegralType;
+	property FloatingPointType : FloatingPointType;
+}
+
+
+enum IntegralType {
+	BYTE,
+	SHORT,
+	INT,
+	LONG,
+	CHAR,
+}
+
+
+enum FloatingPointType {
+	FLOAT,
+	DOUBLE,
+}
+
+
+interface ReferenceType : Type, TypeArgument {
+}
+
+
+interface ClassOrInterfaceType : ReferenceType, ClassType, InterfaceType {
+}
+
+
+class ClassOrInterface : ClassOrInterfaceType {
+	property Name : Name;
+	property GenericType : GenericType;
+}
+
+
+class GenericType : ClassOrInterfaceType {
+	property ClassOrInterface : ClassOrInterface;
+	property TypeArguments : TypeArguments;
+}
+
+
+class ArrayTypeWithTypeArgumentsName {
+	property GenericType : GenericType;
+	property Name : Name;
+}
+
+
+class ArrayType : ReferenceType {
+	property PrimitiveType : PrimitiveType;
+	property Dims : Dims;
+	property Name : Name;
+	property ArrayTypeWithTypeArgumentsName : ArrayTypeWithTypeArgumentsName;
+	property GenericType : GenericType;
+}
+
+
+interface ClassType : ClassTypeElt {
+}
+
+
+interface Name : PostfixExpression, MemberValue {
+}
+
+
+class SimpleName : Name {
+	property Identifier : String;
+}
+
+
+class QualifiedName : Name {
+	property Name : Name;
+	property SimpleName : SimpleName;
+}
+
+
+interface CompilationUnit : input {
+}
+
+
+class InternalCompilationUnit : CompilationUnit {
+	property PackageDeclaration : PackageDeclaration;
+	property ImportDeclarations : list[ImportDeclaration];
+	property TypeDeclarations : list[TypeDeclaration];
+}
+
+
+interface Header : Header1, Header2 {
+}
+
+
+interface Header1 {
+}
+
+
+interface Header2 {
+}
+
+
+class CatchHeader {
+	property FormalParameter : FormalParameter;
+}
+
+
+class PackageDeclaration : Header {
+	property PackageDeclarationName : PackageDeclarationName;
+}
+
+
+class PackageDeclarationName {
+	property Modifiers : list[Modifier];
+	property Name : Name;
+}
+
+
+interface ImportDeclaration : Header {
+}
+
+
+class SingleTypeImportDeclaration : ImportDeclaration {
+	property SingleTypeImportDeclarationName : SingleTypeImportDeclarationName;
+}
+
+
+class SingleTypeImportDeclarationName {
+	property Name : Name;
+}
+
+
+class TypeImportOnDemandDeclaration : ImportDeclaration {
+	property TypeImportOnDemandDeclarationName : TypeImportOnDemandDeclarationName;
+}
+
+
+class TypeImportOnDemandDeclarationName {
+	property Name : Name;
+}
+
+
+class TypeDeclaration {
+	property ClassDeclaration : ClassDeclaration;
+	property InterfaceDeclaration : InterfaceDeclaration;
+	property EnumDeclaration : EnumDeclaration;
+	property AnnotationTypeDeclaration : AnnotationTypeDeclaration;
+}
+
+
+class Modifier {
+	property Annotation : Annotation;
+}
+
+
+class ClassDeclaration : BlockStatement {
+	property ClassHeader : ClassHeader;
+	property ClassBody : ClassBody;
+}
+
+
+class ClassHeader : Header {
+	property ClassHeaderName : ClassHeaderName;
+	property ClassHeaderExtendsopt : ClassHeaderExtends;
+	property ClassHeaderImplementsopt : ClassHeaderImplements;
+}
+
+
+class ClassHeaderName {
+	property ClassHeaderName1 : ClassHeaderName1;
+	property TypeParameters : TypeParameters;
+}
+
+
+class ClassHeaderName1 {
+	property Modifiersopt : list[Modifier];
+	property Identifier : String;
+}
+
+
+class ClassHeaderExtends {
+	property ClassType : ClassType;
+}
+
+
+class ClassHeaderImplements {
+	property InterfaceTypeList : list[InterfaceType];
+}
+
+
+interface InterfaceType {
+}
+
+
+class ClassBody {
+	property ClassBodyDeclarationsopt : list[ClassBodyDeclaration];
+}
+
+
+interface ClassBodyDeclaration {
+}
+
+
+interface Initializer {
+}
+
+
+class ClassMemberDeclaration : ClassBodyDeclaration {
+	property FieldDeclaration : FieldDeclaration;
+	property MethodDeclaration : MethodDeclaration;
+	property ClassDeclaration : ClassDeclaration;
+	property InterfaceDeclaration : InterfaceDeclaration;
+	property EnumDeclaration : EnumDeclaration;
+	property AnnotationTypeDeclaration : AnnotationTypeDeclaration;
+}
+
+
+interface GenericMethodDeclaration {
+}
+
+
+class FieldDeclaration : Header, ConstantDeclaration {
+	property Modifiersopt : list[Modifier];
+	property Type : Type;
+	property VariableDeclarators : list[VariableDeclarator];
+}
+
+
+class VariableDeclarator {
+	property VariableDeclaratorId : VariableDeclaratorId;
+	property VariableInitializer : VariableInitializer;
+}
+
+
+class VariableDeclaratorId {
+	property Identifier : String;
+	property Dimsopt : Dims;
+}
+
+
+interface VariableInitializer {
+}
+
+
+class MethodDeclaration : GenericMethodDeclaration {
+	property AbstractMethodDeclaration : AbstractMethodDeclaration;
+	property MethodHeader : MethodHeader;
+	property MethodBody : MethodBody;
+}
+
+
+class AbstractMethodDeclaration {
+	property MethodHeader : MethodHeader;
+}
+
+
+class MethodHeader {
+	property MethodHeaderName : MethodHeaderName;
+	property FormalParameterListopt : list[FormalParameter];
+	property MethodHeaderExtendedDims : MethodHeaderExtendedDims;
+	property MethodHeaderThrowsClauseopt : MethodHeaderThrowsClause;
+}
+
+
+class MethodHeaderName {
+	property Modifiersopt : list[Modifier];
+	property TypeParameters : TypeParameters;
+	property Type : Type;
+	property Identifier : String;
+}
+
+
+interface MethodHeaderExtendedDims {
+}
+
+
+class MethodHeaderThrowsClause {
+	property ClassTypeList : list[ClassTypeElt];
+}
+
+
+class ConstructorHeader : Header1 {
+	property ConstructorHeaderName : ConstructorHeaderName;
+	property FormalParameterListopt : list[FormalParameter];
+	property MethodHeaderThrowsClauseopt : MethodHeaderThrowsClause;
+}
+
+
+class ConstructorHeaderName {
+	property Modifiersopt : list[Modifier];
+	property TypeParameters : TypeParameters;
+	property Identifier : String;
+}
+
+
+class FormalParameter {
+	property Modifiersopt : list[Modifier];
+	property Type : Type;
+	property VariableDeclaratorId : VariableDeclaratorId;
+}
+
+
+interface ClassTypeElt {
+}
+
+
+class MethodBody {
+	property BlockStatementsopt : list[BlockStatement];
+}
+
+
+class StaticInitializer : Header, ClassBodyDeclaration {
+	property StaticOnly : StaticOnly;
+	property Block : Block;
+}
+
+
+enum StaticOnly {
+	STATIC,
+}
+
+
+class ConstructorDeclaration : ClassBodyDeclaration, GenericMethodDeclaration {
+	property ConstructorHeader : ConstructorHeader;
+	property MethodBody : MethodBody;
+}
+
+
+class ExplicitConstructorInvocation {
+	property ArgumentListopt : list[Expression];
+	property OnlyTypeArguments : OnlyTypeArguments;
+	property Primary : Primary;
+	property Name : Name;
+}
+
+
+class InterfaceDeclaration : BlockStatement {
+	property InterfaceHeader : InterfaceHeader;
+	property InterfaceBody : InterfaceBody;
+}
+
+
+class InterfaceHeader : Header {
+	property InterfaceHeaderName : InterfaceHeaderName;
+	property InterfaceHeaderExtendsopt : InterfaceHeaderExtends;
+}
+
+
+class InterfaceHeaderName {
+	property InterfaceHeaderName1 : InterfaceHeaderName1;
+	property TypeParameters : TypeParameters;
+}
+
+
+class InterfaceHeaderName1 {
+	property Modifiersopt : list[Modifier];
+	property Identifier : String;
+}
+
+
+class InterfaceHeaderExtends {
+	property InterfaceTypeList : list[InterfaceType];
+}
+
+
+class InterfaceBody {
+	property InterfaceMemberDeclarationsopt : list[InterfaceMemberDeclaration];
+}
+
+
+class InterfaceMemberDeclaration {
+	property ConstantDeclaration : ConstantDeclaration;
+	property MethodHeader : MethodHeader;
+	property MethodBody : MethodBody;
+	property AbstractMethodDeclaration : AbstractMethodDeclaration;
+	property InvalidConstructorDeclaration : InvalidConstructorDeclaration;
+	property ClassDeclaration : ClassDeclaration;
+	property InterfaceDeclaration : InterfaceDeclaration;
+	property EnumDeclaration : EnumDeclaration;
+	property AnnotationTypeDeclaration : AnnotationTypeDeclaration;
+}
+
+
+class InvalidConstructorDeclaration {
+	property ConstructorHeader : ConstructorHeader;
+	property MethodBody : MethodBody;
+}
+
+
+interface ConstantDeclaration {
+}
+
+
+class ArrayInitializer : VariableInitializer {
+	property Commaopt : boolean;
+	property VariableInitializers : list[VariableInitializer];
+}
+
+
+class Block : ClassBodyDeclaration, Initializer, TryBlock {
+	property BlockStatementsopt : list[BlockStatement];
+}
+
+
+interface BlockStatement {
+}
+
+
+class LocalVariableDeclarationStatement : BlockStatement {
+	property LocalVariableDeclaration : LocalVariableDeclaration;
+}
+
+
+class LocalVariableDeclaration {
+	property Type : Type;
+	property VariableDeclarators : list[VariableDeclarator];
+	property Modifiers : list[Modifier];
+}
+
+
+interface Statement : BlockStatement {
+}
+
+
+interface StatementNoShortIf {
+}
+
+
+class StatementWithoutTrailingSubstatement : Statement, StatementNoShortIf {
+	property AssertStatement : AssertStatement;
+	property Block : Block;
+	property ExpressionStatement : ExpressionStatement;
+	property SwitchStatement : SwitchStatement;
+	property DoStatement : DoStatement;
+	property BreakStatement : BreakStatement;
+	property ContinueStatement : ContinueStatement;
+	property ReturnStatement : ReturnStatement;
+	property SynchronizedStatement : SynchronizedStatement;
+	property ThrowStatement : ThrowStatement;
+	property TryStatement : TryStatement;
+}
+
+
+class LabeledStatement : Statement {
+	property Label : Label;
+	property Statement : Statement;
+}
+
+
+class LabeledStatementNoShortIf : StatementNoShortIf {
+	property Label : Label;
+	property StatementNoShortIf : StatementNoShortIf;
+}
+
+
+class Label {
+	property Identifier : String;
+}
+
+
+class ExpressionStatement {
+	property StatementExpression : StatementExpression;
+	property ExplicitConstructorInvocation : ExplicitConstructorInvocation;
+}
+
+
+interface StatementExpression {
+}
+
+
+class IfThenStatement : Statement {
+	property Expression : Expression;
+	property Statement : Statement;
+}
+
+
+class IfThenElseStatement : Statement {
+	property Expression : Expression;
+	property StatementNoShortIf : StatementNoShortIf;
+	property Statement : Statement;
+}
+
+
+class IfThenElseStatementNoShortIf : StatementNoShortIf {
+	property Expression : Expression;
+	property StatementNoShortIf : StatementNoShortIf;
+	property StatementNoShortIf2 : StatementNoShortIf;
+}
+
+
+class SwitchStatement {
+	property Expression : Expression;
+	property SwitchBlock : SwitchBlock;
+}
+
+
+class SwitchBlock {
+	property SwitchBlockStatements : list[SwitchBlockStatement];
+	property SwitchLabels : list[SwitchLabel];
+}
+
+
+class SwitchBlockStatement {
+	property SwitchLabels : list[SwitchLabel];
+	property BlockStatements : list[BlockStatement];
+}
+
+
+class SwitchLabel {
+	property ConstantExpression : ConstantExpression;
+}
+
+
+class WhileStatement : Statement {
+	property Expression : Expression;
+	property Statement : Statement;
+}
+
+
+class WhileStatementNoShortIf : StatementNoShortIf {
+	property Expression : Expression;
+	property StatementNoShortIf : StatementNoShortIf;
+}
+
+
+class DoStatement {
+	property Statement : Statement;
+	property Expression : Expression;
+}
+
+
+class ForStatement : Statement {
+	property ForInitopt : ForInit;
+	property Expressionopt : Expression;
+	property ForUpdateopt : ForUpdate;
+	property Statement : Statement;
+}
+
+
+class ForStatementNoShortIf : StatementNoShortIf {
+	property ForInitopt : ForInit;
+	property Expressionopt : Expression;
+	property ForUpdateopt : ForUpdate;
+	property StatementNoShortIf : StatementNoShortIf;
+}
+
+
+class ForInit {
+	property StatementExpressionList : list[StatementExpression];
+	property LocalVariableDeclaration : LocalVariableDeclaration;
+}
+
+
+class ForUpdate {
+	property StatementExpressionList : list[StatementExpression];
+}
+
+
+class AssertStatement {
+	property Expression : Expression;
+	property Expression2 : Expression;
+}
+
+
+class BreakStatement {
+	property Identifier : String;
+}
+
+
+class ContinueStatement {
+	property Identifier : String;
+}
+
+
+class ReturnStatement {
+	property Expressionopt : Expression;
+}
+
+
+class ThrowStatement {
+	property Expression : Expression;
+}
+
+
+class SynchronizedStatement {
+	property OnlySynchronized : OnlySynchronized;
+	property Expression : Expression;
+	property Block : Block;
+}
+
+
+enum OnlySynchronized {
+	SYNCHRONIZED,
+}
+
+
+class TryStatement {
+	property TryBlock : TryBlock;
+	property Catches : list[CatchClause];
+	property Catchesopt : list[CatchClause];
+	property Finally : Finally;
+}
+
+
+interface TryBlock {
+}
+
+
+class CatchClause {
+	property FormalParameter : FormalParameter;
+	property Block : Block;
+}
+
+
+class Finally {
+	property Block : Block;
+}
+
+
+interface Primary : PostfixExpression, PostfixExpression_NotName {
+}
+
+
+class PrimaryNoNewArray : Primary {
+	property Literal : Literal;
+	property Expression_NotName : Expression_NotName;
+	property Name : Name;
+	property ClassInstanceCreationExpression : ClassInstanceCreationExpression;
+	property FieldAccess : FieldAccess;
+	property Dims : Dims;
+	property PrimitiveType : PrimitiveType;
+	property MethodInvocation : MethodInvocation;
+	property ArrayAccess : ArrayAccess;
+}
+
+
+class AllocationHeader : Header {
+	property ClassType : ClassType;
+	property ArgumentListopt : list[Expression];
+}
+
+
+class ClassInstanceCreationExpression : StatementExpression {
+	property OnlyTypeArguments : OnlyTypeArguments;
+	property ClassType : ClassType;
+	property ArgumentListopt : list[Expression];
+	property ClassBodyopt : ClassBody;
+	property Primary : Primary;
+	property ClassInstanceCreationExpressionName : ClassInstanceCreationExpressionName;
+}
+
+
+class ClassInstanceCreationExpressionName {
+	property Name : Name;
+}
+
+
+class ArrayCreationHeader : Header {
+	property PrimitiveType : PrimitiveType;
+	property DimWithOrWithOutExprs : list[DimWithOrWithOutExpr];
+	property ClassOrInterfaceType : ClassOrInterfaceType;
+}
+
+
+class ArrayCreationWithoutArrayInitializer : Primary {
+	property PrimitiveType : PrimitiveType;
+	property DimWithOrWithOutExprs : list[DimWithOrWithOutExpr];
+	property ClassOrInterfaceType : ClassOrInterfaceType;
+}
+
+
+class ArrayCreationWithArrayInitializer : Primary {
+	property PrimitiveType : PrimitiveType;
+	property DimWithOrWithOutExprs : list[DimWithOrWithOutExpr];
+	property ArrayInitializer : ArrayInitializer;
+	property ClassOrInterfaceType : ClassOrInterfaceType;
+}
+
+
+class DimWithOrWithOutExpr {
+	property Expression : Expression;
+}
+
+
+class Dims : MethodHeaderExtendedDims {
+	property DimsLoop : list[OneDimLoop];
+}
+
+
+class OneDimLoop {
+}
+
+
+class FieldAccess {
+	property Primary : Primary;
+	property Identifier : String;
+}
+
+
+class MethodInvocation : StatementExpression {
+	property Name : Name;
+	property ArgumentListopt : list[Expression];
+	property OnlyTypeArguments : OnlyTypeArguments;
+	property Identifier : String;
+	property Primary : Primary;
+}
+
+
+class ArrayAccess {
+	property Name : Name;
+	property Expression : Expression;
+	property PrimaryNoNewArray : PrimaryNoNewArray;
+	property ArrayCreationWithArrayInitializer : ArrayCreationWithArrayInitializer;
+}
+
+
+interface PostfixExpression {
+}
+
+
+class PostIncrementExpression : StatementExpression, PostfixExpression, PostfixExpression_NotName {
+	property PostfixExpression : PostfixExpression;
+}
+
+
+class PostDecrementExpression : StatementExpression, PostfixExpression, PostfixExpression_NotName {
+	property PostfixExpression : PostfixExpression;
+}
+
+
+class UnaryExpression_item {
+	property PreIncrementExpression : PreIncrementExpression;
+	property PreDecrementExpression : PreDecrementExpression;
+	property UnaryExpressionNotPlusMinus : UnaryExpressionNotPlusMinus;
+}
+
+
+class PreIncrementExpression : StatementExpression {
+	property UnaryExpression : list[UnaryExpression_item];
+}
+
+
+class PreDecrementExpression : StatementExpression {
+	property UnaryExpression : list[UnaryExpression_item];
+}
+
+
+class UnaryExpressionNotPlusMinus {
+	property PostfixExpression : PostfixExpression;
+	property UnaryExpression : list[UnaryExpression_item];
+	property CastExpression : CastExpression;
+}
+
+
+class CastExpression {
+	property PrimitiveType : PrimitiveType;
+	property Dimsopt : Dims;
+	property UnaryExpression : list[UnaryExpression_item];
+	property Name : Name;
+	property OnlyTypeArgumentsForCastExpression : OnlyTypeArgumentsForCastExpression;
+	property UnaryExpressionNotPlusMinus : UnaryExpressionNotPlusMinus;
+	property ClassOrInterfaceType : ClassOrInterfaceType;
+	property Dims : Dims;
+}
+
+
+interface OnlyTypeArgumentsForCastExpression {
+}
+
+
+class InstanceofExpression_item {
+	property RelationalExpression : list[list[list[list[list[UnaryExpression_item]]]]];
+	property ReferenceType : ReferenceType;
+}
+
+
+class ConditionalExpression_item {
+	property ConditionalOrExpression : list[list[list[list[list[list[list[InstanceofExpression_item]]]]]]];
+	property Expression : Expression;
+}
+
+
+class AssignmentExpression : Expression {
+	property ConditionalExpression : list[ConditionalExpression_item];
+	property Assignment : Assignment;
+}
+
+
+class Assignment : StatementExpression, AssignmentExpression_NotName {
+	property PostfixExpression : PostfixExpression;
+	property AssignmentOperator : AssignmentOperator;
+	property AssignmentExpression : AssignmentExpression;
+	property InvalidArrayInitializerAssignement : InvalidArrayInitializerAssignement;
+}
+
+
+class InvalidArrayInitializerAssignement {
+	property PostfixExpression : PostfixExpression;
+	property AssignmentOperator : AssignmentOperator;
+	property ArrayInitializer : ArrayInitializer;
+}
+
+
+enum AssignmentOperator {
+	EQUAL,
+	MULTEQUAL,
+	SLASHEQUAL,
+	PERCENTEQUAL,
+	PLUSEQUAL,
+	MINUSEQUAL,
+	LESSLESSEQUAL,
+	GREATERGREATEREQUAL,
+	GREATERGREATERGREATEREQUAL,
+	AMPERSANDEQUAL,
+	XOREQUAL,
+	OREQUAL,
+}
+
+
+interface Expression : VariableInitializer, ConstantExpression {
+}
+
+
+interface ConstantExpression {
+}
+
+
+class EnumDeclaration : BlockStatement {
+	property EnumHeader : EnumHeader;
+	property EnumBody : EnumBody;
+}
+
+
+class EnumHeader : Header {
+	property EnumHeaderName : EnumHeaderName;
+	property ClassHeaderImplementsopt : ClassHeaderImplements;
+}
+
+
+class EnumHeaderName {
+	property Modifiersopt : list[Modifier];
+	property Identifier : String;
+	property TypeParameters : TypeParameters;
+}
+
+
+class EnumBody {
+	property EnumDeclarationsopt : EnumDeclarations;
+	property EnumConstants : list[EnumConstant];
+}
+
+
+class EnumConstantHeaderName {
+	property Modifiersopt : list[Modifier];
+	property Identifier : String;
+}
+
+
+class EnumConstantHeader : Header2 {
+	property EnumConstantHeaderName : EnumConstantHeaderName;
+	property Argumentsopt : Arguments;
+}
+
+
+class EnumConstant {
+	property EnumConstantHeader : EnumConstantHeader;
+	property ClassBody : ClassBody;
+}
+
+
+class Arguments {
+	property ArgumentListopt : list[Expression];
+}
+
+
+class EnumDeclarations {
+	property ClassBodyDeclarationsopt : list[ClassBodyDeclaration];
+}
+
+
+class EnhancedForStatement : Statement {
+	property EnhancedForStatementHeader : EnhancedForStatementHeader;
+	property Statement : Statement;
+}
+
+
+class EnhancedForStatementNoShortIf : StatementNoShortIf {
+	property EnhancedForStatementHeader : EnhancedForStatementHeader;
+	property StatementNoShortIf : StatementNoShortIf;
+}
+
+
+class EnhancedForStatementHeaderInit {
+	property Type : Type;
+	property Identifier : String;
+	property Dimsopt : Dims;
+	property Modifiers : list[Modifier];
+}
+
+
+class EnhancedForStatementHeader {
+	property EnhancedForStatementHeaderInit : EnhancedForStatementHeaderInit;
+	property Expression : Expression;
+}
+
+
+class SingleStaticImportDeclaration : ImportDeclaration {
+	property SingleStaticImportDeclarationName : SingleStaticImportDeclarationName;
+}
+
+
+class SingleStaticImportDeclarationName {
+	property Name : Name;
+}
+
+
+class StaticImportOnDemandDeclaration : ImportDeclaration {
+	property StaticImportOnDemandDeclarationName : StaticImportOnDemandDeclarationName;
+}
+
+
+class StaticImportOnDemandDeclarationName {
+	property Name : Name;
+}
+
+
+class TypeArguments {
+	property TypeArgumentList1 : TypeArgumentList1;
+}
+
+
+class OnlyTypeArguments : OnlyTypeArgumentsForCastExpression {
+	property TypeArgumentList1 : TypeArgumentList1;
+}
+
+
+class TypeArgumentList1 {
+	property TypeArgument1 : TypeArgument1;
+	property TypeArgumentList : list[TypeArgument];
+}
+
+
+interface TypeArgument {
+}
+
+
+interface TypeArgument1 {
+}
+
+
+class ReferenceType1 : TypeArgument1 {
+	property ReferenceType : ReferenceType;
+	property ClassOrInterface : ClassOrInterface;
+	property TypeArgumentList2 : TypeArgumentList2;
+}
+
+
+class TypeArgumentList2 {
+	property TypeArgument2 : TypeArgument2;
+	property TypeArgumentList : list[TypeArgument];
+}
+
+
+interface TypeArgument2 {
+}
+
+
+class ReferenceType2 : TypeArgument2 {
+	property ReferenceType : ReferenceType;
+	property ClassOrInterface : ClassOrInterface;
+	property TypeArgumentList3 : TypeArgumentList3;
+}
+
+
+class TypeArgumentList3 {
+	property TypeArgument3 : TypeArgument3;
+	property TypeArgumentList : list[TypeArgument];
+}
+
+
+interface TypeArgument3 {
+}
+
+
+class ReferenceType3 : TypeArgument3 {
+	property ReferenceType : ReferenceType;
+}
+
+
+class Wildcard : TypeArgument {
+	property WildcardBounds : WildcardBounds;
+}
+
+
+class WildcardBounds {
+	property ReferenceType : ReferenceType;
+}
+
+
+class Wildcard1 : TypeArgument1 {
+	property WildcardBounds1 : WildcardBounds1;
+}
+
+
+class WildcardBounds1 {
+	property ReferenceType1 : ReferenceType1;
+}
+
+
+class Wildcard2 : TypeArgument2 {
+	property WildcardBounds2 : WildcardBounds2;
+}
+
+
+class WildcardBounds2 {
+	property ReferenceType2 : ReferenceType2;
+}
+
+
+class Wildcard3 : TypeArgument3 {
+	property WildcardBounds3 : WildcardBounds3;
+}
+
+
+class WildcardBounds3 {
+	property ReferenceType3 : ReferenceType3;
+}
+
+
+class TypeParameterHeader {
+	property Identifier : String;
+}
+
+
+class TypeParameters {
+	property TypeParameterList1 : TypeParameterList1;
+}
+
+
+class TypeParameter {
+	property TypeParameterHeader : TypeParameterHeader;
+	property ReferenceType : ReferenceType;
+	property AdditionalBoundList : list[AdditionalBound];
+}
+
+
+class AdditionalBound {
+	property ReferenceType : ReferenceType;
+}
+
+
+class TypeParameterList1 {
+	property TypeParameter1 : TypeParameter1;
+	property TypeParameterList : list[TypeParameter];
+}
+
+
+class TypeParameter1 {
+	property TypeParameterHeader : TypeParameterHeader;
+	property ReferenceType1 : ReferenceType1;
+	property ReferenceType : ReferenceType;
+	property AdditionalBoundList1 : AdditionalBoundList1;
+}
+
+
+class AdditionalBoundList1 {
+	property AdditionalBound1 : AdditionalBound1;
+	property AdditionalBoundList : list[AdditionalBound];
+}
+
+
+class AdditionalBound1 {
+	property ReferenceType1 : ReferenceType1;
+}
+
+
+interface PostfixExpression_NotName {
+}
+
+
+class UnaryExpression_NotName {
+	property PreIncrementExpression : PreIncrementExpression;
+	property PreDecrementExpression : PreDecrementExpression;
+	property UnaryExpression : list[UnaryExpression_item];
+	property UnaryExpressionNotPlusMinus_NotName : UnaryExpressionNotPlusMinus_NotName;
+}
+
+
+class UnaryExpressionNotPlusMinus_NotName {
+	property PostfixExpression_NotName : PostfixExpression_NotName;
+	property UnaryExpression : list[UnaryExpression_item];
+	property CastExpression : CastExpression;
+}
+
+
+class MultiplicativeExpression_NotName_item {
+	property UnaryExpression_NotName : UnaryExpression_NotName;
+	property UnaryExpression : list[UnaryExpression_item];
+	property Name : Name;
+}
+
+
+class AdditiveExpression_NotName_item {
+	property MultiplicativeExpression_NotName : list[MultiplicativeExpression_NotName_item];
+	property MultiplicativeExpression : list[list[UnaryExpression_item]];
+	property Name : Name;
+}
+
+
+class ShiftExpression_NotName_item {
+	property AdditiveExpression_NotName : list[AdditiveExpression_NotName_item];
+	property AdditiveExpression : list[list[list[UnaryExpression_item]]];
+	property Name : Name;
+}
+
+
+class RelationalExpression_NotName_item {
+	property ShiftExpression_NotName : list[ShiftExpression_NotName_item];
+	property ShiftExpression : list[list[list[list[UnaryExpression_item]]]];
+	property Name : Name;
+}
+
+
+class InstanceofExpression_NotName_item {
+	property RelationalExpression_NotName : list[RelationalExpression_NotName_item];
+	property Name : Name;
+	property ReferenceType : ReferenceType;
+}
+
+
+class EqualityExpression_NotName_item {
+	property InstanceofExpression_NotName : list[InstanceofExpression_NotName_item];
+	property InstanceofExpression : list[InstanceofExpression_item];
+	property Name : Name;
+}
+
+
+class AndExpression_NotName_item {
+	property EqualityExpression_NotName : list[EqualityExpression_NotName_item];
+	property EqualityExpression : list[list[InstanceofExpression_item]];
+	property Name : Name;
+}
+
+
+class ExclusiveOrExpression_NotName_item {
+	property AndExpression_NotName : list[AndExpression_NotName_item];
+	property AndExpression : list[list[list[InstanceofExpression_item]]];
+	property Name : Name;
+}
+
+
+class InclusiveOrExpression_NotName_item {
+	property ExclusiveOrExpression_NotName : list[ExclusiveOrExpression_NotName_item];
+	property ExclusiveOrExpression : list[list[list[list[InstanceofExpression_item]]]];
+	property Name : Name;
+}
+
+
+class ConditionalAndExpression_NotName_item {
+	property InclusiveOrExpression_NotName : list[InclusiveOrExpression_NotName_item];
+	property InclusiveOrExpression : list[list[list[list[list[InstanceofExpression_item]]]]];
+	property Name : Name;
+}
+
+
+class ConditionalOrExpression_NotName_item {
+	property ConditionalAndExpression_NotName : list[ConditionalAndExpression_NotName_item];
+	property ConditionalAndExpression : list[list[list[list[list[list[InstanceofExpression_item]]]]]];
+	property Name : Name;
+}
+
+
+class ConditionalExpression_NotName : AssignmentExpression_NotName, MemberValue {
+	property ConditionalOrExpression_NotName : list[ConditionalOrExpression_NotName_item];
+	property Expression : Expression;
+	property ConditionalExpression : list[ConditionalExpression_item];
+	property Name : Name;
+}
+
+
+interface AssignmentExpression_NotName : Expression_NotName {
+}
+
+
+interface Expression_NotName {
+}
+
+
+class AnnotationTypeDeclarationHeaderName {
+	property Modifiers : list[Modifier];
+	property Identifier : String;
+	property TypeParameters : TypeParameters;
+}
+
+
+class AnnotationTypeDeclarationHeader : Header {
+	property AnnotationTypeDeclarationHeaderName : AnnotationTypeDeclarationHeaderName;
+	property ClassHeaderExtendsopt : ClassHeaderExtends;
+	property ClassHeaderImplementsopt : ClassHeaderImplements;
+}
+
+
+class AnnotationTypeDeclaration : BlockStatement {
+	property AnnotationTypeDeclarationHeader : AnnotationTypeDeclarationHeader;
+	property AnnotationTypeBody : AnnotationTypeBody;
+}
+
+
+class AnnotationTypeBody {
+	property AnnotationTypeMemberDeclarationsopt : list[AnnotationTypeMemberDeclaration];
+}
+
+
+class AnnotationMethodHeaderName {
+	property Modifiersopt : list[Modifier];
+	property TypeParameters : TypeParameters;
+	property Type : Type;
+	property Identifier : String;
+}
+
+
+class AnnotationMethodHeader {
+	property AnnotationMethodHeaderName : AnnotationMethodHeaderName;
+	property FormalParameterListopt : list[FormalParameter];
+	property MethodHeaderExtendedDims : MethodHeaderExtendedDims;
+	property DefaultValueopt : DefaultValue;
+}
+
+
+class AnnotationTypeMemberDeclaration {
+	property AnnotationMethodHeader : AnnotationMethodHeader;
+	property ConstantDeclaration : ConstantDeclaration;
+	property ConstructorDeclaration : ConstructorDeclaration;
+	property TypeDeclaration : TypeDeclaration;
+}
+
+
+class DefaultValue {
+	property MemberValue : MemberValue;
+}
+
+
+interface Annotation : MemberValue {
+}
+
+
+class AnnotationName : MarkerAnnotation {
+	property Name : Name;
+}
+
+
+class NormalAnnotation : Annotation {
+	property AnnotationName : AnnotationName;
+	property MemberValuePairsopt : list[MemberValuePair];
+}
+
+
+class MemberValuePair {
+	property SimpleName : SimpleName;
+	property MemberValue : MemberValue;
+}
+
+
+interface MemberValue : SingleMemberAnnotationMemberValue {
+}
+
+
+class MemberValueArrayInitializer : MemberValue {
+	property MemberValues : list[MemberValue];
+}
+
+
+interface MarkerAnnotation : Annotation {
+}
+
+
+interface SingleMemberAnnotationMemberValue {
+}
+
+
+class SingleMemberAnnotation : Annotation {
+	property AnnotationName : AnnotationName;
+	property SingleMemberAnnotationMemberValue : SingleMemberAnnotationMemberValue;
+}
+
+
+class RecoveryMethodHeaderName {
+	property Modifiersopt : list[Modifier];
+	property TypeParameters : TypeParameters;
+	property Type : Type;
+	property Identifier : String;
+}
+
+
+class RecoveryMethodHeader : Header {
+	property RecoveryMethodHeaderName : RecoveryMethodHeaderName;
+	property FormalParameterListopt : list[FormalParameter];
+	property MethodHeaderExtendedDims : MethodHeaderExtendedDims;
+	property DefaultValueopt : DefaultValue;
+	property MethodHeaderThrowsClause : MethodHeaderThrowsClause;
+}
+

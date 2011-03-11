@@ -201,7 +201,7 @@ public final class LapgGenerator {
 			if(anchors != null) {
 				SourceElement[] n = new SourceElement[anchors.length];
 				for(int i = 0; i < n.length; i++) {
-					n[i] = new TemplateSourceElementAdapter(anchors[i]);
+					n[i] = anchors[i] != null ? new TemplateSourceElementAdapter(anchors[i]) : null;
 				}
 				status.report(kind, message, n);
 			} else {

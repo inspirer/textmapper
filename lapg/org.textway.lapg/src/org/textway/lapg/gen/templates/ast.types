@@ -1,6 +1,13 @@
 #
 
-class AstEntity {
+class AstType {
+}
+
+class AstUserType extends AstType {
+	string text;
+}
+
+class AstEntity extends AstType {
 	string kind[set:"enum","interface","class"];
 	string name[notempty; identifier];
 	common.Symbol* sym[1];
@@ -24,4 +31,14 @@ class AstProperty {
 	string name[notempty; identifier];
 	common.SymbolRef* refs[1..*];
 	string type;
+}
+
+class AstList extends AstType {
+	AstType target;
+}
+
+class AstBool extends AstType {
+}
+
+class AstObject extends AstType {
 }

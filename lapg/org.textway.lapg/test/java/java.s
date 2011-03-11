@@ -1,5 +1,5 @@
 
-lang = "java"
+lang = "last"
 prefix = "Java"
 package = "org.textway.lapg.gen.java"
 gentree = true

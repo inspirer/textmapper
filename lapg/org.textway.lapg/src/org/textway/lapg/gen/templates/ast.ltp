@@ -167,10 +167,10 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 
 
 ${cached query getType(sym) =
- 	sym.type ? sym.type :
- 	sym.isTerm() ? self->booleanType() :
+ 	sym.type ? new AstUserType(text => sym.type) :
+ 	sym.isTerm() ? new AstBool() :
  	self->isOptional(sym) ? self->getOptionalType(sym) :
- 	self->isList(sym) ? self->listType(self->getListItemType(sym)) :
+ 	self->isList(sym) ? new AstList(target => self->getListItemType(sym)) :
  	self->isData(sym) ? self->getType(syntax.rules[sym].first()->getRuleDataRef().target) :
  	self->getObjectType(sym) 
 }
@@ -183,19 +183,12 @@ ${query getOptionalType(sym) =
 ${query getObjectType(sym) = 
 	classes = [self->getClasses(sym)].collect(x|x),
 	classes.first()
-		? self->objectType(classes.first())
+		? classes.first()
 		: null
 }
 
 ${query getListItemType(sym) =
 	self->hasItemClass(sym) ? self->getObjectType(sym) :
 	self->hasListItem(sym) ? self->getType(self->getListItem(sym)) :
-	'Object'
+	new AstObject()
 }
-
-
-${query objectType(cl) = self->(opts.lang + '_ast.objectType')(cl)}
-
-${query listType(type) = self->(opts.lang + '_ast.listType')(type)}
-
-${query booleanType() = self->(opts.lang + '_ast.booleanType')()}
