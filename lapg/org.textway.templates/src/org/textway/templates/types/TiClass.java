@@ -90,20 +90,14 @@ public class TiClass implements IClass {
 		return null;
 	}
 
-	public boolean isSubtypeOf(IType anotherType) {
-		if(!(anotherType instanceof IClass)) {
-			return false;
-		}
-		IClass another = (IClass) anotherType;
-		String anotherQualified = another.getQualifiedName();
-
+	public boolean isSubtypeOf(String qualifiedName) {
 		Set<IClass> validated = new HashSet<IClass>();
 		LinkedList<IClass> queue = new LinkedList<IClass>();
 		queue.add(this);
 		validated.add(this);
 		while(!queue.isEmpty()) {
 			IClass next = queue.remove();
-			if(next.getQualifiedName().equals(anotherQualified)) {
+			if(next.getQualifiedName().equals(qualifiedName)) {
 				return true;
 			}
 			for(IClass cl : next.getExtends()) {
@@ -114,6 +108,16 @@ public class TiClass implements IClass {
 			}
 		}
 		return false;
+	}
+
+	public boolean isSubtypeOf(IType anotherType) {
+		if(!(anotherType instanceof IClass)) {
+			return false;
+		}
+		IClass another = (IClass) anotherType;
+		String anotherQualified = another.getQualifiedName();
+
+		return isSubtypeOf(anotherQualified);
 	}
 
 	@Override

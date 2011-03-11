@@ -179,6 +179,15 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
+		public boolean is(String qualifiedName) throws EvaluationException {
+			if("Collection".equals(qualifiedName)) {
+				return true;
+			}
+			return JavaIsInstanceUtil.isInstance(getObject(), qualifiedName);
+
+		}
+
+		@Override
 		public Iterator asSequence() throws EvaluationException {
 			return collection.iterator();
 		}
@@ -210,6 +219,15 @@ public class JavaIxFactory implements IxFactory {
 			} else {
 				throw new EvaluationException("index object should be integer");
 			}
+		}
+
+		@Override
+		public boolean is(String qualifiedName) throws EvaluationException {
+			if("List".equals(qualifiedName)) {
+				return true;
+			}
+
+			return super.is(qualifiedName);	//To change body of overridden methods use File | Settings | File Templates.
 		}
 
 		@Override
@@ -265,6 +283,11 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
+		public boolean is(String qualifiedName) throws EvaluationException {
+			return "Map".equals(qualifiedName) || JavaIsInstanceUtil.isInstance(getObject(), qualifiedName);
+		}
+
+		@Override
 		protected String getType() {
 			return "Map";
 		}
@@ -292,6 +315,11 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public boolean asBoolean() {
 			return array.length > 0;
+		}
+
+		@Override
+		public boolean is(String qualifiedName) throws EvaluationException {
+			return "int[]".equals(qualifiedName);
 		}
 
 		@Override
@@ -371,6 +399,11 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public boolean asBoolean() {
 			return array.length > 0;
+		}
+
+		@Override
+		public boolean is(String qualifiedName) throws EvaluationException {
+			return "short[]".equals(qualifiedName);
 		}
 
 		@Override

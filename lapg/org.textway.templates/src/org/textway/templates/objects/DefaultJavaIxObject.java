@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 
@@ -136,8 +135,8 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		throw new EvaluationException("do not know how to apply index");
 	}
 
-	public boolean is(String qualifiedName) throws EvaluationException {
-		throw new EvaluationException("'is' (instanceof) operator is undefined for `Object`");
+	public boolean is(String pattern) throws EvaluationException {
+		return JavaIsInstanceUtil.isInstance(getObject(), pattern);
 	}
 
 	public Object getObject() {

@@ -36,6 +36,11 @@ public class TiInstance extends DefaultIxObject {
 		return myClass.getQualifiedName();
 	}
 
+	@Override
+	public boolean is(String qualifiedName) throws EvaluationException {
+		return myClass.isSubtypeOf(qualifiedName);
+	}
+
 	public Object getProperty(String propertyName) throws EvaluationException {
 		IFeature feature = myClass.getFeature(propertyName);
 		if (feature == null) {

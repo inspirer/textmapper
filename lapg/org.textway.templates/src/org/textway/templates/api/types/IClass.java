@@ -15,4 +15,6 @@ public interface IClass extends IType {
 	Collection<IMethod> getMethods();
 
 	IFeature getFeature(String name);
+
+	boolean isSubtypeOf(String qualifiedName);
 }
