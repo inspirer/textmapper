@@ -157,7 +157,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			return "";
 		}
 		try {
-			return t.apply(context, this, null);
+			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context), this, null);
 		} catch (EvaluationException ex) {
 			report(KIND_ERROR, ex.getMessage(), t);
 			return "";

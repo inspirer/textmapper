@@ -17,11 +17,8 @@ package org.textway.templates.ast;
 
 import java.util.List;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.*;
 import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.api.IQuery;
 import org.textway.templates.ast.TemplatesTree.TextSource;
 
 public class QueryNode extends Node implements IQuery {
@@ -79,31 +76,17 @@ public class QueryNode extends Node implements IQuery {
 		Object result;
 		if (isCached) {
 			result = env.getCache().lookup(this, context.getThisObject(), arguments);
-			if (result != null) {
+			if (result != IEvaluationCache.MISSED) {
 				return result;
 			}
 		}
 
 		if (paramCount > 0) {
-			int i;
-			Object[] old = new Object[paramCount];
-			for (i = 0; i < paramCount; i++) {
-				old[i] = context.getVariable(parameters[i].getName());
+			for (int i = 0; i < paramCount; i++) {
+				context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 			}
-			try {
-				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
-				}
-
-				result = env.evaluate(expr, context, true);
-			} finally {
-				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), old[i]);
-				}
-			}
-		} else {
-			result = env.evaluate(expr, context, true);
 		}
+		result = env.evaluate(expr, context, true);
 		if (isCached) {
 			env.getCache().cache(result, this, context.getThisObject(), arguments);
 		}

@@ -43,7 +43,7 @@ public class ParameterNode extends Node {
 		/* declaration statement, nothing to emit */
 	}
 
-	void toString(StringBuilder sb) {
+	public void toString(StringBuilder sb) {
 		if(type != null) {
 			sb.append(type);
 			sb.append(' ');

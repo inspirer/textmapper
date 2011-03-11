@@ -67,25 +67,11 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 
 		StringBuilder sb = new StringBuilder();
 		if (paramCount > 0) {
-			int i;
-			Object[] old = new Object[paramCount];
-			for (i = 0; i < paramCount; i++) {
-				old[i] = context.getVariable(parameters[i].getName());
+			for (int i = 0; i < paramCount; i++) {
+				context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 			}
-			try {
-				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
-				}
-
-				emit(sb, context, env);
-			} finally {
-				for (i = 0; i < paramCount; i++) {
-					context.setVariable(parameters[i].getName(), old[i]);
-				}
-			}
-		} else {
-			emit(sb, context, env);
 		}
+		emit(sb, context, env);
 		return sb.toString();
 	}
 

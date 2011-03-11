@@ -25,14 +25,15 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 	private final Map<CompositeKey, Object> globalCache = new HashMap<CompositeKey, Object>();
 
 	public void cache(Object value, Object... keys) {
-		if(value == null) {
-			return;
-		}
 		globalCache.put(new CompositeKey(keys), value);
 	}
 
 	public Object lookup(Object... keys) {
-		return globalCache.get(new CompositeKey(keys));
+		Object result = globalCache.get(new CompositeKey(keys));
+		if(result != null) {
+			return result;
+		}
+		return globalCache.containsKey(new CompositeKey(keys)) ? null : MISSED;
 	}
 
 	private static class CompositeKey {

@@ -17,6 +17,8 @@ package org.textway.templates.api;
 
 public interface IEvaluationCache {
 
+	public static final Object MISSED = new Object();
+
 	void cache(Object value, Object... keys);
 
 	Object lookup(Object... keys);

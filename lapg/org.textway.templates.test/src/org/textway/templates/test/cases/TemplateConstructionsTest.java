@@ -388,6 +388,18 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		collector.assertEmptyErrors();
 	}
 
+	// closures.ltp
+	public void testClosures() {
+		TestProblemCollector collector = new TestProblemCollector();
+		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
+
+		EvaluationContext context = new EvaluationContext(null);
+
+		// test 1
+		String q = env.executeTemplate("closures.test1", context, null, null);
+		Assert.assertEquals("=22 and 42", q);
+	}
+
 	private TemplatesRegistry createRegistry(TestProblemCollector collector) {
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		ITypesRegistry types = new TypesRegistry(resources, collector);

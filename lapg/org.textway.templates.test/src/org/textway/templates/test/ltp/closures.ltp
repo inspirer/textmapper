@@ -1,0 +1,10 @@
+${query F(x,yy) = {cached int i => '=' + (i + x) + ' and ' + yy }}
+
+${template test1-}
+${call test11(42)-}
+${end}
+
+
+${template test11(yy)-}
+${[]->F(20,yy).invoke(2)-}
+${end}

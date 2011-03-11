@@ -34,7 +34,7 @@ escdollar:		/$$/
 escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); break; }
 escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); break; }
 
-'${':	/${/		{ group = 1; break; }
+'${':	/${/		{ deep = 1; group = 1; break; }
 '$/':   /$\//
 
 [1]
@@ -70,7 +70,8 @@ Ltrue:		/true/
 Lself:		/self/
 Lassert:	/assert/
 
-'}':		/}/			{ group = 0; break; }
+'{':		/{/			{ deep++; break; }
+'}':		/}/			{ if (--deep == 0) { group = 0; } break; }
 '-}':		/-}/		{ group = 0; break; }
 '+':		/+/
 '-':		/-/
@@ -275,6 +276,12 @@ primary_expression (ExpressionNode) ::=
     												{ $$ = new CallTemplateNode($expression,$expression_listopt,$primary_expression#1,templatePackage, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
     | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
     | complex_data
+    | closure
+;
+
+closure ::=
+	  '{' cached_flagopt parameter_listopt '=>' expression '}'
+                                                    { $$ = new ClosureNode($cached_flagopt != null, $parameter_listopt, $expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 complex_data (ExpressionNode) ::=
@@ -389,6 +396,8 @@ parser.templatePackage = templatePackage;
 ${end}
 
 ${template java_lexer.lexercode}
+private int deep = 0;
+
 private String unescape(String s, int start, int end) {
 	StringBuilder sb = new StringBuilder();
 	end = Math.min(end, s.length());
