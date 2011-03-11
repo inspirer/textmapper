@@ -118,6 +118,9 @@ class TypesResolver {
 				String s = getQualifiedName(className);
 				if (s.indexOf('.') == -1) {
 					s = myPackage + "." + s;
+				} else {
+					String targetPackage = s.substring(0, s.lastIndexOf('.'));
+					requiredPackages.add(targetPackage);
 				}
 				superNames.add(s);
 			}
