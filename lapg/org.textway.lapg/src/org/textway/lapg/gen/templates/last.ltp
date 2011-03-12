@@ -28,7 +28,7 @@ ${end}
 ${template ast_class(cl)}
 class ${cl.name}${call implementedInterfaces(cl)} {
 ${foreach prop in cl.properties-}
-	property ${prop.name} : ${prop.kind == 'enumproperty' ? 'integer' :
+	property ${util.toFirstLower(prop.name)} : ${prop.kind == 'enumproperty' ? 'integer' :
 							  prop.kind == 'flagproperty' ? 'boolean' :
 							  context->getType(prop.refs.first().target)};
 ${end-}

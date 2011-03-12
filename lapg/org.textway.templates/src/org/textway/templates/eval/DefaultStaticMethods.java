@@ -81,6 +81,13 @@ public class DefaultStaticMethods {
 		return s;
 	}
 
+	public String toFirstLower(String s) {
+		if(s.length() > 0) {
+			return Character.toLowerCase(s.charAt(0)) + s.substring(1);
+		}
+		return s;
+	}
+
 	public String toCamelCase(String s, Boolean firstUpper) {
 		char[] string = s.toCharArray();
 		int len = 0;
