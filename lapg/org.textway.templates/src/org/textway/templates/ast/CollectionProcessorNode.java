@@ -58,110 +58,109 @@ public class CollectionProcessorNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
+	public Object evaluate(final EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object select = env.evaluate(selectExpression, context, false);
-		Object prevVar = context.getVariable(varName);
-		try {
-			Iterator<?> it = env.asAdaptable(select).asSequence();
-			if(it == null) {
-				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or iterable (instead of "+select.getClass().getCanonicalName()+")");
-			}
+		Iterator<?> it = env.asAdaptable(select).asSequence();
+		if(it == null) {
+			throw new EvaluationException("`" + selectExpression.toString() + "` should be array or iterable (instead of "+select.getClass().getCanonicalName()+")");
+		}
 
-			if(instruction == SELECT || instruction == REJECT || instruction == COLLECT || instruction == COLLECTUNIQUE) {
-				Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
-				while(it.hasNext()) {
-					Object curr = it.next();
-					context.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
-					Object val = env.evaluate(foreachExpr, context, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
-					if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
-						boolean b = env.asAdaptable(val).asBoolean() ^ (instruction == REJECT);
-						if(b) {
-							result.add(curr);
-						}
-					} else if(val instanceof Iterable<?>) {
-						for(Object v : (Iterable<?>) val) {
-							if(v!=null) {
-								result.add(v);
-							}
-						}
-					} else if(val instanceof Object[]) {
-						for(Object v : (Object[])val) {
-							if(v!=null) {
-								result.add(v);
-							}
-						}
-					} else if(val != null){
-						result.add(val);
-					}
-				}
-				return instruction == COLLECTUNIQUE ? new ArrayList<Object>(result) : result;
-			} else if(instruction == GROUPBY) {
-				List<Object> result = new ArrayList<Object>();
-				Map<Object,Integer> keyToIndex = new HashMap<Object, Integer>();
-				while(it.hasNext()) {
-					Object curr = it.next();
-					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, false);
-					Integer index = keyToIndex.get(val);
-					if(index == null) {
-						keyToIndex.put(val, result.size());
+		if(instruction == SELECT || instruction == REJECT || instruction == COLLECT || instruction == COLLECTUNIQUE) {
+			Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
+			while(it.hasNext()) {
+				Object curr = it.next();
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				innerContext.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
+				Object val = env.evaluate(foreachExpr, innerContext, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
+				if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
+					boolean b = env.asAdaptable(val).asBoolean() ^ (instruction == REJECT);
+					if(b) {
 						result.add(curr);
-					} else {
-						Object existing = result.get(index);
-						if(existing instanceof GroupList) {
-							((GroupList)existing).add(curr);
-						} else {
-							GroupList l = new GroupList();
-							l.add(existing);
-							l.add(curr);
-							result.set(index, l);
+					}
+				} else if(val instanceof Iterable<?>) {
+					for(Object v : (Iterable<?>) val) {
+						if(v!=null) {
+							result.add(v);
 						}
 					}
-				}
-				return result;
-			} else if(instruction == SORT) {
-				List<Object> result = new ArrayList<Object>();
-				final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
-				while(it.hasNext()) {
-					Object curr = it.next();
-					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, false);
-					if(!(val instanceof Comparable<?>)) {
-						throw new EvaluationException("`" + foreachExpr.toString() + "` should implement Comparable (instead of "+val.getClass().getCanonicalName()+")");
-					}
-					sortKey.put(curr, (Comparable<Object>)val);
-					result.add(curr);
-				}
-				Object[] arr = result.toArray();
-				Arrays.sort(arr, new Comparator<Object>() {
-					public int compare(Object o1, Object o2) {
-						if(o1 == null) {
-							return o2 == null ? 0 : -1;
+				} else if(val instanceof Object[]) {
+					for(Object v : (Object[])val) {
+						if(v!=null) {
+							result.add(v);
 						}
-						if(o2 == null) {
-							return 1;
-						}
-						return sortKey.get(o1).compareTo(sortKey.get(o2));
 					}
-				});
-				return arr;
-			} else {
-				while(it.hasNext()) {
-					Object curr = it.next();
-					context.setVariable(varName, curr);
-					Object val = env.evaluate(foreachExpr, context, true);
-					boolean b = env.asAdaptable(val).asBoolean();
-					if( b && instruction == EXISTS) {
-						return true;
-					}
-					if(!b && instruction == FORALL ) {
-						return false;
-					}
+				} else if(val != null){
+					result.add(val);
 				}
-				return instruction == FORALL;
 			}
-		} finally {
-			context.setVariable(varName, prevVar);
+			return instruction == COLLECTUNIQUE ? new ArrayList<Object>(result) : result;
+		} else if(instruction == GROUPBY) {
+			List<Object> result = new ArrayList<Object>();
+			Map<Object,Integer> keyToIndex = new HashMap<Object, Integer>();
+			while(it.hasNext()) {
+				Object curr = it.next();
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				innerContext.setVariable(varName, curr);
+				Object val = env.evaluate(foreachExpr, innerContext, false);
+				Integer index = keyToIndex.get(val);
+				if(index == null) {
+					keyToIndex.put(val, result.size());
+					result.add(curr);
+				} else {
+					Object existing = result.get(index);
+					if(existing instanceof GroupList) {
+						((GroupList)existing).add(curr);
+					} else {
+						GroupList l = new GroupList();
+						l.add(existing);
+						l.add(curr);
+						result.set(index, l);
+					}
+				}
+			}
+			return result;
+		} else if(instruction == SORT) {
+			List<Object> result = new ArrayList<Object>();
+			final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
+			while(it.hasNext()) {
+				Object curr = it.next();
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				innerContext.setVariable(varName, curr);
+				Object val = env.evaluate(foreachExpr, innerContext, false);
+				if(!(val instanceof Comparable<?>)) {
+					throw new EvaluationException("`" + foreachExpr.toString() + "` should implement Comparable (instead of "+val.getClass().getCanonicalName()+")");
+				}
+				sortKey.put(curr, (Comparable<Object>)val);
+				result.add(curr);
+			}
+			Object[] arr = result.toArray();
+			Arrays.sort(arr, new Comparator<Object>() {
+				public int compare(Object o1, Object o2) {
+					if(o1 == null) {
+						return o2 == null ? 0 : -1;
+					}
+					if(o2 == null) {
+						return 1;
+					}
+					return sortKey.get(o1).compareTo(sortKey.get(o2));
+				}
+			});
+			return arr;
+		} else {
+			while(it.hasNext()) {
+				Object curr = it.next();
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				innerContext.setVariable(varName, curr);
+				Object val = env.evaluate(foreachExpr, innerContext, true);
+				boolean b = env.asAdaptable(val).asBoolean();
+				if( b && instruction == EXISTS) {
+					return true;
+				}
+				if(!b && instruction == FORALL ) {
+					return false;
+				}
+			}
+			return instruction == FORALL;
 		}
 	}
 

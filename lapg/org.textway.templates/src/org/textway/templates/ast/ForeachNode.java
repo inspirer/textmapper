@@ -42,59 +42,55 @@ public class ForeachNode extends CompoundNode {
 		try {
 			Object select = env.evaluate(selectExpr, context, false);
             String separator = separatorExpr == null ? null : env.toString(env.evaluate(separatorExpr, context, false), separatorExpr);
-			Object prevVar = context.getVariable(var);
-			Object prevIndex = context.getVariable(INDEX);
 			int index = 0;
             int lastSeparator = sb.length();
-			try {
-				if( targetExpr != null ) {
-					Object to = env.evaluate(targetExpr, context, false);
-					if( select instanceof Integer && to instanceof Integer ) {
-						int toInt = (Integer)to;
-						int delta = toInt >= (Integer)select ? 1 : -1;
-						for( int i = (Integer)select; (delta > 0 ? i <= toInt : i >= toInt); i += delta ) {
-							context.setVariable(var, i);
-                            if(separator != null && lastSeparator < sb.length()) {
-                                sb.append(separator);
-                                lastSeparator = sb.length();
-                            }
-							for( Node n : instructions ) {
-								n.emit(sb, context, env);
-							}
+			if( targetExpr != null ) {
+				Object to = env.evaluate(targetExpr, context, false);
+				if( select instanceof Integer && to instanceof Integer ) {
+					int toInt = (Integer)to;
+					int delta = toInt >= (Integer)select ? 1 : -1;
+					for( int i = (Integer)select; (delta > 0 ? i <= toInt : i >= toInt); i += delta ) {
+						EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+						innerContext.setVariable(var, i);
+						if(separator != null && lastSeparator < sb.length()) {
+							sb.append(separator);
+							lastSeparator = sb.length();
 						}
-					} else {
-						env.report(TemplatesStatus.KIND_ERROR, "In for `" + selectExpr.toString() + "` and `" + targetExpr.toString() + "` should be Integers for " + env.getTitle(context), this);
-					}
-				} else if( select instanceof Iterable<?> ) {
-					for( Object o : (Iterable<?>)select ) {
-						context.setVariable(var, o);
-						context.setVariable(INDEX, index++);
-                        if(separator != null && lastSeparator < sb.length()) {
-                            sb.append(separator);
-                            lastSeparator = sb.length();
-                        }
 						for( Node n : instructions ) {
-							n.emit(sb, context, env);
-						}
-					}
-				} else if(select instanceof Object[]) {
-					for( Object o : (Object[])select ) {
-						context.setVariable(var, o);
-						context.setVariable(INDEX, index++);
-                        if(separator != null && lastSeparator < sb.length()) {
-                            sb.append(separator);
-                            lastSeparator = sb.length();
-                        }
-						for( Node n : instructions ) {
-							n.emit(sb, context, env);
+							n.emit(sb, innerContext, env);
 						}
 					}
 				} else {
-					env.report(TemplatesStatus.KIND_ERROR, "In foreach `" + selectExpr.toString() + "` should be array or iterable for " + env.getTitle(context), this);
+					env.report(TemplatesStatus.KIND_ERROR, "In for `" + selectExpr.toString() + "` and `" + targetExpr.toString() + "` should be Integers for " + env.getTitle(context), this);
 				}
-			} finally {
-				context.setVariable(var, prevVar);
-				context.setVariable(INDEX, prevIndex);
+			} else if( select instanceof Iterable<?> ) {
+				for( Object o : (Iterable<?>)select ) {
+					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+					innerContext.setVariable(var, o);
+					innerContext.setVariable(INDEX, index++);
+					if(separator != null && lastSeparator < sb.length()) {
+						sb.append(separator);
+						lastSeparator = sb.length();
+					}
+					for( Node n : instructions ) {
+						n.emit(sb, innerContext, env);
+					}
+				}
+			} else if(select instanceof Object[]) {
+				for( Object o : (Object[])select ) {
+					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+					innerContext.setVariable(var, o);
+					innerContext.setVariable(INDEX, index++);
+					if(separator != null && lastSeparator < sb.length()) {
+						sb.append(separator);
+						lastSeparator = sb.length();
+					}
+					for( Node n : instructions ) {
+						n.emit(sb, innerContext, env);
+					}
+				}
+			} else {
+				env.report(TemplatesStatus.KIND_ERROR, "In foreach `" + selectExpr.toString() + "` should be array or iterable for " + env.getTitle(context), this);
 			}
 		} catch( EvaluationException ex ) {
 			/* ignore, skip foreach */

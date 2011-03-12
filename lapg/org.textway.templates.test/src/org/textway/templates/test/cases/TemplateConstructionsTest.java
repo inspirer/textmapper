@@ -32,9 +32,7 @@ import org.textway.templates.test.TemplateTestCase;
 import org.textway.templates.types.TypesRegistry;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 public class TemplateConstructionsTest extends TemplateTestCase {
 
@@ -394,10 +392,19 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
 
 		EvaluationContext context = new EvaluationContext(null);
+		context.setVariable("collector", new ObjectCollector());
 
 		// test 1
 		String q = env.executeTemplate("closures.test1", context, null, null);
 		Assert.assertEquals("=22 and 42", q);
+
+		// test 2
+		q = env.executeTemplate("closures.test2", context, null, null);
+		Assert.assertEquals("0: 9, 1: 15, 2: 21, 3: 27", q);
+
+		// test 3
+		q = env.executeTemplate("closures.loopTest2", context, null, null);
+		Assert.assertEquals("Is: 24,42,72", q);
 	}
 
 	private TemplatesRegistry createRegistry(TestProblemCollector collector) {
@@ -410,5 +417,17 @@ public class TemplateConstructionsTest extends TemplateTestCase {
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		ITypesRegistry types = new TypesRegistry(resources, collector);
 		return new TemplatesRegistry(collector, types, new StringTemplateLoader(new Resource(URI.create("inline"), inlineCode)), new DefaultTemplateLoader(resources));
+	}
+
+	public static class ObjectCollector implements Iterable {
+		private List<Object> inner = new ArrayList<Object>();
+
+		public void add(Object o) {
+			inner.add(o);
+		}
+
+		public Iterator iterator() {
+			return inner.iterator();
+		}
 	}
 }

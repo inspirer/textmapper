@@ -62,11 +62,7 @@ public class EvaluationContext {
 		if (vars == null) {
 			vars = new HashMap<String, Object>();
 		}
-		if(value != null) {
-			vars.put(id, value);
-		} else {
-			vars.remove(id);
-		}
+		vars.put(id, value);
 	}
 
 	public Object getThisObject() {

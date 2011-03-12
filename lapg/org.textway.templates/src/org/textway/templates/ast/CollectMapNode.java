@@ -43,35 +43,31 @@ public class CollectMapNode extends ExpressionNode {
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
 		Object select = env.evaluate(selectExpression, context, false);
-		Object prevVar = context.getVariable(varName);
-		try {
-			Iterator<?> it = env.asAdaptable(select).asSequence();
-			if(it == null) {
-				throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of "+select.getClass().getCanonicalName()+")");
-			}
-
-			Map<Object,Object> result = new HashMap<Object,Object>();
-			while(it.hasNext()) {
-				Object curr = it.next();
-				context.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
-				Object key_ = env.evaluate(key, context, false);
-				Object value_ = env.evaluate(value, context, false);
-                if(key_ instanceof Collection<?>) {
-                    for(Object k : (Collection<?>) key_) {
-                        result.put(k,value_);
-                    }
-                } else if(key_ instanceof Object[]) {
-                    for(Object k : (Object[]) key_) {
-                        result.put(k,value_);
-                    }
-                } else {
-                    result.put(key_, value_);
-                }
-			}
-			return result;
-		} finally {
-			context.setVariable(varName, prevVar);
+		Iterator<?> it = env.asAdaptable(select).asSequence();
+		if (it == null) {
+			throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of " + select.getClass().getCanonicalName() + ")");
 		}
+
+		Map<Object, Object> result = new HashMap<Object, Object>();
+		while (it.hasNext()) {
+			Object curr = it.next();
+			EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+			innerContext.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
+			Object key_ = env.evaluate(key, innerContext, false);
+			Object value_ = env.evaluate(value, innerContext, false);
+			if (key_ instanceof Collection<?>) {
+				for (Object k : (Collection<?>) key_) {
+					result.put(k, value_);
+				}
+			} else if (key_ instanceof Object[]) {
+				for (Object k : (Object[]) key_) {
+					result.put(k, value_);
+				}
+			} else {
+				result.put(key_, value_);
+			}
+		}
+		return result;
 	}
 
 	@Override
