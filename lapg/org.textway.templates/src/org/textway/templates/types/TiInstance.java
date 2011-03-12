@@ -18,6 +18,7 @@ package org.textway.templates.types;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
+import org.textway.templates.api.types.IMethod;
 import org.textway.templates.objects.DefaultIxObject;
 
 import java.util.Map;
@@ -57,5 +58,26 @@ public class TiInstance extends DefaultIxObject {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		IMethod method = myClass.getMethod(methodName);
+		if (method == null) {
+			throw new EvaluationException("Method `" + methodName + "` is not declared in class " + myClass.getQualifiedName());
+		}
+
+		// FIXME check arguments count
+
+		Object result = myValues.get(methodName);
+		if (result instanceof TiClosure) {
+			TiClosure closure = (TiClosure) result;
+			Object[] args2 = new Object[args.length + 1];
+			args2[0] = this;
+			System.arraycopy(args, 0, args2, 1, args.length);
+			return closure.callMethod("invoke", args2);
+		}
+
+		return super.callMethod(methodName, args);
 	}
 }

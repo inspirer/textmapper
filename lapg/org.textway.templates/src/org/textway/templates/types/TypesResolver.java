@@ -141,10 +141,37 @@ class TypesResolver {
 		return result;
 	}
 
-	private IMethod convertMethod(AstMethodDeclaration memberDeclaration) {
-		// TODO
-
-		return new TiMethod(memberDeclaration.getName(), null, null);
+	private IMethod convertMethod(final AstMethodDeclaration memberDeclaration) {
+		final TiMethod result = new TiMethod(memberDeclaration.getName());
+		convertType(new TypeHandler() {
+			public void typeResolved(IType type) {
+				result.setType(type);
+			}
+			public String containerName() {
+				return memberDeclaration.getName();
+			}
+		}, memberDeclaration.getReturnType(), true);
+		List<AstTypeEx> parametersopt = memberDeclaration.getParametersopt();
+		final IType[] params = parametersopt == null || parametersopt.size() == 0 ? null : new IType[parametersopt.size()];
+		if(params == null) {
+			return result;
+		}
+		for(int i = 0; i < params.length; i++) {
+			final int boundI = i;
+			AstTypeEx astTypeEx = parametersopt.get(i);
+			convertType(new TypeHandler() {
+				public void typeResolved(IType type) {
+					params[boundI] = type;
+					if(boundI == params.length-1) {
+						result.setParameterTypes(params);
+					}
+				}
+				public String containerName() {
+					return memberDeclaration.getName();
+				}
+			}, astTypeEx, true);
+		}
+		return result;
 	}
 
 	private TiFeature convertFeature(AstFeatureDeclaration fd) {

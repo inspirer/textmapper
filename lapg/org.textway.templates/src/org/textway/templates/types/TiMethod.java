@@ -15,23 +15,27 @@
  */
 package org.textway.templates.types;
 
+import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IMethod;
 import org.textway.templates.api.types.IType;
 
 public class TiMethod implements IMethod {
 
 	private final String name;
-	private final IType returnType;
-	private final IType[] parameterTypes;
+	private TiClass declaringClass;
+	private IType returnType;
+	private IType[] parameterTypes;
 
-	public TiMethod(String name, IType returnType, IType[] parameterTypes) {
+	public TiMethod(String name) {
 		this.name = name;
-		this.returnType = returnType;
-		this.parameterTypes = parameterTypes;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	public IClass getDeclaringClass() {
+		return declaringClass;
 	}
 
 	public IType getReturnType() {
@@ -40,5 +44,17 @@ public class TiMethod implements IMethod {
 
 	public IType[] getParameterTypes() {
 		return parameterTypes;
+	}
+
+	void setType(IType type) {
+		this.returnType = type;
+	}
+
+	void setParameterTypes(IType[] parameterTypes) {
+		this.parameterTypes = parameterTypes;
+	}
+
+	void setDeclaringClass(TiClass declaringClass) {
+		this.declaringClass = declaringClass;
 	}
 }

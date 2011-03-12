@@ -88,13 +88,31 @@ public abstract class TiExpressionBuilder<Node> {
 			for (Entry<String, Node> item : properties.entrySet()) {
 				String key = item.getKey();
 
-				IFeature feature = aClass.getFeature(key);
-				if (feature == null) {
-					report(node, "trying to initialize unknown feature `" + key + "` in class `" + className + "`");
+				IType requiredType = null;
+				{
+					IFeature feature = aClass.getFeature(key);
+					if(feature != null) {
+						requiredType = feature.getType();
+					} else {
+						IMethod method = aClass.getMethod(key);
+						if(method != null) {
+							IType[] parameterTypes = method.getParameterTypes();
+							IType[] requiredParams = new IType[1 + (parameterTypes != null ? parameterTypes.length : 0)];
+							requiredParams[0] = method.getDeclaringClass();
+							if(parameterTypes != null) {
+								System.arraycopy(parameterTypes, 0, requiredParams, 1, parameterTypes.length);
+							}
+							requiredType = new TiClosureType(requiredParams);
+						}
+					}
+				}
+
+				if (requiredType == null) {
+					report(node, "trying to initialize unknown feature/method `" + key + "` in class `" + className + "`");
 					continue;
 				}
 
-				Object value = resolve(item.getValue(), feature.getType());
+				Object value = resolve(item.getValue(), requiredType);
 				if (value != null) {
 					result.put(key, value);
 				}

@@ -37,6 +37,11 @@ public class TiClass implements IClass {
 		this._super = _super;
 		this.features = features;
 		this.methods = methods;
+		if (methods != null) {
+			for (IMethod method : methods) {
+				((TiMethod) method).setDeclaringClass(this);
+			}
+		}
 	}
 
 	public String getName() {
@@ -60,28 +65,59 @@ public class TiClass implements IClass {
 	}
 
 	public IFeature getFeature(String name) {
-		for(IFeature f : features) {
-			if(f.getName().equals(name)) {
+		for (IFeature f : features) {
+			if (f.getName().equals(name)) {
 				return f;
 			}
 		}
 		LinkedList<IClass> queue = new LinkedList<IClass>(this.getExtends());
-		if(queue.isEmpty()) {
+		if (queue.isEmpty()) {
 			return null;
 		}
 
 		Set<IClass> processed = new HashSet<IClass>();
 		processed.add(this);
 		processed.addAll(queue);
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			IClass next = queue.remove();
-			for(IFeature f : next.getFeatures()) {
-				if(f.getName().equals(name)) {
+			for (IFeature f : next.getFeatures()) {
+				if (f.getName().equals(name)) {
 					return f;
 				}
 			}
-			for(IClass cl : next.getExtends()) {
-				if(!processed.contains(cl)) {
+			for (IClass cl : next.getExtends()) {
+				if (!processed.contains(cl)) {
+					processed.add(cl);
+					queue.add(cl);
+				}
+			}
+		}
+		return null;
+	}
+
+	public IMethod getMethod(String name) {
+		for (IMethod m : methods) {
+			if (m.getName().equals(name)) {
+				return m;
+			}
+		}
+		LinkedList<IClass> queue = new LinkedList<IClass>(this.getExtends());
+		if (queue.isEmpty()) {
+			return null;
+		}
+
+		Set<IClass> processed = new HashSet<IClass>();
+		processed.add(this);
+		processed.addAll(queue);
+		while (!queue.isEmpty()) {
+			IClass next = queue.remove();
+			for (IMethod m : next.getMethods()) {
+				if (m.getName().equals(name)) {
+					return m;
+				}
+			}
+			for (IClass cl : next.getExtends()) {
+				if (!processed.contains(cl)) {
 					processed.add(cl);
 					queue.add(cl);
 				}
@@ -95,13 +131,13 @@ public class TiClass implements IClass {
 		LinkedList<IClass> queue = new LinkedList<IClass>();
 		queue.add(this);
 		validated.add(this);
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			IClass next = queue.remove();
-			if(next.getQualifiedName().equals(qualifiedName)) {
+			if (next.getQualifiedName().equals(qualifiedName)) {
 				return true;
 			}
-			for(IClass cl : next.getExtends()) {
-				if(!validated.contains(cl)) {
+			for (IClass cl : next.getExtends()) {
+				if (!validated.contains(cl)) {
 					validated.add(cl);
 					queue.add(cl);
 				}
@@ -111,7 +147,7 @@ public class TiClass implements IClass {
 	}
 
 	public boolean isSubtypeOf(IType anotherType) {
-		if(!(anotherType instanceof IClass)) {
+		if (!(anotherType instanceof IClass)) {
 			return false;
 		}
 		IClass another = (IClass) anotherType;

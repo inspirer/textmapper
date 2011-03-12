@@ -181,15 +181,15 @@ ${template createObject(rule,cl)-}
 new ${self->astPackage()}.@${cl->className()}(
 ${foreach prop in cl.properties-}
 ${if prop.kind == 'enumproperty'-}
-${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
+${pind = prop.indexInRule(rule), pind >= 0
 	? self->astPackage() + '.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)
 	: 0},
 ${else if prop.kind == 'flagproperty'-}
-${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
+${pind = prop.indexInRule(rule), pind >= 0
 	? 'true' 
 	: 'false'},
-${else if self->ast.propertyIndex(prop,rule,cl) >= 0 -}
-${'$'+ self->ast.propertyIndex(prop,rule,cl)} /* ${prop->propertyName()} */,
+${else if prop.indexInRule(rule) >= 0 -}
+${'$'+ prop.indexInRule(rule)} /* ${prop->propertyName()} */,
 ${else-}
 null /* ${prop->propertyName()} */,
 ${end-}
