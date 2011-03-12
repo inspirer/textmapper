@@ -23,7 +23,7 @@ ${cached query getClasses(sym) =
 			name => sym.id,
 			sym => sym,
 			implementedSyms => self->getImplements(sym),
-			implements => {this => this.implementedSyms.collect(x|self->ast.getClasses(x)) }
+			implements => {this => this.implementedSyms.collect(x|self->getClasses(x)) }
 		) :
 	kind == 'class' ?
 		new AstClass(
@@ -31,7 +31,7 @@ ${cached query getClasses(sym) =
 			name => sym.id,
 			sym => sym,
 			implementedSyms => self->getImplements(sym),
-			implements => {this => this.implementedSyms.collect(x|self->ast.getClasses(x)) },
+			implements => {this => this.implementedSyms.collect(x|self->getClasses(x)) },
 			containedRefs => syntax.rules[sym].collect(x|[
 				x.getRight()
 			]),
