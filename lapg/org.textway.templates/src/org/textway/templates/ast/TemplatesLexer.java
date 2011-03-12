@@ -182,6 +182,13 @@ public class TemplatesLexer {
 		23, 28, 20, 15, 25, 27, 17, 26, 8, 29, 49, 4, 36, 30, 1, 1
 	};
 
+	private static final short lapg_lexemnum[] = {
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+		33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+		49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64
+	};
+
 	private int lapg_lexem[][] = unpackFromString(144,57,
 		"-2,2,3,2:54,-1:4,4,5,6,-1,7,8,9,7:2,10,7,11,12,7,13,7:2,14,15,7,16,17,7:2,1" +
 		"8,7,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,7,38,39,-1,7:2" +
@@ -328,38 +335,44 @@ public class TemplatesLexer {
 				continue;
 			}
 
+			if (state == -2) {
+				lapg_n.lexem = 0;
+				lapg_n.sym = null;
+				return lapg_n;
+			}
+
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = - state - 2;
+			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
+		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n) {
-		switch (lapg_n.lexem) {
-			case 3:
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+		switch (lexemIndex) {
+			case 2:
 				 lapg_n.sym = token.toString().substring(1, token.length()); break; 
-			case 4:
+			case 3:
 				 lapg_n.sym = Integer.parseInt(token.toString().substring(1, token.length())); break; 
-			case 5:
+			case 4:
 				 deep = 1; group = 1; break; 
-			case 7:
+			case 6:
 				 lapg_n.sym = current(); break; 
-			case 8:
+			case 7:
 				 lapg_n.sym = Integer.parseInt(current()); break; 
-			case 9:
+			case 8:
 				 lapg_n.sym = unescape(current(), 1, token.length()-1); break; 
-			case 35:
+			case 34:
 				 deep++; break; 
-			case 36:
+			case 35:
 				 if (--deep == 0) { group = 0; } break; 
-			case 37:
+			case 36:
 				 group = 0; break; 
-			case 64:
+			case 63:
 				 return false; 
 		}
 		return true;

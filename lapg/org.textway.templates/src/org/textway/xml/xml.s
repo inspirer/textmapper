@@ -38,7 +38,7 @@ _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/		{ return false; }
 
 identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $lexem = current(); break; }
 ccon(String):	/"[^\n"]*"/							{ $lexem = token.toString().substring(1, token.length()-1); break; }
-ccon(String):	/'[^\n']*'/
+ccon(String):	/'[^\n']*'/							{ $lexem = token.toString().substring(1, token.length()-1); break; }
 
 '>':	    />/          { group = 0; break; }
 '=':		/=/

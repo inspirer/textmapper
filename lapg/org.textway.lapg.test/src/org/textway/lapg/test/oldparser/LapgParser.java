@@ -84,11 +84,13 @@ public class LapgParser implements LapgLexer.ErrorReporter {
 		return res;
 	}
 
+	private int lexemCounter = 0;
+
 	private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CSourcePart command, int line) {
 		try {
 			sym.setTerminal(type, regexp != null, inputId, line);
 			if( regexp != null ) {
-				lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,inputId,line));
+				lexems.add(new CLexem(lexemCounter++, sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,inputId,line));
 			}
 		} catch( ParseException ex ) {
 			error(null, null, ex.getMessage());

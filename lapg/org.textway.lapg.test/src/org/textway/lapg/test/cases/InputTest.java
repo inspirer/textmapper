@@ -51,7 +51,7 @@ public class InputTest extends LapgTestCase {
 
 		StringBuffer sb = new StringBuffer();
 
-		OutputUtils.printTables(sb, lt);
+		OutputUtils.printTables(sb, lt, true);
 		OutputUtils.printTables(sb, pt);
 
 		String expected = removeSpaces(SyntaxUtilOld.getFileContents(openStream(outputId, RESULTCONTAINER)).trim());

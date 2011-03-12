@@ -36,7 +36,7 @@ icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 bcon(Boolean):  /true|false/			{ $lexem = current().equals("true"); break; }
 
 _skip:         /[\n\t\r ]+/    		{ return false; }
-_skip:  /#.*/
+_skip:  /#.*/						{ return false; }
 
 '..':    /\.\./
 '.':    /\./

@@ -73,7 +73,10 @@ public class LexerGeneratorTest extends TestCase {
 		if( state == -1 ) {
 			return -1;
 		}
-		return -state-2;
+		if(state == -2) {
+			return 0;
+		}
+		return lr.lnum[-state-3];
 	}
 
 	private static class TestLexem implements Lexem {
@@ -110,6 +113,10 @@ public class LexerGeneratorTest extends TestCase {
 
 		public String[] getSamples() {
 			return samples;
+		}
+
+		public int getIndex() {
+			return index;
 		}
 
 		public Symbol getSymbol() {

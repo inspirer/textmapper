@@ -196,13 +196,14 @@ public class LapgResolver {
 		List<AstLexerPart> lexerParts = tree.getRoot().getLexer();
 		lexems = new ArrayList<LiLexem>(lexerParts.size());
 
+		int lexemIndex = 0;
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
 				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
 				if (lexeme.getRegexp() != null) {
 					lexems.add(
-							new LiLexem(s,
+							new LiLexem(lexemIndex++, s,
 									lexeme.getRegexp().getRegexp(),
 									groups, lexeme.getPriority(),
 									convert(lexeme.getCode()),

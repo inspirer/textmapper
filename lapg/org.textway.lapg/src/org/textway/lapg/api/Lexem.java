@@ -20,6 +20,7 @@ package org.textway.lapg.api;
  */
 public interface Lexem extends SourceElement {
 
+	int getIndex();
 	Symbol getSymbol();
 	String getRegexp();
 	int getPriority();

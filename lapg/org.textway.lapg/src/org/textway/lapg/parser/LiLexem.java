@@ -23,14 +23,16 @@ import org.textway.templates.api.INamedEntity;
 
 public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 
+	private final int index;
 	private final Symbol sym;
 	private final String regexp;
 	private final int groups;
 	private final int priority;
 	private final SourceElement action;
 
-	public LiLexem(Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
+	public LiLexem(int index, Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
 		super(node);
+		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
 		this.groups = groups;
@@ -52,6 +54,10 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 
 	public String getRegexp() {
 		return regexp;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	public Symbol getSymbol() {

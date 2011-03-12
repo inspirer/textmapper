@@ -78,11 +78,12 @@ Lreduce: /reduce/
 
 [1]
 
-_skip:	/'([^\n\\']|\\.)*'/
-_skip:	/"([^\n\\"]|\\.)*"/
-_skip:	/[^'"{}]+/
-'i{':	/{/				{ deep++; break; }
-'}':	/}/				{ if (--deep == 0) { group = 0; } break; }
+_skip:	/'([^\n\\']|\\.)*'/				{ return false; }
+_skip:	/"([^\n\\"]|\\.)*"/				{ return false; }
+_skip:	/[^'"{}]+/						{ return false; }
+
+'i{':	/{/								{ deep++; break; }
+'}':	/}/								{ if (--deep == 0) { group = 0; } break; }
 
 # Grammar
 

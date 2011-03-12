@@ -55,26 +55,7 @@ public class OutputUtils {
 		}
 	}
 
-	public static void print(StringBuffer sb, int[][] table, int leftpadding, char startrow, char endrow ) {
-		for( int i = 0; i < table.length; i++ ) {
-			if( i > 0 ) {
-				for( int e = 0; e < leftpadding; e++) {
-					sb.append("\t");
-				}
-			}
-			sb.append(startrow);
-			sb.append(" ");
-			int[] row = table[i];
-			for (int element : row) {
-				sb.append(element);
-				sb.append(", ");
-			}
-			sb.append(endrow);
-			sb.append(",\n");
-		}
-	}
-
-	public static void printTables(StringBuffer sb, LexerTables lt) {
+	public static void printTables(StringBuffer sb, LexerTables lt, boolean convertLNum) {
 
 		sb.append("// tables.txt\n\n");
 
@@ -83,7 +64,26 @@ public class OutputUtils {
 		sb.append("\n}\n\n");
 
 		sb.append("lapg_lexem ["+lt.nstates+","+lt.nchars+"] = {\n\t");
-		print(sb, lt.change, 1, '{', '}');
+		for( int i = 0; i < lt.change.length; i++ ) {
+			if( i > 0 ) {
+				for( int e = 0; e < 1; e++) {
+					sb.append("\t");
+				}
+			}
+			sb.append('{');
+			sb.append(" ");
+			int[] row = lt.change[i];
+			for (int element : row) {
+				if(convertLNum && element < -2) {
+					sb.append(-2 - lt.lnum[-3 - element]);
+				} else {
+					sb.append(element);
+				}
+				sb.append(", ");
+			}
+			sb.append('}');
+			sb.append(",\n");
+		}
 		sb.append("}\n\n");
 	}
 

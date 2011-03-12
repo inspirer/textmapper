@@ -20,6 +20,7 @@ import org.textway.lapg.api.Lexem;
 
 public class CLexem implements Lexem {
 
+	private final int index;
 	private final CSymbol sym;
 	private final String regexp;
 	private final CSourcePart action;
@@ -29,7 +30,8 @@ public class CLexem implements Lexem {
 	private final String input;
 	private final int line;
 
-	public CLexem(CSymbol sym, String regexp, CSourcePart action, int priority, int groups, String input, int line) {
+	public CLexem(int index, CSymbol sym, String regexp, CSourcePart action, int priority, int groups, String input, int line) {
+		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
 		this.action = action;
@@ -37,6 +39,10 @@ public class CLexem implements Lexem {
 		this.groups = groups;
 		this.input = input;
 		this.line = line;
+	}
+
+	public int getIndex() {
+		return index;
 	}
 
 	public String getLocation() {

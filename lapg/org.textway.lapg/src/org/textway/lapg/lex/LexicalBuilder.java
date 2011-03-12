@@ -512,7 +512,7 @@ public class LexicalBuilder {
 					}
 
 				} else {
-					current.change[i] = (lexnum >= 0) ? -2 - lnum[lexnum] : -1;
+					current.change[i] = (lexnum >= 0) ? -3 - lexnum : -1;
 				}
 			}
 

@@ -144,26 +144,32 @@ ${end-}
 				continue;
 			}
 
+			if (state == -2) {
+				lapg_n.lexem = 0;
+				lapg_n.sym = null;
+				return lapg_n;
+			}
+
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = - state - 2;
+			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 
 ${if syntax.hasLexemActions()-}
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
+		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
 ${else-}
 		} while (lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
 	}
 ${if syntax.hasLexemActions()}
-	protected boolean createToken(LapgSymbol lapg_n) {
-		switch (lapg_n.lexem) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+		switch (lexemIndex) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.action-}
-			case ${lexem.symbol.index}:
+			case ${lexem.index}:
 				${call lexerAction('lapg_n.sym') for lexem-}
 ${end-}
 ${end-}
@@ -182,6 +188,8 @@ ${end}
 
 ${template lexerTables-}
 ${call java.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
+
+${call java.parserTable(lex.lnum, 'short', 'lapg_lexemnum', 'LapgLexemToSymbol')-}
 
 ${if !opts.packLexems-}
 	private static final short[][] lapg_lexem = new short[][] {

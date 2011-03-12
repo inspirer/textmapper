@@ -99,22 +99,26 @@ public class XmlLexer {
 		11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 1, 1, 1, 1, 1
 	};
 
+	private static final short lapg_lexemnum[] = {
+		1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10
+	};
+
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 		{ -1, -1, -1, -1, -1, 4, 5, 6, 7, 8, 9, 10, -1, 11, 11},
 		{ -3, 2, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
 		{ -4, -4, -4, 12, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4},
-		{ -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8},
+		{ -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9},
 		{ -1, 5, 5, 5, 5, 5, 13, 5, 5, 5, 5, 5, 5, -1, 5},
 		{ -1, 6, 6, 6, 6, 6, 6, 14, 6, 6, 6, 6, 6, -1, 6},
-		{ -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9},
 		{ -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10},
 		{ -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11},
+		{ -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12},
 		{ -6, -6, -6, -6, 10, -6, -6, -6, -6, -6, -6, 10, 10, -6, -6},
-		{ -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, 11, 11},
+		{ -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, 11, 11},
 		{ -1, -1, -1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
+		{ -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8},
 		{ -1, -1, -1, -1, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 		{ -1, 16, 16, 16, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16},
 		{ -1, 16, 16, 16, 18, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16},
@@ -170,25 +174,33 @@ public class XmlLexer {
 				continue;
 			}
 
+			if (state == -2) {
+				lapg_n.lexem = 0;
+				lapg_n.sym = null;
+				return lapg_n;
+			}
+
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = - state - 2;
+			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n));
+		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n) {
-		switch (lapg_n.lexem) {
-			case 2:
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+		switch (lexemIndex) {
+			case 1:
 				 group = 1; break; 
-			case 3:
+			case 2:
 				 return false; 
-			case 4:
+			case 3:
 				 lapg_n.sym = current(); break; 
+			case 4:
+				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
 			case 5:
 				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
 			case 6:
