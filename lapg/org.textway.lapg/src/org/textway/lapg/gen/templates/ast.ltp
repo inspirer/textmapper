@@ -1,4 +1,10 @@
-${cached query allClasses() = 
+${cached query astModel() =
+	new AstModel(
+        classes => self->allClasses()
+	)
+}
+
+${cached query allClasses() =
 	syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))
 	.collect(x|self->getClasses(x)) }
 
@@ -16,14 +22,16 @@ ${cached query getClasses(sym) =
 			kind => 'interface',
 			name => sym.id,
 			sym => sym,
-			implements => self->getImplements(sym)
+			implementedSyms => self->getImplements(sym),
+			implements => {this => this.implementedSyms.collect(x|self->ast.getClasses(x)) }
 		) :
 	kind == 'class' ?
 		new AstClass(
 			kind => 'class',
 			name => sym.id,
 			sym => sym,
-			implements => self->getImplements(sym),
+			implementedSyms => self->getImplements(sym),
+			implements => {this => this.implementedSyms.collect(x|self->ast.getClasses(x)) },
 			containedRefs => syntax.rules[sym].collect(x|[
 				x.getRight()
 			]),
@@ -34,7 +42,7 @@ ${cached query getClasses(sym) =
 			kind => 'class',
 			name => sym.id + '_item',
 			sym => sym,
-			implements => [],
+			implements => { this => [] },
 			containedRefs => syntax.rules[sym].collect(x|[
 				x.getRight().select(y|y.target != x.getLeft())
 			]),

@@ -1,5 +1,10 @@
 #
 
+class AstModel {
+	AstEntity classes[0..*];
+
+}
+
 class AstType {
 }
 
@@ -14,7 +19,9 @@ class AstEntity extends AstType {
 }
 
 class AstInterface extends AstEntity {
-    common.Symbol* implements[0..*];
+    common.Symbol* implementedSyms[0..*];
+    { AstInterface => } implements;
+## TODO    AstInterface* implements[0..*];
 }
 
 class AstClass extends AstInterface {

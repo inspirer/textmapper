@@ -1,7 +1,7 @@
 ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
-${foreach cl in self->ast.allClasses()-}
+${foreach cl in self->ast.astModel().classes-}
 ${self->('ast_' + cl.kind)(cl)} 
 ${end-}
 ${if opts.genastdef-}
@@ -48,7 +48,7 @@ ${query getType(q) =
 
 ${template implementedInterfaces(cl, prefix)-}
 ${if cl.implements.length > 0-}
-${prefix}${foreach impl in cl.implements.collect(x|self->ast.getClasses(x)) separator ', '}${self->getType(impl)}${end-}
+${prefix}${foreach impl in cl.implements separator ', '}${self->getType(impl)}${end-}
 ${end-}
 ${end}
 

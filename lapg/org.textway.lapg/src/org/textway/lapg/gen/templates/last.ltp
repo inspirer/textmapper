@@ -6,7 +6,7 @@ ${template unit-}
 
 // Ast
 
-${foreach cl in self->ast.allClasses()-}
+${foreach cl in self->ast.astModel().classes-}
 ${self->('ast_' + cl.kind)(cl)}
 ${end-}
 ${end}
@@ -14,7 +14,7 @@ ${end}
 
 ${template implementedInterfaces(cl)-}
 ${if cl.implements.length > 0-}
- : ${foreach impl in cl.implements.collect(x|self->ast.getClasses(x)) separator ', '}${impl.name}${end-}
+ : ${foreach impl in cl.implements separator ', '}${impl.name}${end-}
 ${end-}
 ${end}
 
