@@ -47,6 +47,15 @@ public class TiInstance extends DefaultIxObject {
 			throw new EvaluationException("Property `" + propertyName + "` is absent in class " + myClass.getQualifiedName());
 		}
 
-		return myValues.get(propertyName);
+		Object result = myValues.get(propertyName);
+		if (result instanceof TiClosure) {
+			TiClosure closure = (TiClosure) result;
+			if(closure.getParametersCount() == 1) {
+				return closure.callMethod("invoke", this);
+			} else {
+				return closure.getProperty("value");
+			}
+		}
+		return result;
 	}
 }

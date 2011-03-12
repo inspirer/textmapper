@@ -77,7 +77,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			this.rule = rule;
 		}
 
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null || args.length == 0) {
 				if (methodName.equals("left")) {
 					return new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
@@ -263,7 +263,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			};
 		}
 
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
 				List<Rule> list = getRulesContainingSymbol().get(args[0]);
 				return list != null ? list : Collections.emptyList();

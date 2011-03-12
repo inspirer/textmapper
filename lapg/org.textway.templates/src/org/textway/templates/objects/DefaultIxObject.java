@@ -37,7 +37,7 @@ public abstract class DefaultIxObject implements IxObject, IxAdaptable {
 		throw new EvaluationException("property `" + propertyName + "` is absent in `" + getType() + "`");
 	}
 
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+	public Object callMethod(String methodName, Object... args) throws EvaluationException {
 		throw new EvaluationException("method `" + methodName + "` is absent in `" + getType() + "`");
 	}
 

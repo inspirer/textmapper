@@ -19,9 +19,13 @@ import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationCache;
 import org.textway.templates.api.IEvaluationStrategy;
+import org.textway.templates.api.types.IClosureType;
+import org.textway.templates.api.types.IType;
 import org.textway.templates.ast.ExpressionNode;
 import org.textway.templates.ast.ParameterNode;
 import org.textway.templates.objects.DefaultIxObject;
+
+import java.util.Collection;
 
 /**
  * Gryaznov Evgeny, 3/11/11
@@ -42,10 +46,14 @@ public class TiClosure extends DefaultIxObject {
 		this.env = env;
 	}
 
+	public int getParametersCount() {
+		return parameters == null ? 0 : parameters.length;
+	}
+
 	@Override
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+	public Object callMethod(String methodName, Object... args) throws EvaluationException {
 		if ("invoke".equals(methodName)) {
-			int paramCount = parameters != null ? parameters.length : 0, argsCount = args != null ? args.length : 0;
+			int paramCount = getParametersCount(), argsCount = args != null ? args.length : 0;
 
 			if (paramCount != argsCount) {
 				throw new EvaluationException("Wrong number of arguments used while calling closure `" + getType()
@@ -76,7 +84,7 @@ public class TiClosure extends DefaultIxObject {
 	@Override
 	public Object getProperty(String propertyName) throws EvaluationException {
 		if (parameters == null && "value".equals(propertyName)) {
-			return callMethod("invoke", new Object[0]);
+			return callMethod("invoke");
 		}
 		throw new EvaluationException("property `" + propertyName + "` is absent in `" + getType() + "`: o");
 	}
@@ -84,6 +92,17 @@ public class TiClosure extends DefaultIxObject {
 	@Override
 	public boolean is(String qualifiedName) throws EvaluationException {
 		return "closure".equals(qualifiedName.toLowerCase());
+	}
+
+	public boolean matches(IClosureType type) {
+		Collection<IType> parameterTypes = type.getParameterTypes();
+		if(getParametersCount() != parameterTypes.size()) {
+			return false;
+		}
+
+		// FIXME check types
+
+		return true;
 	}
 
 	@Override

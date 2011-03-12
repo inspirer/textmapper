@@ -114,7 +114,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return collection.isEmpty() ? null : collection.iterator().next();
@@ -263,7 +263,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			return new DefaultJavaIxObject(map).callMethod(methodName, args);
 		}
 
@@ -336,7 +336,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return array.length == 0 ? null : array[0];
@@ -420,7 +420,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return array.length == 0 ? null : array[0];

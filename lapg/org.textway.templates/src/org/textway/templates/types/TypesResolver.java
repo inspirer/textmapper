@@ -43,11 +43,10 @@ class TypesResolver {
 	private Set<String> requiredPackages = new HashSet<String>();
 
 	// 2-nd stage
-	List<ResolveBean> myResolveFeatureTypes = new ArrayList<ResolveBean>();
-	List<ResolveSuperBean> myResolveSuperTypes = new ArrayList<ResolveSuperBean>();
+	List<StageWorker> myResolveTypes = new ArrayList<StageWorker>();
 
 	// 3-d stage
-	List<ResolveDefaultValue> myResolveDefaultValues = new ArrayList<ResolveDefaultValue>();
+	List<StageWorker> myResolveDefaultValues = new ArrayList<StageWorker>();
 
 	public TypesResolver(String package_, Resource resource, Map<String, TiClass> registryClasses,
 						 TemplatesStatus status) {
@@ -99,7 +98,7 @@ class TypesResolver {
 		}
 	}
 
-	private TiClass convertClass(AstTypeDeclaration td) {
+	private TiClass convertClass(final AstTypeDeclaration td) {
 		List<IFeature> features = new ArrayList<IFeature>();
 		List<IMethod> methods = new ArrayList<IMethod>();
 		if (td.getMemberDeclarationsopt() != null) {
@@ -111,9 +110,9 @@ class TypesResolver {
 				}
 			}
 		}
-		TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features, methods);
+		final TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features, methods);
 		if (td.getExtends() != null) {
-			List<String> superNames = new ArrayList<String>();
+			final List<String> superNames = new ArrayList<String>();
 			for (List<String> className : td.getExtends()) {
 				String s = getQualifiedName(className);
 				if (s.indexOf('.') == -1) {
@@ -124,7 +123,20 @@ class TypesResolver {
 				}
 				superNames.add(s);
 			}
-			myResolveSuperTypes.add(new ResolveSuperBean(result, td, superNames));
+			myResolveTypes.add(new StageWorker() {
+				public void resolve() {
+					for (String ref : superNames) {
+						TiClass target = myRegistryClasses.get(ref);
+						if (target == null) {
+							myStatus.report(TemplatesStatus.KIND_ERROR,
+									"cannot resolve super type: " + ref + " for " + result.getName(),
+									new LocatedNodeAdapter(td));
+						} else {
+							result.getExtends().add(target);
+						}
+					}
+				}
+			});
 		}
 		return result;
 	}
@@ -167,11 +179,19 @@ class TypesResolver {
 						new LocatedNodeAdapter(fd));
 			}
 		}
-		TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().getIsReference(),
+		final TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().getIsReference(),
 				multiplicities == null
 						? new IMultiplicity[0]
 						: multiplicities.toArray(new IMultiplicity[multiplicities.size()]));
-		convertType(feature, fd.getTypeEx().getType(), stringConstraints);
+		convertType(new TypeHandler() {
+			public void typeResolved(IType type) {
+				feature.setType(type);
+			}
+
+			public String containerName() {
+				return feature.getName();
+			}
+		}, fd.getTypeEx().getType(), stringConstraints, true);
 		convertDefautVal(feature, fd.getDefaultvalopt());
 		return feature;
 	}
@@ -192,12 +212,16 @@ class TypesResolver {
 		return multiplicities;
 	}
 
-	private void convertDefautVal(TiFeature feature, IAstExpression defaultValue) {
+	private void convertDefautVal(final TiFeature feature, final IAstExpression defaultValue) {
 		if (defaultValue == null) {
 			return;
 		}
 		scanRequiredClasses(defaultValue);
-		myResolveDefaultValues.add(new ResolveDefaultValue(feature, defaultValue));
+		myResolveDefaultValues.add(new StageWorker() {
+			public void resolve() {
+				feature.setDefaultValue(convertExpression(defaultValue, feature.getType()));
+			}
+		});
 	}
 
 	private void scanRequiredClasses(IAstExpression expression) {
@@ -225,10 +249,70 @@ class TypesResolver {
 		}
 	}
 
-	private void convertType(TiFeature feature, AstType type, List<AstStringConstraint> constraints) {
+	private void convertType(TypeHandler handler, final AstTypeEx type, boolean async) {
+		convertType(handler, type.getType(), null, async);
+		// FIXME handle list
+	}
+
+	private void convertType(final TypeHandler handler, final AstType type, List<AstStringConstraint> constraints, boolean async) {
 		if (type.getKind() == 0) {
-			// reference
-			resolveLater(feature, type, getQualifiedName(type.getName()));
+			// reference or closure
+			if(type.getIsClosure()) {
+				final List<AstTypeEx> params = type.getParametersopt();
+				if(params == null) {
+					handler.typeResolved(new TiClosureType());
+					return;
+				}
+				StageWorker worker = new StageWorker() {
+					public void resolve() {
+						final IType[] types = new IType[params.size()];
+						for(int i = 0; i < params.size(); i++) {
+							final int boundI = i;
+							convertType(new TypeHandler() {
+								public void typeResolved(IType type) {
+									types[boundI] = type;
+								}
+								public String containerName() {
+									return "closure";
+								}
+							}, params.get(i), false);
+						}
+						handler.typeResolved(new TiClosureType(types));
+					}
+				};
+				if(async) {
+					myResolveTypes.add(worker);
+				} else {
+					worker.resolve();
+				}
+			} else {
+				String reference = getQualifiedName(type.getName());
+				int lastDot = reference.lastIndexOf('.');
+				if (lastDot == -1) {
+					reference = myPackage + "." + reference;
+				} else {
+					String targetPackage = reference.substring(0, lastDot);
+					requiredPackages.add(targetPackage);
+				}
+				final String className = reference;
+				StageWorker worker = new StageWorker() {
+					public void resolve() {
+						TiClass tiClass = myRegistryClasses.get(className);
+						if (tiClass == null) {
+							myStatus.report(TemplatesStatus.KIND_ERROR,
+									"cannot resolve type: " + className + " in " + handler.containerName(),
+									new LocatedNodeAdapter(type));
+						} else {
+							handler.typeResolved(tiClass);
+						}
+					}
+				};
+				if(async) {
+					myResolveTypes.add(worker);
+				} else {
+					worker.resolve();
+				}
+			}
 		} else {
 			// datatype
 			DataTypeKind kind = DataTypeKind.STRING;
@@ -247,7 +331,7 @@ class TypesResolver {
 					}
 				}
 			}
-			feature.setType(new TiDataType(kind, convertedConstraints));
+			handler.typeResolved(new TiDataType(kind, convertedConstraints));
 		}
 	}
 
@@ -286,47 +370,15 @@ class TypesResolver {
 		return sb.toString();
 	}
 
-	private void resolveLater(TiFeature feature, AstType decl, String reference) {
-		int lastDot = reference.lastIndexOf('.');
-		if (lastDot == -1) {
-			reference = myPackage + "." + reference;
-		} else {
-			String targetPackage = reference.substring(0, lastDot);
-			requiredPackages.add(targetPackage);
-		}
-		myResolveFeatureTypes.add(new ResolveBean(feature, decl, reference));
-	}
-
 	void resolve() {
-		for (ResolveBean entry : myResolveFeatureTypes) {
-			TiClass tiClass = myRegistryClasses.get(entry.getReference());
-			if (tiClass == null) {
-				myStatus.report(TemplatesStatus.KIND_ERROR,
-						"cannot resolve type: " + entry.getReference() + " in " + entry.getFeature().getName(),
-						new LocatedNodeAdapter(entry.getNode()));
-			} else {
-				entry.getFeature().setType(tiClass);
-			}
-		}
-
-		for (ResolveSuperBean entry : myResolveSuperTypes) {
-			TiClass source = entry.getClassifier();
-			for (String ref : entry.getReferences()) {
-				TiClass target = myRegistryClasses.get(ref);
-				if (target == null) {
-					myStatus.report(TemplatesStatus.KIND_ERROR,
-							"cannot resolve super type: " + ref + " for " + entry.getClassifier().getName(),
-							new LocatedNodeAdapter(entry.getNode()));
-				} else {
-					source.getExtends().add(target);
-				}
-			}
+		for (StageWorker entry : myResolveTypes) {
+			entry.resolve();
 		}
 	}
 
 	void resolveExpressions() {
-		for (ResolveDefaultValue entry : myResolveDefaultValues) {
-			entry.getFeature_().setDefaultValue(convertExpression(entry.getDefaultValue(), entry.getFeature_().getType()));
+		for (StageWorker entry : myResolveDefaultValues) {
+			entry.resolve();
 		}
 	}
 
@@ -405,69 +457,13 @@ class TypesResolver {
 		}
 	}
 
-	private static class ResolveBean {
-		private TiFeature feature;
-		private IAstNode node;
-		private String reference;
-
-		public ResolveBean(TiFeature feature, IAstNode node, String reference) {
-			this.feature = feature;
-			this.node = node;
-			this.reference = reference;
-		}
-
-		public TiFeature getFeature() {
-			return feature;
-		}
-
-		public String getReference() {
-			return reference;
-		}
-
-		public IAstNode getNode() {
-			return node;
-		}
+	private interface StageWorker {
+		void resolve();
 	}
 
-	private static class ResolveSuperBean {
-		private TiClass class_;
-		private IAstNode node;
-		private Collection<String> references;
+	private interface TypeHandler {
+		void typeResolved(IType type);
 
-		public ResolveSuperBean(TiClass tiClass, IAstNode node, Collection<String> references) {
-			this.class_ = tiClass;
-			this.node = node;
-			this.references = references;
-		}
-
-		public TiClass getClassifier() {
-			return class_;
-		}
-
-		public Collection<String> getReferences() {
-			return references;
-		}
-
-		public IAstNode getNode() {
-			return node;
-		}
-	}
-
-	private static class ResolveDefaultValue {
-		private final TiFeature feature_;
-		private final IAstExpression defaultValue;
-
-		public ResolveDefaultValue(TiFeature feature, IAstExpression defaultValue) {
-			this.feature_ = feature;
-			this.defaultValue = defaultValue;
-		}
-
-		public TiFeature getFeature_() {
-			return feature_;
-		}
-
-		public IAstExpression getDefaultValue() {
-			return defaultValue;
-		}
+		String containerName();
 	}
 }

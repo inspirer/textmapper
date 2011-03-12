@@ -22,6 +22,7 @@ import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IType;
 import org.textway.templates.ast.TemplatesTree.TextSource;
+import org.textway.templates.types.TiClosure;
 import org.textway.templates.types.TiExpressionBuilder;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ import java.util.Map.Entry;
 public class CreateClassNode extends ExpressionNode {
 
 	private final String className;
-	private final Map<String,ExpressionNode> fieldInitializers;
+	private final Map<String, ExpressionNode> fieldInitializers;
 
 	protected CreateClassNode(String className, Map<String, ExpressionNode> fieldInitializers, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
@@ -54,7 +55,7 @@ public class CreateClassNode extends ExpressionNode {
 		return new TiExpressionBuilder<ExpressionNode>() {
 			@Override
 			public IClass resolveType(String className) {
-				if(className.indexOf('.') == -1) {
+				if (className.indexOf('.') == -1) {
 					className = context.getCurrent().getPackage() + "." + className;
 				}
 				return env.getTypesRegistry().getClass(className, CreateClassNode.this);
@@ -62,25 +63,27 @@ public class CreateClassNode extends ExpressionNode {
 
 			@Override
 			public Object resolve(ExpressionNode expression, IType type) {
-				if(expression instanceof CreateClassNode) {
+				if (expression instanceof CreateClassNode) {
 					CreateClassNode newexpr = (CreateClassNode) expression;
 					return convertNew(newexpr, newexpr.getClassName(), newexpr.getFieldInitializers(), type);
 				}
-				if(expression instanceof ListNode) {
+				if (expression instanceof ListNode) {
 					ExpressionNode[] exprlist = ((ListNode) expression).getExpressions();
-					List<ExpressionNode> content = exprlist == null ? Collections.<ExpressionNode>emptyList() :  Arrays.asList(exprlist);
+					List<ExpressionNode> content = exprlist == null ? Collections.<ExpressionNode>emptyList() : Arrays.asList(exprlist);
 					return convertArray(expression, content, type);
 				}
-				if(expression instanceof LiteralNode) {
-					Object literal = ((LiteralNode)expression).getLiteral();
+				if (expression instanceof LiteralNode) {
+					Object literal = ((LiteralNode) expression).getLiteral();
 					return convertLiteral(expression, literal, type);
 				}
 
 				Object result = null;
 				try {
 					result = env.evaluate(expression, context, true);
-					if(result instanceof Boolean || result instanceof Number || result instanceof String) {
+					if (result instanceof Boolean || result instanceof Number || result instanceof String) {
 						return convertLiteral(expression, result, type);
+					} else if (result instanceof TiClosure) {
+						return convertClosure(expression, (TiClosure) result, type);
 					}
 
 					// TODO check type
@@ -103,9 +106,9 @@ public class CreateClassNode extends ExpressionNode {
 		sb.append(className);
 		sb.append("(");
 		int index = sb.length();
-		if(fieldInitializers != null) {
+		if (fieldInitializers != null) {
 			for (Entry<String, ExpressionNode> entry : fieldInitializers.entrySet()) {
-				if(sb.length() > index) {
+				if (sb.length() > index) {
 					sb.append(", ");
 				}
 				sb.append(entry.getKey());

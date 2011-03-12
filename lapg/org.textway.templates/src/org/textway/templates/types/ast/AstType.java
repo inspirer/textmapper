@@ -11,13 +11,17 @@ public class AstType extends AstNode {
 
 	private int kind;
 	private boolean isReference;
+	private boolean isClosure;
 	private List<String> name;
+	private List<AstTypeEx> parametersopt;
 
-	public AstType(int kind, boolean isReference, List<String> name, TextSource input, int start, int end) {
+	public AstType(int kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parametersopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.isReference = isReference;
+		this.isClosure = isClosure;
 		this.name = name;
+		this.parametersopt = parametersopt;
 	}
 
 	public int getKind() {
@@ -26,7 +30,13 @@ public class AstType extends AstNode {
 	public boolean getIsReference() {
 		return isReference;
 	}
+	public boolean getIsClosure() {
+		return isClosure;
+	}
 	public List<String> getName() {
 		return name;
+	}
+	public List<AstTypeEx> getParametersopt() {
+		return parametersopt;
 	}
 }

@@ -27,7 +27,7 @@ public interface IxObject {
 	/**
 	 * Returns a result of <obj>.methodName(args) call.
 	 */
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException;
+	public Object callMethod(String methodName, Object... args) throws EvaluationException;
 
 	/**
 	 * Returns indexed value.

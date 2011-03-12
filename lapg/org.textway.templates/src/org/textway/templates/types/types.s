@@ -146,6 +146,7 @@ type ::=
   | kind=Lbool
   | name
   | name isReference='*'
+  | isClosure='{' parametersopt '=>' '}'
 ;
 
 ##### EXPRESSIONS

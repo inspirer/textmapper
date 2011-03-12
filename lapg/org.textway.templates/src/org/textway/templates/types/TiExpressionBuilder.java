@@ -125,4 +125,18 @@ public abstract class TiExpressionBuilder<Node> {
 
 		return result;
 	}
+
+	protected Object convertClosure(Node node, TiClosure closure, IType type) {
+		if (!(type instanceof IClosureType)) {
+			report(node, "expected value of type `" + type.toString() + "` instead of closure");
+			return null;
+		}
+
+		if(!closure.matches((IClosureType) type)) {
+			report(node, "expected closure of type `" + type.toString() + "`");
+			return null;
+		}
+
+		return closure;
+	}
 }

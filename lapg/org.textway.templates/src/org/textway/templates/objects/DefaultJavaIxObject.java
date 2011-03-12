@@ -82,7 +82,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object callMethod(String methodName, Object[] args) throws EvaluationException {
+	public Object callMethod(String methodName, Object... args) throws EvaluationException {
 		try {
 			Class[] argClasses = null;
 			if (args != null) {
