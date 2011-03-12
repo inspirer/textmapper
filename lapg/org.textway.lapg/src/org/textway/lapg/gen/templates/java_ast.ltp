@@ -73,24 +73,24 @@ package ${self->astPackage()};
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
 
-${foreach prop in self->ast.propertiesNew(cl).select(x|x.kind=='enumproperty')-}
+${foreach prop in cl.properties.select(x|x.kind=='enumproperty')-}
 ${foreach enumliteral in prop.refs-}
 	public static final int ${enumliteral->enumpropertyName(prop)} = ${index+1};
 ${end-}
 
 ${end-}
-${foreach prop in self->ast.propertiesNew(cl)-}
+${foreach prop in cl.properties-}
 	private ${prop->propertyType()} ${prop->propertyName()};
 ${end-}
 
-	public ${cl->className()}(${foreach prop in self->ast.propertiesNew(cl)}${prop->propertyType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+	public ${cl->className()}(${foreach prop in cl.properties}${prop->propertyType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		super(input, start, end);
-${foreach prop in self->ast.propertiesNew(cl)-}
+${foreach prop in cl.properties-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
 	}
 
-${foreach prop in self->ast.propertiesNew(cl)-}
+${foreach prop in cl.properties-}
 	public ${prop->propertyType()} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
@@ -179,7 +179,7 @@ ${end}
 
 ${template createObject(rule,cl)-}
 new ${self->astPackage()}.@${cl->className()}(
-${foreach prop in self->ast.propertiesNew(cl)-}
+${foreach prop in cl.properties-}
 ${if prop.kind == 'enumproperty'-}
 ${pind = self->ast.propertyIndex(prop,rule,cl), pind >= 0
 	? self->astPackage() + '.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)

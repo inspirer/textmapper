@@ -24,9 +24,10 @@ ${cached query getClasses(sym) =
 			name => sym.id,
 			sym => sym,
 			implements => self->getImplements(sym),
-			properties => syntax.rules[sym].collect(x|[
+			containedRefs => syntax.rules[sym].collect(x|[
 				x.getRight()
-			])
+			]),
+			properties => { cached this => self->propertiesInternal(this) }
 		) :
 	(kind == 'leftlist' || kind == 'rightlist') && self->hasItemClass(sym) ?
 		new AstClass(
@@ -34,9 +35,10 @@ ${cached query getClasses(sym) =
 			name => sym.id + '_item',
 			sym => sym,
 			implements => [],
-			properties => syntax.rules[sym].collect(x|[
+			containedRefs => syntax.rules[sym].collect(x|[
 				x.getRight().select(y|y.target != x.getLeft())
-			])
+			]),
+			properties => { cached this => self->propertiesInternal(this) }
 		) :
 	null }
 
@@ -49,8 +51,8 @@ ${query getPropertyKind() =
 		? 'flagproperty' :
 	'property'}
 
-${cached query propertiesNew(cl) =
-	withAlias = cl.properties.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
+${cached query propertiesInternal(cl) =
+	withAlias = cl.containedRefs.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		allrefs = (x is GroupList ? x : [x]),
 		new AstProperty(
 			kind => allrefs->getPropertyKind(),
@@ -59,7 +61,7 @@ ${cached query propertiesNew(cl) =
 			refs => allrefs.toSet()
 		)
 	),
-	withoutAlias = cl.properties.collect(rule|
+	withoutAlias = cl.containedRefs.collect(rule|
 				rule.select(x|!x.alias && !x.target->isSimpleTerm()).groupBy(x|x.target).collect(x|
 					x is GroupList
 					? x.collect(y|[ name: util.uniqueId(y.target.id, util.objectId(rule)), ref: y ])

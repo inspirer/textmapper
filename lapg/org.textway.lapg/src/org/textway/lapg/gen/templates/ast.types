@@ -18,7 +18,8 @@ class AstInterface extends AstEntity {
 }
 
 class AstClass extends AstInterface {
-    common.SymbolRef* properties[0..*];
+    common.SymbolRef* containedRefs[0..*];
+    { AstInterface => } properties[1];
 }
 
 class AstEnum extends AstEntity {
