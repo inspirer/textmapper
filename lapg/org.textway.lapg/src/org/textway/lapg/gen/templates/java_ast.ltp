@@ -187,24 +187,23 @@ ${query propValue(prop) for ast.AstRule =
 
 ${template createObject for ast.AstRule-}
 new ${self->astPackage()}.@${ruleclass->className()}(
-${foreach prop in ruleclass.properties-}
-${self->propValue(prop)},
+${foreach prop in ruleclass.properties -}
+		${self->propValue(prop)},
 ${end-}
-null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
+		${call astSource()}, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
 )${end}
 
 
-${template createEnum for ast.AstEnumRule -}
-${'$$'} = ${self->astPackage()}.@${ruleclass->className()}.${rule.getRight().first()->enumLiteralName(ruleclass->className())};
+${template codeForEnum for ast.AstEnumRule -}
+${'$$'} = ${self->astPackage()}.@${ruleclass->className()}.${literal->enumLiteralName(ruleclass->className())};
 ${end}
 
 
-${template createClass for ast.AstRule-}
-${'$$'} = ${call createObject};
-${end}
+${query codeForClass for ast.AstRule =
+	'$$ = ' + self->createObject() + ';\n' }
 
 
-${query createList for ast.AstListRule =
+${query codeForList for ast.AstListRule =
 	newexpr =
 		ruleclass ? self->createObject() :
 		listitem ? (
@@ -220,21 +219,32 @@ ${query createList for ast.AstListRule =
 	null
 }
 
-${template passArgument for ast.AstPassDataRule -}
-${'$$ = $' + (data ? rule.getRight().indexOf(data) : -1)};
-${end}
+${query codeToPassData for ast.AstPassDataRule =
+	index = data ? rule.getRight().indexOf(data) : -1,
+	index > 0
+		? '$$ = $' + index + ';\n'
+		: null
+}
+
+${query codeForOptional for ast.AstOptionalRule =
+	requiresTrue
+		? '$$ = Boolean.TRUE;\n'
+		: null
+}
 
 ${cached query astcode(rule) =
 	astRule = rule->ast.astRule(),
 	!astRule ? null :
-	astRule.kind == 'enum' ? astRule->createEnum() :
-	astRule.kind == 'optional' ? (astRule.requiresTrue ? '$$ = Boolean.TRUE;\n' : null) :
- 	astRule.kind == 'list' ? astRule->createList() :
-	astRule.kind == 'class' ? astRule->createClass() :
-	astRule.kind == 'pass' && rule.getRight().first() != astRule.data ? astRule->passArgument() :
+	astRule.kind == 'enum' ? astRule->codeForEnum() :
+	astRule.kind == 'optional' ? astRule->codeForOptional() :
+ 	astRule.kind == 'list' ? astRule->codeForList() :
+	astRule.kind == 'class' ? astRule->codeForClass() :
+	astRule.kind == 'pass' ? astRule->codeToPassData() :
 	null
 }
 
 ${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '.' + context.opts.astsubpackage : '')}
 
 ${query astPath() = context.opts.astsubpackage ? context.opts.astsubpackage.replaceAll('\\.','/') + '/' : ''}
+
+${query astSource() = 'null /* input */'}

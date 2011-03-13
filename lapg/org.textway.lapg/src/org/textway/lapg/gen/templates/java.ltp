@@ -247,7 +247,7 @@ ${if rule.getAction()-}
 				${call parserAction for rule-}
 ${if opts.breaks }				break;$/
 ${else-}
-				${call astAction(self->java_ast.astcode(rule)) for rule-}
+${util.shiftRight(rule->astAction(self->java_ast.astcode(rule)), 4)-}
 				break;
 ${end-}
 ${end-}
