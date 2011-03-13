@@ -17,7 +17,7 @@ package org.textway.lapg.idea.file;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import com.intellij.openapi.util.IconLoader;
+import org.textway.lapg.idea.LapgIcons;
 import org.textway.lapg.idea.LapgLanguage;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,8 +29,6 @@ public class LapgFileType extends LanguageFileType {
 	public static final Language LAPG_LANGUAGE = LAPG_FILE_TYPE.getLanguage();
 
 	public static final String DEFAULT_EXTENSION = "s";
-
-    private static final Icon ICON = IconLoader.getIcon("/icons/syntax.png");
 
     private LapgFileType() {
         super(new LapgLanguage());
@@ -53,6 +51,6 @@ public class LapgFileType extends LanguageFileType {
     }
 
     public Icon getIcon() {
-        return ICON;
+        return LapgIcons.LAPG_ICON;
     }
 }

@@ -19,11 +19,11 @@
 	<category>Custom Languages</category>
 	<version>0.9.0</version>
 	<vendor url="http://github.com/inspirer/lapg/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
-	<idea-version since-build="95.66"/>
+	<idea-version since-build="103.72"/>
 
 	<description><![CDATA[
 	<html>
-		<h3>Lapg support for IntelliJ 9.0.2+</h3>
+		<h3>Lapg support for IntelliJ 10.0.2+</h3>
 		<br>
 		<b>Features:</b><br>
 		<ul>
@@ -44,11 +44,15 @@
 	</project-components>
 
 	<actions>
-		<!-- Add your actions here -->
+		<action id="org.textway.lapg.idea.actions.NewLapgGrammar" class="org.textway.lapg.idea.actions.NewLapgGrammar"
+				text="Lapg Grammar" description="Creates new Lapg Grammar">
+			<add-to-group group-id="NewGroup" anchor="last"/>
+		</action>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
 		<fileTypeFactory implementation="org.textway.lapg.idea.file.LapgFileTypeFactory"/>
+		<fileTemplateGroup implementation="org.textway.lapg.idea.actions.LapgTemplatesFactory"/>
 
 		<syntaxHighlighter
 				key="Lapg Syntax"
