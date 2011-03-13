@@ -19,4 +19,12 @@ public class Ast_String extends AstNode {
 	public String getScon() {
 		return scon;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for identifier
+		// TODO for scon
+	}
 }

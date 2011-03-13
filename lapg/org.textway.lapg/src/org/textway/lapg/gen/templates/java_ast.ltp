@@ -1,7 +1,8 @@
 ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
-${foreach cl in self->ast.astModel().classes-}
+${call astVisitor-}
+${foreach cl in self->ast.astModel().elements-}
 ${self->('ast_' + cl.kind)(cl)} 
 ${end-}
 ${if opts.genastdef-}
@@ -30,12 +31,14 @@ ${query propertyType() =
 		? 'int' :
 	self.kind == 'flagproperty'
 		? 'boolean' :
-	context->getType(self.refs.first().target)
+	context->convertType(self.type)
 }
 
 ${query getType(q) =
-	asttype = q is ast.AstType ? q : context->ast.getType(q),
-	asttype is ast.AstList ? 'java.util.@List<' + self->getType(asttype.target) + '>' :
+	self->convertType(q is ast.AstType ? q : context->ast.getType(q))}
+
+${query convertType(asttype) =
+	asttype is ast.AstList ? 'java.util.@List<' + self->convertType(asttype.target) + '>' :
 	asttype is ast.AstBool ? 'Boolean' :
 	asttype is ast.AstObject ? 'Object' :
 	asttype is ast.AstUserType ? asttype.text :
@@ -48,8 +51,9 @@ ${query getType(q) =
 
 ${template implementedInterfaces(cl, prefix)-}
 ${if cl.implements.length > 0-}
-${prefix}${foreach impl in cl.implements separator ', '}${self->getType(impl)}${end-}
-${end-}
+ ${prefix} ${foreach impl in cl.implements separator ', '}${impl->interfaceName()}${end-}
+${else if prefix == 'extends'-}
+ extends I${opts.astprefix}Node${end-}
 ${end}
 
 
@@ -60,7 +64,7 @@ ${template ast_interface(cl)-}
 ${file self->astPath() + cl->interfaceName() + '.java'-}
 package ${self->astPackage()};
 
-public interface ${cl->interfaceName()}${call implementedInterfaces(cl,' extends ')} {
+public interface ${cl->interfaceName()}${call implementedInterfaces(cl,'extends')} {
 }
 ${end-}
 ${end}
@@ -71,7 +75,7 @@ ${template ast_class(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
 package ${self->astPackage()};
 
-public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,' implements ')} {
+public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
 
 ${foreach prop in cl.properties.select(x|x.kind=='enumproperty')-}
 ${foreach enumliteral in prop.refs-}
@@ -94,7 +98,30 @@ ${foreach prop in cl.properties-}
 	public ${prop->propertyType()} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
-${end-}	
+${end-}
+${if true-}
+	public void accept(${opts.astprefix}Visitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+${foreach prop in cl.properties.select(p|p.kind == 'property')-}
+${if prop.type is ast.AstList && prop.type.target is ast.AstInterface -}
+		if (${prop->propertyName()} != null) {
+			for (${self->convertType(prop.type.target)} it : ${prop->propertyName()}) {
+				it.accept(v);
+			}
+		}
+${else if prop.type is ast.AstInterface -}
+		if (${prop->propertyName()} != null) {
+			${prop->propertyName()}.accept(v);
+		}
+${else-}
+		// TODO for ${prop->propertyName()}
+${end-}
+${end-}
+	}
+${end-}
 }
 ${end-}
 ${end}
@@ -123,12 +150,25 @@ public interface I${opts.astprefix}Node {
 	int getOffset();
 	int getEndOffset();
 	${call java.package}.${opts.prefix}Tree.@TextSource getInput();
-	//void accept(Visitor v);
+	void accept(${opts.astprefix}Visitor v);
 }
 ${end-}
 ${end}
 
 
+${template astVisitor-}
+${file self->astPath() + opts.astprefix + 'Visitor.java'-}
+package ${self->astPackage()};
+
+public abstract class ${opts.astprefix}Visitor {
+${foreach cl in self->ast.astModel().classes}
+	protected boolean visit(${cl->className()} n) {
+		return true;
+	}
+${end-}
+}
+${end-}
+${end}
 
 
 ${template astBaseClass-}

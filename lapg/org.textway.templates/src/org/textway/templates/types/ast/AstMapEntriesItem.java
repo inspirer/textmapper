@@ -24,4 +24,15 @@ public class AstMapEntriesItem extends AstNode {
 	public IAstExpression getExpression() {
 		return expression;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for identifier
+		// TODO for mapSeparator
+		if (expression != null) {
+			expression.accept(v);
+		}
+	}
 }

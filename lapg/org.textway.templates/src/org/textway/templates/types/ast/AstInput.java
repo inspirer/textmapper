@@ -15,4 +15,15 @@ public class AstInput extends AstNode {
 	public List<AstTypeDeclaration> getDeclarations() {
 		return declarations;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (declarations != null) {
+			for (AstTypeDeclaration it : declarations) {
+				it.accept(v);
+			}
+		}
+	}
 }

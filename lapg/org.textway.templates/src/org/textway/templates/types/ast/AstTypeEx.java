@@ -20,4 +20,18 @@ public class AstTypeEx extends AstNode {
 	public List<AstMultiplicity> getMultiplicityList() {
 		return multiplicityList;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (type != null) {
+			type.accept(v);
+		}
+		if (multiplicityList != null) {
+			for (AstMultiplicity it : multiplicityList) {
+				it.accept(v);
+			}
+		}
+	}
 }

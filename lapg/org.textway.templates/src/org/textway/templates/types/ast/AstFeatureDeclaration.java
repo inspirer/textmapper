@@ -30,4 +30,22 @@ public class AstFeatureDeclaration extends AstNode implements IAstMemberDeclarat
 	public IAstExpression getDefaultvalopt() {
 		return defaultvalopt;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for name
+		if (typeEx != null) {
+			typeEx.accept(v);
+		}
+		if (modifiersopt != null) {
+			for (AstConstraint it : modifiersopt) {
+				it.accept(v);
+			}
+		}
+		if (defaultvalopt != null) {
+			defaultvalopt.accept(v);
+		}
+	}
 }

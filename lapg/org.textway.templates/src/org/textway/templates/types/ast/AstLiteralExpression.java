@@ -24,4 +24,13 @@ public class AstLiteralExpression extends AstNode implements IAstExpression {
 	public Boolean getBcon() {
 		return bcon;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for scon
+		// TODO for icon
+		// TODO for bcon
+	}
 }

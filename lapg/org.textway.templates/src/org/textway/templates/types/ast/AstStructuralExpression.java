@@ -25,4 +25,21 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 	public List<IAstExpression> getExpressionListopt() {
 		return expressionListopt;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for name
+		if (mapEntriesopt != null) {
+			for (AstMapEntriesItem it : mapEntriesopt) {
+				it.accept(v);
+			}
+		}
+		if (expressionListopt != null) {
+			for (IAstExpression it : expressionListopt) {
+				it.accept(v);
+			}
+		}
+	}
 }

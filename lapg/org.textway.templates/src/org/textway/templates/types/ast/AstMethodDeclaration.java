@@ -25,4 +25,19 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 	public List<AstTypeEx> getParametersopt() {
 		return parametersopt;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (returnType != null) {
+			returnType.accept(v);
+		}
+		// TODO for name
+		if (parametersopt != null) {
+			for (AstTypeEx it : parametersopt) {
+				it.accept(v);
+			}
+		}
+	}
 }

@@ -25,4 +25,17 @@ public class AstTypeDeclaration extends AstNode {
 	public List<IAstMemberDeclaration> getMemberDeclarationsopt() {
 		return memberDeclarationsopt;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for name
+		// TODO for _extends
+		if (memberDeclarationsopt != null) {
+			for (IAstMemberDeclaration it : memberDeclarationsopt) {
+				it.accept(v);
+			}
+		}
+	}
 }

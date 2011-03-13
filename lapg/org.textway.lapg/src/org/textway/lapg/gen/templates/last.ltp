@@ -6,7 +6,7 @@ ${template unit-}
 
 // Ast
 
-${foreach cl in self->ast.astModel().classes-}
+${foreach cl in self->ast.astModel().elements-}
 ${self->('ast_' + cl.kind)(cl)}
 ${end-}
 ${end}

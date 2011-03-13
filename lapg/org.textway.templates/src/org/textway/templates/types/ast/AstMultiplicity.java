@@ -24,4 +24,12 @@ public class AstMultiplicity extends AstNode {
 	public Integer getHi() {
 		return hi;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		// TODO for lo
+		// TODO for hi
+	}
 }

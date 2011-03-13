@@ -28,4 +28,16 @@ public class AstStringConstraint extends AstNode {
 	public String getIdentifier() {
 		return identifier;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (strings != null) {
+			for (Ast_String it : strings) {
+				it.accept(v);
+			}
+		}
+		// TODO for identifier
+	}
 }

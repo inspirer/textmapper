@@ -1,7 +1,8 @@
 ## AST model
 
 class AstModel {
-	AstEntity classes[0..*];
+	AstEntity elements[0..*];
+	{ AstModel => } classes;
 }
 
 ## Rules

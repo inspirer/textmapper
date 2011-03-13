@@ -1,6 +1,7 @@
 ${cached query astModel() =
 	new AstModel(
-        classes => context->allClasses()
+        elements => context->allClasses(),
+        classes => { cached this => this.elements.select(it|it.kind == 'class').sort(it|it.name)}
 	)
 }
 
@@ -110,11 +111,13 @@ ${query getPropertyKind() =
 ${cached query propertiesInternal(cl) =
 	withAlias = cl.containedRefs.collect(x|x.select(y|y.alias)).groupBy(x|x.alias).collect(x|
 		allrefs = (x is GroupList ? x : [x]),
+		pkind = allrefs->getPropertyKind(),
 		new AstProperty(
-			kind => allrefs->getPropertyKind(),
+			kind => pkind,
 			name => util.uniqueId(x is GroupList ? x.first().alias : x.alias, 'prop#' + cl.name),
 			container => cl,
 			refs => allrefs.toSet(),
+			type => (pkind == 'property' ? self->getType(allrefs.first().target) : null),
 			indexInRule => { this,rule => self->propertyIndex(this, rule, this.container) }
 		)
 	),

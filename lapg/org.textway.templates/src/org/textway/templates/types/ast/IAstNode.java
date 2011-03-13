@@ -6,5 +6,5 @@ public interface IAstNode {
 	int getOffset();
 	int getEndOffset();
 	TextSource getInput();
-	//void accept(Visitor v);
+	void accept(AstVisitor v);
 }

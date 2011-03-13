@@ -20,4 +20,18 @@ public class AstConstraint extends AstNode {
 	public List<AstMultiplicity> getMultiplicityList() {
 		return multiplicityList;
 	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (stringConstraint != null) {
+			stringConstraint.accept(v);
+		}
+		if (multiplicityList != null) {
+			for (AstMultiplicity it : multiplicityList) {
+				it.accept(v);
+			}
+		}
+	}
 }

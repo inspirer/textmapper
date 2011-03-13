@@ -108,7 +108,7 @@ public class BootstrapTest extends TestCase {
 				Assert.assertTrue("file is not generated: " + s, strategy.created.contains(s));
 			}
 
-			Assert.assertEquals((expectedResolvedConflicts-status.conflictCount) + " conflicts instead of " + expectedResolvedConflicts, 0, status.conflictCount);
+			Assert.assertEquals((expectedResolvedConflicts - status.conflictCount) + " conflicts instead of " + expectedResolvedConflicts, 0, status.conflictCount);
 		} catch (Exception ex) {
 			Assert.fail(ex.getMessage());
 		}
@@ -123,13 +123,13 @@ public class BootstrapTest extends TestCase {
 		}
 
 		public void report(int kind, String message, SourceElement... anchors) {
-			if(kind == ProcessingStatus.KIND_INFO && message.startsWith("lalr: ")) {
+			if (kind == ProcessingStatus.KIND_INFO && message.startsWith("lalr: ")) {
 				return;
 			}
-			if(kind == ProcessingStatus.KIND_WARN && message.startsWith("symbol") && message.endsWith("is useless")) {
+			if (kind == ProcessingStatus.KIND_WARN && message.startsWith("symbol") && message.endsWith("is useless")) {
 				return;
 			}
-			if(anchors != null && anchors.length >= 1 && anchors[0] != null) {
+			if (anchors != null && anchors.length >= 1 && anchors[0] != null) {
 				message = anchors[0].getResourceName() + "," + anchors[0].getLine() + ": " + message;
 			}
 			Assert.fail("error reported: " + message);
@@ -140,8 +140,8 @@ public class BootstrapTest extends TestCase {
 		}
 
 		public void report(ParserConflict conflict) {
-			if(conflict.getKind() == ParserConflict.FIXED) {
-				if(conflictCount-- > 0) {
+			if (conflict.getKind() == ParserConflict.FIXED) {
+				if (conflictCount-- > 0) {
 					return;
 				}
 			}
@@ -177,8 +177,13 @@ public class BootstrapTest extends TestCase {
 					public void check() throws IOException {
 						String name = getName();
 						checkName(name);
-						InputStream os = new FileInputStream(new File(root,name));
-						String expected = FileUtil.getFileContents(os, charset);
+						String expected;
+						try {
+							InputStream os = new FileInputStream(new File(root, name));
+							expected = FileUtil.getFileContents(os, charset);
+						} catch (IOException ex) {
+							expected = "# Original data is not available (new file is created):\n# " + ex.getMessage();
+						}
 						String data = getData();
 						Assert.assertEquals(expected, data);
 						created.add(name);
