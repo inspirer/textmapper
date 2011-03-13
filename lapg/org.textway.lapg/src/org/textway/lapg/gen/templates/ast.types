@@ -1,12 +1,49 @@
-#
+## AST model
 
 class AstModel {
 	AstEntity classes[0..*];
-
 }
 
-class AstType {
+## Rules
+
+class AstRule {
+	AstEntity* ruleclass[0..1];
+    string kind[choice:"enum","optional","list","class","pass"];
+    common.Rule *rule;
 }
+
+class AstEnumRule extends AstRule {
+    common.SymbolRef* literal;
+}
+
+class AstOptionalRule extends AstRule {
+    bool requiresTrue;
+}
+
+class AstListRule extends AstRule {
+    string listkind[choice:"left","right","normal","none"];
+    common.SymbolRef* listitem;
+}
+
+class AstPassDataRule extends AstRule {
+    common.SymbolRef* data;
+}
+
+
+## Property
+
+class AstProperty {
+	string kind[choice:flagproperty,enumproperty,property];
+	AstClass container[1];
+	string name[notempty; identifier];
+	common.SymbolRef* refs[1..*];
+	string type;
+	int indexInRule(common.Rule);
+}
+
+## Types
+
+class AstType { }
 
 class AstUserType extends AstType {
 	string text;
@@ -30,16 +67,7 @@ class AstClass extends AstInterface {
 }
 
 class AstEnum extends AstEntity {
-	common.SymbolRef* literals;
-}
-
-class AstProperty {
-	string kind[set:flagproperty,enumproperty,property];
-	AstClass container[1];
-	string name[notempty; identifier];
-	common.SymbolRef* refs[1..*];
-	string type;
-	int indexInRule(common.Rule);
+	common.SymbolRef* literals[0..*];
 }
 
 class AstList extends AstType {

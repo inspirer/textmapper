@@ -170,73 +170,69 @@ ${end-}
 ${end}
 
 
-${query getClass(rule) =
-	[self->ast.getClasses(rule.getLeft())].collect(x|x).first()}
+${query propValue(prop) for ast.AstRule =
+	pind = prop.indexInRule(rule),
+	prop.kind == 'enumproperty' ? ( pind >= 0
+			? self->astPackage() + '.@' + ruleclass->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)
+			: 0
+		) :
+	prop.kind == 'flagproperty' ? ( pind >= 0
+			? 'true'
+			: 'false'
+		) :
+	pind >= 0
+		? '$'+ pind + ' /* ' + prop->propertyName() + ' */'
+		: 'null /* ' + prop->propertyName() + ' */' }
 
-${template createEnum(rule)-}
-${'$$'} = ${self->astPackage()}.@${self->getClass(rule)->className()}.${rule.getRight().first()->enumLiteralName(self->getClass(rule)->className())};
-${end}
 
-${template createObject(rule,cl)-}
-new ${self->astPackage()}.@${cl->className()}(
-${foreach prop in cl.properties-}
-${if prop.kind == 'enumproperty'-}
-${pind = prop.indexInRule(rule), pind >= 0
-	? self->astPackage() + '.@' + cl->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)
-	: 0},
-${else if prop.kind == 'flagproperty'-}
-${pind = prop.indexInRule(rule), pind >= 0
-	? 'true' 
-	: 'false'},
-${else if prop.indexInRule(rule) >= 0 -}
-${'$'+ prop.indexInRule(rule)} /* ${prop->propertyName()} */,
-${else-}
-null /* ${prop->propertyName()} */,
-${end-}
+${template createObject for ast.AstRule-}
+new ${self->astPackage()}.@${ruleclass->className()}(
+${foreach prop in ruleclass.properties-}
+${self->propValue(prop)},
 ${end-}
 null /* input */, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
 )${end}
 
-${template createClass(rule)-}
-${'$$'} = ${call createObject(rule, self->getClass(rule))};
+
+${template createEnum for ast.AstEnumRule -}
+${'$$'} = ${self->astPackage()}.@${ruleclass->className()}.${rule.getRight().first()->enumLiteralName(ruleclass->className())};
 ${end}
 
 
-${query createList(rule) =
+${template createClass for ast.AstRule-}
+${'$$'} = ${call createObject};
+${end}
+
+
+${query createList for ast.AstListRule =
 	newexpr =
-		self->ast.hasItemClass(rule.getLeft()) ? self->createObject(rule, self->getClass(rule)) :
-		self->ast.hasListItem(rule.getLeft()) ? (
-			item = self->ast.getListItem(rule.getLeft()),
-			refitem = rule.getRight().select(x|x.target == item).first(),
-			index = refitem ? rule.getRight().indexOf(refitem) : -1,
+		ruleclass ? self->createObject() :
+		listitem ? (
+			index = rule.getRight().indexOf(listitem),
 			index >= 0
 				? '$' + index
 				: null
 		) : null,
-	kind = self->ast.intListRuleKind(rule),
-
 	!newexpr ? null :
-	kind == 'leftrec'	? '$0.add(' + newexpr + ');\n' :
-	kind == 'rightrec'	? '$'+(rule.getRight().size()-1)+'.add(0, ' + newexpr + ');\n' :
-	kind == 'normal'	? '$$ = new java.util.@ArrayList();\n${left()}.add(' + newexpr + ');\n' :
+	listkind == 'left'	 ? '$0.add(' + newexpr + ');\n' :
+	listkind == 'right'	 ? '$'+(rule.getRight().size()-1)+'.add(0, ' + newexpr + ');\n' :
+	listkind == 'normal' ? '$$ = new java.util.@ArrayList();\n${left()}.add(' + newexpr + ');\n' :
 	null
 }
 
-${template passArgument(rule)-}
-${'$$ = $' + (list = rule.getRight().select(x|x['pass']),
-	list.first() ? rule.getRight().indexOf(list.first()) : -1)};
+${template passArgument for ast.AstPassDataRule -}
+${'$$ = $' + (data ? rule.getRight().indexOf(data) : -1)};
 ${end}
 
 ${cached query astcode(rule) =
-	left = rule.getLeft(),
-	self->ast.isEnum(left) ? self->createEnum(rule) :
-	self->ast.isOptional(left) ?
-		(rule.getRight().size() == 1 && rule.getRight().first().target->ast.isSimpleTerm() ? '$$ = Boolean.TRUE;\n' : null) :
- 	self->ast.isList(left) ? self->createList(rule) :
-	self->ast.symbolKind(left) == 'class' ? self->createClass(rule) :
-	self->ast.symbolKind(left) == 'data' && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
-	self->ast.symbolKind(left) == 'interface' && rule.getRight().size() > 1 && !rule.getRight().first()['pass'] ? self->passArgument(rule) :
-	null 
+	astRule = rule->ast.astRule(),
+	!astRule ? null :
+	astRule.kind == 'enum' ? astRule->createEnum() :
+	astRule.kind == 'optional' ? (astRule.requiresTrue ? '$$ = Boolean.TRUE;\n' : null) :
+ 	astRule.kind == 'list' ? astRule->createList() :
+	astRule.kind == 'class' ? astRule->createClass() :
+	astRule.kind == 'pass' && rule.getRight().first() != astRule.data ? astRule->passArgument() :
+	null
 }
 
 ${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '.' + context.opts.astsubpackage : '')}

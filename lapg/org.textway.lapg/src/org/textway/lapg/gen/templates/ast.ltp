@@ -1,8 +1,56 @@
 ${cached query astModel() =
 	new AstModel(
-        classes => self->allClasses()
+        classes => context->allClasses()
 	)
 }
+
+${cached query astRule() =
+	leftSymbolKind = context->isOptional(getLeft()) ? 'optional' : context->symbolKind(getLeft()),
+	leftSymbolKind == 'enum' ?
+		new AstEnumRule(
+			rule => self,
+			kind => 'enum',
+			ruleclass => [context->getClasses(getLeft())].collect(x|x).first(),
+			literal => getRight().first()
+		) :
+	leftSymbolKind == 'optional' ?
+		new AstOptionalRule(
+			rule => self,
+			kind => 'optional',
+			requiresTrue => getRight().size() == 1 && getRight().first().target->isSimpleTerm()
+		) :
+	leftSymbolKind == 'leftlist' || leftSymbolKind == 'rightlist' ?
+		new AstListRule(
+			rule => self,
+			kind => 'list',
+			ruleclass => context->hasItemClass(getLeft()) ? [context->getClasses(getLeft())].collect(x|x).first() : null,
+			listkind => (kkind = context->intListRuleKind(self),
+					kkind == 'leftrec' ? 'left' :
+					kkind == 'rightrec' ? 'right' :
+					kkind == 'normal' ? 'normal'
+						: 'none'),
+			listitem => context->hasListItem(getLeft())
+				? (
+					item = context->getListItem(getLeft()),
+					getRight().select(x|x.target == item).first()
+				) : null
+		) :
+	leftSymbolKind == 'data' || (leftSymbolKind == 'interface' && getRight().size() > 1) ?
+		new AstPassDataRule(
+			rule => self,
+			kind => 'pass',
+			data => self->getRuleDataRef()
+		) :
+	leftSymbolKind == 'class' ?
+		new AstRule(
+			rule => self,
+			kind => 'class',
+			ruleclass => [context->getClasses(getLeft())].collect(x|x).first()
+		) :
+	null
+}
+
+
 
 ${cached query allClasses() =
 	syntax.symbols.select(x|!x.isTerm() && !self->isOptional(x))
