@@ -351,7 +351,7 @@ ${end}
 
 ${template java_tree.parseStatements-}
 ${call base-}
-${if inp.id == 'input'-}
+${if inp.target.id == 'input'-}
 if (result != null) {
 	result.setTemplatesStart(lexer.getTemplatesStart());
 }

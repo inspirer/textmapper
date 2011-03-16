@@ -15,12 +15,7 @@
  */
 package org.textway.lapg.lalr;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.Prio;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.api.*;
 
 abstract class ContextFree {
 
@@ -53,10 +48,11 @@ abstract class ContextFree {
 		return result;
 	}
 
-	private static int[] toArray(Symbol[] input) {
+	private static int[] toArray(InputRef[] input) {
 		int[] result = new int[input.length];
 		for (int i = 0; i < input.length; i++) {
-			result[i] = input[i].getIndex();
+			// TODO handle input[i].hasEoi()
+			result[i] = input[i].getTarget().getIndex();
 		}
 		return result;
 	}

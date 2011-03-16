@@ -45,7 +45,7 @@ ${end}
 
 ${template parse-}
 ${foreach inp in syntax.input}
-	public static ${opts.prefix}Tree<${call typeofsym for inp}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.id)}${else}parse${end}(${call parseParameters for inp}) {
+	public static ${opts.prefix}Tree<${call typeofsym for inp.target}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.target.id)}${else}parse${end}(${call parseParameters for inp}) {
 		final java.util.@List<${opts.prefix}Problem> list = new java.util.@ArrayList<${opts.prefix}Problem>();
 		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -59,13 +59,13 @@ ${util.shiftRight(self->createLexer(),3)-}
 ${util.shiftRight(self->createParser(),3)-}
 ${util.shiftRight(self->parseStatements(),3)-}
 
-			return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, result, list);
+			return new ${opts.prefix}Tree<${call typeofsym for inp.target}>(source, result, list);
 		} catch (${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
 		} catch (java.io.@IOException ex) {
 			list.add(new ${opts.prefix}Problem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new ${opts.prefix}Tree<${call typeofsym for inp}>(source, null, list);
+		return new ${opts.prefix}Tree<${call typeofsym for inp.target}>(source, null, list);
 	}
 ${end}
 ${end}
@@ -82,7 +82,7 @@ ${opts.prefix}Parser parser = new ${opts.prefix}Parser(reporter);
 ${end}
 
 ${template parseStatements-}
-${call typeofsym for inp} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.id)}${else}parse${end}(lexer);
+${call typeofsym for inp.target} result = parser.${if syntax.input.length > 1}parse${util.toFirstUpper(inp.target.id)}${else}parse${end}(lexer);
 ${end}
 
 ${template constants-}

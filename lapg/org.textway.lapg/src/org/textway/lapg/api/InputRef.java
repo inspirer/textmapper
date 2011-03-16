@@ -13,31 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.api;
 
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
-import org.textway.lapg.parser.ast.IAstNode;
-
-import java.util.Map;
-
-public class LiSymbolRef extends LiAnnotated implements SymbolRef {
-
-	private final Symbol target;
-	private final String alias;
-
-	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, IAstNode node) {
-		super(annotations, node);
-		this.target = target;
-		this.alias = alias;
-	}
-
-	public String getAlias() {
-		return alias;
-	}
-
-	public Symbol getTarget() {
-		return target;
-	}
-
+/**
+ * Gryaznov Evgeny, 3/16/11
+ */
+public interface InputRef extends SourceElement {
+	Symbol getTarget();
+	boolean hasEoi();
 }

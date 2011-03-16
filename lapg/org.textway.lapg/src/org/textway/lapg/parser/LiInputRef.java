@@ -15,29 +15,29 @@
  */
 package org.textway.lapg.parser;
 
+import org.textway.lapg.api.InputRef;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
 
-import java.util.Map;
-
-public class LiSymbolRef extends LiAnnotated implements SymbolRef {
+/**
+ * Gryaznov Evgeny, 3/16/11
+ */
+public class LiInputRef extends LiEntity implements InputRef {
 
 	private final Symbol target;
-	private final String alias;
+	private final boolean hasEoi;
 
-	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, IAstNode node) {
-		super(annotations, node);
+	public LiInputRef(IAstNode node, Symbol target, boolean hasEoi) {
+		super(node);
 		this.target = target;
-		this.alias = alias;
-	}
-
-	public String getAlias() {
-		return alias;
+		this.hasEoi = hasEoi;
 	}
 
 	public Symbol getTarget() {
 		return target;
 	}
 
+	public boolean hasEoi() {
+		return hasEoi;
+	}
 }

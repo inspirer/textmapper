@@ -31,7 +31,7 @@ public interface Grammar {
 	Lexem[] getLexems();
 
 	int getTerminals();
-	Symbol[] getInput();
+	InputRef[] getInput();
 	Symbol getEoi();
 	Symbol getError();
 

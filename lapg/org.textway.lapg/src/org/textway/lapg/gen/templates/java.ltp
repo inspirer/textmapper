@@ -90,7 +90,7 @@ ${end-}
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first()->type()}${syntax.input.first()->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}) throws java.io.@IOException, ParseException {
+	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}) throws java.io.@IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -144,7 +144,7 @@ ${if syntax.error-}
 ${end-}
 			throw new ParseException();
 		}
-		return ${if syntax.input.length == 1 && syntax.input.first()->type()}(${syntax.input.first()->type()})${end}lapg_m[lapg_head - 1].sym;
+		return ${if syntax.input.length == 1 && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end}lapg_m[lapg_head - 1].sym;
 	}
 ${if syntax.error}
 	protected boolean restore() {
@@ -271,8 +271,8 @@ ${if opts.genCleanup}
 ${end-}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}
-	public ${if inp->type()}${inp->type()}${else}Object${end} parse${util.toFirstUpper(inp.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp->type()}(${inp->type()}) ${end}parse(lexer, ${index});
+	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer, ${index});
 	}
 ${end-}
 ${end-}

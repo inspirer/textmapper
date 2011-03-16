@@ -16,6 +16,7 @@
 package org.textway.lapg.parser;
 
 import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.InputRef;
 import org.textway.lapg.api.Prio;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.common.FormatUtil;
@@ -48,7 +49,7 @@ public class LapgResolver {
 	private List<LiRule> rules;
 	private List<LiPrio> priorities;
 
-	private List<LiSymbol> inputs;
+	private List<LiInputRef> inputs;
 	private LiSymbol eoi;
 
 	private Map<String, Object> options;
@@ -81,7 +82,7 @@ public class LapgResolver {
 			} else if (input.isTerm()) {
 				error(tree.getRoot(), "input should be non-terminal");
 			} else {
-				inputs.add(input);
+				inputs.add(new LiInputRef(null, input, true));
 			}
 		}
 
@@ -101,7 +102,7 @@ public class LapgResolver {
 		}
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
 		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
-		LiSymbol[] inputArr = inputs.toArray(new LiSymbol[inputs.size()]);
+		InputRef[] inputArr = inputs.toArray(new InputRef[inputs.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
 
@@ -313,7 +314,7 @@ public class LapgResolver {
 
 	private void collectDirectives() {
 		priorities = new ArrayList<LiPrio>();
-		inputs = new ArrayList<LiSymbol>();
+		inputs = new ArrayList<LiInputRef>();
 
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstDirective) {
@@ -321,7 +322,10 @@ public class LapgResolver {
 				String key = directive.getKey();
 				List<LiSymbol> val = resolve(directive.getSymbols());
 				if (key.equals("input")) {
-					inputs.addAll(val);
+					// TODO handle no-eoi attribute
+					for(LiSymbol s : val) {
+						inputs.add(new LiInputRef(null, s, true));
+					}
 				} else if (key.equals("left")) {
 					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()]), directive));
 				} else if (key.equals("right")) {
