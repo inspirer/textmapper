@@ -6,6 +6,7 @@
 	<property name="source" value="1.5"/>
 	<property name="lapg.ver" value="1.4.0alpha1"/>
 	<property name="suffix" value="1.4.0"/>
+	<property name="pluginPath" value="${user.home}/Library/Application Support/IntelliJIdea10CE"/>
 
 	<target name="all" depends="clean,test,deploy">
 	</target>
@@ -132,5 +133,11 @@
 			<metainf dir="." includes="LICENSE.txt"/>
 		</jar>
 		<delete dir="build/lapg/classes"/>
+	</target>
+
+	<target name="install-plugin">
+		<copy includeemptydirs="false" todir="${pluginPath}/lapg/">
+			<fileset dir="build/lapg" includes="lib/**"/>
+		</copy>
 	</target>
 </project>
