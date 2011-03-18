@@ -36,7 +36,7 @@ class Lalr1 extends LR0 {
 
 	protected short[] larule /* index in LA -> rule */, laindex /* state -> index in LA */;
 	protected int[] LA /* (state,rule to reduce in state) -> setof(term) */;
-	protected short[] term_goto /* nsyms + 1 */, term_from, term_to /* ngotos: state->state */;
+	protected short[] term_goto /* sym -> index [nsyms + 1] */, term_from, term_to /* [ntgotos + ngotos] for each shift: state->state */;
 
 	private int maxrpart /* max len of rule's right part */, ngotos, ntgotos;
 	private Short[] lookback;
@@ -50,6 +50,10 @@ class Lalr1 extends LR0 {
 
 		initializeLA();
 		init_goto();
+
+		for (int i = nterms; i <= nsyms; i++) {
+			term_goto[i] -= ntgotos;
+		}
 
 		edge = new short[ngotos + 1];
 		graph = new short[ngotos][];
@@ -166,14 +170,10 @@ class Lalr1 extends LR0 {
 
 		ntgotos = term_goto[nterms];
 		ngotos -= ntgotos;
-
-		for (i = nterms; i <= nsyms; i++) {
-			term_goto[i] -= ntgotos;
-		}
 	}
 
 
-	// returns the number of goto, which shifts from state by symbol
+	// returns the number of goto, which shifts from state by non-term symbol
 	private int select_goto(int state, int symbol) {
 		int min = term_goto[symbol], max = term_goto[symbol + 1] - 1;
 		int i, e;
@@ -217,7 +217,7 @@ class Lalr1 extends LR0 {
 	private void init_follow() {
 		int settrav = 0, nedges = 0;
 		short[][] empties = graph;
-		int e, k, i;
+		int k, i;
 
 		follow = new int[ngotos * termset];
 		Arrays.fill(follow, 0);
@@ -227,11 +227,11 @@ class Lalr1 extends LR0 {
 			short[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
 
-			for (e = 0; e < nshifts && state[shifts[shifts_ind]].symbol < nterms; e++, shifts_ind++) {
+			for (; shifts_ind < nshifts && state[shifts[shifts_ind]].symbol < nterms; shifts_ind++) {
 				follow[settrav + (state[shifts[shifts_ind]].symbol) / BITS] |= (1 << ((state[shifts[shifts_ind]].symbol) % BITS));
 			}
 
-			for (; e < nshifts; e++, shifts_ind++) {
+			for (; shifts_ind < nshifts; shifts_ind++) {
 				k = state[shifts[shifts_ind]].symbol;
 				if (sym_empty[k]) {
 					edge[nedges++] = (short) select_goto(st, k);
