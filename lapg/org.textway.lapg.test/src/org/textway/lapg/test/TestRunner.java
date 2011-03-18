@@ -23,6 +23,7 @@ import org.textway.lapg.test.cases.*;
 public class TestRunner {
 	public static Test suite() {
 		TestSuite ts = new TestSuite("lapg tests");
+		ts.addTestSuite(InterpretedTest.class);
 		ts.addTestSuite(AnnotationsTest.class);
 		ts.addTestSuite(JavaPostProcessorTest.class);
 		ts.addTestSuite(CharacterSetTest.class);
