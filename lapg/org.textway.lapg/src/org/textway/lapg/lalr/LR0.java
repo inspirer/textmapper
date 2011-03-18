@@ -32,15 +32,14 @@ class LR0 extends ContextFree {
 	// LR0 engine internals
 	private int nvars;
 	private int varset, ruleset;
-	private int[] ruleforvar /* nvars x ruleset */;
+	private int[] ruleforvar /* nvars: set of rules (closure) */;
 
 	private short[] toreduce, closure /* [situations] */;
 	private int closureend /* size of closure */;
-	private short[][] symbase /* [nsyms][] */;
+	private short[][] symbase /* nsyms: array of size symbasesize[i] = situations after sym shift */;
 	private int[] symbasesize;
-	private short[] symcanshift;
-	private int[]   closurebit /* ruleset */;
-	private int 	ntoreduce, ntoshift;
+	private short[] symcanshift /* list of symbols to shift [nsyms] */;
+	private int[]   closurebit /* list of rules, added to closure [ruleset] */;
 	private State[] table;
 	private State current, last;
 
@@ -142,16 +141,14 @@ class LR0 extends ContextFree {
 
 	private void build_sets() {
 		int i, e, j;
-		int[] p;
 
-		// firsts
+		// firsts [Non-term -> set of(Non-term)]
 		int[] firsts = new int[nvars * varset];
 		Arrays.fill(firsts, 0);
 
 		for (i = 0; i < nvars; i++) {
-			p = derives[i];
-			for (int element : p) {
-				e = rright[rindex[element]];
+			for (int ruleIndex : derives[i]) {
+				e = rright[rindex[ruleIndex]];
 				if (e >= nterms) {
 					firsts[varset * i + (e - nterms) / BITS] |= (1 << ((e - nterms) % BITS));
 				}
@@ -183,9 +180,8 @@ class LR0 extends ContextFree {
 		for (i = 0; i < nvars; i++) {
 			for (e = 0; e < nvars; e++) {
 				if (((firsts[varset * i + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
-					p = derives[e];
-					for (int q = 0; q < p.length; q++) {
-						ruleforvar[ruleset * i + (p[q]) / BITS] |= (1 << ((p[q]) % BITS));
+					for (int p : derives[e]) {
+						ruleforvar[ruleset * i + (p) / BITS] |= (1 << ((p) % BITS));
 					}
 				}
 			}
@@ -193,8 +189,8 @@ class LR0 extends ContextFree {
 	}
 
 	private void initializeLR0() {
-		for(nstates = 0; nstates < inputs.length; nstates++) {
-			if(nstates == 0) {
+		for (nstates = 0; nstates < inputs.length; nstates++) {
+			if (nstates == 0) {
 				first = last = current = new State();
 			} else {
 				last = last.next = new State();
@@ -203,7 +199,7 @@ class LR0 extends ContextFree {
 			last.nreduce = last.nshifts = last.symbol = last.fromstate = 0;
 			last.next = last.link = null;
 			last.shifts = last.reduce = null;
-			last.elems = new short[] { -1 };
+			last.elems = new short[]{-1};
 		}
 	}
 
@@ -309,24 +305,22 @@ class LR0 extends ContextFree {
 	}
 
 	private boolean process_state() {
-		int i, e, sym;
-
-		ntoreduce = 0;
+		int i, ntoreduce = 0;
 		Arrays.fill(symbasesize, (short) 0);
 
 		for (i = 0; i < closureend; i++) {
-			sym = rright[closure[i]];
+			int sym = rright[closure[i]];
 			if (sym >= 0) {
-				e = symbasesize[sym];
+				int e = symbasesize[sym];
 				symbase[sym][e++] = (short) (closure[i] + 1);
 				symbasesize[sym] = e;
 
 			} else {
-				toreduce[ntoreduce++] = (short) (-1 - rright[closure[i]]);
+				toreduce[ntoreduce++] = (short) (-1 - sym);
 			}
 		}
 
-		ntoshift = 0;
+		int ntoshift = 0;
 		for (i = 0; i < nsyms; i++) {
 			if (symbasesize[i] != 0) {
 				symcanshift[ntoshift++] = (short) i;
@@ -366,6 +360,7 @@ class LR0 extends ContextFree {
 				t.shifts[e++] = old[i];
 			}
 			t.shifts[e++] = (short) tostate;
+			assert i == n || state[old[i]].symbol != symbol : "bad";   // FIXME
 			for (; i < n; i++) {
 				t.shifts[e++] = old[i];
 			}

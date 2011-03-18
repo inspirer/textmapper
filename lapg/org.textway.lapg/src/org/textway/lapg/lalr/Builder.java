@@ -195,19 +195,17 @@ public class Builder extends Lalr1 {
 	}
 
 	private void action() {
-		State t;
 		List<short[]> actionTables = new ArrayList<short[]>();
 		int rr = 0, sr = 0;
 		short[] actionset = new short[nterms], next = new short[nterms];
 		ConflictBuilder conflicts = new ConflictBuilder(nterms);
-		int setsize;
 		int i, e;
 
 		action_index = new int[nstates];
 		action_table = null;
 		nactions = 0;
 
-		for (t = first; t != null; t = t.next) {
+		for (State t = first; t != null; t = t.next) {
 			if (t.LR0) {
 				if (t.nshifts > 0) {
 					action_index[t.number] = -1;
@@ -219,7 +217,7 @@ public class Builder extends Lalr1 {
 			} else {
 
 				// prepare
-				setsize = 0;
+				int setsize = 0;
 				for (i = 0; i < nterms; i++) {
 					next[i] = -2;
 				}

@@ -23,10 +23,10 @@ import org.textway.lapg.api.ProcessingStatus;
 
 class Lalr1 extends LR0 {
 
-	public class Short {
+	public static class Short {
 		short value;
 		Short next;
-	};
+	}
 
 	Lalr1(Grammar g, ProcessingStatus status) {
 		super(g, status);
@@ -34,11 +34,11 @@ class Lalr1 extends LR0 {
 
 	// LALR
 
-	protected short[] larule, laindex;
-	protected int[] LA /* ? -> setof(term) */;
+	protected short[] larule /* index in LA -> rule */ , laindex /* state -> index in LA */;
+	protected int[] LA /* (state,rule to reduce in state) -> setof(term) */;
 	protected short[] term_goto /* nsyms + 1 */, term_from, term_to /* ngotos: state->state */;
 
-	private int maxrpart, ngotos, ntgotos;
+	private int maxrpart /* max len of rule's right part */, ngotos, ntgotos;
 	private Short[] lookback;
 	private short[] edge;
 	private short[][] graph;
@@ -73,17 +73,16 @@ class Lalr1 extends LR0 {
 	}
 
 
-	// fills: laindex, larules, maxrpart; creates: lookback, LA
-	private void initializeLA()
-	{
+	// fills: laindex, larule, maxrpart; creates: lookback, LA
+	private void initializeLA() {
 		int i, e, k;
 		State t;
 
 		// calculate maxrpart
 		maxrpart = 2;
-		for( e = i = 0; i < situations; i++ ) {
-			if( rright[i] < 0 ) {
-				if( e > maxrpart ) {
+		for (e = i = 0; i < situations; i++) {
+			if (rright[i] < 0) {
+				if (e > maxrpart) {
 					maxrpart = e;
 				}
 				e = 0;
@@ -93,31 +92,32 @@ class Lalr1 extends LR0 {
 		}
 
 		// get larule size
-		for( e = 0, t = first; t != null; t = t.next ) {
-			if( !t.LR0 ) {
+		for (e = 0, t = first; t != null; t = t.next) {
+			if (!t.LR0) {
 				e += t.nreduce;
 			}
 		}
 
-		if( e == 0 ) {
+		if (e == 0) {
+			// TODO: LR(0) grammar - exit?
 			e = 1;
 		}
 
 		// allocate
-		laindex = new short[ nstates+1 ];
-		laindex[nstates] = (short)e;
-		larule = new short[ e ];
-		lookback = new Short[ e ];
-		LA = new int[ e * termset ];
+		laindex = new short[nstates + 1];
+		laindex[nstates] = (short) e;
+		larule = new short[e];
+		lookback = new Short[e];
+		LA = new int[e * termset];
 
 		Arrays.fill(lookback, null);
 		Arrays.fill(LA, 0);
 
 		// fills: larule, laindex
-		for( i = 0, t = first; t != null; t = t.next ) {
-			laindex[t.number] = (short)i;
-			if( !t.LR0 ) {
-				for( k = 0; k < t.nreduce; k++ ) {
+		for (i = 0, t = first; t != null; t = t.next) {
+			laindex[t.number] = (short) i;
+			if (!t.LR0) {
+				for (k = 0; k < t.nreduce; k++) {
 					larule[i++] = t.reduce[k];
 				}
 			}
@@ -126,66 +126,64 @@ class Lalr1 extends LR0 {
 
 
 	//	 fills: term_goto, term_from, term_to
-	private void init_goto()
-	{
+	private void init_goto() {
 		State t;
 		int i, e, symnum;
 		short[] goto_nshifts;
 
-		goto_nshifts = new short[ nsyms ];
-		term_goto = new short[ nsyms + 1 ];
+		goto_nshifts = new short[nsyms];
+		term_goto = new short[nsyms + 1];
 
-		Arrays.fill(goto_nshifts, (short)0);
+		Arrays.fill(goto_nshifts, (short) 0);
 
 		ngotos = 0;
-		for( t = first; t != null; t = t.next ) {
-			for( i = t.nshifts-1; i >= 0; i-- ) {
+		for (t = first; t != null; t = t.next) {
+			for (i = t.nshifts - 1; i >= 0; i--) {
 				symnum = state[t.shifts[i]].symbol;
 				goto_nshifts[symnum]++;
 				ngotos++;
 			}
 		}
 
-		for( e = i = 0; i < nsyms; i++ ) {
-			term_goto[i] = (short)e;
+		for (e = i = 0; i < nsyms; i++) {
+			term_goto[i] = (short) e;
 			e += goto_nshifts[i];
 			goto_nshifts[i] = term_goto[i];
 		}
-		term_goto[nsyms] = (short)ngotos;
-		term_from = new short[ ngotos ];
-		term_to = new short[ ngotos ];
+		term_goto[nsyms] = (short) ngotos;
+		term_from = new short[ngotos];
+		term_to = new short[ngotos];
 
-		for( t = first; t != null; t = t.next ) {
-			for( i = t.nshifts-1; i >= 0; i-- ) {
+		for (t = first; t != null; t = t.next) {
+			for (i = t.nshifts - 1; i >= 0; i--) {
 				int newstate = t.shifts[i];
 				symnum = state[newstate].symbol;
 				e = goto_nshifts[symnum]++;
-				term_from[e] = (short)t.number;
-				term_to[e] = (short)newstate;
+				term_from[e] = (short) t.number;
+				term_to[e] = (short) newstate;
 			}
 		}
 
 		ntgotos = term_goto[nterms];
 		ngotos -= ntgotos;
 
-		for( i = nterms; i <= nsyms; i++ ) {
+		for (i = nterms; i <= nsyms; i++) {
 			term_goto[i] -= ntgotos;
 		}
 	}
 
 
 	// returns the number of goto, which shifts from state by symbol
-	private int select_goto( int state, int symbol )
-	{
-		int min = term_goto[symbol], max = term_goto[symbol+1]-1;
+	private int select_goto(int state, int symbol) {
+		int min = term_goto[symbol], max = term_goto[symbol + 1] - 1;
 		int i, e;
 
-		while( min <= max ) {
+		while (min <= max) {
 			e = (min + max) >> 1;
-			i = term_from[ntgotos+e];
-			if( i == state ) {
+			i = term_from[ntgotos + e];
+			if (i == state) {
 				return e;
-			} else if( i < state ) {
+			} else if (i < state) {
 				min = e + 1;
 			} else {
 				max = e - 1;
@@ -198,12 +196,11 @@ class Lalr1 extends LR0 {
 
 
 	// add goto number to rule lookback list
-	private void add_lookback( int state, int rule, short gotono )
-	{
-		int i = laindex[state], max = laindex[state+1];
+	private void add_lookback(int state, int rule, short gotono) {
+		int i = laindex[state], max = laindex[state + 1];
 
-		for( ; i < max; i++ ) {
-			if( larule[i] == rule ) {
+		for (; i < max; i++) {
+			if (larule[i] == rule) {
 				Short s = new Short();
 				s.value = gotono;
 				s.next = lookback[i];
@@ -217,35 +214,34 @@ class Lalr1 extends LR0 {
 
 
 	// fills: follow
-	private void init_follow()
-	{
+	private void init_follow() {
 		int settrav = 0, nedges = 0;
 		short[][] empties = graph;
 		int e, k, i;
 
-		follow = new int[ ngotos * termset ];
+		follow = new int[ngotos * termset];
 		Arrays.fill(follow, 0);
 
-		for( i = 0; i < ngotos; i++, settrav += termset ) {
-			int st = term_to[ntgotos+i];
+		for (i = 0; i < ngotos; i++, settrav += termset) {
+			int st = term_to[ntgotos + i];
 			short[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
 
-			for( e = 0; e < nshifts && state[shifts[shifts_ind]].symbol < nterms; e++, shifts_ind++ ) {
-				follow[settrav + (state[shifts[shifts_ind]].symbol)/BITS] |= (1<<((state[shifts[shifts_ind]].symbol)%BITS));
+			for (e = 0; e < nshifts && state[shifts[shifts_ind]].symbol < nterms; e++, shifts_ind++) {
+				follow[settrav + (state[shifts[shifts_ind]].symbol) / BITS] |= (1 << ((state[shifts[shifts_ind]].symbol) % BITS));
 			}
 
-			for( ; e < nshifts; e++, shifts_ind++ ) {
+			for (; e < nshifts; e++, shifts_ind++) {
 				k = state[shifts[shifts_ind]].symbol;
-				if( sym_empty[k] ) {
-					edge[nedges++] = (short)select_goto( st, k );
+				if (sym_empty[k]) {
+					edge[nedges++] = (short) select_goto(st, k);
 				}
 			}
 
-			if( nedges != 0 ) {
-				empties[i] = new short[nedges+1];
+			if (nedges != 0) {
+				empties[i] = new short[nedges + 1];
 				short[] target = empties[i];
-				for( int q = 0; q < nedges; q++) {
+				for (int q = 0; q < nedges; q++) {
 					target[q] = edge[q];
 				}
 				empties[i][nedges] = -1;
@@ -255,25 +251,24 @@ class Lalr1 extends LR0 {
 			}
 		}
 
-		graph_closure( empties );
+		graph_closure(empties);
 		Arrays.fill(empties, null);
 	}
 
 
 	// reverts all edges in graph
-	private void transpose_graph()
-	{
+	private void transpose_graph() {
 		int n = ngotos;
 		short[] nedges = new short[n];
 		short[] p;
 		int i;
 
 		// calculate new row sizes
-		Arrays.fill(nedges, (short)0);
-		for( i = 0; i < n; i++ ) {
+		Arrays.fill(nedges, (short) 0);
+		for (i = 0; i < n; i++) {
 			p = graph[i];
-			if( p != null ) {
-				for( int e = 0; p[e] >= 0; e++ ) {
+			if (p != null) {
+				for (int e = 0; p[e] >= 0; e++) {
 					nedges[p[e]]++;
 				}
 			}
@@ -281,24 +276,24 @@ class Lalr1 extends LR0 {
 
 		// allocate new graph
 		short[][] newgraph = new short[n][];
-		for( i = 0; i < n; i++ ) {
-			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i]+1] : null;
+		for (i = 0; i < n; i++) {
+			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i] + 1] : null;
 		}
 
 		// fill new graph
-		Arrays.fill(nedges, (short)0);
-		for( i = 0; i < n; i++ ) {
+		Arrays.fill(nedges, (short) 0);
+		for (i = 0; i < n; i++) {
 			p = graph[i];
-			if( p != null ) {
-				for( int e = 0; p[e] >= 0; e++ ) {
-					newgraph[p[e]][nedges[p[e]]++] = (short)i;
+			if (p != null) {
+				for (int e = 0; p[e] >= 0; e++) {
+					newgraph[p[e]][nedges[p[e]]++] = (short) i;
 				}
 			}
 		}
 
 		// insert -1 (end-of-row markers)
-		for( i = 0; i < n; i++ ) {
-			if( newgraph[i] != null ) {
+		for (i = 0; i < n; i++) {
+			if (newgraph[i] != null) {
 				newgraph[i][nedges[i]] = -1;
 			}
 		}
@@ -308,45 +303,44 @@ class Lalr1 extends LR0 {
 
 
 	//	 builds follow set
-	private void build_follow()
-	{
+	private void build_follow() {
 		int i, e, length, currstate, nedges = 0, rpart;
-		short[] states = new short[maxrpart+1];
+		short[] states = new short[maxrpart + 1];
 		int[] rule;
 
-		for( i = 0; i < ngotos; i++ ) {
-			int fstate = term_from[ntgotos+i];
-			int symbol = state[term_to[ntgotos+i]].symbol;
+		for (i = 0; i < ngotos; i++) {
+			int fstate = term_from[ntgotos + i];
+			int symbol = state[term_to[ntgotos + i]].symbol;
 
-			rule = derives[symbol-nterms];
+			rule = derives[symbol - nterms];
 			for (int element : rule) {
-				currstate = states[0] = (short)fstate;
+				currstate = states[0] = (short) fstate;
 				length = 1;
 
-				for( rpart = rindex[element]; rright[rpart] >= 0; rpart++ ) {
+				for (rpart = rindex[element]; rright[rpart] >= 0; rpart++) {
 					int nshifts = state[currstate].nshifts;
 					short[] shft = state[currstate].shifts;
 
-					for( e = 0; e < nshifts; e++ ) {
+					for (e = 0; e < nshifts; e++) {
 						currstate = shft[e];
-						if( state[currstate].symbol == rright[rpart] ) {
+						if (state[currstate].symbol == rright[rpart]) {
 							break;
 						}
 					}
-					assert e < nshifts;
-					states[length++] = (short)currstate;
+					assert e < nshifts; // FIXME throw Exception?
+					states[length++] = (short) currstate;
 				}
 
-				if( !state[currstate].LR0 ) {
-					add_lookback( currstate, element, (short)i );
+				if (!state[currstate].LR0) {
+					add_lookback(currstate, element, (short) i);
 				}
 
-				for( length--;;) {
+				for (length--; ;) {
 					rpart--;
-					if( rpart >= 0 && rright[rpart] >= nterms ) {
+					if (rpart >= 0 && rright[rpart] >= nterms) {
 						currstate = states[--length];
-						edge[nedges++] = (short)select_goto( currstate, rright[rpart] );
-						if( sym_empty[rright[rpart]] ) {
+						edge[nedges++] = (short) select_goto(currstate, rright[rpart]);
+						if (sym_empty[rright[rpart]]) {
 							continue;
 						}
 					}
@@ -354,10 +348,10 @@ class Lalr1 extends LR0 {
 				}
 			}
 
-			if( nedges != 0 ) {
-				graph[i] = new short[nedges+1];
+			if (nedges != 0) {
+				graph[i] = new short[nedges + 1];
 				short[] target = graph[i];
-				for( int q = 0; q < nedges; q++) {
+				for (int q = 0; q < nedges; q++) {
 					target[q] = edge[q];
 				}
 				graph[i][nedges] = -1;
@@ -371,7 +365,7 @@ class Lalr1 extends LR0 {
 		transpose_graph();
 		show_graph();
 
-		graph_closure( graph );
+		graph_closure(graph);
 	}
 
 
@@ -405,12 +399,12 @@ class Lalr1 extends LR0 {
 
 	private static final String spaces = "    ";
 
-	private String format(int l, boolean left) {
+	private static String format(int l, boolean left) {
 		String s = Integer.toString(l);
-		if( s.length() >= 4 ) {
+		if (s.length() >= 4) {
 			return s;
 		}
-		if( left ) {
+		if (left) {
 			return spaces.substring(s.length()) + s;
 		}
 		return s + spaces.substring(s.length());
@@ -424,17 +418,17 @@ class Lalr1 extends LR0 {
 
 		int i, e;
 
-		status.debug( "\nFollow:\n");
+		status.debug("\nFollow:\n");
 		for (i = 0; i < ngotos; i++) {
 
-			status.debug( format(term_from[ntgotos+i], false) + " -> " + format(term_to[ntgotos+i], true) + "\t");
+			status.debug(format(term_from[ntgotos + i], false) + " -> " + format(term_to[ntgotos + i], true) + "\t");
 			for (e = 0; e < nterms; e++) {
-				if (((follow[i*termset + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
-					status.debug( " " + sym[e].getName());
+				if (((follow[i * termset + (e) / BITS] & (1 << ((e) % BITS))) != 0)) {
+					status.debug(" " + sym[e].getName());
 				}
 			}
 
-			status.debug( "\n");
+			status.debug("\n");
 		}
 	}
 
@@ -445,16 +439,16 @@ class Lalr1 extends LR0 {
 			return;
 		}
 
-		status.debug( "\nGraph:\n");
+		status.debug("\nGraph:\n");
 
 		for (int i = 0; i < ngotos; i++) {
 			short[] p = graph[i];
 			if (p != null) {
-				status.debug( MessageFormat.format(" {0,number,####}: ", i));
+				status.debug(MessageFormat.format(" {0,number,####}: ", i));
 				for (int e = 0; p[e] >= 0; e++) {
-					status.debug( " " + p[e]);
+					status.debug(" " + p[e]);
 				}
-				status.debug( "\n");
+				status.debug("\n");
 			}
 		}
 
@@ -467,12 +461,12 @@ class Lalr1 extends LR0 {
 			return;
 		}
 
-		status.debug( "\nLookaheads:\n");
+		status.debug("\nLookaheads:\n");
 
 		for (int i = 0; i < nstates; i++) {
 			if (laindex[i] < laindex[i + 1]) {
 				int max = laindex[i + 1];
-				status.debug( i + ":\n");
+				status.debug(i + ":\n");
 
 				for (int e = laindex[i]; e < max; e++) {
 					int k = rindex[larule[e]];
@@ -482,13 +476,13 @@ class Lalr1 extends LR0 {
 					print_situation(k);
 					int set = termset * e;
 
-					status.debug( "  >>>");
+					status.debug("  >>>");
 					for (k = 0; k < nterms; k++) {
 						if (((LA[set + (k) / BITS] & (1 << ((k) % BITS))) != 0)) {
-							status.debug( " " + sym[k].getName());
+							status.debug(" " + sym[k].getName());
 						}
 					}
-					status.debug( "\n");
+					status.debug("\n");
 				}
 			}
 		}
@@ -529,7 +523,7 @@ class Lalr1 extends LR0 {
 		}
 
 		if (gc_index[i] == height) {
-			for (;;) {
+			for (; ;) {
 				int e = gc_vertices[top--];
 				gc_index[e] = (short) infinity;
 				if (i == e) {
