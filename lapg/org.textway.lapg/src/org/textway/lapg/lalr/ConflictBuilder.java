@@ -56,9 +56,9 @@ public class ConflictBuilder {
 	}
 
 	public void addReduce(int termSym, Symbol sym, int status, Rule rule, Rule originalRule) {
-		if(nextconfl[termSym] == null) {
+		if (nextconfl[termSym] == null) {
 			conflicts.add(nextconfl[termSym] = new ConflictData(sym, originalRule == null));
-			if(originalRule != null) {
+			if (originalRule != null) {
 				nextconfl[termSym].addReduce(ConflictBuilder.CONFLICT, originalRule);
 			}
 		}
@@ -66,15 +66,15 @@ public class ConflictBuilder {
 	}
 
 	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input) {
-		if(conflicts.isEmpty()) {
+		if (conflicts.isEmpty()) {
 			return Collections.<LalrConflict>emptyList();
 		}
 
 		Map<Object, ConflictData> map = new HashMap<Object, ConflictData>();
-		for(ConflictData c : conflicts) {
+		for (ConflictData c : conflicts) {
 			Object key = c.getRulesAndKindKey();
 			ConflictData data = map.get(key);
-			if(data == null) {
+			if (data == null) {
 				map.put(key, c);
 			} else {
 				data.addLinked(c);
@@ -84,7 +84,7 @@ public class ConflictBuilder {
 		Collection<ConflictData> values = map.values();
 
 		List<LalrConflict> result = new ArrayList<LalrConflict>(values.size());
-		for(ConflictData data : values) {
+		for (ConflictData data : values) {
 			result.add(new LalrConflict(data.getKind(), data.getKindAsText(), inp, data.getSymbols(), data.getRules()));
 		}
 		Collections.sort(result);
@@ -111,12 +111,12 @@ public class ConflictBuilder {
 
 		public Symbol[] getSymbols() {
 			int len = 0;
-			for(ConflictData curr = this; curr != null; curr = curr.linked) {
-				len ++;
+			for (ConflictData curr = this; curr != null; curr = curr.linked) {
+				len++;
 			}
 			Symbol[] result = new Symbol[len];
 			len = 0;
-			for(ConflictData curr = this; curr != null; curr = curr.linked) {
+			for (ConflictData curr = this; curr != null; curr = curr.linked) {
 				result[len++] = curr.termSym;
 			}
 			Arrays.sort(result, new Comparator<Symbol>() {
@@ -128,30 +128,30 @@ public class ConflictBuilder {
 		}
 
 		public int getKind() {
-			if(status == CONFLICT) {
+			if (status == CONFLICT) {
 				return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
 			}
 			return ParserConflict.FIXED;
 		}
 
 		public String getKindAsText() {
-			switch(status) {
-			case SHIFT:
-				return "resolved as shift";
-			case REDUCE:
-				return "resolved as reduce";
-			case SYNTAXERR:
-				return "resolved as syntax error";
-			case CONFLICT:
-				return canShift ? "shift/reduce" : "reduce/reduce";
+			switch (status) {
+				case SHIFT:
+					return "resolved as shift";
+				case REDUCE:
+					return "resolved as reduce";
+				case SYNTAXERR:
+					return "resolved as syntax error";
+				case CONFLICT:
+					return canShift ? "shift/reduce" : "reduce/reduce";
 			}
 			return "<no conflict>";
 		}
 
 		public void addReduce(int newstatus, Rule rule) {
-			if(status == NONE) {
+			if (status == NONE) {
 				status = newstatus;
-			} else if(status != CONFLICT && newstatus != status) {
+			} else if (status != CONFLICT && newstatus != status) {
 				status = CONFLICT; // shift + reduce = conflict
 			}
 			rules.add(rule);

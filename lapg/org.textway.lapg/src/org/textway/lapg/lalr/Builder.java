@@ -40,7 +40,8 @@ public class Builder extends Lalr1 {
 		boolean k;
 
 		// search for symbols which accepts the empty chain
-		search_next_empty: for (;;) {
+		search_next_empty:
+		for (; ;) {
 			for (i = 0; i < rules; i++) {
 				if (!sym_empty[rleft[i]]) {
 
@@ -70,7 +71,8 @@ public class Builder extends Lalr1 {
 		}
 
 		// search for the good symbols
-		get_next_good: for (;;) {
+		get_next_good:
+		for (; ;) {
 			for (i = 0; i < rules; i++) {
 				if (!sym_good[rleft[i]]) {
 
@@ -265,15 +267,15 @@ public class Builder extends Lalr1 {
 
 				// merge conflicts
 				List<LalrConflict> mergedConflicts = conflicts.getMergedConflicts(t.number, getInput(t.number));
-				for(ParserConflict conflict : mergedConflicts) {
+				for (ParserConflict conflict : mergedConflicts) {
 					status.report(conflict);
-					switch(conflict.getKind()) {
-					case ParserConflict.REDUCE_REDUCE:
-						rr++;
-						break;
-					case ParserConflict.SHIFT_REDUCE:
-						sr++;
-						break;
+					switch (conflict.getKind()) {
+						case ParserConflict.REDUCE_REDUCE:
+							rr++;
+							break;
+						case ParserConflict.SHIFT_REDUCE:
+							sr++;
+							break;
 					}
 				}
 
@@ -318,22 +320,22 @@ public class Builder extends Lalr1 {
 
 		} else if (next[termSym] == -1) {
 			switch (compare_prio(rule, termSym)) {
-			case 0: // shift/reduce
-				builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
-				break;
-			case 1: // shift
-				builder.addReduce(termSym, sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
-				break;
-			case 2: // reduce
-				builder.addReduce(termSym, sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
-				next[termSym] = rule;
-				break;
-			case 3: // error (non-assoc)
-				builder.addReduce(termSym, sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
-				next[termSym] = -3;
-				break;
+				case 0: // shift/reduce
+					builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+					break;
+				case 1: // shift
+					builder.addReduce(termSym, sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
+					break;
+				case 2: // reduce
+					builder.addReduce(termSym, sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
+					next[termSym] = rule;
+					break;
+				case 3: // error (non-assoc)
+					builder.addReduce(termSym, sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
+					next[termSym] = -3;
+					break;
 			}
-		} else if(next[termSym] == -3) {
+		} else if (next[termSym] == -3) {
 			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
 		} else {
 			// reduce/reduce

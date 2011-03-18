@@ -64,8 +64,8 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 		sb.append(getKindAsText());
 		sb.append(" conflict (next: ");
 		boolean first = true;
-		for(Symbol s : getSymbols()) {
-			if(!first) {
+		for (Symbol s : getSymbols()) {
+			if (!first) {
 				sb.append(", ");
 			} else {
 				first = false;
@@ -73,7 +73,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 			sb.append(s.getName());
 		}
 		sb.append(")\n");
-		for(Rule r : getRules()) {
+		for (Rule r : getRules()) {
 			sb.append("    ");
 			sb.append(r.toString());
 			sb.append('\n');
@@ -101,8 +101,8 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 
 		public String getText() {
 			StringBuilder sb = new StringBuilder();
-			for(Symbol s : symbols) {
-				if(sb.length() > 0) {
+			for (Symbol s : symbols) {
+				if (sb.length() > 0) {
 					sb.append(" ");
 				}
 				sb.append(s.getName());
@@ -112,23 +112,23 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 	}
 
 	public int compareTo(LalrConflict o) {
-		if(input.getState() != o.input.getState()) {
+		if (input.getState() != o.input.getState()) {
 			return input.getState() < o.input.getState() ? -1 : 1;
 		}
-		for(int i = 0; i < symbols.length && i < o.symbols.length; i++) {
-			if(symbols[i].getIndex() != o.symbols[i].getIndex()) {
+		for (int i = 0; i < symbols.length && i < o.symbols.length; i++) {
+			if (symbols[i].getIndex() != o.symbols[i].getIndex()) {
 				return symbols[i].getIndex() < o.symbols[i].getIndex() ? -1 : 1;
 			}
 		}
-		if(symbols.length != o.symbols.length) {
+		if (symbols.length != o.symbols.length) {
 			return symbols.length < o.symbols.length ? -1 : 1;
 		}
-		for(int i = 0; i < rules.length && i < o.rules.length; i++) {
-			if(rules[i].getIndex() != o.rules[i].getIndex()) {
+		for (int i = 0; i < rules.length && i < o.rules.length; i++) {
+			if (rules[i].getIndex() != o.rules[i].getIndex()) {
 				return rules[i].getIndex() < o.rules[i].getIndex() ? -1 : 1;
 			}
 		}
-		if(rules.length != o.rules.length) {
+		if (rules.length != o.rules.length) {
 			return rules.length < o.rules.length ? -1 : 1;
 		}
 		return 0;

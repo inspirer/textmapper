@@ -21,7 +21,7 @@ import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
 
 /**
- *  LR(0) states generator
+ * LR(0) states generator
  */
 class LR0 extends ContextFree {
 
@@ -39,7 +39,7 @@ class LR0 extends ContextFree {
 	private short[][] symbase /* nsyms: array of size symbasesize[i] = situations after sym shift */;
 	private int[] symbasesize;
 	private short[] symcanshift /* list of symbols to shift [nsyms] */;
-	private int[]   closurebit /* list of rules, added to closure [ruleset] */;
+	private int[] closurebit /* list of rules, added to closure [ruleset] */;
 	private State[] table;
 	private State current, last;
 
@@ -380,21 +380,21 @@ class LR0 extends ContextFree {
 
 		// search next_to_final
 		Arrays.fill(created, false);
-		for(State t = first; t != null; t = t.next) {
-			if(t.number >= inputs.length && t.fromstate < inputs.length && t.symbol == inputs[t.fromstate]) {
+		for (State t = first; t != null; t = t.next) {
+			if (t.number >= inputs.length && t.fromstate < inputs.length && t.symbol == inputs[t.fromstate]) {
 				next_to_final[t.fromstate] = t;
 			}
 		}
 
 		// if not found then create
-		for(int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length; i++) {
 			if (next_to_final[i] == null) {
 				next_to_final[i] = new_state(i, inputs[i], 0, 0);
 				created[i] = true;
 			}
 		}
 
-		for(int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length; i++) {
 			final_state[i] = new_state(next_to_final[i].number, eoi, 0, 0);
 		}
 
@@ -405,7 +405,7 @@ class LR0 extends ContextFree {
 		}
 
 		// insert shifts
-		for(int i = 0; i < inputs.length; i++) {
+		for (int i = 0; i < inputs.length; i++) {
 			if (created[i]) {
 				insert_shift(state[i], next_to_final[i].number);
 			}
@@ -418,11 +418,11 @@ class LR0 extends ContextFree {
 			return;
 		}
 
-		status.debug( "\nStates\n0:\n");
+		status.debug("\nStates\n0:\n");
 
 		for (State t = first; t != null; t = t.next) {
 			if (t != first) {
-				status.debug( "\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
+				status.debug("\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
 			}
 
 			build_closure(t.number, t.elems);
@@ -444,11 +444,11 @@ class LR0 extends ContextFree {
 		current = last = null;
 	}
 
-	protected class State {
-		int  fromstate, symbol, number, nshifts, nreduce;
+	protected static class State {
+		int fromstate, symbol, number, nshifts, nreduce;
 		State link, next;
 		short[] shifts, reduce;
 		boolean LR0;
 		short[] elems;
-	};
+	}
 }

@@ -34,7 +34,7 @@ class Lalr1 extends LR0 {
 
 	// LALR
 
-	protected short[] larule /* index in LA -> rule */ , laindex /* state -> index in LA */;
+	protected short[] larule /* index in LA -> rule */, laindex /* state -> index in LA */;
 	protected int[] LA /* (state,rule to reduce in state) -> setof(term) */;
 	protected short[] term_goto /* nsyms + 1 */, term_from, term_to /* ngotos: state->state */;
 
