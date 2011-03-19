@@ -39,7 +39,7 @@ class Lalr1 extends LR0 {
 	protected short[] term_goto /* sym -> index [nsyms + 1] */, term_from, term_to /* [ntgotos + ngotos] for each shift: state->state */;
 
 	private int maxrpart /* max len of rule's right part */, ngotos, ntgotos;
-	private Short[] lookback;
+	private Short[] lookback /* [number of available non-LR0 reductions] */;
 	private short[] edge;
 	private short[][] graph;
 	private int[] follow /* ngotos ->setof(term) */;
@@ -213,7 +213,7 @@ class Lalr1 extends LR0 {
 	}
 
 
-	// fills: follow
+	// builds in-rule follow set, processes empty symbols
 	private void init_follow() {
 		int settrav = 0, nedges = 0;
 		short[][] empties = graph;
@@ -256,68 +256,20 @@ class Lalr1 extends LR0 {
 	}
 
 
-	// reverts all edges in graph
-	private void transpose_graph() {
-		int n = ngotos;
-		short[] nedges = new short[n];
-		short[] p;
-		int i;
-
-		// calculate new row sizes
-		Arrays.fill(nedges, (short) 0);
-		for (i = 0; i < n; i++) {
-			p = graph[i];
-			if (p != null) {
-				for (int e = 0; p[e] >= 0; e++) {
-					nedges[p[e]]++;
-				}
-			}
-		}
-
-		// allocate new graph
-		short[][] newgraph = new short[n][];
-		for (i = 0; i < n; i++) {
-			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i] + 1] : null;
-		}
-
-		// fill new graph
-		Arrays.fill(nedges, (short) 0);
-		for (i = 0; i < n; i++) {
-			p = graph[i];
-			if (p != null) {
-				for (int e = 0; p[e] >= 0; e++) {
-					newgraph[p[e]][nedges[p[e]]++] = (short) i;
-				}
-			}
-		}
-
-		// insert -1 (end-of-row markers)
-		for (i = 0; i < n; i++) {
-			if (newgraph[i] != null) {
-				newgraph[i][nedges[i]] = -1;
-			}
-		}
-
-		graph = newgraph;
-	}
-
-
-	//	 builds follow set
+	// builds cross-rule follow graph & updates follow set
 	private void build_follow() {
 		int i, e, length, currstate, nedges = 0, rpart;
 		short[] states = new short[maxrpart + 1];
-		int[] rule;
 
 		for (i = 0; i < ngotos; i++) {
 			int fstate = term_from[ntgotos + i];
 			int symbol = state[term_to[ntgotos + i]].symbol;
 
-			rule = derives[symbol - nterms];
-			for (int element : rule) {
+			for (int ruleIndex : derives[symbol - nterms]) {
 				currstate = states[0] = (short) fstate;
 				length = 1;
 
-				for (rpart = rindex[element]; rright[rpart] >= 0; rpart++) {
+				for (rpart = rindex[ruleIndex]; rright[rpart] >= 0; rpart++) {
 					int nshifts = state[currstate].nshifts;
 					short[] shft = state[currstate].shifts;
 
@@ -332,7 +284,7 @@ class Lalr1 extends LR0 {
 				}
 
 				if (!state[currstate].LR0) {
-					add_lookback(currstate, element, (short) i);
+					add_lookback(currstate, ruleIndex, (short) i);
 				}
 
 				for (length--; ;) {
@@ -362,7 +314,7 @@ class Lalr1 extends LR0 {
 		}
 
 		show_graph();
-		transpose_graph();
+		graph = transpose_graph(graph, ngotos);
 		show_graph();
 
 		graph_closure(graph);
@@ -489,6 +441,49 @@ class Lalr1 extends LR0 {
 
 	}
 
+	// reverts all edges in graph
+	private static short[][] transpose_graph(short[][] graph, final int n) {
+		int[] nedges = new int[n];
+		short[] p;
+		int i;
+
+		// calculate new row sizes
+		Arrays.fill(nedges, 0);
+		for (i = 0; i < n; i++) {
+			p = graph[i];
+			if (p != null) {
+				for (int e = 0; p[e] >= 0; e++) {
+					nedges[p[e]]++;
+				}
+			}
+		}
+
+		// allocate new graph
+		short[][] newgraph = new short[n][];
+		for (i = 0; i < n; i++) {
+			newgraph[i] = (nedges[i] != 0) ? new short[nedges[i] + 1] : null;
+		}
+
+		// fill new graph
+		Arrays.fill(nedges, (short) 0);
+		for (i = 0; i < n; i++) {
+			p = graph[i];
+			if (p != null) {
+				for (int e = 0; p[e] >= 0; e++) {
+					newgraph[p[e]][nedges[p[e]]++] = (short) i;
+				}
+			}
+		}
+
+		// insert -1 (end-of-row markers)
+		for (i = 0; i < n; i++) {
+			if (newgraph[i] != null) {
+				newgraph[i][nedges[i]] = -1;
+			}
+		}
+
+		return newgraph;
+	}
 
 	// graph closure // //////////////////////////////////////////////////////////////////////////////
 
@@ -559,5 +554,6 @@ class Lalr1 extends LR0 {
 
 		gc_index = null;
 		gc_vertices = null;
+		this.relation = null;
 	}
 }
