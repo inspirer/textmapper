@@ -256,7 +256,7 @@ class Lalr1 extends LR0 {
 	}
 
 
-	// builds cross-rule follow graph & updates follow set
+	// builds 1) lookback 2) cross-rule follow graph & updates follow set
 	private void build_follow() {
 		int i, e, length, currstate, nedges = 0, rpart;
 		short[] states = new short[maxrpart + 1];
@@ -265,11 +265,12 @@ class Lalr1 extends LR0 {
 			int fstate = term_from[ntgotos + i];
 			int symbol = state[term_to[ntgotos + i]].symbol;
 
-			for (int ruleIndex : derives[symbol - nterms]) {
+			for (int rule : derives[symbol - nterms]) {
 				currstate = states[0] = (short) fstate;
 				length = 1;
 
-				for (rpart = rindex[ruleIndex]; rright[rpart] >= 0; rpart++) {
+				// iterate through rule's states
+				for (rpart = rindex[rule]; rright[rpart] >= 0; rpart++) {
 					int nshifts = state[currstate].nshifts;
 					short[] shft = state[currstate].shifts;
 
@@ -284,13 +285,16 @@ class Lalr1 extends LR0 {
 				}
 
 				if (!state[currstate].LR0) {
-					add_lookback(currstate, ruleIndex, (short) i);
+					// a) lookback: rule's lookahead symbols include follow set for the current goto (i)
+					add_lookback(currstate, rule, (short) i);
 				}
 
 				for (length--; ;) {
 					rpart--;
 					if (rpart >= 0 && rright[rpart] >= nterms) {
 						currstate = states[--length];
+
+						// b) inner rule's goto inherits outer follow set
 						edge[nedges++] = (short) select_goto(currstate, rright[rpart]);
 						if (sym_empty[rright[rpart]]) {
 							continue;
