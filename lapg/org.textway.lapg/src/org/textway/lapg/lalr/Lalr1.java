@@ -255,6 +255,18 @@ class Lalr1 extends LR0 {
 		Arrays.fill(empties, null);
 	}
 
+	private int state_by_symbol(int sourceState, int symbol) {
+		assert state[sourceState].nshifts == state[sourceState].shifts.length;
+
+		for (int target : state[sourceState].shifts) {
+			if (state[target].symbol == symbol) {
+				return target;
+			}
+		}
+
+		// data consistency problem, shouldn't happen
+		throw new RuntimeException("state N" + sourceState + " is broken, cannot shift " + sym[symbol].getName());
+	}
 
 	// builds 1) lookback 2) cross-rule follow graph & updates follow set
 	private void build_follow() {
@@ -271,16 +283,7 @@ class Lalr1 extends LR0 {
 
 				// iterate through rule's states
 				for (rpart = rindex[rule]; rright[rpart] >= 0; rpart++) {
-					int nshifts = state[currstate].nshifts;
-					short[] shft = state[currstate].shifts;
-
-					for (e = 0; e < nshifts; e++) {
-						currstate = shft[e];
-						if (state[currstate].symbol == rright[rpart]) {
-							break;
-						}
-					}
-					assert e < nshifts; // FIXME throw Exception?
+					currstate = state_by_symbol(currstate, rright[rpart]);
 					states[length++] = (short) currstate;
 				}
 
