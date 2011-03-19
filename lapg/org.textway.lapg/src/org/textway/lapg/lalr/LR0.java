@@ -42,6 +42,7 @@ class LR0 extends ContextFree {
 	private int[] closurebit /* list of rules, added to closure [ruleset] */;
 	private State[] table;
 	private State current, last;
+	private State[] next_to_final;
 
 	// result
 	protected int nstates, termset;
@@ -87,6 +88,8 @@ class LR0 extends ContextFree {
 
 		table = new State[STATE_TABLE_SIZE];
 		Arrays.fill(table, null);
+
+		next_to_final = new State[inputs.length];
 
 		// state transition temporary data
 		short[] symnum = new short[nsyms];
@@ -252,7 +255,7 @@ class LR0 extends ContextFree {
 		}
 	}
 
-	private State new_state(int from, int by, int hash, int size) {
+	private State new_state(int from, int by, int hash, int size, int inputsign) {
 		last = last.next = new State();
 		last.elems = new short[size + 1];
 		last.link = table[hash % STATE_TABLE_SIZE];
@@ -265,6 +268,10 @@ class LR0 extends ContextFree {
 		last.reduce = last.shifts = null;
 		last.LR0 = true;
 		last.elems[size] = -1;
+		last.inputsign = inputsign;
+		if(inputsign >= 0) {
+			next_to_final[inputsign] = last;
+		}
 		return last;
 	}
 
@@ -278,6 +285,7 @@ class LR0 extends ContextFree {
 			hash += new_core[i];
 		}
 		t = table[hash % STATE_TABLE_SIZE];
+		int inputsign = current.number < inputs.length && inputs[current.number] == symbol ? current.number : -1;
 
 		while (t != null) {
 			for (i = 0; i < size; i++) {
@@ -286,7 +294,7 @@ class LR0 extends ContextFree {
 				}
 			}
 
-			if (i == size) {
+			if (i == size && inputsign == t.inputsign) {
 				break;
 			}
 
@@ -294,7 +302,7 @@ class LR0 extends ContextFree {
 		}
 
 		if (t == null) {
-			t = new_state(current.number, symbol, hash, size);
+			t = new_state(current.number, symbol, hash, size, inputsign);
 			for (i = 0; i < size; i++) {
 				t.elems[i] = new_core[i];
 			}
@@ -360,7 +368,7 @@ class LR0 extends ContextFree {
 				t.shifts[e++] = old[i];
 			}
 			t.shifts[e++] = (short) tostate;
-			assert i == n || state[old[i]].symbol != symbol : "bad";   // FIXME
+			assert i == n || state[old[i]].symbol != symbol : "internal error: cannot insert shift";
 			for (; i < n; i++) {
 				t.shifts[e++] = old[i];
 			}
@@ -374,28 +382,22 @@ class LR0 extends ContextFree {
 	}
 
 	private void add_final_states() {
-		State[] next_to_final = new State[inputs.length];
 		boolean[] created = new boolean[inputs.length];
 		State[] final_state = new State[inputs.length];
 
 		// search next_to_final
 		Arrays.fill(created, false);
-		for (State t = first; t != null; t = t.next) {
-			if (t.number >= inputs.length && t.fromstate < inputs.length && t.symbol == inputs[t.fromstate]) {
-				next_to_final[t.fromstate] = t;
-			}
-		}
 
 		// if not found then create
 		for (int i = 0; i < inputs.length; i++) {
 			if (next_to_final[i] == null) {
-				next_to_final[i] = new_state(i, inputs[i], 0, 0);
+				next_to_final[i] = new_state(i, inputs[i], 0, 0, -1);
 				created[i] = true;
 			}
 		}
 
 		for (int i = 0; i < inputs.length; i++) {
-			final_state[i] = new_state(next_to_final[i].number, eoi, 0, 0);
+			final_state[i] = new_state(next_to_final[i].number, eoi, 0, 0, -1);
 		}
 
 		// create state array
@@ -446,6 +448,7 @@ class LR0 extends ContextFree {
 
 	protected static class State {
 		int fromstate, symbol, number, nshifts, nreduce;
+		int inputsign;
 		State link, next;
 		short[] shifts, reduce;
 		boolean LR0;
