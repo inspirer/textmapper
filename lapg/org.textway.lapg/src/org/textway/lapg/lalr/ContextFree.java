@@ -48,15 +48,6 @@ abstract class ContextFree {
 		return result;
 	}
 
-	private static int[] toArray(InputRef[] input) {
-		int[] result = new int[input.length];
-		for (int i = 0; i < input.length; i++) {
-			// TODO handle input[i].hasEoi()
-			result[i] = input[i].getTarget().getIndex();
-		}
-		return result;
-	}
-
 	protected ContextFree(Grammar g, ProcessingStatus status) {
 		this.status = status;
 
@@ -66,7 +57,15 @@ abstract class ContextFree {
 		this.nsyms = sym.length;
 		this.rules = wrules.length;
 		this.nterms = g.getTerminals();
-		this.inputs = toArray(g.getInput());
+
+		InputRef[] startRefs = g.getInput();
+		this.noEoiInput = new boolean[startRefs.length];
+		this.inputs = new int[startRefs.length];
+		for (int i = 0; i < startRefs.length; i++) {
+			this.inputs[i] = startRefs[i].getTarget().getIndex();
+			this.noEoiInput[i] = !startRefs[i].hasEoi();
+		}
+
 		this.eoi = g.getEoi().getIndex();
 		this.errorn = g.getError() == null ? -1 : g.getError().getIndex();
 
@@ -107,6 +106,7 @@ abstract class ContextFree {
 
 	protected final int nsyms, nterms, eoi, errorn;
 	protected final int[] inputs;
+	protected final boolean[] noEoiInput;
 	protected final int rules, situations;
 	protected final Symbol[] sym;
 	protected final Rule[] wrules;

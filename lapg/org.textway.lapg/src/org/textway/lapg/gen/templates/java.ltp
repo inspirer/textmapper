@@ -90,7 +90,7 @@ ${end-}
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
 
-	${if syntax.input.length > 1}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}) throws java.io.@IOException, ParseException {
+	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}${if self->needFinalState()}, int finalState${end}) throws java.io.@IOException, ParseException {
 
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
@@ -101,7 +101,7 @@ ${end-}
 		lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+initialState' : parser.nstates-1}) {
+		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -134,7 +134,7 @@ ${end-}
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${syntax.input.length > 1 ? '' + (parser.nstates - syntax.input.length) + '+initialState' : parser.nstates-1}) {
+		if (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
@@ -269,15 +269,17 @@ ${if opts.genCleanup}
 	protected void cleanup(LapgSymbol sym) {
 	}
 ${end-}
-${if syntax.input.length > 1-}
+${if self->needFinalState()-}
 ${foreach inp in syntax.input}
 	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer, ${index});
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if syntax.input.length > 1}, ${index}${end}, ${parser.final_states[index]});
 	}
 ${end-}
 ${end-}
 }
-${end} 
+${end}
+
+${query needFinalState = syntax.input.length > 1 || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
 
 ${template parserTables-}
 ${call parserTable(parser.action_index, 'int', 'lapg_action', 'LapgAction')-}

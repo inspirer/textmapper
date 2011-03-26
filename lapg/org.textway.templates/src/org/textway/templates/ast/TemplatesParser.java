@@ -732,7 +732,7 @@ public class TemplatesParser {
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
 
-	private Object parse(TemplatesLexer lexer, int initialState) throws IOException, ParseException {
+	private Object parse(TemplatesLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -741,7 +741,7 @@ public class TemplatesParser {
 		lapg_m[0].state = initialState;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 270+initialState) {
+		while (lapg_m[lapg_head].state != finalState) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -755,7 +755,7 @@ public class TemplatesParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 270+initialState) {
+		if (lapg_m[lapg_head].state != finalState) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			throw new ParseException();
 		}
@@ -1073,10 +1073,10 @@ public class TemplatesParser {
 	}
 
 	public List<IBundleEntity> parseInput(TemplatesLexer lexer) throws IOException, ParseException {
-		return (List<IBundleEntity>) parse(lexer, 0);
+		return (List<IBundleEntity>) parse(lexer, 0, 270);
 	}
 
 	public TemplateNode parseBody(TemplatesLexer lexer) throws IOException, ParseException {
-		return (TemplateNode) parse(lexer, 1);
+		return (TemplateNode) parse(lexer, 1, 271);
 	}
 }

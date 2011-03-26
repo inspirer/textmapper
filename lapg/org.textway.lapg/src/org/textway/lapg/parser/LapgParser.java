@@ -364,7 +364,7 @@ public class LapgParser {
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
 
-	private Object parse(LapgLexer lexer, int initialState) throws IOException, ParseException {
+	private Object parse(LapgLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
@@ -374,7 +374,7 @@ public class LapgParser {
 		lapg_m[0].state = initialState;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 193+initialState) {
+		while (lapg_m[lapg_head].state != finalState) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -404,7 +404,7 @@ public class LapgParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 193+initialState) {
+		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
 				reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			}
@@ -711,10 +711,10 @@ public class LapgParser {
 	}
 
 	public AstRoot parseInput(LapgLexer lexer) throws IOException, ParseException {
-		return (AstRoot) parse(lexer, 0);
+		return (AstRoot) parse(lexer, 0, 193);
 	}
 
 	public AstExpression parseExpression(LapgLexer lexer) throws IOException, ParseException {
-		return (AstExpression) parse(lexer, 1);
+		return (AstExpression) parse(lexer, 1, 194);
 	}
 }

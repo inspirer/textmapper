@@ -27,6 +27,7 @@ public class ParserTables {
 	public int[] rleft, rright, rindex, rprio;
 	public short[] sym_goto, sym_from, sym_to, action_table;
 	public int[] action_index;
+	public int[] final_states;
 	public int nactions;
 
 	public int[] getRuleLength() {

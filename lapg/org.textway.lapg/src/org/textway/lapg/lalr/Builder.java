@@ -392,6 +392,7 @@ public class Builder extends Lalr1 {
 		r.action_table = this.action_table;
 		r.action_index = this.action_index;
 		r.nactions = this.nactions;
+		r.final_states = this.final_states;
 		return r;
 	}
 

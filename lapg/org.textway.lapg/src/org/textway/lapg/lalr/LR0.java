@@ -49,6 +49,7 @@ class LR0 extends ContextFree {
 	protected int[][] derives /* nvars: list of rules */;   // !! note: derives -= nterms;
 	protected State[] state;
 	protected State first;
+	protected int[] final_states;
 
 	protected LR0(Grammar g, ProcessingStatus status) {
 		super(g, status);
@@ -269,7 +270,7 @@ class LR0 extends ContextFree {
 		last.LR0 = true;
 		last.elems[size] = -1;
 		last.inputsign = inputsign;
-		if(inputsign >= 0) {
+		if (inputsign >= 0) {
 			next_to_final[inputsign] = last;
 		}
 		return last;
@@ -383,7 +384,7 @@ class LR0 extends ContextFree {
 
 	private void add_final_states() {
 		boolean[] created = new boolean[inputs.length];
-		State[] final_state = new State[inputs.length];
+		final_states = new int[inputs.length];
 
 		// search next_to_final
 		Arrays.fill(created, false);
@@ -397,7 +398,11 @@ class LR0 extends ContextFree {
 		}
 
 		for (int i = 0; i < inputs.length; i++) {
-			final_state[i] = new_state(next_to_final[i].number, eoi, 0, 0, -1);
+			if (noEoiInput[i]) {
+				final_states[i] = next_to_final[i].number;
+			} else {
+				final_states[i] = new_state(next_to_final[i].number, eoi, 0, 0, -1).number;
+			}
 		}
 
 		// create state array
@@ -411,7 +416,9 @@ class LR0 extends ContextFree {
 			if (created[i]) {
 				insert_shift(state[i], next_to_final[i].number);
 			}
-			insert_shift(next_to_final[i], final_state[i].number);
+			if (!noEoiInput[i]) {
+				insert_shift(next_to_final[i], final_states[i]);
+			}
 		}
 	}
 

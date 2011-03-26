@@ -227,6 +227,19 @@ class Lalr1 extends LR0 {
 			short[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
 
+			// handle goto for no-eoi input => add all terms into follow
+			if (term_from[ntgotos + i] < inputs.length) {
+				int src = term_from[ntgotos + i];
+				if (noEoiInput[src] && final_states[src] == st) {
+					for (k = 0; k < termset - 1; k++) {
+						follow[settrav + k] = 0xffffffff;
+					}
+					for (k = (termset-1) * BITS; k < nterms; k++) {
+						follow[settrav + termset - 1] |= (1 << (k % BITS));
+					}
+				}
+			}
+
 			for (; shifts_ind < nshifts && state[shifts[shifts_ind]].symbol < nterms; shifts_ind++) {
 				follow[settrav + (state[shifts[shifts_ind]].symbol) / BITS] |= (1 << ((state[shifts[shifts_ind]].symbol) % BITS));
 			}

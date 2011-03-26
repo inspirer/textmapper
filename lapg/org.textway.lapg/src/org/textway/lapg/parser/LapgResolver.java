@@ -324,7 +324,8 @@ public class LapgResolver {
 				if (key.equals("input")) {
 					// TODO handle no-eoi attribute
 					for(LiSymbol s : val) {
-						inputs.add(new LiInputRef(null, s, true));
+						boolean hasEoi = !s.getName().toLowerCase().endsWith("noeoi"); // FIXME
+						inputs.add(new LiInputRef(null, s, hasEoi));
 					}
 				} else if (key.equals("left")) {
 					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()]), directive));
