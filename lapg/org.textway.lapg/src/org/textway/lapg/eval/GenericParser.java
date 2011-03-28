@@ -1,18 +1,20 @@
 package org.textway.lapg.eval;
 
 import org.textway.lapg.api.Grammar;
-import org.textway.lapg.eval.InterpretedLexer.ErrorReporter;
-import org.textway.lapg.eval.InterpretedLexer.InterpretedSymbol;
-import org.textway.lapg.eval.InterpretedTree.TextSource;
+import org.textway.lapg.eval.GenericLexer.ErrorReporter;
+import org.textway.lapg.eval.GenericLexer.ParseSymbol;
+import org.textway.lapg.eval.GenericParseContext.TextSource;
 import org.textway.lapg.lalr.ParserTables;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Gryaznov Evgeny, 3/17/11
  */
-public class InterpretedParser {
+public class GenericParser {
 	public static class ParseException extends Exception {
 		private static final long serialVersionUID = 1L;
 
@@ -21,8 +23,10 @@ public class InterpretedParser {
 	}
 
 	private final ErrorReporter reporter;
+	protected TextSource source;
 
-	private final Grammar grammar;
+	protected final Grammar grammar;
+
 	private final int[] lapg_action;
 	private final short[] lapg_lalr;
 	private final short[] lapg_sym_goto;
@@ -33,8 +37,7 @@ public class InterpretedParser {
 
 	private final boolean debugSyntax;
 
-
-	public InterpretedParser(ErrorReporter reporter, ParserTables tables, Grammar grammar, boolean debugSyntax) {
+	public GenericParser(ErrorReporter reporter, ParserTables tables, Grammar grammar, boolean debugSyntax) {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		this.lapg_action = tables.action_index;
@@ -79,20 +82,20 @@ public class InterpretedParser {
 	}
 
 	protected int lapg_head;
-	protected InterpretedSymbol[] lapg_m;
-	protected InterpretedSymbol lapg_n;
+	protected ParseSymbol[] lapg_m;
+	protected ParseSymbol lapg_n;
 
-	public Object parse(InterpretedLexer lexer, int initialState) throws IOException, ParseException {
+	public Object parse(GenericLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
-		lapg_m = new InterpretedSymbol[1024];
+		lapg_m = new ParseSymbol[1024];
 		lapg_head = 0;
 		int lapg_symbols_ok = 4;
 
-		lapg_m[0] = new InterpretedSymbol();
+		lapg_m[0] = new ParseSymbol();
 		lapg_m[0].state = initialState;
 		lapg_n = lexer.next();
 
-		while (lapg_m[lapg_head].state != 193+initialState) {
+		while (lapg_m[lapg_head].state != finalState) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
 
 			if (lapg_i >= 0) {
@@ -103,26 +106,28 @@ public class InterpretedParser {
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
-				if (restore()) {
-					if (lapg_symbols_ok >= 4) {
-						reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+				if (grammar.getError() != null) {
+					if (restore()) {
+						if (lapg_symbols_ok >= 4) {
+							reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+						}
+						if (lapg_symbols_ok <= 1) {
+							lapg_n = lexer.next();
+						}
+						lapg_symbols_ok = 0;
+						continue;
 					}
-					if (lapg_symbols_ok <= 1) {
-						lapg_n = lexer.next();
+					if (lapg_head < 0) {
+						lapg_head = 0;
+						lapg_m[0] = new ParseSymbol();
+						lapg_m[0].state = initialState;
 					}
-					lapg_symbols_ok = 0;
-					continue;
-				}
-				if (lapg_head < 0) {
-					lapg_head = 0;
-					lapg_m[0] = new InterpretedSymbol();
-					lapg_m[0].state = initialState;
 				}
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 193+initialState) {
+		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
 				reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
 			}
@@ -141,7 +146,7 @@ public class InterpretedParser {
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
-			lapg_m[++lapg_head] = new InterpretedSymbol();
+			lapg_m[++lapg_head] = new ParseSymbol();
 			lapg_m[lapg_head].lexem = grammar.getError().getIndex();
 			lapg_m[lapg_head].sym = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
@@ -153,7 +158,7 @@ public class InterpretedParser {
 		return false;
 	}
 
-	protected void shift(InterpretedLexer lexer) throws IOException {
+	protected void shift(GenericLexer lexer) throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (debugSyntax) {
@@ -165,14 +170,14 @@ public class InterpretedParser {
 	}
 
 	protected void reduce(int rule) {
-		InterpretedSymbol lapg_gg = new InterpretedSymbol();
+		ParseSymbol lapg_gg = new ParseSymbol();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (debugSyntax) {
 			System.out.println("reduce to " + grammar.getSymbols()[lapg_rlex[rule]].getName());
 		}
-		InterpretedSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
+		ParseSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 		lapg_gg.line = startsym.line;
 		lapg_gg.offset = startsym.offset;
 		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
@@ -182,21 +187,37 @@ public class InterpretedParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
-	protected void applyRule(InterpretedSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(ParseSymbol lapg_gg, int rule, int ruleLength) {
+		if (ruleLength == 1) {
+			Object right = lapg_m[lapg_head].sym;
+			if (right instanceof GenericNode) {
+				lapg_gg.sym = right;
+			} else {
+				lapg_gg.sym = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+			}
+		} else if (ruleLength > 1) {
+			List<GenericNode> children = new ArrayList<GenericNode>();
+			for (int i = ruleLength - 1; i >= 0; i--) {
+				if (lapg_m[lapg_head].sym instanceof GenericNode) {
+					children.add((GenericNode) lapg_m[lapg_head].sym);
+				}
+			}
+			lapg_gg.sym = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new GenericNode[children.size()]));
+		}
 	}
 
-	/**
+	/*
 	 *  disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(InterpretedSymbol sym) {
+	protected void dispose(ParseSymbol sym) {
 	}
 
-	/**
+	/*
 	 *  cleans node removed from the stack
 	 */
-	protected void cleanup(InterpretedSymbol sym) {
+	protected void cleanup(ParseSymbol sym) {
 	}
 }

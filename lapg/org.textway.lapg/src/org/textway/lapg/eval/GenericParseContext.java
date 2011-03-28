@@ -16,8 +16,8 @@
 package org.textway.lapg.eval;
 
 import org.textway.lapg.api.Grammar;
-import org.textway.lapg.eval.InterpretedLexer.ErrorReporter;
-import org.textway.lapg.eval.InterpretedParser.ParseException;
+import org.textway.lapg.eval.GenericLexer.ErrorReporter;
+import org.textway.lapg.eval.GenericParser.ParseException;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
 
@@ -31,57 +31,73 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 3/17/11
  */
-public class InterpretedTree<T> {
+public class GenericParseContext {
 
-	private final TextSource source;
-	private final T root;
-	private final List<InterpretedProblem> errors;
+	private final Grammar grammar;
+	private final ParserTables parserTables;
+	private final LexerTables lexerTables;
 
-	public InterpretedTree(TextSource source, T root, List<InterpretedProblem> errors) {
-		this.source = source;
-		this.root = root;
-		this.errors = errors;
+	public GenericParseContext(Grammar grammar, ParserTables parserTables, LexerTables lexerTables) {
+		this.grammar = grammar;
+		this.parserTables = parserTables;
+		this.lexerTables = lexerTables;
 	}
 
-	public TextSource getSource() {
-		return source;
-	}
-
-	public T getRoot() {
-		return root;
-	}
-
-	public List<InterpretedProblem> getErrors() {
-		return errors;
-	}
-
-	public boolean hasErrors() {
-		return errors.size() > 0;
-	}
-
-
-	public static InterpretedTree<Object> parse(TextSource source, Grammar g, ParserTables p, LexerTables t, int inputIndex) {
-		final List<InterpretedProblem> list = new ArrayList<InterpretedProblem>();
+	public Result parse(TextSource source, int inputIndex) {
+		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new InterpretedProblem(KIND_ERROR, start, end, s, null));
+				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			InterpretedLexer lexer = new InterpretedLexer(source.getStream(), reporter, t);
+			GenericLexer lexer = createLexer(source, reporter);
 			lexer.setLine(source.getInitialLine());
 
-			InterpretedParser parser = new InterpretedParser(reporter, p, g, false);
-			Object result = parser.parse(lexer, inputIndex);
+			GenericParser parser = createParser(source, reporter);
+			parser.source = source;
+			Object result = parser.parse(lexer, inputIndex, parserTables.final_states[inputIndex]);
 
-			return new InterpretedTree<Object>(source, result, list);
+			return new Result(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new InterpretedProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new ParseProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new InterpretedTree<Object>(source, null, list);
+		return new Result(source, null, list);
+	}
+
+	private GenericParser createParser(TextSource source, ErrorReporter reporter) {
+		return new GenericParser(reporter, parserTables, grammar, false);
+	}
+
+	protected GenericLexer createLexer(TextSource source, ErrorReporter reporter) throws IOException {
+		return new GenericLexer(source.getStream(), reporter, lexerTables, grammar);
+	}
+
+	public static class Result {
+		private final TextSource source;
+		private final Object root;
+		private final List<ParseProblem> errors;
+
+		public Result(TextSource source, Object root, List<ParseProblem> errors) {
+			this.source = source;
+			this.root = root;
+			this.errors = errors;
+		}
+
+		public TextSource getSource() {
+			return source;
+		}
+
+		public Object getRoot() {
+			return root;
+		}
+
+		public List<ParseProblem> getErrors() {
+			return errors;
+		}
 	}
 
 	public static final int KIND_FATAL = 0;
@@ -90,14 +106,14 @@ public class InterpretedTree<T> {
 
 	public static final String PARSER_SOURCE = "parser";
 
-	public static class InterpretedProblem extends Exception {
+	public static class ParseProblem extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
 
-		public InterpretedProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public ParseProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;

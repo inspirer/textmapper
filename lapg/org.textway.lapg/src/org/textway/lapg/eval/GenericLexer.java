@@ -15,6 +15,8 @@
  */
 package org.textway.lapg.eval;
 
+import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.lex.LexerTables;
 
 import java.io.IOException;
@@ -24,9 +26,9 @@ import java.text.MessageFormat;
 /**
  * Gryaznov Evgeny, 3/17/11
  */
-public class InterpretedLexer {
+public class GenericLexer {
 
-	public static class InterpretedSymbol {
+	public static class ParseSymbol {
 		public Object sym;
 		public int lexem;
 		public int state;
@@ -43,6 +45,7 @@ public class InterpretedLexer {
 
 	private Reader stream;
 	final private ErrorReporter reporter;
+	private final Grammar grammar;
 
 	final private char[] data = new char[2048];
 	private int datalen, l;
@@ -61,8 +64,9 @@ public class InterpretedLexer {
 	private final int[][] lapg_lexem;
 
 
-	public InterpretedLexer(Reader stream, ErrorReporter reporter, LexerTables tables) throws IOException {
+	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
 		this.reporter = reporter;
+		this.grammar = grammar;
 		this.lapg_char2no = tables.char2no;
 		this.lapg_lexem = tables.change;
 		this.lapg_lexemnum = tables.lnum;
@@ -109,8 +113,8 @@ public class InterpretedLexer {
 		return 1;
 	}
 
-	public InterpretedSymbol next() throws IOException {
-		InterpretedSymbol lapg_n = new InterpretedSymbol();
+	public ParseSymbol next() throws IOException {
+		ParseSymbol lapg_n = new ParseSymbol();
 		int state;
 
 		do {
@@ -167,7 +171,14 @@ public class InterpretedLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(InterpretedSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) {
+		SourceElement action = grammar.getLexems()[lexemIndex].getAction();
+		if(action != null) {
+			String text = action.getText();
+			if(text.indexOf("return false") >= 0) {
+				return false;
+			}
+		}
 		return true;
 	}
 }
