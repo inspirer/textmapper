@@ -60,15 +60,23 @@ public class GenericNode {
 		return source.getText(offset, endoffset);
 	}
 
+	public String toSignature() {
+		StringBuilder sb = new StringBuilder();
+		toString(sb);
+		return sb.toString();
+	}
+
 	public void toString(StringBuilder sb) {
 		sb.append('[');
 		int offset = this.offset;
-		for(GenericNode node : children) {
-			if(offset < node.offset) {
-				sb.append(source.getText(offset, node.offset));
+		if(children != null) {
+			for(GenericNode node : children) {
+				if(offset < node.offset) {
+					sb.append(source.getText(offset, node.offset));
+				}
+				node.toString(sb);
+				offset = node.endoffset;
 			}
-			node.toString(sb);
-			offset = node.endoffset;
 		}
 		if(offset < endoffset) {
 			sb.append(source.getText(offset, endoffset));

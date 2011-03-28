@@ -379,6 +379,10 @@ class LR0 extends ContextFree {
 			t.nshifts = 1;
 			t.shifts = new short[1];
 			t.shifts[0] = (short) tostate;
+
+			if(t.nreduce > 0) {
+				t.LR0 = false;
+			}
 		}
 	}
 

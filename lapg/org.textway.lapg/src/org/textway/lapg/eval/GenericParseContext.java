@@ -43,6 +43,10 @@ public class GenericParseContext {
 		this.lexerTables = lexerTables;
 	}
 
+	public Result parse(String text, int inputIndex) {
+		return parse(new TextSource("input", text.toCharArray(), 1), inputIndex);
+	}
+
 	public Result parse(TextSource source, int inputIndex) {
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
