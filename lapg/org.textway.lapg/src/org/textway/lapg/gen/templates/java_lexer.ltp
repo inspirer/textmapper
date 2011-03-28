@@ -75,7 +75,7 @@ ${end-}
 
 ${self->lexerTables()-}
 
-	private static int mapCharacter(int chr) {
+	private int mapCharacter(int chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
 			return lapg_char2no[chr];
 		}

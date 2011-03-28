@@ -287,7 +287,7 @@ public class TemplatesLexer {
 		return res;
 	}
 
-	private static int mapCharacter(int chr) {
+	private int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}

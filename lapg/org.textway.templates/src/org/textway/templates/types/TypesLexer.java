@@ -216,7 +216,7 @@ public class TypesLexer {
 		{ -24, -24, -24, -24, -24, -24, -24, 6, 6, 6, 6, 6, 6, 6, 6, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, -24}
 	};
 
-	private static int mapCharacter(int chr) {
+	private int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}

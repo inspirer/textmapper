@@ -53,7 +53,7 @@ ${end-}
 ${end-}
 	}
 ${end}
-	protected final static int lapg_next(int state, int symbol) {
+	protected final int lapg_next(int state, int symbol) {
 ${if parser.nactions > 0-}
 		int p;
 		if (lapg_action[state] < -2) {
@@ -68,7 +68,7 @@ ${end-}
 		return lapg_action[state];
 	}
 
-	protected final static int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 

@@ -126,7 +126,7 @@ public class XmlLexer {
 		{ -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5}
 	};
 
-	private static int mapCharacter(int chr) {
+	private int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}

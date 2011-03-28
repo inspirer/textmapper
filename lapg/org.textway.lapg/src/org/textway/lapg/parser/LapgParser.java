@@ -329,7 +329,7 @@ public class LapgParser {
 		public static final int grammar_part_directive = 47;  // grammar_part ::= '%' identifier references ';'
 	}
 
-	protected final static int lapg_next(int state, int symbol) {
+	protected final int lapg_next(int state, int symbol) {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
@@ -342,7 +342,7 @@ public class LapgParser {
 		return lapg_action[state];
 	}
 
-	protected final static int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 

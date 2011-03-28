@@ -247,7 +247,7 @@ public class LapgLexer {
 		{ -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, -35, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, -35, -35, 27, 27, -35}
 	};
 
-	private static int mapCharacter(int chr) {
+	private int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}
