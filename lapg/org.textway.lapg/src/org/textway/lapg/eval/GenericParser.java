@@ -140,7 +140,7 @@ public class GenericParser {
 		if (lapg_n.lexem == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1) == -1) {
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, grammar.getError().getIndex()) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
@@ -149,7 +149,7 @@ public class GenericParser {
 			lapg_m[++lapg_head] = new ParseSymbol();
 			lapg_m[lapg_head].lexem = grammar.getError().getIndex();
 			lapg_m[lapg_head].sym = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, grammar.getError().getIndex());
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
