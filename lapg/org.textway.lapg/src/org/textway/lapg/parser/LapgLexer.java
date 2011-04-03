@@ -141,8 +141,16 @@ public class LapgLexer {
 		return tokenLine;
 	}
 
+	public int getLine() {
+		return currLine;
+	}
+
 	public void setLine(int currLine) {
 		this.currLine = currLine;
+	}
+
+	public int getOffset() {
+		return currOffset;
 	}
 
 	public void setOffset(int currOffset) {
@@ -289,6 +297,9 @@ public class LapgLexer {
 				if (chr == 0) {
 					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
 					break;
+				}
+				if (l - 1 > tokenStart) {
+					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
 				reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
