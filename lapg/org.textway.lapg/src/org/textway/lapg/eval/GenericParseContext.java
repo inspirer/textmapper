@@ -61,7 +61,7 @@ public class GenericParseContext {
 
 			GenericParser parser = createParser(source, reporter);
 			parser.source = source;
-			Object result = parser.parse(lexer, inputIndex, parserTables.final_states[inputIndex]);
+			Object result = parser.parse(lexer, inputIndex, parserTables.final_states[inputIndex], !grammar.getInput()[inputIndex].hasEoi());
 
 			return new Result(source, result, list);
 		} catch (ParseException ex) {

@@ -25,6 +25,7 @@ public class SampleALexer {
 		public static final int Lclass = 3;
 		public static final int LCURLY = 4;
 		public static final int RCURLY = 5;
+		public static final int error = 6;
 	}
 	
 	public interface ErrorReporter {
@@ -75,12 +76,24 @@ public class SampleALexer {
 		return tokenLine;
 	}
 
+	public int getLine() {
+		return currLine;
+	}
+
 	public void setLine(int currLine) {
 		this.currLine = currLine;
 	}
 
+	public int getColumn() {
+		return currColumn;
+	}
+
 	public void setColumn(int currColumn) {
 		this.currColumn = currColumn;
+	}
+
+	public int getOffset() {
+		return currOffset;
 	}
 
 	public void setOffset(int currOffset) {
@@ -164,10 +177,13 @@ public class SampleALexer {
 
 			if (state == -1) {
 				if (chr == 0) {
-					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
+					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of file reached");
 					break;
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				if (l - 1 > tokenStart) {
+					token.append(data, tokenStart, l - 1 - tokenStart);
+				}
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}

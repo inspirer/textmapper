@@ -53,12 +53,17 @@ ${end-}
 ${end-}
 	}
 ${end}
-	protected final int lapg_next(int state, int symbol) {
+	protected final int lapg_next(int state) ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if parser.nactions > 0-}
 		int p;
 		if (lapg_action[state] < -2) {
+${if self->lazyNext()-}
+			if(lapg_n == null) {
+				lapg_n = lapg_lexer.next();
+			}
+${end-}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == symbol) {
+				if (lapg_lalr[p] == lapg_n.lexem) {
 					break;
 				}
 			}
@@ -68,7 +73,7 @@ ${end-}
 		return lapg_action[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -89,9 +94,13 @@ ${end-}
 	protected int lapg_head;
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
+	protected ${opts.prefix}Lexer lapg_lexer;
 
-	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}${if self->needFinalState()}, int finalState${end}) throws java.io.@IOException, ParseException {
+	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end
+		} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}${if self->needFinalState()}, int finalState${end
+		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
+		lapg_lexer = lexer;
 		lapg_m = new LapgSymbol[${opts.stack}];
 		lapg_head = 0;
 ${if syntax.error}		int lapg_symbols_ok = 4;
@@ -99,15 +108,15 @@ ${end-}
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
-		lapg_n = lexer.next();
+		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
+			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
 			} else if (lapg_i == -1) {
-				shift(lexer);
+				shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}noEoi${end});
 ${if syntax.error}				lapg_symbols_ok++;
 ${end-}
 			}
@@ -116,10 +125,12 @@ ${end-}
 ${if syntax.error-}
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}", lexer.getTokenLine(), lapg_n.column)${else}", lexer.getTokenLine())${end});
+						reporter.error(${call err_location('lapg_n', 'lapg_lexer')}
+								java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
+								lapg_lexer.getTokenLine(), lapg_n.column)${else}", lapg_lexer.getTokenLine())${end});
 					}
 					if (lapg_symbols_ok <= 1) {
-						lapg_n = lexer.next();
+						lapg_n = lapg_lexer.next();
 					}
 					lapg_symbols_ok = 0;
 					continue;
@@ -138,16 +149,30 @@ ${end-}
 ${if syntax.error-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${call err_location('lapg_n')}lexer.getTokenLine(), java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}", lexer.getTokenLine()${if opts.positions.contains('column')}, lapg_n.column${end}));
+${end}			reporter.error(${self->lazyNext() ? self->err_location_safe('lapg_n', 'lapg_lexer') : self->err_location('lapg_n', 'lapg_lexer')}
+					java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
+					lapg_lexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column${end}));
 ${if syntax.error-}
 			}
 ${end-}
 			throw new ParseException();
 		}
-		return ${if syntax.input.length == 1 && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end}lapg_m[lapg_head - 1].sym;
+		return ${if syntax.input.length == 1 && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
+			}lapg_m[${
+				self->hasNoEoiInputs() && self->hasEoiInputs()
+					? 'noEoi ? lapg_head : lapg_head - 1' :
+				self->hasNoEoiInputs()
+				 	? 'lapg_head'
+				 	: 'lapg_head - 1'
+			}].sym;
 	}
 ${if syntax.error}
-	protected boolean restore() {
+	protected boolean restore() ${if self->lazyNext()}throws java.io.@IOException ${end}{
+${if self->lazyNext()-}
+		if(lapg_n == null) {
+			lapg_n = lapg_lexer.next();
+		}
+${end-}
 		if (lapg_n.lexem == 0) {
 			return false;
 		}
@@ -185,14 +210,25 @@ ${end-}
 	}
 ${end-}
 
-	protected void shift(${opts.prefix}Lexer lexer) throws java.io.@IOException {
+	protected void shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}boolean lazy${end}) throws java.io.@IOException {
+${if self->lazyNext()-}
+		if(lapg_n == null) {
+			lapg_n = lapg_lexer.next();
+		}
+${end-}
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
 		}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
-			lapg_n = lexer.next();
+			lapg_n = ${
+				self->hasNoEoiInputs() && self->hasEoiInputs()
+					? 'lazy ? null : lapg_lexer.next()' :
+				self->hasNoEoiInputs()
+				 	? 'null'
+				 	: 'lapg_lexer.next()'
+			};
 		}
 	}
 
@@ -207,23 +243,23 @@ ${end-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
 		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 ${if opts.positions.contains('line')-}
-		lapg_gg.line = startsym.line;
+		lapg_gg.line = ${if self->lazyNext()}startsym == null ? lapg_lexer.getLine() : ${end}startsym.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-		lapg_gg.column = startsym.column;
+		lapg_gg.column = ${if self->lazyNext()}startsym == null ? lapg_lexer.getColumn() : ${end}startsym.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-		lapg_gg.offset = startsym.offset;
+		lapg_gg.offset = ${if self->lazyNext()}startsym == null ? lapg_lexer.getOffset() : ${end}startsym.offset;
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : lapg_n.line;
+		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getLine() : ${end}lapg_n.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : lapg_n.column;
+		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getOffset() : ${end}lapg_n.offset;
 ${end-}
 		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
@@ -272,14 +308,13 @@ ${end-}
 ${if self->needFinalState()-}
 ${foreach inp in syntax.input}
 	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if syntax.input.length > 1}, ${index}${end}, ${parser.final_states[index]});
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if syntax.input.length > 1}, ${index}${end}, ${parser.final_states[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
+				}, ${inp.hasEoi() ? 'false' : 'true'}${end});
 	}
 ${end-}
 ${end-}
 }
 ${end}
-
-${query needFinalState = syntax.input.length > 1 || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
 
 ${template parserTables-}
 ${call parserTable(parser.action_index, 'int', 'lapg_action', 'LapgAction')-}
@@ -364,14 +399,19 @@ ${call getsym}.endcolumn${end}
 ${template sym_endoffset-}
 ${call getsym}.endoffset${end}
 
-${template err_location(var)-}
-${if opts.positions.contains('offset')}${var}.offset, ${end-} 
-${if opts.endpositions.contains('offset')}${var}.endoffset, ${end-} 
-${end}
+${template err_location(symvar,lexervar)-}
+${if opts.positions.contains('offset')}${symvar}.offset, ${end-}
+${if opts.endpositions.contains('offset')}${symvar}.endoffset, ${end-}
+${if opts.positions.contains('line')}${symvar}.line${else}${lexervar}.getTokenLine()${end}, ${end}
 
-${template err_parameters(fqn)-}
-${if opts.positions.contains('offset')}int start, ${end-} 
-${if opts.endpositions.contains('offset')}int end, ${end-} 
+${template err_location_safe(symvar,lexervar)-}
+${if opts.positions.contains('offset')}${symvar} == null ? ${lexervar}.getOffset() : ${symvar}.offset, ${end-}
+${if opts.endpositions.contains('offset')}${symvar} == null ? ${lexervar}.getOffset() : ${symvar}.endoffset, ${end-}
+${symvar} == null ? ${lexervar}.getLine() : ${if opts.positions.contains('line')}${symvar}.line${else}${lexervar}.getTokenLine()${end}, ${end}
+
+${template err_parameters()-}
+${if opts.positions.contains('offset')}int start, ${end-}
+${if opts.endpositions.contains('offset')}int end, ${end-}
 int line, ${end}
 
 ${template imports-}
@@ -391,6 +431,13 @@ ${template parseException-}
 ${end}
 
 ${query package() = opts.package ? opts.package : 'com.test' }
+
+${cached query needFinalState = syntax.input.length > 1 || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
+
+${cached query hasNoEoiInputs() = syntax.input.exists(x|!x.hasEoi()) }
+${cached query hasEoiInputs() = syntax.input.exists(x|x.hasEoi()) }
+
+${cached query lazyNext() = self->hasNoEoiInputs() }
 
 ${cached query type() = context.opts.genast ? context->java_ast.getType(self) : self.type }
 

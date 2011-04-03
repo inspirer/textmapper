@@ -225,11 +225,11 @@ public class TypesParser {
 		public static final int expression_listopt = 61;
 	}
 
-	protected final int lapg_next(int state, int symbol) {
+	protected final int lapg_next(int state) {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == symbol) {
+				if (lapg_lalr[p] == lapg_n.lexem) {
 					break;
 				}
 			}
@@ -238,7 +238,7 @@ public class TypesParser {
 		return lapg_action[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -259,23 +259,25 @@ public class TypesParser {
 	protected int lapg_head;
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
+	protected TypesLexer lapg_lexer;
 
 	public AstInput parse(TypesLexer lexer) throws IOException, ParseException {
 
+		lapg_lexer = lexer;
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = 0;
-		lapg_n = lexer.next();
+		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 109) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
+			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
 			} else if (lapg_i == -1) {
-				shift(lexer);
+				shift();
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
@@ -284,20 +286,22 @@ public class TypesParser {
 		}
 
 		if (lapg_m[lapg_head].state != 109) {
-			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lexer.getTokenLine()));
+			reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
+					MessageFormat.format("syntax error before line {0}",
+					lapg_lexer.getTokenLine()));
 			throw new ParseException();
 		}
 		return (AstInput)lapg_m[lapg_head - 1].sym;
 	}
 
-	protected void shift(TypesLexer lexer) throws IOException {
+	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
 		}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
-			lapg_n = lexer.next();
+			lapg_n = lapg_lexer.next();
 		}
 	}
 

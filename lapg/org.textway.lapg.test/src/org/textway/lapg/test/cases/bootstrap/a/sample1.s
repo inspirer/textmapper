@@ -18,6 +18,7 @@ Lclass: /class/
 '{': /{/
 '}': /}/
 
+error:
 
 # grammar
 
@@ -33,4 +34,5 @@ classdef ::=
 classdeflist ::=
 	classdef
   | classdeflist classdef
+  | error
 ;

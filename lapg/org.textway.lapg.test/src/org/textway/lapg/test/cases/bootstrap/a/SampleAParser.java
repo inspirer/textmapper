@@ -27,31 +27,31 @@ public class SampleAParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int lapg_action[] = {
-		-1, -1, -1, 0, -1, -3, 4, -9, -1, 5, 3, -2, -1, -2
+		-1, -1, -1, 0, -1, -3, 6, 4, -11, -1, 5, 3, -2, -1, -2
 	};
 
 	private static final short lapg_lalr[] = {
-		3, -1, 5, 1, -1, -2, 3, -1, 5, 2, -1, -2
+		3, -1, 6, -1, 5, 1, -1, -2, 3, -1, 5, 2, -1, -2
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 1, 2, 2, 6, 7, 8, 9, 13, 14, 15
+		0, 1, 2, 2, 6, 7, 8, 9, 10, 14, 15, 16
 	};
 
 	private static final short lapg_sym_from[] = {
-		12, 2, 0, 1, 5, 7, 4, 8, 0, 0, 1, 5, 7, 5, 5
+		13, 2, 0, 1, 5, 8, 4, 9, 5, 0, 0, 1, 5, 8, 5, 5
 	};
 
 	private static final short lapg_sym_to[] = {
-		13, 4, 2, 2, 2, 2, 5, 10, 11, 3, 12, 6, 9, 7, 8
+		14, 4, 2, 2, 2, 2, 5, 11, 6, 12, 3, 13, 7, 10, 8, 9
 	};
 
 	private static final short lapg_rlen[] = {
-		1, 0, 1, 5, 1, 2
+		1, 0, 1, 5, 1, 2, 1
 	};
 
 	private static final short lapg_rlex[] = {
-		6, 9, 9, 7, 8, 8
+		7, 10, 10, 8, 9, 9, 9
 	};
 
 	protected static final String[] lapg_syms = new String[] {
@@ -61,6 +61,7 @@ public class SampleAParser {
 		"Lclass",
 		"'{'",
 		"'}'",
+		"error",
 		"classdef_NoEoi",
 		"classdef",
 		"classdeflist",
@@ -69,17 +70,20 @@ public class SampleAParser {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int classdef_NoEoi = 6;
-		public static final int classdef = 7;
-		public static final int classdeflist = 8;
-		public static final int classdeflistopt = 9;
+		public static final int classdef_NoEoi = 7;
+		public static final int classdef = 8;
+		public static final int classdeflist = 9;
+		public static final int classdeflistopt = 10;
 	}
 
-	protected final static int lapg_next(int state, int symbol) {
+	protected final int lapg_next(int state) throws IOException {
 		int p;
 		if (lapg_action[state] < -2) {
+			if(lapg_n == null) {
+				lapg_n = lapg_lexer.next();
+			}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == symbol) {
+				if (lapg_lalr[p] == lapg_n.lexem) {
 					break;
 				}
 			}
@@ -88,7 +92,7 @@ public class SampleAParser {
 		return lapg_action[state];
 	}
 
-	protected final static int lapg_state_sym(int state, int symbol) {
+	protected static final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -109,45 +113,101 @@ public class SampleAParser {
 	protected int lapg_head;
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
+	protected SampleALexer lapg_lexer;
 
-	private Object parse(SampleALexer lexer, int initialState, int finalState) throws IOException, ParseException {
+	private Object parse(SampleALexer lexer, int initialState, int finalState, boolean noEoi) throws IOException, ParseException {
 
+		lapg_lexer = lexer;
 		lapg_m = new LapgSymbol[1024];
 		lapg_head = 0;
+		int lapg_symbols_ok = 4;
 
 		lapg_m[0] = new LapgSymbol();
 		lapg_m[0].state = initialState;
-		lapg_n = lexer.next();
+		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state, lapg_n.lexem);
+			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
 			} else if (lapg_i == -1) {
-				shift(lexer);
+				shift(noEoi);
+				lapg_symbols_ok++;
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
+				if (restore()) {
+					if (lapg_symbols_ok >= 4) {
+						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
+								MessageFormat.format("syntax error before line {0}, column {1}",
+								lapg_lexer.getTokenLine(), lapg_n.column));
+					}
+					if (lapg_symbols_ok <= 1) {
+						lapg_n = lapg_lexer.next();
+					}
+					lapg_symbols_ok = 0;
+					continue;
+				}
+				if (lapg_head < 0) {
+					lapg_head = 0;
+					lapg_m[0] = new LapgSymbol();
+					lapg_m[0].state = initialState;
+				}
 				break;
 			}
 		}
 
 		if (lapg_m[lapg_head].state != finalState) {
-			reporter.error(lapg_n.offset, lapg_n.endoffset, lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}, column {1}", lexer.getTokenLine(), lapg_n.column));
+			if (lapg_symbols_ok >= 4) {
+				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_n.line, 
+					MessageFormat.format("syntax error before line {0}, column {1}",
+					lapg_lexer.getTokenLine(), lapg_n == null ? lapg_lexer.getColumn() : lapg_n.column));
+			}
 			throw new ParseException();
 		}
-		return lapg_m[lapg_head - 1].sym;
+		return lapg_m[noEoi ? lapg_head : lapg_head - 1].sym;
 	}
 
-	protected void shift(SampleALexer lexer) throws IOException {
+	protected boolean restore() throws IOException {
+		if(lapg_n == null) {
+			lapg_n = lapg_lexer.next();
+		}
+		if (lapg_n.lexem == 0) {
+			return false;
+		}
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 6) == -1) {
+			dispose(lapg_m[lapg_head]);
+			lapg_m[lapg_head] = null;
+			lapg_head--;
+		}
+		if (lapg_head >= 0) {
+			lapg_m[++lapg_head] = new LapgSymbol();
+			lapg_m[lapg_head].lexem = 6;
+			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 6);
+			lapg_m[lapg_head].line = lapg_n.line;
+			lapg_m[lapg_head].column = lapg_n.column;
+			lapg_m[lapg_head].offset = lapg_n.offset;
+			lapg_m[lapg_head].endline = lapg_n.endline;
+			lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
+			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+			return true;
+		}
+		return false;
+	}
+
+	protected void shift(boolean lazy) throws IOException {
+		if(lapg_n == null) {
+			lapg_n = lapg_lexer.next();
+		}
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
 		}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
-			lapg_n = lexer.next();
+			lapg_n = lazy ? null : lapg_lexer.next();
 		}
 	}
 
@@ -160,12 +220,12 @@ public class SampleAParser {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
 		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
-		lapg_gg.line = startsym.line;
-		lapg_gg.column = startsym.column;
-		lapg_gg.offset = startsym.offset;
-		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : lapg_n.line;
-		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : lapg_n.column;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n.offset;
+		lapg_gg.line = startsym == null ? lapg_lexer.getLine() : startsym.line;
+		lapg_gg.column = startsym == null ? lapg_lexer.getColumn() : startsym.column;
+		lapg_gg.offset = startsym == null ? lapg_lexer.getOffset() : startsym.offset;
+		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : lapg_n == null ? lapg_lexer.getLine() : lapg_n.line;
+		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : lapg_n == null ? lapg_lexer.getColumn() : lapg_n.column;
+		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset;
 		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
 			lapg_m[lapg_head--] = null;
@@ -193,11 +253,17 @@ public class SampleAParser {
 		}
 	}
 
+	/**
+	 *  disposes symbol dropped by error recovery mechanism
+	 */
+	protected void dispose(LapgSymbol sym) {
+	}
+
 	public IAstClassdefNoEoi parseClassdef_NoEoi(SampleALexer lexer) throws IOException, ParseException {
-		return (IAstClassdefNoEoi) parse(lexer, 0, 11);
+		return (IAstClassdefNoEoi) parse(lexer, 0, 12, true);
 	}
 
 	public AstClassdef parseClassdef(SampleALexer lexer) throws IOException, ParseException {
-		return (AstClassdef) parse(lexer, 1, 13);
+		return (AstClassdef) parse(lexer, 1, 14, false);
 	}
 }

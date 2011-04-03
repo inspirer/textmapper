@@ -87,7 +87,7 @@ ${end-}
 
 ${self->lexerTables()-}
 
-	private int mapCharacter(int chr) {
+	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
 			return lapg_char2no[chr];
 		}
@@ -148,13 +148,13 @@ ${end-}
 
 			if (state == -1) {
 				if (chr == 0) {
-					reporter.error(${call java.err_location('lapg_n')}currLine, "Unexpected end of file reached");
+					reporter.error(${call java.err_location('lapg_n', 'this') }"Unexpected end of file reached");
 					break;
 				}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(${call java.err_location('lapg_n')}currLine, java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(${call java.err_location('lapg_n', 'this') }java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -250,7 +250,7 @@ ${end-}
 	}
 	
 	public interface ErrorReporter {
-		void error(${call java.err_parameters(false)}String s);
+		void error(${call java.err_parameters()}String s);
 	}
 ${end}
 

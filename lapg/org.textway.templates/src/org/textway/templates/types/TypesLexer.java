@@ -224,7 +224,7 @@ public class TypesLexer {
 		{ -24, -24, -24, -24, -24, -24, -24, 6, 6, 6, 6, 6, 6, 6, 6, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, -24, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, -24}
 	};
 
-	private int mapCharacter(int chr) {
+	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
 			return lapg_char2no[chr];
 		}
@@ -264,13 +264,13 @@ public class TypesLexer {
 
 			if (state == -1) {
 				if (chr == 0) {
-					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
+					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of file reached");
 					break;
 				}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}

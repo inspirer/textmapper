@@ -136,7 +136,7 @@ lexer_parts (List<AstLexerPart>) ::=
 
 lexer_part (AstLexerPart) ::=
 	  group_selector: '[' icon_list ']'					{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| alias: identifier '=' pattern						{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| alias: identifier '=' pattern						{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
 	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 	| symbol typeopt ':' pattern iconopt commandopt		{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 ;
@@ -201,11 +201,11 @@ rulesym (AstRuleSymbol) ::=
 	| identifier '=' reference							{ $$ = new AstRuleSymbol(null, $identifier, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 	| reference 										{ $$ = new AstRuleSymbol(null, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
 
-	| '(' rulesyms_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
-	| rulesym '&' rulesym								{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
-	| rulesym '?'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
-	| rulesym '*'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
-	| rulesym '+'										{ reporter.error(${context->java.err_location('lapg_gg')}lapg_gg.line, "unsupported, TODO"); }
+	| '(' rulesyms_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulesym '&' rulesym								{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulesym '?'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulesym '*'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulesym '+'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
 ;
 
 rulesyms_choice ::=

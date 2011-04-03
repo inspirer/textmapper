@@ -81,6 +81,17 @@ public class BootstrapTest extends TestCase {
 				}, 0);
 	}
 
+	public void testSampleA() {
+		bootstrap(
+				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a",
+				"sample1.s",
+				new String[0],
+				new String[]{
+						"SampleALexer.java", "SampleATree.java", "SampleAParser.java",
+						"ast/IAstNode.java", "ast/IAstClassdefNoEoi.java"
+				}, 0);
+	}
+
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles, int expectedResolvedConflicts) {
 		try {
 			LapgOptions options = LapgOptions.parseArguments(args, new PrintStream(new CheckingErrorStream("")));
