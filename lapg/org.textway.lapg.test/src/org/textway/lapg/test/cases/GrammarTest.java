@@ -57,7 +57,7 @@ public class GrammarTest extends LapgTestCase {
 			Assert.fail(parseProblem.toString());
 		}
 		GenericNode node = (GenericNode) root.getRoot();
-
+		Assert.assertNotNull(node);
 		Assert.assertEquals(expectedAst, node.toSignature());
 	}
 
@@ -78,13 +78,19 @@ public class GrammarTest extends LapgTestCase {
 		// A2 ::= A1 | A2 'aaa' ;
 
 		testParser(context, 0, "    aaa    ", "[aaa]");
-		testParser(context, 0, "    aaa x    ", "[aaa x]");
-		testParser(context, 1, "    aaa xyz aaa   ", "[aaa xyz aaa]");
-		testParser(context, 0, "   aaa x y z a  b c   ", "[aaa x y z a  b c]");
+		testParser(context, 0, "    aaa x    ", "[[aaa] x]");
+		testParser(context, 1, "    aaa xyz aaa   ", "[[[aaa] xyz] aaa]");
+		testParser(context, 0, "   aaa x y z a  b c   ", "[[[[[[[aaa] x] y] z] a]  b] c]");
 		testParser(context, 1, "    aaa    ", "[aaa]");
-		testParser(context, 1, "    aaa aaa aaa aaa    ", "[aaa aaa aaa aaa]");
-		testParser(context, 1, "  aaa x  aaa aaa aaa aaa    ", "[aaa x  aaa aaa aaa aaa]");
-		testParser(context, 1, "  aaa x  aaa y aaa aaa aaa    ", "[aaa x  aaa y aaa aaa aaa]");
+		testParser(context, 1, "    aaa aaa aaa aaa    ", "[[[[aaa] aaa] aaa] aaa]");
+		testParser(context, 1, "  aaa x  aaa aaa aaa aaa    ", "[[[[[[aaa] x]  aaa] aaa] aaa] aaa]");
+		testParser(context, 1, "  aaa x  aaa y aaa aaa aaa    ", "[[[[[[[aaa] x]  aaa] y] aaa] aaa] aaa]");
 	}
 
+	public void testNoEoi() {
+		GenericParseContext context = loadGrammar("syntaxNoEoi");
+
+		testParser(context, 0, " class A {}  ###  ", "[class A {}]");
+		testParser(context, 0, " class A {class B{} class C{} class D{}}  ####  ", "[class A {[[[class B{}] [class C{}]] [class D{}]]}]");
+	}
 }
