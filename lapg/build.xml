@@ -107,6 +107,8 @@
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a"/>
+		<echo message="Sample2 parser"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
 	</target>
 
 	<target name="plugin">
