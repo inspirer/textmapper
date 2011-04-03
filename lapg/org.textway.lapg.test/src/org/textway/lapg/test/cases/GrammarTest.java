@@ -29,6 +29,7 @@ import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
+import org.textway.lapg.test.cases.bootstrap.a.SampleAParseContext;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.ClassResourceLoader;
@@ -92,5 +93,30 @@ public class GrammarTest extends LapgTestCase {
 
 		testParser(context, 0, " class A {}  ###  ", "[class A {}]");
 		testParser(context, 0, " class A {class B{} class C{} class D{}}  ####  ", "[class A {[[[class B{}] [class C{}]] [class D{}]]}]");
+	}
+
+
+	// sample1 test
+
+	private void testSample1(String text, String expectedAst, boolean eoi) {
+		Result root = new SampleAParseContext().parse(text, eoi);
+		if(root.getErrors().size() > 0) {
+			ParseProblem parseProblem = root.getErrors().get(0);
+			Assert.fail(parseProblem.toString());
+		}
+		GenericNode node = (GenericNode) root.getRoot();
+		Assert.assertNotNull(node);
+		Assert.assertEquals(expectedAst, node.toSignature());
+	}
+
+	public void testNoEoiOnSample1() {
+		testSample1(" class A {}  class B { } ", "[class A {}]", false);
+		testSample1(" class A {}  ###  ", "[class A {}]", false);
+		testSample1(" class A {class B{} class C{} class D{}}  ####  ", "[class A {[class B{}] [class C{}] [class D{}]}]", false);
+	}
+
+	public void testEoiOnSample1() {
+		testSample1(" class A {}  ", "[class A {}]", true);
+		testSample1(" class A {class B{} class C{} class D{}}  ", "[class A {[class B{}] [class C{}] [class D{}]}]", true);
 	}
 }
