@@ -134,10 +134,10 @@ public class LapgParser implements PsiParser {
 		}
 
 		@Override
-		protected void shift(LapgLexer lexer) throws IOException {
+		protected void shift() throws IOException {
 			boolean wasCurly = lapg_n.lexem == Tokens.LCURLY;
 			Marker marker = lapg_n.lexem != Tokens.eoi ? mark() : null;
-			super.shift(lexer);
+			super.shift();
 			lapg_m[lapg_head].sym = marker;
 
 			if(wasCurly) {
