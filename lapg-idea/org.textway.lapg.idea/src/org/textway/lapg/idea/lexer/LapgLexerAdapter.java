@@ -158,8 +158,6 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return OP_LPAREN;
 			case Lexems.RPAREN:
 				return OP_RPAREN;
-			case Lexems.LESSLESS:
-				return OP_LTLT;
 			case Lexems.LESS:
 				return OP_LT;
 			case Lexems.GREATER:

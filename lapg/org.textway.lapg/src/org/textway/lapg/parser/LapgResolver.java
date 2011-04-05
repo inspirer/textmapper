@@ -15,10 +15,7 @@
  */
 package org.textway.lapg.parser;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.InputRef;
-import org.textway.lapg.api.Prio;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.*;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
@@ -203,8 +200,11 @@ public class LapgResolver {
 				AstLexeme lexeme = (AstLexeme) clause;
 				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
 				if (lexeme.getRegexp() != null) {
+					AstLexemAttrs attrs = lexeme.getAttrs();
+					int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
+
 					lexems.add(
-							new LiLexem(lexemIndex++, s,
+							new LiLexem(kind, lexemIndex++, s,
 									lexeme.getRegexp().getRegexp(),
 									groups, lexeme.getPriority(),
 									convert(lexeme.getCode()),
@@ -214,6 +214,8 @@ public class LapgResolver {
 				groups = convert((AstGroupsSelector) clause);
 			}
 		}
+
+		// TODO analyze lexems
 	}
 
 	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {

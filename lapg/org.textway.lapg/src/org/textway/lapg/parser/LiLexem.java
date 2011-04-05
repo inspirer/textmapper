@@ -23,6 +23,7 @@ import org.textway.templates.api.INamedEntity;
 
 public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 
+	private final int kind;
 	private final int index;
 	private final Symbol sym;
 	private final String regexp;
@@ -30,8 +31,9 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 	private final int priority;
 	private final SourceElement action;
 
-	public LiLexem(int index, Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
+	public LiLexem(int kind, int index, Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
 		super(node);
+		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
@@ -56,12 +58,33 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		return regexp;
 	}
 
+	public int getKind() {
+		return kind;
+	}
+
+	public String getKindAsText() {
+		switch (kind) {
+			case KIND_CLASS:
+				return "class";
+			case KIND_INSTANCE:
+				return "instance";
+			case KIND_SOFT:
+				return "soft";
+		}
+		return "none";
+	}
+
 	public int getIndex() {
 		return index;
 	}
 
 	public Symbol getSymbol() {
 		return sym;
+	}
+
+	public Lexem getClassLexem() {
+		// FIXME
+		return null;
 	}
 
 	public String getTitle() {

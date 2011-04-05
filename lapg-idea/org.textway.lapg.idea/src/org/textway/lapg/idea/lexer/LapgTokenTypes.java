@@ -59,7 +59,6 @@ public interface LapgTokenTypes {
 	IElementType OP_EQ = new LapgElementType(Lexems.EQUAL, "=");
 	IElementType OP_EQGT = new LapgElementType(Lexems.EQUALGREATER, "=>");
 	IElementType OP_COLON = new LapgElementType(Lexems.COLON, ":");
-	IElementType OP_LTLT = new LapgElementType(Lexems.LESSLESS, "<<");
 	IElementType OP_LT = new LapgElementType(Lexems.LESS, "<");
 	IElementType OP_GT = new LapgElementType(Lexems.GREATER, ">");
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
@@ -70,7 +69,7 @@ public interface LapgTokenTypes {
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LTLT, OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, OP_AND, OP_AT
+			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, OP_AND, OP_AT
 	);
 
 	// keywords

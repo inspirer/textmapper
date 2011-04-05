@@ -22,16 +22,18 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 	private final AstIdentifier name;
 	private final String type;
 	private final AstRegexp regexp;
+	private final AstLexemAttrs attrs;
 	private final int priority;
 	private final AstCode code;
 
 	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp,
-			Integer priority, AstCode code, TextSource source, int offset,
+			Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
 			int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.type = type;
 		this.regexp = regexp;
+		this.attrs = attrs;
 		this.priority = priority != null ? priority : 0;
 		this.code = code;
 	}
@@ -50,6 +52,10 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public AstLexemAttrs getAttrs() {
+		return attrs;
 	}
 
 	public AstCode getCode() {

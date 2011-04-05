@@ -100,4 +100,8 @@ public class AbstractVisitor {
 	public boolean visit(AstShiftClause n) {
 		return true;
 	}
+
+	public boolean visit(AstLexemAttrs n) {
+		return true;
+	}
 }

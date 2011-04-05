@@ -13,26 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textway.lapg.parser.ast;
+
+import org.textway.lapg.parser.LapgTree.TextSource;
 
 /**
- * Lexem rule.
+ * Gryaznov Evgeny, 4/3/11
  */
-public interface Lexem extends SourceElement {
+public class AstLexemAttrs extends AstNode {
 
-	public static final int KIND_NONE = 0;
-	public static final int KIND_CLASS = 1;
-	public static final int KIND_INSTANCE = 2;
-	public static final int KIND_SOFT = 3;
+	private final int kind;
 
-	int getIndex();
-	Symbol getSymbol();
-	String getRegexp();
-	int getPriority();
-	int getGroups();
-	SourceElement getAction();
+	public AstLexemAttrs(int kind, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.kind = kind;
+	}
 
-	int getKind();
-	String getKindAsText();
-	Lexem getClassLexem();
+	public int getKind() {
+		return kind;
+	}
+
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
+	}
 }

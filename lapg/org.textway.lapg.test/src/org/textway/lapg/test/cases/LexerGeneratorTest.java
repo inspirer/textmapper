@@ -99,6 +99,18 @@ public class LexerGeneratorTest extends TestCase {
 			return null;
 		}
 
+		public int getKind() {
+			return KIND_NONE;
+		}
+
+		public String getKindAsText() {
+			return "none";
+		}
+
+		public Lexem getClassLexem() {
+			return null;
+		}
+
 		public int getGroups() {
 			return 1;
 		}

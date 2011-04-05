@@ -61,6 +61,18 @@ public class CLexem implements Lexem {
 		return action;
 	}
 
+	public int getKind() {
+		return KIND_NONE;
+	}
+
+	public String getKindAsText() {
+		return "none";
+	}
+
+	public Lexem getClassLexem() {
+		return null;
+	}
+
 	public int getPriority() {
 		return priority;
 	}
