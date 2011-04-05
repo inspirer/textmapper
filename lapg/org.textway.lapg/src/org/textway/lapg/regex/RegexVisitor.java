@@ -15,39 +15,30 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.regex.RegexDefTree.TextSource;
-
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexRange extends RegexPart {
+public class RegexVisitor {
 
-	private char left;
-	private char right;
+	public void visit(RegexAny c) { }
 
-	public RegexRange(char left, char right, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.left = left;
-		this.right = right;
+	public void visit(RegexChar c) { }
+
+	public void visit(RegexExpand c) { }
+
+	public void visitBefore(RegexList c) { }
+	public void visitAfter(RegexList c) { }
+
+	public void visitBefore(RegexOr c) { }
+	public void visitBetween(RegexOr c) { }
+	public void visitAfter(RegexOr c) { }
+
+	public void visitBefore(RegexQuantifier c) { }
+	public void visitAfter(RegexQuantifier c) { }
+
+	public boolean visit(RegexSet c) {
+		return false;
 	}
 
-	public char getLeft() {
-		return left;
-	}
-
-	public char getRight() {
-		return right;
-	}
-
-	@Override
-	protected void toString(StringBuilder sb) {
-		RegexUtil.escape(sb, left);
-		sb.append('-');
-		RegexUtil.escape(sb, right);
-	}
-
-	@Override
-	public void accept(RegexVisitor visitor) {
-		visitor.visit(this);
-	}
+	public void visit(RegexRange c) { }
 }

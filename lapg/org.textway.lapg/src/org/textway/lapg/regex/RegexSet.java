@@ -49,4 +49,17 @@ public class RegexSet extends RegexPart {
 		}
 		sb.append(']');
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		if(!visitor.visit(this)) {
+			return;
+		}
+
+		if(charset != null) {
+			for (RegexPart part : charset) {
+				part.accept(visitor);
+			}
+		}
+	}
 }

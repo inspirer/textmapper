@@ -42,4 +42,9 @@ public class RegexChar extends RegexPart {
 	protected void toString(StringBuilder sb) {
 		RegexUtil.escape(sb, c);
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		visitor.visit(this);
+	}
 }

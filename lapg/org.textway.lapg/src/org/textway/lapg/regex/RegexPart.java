@@ -64,4 +64,6 @@ public abstract class RegexPart {
 	}
 
 	protected abstract void toString(StringBuilder sb);
+
+	public abstract void accept(RegexVisitor visitor);
 }

@@ -51,4 +51,19 @@ public class RegexOr extends RegexPart {
 			p.toString(sb);
 		}
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		visitor.visitBefore(this);
+		boolean first = true;
+		for (RegexPart element : variants) {
+			if (!first) {
+				visitor.visitBetween(this);
+			} else {
+				first = false;
+			}
+			element.accept(visitor);
+		}
+		visitor.visitAfter(this);
+	}
 }

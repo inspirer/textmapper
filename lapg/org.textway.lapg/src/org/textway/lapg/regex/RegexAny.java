@@ -30,4 +30,9 @@ public class RegexAny extends RegexPart {
 	protected void toString(StringBuilder sb) {
 		sb.append('.');
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		visitor.visit(this);
+	}
 }

@@ -35,4 +35,9 @@ public class RegexExpand extends RegexPart {
 		sb.append(name);
 		sb.append('}');
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		visitor.visit(this);
+	}
 }

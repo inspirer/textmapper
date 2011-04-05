@@ -65,4 +65,11 @@ public class RegexQuantifier extends RegexPart {
 			sb.append('}');
 		}
 	}
+
+	@Override
+	public void accept(RegexVisitor visitor) {
+		visitor.visitBefore(this);
+		inner.accept(visitor);
+		visitor.visitAfter(this);
+	}
 }
