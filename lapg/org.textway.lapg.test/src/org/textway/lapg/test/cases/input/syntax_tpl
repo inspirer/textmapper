@@ -9,7 +9,7 @@ any:	/$$/
 
 escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*/			{ @ = new String(token,1,lapg_size-1); break; }
 
-'${':	/${/		{ group = @1; break; }
+'${':	/$\{/		{ group = @1; break; }
 '$/':   /$\//
 
 [1]
@@ -36,8 +36,8 @@ Ltrue:		/true/
 Lthis:		/this/
 Lassert:	/assert/
 
-'}':		/}/			{ group = @0; break; }
-'-}':		/-}/		{ group = @0; break; }
+'}':		/\}/			{ group = @0; break; }
+'-}':		/-\}/		{ group = @0; break; }
 '+':		/+/
 '-':		/-/
 '*':		/*/

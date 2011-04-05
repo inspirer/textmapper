@@ -73,7 +73,7 @@ Lshift: /shift/
 
 Lreduce: /reduce/
 
-'{':	/{/		{ deep = 1; group = 1; break; }
+'{':	/\{/		{ deep = 1; group = 1; break; }
 
 [1]
 
@@ -81,8 +81,8 @@ _skip:	/'([^\n\\']|\\.)*'/				{ return false; }
 _skip:	/"([^\n\\"]|\\.)*"/				{ return false; }
 _skip:	/[^'"{}]+/						{ return false; }
 
-'i{':	/{/								{ deep++; break; }
-'}':	/}/								{ if (--deep == 0) { group = 0; } break; }
+'i{':	/\{/							{ deep++; break; }
+'}':	/\}/							{ if (--deep == 0) { group = 0; } break; }
 
 # Grammar
 

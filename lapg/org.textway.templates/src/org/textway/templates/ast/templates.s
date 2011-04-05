@@ -34,7 +34,7 @@ escdollar:		/$$/
 escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); break; }
 escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); break; }
 
-'${':	/${/		{ deep = 1; group = 1; break; }
+'${':	/$\{/		{ deep = 1; group = 1; break; }
 '$/':   /$\//
 
 [1]
@@ -70,9 +70,9 @@ Ltrue:		/true/
 Lself:		/self/
 Lassert:	/assert/
 
-'{':		/{/			{ deep++; break; }
-'}':		/}/			{ if (--deep == 0) { group = 0; } break; }
-'-}':		/-}/		{ group = 0; break; }
+'{':		/\{/		{ deep++; break; }
+'}':		/\}/		{ if (--deep == 0) { group = 0; } break; }
+'-}':		/-\}/		{ group = 0; break; }
 '+':		/+/
 '-':		/-/
 '*':		/*/
