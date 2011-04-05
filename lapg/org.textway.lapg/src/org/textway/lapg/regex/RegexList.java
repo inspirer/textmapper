@@ -33,7 +33,7 @@ public class RegexList extends RegexPart {
 	}
 
 	public void addElement(RegexPart part) {
-		if(inParentheses) {
+		if (inParentheses) {
 			throw new IllegalStateException("cannot add elements");
 		}
 		elements.add(part);
@@ -53,14 +53,24 @@ public class RegexList extends RegexPart {
 	}
 
 	@Override
+	public boolean isConstant() {
+		for (RegexPart p : elements) {
+			if (!p.isConstant()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
-		if(inParentheses) {
+		if (inParentheses) {
 			sb.append('(');
 		}
-		for(RegexPart p : elements) {
+		for (RegexPart p : elements) {
 			p.toString(sb);
 		}
-		if(inParentheses) {
+		if (inParentheses) {
 			sb.append(')');
 		}
 	}

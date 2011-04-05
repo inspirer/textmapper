@@ -42,8 +42,8 @@ public class RegexOr extends RegexPart {
 	@Override
 	protected void toString(StringBuilder sb) {
 		boolean first = true;
-		for(RegexPart p : variants) {
-			if(!first) {
+		for (RegexPart p : variants) {
+			if (!first) {
 				sb.append("|");
 			} else {
 				first = false;

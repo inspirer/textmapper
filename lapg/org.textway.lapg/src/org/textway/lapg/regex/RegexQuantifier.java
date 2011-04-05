@@ -47,18 +47,18 @@ public class RegexQuantifier extends RegexPart {
 	@Override
 	protected void toString(StringBuilder sb) {
 		inner.toString(sb);
-		if(min == 0 && max == -1) {
+		if (min == 0 && max == -1) {
 			sb.append('*');
-		} else if(min == 0 && max == 1) {
+		} else if (min == 0 && max == 1) {
 			sb.append('?');
-		} else if(min == 1 && max == -1) {
+		} else if (min == 1 && max == -1) {
 			sb.append('+');
 		} else {
 			sb.append('{');
 			sb.append(min);
-			if(min != max) {
+			if (min != max) {
 				sb.append(',');
-				if(max != -1) {
+				if (max != -1) {
 					sb.append(max);
 				}
 			}

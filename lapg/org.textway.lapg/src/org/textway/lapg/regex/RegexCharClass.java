@@ -18,35 +18,21 @@ package org.textway.lapg.regex;
 import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
-import java.util.List;
-
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexSet extends RegexPart {
+public class RegexCharClass extends RegexSet {
 
-	private final CharacterSet set;
-	private final List<RegexPart> charset;
+	private final char c;
 
-	public RegexSet(CharacterSet set, List<RegexPart> charset, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.set = set;
-		this.charset = charset;
-	}
-
-	public CharacterSet getSet() {
-		return set;
+	public RegexCharClass(char c, CharacterSet set, TextSource source, int offset, int endoffset) {
+		super(set, null, source, offset, endoffset);
+		this.c = c;
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append('[');
-		if (set.isInverted()) {
-			sb.append('^');
-		}
-		for (RegexPart p : charset) {
-			p.toString(sb);
-		}
-		sb.append(']');
+		sb.append('\\');
+		sb.append(c);
 	}
 }

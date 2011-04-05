@@ -16,20 +16,26 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.lex.CharacterSet;
+import org.textway.lapg.lex.CharacterSet.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
 class RegexUtil {
 
+	private static final Pattern QUANTIFIER = Pattern.compile("(\\d+)(,(\\d+)?)?");
+	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");
+
 	static RegexPart wrap(RegexPart part) {
 		if (!(part instanceof RegexList) || ((RegexList) part).isInParentheses()) {
 			part = new RegexList(part);
 		}
-		((RegexList)part).setInParentheses();
+		((RegexList) part).setInParentheses();
 		return part;
 	}
 
@@ -37,7 +43,13 @@ class RegexUtil {
 		if (!(left instanceof RegexList) || ((RegexList) left).isInParentheses()) {
 			left = new RegexList(left);
 		}
-		((RegexList) left).addElement(right);
+		if (right instanceof RegexList && !(((RegexList) right).isInParentheses())) {
+			for (RegexPart item : ((RegexList) right).getElements()) {
+				((RegexList) left).addElement(item);
+			}
+		} else {
+			((RegexList) left).addElement(right);
+		}
 		return left;
 	}
 
@@ -68,7 +80,7 @@ class RegexUtil {
 		charset.add(right);
 	}
 
-	static RegexSet toSet(List<RegexPart> charset, ErrorReporter reporter, CharacterSet.Builder builder, boolean inverted) {
+	static RegexSet toSet(List<RegexPart> charset, ErrorReporter reporter, Builder builder, boolean inverted) {
 		builder.clear();
 		for (RegexPart part : charset) {
 			if (part instanceof RegexChar) {
@@ -194,5 +206,55 @@ class RegexUtil {
 			sb.append("0000".substring(sym.length()));
 		}
 		sb.append(sym);
+	}
+
+	static RegexPart createQuantifierOrSequence(RegexPart sym, RegexExpand quantifierOrExpand, ErrorReporter reporter) {
+		String innerText = quantifierOrExpand.getInput().getText(quantifierOrExpand.getOffset() + 1, quantifierOrExpand.getEndOffset() - 1);
+		Matcher matcher = QUANTIFIER.matcher(innerText);
+		if (matcher.matches()) {
+			int min = Integer.parseInt(matcher.group(1));
+			int max = min;
+			if (matcher.group(2) != null) {
+				String second = matcher.group(3);
+				max = second != null ? Integer.parseInt(second) : -1;
+			}
+			return new RegexQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierOrExpand.getEndOffset());
+		}
+
+		checkExpand(quantifierOrExpand, reporter, true);
+		return createSequence(sym, quantifierOrExpand);
+	}
+
+	static void checkExpand(RegexExpand expand, ErrorReporter reporter, boolean acceptQuantifier) {
+		String innerText = expand.getInput().getText(expand.getOffset() + 1, expand.getEndOffset() - 1);
+		if(!IDENTIFIER.matcher(innerText).matches()) {
+			reporter.error(expand.getOffset(), expand.getEndOffset(), expand.getInput().lineForOffset(expand.getOffset()),
+					acceptQuantifier
+						? "quantifier range or expansion identifier is expected instead of `" + innerText + "'"
+						: "an expansion identifier is expected instead of `" + innerText + "'");
+		}
+	}
+
+	static CharacterSet getClassSet(char c, Builder builder) {
+		builder.clear();
+		if (c == 'w' || c == 'W') {
+			builder.addRange('0', '9');
+			builder.addRange('a', 'z');
+			builder.addRange('A', 'Z');
+			builder.addSymbol('_');
+			return builder.create(c == 'W');
+		} else if (c == 's' || c == 'S') {
+			builder.addSymbol('\n');
+			builder.addSymbol('\r');
+			builder.addSymbol('\f');
+			builder.addSymbol('\t');
+//			builder.addSymbol('\v');
+			builder.addSymbol(' ');
+			return builder.create(c == 'S');
+		} else if (c == 'd' || c == 'D') {
+			builder.addRange('0', '9');
+			return builder.create(c == 'D');
+		}
+		return null;
 	}
 }

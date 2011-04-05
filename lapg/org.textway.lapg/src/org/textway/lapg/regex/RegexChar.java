@@ -34,6 +34,11 @@ public class RegexChar extends RegexPart {
 	}
 
 	@Override
+	public boolean isConstant() {
+		return true;
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		RegexUtil.escape(sb, c);
 	}

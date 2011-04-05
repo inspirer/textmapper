@@ -44,12 +44,16 @@ public abstract class RegexPart {
 	}
 
 	protected void include(RegexPart part) {
-		if(part.offset < this.offset) {
+		if (part.offset < this.offset) {
 			this.offset = part.offset;
 		}
-		if(part.endoffset > this.endoffset) {
+		if (part.endoffset > this.endoffset) {
 			this.endoffset = part.endoffset;
 		}
+	}
+
+	public boolean isConstant() {
+		return false;
 	}
 
 	@Override
