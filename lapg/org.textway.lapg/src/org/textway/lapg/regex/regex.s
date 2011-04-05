@@ -8,10 +8,10 @@ gentree = true
 positions = "offset"
 endpositions = "offset"
 
-char(Character): /[^(){}\[\]\.\|\\\/*?+^-]/      							{ $lexem = current().charAt(0); }
-char(Character): /\\[^\r\n\t0-9ux]/											{ $lexem = RegexUtil.unescape(current().charAt(1)); }
-char(Character): /\\[0-9]+/													{ $lexem = RegexUtil.unescapeOct(current()); }
-char(Character): /\\[xu][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current()); }
+char(Character): /[^(){}\[\]\.\|\\\/*?+^-]/      							{ $lexem = current().charAt(0); break; }
+char(Character): /\\[^\r\n\t0-9ux]/											{ $lexem = RegexUtil.unescape(current().charAt(1)); break; }
+char(Character): /\\[0-9]+/													{ $lexem = RegexUtil.unescapeOct(current()); break; }
+char(Character): /\\[xu][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current()); break; }
 
 '.':  /\./
 '-':  /-/
