@@ -20,10 +20,10 @@ public class RegexpParseTest extends LapgTestCase {
 
 		RegexpParser rp = new RegexpParser();
 		try{
-			for(int i = 0; i < 2000; i++) {
+			for(int i = 20; i < 2020; i++) {
 				rp.compile(i, "n"+i, "[\\x"+toHex4(i*10)+"-\\x"+toHex4(i*10+6)+"]");
 			}
-			for(int i = 0; i < 2000; i++) {
+			for(int i = 20; i < 2020; i++) {
 				rp.compile(i, "nb"+i, "[\\x"+toHex4(i*10+3)+"-\\x"+toHex4(i*10+8)+"]");
 			}
 		} catch(RegexpParseException ex) {
@@ -177,17 +177,17 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(5, "paren3", "aaa\\4a5!zzz");
+			rp.compile(5, "paren3", "aaa\\x4a5!zzz");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp contains incomplete unicode symbol", ex.getMessage());
-			Assert.assertEquals(7, ex.getErrorOffset());
+			Assert.assertEquals(5, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(5, "paren3", "aaa\\4a");
+			rp.compile(5, "paren3", "aaa\\x4a");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp contains incomplete unicode symbol", ex.getMessage());
-			Assert.assertEquals(6, ex.getErrorOffset());
+			Assert.assertEquals(7, ex.getErrorOffset());
 		}
 	}
 }

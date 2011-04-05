@@ -220,7 +220,7 @@ public class RegexDefLexer {
 			case 2:
 				 lapg_n.sym = RegexUtil.unescapeOct(current()); break; 
 			case 3:
-				 lapg_n.sym = RegexUtil.unescapeHex(current()); break; 
+				 lapg_n.sym = RegexUtil.unescapeHex(current().substring(2)); break; 
 			case 4:
 				 lapg_n.sym = current().charAt(1); break; 
 		}

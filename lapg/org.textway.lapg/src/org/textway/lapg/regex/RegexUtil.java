@@ -138,7 +138,7 @@ class RegexUtil {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
-	static int unescapeHex(String s) {
+	static char unescapeHex(String s) {
 		int result = 0;
 		for (int i = 0; i < s.length(); i++) {
 			result <<= 4;
@@ -153,7 +153,7 @@ class RegexUtil {
 				throw new NumberFormatException();
 			}
 		}
-		return result;
+		return (char) result;
 	}
 
 	static void escape(StringBuilder sb, char c) {
