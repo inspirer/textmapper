@@ -111,7 +111,7 @@ public class BootstrapTest extends TestCase {
 			options.setInput(syntaxFile);
 
 			File root = new File(folder);
-			Assert.assertTrue("folder doesn't exist", root.exists() && root.isDirectory());
+			Assert.assertTrue("folder doesn't exist: " + root.getAbsolutePath(), root.exists() && root.isDirectory());
 
 			File source = new File(root, syntaxFile);
 			Assert.assertTrue("grammar source doesn't exist", source.exists() && source.isFile());

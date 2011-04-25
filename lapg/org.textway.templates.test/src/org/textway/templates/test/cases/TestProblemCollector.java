@@ -41,8 +41,9 @@ public class TestProblemCollector implements TemplatesStatus {
 		if(kind == KIND_ERROR || kind == KIND_FATAL) {
 			if(anchors != null && anchors.length >= 1 && anchors[0] != null) {
 				String resourceName = anchors[0].getResourceName();
-				if(resourceName.indexOf(File.separatorChar) != -1) {
-					resourceName = resourceName.substring(resourceName.lastIndexOf(File.separatorChar) + 1);
+				resourceName = resourceName.replaceAll("\\\\","/");
+				if(resourceName.indexOf('/') != -1) {
+					resourceName = resourceName.substring(resourceName.lastIndexOf('/') + 1);
 				}
 				message = resourceName + "," + anchors[0].getLine() + ": " + message;
 			}
