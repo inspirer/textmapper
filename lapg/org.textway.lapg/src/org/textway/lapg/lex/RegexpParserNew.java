@@ -98,7 +98,12 @@ public class RegexpParserNew {
 		}
 
 		RegexpBuilder builder = new RegexpBuilder();
-		result.getRoot().accept(builder);
+		try {
+			result.getRoot().accept(builder);
+		} catch(IllegalArgumentException ex) {
+			throw new RegexpParseException(ex.getMessage(), 0);
+		}
+
 
 		int length = builder.getLength();
 		sym[++length] = -1 - number;
@@ -138,6 +143,7 @@ public class RegexpParserNew {
 
 		@Override
 		public void visit(RegexExpand c) {
+			throw new IllegalArgumentException("cannot expand {" + c.getName() + "}");
 		}
 
 		@Override
@@ -191,6 +197,8 @@ public class RegexpParserNew {
 			} else if(c.getMin() == 1 && c.getMax() == -1) {
 				sym[length] |= 1 << 29;
 				yield(LexConstants.SPL);
+			} else {
+				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
 			}
 		}
 

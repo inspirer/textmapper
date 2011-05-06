@@ -41,4 +41,6 @@ public class RegexVisitor {
 	}
 
 	public void visit(RegexRange c) { }
+
+	public void visit(RegexEmpty c) { }
 }

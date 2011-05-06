@@ -18,22 +18,12 @@ package org.textway.lapg.regex;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
- * Gryaznov Evgeny, 4/5/11
+ * Gryaznov Evgeny, 5/6/11
  */
-public class RegexExpand extends RegexPart {
+public class RegexEmpty extends RegexPart {
 
-	private final String name;
-
-	public RegexExpand(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.name = source.getText(offset + 1, endoffset - 1);
-	}
-
-	@Override
-	protected void toString(StringBuilder sb) {
-		sb.append('{');
-		sb.append(name);
-		sb.append('}');
+	public RegexEmpty(TextSource source, int offset) {
+		super(source, offset, offset);
 	}
 
 	@Override
@@ -41,7 +31,12 @@ public class RegexExpand extends RegexPart {
 		visitor.visit(this);
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	protected void toString(StringBuilder sb) {
+	}
+
+	@Override
+	public boolean isConstant() {
+		return true;
 	}
 }

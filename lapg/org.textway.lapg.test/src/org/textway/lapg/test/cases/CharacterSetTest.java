@@ -23,9 +23,6 @@ import org.textway.lapg.lex.CharacterSet;
 
 import org.junit.Assert;
 
-/**
- * Tests for {@link LapgOptions} command-line arguments parsing.
- */
 public class CharacterSetTest extends TestCase {
 
 	public void testCreation() {

@@ -11,7 +11,8 @@ endpositions = "offset"
 char(Character): /[^(){}\[\]\.\|\\\/*?+^-]/      							{ $lexem = current().charAt(0); break; }
 char(Character): /\\[^\r\n\t0-9uUxXwWsSdD]/									{ $lexem = RegexUtil.unescape(current().charAt(1)); break; }
 char(Character): /\\[0-9]+/													{ $lexem = RegexUtil.unescapeOct(current()); break; }
-char(Character): /\\[xXuU][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
+char(Character): /\\[xX][0-9A-Fa-f][0-9A-Fa-f]/								{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
+char(Character): /\\[uU][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
 charclass(Character): /\\[wWsSdD]/											{ $lexem = current().charAt(1); break; }
 
 '.':  /\./
@@ -34,8 +35,8 @@ charclass(Character): /\\[wWsSdD]/											{ $lexem = current().charAt(1); bre
 %input pattern;
 
 pattern (RegexPart) ::=
-	  parts
-	| left=pattern '|' parts					{ $$ = RegexUtil.createOr($left, $parts); }
+	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }
+	| left=pattern '|' partsopt					{ $$ = RegexUtil.createOr($left, $partsopt, source, ${partsopt.offset}); }
 ;
 
 %right '*' '+' '?';
@@ -58,7 +59,6 @@ primitive_part (RegexPart) ::=
 	| '+'                                       { $$ = new RegexChar('+', source, ${left().offset}, ${left().endoffset}); }
 	| '?'                                       { $$ = new RegexChar('?', source, ${left().offset}, ${left().endoffset}); }
 	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern); }
-	| '(' ')'									{ $$ = new RegexList(source, ${left().offset}, ${left().endoffset}); reporter.error(${left().offset}, ${left().endoffset}, source.lineForOffset(${left().offset}), "empty parenthesized expression"); }
 	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false); }
 	| '[' '^' charset ']'						{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true); }
 ;

@@ -15,8 +15,6 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.regex.RegexDefTree.TextSource;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +25,6 @@ public class RegexList extends RegexPart {
 
 	private List<RegexPart> elements = new ArrayList<RegexPart>();
 	private boolean inParentheses;
-
-	public RegexList(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.inParentheses = true;
-	}
 
 	public RegexList(RegexPart initialPart) {
 		super(initialPart.getInput(), initialPart.getOffset(), initialPart.getEndOffset());

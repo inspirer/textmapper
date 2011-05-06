@@ -30,12 +30,23 @@ public class RegexParserTest extends TestCase {
 
 	public void testParens() {
 		checkRegex("[a-z]");
+		checkRegex("(A|)");
 		checkRegex("[^A-Z]");
 		checkRegex("([^A-Z]+)A");
 		checkRegex("([^A-Z]+|B)A");
 		checkRegex("(([^A-Z])+|B)A");
 		checkRegex("((([^A-Z])+)|B)A");
 		checkRegex("(((([^A-Z])+)|B)A)");
+	}
+
+	public void testCharClasses() {
+		checkRegex("");
+		checkRegex("\\xf40");
+		checkErrors("\\u200", "Unexpected end of file reached");
+		checkErrors("\\x2x0", "invalid lexem at line 1: `\\x2x`, skipped");
+		checkErrors("\\x2x", "invalid lexem at line 1: `\\x2x`, skipped");
+		checkErrors("\\u200xx", "invalid lexem at line 1: `\\u200x`, skipped");
+		checkRegex("\\uf40b");
 	}
 
 	public void testIPv6() {

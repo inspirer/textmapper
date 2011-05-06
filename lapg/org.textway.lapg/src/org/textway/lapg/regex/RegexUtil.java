@@ -18,6 +18,7 @@ package org.textway.lapg.regex;
 import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.lex.CharacterSet.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
+import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -53,11 +54,17 @@ class RegexUtil {
 		return left;
 	}
 
-	static RegexPart createOr(RegexPart left, RegexPart right) {
+	static RegexPart emptyIfNull(RegexPart part, TextSource source, int offset) {
+		return part != null
+				? part
+				: new RegexEmpty(source, offset);
+	}
+
+	static RegexPart createOr(RegexPart left, RegexPart right, TextSource source, int offset) {
 		if (!(left instanceof RegexOr)) {
 			left = new RegexOr(left);
 		}
-		((RegexOr) left).addVariant(right);
+		((RegexOr) left).addVariant(emptyIfNull(right, source, offset));
 		return left;
 	}
 
@@ -130,6 +137,8 @@ class RegexUtil {
 				return '\r';
 			case 't':
 				return '\t';
+			case 'v':
+				return 0xb;
 		}
 		return c;
 	}
@@ -180,6 +189,9 @@ class RegexUtil {
 			case 7:
 				sb.append("\\a");
 				return;
+			case 0xb:
+				sb.append("\\v");
+				return;
 			case '\b':
 				sb.append("\\b");
 				return;
@@ -200,10 +212,12 @@ class RegexUtil {
 			sb.append(c);
 			return;
 		}
-		sb.append("\\x");
 		String sym = Integer.toString(c, 16);
-		if (sym.length() < 4) {
-			sb.append("0000".substring(sym.length()));
+		boolean isShort = sym.length() <= 2;
+		sb.append(isShort ? "\\x" : "\\u");
+		int len = isShort ? 2 : 4;
+		if(sym.length() < len) {
+			sb.append("0000".substring(sym.length() + (4-len)));
 		}
 		sb.append(sym);
 	}
@@ -248,7 +262,7 @@ class RegexUtil {
 			builder.addSymbol('\r');
 			builder.addSymbol('\f');
 			builder.addSymbol('\t');
-//			builder.addSymbol('\v');
+			builder.addSymbol(0x0b);   // \v (Vertical Tab)
 			builder.addSymbol(' ');
 			return builder.create(c == 'S');
 		} else if (c == 'd' || c == 'D') {

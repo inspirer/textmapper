@@ -156,6 +156,15 @@ public class SampleALexer {
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
+				if (state == -1 && chr == 0) {
+					lapg_n.endoffset = currOffset;
+					lapg_n.endline = currLine;
+					lapg_n.endcolumn = currColumn;
+					lapg_n.lexem = 0;
+					lapg_n.sym = null;
+					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					return lapg_n;
+				}
 				if (state >= -1 && chr != 0) {
 					currOffset++;
 					currColumn++;
@@ -176,10 +185,6 @@ public class SampleALexer {
 			lapg_n.endcolumn = currColumn;
 
 			if (state == -1) {
-				if (chr == 0) {
-					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of file reached");
-					break;
-				}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
