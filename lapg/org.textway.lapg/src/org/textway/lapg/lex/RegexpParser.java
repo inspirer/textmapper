@@ -87,29 +87,11 @@ public class RegexpParser {
 	 * @return Engine representation of regular expression
 	 */
 	public int[] compile(int number, String name, String regex) throws RegexpParseException {
-		if (regex.length() == 0) {
-			throw new RegexpParseException("regexp is empty", 0);
-		}
-
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource(name, regex.toCharArray(), 1));
-		if(result.hasErrors()) {
-			RegexDefProblem problem = result.getErrors().get(0);
-			String message = problem.getMessage();
-			if(message.startsWith("syntax error")) {
-				if(problem.getOffset() >= regex.length()) {
-					message = "regexp is incomplete";
-				} else {
-					message = "regexp has syntax error near `" + regex.substring(problem.getOffset()) + "'";
-				}
-			} else if(message.equals("Unexpected end of input reached")) {
-				message = "unfinished escape sequence found";
-			}
-			throw new RegexpParseException(message, problem.getOffset());
-		}
+		RegexPart parsed = RegexMatcher.parse(regex);
 
 		RegexpBuilder builder = new RegexpBuilder();
 		try {
-			result.getRoot().accept(builder);
+			parsed.accept(builder);
 		} catch(IllegalArgumentException ex) {
 			throw new RegexpParseException(ex.getMessage(), 0);
 		}

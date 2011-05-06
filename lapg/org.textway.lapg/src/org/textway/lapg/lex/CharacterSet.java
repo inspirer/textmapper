@@ -38,6 +38,17 @@ public class CharacterSet implements Iterable<int[]> {
 		this(set, size, false);
 	}
 
+	public boolean contains(int c) {
+		int sind = binarySearch(set, 0, set.length, c);
+		if (sind < 0) {
+			sind = -sind - 1;
+			boolean inSet = (sind & 1) != 0;
+			return inSet ^ inverted;
+		} else {
+			return true;
+		}
+	}
+
 	public boolean isEmpty() {
 		return set.length == 0;
 	}
@@ -120,9 +131,9 @@ public class CharacterSet implements Iterable<int[]> {
 			int sind = binarySearch(set, 0, length, start);
 			if (sind < 0) {
 				int insert = -sind - 1;
-				if(insert >= length) {
-					if(length > 0 && start == set[length-1]+1) {
-						set[length-1] = end;
+				if (insert >= length) {
+					if (length > 0 && start == set[length - 1] + 1) {
+						set[length - 1] = end;
 					} else {
 						if (length + 1 >= set.length) {
 							reallocateSet();
@@ -132,27 +143,27 @@ public class CharacterSet implements Iterable<int[]> {
 					}
 					return;
 				} else if ((insert & 1) == 0) {
-					if(insert > 0 && start == set[insert-1]+1) {
-						start = set[insert-2];
-						sind = insert-2;
-					} else if(end >= set[insert]-1) {
+					if (insert > 0 && start == set[insert - 1] + 1) {
+						start = set[insert - 2];
+						sind = insert - 2;
+					} else if (end >= set[insert] - 1) {
 						set[insert] = start;
 						sind = insert;
 					} else {
 						if (length + 1 >= set.length) {
 							reallocateSet();
 						}
-						for(int i = length-1; i >= insert; i--) {
-							set[i+2] = set[i];
+						for (int i = length - 1; i >= insert; i--) {
+							set[i + 2] = set[i];
 						}
 						set[insert] = start;
-						set[insert+1] = end;
+						set[insert + 1] = end;
 						length += 2;
 						return;
 					}
 
 				} else {
-					start = insert-1;
+					start = insert - 1;
 					sind = start;
 				}
 			}

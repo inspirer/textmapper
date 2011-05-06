@@ -32,7 +32,18 @@ public class CharacterSetTest extends TestCase {
 		b.addRange(1,10);
 		b.addRange(15,30);
 		b.addRange(12,12);
-		Assert.assertEquals("[1-10,12,15-30]", b.create().toString());
+		CharacterSet characterSet = b.create();
+		Assert.assertEquals("[1-10,12,15-30]", characterSet.toString());
+		Assert.assertTrue(characterSet.contains(8));
+		Assert.assertTrue(characterSet.contains(10));
+		Assert.assertFalse(characterSet.contains(11));
+		Assert.assertTrue(characterSet.contains(12));
+		Assert.assertFalse(characterSet.contains(13));
+		Assert.assertFalse(characterSet.contains(14));
+		Assert.assertTrue(characterSet.contains(15));
+		Assert.assertTrue(characterSet.contains(29));
+		Assert.assertTrue(characterSet.contains(30));
+		Assert.assertFalse(characterSet.contains(33));
 
 		b.clear();
 		b.addSymbol(10);
