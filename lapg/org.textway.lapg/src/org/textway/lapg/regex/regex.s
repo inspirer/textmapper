@@ -10,7 +10,7 @@ endpositions = "offset"
 
 char(Character): /[^(){}\[\]\.\|\\\/*?+^-]/      							{ $lexem = current().charAt(0); break; }
 char(Character): /\\[^\r\n\t0-9uUxXwWsSdD]/									{ $lexem = RegexUtil.unescape(current().charAt(1)); break; }
-char(Character): /\\[0-9]+/													{ $lexem = RegexUtil.unescapeOct(current()); break; }
+char(Character): /\\[0-7][0-7][0-7]/										{ $lexem = RegexUtil.unescapeOct(current().substring(1)); break; }
 char(Character): /\\[xX][0-9A-Fa-f][0-9A-Fa-f]/								{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
 char(Character): /\\[uU][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
 charclass(Character): /\\[wWsSdD]/											{ $lexem = current().charAt(1); break; }

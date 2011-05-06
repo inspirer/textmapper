@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexParserTest extends TestCase {
+public class RegexDefTest extends TestCase {
 
 	public void testParens() {
 		checkRegex("[a-z]");
@@ -42,7 +42,7 @@ public class RegexParserTest extends TestCase {
 	public void testCharClasses() {
 		checkRegex("");
 		checkRegex("\\xf40");
-		checkErrors("\\u200", "Unexpected end of file reached");
+		checkErrors("\\u200", "Unexpected end of input reached");
 		checkErrors("\\x2x0", "invalid lexem at line 1: `\\x2x`, skipped");
 		checkErrors("\\x2x", "invalid lexem at line 1: `\\x2x`, skipped");
 		checkErrors("\\u200xx", "invalid lexem at line 1: `\\u200x`, skipped");

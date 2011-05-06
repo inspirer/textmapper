@@ -15,11 +15,18 @@
  */
 package org.textway.lapg.lex;
 
+import org.textway.lapg.regex.*;
+import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
+import org.textway.lapg.regex.RegexDefTree.TextSource;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * Gryaznov Evgeny, 4/5/11
+ */
 public class RegexpParser {
 
 	// result
@@ -45,69 +52,6 @@ public class RegexpParser {
 		Arrays.fill(character2symbol, 1);
 		character2symbol[0] = 0;
 		symbolCount = 2;
-	}
-
-	private int index;
-	private char[] re;
-	private String regexp;
-
-	public static int parseHex(String s) {
-		int result = 0;
-		for (int i = 0; i < s.length(); i++) {
-			result <<= 4;
-			int c = s.codePointAt(i);
-			if (c >= 'a' && c <= 'f') {
-				result |= 10 + c - 'a';
-			} else if (c >= 'A' && c <= 'F') {
-				result |= 10 + c - 'A';
-			} else if (c >= '0' && c <= '9') {
-				result |= c - '0';
-			} else {
-				throw new NumberFormatException();
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * @return unicode character 0 - 0xffff, or -1 in case of error
-	 */
-	private int escape() throws RegexpParseException {
-		index++;
-		if (index >= re.length) {
-			throw new RegexpParseException("regexp contains \\ at the end of expression", re.length);
-		}
-
-		int c = re[index];
-		switch (c) {
-		case 'a':
-			return 7;
-		case 'b':
-			return '\b';
-		case 'f':
-			return '\f';
-		case 'n':
-			return '\n';
-		case 'r':
-			return '\r';
-		case 't':
-			return '\t';
-		case 'u':
-		case 'x': {
-			if (index + 4 >= re.length) {
-				throw new RegexpParseException("regexp contains incomplete unicode symbol", re.length);
-			}
-			index += 4;
-			try {
-				return parseHex(new String(re, index - 3, 4));
-			} catch (NumberFormatException ex) {
-				throw new RegexpParseException("regexp contains incomplete unicode symbol", index-3);
-			}
-		}
-
-		default:
-			return c;
-		}
 	}
 
 	private int storeSet(CharacterSet set) {
@@ -140,188 +84,139 @@ public class RegexpParser {
 	}
 
 	/**
-	 * regular expression "tokenizer"
-	 */
-	private int getnext() throws RegexpParseException {
-		int i, e;
-		boolean invert = false;
-
-		switch (re[index]) {
-		case '(':
-			index++;
-			return LexConstants.LBR;
-
-		case ')':
-			index++;
-			return LexConstants.RBR;
-
-		case '|':
-			index++;
-			return LexConstants.OR;
-
-		case '.':
-			index++;
-			useCharacter('\n');
-			return LexConstants.ANY;
-
-		case '[':
-			index++;
-			invert = index < re.length && re[index] == '^';
-			if (invert) {
-				index++;
-			}
-
-			builder.clear();
-
-			while (index < re.length && re[index] != ']') {
-				i = re[index];
-				if (i == '\\') {
-					i = escape();
-					if (i == -1) {
-						return -1;
-					}
-				}
-				index++;
-				if (index + 1 < re.length && re[index] == '-' && re[index + 1] != ']') {
-					e = re[++index];
-					if (e == '\\') {
-						e = escape();
-						if (e == -1) {
-							return -1;
-						}
-					}
-
-					if (e > i) {
-						builder.addRange(i, e);
-					} else {
-						builder.addRange(e, i);
-					}
-					index++;
-				} else {
-					builder.addSymbol(i);
-				}
-			}
-
-			if (index >= re.length) {
-				throw new RegexpParseException("regexp contains unpaired brackets", re.length);
-			}
-
-			index++;
-			return storeSet(builder.create(invert));
-
-		case ']':
-			throw new RegexpParseException("unexpected closing brace, escape it to use as character", index);
-
-		case '\\':
-			i = escape();
-			if (i == -1) {
-				return -1;
-			}
-			useCharacter(i);
-			index++;
-			return character2symbol[i] | LexConstants.SYM;
-
-		default:
-			i = re[index];
-			useCharacter(i);
-			index++;
-			return character2symbol[i] | LexConstants.SYM;
-		}
-	}
-
-	/**
 	 * @return Engine representation of regular expression
 	 */
-	public int[] compile(int number, String name, String regexp) throws RegexpParseException {
-
-		int length = 0, deep = 1;
-		boolean addbrackets = false;
-
-		this.index = 0;
-		this.regexp = regexp;
-		this.re = this.regexp.toCharArray();
-
-		if (re.length == 0) {
+	public int[] compile(int number, String name, String regex) throws RegexpParseException {
+		if (regex.length() == 0) {
 			throw new RegexpParseException("regexp is empty", 0);
 		}
 
-		while (index < re.length) {
-			if (length > LexConstants.MAX_ENTRIES - 5) {
-				throw new RegexpParseException("regexp is too long", index);
+		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource(name, regex.toCharArray(), 1));
+		if(result.hasErrors()) {
+			RegexDefProblem problem = result.getErrors().get(0);
+			String message = problem.getMessage();
+			if(message.startsWith("syntax error")) {
+				if(problem.getOffset() >= regex.length()) {
+					message = "regexp is incomplete";
+				} else {
+					message = "regexp has syntax error near `" + regex.substring(problem.getOffset()) + "'";
+				}
+			} else if(message.equals("Unexpected end of input reached")) {
+				message = "unfinished escape sequence found";
 			}
+			throw new RegexpParseException(message, problem.getOffset());
+		}
 
-			sym[length] = getnext();
+		RegexpBuilder builder = new RegexpBuilder();
+		try {
+			result.getRoot().accept(builder);
+		} catch(IllegalArgumentException ex) {
+			throw new RegexpParseException(ex.getMessage(), 0);
+		}
 
-			switch (sym[length]) {
-			case LexConstants.LBR:
-				stack[deep] = length;
-				if (++deep >= LexConstants.MAX_DEEP) {
-					throw new RegexpParseException("regexp contains too much parentheses", index-1);
-				}
-				break;
-			case LexConstants.OR:
-				if (deep == 1) {
-					addbrackets = true;
-				}
-				break;
-			case LexConstants.RBR:
-				if (--deep == 0) {
-					throw new RegexpParseException("regexp contains unpaired parentheses", index-1);
-				}
-				sym[stack[deep]] |= length;
-				/* FALLTHROUGH */
-			default:
-				if (index < re.length && (re[index] == '+' || re[index] == '?' || re[index] == '*')) {
-					switch (re[index]) {
-					case '+':
-						sym[length] |= 1 << 29;
-						break;
-					case '*':
-						sym[length] |= 2 << 29;
-						break;
-					case '?':
-						sym[length] |= 3 << 29;
-						break;
-					}
-					if (re[index] != '?') {
-						sym[++length] = LexConstants.SPL;
-					}
-					index++;
-				}
-				break;
-			case -1:
-				return null;
+
+		int length = builder.getLength();
+		sym[++length] = -1 - number;
+
+		int[] compiled = new int[length+1];
+		System.arraycopy(sym, 0, compiled, 0, length + 1);
+		return compiled;
+	}
+
+	private class RegexpBuilder extends RegexVisitor {
+
+		int length = -1, deep = 1;
+		RegexOr outermostOr;
+
+		public RegexpBuilder() {
+		}
+
+		public int getLength() {
+			return length;
+		}
+
+		private void yield(int i) {
+			sym[++length] = i;
+		}
+
+		@Override
+		public void visit(RegexAny c) {
+			useCharacter('\n');
+			yield(LexConstants.ANY);
+		}
+
+		@Override
+		public void visit(RegexChar c) {
+			useCharacter(c.getChar());
+			yield(character2symbol[c.getChar()] | LexConstants.SYM);
+		}
+
+		@Override
+		public void visit(RegexExpand c) {
+			throw new IllegalArgumentException("cannot expand {" + c.getName() + "}");
+		}
+
+		@Override
+		public void visitBefore(RegexList c) {
+			if(c.isInParentheses()) {
+				yield(LexConstants.LBR);
+				stack[deep++] = length;
 			}
-			length++;
 		}
 
-		if (deep != 1) {
-			throw new RegexpParseException("regexp contains unpaired parentheses", re.length);
-		}
-
-		int e;
-		if (addbrackets) {
-			for (e = 0; e < length; e++) {
-				if ((sym[e] & LexConstants.MASK) == LexConstants.LBR) {
-					sym[e] = (sym[e] & ~0xffff) | ((sym[e] & 0xffff) + 1);
-				}
+		@Override
+		public void visitAfter(RegexList c) {
+			if(c.isInParentheses()) {
+				yield(LexConstants.RBR);
+				sym[stack[--deep]] |= length;
 			}
-
-			sym[length++] = LexConstants.RBR;
 		}
 
-		sym[length++] = -1 - number;
-
-		e = 0;
-		int[] result = new int[length + (addbrackets ? 1 : 0)];
-		if (addbrackets) {
-			result[e++] = LexConstants.LBR | (length - 1);
-		}
-		for (int i = 0; i < length; i++, e++) {
-			result[e] = sym[i];
+		@Override
+		public void visitBefore(RegexOr c) {
+			if(length == -1) {
+				outermostOr = c;
+				yield(LexConstants.LBR);
+			}
 		}
 
-		return result;
+		@Override
+		public void visitBetween(RegexOr c) {
+			yield(LexConstants.OR);
+		}
+
+		@Override
+		public void visitAfter(RegexOr c) {
+			if(outermostOr == c) {
+				yield(LexConstants.RBR);
+				sym[0] |= length;
+			}
+		}
+
+		@Override
+		public void visitBefore(RegexQuantifier c) {
+		}
+
+		@Override
+		public void visitAfter(RegexQuantifier c) {
+			if(c.getMin() == 0 && c.getMax() == 1) {
+				sym[length] |= 3 << 29;
+			} else if(c.getMin() == 0 && c.getMax() == -1) {
+				sym[length] |= 2 << 29;
+				yield(LexConstants.SPL);
+			} else if(c.getMin() == 1 && c.getMax() == -1) {
+				sym[length] |= 1 << 29;
+				yield(LexConstants.SPL);
+			} else {
+				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
+			}
+		}
+
+		@Override
+		public boolean visit(RegexSet c) {
+			yield(storeSet(c.getSet()));
+			return false;
+		}
 	}
 
 	public void buildSets() {

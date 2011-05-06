@@ -33,7 +33,7 @@ public class LexerGeneratorTest extends TestCase {
 			new TestLexem(1, 0, "number", "[0-9]+", "1", "12", "323", "2111111"),
 			new TestLexem(2, 0, "hex", "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
 			new TestLexem(3, 0, "hex", "\\n|\\t|\\r", "\n", "\t", "\r"),
-			new TestLexem(4, 0, "hex", "[\\xAAAA-\\xAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
+			new TestLexem(4, 0, "hex", "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
 	};
 
 	TestLexem[] ERRINPUT = {

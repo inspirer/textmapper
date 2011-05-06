@@ -6,7 +6,7 @@ import junit.framework.Assert;
 import org.textway.lapg.lex.LexConstants;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.lex.RegexpParser;
-import org.textway.lapg.lex.RegexpParserNew;
+import org.textway.lapg.regex.RegexUtil;
 
 public class RegexpParseTest extends LapgTestCase {
 	private static char[] HEX = new char[] { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
@@ -37,7 +37,7 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testNewParser() {
-		RegexpParserNew rp = new RegexpParserNew();
+		RegexpParser rp = new RegexpParser();
 		try {
 			rp.compile(0, "a", "Eea{1,2}");
 			Assert.fail("no exception");
@@ -104,7 +104,7 @@ public class RegexpParseTest extends LapgTestCase {
 	public void testUnicode() {
 		RegexpParser rp = new RegexpParser();
 		try {
-			rp.compile(0, "string", "[\\x5151-\\x5252][\\x1000-\\x2000]");
+			rp.compile(0, "string", "[\\u5151-\\u5252][\\u1000-\\u2000]");
 		} catch (RegexpParseException ex) {
 			Assert.fail("parse failed: " + ex.getMessage());
 		}
@@ -118,26 +118,26 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testHexConverter() {
-		Assert.assertEquals(0, RegexpParser.parseHex("0"));
-		Assert.assertEquals(10, RegexpParser.parseHex("a"));
-		Assert.assertEquals(11, RegexpParser.parseHex("b"));
-		Assert.assertEquals(12, RegexpParser.parseHex("C"));
-		Assert.assertEquals(16, RegexpParser.parseHex("10"));
-		Assert.assertEquals(39664, RegexpParser.parseHex("9aF0"));
+		Assert.assertEquals(0, RegexUtil.unescapeHex("0"));
+		Assert.assertEquals(10, RegexUtil.unescapeHex("a"));
+		Assert.assertEquals(11, RegexUtil.unescapeHex("b"));
+		Assert.assertEquals(12, RegexUtil.unescapeHex("C"));
+		Assert.assertEquals(16, RegexUtil.unescapeHex("10"));
+		Assert.assertEquals(39664, RegexUtil.unescapeHex("9aF0"));
 		try {
-			RegexpParser.parseHex("9aF0!");
+			RegexUtil.unescapeHex("9aF0!");
 			Assert.fail("no exception");
 		} catch(Throwable th) {
 			Assert.assertTrue(th instanceof NumberFormatException);
 		}
 		try {
-			RegexpParser.parseHex("g");
+			RegexUtil.unescapeHex("g");
 			Assert.fail("no exception");
 		} catch(Throwable th) {
 			Assert.assertTrue(th instanceof NumberFormatException);
 		}
 		try {
-			RegexpParser.parseHex("G");
+			RegexUtil.unescapeHex("G");
 			Assert.fail("no exception");
 		} catch(Throwable th) {
 			Assert.assertTrue(th instanceof NumberFormatException);
@@ -176,65 +176,92 @@ public class RegexpParseTest extends LapgTestCase {
 		RegexpParser rp = new RegexpParser();
 		try {
 			rp.compile(0, "string", "[\\x5151-\\x5252][\\x1000-\\x2000");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains unpaired brackets", ex.getMessage());
+			Assert.assertEquals("regexp is incomplete", ex.getMessage());
 			Assert.assertEquals(29, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(1, "string1", "[\\x5151]]-\\x5252]][\\x1000-\\x2000");
+			rp.compile(1, "string2", "[\\x5151-\\x5252][\\x1000-\\x2000]]");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("unexpected closing brace, escape it to use as character", ex.getMessage());
+			Assert.assertEquals("regexp has syntax error near `]'", ex.getMessage());
+			Assert.assertEquals(30, ex.getErrorOffset());
+		}
+
+		try {
+			rp.compile(2, "string3", "[\\x5151]]-\\x5252]][\\x1000-\\x2000");
+			Assert.fail("no exception");
+		} catch (RegexpParseException ex) {
+			Assert.assertEquals("regexp has syntax error near `]-\\x5252]][\\x1000-\\x2000'", ex.getMessage());
 			Assert.assertEquals(8, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(2, "empty", "");
+			rp.compile(3, "empty", "");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp is empty", ex.getMessage());
 			Assert.assertEquals(0, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(3, "paren", "(abc");
+			rp.compile(4, "paren", "(abc");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains unpaired parentheses", ex.getMessage());
+			Assert.assertEquals("regexp is incomplete", ex.getMessage());
 			Assert.assertEquals(4, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(4, "paren2", "(abc))xyz");
+			rp.compile(5, "paren2", "(abc))xyz");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains unpaired parentheses", ex.getMessage());
+			Assert.assertEquals("regexp has syntax error near `)xyz'", ex.getMessage());
 			Assert.assertEquals(5, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(5, "paren3", "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((abc))");
+			rp.compile(6, "paren3", "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((abc))");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains too much parentheses", ex.getMessage());
-			Assert.assertEquals(126, ex.getErrorOffset());
+			Assert.assertEquals("regexp is incomplete", ex.getMessage());
+			Assert.assertEquals(135, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(5, "slash1", "aaa\\");
+			rp.compile(7, "slash1", "aaa\\");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains \\ at the end of expression", ex.getMessage());
-			Assert.assertEquals(4, ex.getErrorOffset());
+			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
+			Assert.assertEquals(3, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(5, "unicode1", "aaa\\x4a5!zzz");
+			rp.compile(8, "unicode1", "aaa\\u4a5!zzz");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains incomplete unicode symbol", ex.getMessage());
-			Assert.assertEquals(5, ex.getErrorOffset());
+			Assert.assertEquals("invalid lexem at line 1: `\\u4a5!`, skipped", ex.getMessage());
+			Assert.assertEquals(3, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(5, "unicode2", "aaa\\x4a");
+			rp.compile(9, "unicode2", "aaa\\u4a");
+			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
-			Assert.assertEquals("regexp contains incomplete unicode symbol", ex.getMessage());
-			Assert.assertEquals(7, ex.getErrorOffset());
+			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
+			Assert.assertEquals(3, ex.getErrorOffset());
+		}
+
+		try {
+			rp.compile(9, "unicode2", "aaa\\007");
+			Assert.fail("no exception");
+		} catch (UnsupportedOperationException ex) {
+			/* TODO get rid of */
+		} catch (RegexpParseException ex) {
+			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
+			Assert.assertEquals(3, ex.getErrorOffset());
 		}
 	}
 }

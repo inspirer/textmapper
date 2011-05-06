@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexUtil {
+public class RegexUtil {
 
 	private static final Pattern QUANTIFIER = Pattern.compile("(\\d+)(,(\\d+)?)?");
 	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");
@@ -147,7 +147,7 @@ class RegexUtil {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
-	static char unescapeHex(String s) {
+	public static char unescapeHex(String s) {
 		int result = 0;
 		for (int i = 0; i < s.length(); i++) {
 			result <<= 4;
