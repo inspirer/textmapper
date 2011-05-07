@@ -102,6 +102,11 @@ public class RegexMatcher {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return regex;
+	}
+
 	private static class State {
 		int index;
 		List<Integer> jumps;

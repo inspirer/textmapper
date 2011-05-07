@@ -45,7 +45,7 @@ public class CharacterSet implements Iterable<int[]> {
 			boolean inSet = (sind & 1) != 0;
 			return inSet ^ inverted;
 		} else {
-			return true;
+			return !inverted;
 		}
 	}
 

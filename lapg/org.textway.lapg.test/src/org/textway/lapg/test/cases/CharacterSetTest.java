@@ -52,6 +52,12 @@ public class CharacterSetTest extends TestCase {
 		Assert.assertEquals("[10,20,30]", b.create().toString());
 
 		b.clear();
+		b.addSymbol(25);
+		characterSet = b.create(true);
+		Assert.assertTrue(characterSet.contains(1));
+		Assert.assertFalse(characterSet.contains(25));
+
+		b.clear();
 		Assert.assertEquals("[]", b.create().toString());
 
 		b.clear();
