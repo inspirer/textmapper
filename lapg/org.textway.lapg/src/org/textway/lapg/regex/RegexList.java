@@ -63,6 +63,19 @@ public class RegexList extends RegexPart {
 	}
 
 	@Override
+	public String getConstantValue() {
+		StringBuilder sb = new StringBuilder();
+		for(RegexPart p : elements) {
+			String current = p.getConstantValue();
+			if(current == null) {
+				return null;
+			}
+			sb.append(current);
+		}
+		return sb.toString();
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		if (inParentheses) {
 			sb.append('(');

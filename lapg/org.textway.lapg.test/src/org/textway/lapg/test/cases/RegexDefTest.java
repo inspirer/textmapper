@@ -70,6 +70,21 @@ public class RegexDefTest extends TestCase {
 		checkRegex("a{9,10}");
 	}
 
+	public void testConstants() {
+		checkConstantRegex("abc", null, "abc");
+		checkConstantRegex("(a(b)c)", null,  "abc");
+		checkConstantRegex("ab(c)", null, "abc");
+		checkConstantRegex("(abc)", null, "abc");
+		checkConstantRegex("abc()", null, "abc");
+		checkConstantRegex("\\t", null, "\t");
+		checkConstantRegex("\\u0009", "\\t", "\t");
+
+		Assert.assertFalse(checkRegex("a{9,10}").isConstant());
+		Assert.assertFalse(checkRegex("aa(b|)").isConstant());
+		Assert.assertFalse(checkRegex("aab?").isConstant());
+		Assert.assertFalse(checkRegex("aab*").isConstant());
+	}
+
 	public void testVisitor1() {
 		checkVisitor("(a|[a-z]+){name}a{9,10}\\\\.",
 			"before: (a|[a-z]+){name}a{9,10}\\\\.",
@@ -91,11 +106,19 @@ public class RegexDefTest extends TestCase {
 			 "after: (a|[a-z]+){name}a{9,10}\\\\.");
 	}
 
-	private void checkRegex(String regex) {
-		checkRegex(regex, regex);
+
+	private void checkConstantRegex(String regex, String converted, String value) {
+		RegexPart regexPart = checkRegex(regex, converted == null ? regex : converted);
+		Assert.assertTrue(regexPart.isConstant());
+		String val = regexPart.getConstantValue();
+		Assert.assertEquals(value, val);
 	}
 
-	private void checkRegex(String regex, String expected) {
+	private RegexPart checkRegex(String regex) {
+		return checkRegex(regex, regex);
+	}
+
+	private RegexPart checkRegex(String regex, String expected) {
 		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if(result.hasErrors()) {
 			Assert.fail(result.getErrors().get(0).getMessage());
@@ -103,6 +126,7 @@ public class RegexDefTest extends TestCase {
 		RegexPart root = result.getRoot();
 		Assert.assertNotNull(root);
 		Assert.assertEquals(expected, root.toString());
+		return root;
 	}
 
 	private void checkErrors(String regex, String ...expectedErrors) {

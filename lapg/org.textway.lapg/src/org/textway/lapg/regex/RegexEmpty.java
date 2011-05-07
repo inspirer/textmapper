@@ -39,4 +39,9 @@ public class RegexEmpty extends RegexPart {
 	public boolean isConstant() {
 		return true;
 	}
+
+	@Override
+	public String getConstantValue() {
+		return "";
+	}
 }

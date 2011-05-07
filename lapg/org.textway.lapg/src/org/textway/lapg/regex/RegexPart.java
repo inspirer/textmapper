@@ -56,6 +56,10 @@ public abstract class RegexPart {
 		return false;
 	}
 
+	public String getConstantValue() {
+		return null;
+	}
+
 	@Override
 	public final String toString() {
 		StringBuilder sb = new StringBuilder();
