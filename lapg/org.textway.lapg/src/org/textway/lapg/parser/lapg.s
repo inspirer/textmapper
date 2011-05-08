@@ -142,7 +142,7 @@ lexer_part (AstLexerPart) ::=
 ;
 
 lexem_attr (AstLexemAttrs) ::=
-	  ':' identifier									{ $$ = lexemAttrs($identifier, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
+	  '(' identifier ')'								{ $$ = lexemAttrs($identifier, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
 ;
 
 icon_list (List<Integer>) ::=
