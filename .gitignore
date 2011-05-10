@@ -1,3 +1,4 @@
 .DS_Store
 bin
-build/build
+/build/build
+/update-site
