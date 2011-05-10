@@ -53,6 +53,8 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
+		<facetType implementation="org.textway.lapg.idea.facet.LapgFacetType"/>
+		<frameworkSupport implementation="org.textway.lapg.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
 		<fileTypeFactory implementation="org.textway.lapg.idea.file.LapgFileTypeFactory"/>
 		<fileTemplateGroup implementation="org.textway.lapg.idea.actions.LapgTemplatesFactory"/>
 
