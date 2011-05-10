@@ -101,7 +101,8 @@ public class Lapg {
 		}
 
 		InputStream stream;
-		if (options.getInput() != null && !options.getInput().startsWith("-")) {
+		assert options.getInput() != null;
+		if (!options.getInput().startsWith("-")) {
 			try {
 				stream = new FileInputStream(options.getInput());
 			} catch (FileNotFoundException ex) {

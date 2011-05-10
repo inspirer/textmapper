@@ -30,7 +30,7 @@ public interface IEvaluationStrategy extends TemplatesStatus, IStreamHandler, Ix
 
 	String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement referer);
 
-	Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, SourceElement referer) throws EvaluationException;
+	Object evaluate(IQuery t, EvaluationContext context, Object[] arguments) throws EvaluationException;
 
 	IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer);
 

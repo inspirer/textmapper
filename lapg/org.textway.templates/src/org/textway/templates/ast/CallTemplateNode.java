@@ -77,7 +77,7 @@ public class CallTemplateNode extends ExpressionNode {
 		if(t instanceof ITemplate) {
 			return env.evaluate((ITemplate)t, callContext, args, this);
 		} else if(t instanceof IQuery) {
-			return env.evaluate((IQuery)t, callContext, args, this);
+			return env.evaluate((IQuery)t, callContext, args);
 		} else {
 			return "";
 		}

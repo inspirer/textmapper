@@ -35,7 +35,7 @@ public class TemplatesBundle {
 	}
 
 	public String getName() {
-		return resource.getUri().getPath();
+		return resource.getUri().toString();
 	}
 
 	public IBundleEntity[] getEntities() {
@@ -45,12 +45,12 @@ public class TemplatesBundle {
 	public static TemplatesBundle parse(final Resource resource, String templatePackage,
 										final TemplatesStatus status) {
 
-		TextSource source = new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine());
+		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents().toCharArray(), resource.getInitialLine());
 		final TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			status.report(TemplatesStatus.KIND_ERROR, problem.getMessage(), new SourceElement() {
 				public String getResourceName() {
-					return resource.getUri().getPath();
+					return resource.getUri().toString();
 				}
 
 				public int getOffset() {

@@ -57,7 +57,7 @@ public class LapgParser implements PsiParser {
 
 		if (token == Tokens.lexer_part && (rule != Rules.lexer_part_alias && rule != Rules.lexer_part_group_selector)) {
 			return LapgElementTypes.LEXEM;
-		} else if(token == Tokens.grammar_part && rule != Rules.grammar_part_directive) {
+		} else if (token == Tokens.grammar_part && rule != Rules.grammar_part_directive) {
 			return LapgElementTypes.NONTERM;
 		}
 		return null;
@@ -83,12 +83,19 @@ public class LapgParser implements PsiParser {
 			/* syntax error, ok */
 		}
 
-		assert parser.markers.isEmpty();
+		boolean cannotRecover = !parser.markers.isEmpty();
+		while (!parser.markers.isEmpty()) {
+			parser.markers.pop().drop();
+		}
 
 		while (!builder.eof()) {
 			builder.advanceLexer();
 		}
-		grammar.done(LapgElementTypes.GRAMMAR);
+		if (cannotRecover) {
+			grammar.collapse(LapgElementTypes.GRAMMAR);
+		} else {
+			grammar.done(LapgElementTypes.GRAMMAR);
+		}
 	}
 
 	private static class LapgParserEx extends org.textway.lapg.parser.LapgParser {
@@ -140,7 +147,7 @@ public class LapgParser implements PsiParser {
 			super.shift();
 			lapg_m[lapg_head].sym = marker;
 
-			if(wasCurly) {
+			if (wasCurly) {
 				lapg_m[++lapg_head] = new LapgSymbol();
 				lapg_m[lapg_head].lexem = Tokens.command_tokensopt;
 				lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_m[lapg_head].lexem);

@@ -62,7 +62,7 @@ class TypesResolver {
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.report(TemplatesStatus.KIND_ERROR, s.getMessage(), new SourceElement() {
 					public String getResourceName() {
-						return myResource.getUri().getPath();
+						return myResource.getUri().toString();
 					}
 
 					public int getOffset() {
@@ -468,7 +468,7 @@ class TypesResolver {
 		}
 
 		public String getResourceName() {
-			return myResource.getUri().getPath();
+			return myResource.getUri().toString();
 		}
 
 		public int getOffset() {

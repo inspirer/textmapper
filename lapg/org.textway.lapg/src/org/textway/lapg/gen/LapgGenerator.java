@@ -148,7 +148,7 @@ public final class LapgGenerator {
 	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		if(grammarTemplates != null) {
-			loaders.add(new StringTemplateLoader(new Resource(URI.create("input"), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
+			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));

@@ -120,22 +120,22 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		try {
 			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 		} catch (EvaluationException ex) {
-			report(KIND_ERROR, ex.getMessage(), t);
+			report(KIND_ERROR, ex.getMessage(), referer != null ? referer : t);
 			return "";
 		}
 	}
 
-	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, SourceElement referer) throws EvaluationException {
+	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments) throws EvaluationException {
 		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
 	public String eval(final Resource resource, EvaluationContext context) {
-		TextSource source = new TextSource(resource.getUri().getPath(), resource.getContents().toCharArray(), resource.getInitialLine());
+		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents().toCharArray(), resource.getInitialLine());
 		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(source, "syntax");
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			DefaultEvaluationStrategy.this.report(KIND_ERROR, problem.getMessage(), new SourceElement() {
 				public String getResourceName() {
-					return resource.getUri().getPath();
+					return resource.getUri().toString();
 				}
 
 				public int getOffset() {
