@@ -9,7 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="module" module-name="org.textway.lapg" />
-    <orderEntry type="library" name="ANT" level="project" />
+    <orderEntry type="library" name="ANT" level="application" />
   </component>
 </module>
 
