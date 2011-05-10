@@ -63,5 +63,7 @@
 		<java jar="${launcher.plugin}" fork="true">
 			<arg line="-application org.eclipse.ant.core.antRunner -buildfile ${build.xml.script} -Dbuilder=${buildDirectoryUnixPath}"/>
 		</java>
+		<zip destfile="${buildDirectory}/lapg-update-site.zip"
+			basedir="${deploy.target}"/>
 	</target>
 </project>
