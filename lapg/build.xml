@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="all" name="org.textway.lapg">
-	<property environment="env"/>
+	<property name="lapg.ver" value="1.4.0alpha1"/>
+	<property name="suffix" value="1.4.0"/>
+
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
 	<property name="source" value="1.5"/>
-	<property name="lapg.ver" value="1.4.0alpha1"/>
-	<property name="suffix" value="1.4.0"/>
-	<property name="pluginPath" value="${user.home}/Library/Application Support/IntelliJIdea10CE"/>
 
 	<target name="all" depends="clean,test,deploy">
 	</target>
@@ -72,9 +71,9 @@
 			<src path="org.textway.templates.test/src"/>
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
-			<test name="org.textway.lapg.test.TestRunner" />
-			<test name="org.textway.templates.test.TestRunner" />
-			<formatter type="brief" usefile="false" />
+			<test name="org.textway.lapg.test.TestRunner"/>
+			<test name="org.textway.templates.test.TestRunner"/>
+			<formatter type="brief" usefile="false"/>
 			<classpath>
 				<pathelement location="build/bintests"/>
 				<pathelement location="build/lapg.jar"/>
@@ -108,12 +107,26 @@
 		<echo message="XML parser"/>
 		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true"
+			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
+		<java jar="libs/lapg-1.4.0.jar" fork="true"
+			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
 	</target>
 
 	<target name="plugin">
+		<property file="build.properties"/>
+		<property name="ideaPath" value="${home.idea_ic_10}"/>
+
+		<path id="javac2.classpath">
+			<pathelement location="${ideaPath}/lib/javac2.jar"/>
+			<pathelement location="${ideaPath}/lib/jdom.jar"/>
+			<pathelement location="${ideaPath}/lib/asm.jar"/>
+			<pathelement location="${ideaPath}/lib/asm-commons.jar"/>
+			<pathelement location="${ideaPath}/lib/jgoodies-forms.jar"/>
+		</path>
+		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
+
 		<mkdir dir="build/lapg/classes"/>
 		<copy includeemptydirs="false" todir="build/lapg">
 			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="lib/**"/>
@@ -122,13 +135,13 @@
 			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
 			<fileset dir="../lapg-idea/org.textway.lapg.idea/resources"/>
 		</copy>
-		<javac destdir="build/lapg/classes" source="${source}" target="${target}">
+		<javac2 destdir="build/lapg/classes" source="${source}" target="${target}">
 			<src path="../lapg-idea/org.textway.lapg.idea/src"/>
 			<classpath>
 				<fileset dir="build/lapg/lib" includes="*.jar"/>
-				<fileset dir="${env.IDEA_PATH}/lib" includes="*.jar"/>
+				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 			</classpath>
-		</javac>
+		</javac2>
 		<jar destfile="build/lapg/lib/lapg-plugin.jar">
 			<fileset dir="build/lapg/classes"/>
 			<manifest>
@@ -141,7 +154,8 @@
 		<delete dir="build/lapg/classes"/>
 	</target>
 
-	<target name="install-plugin">
+	<target name="install-plugin" depends="plugin">
+		<property name="pluginPath" value="${home.idea_ic_10.plugins}"/>
 		<copy includeemptydirs="false" todir="${pluginPath}/lapg/">
 			<fileset dir="build/lapg" includes="lib/**"/>
 		</copy>

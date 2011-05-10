@@ -1,6 +1,7 @@
 .DS_Store
 workspace.xml
 dictionaries
+/lapg/build.properties
 /lapg/build/
 /lapg/libs/lapg-1*
 /lapg-idea/org.textway.lapg.idea/lib/lapg-1*

@@ -18,7 +18,7 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
       <entry name="?*.ltp" />
-      <entry name="*/cases/input/syntax*" />
+      <entry name="input/syntax*" />
       <entry name="?*.tbl" />
       <entry name="?*.types" />
     </wildcardResourcePatterns>
