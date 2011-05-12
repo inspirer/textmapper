@@ -21,24 +21,23 @@ import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.*;
 
-/**
- * Gryaznov Evgeny, 5/6/11
- */
 public class RegexMatcher {
 
-	private final String regex;
+	private final RegexPart regex;
 	private State[] states;
 
 	public RegexMatcher(String regex) throws RegexpParseException {
+		this(parse(regex));
+	}
+
+	public RegexMatcher(RegexPart regex) {
 		this.regex = regex;
 		compile();
 	}
 
-	private void compile() throws RegexpParseException {
-		RegexPart parsed = parse(regex);
-
+	private void compile() {
 		RegexpBuilder builder = new RegexpBuilder();
-		parsed.accept(builder);
+		regex.accept(builder);
 		states = builder.getResult();
 	}
 
@@ -104,7 +103,7 @@ public class RegexMatcher {
 
 	@Override
 	public String toString() {
-		return regex;
+		return regex.toString();
 	}
 
 	private static class State {

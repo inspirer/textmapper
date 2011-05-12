@@ -86,12 +86,10 @@ public class RegexpParser {
 	/**
 	 * @return Engine representation of regular expression
 	 */
-	public int[] compile(int number, String name, String regex) throws RegexpParseException {
-		RegexPart parsed = RegexMatcher.parse(regex);
-
+	public int[] compile(int number, RegexPart regex) throws RegexpParseException {
 		RegexpBuilder builder = new RegexpBuilder();
 		try {
-			parsed.accept(builder);
+			regex.accept(builder);
 		} catch(IllegalArgumentException ex) {
 			throw new RegexpParseException(ex.getMessage(), 0);
 		}

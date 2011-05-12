@@ -17,8 +17,11 @@ package org.textway.lapg.parser;
 
 import org.textway.lapg.api.*;
 import org.textway.lapg.common.FormatUtil;
+import org.textway.lapg.lex.RegexMatcher;
+import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.ast.*;
+import org.textway.lapg.regex.RegexPart;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
@@ -26,10 +29,7 @@ import org.textway.templates.types.TiExpressionBuilder;
 import org.textway.templates.types.TypesRegistry;
 import org.textway.templates.types.TypesUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LapgResolver {
 
@@ -194,6 +194,8 @@ public class LapgResolver {
 		List<AstLexerPart> lexerParts = tree.getRoot().getLexer();
 		lexems = new ArrayList<LiLexem>(lexerParts.size());
 
+		List<LiLexem> classLexems = new LinkedList<LiLexem>();
+
 		int lexemIndex = 0;
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
@@ -202,20 +204,56 @@ public class LapgResolver {
 				if (lexeme.getRegexp() != null) {
 					AstLexemAttrs attrs = lexeme.getAttrs();
 					int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
+					RegexPart regex;
+					try {
+						regex = RegexMatcher.parse(lexeme.getRegexp().getRegexp());
+					} catch (RegexpParseException e) {
+						error(lexeme.getRegexp(), e.getMessage());
+						continue;
+					}
 
-					lexems.add(
-							new LiLexem(kind, lexemIndex++, s,
-									lexeme.getRegexp().getRegexp(),
-									groups, lexeme.getPriority(),
-									convert(lexeme.getCode()),
-									lexeme));
+					LiLexem liLexem = new LiLexem(kind, lexemIndex++, s,
+							regex,
+							groups, lexeme.getPriority(),
+							convert(lexeme.getCode()),
+							lexeme);
+					lexems.add(liLexem);
+					if (kind == Lexem.KIND_CLASS) {
+						classLexems.add(liLexem);
+					}
 				}
 			} else if (clause instanceof AstGroupsSelector) {
 				groups = convert((AstGroupsSelector) clause);
 			}
 		}
 
-		// TODO analyze lexems
+		for (LiLexem clLexem : classLexems) {
+			RegexMatcher m = new RegexMatcher(clLexem.getParsedRegexp());
+			for (LiLexem l : lexems) {
+				RegexPart lRegex = l.getParsedRegexp();
+				if (lRegex.isConstant() && l.getKind() != Lexem.KIND_CLASS) {
+					if (clLexem.getGroups() == l.getGroups() && m.matches(lRegex.getConstantValue())) {
+						if (l.getClassLexem() != null) {
+							error(l, "lexem matches two classes `" + l.getClassLexem().getSymbol().getName()
+									+ "' and `" + clLexem.getSymbol().getName() + "', using first");
+						} else {
+							l.setClassLexem(clLexem, l.getKind() == Lexem.KIND_SOFT);
+						}
+					}
+				}
+			}
+		}
+
+		for (LiLexem l : lexems) {
+			if (l.getKind() == Lexem.KIND_SOFT && l.getClassLexem() == null) {
+				String name = l.getSymbol().getName();
+				if (!l.getParsedRegexp().isConstant()) {
+					error(l, "soft lexem `" + name + "' should have a constant regexp");
+				} else {
+					error(l, "soft lexem `" + name + "' doesn't match any class lexem");
+				}
+			}
+		}
 	}
 
 	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {
@@ -269,7 +307,7 @@ public class LapgResolver {
 			}
 		}
 		AstRuleAttribute ruleAttribute = right.getAttribute();
-		AstReference rulePrio = ruleAttribute instanceof AstPrioClause ? ((AstPrioClause)ruleAttribute).getReference() : null;
+		AstReference rulePrio = ruleAttribute instanceof AstPrioClause ? ((AstPrioClause) ruleAttribute).getReference() : null;
 		LiSymbol prio = rulePrio != null ? resolve(rulePrio) : null;
 		// TODO store %shift attribute
 		// TODO check prio is term
@@ -325,7 +363,7 @@ public class LapgResolver {
 				List<LiSymbol> val = resolve(directive.getSymbols());
 				if (key.equals("input")) {
 					// TODO handle no-eoi attribute
-					for(LiSymbol s : val) {
+					for (LiSymbol s : val) {
 						boolean hasEoi = !s.getName().toLowerCase().endsWith("noeoi"); // FIXME
 						inputs.add(new LiInputRef(null, s, hasEoi));
 					}
@@ -395,6 +433,10 @@ public class LapgResolver {
 	}
 
 	private void error(IAstNode n, String message) {
+		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
+	}
+
+	private void error(LiEntity n, String message) {
 		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 

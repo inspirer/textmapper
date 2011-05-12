@@ -118,6 +118,17 @@ public class InputTest extends LapgTestCase {
 		}
 	}
 
+	public void testClassLexems() {
+		TestStatus notifier = new TestStatus("",
+				"syntax_lexems,19: lexem matches two classes `identifier' and `identifierX', using first\n" +
+				"syntax_lexems,22: soft lexem `L0choice' doesn't match any class lexem\n" +
+				"syntax_lexems,25: soft lexem `int' should have a constant regexp\n");
+		Grammar g = SyntaxUtil.parseSyntax("syntax_lexems", openStream("syntax_lexems", TESTCONTAINER),
+				notifier, createDefaultTypesRegistry());
+		notifier.assertDone();
+		Assert.assertNull(g);
+	}
+
 	public void testCheckCSharpGrammar() {
 		Grammar g = SyntaxUtil.parseSyntax("input", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
 				createDefaultTypesRegistry());

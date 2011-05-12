@@ -19,19 +19,21 @@ import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.parser.ast.IAstNode;
+import org.textway.lapg.regex.RegexPart;
 import org.textway.templates.api.INamedEntity;
 
 public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 
-	private final int kind;
+	private int kind;
 	private final int index;
 	private final Symbol sym;
-	private final String regexp;
+	private final RegexPart regexp;
 	private final int groups;
 	private final int priority;
 	private final SourceElement action;
+	private LiLexem classLexem;
 
-	public LiLexem(int kind, int index, Symbol sym, String regexp, int groups, int priority, SourceElement action, IAstNode node) {
+	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, SourceElement action, IAstNode node) {
 		super(node);
 		this.kind = kind;
 		this.index = index;
@@ -55,6 +57,10 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 	}
 
 	public String getRegexp() {
+		return regexp.toString();
+	}
+
+	public RegexPart getParsedRegexp() {
 		return regexp;
 	}
 
@@ -83,11 +89,17 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 	}
 
 	public Lexem getClassLexem() {
-		// FIXME
-		return null;
+		return classLexem;
 	}
 
 	public String getTitle() {
 		return "Lexem `" + sym.getName() + "`";
+	}
+
+	public void setClassLexem(LiLexem classLexem, boolean isSoft) {
+		if(this.kind == KIND_CLASS) throw new IllegalStateException();
+
+		this.classLexem = classLexem;
+		this.kind = isSoft ? Lexem.KIND_SOFT : Lexem.KIND_INSTANCE;
 	}
 }

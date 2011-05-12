@@ -28,7 +28,6 @@ import org.textway.lapg.parser.ast.AstRoot;
 import org.textway.templates.types.TypesRegistry;
 
 import java.io.InputStream;
-import java.util.Map;
 
 public class SyntaxUtil {
 

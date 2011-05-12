@@ -85,6 +85,7 @@ public class AnnotationsTest extends LapgTestCase {
 				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		Grammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
+		notifier.assertDone();
 		Assert.assertNull(g);
 	}
 

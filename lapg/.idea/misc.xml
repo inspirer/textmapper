@@ -6,6 +6,26 @@
   <component name="EntryPointsManager">
     <entry_points version="2.0" />
   </component>
+  <component name="FacetAutodetectingManager">
+    <autodetection-disabled>
+      <facet-type id="Lapg">
+        <modules>
+          <module name="org.textway.lapg.test">
+            <files>
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a/sample1.s" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b/sample2.s" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_conflict1" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_conflict2resolved" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_cs" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_lapg" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_lexems" />
+              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_tpl" />
+            </files>
+          </module>
+        </modules>
+      </facet-type>
+    </autodetection-disabled>
+  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
