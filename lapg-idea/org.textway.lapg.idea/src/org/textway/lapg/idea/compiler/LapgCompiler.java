@@ -17,6 +17,7 @@ package org.textway.lapg.idea.compiler;
 
 import com.intellij.compiler.impl.CompilerUtil;
 import com.intellij.compiler.impl.javaCompiler.OutputItemImpl;
+import com.intellij.facet.FacetManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.compiler.CompileContext;
 import com.intellij.openapi.compiler.CompileScope;
@@ -25,8 +26,9 @@ import com.intellij.openapi.compiler.TranslatingCompiler;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ui.configuration.ModulesConfigurator;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -38,14 +40,16 @@ import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.idea.LapgBundle;
+import org.textway.lapg.idea.facet.LapgConfigurationBean;
+import org.textway.lapg.idea.facet.LapgFacet;
+import org.textway.lapg.idea.facet.LapgFacetType;
 import org.textway.lapg.idea.file.LapgFileType;
 import org.textway.lapg.idea.parser.LapgFile;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Gryaznov Evgeny, 3/13/11
@@ -78,60 +82,25 @@ public class LapgCompiler implements TranslatingCompiler {
 
 
 	public void compile(CompileContext context, Chunk<Module> moduleChunk, VirtualFile[] files, OutputSink sink) {
-		ProgressIndicator progressIndicator = context.getProgressIndicator();
-		progressIndicator.setText("Lapg Compiler..");
+		Map<Module, List<VirtualFile>> mapToFiles = CompilerUtil.buildModuleToFilesMap(context, files);
+
+		for (Entry<Module, List<VirtualFile>> e : mapToFiles.entrySet()) {
+			compileModule(context, e.getKey(), e.getValue(), sink);
+		}
+	}
+
+	public void compileModule(CompileContext context, Module module, Collection<VirtualFile> files, OutputSink sink) {
+		LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
+		if (facet == null) {
+			return;
+		}
+
 		final List<File> filesToRefresh = new ArrayList<File>();
 		final Map<String, Collection<OutputItem>> outputs = new HashMap<String, Collection<OutputItem>>();
 		for (VirtualFile file : files) {
-			progressIndicator.checkCanceled();
-			progressIndicator.setText2(file.getName());
-			VirtualFile outputDir = file.getParent();
-			if (!outputDir.isDirectory() || !outputDir.isWritable()) {
-				// TODO ...
-				continue;
-			}
-
-			IdeaProcessingStatus status = new IdeaProcessingStatus(file, context);
-			LapgSyntaxBuilder builder = new LapgSyntaxBuilder(file, status);
-			boolean success = builder.generate() && !status.hasErrors();
-
-			if (success) {
-				String outPath = outputDir.getPath();
-				Map<String, String> generatedContent = builder.getGeneratedContent();
-				try {
-
-					for (Map.Entry<String, String> entry : generatedContent.entrySet()) {
-						final File destFile = new File(outPath, entry.getKey());
-						File pf = destFile.getParentFile();
-						if (!pf.exists() && !pf.mkdirs()) {
-							throw new IOException("cannot create folders for `" + pf.getPath() + "'");
-						}
-						String content = entry.getValue();
-						OutputStream os = new FileOutputStream(destFile);
-						os.write(content.getBytes("utf8"));
-						os.close();
-						filesToRefresh.add(destFile);
-
-						// report file
-						String outputDirPath = destFile.getParent();
-						Collection<OutputItem> collection = outputs.get(outputDirPath);
-						if (collection == null) {
-							collection = new ArrayList<OutputItem>();
-							outputs.put(outputDirPath, collection);
-						}
-						collection.add(new OutputItemImpl(FileUtil.toSystemIndependentName(destFile.getPath()), file));
-					}
-
-
-				} catch (IOException e) {
-					context.addMessage(CompilerMessageCategory.ERROR, e.getMessage(), null, 0, 0);
-					success = false;
-				}
-			}
-			if (!success) {
-				// recompile later
-				sink.add(outputDir.getPath(), Collections.<OutputItem>emptyList(), new VirtualFile[]{file});
-			}
+			context.getProgressIndicator().checkCanceled();
+			context.getProgressIndicator().setText("Compiling " + file.getName());
+			compileFile(context, file, sink, filesToRefresh, outputs);
 		}
 		CompilerUtil.refreshIOFiles(filesToRefresh);
 		for (Map.Entry<String, Collection<OutputItem>> entry : outputs.entrySet()) {
@@ -139,11 +108,70 @@ public class LapgCompiler implements TranslatingCompiler {
 		}
 	}
 
+	private void compileFile(CompileContext context, VirtualFile file, OutputSink sink, List<File> filesToRefresh, Map<String, Collection<OutputItem>> outputs) {
+		VirtualFile outputDir = file.getParent();
+		if (!outputDir.isDirectory() || !outputDir.isWritable()) {
+			// TODO ...
+			return;
+		}
+
+		IdeaProcessingStatus status = new IdeaProcessingStatus(file, context);
+		LapgSyntaxBuilder builder = new LapgSyntaxBuilder(file, status);
+		boolean success = builder.generate() && !status.hasErrors();
+
+		if (success) {
+			String outPath = outputDir.getPath();
+			Map<String, String> generatedContent = builder.getGeneratedContent();
+			try {
+				context.getProgressIndicator().setText("Saving " + file.getName());
+
+				for (Entry<String, String> entry : generatedContent.entrySet()) {
+					final File destFile = new File(outPath, entry.getKey());
+					LapgSyntaxBuilder.writeFile(destFile, entry.getValue());
+					filesToRefresh.add(destFile);
+
+					// report file
+					String outputDirPath = destFile.getParent();
+					Collection<OutputItem> collection = outputs.get(outputDirPath);
+					if (collection == null) {
+						collection = new ArrayList<OutputItem>();
+						outputs.put(outputDirPath, collection);
+					}
+					collection.add(new OutputItemImpl(FileUtil.toSystemIndependentName(destFile.getPath()), file));
+				}
+
+
+			} catch (IOException e) {
+				context.addMessage(CompilerMessageCategory.ERROR, e.getMessage(), null, 0, 0);
+				success = false;
+			}
+		}
+		if (!success) {
+			// recompile later
+			sink.add(outputDir.getPath(), Collections.<OutputItem>emptyList(), new VirtualFile[]{file});
+		}
+	}
+
 	public boolean validateConfiguration(CompileScope compileScope) {
 		VirtualFile[] files = compileScope.getFiles(LapgFileType.LAPG_FILE_TYPE, true);
 		if (files.length == 0) return true;
 
-		// TODO check configuration
+		final Module[] modules = compileScope.getAffectedModules();
+		for (final Module module : modules) {
+			LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
+			if (facet != null) {
+				LapgConfigurationBean configuration = facet.getConfiguration().getState();
+				boolean hasTemplatesFolder = configuration.templatesFolder.trim().length() > 0;
+
+				if (configuration.excludeDefaultTemplates && !hasTemplatesFolder) {
+					Messages.showErrorDialog(module.getProject(), LapgBundle.message("compiler.facetproblem.no_templates", module.getName()),
+							LapgBundle.message("compiler.facetproblem.title"));
+
+					ModulesConfigurator.showFacetSettingsDialog(facet, "Lapg");
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
@@ -179,7 +207,7 @@ public class LapgCompiler implements TranslatingCompiler {
 		}
 
 		public void report(ParserConflict conflict) {
-			if(conflict.getKind() != ParserConflict.FIXED) {
+			if (conflict.getKind() != ParserConflict.FIXED) {
 				report(KIND_ERROR, conflict.getText(), conflict.getRules());
 			}
 		}

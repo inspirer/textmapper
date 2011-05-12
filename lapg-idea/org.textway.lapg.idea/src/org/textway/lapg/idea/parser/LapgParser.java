@@ -91,11 +91,7 @@ public class LapgParser implements PsiParser {
 		while (!builder.eof()) {
 			builder.advanceLexer();
 		}
-		if (cannotRecover) {
-			grammar.collapse(LapgElementTypes.GRAMMAR);
-		} else {
-			grammar.done(LapgElementTypes.GRAMMAR);
-		}
+		grammar.done(LapgElementTypes.GRAMMAR);
 	}
 
 	private static class LapgParserEx extends org.textway.lapg.parser.LapgParser {

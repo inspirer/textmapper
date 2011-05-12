@@ -26,8 +26,7 @@ import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.templates.storage.FileBasedResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -97,8 +96,57 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 		File folder = new File(qualifiedName);
 		if (folder.isDirectory()) {
 			// FIXME charset
-			return new FileBasedResourceLoader(new File[] { folder }, "utf8");
+			return new FileBasedResourceLoader(new File[]{folder}, "utf-8");
 		}
 		return null;
+	}
+
+	static void writeFile(File file, String content) throws IOException {
+		File pf = file.getParentFile();
+		if (file.exists()) {
+			try {
+				String diskContent = readFile(file);
+				if (diskContent != null && diskContent.equals(content)) {
+					return;
+				}
+			} catch (IOException e) {
+				/* ignore */
+			}
+
+		} else if (!pf.exists() && !pf.mkdirs()) {
+			throw new IOException("cannot create folders for `" + pf.getPath() + "'");
+		}
+
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8"));
+			writer.print(content);
+			writer.flush();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+	}
+
+	static String readFile(File file) throws IOException {
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+			StringBuilder result = new StringBuilder();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				result.append(line).append("\n");
+			}
+			return result.toString();
+		} finally {
+			try {
+				if (reader != null) {
+					reader.close();
+				}
+			} catch (IOException e) {
+				/* ignore */
+			}
+		}
 	}
 }
