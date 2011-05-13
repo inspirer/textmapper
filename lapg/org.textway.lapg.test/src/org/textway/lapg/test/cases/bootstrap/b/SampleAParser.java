@@ -35,7 +35,8 @@ public class SampleAParser {
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 0, 1, 1, 4, 5, 6, 6, 6, 7, 8, 11, 12, 13
+		0, 0, 1, 1, 4, 5, 6, 6, 6, 7, 7, 7, 7, 7, 8, 11,
+		12, 13
 	};
 
 	private static final short lapg_sym_from[] = {
@@ -51,7 +52,7 @@ public class SampleAParser {
 	};
 
 	private static final short lapg_rlex[] = {
-		9, 12, 12, 10, 11, 11, 11
+		13, 16, 16, 14, 15, 15, 15
 	};
 
 	protected static final String[] lapg_syms = new String[] {
@@ -64,6 +65,10 @@ public class SampleAParser {
 		"Linterface",
 		"Lenum",
 		"error",
+		"numeric",
+		"octal",
+		"decimal",
+		"eleven",
 		"classdef_NoEoi",
 		"classdef",
 		"classdeflist",
@@ -72,10 +77,10 @@ public class SampleAParser {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int classdef_NoEoi = 9;
-		public static final int classdef = 10;
-		public static final int classdeflist = 11;
-		public static final int classdeflistopt = 12;
+		public static final int classdef_NoEoi = 13;
+		public static final int classdef = 14;
+		public static final int classdeflist = 15;
+		public static final int classdeflistopt = 16;
 	}
 
 	protected final int lapg_next(int state) throws IOException {

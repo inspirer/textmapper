@@ -26,6 +26,10 @@ public class SampleALexer {
 		public static final int Linterface = 6;
 		public static final int Lenum = 7;
 		public static final int error = 8;
+		public static final int numeric = 9;
+		public static final int octal = 10;
+		public static final int decimal = 11;
+		public static final int eleven = 12;
 	}
 
 	public interface ErrorReporter {
@@ -96,26 +100,32 @@ public class SampleALexer {
 	}
 
 	private static final short lapg_char2no[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 1, 1, 6, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 1, 1, 8, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1,
-		1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4,
-		1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 3, 1, 1
+		8, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		4, 10, 10, 10, 10, 10, 10, 10, 7, 7, 1, 1, 1, 1, 1, 1,
+		1, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+		6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1, 1, 1, 1, 6,
+		1, 9, 9, 9, 9, 9, 9, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+		6, 6, 6, 6, 6, 6, 6, 6, 5, 6, 6, 2, 1, 3, 1, 1
 	};
 
 	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4, 5, 6, 7
+		1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 3, -1, 4},
-		{ -6, -6, -6, -6, -6, -6, -6},
-		{ -7, -7, -7, -7, -7, -7, -7},
-		{ -3, -3, -3, -3, 3, 3, -3},
-		{ -4, -4, -4, -4, -4, -4, 4}
+		{ -2, -1, 1, 2, 3, 4, 4, 5, 6, 4, 5},
+		{ -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6},
+		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
+		{ -1, -1, -1, -1, 7, 8, -1, -1, -1, -1, 7},
+		{ -3, -3, -3, -3, 4, 4, 4, 4, -3, 4, 4},
+		{ -1, -1, -1, -1, 9, -1, -1, 9, -1, -1, 9},
+		{ -4, -4, -4, -4, -4, -4, -4, -4, 6, -4, -4},
+		{ -11, -11, -11, -11, 7, -11, -11, -11, -11, -11, 7},
+		{ -1, -1, -1, -1, 10, -1, -1, 10, -1, 10, 10},
+		{ -12, -12, -12, -12, 9, -12, -12, 9, -12, -12, 9},
+		{ -10, -10, -10, -10, 10, -10, -10, 10, -10, 10, 10}
 	};
 
 	private static int mapCharacter(int chr) {
@@ -195,6 +205,12 @@ public class SampleALexer {
 				return createIdentifierToken(lapg_n, lexemIndex);
 			case 1:
 				 return false; 
+			case 7:
+				return createNumericToken(lapg_n, lexemIndex);
+			case 8:
+				return createOctalToken(lapg_n, lexemIndex);
+			case 9:
+				return createDecimalToken(lapg_n, lexemIndex);
 		}
 		return true;
 	}
@@ -221,6 +237,36 @@ public class SampleALexer {
 				 lapg_n.sym = new Object(); break; 
 			case 0: // <default>
 				 lapg_n.sym = current(); break; 
+		}
+		return true;
+	}
+
+	protected boolean createNumericToken(LapgSymbol lapg_n, int lexemIndex) {
+		return true;
+	}
+
+	protected boolean createOctalToken(LapgSymbol lapg_n, int lexemIndex) {
+		switch(lexemIndex) {
+			case 8: // <default>
+				 lapg_n.sym = Integer.parseInt(current(), 8); break; 
+		}
+		return true;
+	}
+
+	private static Map<String,Integer> subTokensOfDecimal = new HashMap<String,Integer>();
+	static {
+		subTokensOfDecimal.put("11", 10);
+	}
+
+	protected boolean createDecimalToken(LapgSymbol lapg_n, int lexemIndex) {
+		Integer replacement = subTokensOfDecimal.get(current());
+		if(replacement != null) {
+			lexemIndex = replacement;
+			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+		}
+		switch(lexemIndex) {
+			case 10: // 11
+				 lapg_n.sym = 11; break; 
 		}
 		return true;
 	}
