@@ -31,11 +31,11 @@ public class SampleAParser {
 	};
 
 	private static final short lapg_lalr[] = {
-		3, -1, 6, -1, 5, 1, -1, -2, 3, -1, 5, 2, -1, -2
+		3, -1, 8, -1, 5, 1, -1, -2, 3, -1, 5, 2, -1, -2
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 0, 1, 1, 4, 5, 6, 7, 8, 11, 12, 13
+		0, 0, 1, 1, 4, 5, 6, 6, 6, 7, 8, 11, 12, 13
 	};
 
 	private static final short lapg_sym_from[] = {
@@ -51,7 +51,7 @@ public class SampleAParser {
 	};
 
 	private static final short lapg_rlex[] = {
-		7, 10, 10, 8, 9, 9, 9
+		9, 12, 12, 10, 11, 11, 11
 	};
 
 	protected static final String[] lapg_syms = new String[] {
@@ -61,6 +61,8 @@ public class SampleAParser {
 		"Lclass",
 		"'{'",
 		"'}'",
+		"Linterface",
+		"Lenum",
 		"error",
 		"classdef_NoEoi",
 		"classdef",
@@ -70,10 +72,10 @@ public class SampleAParser {
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int classdef_NoEoi = 7;
-		public static final int classdef = 8;
-		public static final int classdeflist = 9;
-		public static final int classdeflistopt = 10;
+		public static final int classdef_NoEoi = 9;
+		public static final int classdef = 10;
+		public static final int classdeflist = 11;
+		public static final int classdeflistopt = 12;
 	}
 
 	protected final int lapg_next(int state) throws IOException {
@@ -175,16 +177,16 @@ public class SampleAParser {
 		if (lapg_n.lexem == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 6) == -1) {
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 8) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new LapgSymbol();
-			lapg_m[lapg_head].lexem = 6;
+			lapg_m[lapg_head].lexem = 8;
 			lapg_m[lapg_head].sym = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 6);
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 8);
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
 			return true;

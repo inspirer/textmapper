@@ -11,12 +11,19 @@ positions = "offset"
 endpositions = "offset"
 genCleanup = false
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $lexem = current(); break; }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 (class)
+												{ $lexem = current(); break; }
 _skip:          /[\n\t\r ]+/                   	{ return false; }
 
 Lclass: /class/
 '{': /\{/
 '}': /\}/
+
+# reserved
+
+Linterface: /interface/
+Lenum:      /enum/
+
 
 error:
 
