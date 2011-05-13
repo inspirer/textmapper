@@ -82,7 +82,7 @@ public class TemplatesLexer {
 		public static final int QUESTIONMARK = 63;
 		public static final int _skip = 64;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}

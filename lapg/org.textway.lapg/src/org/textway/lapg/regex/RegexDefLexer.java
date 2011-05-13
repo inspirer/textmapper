@@ -32,7 +32,7 @@ public class RegexDefLexer {
 		public static final int PLUS = 14;
 		public static final int QUESTIONMARK = 15;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}

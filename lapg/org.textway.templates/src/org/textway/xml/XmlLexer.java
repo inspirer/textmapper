@@ -28,7 +28,7 @@ public class XmlLexer {
 		public static final int SLASH = 9;
 		public static final int _skip = 10;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}

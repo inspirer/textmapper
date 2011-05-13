@@ -53,7 +53,7 @@ public class LapgLexer {
 		public static final int iLCURLY = 34;
 		public static final int RCURLY = 35;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}

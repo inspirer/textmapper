@@ -27,7 +27,7 @@ public class SampleALexer {
 		public static final int RCURLY = 5;
 		public static final int error = 6;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}
