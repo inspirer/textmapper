@@ -20,7 +20,6 @@ prefix = "Templates"
 package = "org.textway.templates.ast"
 breaks = true
 gentree = true
-packLexems = true
 positions = "line,offset"
 endpositions = "offset"
 
@@ -39,7 +38,7 @@ escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().sub
 
 [1]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ -1		{ $lexem = current(); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ (class) { $lexem = current(); break; }
 
 icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); break; }
 ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = unescape(current(), 1, token.length()-1); break; }
