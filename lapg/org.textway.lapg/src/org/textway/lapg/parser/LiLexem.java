@@ -92,6 +92,10 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		return classLexem;
 	}
 
+	public boolean isExcluded() {
+		return this.classLexem != null;
+	}
+
 	public String getTitle() {
 		return "Lexem `" + sym.getName() + "`";
 	}

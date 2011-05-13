@@ -183,23 +183,60 @@ ${end-}
 			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 
-${if syntax.hasLexemActions()-}
+${if syntax.hasLexemActions() || self->classLexems().size() > 0-}
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
 ${else-}
 		} while (lapg_n.lexem == -1);
 ${end-}
 		return lapg_n;
 	}
-${if syntax.hasLexemActions()}
+${if syntax.hasLexemActions() || self->classLexems().size() > 0}
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
 		switch (lexemIndex) {
 ${foreach lexem in syntax.lexems-}
-${if lexem.action-}
+${if lexem.kindAsText == 'class'-}
+			case ${lexem.index}:
+				return create${lexem->classLexemName()}Token(lapg_n, lexemIndex);
+${else if lexem.action && !lexem.classLexem-}
 			case ${lexem.index}:
 				${call lexerAction('lapg_n.sym') for lexem-}
 ${end-}
 ${end-}
 		}
+		return true;
+	}
+${end-}
+${foreach lexem in self->classLexems()-}
+${if lexem->classHasInstances()-}
+
+	private static java.util.@Map<String,Integer> subTokensOf${lexem->classLexemName()} = new java.util.@HashMap<String,Integer>();
+	static {
+${foreach instance in lexem->classInstances()-}
+		subTokensOf${lexem->classLexemName()}.put("${util.escape(instance.parsedRegexp.constantValue)}", ${instance.index});
+${end-}
+	}
+${end-}
+
+	protected boolean create${lexem->classLexemName()}Token(LapgSymbol lapg_n, int lexemIndex) {
+${if lexem->classHasInstances()-}
+		Integer replacement = subTokensOf${lexem->classLexemName()}.get(current());
+		if(replacement != null) {
+			lexemIndex = replacement;
+			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+		}
+${end-}
+${if lexem->classInstances().exists(x|x.action) || lexem.action-}
+		switch(lexemIndex) {
+${foreach instance in lexem->classInstances().select(x|x.action)-}
+			case ${instance.index}: // ${instance.parsedRegexp.constantValue}
+				${call lexerAction('lapg_n.sym') for instance-}
+${end-}
+${if lexem.action-}
+			case ${lexem.index}: // <default>
+				${call lexerAction('lapg_n.sym') for lexem-}
+${end-}
+		}
+${end-}
 		return true;
 	}
 ${end-}
@@ -259,7 +296,7 @@ ${for i in [0, parser.nterms - 1]-}
 		public static final int ${parser.sym[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
-	
+
 	public interface ErrorReporter {
 		void error(${call java.err_parameters()}String s);
 	}
@@ -267,3 +304,12 @@ ${end}
 
 ${template lexercode-}
 ${end}
+
+
+${cached query classLexems() = syntax.lexems.select(x|x.kindAsText == 'class')}
+
+${cached query classHasInstances() = self->classInstances().size() > 0 }
+
+${cached query classInstances() = context.syntax.lexems.select(x|x.classLexem && x.classLexem == self)}
+
+${cached query classLexemName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classlexem__')}

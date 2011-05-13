@@ -35,4 +35,5 @@ public interface Lexem extends SourceElement {
 	int getKind();
 	String getKindAsText();
 	Lexem getClassLexem();
+	boolean isExcluded();
 }

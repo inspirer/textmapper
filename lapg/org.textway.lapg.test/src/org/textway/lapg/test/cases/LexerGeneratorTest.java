@@ -111,6 +111,10 @@ public class LexerGeneratorTest extends TestCase {
 			return null;
 		}
 
+		public boolean isExcluded() {
+			return false;
+		}
+
 		public int getGroups() {
 			return 1;
 		}

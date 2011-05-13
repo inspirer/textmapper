@@ -38,7 +38,7 @@ public class LexicalBuilder {
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
-	int nsit, nterms, totalgroups;
+	int nsit, nlexems, totalgroups;
 	int characters, charsetSize;
 	int[] char2no;
 	private int[][] set2symbols;
@@ -119,10 +119,10 @@ public class LexicalBuilder {
 		for (p = 0; set[p] >= 0;) {
 
 			// search for next terminal
-			while (i < nterms && set[p] >= lindex[i + 1]) {
+			while (i < nlexems && set[p] >= lindex[i + 1]) {
 				i++;
 			}
-			assert i < nterms;
+			assert i < nlexems;
 
 			// create closure for it in cset
 			slen = ljmpset[i];
@@ -189,7 +189,11 @@ public class LexicalBuilder {
 			status.debug("\nLexem jumps:\n");
 		}
 
-		for (lex = 0; lex < nterms; lex++) {
+		for (lex = 0; lex < nlexems; lex++) {
+			if(llen[lex] == 0) {
+				// ignoring lexem
+				continue;
+			}
 
 			int[] jumps = ljmp[lex];
 			int jmpset = ljmpset[lex];
@@ -339,7 +343,7 @@ public class LexicalBuilder {
 		nnext = 0;
 
 		// allocate temporary set
-		for (e = 1, i = 0; i < nterms; i++) {
+		for (e = 1, i = 0; i < nlexems; i++) {
 			if (ljmpset[i] > e) {
 				e = ljmpset[i];
 			}
@@ -347,8 +351,8 @@ public class LexicalBuilder {
 		cset = new int[e];
 
 		// create first set
-		for (i = 0; i < nterms; i++) {
-			if ((group[i] & 1) != 0) {
+		for (i = 0; i < nlexems; i++) {
+			if ((group[i] & 1) != 0 && llen[i] != 0) {
 				next[nnext++] = lindex[i];
 			}
 		}
@@ -379,8 +383,8 @@ public class LexicalBuilder {
 		// create left group states
 		for (k = 1; k < LexConstants.BITS; k++) {
 			if ((totalgroups & (1 << k)) != 0) {
-				for (nnext = i = 0; i < nterms; i++) {
-					if ((group[i] & (1 << k)) != 0) {
+				for (nnext = i = 0; i < nlexems; i++) {
+					if ((group[i] & (1 << k)) != 0 && llen[i] != 0) {
 						next[nnext++] = lindex[i];
 					}
 				}
@@ -529,7 +533,7 @@ public class LexicalBuilder {
 		return lexemerrors == 0;
 	}
 
-	/**
+	/*
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare() {
@@ -538,25 +542,26 @@ public class LexicalBuilder {
 
 		nsit = 0;
 		ArrayList<int[]> syms = new ArrayList<int[]>();
-		nterms = myLexems.length;
+		nlexems = myLexems.length;
 
-		if (nterms >= LexConstants.MAX_LEXEMS) {
+		if (nlexems >= LexConstants.MAX_LEXEMS) {
 			status.report(ProcessingStatus.KIND_ERROR, "too much lexems", myLexems[LexConstants.MAX_LEXEMS - 1]);
 			return false;
 		}
 
 		totalgroups = 0;
-		lnum = new int[nterms];
-		lprio = new int[nterms];
-		group = new int[nterms];
-		lindex = new int[nterms + 1];
-		llen = new int[nterms];
-		ljmpset = new int[nterms];
-		ljmp = new int[nterms][];
-		lname = new String[nterms];
+		lnum = new int[nlexems];
+		lprio = new int[nlexems];
+		group = new int[nlexems];
+		lindex = new int[nlexems + 1];
+		llen = new int[nlexems];
+		ljmpset = new int[nlexems];
+		ljmp = new int[nlexems][];
+		lname = new String[nlexems];
 
-		for (int i = 0; i < nterms; i++) {
+		for (int i = 0; i < nlexems; i++) {
 			Lexem l = myLexems[i];
+			assert i == l.getIndex();
 			totalgroups |= l.getGroups();
 
 			if (l.getGroups() == 0) {
@@ -570,33 +575,35 @@ public class LexicalBuilder {
 				continue;
 			}
 
-			try {
-				RegexPart parsedRegex = l instanceof LiLexem
-						? ((LiLexem) l).getParsedRegexp()
-						: RegexMatcher.parse(l.getRegexp());
-				int[] lexem_sym = rp.compile(i, parsedRegex);
+			lnum[i] = l.getSymbol().getIndex();
+			lname[i] = l.getSymbol().getName();
+			lprio[i] = l.getPriority();
+			group[i] = l.getGroups();
+			lindex[i] = nsit;
 
-				lnum[i] = l.getSymbol().getIndex();
-				lprio[i] = l.getPriority();
-				group[i] = l.getGroups();
-				lindex[i] = nsit;
+			if(!l.isExcluded()) {
+				int[] lexem_sym = parseRegexp(rp, l);
+				if(lexem_sym == null) {
+					success = false;
+					continue;
+				}
+
 				llen[i] = lexem_sym.length;
 				ljmpset[i] = (((lexem_sym.length) + LexConstants.BITS - 1) / LexConstants.BITS);
 				ljmp[i] = new int[lexem_sym.length * ljmpset[i]];
-				lname[i] = l.getSymbol().getName();
 
 				Arrays.fill(ljmp[i], 0);
 				syms.add(lexem_sym);
 				nsit += lexem_sym.length;
-			} catch (RegexpParseException ex) {
-				status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
-				success = false;
+			} else {
+				llen[i] = 0;
+				ljmpset[i] = 0;
 			}
 		}
 		if (!success) {
 			return false;
 		}
-		lindex[nterms] = nsit;
+		lindex[nlexems] = nsit;
 		lsym = new int[nsit];
 		int e = 0;
 		for (int[] from : syms) {
@@ -618,7 +625,7 @@ public class LexicalBuilder {
 
 		if (status.isDebugMode()) {
 			status.debug("\nLexems:\n\n");
-			for (int i = 0; i < nterms; i++) {
+			for (int i = 0; i < nlexems; i++) {
 				status.debug(lname[i] + "," + lnum[i] + ": ");
 				for (e = lindex[i]; e < lindex[i + 1]; e++) {
 					status.debug(" " + FormatUtil.asHex(lsym[e], 8));
@@ -659,6 +666,19 @@ public class LexicalBuilder {
 		return true;
 	}
 
+	private int[] parseRegexp(RegexpParser rp, Lexem l) {
+		try {
+			RegexPart parsedRegex = l instanceof LiLexem
+					? ((LiLexem) l).getParsedRegexp()
+					: RegexMatcher.parse(l.getRegexp());
+			return rp.compile(l.getIndex(), parsedRegex);
+
+		} catch (RegexpParseException ex) {
+			status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
+			return null;
+		}
+	}
+
 	private LexerTables generate() {
 
 		if (myLexems.length == 0) {
@@ -680,10 +700,10 @@ public class LexicalBuilder {
 			stateChange[s.number] = s.change;
 		}
 
-		return new LexerTables(states, characters, nterms, lnum, char2no, groupset, stateChange);
+		return new LexerTables(states, characters, nlexems, lnum, char2no, groupset, stateChange);
 	}
 
-	/**
+	/*
 	 * Generates lexer tables from lexems descriptions
 	 */
 	public static LexerTables compile(Lexem[] lexems, ProcessingStatus status) {

@@ -17,13 +17,7 @@ package org.textway.templates.eval;
 
 import org.textway.templates.objects.IxWrapper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Default class to use as helper in templates.
@@ -58,8 +52,8 @@ public class DefaultStaticMethods {
 		int i = 0;
 		sb.append("[");
 		ArrayList keys = new ArrayList(map.keySet());
-		if(keys.size() > 0 && keys.get(0) instanceof Comparable<?>) {
-			Collections.sort((List<Comparable>)keys);
+		if (keys.size() > 0 && keys.get(0) instanceof Comparable<?>) {
+			Collections.sort((List<Comparable>) keys);
 		}
 		for (Object key : keys) {
 			if (i > 0) {
@@ -75,14 +69,14 @@ public class DefaultStaticMethods {
 	}
 
 	public String toFirstUpper(String s) {
-		if(s.length() > 0) {
+		if (s.length() > 0) {
 			return Character.toUpperCase(s.charAt(0)) + s.substring(1);
 		}
 		return s;
 	}
 
 	public String toFirstLower(String s) {
-		if(s.length() > 0) {
+		if (s.length() > 0) {
 			return Character.toLowerCase(s.charAt(0)) + s.substring(1);
 		}
 		return s;
@@ -92,11 +86,11 @@ public class DefaultStaticMethods {
 		char[] string = s.toCharArray();
 		int len = 0;
 		boolean nextUpper = firstUpper;
-		for(int i = 0; i < string.length; i++) {
+		for (int i = 0; i < string.length; i++) {
 			char c = string[i];
-			if(c == '_') {
+			if (c == '_') {
 				nextUpper = true;
-			} else if(nextUpper){
+			} else if (nextUpper) {
 				string[len] = len > 0 || firstUpper ? Character.toUpperCase(c) : c;
 				len++;
 				nextUpper = false;
@@ -108,15 +102,15 @@ public class DefaultStaticMethods {
 	}
 
 	private final Set<String> usedIdentifiers = new HashSet<String>();
-	private final Map<Object,String> objectIds = new HashMap<Object,String>();
+	private final Map<Object, String> objectIds = new HashMap<Object, String>();
 	int objectIdCounter = 1;
 
 	public String objectId(Object o) {
-		if(o instanceof IxWrapper) {
-			o = ((IxWrapper)o).getObject();
+		if (o instanceof IxWrapper) {
+			o = ((IxWrapper) o).getObject();
 		}
 		String s = objectIds.get(o);
-		if(s == null) {
+		if (s == null) {
 			s = "obj" + objectIdCounter++;
 			objectIds.put(o, s);
 		}
@@ -130,10 +124,49 @@ public class DefaultStaticMethods {
 	public String uniqueId(String s, String context) {
 		String result = s;
 		int i = 2;
-		while(usedIdentifiers.contains(context != null ? context + "#" + result : result)) {
+		while (usedIdentifiers.contains(context != null ? context + "#" + result : result)) {
 			result = s + i++;
 		}
 		usedIdentifiers.add(context != null ? context + "#" + result : result);
 		return result;
+	}
+
+	public String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : s.toCharArray()) {
+			switch (c) {
+				case '"':
+				case '\'':
+				case '\\':
+					sb.append('\\');
+					sb.append(c);
+					continue;
+				case '\f':
+					sb.append("\\f");
+					continue;
+				case '\n':
+					sb.append("\\n");
+					continue;
+				case '\r':
+					sb.append("\\r");
+					continue;
+				case '\t':
+					sb.append("\\t");
+					continue;
+			}
+			if (c >= 0x20 && c < 0x80) {
+				sb.append(c);
+				continue;
+			}
+			String sym = Integer.toString(c, 16);
+			boolean isShort = sym.length() <= 2;
+			sb.append(isShort ? "\\x" : "\\u");
+			int len = isShort ? 2 : 4;
+			if (sym.length() < len) {
+				sb.append("0000".substring(sym.length() + (4 - len)));
+			}
+			sb.append(sym);
+		}
+		return sb.toString();
 	}
 }

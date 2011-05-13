@@ -3,6 +3,8 @@ package org.textway.lapg.test.cases.bootstrap.b;
 import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SampleALexer {
 
@@ -25,7 +27,7 @@ public class SampleALexer {
 		public static final int Lenum = 7;
 		public static final int error = 8;
 	}
-	
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}
@@ -94,14 +96,14 @@ public class SampleALexer {
 	}
 
 	private static final short lapg_char2no[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 18, 18, 1, 1, 18, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 6, 6, 1, 1, 6, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		18, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 1, 1, 1, 1, 1, 1,
-		1, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
-		16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 1, 1, 1, 1, 16,
-		1, 4, 16, 2, 16, 11, 13, 16, 16, 8, 16, 16, 3, 15, 9, 16,
-		16, 16, 12, 5, 10, 14, 16, 16, 16, 16, 16, 6, 1, 7, 1, 1
+		6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1,
+		1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4,
+		1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
+		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 2, 1, 3, 1, 1
 	};
 
 	private static final short lapg_lexemnum[] = {
@@ -109,29 +111,11 @@ public class SampleALexer {
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 2, 2, 3, 4, 5, 2, 2, 6, 2, 2, 2, 2, 2, -1, 7},
-		{ -3, -3, 2, 8, 2, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 9, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 10, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, 7},
-		{ -3, -3, 2, 2, 11, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 12, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 2, 2, 2, 13, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 14, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 15, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 16, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 17, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 2, 18, 2, 2, 2, 2, 2, -3},
-		{ -9, -9, 2, 2, 2, 2, -9, -9, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -9},
-		{ -5, -5, 2, 2, 2, 2, -5, -5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -5},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 2, 2, 19, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 20, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 21, 2, 2, 2, -3, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, 2, 22, 2, 2, 2, 2, 2, 2, -3},
-		{ -8, -8, 2, 2, 2, 2, -8, -8, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, -8}
+		{ -2, -1, 1, 2, 3, -1, 4},
+		{ -6, -6, -6, -6, -6, -6, -6},
+		{ -7, -7, -7, -7, -7, -7, -7},
+		{ -3, -3, -3, -3, 3, 3, -3},
+		{ -4, -4, -4, -4, -4, -4, 4}
 	};
 
 	private static int mapCharacter(int chr) {
@@ -208,9 +192,35 @@ public class SampleALexer {
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
 		switch (lexemIndex) {
 			case 0:
-				 lapg_n.sym = current(); break; 
+				return createIdentifierToken(lapg_n, lexemIndex);
 			case 1:
 				 return false; 
+		}
+		return true;
+	}
+
+	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
+	static {
+		subTokensOfIdentifier.put("class", 2);
+		subTokensOfIdentifier.put("interface", 5);
+		subTokensOfIdentifier.put("enum", 6);
+	}
+
+	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
+		Integer replacement = subTokensOfIdentifier.get(current());
+		if(replacement != null) {
+			lexemIndex = replacement;
+			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+		}
+		switch(lexemIndex) {
+			case 2: // class
+				 lapg_n.sym = "class"; break; 
+			case 5: // interface
+				 lapg_n.sym = "interface"; break; 
+			case 6: // enum
+				 lapg_n.sym = new Object(); break; 
+			case 0: // <default>
+				 lapg_n.sym = current(); break; 
 		}
 		return true;
 	}
