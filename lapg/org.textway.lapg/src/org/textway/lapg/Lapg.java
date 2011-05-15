@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2010 Evgeny Gryaznov
+ * Copyright 2002-2011 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,8 @@ import org.textway.lapg.parser.LapgTree.TextSource;
  */
 public class Lapg {
 
-	public static final String VERSION = "1.4.0/java";
-	public static final String BUILD = "2010";
+	public static final String VERSION = "1.4.x/java";
+	public static final String BUILD = "2011";
 
 	public static final String HELP_MESSAGE =
 		"lapg - Lexer and Parser generator\n"+
@@ -58,7 +58,7 @@ public class Lapg {
 
 	public static final String VERSION_MESSAGE =
 		"lapg v" + VERSION + " build " + BUILD + "\n" +
-		"Evgeny Gryaznov, 2002-10, egryaznov@gmail.com\n";
+		"Evgeny Gryaznov, 2002-2011, egryaznov@gmail.com\n";
 
 
 	public static void main(String[] args) {

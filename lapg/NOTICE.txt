@@ -6,7 +6,7 @@
 
    Lexer and Parser Generator
    http://textway.org/
-   Copyright 2002-2010 Evgeny Gryaznov
+   Copyright 2002-2011 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2010 Evgeny Gryaznov
+ * Copyright 2002-2011 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,6 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-/**
- * Evgeny, Dec 4, 2010
- */
 public class ClassResourceLoader implements IResourceLoader {
 
 	private final ClassLoader loader;
