@@ -145,6 +145,14 @@ public class RegexDefTree<T> {
 			return initialLine + (line >= 0 ? line : -line - 2);
 		}
 
+		public int columnForOffset(int offset) {
+			if (lineoffset == null) {
+				lineoffset = getLineOffsets(contents);
+			}
+			int line = Arrays.binarySearch(lineoffset, offset);
+			return offset >= 0 ? offset - lineoffset[line >= 0 ? line : -line - 2] : 0;
+		}
+
 		public char[] getContents() {
 			return contents;
 		}

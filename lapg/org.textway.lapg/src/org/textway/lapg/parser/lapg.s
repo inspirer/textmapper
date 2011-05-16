@@ -1,6 +1,5 @@
 #  syntax: lalr1 generator source grammar
-#
-#  Lapg (Lexer and Parser Generator)
+
 #  Copyright 2002-2011 Evgeny Gryaznov
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");

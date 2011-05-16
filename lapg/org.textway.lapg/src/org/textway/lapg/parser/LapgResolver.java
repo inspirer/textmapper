@@ -19,7 +19,11 @@ import org.textway.lapg.api.*;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
+import org.textway.lapg.parser.LapgLexer.ErrorReporter;
+import org.textway.lapg.parser.LapgLexer.LapgSymbol;
+import org.textway.lapg.parser.LapgLexer.Lexems;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
+import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.parser.ast.*;
 import org.textway.lapg.regex.RegexPart;
 import org.textway.templates.api.types.IClass;
@@ -29,6 +33,7 @@ import org.textway.templates.types.TiExpressionBuilder;
 import org.textway.templates.types.TypesRegistry;
 import org.textway.templates.types.TypesUtil;
 
+import java.io.IOException;
 import java.util.*;
 
 public class LapgResolver {
@@ -102,11 +107,12 @@ public class LapgResolver {
 		InputRef[] inputArr = inputs.toArray(new InputRef[inputs.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
+		String copyrightHeader = extractCopyright();
 
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr,
 				inputArr, eoi, error, options,
 				templates, terminals,
-				!tree.getErrors().isEmpty());
+				!tree.getErrors().isEmpty(), copyrightHeader);
 	}
 
 	private SourceElement getTemplates() {
@@ -537,6 +543,54 @@ public class LapgResolver {
 				error(expression, message);
 			}
 		}.resolve(expression, type);
+	}
+
+	private String extractCopyright() {
+		TextSource source = tree.getSource();
+		final List<LapgProblem> list = new LinkedList<LapgProblem>();
+		ErrorReporter reporter = new ErrorReporter() {
+			public void error(int start, int end, int line, String s) {
+				list.add(new LapgProblem(LapgTree.KIND_ERROR, start, end, s, null));
+			}
+		};
+
+		try {
+			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
+			lexer.setSkipComments(false);
+			List<String> headers = new LinkedList<String>();
+
+			LapgSymbol sym = lexer.next();
+			int lastline = 0;
+			StringBuilder sb = new StringBuilder();
+			while (sym.lexem == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
+				String val = lexer.current().substring(1);
+				if (sym.line > lastline + 1 && sb.length() > 0) {
+					headers.add(sb.toString());
+					sb.setLength(0);
+				}
+				lastline = sym.line;
+				if(!(sym.line == 1 && val.startsWith("!"))) {
+					sb.append(val).append('\n');
+				}
+				sym = lexer.next();
+			}
+			if(!list.isEmpty()) {
+				return null;
+			}
+			if(sb.length() > 0) {
+				headers.add(sb.toString());
+			}
+			for(String s : headers) {
+				if(s.toLowerCase().contains("license")) {
+					return s;
+				}
+			}
+
+		} catch (IOException e) {
+			/* ignore */
+		}
+
+		return null;
 	}
 
 	private static class LapgResolverProblem extends LapgProblem {
