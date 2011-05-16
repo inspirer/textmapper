@@ -547,10 +547,10 @@ public class LapgResolver {
 
 	private String extractCopyright() {
 		TextSource source = tree.getSource();
-		final List<LapgProblem> list = new LinkedList<LapgProblem>();
+		final boolean[] hasErrors = new boolean[] { false };
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new LapgProblem(LapgTree.KIND_ERROR, start, end, s, null));
+				hasErrors[0] = true;
 			}
 		};
 
@@ -574,7 +574,7 @@ public class LapgResolver {
 				}
 				sym = lexer.next();
 			}
-			if(!list.isEmpty()) {
+			if(hasErrors[0]) {
 				return null;
 			}
 			if(sb.length() > 0) {

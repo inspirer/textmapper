@@ -1,4 +1,5 @@
 ${template unit-}
+${call java.header-}
 package ${call java.package};
 
 ${call java.imports-}

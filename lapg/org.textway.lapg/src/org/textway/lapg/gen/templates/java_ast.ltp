@@ -62,6 +62,7 @@ ${end}
 
 ${template ast_interface(cl)-}
 ${file self->astPath() + cl->interfaceName() + '.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public interface ${cl->interfaceName()}${call implementedInterfaces(cl,'extends')} {
@@ -73,6 +74,7 @@ ${end}
 
 ${template ast_class(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
@@ -130,6 +132,7 @@ ${end}
 
 ${template ast_enum(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public enum ${cl->className()} {
@@ -144,6 +147,7 @@ ${end}
 
 ${template astBaseInterface-}
 ${file self->astPath() + 'I' + opts.astprefix + 'Node.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public interface I${opts.astprefix}Node {
@@ -158,6 +162,7 @@ ${end}
 
 ${template astVisitor-}
 ${file self->astPath() + opts.astprefix + 'Visitor.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Visitor {
@@ -173,6 +178,7 @@ ${end}
 
 ${template astBaseClass-}
 ${file self->astPath() + opts.astprefix + 'Node.java'-}
+${call java.header-}
 package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {

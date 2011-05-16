@@ -14,6 +14,7 @@ ${call java_options.options-}
 ${end}
 
 ${template unit-}
+${call header-}
 package ${call package};
 
 ${call imports-}
@@ -454,3 +455,14 @@ ${query escapeJavaReserved() =
 		'super', 'switch', 'synchronized', 'this', 'throw', 'throws', 'transient', 'true', 'try', 'void',
 		'volatile', 'while'
 	].contains(self) ? '_' + self : self }
+
+
+${template header-}
+${if opts.genCopyright && syntax.copyrightHeader-}
+/**
+${foreach line in syntax.copyrightHeader.split('\n')-}
+ *${line}
+${end-}
+ */
+${end-}
+${end}
