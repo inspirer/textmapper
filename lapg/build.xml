@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="." default="all" name="org.textway.lapg">
-	<property name="lapg.ver" value="1.4.0alpha1"/>
-	<property name="suffix" value="1.4.0"/>
+	<property name="lapg.version" value="1.4.0"/>
+	<property name="lapg.qualifier" value="SNAPSHOT"/>
+	<property name="suffix" value="${lapg.version}"/>
 
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
 	<property name="source" value="1.5"/>
+
+	<tstamp>
+		<format property="lapg.build.date" pattern="EEE MMM d HH:mm:ss z yyyy" />
+	</tstamp>
 
 	<target name="all" depends="clean,test,deploy">
 	</target>
@@ -14,7 +19,14 @@
 		<delete dir="build"/>
 	</target>
 
-	<target name="build">
+	<target name="rev" unless="lapg.revision">
+		<exec executable="git" outputproperty="lapg.revision">
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+	</target>
+
+	<target name="build" depends="rev">
 		<mkdir dir="build/bin"/>
 		<copy includeemptydirs="false" todir="build/bin">
 			<fileset dir="org.textway.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
@@ -30,15 +42,16 @@
 			<manifest>
 				<attribute name="Main-Class" value="org.textway.lapg.Lapg"/>
 				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${lapg.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
-				<attribute name="Implementation-Version" value="${lapg.ver}"/>
+				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
 			</manifest>
 			<metainf dir="." includes="*.txt"/>
 		</jar>
 	</target>
 
-	<target name="buildsource">
+	<target name="buildsource" depends="rev">
 		<mkdir dir="build/src"/>
 		<copy includeemptydirs="false" todir="build/src">
 			<fileset dir="org.textway.lapg/src" includes="**/*.java, **/syntax, **/*.ltp"/>
@@ -48,9 +61,10 @@
 			<fileset dir="build/src"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${lapg.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
-				<attribute name="Implementation-Version" value="${lapg.ver}"/>
+				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
 			</manifest>
 			<metainf dir="." includes="*.txt"/>
 		</jar>
@@ -97,24 +111,24 @@
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/regex"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
 		<echo message="Types parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/types"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/types"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true"
+		<java jar="libs/lapg-${suffix}.jar" fork="true"
 			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
-		<java jar="libs/lapg-1.4.0.jar" fork="true"
+		<java jar="libs/lapg-${suffix}.jar" fork="true"
 			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
 	</target>
 
-	<target name="plugin">
+	<target name="plugin" depends="rev">
 		<property file="build.properties"/>
 		<property name="ideaPath" value="${home.idea_ic_10}"/>
 
@@ -146,8 +160,10 @@
 			<fileset dir="build/lapg/classes"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${lapg.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
+				<attribute name="Implementation-Title" value="Lexer and Parser Generator IDEA Plug-in"/>
+				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
 			</manifest>
 			<metainf dir="." includes="LICENSE.txt"/>
 		</jar>
