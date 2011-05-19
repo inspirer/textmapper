@@ -76,6 +76,7 @@ public class CharacterSet implements Iterable<int[]> {
 			}
 
 			public void remove() {
+				throw new UnsupportedOperationException();
 			}
 		};
 	}

@@ -17,11 +17,9 @@ package org.textway.lapg.test.cases;
 
 import java.util.Iterator;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.lex.CharacterSet;
-
-import org.junit.Assert;
 
 public class CharacterSetTest extends TestCase {
 
@@ -118,6 +116,16 @@ public class CharacterSetTest extends TestCase {
 		Assert.assertEquals(false, it.hasNext());
 		Assert.assertNull(it.next());
 		Assert.assertNull(it.next());
+
+		it = set.iterator();
+		it.next();
+		boolean exc = false;
+		try {
+			it.remove();
+		} catch(UnsupportedOperationException ex) {
+			exc = true;
+		}
+		Assert.assertTrue("no exception", exc);
 	}
 
 	public void testSubtract2() {
@@ -149,7 +157,7 @@ public class CharacterSetTest extends TestCase {
 	}
 
 	public void testRealloc() {
-		StringBuffer res = new StringBuffer();
+		StringBuilder res = new StringBuilder();
 		CharacterSet.Builder b = new CharacterSet.Builder();
 		res.append("[");
 
@@ -161,6 +169,26 @@ public class CharacterSetTest extends TestCase {
 			b.addSymbol(i*4);
 		}
 		res.append("]");
+		Assert.assertEquals(res.toString(), b.create().toString());
+	}
+
+	public void testReverseRealloc() {
+		StringBuilder res = new StringBuilder();
+		res.append("[");
+		for(int i = 0; i < 6000; i++) {
+			if(i > 0) {
+				res.append(",");
+			}
+			res.append(i*4);
+		}
+		res.append("]");
+
+		// set in reverse order
+		CharacterSet.Builder b = new CharacterSet.Builder();
+		b.addSymbol(0);
+		for(int i = 6000-1; i > 0; i--) {
+			b.addSymbol(i*4);
+		}
 		Assert.assertEquals(res.toString(), b.create().toString());
 	}
 
