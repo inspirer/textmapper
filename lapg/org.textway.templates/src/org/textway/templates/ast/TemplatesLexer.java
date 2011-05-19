@@ -120,9 +120,9 @@ public class TemplatesLexer {
 	private int tokenLine = 1;
 	private int currLine = 1;
 	private int currOffset = 0;
-	
+
 	private int deep = 0;
-	
+
 	private String unescape(String s, int start, int end) {
 		StringBuilder sb = new StringBuilder();
 		end = Math.min(end, s.length());

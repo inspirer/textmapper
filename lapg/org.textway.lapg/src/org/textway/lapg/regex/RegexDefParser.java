@@ -40,7 +40,7 @@ public class RegexDefParser {
 		this.reporter = reporter;
 	}
 
-	
+
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	CharacterSet.Builder setbuilder = new CharacterSet.Builder();

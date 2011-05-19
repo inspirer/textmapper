@@ -43,34 +43,34 @@ public class TemplatesParser {
 		this.reporter = reporter;
 	}
 
-	
+
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	String templatePackage;
-	
+
 	private int killEnds = -1;
-	
+
 	private int rawText(int start, final int end) {
 		char[] buff = source.getContents();
 		if( killEnds == start ) {
 			while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
 				start++;
-	
+
 			if( start < end && buff[start] == '\r' )
 				start++;
-	
+
 			if( start < end && buff[start] == '\n' )
 				start++;
 		}
 		return start;
 	}
-	
+
 	private void checkIsSpace(int start, int end, int line) {
 		String val = source.getText(rawText(start,end),end).trim();
 		if( val.length() > 0 )
 			reporter.error(start, end, line, "Unknown text ignored: `"+val+"`");
 	}
-	
+
 	private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int endoffset, int line) {
 		if (elseNode == null ) {
 			return;
@@ -81,7 +81,7 @@ public class TemplatesParser {
 			reporter.error(offset, endoffset, line, "Unknown else node, instructions skipped");
 		}
 	}
-	
+
 	private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, TextSource source, int offset, int endoffset, int line) {
 		if(!instruction.equals("collect")) {
 			reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
@@ -89,7 +89,7 @@ public class TemplatesParser {
 		}
 		return new CollectMapNode(context, varName, key, value, source, offset, endoffset);
 	}
-	
+
 	private ExpressionNode createCollectionProcessor(ExpressionNode context, String instruction, String varName, ExpressionNode foreachExpr, TextSource source, int offset, int endoffset, int line) {
 		char first = instruction.charAt(0);
 		int kind = 0;
@@ -135,23 +135,23 @@ public class TemplatesParser {
 		}
 		return new CollectionProcessorNode(context, kind, varName, foreachExpr, source, offset, endoffset);
 	}
-	
+
 	private Node createEscapedId(String escid, int offset, int endoffset) {
 		int sharp = escid.indexOf('#');
 		if( sharp >= 0 ) {
 			Integer index = new Integer(escid.substring(sharp+1));
 			escid = escid.substring(0, sharp);
 			return new IndexNode(new SelectNode(null,escid,source,offset,endoffset), new LiteralNode(index,source,offset,endoffset),source,offset,endoffset);
-		
+
 		} else {
 			return new SelectNode(null,escid,source,offset,endoffset);
 		}
 	}
-	
+
 	private void skipSpaces(int offset) {
 		killEnds = offset+1;
 	}
-	
+
 	private void checkFqn(String templateName, int offset, int endoffset, int line) {
 		if( templateName.indexOf('.') >= 0 && templatePackage != null) {
 			reporter.error(offset, endoffset, line, "template name should be simple identifier");

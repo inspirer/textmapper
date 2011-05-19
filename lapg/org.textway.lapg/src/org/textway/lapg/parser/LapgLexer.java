@@ -89,19 +89,19 @@ public class LapgLexer {
 	private int tokenLine = 1;
 	private int currLine = 1;
 	private int currOffset = 0;
-	
+
 	private int deep = 0;
 	private int templatesStart = -1;
 	private boolean skipComments = true;
-	
+
 	int getTemplatesStart() {
 		return templatesStart;
 	}
-	
+
 	public void setSkipComments(boolean skip) {
 		this.skipComments = skip;
 	}
-	
+
 	private String unescape(String s, int start, int end) {
 		StringBuilder sb = new StringBuilder();
 		end = Math.min(end, s.length());

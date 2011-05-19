@@ -39,15 +39,15 @@ public class XmlParser {
 		this.reporter = reporter;
 	}
 
-	
+
 	private static final boolean DEBUG_SYNTAX = false;
-	
+
 	TextSource source;
-	
+
 	private XmlData getData(int start, int end) {
 		return new XmlData(source.getContents(), start, end-start);
 	}
-	
+
 	private void checkTag(XmlNode node, String endTag, int offset, int endoffset, int line) {
 		if (!node.getTagName().equals(endTag))
 			reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);

@@ -41,10 +41,10 @@ public class LapgParser {
 		this.reporter = reporter;
 	}
 
-	
+
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	
+
 	private AstLexemAttrs lexemAttrs(String attr, TextSource source, int offset, int endoffset, int line) {
 		if("class".equals(attr)) {
 			return new AstLexemAttrs(Lexem.KIND_CLASS, source, offset, endoffset);
