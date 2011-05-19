@@ -17,6 +17,7 @@ package org.textway.lapg.parser;
 
 import org.textway.lapg.api.*;
 import org.textway.lapg.common.FormatUtil;
+import org.textway.lapg.gen.TemplateStaticMethods;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
@@ -596,7 +597,7 @@ public class LapgResolver {
 			}
 			for (String s : headers) {
 				if (s.toLowerCase().contains("license")) {
-					return s;
+					return new TemplateStaticMethods().shiftLeft(s);
 				}
 			}
 

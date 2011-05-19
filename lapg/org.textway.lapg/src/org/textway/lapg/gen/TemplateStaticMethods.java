@@ -21,21 +21,75 @@ import org.textway.templates.eval.DefaultStaticMethods;
 public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public String shiftRight(String s, Integer padding) {
-		String[] sspl = s.split("\\n");
-		StringBuffer sb = new StringBuffer(s.length() + (padding + 1) * sspl.length);
-		for (String q : sspl) {
+		return shiftRightWithChar(s, padding, '\t');
+	}
 
-			for (int i = 0; i < padding; i++) {
-				sb.append('\t');
+	public String shiftRightWithSpaces(String s, Integer padding) {
+		return shiftRightWithChar(s, padding, ' ');
+	}
+
+	private static String shiftRightWithChar(String s, Integer padding, char paddingChar) {
+		String[] sspl = s.split("\\r?\\n");
+		StringBuilder sb = new StringBuilder(s.length() + (padding + 1) * sspl.length);
+		for (String q : sspl) {
+			if(q.trim().length() > 0) {
+				for (int i = 0; i < padding; i++) {
+					sb.append(paddingChar);
+				}
+				sb.append(q);
 			}
-			sb.append(q);
+			sb.append('\n');
+		}
+		return sb.toString();
+	}
+
+	public String shiftLeft(String text) {
+		String[] sspl = text.split("\\r?\\n");
+		String prefix = null;
+		for(int i = 0; i < sspl.length; i++) {
+			if(sspl[i].trim().length() == 0) {
+				sspl[i] = "";
+				continue;
+			}
+			int spaces = 0;
+			while(spaces < sspl[i].length()) {
+				char c = sspl[i].charAt(spaces);
+				if(c == ' ' || c == '\t') {
+					spaces++;
+				} else {
+					break;
+				}
+			}
+			if(prefix == null) {
+				prefix = sspl[i].substring(0, spaces);
+			} else {
+				int len = 0;
+				while(len < prefix.length() && len < spaces && prefix.charAt(len) == sspl[i].charAt(len)) len++;
+				if(len < prefix.length()) {
+					prefix = prefix.substring(0, len);
+				}
+			}
+			if(prefix.length() == 0) {
+				return text;
+			}
+		}
+		if(prefix == null) {
+			return text;
+		}
+
+		int padding = prefix.length();
+		StringBuilder sb = new StringBuilder(text.length());
+		for (String q : sspl) {
+			if(q.length() > 0) {
+				sb.append(q.substring(padding));
+			}
 			sb.append('\n');
 		}
 		return sb.toString();
 	}
 
 	public String format(short[] table, Integer maxwidth, Integer leftpadding) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < table.length; i++) {
 			if (i > 0) {
 				if ((i % maxwidth) == 0) {
@@ -56,7 +110,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	}
 
 	public String format(int[] table, Integer maxwidth, Integer leftpadding) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < table.length; i++) {
 			if (i > 0) {
 				if ((i % maxwidth) == 0) {
@@ -77,7 +131,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	}
 
 	public static String format(int[][] table, Integer leftpadding, String startrow, String endrow) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < table.length; i++) {
 			if (i > 0) {
 				for (int e = 0; e < leftpadding; e++) {

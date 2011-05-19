@@ -26,6 +26,7 @@ public class TestRunner {
 		ts.addTestSuite(MatcherTest.class);
 		ts.addTestSuite(RegexDefTest.class);
 		ts.addTestSuite(GrammarTest.class);
+		ts.addTestSuite(TemplateStaticMethodsTest.class);
 		ts.addTestSuite(AnnotationsTest.class);
 		ts.addTestSuite(JavaPostProcessorTest.class);
 		ts.addTestSuite(CharacterSetTest.class);

@@ -460,7 +460,7 @@ ${query escapeJavaReserved() =
 ${template header-}
 ${if opts.genCopyright && syntax.copyrightHeader-}
 /**
-${foreach line in syntax.copyrightHeader.split('\n')-}
+${foreach line in util.shiftRightWithSpaces(syntax.copyrightHeader, 1).split('\n')-}
  *${line}
 ${end-}
  */
