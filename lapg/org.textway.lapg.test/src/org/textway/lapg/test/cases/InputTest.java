@@ -120,9 +120,12 @@ public class InputTest extends LapgTestCase {
 
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,19: lexem matches two classes `identifier' and `identifierX', using first\n" +
-				"syntax_lexems,22: soft lexem `L0choice' doesn't match any class lexem\n" +
-				"syntax_lexems,25: soft lexem `int' should have a constant regexp\n");
+				"syntax_lexems,37: redeclaration of soft terminal: ssss\n" +
+				"syntax_lexems,20: lexem matches two classes `identifier' and `identifierX', using first\n" +
+				"syntax_lexems,23: soft lexem `L0choice' doesn't match any class lexem\n" +
+				"syntax_lexems,26: soft lexem `int' should have a constant regexp\n" +
+				"syntax_lexems,34: soft terminal `abcde' class ambiguity: icon or identifier\n"
+		);
 		Grammar g = SyntaxUtil.parseSyntax("syntax_lexems", openStream("syntax_lexems", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
 		notifier.assertDone();

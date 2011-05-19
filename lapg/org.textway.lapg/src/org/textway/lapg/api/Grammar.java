@@ -36,8 +36,5 @@ public interface Grammar {
 	Symbol getError();
 
 	SourceElement getTemplates();
-
-	boolean hasActions();
-	boolean hasLexemActions();
 	boolean hasErrors();
 }

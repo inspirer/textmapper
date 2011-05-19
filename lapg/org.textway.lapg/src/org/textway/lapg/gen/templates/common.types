@@ -21,8 +21,6 @@ class Grammar {
 
 	SourceElement templates;
 
-	bool hasActions();
-	bool hasLexemActions();
 	bool hasErrors();
 
 # TODO:

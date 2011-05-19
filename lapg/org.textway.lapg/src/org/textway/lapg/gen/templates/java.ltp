@@ -275,7 +275,7 @@ ${end-}
 
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
-${if syntax.hasActions() || opts.genast -}
+${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
 		switch (rule) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}

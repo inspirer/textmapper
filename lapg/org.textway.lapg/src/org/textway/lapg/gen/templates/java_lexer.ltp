@@ -184,15 +184,12 @@ ${end-}
 			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 
-${if syntax.hasLexemActions() || self->classLexems().size() > 0-}
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
-${else-}
-		} while (lapg_n.lexem == -1);
-${end-}
 		return lapg_n;
 	}
-${if syntax.hasLexemActions() || self->classLexems().size() > 0}
+
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+${if self->hasLexemActions()-}
 		switch (lexemIndex) {
 ${foreach lexem in syntax.lexems-}
 ${if lexem.kindAsText == 'class'-}
@@ -204,9 +201,9 @@ ${else if lexem.action && !lexem.classLexem-}
 ${end-}
 ${end-}
 		}
+${end-}
 		return true;
 	}
-${end-}
 ${foreach lexem in self->classLexems()-}
 ${if lexem->classHasInstances()-}
 
@@ -306,6 +303,8 @@ ${end}
 ${template lexercode-}
 ${end}
 
+${cached query hasLexemActions() =
+	syntax.lexems.exists(l|l.action || l.kindAsText == 'class')}
 
 ${cached query classLexems() = syntax.lexems.select(x|x.kindAsText == 'class')}
 

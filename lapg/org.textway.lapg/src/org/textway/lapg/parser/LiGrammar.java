@@ -98,24 +98,6 @@ public class LiGrammar implements Grammar {
 		return hasErrors;
 	}
 
-	public boolean hasActions() {
-		for (Rule r : rules) {
-			if (r.getAction() != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean hasLexemActions() {
-		for (Lexem l : lexems) {
-			if (l.getAction() != null) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public String getCopyrightHeader() {
 		return copyrightHeader;
 	}

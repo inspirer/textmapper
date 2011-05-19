@@ -4,9 +4,7 @@ class Global {
 	common.Context* context[1];
 }
 
-class Options {
-	string lang[identifier] = "";
-
+class Options extends common.Options {
 	string prefix[notempty; identifier];
 	string package[qualified] = "";
 	string positions [set:line,column,offset] = "line,offset";

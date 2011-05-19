@@ -72,8 +72,6 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		switch (kind) {
 			case KIND_CLASS:
 				return "class";
-			case KIND_INSTANCE:
-				return "instance";
 			case KIND_SOFT:
 				return "soft";
 		}
@@ -100,10 +98,9 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		return "Lexem `" + sym.getName() + "`";
 	}
 
-	public void setClassLexem(LiLexem classLexem, boolean isSoft) {
+	void setClassLexem(LiLexem classLexem) {
 		if(this.kind == KIND_CLASS) throw new IllegalStateException();
 
 		this.classLexem = classLexem;
-		this.kind = isSoft ? Lexem.KIND_SOFT : Lexem.KIND_INSTANCE;
 	}
 }

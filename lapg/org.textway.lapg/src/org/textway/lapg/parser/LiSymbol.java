@@ -25,12 +25,15 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	private final String name;
 	private final String type;
 	private final boolean isTerm;
+	private final boolean isSoft;
+	private Symbol softClass;
 
-	public LiSymbol(String name, String type, boolean isTerm, IAstNode node) {
+	public LiSymbol(String name, String type, boolean isTerm, boolean isSoft, IAstNode node) {
 		super(null, node);
 		this.name = name;
 		this.type = type;
 		this.isTerm = isTerm;
+		this.isSoft = isSoft;
 	}
 
 	public int getIndex() {
@@ -58,7 +61,19 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		return isTerm;
 	}
 
-    public String getId() {
+	public boolean isSoft() {
+		return isSoft;
+	}
+
+	public Symbol getSoftClass() {
+		return softClass;
+	}
+
+	void setSoftClass(Symbol softClass) {
+		this.softClass = softClass;
+	}
+
+	public String getId() {
         return identifier;
     }
 }

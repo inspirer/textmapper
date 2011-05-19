@@ -22,8 +22,7 @@ public interface Lexem extends SourceElement {
 
 	public static final int KIND_NONE = 0;
 	public static final int KIND_CLASS = 1;
-	public static final int KIND_INSTANCE = 2;
-	public static final int KIND_SOFT = 3;
+	public static final int KIND_SOFT = 2;
 
 	int getIndex();
 	Symbol getSymbol();

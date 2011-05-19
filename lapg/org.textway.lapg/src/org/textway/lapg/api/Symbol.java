@@ -22,6 +22,8 @@ public interface Symbol extends Annotated, SourceElement {
 	String getName();
 	String getType();
 	boolean isTerm();
+	boolean isSoft();
+	Symbol getSoftClass();
 
 	@Deprecated
 	boolean isDefined();

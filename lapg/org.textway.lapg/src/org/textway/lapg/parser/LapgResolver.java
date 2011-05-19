@@ -128,18 +128,20 @@ public class LapgResolver {
 		return null;
 	}
 
-	private LiSymbol create(AstIdentifier id, String type, boolean isTerm) {
+	private LiSymbol create(AstIdentifier id, String type, boolean isTerm, boolean isSoft) {
 		String name = id.getName();
 		if (symbolsMap.containsKey(name)) {
 			LiSymbol sym = symbolsMap.get(name);
 			if (sym.isTerm() != isTerm) {
 				error(id, "redeclaration of " + (isTerm ? "non-terminal" : "terminal") + ": " + name);
+			} else if (sym.isSoft() != isSoft) {
+				error(id, "redeclaration of " + (isSoft ? "non-soft" : "soft") + " terminal: " + name);
 			} else if (!LapgResolverHelper.safeEquals(sym.getType(), type)) {
 				error(id, "redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of " + (sym.getType() == null ? "<empty>" : sym.getType()));
 			}
 			return sym;
 		} else {
-			LiSymbol sym = new LiSymbol(name, type, isTerm, id);
+			LiSymbol sym = new LiSymbol(name, type, isTerm, isSoft, id);
 			symbolsMap.put(name, sym);
 			symbols.add(sym);
 			return sym;
@@ -153,7 +155,7 @@ public class LapgResolver {
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
-					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false);
+					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false, false);
 					rules.add(new LiRule(null, symopt, new LiSymbolRef[0], null, null, null, id));
 					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null)}, null, null, null, id));
 					return symopt;
@@ -192,7 +194,7 @@ public class LapgResolver {
 	}
 
 	private void collectLexems() {
-		eoi = new LiSymbol("eoi", null, true, null);
+		eoi = new LiSymbol("eoi", null, true, false, null);
 		symbolsMap.put(eoi.getName(), eoi);
 		symbols.add(eoi);
 		int groups = 1;
@@ -206,10 +208,10 @@ public class LapgResolver {
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true);
+				AstLexemAttrs attrs = lexeme.getAttrs();
+				int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
+				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true, kind == Lexem.KIND_SOFT);
 				if (lexeme.getRegexp() != null) {
-					AstLexemAttrs attrs = lexeme.getAttrs();
-					int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
 					RegexPart regex;
 					try {
 						regex = RegexMatcher.parse(lexeme.getRegexp().getRegexp());
@@ -243,7 +245,7 @@ public class LapgResolver {
 							error(l, "lexem matches two classes `" + l.getClassLexem().getSymbol().getName()
 									+ "' and `" + clLexem.getSymbol().getName() + "', using first");
 						} else {
-							l.setClassLexem(clLexem, l.getKind() == Lexem.KIND_SOFT);
+							l.setClassLexem(clLexem);
 						}
 					}
 				}
@@ -251,12 +253,24 @@ public class LapgResolver {
 		}
 
 		for (LiLexem l : lexems) {
-			if (l.getKind() == Lexem.KIND_SOFT && l.getClassLexem() == null) {
+			if (l.getKind() != Lexem.KIND_SOFT) {
+				continue;
+			}
+			if (l.getClassLexem() == null) {
 				String name = l.getSymbol().getName();
 				if (!l.getParsedRegexp().isConstant()) {
 					error(l, "soft lexem `" + name + "' should have a constant regexp");
 				} else {
 					error(l, "soft lexem `" + name + "' doesn't match any class lexem");
+				}
+			} else {
+				Symbol softClass = l.getClassLexem().getSymbol();
+				Symbol existingClass = l.getSymbol().getSoftClass();
+				if (existingClass != null && existingClass != softClass) {
+					String name = l.getSymbol().getName();
+					error(l, "soft terminal `" + name + "' class ambiguity: " + softClass.getName() + " or " + existingClass.getName());
+				} else if(existingClass == null) {
+					((LiSymbol)l.getSymbol()).setSoftClass(softClass);
 				}
 			}
 		}
@@ -279,7 +293,7 @@ public class LapgResolver {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), false);
+				create(nonterm.getName(), nonterm.getType(), false, false);
 			}
 		}
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
@@ -300,7 +314,7 @@ public class LapgResolver {
 				}
 				AstCode astCode = rs.getCode();
 				if (astCode != null) {
-					LiSymbol codeSym = new LiSymbol("{}", null, false, astCode);
+					LiSymbol codeSym = new LiSymbol("{}", null, false, false, astCode);
 					symbols.add(codeSym);
 					rightPart.add(new LiSymbolRef(codeSym, null, null, null));
 					rules.add(new LiRule(null, codeSym, null, convert(astCode), null, null, astCode));
@@ -547,7 +561,7 @@ public class LapgResolver {
 
 	private String extractCopyright() {
 		TextSource source = tree.getSource();
-		final boolean[] hasErrors = new boolean[] { false };
+		final boolean[] hasErrors = new boolean[]{false};
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
 				hasErrors[0] = true;
@@ -569,19 +583,19 @@ public class LapgResolver {
 					sb.setLength(0);
 				}
 				lastline = sym.line;
-				if(!(sym.line == 1 && val.startsWith("!"))) {
+				if (!(sym.line == 1 && val.startsWith("!"))) {
 					sb.append(val).append('\n');
 				}
 				sym = lexer.next();
 			}
-			if(hasErrors[0]) {
+			if (hasErrors[0]) {
 				return null;
 			}
-			if(sb.length() > 0) {
+			if (sb.length() > 0) {
 				headers.add(sb.toString());
 			}
-			for(String s : headers) {
-				if(s.toLowerCase().contains("license")) {
+			for (String s : headers) {
+				if (s.toLowerCase().contains("license")) {
 					return s;
 				}
 			}

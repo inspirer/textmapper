@@ -141,6 +141,14 @@ public class LexerGeneratorTest extends TestCase {
 					throw new UnsupportedOperationException();
 				}
 
+				public boolean isSoft() {
+					throw new UnsupportedOperationException();
+				}
+
+				public Symbol getSoftClass() {
+					throw new UnsupportedOperationException();
+				}
+
 				public boolean isDefined() {
 					throw new UnsupportedOperationException();
 				}
