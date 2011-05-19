@@ -24,7 +24,4 @@ public interface Symbol extends Annotated, SourceElement {
 	boolean isTerm();
 	boolean isSoft();
 	Symbol getSoftClass();
-
-	@Deprecated
-	boolean isDefined();
 }

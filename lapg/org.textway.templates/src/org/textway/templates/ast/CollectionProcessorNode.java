@@ -127,10 +127,12 @@ public class CollectionProcessorNode extends ExpressionNode {
 				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
 				innerContext.setVariable(varName, curr);
 				Object val = env.evaluate(foreachExpr, innerContext, false);
-				if(!(val instanceof Comparable<?>)) {
-					throw new EvaluationException("`" + foreachExpr.toString() + "` should implement Comparable (instead of "+val.getClass().getCanonicalName()+")");
+				Comparable<Object> comparableVal = objectAsComparable(val);
+				if(comparableVal == null) {
+					throw new EvaluationException("`" + foreachExpr.toString() + "` should implement Comparable (instead of "+
+							(val != null ? val.getClass().getCanonicalName() : "<null>") +")");
 				}
-				sortKey.put(curr, (Comparable<Object>)val);
+				sortKey.put(curr, comparableVal);
 				result.add(curr);
 			}
 			Object[] arr = result.toArray();
@@ -162,6 +164,11 @@ public class CollectionProcessorNode extends ExpressionNode {
 			}
 			return instruction == FORALL;
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Comparable<Object> objectAsComparable(Object obj) {
+		return obj instanceof Comparable<?> ? (Comparable<Object>) obj : null;
 	}
 
 	@Override

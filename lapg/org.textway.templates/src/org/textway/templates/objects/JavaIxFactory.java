@@ -102,9 +102,9 @@ public class JavaIxFactory implements IxFactory {
 
 	public static class JavaCollectionIxObject extends DefaultIxObject implements IxWrapper {
 
-		protected Collection collection;
+		protected Collection<?> collection;
 
-		public JavaCollectionIxObject(Collection collection) {
+		public JavaCollectionIxObject(Collection<?> collection) {
 			this.collection = collection;
 		}
 

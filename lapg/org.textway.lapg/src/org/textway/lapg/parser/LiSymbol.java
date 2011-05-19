@@ -53,10 +53,6 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		return type;
 	}
 
-	public boolean isDefined() {
-		return true;
-	}
-
 	public boolean isTerm() {
 		return isTerm;
 	}

@@ -149,10 +149,6 @@ public class LexerGeneratorTest extends TestCase {
 					throw new UnsupportedOperationException();
 				}
 
-				public boolean isDefined() {
-					throw new UnsupportedOperationException();
-				}
-
 				public String getType() {
 					throw new UnsupportedOperationException();
 				}

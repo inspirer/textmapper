@@ -32,7 +32,7 @@
 			<fileset dir="org.textway.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
 			<fileset dir="org.textway.templates/src" excludes="**/*.launch, **/*.java, **/syntax"/>
 		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}" includeantruntime="true">
 			<src path="org.textway.lapg/src"/>
 			<src path="org.textway.lapg.ant/src"/>
 			<src path="org.textway.templates/src"/>
@@ -76,7 +76,7 @@
 			<fileset dir="org.textway.lapg.test/src" excludes="**/*.launch, **/*.java"/>
 			<fileset dir="org.textway.templates.test/src" excludes="**/*.launch, **/*.java"/>
 		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}" includeantruntime="false">
 			<classpath>
 				<pathelement location="build/lapg.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
@@ -149,7 +149,7 @@
 			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
 			<fileset dir="../lapg-idea/org.textway.lapg.idea/resources"/>
 		</copy>
-		<javac2 destdir="build/lapg/classes" source="${source}" target="${target}">
+		<javac2 destdir="build/lapg/classes" source="${source}" target="${target}" includeantruntime="false">
 			<src path="../lapg-idea/org.textway.lapg.idea/src"/>
 			<classpath>
 				<fileset dir="build/lapg/lib" includes="*.jar"/>

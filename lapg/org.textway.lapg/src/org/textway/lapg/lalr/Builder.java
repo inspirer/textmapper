@@ -129,9 +129,7 @@ public class Builder extends Lalr1 {
 
 		// print out the useless symbols
 		for (i = 0; i < nsyms; i++) {
-			if (!sym[i].isTerm() && !sym[i].isDefined()) {
-				status.report(ProcessingStatus.KIND_ERROR, "no rules for `" + sym[i].getName() + "`", sym[i]);
-			} else if (!sym_good[i] || !sym_employed[i]) {
+			if (!sym_good[i] || !sym_employed[i]) {
 				if (!sym[i].getName().startsWith("_skip")) {
 					status.report(ProcessingStatus.KIND_WARN, "symbol `" + sym[i].getName() + "` is useless", sym[i]);
 				}
