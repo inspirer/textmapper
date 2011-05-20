@@ -29,7 +29,7 @@ public class JavaTablesCompression extends TestCase {
 		Assert.assertTrue( c.startsWith(starts));
 		c = c.substring(starts.length());
 
-		StringBuffer extractedString = new StringBuffer();
+		StringBuilder extractedString = new StringBuilder();
 		char[] chs = c.toCharArray();
 		boolean isstring = false;
 		for (char ch : chs) {
@@ -55,7 +55,7 @@ public class JavaTablesCompression extends TestCase {
 	private void checkDecompression(int[] a) {
 		String c = JavaArrayArchiver.packInt(a, 5);
 
-		StringBuffer extractedString = new StringBuffer();
+		StringBuilder extractedString = new StringBuilder();
 		char[] chs = c.toCharArray();
 		boolean isstring = false;
 		for (char ch : chs) {

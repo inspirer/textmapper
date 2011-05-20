@@ -28,7 +28,7 @@ public class FileBasedResourceLoader implements IResourceLoader {
 	}
 
 	private static String getFileContents(File file, String charsetName) {
-		StringBuffer contents = new StringBuffer();
+		StringBuilder contents = new StringBuilder();
 		char[] buffer = new char[2048];
 		int count;
 		try {

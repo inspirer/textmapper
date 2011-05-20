@@ -45,7 +45,7 @@ public class XmlAttribute extends XmlElement {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append(name);
 		sb.append("=\"");
 		sb.append(value);

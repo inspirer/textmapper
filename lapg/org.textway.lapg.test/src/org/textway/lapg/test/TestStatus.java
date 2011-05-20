@@ -26,8 +26,8 @@ import org.textway.lapg.api.SourceElement;
 
 public class TestStatus implements ProcessingStatus {
 
-	private final StringBuffer warns = new StringBuffer();
-	private final StringBuffer errors = new StringBuffer();
+	private final StringBuilder warns = new StringBuilder();
+	private final StringBuilder errors = new StringBuilder();
 	private int debuglev;
 
 	public TestStatus() {

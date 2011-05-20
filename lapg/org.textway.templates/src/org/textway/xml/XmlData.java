@@ -29,7 +29,7 @@ public class XmlData extends XmlElement {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append(new String(buffer, start, len));
 	}
 

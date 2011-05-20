@@ -83,7 +83,7 @@ public class XmlNode extends XmlElement {
 	}
 
 	@Override
-	public void toString(StringBuffer sb) {
+	public void toString(StringBuilder sb) {
 		sb.append("<");
 		sb.append(tagName);
 		if( attributes != null ) {
@@ -111,7 +111,7 @@ public class XmlNode extends XmlElement {
 	}
 
 	public String getNodeDeclaration() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("<");
 		sb.append(tagName);
 		if( attributes != null ) {

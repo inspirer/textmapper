@@ -88,7 +88,7 @@ public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (left.getName() == null) {
 			sb.append("<noname>");
 		} else {

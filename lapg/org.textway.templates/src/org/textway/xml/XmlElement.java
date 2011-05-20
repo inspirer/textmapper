@@ -19,11 +19,11 @@ import org.textway.templates.api.SourceElement;
 
 public abstract class XmlElement implements SourceElement {
 
-	public abstract void toString(StringBuffer sb);
+	public abstract void toString(StringBuilder sb);
 
 	@Override
 	public final String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		toString(sb);
 		return sb.toString();
 	}

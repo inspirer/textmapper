@@ -34,7 +34,7 @@ public class ClassResourceLoader implements IResourceLoader {
 	}
 
 	private static String getStreamContents(URL url, String charsetName) {
-		StringBuffer contents = new StringBuffer();
+		StringBuilder contents = new StringBuilder();
 		char[] buffer = new char[2048];
 		int count;
 		try {

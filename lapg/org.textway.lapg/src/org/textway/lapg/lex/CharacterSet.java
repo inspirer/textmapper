@@ -83,7 +83,7 @@ public class CharacterSet implements Iterable<int[]> {
 
 	@Override
 	public String toString() {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		for (int i = 0; i < set.length; i += 2) {
 			if (sb.length() > 1) {
