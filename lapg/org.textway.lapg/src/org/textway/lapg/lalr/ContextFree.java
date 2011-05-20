@@ -36,9 +36,9 @@ abstract class ContextFree {
 		int[] result = new int[counter];
 
 		int curr_prio = 0;
-		for (int i = 0; i < prios.length; i++) {
-			result[curr_prio++] = -prios[i].getPrio();
-			Symbol[] list = prios[i].getSymbols();
+		for (Prio prio : prios) {
+			result[curr_prio++] = -prio.getPrio();
+			Symbol[] list = prio.getSymbols();
 			for (Symbol element : list) {
 				result[curr_prio++] = element.getIndex();
 			}
@@ -120,7 +120,6 @@ abstract class ContextFree {
 		int rulenum, i;
 
 		for (i = situation; rright[i] >= 0; i++) {
-			;
 		}
 		rulenum = -rright[i] - 1;
 

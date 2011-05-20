@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.gen;
 
+import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.common.JavaArrayArchiver;
 import org.textway.templates.eval.DefaultStaticMethods;
 
@@ -165,5 +166,37 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 
 	public static String packShort(short[] table, Integer leftpadding) {
 		return JavaArrayArchiver.packShort(table, leftpadding);
+	}
+
+	public String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : s.toCharArray()) {
+			switch (c) {
+				case '"':
+				case '\'':
+				case '\\':
+					sb.append('\\');
+					sb.append(c);
+					continue;
+				case '\f':
+					sb.append("\\f");
+					continue;
+				case '\n':
+					sb.append("\\n");
+					continue;
+				case '\r':
+					sb.append("\\r");
+					continue;
+				case '\t':
+					sb.append("\\t");
+					continue;
+			}
+			if (c >= 0x20 && c < 0x80) {
+				sb.append(c);
+				continue;
+			}
+			FormatUtil.appendEscaped(sb, c);
+		}
+		return sb.toString();
 	}
 }

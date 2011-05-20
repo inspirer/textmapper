@@ -22,9 +22,8 @@ import org.textway.templates.bundle.IBundleEntity;
  */
 public interface ITemplate extends IBundleEntity {
 
-	/**
+	/*
 	 * Evaluates template in context and environment.
-	 * @return result of invocation
 	 */
 	String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException;
 }

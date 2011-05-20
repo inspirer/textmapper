@@ -22,24 +22,21 @@ public class JavaIsInstanceUtil {
 
 	public static boolean isInstance(Object o, String qualifiedName) {
 		String name = o.getClass().getCanonicalName();
-		if(matches(name, qualifiedName)) {
+		if (matches(name, qualifiedName)) {
 			return Boolean.TRUE;
 		}
-		if(qualifiedName.indexOf('.') >= 0) {
-			return hasSupertype(o.getClass(), qualifiedName);
-		}
-		return false;
+		return qualifiedName.indexOf('.') >= 0 && hasSupertype(o.getClass(), qualifiedName);
 	}
 
-	private static boolean hasSupertype(Class<? extends Object> class_, String className) {
-		if(class_ == null) {
+	private static boolean hasSupertype(Class<?> class_, String className) {
+		if (class_ == null) {
 			return false;
 		}
-		if(matches(class_.getCanonicalName(), className)) {
+		if (matches(class_.getCanonicalName(), className)) {
 			return true;
 		}
-		for(Class<? extends Object> i : class_.getInterfaces()) {
-			if(hasSupertype(i, className)) {
+		for (Class<?> i : class_.getInterfaces()) {
+			if (hasSupertype(i, className)) {
 				return true;
 			}
 		}
@@ -47,18 +44,15 @@ public class JavaIsInstanceUtil {
 	}
 
 	private static boolean matches(String name, String pattern) {
-		if(name == null) {
+		if (name == null) {
 			return false;
 		}
-		if(pattern.indexOf('.') >= 0) {
+		if (pattern.indexOf('.') >= 0) {
 			return name.equals(pattern);
 		}
-		if(name.indexOf('.') >= 0) {
+		if (name.indexOf('.') >= 0) {
 			name = name.substring(name.lastIndexOf('.') + 1);
 		}
-		if(name.equals(pattern) || name.toLowerCase().equals(pattern)) {
-			return true;
-		}
-		return false;
+		return name.equals(pattern) || name.toLowerCase().equals(pattern);
 	}
 }

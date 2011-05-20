@@ -31,6 +31,7 @@ public abstract class ExpressionNode extends Node {
 		try {
 			sb.append(env.toString(env.evaluate(this, context, false), this));
 		} catch (EvaluationException ex) {
+			/* already handled, ignore */
 		}
 	}
 

@@ -43,7 +43,7 @@ public class XmlIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getByIndex(Object key) throws EvaluationException {
-			if (false == key instanceof String) {
+			if (!(key instanceof String)) {
 				return null;
 			}
 
@@ -85,6 +85,4 @@ public class XmlIxFactory extends JavaIxFactory {
 			return getByIndex(property);
 		}
 	}
-
-	;
 }

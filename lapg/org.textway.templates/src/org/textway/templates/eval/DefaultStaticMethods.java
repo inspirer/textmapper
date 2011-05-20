@@ -29,7 +29,7 @@ public class DefaultStaticMethods {
 	}
 
 	public String print(Object[] list, String separator, Integer maxwidth) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		int i = 0, lineStart = 0;
 		for (Object a : list) {
 			if (i > 0) {
@@ -129,44 +129,5 @@ public class DefaultStaticMethods {
 		}
 		usedIdentifiers.add(context != null ? context + "#" + result : result);
 		return result;
-	}
-
-	public String escape(String s) {
-		StringBuilder sb = new StringBuilder();
-		for (char c : s.toCharArray()) {
-			switch (c) {
-				case '"':
-				case '\'':
-				case '\\':
-					sb.append('\\');
-					sb.append(c);
-					continue;
-				case '\f':
-					sb.append("\\f");
-					continue;
-				case '\n':
-					sb.append("\\n");
-					continue;
-				case '\r':
-					sb.append("\\r");
-					continue;
-				case '\t':
-					sb.append("\\t");
-					continue;
-			}
-			if (c >= 0x20 && c < 0x80) {
-				sb.append(c);
-				continue;
-			}
-			String sym = Integer.toString(c, 16);
-			boolean isShort = sym.length() <= 2;
-			sb.append(isShort ? "\\x" : "\\u");
-			int len = isShort ? 2 : 4;
-			if (sym.length() < len) {
-				sb.append("0000".substring(sym.length() + (4 - len)));
-			}
-			sb.append(sym);
-		}
-		return sb.toString();
 	}
 }

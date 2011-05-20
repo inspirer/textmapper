@@ -15,26 +15,18 @@
  */
 package org.textway.lapg.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaPostProcessor {
 
-	Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
-	Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
-	Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\s*\\.\\s*)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*[\\n\\r]{1,2}");
+	private static Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
+	private static Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
+	private static Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*[\\n\\r]{1,2}");
 
 	private String text;
-	private String currentPackage;
 	private final Map<String, String> toimport = new HashMap<String, String>();
 	private final Set<String> massimport = new HashSet<String>();
 
@@ -57,9 +49,9 @@ public class JavaPostProcessor {
 
 	private void addImports() {
 		ArrayList<String> imports = new ArrayList<String>();
-		for(Entry<String, String> entry : toimport.entrySet()) {
+		for (Entry<String, String> entry : toimport.entrySet()) {
 			String imp = entry.getValue() + "." + entry.getKey();
-			if(!topos.containsKey(imp)) {
+			if (!topos.containsKey(imp)) {
 				imports.add(imp);
 			}
 		}
@@ -69,16 +61,16 @@ public class JavaPostProcessor {
 		Iterator<String> it = existingImports.iterator();
 		String current = it.hasNext() ? it.next() : null;
 
-		for(String i : imports) {
-			while(current != null && current.compareTo(i) < 0) {
+		for (String i : imports) {
+			while (current != null && current.compareTo(i) < 0) {
 				current = it.hasNext() ? it.next() : null;
 			}
 			int insertloc = current != null ? topos.get(current) : lastImportLocation;
-			if(insertloc == 0) {
+			if (insertloc == 0) {
 				insertloc = nextAfterPackage;
 			}
 			String s = current != null || lastImportLocation == 0 ? "import " + i + ";\n" : "\nimport " + i + ";";
-			if(toinsert.containsKey(insertloc)) {
+			if (toinsert.containsKey(insertloc)) {
 				toinsert.put(insertloc, toinsert.get(insertloc) + s);
 			} else {
 				toinsert.put(insertloc, s);
@@ -89,13 +81,13 @@ public class JavaPostProcessor {
 		Collections.sort(locations);
 		StringBuilder sb = new StringBuilder(text.length());
 		int lastStart = 0;
-		for(Integer inspos : locations) {
+		for (Integer inspos : locations) {
 			sb.append(text.substring(lastStart, inspos));
 			lastStart = inspos;
 			sb.append(toinsert.get(inspos));
 		}
 		String next = text.substring(lastStart);
-		if(lastImportLocation == 0 && locations.size() > 0 && !next.startsWith("\r") && !next.startsWith("\n")) {
+		if (lastImportLocation == 0 && locations.size() > 0 && !next.startsWith("\r") && !next.startsWith("\n")) {
 			sb.append('\n');
 		}
 		sb.append(next);
@@ -104,9 +96,9 @@ public class JavaPostProcessor {
 
 	private void collectExistingImports() {
 		Matcher p = PACKAGE.matcher(text);
-		if(p.find()) {
+		if (p.find()) {
 			nextAfterPackage = p.end();
-			currentPackage = p.group(1);
+			String currentPackage = p.group(1);
 			massimport.add(currentPackage);
 		}
 
@@ -115,8 +107,8 @@ public class JavaPostProcessor {
 		while (m.find()) {
 			String name = m.group(2);
 			String qualifier = trimLastDot(m.group(1));
-			existingImports.add(qualifier+ "." +name);
-			topos.put(qualifier+ "." +name, m.start());
+			existingImports.add(qualifier + "." + name);
+			topos.put(qualifier + "." + name, m.start());
 			lastImportLocation = Math.max(lastImportLocation, m.end());
 			if (name.equals("*")) {
 				massimport.add(qualifier);
@@ -143,7 +135,7 @@ public class JavaPostProcessor {
 			if (oldqualifier == null) {
 				toimport.put(name, qualifier);
 			} else if (!oldqualifier.equals(qualifier)) {
-				sb.append(qualifier+".");
+				sb.append(qualifier).append('.');
 			}
 		}
 		sb.append(text.substring(lastStart));
@@ -151,9 +143,7 @@ public class JavaPostProcessor {
 	}
 
 	private static String trimLastDot(String s) {
-		if (s.endsWith(".")) {
-			return s.substring(0, s.length() - 1);
-		}
-		return s;
+		assert s.endsWith(".");
+		return s.endsWith(".") ? s.substring(0, s.length() - 1) : s;
 	}
 }

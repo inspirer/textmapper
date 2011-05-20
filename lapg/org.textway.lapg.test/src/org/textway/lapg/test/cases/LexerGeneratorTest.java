@@ -16,11 +16,9 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.TestCase;
-
 import org.junit.Assert;
-
-import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
@@ -44,10 +42,10 @@ public class LexerGeneratorTest extends TestCase {
 
 	public void testGenerator() {
 		LexerTables lt = LexicalBuilder.compile(INPUT1, new TestStatus());
-		for(TestLexem tl : INPUT1) {
-			for(String s : tl.getSamples()) {
+		for (TestLexem tl : INPUT1) {
+			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
-				Assert.assertEquals("For "+s+" Expected " + tl.getRegexp()+ ";",tl.index, res);
+				Assert.assertEquals("For " + s + " Expected " + tl.getRegexp() + ";", tl.index, res);
 			}
 		}
 	}
@@ -66,17 +64,17 @@ public class LexerGeneratorTest extends TestCase {
 		int state = 0;
 		int index = 0;
 
-		while(state >= 0) {
+		while (state >= 0) {
 			int chr = index < s.length() ? s.codePointAt(index++) : 0;
-			state = lr.change[state][chr>=0 && chr < lr.char2no.length ? lr.char2no[chr]: 1];
+			state = lr.change[state][chr >= 0 && chr < lr.char2no.length ? lr.char2no[chr] : 1];
 		}
-		if( state == -1 ) {
+		if (state == -1) {
 			return -1;
 		}
-		if(state == -2) {
+		if (state == -2) {
 			return 0;
 		}
-		return lr.lnum[-state-3];
+		return lr.lnum[-state - 3];
 	}
 
 	private static class TestLexem implements Lexem {
@@ -87,7 +85,7 @@ public class LexerGeneratorTest extends TestCase {
 		private final String regexp;
 		private final String[] samples;
 
-		public TestLexem(int index, int prio, String name, String regexp, String ... samples) {
+		public TestLexem(int index, int prio, String name, String regexp, String... samples) {
 			this.index = index;
 			this.prio = prio;
 			this.name = name;
@@ -157,11 +155,11 @@ public class LexerGeneratorTest extends TestCase {
 					return name;
 				}
 
-                public String getId() {
-                    return name;
-                }
+				public String getId() {
+					return name;
+				}
 
-                public int getIndex() {
+				public int getIndex() {
 					return index;
 				}
 
@@ -182,7 +180,7 @@ public class LexerGeneratorTest extends TestCase {
 				}
 
 				public String getText() {
-					return null;  //To change body of implemented methods use File | Settings | File Templates.
+					throw new UnsupportedOperationException();
 				}
 
 				public int getOffset() {
@@ -204,7 +202,7 @@ public class LexerGeneratorTest extends TestCase {
 		}
 
 		public String getText() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			throw new UnsupportedOperationException();
 		}
 
 		public int getOffset() {

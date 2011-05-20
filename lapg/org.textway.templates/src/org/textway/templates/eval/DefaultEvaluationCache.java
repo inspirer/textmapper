@@ -15,10 +15,10 @@
  */
 package org.textway.templates.eval;
 
+import org.textway.templates.api.IEvaluationCache;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.textway.templates.api.IEvaluationCache;
 
 public class DefaultEvaluationCache implements IEvaluationCache {
 
@@ -30,7 +30,7 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 
 	public Object lookup(Object... keys) {
 		Object result = globalCache.get(new CompositeKey(keys));
-		if(result != null) {
+		if (result != null) {
 			return result;
 		}
 		return globalCache.containsKey(new CompositeKey(keys)) ? null : MISSED;
@@ -45,7 +45,7 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 
 		@Override
 		public boolean equals(Object obj) {
-			if(false == obj instanceof CompositeKey) {
+			if (!(obj instanceof CompositeKey)) {
 				return false;
 			}
 			CompositeKey o = (CompositeKey) obj;
@@ -60,27 +60,27 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 
 	private static int arrayHash(Object[] arr) {
 		int hashCode = arr.length;
-		for(Object o : arr) {
+		for (Object o : arr) {
 			int currHash;
-			if(o instanceof Object[]) {
+			if (o instanceof Object[]) {
 				currHash = arrayHash((Object[]) o);
 			} else {
 				currHash = o != null ? o.hashCode() : 0;
 			}
-			hashCode = hashCode*37 + currHash;
+			hashCode = hashCode * 37 + currHash;
 		}
 		return hashCode;
 	}
 
 	private static boolean arrayEquals(Object[] o1, Object[] o2) {
-		if(o1 == o2) {
+		if (o1 == o2) {
 			return true;
 		}
-		if(o1.length != o2.length) {
+		if (o1.length != o2.length) {
 			return false;
 		}
 		for (int i = 0; i < o1.length; i++) {
-			if(!safeEquals(o1[i], o2[i])) {
+			if (!safeEquals(o1[i], o2[i])) {
 				return false;
 			}
 		}
@@ -88,14 +88,14 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 	}
 
 	private static boolean safeEquals(Object o1, Object o2) {
-		if(o1 == o2) {
+		if (o1 == o2) {
 			return true;
 		}
-		if(o1 == null || o2 == null) {
-			return o1 == o2;
+		if (o1 == null || o2 == null) {
+			return false;
 		}
-		if(o1 instanceof Object[] && o2 instanceof Object[]) {
-			return arrayEquals((Object[])o1, (Object[]) o2);
+		if (o1 instanceof Object[] && o2 instanceof Object[]) {
+			return arrayEquals((Object[]) o1, (Object[]) o2);
 		}
 		return o1.equals(o2);
 	}

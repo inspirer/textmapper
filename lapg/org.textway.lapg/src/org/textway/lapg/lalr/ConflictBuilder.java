@@ -67,7 +67,7 @@ public class ConflictBuilder {
 
 	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input) {
 		if (conflicts.isEmpty()) {
-			return Collections.<LalrConflict>emptyList();
+			return Collections.emptyList();
 		}
 
 		Map<Object, ConflictData> map = new HashMap<Object, ConflictData>();
@@ -190,13 +190,9 @@ public class ConflictBuilder {
 					return false;
 				}
 				ConflictData other = ((RulesAndKindKey) obj).getConflictData();
-				if (canShift != other.canShift || status != other.status) {
-					return false;
-				}
-				if (!rules.equals(other.rules)) {
-					return false;
-				}
-				return true;
+				return canShift == other.canShift &&
+						status == other.status &&
+						rules.equals(other.rules);
 			}
 
 			public ConflictData getConflictData() {

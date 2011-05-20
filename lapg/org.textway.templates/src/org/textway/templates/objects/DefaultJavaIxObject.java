@@ -44,7 +44,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 
 	public boolean asBoolean() {
 		if (wrapped instanceof Boolean) {
-			return ((Boolean) wrapped).booleanValue();
+			return (Boolean) wrapped;
 		} else if (wrapped instanceof String) {
 			return ((String) wrapped).trim().length() > 0;
 		}
@@ -62,14 +62,15 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 	}
 
 	public Object getProperty(String id) throws EvaluationException {
-		String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 		try {
 			try {
 				Field f = wrapped.getClass().getField(id);
 				return f.get(wrapped);
 			} catch (NoSuchFieldException ex) {
+				/* ignore, try method */
 			}
 
+			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 			Method meth = wrapped.getClass().getMethod(getAccessor);
 			return meth.invoke(wrapped);
 		} catch (NoSuchMethodException ex) {

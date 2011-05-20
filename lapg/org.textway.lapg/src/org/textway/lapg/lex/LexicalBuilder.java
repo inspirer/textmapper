@@ -70,7 +70,6 @@ public class LexicalBuilder {
 		// search for existing
 		for (n = hash[sum]; n != null; n = n.hash) {
 			for (i = 0; n.set[i] >= 0 && state[i] >= 0 && n.set[i] == state[i]; i++) {
-				;
 			}
 			if (n.set[i] == -1 && state[i] == -1) {
 				return n.number;
@@ -474,9 +473,9 @@ public class LexicalBuilder {
 			current.change = new int[characters];
 
 			// try to shift all available symbols
-			for (i = 0; i < characters; i++) {
-				if ((toshift[(i) / LexConstants.BITS] & (1 << ((i) % LexConstants.BITS))) != 0) {
-					int l, sym = i;
+			for (int sym = 0; sym < characters; sym++) {
+				if ((toshift[(sym) / LexConstants.BITS] & (1 << ((sym) % LexConstants.BITS))) != 0) {
+					int l;
 
 					nnext = 0;
 					// create new state
@@ -509,16 +508,16 @@ public class LexicalBuilder {
 						l += next[e];
 					}
 
-					current.change[i] = add_set(next, nnext, l % LexConstants.HASH_SIZE);
+					current.change[sym] = add_set(next, nnext, l % LexConstants.HASH_SIZE);
 
 					// Have we exceeded the limits?
-					if (current.change[i] == -1) {
+					if (current.change[sym] == -1) {
 						status.report(ProcessingStatus.KIND_FATAL, "lexical analyzer is too big ...");
 						return false;
 					}
 
 				} else {
-					current.change[i] = (lexnum >= 0) ? -3 - lexnum : -1;
+					current.change[sym] = (lexnum >= 0) ? -3 - lexnum : -1;
 				}
 			}
 

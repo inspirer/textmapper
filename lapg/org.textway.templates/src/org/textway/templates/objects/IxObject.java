@@ -19,22 +19,22 @@ import org.textway.templates.api.EvaluationException;
 
 public interface IxObject {
 
-	/**
+	/*
 	 * Returns value of <propertyName> property of <obj>.
 	 */
 	public Object getProperty(String propertyName) throws EvaluationException;
 
-	/**
+	/*
 	 * Returns a result of <obj>.methodName(args) call.
 	 */
 	public Object callMethod(String methodName, Object... args) throws EvaluationException;
 
-	/**
+	/*
 	 * Returns indexed value.
 	 */
 	public Object getByIndex(Object index) throws EvaluationException;
 
-	/**
+	/*
 	 * "is" expression
 	 */
 	public boolean is(String qualifiedName) throws EvaluationException;

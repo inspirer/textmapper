@@ -37,6 +37,7 @@ public class AssertNode extends Node {
 				env.report(TemplatesStatus.KIND_ERROR, "Assertion `" + expr.toString() + "` failed for " + env.getTitle(context.getThisObject()), this);
 			}
 		} catch (EvaluationException ex) {
+			/* already handled, ignore */
 		}
 	}
 }
