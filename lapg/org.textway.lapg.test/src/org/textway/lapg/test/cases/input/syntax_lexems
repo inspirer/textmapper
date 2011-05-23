@@ -36,6 +36,22 @@ abcde:   /01234/			(soft)
 ssss:   /we/			(soft)
 ssss:
 
+# err: cannot have an action
+wact:   /withAction/			(soft)   { System.out.println("oops"); return true; }
+
+# err: cannot have a type
+wtype (int):   /withType/			(soft)
+
+
+delim(char): /[;:,\.\/\\]/       (class)
+
+
+# err: overrides type
+comma(Character): /,/   (soft)
+
+# ok
+colon_or_semicolon: /;/   (soft)
+colon_or_semicolon: /:/   (soft)
 
 input ::=
 	identifier ;

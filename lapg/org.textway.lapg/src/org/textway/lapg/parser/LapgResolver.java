@@ -221,10 +221,16 @@ public class LapgResolver {
 						continue;
 					}
 
+					SourceElement action = convert(lexeme.getCode());
+					if(kind == Lexem.KIND_SOFT && action != null) {
+						error(lexeme.getCode(), "soft lexem `" + lexeme.getName().getName() + "' cannot have a semantic action");
+						action = null;
+					}
+
 					LiLexem liLexem = new LiLexem(kind, lexemIndex++, s,
 							regex,
 							groups, lexeme.getPriority(),
-							convert(lexeme.getCode()),
+							action,
 							lexeme);
 					lexems.add(liLexem);
 					if (kind == Lexem.KIND_CLASS) {
@@ -257,8 +263,8 @@ public class LapgResolver {
 			if (l.getKind() != Lexem.KIND_SOFT) {
 				continue;
 			}
+			String name = l.getSymbol().getName();
 			if (l.getClassLexem() == null) {
-				String name = l.getSymbol().getName();
 				if (!l.getParsedRegexp().isConstant()) {
 					error(l, "soft lexem `" + name + "' should have a constant regexp");
 				} else {
@@ -268,10 +274,23 @@ public class LapgResolver {
 				Symbol softClass = l.getClassLexem().getSymbol();
 				Symbol existingClass = l.getSymbol().getSoftClass();
 				if (existingClass != null && existingClass != softClass) {
-					String name = l.getSymbol().getName();
 					error(l, "soft terminal `" + name + "' class ambiguity: " + softClass.getName() + " or " + existingClass.getName());
 				} else if(existingClass == null) {
 					((LiSymbol)l.getSymbol()).setSoftClass(softClass);
+				}
+
+				// check type
+				String symtype = l.getSymbol().getType();
+				String classtype = softClass.getType();
+				if(symtype == null) {
+					if(classtype != null) {
+						((LiSymbol)l.getSymbol()).setType(classtype);
+					}
+				} else if(!symtype.equals(classtype)) {
+					if(classtype == null) {
+						classtype = "<no type>";
+					}
+					error(l, "soft terminal `" + name + "' overrides base type: expected `" + classtype + "', found `" + symtype + "'");
 				}
 			}
 		}

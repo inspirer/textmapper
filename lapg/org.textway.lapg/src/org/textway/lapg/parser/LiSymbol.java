@@ -23,7 +23,7 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	private int index;
     private String identifier;
 	private final String name;
-	private final String type;
+	private String type;
 	private final boolean isTerm;
 	private final boolean isSoft;
 	private Symbol softClass;
@@ -51,6 +51,10 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 
 	public String getType() {
 		return type;
+	}
+
+	void setType(String type) {
+		this.type = type;
 	}
 
 	public boolean isTerm() {
