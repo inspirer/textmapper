@@ -74,6 +74,9 @@
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgAnnotator"/>
 
+		<defaultLiveTemplatesProvider
+				implementation="org.textway.lapg.idea.templates.LapgDefaultLiveTemplatesProvider"/>
+
 		<lang.commenter
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgCommenter"/>
