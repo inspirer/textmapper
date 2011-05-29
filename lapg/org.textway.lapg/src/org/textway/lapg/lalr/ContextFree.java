@@ -17,6 +17,8 @@ package org.textway.lapg.lalr;
 
 import org.textway.lapg.api.*;
 
+import java.util.Arrays;
+
 abstract class ContextFree {
 
 	private static int getSituations(Rule[] rules) {
@@ -73,6 +75,21 @@ abstract class ContextFree {
 
 		this.priorul = getPriorityRules(g.getPriorities());
 
+		this.classterm = new int[nterms];
+		this.softterms = new int[nterms];
+		Arrays.fill(this.softterms, -1);
+		Arrays.fill(this.classterm, 0);
+		for(int i = 0; i < nterms; i++) {
+			if(this.sym[i].isSoft()) {
+				int classindex = this.sym[i].getSoftClass().getIndex();
+				assert classindex < nterms && !this.sym[classindex].isSoft();
+				this.classterm[i] = classindex;
+				this.classterm[classindex] = -1;
+				this.softterms[i] = this.softterms[classindex];
+				this.softterms[classindex] = i;
+			}
+		}
+
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];
 		this.rindex = new int[rules];
@@ -113,6 +130,8 @@ abstract class ContextFree {
 	protected final int[] priorul;
 	protected final int[] rleft, rindex, rright, rprio;
 	protected final boolean[] sym_empty;
+	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
+	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
 
 	// info
 
