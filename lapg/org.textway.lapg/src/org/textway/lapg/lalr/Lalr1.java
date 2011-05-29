@@ -15,11 +15,11 @@
  */
 package org.textway.lapg.lalr;
 
-import java.text.MessageFormat;
-import java.util.Arrays;
-
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
+
+import java.text.MessageFormat;
+import java.util.Arrays;
 
 class Lalr1 extends LR0 {
 
@@ -131,38 +131,35 @@ class Lalr1 extends LR0 {
 
 	//	 fills: term_goto, term_from, term_to
 	private void init_goto() {
-		State t;
 		int i, e, symnum;
-		short[] goto_nshifts;
 
-		goto_nshifts = new short[nsyms];
 		term_goto = new short[nsyms + 1];
-
-		Arrays.fill(goto_nshifts, (short) 0);
+		short[] symshiftCounter = new short[nsyms];
+		Arrays.fill(symshiftCounter, (short) 0);
 
 		ngotos = 0;
-		for (t = first; t != null; t = t.next) {
+		for (State t = first; t != null; t = t.next) {
 			for (i = t.nshifts - 1; i >= 0; i--) {
 				symnum = state[t.shifts[i]].symbol;
-				goto_nshifts[symnum]++;
+				symshiftCounter[symnum]++;
 				ngotos++;
 			}
 		}
 
 		for (e = i = 0; i < nsyms; i++) {
 			term_goto[i] = (short) e;
-			e += goto_nshifts[i];
-			goto_nshifts[i] = term_goto[i];
+			e += symshiftCounter[i];
+			symshiftCounter[i] = term_goto[i];
 		}
 		term_goto[nsyms] = (short) ngotos;
 		term_from = new short[ngotos];
 		term_to = new short[ngotos];
 
-		for (t = first; t != null; t = t.next) {
+		for (State t = first; t != null; t = t.next) {
 			for (i = t.nshifts - 1; i >= 0; i--) {
 				int newstate = t.shifts[i];
 				symnum = state[newstate].symbol;
-				e = goto_nshifts[symnum]++;
+				e = symshiftCounter[symnum]++;
 				term_from[e] = (short) t.number;
 				term_to[e] = (short) newstate;
 			}
@@ -234,7 +231,7 @@ class Lalr1 extends LR0 {
 					for (k = 0; k < termset - 1; k++) {
 						follow[settrav + k] = 0xffffffff;
 					}
-					for (k = (termset-1) * BITS; k < nterms; k++) {
+					for (k = (termset - 1) * BITS; k < nterms; k++) {
 						follow[settrav + termset - 1] |= (1 << (k % BITS));
 					}
 				}
@@ -253,10 +250,7 @@ class Lalr1 extends LR0 {
 
 			if (nedges != 0) {
 				empties[i] = new short[nedges + 1];
-				short[] target = empties[i];
-				for (int q = 0; q < nedges; q++) {
-					target[q] = edge[q];
-				}
+				System.arraycopy(edge, 0, empties[i], 0, nedges);
 				empties[i][nedges] = -1;
 				nedges = 0;
 			} else {
@@ -305,7 +299,7 @@ class Lalr1 extends LR0 {
 					add_lookback(currstate, rule, (short) i);
 				}
 
-				for (length--; ;) {
+				for (length--; ; ) {
 					rpart--;
 					if (rpart >= 0 && rright[rpart] >= nterms) {
 						currstate = states[--length];
@@ -322,10 +316,7 @@ class Lalr1 extends LR0 {
 
 			if (nedges != 0) {
 				graph[i] = new short[nedges + 1];
-				short[] target = graph[i];
-				for (int q = 0; q < nedges; q++) {
-					target[q] = edge[q];
-				}
+				System.arraycopy(edge, 0, graph[i], 0, nedges);
 				graph[i][nedges] = -1;
 				nedges = 0;
 			} else {
@@ -538,7 +529,7 @@ class Lalr1 extends LR0 {
 		}
 
 		if (gc_index[i] == height) {
-			for (; ;) {
+			for (; ; ) {
 				int e = gc_vertices[top--];
 				gc_index[e] = (short) infinity;
 				if (i == e) {
