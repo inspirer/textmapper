@@ -181,19 +181,6 @@ public class Builder extends Lalr1 {
 		return 0;
 	}
 
-	private Symbol[] getInput(int s) {
-		Stack<Symbol> stack = new Stack<Symbol>();
-		while (state[s].number != 0) {
-			stack.push(sym[state[s].symbol]);
-			s = state[s].fromstate;
-		}
-		Symbol[] result = new Symbol[stack.size()];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = stack.pop();
-		}
-		return result;
-	}
-
 	private void action() {
 		List<short[]> actionTables = new ArrayList<short[]>();
 		int rr = 0, sr = 0;

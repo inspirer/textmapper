@@ -79,8 +79,8 @@ abstract class ContextFree {
 		this.softterms = new int[nterms];
 		Arrays.fill(this.softterms, -1);
 		Arrays.fill(this.classterm, 0);
-		for(int i = 0; i < nterms; i++) {
-			if(this.sym[i].isSoft()) {
+		for (int i = 0; i < nterms; i++) {
+			if (this.sym[i].isSoft()) {
 				int classindex = this.sym[i].getSoftClass().getIndex();
 				assert classindex < nterms && !this.sym[classindex].isSoft();
 				this.classterm[i] = classindex;
@@ -132,6 +132,11 @@ abstract class ContextFree {
 	protected final boolean[] sym_empty;
 	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
 	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
+
+	protected int ruleIndex(int situation) {
+		while (rright[situation] >= 0) situation++;
+		return -rright[situation] - 1;
+	}
 
 	// info
 

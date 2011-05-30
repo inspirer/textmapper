@@ -1,0 +1,27 @@
+lang = "java"
+prefix = "Lexems"
+
+identifier(String): /[a-zA-Z_][A-Za-z_0-9]*/    (class)
+_skip:      /[\t\r\n ]+/    							{ return false; }
+
+Lclass:		 /class/				(soft)
+Lextends:	 /extends/              (soft)
+
+'(': /\(/
+')': /\)/
+
+input ::=
+	classdef ;
+
+classdef ::=
+	  Lclass identifier '(' memberslist ')'
+	| Lclass identifier Lextends identifier '(' memberslist ')'
+;
+
+memberslist ::=
+	member | memberslist member ;
+
+member ::=
+	  classdef
+	| identifier '(' ')'
+;

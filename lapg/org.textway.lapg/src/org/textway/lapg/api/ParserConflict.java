@@ -21,6 +21,7 @@ public interface ParserConflict {
 	static final int FIXED = 0;
 	static final int SHIFT_REDUCE = 1;
 	static final int REDUCE_REDUCE = 2;
+	static final int SHIFT_SOFT = 3;
 
 	int getKind();
 

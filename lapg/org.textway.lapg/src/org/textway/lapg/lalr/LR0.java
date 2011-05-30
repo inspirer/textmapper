@@ -15,10 +15,16 @@
  */
 package org.textway.lapg.lalr;
 
-import java.util.Arrays;
-
 import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.ParserConflict;
+import org.textway.lapg.api.ParserConflict.Input;
 import org.textway.lapg.api.ProcessingStatus;
+import org.textway.lapg.api.Symbol;
+import org.textway.lapg.lalr.LalrConflict.InputImpl;
+import org.textway.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
+
+import java.util.Arrays;
+import java.util.Stack;
 
 /**
  * LR(0) states generator
@@ -43,6 +49,7 @@ class LR0 extends ContextFree {
 	private State[] table;
 	private State current, last;
 	private State[] next_to_final;
+	private SoftConflictBuilder softconflicts;
 
 	// result
 	protected int nstates, termset;
@@ -111,6 +118,8 @@ class LR0 extends ContextFree {
 			symbase[i] = new short[symnum[i]];
 		}
 		symcanshift = symnum;
+
+		softconflicts = new SoftConflictBuilder();
 	}
 
 	private void build_derives() {
@@ -333,6 +342,10 @@ class LR0 extends ContextFree {
 		for (i = 0; i < nsyms; i++) {
 			if (symbasesize[i] != 0) {
 				symcanshift[ntoshift++] = (short) i;
+
+				if (i < nterms && classterm[i] == -1) {
+					checkSoftTerms(i);
+				}
 			}
 		}
 
@@ -355,6 +368,31 @@ class LR0 extends ContextFree {
 
 		current.LR0 = !(ntoreduce > 1 || (ntoshift != 0 && ntoreduce != 0));
 		return true;
+	}
+
+	private void checkSoftTerms(int classTerm) {
+		SoftClassConflict conflict = null;
+
+		for (int soft = softterms[classTerm]; soft != -1; soft = softterms[soft]) {
+			assert soft < nterms && classterm[soft] == classTerm;
+			if (symbasesize[soft] != 0) {
+				// soft lexem conflict
+				short[] core;
+				if (conflict == null) {
+					conflict = softconflicts.addConflict(current.number);
+					conflict.addSymbol(sym[classTerm]);
+					core = symbase[classTerm];
+					for(int i = 0; i < symbasesize[classTerm]; i++) {
+						conflict.addRule(wrules[ruleIndex(core[i])]);
+					}
+				}
+				conflict.addSymbol(sym[soft]);
+				core = symbase[soft];
+				for(int i = 0; i < symbasesize[soft]; i++) {
+					conflict.addRule(wrules[ruleIndex(core[i])]);
+				}
+			}
+		}
 	}
 
 	private void insert_shift(State t, int tostate) {
@@ -380,7 +418,7 @@ class LR0 extends ContextFree {
 			t.shifts = new short[1];
 			t.shifts[0] = (short) tostate;
 
-			if(t.nreduce > 0) {
+			if (t.nreduce > 0) {
 				t.LR0 = false;
 			}
 		}
@@ -424,6 +462,14 @@ class LR0 extends ContextFree {
 				insert_shift(next_to_final[i], final_states[i]);
 			}
 		}
+
+		// report conflicts
+		for (SoftClassConflict conflict : softconflicts.getConflicts()) {
+			Input input = new InputImpl(conflict.getState(), getInput(conflict.getState()));
+			status.report(new LalrConflict(
+					ParserConflict.SHIFT_SOFT, "shift soft/class",
+					input, conflict.getSymbols(), conflict.getRules()));
+		}
 	}
 
 	private void show_debug() {
@@ -446,6 +492,19 @@ class LR0 extends ContextFree {
 		}
 	}
 
+	protected final Symbol[] getInput(int s) {
+		Stack<Symbol> stack = new Stack<Symbol>();
+		while (state[s].number != 0) {
+			stack.push(sym[state[s].symbol]);
+			s = state[s].fromstate;
+		}
+		Symbol[] result = new Symbol[stack.size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = stack.pop();
+		}
+		return result;
+	}
+
 	private void freeLR0() {
 		ruleforvar = null;
 		toreduce = closure = null;
@@ -455,6 +514,7 @@ class LR0 extends ContextFree {
 		closurebit = null;
 		table = null;
 		current = last = null;
+		softconflicts = null;
 	}
 
 	protected static class State {
