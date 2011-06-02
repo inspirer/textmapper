@@ -316,7 +316,7 @@ public class TypesLexer {
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
 		switch(lexemIndex) {
-			case 0: // <default>
+			case 0:	// <default>
 				 lapg_n.sym = current(); break; 
 		}
 		return true;

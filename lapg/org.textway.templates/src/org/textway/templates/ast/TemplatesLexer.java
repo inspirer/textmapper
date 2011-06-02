@@ -401,7 +401,7 @@ public class TemplatesLexer {
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
 		switch(lexemIndex) {
-			case 6: // <default>
+			case 6:	// <default>
 				 lapg_n.sym = current(); break; 
 		}
 		return true;

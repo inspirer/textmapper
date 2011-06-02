@@ -216,9 +216,19 @@ public class Builder extends Lalr1 {
 					if (termSym >= nterms) {
 						break;
 					}
+
 					assert next[termSym] == -2;
 					next[termSym] = -1;
 					actionset[setsize++] = (short) termSym;
+
+					// shift soft terms
+					if(classterm[termSym] == -1 && !t.softConflicts) {
+						for (int soft = softterms[termSym]; soft != -1; soft = softterms[soft]) {
+							assert next[soft] == -2;
+							next[soft] = -1;
+							actionset[setsize++] = (short) soft;
+						}
+					}
 				}
 
 				// reset conflicts

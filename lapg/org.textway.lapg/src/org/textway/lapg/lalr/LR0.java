@@ -275,6 +275,7 @@ class LR0 extends ContextFree {
 		last.number = nstates++;
 		last.nshifts = last.nreduce = 0;
 		last.next = null;
+		last.softConflicts = false;
 		last.reduce = last.shifts = null;
 		last.LR0 = true;
 		last.elems[size] = -1;
@@ -379,6 +380,7 @@ class LR0 extends ContextFree {
 				// soft lexem conflict
 				short[] core;
 				if (conflict == null) {
+					current.softConflicts = true;
 					conflict = softconflicts.addConflict(current.number);
 					conflict.addSymbol(sym[classTerm]);
 					core = symbase[classTerm];
@@ -524,5 +526,6 @@ class LR0 extends ContextFree {
 		short[] shifts, reduce;
 		boolean LR0;
 		short[] elems;
+		boolean softConflicts;
 	}
 }

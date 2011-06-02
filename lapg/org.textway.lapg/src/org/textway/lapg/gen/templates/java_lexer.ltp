@@ -226,11 +226,14 @@ ${end-}
 ${if lexem->classInstances().exists(x|x.action) || lexem.action-}
 		switch(lexemIndex) {
 ${foreach instance in lexem->classInstances().select(x|x.action)-}
-			case ${instance.index}: // ${instance.parsedRegexp.constantValue}
+			case ${instance.index}:	// ${instance.parsedRegexp.constantValue}
 				${call lexerAction('lapg_n.sym') for instance-}
 ${end-}
 ${if lexem.action-}
-			case ${lexem.index}: // <default>
+${foreach instance in lexem->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
+			case ${instance.index}:	// ${instance.parsedRegexp.constantValue} (soft)
+${end-}
+			case ${lexem.index}:	// <default>
 				${call lexerAction('lapg_n.sym') for lexem-}
 ${end-}
 		}
