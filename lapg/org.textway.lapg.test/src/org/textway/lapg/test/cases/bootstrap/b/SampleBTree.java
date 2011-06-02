@@ -6,17 +6,17 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.lapg.test.cases.bootstrap.b.SampleALexer.ErrorReporter;
-import org.textway.lapg.test.cases.bootstrap.b.SampleAParser.ParseException;
+import org.textway.lapg.test.cases.bootstrap.b.SampleBLexer.ErrorReporter;
+import org.textway.lapg.test.cases.bootstrap.b.SampleBParser.ParseException;
 import org.textway.lapg.test.cases.bootstrap.b.ast.IAstClassdefNoEoi;
 
-public class SampleATree<T> {
+public class SampleBTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<SampleAProblem> errors;
+	private final List<SampleBProblem> errors;
 
-	public SampleATree(TextSource source, T root, List<SampleAProblem> errors) {
+	public SampleBTree(TextSource source, T root, List<SampleBProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -30,7 +30,7 @@ public class SampleATree<T> {
 		return root;
 	}
 
-	public List<SampleAProblem> getErrors() {
+	public List<SampleBProblem> getErrors() {
 		return errors;
 	}
 
@@ -39,28 +39,28 @@ public class SampleATree<T> {
 	}
 
 
-	public static SampleATree<IAstClassdefNoEoi> parse(TextSource source) {
-		final List<SampleAProblem> list = new ArrayList<SampleAProblem>();
+	public static SampleBTree<IAstClassdefNoEoi> parse(TextSource source) {
+		final List<SampleBProblem> list = new ArrayList<SampleBProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new SampleAProblem(KIND_ERROR, start, end, s, null));
+				list.add(new SampleBProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
+			SampleBLexer lexer = new SampleBLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			SampleAParser parser = new SampleAParser(reporter);
+			SampleBParser parser = new SampleBParser(reporter);
 			IAstClassdefNoEoi result = parser.parse(lexer);
 
-			return new SampleATree<IAstClassdefNoEoi>(source, result, list);
+			return new SampleBTree<IAstClassdefNoEoi>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new SampleAProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new SampleBProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new SampleATree<IAstClassdefNoEoi>(source, null, list);
+		return new SampleBTree<IAstClassdefNoEoi>(source, null, list);
 	}
 
 
@@ -70,14 +70,14 @@ public class SampleATree<T> {
 
 	public static final String PARSER_SOURCE = "parser";
 
-	public static class SampleAProblem extends Exception {
+	public static class SampleBProblem extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
 
-		public SampleAProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public SampleBProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;

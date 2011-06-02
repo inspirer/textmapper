@@ -108,7 +108,7 @@ public class BootstrapTest extends TestCase {
 				"sample2.s",
 				new String[0],
 				new String[]{
-						"SampleALexer.java", "SampleATree.java", "SampleAParser.java",
+						"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java",
 						"ast/IAstNode.java", "ast/IAstClassdefNoEoi.java"
 				}, 0);
 	}

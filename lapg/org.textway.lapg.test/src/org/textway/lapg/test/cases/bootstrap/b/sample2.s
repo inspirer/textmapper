@@ -15,7 +15,7 @@
 #  limitations under the License.
 
 lang = "java"
-prefix = "SampleA"
+prefix = "SampleB"
 package = "org.textway.lapg.test.cases.bootstrap.b"
 maxtoken = 2048
 breaks = true
@@ -30,8 +30,11 @@ identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
 _skip:          /[\n\t\r ]+/                   	{ return false; }
 
 Lclass: /class/								{ $lexem = "class"; break; }
+Lextends: /extends/  (soft)
 '{': /\{/
 '}': /\}/
+'(': /\(/
+')': /\)/
 
 # reserved
 
@@ -53,8 +56,11 @@ decimal:  /[1-9][0-9]+/			(class)
 # instance of decimal
 eleven:   /11/				          { $lexem = 11; break; }
 
-# grammar
+# soft
+_skipSoftKW: /xyzzz/	(soft)
 
+
+# grammar
 
 %input classdef_NoEoi ;
 
@@ -62,10 +68,17 @@ classdef_NoEoi ::=
 	classdef ;
 
 classdef ::=
-	Lclass identifier '{' classdeflistopt '}' ;
+	Lclass ID '{' classdeflistopt '}'
+  | Lclass ID Lextends identifier '{' classdeflistopt '}'
+;
+
+ID ::=
+	@pass identifier ;
 
 classdeflist ::=
 	classdef
   | classdeflist classdef
+  | identifier '(' ')'
+  | classdeflist identifier '(' ')'
   | error
 ;

@@ -10,18 +10,7 @@
     <autodetection-disabled>
       <facet-type id="Lapg">
         <modules>
-          <module name="org.textway.lapg.test">
-            <files>
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a/sample1.s" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b/sample2.s" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_conflict1" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_conflict2resolved" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_cs" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_lapg" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_lexems" />
-              <file url="file://$PROJECT_DIR$/org.textway.lapg.test/src/org/textway/lapg/test/cases/input/syntax_tpl" />
-            </files>
-          </module>
+          <module name="org.textway.lapg.test" />
         </modules>
       </facet-type>
     </autodetection-disabled>

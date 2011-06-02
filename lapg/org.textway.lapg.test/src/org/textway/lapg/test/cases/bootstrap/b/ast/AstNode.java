@@ -1,6 +1,6 @@
 package org.textway.lapg.test.cases.bootstrap.b.ast;
 
-import org.textway.lapg.test.cases.bootstrap.b.SampleATree.TextSource;
+import org.textway.lapg.test.cases.bootstrap.b.SampleBTree.TextSource;
 
 public abstract class AstNode implements IAstNode {
 	
