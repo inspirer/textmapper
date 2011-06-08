@@ -16,15 +16,24 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.textway.lapg.api.Grammar;
+import org.textway.lapg.gen.SyntaxUtil;
+import org.textway.lapg.lalr.Builder;
+import org.textway.lapg.lex.LexicalBuilder;
+import org.textway.lapg.test.TestStatus;
 import org.textway.lapg.test.cases.bootstrap.b.SampleBTree;
 import org.textway.lapg.test.cases.bootstrap.b.SampleBTree.TextSource;
 import org.textway.lapg.test.cases.bootstrap.b.ast.*;
+import org.textway.templates.api.SourceElement;
+import org.textway.templates.api.TemplatesStatus;
+import org.textway.templates.storage.ClassResourceLoader;
+import org.textway.templates.storage.ResourceRegistry;
+import org.textway.templates.types.TypesRegistry;
 
 /**
  * Gryaznov Evgeny, 6/3/11
  */
-public class SoftTermsTest extends TestCase {
+public class SoftTermsTest extends LapgTestCase {
 
 	public void testSampleB() {
 		checkParsed(
@@ -39,6 +48,80 @@ public class SoftTermsTest extends TestCase {
 				"}",
 
 			"class:'P',class:'Q',meth:extends,class:(extends D)'E',meth:xyzzz,class:(extends D25)'E25',meth:q,");
+	}
+
+	public void testSoftConflictsHandling_ShiftShift() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_ss", openStream("syntax_softconflicts_ss", TESTCONTAINER), new TestStatus(),
+				createDefaultTypesRegistry());
+		Assert.assertNotNull(g);
+
+		TestStatus er = new TestStatus(
+				"",
+				"syntax_softconflicts_ss,26: input: Lclass identifier '('\n" +
+				"shift soft/class conflict (next: identifier, Lclass)\n" +
+				"    member ::= identifier '(' ')'\n" +
+				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
+				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+				"\n" +
+				"syntax_softconflicts_ss,26: input: Lclass identifier '(' memberslist\n" +
+				"shift soft/class conflict (next: identifier, Lclass)\n" +
+				"    member ::= identifier '(' ')'\n" +
+				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
+				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+				"\n" +
+				"syntax_softconflicts_ss,26: input: Lclass identifier Lextends identifier '('\n" +
+				"shift soft/class conflict (next: identifier, Lclass)\n" +
+				"    member ::= identifier '(' ')'\n" +
+				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
+				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+				"\n" +
+				"syntax_softconflicts_ss,26: input: Lclass identifier Lextends identifier '(' memberslist\n" +
+				"shift soft/class conflict (next: identifier, Lclass)\n" +
+				"    member ::= identifier '(' ')'\n" +
+				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
+				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
+				"\n");
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
+
+		er.assertDone();
+	}
+
+	public void testSoftConflictsHandling_ShiftReduce() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_sr", openStream("syntax_softconflicts_sr", TESTCONTAINER), new TestStatus(),
+				createDefaultTypesRegistry());
+		Assert.assertNotNull(g);
+
+		TestStatus er = new TestStatus(
+				"",
+				"syntax_softconflicts_sr,30: input: Lclass identifier '(' identifier\n" +
+				"shift/reduce conflict (next: Lof)\n" +
+				"    typename ::= identifier\n" +
+				"\n" +
+				"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
+
+		er.assertDone();
+	}
+
+	public void testSoftConflictsHandling_ReduceReduce() {
+		Grammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_rr", openStream("syntax_softconflicts_rr", TESTCONTAINER), new TestStatus(),
+				createDefaultTypesRegistry());
+		Assert.assertNotNull(g);
+
+		TestStatus er = new TestStatus(
+				"",
+				"syntax_softconflicts_rr,30: input: Lclass identifier '(' identifier\n" +
+				"reduce/reduce conflict (next: Lof)\n" +
+				"    varname ::= identifier\n" +
+				"    typename ::= identifier\n" +
+				"\n" +
+				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
+		LexicalBuilder.compile(g.getLexems(), er);
+		Builder.compile(g, er);
+
+		er.assertDone();
 	}
 
 	private void checkParsed(String text, String expected) {
@@ -71,5 +154,16 @@ public class SoftTermsTest extends TestCase {
 			}
 		});
 		Assert.assertEquals(expected, sb.toString());
+	}
+
+	private TypesRegistry createDefaultTypesRegistry() {
+		ResourceRegistry resources = new ResourceRegistry(
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		return new TypesRegistry(resources, new TemplatesStatus() {
+			public void report(int kind, String message, SourceElement... anchors) {
+				Assert.fail(message);
+			}
+		});
 	}
 }

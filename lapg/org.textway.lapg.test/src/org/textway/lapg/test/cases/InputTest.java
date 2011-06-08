@@ -179,43 +179,6 @@ public class InputTest extends LapgTestCase {
 		er.assertDone();
 	}
 
-	public void testSoftConflictsHandling() {
-		Grammar g = SyntaxUtil.parseSyntax("syntax_softconflicts", openStream("syntax_softconflicts", TESTCONTAINER), new TestStatus(),
-				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
-
-		TestStatus er = new TestStatus(
-				"",
-				"syntax_softconflicts,26: input: Lclass identifier '('\n" +
-				"shift soft/class conflict (next: identifier, Lclass)\n" +
-				"    member ::= identifier '(' ')'\n" +
-				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
-				"\n" +
-				"syntax_softconflicts,26: input: Lclass identifier '(' memberslist\n" +
-				"shift soft/class conflict (next: identifier, Lclass)\n" +
-				"    member ::= identifier '(' ')'\n" +
-				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
-				"\n" +
-				"syntax_softconflicts,26: input: Lclass identifier Lextends identifier '('\n" +
-				"shift soft/class conflict (next: identifier, Lclass)\n" +
-				"    member ::= identifier '(' ')'\n" +
-				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
-				"\n" +
-				"syntax_softconflicts,26: input: Lclass identifier Lextends identifier '(' memberslist\n" +
-				"shift soft/class conflict (next: identifier, Lclass)\n" +
-				"    member ::= identifier '(' ')'\n" +
-				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
-				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
-				"\n");
-		LexicalBuilder.compile(g.getLexems(), er);
-		Builder.compile(g, er);
-
-		er.assertDone();
-	}
-
 	public void testCheckConflictsResolving() {
 		Grammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestStatus(),
 				createDefaultTypesRegistry());
