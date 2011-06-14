@@ -65,9 +65,18 @@ public class ConflictBuilder {
 		nextconfl[termSym].addReduce(status, rule);
 	}
 
-	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input) {
+	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input, short[] next, int[] classterm) {
 		if (conflicts.isEmpty()) {
 			return Collections.emptyList();
+		}
+
+		for(ConflictData d : conflicts) {
+			int term = d.getConflictingTerm();
+			if(classterm[term] > 0) {
+				if(!hasConflict(classterm[term]) && next[classterm[term]] >= -1 ) {
+					d.setSoft();
+				}
+			}
 		}
 
 		Map<Object, ConflictData> map = new HashMap<Object, ConflictData>();
@@ -95,6 +104,7 @@ public class ConflictBuilder {
 
 		private final Symbol termSym;
 		private final boolean canShift;
+		private boolean isSoft;
 		private final List<Rule> rules = new ArrayList<Rule>();
 		private int status = NONE;
 
@@ -103,6 +113,15 @@ public class ConflictBuilder {
 		public ConflictData(Symbol termSym, boolean canShift) {
 			this.termSym = termSym;
 			this.canShift = canShift;
+			this.isSoft = false;
+		}
+
+		public int getConflictingTerm() {
+			return termSym.getIndex();
+		}
+
+		public void setSoft() {
+			isSoft = true;
 		}
 
 		public Rule[] getRules() {
@@ -129,7 +148,11 @@ public class ConflictBuilder {
 
 		public int getKind() {
 			if (status == CONFLICT) {
-				return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
+				if(isSoft) {
+					return canShift ? ParserConflict.SHIFT_REDUCE_SOFT : ParserConflict.REDUCE_REDUCE_SOFT;
+				} else {
+					return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
+				}
 			}
 			return ParserConflict.FIXED;
 		}
@@ -143,7 +166,11 @@ public class ConflictBuilder {
 				case SYNTAXERR:
 					return "resolved as syntax error";
 				case CONFLICT:
-					return canShift ? "shift/reduce" : "reduce/reduce";
+					if(isSoft) {
+						return canShift ? "soft shift/reduce" : "soft reduce/reduce";
+					} else {
+						return canShift ? "shift/reduce" : "reduce/reduce";
+					}
 			}
 			return "<no conflict>";
 		}
@@ -176,6 +203,7 @@ public class ConflictBuilder {
 				final int prime = 31;
 				int result = 1;
 				result = prime * result + (canShift ? 1231 : 1237);
+				result = prime * result + (isSoft ? 1231 : 1237);
 				result = prime * result + ((rules == null) ? 0 : rules.hashCode());
 				result = prime * result + status;
 				return result;
@@ -191,6 +219,7 @@ public class ConflictBuilder {
 				}
 				ConflictData other = ((RulesAndKindKey) obj).getConflictData();
 				return canShift == other.canShift &&
+						isSoft == other.isSoft &&
 						status == other.status &&
 						rules.equals(other.rules);
 			}

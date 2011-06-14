@@ -95,7 +95,7 @@ public class SoftTermsTest extends LapgTestCase {
 		TestStatus er = new TestStatus(
 				"",
 				"syntax_softconflicts_sr,30: input: Lclass identifier '(' identifier\n" +
-				"shift/reduce conflict (next: Lof)\n" +
+				"soft shift/reduce conflict (next: Lof)\n" +
 				"    typename ::= identifier\n" +
 				"\n" +
 				"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
@@ -113,7 +113,7 @@ public class SoftTermsTest extends LapgTestCase {
 		TestStatus er = new TestStatus(
 				"",
 				"syntax_softconflicts_rr,30: input: Lclass identifier '(' identifier\n" +
-				"reduce/reduce conflict (next: Lof)\n" +
+				"soft reduce/reduce conflict (next: Lof)\n" +
 				"    varname ::= identifier\n" +
 				"    typename ::= identifier\n" +
 				"\n" +
