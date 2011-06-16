@@ -192,6 +192,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return KW_RIGHT;
 			case Lexems.Lnonassoc:
 				return KW_NONASSOC;
+			case Lexems.Lnoeoi:
+				return KW_NOEOI;
 		}
 
 		/* default, eoi */
