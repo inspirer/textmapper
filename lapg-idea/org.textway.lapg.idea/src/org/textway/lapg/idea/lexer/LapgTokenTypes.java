@@ -78,6 +78,10 @@ public interface LapgTokenTypes {
 	IElementType KW_PRIO = new LapgElementType(Lexems.Lprio, "prio");
 	IElementType KW_SHIFT = new LapgElementType(Lexems.Lshift, "shift");
 	IElementType KW_REDUCE = new LapgElementType(Lexems.Lreduce, "reduce");
+	IElementType KW_INPUT = new LapgElementType(Lexems.Linput, "input");
+	IElementType KW_LEFT = new LapgElementType(Lexems.Lleft, "left");
+	IElementType KW_RIGHT = new LapgElementType(Lexems.Lright, "right");
+	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 
-	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE);
+	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE, KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC);
 }

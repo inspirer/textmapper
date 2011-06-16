@@ -184,6 +184,14 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return KW_SHIFT;
 			case Lexems.Lreduce:
 				return KW_REDUCE;
+			case Lexems.Linput:
+				return KW_INPUT;
+			case Lexems.Lleft:
+				return KW_LEFT;
+			case Lexems.Lright:
+				return KW_RIGHT;
+			case Lexems.Lnonassoc:
+				return KW_NONASSOC;
 		}
 
 		/* default, eoi */
