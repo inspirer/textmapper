@@ -31,7 +31,7 @@ error:
 
 [0]
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/  (class)
 			{ $lexem = current(); break; }
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
@@ -66,8 +66,14 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 Ltrue:  /true/
 Lfalse: /false/
 
-Lprio:  /prio/
-Lshift: /shift/
+Lprio:  /prio/                     (soft)
+Lshift: /shift/					   (soft)
+
+
+Linput: /input/			   (soft)
+Lleft:  /left/                     (soft)
+Lright: /right/					   (soft)
+Lnonassoc: /nonassoc/			   (soft)
 
 # reserved
 
@@ -159,7 +165,15 @@ grammar_parts (List<AstGrammarPart>) ::=
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| annotations_decl symbol typeopt '::=' rules ';'	{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations_decl, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| directive: '%' identifier references ';'			{ $$ = new AstDirective($identifier, $references, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| directive: directive								{ $$ = $directive; }
+;
+
+priority_kw (String) ::=
+	Lleft | Lright | Lnonassoc ;
+
+directive ::=
+	  '%' priority_kw references ';'					{ $$ = new AstDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Linput references ';'							{ $$ = new AstDirective("input", $references, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 references (List<AstReference>) ::= 
