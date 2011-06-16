@@ -31,7 +31,7 @@ error:
 
 [0]
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/  (class)
+identifier(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
 			{ $lexem = current(); break; }
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
@@ -66,14 +66,16 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 Ltrue:  /true/
 Lfalse: /false/
 
-Lprio:  /prio/                     (soft)
-Lshift: /shift/					   (soft)
+Lprio:  /prio/				(soft)
+Lshift: /shift/				(soft)
 
 
-Linput: /input/			   (soft)
-Lleft:  /left/                     (soft)
-Lright: /right/					   (soft)
-Lnonassoc: /nonassoc/			   (soft)
+Linput: /input/				(soft)
+Lleft:  /left/				(soft)
+Lright: /right/				(soft)
+Lnonassoc: /nonassoc/		(soft)
+
+Lnoeoi: /no-eoi/			(soft)
 
 # reserved
 
@@ -92,7 +94,7 @@ _skip:	/[^'"{}]+/						{ return false; }
 
 # Grammar
 
-%input input expression;
+%input input, expression;
 
 input (AstRoot) ::=
 	options lexer_parts grammar_parts					{  $$ = new AstRoot($options, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
@@ -173,7 +175,12 @@ priority_kw (String) ::=
 
 directive ::=
 	  '%' priority_kw references ';'					{ $$ = new AstDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Linput references ';'							{ $$ = new AstDirective("input", $references, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Linput inputs ';'								{ $$ = new AstDirective("input", $inputs, source, ${left().offset}, ${left().endoffset}); }
+;
+
+inputs (List<AstReference>) ::=
+	  reference Lnoeoiopt								{ $$ = new ArrayList<AstReference>(); $inputs.add($reference); }
+	| list=inputs ',' reference Lnoeoiopt               { $list.add($reference); }
 ;
 
 references (List<AstReference>) ::= 

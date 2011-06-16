@@ -12,7 +12,7 @@ AAA: /aaa/
 # grammar
 
 
-%input A1 A2 ;
+%input A1, A2;
 
 A1 ::=
 	AAA
