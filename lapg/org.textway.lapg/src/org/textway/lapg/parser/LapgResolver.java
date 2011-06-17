@@ -401,13 +401,7 @@ public class LapgResolver {
 				AstDirective directive = (AstDirective) clause;
 				String key = directive.getKey();
 				List<LiSymbol> val = resolve(directive.getSymbols());
-				if (key.equals("input")) {
-					// TODO handle no-eoi attribute
-					for (LiSymbol s : val) {
-						boolean hasEoi = !s.getName().toLowerCase().endsWith("noeoi"); // FIXME
-						inputs.add(new LiInputRef(null, s, hasEoi));
-					}
-				} else if (key.equals("left")) {
+				if (key.equals("left")) {
 					priorities.add(new LiPrio(Prio.LEFT, val.toArray(new LiSymbol[val.size()]), directive));
 				} else if (key.equals("right")) {
 					priorities.add(new LiPrio(Prio.RIGHT, val.toArray(new LiSymbol[val.size()]), directive));
@@ -415,6 +409,15 @@ public class LapgResolver {
 					priorities.add(new LiPrio(Prio.NONASSOC, val.toArray(new LiSymbol[val.size()]), directive));
 				} else {
 					error(directive, "unknown directive identifier used: `" + key + "`");
+				}
+			} else if(clause instanceof AstInputDirective) {
+				List<AstInputRef> refs = ((AstInputDirective) clause).getInputRefs();
+				for (AstInputRef inputRef : refs) {
+					LiSymbol sym = resolve(inputRef.getReference());
+					boolean hasEoi = !inputRef.isNonEoi();
+					if (sym != null) {
+						inputs.add(new LiInputRef(null, sym, hasEoi));
+					}
 				}
 			}
 		}

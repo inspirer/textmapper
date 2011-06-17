@@ -175,12 +175,16 @@ priority_kw (String) ::=
 
 directive ::=
 	  '%' priority_kw references ';'					{ $$ = new AstDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Linput inputs ';'								{ $$ = new AstDirective("input", $inputs, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Linput inputs ';'								{ $$ = new AstInputDirective($inputs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-inputs (List<AstReference>) ::=
-	  reference Lnoeoiopt								{ $$ = new ArrayList<AstReference>(); $inputs.add($reference); }
-	| list=inputs ',' reference Lnoeoiopt               { $list.add($reference); }
+inputs (List<AstInputRef>) ::=
+	  inputref											{ $$ = new ArrayList<AstInputRef>(); $inputs.add($inputref); }
+	| list=inputs ',' inputref               			{ $list.add($inputref); }
+;
+
+inputref (AstInputRef) ::=
+	reference Lnoeoiopt									{ $$ = new AstInputRef($reference, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 references (List<AstReference>) ::= 

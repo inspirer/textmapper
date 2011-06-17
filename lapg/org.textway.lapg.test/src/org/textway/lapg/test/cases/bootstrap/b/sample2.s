@@ -62,7 +62,7 @@ _skipSoftKW: /xyzzz/	(soft)
 
 # grammar
 
-%input classdef_NoEoi ;
+%input classdef_NoEoi no-eoi;
 
 classdef_NoEoi ::=
 	classdef ;

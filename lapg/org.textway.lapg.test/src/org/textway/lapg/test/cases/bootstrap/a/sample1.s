@@ -38,7 +38,7 @@ error:
 # grammar
 
 
-%input classdef_NoEoi, classdef ;
+%input classdef_NoEoi no-eoi, classdef ;
 
 classdef_NoEoi ::=
 	classdef ;

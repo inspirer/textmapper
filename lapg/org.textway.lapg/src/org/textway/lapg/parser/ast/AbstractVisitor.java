@@ -25,6 +25,10 @@ public class AbstractVisitor {
 		return true;
 	}
 
+	public boolean visit(AstInputDirective n) {
+		return true;
+	}
+
 	public boolean visit(AstGroupsSelector n) {
 		return true;
 	}
@@ -102,6 +106,10 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(AstLexemAttrs n) {
+		return true;
+	}
+
+	public boolean visit(AstInputRef n) {
 		return true;
 	}
 }
