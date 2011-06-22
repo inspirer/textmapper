@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset='utf-8'>
-	<title>About Lapg</title>
+	<title>{{ page.title }}</title>
 	<link href="style.css" rel="stylesheet" type="text/css"/>
 	<script type="text/javascript">
 	var _gaq = _gaq || [];
@@ -32,28 +32,9 @@
 </div>
 
 <div id="page">
+{% if page.sidebar %}
 	<div id="content">
-
-		<p>Lapg is a combined lexer and parser generator.</p>
-
-		<p>Some of the features are:</p>
-		<ul>
-			<li>lalr(1), error recovery, operator precedence</li>
-			<li>unicode support</li>
-			<li>multiple input symbols</li>
-			<li>soft keywords</li>
-			<li>smart AST generation</li>
-			<li>Eclipse and IntelliJ IDEA integration plug-ins</li>
-			<li>option to parse without end-of-input marker</li>
-			<li>template language (purely functional)</li>
-		</ul>
-
-		<p>License:</p>
-		<ul>
-			<li>Lapg - Apache 2</li>
-			<li>IntelliJ IDEA plug-in - GNU General Public License</li>
-			<li>Eclipse plug-in - Eclipse Public license</li>
-		</ul>
+		{{ content }}
 	</div>
 	<div id="sidebar">
 		<img src="images/lapg_eclipse.jpg"/>
@@ -63,6 +44,11 @@
 
 		<img src="images/lapg_idea.jpg"/>
 	</div>
+{% else %}
+	<div id="widecontent">
+		{{ content }}
+	</div>
+{% endif %}
 	<div style="clear: both;">&nbsp;</div>
 </div>
 
