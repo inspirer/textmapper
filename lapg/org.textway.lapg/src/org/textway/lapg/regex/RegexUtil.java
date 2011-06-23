@@ -19,6 +19,7 @@ import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.lex.CharacterSet.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
+import org.textway.lapg.regex.RegexDefLexer.Lexems;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.List;
@@ -231,6 +232,15 @@ public class RegexUtil {
 
 		checkExpand(quantifierOrExpand, reporter, true);
 		return createSequence(sym, quantifierOrExpand);
+	}
+
+	static void applyQuantifierToTheLastElement(RegexList list, int quantifier) {
+		List<RegexPart> elements = list.getElements();
+		RegexPart last = elements.remove(elements.size() - 1);
+		int min = quantifier == Lexems.PLUS ? 1 : 0;
+		int max = quantifier == Lexems.QUESTIONMARK ? 1 : -1;
+		last = new RegexQuantifier(last, min, max, last.getInput(), last.getOffset(), last.getEndOffset() + 1);
+		elements.add(last);
 	}
 
 	static void checkExpand(RegexExpand expand, ErrorReporter reporter, boolean acceptQuantifier) {

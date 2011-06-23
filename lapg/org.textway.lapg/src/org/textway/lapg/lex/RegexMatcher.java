@@ -27,16 +27,16 @@ public class RegexMatcher {
 	private State[] states;
 
 	public RegexMatcher(String alias, String regex) throws RegexpParseException {
-		this(parse(alias, regex));
+		this(parse(alias, regex), Collections.<String, RegexPart>emptyMap());
 	}
 
-	public RegexMatcher(RegexPart regex) {
+	public RegexMatcher(RegexPart regex, Map<String, RegexPart> namedPatterns) {
 		this.regex = regex;
-		compile();
+		compile(namedPatterns);
 	}
 
-	private void compile() {
-		RegexpBuilder builder = new RegexpBuilder();
+	private void compile(Map<String, RegexPart> namedPatterns) {
+		RegexpBuilder builder = new RegexpBuilder(namedPatterns);
 		regex.accept(builder);
 		states = builder.getResult();
 	}
@@ -161,8 +161,10 @@ public class RegexMatcher {
 		private List<State> states = new ArrayList<State>();
 		private Stack<StackElement> stack = new Stack<StackElement>();
 		private RegexOr outermostOr;
+		private final Map<String, RegexPart> namedPatterns;
 
-		public RegexpBuilder() {
+		public RegexpBuilder(Map<String, RegexPart> namedPatterns) {
+			this.namedPatterns = namedPatterns;
 		}
 
 		public State[] getResult() {
@@ -227,7 +229,12 @@ public class RegexMatcher {
 
 		@Override
 		public void visit(RegexExpand c) {
-			throw new IllegalArgumentException("cannot expand {" + c.getName() + "}");
+			String name = c.getName();
+			RegexPart inner = namedPatterns.get(name);
+			if(inner == null) {
+				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
+			}
+			inner.accept(this);
 		}
 
 		@Override

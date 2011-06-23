@@ -207,7 +207,7 @@ public class LapgResolver {
 		namedPatterns = new ArrayList<LiNamedPattern>(lexerParts.size() / 2);
 
 		List<LiLexem> classLexems = new LinkedList<LiLexem>();
-		Map<String, LiNamedPattern> namedPatternsMap = new HashMap<String, LiNamedPattern>();
+		Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 		int lexemIndex = 0;
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
@@ -254,18 +254,17 @@ public class LapgResolver {
 					continue;
 				}
 				LiNamedPattern pattern = new LiNamedPattern(name, regex, astpattern);
-				LiNamedPattern exising = namedPatternsMap.get(name);
-				if (exising != null) {
+				if (namedPatternsMap.get(name) != null) {
 					error(astpattern, "redeclaration of named pattern `" + name + "'");
 				} else {
 					namedPatterns.add(pattern);
+					namedPatternsMap.put(name, regex);
 				}
-				namedPatternsMap.put(name, pattern);
 			}
 		}
 
 		for (LiLexem clLexem : classLexems) {
-			RegexMatcher m = new RegexMatcher(clLexem.getParsedRegexp());
+			RegexMatcher m = new RegexMatcher(clLexem.getParsedRegexp(), namedPatternsMap);
 			for (LiLexem l : lexems) {
 				RegexPart lRegex = l.getParsedRegexp();
 				if (lRegex.isConstant() && l.getKind() != Lexem.KIND_CLASS) {

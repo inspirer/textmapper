@@ -263,7 +263,19 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head-1].sym), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 8:  // part ::= primitive_part '{' scon '}'
-				 lapg_gg.sym = RegexUtil.createQuantifierOrSequence(((RegexPart)lapg_m[lapg_head-3].sym), new RegexExpand(source, lapg_m[lapg_head-2].offset, lapg_gg.endoffset), reporter); 
+				
+												  lapg_gg.sym = RegexUtil.createQuantifierOrSequence(((RegexPart)lapg_m[lapg_head-3].sym), new RegexExpand(source, lapg_m[lapg_head-2].offset, lapg_gg.endoffset), reporter);
+												  if(lapg_gg.sym instanceof RegexList) {
+												  	if(lapg_n.lexem == Lexems.MULT || lapg_n.lexem == Lexems.PLUS || lapg_n.lexem == Lexems.QUESTIONMARK) {
+												  	  RegexUtil.applyQuantifierToTheLastElement((RegexList) lapg_gg.sym, lapg_n.lexem);
+												  	  try {
+												  	  	lapg_n = lapg_lexer.next();
+												  	  } catch(IOException e) {
+												  	    // ignore
+												  	  }
+												  	}
+												  }
+												
 				break;
 			case 9:  // primitive_part ::= char
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 

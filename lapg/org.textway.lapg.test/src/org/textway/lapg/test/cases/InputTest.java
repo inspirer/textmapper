@@ -120,14 +120,14 @@ public class InputTest extends LapgTestCase {
 
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,37: redeclaration of soft terminal: ssss\n" +
-				"syntax_lexems,40: soft lexem `wact' cannot have a semantic action\n" +
-				"syntax_lexems,20: lexem matches two classes `identifier' and `identifierX', using first\n" +
-				"syntax_lexems,23: soft lexem `L0choice' doesn't match any class lexem\n" +
-				"syntax_lexems,26: soft lexem `int' should have a constant regexp\n" +
-				"syntax_lexems,34: soft terminal `abcde' class ambiguity: icon or identifier\n" +
-				"syntax_lexems,43: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
-				"syntax_lexems,50: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
+				"syntax_lexems,39: redeclaration of soft terminal: ssss\n" +
+				"syntax_lexems,42: soft lexem `wact' cannot have a semantic action\n" +
+				"syntax_lexems,22: lexem matches two classes `identifier' and `identifierX', using first\n" +
+				"syntax_lexems,25: soft lexem `L0choice' doesn't match any class lexem\n" +
+				"syntax_lexems,28: soft lexem `int' should have a constant regexp\n" +
+				"syntax_lexems,36: soft terminal `abcde' class ambiguity: icon or identifier\n" +
+				"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
+				"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);
 		Grammar g = SyntaxUtil.parseSyntax("syntax_lexems", openStream("syntax_lexems", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());

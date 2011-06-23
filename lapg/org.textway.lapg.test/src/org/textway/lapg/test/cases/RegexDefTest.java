@@ -86,8 +86,8 @@ public class RegexDefTest extends TestCase {
 	}
 
 	public void testVisitor1() {
-		checkVisitor("(a|[a-z]+){name}a{9,10}\\\\.",
-			"before: (a|[a-z]+){name}a{9,10}\\\\.",
+		checkVisitor("(a|[a-z]+){name}+a{9,10}\\\\.",
+			"before: (a|[a-z]+){name}+a{9,10}\\\\.",
 				"before: (a|[a-z]+)",
 					"before: a|[a-z]+",
 						"a",
@@ -97,13 +97,15 @@ public class RegexDefTest extends TestCase {
 						"after: [a-z]+",
 					"after: a|[a-z]+",
 				"after: (a|[a-z]+)",
-				"{name}",
+				"before: {name}+",
+					"{name}",
+				"after: {name}+",
 				"before: a{9,10}",
 					"a",
 				"after: a{9,10}",
 				"\\\\",
 				".",
-			 "after: (a|[a-z]+){name}a{9,10}\\\\.");
+			 "after: (a|[a-z]+){name}+a{9,10}\\\\.");
 	}
 
 

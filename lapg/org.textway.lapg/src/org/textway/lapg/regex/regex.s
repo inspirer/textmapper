@@ -61,7 +61,19 @@ part (RegexPart) ::=
 	| primitive_part '*'						{ $$ = new RegexQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '+'						{ $$ = new RegexQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '?'						{ $$ = new RegexQuantifier($primitive_part, 0, 1, source, ${left().offset}, ${left().endoffset}); }
-	| primitive_part opening='{' scon '}'		{ $$ = RegexUtil.createQuantifierOrSequence($primitive_part, new RegexExpand(source, ${opening.offset}, ${left().endoffset}), reporter); }
+	| primitive_part opening='{' scon '}'		{
+												  $$ = RegexUtil.createQuantifierOrSequence($primitive_part, new RegexExpand(source, ${opening.offset}, ${left().endoffset}), reporter);
+												  if($$ instanceof RegexList) {
+												  	if(lapg_n.lexem == Lexems.MULT || lapg_n.lexem == Lexems.PLUS || lapg_n.lexem == Lexems.QUESTIONMARK) {
+												  	  RegexUtil.applyQuantifierToTheLastElement((RegexList) $$, lapg_n.lexem);
+												  	  try {
+												  	  	lapg_n = lapg_lexer.next();
+												  	  } catch(IOException e) {
+												  	    // ignore
+												  	  }
+												  	}
+												  }
+												}
 ;
 
 primitive_part (RegexPart) ::=
