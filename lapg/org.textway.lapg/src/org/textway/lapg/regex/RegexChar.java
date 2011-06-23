@@ -45,7 +45,7 @@ public class RegexChar extends RegexPart {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		RegexUtil.escape(sb, c);
+		RegexUtil.escape(sb, c, false);
 	}
 
 	@Override

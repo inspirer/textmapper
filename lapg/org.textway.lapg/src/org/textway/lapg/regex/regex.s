@@ -37,6 +37,9 @@ charclass(Character): /\\[wWsSdD]/											{ $lexem = current().charAt(1); bre
 '|':  /\|/
 ')':  /\)/
 '{':  /\{/
+'{digit'(Character):  /\{[0-9]/                                             { $lexem = current().charAt(1); break; }
+'{letter'(Character): /\{[a-zA-Z_]/                                         { $lexem = current().charAt(1); break; }
+
 '}':  /\}/
 '[':  /\[/
 ']':  /\]/
@@ -61,19 +64,7 @@ part (RegexPart) ::=
 	| primitive_part '*'						{ $$ = new RegexQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '+'						{ $$ = new RegexQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part '?'						{ $$ = new RegexQuantifier($primitive_part, 0, 1, source, ${left().offset}, ${left().endoffset}); }
-	| primitive_part opening='{' scon '}'		{
-												  $$ = RegexUtil.createQuantifierOrSequence($primitive_part, new RegexExpand(source, ${opening.offset}, ${left().endoffset}), reporter);
-												  if($$ instanceof RegexList) {
-												  	if(lapg_n.lexem == Lexems.MULT || lapg_n.lexem == Lexems.PLUS || lapg_n.lexem == Lexems.QUESTIONMARK) {
-												  	  RegexUtil.applyQuantifierToTheLastElement((RegexList) $$, lapg_n.lexem);
-												  	  try {
-												  	  	lapg_n = lapg_lexer.next();
-												  	  } catch(IOException e) {
-												  	    // ignore
-												  	  }
-												  	}
-												  }
-												}
+	| primitive_part op='{digit' sconopt '}'	{ $$ = RegexUtil.createQuantifier($primitive_part, source, ${op.offset}, ${left().endoffset}, reporter); }
 ;
 
 primitive_part (RegexPart) ::=
@@ -88,6 +79,7 @@ primitive_part (RegexPart) ::=
 	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern); }
 	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false); }
 	| '[' '^' charset ']'						{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true); }
+	| '{letter' sconopt '}'						{ $$ = new RegexExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexExpand) $$, reporter); }
 ;
 
 setsymbol (RegexPart) ::=
@@ -97,6 +89,10 @@ setsymbol (RegexPart) ::=
 	| '|'                                       { $$ = new RegexChar('|', source, ${left().offset}, ${left().endoffset}); }
 	| ')'                                       { $$ = new RegexChar(')', source, ${left().offset}, ${left().endoffset}); }
 	| '{'                                       { $$ = new RegexChar('{', source, ${left().offset}, ${left().endoffset}); }
+	| '{digit'                                  { $$ = RegexUtil.createOr(new RegexChar('{', source, ${left().offset}, ${left().offset}+1),
+																		  new RegexChar($0, source, ${left().offset}+1, ${left().endoffset}), null, 0); }
+	| '{letter'                                 { $$ = RegexUtil.createOr(new RegexChar('{', source, ${left().offset}, ${left().offset}+1),
+																		  new RegexChar($0, source, ${left().offset}+1, ${left().endoffset}), null, 0); }
 	| '}'                                       { $$ = new RegexChar('}', source, ${left().offset}, ${left().endoffset}); }
 	| '*'                                       { $$ = new RegexChar('*', source, ${left().offset}, ${left().endoffset}); }
 	| '+'                                       { $$ = new RegexChar('+', source, ${left().offset}, ${left().endoffset}); }
@@ -107,8 +103,8 @@ setsymbol (RegexPart) ::=
 
 charset (java.util.@List<RegexPart>) ::=
 	  sym='-'									{ $$ = new java.util.@ArrayList<RegexPart>(); $charset.add(new RegexChar('-', source, ${sym.offset}, ${sym.endoffset})); }
-	| setsymbol									{ $$ = new java.util.@ArrayList<RegexPart>(); $charset.add($setsymbol); }
-	| charset setsymbol							{ $charset#1.add($setsymbol); }
+	| setsymbol									{ $$ = new java.util.@ArrayList<RegexPart>(); RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
+	| charset setsymbol							{ RegexUtil.addSetSymbol($charset#1, $setsymbol, reporter); }
 	| charset sym='^'							{ $charset#1.add(new RegexChar('^', source, ${sym.offset}, ${sym.endoffset})); }
 	| charset sym='-'							{ $charset#1.add(new RegexChar('-', source, ${sym.offset}, ${sym.endoffset})); }
 			%prio char
@@ -117,14 +113,14 @@ charset (java.util.@List<RegexPart>) ::=
 
 parts (RegexPart) ::=
 	  part
-	| '{' scon '}'								{ $$ = new RegexExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexExpand) $$, reporter, false); }
 	| list=parts part							{ $$ = RegexUtil.createSequence($list, $part); }
 ;
 
 scon ::=
 	  char
+	| '-'
 	| scon char
-	| scon '.'
+	| scon '-'
 ;
 
 

@@ -45,18 +45,22 @@ public class RegexSet extends RegexPart {
 			sb.append('^');
 		}
 		for (RegexPart p : charset) {
-			p.toString(sb);
+			if (p instanceof RegexChar) {
+				RegexUtil.escape(sb, ((RegexChar) p).getChar(), true);
+			} else {
+				p.toString(sb);
+			}
 		}
 		sb.append(']');
 	}
 
 	@Override
 	public void accept(RegexVisitor visitor) {
-		if(!visitor.visit(this)) {
+		if (!visitor.visit(this)) {
 			return;
 		}
 
-		if(charset != null) {
+		if (charset != null) {
 			for (RegexPart part : charset) {
 				part.accept(visitor);
 			}

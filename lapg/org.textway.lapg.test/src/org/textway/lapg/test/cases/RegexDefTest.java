@@ -30,6 +30,8 @@ public class RegexDefTest extends TestCase {
 
 	public void testParens() {
 		checkRegex("[a-z]");
+		checkRegex("[{a}(aa)]");
+		checkRegex("{a}{2}");
 		checkRegex("(A|)");
 		checkRegex("[^A-Z]");
 		checkRegex("([^A-Z]+)A");
@@ -56,7 +58,7 @@ public class RegexDefTest extends TestCase {
 	public void testSet() {
 		checkRegex("[a-z-]", "[a-z\\-]");
 		checkRegex("[-a-z]", "[\\-a-z]");
-		checkRegex("[a-{]", "[a\\-\\{]");
+		checkRegex("[a-{]", "[a\\-{]");
 
 		checkErrors("[\\.-z]", "invalid range in character class (before dash): `\\.', escape `-'");
 	}
@@ -64,7 +66,7 @@ public class RegexDefTest extends TestCase {
 	public void testQuantifiers() {
 		checkRegex("{aaa}");
 		checkErrors("{aaa }", "an expansion identifier is expected instead of `aaa '");
-		checkErrors("a{aaa }", "quantifier range or expansion identifier is expected instead of `aaa '");
+		checkErrors("a{aaa }", "an expansion identifier is expected instead of `aaa '");
 		checkRegex("a{9}");
 		checkRegex("a{9,}");
 		checkRegex("a{9,10}");

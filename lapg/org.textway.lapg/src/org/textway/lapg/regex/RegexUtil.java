@@ -70,6 +70,16 @@ public class RegexUtil {
 		return left;
 	}
 
+	static void addSetSymbol(List<RegexPart> charset, RegexPart right, ErrorReporter reporter) {
+		if(right instanceof RegexOr) {
+			for (RegexPart regexPart : ((RegexOr) right).getVariants()) {
+				addSetSymbol(charset, regexPart, reporter);
+			}
+		} else {
+			charset.add(right);
+		}
+	}
+
 	static void applyRange(List<RegexPart> charset, RegexChar right, ErrorReporter reporter) {
 		RegexPart last = charset.get(charset.size() - 1);
 
@@ -167,22 +177,26 @@ public class RegexUtil {
 		return (char) result;
 	}
 
-	static void escape(StringBuilder sb, char c) {
+	static void escape(StringBuilder sb, char c, boolean inSet) {
 		switch (c) {
-			case '.':
-			case '-':
-			case '^':
 			case '(':
 			case '|':
 			case ')':
 			case '{':
 			case '}':
-			case '[':
-			case ']':
 			case '*':
 			case '+':
 			case '?':
-
+				if(!inSet) {
+					sb.append('\\');
+				}
+				sb.append(c);
+				return;
+			case '.':
+			case '-':
+			case '^':
+			case '[':
+			case ']':
 			case '\\':
 			case '/':
 				sb.append('\\');
@@ -217,8 +231,8 @@ public class RegexUtil {
 		FormatUtil.appendEscaped(sb, c);
 	}
 
-	static RegexPart createQuantifierOrSequence(RegexPart sym, RegexExpand quantifierOrExpand, ErrorReporter reporter) {
-		String innerText = quantifierOrExpand.getInput().getText(quantifierOrExpand.getOffset() + 1, quantifierOrExpand.getEndOffset() - 1);
+	static RegexPart createQuantifier(RegexPart sym, TextSource source, int quantifierStart, int quantifierEnd, ErrorReporter reporter) {
+		String innerText = source.getText(quantifierStart + 1, quantifierEnd - 1);
 		Matcher matcher = QUANTIFIER.matcher(innerText);
 		if (matcher.matches()) {
 			int min = Integer.parseInt(matcher.group(1));
@@ -227,29 +241,19 @@ public class RegexUtil {
 				String second = matcher.group(3);
 				max = second != null ? Integer.parseInt(second) : -1;
 			}
-			return new RegexQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierOrExpand.getEndOffset());
+			return new RegexQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierEnd);
 		}
 
-		checkExpand(quantifierOrExpand, reporter, true);
-		return createSequence(sym, quantifierOrExpand);
+		reporter.error(quantifierStart, quantifierEnd, source.lineForOffset(quantifierStart),
+				"quantifier range is expected instead of `" + innerText + "'");
+		return sym;
 	}
 
-	static void applyQuantifierToTheLastElement(RegexList list, int quantifier) {
-		List<RegexPart> elements = list.getElements();
-		RegexPart last = elements.remove(elements.size() - 1);
-		int min = quantifier == Lexems.PLUS ? 1 : 0;
-		int max = quantifier == Lexems.QUESTIONMARK ? 1 : -1;
-		last = new RegexQuantifier(last, min, max, last.getInput(), last.getOffset(), last.getEndOffset() + 1);
-		elements.add(last);
-	}
-
-	static void checkExpand(RegexExpand expand, ErrorReporter reporter, boolean acceptQuantifier) {
+	static void checkExpand(RegexExpand expand, ErrorReporter reporter) {
 		String innerText = expand.getInput().getText(expand.getOffset() + 1, expand.getEndOffset() - 1);
-		if(!IDENTIFIER.matcher(innerText).matches()) {
+		if (!IDENTIFIER.matcher(innerText).matches()) {
 			reporter.error(expand.getOffset(), expand.getEndOffset(), expand.getInput().lineForOffset(expand.getOffset()),
-					acceptQuantifier
-						? "quantifier range or expansion identifier is expected instead of `" + innerText + "'"
-						: "an expansion identifier is expected instead of `" + innerText + "'");
+					"an expansion identifier is expected instead of `" + innerText + "'");
 		}
 	}
 

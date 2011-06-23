@@ -41,9 +41,9 @@ public class RegexRange extends RegexPart {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		RegexUtil.escape(sb, left);
+		RegexUtil.escape(sb, left, true);
 		sb.append('-');
-		RegexUtil.escape(sb, right);
+		RegexUtil.escape(sb, right, true);
 	}
 
 	@Override

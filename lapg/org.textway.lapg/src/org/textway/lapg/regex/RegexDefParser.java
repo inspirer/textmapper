@@ -45,65 +45,67 @@ public class RegexDefParser {
 	TextSource source;
 	CharacterSet.Builder setbuilder = new CharacterSet.Builder();
 	private static final int lapg_action[] = {
-		-3, 9, 10, 11, 12, 13, -31, -1, -1, 14, 15, 16, -1, 36, -59, -89,
-		2, -1, 39, -1, 20, 21, 30, -1, 22, 23, 24, 25, 26, 27, 28, 29,
-		31, -1, -117, -1, 5, 6, 7, 38, 17, 40, 41, 37, -1, -147, 33, 18,
-		32, 3, -1, 19, 35, 8, -2
+		-3, 11, 12, 13, 14, 15, -31, -59, -1, 16, 17, 18, -1, 41, -67, -99,
+		2, -1, 43, 44, -129, -1, 23, 24, 35, -1, 25, 26, 27, 28, 29, 30,
+		31, 32, 33, 34, 36, -1, -137, -167, 5, 6, 7, 42, 19, 45, 46, 22,
+		-1, -175, 38, 20, 37, 3, -1, 21, 40, 10, -2
 	};
 
 	private static final short lapg_lalr[] = {
-		1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 6, -1, 9, -1, 11, -1,
-		13, -1, 14, -1, 15, -1, 0, 0, 7, 0, -1, -2, 1, -1, 2, -1,
-		3, -1, 4, -1, 5, -1, 6, -1, 9, -1, 11, -1, 13, -1, 14, -1,
-		15, -1, 7, 0, 8, 0, -1, -2, 9, -1, 13, -1, 14, -1, 15, -1,
-		0, 4, 1, 4, 2, 4, 3, 4, 4, 4, 5, 4, 6, 4, 7, 4,
-		8, 4, 11, 4, -1, -2, 1, -1, 2, -1, 3, -1, 4, -1, 5, -1,
-		6, -1, 11, -1, 13, -1, 14, -1, 15, -1, 0, 1, 7, 1, 8, 1,
-		-1, -2, 1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 6, -1, 9, -1,
-		11, -1, 13, -1, 14, -1, 15, -1, 0, 0, 7, 0, 8, 0, -1, -2,
-		1, -1, 2, 34, 4, 34, 5, 34, 6, 34, 7, 34, 8, 34, 9, 34,
-		10, 34, 12, 34, 13, 34, 14, 34, 15, 34, -1, -2
+		1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 6, -1, 11, -1, 13, -1,
+		15, -1, 16, -1, 17, -1, 0, 0, 7, 0, -1, -2, 1, -1, 2, -1,
+		3, -1, 4, -1, 5, -1, 6, -1, 11, -1, 13, -1, 15, -1, 16, -1,
+		17, -1, 7, 0, 8, 0, -1, -2, 1, -1, 4, -1, 12, 8, -1, -2,
+		10, -1, 15, -1, 16, -1, 17, -1, 0, 4, 1, 4, 2, 4, 3, 4,
+		4, 4, 5, 4, 6, 4, 7, 4, 8, 4, 11, 4, 13, 4, -1, -2,
+		1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 6, -1, 11, -1, 13, -1,
+		15, -1, 16, -1, 17, -1, 0, 1, 7, 1, 8, 1, -1, -2, 1, -1,
+		4, -1, 12, 9, -1, -2, 1, -1, 2, -1, 3, -1, 4, -1, 5, -1,
+		6, -1, 11, -1, 13, -1, 15, -1, 16, -1, 17, -1, 0, 0, 7, 0,
+		8, 0, -1, -2, 1, -1, 4, -1, 12, 8, -1, -2, 1, -1, 2, 39,
+		4, 39, 5, 39, 6, 39, 7, 39, 8, 39, 9, 39, 10, 39, 11, 39,
+		12, 39, 14, 39, 15, 39, 16, 39, 17, 39, -1, -2
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 1, 14, 22, 28, 36, 43, 51, 57, 62, 70, 76, 80, 82, 91, 100,
-		109, 111, 115, 119, 123, 125, 128, 130, 133
+		0, 1, 13, 21, 25, 36, 43, 51, 57, 62, 66, 71, 79, 85, 89, 91,
+		100, 109, 118, 120, 124, 128, 132, 134, 137, 139, 142, 144
 	};
 
 	private static final short lapg_sym_from[] = {
-		12, 0, 6, 7, 8, 15, 19, 23, 33, 34, 35, 44, 45, 50, 0, 6,
-		8, 15, 23, 33, 34, 44, 0, 6, 15, 19, 34, 50, 0, 6, 8, 15,
-		23, 33, 34, 44, 0, 6, 8, 15, 33, 34, 44, 0, 6, 8, 15, 23,
-		33, 34, 44, 8, 12, 17, 23, 33, 44, 8, 17, 23, 33, 44, 0, 6,
-		8, 14, 23, 33, 34, 44, 8, 19, 23, 33, 44, 50, 0, 6, 15, 34,
-		33, 44, 0, 6, 8, 14, 15, 23, 33, 34, 44, 0, 6, 8, 14, 15,
-		23, 33, 34, 44, 0, 6, 8, 14, 15, 23, 33, 34, 44, 0, 6, 0,
-		6, 15, 34, 0, 6, 15, 34, 8, 23, 33, 44, 8, 23, 0, 6, 34,
-		7, 35, 0, 6, 34
+		12, 0, 6, 7, 8, 15, 20, 25, 37, 38, 39, 48, 49, 0, 6, 8,
+		15, 25, 37, 38, 48, 0, 6, 15, 38, 0, 6, 7, 8, 15, 20, 25,
+		37, 38, 39, 48, 0, 6, 8, 15, 37, 38, 48, 0, 6, 8, 15, 25,
+		37, 38, 48, 8, 12, 17, 25, 37, 48, 8, 17, 25, 37, 48, 8, 25,
+		37, 48, 8, 14, 25, 37, 48, 0, 6, 8, 15, 25, 37, 38, 48, 8,
+		21, 25, 37, 48, 54, 0, 6, 15, 38, 37, 48, 0, 6, 8, 14, 15,
+		25, 37, 38, 48, 0, 6, 8, 14, 15, 25, 37, 38, 48, 0, 6, 8,
+		14, 15, 25, 37, 38, 48, 0, 6, 0, 6, 15, 38, 0, 6, 15, 38,
+		8, 25, 37, 48, 8, 25, 0, 6, 38, 7, 39, 0, 6, 38, 7, 39
 	};
 
 	private static final short lapg_sym_to[] = {
-		54, 1, 1, 18, 20, 1, 41, 20, 20, 1, 18, 20, 52, 41, 2, 2,
-		21, 2, 21, 21, 2, 21, 3, 3, 3, 42, 3, 42, 4, 4, 22, 4,
-		22, 45, 4, 45, 5, 5, 23, 5, 46, 5, 46, 6, 6, 24, 6, 24,
-		24, 6, 24, 25, 34, 34, 25, 25, 25, 26, 40, 26, 26, 26, 7, 7,
-		27, 35, 27, 27, 7, 27, 28, 43, 28, 28, 28, 53, 8, 8, 8, 8,
-		47, 51, 9, 9, 29, 36, 9, 29, 29, 9, 29, 10, 10, 30, 37, 10,
-		30, 30, 10, 30, 11, 11, 31, 38, 11, 31, 31, 11, 31, 12, 17, 13,
-		13, 39, 13, 14, 14, 14, 14, 32, 32, 48, 48, 33, 44, 15, 15, 15,
-		19, 50, 16, 16, 49
+		58, 1, 1, 18, 22, 1, 45, 22, 22, 1, 18, 22, 56, 2, 2, 23,
+		2, 23, 23, 2, 23, 3, 3, 3, 3, 4, 4, 19, 24, 4, 46, 24,
+		49, 4, 19, 49, 5, 5, 25, 5, 50, 5, 50, 6, 6, 26, 6, 26,
+		26, 6, 26, 27, 38, 38, 27, 27, 27, 28, 44, 28, 28, 28, 29, 29,
+		29, 29, 30, 39, 30, 30, 30, 7, 7, 31, 7, 31, 31, 7, 31, 32,
+		47, 32, 32, 32, 57, 8, 8, 8, 8, 51, 55, 9, 9, 33, 40, 9,
+		33, 33, 9, 33, 10, 10, 34, 41, 10, 34, 34, 10, 34, 11, 11, 35,
+		42, 11, 35, 35, 11, 35, 12, 17, 13, 13, 43, 13, 14, 14, 14, 14,
+		36, 36, 52, 52, 37, 48, 15, 15, 15, 20, 20, 16, 16, 53, 21, 54
 	};
 
 	private static final short lapg_rlen[] = {
-		0, 1, 1, 3, 1, 2, 2, 2, 4, 1, 1, 1, 1, 1, 1, 1,
-		1, 3, 3, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		2, 2, 2, 3, 1, 3, 2, 1, 2, 2
+		0, 1, 1, 3, 1, 2, 2, 2, 0, 1, 4, 1, 1, 1, 1, 1,
+		1, 1, 1, 3, 3, 4, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 2, 2, 2, 3, 1, 2, 1, 1, 2, 2
 	};
 
 	private static final short lapg_rlex[] = {
-		23, 23, 16, 16, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18,
-		18, 18, 18, 18, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20,
-		20, 20, 20, 20, 21, 21, 21, 22, 22, 22
+		25, 25, 18, 18, 19, 19, 19, 19, 26, 26, 19, 20, 20, 20, 20, 20,
+		20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+		21, 21, 21, 22, 22, 22, 22, 22, 22, 23, 23, 24, 24, 24, 24
 	};
 
 	protected static final String[] lapg_syms = new String[] {
@@ -117,6 +119,8 @@ public class RegexDefParser {
 		"'|'",
 		"')'",
 		"'{'",
+		"'{digit'",
+		"'{letter'",
 		"'}'",
 		"'['",
 		"']'",
@@ -131,18 +135,20 @@ public class RegexDefParser {
 		"parts",
 		"scon",
 		"partsopt",
+		"sconopt",
 	};
 
 	public interface Tokens extends Lexems {
 		// non-terminals
-		public static final int pattern = 16;
-		public static final int part = 17;
-		public static final int primitive_part = 18;
-		public static final int setsymbol = 19;
-		public static final int charset = 20;
-		public static final int parts = 21;
-		public static final int scon = 22;
-		public static final int partsopt = 23;
+		public static final int pattern = 18;
+		public static final int part = 19;
+		public static final int primitive_part = 20;
+		public static final int setsymbol = 21;
+		public static final int charset = 22;
+		public static final int parts = 23;
+		public static final int scon = 24;
+		public static final int partsopt = 25;
+		public static final int sconopt = 26;
 	}
 
 	protected final int lapg_next(int state) {
@@ -191,7 +197,7 @@ public class RegexDefParser {
 		lapg_m[0].state = 0;
 		lapg_n = lapg_lexer.next();
 
-		while (lapg_m[lapg_head].state != 54) {
+		while (lapg_m[lapg_head].state != 58) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
@@ -205,7 +211,7 @@ public class RegexDefParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 54) {
+		if (lapg_m[lapg_head].state != 58) {
 			reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(), 
 					MessageFormat.format("syntax error before line {0}",
 					lapg_lexer.getTokenLine()));
@@ -262,106 +268,102 @@ public class RegexDefParser {
 			case 7:  // part ::= primitive_part '?'
 				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head-1].sym), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 8:  // part ::= primitive_part '{' scon '}'
-				
-												  lapg_gg.sym = RegexUtil.createQuantifierOrSequence(((RegexPart)lapg_m[lapg_head-3].sym), new RegexExpand(source, lapg_m[lapg_head-2].offset, lapg_gg.endoffset), reporter);
-												  if(lapg_gg.sym instanceof RegexList) {
-												  	if(lapg_n.lexem == Lexems.MULT || lapg_n.lexem == Lexems.PLUS || lapg_n.lexem == Lexems.QUESTIONMARK) {
-												  	  RegexUtil.applyQuantifierToTheLastElement((RegexList) lapg_gg.sym, lapg_n.lexem);
-												  	  try {
-												  	  	lapg_n = lapg_lexer.next();
-												  	  } catch(IOException e) {
-												  	    // ignore
-												  	  }
-												  	}
-												  }
-												
+			case 10:  // part ::= primitive_part '{digit' sconopt '}'
+				 lapg_gg.sym = RegexUtil.createQuantifier(((RegexPart)lapg_m[lapg_head-3].sym), source, lapg_m[lapg_head-2].offset, lapg_gg.endoffset, reporter); 
 				break;
-			case 9:  // primitive_part ::= char
+			case 11:  // primitive_part ::= char
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 10:  // primitive_part ::= charclass
+			case 12:  // primitive_part ::= charclass
 				 lapg_gg.sym = new RegexCharClass(((Character)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((Character)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 11:  // primitive_part ::= '.'
+			case 13:  // primitive_part ::= '.'
 				 lapg_gg.sym = new RegexAny(source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 12:  // primitive_part ::= '-'
+			case 14:  // primitive_part ::= '-'
 				 lapg_gg.sym = new RegexChar('-', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 13:  // primitive_part ::= '^'
+			case 15:  // primitive_part ::= '^'
 				 lapg_gg.sym = new RegexChar('^', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 14:  // primitive_part ::= '*'
+			case 16:  // primitive_part ::= '*'
 				 lapg_gg.sym = new RegexChar('*', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 15:  // primitive_part ::= '+'
+			case 17:  // primitive_part ::= '+'
 				 lapg_gg.sym = new RegexChar('+', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 16:  // primitive_part ::= '?'
+			case 18:  // primitive_part ::= '?'
 				 lapg_gg.sym = new RegexChar('?', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 17:  // primitive_part ::= '(' pattern ')'
+			case 19:  // primitive_part ::= '(' pattern ')'
 				 lapg_gg.sym = RegexUtil.wrap(((RegexPart)lapg_m[lapg_head-1].sym)); 
 				break;
-			case 18:  // primitive_part ::= '[' charset ']'
+			case 20:  // primitive_part ::= '[' charset ']'
 				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head-1].sym), reporter, setbuilder, false); 
 				break;
-			case 19:  // primitive_part ::= '[' '^' charset ']'
+			case 21:  // primitive_part ::= '[' '^' charset ']'
 				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head-1].sym), reporter, setbuilder, true); 
 				break;
-			case 20:  // setsymbol ::= char
+			case 22:  // primitive_part ::= '{letter' sconopt '}'
+				 lapg_gg.sym = new RegexExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexExpand) lapg_gg.sym, reporter); 
+				break;
+			case 23:  // setsymbol ::= char
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 21:  // setsymbol ::= charclass
+			case 24:  // setsymbol ::= charclass
 				 lapg_gg.sym = new RegexCharClass(((Character)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((Character)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 22:  // setsymbol ::= '('
+			case 25:  // setsymbol ::= '('
 				 lapg_gg.sym = new RegexChar('(', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 23:  // setsymbol ::= '|'
+			case 26:  // setsymbol ::= '|'
 				 lapg_gg.sym = new RegexChar('|', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 24:  // setsymbol ::= ')'
+			case 27:  // setsymbol ::= ')'
 				 lapg_gg.sym = new RegexChar(')', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 25:  // setsymbol ::= '{'
+			case 28:  // setsymbol ::= '{'
 				 lapg_gg.sym = new RegexChar('{', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 26:  // setsymbol ::= '}'
+			case 29:  // setsymbol ::= '{digit'
+				 lapg_gg.sym = RegexUtil.createOr(new RegexChar('{', source, lapg_gg.offset, lapg_gg.offset+1),
+																		  new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset+1, lapg_gg.endoffset), null, 0); 
+				break;
+			case 30:  // setsymbol ::= '{letter'
+				 lapg_gg.sym = RegexUtil.createOr(new RegexChar('{', source, lapg_gg.offset, lapg_gg.offset+1),
+																		  new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset+1, lapg_gg.endoffset), null, 0); 
+				break;
+			case 31:  // setsymbol ::= '}'
 				 lapg_gg.sym = new RegexChar('}', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 27:  // setsymbol ::= '*'
+			case 32:  // setsymbol ::= '*'
 				 lapg_gg.sym = new RegexChar('*', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 28:  // setsymbol ::= '+'
+			case 33:  // setsymbol ::= '+'
 				 lapg_gg.sym = new RegexChar('+', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 29:  // setsymbol ::= '?'
+			case 34:  // setsymbol ::= '?'
 				 lapg_gg.sym = new RegexChar('?', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 30:  // charset ::= '-'
+			case 35:  // charset ::= '-'
 				 lapg_gg.sym = new ArrayList<RegexPart>(); ((List<RegexPart>)lapg_gg.sym).add(new RegexChar('-', source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 31:  // charset ::= setsymbol
-				 lapg_gg.sym = new ArrayList<RegexPart>(); ((List<RegexPart>)lapg_gg.sym).add(((RegexPart)lapg_m[lapg_head-0].sym)); 
+			case 36:  // charset ::= setsymbol
+				 lapg_gg.sym = new ArrayList<RegexPart>(); RegexUtil.addSetSymbol(((List<RegexPart>)lapg_gg.sym), ((RegexPart)lapg_m[lapg_head-0].sym), reporter); 
 				break;
-			case 32:  // charset ::= charset setsymbol
-				 ((List<RegexPart>)lapg_m[lapg_head-1].sym).add(((RegexPart)lapg_m[lapg_head-0].sym)); 
+			case 37:  // charset ::= charset setsymbol
+				 RegexUtil.addSetSymbol(((List<RegexPart>)lapg_m[lapg_head-1].sym), ((RegexPart)lapg_m[lapg_head-0].sym), reporter); 
 				break;
-			case 33:  // charset ::= charset '^'
+			case 38:  // charset ::= charset '^'
 				 ((List<RegexPart>)lapg_m[lapg_head-1].sym).add(new RegexChar('^', source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 34:  // charset ::= charset '-' %prio char
+			case 39:  // charset ::= charset '-' %prio char
 				 ((List<RegexPart>)lapg_m[lapg_head-1].sym).add(new RegexChar('-', source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset)); 
 				break;
-			case 35:  // charset ::= charset '-' char
+			case 40:  // charset ::= charset '-' char
 				 RegexUtil.applyRange(((List<RegexPart>)lapg_m[lapg_head-2].sym), new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset), reporter); 
 				break;
-			case 37:  // parts ::= '{' scon '}'
-				 lapg_gg.sym = new RegexExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexExpand) lapg_gg.sym, reporter, false); 
-				break;
-			case 38:  // parts ::= parts part
+			case 42:  // parts ::= parts part
 				 lapg_gg.sym = RegexUtil.createSequence(((RegexPart)lapg_m[lapg_head-1].sym), ((RegexPart)lapg_m[lapg_head-0].sym)); 
 				break;
 		}
