@@ -52,7 +52,7 @@ public class MatcherTest extends TestCase {
 	}
 
 	public void testIdentifier() throws RegexpParseException {
-		RegexMatcher matcher = new RegexMatcher("[a-zA-Z_][a-zA-Z0-9_]+");
+		RegexMatcher matcher = new RegexMatcher("id", "[a-zA-Z_][a-zA-Z0-9_]+");
 		checkMatch(matcher, "aaaa", true);
 		checkMatch(matcher, "aa0aa", true);
 		checkMatch(matcher, "aa0aa ", false);
@@ -60,7 +60,7 @@ public class MatcherTest extends TestCase {
 	}
 
 	public void testRegex() throws RegexpParseException {
-		RegexMatcher matcher = new RegexMatcher("\\/([^\\/\\\\\\n]|\\\\.)*\\/");
+		RegexMatcher matcher = new RegexMatcher("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
 		checkMatch(matcher, "/aaa/", true);
 		checkMatch(matcher, "/tt\\\\t+/", true);
 		checkMatch(matcher, "//", true);
@@ -89,7 +89,7 @@ public class MatcherTest extends TestCase {
 
 	private static void checkMatch(String regex, String sample, boolean expected) {
 		try {
-			RegexMatcher matcher = new RegexMatcher(regex);
+			RegexMatcher matcher = new RegexMatcher("unknown", regex);
 			Assert.assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 		} catch (RegexpParseException ex) {
 			Assert.fail(ex.getMessage());

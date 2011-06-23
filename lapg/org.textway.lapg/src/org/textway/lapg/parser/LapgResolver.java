@@ -219,7 +219,7 @@ public class LapgResolver {
 				if (lexeme.getRegexp() != null) {
 					RegexPart regex;
 					try {
-						regex = RegexMatcher.parse(lexeme.getRegexp().getRegexp());
+						regex = RegexMatcher.parse(s.getName(), lexeme.getRegexp().getRegexp());
 					} catch (RegexpParseException e) {
 						error(lexeme.getRegexp(), e.getMessage());
 						continue;
@@ -245,14 +245,14 @@ public class LapgResolver {
 				groups = convert((AstGroupsSelector) clause);
 			} else if (clause instanceof AstNamedPattern) {
 				AstNamedPattern astpattern = (AstNamedPattern) clause;
+				String name = astpattern.getName();
 				RegexPart regex;
 				try {
-					regex = RegexMatcher.parse(astpattern.getRegexp().getRegexp());
+					regex = RegexMatcher.parse(name, astpattern.getRegexp().getRegexp());
 				} catch (RegexpParseException e) {
 					error(astpattern.getRegexp(), e.getMessage());
 					continue;
 				}
-				String name = astpattern.getName();
 				LiNamedPattern pattern = new LiNamedPattern(name, regex, astpattern);
 				LiNamedPattern exising = namedPatternsMap.get(name);
 				if (exising != null) {

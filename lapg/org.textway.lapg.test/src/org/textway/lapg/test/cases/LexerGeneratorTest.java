@@ -18,6 +18,7 @@ package org.textway.lapg.test.cases;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.lex.LexerTables;
@@ -25,6 +26,8 @@ import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.test.TestStatus;
 
 public class LexerGeneratorTest extends TestCase {
+
+	private final NamedPattern[] NO_PATTERNS = new NamedPattern[0];
 
 	TestLexem[] INPUT1 = {
 			new TestLexem(0, 0, "string", "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
@@ -41,7 +44,7 @@ public class LexerGeneratorTest extends TestCase {
 	};
 
 	public void testGenerator() {
-		LexerTables lt = LexicalBuilder.compile(INPUT1, new TestStatus());
+		LexerTables lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
@@ -55,7 +58,7 @@ public class LexerGeneratorTest extends TestCase {
 				"",
 				"lexemtest,3: empty: lexem is empty\n" +
 				"lexemtest,1: two lexems are identical: string and number\n");
-		LexicalBuilder.compile(ERRINPUT, notifier);
+		LexicalBuilder.compile(ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();
 
 	}

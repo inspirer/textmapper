@@ -85,7 +85,7 @@ public final class LapgGenerator {
 
 			// Generate tables
 			long start = System.currentTimeMillis();
-			LexerTables l = LexicalBuilder.compile(s.getLexems(), status);
+			LexerTables l = LexicalBuilder.compile(s.getLexems(), s.getPatterns(), status);
 			ParserTables r = Builder.compile(s, status);
 			if (l == null || r == null) {
 				return false;

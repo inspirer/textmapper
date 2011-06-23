@@ -26,8 +26,8 @@ public class RegexMatcher {
 	private final RegexPart regex;
 	private State[] states;
 
-	public RegexMatcher(String regex) throws RegexpParseException {
-		this(parse(regex));
+	public RegexMatcher(String alias, String regex) throws RegexpParseException {
+		this(parse(alias, regex));
 	}
 
 	public RegexMatcher(RegexPart regex) {
@@ -41,12 +41,12 @@ public class RegexMatcher {
 		states = builder.getResult();
 	}
 
-	public static RegexPart parse(String regex) throws RegexpParseException {
+	public static RegexPart parse(String alias, String regex) throws RegexpParseException {
 		if (regex.length() == 0) {
 			throw new RegexpParseException("regexp is empty", 0);
 		}
 
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource("", regex.toCharArray(), 1));
+		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();

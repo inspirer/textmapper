@@ -16,13 +16,8 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.regex.*;
-import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
-import org.textway.lapg.regex.RegexDefTree.TextSource;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Gryaznov Evgeny, 4/5/11
@@ -35,12 +30,17 @@ public class RegexpParser {
 	private final List<CharacterSet> setpool;
 	private int[][] set2symbols;
 
+	// global vars
+	private final Map<String, RegexPart> namedPatterns;
+
 	// temporary variables
 	private final CharacterSet.Builder builder;
 	private final int[] sym;
 	private final int[] stack;
 
-	public RegexpParser() {
+	public RegexpParser(Map<String, RegexPart> namedPatterns) {
+		this.namedPatterns = namedPatterns;
+
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
 		this.builder = new CharacterSet.Builder();
@@ -133,7 +133,12 @@ public class RegexpParser {
 
 		@Override
 		public void visit(RegexExpand c) {
-			throw new IllegalArgumentException("cannot expand {" + c.getName() + "}");
+			String name = c.getName();
+			RegexPart inner = namedPatterns.get(name);
+			if(inner == null) {
+				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
+			}
+			inner.accept(this);
 		}
 
 		@Override

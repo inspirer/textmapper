@@ -46,7 +46,7 @@ public class GrammarTest extends LapgTestCase {
 		Grammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
-		LexerTables l = LexicalBuilder.compile(g.getLexems(), new TestStatus());
+		LexerTables l = LexicalBuilder.compile(g.getLexems(), g.getPatterns(), new TestStatus());
 		ParserTables r = Builder.compile(g, new TestStatus());
 		return new GenericParseContext(g, r, l);
 	}

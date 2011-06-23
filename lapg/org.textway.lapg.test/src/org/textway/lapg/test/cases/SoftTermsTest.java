@@ -81,7 +81,7 @@ public class SoftTermsTest extends LapgTestCase {
 				"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
 				"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 				"\n");
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();
@@ -99,7 +99,7 @@ public class SoftTermsTest extends LapgTestCase {
 				"    typename ::= identifier\n" +
 				"\n" +
 				"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();
@@ -118,7 +118,7 @@ public class SoftTermsTest extends LapgTestCase {
 				"    typename ::= identifier\n" +
 				"\n" +
 				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();

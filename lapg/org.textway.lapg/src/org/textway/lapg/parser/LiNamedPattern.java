@@ -42,6 +42,10 @@ public class LiNamedPattern extends LiEntity implements NamedPattern, INamedEnti
 		return regexp.toString();
 	}
 
+	public RegexPart getParsedRegexp() {
+		return regexp;
+	}
+
 	public String getTitle() {
 		return "Pattern `" + name + "`";
 	}

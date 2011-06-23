@@ -16,13 +16,17 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LiLexem;
+import org.textway.lapg.parser.LiNamedPattern;
 import org.textway.lapg.regex.RegexPart;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LexicalBuilder {
 
@@ -34,7 +38,8 @@ public class LexicalBuilder {
 	}
 
 	// initial information
-	private final Lexem[] myLexems;
+	private final Lexem[] lexems;
+	private final NamedPattern[] patterns;
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
@@ -56,9 +61,10 @@ public class LexicalBuilder {
 
 	int[] groupset;
 
-	private LexicalBuilder(Lexem[] lexems, ProcessingStatus status) {
+	private LexicalBuilder(Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
 		this.status = status;
-		this.myLexems = lexems;
+		this.lexems = lexems;
+		this.patterns = patterns;
 	}
 
 	private int add_set(int[] state, int size, int sum) {
@@ -115,7 +121,7 @@ public class LexicalBuilder {
 			status.debug("\n");
 		}
 
-		for (p = 0; set[p] >= 0;) {
+		for (p = 0; set[p] >= 0; ) {
 
 			// search for next terminal
 			while (i < nlexems && set[p] >= lindex[i + 1]) {
@@ -189,7 +195,7 @@ public class LexicalBuilder {
 		}
 
 		for (lex = 0; lex < nlexems; lex++) {
-			if(llen[lex] == 0) {
+			if (llen[lex] == 0) {
 				// ignoring lexem
 				continue;
 			}
@@ -416,7 +422,7 @@ public class LexicalBuilder {
 					if (lexnum != -1 && lexnum != nlex) {
 
 						if (lprio[nlex] == lprio[lexnum]) {
-							status.report(ProcessingStatus.KIND_ERROR, "two lexems are identical: " + lname[lexnum] + " and " + lname[nlex], myLexems[lexnum], myLexems[nlex]);
+							status.report(ProcessingStatus.KIND_ERROR, "two lexems are identical: " + lname[lexnum] + " and " + lname[nlex], lexems[lexnum], lexems[nlex]);
 							lexemerrors++;
 
 						} else if (lprio[nlex] > lprio[lexnum]) {
@@ -465,7 +471,7 @@ public class LexicalBuilder {
 
 			// check for the empty lexem
 			if (current == first && lexnum != -1) {
-				status.report(ProcessingStatus.KIND_ERROR, lname[lexnum] + ": lexem is empty", myLexems[lexnum]);
+				status.report(ProcessingStatus.KIND_ERROR, lname[lexnum] + ": lexem is empty", lexems[lexnum]);
 				lexemerrors++;
 			}
 
@@ -536,15 +542,15 @@ public class LexicalBuilder {
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(loadNamedPatterns());
 		boolean success = true;
 
 		nsit = 0;
 		ArrayList<int[]> syms = new ArrayList<int[]>();
-		nlexems = myLexems.length;
+		nlexems = lexems.length;
 
 		if (nlexems >= LexConstants.MAX_LEXEMS) {
-			status.report(ProcessingStatus.KIND_ERROR, "too much lexems", myLexems[LexConstants.MAX_LEXEMS - 1]);
+			status.report(ProcessingStatus.KIND_ERROR, "too much lexems", lexems[LexConstants.MAX_LEXEMS - 1]);
 			return false;
 		}
 
@@ -559,7 +565,7 @@ public class LexicalBuilder {
 		lname = new String[nlexems];
 
 		for (int i = 0; i < nlexems; i++) {
-			Lexem l = myLexems[i];
+			Lexem l = lexems[i];
 			assert i == l.getIndex();
 			totalgroups |= l.getGroups();
 
@@ -580,9 +586,9 @@ public class LexicalBuilder {
 			group[i] = l.getGroups();
 			lindex[i] = nsit;
 
-			if(!l.isExcluded()) {
+			if (!l.isExcluded()) {
 				int[] lexem_sym = parseRegexp(rp, l);
-				if(lexem_sym == null) {
+				if (lexem_sym == null) {
 					success = false;
 					continue;
 				}
@@ -612,7 +618,7 @@ public class LexicalBuilder {
 		}
 
 		if ((totalgroups & 1) == 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "no lexems in the first group", myLexems.length > 0 ? myLexems[0] : null);
+			status.report(ProcessingStatus.KIND_ERROR, "no lexems in the first group", lexems.length > 0 ? lexems[0] : null);
 			return false;
 		}
 
@@ -630,7 +636,7 @@ public class LexicalBuilder {
 					status.debug(" " + FormatUtil.asHex(lsym[e], 8));
 				}
 
-				status.debug(" (" + myLexems[i].getRegexp() + ")\n");
+				status.debug(" (" + lexems[i].getRegexp() + ")\n");
 			}
 
 			// only for small data
@@ -665,11 +671,27 @@ public class LexicalBuilder {
 		return true;
 	}
 
+	private Map<String, RegexPart> loadNamedPatterns() {
+		Map<String, RegexPart> result = new HashMap<String, RegexPart>();
+		for (NamedPattern p : patterns) {
+			String name = p.getName();
+			try {
+				RegexPart regex = p instanceof LiNamedPattern
+						? ((LiNamedPattern) p).getParsedRegexp()
+						: RegexMatcher.parse(name, p.getRegexp());
+				result.put(name, regex);
+			} catch (RegexpParseException ex) {
+				status.report(ProcessingStatus.KIND_ERROR, name + ": " + ex.getMessage(), p);
+			}
+		}
+		return result;
+	}
+
 	private int[] parseRegexp(RegexpParser rp, Lexem l) {
 		try {
 			RegexPart parsedRegex = l instanceof LiLexem
 					? ((LiLexem) l).getParsedRegexp()
-					: RegexMatcher.parse(l.getRegexp());
+					: RegexMatcher.parse(l.getSymbol().getName(), l.getRegexp());
 			return rp.compile(l.getIndex(), parsedRegex);
 
 		} catch (RegexpParseException ex) {
@@ -680,7 +702,7 @@ public class LexicalBuilder {
 
 	private LexerTables generate() {
 
-		if (myLexems.length == 0) {
+		if (lexems.length == 0) {
 			status.report(ProcessingStatus.KIND_ERROR, "no lexems");
 			return null;
 		}
@@ -705,8 +727,8 @@ public class LexicalBuilder {
 	/*
 	 * Generates lexer tables from lexems descriptions
 	 */
-	public static LexerTables compile(Lexem[] lexems, ProcessingStatus status) {
-		LexicalBuilder lb = new LexicalBuilder(lexems, status);
+	public static LexerTables compile(Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
+		LexicalBuilder lb = new LexicalBuilder(lexems, patterns, status);
 		return lb.generate();
 	}
 }

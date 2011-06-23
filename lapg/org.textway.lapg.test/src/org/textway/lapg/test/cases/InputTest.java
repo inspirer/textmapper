@@ -111,7 +111,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testTextSource() {
 		TextSource source = new TextSource("file", "aa\nbb\n\nc".toCharArray(), 7);
-		int[] expected = new int[] { 7, 7, 7, 8, 8, 8, 9, 10 };
+		int[] expected = new int[]{7, 7, 7, 8, 8, 8, 9, 10};
 
 		for (int i = 0; i < expected.length; i++) {
 			Assert.assertEquals("offset #" + i, expected[i], source.lineForOffset(i));
@@ -163,7 +163,7 @@ public class InputTest extends LapgTestCase {
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();
@@ -184,7 +184,7 @@ public class InputTest extends LapgTestCase {
 				"    list_item ::= Licon\n" +
 				"\n" +
 				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();
@@ -198,7 +198,7 @@ public class InputTest extends LapgTestCase {
 		TestStatus er = new TestStatus(
 				"",
 				"", 0);
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 		er.assertDone();
 
@@ -231,7 +231,7 @@ public class InputTest extends LapgTestCase {
 				// ignore
 			}
 		};
-		LexicalBuilder.compile(g.getLexems(), er);
+		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
 		Builder.compile(g, er);
 
 		er.assertDone();

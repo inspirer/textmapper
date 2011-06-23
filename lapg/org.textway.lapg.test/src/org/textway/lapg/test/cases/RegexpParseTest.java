@@ -16,12 +16,14 @@
 package org.textway.lapg.test.cases;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import junit.framework.Assert;
 import org.textway.lapg.lex.LexConstants;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.lex.RegexpParser;
+import org.textway.lapg.regex.RegexPart;
 import org.textway.lapg.regex.RegexUtil;
 
 public class RegexpParseTest extends LapgTestCase {
@@ -36,13 +38,13 @@ public class RegexpParseTest extends LapgTestCase {
 		Assert.assertEquals("abcf", toHex4(0xabcf));
 		Assert.assertEquals("75e1", toHex4(0x75e1));
 
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try{
 			for(int i = 20; i < 2020; i++) {
-				rp.compile(i, RegexMatcher.parse("[\\u" + toHex4(i * 10) + "-\\u" + toHex4(i * 10 + 6) + "]"));
+				rp.compile(i, parseRegexp("[\\u" + toHex4(i * 10) + "-\\u" + toHex4(i * 10 + 6) + "]"));
 			}
 			for(int i = 20; i < 2020; i++) {
-				rp.compile(i, RegexMatcher.parse("[\\u"+toHex4(i*10+3)+"-\\u"+toHex4(i*10+8)+"]"));
+				rp.compile(i, parseRegexp("[\\u"+toHex4(i*10+3)+"-\\u"+toHex4(i*10+8)+"]"));
 			}
 		} catch(RegexpParseException ex) {
 			Assert.fail("parse failed: " + ex.getMessage());
@@ -53,27 +55,27 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testNewParser() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try {
-			rp.compile(0, RegexMatcher.parse("Eea{1,2}"));
+			rp.compile(0, parseRegexp("Eea{1,2}"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException e) {
 			Assert.assertEquals("unsupported quantifier: a{1,2}", e.getMessage());
 		}
 
 		try {
-			rp.compile(1, RegexMatcher.parse("Eea{bbi}"));
+			rp.compile(1, parseRegexp("Eea{bbi}"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException e) {
-			Assert.assertEquals("cannot expand {bbi}", e.getMessage());
+			Assert.assertEquals("cannot expand {bbi}, not found", e.getMessage());
 		}
 	}
 
 	public void testRegexpParserInvertedSet() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try {
-			rp.compile(0, RegexMatcher.parse("'[^'\n]+'"));
-			rp.compile(1, RegexMatcher.parse("%"));
+			rp.compile(0, parseRegexp("'[^'\n]+'"));
+			rp.compile(1, parseRegexp("%"));
 		} catch(RegexpParseException ex) {
 			Assert.fail("parse failed: " + ex.getMessage());
 		}
@@ -90,21 +92,21 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testRegexpParser() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try {
-			rp.compile(0, RegexMatcher.parse("[a-zA-Z_][a-zA-Z0-9_]*"));
+			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			rp.buildSets();
 			Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
 
-			rp = new RegexpParser();
-			rp.compile(0, RegexMatcher.parse("[a-zA-Z_][a-zA-Z0-9_]*"));
-			rp.compile(1, RegexMatcher.parse("do"));
+			rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
+			rp.compile(1, parseRegexp("do"));
 			rp.buildSets();
 			Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
 
-			rp = new RegexpParser();
-			rp.compile(0, RegexMatcher.parse("[a-w][p-z]"));
-			rp.compile(1, RegexMatcher.parse("[b-c][y-z]"));
+			rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			rp.compile(0, parseRegexp("[a-w][p-z]"));
+			rp.compile(1, parseRegexp("[b-c][y-z]"));
 			rp.buildSets();
 			Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 6, 6, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
 			int[][] p = rp.getSetToSymbolsMap();
@@ -118,9 +120,9 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testUnicode() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try {
-			rp.compile(0, RegexMatcher.parse("[\\u5151-\\u5252][\\u1000-\\u2000]"));
+			rp.compile(0, parseRegexp("[\\u5151-\\u5252][\\u1000-\\u2000]"));
 		} catch (RegexpParseException ex) {
 			Assert.fail("parse failed: " + ex.getMessage());
 		}
@@ -162,20 +164,20 @@ public class RegexpParseTest extends LapgTestCase {
 
 	public void testParserParen() {
 		try {
-			RegexpParser rp = new RegexpParser();
-			int[] result = rp.compile(0, RegexMatcher.parse("()"));
+			RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			int[] result = rp.compile(0, parseRegexp("()"));
 			Assert.assertEquals(Arrays.toString(new int[]{ LexConstants.LBR + 1, LexConstants.RBR, -1 }), Arrays.toString(result));
 
-			result = rp.compile(0, RegexMatcher.parse("(a|)"));
+			result = rp.compile(0, parseRegexp("(a|)"));
 			Assert.assertEquals(Arrays.toString(new int[]
 					{ LexConstants.LBR + 3, LexConstants.SYM | rp.getCharacterMap()['a'],
 							LexConstants.OR, LexConstants.RBR, -1 }), Arrays.toString(result));
 
-			result = rp.compile(0, RegexMatcher.parse("(.)"));
+			result = rp.compile(0, parseRegexp("(.)"));
 			Assert.assertEquals(Arrays.toString(new int[]
 					{ LexConstants.LBR + 2, LexConstants.ANY, LexConstants.RBR, -1 }), Arrays.toString(result));
 
-			result = rp.compile(0, RegexMatcher.parse("(abc|)"));
+			result = rp.compile(0, parseRegexp("(abc|)"));
 			Assert.assertEquals(Arrays.toString(new int[]
 					{ LexConstants.LBR + 5, LexConstants.SYM | rp.getCharacterMap()['a'],
 							LexConstants.SYM | rp.getCharacterMap()['b'],
@@ -189,9 +191,9 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testParserExc() {
-		RegexpParser rp = new RegexpParser();
+		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
 		try {
-			rp.compile(0, RegexMatcher.parse("[\\x5151-\\x5252][\\x1000-\\x2000"));
+			rp.compile(0, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp is incomplete", ex.getMessage());
@@ -199,7 +201,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(1, RegexMatcher.parse("[\\x5151-\\x5252][\\x1000-\\x2000]]"));
+			rp.compile(1, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000]]"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp has syntax error near `]'", ex.getMessage());
@@ -207,7 +209,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(2, RegexMatcher.parse("[\\x5151]]-\\x5252]][\\x1000-\\x2000"));
+			rp.compile(2, parseRegexp("[\\x5151]]-\\x5252]][\\x1000-\\x2000"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp has syntax error near `]-\\x5252]][\\x1000-\\x2000'", ex.getMessage());
@@ -215,7 +217,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(3, RegexMatcher.parse(""));
+			rp.compile(3, parseRegexp(""));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp is empty", ex.getMessage());
@@ -223,7 +225,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(4, RegexMatcher.parse("(abc"));
+			rp.compile(4, parseRegexp("(abc"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp is incomplete", ex.getMessage());
@@ -231,7 +233,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(5, RegexMatcher.parse("(abc))xyz"));
+			rp.compile(5, parseRegexp("(abc))xyz"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp has syntax error near `)xyz'", ex.getMessage());
@@ -239,7 +241,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(6, RegexMatcher.parse("((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((abc))"));
+			rp.compile(6, parseRegexp("((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((abc))"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("regexp is incomplete", ex.getMessage());
@@ -247,7 +249,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(7, RegexMatcher.parse("aaa\\"));
+			rp.compile(7, parseRegexp("aaa\\"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
@@ -255,7 +257,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(8, RegexMatcher.parse("aaa\\u4a5!zzz"));
+			rp.compile(8, parseRegexp("aaa\\u4a5!zzz"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("invalid lexem at line 1: `\\u4a5!`, skipped", ex.getMessage());
@@ -263,7 +265,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(9, RegexMatcher.parse("aaa\\u4a"));
+			rp.compile(9, parseRegexp("aaa\\u4a"));
 			Assert.fail("no exception");
 		} catch (RegexpParseException ex) {
 			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
@@ -271,7 +273,7 @@ public class RegexpParseTest extends LapgTestCase {
 		}
 
 		try {
-			rp.compile(9, RegexMatcher.parse("aaa\\007"));
+			rp.compile(9, parseRegexp("aaa\\007"));
 			Assert.fail("no exception");
 		} catch (UnsupportedOperationException ex) {
 			/* TODO get rid of */
@@ -279,5 +281,9 @@ public class RegexpParseTest extends LapgTestCase {
 			Assert.assertEquals("unfinished escape sequence found", ex.getMessage());
 			Assert.assertEquals(3, ex.getErrorOffset());
 		}
+	}
+	
+	private static RegexPart parseRegexp(String s) throws RegexpParseException {
+		return RegexMatcher.parse("", s);
 	}
 }
