@@ -143,7 +143,7 @@ lexer_parts (List<AstLexerPart>) ::=
 
 lexer_part (AstLexerPart) ::=
 	  group_selector: '[' icon_list ']'					{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| alias: identifier '=' pattern						{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| alias: identifier '=' pattern						{ $$ = new AstNamedPattern($identifier, $pattern, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 	| symbol typeopt ':' pattern iconopt lexem_attropt commandopt
 														{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $lexem_attropt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }

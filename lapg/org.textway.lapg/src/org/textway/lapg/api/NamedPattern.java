@@ -15,27 +15,10 @@
  */
 package org.textway.lapg.api;
 
-import java.util.Map;
-
 /**
- * Input grammar definition.
+ * Gryaznov Evgeny, 6/23/11
  */
-public interface Grammar {
-
-	Symbol[] getSymbols();
-	Rule[] getRules();
-	Prio[] getPriorities();
-
-	Map<String, Object> getOptions();
-
-	Lexem[] getLexems();
-	NamedPattern[] getPatterns();
-
-	int getTerminals();
-	InputRef[] getInput();
-	Symbol getEoi();
-	Symbol getError();
-
-	SourceElement getTemplates();
-	boolean hasErrors();
+public interface NamedPattern extends SourceElement {
+	String getName();
+	String getRegexp();
 }

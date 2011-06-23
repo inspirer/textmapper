@@ -25,6 +25,7 @@ public class LiGrammar implements Grammar {
 	private final Rule[] rules;
 	private final Prio[] priorities;
 	private final Lexem[] lexems;
+	private final NamedPattern[] patterns;
 
 	private final InputRef[] inputs;
 	private final Symbol eoi;
@@ -37,13 +38,14 @@ public class LiGrammar implements Grammar {
 
 	private final String copyrightHeader;
 
-	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, InputRef[] inputs, Symbol eoi,
-			Symbol error, Map<String, Object> options, SourceElement templates, int terminals, boolean hasErrors,
-			String copyrightHeader) {
+	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, NamedPattern[] patterns, InputRef[] inputs, Symbol eoi,
+					 Symbol error, Map<String, Object> options, SourceElement templates, int terminals, boolean hasErrors,
+					 String copyrightHeader) {
 		this.symbols = symbols;
 		this.rules = rules;
 		this.priorities = priorities;
 		this.lexems = lexems;
+		this.patterns = patterns;
 		this.inputs = inputs;
 		this.eoi = eoi;
 		this.error = error;
@@ -68,6 +70,10 @@ public class LiGrammar implements Grammar {
 
 	public Lexem[] getLexems() {
 		return lexems;
+	}
+
+	public NamedPattern[] getPatterns() {
+		return patterns;
 	}
 
 	public InputRef[] getInput() {

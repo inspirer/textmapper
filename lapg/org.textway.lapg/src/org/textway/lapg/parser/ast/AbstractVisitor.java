@@ -37,6 +37,10 @@ public class AbstractVisitor {
 		return true;
 	}
 
+	public boolean visit(AstNamedPattern n) {
+		return true;
+	}
+
 	public boolean visit(AstLexeme n) {
 		return true;
 	}

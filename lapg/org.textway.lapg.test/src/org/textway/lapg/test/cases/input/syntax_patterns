@@ -1,0 +1,21 @@
+lang = "java"
+prefix = "Lexems"
+
+icon: /[0-7]+/       (class)
+
+# error
+DIGIT = /[0-9+/
+
+# ok
+NORMDIGIT = /[0-9]+/
+
+# ok
+WORD = /[a-zA-Z]+/
+
+# redeclaratin
+WORD = /[a-z]+/
+
+identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/   -2    (class)
+
+input ::=
+	identifier ;

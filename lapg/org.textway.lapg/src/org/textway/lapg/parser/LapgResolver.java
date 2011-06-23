@@ -49,6 +49,7 @@ public class LapgResolver {
 
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
 	private List<LiLexem> lexems;
+	private List<LiNamedPattern> namedPatterns;
 	private List<LiRule> rules;
 	private List<LiPrio> priorities;
 
@@ -106,11 +107,12 @@ public class LapgResolver {
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
 		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
 		InputRef[] inputArr = inputs.toArray(new InputRef[inputs.size()]);
+		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
 		String copyrightHeader = extractCopyright();
 
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr,
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr,
 				inputArr, eoi, error, options,
 				templates, terminals,
 				!tree.getErrors().isEmpty(), copyrightHeader);
@@ -202,8 +204,10 @@ public class LapgResolver {
 
 		List<AstLexerPart> lexerParts = tree.getRoot().getLexer();
 		lexems = new ArrayList<LiLexem>(lexerParts.size());
+		namedPatterns = new ArrayList<LiNamedPattern>(lexerParts.size() / 2);
 
 		List<LiLexem> classLexems = new LinkedList<LiLexem>();
+		Map<String, LiNamedPattern> namedPatternsMap = new HashMap<String, LiNamedPattern>();
 
 		int lexemIndex = 0;
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
@@ -222,7 +226,7 @@ public class LapgResolver {
 					}
 
 					SourceElement action = convert(lexeme.getCode());
-					if(kind == Lexem.KIND_SOFT && action != null) {
+					if (kind == Lexem.KIND_SOFT && action != null) {
 						error(lexeme.getCode(), "soft lexem `" + lexeme.getName().getName() + "' cannot have a semantic action");
 						action = null;
 					}
@@ -239,6 +243,24 @@ public class LapgResolver {
 				}
 			} else if (clause instanceof AstGroupsSelector) {
 				groups = convert((AstGroupsSelector) clause);
+			} else if (clause instanceof AstNamedPattern) {
+				AstNamedPattern astpattern = (AstNamedPattern) clause;
+				RegexPart regex;
+				try {
+					regex = RegexMatcher.parse(astpattern.getRegexp().getRegexp());
+				} catch (RegexpParseException e) {
+					error(astpattern.getRegexp(), e.getMessage());
+					continue;
+				}
+				String name = astpattern.getName();
+				LiNamedPattern pattern = new LiNamedPattern(name, regex, astpattern);
+				LiNamedPattern exising = namedPatternsMap.get(name);
+				if (exising != null) {
+					error(astpattern, "redeclaration of named pattern `" + name + "'");
+				} else {
+					namedPatterns.add(pattern);
+				}
+				namedPatternsMap.put(name, pattern);
 			}
 		}
 
@@ -275,19 +297,19 @@ public class LapgResolver {
 				Symbol existingClass = l.getSymbol().getSoftClass();
 				if (existingClass != null && existingClass != softClass) {
 					error(l, "soft terminal `" + name + "' class ambiguity: " + softClass.getName() + " or " + existingClass.getName());
-				} else if(existingClass == null) {
-					((LiSymbol)l.getSymbol()).setSoftClass(softClass);
+				} else if (existingClass == null) {
+					((LiSymbol) l.getSymbol()).setSoftClass(softClass);
 				}
 
 				// check type
 				String symtype = l.getSymbol().getType();
 				String classtype = softClass.getType();
-				if(symtype == null) {
-					if(classtype != null) {
-						((LiSymbol)l.getSymbol()).setType(classtype);
+				if (symtype == null) {
+					if (classtype != null) {
+						((LiSymbol) l.getSymbol()).setType(classtype);
 					}
-				} else if(!symtype.equals(classtype)) {
-					if(classtype == null) {
+				} else if (!symtype.equals(classtype)) {
+					if (classtype == null) {
 						classtype = "<no type>";
 					}
 					error(l, "soft terminal `" + name + "' overrides base type: expected `" + classtype + "', found `" + symtype + "'");
@@ -410,7 +432,7 @@ public class LapgResolver {
 				} else {
 					error(directive, "unknown directive identifier used: `" + key + "`");
 				}
-			} else if(clause instanceof AstInputDirective) {
+			} else if (clause instanceof AstInputDirective) {
 				List<AstInputRef> refs = ((AstInputDirective) clause).getInputRefs();
 				for (AstInputRef inputRef : refs) {
 					LiSymbol sym = resolve(inputRef.getReference());
