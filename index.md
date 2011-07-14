@@ -1,6 +1,6 @@
 ---
 layout: default
-title: About Lapg
+title: Lexer and Parser Generator - Lapg
 sidebar: true
 ---
 
