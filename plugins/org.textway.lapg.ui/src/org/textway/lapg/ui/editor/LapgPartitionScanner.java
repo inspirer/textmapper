@@ -125,7 +125,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n) {
+		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
 			switch(lapg_n.lexem) {
 			case Lexems._skip_comment:
 			case Lexems.scon:
@@ -135,7 +135,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 			case Lexems.LCURLY:
 			case Lexems.RCURLY:
 			case Lexems.iLCURLY:
-				return super.createToken(lapg_n);
+				return super.createToken(lapg_n, lexemIndex);
 			}
 			return false;
 		}
