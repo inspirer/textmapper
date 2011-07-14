@@ -143,7 +143,7 @@
 
 		<mkdir dir="build/lapg/classes"/>
 		<copy includeemptydirs="false" todir="build/lapg">
-			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="lib/**"/>
+			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
 		</copy>
 		<copy includeemptydirs="false" todir="build/lapg/classes">
 			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
@@ -175,5 +175,20 @@
 		<copy includeemptydirs="false" todir="${pluginPath}/lapg/">
 			<fileset dir="build/lapg" includes="lib/**"/>
 		</copy>
+	</target>
+
+	<target name="archive-plugin" depends="plugin">
+		<zip destfile="libs/lapg-idea-${suffix}.zip">
+		    <zipfileset dir="build" includes="lapg/**"/>
+		    <zipfileset file="../lapg-idea/README.txt"/>
+		</zip>
+	</target>
+
+	<target name="archive-lapg">
+		<zip destfile="libs/lapg-${suffix}.zip">
+		    <zipfileset file="libs/lapg-${suffix}.jar"/>
+		    <zipfileset file="libs/lapg-${suffix}-src.jar"/>
+		    <zipfileset file="libs/lapg.sh"/>
+		</zip>
 	</target>
 </project>
