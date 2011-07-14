@@ -38,7 +38,7 @@ import org.textway.lapg.parser.LapgTree.TextSource;
  */
 public class Lapg {
 
-	public static final String VERSION = "1.4.x/java";
+	public static final String VERSION = "1.3.10/java";
 	public static final String BUILD = "2011";
 
 	public static final String HELP_MESSAGE =

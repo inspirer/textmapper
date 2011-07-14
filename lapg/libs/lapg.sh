@@ -7,4 +7,4 @@ while [ -L "$SCRIPT_LOCATION" ]; do
 done
 
 BASE=`dirname "$SCRIPT_LOCATION"`
-java -cp ${BASE}/lapg-1.4.?.jar org.textway.lapg.Lapg $*
+java -cp ${BASE}/lapg-1.3.??.jar org.textway.lapg.Lapg $*
