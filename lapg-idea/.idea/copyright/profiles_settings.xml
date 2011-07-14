@@ -1,5 +1,5 @@
 <component name="CopyrightManager">
-  <settings default="Lapg.Apache">
+  <settings default="Lapg-Idea.GPL">
     <module2copyright />
     <LanguageOptions name="JAVA">
       <option name="fileTypeOverride" value="3" />

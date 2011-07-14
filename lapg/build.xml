@@ -165,7 +165,7 @@
 				<attribute name="Implementation-Title" value="Lexer and Parser Generator IDEA Plug-in"/>
 				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
 			</manifest>
-			<metainf dir="." includes="LICENSE.txt"/>
+			<metainf dir="../lapg-idea" includes="LICENSE.txt"/>
 		</jar>
 		<delete dir="build/lapg/classes"/>
 	</target>
