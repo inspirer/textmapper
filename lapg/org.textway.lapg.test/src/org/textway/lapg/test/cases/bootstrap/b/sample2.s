@@ -24,6 +24,8 @@ gentree = true
 positions = "offset"
 endpositions = "offset"
 genCleanup = false
+genCopyright = true
+
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
 												{ $lexem = current(); break; }
