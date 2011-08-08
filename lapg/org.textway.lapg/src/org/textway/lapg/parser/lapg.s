@@ -97,8 +97,8 @@ _skip:	/[^'"{}]+/						{ return false; }
 %input input, expression;
 
 input (AstRoot) ::=
-	options lexer_parts grammar_parts					{  $$ = new AstRoot($options, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
-	| lexer_parts grammar_parts							{  $$ = new AstRoot(null, $lexer_parts, $grammar_parts, source, ${input.offset}, ${input.endoffset}); }  
+	options lexer_parts grammar_partsopt				{  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${input.offset}, ${input.endoffset}); }
+	| lexer_parts grammar_partsopt						{  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${input.offset}, ${input.endoffset}); }
 ;
 
 options (List<AstOptionPart>) ::=

@@ -293,8 +293,8 @@ ${end-}
 	}
 
 	public interface Lexems {
-${for i in [0, parser.nterms - 1]-}
-		public static final int ${parser.sym[i].id->java.escapeJavaReserved()} = ${i};
+${for i in [0, syntax.terminals - 1]-}
+		public static final int ${syntax.symbols[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
 

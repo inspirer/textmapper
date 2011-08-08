@@ -1,5 +1,7 @@
 ${template main-}
+${if parser-}
 ${file opts.prefix+'Parser.java'}${call unit}${end-}
+${end-}
 ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
 ${if opts.gentree-}
 ${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}

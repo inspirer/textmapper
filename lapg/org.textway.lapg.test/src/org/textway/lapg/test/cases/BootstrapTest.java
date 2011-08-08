@@ -45,6 +45,17 @@ public class BootstrapTest extends TestCase {
 				}, 2);
 	}
 
+	public void testSAction() {
+		bootstrap(
+				"org.textway.lapg/src/org/textway/lapg/parser/action",
+				"saction.s",
+				new String[0],
+				new String[]{
+						"SActionLexer.java"
+				}, 0);
+	}
+
+
 	public void testRegexS() {
 		bootstrap(
 				"org.textway.lapg/src/org/textway/lapg/regex",
@@ -110,6 +121,16 @@ public class BootstrapTest extends TestCase {
 				new String[]{
 						"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java",
 						"ast/IAstNode.java", "ast/IAstClassdefNoEoi.java"
+				}, 0);
+	}
+
+	public void testSampleNoParser() {
+		bootstrap(
+				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly",
+				"noparser.s",
+				new String[0],
+				new String[]{
+						"NoparserLexer.java"
 				}, 0);
 	}
 

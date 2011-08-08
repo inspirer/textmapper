@@ -73,27 +73,40 @@ public class LapgResolver {
 		collectLexems();
 		int terminals = symbols.size();
 
-		collectNonTerminals();
-		collectRules();
-		collectDirectives();
+		LiRule[] ruleArr;
+		LiPrio[] prioArr;
+		InputRef[] inputArr;
+		if(tree.getRoot().getGrammar() != null) {
+			collectNonTerminals();
+			collectRules();
+			collectDirectives();
+
+			if (inputs.size() == 0) {
+				LiSymbol input = symbolsMap.get("input");
+				if (input == null) {
+					error(tree.getRoot(), "no input non-terminal");
+				} else if (input.isTerm()) {
+					error(tree.getRoot(), "input should be non-terminal");
+				} else {
+					inputs.add(new LiInputRef(null, input, true));
+				}
+			}
+
+			ruleArr = rules.toArray(new LiRule[rules.size()]);
+			for (int i = 0; i < ruleArr.length; i++) {
+				ruleArr[i].setIndex(i);
+			}
+			prioArr = priorities.toArray(new LiPrio[priorities.size()]);
+			inputArr = inputs.toArray(new InputRef[inputs.size()]);
+		} else {
+			ruleArr = null;
+			prioArr = null;
+			inputArr = null;
+		}
+
 		collectOptions();
 		SourceElement templates = getTemplates();
 
-		if (inputs.size() == 0) {
-			LiSymbol input = symbolsMap.get("input");
-			if (input == null) {
-				error(tree.getRoot(), "no input non-terminal");
-			} else if (input.isTerm()) {
-				error(tree.getRoot(), "input should be non-terminal");
-			} else {
-				inputs.add(new LiInputRef(null, input, true));
-			}
-		}
-
-		LiRule[] ruleArr = rules.toArray(new LiRule[rules.size()]);
-		for (int i = 0; i < ruleArr.length; i++) {
-			ruleArr[i].setIndex(i);
-		}
 		LiSymbol[] symbolArr = symbols.toArray(new LiSymbol[symbols.size()]);
 		for (LiSymbol s : symbolArr) {
 			String name = s.getName();
@@ -105,8 +118,6 @@ public class LapgResolver {
 			symbolArr[i].setId(i, helper.generateId(symbolArr[i].getName(), i));
 		}
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
-		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
-		InputRef[] inputArr = inputs.toArray(new InputRef[inputs.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
