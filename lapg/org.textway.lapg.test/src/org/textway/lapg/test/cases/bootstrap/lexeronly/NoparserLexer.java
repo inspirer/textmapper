@@ -30,8 +30,6 @@ public class NoparserLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	final private char[] data = new char[2048];
-	private int datalen, l;
 	private char chr;
 
 	private int group;
@@ -51,9 +49,15 @@ public class NoparserLexer {
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
 		this.group = 0;
-		this.datalen = stream.read(data);
-		this.l = 0;
-		chr = l < datalen ? data[l++] : 0;
+		chr = nextChar();
+	}
+
+	protected char nextChar() throws IOException {
+		int c = stream.read();
+		if(c == -1) {
+			c = 0;
+		}
+		return (char) c;
 	}
 
 	public int getState() {
@@ -135,7 +139,6 @@ public class NoparserLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -150,19 +153,12 @@ public class NoparserLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					if (l >= datalen) {
-						token.append(data, tokenStart, l - tokenStart);
-						datalen = stream.read(data);
-						tokenStart = l = 0;
-					}
-					chr = l < datalen ? data[l++] : 0;
+					token.append(chr);
+					chr = nextChar();
 				}
 			}
 
 			if (state == -1) {
-				if (l - 1 > tokenStart) {
-					token.append(data, tokenStart, l - 1 - tokenStart);
-				}
 				reporter.error(lapg_n.offset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
@@ -172,10 +168,6 @@ public class NoparserLexer {
 				lapg_n.lexem = 0;
 				lapg_n.sym = null;
 				return lapg_n;
-			}
-
-			if (l - 1 > tokenStart) {
-				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
 			lapg_n.lexem = lapg_lexemnum[-state - 3];

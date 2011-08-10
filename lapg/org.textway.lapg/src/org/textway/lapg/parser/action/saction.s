@@ -5,7 +5,7 @@ prefix = "SAction"
 package = "org.textway.lapg.parser.action"
 positions = "offset"
 endpositions = ""
-lexerInput = "char"
+lexerInput = "custom"
 
 
 '{':	/\{/

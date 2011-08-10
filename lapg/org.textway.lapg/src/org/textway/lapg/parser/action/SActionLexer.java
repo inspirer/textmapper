@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
 
-public class SActionLexer {
+public abstract class SActionLexer {
 
 	public static class LapgSymbol {
 		public Object sym;
@@ -40,24 +40,17 @@ public class SActionLexer {
 	private int currOffset = 0;
 
 
-	public SActionLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public SActionLexer(ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset();
 	}
 
-	public void reset(Reader stream) throws IOException {
-		this.stream = stream;
+	public void reset() throws IOException {
 		this.group = 0;
 		chr = nextChar();
 	}
 
-	protected char nextChar() throws IOException {
-		int c = stream.read();
-		if(c == -1) {
-			c = 0;
-		}
-		return (char) c;
-	}
+	protected abstract char nextChar() throws IOException;
 
 	public int getState() {
 		return group;

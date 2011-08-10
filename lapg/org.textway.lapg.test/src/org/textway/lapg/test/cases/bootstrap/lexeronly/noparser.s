@@ -3,6 +3,7 @@
 lang = "java"
 prefix = "Noparser"
 package = "org.textway.lapg.test.cases.bootstrap.lexeronly"
+lexerInput = "char"
 
 '{':	/\{/
 

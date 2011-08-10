@@ -2,7 +2,7 @@ ${template unit-}
 ${call java.header-}
 package ${call java.package};
 
-public class ${opts.prefix}Lexer {
+public ${if opts.lexerInput == 'custom'}abstract ${end}class ${opts.prefix}Lexer {
 
 ${call innerDeclarations-}
 
@@ -31,13 +31,15 @@ ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 ${end-}
 ${util.shiftRight(self->lexercode(), 1)-}
 
-	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset(${if opts.lexerInput != 'custom'}stream${end});
 	}
 
-	public void reset(java.io.@Reader stream) throws java.io.@IOException {
+	public void reset(${if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
+${if opts.lexerInput != 'custom'-}
 		this.stream = stream;
+${end-}
 		this.group = 0;
 ${if opts.lexerInput == 'buffered'-}
 		this.datalen = stream.read(data);
@@ -56,6 +58,9 @@ ${if opts.lexerInput == 'char'-}
 		}
 		return (char) c;
 	}
+
+${else if opts.lexerInput == 'custom'-}
+	protected abstract char nextChar() throws IOException;
 
 ${end-}
 	public int getState() {
