@@ -73,9 +73,9 @@ public class XmlLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
+		this.group = 0;
 		this.datalen = stream.read(data);
 		this.l = 0;
-		this.group = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 

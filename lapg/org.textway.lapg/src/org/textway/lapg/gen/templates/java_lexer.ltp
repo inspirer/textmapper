@@ -11,8 +11,10 @@ ${call innerDeclarations-}
 	private java.io.@Reader stream;
 	final private ErrorReporter reporter;
 
+${if opts.lexerInput == 'buffered'-}
 	final private char[] data = new char[2048];
 	private int datalen, l;
+${end-}
 	private char chr;
 
 	private int group;
@@ -36,12 +38,26 @@ ${util.shiftRight(self->lexercode(), 1)-}
 
 	public void reset(java.io.@Reader stream) throws java.io.@IOException {
 		this.stream = stream;
+		this.group = 0;
+${if opts.lexerInput == 'buffered'-}
 		this.datalen = stream.read(data);
 		this.l = 0;
-		this.group = 0;
 		chr = l < datalen ? data[l++] : 0;
+${else-}
+		chr = nextChar();
+${end-}
 	}
 
+${if opts.lexerInput == 'char'-}
+	protected char nextChar() throws IOException {
+		int c = stream.read();
+		if(c == -1) {
+			c = 0;
+		}
+		return (char) c;
+	}
+
+${end-}
 	public int getState() {
 		return group;
 	}
@@ -112,7 +128,9 @@ ${end-}
 				token.trimToSize();
 			}
 			token.setLength(0);
+${if opts.lexerInput == 'buffered'-}
 			int tokenStart = l - 1;
+${end-}
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -144,12 +162,17 @@ ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 ${end-}
 						currLine++;
 					}
+${if opts.lexerInput == 'buffered'-}
 					if (l >= datalen) {
 						token.append(data, tokenStart, l - tokenStart);
 						datalen = stream.read(data);
 						tokenStart = l = 0;
 					}
 					chr = l < datalen ? data[l++] : 0;
+${else-}
+					token.append(chr);
+					chr = nextChar();
+${end-}
 				}
 			}
 ${if opts.endpositions.contains('offset')-}
@@ -163,9 +186,11 @@ ${if opts.endpositions.contains('column')-}
 ${end-}
 
 			if (state == -1) {
+${if opts.lexerInput == 'buffered'-}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
+${end-}
 				reporter.error(${call java.err_location('lapg_n', 'this') }java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
@@ -177,10 +202,12 @@ ${end-}
 				return lapg_n;
 			}
 
+${if opts.lexerInput == 'buffered'-}
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
+${end-}
 			lapg_n.lexem = lapg_lexemnum[-state - 3];
 			lapg_n.sym = null;
 

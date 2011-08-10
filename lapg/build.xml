@@ -112,6 +112,8 @@
 	<target name="syntax">
 		<echo message="Lapg parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser"/>
+		<echo message="Action parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
@@ -126,6 +128,9 @@
 		<echo message="Sample2 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
 			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
+		<echo message="lexeronly parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true"
+			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
 	</target>
 
 	<target name="plugin" depends="rev">
