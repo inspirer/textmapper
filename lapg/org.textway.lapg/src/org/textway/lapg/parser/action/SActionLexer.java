@@ -52,6 +52,12 @@ public abstract class SActionLexer {
 
 	protected abstract char nextChar() throws IOException;
 
+	protected void advance() throws IOException {
+		if (chr == 0) return;
+		token.append(chr);
+		chr = nextChar();
+	}
+
 	public int getState() {
 		return group;
 	}
@@ -145,8 +151,7 @@ public abstract class SActionLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					token.append(chr);
-					chr = nextChar();
+					advance();
 				}
 			}
 
@@ -169,7 +174,7 @@ public abstract class SActionLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 		return true;
 	}
 }

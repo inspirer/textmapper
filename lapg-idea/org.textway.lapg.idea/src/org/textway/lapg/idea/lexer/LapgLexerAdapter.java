@@ -241,7 +241,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 			super.createToken(lapg_n, lexemIndex);
 			return true;
 		}

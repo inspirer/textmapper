@@ -338,6 +338,31 @@ public void setSkipComments(boolean skip) {
 	this.skipComments = skip;
 }
 
+private void skipAction() throws java.io.@IOException {
+	final int[] ind = new int[] { 0 };
+	org.textway.lapg.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textway.lapg.parser.action.@SActionLexer.ErrorReporter() {
+		public void error(int start, int line, String s) {
+			reporter.error(start, start + 1, line, s);
+		}
+	};
+	org.textway.lapg.parser.action.@SActionLexer l = new org.textway.lapg.parser.action.@SActionLexer(innerreporter) {
+		@Override
+		protected char nextChar() throws java.io.@IOException {
+			if (ind[0] < 2) {
+				return ind[0]++ == 0 ? '{' : chr;
+			}
+			LapgLexer.this.advance();
+			return chr;
+		}
+	};
+	org.textway.lapg.parser.action.@SActionParser p = new org.textway.lapg.parser.action.@SActionParser(innerreporter);
+	try {
+		p.parse(l);
+	} catch (org.textway.lapg.parser.action.@SActionParser.ParseException e) {
+		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+	}
+}
+
 private String unescape(String s, int start, int end) {
 	StringBuilder sb = new StringBuilder();
 	end = Math.min(end, s.length());

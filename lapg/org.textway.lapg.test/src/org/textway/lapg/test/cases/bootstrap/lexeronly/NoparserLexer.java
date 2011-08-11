@@ -49,15 +49,21 @@ public class NoparserLexer {
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
 		this.group = 0;
-		chr = nextChar();
-	}
-
-	protected char nextChar() throws IOException {
 		int c = stream.read();
 		if(c == -1) {
 			c = 0;
 		}
-		return (char) c;
+		chr = (char) c;
+	}
+
+	protected void advance() throws IOException {
+		if (chr == 0) return;
+		token.append(chr);
+		int c = stream.read();
+		if(c == -1) {
+			c = 0;
+		}
+		chr = (char) c;
 	}
 
 	public int getState() {
@@ -153,8 +159,7 @@ public class NoparserLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					token.append(chr);
-					chr = nextChar();
+					advance();
 				}
 			}
 
@@ -177,7 +182,7 @@ public class NoparserLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 		return true;
 	}
 }

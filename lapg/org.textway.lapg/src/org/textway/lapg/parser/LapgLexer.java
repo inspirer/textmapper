@@ -20,6 +20,8 @@ import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
+import org.textway.lapg.parser.action.SActionLexer;
+import org.textway.lapg.parser.action.SActionParser;
 
 public class LapgLexer {
 
@@ -86,7 +88,7 @@ public class LapgLexer {
 	final private ErrorReporter reporter;
 
 	final private char[] data = new char[2048];
-	private int datalen, l;
+	private int datalen, l, tokenStart;
 	private char chr;
 
 	private int group;
@@ -107,6 +109,31 @@ public class LapgLexer {
 
 	public void setSkipComments(boolean skip) {
 		this.skipComments = skip;
+	}
+
+	private void skipAction() throws IOException {
+		final int[] ind = new int[] { 0 };
+		SActionLexer.ErrorReporter innerreporter = new SActionLexer.ErrorReporter() {
+			public void error(int start, int line, String s) {
+				reporter.error(start, start + 1, line, s);
+			}
+		};
+		SActionLexer l = new SActionLexer(innerreporter) {
+			@Override
+			protected char nextChar() throws IOException {
+				if (ind[0] < 2) {
+					return ind[0]++ == 0 ? '{' : chr;
+				}
+				LapgLexer.this.advance();
+				return chr;
+			}
+		};
+		SActionParser p = new SActionParser(innerreporter);
+		try {
+			p.parse(l);
+		} catch (SActionParser.ParseException e) {
+			reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+		}
 	}
 
 	private String unescape(String s, int start, int end) {
@@ -145,8 +172,20 @@ public class LapgLexer {
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
 		this.group = 0;
-		this.datalen = stream.read(data);
-		this.l = 0;
+		datalen = stream.read(data);
+		l = tokenStart = 0;
+		chr = l < datalen ? data[l++] : 0;
+	}
+
+	protected void advance() throws IOException {
+		if (l >= datalen) {
+			if (tokenStart >= 0) {
+				token.append(data, tokenStart, l - tokenStart);
+				tokenStart = 0;
+			}
+			datalen = stream.read(data);
+			l = 0;
+		}
 		chr = l < datalen ? data[l++] : 0;
 	}
 
@@ -272,7 +311,7 @@ public class LapgLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l - 1;
+			tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -281,6 +320,7 @@ public class LapgLexer {
 					lapg_n.lexem = 0;
 					lapg_n.sym = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					tokenStart = -1;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
@@ -310,6 +350,7 @@ public class LapgLexer {
 			if (state == -2) {
 				lapg_n.lexem = 0;
 				lapg_n.sym = null;
+				tokenStart = -1;
 				return lapg_n;
 			}
 
@@ -321,10 +362,11 @@ public class LapgLexer {
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		tokenStart = -1;
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 		switch (lexemIndex) {
 			case 0:
 				return createIdentifierToken(lapg_n, lexemIndex);

@@ -110,7 +110,7 @@ public class TemplatesLexer {
 	final private ErrorReporter reporter;
 
 	final private char[] data = new char[2048];
-	private int datalen, l;
+	private int datalen, l, tokenStart;
 	private char chr;
 
 	private int group;
@@ -159,8 +159,20 @@ public class TemplatesLexer {
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
 		this.group = 0;
-		this.datalen = stream.read(data);
-		this.l = 0;
+		datalen = stream.read(data);
+		l = tokenStart = 0;
+		chr = l < datalen ? data[l++] : 0;
+	}
+
+	protected void advance() throws IOException {
+		if (l >= datalen) {
+			if (tokenStart >= 0) {
+				token.append(data, tokenStart, l - tokenStart);
+				tokenStart = 0;
+			}
+			datalen = stream.read(data);
+			l = 0;
+		}
 		chr = l < datalen ? data[l++] : 0;
 	}
 
@@ -287,7 +299,7 @@ public class TemplatesLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l - 1;
+			tokenStart = l - 1;
 
 			for (state = group; state >= 0;) {
 				state = lapg_lexem[state][mapCharacter(chr)];
@@ -296,6 +308,7 @@ public class TemplatesLexer {
 					lapg_n.lexem = 0;
 					lapg_n.sym = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					tokenStart = -1;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
@@ -325,6 +338,7 @@ public class TemplatesLexer {
 			if (state == -2) {
 				lapg_n.lexem = 0;
 				lapg_n.sym = null;
+				tokenStart = -1;
 				return lapg_n;
 			}
 
@@ -336,10 +350,11 @@ public class TemplatesLexer {
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		tokenStart = -1;
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 		switch (lexemIndex) {
 			case 2:
 				 lapg_n.sym = token.toString().substring(1, token.length()); break; 

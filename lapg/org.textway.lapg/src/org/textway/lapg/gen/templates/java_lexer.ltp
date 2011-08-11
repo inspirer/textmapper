@@ -13,7 +13,7 @@ ${call innerDeclarations-}
 
 ${if opts.lexerInput == 'buffered'-}
 	final private char[] data = new char[2048];
-	private int datalen, l;
+	private int datalen, l, tokenStart;
 ${end-}
 	private char chr;
 
@@ -42,25 +42,52 @@ ${if opts.lexerInput != 'custom'-}
 ${end-}
 		this.group = 0;
 ${if opts.lexerInput == 'buffered'-}
-		this.datalen = stream.read(data);
-		this.l = 0;
+		datalen = stream.read(data);
+		l = tokenStart = 0;
 		chr = l < datalen ? data[l++] : 0;
-${else-}
+${else if opts.lexerInput == 'char'-}
+		int c = stream.read();
+		if(c == -1) {
+			c = 0;
+		}
+		chr = (char) c;
+${else if opts.lexerInput == 'custom'-}
 		chr = nextChar();
 ${end-}
 	}
 
 ${if opts.lexerInput == 'char'-}
-	protected char nextChar() throws IOException {
+	protected void advance() throws java.io.@IOException {
+		if (chr == 0) return;
+		token.append(chr);
 		int c = stream.read();
 		if(c == -1) {
 			c = 0;
 		}
-		return (char) c;
+		chr = (char) c;
 	}
 
 ${else if opts.lexerInput == 'custom'-}
-	protected abstract char nextChar() throws IOException;
+	protected abstract char nextChar() throws java.io.@IOException;
+
+	protected void advance() throws java.io.@IOException {
+		if (chr == 0) return;
+		token.append(chr);
+		chr = nextChar();
+	}
+
+${else if opts.lexerInput == 'buffered'-}
+	protected void advance() throws java.io.@IOException {
+		if (l >= datalen) {
+			if (tokenStart >= 0) {
+				token.append(data, tokenStart, l - tokenStart);
+				tokenStart = 0;
+			}
+			datalen = stream.read(data);
+			l = 0;
+		}
+		chr = l < datalen ? data[l++] : 0;
+	}
 
 ${end-}
 	public int getState() {
@@ -134,7 +161,7 @@ ${end-}
 			}
 			token.setLength(0);
 ${if opts.lexerInput == 'buffered'-}
-			int tokenStart = l - 1;
+			tokenStart = l - 1;
 ${end-}
 
 			for (state = group; state >= 0;) {
@@ -152,6 +179,9 @@ ${end-}
 					lapg_n.lexem = 0;
 					lapg_n.sym = null;
 					reporter.error(${call java.err_location('lapg_n', 'this') }"Unexpected end of input reached");
+${if opts.lexerInput == 'buffered'-}
+					tokenStart = -1;
+${end-}
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
@@ -175,8 +205,7 @@ ${if opts.lexerInput == 'buffered'-}
 					}
 					chr = l < datalen ? data[l++] : 0;
 ${else-}
-					token.append(chr);
-					chr = nextChar();
+					advance();
 ${end-}
 				}
 			}
@@ -204,6 +233,9 @@ ${end-}
 			if (state == -2) {
 				lapg_n.lexem = 0;
 				lapg_n.sym = null;
+${if opts.lexerInput == 'buffered'-}
+				tokenStart = -1;
+${end-}
 				return lapg_n;
 			}
 
@@ -217,10 +249,13 @@ ${end-}
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+${if opts.lexerInput == 'buffered'-}
+		tokenStart = -1;
+${end-}
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws java.io.@IOException {
 ${if self->hasLexemActions()-}
 		switch (lexemIndex) {
 ${foreach lexem in syntax.lexems-}
