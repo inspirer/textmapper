@@ -75,18 +75,26 @@ public class SampleALexer {
 		this.stream = stream;
 		this.group = 0;
 		datalen = stream.read(data);
-		l = tokenStart = 0;
+		l = 0;
+		tokenStart = -1;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
 	protected void advance() throws IOException {
+		if (chr == 0) return;
+		currOffset++;
+		currColumn++;
+		if (chr == '\n') {
+			currColumn = 1;
+			currLine++;
+		}
 		if (l >= datalen) {
 			if (tokenStart >= 0) {
 				token.append(data, tokenStart, l - tokenStart);
 				tokenStart = 0;
 			}
-			datalen = stream.read(data);
 			l = 0;
+			datalen = stream.read(data);
 		}
 		chr = l < datalen ? data[l++] : 0;
 	}
@@ -202,8 +210,8 @@ public class SampleALexer {
 					}
 					if (l >= datalen) {
 						token.append(data, tokenStart, l - tokenStart);
-						datalen = stream.read(data);
 						tokenStart = l = 0;
+						datalen = stream.read(data);
 					}
 					chr = l < datalen ? data[l++] : 0;
 				}

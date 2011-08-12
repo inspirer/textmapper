@@ -10,9 +10,9 @@ lexerInput = "custom"
 
 '{':	/\{/
 
-_skip:	/'([^\n\\']|\\.)*'/
-_skip:	/"([^\n\\"]|\\.)*"/
-_skip:	/[^'"{}]+/
+_skip:	/'([^\n\\']|\\.)*'/        			{ return false; }
+_skip:	/"([^\n\\"]|\\.)*"/					{ return false; }
+_skip:	/[^'"{}]+/							{ return false; }
 
 '}':	/\}/
 

@@ -139,20 +139,9 @@ public class LapgParser implements PsiParser {
 
 		@Override
 		protected void shift() throws IOException {
-			boolean wasCurly = lapg_n.lexem == Tokens.LCURLY;
 			Marker marker = lapg_n.lexem != Tokens.eoi ? mark() : null;
 			super.shift();
 			lapg_m[lapg_head].sym = marker;
-
-			if (wasCurly) {
-				lapg_m[++lapg_head] = new LapgSymbol();
-				lapg_m[lapg_head].lexem = Tokens.command_tokensopt;
-				lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_m[lapg_head].lexem);
-				// close it
-				lapg_m[++lapg_head] = new LapgSymbol();
-				lapg_m[lapg_head].lexem = Tokens.RCURLY;
-				lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_m[lapg_head].lexem);
-			}
 		}
 
 		@Override

@@ -58,6 +58,10 @@ public class NoparserLexer {
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;
+		currOffset++;
+		if (chr == '\n') {
+			currLine++;
+		}
 		token.append(chr);
 		int c = stream.read();
 		if(c == -1) {
@@ -159,7 +163,12 @@ public class NoparserLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					advance();
+					token.append(chr);
+					int c = stream.read();
+					if(c == -1) {
+						c = 0;
+					}
+					chr = (char) c;
 				}
 			}
 

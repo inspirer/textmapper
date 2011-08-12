@@ -81,16 +81,7 @@ Lnoeoi: /no-eoi/			(soft)
 
 Lreduce: /reduce/
 
-'{':	/\{/		{ deep = 1; group = 1; break; }
-
-[1]
-
-_skip:	/'([^\n\\']|\\.)*'/				{ return false; }
-_skip:	/"([^\n\\"]|\\.)*"/				{ return false; }
-_skip:	/[^'"{}]+/						{ return false; }
-
-'i{':	/\{/							{ deep++; break; }
-'}':	/\}/							{ if (--deep == 0) { group = 0; } break; }
+code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); break; }
 
 # Grammar
 
@@ -300,14 +291,7 @@ rule_attrs (AstRuleAttribute) ::=
 ;
 
 command (AstCode) ::=
-	'{' command_tokensopt '}'							{ $$ = new AstCode(source, ${self[0].offset}+1, ${self[2].endoffset}-1); }  
-;
-
-command_tokens ::=
-	command_tokens command_token | command_token ;
-
-command_token ::=
-	'i{' command_tokensopt '}' 
+	code												{ $$ = new AstCode(source, ${code.offset}+1, ${code.endoffset}-1); }
 ;
 
 syntax_problem (AstError) ::=
@@ -338,7 +322,7 @@ public void setSkipComments(boolean skip) {
 	this.skipComments = skip;
 }
 
-private void skipAction() throws java.io.@IOException {
+private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
 	org.textway.lapg.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textway.lapg.parser.action.@SActionLexer.ErrorReporter() {
 		public void error(int start, int line, String s) {
@@ -360,7 +344,9 @@ private void skipAction() throws java.io.@IOException {
 		p.parse(l);
 	} catch (org.textway.lapg.parser.action.@SActionParser.ParseException e) {
 		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+		return false;
 	}
+	return true;
 }
 
 private String unescape(String s, int start, int end) {

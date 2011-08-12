@@ -43,7 +43,8 @@ ${end-}
 		this.group = 0;
 ${if opts.lexerInput == 'buffered'-}
 		datalen = stream.read(data);
-		l = tokenStart = 0;
+		l = 0;
+		tokenStart = -1;
 		chr = l < datalen ? data[l++] : 0;
 ${else if opts.lexerInput == 'char'-}
 		int c = stream.read();
@@ -55,41 +56,16 @@ ${else if opts.lexerInput == 'custom'-}
 		chr = nextChar();
 ${end-}
 	}
+${if opts.lexerInput == 'custom'-}
 
-${if opts.lexerInput == 'char'-}
-	protected void advance() throws java.io.@IOException {
-		if (chr == 0) return;
-		token.append(chr);
-		int c = stream.read();
-		if(c == -1) {
-			c = 0;
-		}
-		chr = (char) c;
-	}
-
-${else if opts.lexerInput == 'custom'-}
 	protected abstract char nextChar() throws java.io.@IOException;
+${end-}
 
 	protected void advance() throws java.io.@IOException {
 		if (chr == 0) return;
-		token.append(chr);
-		chr = nextChar();
+${self->advanceChar(false)-}
 	}
 
-${else if opts.lexerInput == 'buffered'-}
-	protected void advance() throws java.io.@IOException {
-		if (l >= datalen) {
-			if (tokenStart >= 0) {
-				token.append(data, tokenStart, l - tokenStart);
-				tokenStart = 0;
-			}
-			datalen = stream.read(data);
-			l = 0;
-		}
-		chr = l < datalen ? data[l++] : 0;
-	}
-
-${end-}
 	public int getState() {
 		return group;
 	}
@@ -185,28 +161,7 @@ ${end-}
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
-${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
-					currOffset++;
-${end-}
-${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
-					currColumn++;
-${end-}
-					if (chr == '\n') {
-${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
-						currColumn = 1;
-${end-}
-						currLine++;
-					}
-${if opts.lexerInput == 'buffered'-}
-					if (l >= datalen) {
-						token.append(data, tokenStart, l - tokenStart);
-						datalen = stream.read(data);
-						tokenStart = l = 0;
-					}
-					chr = l < datalen ? data[l++] : 0;
-${else-}
-					advance();
-${end-}
+${util.shiftRight(self->advanceChar(true), 3)-}
 				}
 			}
 ${if opts.endpositions.contains('offset')-}
@@ -309,6 +264,48 @@ ${end-}
 	}
 ${end-}
 }
+${end}
+
+
+${template advanceChar(inNext)-}
+${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
+		currOffset++;
+${end-}
+${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
+		currColumn++;
+${end-}
+		if (chr == '\n') {
+${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
+			currColumn = 1;
+${end-}
+			currLine++;
+		}
+${if opts.lexerInput == 'char'-}
+		token.append(chr);
+		int c = stream.read();
+		if(c == -1) {
+			c = 0;
+		}
+		chr = (char) c;
+${else if opts.lexerInput == 'custom'-}
+		token.append(chr);
+		chr = nextChar();
+${else if opts.lexerInput == 'buffered'-}
+		if (l >= datalen) {
+${if inNext-}
+			token.append(data, tokenStart, l - tokenStart);
+			tokenStart = l = 0;
+${else-}
+			if (tokenStart >= 0) {
+				token.append(data, tokenStart, l - tokenStart);
+				tokenStart = 0;
+			}
+			l = 0;
+${end-}
+			datalen = stream.read(data);
+		}
+		chr = l < datalen ? data[l++] : 0;
+${end-}
 ${end}
 
 

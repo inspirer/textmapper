@@ -109,16 +109,12 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 			return TokenType.BAD_CHARACTER;
 		}
 		int token = lexem.lexem;
-		if (token == Lexems.LCURLY) {
-			skipAction();
-			fTokenLength = lexem.endoffset - fTokenOffset;
-			lexem = null;
-			return TOKEN_ACTION;
-		}
 		fTokenLength = lexem.endoffset - fTokenOffset;
 		LapgSymbol currentLexem = lexem;
 		lexem = null;
 		switch (token) {
+			case Lexems.code:
+				return TOKEN_ACTION;
 			case Lexems._skip:
 				return WHITESPACE;
 			case Lexems._skip_comment:
@@ -206,22 +202,6 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 			return TEMPLATES;
 		}
 		return null;
-	}
-
-	private void skipAction() {
-		int deep = 1;
-		while (lexem.lexem != Lexems.eoi && deep > 0) {
-			readNext();
-			switch (lexem.lexem) {
-				case Lexems.iLCURLY:
-				case Lexems.LCURLY:
-					deep++;
-					break;
-				case Lexems.RCURLY:
-					deep--;
-					break;
-			}
-		}
 	}
 
 	private void readNext() {

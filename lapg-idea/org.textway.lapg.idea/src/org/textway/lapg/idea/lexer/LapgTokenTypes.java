@@ -39,7 +39,7 @@ public interface LapgTokenTypes {
 	TokenSet strings = TokenSet.create(STRING);
 
 	// inner tokens
-	IElementType TOKEN_ACTION = new LapgElementType(Tokens.LCURLY, "action");
+	IElementType TOKEN_ACTION = new LapgElementType(Lexems.code, "action");
 	IElementType TEMPLATES = new LapgElementType(Lexems.eoi, "templates");
 
 	// [] ()
