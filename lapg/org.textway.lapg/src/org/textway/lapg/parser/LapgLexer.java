@@ -72,8 +72,11 @@ public class LapgLexer {
 		public static final int Lright = 34;
 		public static final int Lnonassoc = 35;
 		public static final int Lnoeoi = 36;
-		public static final int Lreduce = 37;
-		public static final int code = 38;
+		public static final int Lsoft = 37;
+		public static final int Lclass = 38;
+		public static final int Lspace = 39;
+		public static final int Lreduce = 40;
+		public static final int code = 41;
 	}
 
 	public interface ErrorReporter {
@@ -241,7 +244,7 @@ public class LapgLexer {
 	private static final short lapg_lexemnum[] = {
 		2, 3, 4, 5, 0, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-		33, 34, 35, 36, 37, 38
+		33, 34, 35, 36, 37, 38, 39, 40, 41
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
@@ -270,7 +273,7 @@ public class LapgLexer {
 		{ -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27, -27},
 		{ -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28, -28},
 		{ -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29, -29},
-		{ -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40, -40},
+		{ -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43, -43},
 		{ -3, -3, -3, -3, -3, -3, -3, 38, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, -3, 26, 26, -3},
 		{ -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, 27, -6},
 		{ -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, 28},
@@ -378,7 +381,7 @@ public class LapgLexer {
 				 return false; 
 			case 7:
 				 return !skipComments; 
-			case 37:
+			case 40:
 				 skipAction(); lapg_n.endoffset = getOffset(); break; 
 		}
 		return true;
@@ -395,7 +398,10 @@ public class LapgLexer {
 		subTokensOfIdentifier.put("right", 33);
 		subTokensOfIdentifier.put("nonassoc", 34);
 		subTokensOfIdentifier.put("no-eoi", 35);
-		subTokensOfIdentifier.put("reduce", 36);
+		subTokensOfIdentifier.put("soft", 36);
+		subTokensOfIdentifier.put("class", 37);
+		subTokensOfIdentifier.put("space", 38);
+		subTokensOfIdentifier.put("reduce", 39);
 	}
 
 	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
@@ -412,6 +418,9 @@ public class LapgLexer {
 			case 33:	// right (soft)
 			case 34:	// nonassoc (soft)
 			case 35:	// no-eoi (soft)
+			case 36:	// soft (soft)
+			case 37:	// class (soft)
+			case 38:	// space (soft)
 			case 0:	// <default>
 				 lapg_n.sym = current(); break; 
 		}

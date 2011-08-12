@@ -77,6 +77,10 @@ Lnonassoc: /nonassoc/		(soft)
 
 Lnoeoi: /no-eoi/			(soft)
 
+Lsoft: /soft/				(soft)
+Lclass: /class/				(soft)
+Lspace: /space/				(soft)
+
 # reserved
 
 Lreduce: /reduce/
@@ -136,12 +140,18 @@ lexer_part (AstLexerPart) ::=
 	  group_selector: '[' icon_list ']'					{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 	| alias: identifier '=' pattern						{ $$ = new AstNamedPattern($identifier, $pattern, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| symbol typeopt ':' pattern iconopt lexem_attropt commandopt
-														{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $lexem_attropt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	| symbol typeopt ':' pattern iconopt lexem_attrsopt commandopt
+														{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $lexem_attrsopt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
 ;
 
-lexem_attr (AstLexemAttrs) ::=
-	  '(' identifier ')'								{ $$ = lexemAttrs($identifier, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
+lexem_attrs (AstLexemAttrs) ::=
+	  '(' lexem_attribute ')'							{ $$ = $1; }
+;
+
+lexem_attribute (AstLexemAttrs) ::=
+	  Lsoft												{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 icon_list (List<Integer>) ::=
@@ -382,16 +392,6 @@ ${end}
 ${template java.classcode}
 ${call base-}
 org.textway.lapg.parser.LapgTree.@TextSource source;
-
-private AstLexemAttrs lexemAttrs(String attr, TextSource source, int offset, int endoffset, int line) {
-	if("class".equals(attr)) {
-		return new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_CLASS, source, offset, endoffset);
-	} else if("soft".equals(attr)) {
-		return new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SOFT, source, offset, endoffset);
-	}
-    reporter.error(offset, endoffset, line, "unknown lexem attribute: " + attr);
-	return null;
-}
 ${end}
 
 ${template java_tree.createParser-}
