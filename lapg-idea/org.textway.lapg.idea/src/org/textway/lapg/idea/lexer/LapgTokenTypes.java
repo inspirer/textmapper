@@ -84,6 +84,9 @@ public interface LapgTokenTypes {
 	IElementType KW_RIGHT = new LapgElementType(Lexems.Lright, "right");
 	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 	IElementType KW_NOEOI = new LapgElementType(Lexems.Lnoeoi, "no-eoi");
+	IElementType KW_SOFT = new LapgElementType(Lexems.Lsoft, "soft");
+	IElementType KW_CLASS = new LapgElementType(Lexems.Lclass, "class");
+	IElementType KW_SPACE = new LapgElementType(Lexems.Lspace, "space");
 
 	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE, KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC, KW_NOEOI);
 }

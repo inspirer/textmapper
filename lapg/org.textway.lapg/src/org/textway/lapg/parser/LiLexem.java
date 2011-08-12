@@ -74,6 +74,8 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 				return "class";
 			case KIND_SOFT:
 				return "soft";
+			case KIND_SPACE:
+				return "space";
 		}
 		return "none";
 	}

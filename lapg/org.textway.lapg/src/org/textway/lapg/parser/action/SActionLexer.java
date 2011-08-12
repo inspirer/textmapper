@@ -182,11 +182,11 @@ public abstract class SActionLexer {
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 		switch (lexemIndex) {
 			case 1:
-				 return false; 
+				return false;
 			case 2:
-				 return false; 
+				return false;
 			case 3:
-				 return false; 
+				return false;
 		}
 		return true;
 	}

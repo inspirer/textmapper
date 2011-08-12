@@ -220,6 +220,9 @@ ${if lexem.kindAsText == 'class'-}
 ${else if lexem.action && !lexem.classLexem-}
 			case ${lexem.index}:
 				${call lexerAction('lapg_n.sym') for lexem-}
+${else if lexem.kindAsText == 'space'-}
+			case ${lexem.index}:
+				return false;
 ${end-}
 ${end-}
 		}
@@ -371,7 +374,7 @@ ${template lexercode-}
 ${end}
 
 ${cached query hasLexemActions() =
-	syntax.lexems.exists(l|l.action || l.kindAsText == 'class')}
+	syntax.lexems.exists(l|l.action || l.kindAsText == 'class' || l.kindAsText == 'space')}
 
 ${cached query classLexems() = syntax.lexems.select(x|x.kindAsText == 'class')}
 
