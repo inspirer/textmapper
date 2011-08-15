@@ -131,17 +131,12 @@ public class SoftTermsTest extends LapgTestCase {
 		final StringBuilder sb = new StringBuilder();
 		tree.getRoot().accept(new AstVisitor() {
 			@Override
-			protected boolean visit(AstID n) {
-				sb.append("'").append(n.getIdentifier()).append("'").append(',');
-				return true;
-			}
-
-			@Override
 			protected boolean visit(AstClassdef n) {
 				sb.append("class:");
 				if(n.getIdentifier() != null) {
 					sb.append("(extends ").append(n.getIdentifier()).append(")");
 				}
+				sb.append("'").append(n.getID()).append("'").append(',');
 				return true;
 			}
 

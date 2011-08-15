@@ -24,7 +24,6 @@ import org.textway.lapg.test.cases.bootstrap.b.SampleBLexer.LapgSymbol;
 import org.textway.lapg.test.cases.bootstrap.b.SampleBLexer.Lexems;
 import org.textway.lapg.test.cases.bootstrap.b.ast.AstClassdef;
 import org.textway.lapg.test.cases.bootstrap.b.ast.AstClassdeflistItem;
-import org.textway.lapg.test.cases.bootstrap.b.ast.AstID;
 import org.textway.lapg.test.cases.bootstrap.b.ast.IAstClassdefNoEoi;
 
 public class SampleBParser {
@@ -44,8 +43,8 @@ public class SampleBParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int lapg_action[] = {
-		-1, -1, 0, 5, -1, -1, -3, -1, -1, 10, 6, -17, -1, -29, -1, -1,
-		7, 3, -1, 8, -1, 4, 9, -2
+		-1, -1, 0, 5, -1, -1, -3, -1, -1, 11, 6, -17, -1, -29, -1, -1,
+		7, 3, -1, -1, 8, -1, 4, 9, 10, -2
 	};
 
 	private static final short lapg_lalr[] = {
@@ -55,28 +54,28 @@ public class SampleBParser {
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 0, 5, 5, 9, 15, 17, 19, 21, 23, 23, 23, 25, 25, 25, 25,
-		25, 30, 31, 35, 36, 38, 40
+		0, 0, 5, 5, 9, 16, 18, 20, 22, 25, 25, 25, 27, 27, 27, 27,
+		27, 32, 33, 37, 38, 40, 42
 	};
 
 	private static final short lapg_sym_from[] = {
-		1, 5, 6, 11, 13, 0, 6, 11, 13, 1, 4, 5, 6, 11, 13, 4,
-		7, 12, 18, 8, 15, 14, 20, 6, 13, 1, 5, 6, 11, 13, 0, 0,
-		6, 11, 13, 1, 6, 13, 6, 13
+		1, 5, 6, 11, 13, 0, 6, 11, 13, 1, 4, 5, 6, 11, 13, 14,
+		4, 7, 12, 18, 8, 15, 14, 19, 21, 6, 13, 1, 5, 6, 11, 13,
+		0, 0, 6, 11, 13, 1, 6, 13, 6, 13
 	};
 
 	private static final short lapg_sym_to[] = {
-		3, 7, 8, 15, 8, 1, 1, 1, 1, 3, 5, 7, 8, 15, 8, 6,
-		13, 17, 21, 14, 20, 19, 22, 9, 9, 3, 7, 8, 15, 8, 23, 2,
-		10, 16, 10, 4, 11, 11, 12, 18
+		3, 7, 8, 15, 8, 1, 1, 1, 1, 3, 5, 7, 8, 15, 8, 19,
+		6, 13, 17, 22, 14, 21, 20, 23, 24, 9, 9, 3, 7, 8, 15, 8,
+		25, 2, 10, 16, 10, 4, 11, 11, 12, 18
 	};
 
 	private static final short lapg_rlen[] = {
-		1, 0, 1, 5, 7, 1, 1, 2, 3, 4, 1
+		1, 0, 1, 5, 7, 1, 1, 2, 3, 4, 4, 1
 	};
 
 	private static final short lapg_rlex[] = {
-		17, 21, 21, 18, 18, 19, 20, 20, 20, 20, 20
+		17, 21, 21, 18, 18, 19, 20, 20, 20, 20, 20, 20
 	};
 
 	protected static final String[] lapg_syms = new String[] {
@@ -163,7 +162,7 @@ public class SampleBParser {
 		lapg_m[0].state = 0;
 		lapg_n = lapg_lexer.next();
 
-		while (lapg_m[lapg_head].state != 23) {
+		while (lapg_m[lapg_head].state != 25) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
@@ -194,7 +193,7 @@ public class SampleBParser {
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 23) {
+		if (lapg_m[lapg_head].state != 25) {
 			if (lapg_symbols_ok >= 4) {
 				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_lexer.getTokenLine(), 
 					MessageFormat.format("syntax error before line {0}",
@@ -267,24 +266,21 @@ public class SampleBParser {
 		switch (rule) {
 			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
 				lapg_gg.sym = new AstClassdef(
-						((AstID)lapg_m[lapg_head-3].sym) /* ID */,
+						true,
+						false,
+						((String)lapg_m[lapg_head-3].sym) /* ID */,
 						((List<AstClassdeflistItem>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
-						null /* Lextends */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
 				lapg_gg.sym = new AstClassdef(
-						((AstID)lapg_m[lapg_head-5].sym) /* ID */,
+						true,
+						true,
+						((String)lapg_m[lapg_head-5].sym) /* ID */,
 						((List<AstClassdeflistItem>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
-						((String)lapg_m[lapg_head-4].sym) /* Lextends */,
 						((String)lapg_m[lapg_head-3].sym) /* identifier */,
 						null /* input */, lapg_m[lapg_head-6].offset, lapg_m[lapg_head-0].endoffset);
-				break;
-			case 5:  // ID ::= identifier
-				lapg_gg.sym = new AstID(
-						((String)lapg_m[lapg_head-0].sym) /* identifier */,
-						null /* input */, lapg_m[lapg_head-0].offset, lapg_m[lapg_head-0].endoffset);
 				break;
 			case 6:  // classdeflist ::= classdef
 				lapg_gg.sym = new ArrayList();
@@ -306,13 +302,16 @@ public class SampleBParser {
 						((String)lapg_m[lapg_head-2].sym) /* identifier */,
 						null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head-0].endoffset));
 				break;
-			case 9:  // classdeflist ::= classdeflist identifier '(' ')'
+			case 9:  // classdeflist ::= identifier '(' Lextends ')'
+				 String s = /* should be string */ ((String)lapg_m[lapg_head-1].sym); 
+				break;
+			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
 				((List<AstClassdeflistItem>)lapg_m[lapg_head-3].sym).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)lapg_m[lapg_head-2].sym) /* identifier */,
 						null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head-0].endoffset));
 				break;
-			case 10:  // classdeflist ::= error
+			case 11:  // classdeflist ::= error
 				lapg_gg.sym = new ArrayList();
 				((List<AstClassdeflistItem>)lapg_gg.sym).add(new AstClassdeflistItem(
 						null /* classdef */,

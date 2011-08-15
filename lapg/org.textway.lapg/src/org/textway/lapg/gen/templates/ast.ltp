@@ -151,7 +151,7 @@ ${cached query symbolKind(sym) =
 	self->isData(sym) ? 'data' :
 	self->isInterface(sym) ? 'interface' : 'class'}
 
-${query isSimpleTerm() = self.isTerm() && !self.type}
+${query isSimpleTerm() = self.isTerm() && (!self.type || self.isSoft())}
 
 ${cached query isEnum(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 && x.getRight().first().target->isSimpleTerm())}
@@ -159,14 +159,14 @@ ${cached query isEnum(sym) = syntax.rules[sym].
 ${cached query isInterface(sym) = syntax.rules[sym].
 	forAll(x|x.getRight().length == 1 
 					&& self->supportsExtending(x.getRight().first().target)
-		  || (
+		  || x.getRight().length > 1 && (
 		   		nonterm = x->getRuleDataRef(),
 		   		nonterm && self->supportsExtending(nonterm.target)
 		   	 )
 	)}
 
 ${cached query getRuleDataRef() =
-	self.getRight().length > 1 ? (
+	self.getRight().length >= 1 ? (
 		nonterm = self.getRight().select(y|!y.target->isSimpleTerm()),
 		nonterm.size() == 1 && nonterm.first()['pass'] ? nonterm.first() : null
 	) : null }

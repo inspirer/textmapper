@@ -20,27 +20,32 @@ import org.textway.lapg.test.cases.bootstrap.b.SampleBTree.TextSource;
 
 public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 
-	private AstID ID;
+	private boolean tc;
+	private boolean te;
+	private String ID;
 	private List<AstClassdeflistItem> classdeflistopt;
-	private String Lextends;
 	private String identifier;
 
-	public AstClassdef(AstID ID, List<AstClassdeflistItem> classdeflistopt, String Lextends, String identifier, TextSource input, int start, int end) {
+	public AstClassdef(boolean tc, boolean te, String ID, List<AstClassdeflistItem> classdeflistopt, String identifier, TextSource input, int start, int end) {
 		super(input, start, end);
+		this.tc = tc;
+		this.te = te;
 		this.ID = ID;
 		this.classdeflistopt = classdeflistopt;
-		this.Lextends = Lextends;
 		this.identifier = identifier;
 	}
 
-	public AstID getID() {
+	public boolean getTc() {
+		return tc;
+	}
+	public boolean getTe() {
+		return te;
+	}
+	public String getID() {
 		return ID;
 	}
 	public List<AstClassdeflistItem> getClassdeflistopt() {
 		return classdeflistopt;
-	}
-	public String getLextends() {
-		return Lextends;
 	}
 	public String getIdentifier() {
 		return identifier;
@@ -50,15 +55,12 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 			return;
 		}
 
-		if (ID != null) {
-			ID.accept(v);
-		}
+		// TODO for ID
 		if (classdeflistopt != null) {
 			for (AstClassdeflistItem it : classdeflistopt) {
 				it.accept(v);
 			}
 		}
-		// TODO for Lextends
 		// TODO for identifier
 	}
 }

@@ -70,8 +70,8 @@ classdef_NoEoi ::=
 	classdef ;
 
 classdef ::=
-	Lclass ID '{' classdeflistopt '}'
-  | Lclass ID Lextends identifier '{' classdeflistopt '}'
+	tc=Lclass ID '{' classdeflistopt '}'
+  | tc=Lclass ID te=Lextends identifier '{' classdeflistopt '}'
 ;
 
 ID ::=
@@ -81,6 +81,7 @@ classdeflist ::=
 	classdef
   | classdeflist classdef
   | identifier '(' ')'
+  | identifier '(' Lextends ')'				{ String s = /* should be string */ $Lextends; }
   | classdeflist identifier '(' ')'
   | error
 ;
