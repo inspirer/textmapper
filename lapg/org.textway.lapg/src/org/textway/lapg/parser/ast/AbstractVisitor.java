@@ -116,4 +116,8 @@ public class AbstractVisitor {
 	public boolean visit(AstInputRef n) {
 		return true;
 	}
+
+	public boolean visit(AstNegativeLA n) {
+		return true;
+	}
 }

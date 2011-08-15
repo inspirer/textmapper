@@ -15,9 +15,10 @@
  */
 package org.textway.lapg.api;
 
-public interface SymbolRef extends Annotated, SourceElement {
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public interface NegativeLookahead {
 
-	Symbol getTarget();
-	String getAlias();
-	NegativeLookahead getNegativeLA();
+	Symbol[] getUnwantedSet();
 }

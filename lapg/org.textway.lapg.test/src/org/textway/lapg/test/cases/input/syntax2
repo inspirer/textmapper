@@ -17,4 +17,12 @@ item ::=
 	'(' listopt ')'
 	| a
 	| b {  ${for a in b}..!..$$  }
+	| item3
 ;
+
+item3 ::=
+	(?! a) subitem
+;
+
+subitem ::=
+	a | b | '(' ')' ;

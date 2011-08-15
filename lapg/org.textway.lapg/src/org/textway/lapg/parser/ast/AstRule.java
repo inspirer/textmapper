@@ -21,18 +21,16 @@ import java.util.List;
 
 public class AstRule extends AstNode {
 
-	private final List<AstRuleSymbol> list;
-	private final AstCode action;
+	private final List<AstRulePart> list;
 	private final AstRuleAttribute attribute;
 	private final AstAnnotations annotations;
 	private final String ruleAlias;
 	private final AstError error;
 
-	public AstRule(AstRulePrefix prefix, List<AstRuleSymbol> list, AstCode action, AstRuleAttribute attr, TextSource source,
+	public AstRule(AstRulePrefix prefix, List<AstRulePart> list, AstRuleAttribute attr, TextSource source,
 				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
-		this.action = action;
 		this.attribute = attr;
 		if (prefix != null) {
 			this.annotations = prefix.getAnnotations();
@@ -47,7 +45,6 @@ public class AstRule extends AstNode {
 	public AstRule(AstError err) {
 		super(err.getInput(), err.getOffset(), err.getEndOffset());
 		this.list = null;
-		this.action = null;
 		this.attribute = null;
 		this.ruleAlias = null;
 		this.annotations = null;
@@ -58,12 +55,8 @@ public class AstRule extends AstNode {
 		return error != null;
 	}
 
-	public List<AstRuleSymbol> getList() {
+	public List<AstRulePart> getList() {
 		return list;
-	}
-
-	public AstCode getAction() {
-		return action;
 	}
 
 	public AstRuleAttribute getAttribute() {
@@ -90,12 +83,9 @@ public class AstRule extends AstNode {
 			annotations.accept(v);
 		}
 		if (list != null) {
-			for (AstRuleSymbol rsym : list) {
-				rsym.accept(v);
+			for (AstRulePart part : list) {
+				part.accept(v);
 			}
-		}
-		if (action != null) {
-			action.accept(v);
 		}
 		if (attribute != null) {
 			attribute.accept(v);

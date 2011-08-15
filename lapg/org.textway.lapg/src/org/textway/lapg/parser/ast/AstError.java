@@ -17,7 +17,7 @@ package org.textway.lapg.parser.ast;
 
 import org.textway.lapg.parser.LapgTree.TextSource;
 
-public class AstError extends AstNode implements AstLexerPart, AstGrammarPart, AstOptionPart, AstExpression {
+public class AstError extends AstNode implements AstLexerPart, AstGrammarPart, AstOptionPart, AstExpression, AstRulePart {
 
 	public AstError(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);

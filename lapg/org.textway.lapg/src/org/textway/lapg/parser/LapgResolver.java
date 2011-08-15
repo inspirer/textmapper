@@ -76,7 +76,7 @@ public class LapgResolver {
 		LiRule[] ruleArr;
 		LiPrio[] prioArr;
 		InputRef[] inputArr;
-		if(tree.getRoot().getGrammar() != null) {
+		if (tree.getRoot().getGrammar() != null) {
 			collectNonTerminals();
 			collectRules();
 			collectDirectives();
@@ -171,7 +171,7 @@ public class LapgResolver {
 				if (sym != null) {
 					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false, false);
 					rules.add(new LiRule(null, symopt, new LiSymbolRef[0], null, null, null, id));
-					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null)}, null, null, null, id));
+					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null, null)}, null, null, null, id));
 					return symopt;
 				}
 			}
@@ -357,24 +357,33 @@ public class LapgResolver {
 	}
 
 	private void createRule(LiSymbol left, AstRule right, List<LiSymbolRef> rightPart) {
-		List<AstRuleSymbol> list = right.getList();
 		rightPart.clear();
+
+		List<AstRulePart> list = right.getList();
+		AstCode lastAction = null;
 		if (list != null) {
-			for (AstRuleSymbol rs : list) {
-				if (rs.hasSyntaxError()) {
-					continue;
-				}
-				AstCode astCode = rs.getCode();
-				if (astCode != null) {
-					LiSymbol codeSym = new LiSymbol("{}", null, false, false, astCode);
-					symbols.add(codeSym);
-					rightPart.add(new LiSymbolRef(codeSym, null, null, null));
-					rules.add(new LiRule(null, codeSym, null, convert(astCode), null, null, astCode));
-				}
-				LiSymbol sym = resolve(rs.getSymbol());
-				if (sym != null) {
-					// TODO check duplicate alias
-					rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations(), "AnnotateReference"), rs.getSymbol()));
+			AstRulePart last = list.size() > 0 ? list.get(list.size() - 1) : null;
+			if (last instanceof AstCode) {
+				lastAction = (AstCode) last;
+			}
+
+			for (AstRulePart part : list) {
+				if (part instanceof AstCode) {
+					AstCode astCode = (AstCode) part;
+					if (astCode != lastAction) {
+						LiSymbol codeSym = new LiSymbol("{}", null, false, false, astCode);
+						symbols.add(codeSym);
+						rightPart.add(new LiSymbolRef(codeSym, null, null, null, null));
+						rules.add(new LiRule(null, codeSym, null, convert(astCode), null, null, astCode));
+					}
+
+				} else if (part instanceof AstRuleSymbol) {
+					AstRuleSymbol rs = (AstRuleSymbol) part;
+					LiSymbol sym = resolve(rs.getSymbol());
+					if (sym != null) {
+						// TODO check duplicate alias
+						rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations(), "AnnotateReference"), convertLA(rs.getAnnotations()), rs.getSymbol()));
+					}
 				}
 			}
 		}
@@ -383,12 +392,13 @@ public class LapgResolver {
 		LiSymbol prio = rulePrio != null ? resolve(rulePrio) : null;
 		// TODO store %shift attribute
 		// TODO check prio is term
+		// TODO check right.getAnnotations().getNegativeLA() == null
 		rules.add(
 				new LiRule(
 						right.getAlias(),
 						left,
 						rightPart.toArray(new LiSymbolRef[rightPart.size()]),
-						convert(right.getAction()),
+						convert(lastAction),
 						prio,
 						convert(right.getAnnotations(), "AnnotateRule"),
 						right));
@@ -515,9 +525,22 @@ public class LapgResolver {
 		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 
+	private LiNegativeLookahead convertLA(AstRuleAnnotations astAnnotations) {
+		if (astAnnotations == null || astAnnotations.getNegativeLA() == null) {
+			return null;
+		}
+
+		List<AstReference> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
+		List<LiSymbol> resolved = resolve(unwantedSymbols);
+		if(resolved.size() == 0) return null;
+
+		return new LiNegativeLookahead(resolved.toArray(new LiSymbol[resolved.size()]), astAnnotations.getNegativeLA());
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private Map<String, Object> convert(AstAnnotations astAnnotations, String kind) {
-		if (astAnnotations == null) {
+		if (astAnnotations == null || astAnnotations.getAnnotations() == null) {
 			return null;
 		}
 

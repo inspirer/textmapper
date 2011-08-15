@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textway.lapg.parser.ast;
 
-public interface SymbolRef extends Annotated, SourceElement {
-
-	Symbol getTarget();
-	String getAlias();
-	NegativeLookahead getNegativeLA();
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public interface AstRulePart extends IAstNode {
 }

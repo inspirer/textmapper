@@ -17,13 +17,32 @@ package org.textway.lapg.parser.ast;
 
 import org.textway.lapg.parser.LapgTree.TextSource;
 
-public class AstCode extends AstNode implements AstRulePart {
+import java.util.List;
 
-	public AstCode(TextSource source, int offset, int endoffset) {
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public class AstNegativeLA extends AstNode {
+
+	private final List<AstReference> unwantedSymbols;
+
+	public AstNegativeLA(List<AstReference> unwantedSymbols, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.unwantedSymbols = unwantedSymbols;
+	}
+
+	public List<AstReference> getUnwantedSymbols() {
+		return unwantedSymbols;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if(!v.visit(this)) {
+			return;
+		}
+		if(unwantedSymbols != null) {
+			for (AstReference unwantedSymbol : unwantedSymbols) {
+				unwantedSymbol.accept(v);
+			}
+		}
 	}
 }

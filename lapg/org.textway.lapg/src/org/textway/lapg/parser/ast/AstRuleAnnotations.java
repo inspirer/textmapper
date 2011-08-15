@@ -17,13 +17,35 @@ package org.textway.lapg.parser.ast;
 
 import org.textway.lapg.parser.LapgTree.TextSource;
 
-public class AstCode extends AstNode implements AstRulePart {
+import java.util.List;
 
-	public AstCode(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public class AstRuleAnnotations extends AstAnnotations {
+
+	private final AstNegativeLA negativeLA;
+
+	public AstRuleAnnotations(AstNegativeLA negativeLA, List<AstNamedEntry> annotations, TextSource source, int offset, int endoffset) {
+		super(annotations, source, offset, endoffset);
+		this.negativeLA = negativeLA;
+	}
+
+	public AstNegativeLA getNegativeLA() {
+		return negativeLA;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if(!v.visit(this)) {
+			return;
+		}
+		if(negativeLA != null) {
+			negativeLA.accept(v);
+		}
+		if(getAnnotations() != null) {
+			for(AstNamedEntry n : getAnnotations()) {
+				n.accept(v);
+			}
+		}
 	}
 }

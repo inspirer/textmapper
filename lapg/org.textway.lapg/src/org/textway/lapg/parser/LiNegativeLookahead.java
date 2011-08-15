@@ -13,11 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textway.lapg.parser;
 
-public interface SymbolRef extends Annotated, SourceElement {
+import org.textway.lapg.api.NegativeLookahead;
+import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.Symbol;
+import org.textway.lapg.parser.ast.IAstNode;
 
-	Symbol getTarget();
-	String getAlias();
-	NegativeLookahead getNegativeLA();
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public class LiNegativeLookahead extends LiEntity implements SourceElement, NegativeLookahead {
+
+	private final LiSymbol[] symbols;
+
+	public LiNegativeLookahead(LiSymbol[] symbols, IAstNode node) {
+		super(node);
+		this.symbols = symbols;
+	}
+
+	public Symbol[] getUnwantedSet() {
+		return symbols;
+	}
 }

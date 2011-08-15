@@ -60,6 +60,7 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 '*':	/*/
 '+':	/+/
 '?':	/?/
+'?!':	/?!/
 '&':	/&/
 '@':	/@/
 
@@ -167,7 +168,7 @@ grammar_parts (List<AstGrammarPart>) ::=
 
 grammar_part (AstGrammarPart) ::= 
 	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| annotations_decl symbol typeopt '::=' rules ';'	{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations_decl, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| annotations symbol typeopt '::=' rules ';'		{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| directive: directive								{ $$ = $directive; }
 ;
 
@@ -199,57 +200,60 @@ rules (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix rulesyms commandopt rule_attrsopt		{ $$ = new AstRule($ruleprefix, $rulesyms, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 rulesyms commandopt rule_attrsopt		{ $$ = new AstRule(null, $rulesyms, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| ruleprefix commandopt rule_attrsopt  				{ $$ = new AstRule($ruleprefix, null, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 commandopt rule_attrsopt  				{ $$ = new AstRule(null, null, $commandopt, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  ruleprefix ruleparts rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 ruleparts rule_attrsopt				{ $$ = new AstRule(null, $ruleparts, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| ruleprefix rule_attrsopt  						{ $$ = new AstRule($ruleprefix, null, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	| 			 rule_attrsopt  						{ $$ = new AstRule(null, null, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
 ruleprefix (AstRulePrefix) ::=
-	  annotations_decl ':'                              { $$ = new AstRulePrefix($annotations_decl, null); }
-	| annotations_decl identifier ':'					{ $$ = new AstRulePrefix($annotations_decl, $identifier); }
+	  annotations ':'									{ $$ = new AstRulePrefix($annotations, null); }
+	| ruleannotations identifier ':'					{ $$ = new AstRulePrefix($ruleannotations, $identifier); }
 	| identifier ':'									{ $$ = new AstRulePrefix(null, $identifier); }
 ;
 
-rulesyms (List<AstRuleSymbol>) ::=
-	  rulesym											{ $$ = new ArrayList<AstRuleSymbol>(); $rulesyms.add($rulesym); }
-	| list=rulesyms rulesym 							{ $list.add($rulesym); }
-	| list=rulesyms syntax_problem						{ $list.add(new AstRuleSymbol($syntax_problem)); }
+ruleparts (List<AstRulePart>) ::=
+	  rulepart											{ $$ = new ArrayList<AstRulePart>(); $ruleparts.add($rulepart); }
+	| list=ruleparts rulepart 							{ $list.add($rulepart); }
+	| list=ruleparts syntax_problem						{ $list.add($syntax_problem); }
 ;
 
 %left '&';
 %nonassoc '?' '*' '+';
 
-rulesym (AstRuleSymbol) ::=
-	  command annotations_decl identifier '=' reference { $$ = new AstRuleSymbol($command, $identifier, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| command annotations_decl reference 				{ $$ = new AstRuleSymbol($command, null, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| command identifier '=' reference					{ $$ = new AstRuleSymbol($command, $identifier, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| command reference 								{ $$ = new AstRuleSymbol($command, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| annotations_decl identifier '=' reference			{ $$ = new AstRuleSymbol(null, $identifier, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| annotations_decl reference 						{ $$ = new AstRuleSymbol(null, null, $reference, $annotations_decl, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| identifier '=' reference							{ $$ = new AstRuleSymbol(null, $identifier, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
-	| reference 										{ $$ = new AstRuleSymbol(null, null, $reference, null, source, ${rulesym.offset}, ${rulesym.endoffset}); }
+rulepart (AstRulePart) ::=
+	  ruleannotations identifier '=' reference			{ $$ = new AstRuleSymbol($identifier, $reference, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| ruleannotations reference 						{ $$ = new AstRuleSymbol(null, $reference, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| identifier '=' reference							{ $$ = new AstRuleSymbol($identifier, $reference, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| reference 										{ $$ = new AstRuleSymbol(null, $reference, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| command
 
-	| '(' rulesyms_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulesym '&' rulesym								{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulesym '?'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulesym '*'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulesym '+'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| '(' ruleparts_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulepart '&' rulepart								{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulepart '?'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulepart '*'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| rulepart '+'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
 ;
 
-rulesyms_choice ::=
-	  rulesyms
-	| rulesyms_choice '|' rulesyms
+ruleparts_choice ::=
+	  ruleparts
+	| ruleparts_choice '|' ruleparts
 ;
 
-annotations_decl (AstAnnotations) ::=
-	annotations											{ $$ = new AstAnnotations($annotations, source, ${left().offset}, ${left().endoffset}); }
+ruleannotations (AstRuleAnnotations) ::=
+	  annotation_list									{ $$ = new AstRuleAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la annotation_list						{ $$ = new AstRuleAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la										{ $$ = new AstRuleAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotations (java.util.@List<AstNamedEntry>) ::=
-	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $annotations.add($annotation); }
-	| annotations annotation							{ $annotations#0.add($annotation); }
+annotations (AstAnnotations) ::=
+	annotation_list										{ $$ = new AstAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
+;
+
+annotation_list (java.util.@List<AstNamedEntry>) ::=
+	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $annotation_list.add($annotation); }
+	| annotation_list annotation						{ $annotation_list#0.add($annotation); }
 ;
 
 annotation (AstNamedEntry) ::=
@@ -258,6 +262,14 @@ annotation (AstNamedEntry) ::=
 	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
+negative_la (AstNegativeLA) ::=
+	'(' '?!' negative_la_clause ')'						{ $$ = new AstNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
+;
+
+negative_la_clause (java.util.@List<AstReference>) ::=
+	  reference											{ $$ = new java.util.@ArrayList<AstReference>(); $negative_la_clause.add($reference); }
+	| negative_la_clause '|' reference					{ $negative_la_clause#0.add($reference); }
+;
 
 ##### EXPRESSIONS
 

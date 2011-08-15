@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.parser;
 
+import org.textway.lapg.api.NegativeLookahead;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
 import org.textway.lapg.parser.ast.IAstNode;
@@ -25,15 +26,21 @@ public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 
 	private final Symbol target;
 	private final String alias;
+	private final LiNegativeLookahead negLA;
 
-	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, IAstNode node) {
+	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, LiNegativeLookahead negLA,  IAstNode node) {
 		super(annotations, node);
 		this.target = target;
 		this.alias = alias;
+		this.negLA = negLA;
 	}
 
 	public String getAlias() {
 		return alias;
+	}
+
+	public NegativeLookahead getNegativeLA() {
+		return negLA;
 	}
 
 	public Symbol getTarget() {

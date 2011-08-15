@@ -17,39 +17,17 @@ package org.textway.lapg.parser.ast;
 
 import org.textway.lapg.parser.LapgTree.TextSource;
 
-public class AstRuleSymbol extends AstNode {
+public class AstRuleSymbol extends AstNode implements AstRulePart {
 
-	private final AstCode action;
 	private final String alias;
 	private final AstReference symbol;
-	private final AstAnnotations annotations;
+	private final AstRuleAnnotations annotations;
 
-	private final AstError error;
-
-	public AstRuleSymbol(AstCode action, String alias, AstReference symbol, AstAnnotations annotations, TextSource source, int offset, int endoffset) {
+	public AstRuleSymbol(String alias, AstReference symbol, AstRuleAnnotations annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.action = action;
 		this.alias = alias;
 		this.symbol = symbol;
 		this.annotations = annotations;
-		this.error = null;
-	}
-
-	public AstRuleSymbol(AstError error) {
-		super(error.getInput(), error.getOffset(), error.getEndOffset());
-		this.action = null;
-		this.alias = null;
-		this.symbol = null;
-		this.annotations = null;
-		this.error = error;
-	}
-
-	public boolean hasSyntaxError() {
-		return error != null;
-	}
-
-	public AstCode getCode() {
-		return action;
 	}
 
 	public AstReference getSymbol() {
@@ -60,15 +38,11 @@ public class AstRuleSymbol extends AstNode {
 		return alias;
 	}
 
-	public AstAnnotations getAnnotations() {
+	public AstRuleAnnotations getAnnotations() {
 		return annotations;
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(error != null) {
-			v.visit(error);
-			return;
-		}
 		if(!v.visit(this)) {
 			return;
 		}
@@ -77,9 +51,6 @@ public class AstRuleSymbol extends AstNode {
 		}
 		if(annotations != null) {
 			annotations.accept(v);
-		}
-		if(action != null) {
-			action.accept(v);
 		}
 	}
 }

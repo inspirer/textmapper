@@ -95,7 +95,7 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals(0, g.getEoi().getIndex());
 
 		Symbol[] syms = g.getSymbols();
-		Assert.assertEquals(9, syms.length);
+		Assert.assertEquals(11, syms.length);
 		Assert.assertEquals("eoi", syms[0].getName());
 		Assert.assertEquals("a", syms[1].getName());
 		Assert.assertEquals("b", syms[2].getName());
@@ -104,9 +104,15 @@ public class InputTest extends LapgTestCase {
 		Assert.assertEquals("input", syms[5].getName());
 		Assert.assertEquals("list", syms[6].getName());
 		Assert.assertEquals("item", syms[7].getName());
-		Assert.assertEquals("listopt", syms[8].getName());
-		Assert.assertEquals(8, g.getRules().length);
+		Assert.assertEquals("item3", syms[8].getName());
+		Assert.assertEquals("subitem", syms[9].getName());
+		Assert.assertEquals("listopt", syms[10].getName());
+		Assert.assertEquals(13, g.getRules().length);
 		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getRules()[7].getAction().getText());
+		Assert.assertEquals(1, g.getRules()[9].getRight().length);
+		Assert.assertNotNull(g.getRules()[9].getRight()[0].getNegativeLA());
+		Assert.assertEquals(1, g.getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet().length);
+		Assert.assertEquals(1, g.getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet()[0].getIndex());
 	}
 
 	public void testTextSource() {
