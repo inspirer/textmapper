@@ -21,34 +21,23 @@ import java.util.Arrays;
 
 abstract class ContextFree {
 
-	private static int getSituations(Rule[] rules) {
-		int counter = 0;
-		for (Rule rule : rules) {
-			counter += rule.getRight().length + 1;
-		}
-		return counter;
-	}
+	// log
 
-	private static int[] getPriorityRules(Prio[] prios) {
-		int counter = 0;
-		for (Prio prio : prios) {
-			counter += prio.getSymbols().length + 1;
-		}
+	protected final ProcessingStatus status;
 
-		int[] result = new int[counter];
+	// grammar information
 
-		int curr_prio = 0;
-		for (Prio prio : prios) {
-			result[curr_prio++] = -prio.getPrio();
-			Symbol[] list = prio.getSymbols();
-			for (Symbol element : list) {
-				result[curr_prio++] = element.getIndex();
-			}
-		}
-
-		assert curr_prio == counter;
-		return result;
-	}
+	protected final int nsyms, nterms, eoi, errorn;
+	protected final int[] inputs;
+	protected final boolean[] noEoiInput;
+	protected final int rules, situations;
+	protected final Symbol[] sym;
+	protected final Rule[] wrules;
+	protected final int[] priorul;
+	protected final int[] rleft, rindex, rright, rprio;
+	protected final boolean[] sym_empty;
+	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
+	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
 
 	protected ContextFree(Grammar g, ProcessingStatus status) {
 		this.status = status;
@@ -115,23 +104,43 @@ abstract class ContextFree {
 		assert situations == curr_rindex;
 	}
 
-	// log
+	private static int getSituations(Rule[] rules) {
+		int counter = 0;
+		for (Rule rule : rules) {
+			counter += rule.getRight().length + 1;
+		}
+		return counter;
+	}
 
-	protected final ProcessingStatus status;
+	private static int[] getPriorityRules(Prio[] prios) {
+		int counter = 0;
+		for (Prio prio : prios) {
+			counter += prio.getSymbols().length + 1;
+		}
 
-	// grammar information
+		int[] result = new int[counter];
 
-	protected final int nsyms, nterms, eoi, errorn;
-	protected final int[] inputs;
-	protected final boolean[] noEoiInput;
-	protected final int rules, situations;
-	protected final Symbol[] sym;
-	protected final Rule[] wrules;
-	protected final int[] priorul;
-	protected final int[] rleft, rindex, rright, rprio;
-	protected final boolean[] sym_empty;
-	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
-	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
+		int curr_prio = 0;
+		for (Prio prio : prios) {
+			result[curr_prio++] = -prio.getPrio();
+			Symbol[] list = prio.getSymbols();
+			for (Symbol element : list) {
+				result[curr_prio++] = element.getIndex();
+			}
+		}
+
+		assert curr_prio == counter;
+		return result;
+	}
+
+	private static int[] toSortedIds(Symbol[] list) {
+		int[] result = new int[list.length];
+		for(int i = 0; i < list.length; i++) {
+			result[i] = list[i].getIndex();
+		}
+		Arrays.sort(result);
+		return result;
+	}
 
 	protected int ruleIndex(int situation) {
 		while (rright[situation] >= 0) situation++;
