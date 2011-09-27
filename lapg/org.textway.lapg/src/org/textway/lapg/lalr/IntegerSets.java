@@ -19,7 +19,7 @@ import java.util.Arrays;
 
 /**
  * Gryaznov Evgeny, 8/17/11
- *
+ * <p/>
  * Effectively stores and merges integer sets (represented as sorted arrays)
  */
 public class IntegerSets {
@@ -28,6 +28,20 @@ public class IntegerSets {
 
 	private HashEntry[] htable = new HashEntry[997];
 	private int count;
+
+	public boolean contains(int i, int element) {
+		int[] set = sets[i];
+		if (set.length <= 4) {
+			for (int e : set) {
+				if (e == element) {
+					return true;
+				}
+			}
+			return false;
+		} else {
+			return Arrays.binarySearch(set, element) >= 0;
+		}
+	}
 
 	public int storeSet(int[] set) {
 		int hash = hashCode(set);
@@ -40,6 +54,8 @@ public class IntegerSets {
 	}
 
 	public int mergeSets(int i1, int i2) {
+		if (i1 == -1) return i2;
+		if (i2 == -1) return i1;
 		int hash = hashCode(sets[i1], sets[i2]);
 		for (HashEntry bucket = htable[toHashIndex(hash)]; bucket != null; bucket = bucket.next) {
 			if (bucket.hash == hash && equals(sets[bucket.index], sets[i1], sets[i2])) {
@@ -48,6 +64,13 @@ public class IntegerSets {
 		}
 		int[] set = merge(sets[i1], sets[i2]);
 		return push(hash, set);
+	}
+
+	public boolean isStrictSubset(int subset, int set) {
+		if (set == -1 || set == subset) return false;
+		if (subset == -1) return true;
+		// TODO
+		return true;
 	}
 
 	private int push(int hash, int[] set) {

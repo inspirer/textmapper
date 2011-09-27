@@ -39,6 +39,11 @@ abstract class ContextFree {
 	protected final int[] classterm; /* index of a class term, or 0 if none, or -1 for class term */
 	protected final int[] softterms; /* a -1 terminated list of soft terms for a class */
 
+	protected final int[] nla_situations; /* list of situations with nla */
+	protected final int[] nla_rules; /* list of rules, starting with nla */
+	protected final int[] sit_nla; /* set index for each situation */
+	protected final IntegerSets nla;
+
 	protected ContextFree(Grammar g, ProcessingStatus status) {
 		this.status = status;
 
@@ -86,6 +91,8 @@ abstract class ContextFree {
 		this.sym_empty = new boolean[nsyms];
 
 		int curr_rindex = 0;
+		int nla_count = 0;
+		int nla_rcount = 0;
 		for (int i = 0; i < wrules.length; i++) {
 			Rule r = wrules[i];
 			this.rleft[i] = r.getLeft().getIndex();
@@ -93,12 +100,49 @@ abstract class ContextFree {
 			this.rindex[i] = curr_rindex;
 			SymbolRef[] wright = r.getRight();
 			for (SymbolRef element : wright) {
+				if(element.getNegativeLA() != null) {
+					nla_count++;
+					if(element == wright[0]) {
+						nla_rcount++;
+					}
+				}
 				this.rright[curr_rindex++] = element.getTarget().getIndex();
 			}
 			this.rright[curr_rindex++] = -1 - i;
 			if (wright.length == 0) {
 				sym_empty[rleft[i]] = true;
 			}
+		}
+
+		if(nla_count > 0) {
+			sit_nla = new int[situations];
+			Arrays.fill(sit_nla, -1);
+			nla = new IntegerSets();
+			nla_situations = new int[nla_count];
+			nla_rules = new int[nla_rcount];
+			int nla_sit_index = 0, nla_rule_index = 0;
+			for (int i = 0; i < wrules.length; i++) {
+				int sit = rindex[i];
+				SymbolRef[] wright = wrules[i].getRight();
+				for (SymbolRef element : wright) {
+					NegativeLookahead nl = element.getNegativeLA();
+					if(nl != null) {
+						sit_nla[sit] = nla.storeSet(toSortedIds(nl.getUnwantedSet()));
+						nla_situations[nla_sit_index++] = sit;
+						if(element == wright[0]) {
+							nla_rules[nla_rule_index++] = i;
+						}
+					}
+					sit++;
+				}
+			}
+			assert nla_count == nla_sit_index;
+			assert nla_rcount == nla_rule_index;
+		} else {
+			sit_nla = null;
+			nla = null;
+			nla_situations = null;
+			nla_rules = null;
 		}
 
 		assert situations == curr_rindex;

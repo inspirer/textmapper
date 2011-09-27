@@ -23,8 +23,7 @@ import org.textway.lapg.api.Symbol;
 import org.textway.lapg.lalr.LalrConflict.InputImpl;
 import org.textway.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
 
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * LR(0) states generator
@@ -199,6 +198,113 @@ class LR0 extends ContextFree {
 				}
 			}
 		}
+
+		// rebuild ruleforvar if lookahead is required
+		if (nla_rules == null) return;
+
+		int[] var_nla = new int[nvars];
+		for (i = 0; i < nvars; i++) {
+			boolean hasNLA = false;
+			for (int rule : nla_rules) {
+				assert sit_nla[rindex[rule]] >= 0;
+				if ((ruleforvar[ruleset * i + rule / BITS] & (1 << (rule % BITS))) != 0) {
+					hasNLA = true;
+					break;
+				}
+			}
+			if (!hasNLA) continue;
+
+			Arrays.fill(ruleforvar, ruleset * i, ruleset * (i + 1), 0);
+			ruleforvar_closure(i, -1, new NlaClosureState(ruleforvar, ruleset * i, var_nla));
+		}
+	}
+
+	/*
+	 *  -2  ignored
+	 *  -1  added
+	 *  0+  backdeps index
+	 */
+	public int ruleforvar_closure(int startVar, int inherited_nla, NlaClosureState state) {
+		int result = -2;
+		if (state.var_nla[startVar] < -2) {
+			return state.var_nla[startVar] == -4 ? -1 : -2;
+		}
+
+		for (int ruleIndex : derives[startVar]) {
+			if ((state.array[state.startIndex + ruleIndex / BITS] & (1 << (ruleIndex % BITS))) != 0) {
+				result = -1;
+				continue;
+			}
+			int e = rright[rindex[ruleIndex]];
+			if (e < 0) {
+				// empty rule => ignore nla
+				state.array[state.startIndex + ruleIndex / BITS] |= (1 << (ruleIndex % BITS));
+				result = -1;
+				continue;
+			}
+			int composite_nla = nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
+			if (e < nterms) {
+				if (composite_nla == -1 || !nla.contains(composite_nla, e)) {
+					state.array[state.startIndex + ruleIndex / BITS] |= (1 << (ruleIndex % BITS));
+					result = -1;
+				}
+				continue;
+			}
+
+			// not-term
+			if (state.stack.get(ruleIndex) != null) {
+				if (result != -1) {
+					result = state.backdeps.mergeSets(result == -2 ? -1 : result, state.backdeps.storeSet(new int[]{ruleIndex}));
+				}
+			} else {
+				state.stack.put(ruleIndex, Collections.<Integer>emptyList());
+				int inner = ruleforvar_closure(e - nterms, composite_nla, state);
+				List<Integer> deps = state.stack.remove(ruleIndex);
+				if (inner == -1) {
+					state.array[state.startIndex + ruleIndex / BITS] |= (1 << (ruleIndex % BITS));
+					for (int depRule : deps) {
+						state.array[state.startIndex + depRule / BITS] |= (1 << (depRule % BITS));
+					}
+					result = -1;
+				} else if (inner >= 0) {
+					for (int outerRule : state.backdeps.sets[inner]) {
+						List<Integer> outerdeps = state.stack.get(outerRule);
+						if (outerdeps == null) continue;
+						if (outerdeps.size() == 0) {
+							outerdeps = new ArrayList<Integer>(4);
+							state.stack.put(outerRule, outerdeps);
+						}
+						outerdeps.add(ruleIndex);
+					}
+					if (result != -1) {
+						result = state.backdeps.mergeSets(result == -2 ? -1 : result, inner);
+					}
+				}
+			}
+		}
+
+		if (result == -1 || result == -2 && inherited_nla == -1) {
+			state.var_nla[startVar] = result == -1 ? -4 : -3;
+		}
+		return result;
+	}
+
+	private static class NlaClosureState {
+
+		private NlaClosureState(int[] array, int startIndex, int[] var_nla) {
+			this.array = array;
+			this.startIndex = startIndex;
+			this.var_nla = var_nla;
+			this.backdeps = new IntegerSets();
+			this.stack = new HashMap<Integer, List<Integer>>();
+			Arrays.fill(var_nla, -2);
+		}
+
+		Map<Integer, List<Integer>> stack; /* ruleIndex -> list of dependent rules */
+		IntegerSets backdeps;
+		int[] array;
+		int startIndex;
+		int[] var_nla; /* nvar -> -4 = added; -3 = ignored; -2 = not processed; -1 = no la restrictions; index in nla otherwise */
 	}
 
 	private void initializeLR0() {
@@ -384,13 +490,13 @@ class LR0 extends ContextFree {
 					conflict = softconflicts.addConflict(current.number);
 					conflict.addSymbol(sym[classTerm]);
 					core = symbase[classTerm];
-					for(int i = 0; i < symbasesize[classTerm]; i++) {
+					for (int i = 0; i < symbasesize[classTerm]; i++) {
 						conflict.addRule(wrules[ruleIndex(core[i])]);
 					}
 				}
 				conflict.addSymbol(sym[soft]);
 				core = symbase[soft];
-				for(int i = 0; i < symbasesize[soft]; i++) {
+				for (int i = 0; i < symbasesize[soft]; i++) {
 					conflict.addRule(wrules[ruleIndex(core[i])]);
 				}
 			}
