@@ -337,9 +337,14 @@ class LR0 extends ContextFree {
 			for (i = 0; prev[i] >= 0; i++) {
 				e = rright[prev[i]];
 				if (e >= nterms) {
-					int from = (e - nterms) * ruleset;
-					for (int x = 0; x < ruleset; x++) {
-						closurebit[x] |= ruleforvar[from++];
+					if(sit_nla == null || sit_nla[prev[i]] == -1) {
+						int from = (e - nterms) * ruleset;
+						for (int x = 0; x < ruleset; x++) {
+							closurebit[x] |= ruleforvar[from++];
+						}
+					} else {
+						ruleforvar_closure(e - nterms, sit_nla[prev[i]],
+								new NlaClosureState(closurebit, 0, new int[nvars])); // TODO extract var_nla
 					}
 				}
 			}
