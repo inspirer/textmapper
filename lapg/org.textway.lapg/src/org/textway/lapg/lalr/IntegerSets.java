@@ -69,7 +69,13 @@ public class IntegerSets {
 	public boolean isStrictSubset(int subset, int set) {
 		if (set == -1 || set == subset) return false;
 		if (subset == -1) return true;
-		// TODO
+		int[] set_arr = sets[set];
+		int set_index = 0;
+		for (int el : sets[subset]) {
+			while (set_index < set_arr.length && el > set_arr[set_index]) set_index++;
+			if (set_index >= set_arr.length || el != set_arr[set_index]) return false;
+		}
+
 		return true;
 	}
 
