@@ -1,0 +1,112 @@
+fixed: Laaa > Lid
+fixed: Lbbb > Lid
+
+States
+0:
+  input ::= _ statements
+  statements ::= _ statements statement
+  statements ::= _ statement
+  statement ::= _ expr
+  statement ::= _ Laaa '=' error ';'
+  expr ::= _ '(' innerexpr ')'
+  expr ::= _ Lint
+  expr ::= _ Lid
+
+1: (from 0, Lid)
+  expr ::= Lid _
+
+2: (from 0, Lint)
+  expr ::= Lint _
+
+3: (from 0, '(')
+  expr ::= _ '(' innerexpr ')'
+  expr ::= '(' _ innerexpr ')'
+  expr ::= _ Lint
+  innerexpr ::= _ expr
+  innerexpr ::= _ Lbbb
+
+4: (from 0, Laaa)
+  statement ::= Laaa _ '=' error ';'
+
+5: (from 0, statements)
+  input ::= statements _
+  statements ::= statements _ statement
+  statement ::= _ expr
+  statement ::= _ Laaa '=' error ';'
+  expr ::= _ '(' innerexpr ')'
+  expr ::= _ Lint
+  expr ::= _ Lid
+
+6: (from 0, statement)
+  statements ::= statement _
+
+7: (from 0, expr)
+  statement ::= expr _
+
+8: (from 3, Lbbb)
+  innerexpr ::= Lbbb _
+
+9: (from 3, expr)
+  innerexpr ::= expr _
+
+10: (from 3, innerexpr)
+  expr ::= '(' innerexpr _ ')'
+
+11: (from 4, '=')
+  statement ::= Laaa '=' _ error ';'
+
+12: (from 5, statement)
+  statements ::= statements statement _
+
+13: (from 10, ')')
+  expr ::= '(' innerexpr ')' _
+
+14: (from 11, error)
+  statement ::= Laaa '=' error _ ';'
+
+15: (from 14, ';')
+  statement ::= Laaa '=' error ';' _
+
+16: (from 0, input)
+
+17: (from 16, eoi)
+
+Rules for var:
+
+input ::
+	input ::= statements
+	statements ::= statements statement
+	statements ::= statement
+	statement ::= expr
+	statement ::= Laaa '=' error ';'
+	expr ::= '(' innerexpr ')'
+	expr ::= Lint
+	expr ::= Lid
+statements ::
+	statements ::= statements statement
+	statements ::= statement
+	statement ::= expr
+	statement ::= Laaa '=' error ';'
+	expr ::= '(' innerexpr ')'
+	expr ::= Lint
+	expr ::= Lid
+statement ::
+	statement ::= expr
+	statement ::= Laaa '=' error ';'
+	expr ::= '(' innerexpr ')'
+	expr ::= Lint
+	expr ::= Lid
+expr ::
+	expr ::= '(' innerexpr ')'
+	expr ::= Lint
+	expr ::= Lid
+innerexpr ::
+	expr ::= '(' innerexpr ')'
+	expr ::= Lint
+	innerexpr ::= expr
+	innerexpr ::= Lbbb
+
+Lookaheads:
+5:
+  input ::= statements _
+  >>> eoi

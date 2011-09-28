@@ -145,7 +145,7 @@ class Lalr1 extends LR0 {
 				ngotos++;
 
 				// handle soft terms
-				if(symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
+				if (symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
 					for (int soft = softterms[symnum]; soft != -1; soft = softterms[soft]) {
 						symshiftCounter[soft]++;
 						ngotos++;
@@ -172,7 +172,7 @@ class Lalr1 extends LR0 {
 				term_to[e] = (short) newstate;
 
 				// handle soft terms
-				if(symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
+				if (symnum < nterms && classterm[symnum] == -1 && !t.softConflicts) {
 					for (int soft = softterms[symnum]; soft != -1; soft = softterms[soft]) {
 						e = symshiftCounter[soft]++;
 						term_from[e] = (short) t.number;
@@ -259,7 +259,7 @@ class Lalr1 extends LR0 {
 				follow[settrav + sym / BITS] |= (1 << (sym % BITS));
 
 				// add soft terms
-				if(classterm[sym] == -1) {
+				if (classterm[sym] == -1) {
 					for (int soft = softterms[sym]; soft != -1; soft = softterms[soft]) {
 						follow[settrav + soft / BITS] |= (1 << (soft % BITS));
 					}
@@ -310,6 +310,11 @@ class Lalr1 extends LR0 {
 			int symbol = state[term_to[ntgotos + i]].symbol;
 
 			for (int rule : derives[symbol - nterms]) {
+				if (state[fstate].closure != null && (state[fstate].closure[rule / BITS] & (1 << (rule % BITS))) == 0) {
+					// rule was ignored by negative lookahead
+					continue;
+				}
+
 				currstate = states[0] = (short) fstate;
 				length = 1;
 

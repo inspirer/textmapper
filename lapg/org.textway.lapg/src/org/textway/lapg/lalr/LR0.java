@@ -38,6 +38,7 @@ class LR0 extends ContextFree {
 	private int nvars;
 	private int varset, ruleset;
 	private int[] ruleforvar /* nvars: set of rules (closure) */;
+	private int[] nla_vars /* set of vars with nla in rules */;
 
 	private short[] toreduce, closure /* [situations] */;
 	private int closureend /* size of closure */;
@@ -68,7 +69,7 @@ class LR0 extends ContextFree {
 		initializeLR0();
 
 		while (current != null) {
-			build_closure(current.number, current.elems);
+			build_closure(current, current.elems);
 			if (!process_state()) {
 				status.report(ProcessingStatus.KIND_FATAL, "syntax analyzer is too big ...");
 				freeLR0();
@@ -201,6 +202,8 @@ class LR0 extends ContextFree {
 
 		// rebuild ruleforvar if lookahead is required
 		if (nla_rules == null) return;
+		nla_vars = new int[varset];
+		Arrays.fill(nla_vars, 0);
 
 		int[] var_nla = new int[nvars];
 		for (i = 0; i < nvars; i++) {
@@ -213,6 +216,7 @@ class LR0 extends ContextFree {
 				}
 			}
 			if (!hasNLA) continue;
+			nla_vars[i / BITS] |= 1 << (i % BITS);
 
 			Arrays.fill(ruleforvar, ruleset * i, ruleset * (i + 1), 0);
 			ruleforvar_closure(i, -1, new NlaClosureState(ruleforvar, ruleset * i, var_nla));
@@ -242,7 +246,7 @@ class LR0 extends ContextFree {
 				result = -1;
 				continue;
 			}
-			int composite_nla = nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
+			int composite_nla = nla == null ? -1 : nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
 			if (e < nterms) {
 				if (composite_nla == -1 || !nla.contains(composite_nla, e)) {
 					state.array[state.startIndex + ruleIndex / BITS] |= (1 << (ruleIndex % BITS));
@@ -322,11 +326,16 @@ class LR0 extends ContextFree {
 		}
 	}
 
-	private void build_closure(int state, short[] prev) {
+	private void build_closure(State state, short[] prev) {
 		int e, i;
+		boolean need_closure = false;
 
-		if (state < inputs.length) {
-			int from = (inputs[state] - nterms) * ruleset;
+		if (state.number < inputs.length) {
+			int inputVar = inputs[state.number] - nterms;
+			int from = inputVar * ruleset;
+			if (nla_vars != null && (nla_vars[inputVar / BITS] & (1 << (inputVar % BITS))) != 0) {
+				need_closure = true;
+			}
 			for (i = 0; i < ruleset; i++) {
 				closurebit[i] = ruleforvar[from++];
 			}
@@ -337,17 +346,25 @@ class LR0 extends ContextFree {
 			for (i = 0; prev[i] >= 0; i++) {
 				e = rright[prev[i]];
 				if (e >= nterms) {
-					if(sit_nla == null || sit_nla[prev[i]] == -1) {
+					if (sit_nla == null || sit_nla[prev[i]] == -1) {
 						int from = (e - nterms) * ruleset;
+						if (nla_vars != null && (nla_vars[(e - nterms) / BITS] & (1 << ((e - nterms) % BITS))) != 0) {
+							need_closure = true;
+						}
 						for (int x = 0; x < ruleset; x++) {
 							closurebit[x] |= ruleforvar[from++];
 						}
 					} else {
 						ruleforvar_closure(e - nterms, sit_nla[prev[i]],
 								new NlaClosureState(closurebit, 0, new int[nvars])); // TODO extract var_nla
+						need_closure = true;
 					}
 				}
 			}
+		}
+
+		if (need_closure) {
+			state.closure = Arrays.copyOf(closurebit, ruleset);
 		}
 
 		int rule = 0, prev_index = 0;
@@ -597,10 +614,42 @@ class LR0 extends ContextFree {
 				status.debug("\n" + t.number + ": (from " + t.fromstate + ", " + sym[t.symbol].getName() + ")\n");
 			}
 
-			build_closure(t.number, t.elems);
+			build_closure(t, t.elems);
 
 			for (int i = 0; i < closureend; i++) {
 				print_situation(closure[i]);
+			}
+		}
+
+		status.debug("\nRules for var:\n\n");
+
+		for (int var = 0; var < nvars; var++) {
+			status.debug(sym[nterms + var].getName() + " ::\n");
+			int[] a = new int[ruleset];
+			NlaClosureState st = new NlaClosureState(a, 0, new int[nvars]);
+			ruleforvar_closure(var, -1, st);
+			for (int ruleIndex = 0; ruleIndex < rules; ruleIndex++) {
+				if ((a[ruleIndex / BITS] & (1 << (ruleIndex % BITS))) != 0) {
+//					int rule_nla = st.var_nla[rleft[ruleIndex] - nterms];
+//					if (rule_nla != -1) {
+//						StringBuilder sb = new StringBuilder("\t[");
+//						for (int nla_sym : nla.sets[rule_nla]) {
+//							if (sb.length() > 1) {
+//								sb.append(",");
+//							}
+//							sb.append(sym[nla_sym].getName());
+//						}
+//						sb.append("] ");
+//						status.debug(sb.toString());
+//					} else {
+					status.debug("\t");
+//					}
+					status.debug(sym[rleft[ruleIndex]].getName() + " ::=");
+					for (int i = rindex[ruleIndex]; rright[i] >= 0; i++) {
+						status.debug(" " + sym[rright[i]].getName());
+					}
+					status.debug("\n");
+				}
 			}
 		}
 	}
@@ -638,5 +687,6 @@ class LR0 extends ContextFree {
 		boolean LR0;
 		short[] elems;
 		boolean softConflicts;
+		int[] closure; /* ruleset: outgoing rules */
 	}
 }
