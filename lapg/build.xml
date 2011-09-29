@@ -131,6 +131,9 @@
 		<echo message="lexeronly parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
 			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
+		<echo message="NLA test parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true"
+			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla"><arg value="-e"/></java>
 	</target>
 
 	<target name="plugin" depends="rev">

@@ -1,0 +1,1577 @@
+
+Lexems:
+
+identifier,1:  00000000 40000001 80040000 ffffffff ([a-zA-Z_][a-zA-Z_0-9]*)
+icon,2:  e0060002 20000002 80040000 fffffffe (\-?[0-9]+)
+_skip,3:  20000003 80040000 fffffffd ([\n\t\r ]+)
+'=',4:  80060003 fffffffc (=)
+';',5:  80060004 fffffffb (;)
+'+',6:  80060005 fffffffa (\+)
+'-',7:  80060002 fffffff9 (\-)
+'*',8:  80060006 fffffff8 (\*)
+'/',9:  80060007 fffffff7 (\/)
+'(',10:  80060008 fffffff6 (\()
+')',11:  80060009 fffffff5 (\))
+'{',12:  8006000a fffffff4 (\{)
+'}',13:  8006000b fffffff3 (\})
+'[',14:  8006000c fffffff2 (\[)
+']',15:  8006000d fffffff1 (\])
+',',16:  8006000e fffffff0 (,)
+'.',17:  8006000f ffffffef (\.)
+'!',18:  80060010 ffffffee (!)
+'?',19:  80060011 ffffffed (\?)
+':',20:  80060012 ffffffec (:)
+'->',21:  80060002 80060013 ffffffeb (\->)
+Lnull,22:  (null)
+Linvoke,23:  (invoke)
+Lreset,24:  (reset)
+Lnop,25:  (nop)
+
+Symbols:
+
+0: \x0000
+1: \x0001\x0002\x0003\x0004\x0005\x0006\x0007\x0008\x000b\x000c\x000e\x000f\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x001c\x001d\x001e\x001f"#$%&'<@\^`|~
+2: -
+3: =
+4: ;
+5: +
+6: *
+7: /
+8: (
+9: )
+10: {
+11: }
+12: [
+13: ]
+14: ,
+15: .
+16: !
+17: ?
+18: :
+19: >
+20: ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+21: 0123456789
+22: \x0009\x000a\x000d\x0020
+
+Sets:
+
+0:  20
+1:  20 21
+2:  21
+3:  22
+
+Lexem jumps:
+ 0:  (0: 0) SET#0 (1: 1 2 3) SET#1* (2: 1 2 3) SPLIT  [identifier,1]
+ 1:  (0: 0 1) #0002? (1: 1) SET#2+ (2: 1 2 3) SPLIT  [icon,2]
+ 2:  (0: 0) SET#3+ (1: 0 1 2) SPLIT  [_skip,3]
+ 3:  (0: 0) #0003  ['=',4]
+ 4:  (0: 0) #0004  [';',5]
+ 5:  (0: 0) #0005  ['+',6]
+ 6:  (0: 0) #0002  ['-',7]
+ 7:  (0: 0) #0006  ['*',8]
+ 8:  (0: 0) #0007  ['/',9]
+ 9:  (0: 0) #0008  ['(',10]
+10:  (0: 0) #0009  [')',11]
+11:  (0: 0) #000a  ['{',12]
+12:  (0: 0) #000b  ['}',13]
+13:  (0: 0) #000c  ['[',14]
+14:  (0: 0) #000d  [']',15]
+15:  (0: 0) #000e  [',',16]
+16:  (0: 0) #000f  ['.',17]
+17:  (0: 0) #0010  ['!',18]
+18:  (0: 0) #0011  ['?',19]
+19:  (0: 0) #0012  [':',20]
+20:  (0: 0) #0002 (1: 1) #0013  ['->',21]
+
+
+States
+0:
+  input ::= _ statements
+  statements ::= _ statements statement
+  statements ::= _ statement
+  statement ::= _ Lreset identifier ';'
+  statement ::= _ expression ';'
+  statement ::= _ Lnop ';'
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+1: (from 0, identifier)
+  primary_expression ::= identifier _
+  primary_expression ::= identifier _ '(' expression_listopt ')'
+  assignment_expression ::= identifier _ '=' conditional_expression
+
+2: (from 0, icon)
+  primary_expression ::= icon _
+
+3: (from 0, '-')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  unary_expression ::= '-' _ unary_expression
+
+4: (from 0, '(')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= '(' _ expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+5: (from 0, '{')
+  closure ::= '{' _ '->' statements_noreset '}'
+
+6: (from 0, '!')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= '!' _ unary_expression
+  unary_expression ::= _ '-' unary_expression
+
+7: (from 0, Lnull)
+  primary_expression ::= Lnull _
+
+8: (from 0, Lreset)
+  statement ::= Lreset _ identifier ';'
+
+9: (from 0, Lnop)
+  statement ::= Lnop _ ';'
+
+10: (from 0, statements)
+  input ::= statements _
+  statements ::= statements _ statement
+  statement ::= _ Lreset identifier ';'
+  statement ::= _ expression ';'
+  statement ::= _ Lnop ';'
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+11: (from 0, statement)
+  statements ::= statement _
+
+12: (from 0, primary_expression)
+  primary_expression ::= primary_expression _ '.' identifier
+  primary_expression ::= primary_expression _ '.' identifier '(' expression_listopt ')'
+  primary_expression ::= primary_expression _ '[' expression ']'
+  exotic_call_prefix ::= primary_expression _ '->' Linvoke
+  unary_expression ::= primary_expression _
+
+13: (from 0, closure)
+  primary_expression ::= closure _
+
+14: (from 0, exotic_call)
+  primary_expression ::= exotic_call _
+
+15: (from 0, exotic_call_prefix)
+  exotic_call ::= exotic_call_prefix _ '(' ')'
+
+16: (from 0, unary_expression)
+  binary_op ::= unary_expression _
+
+17: (from 0, binary_op)
+  binary_op ::= binary_op _ '*' binary_op
+  binary_op ::= binary_op _ '/' binary_op
+  binary_op ::= binary_op _ '+' binary_op
+  binary_op ::= binary_op _ '-' binary_op
+  conditional_expression ::= binary_op _
+  conditional_expression ::= binary_op _ '?' conditional_expression ':' conditional_expression
+
+18: (from 0, conditional_expression)
+  assignment_expression ::= conditional_expression _
+
+19: (from 0, assignment_expression)
+  expression ::= assignment_expression _
+
+20: (from 0, expression)
+  statement ::= expression _ ';'
+  expression ::= expression _ ',' assignment_expression
+
+21: (from 1, '=')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= identifier '=' _ conditional_expression
+
+22: (from 1, '(')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  expression_listopt ::= _
+  expression_listopt ::= _ expression_list
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= identifier '(' _ expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  expression_list ::= _ conditional_expression
+  expression_list ::= _ expression_list ',' conditional_expression
+
+23: (from 3, identifier)
+  primary_expression ::= identifier _
+  primary_expression ::= identifier _ '(' expression_listopt ')'
+
+24: (from 3, unary_expression)
+  unary_expression ::= '-' unary_expression _
+
+25: (from 4, expression)
+  primary_expression ::= '(' expression _ ')'
+  expression ::= expression _ ',' assignment_expression
+
+26: (from 5, '->')
+  statements ::= _ statements statement
+  statements ::= _ statement
+  statement ::= _ Lreset identifier ';'
+  statement ::= _ expression ';'
+  statement ::= _ Lnop ';'
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  closure ::= '{' '->' _ statements_noreset '}'
+  statements_noreset ::= _ statements statement
+  statements_noreset ::= _ statement
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+27: (from 6, unary_expression)
+  unary_expression ::= '!' unary_expression _
+
+28: (from 8, identifier)
+  statement ::= Lreset identifier _ ';'
+
+29: (from 9, ';')
+  statement ::= Lnop ';' _
+
+30: (from 10, statement)
+  statements ::= statements statement _
+
+31: (from 12, '[')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= primary_expression '[' _ expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+32: (from 12, '.')
+  primary_expression ::= primary_expression '.' _ identifier
+  primary_expression ::= primary_expression '.' _ identifier '(' expression_listopt ')'
+
+33: (from 12, '->')
+  exotic_call_prefix ::= primary_expression '->' _ Linvoke
+
+34: (from 15, '(')
+  exotic_call ::= exotic_call_prefix '(' _ ')'
+
+35: (from 17, '+')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= binary_op '+' _ binary_op
+  binary_op ::= _ binary_op '-' binary_op
+
+36: (from 17, '-')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  binary_op ::= binary_op '-' _ binary_op
+
+37: (from 17, '*')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= binary_op '*' _ binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+
+38: (from 17, '/')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= binary_op '/' _ binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+
+39: (from 17, '?')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  conditional_expression ::= binary_op '?' _ conditional_expression ':' conditional_expression
+
+40: (from 20, ';')
+  statement ::= expression ';' _
+
+41: (from 20, ',')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= expression ',' _ assignment_expression
+
+42: (from 21, conditional_expression)
+  assignment_expression ::= identifier '=' conditional_expression _
+
+43: (from 22, conditional_expression)
+  expression_list ::= conditional_expression _
+
+44: (from 22, expression_list)
+  expression_listopt ::= expression_list _
+  expression_list ::= expression_list _ ',' conditional_expression
+
+45: (from 22, expression_listopt)
+  primary_expression ::= identifier '(' expression_listopt _ ')'
+
+46: (from 25, ')')
+  primary_expression ::= '(' expression ')' _
+
+47: (from 26, statements)
+  statements ::= statements _ statement
+  statement ::= _ Lreset identifier ';'
+  statement ::= _ expression ';'
+  statement ::= _ Lnop ';'
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  statements_noreset ::= statements _ statement
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  assignment_expression ::= _ conditional_expression
+  assignment_expression ::= _ identifier '=' conditional_expression
+  expression ::= _ assignment_expression
+  expression ::= _ expression ',' assignment_expression
+
+48: (from 26, statement)
+  statements ::= statement _
+  statements_noreset ::= statement _
+
+49: (from 26, statements_noreset)
+  closure ::= '{' '->' statements_noreset _ '}'
+
+50: (from 28, ';')
+  statement ::= Lreset identifier ';' _
+
+51: (from 31, expression)
+  primary_expression ::= primary_expression '[' expression _ ']'
+  expression ::= expression _ ',' assignment_expression
+
+52: (from 32, identifier)
+  primary_expression ::= primary_expression '.' identifier _
+  primary_expression ::= primary_expression '.' identifier _ '(' expression_listopt ')'
+
+53: (from 33, Linvoke)
+  exotic_call_prefix ::= primary_expression '->' Linvoke _
+
+54: (from 34, ')')
+  exotic_call ::= exotic_call_prefix '(' ')' _
+
+55: (from 35, binary_op)
+  binary_op ::= binary_op _ '*' binary_op
+  binary_op ::= binary_op _ '/' binary_op
+  binary_op ::= binary_op _ '+' binary_op
+  binary_op ::= binary_op '+' binary_op _
+  binary_op ::= binary_op _ '-' binary_op
+
+56: (from 36, binary_op)
+  binary_op ::= binary_op _ '*' binary_op
+  binary_op ::= binary_op _ '/' binary_op
+  binary_op ::= binary_op _ '+' binary_op
+  binary_op ::= binary_op _ '-' binary_op
+  binary_op ::= binary_op '-' binary_op _
+
+57: (from 37, binary_op)
+  binary_op ::= binary_op _ '*' binary_op
+  binary_op ::= binary_op '*' binary_op _
+  binary_op ::= binary_op _ '/' binary_op
+  binary_op ::= binary_op _ '+' binary_op
+  binary_op ::= binary_op _ '-' binary_op
+
+58: (from 38, binary_op)
+  binary_op ::= binary_op _ '*' binary_op
+  binary_op ::= binary_op _ '/' binary_op
+  binary_op ::= binary_op '/' binary_op _
+  binary_op ::= binary_op _ '+' binary_op
+  binary_op ::= binary_op _ '-' binary_op
+
+59: (from 39, conditional_expression)
+  conditional_expression ::= binary_op '?' conditional_expression _ ':' conditional_expression
+
+60: (from 41, assignment_expression)
+  expression ::= expression ',' assignment_expression _
+
+61: (from 44, ',')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  expression_list ::= expression_list ',' _ conditional_expression
+
+62: (from 45, ')')
+  primary_expression ::= identifier '(' expression_listopt ')' _
+
+63: (from 47, statement)
+  statements ::= statements statement _
+  statements_noreset ::= statements statement _
+
+64: (from 49, '}')
+  closure ::= '{' '->' statements_noreset '}' _
+
+65: (from 51, ']')
+  primary_expression ::= primary_expression '[' expression ']' _
+
+66: (from 52, '(')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  expression_listopt ::= _
+  expression_listopt ::= _ expression_list
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= primary_expression '.' identifier '(' _ expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  expression_list ::= _ conditional_expression
+  expression_list ::= _ expression_list ',' conditional_expression
+
+67: (from 59, ':')
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+  unary_expression ::= _ primary_expression
+  unary_expression ::= _ '!' unary_expression
+  unary_expression ::= _ '-' unary_expression
+  binary_op ::= _ unary_expression
+  binary_op ::= _ binary_op '*' binary_op
+  binary_op ::= _ binary_op '/' binary_op
+  binary_op ::= _ binary_op '+' binary_op
+  binary_op ::= _ binary_op '-' binary_op
+  conditional_expression ::= _ binary_op
+  conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
+  conditional_expression ::= binary_op '?' conditional_expression ':' _ conditional_expression
+
+68: (from 61, conditional_expression)
+  expression_list ::= expression_list ',' conditional_expression _
+
+69: (from 66, expression_listopt)
+  primary_expression ::= primary_expression '.' identifier '(' expression_listopt _ ')'
+
+70: (from 67, conditional_expression)
+  conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression _
+
+71: (from 69, ')')
+  primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')' _
+
+72: (from 0, input)
+
+73: (from 72, eoi)
+
+Rules for var:
+
+input ::
+	input ::= statements
+	statements ::= statements statement
+	statements ::= statement
+	statement ::= Lreset identifier ';'
+	statement ::= expression ';'
+	statement ::= Lnop ';'
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+	expression ::= assignment_expression
+	expression ::= expression ',' assignment_expression
+statements ::
+	statements ::= statements statement
+	statements ::= statement
+	statement ::= Lreset identifier ';'
+	statement ::= expression ';'
+	statement ::= Lnop ';'
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+	expression ::= assignment_expression
+	expression ::= expression ',' assignment_expression
+statement ::
+	statement ::= Lreset identifier ';'
+	statement ::= expression ';'
+	statement ::= Lnop ';'
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+	expression ::= assignment_expression
+	expression ::= expression ',' assignment_expression
+primary_expression ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+closure ::
+	closure ::= '{' '->' statements_noreset '}'
+statements_noreset ::
+	statements ::= statements statement
+	statements ::= statement
+	statement ::= Lreset identifier ';'
+	statement ::= expression ';'
+	statement ::= Lnop ';'
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	statements_noreset ::= statements statement
+	statements_noreset ::= statement
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+	expression ::= assignment_expression
+	expression ::= expression ',' assignment_expression
+exotic_call ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+exotic_call_prefix ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+unary_expression ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+binary_op ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+conditional_expression ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+assignment_expression ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+expression ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	assignment_expression ::= conditional_expression
+	assignment_expression ::= identifier '=' conditional_expression
+	expression ::= assignment_expression
+	expression ::= expression ',' assignment_expression
+expression_list ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	expression_list ::= conditional_expression
+	expression_list ::= expression_list ',' conditional_expression
+expression_listopt ::
+	primary_expression ::= identifier
+	primary_expression ::= '(' expression ')'
+	primary_expression ::= icon
+	primary_expression ::= Lnull
+	expression_listopt ::=
+	expression_listopt ::= expression_list
+	primary_expression ::= identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '.' identifier
+	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+	primary_expression ::= primary_expression '[' expression ']'
+	primary_expression ::= exotic_call
+	primary_expression ::= closure
+	closure ::= '{' '->' statements_noreset '}'
+	exotic_call ::= exotic_call_prefix '(' ')'
+	exotic_call_prefix ::= primary_expression '->' Linvoke
+	unary_expression ::= primary_expression
+	unary_expression ::= '!' unary_expression
+	unary_expression ::= '-' unary_expression
+	binary_op ::= unary_expression
+	binary_op ::= binary_op '*' binary_op
+	binary_op ::= binary_op '/' binary_op
+	binary_op ::= binary_op '+' binary_op
+	binary_op ::= binary_op '-' binary_op
+	conditional_expression ::= binary_op
+	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
+	expression_list ::= conditional_expression
+	expression_list ::= expression_list ',' conditional_expression
+
+Graph:
+ 0:  1
+ 1:  4 3
+ 2:  6 5
+ 7:  46 26
+ 8:  47 27
+ 9:  48 28
+ 10:  49 29
+ 11:  50 30
+ 12:  51 31
+ 13:  52 32
+ 14:  53 33
+ 15:  54 34
+ 16:  55 35
+ 17:  56 36
+ 18:  57 37
+ 19:  58 38
+ 20:  59 39
+ 21:  60 40
+ 22:  61 41
+ 23:  62 42
+ 24:  63 43
+ 25:  64 44
+ 45:  6 5
+ 84:  7 87 85
+ 85:  8 87 85
+ 86:  9 87 85
+ 87:  10 87 85
+ 88:  11 87 85
+ 89:  12 87 85
+ 90:  13 87 85
+ 91:  14 87 85
+ 92:  15 87 85
+ 93:  16 87 85
+ 94:  17 87 85
+ 95:  18 87 85
+ 96:  19 87 85
+ 97:  20 87 85
+ 98:  21 87 85
+ 99:  22 87 85
+ 100:  23 87 85
+ 101:  24 87 85
+ 102:  25 87 85
+ 103:  84 112 113 110 111
+ 104:  86 112 113 110 111
+ 105:  88 112 113 110 111
+ 106:  89 112 113 110 111
+ 107:  90 112 113 110 111
+ 108:  91 112 113 110 111
+ 109:  92 112 113 110 111
+ 110:  93 112 113 110 111
+ 111:  94 112 113 110 111
+ 112:  95 112 113 110 111
+ 113:  96 112 113 110 111
+ 114:  97 112 113 110 111
+ 115:  98 112 113 110 111
+ 116:  99 112 113 110 111
+ 117:  100 112 113 110 111
+ 118:  101 112 113 110 111
+ 119:  102 112 113 110 111
+ 120:  103 132
+ 121:  104 132
+ 122:  105 132
+ 123:  106 132
+ 124:  107 132
+ 125:  108 132
+ 126:  109 132
+ 127:  114 132
+ 128:  115 132
+ 129:  116 132
+ 130:  117 132
+ 131:  118 132
+ 132:  119 132
+ 133:  120 123
+ 134:  121 123
+ 135:  122 123
+ 136:  125 123
+ 137:  126 123
+ 138:  128 123
+ 139:  129 123
+ 140:  133 138
+ 141:  134 138
+ 142:  135 138
+ 143:  136 138
+ 144:  137 138
+ 145:  139 138
+ 146:  124 130
+ 147:  131 130
+ 148:  146
+ 149:  147
+
+Graph:
+ 1:  0
+ 3:  1
+ 4:  1
+ 5:  2 45
+ 6:  2 45
+ 7:  84
+ 8:  85
+ 9:  86
+ 10:  87
+ 11:  88
+ 12:  89
+ 13:  90
+ 14:  91
+ 15:  92
+ 16:  93
+ 17:  94
+ 18:  95
+ 19:  96
+ 20:  97
+ 21:  98
+ 22:  99
+ 23:  100
+ 24:  101
+ 25:  102
+ 26:  7
+ 27:  8
+ 28:  9
+ 29:  10
+ 30:  11
+ 31:  12
+ 32:  13
+ 33:  14
+ 34:  15
+ 35:  16
+ 36:  17
+ 37:  18
+ 38:  19
+ 39:  20
+ 40:  21
+ 41:  22
+ 42:  23
+ 43:  24
+ 44:  25
+ 46:  7
+ 47:  8
+ 48:  9
+ 49:  10
+ 50:  11
+ 51:  12
+ 52:  13
+ 53:  14
+ 54:  15
+ 55:  16
+ 56:  17
+ 57:  18
+ 58:  19
+ 59:  20
+ 60:  21
+ 61:  22
+ 62:  23
+ 63:  24
+ 64:  25
+ 84:  103
+ 85:  84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102
+ 86:  104
+ 87:  84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102
+ 88:  105
+ 89:  106
+ 90:  107
+ 91:  108
+ 92:  109
+ 93:  110
+ 94:  111
+ 95:  112
+ 96:  113
+ 97:  114
+ 98:  115
+ 99:  116
+ 100:  117
+ 101:  118
+ 102:  119
+ 103:  120
+ 104:  121
+ 105:  122
+ 106:  123
+ 107:  124
+ 108:  125
+ 109:  126
+ 110:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+ 111:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+ 112:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+ 113:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+ 114:  127
+ 115:  128
+ 116:  129
+ 117:  130
+ 118:  131
+ 119:  132
+ 120:  133
+ 121:  134
+ 122:  135
+ 123:  133 134 135 136 137 138 139
+ 124:  146
+ 125:  136
+ 126:  137
+ 128:  138
+ 129:  139
+ 130:  146 147
+ 131:  147
+ 132:  120 121 122 123 124 125 126 127 128 129 130 131 132
+ 133:  140
+ 134:  141
+ 135:  142
+ 136:  143
+ 137:  144
+ 138:  140 141 142 143 144 145
+ 139:  145
+ 146:  148
+ 147:  149
+
+Follow:
+0    ->   72	 eoi
+0    ->   10	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+26   ->   47	 identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+0    ->   11	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+10   ->   30	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+26   ->   48	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
+47   ->   63	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
+0    ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+3    ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+4    ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+6    ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+10   ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+21   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+22   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+26   ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+31   ->   12	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
+35   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+36   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+37   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+38   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+39   ->   12	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+41   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+47   ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+61   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+67   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+0    ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+3    ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+4    ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+6    ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+10   ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+21   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+22   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+26   ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+31   ->   13	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
+35   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+36   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+37   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+38   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+39   ->   13	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+41   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+47   ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+61   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+67   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+26   ->   49	 '}'
+0    ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+3    ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+4    ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+6    ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+10   ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+21   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+22   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+26   ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+31   ->   14	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
+35   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+36   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+37   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+38   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+39   ->   14	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+41   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+47   ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+61   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+67   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+0    ->   15	 '('
+3    ->   15	 '('
+4    ->   15	 '('
+6    ->   15	 '('
+10   ->   15	 '('
+21   ->   15	 '('
+22   ->   15	 '('
+26   ->   15	 '('
+31   ->   15	 '('
+35   ->   15	 '('
+36   ->   15	 '('
+37   ->   15	 '('
+38   ->   15	 '('
+39   ->   15	 '('
+41   ->   15	 '('
+47   ->   15	 '('
+61   ->   15	 '('
+66   ->   15	 '('
+67   ->   15	 '('
+0    ->   16	 ';' '+' '-' '*' '/' ',' '?'
+3    ->   24	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+4    ->   16	 '+' '-' '*' '/' ')' ',' '?'
+6    ->   27	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+10   ->   16	 ';' '+' '-' '*' '/' ',' '?'
+21   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+22   ->   16	 '+' '-' '*' '/' ')' ',' '?'
+26   ->   16	 ';' '+' '-' '*' '/' ',' '?'
+31   ->   16	 '+' '-' '*' '/' ']' ',' '?'
+35   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+36   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+37   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+38   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+39   ->   16	 '+' '-' '*' '/' '?' ':'
+41   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+47   ->   16	 ';' '+' '-' '*' '/' ',' '?'
+61   ->   16	 '+' '-' '*' '/' ')' ',' '?'
+66   ->   16	 '+' '-' '*' '/' ')' ',' '?'
+67   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+0    ->   17	 ';' '+' '-' '*' '/' ',' '?'
+4    ->   17	 '+' '-' '*' '/' ')' ',' '?'
+10   ->   17	 ';' '+' '-' '*' '/' ',' '?'
+21   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+22   ->   17	 '+' '-' '*' '/' ')' ',' '?'
+26   ->   17	 ';' '+' '-' '*' '/' ',' '?'
+31   ->   17	 '+' '-' '*' '/' ']' ',' '?'
+35   ->   55	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+36   ->   56	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+37   ->   57	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+38   ->   58	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+39   ->   17	 '+' '-' '*' '/' '?' ':'
+41   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+47   ->   17	 ';' '+' '-' '*' '/' ',' '?'
+61   ->   17	 '+' '-' '*' '/' ')' ',' '?'
+66   ->   17	 '+' '-' '*' '/' ')' ',' '?'
+67   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+0    ->   18	 ';' ','
+4    ->   18	 ')' ','
+10   ->   18	 ';' ','
+21   ->   42	 ';' ')' ']' ','
+22   ->   43	 ')' ','
+26   ->   18	 ';' ','
+31   ->   18	 ']' ','
+39   ->   59	 ':'
+41   ->   18	 ';' ')' ']' ','
+47   ->   18	 ';' ','
+61   ->   68	 ')' ','
+66   ->   43	 ')' ','
+67   ->   70	 ';' ')' ']' ',' ':'
+0    ->   19	 ';' ','
+4    ->   19	 ')' ','
+10   ->   19	 ';' ','
+26   ->   19	 ';' ','
+31   ->   19	 ']' ','
+41   ->   60	 ';' ')' ']' ','
+47   ->   19	 ';' ','
+0    ->   20	 ';' ','
+4    ->   25	 ')' ','
+10   ->   20	 ';' ','
+26   ->   20	 ';' ','
+31   ->   51	 ']' ','
+47   ->   20	 ';' ','
+22   ->   44	 ')' ','
+66   ->   44	 ')' ','
+22   ->   45	 ')'
+66   ->   69	 ')'
+
+Lookaheads:
+1:
+  primary_expression ::= identifier _
+  >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+10:
+  input ::= statements _
+  >>> eoi
+12:
+  unary_expression ::= primary_expression _
+  >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+17:
+  conditional_expression ::= binary_op _
+  >>> ';' ')' ']' ',' ':'
+22:
+  expression_listopt ::= _
+  >>> ')'
+23:
+  primary_expression ::= identifier _
+  >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+44:
+  expression_listopt ::= expression_list _
+  >>> ')'
+48:
+  statements ::= statement _
+  >>> identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+  statements_noreset ::= statement _
+  >>> '}'
+52:
+  primary_expression ::= primary_expression '.' identifier _
+  >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+55:
+  binary_op ::= binary_op '+' binary_op _
+  >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+56:
+  binary_op ::= binary_op '-' binary_op _
+  >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+57:
+  binary_op ::= binary_op '*' binary_op _
+  >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+58:
+  binary_op ::= binary_op '/' binary_op _
+  >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+63:
+  statements ::= statements statement _
+  >>> identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
+  statements_noreset ::= statements statement _
+  >>> '}'
+66:
+  expression_listopt ::= _
+  >>> ')'

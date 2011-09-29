@@ -134,6 +134,16 @@ public class BootstrapTest extends TestCase {
 				}, 0);
 	}
 
+	public void testNLA() {
+		bootstrap(
+				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla",
+				"nla.s",
+				new String[0],
+				new String[]{
+						"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java"
+				}, 6);
+	}
+
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles, int expectedResolvedConflicts) {
 		try {
 			LapgOptions options = LapgOptions.parseArguments(args, new PrintStream(new CheckingErrorStream("")));

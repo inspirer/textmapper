@@ -23,16 +23,23 @@ import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
+import org.textway.lapg.test.cases.bootstrap.nla.NlaTestTree;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+
 /**
  * Gryaznov Evgeny, 9/28/11
  */
 public class NlaTest extends LapgTestCase {
+
+	private static final String NLA_INPUT = "org/textway/lapg/test/cases/bootstrap/nla/input";
 
 	private TypesRegistry createDefaultTypesRegistry() {
 		ResourceRegistry resources = new ResourceRegistry(
@@ -66,6 +73,27 @@ public class NlaTest extends LapgTestCase {
 
 		String expectedDebug = FileUtil.getFileContents(openStream("syntax_nla1.debug", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
 		Assert.assertEquals(expectedDebug, debugText.toString());
+	}
+
+	public void testInputAll() throws UnsupportedEncodingException {
+		String contents = FileUtil.getFileContents(openStream("all.in", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
+		String output;
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream savedOut = System.out;
+		try {
+			System.setOut(new PrintStream(out));
+
+			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("all.in", contents.toCharArray(), 1));
+			Assert.assertFalse(parse.hasErrors());
+
+		} finally {
+			System.setOut(savedOut);
+			output = out.toString("utf-8");
+		}
+
+		String expected = FileUtil.getFileContents(openStream("all.out", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
+		Assert.assertEquals(expected, output);
 	}
 
 }

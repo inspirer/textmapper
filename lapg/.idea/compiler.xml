@@ -21,6 +21,8 @@
       <entry name="org/textway/lapg/test/cases/input/syntax*" />
       <entry name="?*.tbl" />
       <entry name="?*.types" />
+      <entry name="?*.in" />
+      <entry name="?*.out" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
