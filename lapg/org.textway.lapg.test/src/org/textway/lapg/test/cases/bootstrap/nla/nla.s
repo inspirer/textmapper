@@ -69,7 +69,7 @@ closure ::=
 	'{' '->' statements_noreset '}' ;
 
 statements_noreset ::=
-	  statements statement
+	  statements_noreset statement
 	| statement
 ;
 

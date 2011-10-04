@@ -350,8 +350,6 @@ States
   expression ::= expression _ ',' assignment_expression
 
 26: (from 5, '->')
-  statements ::= _ statements statement
-  statements ::= _ statement
   statement ::= _ Lreset identifier ';'
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
@@ -367,7 +365,7 @@ States
   primary_expression ::= _ closure
   closure ::= _ '{' '->' statements_noreset '}'
   closure ::= '{' '->' _ statements_noreset '}'
-  statements_noreset ::= _ statements statement
+  statements_noreset ::= _ statements_noreset statement
   statements_noreset ::= _ statement
   exotic_call ::= _ exotic_call_prefix '(' ')'
   exotic_call_prefix ::= _ primary_expression '->' Linvoke
@@ -607,8 +605,10 @@ States
 46: (from 25, ')')
   primary_expression ::= '(' expression ')' _
 
-47: (from 26, statements)
-  statements ::= statements _ statement
+47: (from 26, statement)
+  statements_noreset ::= statement _
+
+48: (from 26, statements_noreset)
   statement ::= _ Lreset identifier ';'
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
@@ -623,7 +623,8 @@ States
   primary_expression ::= _ exotic_call
   primary_expression ::= _ closure
   closure ::= _ '{' '->' statements_noreset '}'
-  statements_noreset ::= statements _ statement
+  closure ::= '{' '->' statements_noreset _ '}'
+  statements_noreset ::= statements_noreset _ statement
   exotic_call ::= _ exotic_call_prefix '(' ')'
   exotic_call_prefix ::= _ primary_expression '->' Linvoke
   unary_expression ::= _ primary_expression
@@ -641,65 +642,58 @@ States
   expression ::= _ assignment_expression
   expression ::= _ expression ',' assignment_expression
 
-48: (from 26, statement)
-  statements ::= statement _
-  statements_noreset ::= statement _
-
-49: (from 26, statements_noreset)
-  closure ::= '{' '->' statements_noreset _ '}'
-
-50: (from 28, ';')
+49: (from 28, ';')
   statement ::= Lreset identifier ';' _
 
-51: (from 31, expression)
+50: (from 31, expression)
   primary_expression ::= primary_expression '[' expression _ ']'
   expression ::= expression _ ',' assignment_expression
 
-52: (from 32, identifier)
+51: (from 32, identifier)
   primary_expression ::= primary_expression '.' identifier _
   primary_expression ::= primary_expression '.' identifier _ '(' expression_listopt ')'
 
-53: (from 33, Linvoke)
+52: (from 33, Linvoke)
   exotic_call_prefix ::= primary_expression '->' Linvoke _
 
-54: (from 34, ')')
+53: (from 34, ')')
   exotic_call ::= exotic_call_prefix '(' ')' _
 
-55: (from 35, binary_op)
+54: (from 35, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op '+' binary_op _
   binary_op ::= binary_op _ '-' binary_op
 
-56: (from 36, binary_op)
+55: (from 36, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
   binary_op ::= binary_op '-' binary_op _
 
-57: (from 37, binary_op)
+56: (from 37, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op '*' binary_op _
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
 
-58: (from 38, binary_op)
+57: (from 38, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op '/' binary_op _
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
 
-59: (from 39, conditional_expression)
+58: (from 39, conditional_expression)
   conditional_expression ::= binary_op '?' conditional_expression _ ':' conditional_expression
 
-60: (from 41, assignment_expression)
+59: (from 41, assignment_expression)
   expression ::= expression ',' assignment_expression _
 
-61: (from 44, ',')
+60: (from 44, ',')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -725,20 +719,19 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   expression_list ::= expression_list ',' _ conditional_expression
 
-62: (from 45, ')')
+61: (from 45, ')')
   primary_expression ::= identifier '(' expression_listopt ')' _
 
-63: (from 47, statement)
-  statements ::= statements statement _
-  statements_noreset ::= statements statement _
-
-64: (from 49, '}')
+62: (from 48, '}')
   closure ::= '{' '->' statements_noreset '}' _
 
-65: (from 51, ']')
+63: (from 48, statement)
+  statements_noreset ::= statements_noreset statement _
+
+64: (from 50, ']')
   primary_expression ::= primary_expression '[' expression ']' _
 
-66: (from 52, '(')
+65: (from 51, '(')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -768,7 +761,7 @@ States
   expression_list ::= _ conditional_expression
   expression_list ::= _ expression_list ',' conditional_expression
 
-67: (from 59, ':')
+66: (from 58, ':')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -794,21 +787,21 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   conditional_expression ::= binary_op '?' conditional_expression ':' _ conditional_expression
 
-68: (from 61, conditional_expression)
+67: (from 60, conditional_expression)
   expression_list ::= expression_list ',' conditional_expression _
 
-69: (from 66, expression_listopt)
+68: (from 65, expression_listopt)
   primary_expression ::= primary_expression '.' identifier '(' expression_listopt _ ')'
 
-70: (from 67, conditional_expression)
+69: (from 66, conditional_expression)
   conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression _
 
-71: (from 69, ')')
+70: (from 68, ')')
   primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')' _
 
-72: (from 0, input)
+71: (from 0, input)
 
-73: (from 72, eoi)
+72: (from 71, eoi)
 
 Rules for var:
 
@@ -927,8 +920,6 @@ primary_expression ::
 closure ::
 	closure ::= '{' '->' statements_noreset '}'
 statements_noreset ::
-	statements ::= statements statement
-	statements ::= statement
 	statement ::= Lreset identifier ';'
 	statement ::= expression ';'
 	statement ::= Lnop ';'
@@ -943,7 +934,7 @@ statements_noreset ::
 	primary_expression ::= exotic_call
 	primary_expression ::= closure
 	closure ::= '{' '->' statements_noreset '}'
-	statements_noreset ::= statements statement
+	statements_noreset ::= statements_noreset statement
 	statements_noreset ::= statement
 	exotic_call ::= exotic_call_prefix '(' ')'
 	exotic_call_prefix ::= primary_expression '->' Linvoke
@@ -1163,8 +1154,8 @@ expression_listopt ::
 
 Graph:
  0:  1
- 1:  4 3
- 2:  6 5
+ 1:  3 2
+ 6:  45 25
  7:  46 26
  8:  47 27
  9:  48 28
@@ -1183,81 +1174,81 @@ Graph:
  22:  61 41
  23:  62 42
  24:  63 43
- 25:  64 44
- 45:  6 5
- 84:  7 87 85
- 85:  8 87 85
- 86:  9 87 85
- 87:  10 87 85
- 88:  11 87 85
- 89:  12 87 85
- 90:  13 87 85
- 91:  14 87 85
- 92:  15 87 85
- 93:  16 87 85
- 94:  17 87 85
- 95:  18 87 85
- 96:  19 87 85
- 97:  20 87 85
- 98:  21 87 85
- 99:  22 87 85
- 100:  23 87 85
- 101:  24 87 85
- 102:  25 87 85
- 103:  84 112 113 110 111
- 104:  86 112 113 110 111
- 105:  88 112 113 110 111
- 106:  89 112 113 110 111
- 107:  90 112 113 110 111
- 108:  91 112 113 110 111
- 109:  92 112 113 110 111
- 110:  93 112 113 110 111
- 111:  94 112 113 110 111
- 112:  95 112 113 110 111
- 113:  96 112 113 110 111
- 114:  97 112 113 110 111
- 115:  98 112 113 110 111
- 116:  99 112 113 110 111
- 117:  100 112 113 110 111
- 118:  101 112 113 110 111
- 119:  102 112 113 110 111
- 120:  103 132
- 121:  104 132
- 122:  105 132
- 123:  106 132
- 124:  107 132
- 125:  108 132
- 126:  109 132
- 127:  114 132
- 128:  115 132
- 129:  116 132
- 130:  117 132
- 131:  118 132
- 132:  119 132
- 133:  120 123
- 134:  121 123
- 135:  122 123
- 136:  125 123
- 137:  126 123
- 138:  128 123
- 139:  129 123
- 140:  133 138
- 141:  134 138
- 142:  135 138
- 143:  136 138
- 144:  137 138
- 145:  139 138
- 146:  124 130
- 147:  131 130
+ 44:  5 4
+ 83:  6 86 84
+ 84:  7 86 84
+ 85:  8 86 84
+ 86:  9 86 84
+ 87:  10 86 84
+ 88:  11 86 84
+ 89:  12 86 84
+ 90:  13 86 84
+ 91:  14 86 84
+ 92:  15 86 84
+ 93:  16 86 84
+ 94:  17 86 84
+ 95:  18 86 84
+ 96:  19 86 84
+ 97:  20 86 84
+ 98:  21 86 84
+ 99:  22 86 84
+ 100:  23 86 84
+ 101:  24 86 84
+ 102:  83 111 112 109 110
+ 103:  85 111 112 109 110
+ 104:  87 111 112 109 110
+ 105:  88 111 112 109 110
+ 106:  89 111 112 109 110
+ 107:  90 111 112 109 110
+ 108:  91 111 112 109 110
+ 109:  92 111 112 109 110
+ 110:  93 111 112 109 110
+ 111:  94 111 112 109 110
+ 112:  95 111 112 109 110
+ 113:  96 111 112 109 110
+ 114:  97 111 112 109 110
+ 115:  98 111 112 109 110
+ 116:  99 111 112 109 110
+ 117:  100 111 112 109 110
+ 118:  101 111 112 109 110
+ 119:  102 131
+ 120:  103 131
+ 121:  104 131
+ 122:  105 131
+ 123:  106 131
+ 124:  107 131
+ 125:  108 131
+ 126:  113 131
+ 127:  114 131
+ 128:  115 131
+ 129:  116 131
+ 130:  117 131
+ 131:  118 131
+ 132:  119 122
+ 133:  120 122
+ 134:  121 122
+ 135:  124 122
+ 136:  125 122
+ 137:  127 122
+ 138:  128 122
+ 139:  132 137
+ 140:  133 137
+ 141:  134 137
+ 142:  135 137
+ 143:  136 137
+ 144:  138 137
+ 145:  123 129
+ 146:  130 129
+ 147:  145
  148:  146
- 149:  147
 
 Graph:
  1:  0
+ 2:  1
  3:  1
- 4:  1
- 5:  2 45
- 6:  2 45
+ 4:  44
+ 5:  44
+ 6:  83
  7:  84
  8:  85
  9:  86
@@ -1276,7 +1267,7 @@ Graph:
  22:  99
  23:  100
  24:  101
- 25:  102
+ 25:  6
  26:  7
  27:  8
  28:  9
@@ -1295,7 +1286,7 @@ Graph:
  41:  22
  42:  23
  43:  24
- 44:  25
+ 45:  6
  46:  7
  47:  8
  48:  9
@@ -1314,11 +1305,11 @@ Graph:
  61:  22
  62:  23
  63:  24
- 64:  25
- 84:  103
- 85:  84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102
- 86:  104
- 87:  84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102
+ 83:  102
+ 84:  83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101
+ 85:  103
+ 86:  83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101
+ 87:  104
  88:  105
  89:  106
  90:  107
@@ -1340,11 +1331,11 @@ Graph:
  106:  123
  107:  124
  108:  125
- 109:  126
- 110:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
- 111:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
- 112:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
- 113:  103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119
+ 109:  102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
+ 110:  102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
+ 111:  102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
+ 112:  102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118
+ 113:  126
  114:  127
  115:  128
  116:  129
@@ -1353,34 +1344,32 @@ Graph:
  119:  132
  120:  133
  121:  134
- 122:  135
- 123:  133 134 135 136 137 138 139
- 124:  146
+ 122:  132 133 134 135 136 137 138
+ 123:  145
+ 124:  135
  125:  136
- 126:  137
+ 127:  137
  128:  138
- 129:  139
- 130:  146 147
- 131:  147
- 132:  120 121 122 123 124 125 126 127 128 129 130 131 132
+ 129:  145 146
+ 130:  146
+ 131:  119 120 121 122 123 124 125 126 127 128 129 130 131
+ 132:  139
  133:  140
  134:  141
  135:  142
  136:  143
- 137:  144
- 138:  140 141 142 143 144 145
- 139:  145
+ 137:  139 140 141 142 143 144
+ 138:  144
+ 145:  147
  146:  148
- 147:  149
 
 Follow:
-0    ->   72	 eoi
+0    ->   71	 eoi
 0    ->   10	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
-26   ->   47	 identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
 0    ->   11	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
 10   ->   30	 eoi identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
-26   ->   48	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-47   ->   63	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
+26   ->   47	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
+48   ->   63	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
 0    ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 4    ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
@@ -1396,10 +1385,10 @@ Follow:
 38   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 39   ->   12	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
 41   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-47   ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-61   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-66   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-67   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+48   ->   12	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+60   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+65   ->   12	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   12	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 0    ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 4    ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
@@ -1415,11 +1404,11 @@ Follow:
 38   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 39   ->   13	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
 41   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-47   ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-61   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-66   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-67   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-26   ->   49	 '}'
+48   ->   13	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+60   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+65   ->   13	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   13	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+26   ->   48	 identifier icon '-' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
 0    ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 4    ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
@@ -1435,10 +1424,10 @@ Follow:
 38   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 39   ->   14	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
 41   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-47   ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-61   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-66   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-67   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+48   ->   14	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+60   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+65   ->   14	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+66   ->   14	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 0    ->   15	 '('
 3    ->   15	 '('
 4    ->   15	 '('
@@ -1454,10 +1443,10 @@ Follow:
 38   ->   15	 '('
 39   ->   15	 '('
 41   ->   15	 '('
-47   ->   15	 '('
-61   ->   15	 '('
+48   ->   15	 '('
+60   ->   15	 '('
+65   ->   15	 '('
 66   ->   15	 '('
-67   ->   15	 '('
 0    ->   16	 ';' '+' '-' '*' '/' ',' '?'
 3    ->   24	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 4    ->   16	 '+' '-' '*' '/' ')' ',' '?'
@@ -1473,10 +1462,10 @@ Follow:
 38   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 39   ->   16	 '+' '-' '*' '/' '?' ':'
 41   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-47   ->   16	 ';' '+' '-' '*' '/' ',' '?'
-61   ->   16	 '+' '-' '*' '/' ')' ',' '?'
-66   ->   16	 '+' '-' '*' '/' ')' ',' '?'
-67   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+48   ->   16	 ';' '+' '-' '*' '/' ',' '?'
+60   ->   16	 '+' '-' '*' '/' ')' ',' '?'
+65   ->   16	 '+' '-' '*' '/' ')' ',' '?'
+66   ->   16	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 0    ->   17	 ';' '+' '-' '*' '/' ',' '?'
 4    ->   17	 '+' '-' '*' '/' ')' ',' '?'
 10   ->   17	 ';' '+' '-' '*' '/' ',' '?'
@@ -1484,16 +1473,16 @@ Follow:
 22   ->   17	 '+' '-' '*' '/' ')' ',' '?'
 26   ->   17	 ';' '+' '-' '*' '/' ',' '?'
 31   ->   17	 '+' '-' '*' '/' ']' ',' '?'
-35   ->   55	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-36   ->   56	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-37   ->   57	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-38   ->   58	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+35   ->   54	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+36   ->   55	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+37   ->   56	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+38   ->   57	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 39   ->   17	 '+' '-' '*' '/' '?' ':'
 41   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-47   ->   17	 ';' '+' '-' '*' '/' ',' '?'
-61   ->   17	 '+' '-' '*' '/' ')' ',' '?'
-66   ->   17	 '+' '-' '*' '/' ')' ',' '?'
-67   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+48   ->   17	 ';' '+' '-' '*' '/' ',' '?'
+60   ->   17	 '+' '-' '*' '/' ')' ',' '?'
+65   ->   17	 '+' '-' '*' '/' ')' ',' '?'
+66   ->   17	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 0    ->   18	 ';' ','
 4    ->   18	 ')' ','
 10   ->   18	 ';' ','
@@ -1501,29 +1490,29 @@ Follow:
 22   ->   43	 ')' ','
 26   ->   18	 ';' ','
 31   ->   18	 ']' ','
-39   ->   59	 ':'
+39   ->   58	 ':'
 41   ->   18	 ';' ')' ']' ','
-47   ->   18	 ';' ','
-61   ->   68	 ')' ','
-66   ->   43	 ')' ','
-67   ->   70	 ';' ')' ']' ',' ':'
+48   ->   18	 ';' ','
+60   ->   67	 ')' ','
+65   ->   43	 ')' ','
+66   ->   69	 ';' ')' ']' ',' ':'
 0    ->   19	 ';' ','
 4    ->   19	 ')' ','
 10   ->   19	 ';' ','
 26   ->   19	 ';' ','
 31   ->   19	 ']' ','
-41   ->   60	 ';' ')' ']' ','
-47   ->   19	 ';' ','
+41   ->   59	 ';' ')' ']' ','
+48   ->   19	 ';' ','
 0    ->   20	 ';' ','
 4    ->   25	 ')' ','
 10   ->   20	 ';' ','
 26   ->   20	 ';' ','
-31   ->   51	 ']' ','
-47   ->   20	 ';' ','
+31   ->   50	 ']' ','
+48   ->   20	 ';' ','
 22   ->   44	 ')' ','
-66   ->   44	 ')' ','
+65   ->   44	 ')' ','
 22   ->   45	 ')'
-66   ->   69	 ')'
+65   ->   68	 ')'
 
 Lookaheads:
 1:
@@ -1547,31 +1536,21 @@ Lookaheads:
 44:
   expression_listopt ::= expression_list _
   >>> ')'
-48:
-  statements ::= statement _
-  >>> identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
-  statements_noreset ::= statement _
-  >>> '}'
-52:
+51:
   primary_expression ::= primary_expression '.' identifier _
   >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-55:
+54:
   binary_op ::= binary_op '+' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-56:
+55:
   binary_op ::= binary_op '-' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-57:
+56:
   binary_op ::= binary_op '*' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-58:
+57:
   binary_op ::= binary_op '/' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-63:
-  statements ::= statements statement _
-  >>> identifier icon '-' '(' '{' '!' Lnull Linvoke Lreset Lnop
-  statements_noreset ::= statements statement _
-  >>> '}'
-66:
+65:
   expression_listopt ::= _
   >>> ')'
