@@ -23,10 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileBasedStrategy;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.LapgGenerator;
@@ -141,16 +138,15 @@ public class Lapg {
 		return new ConsoleStatus(debuglev);
 	}
 
-	private static class ConsoleStatus implements ProcessingStatus {
+	private static class ConsoleStatus extends AbstractProcessingStatus {
 
 		static final String OUT_ERRORS = "errors";
 		static final String OUT_TABLES = "tables";
 
 		private PrintStream debug, warn;
-		private final int debuglev;
 
 		public ConsoleStatus(int debuglev) {
-			this.debuglev = debuglev;
+			super(debuglev >= LapgOptions.DEBUG_TABLES, debuglev >= LapgOptions.DEBUG_AMBIG);
 			this.debug = null;
 			this.warn = null;
 		}
@@ -159,41 +155,41 @@ public class Lapg {
 			try {
 				return new PrintStream(new FileOutputStream(name));
 			} catch (FileNotFoundException ex) {
-				error("lapg: IO error: " + ex.getMessage());
+				handle(KIND_ERROR, "lapg: IO error: " + ex.getMessage());
 				return System.err;
 			}
 		}
 
-		public void error(String error) {
-			System.err.print(error);
+		@Override
+		public void handle(int kind, String text) {
+			if(kind == KIND_ERROR || kind == KIND_FATAL) {
+				System.err.print(text);
+			} else if(kind == KIND_INFO) {
+				System.out.print(text);
+			} else if(kind == KIND_DEBUG) {
+				if (!isDebugMode()) {
+					return;
+				}
+				if (debug == null) {
+					debug = openFile(OUT_TABLES);
+				}
+			 	debug.print(text);
+			} else if(kind == KIND_WARN) {
+				if (!isAnalysisMode()) {
+					return;
+				}
+				if (warn == null) {
+					warn = openFile(OUT_ERRORS);
+				}
+				warn.print(text);
+			}
 		}
 
-		public void info(String info) {
-			System.out.print(info);
-		}
-
-		public void trace(Throwable ex) {
-			ex.printStackTrace(System.err);
-		}
-
-		public void debug(String info) {
-			if (debuglev < 2) {
-				return;
+		public void report(String message, Throwable th) {
+			System.err.print(message + "\n");
+			if(th != null) {
+				th.printStackTrace(System.err);
 			}
-			if (debug == null) {
-				debug = openFile(OUT_TABLES);
-			}
-			debug.print(info);
-		}
-
-		public void warn(String warning) {
-			if (debuglev < 1) {
-				return;
-			}
-			if (warn == null) {
-				warn = openFile(OUT_ERRORS);
-			}
-			warn.print(warning);
 		}
 
 		public void dispose() {
@@ -205,57 +201,6 @@ public class Lapg {
 				warn.close();
 				warn = null;
 			}
-		}
-
-		public void report(String message, Throwable th) {
-			error(message + "\n");
-			if(th != null) {
-				trace(th);
-			}
-		}
-
-		public void report(int kind, String message, SourceElement ...anchors) {
-			SourceElement anchor = anchors != null && anchors.length > 0 ? anchors[0] : null;
-			switch(kind) {
-			case KIND_FATAL:
-			case KIND_ERROR:
-				if(anchor != null && anchor.getResourceName() != null) {
-					error(anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
-				error(message + "\n");
-				break;
-			case KIND_WARN:
-				if(anchor != null && anchor.getResourceName() != null) {
-					warn(anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
-				warn(message + "\n");
-				break;
-			case KIND_INFO:
-				if(anchor != null && anchor.getResourceName() != null) {
-					info(anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
-				info(message + "\n");
-				break;
-			}
-		}
-
-		public void report(ParserConflict conflict) {
-			Rule rule = conflict.getRules()[0];
-			if(conflict.getKind() == ParserConflict.FIXED) {
-				if(isAnalysisMode()) {
-					report(KIND_WARN, conflict.getText(), rule);
-				}
-			} else {
-				report(KIND_ERROR, conflict.getText(), rule);
-			}
-		}
-
-		public boolean isDebugMode() {
-			return debuglev >= 2;
-		}
-
-		public boolean isAnalysisMode() {
-			return debuglev >= 1;
 		}
 	}
 }

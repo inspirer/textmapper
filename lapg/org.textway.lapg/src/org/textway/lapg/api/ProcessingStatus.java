@@ -22,6 +22,7 @@ public interface ProcessingStatus {
 	public static final int KIND_ERROR = 1;
 	public static final int KIND_WARN = 2;
 	public static final int KIND_INFO = 3;
+	public static final int KIND_DEBUG = 4;
 
 	void report(int kind, String message, SourceElement ...anchors);
 
