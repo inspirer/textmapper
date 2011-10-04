@@ -78,5 +78,5 @@ public abstract class AbstractProcessingStatus implements ProcessingStatus {
 		handle(KIND_DEBUG, info);
 	}
 
-	public abstract void handle(int kind, String error);
+	public abstract void handle(int kind, String text);
 }

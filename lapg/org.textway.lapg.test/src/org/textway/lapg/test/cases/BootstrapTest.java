@@ -21,6 +21,7 @@ import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
 import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
@@ -138,9 +139,9 @@ public class BootstrapTest extends TestCase {
 		bootstrap(
 				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla",
 				"nla.s",
-				new String[0],
+				new String[]{"-e"},
 				new String[]{
-						"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java"
+						"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"
 				}, 6);
 	}
 
@@ -160,32 +161,47 @@ public class BootstrapTest extends TestCase {
 			String contents = FileUtil.getFileContents(new FileInputStream(source), FileUtil.DEFAULT_ENCODING);
 			Assert.assertNotNull("cannot read " + syntaxFile, contents);
 
-			BootstrapTestStatus status = new BootstrapTestStatus(expectedResolvedConflicts);
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
+			BootstrapTestStatus status = new BootstrapTestStatus(expectedResolvedConflicts, options.getDebug() >= LapgOptions.DEBUG_TABLES, options.getDebug() >= LapgOptions.DEBUG_AMBIG);
 
 			boolean success = new LapgGenerator(options, status, strategy).compileGrammar(input);
 			Assert.assertTrue(success);
 
+			if (status.isDebugMode()) {
+				strategy.createFile("tables", status.tablesFile != null ? status.tablesFile.toString() : "", status);
+			}
+			if (status.isAnalysisMode()) {
+				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "", status);
+			}
 			for (String s : createdFiles) {
 				Assert.assertTrue("file is not generated: " + s, strategy.created.contains(s));
 			}
 
 			Assert.assertEquals((expectedResolvedConflicts - status.conflictCount) + " conflicts instead of " + expectedResolvedConflicts, 0, status.conflictCount);
+
 		} catch (Exception ex) {
 			Assert.fail(ex.getMessage());
 		}
 	}
 
-	public static class BootstrapTestStatus implements ProcessingStatus {
+	public static class BootstrapTestStatus extends AbstractProcessingStatus {
 
-		int conflictCount;
+		private int conflictCount;
+		private StringBuilder tablesFile;
+		private StringBuilder errorsFile;
 
-		public BootstrapTestStatus(int conflictCount) {
+		public BootstrapTestStatus(int conflictCount, boolean debug, boolean analysis) {
+			super(debug, analysis);
 			this.conflictCount = conflictCount;
 		}
 
 		public void report(int kind, String message, SourceElement... anchors) {
+			super.report(kind, message, anchors);
+
+			if (kind == KIND_WARN && isAnalysisMode()) {
+				return;
+			}
 			if (kind == ProcessingStatus.KIND_INFO && message.startsWith("lalr: ")) {
 				return;
 			}
@@ -203,6 +219,7 @@ public class BootstrapTest extends TestCase {
 		}
 
 		public void report(ParserConflict conflict) {
+			super.report(conflict);
 			if (conflict.getKind() == ParserConflict.FIXED) {
 				if (conflictCount-- > 0) {
 					return;
@@ -212,15 +229,31 @@ public class BootstrapTest extends TestCase {
 		}
 
 		public void debug(String info) {
-			Assert.fail("debug is forbidden: " + info);
+			super.debug(info);
+			if (!isDebugMode()) {
+				Assert.fail("debug is forbidden: " + info);
+			}
 		}
 
-		public boolean isDebugMode() {
-			return false;
-		}
-
-		public boolean isAnalysisMode() {
-			return false;
+		@Override
+		public void handle(int kind, String text) {
+			if (kind == KIND_DEBUG) {
+				if (!isDebugMode()) {
+					return;
+				}
+				if (tablesFile == null) {
+					tablesFile = new StringBuilder();
+				}
+				tablesFile.append(text);
+			} else if (kind == KIND_WARN) {
+				if (!isAnalysisMode()) {
+					return;
+				}
+				if (errorsFile == null) {
+					errorsFile = new StringBuilder();
+				}
+				errorsFile.append(text);
+			}
 		}
 	}
 
