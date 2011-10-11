@@ -47,10 +47,16 @@ statements ::=
 ;
 
 statement ::=
-	  Lreset identifier ';'
+	  control_statement
 	| expression ';'
 	| Lnop ';'
 ;
+
+control_statement ::=
+	reset_statement ;
+
+reset_statement ::=
+	Lreset identifier ';' ;
 
 primary_expression ::=
   	  identifier
@@ -62,13 +68,20 @@ primary_expression ::=
     | primary_expression '.' identifier '(' expression_listopt ')'
     | primary_expression '[' expression ']'
     | exotic_call
-    | closure
+    | closure_rule
 ;
+
+
+closure_rule ::=
+	closure
+	| '*' identifier ;
 
 closure ::=
 	'{' '->' statements_noreset '}' ;
 
 statements_noreset ::=
+#	  statements_noreset (?! Lreset) statement
+#	| (?! Lreset) statement
 	  statements_noreset statement
 	| statement
 ;
@@ -78,8 +91,8 @@ exotic_call ::=
 	exotic_call_prefix '(' ')' ;
 
 exotic_call_prefix ::=
+#	(?! '(' | '{')
 	primary_expression '->' Linvoke ;
-
 
 unary_expression (ExpressionNode) ::=
 	primary_expression

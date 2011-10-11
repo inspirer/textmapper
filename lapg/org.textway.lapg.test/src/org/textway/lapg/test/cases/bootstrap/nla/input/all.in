@@ -6,3 +6,4 @@ q = aa(bb,a[1]);
 p = aa.bb({-> nop;});
 a.p->invoke();
 t = 1+2*3+ (1 ? 1--1 : 2);
+er = {-> reset x; };

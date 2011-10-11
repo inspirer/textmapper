@@ -85,7 +85,9 @@ public class NlaTest extends LapgTestCase {
 			System.setOut(new PrintStream(out));
 
 			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("all.in", contents.toCharArray(), 1));
-			Assert.assertFalse(parse.hasErrors());
+			if(parse.hasErrors()) {
+				Assert.fail(parse.getErrors().get(0).getMessage());
+			}
 
 		} finally {
 			System.setOut(savedOut);
@@ -96,4 +98,26 @@ public class NlaTest extends LapgTestCase {
 		Assert.assertEquals(expected, output);
 	}
 
+	public void testExoticInput() throws UnsupportedEncodingException {
+		String contents = FileUtil.getFileContents(openStream("exotic.in", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
+		String output;
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream savedOut = System.out;
+		try {
+			System.setOut(new PrintStream(out));
+
+			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("exotic.in", contents.toCharArray(), 1));
+			if(parse.hasErrors()) {
+				Assert.fail(parse.getErrors().get(0).getMessage());
+			}
+
+		} finally {
+			System.setOut(savedOut);
+			output = out.toString("utf-8");
+		}
+
+		String expected = FileUtil.getFileContents(openStream("exotic.out", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
+		Assert.assertEquals(expected, output);
+	}
 }

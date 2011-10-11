@@ -1,0 +1,3 @@
+nop;
+result = aaa->invoke();
+result = {-> 4; }->invoke();
