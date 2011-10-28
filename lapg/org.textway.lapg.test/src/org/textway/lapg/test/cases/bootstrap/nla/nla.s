@@ -35,6 +35,7 @@ Lnull: /null/
 Linvoke: /invoke/  (soft)
 Lreset: /reset/
 Lnop: /nop/
+Lexotic: /exotic/
 
 # grammar
 
@@ -50,6 +51,7 @@ statement ::=
 	  control_statement
 	| expression ';'
 	| Lnop ';'
+	| Lexotic exotic_call ';'
 ;
 
 control_statement ::=

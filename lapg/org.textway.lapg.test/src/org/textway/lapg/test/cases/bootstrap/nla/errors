@@ -1,24 +1,24 @@
-nla.s,111: input: binary_op '+' binary_op
+nla.s,113: input: binary_op '+' binary_op
 resolved as reduce conflict (next: '+', '-')
     binary_op ::= binary_op '+' binary_op
 
-nla.s,111: input: binary_op '+' binary_op
+nla.s,113: input: binary_op '+' binary_op
 resolved as shift conflict (next: '*', '/')
     binary_op ::= binary_op '+' binary_op
 
-nla.s,112: input: binary_op '-' binary_op
+nla.s,114: input: binary_op '-' binary_op
 resolved as reduce conflict (next: '+', '-')
     binary_op ::= binary_op '-' binary_op
 
-nla.s,112: input: binary_op '-' binary_op
+nla.s,114: input: binary_op '-' binary_op
 resolved as shift conflict (next: '*', '/')
     binary_op ::= binary_op '-' binary_op
 
-nla.s,109: input: binary_op '*' binary_op
+nla.s,111: input: binary_op '*' binary_op
 resolved as reduce conflict (next: '+', '-', '*', '/')
     binary_op ::= binary_op '*' binary_op
 
-nla.s,110: input: binary_op '/' binary_op
+nla.s,112: input: binary_op '/' binary_op
 resolved as reduce conflict (next: '+', '-', '*', '/')
     binary_op ::= binary_op '/' binary_op
 

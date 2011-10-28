@@ -44,6 +44,7 @@ public class NlaTestLexer {
 		public static final int Linvoke = 23;
 		public static final int Lreset = 24;
 		public static final int Lnop = 25;
+		public static final int Lexotic = 26;
 	}
 
 	public interface ErrorReporter {
@@ -144,7 +145,7 @@ public class NlaTestLexer {
 
 	private static final short lapg_lexemnum[] = {
 		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		17, 18, 19, 20, 21, 22, 23, 24, 25
+		17, 18, 19, 20, 21, 22, 23, 24, 25, 26
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
@@ -264,6 +265,7 @@ public class NlaTestLexer {
 		subTokensOfIdentifier.put("invoke", 22);
 		subTokensOfIdentifier.put("reset", 23);
 		subTokensOfIdentifier.put("nop", 24);
+		subTokensOfIdentifier.put("exotic", 25);
 	}
 
 	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {

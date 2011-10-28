@@ -26,6 +26,7 @@ Lnull,22:  (null)
 Linvoke,23:  (invoke)
 Lreset,24:  (reset)
 Lnop,25:  (nop)
+Lexotic,26:  (exotic)
 
 Symbols:
 
@@ -92,6 +93,7 @@ States
   statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
+  statement ::= _ Lexotic exotic_call ';'
   control_statement ::= _ reset_statement
   reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
@@ -221,12 +223,31 @@ States
 10: (from 0, Lnop)
   statement ::= Lnop _ ';'
 
-11: (from 0, statements)
+11: (from 0, Lexotic)
+  statement ::= Lexotic _ exotic_call ';'
+  primary_expression ::= _ identifier
+  primary_expression ::= _ '(' expression ')'
+  primary_expression ::= _ icon
+  primary_expression ::= _ Lnull
+  primary_expression ::= _ identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '.' identifier
+  primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
+  primary_expression ::= _ primary_expression '[' expression ']'
+  primary_expression ::= _ exotic_call
+  primary_expression ::= _ closure_rule
+  closure_rule ::= _ closure
+  closure_rule ::= _ '*' identifier
+  closure ::= _ '{' '->' statements_noreset '}'
+  exotic_call ::= _ exotic_call_prefix '(' ')'
+  exotic_call_prefix ::= _ primary_expression '->' Linvoke
+
+12: (from 0, statements)
   input ::= statements _
   statements ::= statements _ statement
   statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
+  statement ::= _ Lexotic exotic_call ';'
   control_statement ::= _ reset_statement
   reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
@@ -259,38 +280,38 @@ States
   expression ::= _ assignment_expression
   expression ::= _ expression ',' assignment_expression
 
-12: (from 0, statement)
+13: (from 0, statement)
   statements ::= statement _
 
-13: (from 0, control_statement)
+14: (from 0, control_statement)
   statement ::= control_statement _
 
-14: (from 0, reset_statement)
+15: (from 0, reset_statement)
   control_statement ::= reset_statement _
 
-15: (from 0, primary_expression)
+16: (from 0, primary_expression)
   primary_expression ::= primary_expression _ '.' identifier
   primary_expression ::= primary_expression _ '.' identifier '(' expression_listopt ')'
   primary_expression ::= primary_expression _ '[' expression ']'
   exotic_call_prefix ::= primary_expression _ '->' Linvoke
   unary_expression ::= primary_expression _
 
-16: (from 0, closure_rule)
+17: (from 0, closure_rule)
   primary_expression ::= closure_rule _
 
-17: (from 0, closure)
+18: (from 0, closure)
   closure_rule ::= closure _
 
-18: (from 0, exotic_call)
+19: (from 0, exotic_call)
   primary_expression ::= exotic_call _
 
-19: (from 0, exotic_call_prefix)
+20: (from 0, exotic_call_prefix)
   exotic_call ::= exotic_call_prefix _ '(' ')'
 
-20: (from 0, unary_expression)
+21: (from 0, unary_expression)
   binary_op ::= unary_expression _
 
-21: (from 0, binary_op)
+22: (from 0, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
@@ -298,17 +319,17 @@ States
   conditional_expression ::= binary_op _
   conditional_expression ::= binary_op _ '?' conditional_expression ':' conditional_expression
 
-22: (from 0, conditional_expression)
+23: (from 0, conditional_expression)
   assignment_expression ::= conditional_expression _
 
-23: (from 0, assignment_expression)
+24: (from 0, assignment_expression)
   expression ::= assignment_expression _
 
-24: (from 0, expression)
+25: (from 0, expression)
   statement ::= expression _ ';'
   expression ::= expression _ ',' assignment_expression
 
-25: (from 1, '=')
+26: (from 1, '=')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -336,7 +357,7 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   assignment_expression ::= identifier '=' _ conditional_expression
 
-26: (from 1, '(')
+27: (from 1, '(')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -368,24 +389,25 @@ States
   expression_list ::= _ conditional_expression
   expression_list ::= _ expression_list ',' conditional_expression
 
-27: (from 3, identifier)
+28: (from 3, identifier)
   primary_expression ::= identifier _
   primary_expression ::= identifier _ '(' expression_listopt ')'
 
-28: (from 3, unary_expression)
+29: (from 3, unary_expression)
   unary_expression ::= '-' unary_expression _
 
-29: (from 4, identifier)
+30: (from 4, identifier)
   closure_rule ::= '*' identifier _
 
-30: (from 5, expression)
+31: (from 5, expression)
   primary_expression ::= '(' expression _ ')'
   expression ::= expression _ ',' assignment_expression
 
-31: (from 6, '->')
+32: (from 6, '->')
   statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
+  statement ::= _ Lexotic exotic_call ';'
   control_statement ::= _ reset_statement
   reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
@@ -421,19 +443,29 @@ States
   expression ::= _ assignment_expression
   expression ::= _ expression ',' assignment_expression
 
-32: (from 7, unary_expression)
+33: (from 7, unary_expression)
   unary_expression ::= '!' unary_expression _
 
-33: (from 9, identifier)
+34: (from 9, identifier)
   reset_statement ::= Lreset identifier _ ';'
 
-34: (from 10, ';')
+35: (from 10, ';')
   statement ::= Lnop ';' _
 
-35: (from 11, statement)
+36: (from 11, primary_expression)
+  primary_expression ::= primary_expression _ '.' identifier
+  primary_expression ::= primary_expression _ '.' identifier '(' expression_listopt ')'
+  primary_expression ::= primary_expression _ '[' expression ']'
+  exotic_call_prefix ::= primary_expression _ '->' Linvoke
+
+37: (from 11, exotic_call)
+  statement ::= Lexotic exotic_call _ ';'
+  primary_expression ::= exotic_call _
+
+38: (from 12, statement)
   statements ::= statements statement _
 
-36: (from 15, '[')
+39: (from 16, '[')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -465,17 +497,17 @@ States
   expression ::= _ assignment_expression
   expression ::= _ expression ',' assignment_expression
 
-37: (from 15, '.')
+40: (from 16, '.')
   primary_expression ::= primary_expression '.' _ identifier
   primary_expression ::= primary_expression '.' _ identifier '(' expression_listopt ')'
 
-38: (from 15, '->')
+41: (from 16, '->')
   exotic_call_prefix ::= primary_expression '->' _ Linvoke
 
-39: (from 19, '(')
+42: (from 20, '(')
   exotic_call ::= exotic_call_prefix '(' _ ')'
 
-40: (from 21, '+')
+43: (from 22, '+')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -501,7 +533,7 @@ States
   binary_op ::= binary_op '+' _ binary_op
   binary_op ::= _ binary_op '-' binary_op
 
-41: (from 21, '-')
+44: (from 22, '-')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -527,7 +559,7 @@ States
   binary_op ::= _ binary_op '-' binary_op
   binary_op ::= binary_op '-' _ binary_op
 
-42: (from 21, '*')
+45: (from 22, '*')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -553,7 +585,7 @@ States
   binary_op ::= _ binary_op '+' binary_op
   binary_op ::= _ binary_op '-' binary_op
 
-43: (from 21, '/')
+46: (from 22, '/')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -579,7 +611,7 @@ States
   binary_op ::= _ binary_op '+' binary_op
   binary_op ::= _ binary_op '-' binary_op
 
-44: (from 21, '?')
+47: (from 22, '?')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -607,10 +639,10 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   conditional_expression ::= binary_op '?' _ conditional_expression ':' conditional_expression
 
-45: (from 24, ';')
+48: (from 25, ';')
   statement ::= expression ';' _
 
-46: (from 24, ',')
+49: (from 25, ',')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -640,29 +672,30 @@ States
   assignment_expression ::= _ identifier '=' conditional_expression
   expression ::= expression ',' _ assignment_expression
 
-47: (from 25, conditional_expression)
+50: (from 26, conditional_expression)
   assignment_expression ::= identifier '=' conditional_expression _
 
-48: (from 26, conditional_expression)
+51: (from 27, conditional_expression)
   expression_list ::= conditional_expression _
 
-49: (from 26, expression_list)
+52: (from 27, expression_list)
   expression_listopt ::= expression_list _
   expression_list ::= expression_list _ ',' conditional_expression
 
-50: (from 26, expression_listopt)
+53: (from 27, expression_listopt)
   primary_expression ::= identifier '(' expression_listopt _ ')'
 
-51: (from 30, ')')
+54: (from 31, ')')
   primary_expression ::= '(' expression ')' _
 
-52: (from 31, statement)
+55: (from 32, statement)
   statements_noreset ::= statement _
 
-53: (from 31, statements_noreset)
+56: (from 32, statements_noreset)
   statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
+  statement ::= _ Lexotic exotic_call ';'
   control_statement ::= _ reset_statement
   reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
@@ -697,58 +730,61 @@ States
   expression ::= _ assignment_expression
   expression ::= _ expression ',' assignment_expression
 
-54: (from 33, ';')
+57: (from 34, ';')
   reset_statement ::= Lreset identifier ';' _
 
-55: (from 36, expression)
+58: (from 37, ';')
+  statement ::= Lexotic exotic_call ';' _
+
+59: (from 39, expression)
   primary_expression ::= primary_expression '[' expression _ ']'
   expression ::= expression _ ',' assignment_expression
 
-56: (from 37, identifier)
+60: (from 40, identifier)
   primary_expression ::= primary_expression '.' identifier _
   primary_expression ::= primary_expression '.' identifier _ '(' expression_listopt ')'
 
-57: (from 38, Linvoke)
+61: (from 41, Linvoke)
   exotic_call_prefix ::= primary_expression '->' Linvoke _
 
-58: (from 39, ')')
+62: (from 42, ')')
   exotic_call ::= exotic_call_prefix '(' ')' _
 
-59: (from 40, binary_op)
+63: (from 43, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op '+' binary_op _
   binary_op ::= binary_op _ '-' binary_op
 
-60: (from 41, binary_op)
+64: (from 44, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
   binary_op ::= binary_op '-' binary_op _
 
-61: (from 42, binary_op)
+65: (from 45, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op '*' binary_op _
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
 
-62: (from 43, binary_op)
+66: (from 46, binary_op)
   binary_op ::= binary_op _ '*' binary_op
   binary_op ::= binary_op _ '/' binary_op
   binary_op ::= binary_op '/' binary_op _
   binary_op ::= binary_op _ '+' binary_op
   binary_op ::= binary_op _ '-' binary_op
 
-63: (from 44, conditional_expression)
+67: (from 47, conditional_expression)
   conditional_expression ::= binary_op '?' conditional_expression _ ':' conditional_expression
 
-64: (from 46, assignment_expression)
+68: (from 49, assignment_expression)
   expression ::= expression ',' assignment_expression _
 
-65: (from 49, ',')
+69: (from 52, ',')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -776,19 +812,19 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   expression_list ::= expression_list ',' _ conditional_expression
 
-66: (from 50, ')')
+70: (from 53, ')')
   primary_expression ::= identifier '(' expression_listopt ')' _
 
-67: (from 53, '}')
+71: (from 56, '}')
   closure ::= '{' '->' statements_noreset '}' _
 
-68: (from 53, statement)
+72: (from 56, statement)
   statements_noreset ::= statements_noreset statement _
 
-69: (from 55, ']')
+73: (from 59, ']')
   primary_expression ::= primary_expression '[' expression ']' _
 
-70: (from 56, '(')
+74: (from 60, '(')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -820,7 +856,7 @@ States
   expression_list ::= _ conditional_expression
   expression_list ::= _ expression_list ',' conditional_expression
 
-71: (from 63, ':')
+75: (from 67, ':')
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -848,21 +884,21 @@ States
   conditional_expression ::= _ binary_op '?' conditional_expression ':' conditional_expression
   conditional_expression ::= binary_op '?' conditional_expression ':' _ conditional_expression
 
-72: (from 65, conditional_expression)
+76: (from 69, conditional_expression)
   expression_list ::= expression_list ',' conditional_expression _
 
-73: (from 70, expression_listopt)
+77: (from 74, expression_listopt)
   primary_expression ::= primary_expression '.' identifier '(' expression_listopt _ ')'
 
-74: (from 71, conditional_expression)
+78: (from 75, conditional_expression)
   conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression _
 
-75: (from 73, ')')
+79: (from 77, ')')
   primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')' _
 
-76: (from 0, input)
+80: (from 0, input)
 
-77: (from 76, eoi)
+81: (from 80, eoi)
 
 Rules for var:
 
@@ -873,6 +909,7 @@ input ::
 	statement ::= control_statement
 	statement ::= expression ';'
 	statement ::= Lnop ';'
+	statement ::= Lexotic exotic_call ';'
 	control_statement ::= reset_statement
 	reset_statement ::= Lreset identifier ';'
 	primary_expression ::= identifier
@@ -910,6 +947,7 @@ statements ::
 	statement ::= control_statement
 	statement ::= expression ';'
 	statement ::= Lnop ';'
+	statement ::= Lexotic exotic_call ';'
 	control_statement ::= reset_statement
 	reset_statement ::= Lreset identifier ';'
 	primary_expression ::= identifier
@@ -945,6 +983,7 @@ statement ::
 	statement ::= control_statement
 	statement ::= expression ';'
 	statement ::= Lnop ';'
+	statement ::= Lexotic exotic_call ';'
 	control_statement ::= reset_statement
 	reset_statement ::= Lreset identifier ';'
 	primary_expression ::= identifier
@@ -1007,6 +1046,7 @@ statements_noreset ::
 	statement ::= control_statement
 	statement ::= expression ';'
 	statement ::= Lnop ';'
+	statement ::= Lexotic exotic_call ';'
 	control_statement ::= reset_statement
 	reset_statement ::= Lreset identifier ';'
 	primary_expression ::= identifier
@@ -1269,118 +1309,120 @@ Graph:
  7:  11
  8:  12
  9:  13
- 14:  72 33
- 15:  73 34
- 16:  74 35
- 17:  75 36
- 18:  76 37
- 19:  77 38
- 20:  78 39
- 21:  79 40
- 22:  80 41
- 23:  81 42
- 24:  82 43
- 25:  83 44
- 26:  84 45
- 27:  85 46
- 28:  86 47
- 29:  87 48
- 30:  88 49
- 31:  89 50
- 32:  90 51
- 33:  52
- 34:  53
- 35:  54
- 36:  55
- 37:  56
- 38:  57
- 39:  58
- 40:  59
- 41:  60
- 42:  61
- 43:  62
- 44:  63
- 45:  64
- 46:  65
- 47:  66
- 48:  67
- 49:  68
- 50:  69
- 51:  70
- 71:  5 4
- 110:  14 113 111
- 111:  15 113 111
- 112:  16 113 111
- 113:  17 113 111
- 114:  18 113 111
- 115:  19 113 111
- 116:  20 113 111
- 117:  21 113 111
- 118:  22 113 111
- 119:  23 113 111
- 120:  24 113 111
- 121:  25 113 111
- 122:  26 113 111
- 123:  27 113 111
- 124:  28 113 111
- 125:  29 113 111
- 126:  30 113 111
- 127:  31 113 111
- 128:  32 113 111
- 129:  110 138 139 136 137
- 130:  112 138 139 136 137
- 131:  114 138 139 136 137
- 132:  115 138 139 136 137
- 133:  116 138 139 136 137
- 134:  117 138 139 136 137
- 135:  118 138 139 136 137
- 136:  119 138 139 136 137
- 137:  120 138 139 136 137
- 138:  121 138 139 136 137
- 139:  122 138 139 136 137
- 140:  123 138 139 136 137
- 141:  124 138 139 136 137
- 142:  125 138 139 136 137
- 143:  126 138 139 136 137
- 144:  127 138 139 136 137
- 145:  128 138 139 136 137
- 146:  129 158
- 147:  130 158
- 148:  131 158
- 149:  132 158
- 150:  133 158
- 151:  134 158
- 152:  135 158
- 153:  140 158
- 154:  141 158
- 155:  142 158
- 156:  143 158
- 157:  144 158
- 158:  145 158
- 159:  146 149
- 160:  147 149
- 161:  148 149
- 162:  151 149
- 163:  152 149
- 164:  154 149
- 165:  155 149
- 166:  159 164
- 167:  160 164
- 168:  161 164
- 169:  162 164
- 170:  163 164
- 171:  165 164
- 172:  150 156
- 173:  157 156
- 174:  172
- 175:  173
+ 14:  75 34
+ 15:  76 35
+ 16:  77 36
+ 17:  78 37
+ 18:  79 38
+ 19:  80 39
+ 20:  81 40
+ 21:  82 41
+ 22:  83 42
+ 23:  84 43
+ 24:  85 44
+ 25:  86 45
+ 26:  87 46
+ 27:  88 47
+ 28:  89 48
+ 29:  90 49
+ 30:  91 50
+ 31:  92 51
+ 32:  93 52
+ 33:  94 53
+ 34:  54
+ 35:  55
+ 36:  56
+ 37:  57
+ 38:  58
+ 39:  59
+ 40:  60
+ 41:  61
+ 42:  62
+ 43:  63
+ 44:  64
+ 45:  65
+ 46:  66
+ 47:  67
+ 48:  68
+ 49:  69
+ 50:  70
+ 51:  71
+ 52:  72
+ 53:  73
+ 74:  5 4
+ 115:  14 118 116
+ 116:  15 118 116
+ 117:  16 118 116
+ 118:  17 118 116
+ 119:  19 118 116
+ 120:  20 118 116
+ 121:  21 118 116
+ 122:  22 118 116
+ 123:  23 118 116
+ 124:  24 118 116
+ 125:  25 118 116
+ 126:  26 118 116
+ 127:  27 118 116
+ 128:  28 118 116
+ 129:  29 118 116
+ 130:  30 118 116
+ 131:  31 118 116
+ 132:  32 118 116
+ 133:  33 118 116
+ 134:  115 143 144 141 142
+ 135:  117 143 144 141 142
+ 136:  119 143 144 141 142
+ 137:  120 143 144 141 142
+ 138:  121 143 144 141 142
+ 139:  122 143 144 141 142
+ 140:  123 143 144 141 142
+ 141:  124 143 144 141 142
+ 142:  125 143 144 141 142
+ 143:  126 143 144 141 142
+ 144:  127 143 144 141 142
+ 145:  128 143 144 141 142
+ 146:  129 143 144 141 142
+ 147:  130 143 144 141 142
+ 148:  131 143 144 141 142
+ 149:  132 143 144 141 142
+ 150:  133 143 144 141 142
+ 151:  134 163
+ 152:  135 163
+ 153:  136 163
+ 154:  137 163
+ 155:  138 163
+ 156:  139 163
+ 157:  140 163
+ 158:  145 163
+ 159:  146 163
+ 160:  147 163
+ 161:  148 163
+ 162:  149 163
+ 163:  150 163
+ 164:  151 154
+ 165:  152 154
+ 166:  153 154
+ 167:  156 154
+ 168:  157 154
+ 169:  159 154
+ 170:  160 154
+ 171:  164 169
+ 172:  165 169
+ 173:  166 169
+ 174:  167 169
+ 175:  168 169
+ 176:  170 169
+ 177:  155 161
+ 178:  162 161
+ 179:  177
+ 180:  178
 
 Graph:
  1:  0
  2:  1
  3:  1
- 4:  71
- 5:  71
+ 4:  74
+ 5:  74
  6:  2
  7:  3
  8:  4
@@ -1389,91 +1431,89 @@ Graph:
  11:  7
  12:  8
  13:  9
- 14:  110
- 15:  111
- 16:  112
- 17:  113
- 18:  114
- 19:  115
- 20:  116
- 21:  117
- 22:  118
- 23:  119
- 24:  120
- 25:  121
- 26:  122
- 27:  123
- 28:  124
- 29:  125
- 30:  126
- 31:  127
- 32:  128
- 33:  14
- 34:  15
- 35:  16
- 36:  17
- 37:  18
- 38:  19
- 39:  20
- 40:  21
- 41:  22
- 42:  23
- 43:  24
- 44:  25
- 45:  26
- 46:  27
- 47:  28
- 48:  29
- 49:  30
- 50:  31
- 51:  32
- 52:  33
- 53:  34
- 54:  35
- 55:  36
- 56:  37
- 57:  38
- 58:  39
- 59:  40
- 60:  41
- 61:  42
- 62:  43
- 63:  44
- 64:  45
- 65:  46
- 66:  47
- 67:  48
- 68:  49
- 69:  50
- 70:  51
- 72:  14
- 73:  15
- 74:  16
- 75:  17
- 76:  18
- 77:  19
- 78:  20
- 79:  21
- 80:  22
- 81:  23
- 82:  24
- 83:  25
- 84:  26
- 85:  27
- 86:  28
- 87:  29
- 88:  30
- 89:  31
- 90:  32
- 110:  129
- 111:  110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128
- 112:  130
- 113:  110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128
- 114:  131
- 115:  132
- 116:  133
- 117:  134
- 118:  135
+ 14:  115
+ 15:  116
+ 16:  117
+ 17:  118
+ 19:  119
+ 20:  120
+ 21:  121
+ 22:  122
+ 23:  123
+ 24:  124
+ 25:  125
+ 26:  126
+ 27:  127
+ 28:  128
+ 29:  129
+ 30:  130
+ 31:  131
+ 32:  132
+ 33:  133
+ 34:  14
+ 35:  15
+ 36:  16
+ 37:  17
+ 38:  18
+ 39:  19
+ 40:  20
+ 41:  21
+ 42:  22
+ 43:  23
+ 44:  24
+ 45:  25
+ 46:  26
+ 47:  27
+ 48:  28
+ 49:  29
+ 50:  30
+ 51:  31
+ 52:  32
+ 53:  33
+ 54:  34
+ 55:  35
+ 56:  36
+ 57:  37
+ 58:  38
+ 59:  39
+ 60:  40
+ 61:  41
+ 62:  42
+ 63:  43
+ 64:  44
+ 65:  45
+ 66:  46
+ 67:  47
+ 68:  48
+ 69:  49
+ 70:  50
+ 71:  51
+ 72:  52
+ 73:  53
+ 75:  14
+ 76:  15
+ 77:  16
+ 78:  17
+ 79:  18
+ 80:  19
+ 81:  20
+ 82:  21
+ 83:  22
+ 84:  23
+ 85:  24
+ 86:  25
+ 87:  26
+ 88:  27
+ 89:  28
+ 90:  29
+ 91:  30
+ 92:  31
+ 93:  32
+ 94:  33
+ 115:  134
+ 116:  115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133
+ 117:  135
+ 118:  115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133
  119:  136
  120:  137
  121:  138
@@ -1491,253 +1531,266 @@ Graph:
  133:  150
  134:  151
  135:  152
- 136:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
- 137:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
- 138:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
- 139:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
- 140:  153
- 141:  154
- 142:  155
- 143:  156
- 144:  157
+ 136:  153
+ 137:  154
+ 138:  155
+ 139:  156
+ 140:  157
+ 141:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
+ 142:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
+ 143:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
+ 144:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
  145:  158
  146:  159
  147:  160
  148:  161
- 149:  159 160 161 162 163 164 165
- 150:  172
- 151:  162
- 152:  163
- 154:  164
- 155:  165
- 156:  172 173
- 157:  173
- 158:  146 147 148 149 150 151 152 153 154 155 156 157 158
- 159:  166
- 160:  167
- 161:  168
- 162:  169
- 163:  170
- 164:  166 167 168 169 170 171
- 165:  171
- 172:  174
- 173:  175
+ 149:  162
+ 150:  163
+ 151:  164
+ 152:  165
+ 153:  166
+ 154:  164 165 166 167 168 169 170
+ 155:  177
+ 156:  167
+ 157:  168
+ 159:  169
+ 160:  170
+ 161:  177 178
+ 162:  178
+ 163:  151 152 153 154 155 156 157 158 159 160 161 162 163
+ 164:  171
+ 165:  172
+ 166:  173
+ 167:  174
+ 168:  175
+ 169:  171 172 173 174 175 176
+ 170:  176
+ 177:  179
+ 178:  180
 
 Follow:
-0    ->   76	 eoi
-0    ->   11	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-0    ->   12	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-11   ->   35	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-31   ->   52	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-53   ->   68	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-0    ->   13	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-11   ->   13	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-31   ->   13	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-53   ->   13	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-0    ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-11   ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop
-31   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-53   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
-0    ->   15	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-3    ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-5    ->   15	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-7    ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-11   ->   15	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-25   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-26   ->   15	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-31   ->   15	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-36   ->   15	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
-40   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-41   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-42   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-43   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-44   ->   15	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
-46   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-53   ->   15	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-65   ->   15	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-70   ->   15	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-71   ->   15	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+0    ->   80	 eoi
+0    ->   12	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+0    ->   13	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+12   ->   38	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+32   ->   55	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+56   ->   72	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+0    ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+12   ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+32   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+56   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+0    ->   15	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+12   ->   15	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
+32   ->   15	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+56   ->   15	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
 0    ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 7    ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-11   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-25   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-26   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-31   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-36   ->   16	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
-40   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-41   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-42   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+11   ->   36	 '[' '.' '->'
+12   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+26   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+27   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+32   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+39   ->   16	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
 43   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-44   ->   16	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
-46   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-53   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-65   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-70   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-71   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+44   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+45   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+46   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+47   ->   16	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+49   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+56   ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+69   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+74   ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+75   ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 0    ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 7    ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-11   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-25   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-26   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-31   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-36   ->   17	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
-40   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-41   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-42   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+11   ->   17	 '[' '.' '->'
+12   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+26   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+27   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+32   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+39   ->   17	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
 43   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-44   ->   17	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
-46   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-53   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-65   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-70   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-71   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-31   ->   53	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop
+44   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+45   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+46   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+47   ->   17	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+49   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+56   ->   17	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+69   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+74   ->   17	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+75   ->   17	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 0    ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 7    ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-11   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-25   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-26   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-31   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-36   ->   18	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
-40   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-41   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-42   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+11   ->   18	 '[' '.' '->'
+12   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+26   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+27   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+32   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+39   ->   18	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
 43   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-44   ->   18	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
-46   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-53   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
-65   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-70   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
-71   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-0    ->   19	 '('
-3    ->   19	 '('
-5    ->   19	 '('
-7    ->   19	 '('
-11   ->   19	 '('
-25   ->   19	 '('
-26   ->   19	 '('
-31   ->   19	 '('
-36   ->   19	 '('
-40   ->   19	 '('
-41   ->   19	 '('
-42   ->   19	 '('
-43   ->   19	 '('
-44   ->   19	 '('
-46   ->   19	 '('
-53   ->   19	 '('
-65   ->   19	 '('
-70   ->   19	 '('
-71   ->   19	 '('
-0    ->   20	 ';' '+' '-' '*' '/' ',' '?'
-3    ->   28	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-5    ->   20	 '+' '-' '*' '/' ')' ',' '?'
-7    ->   32	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-11   ->   20	 ';' '+' '-' '*' '/' ',' '?'
-25   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-26   ->   20	 '+' '-' '*' '/' ')' ',' '?'
-31   ->   20	 ';' '+' '-' '*' '/' ',' '?'
-36   ->   20	 '+' '-' '*' '/' ']' ',' '?'
-40   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-41   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-42   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-43   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-44   ->   20	 '+' '-' '*' '/' '?' ':'
-46   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-53   ->   20	 ';' '+' '-' '*' '/' ',' '?'
-65   ->   20	 '+' '-' '*' '/' ')' ',' '?'
-70   ->   20	 '+' '-' '*' '/' ')' ',' '?'
-71   ->   20	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+44   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+45   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+46   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+47   ->   18	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+49   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+56   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+69   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+74   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+75   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+32   ->   56	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+0    ->   19	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+3    ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+5    ->   19	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+7    ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+11   ->   37	 ';' '[' '.' '->'
+12   ->   19	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+26   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+27   ->   19	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+32   ->   19	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+39   ->   19	 '+' '-' '*' '/' '[' ']' ',' '.' '?' '->'
+43   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+44   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+45   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+46   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+47   ->   19	 '+' '-' '*' '/' '[' '.' '?' ':' '->'
+49   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
+56   ->   19	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
+69   ->   19	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+74   ->   19	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
+75   ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
+0    ->   20	 '('
+3    ->   20	 '('
+5    ->   20	 '('
+7    ->   20	 '('
+11   ->   20	 '('
+12   ->   20	 '('
+26   ->   20	 '('
+27   ->   20	 '('
+32   ->   20	 '('
+39   ->   20	 '('
+43   ->   20	 '('
+44   ->   20	 '('
+45   ->   20	 '('
+46   ->   20	 '('
+47   ->   20	 '('
+49   ->   20	 '('
+56   ->   20	 '('
+69   ->   20	 '('
+74   ->   20	 '('
+75   ->   20	 '('
 0    ->   21	 ';' '+' '-' '*' '/' ',' '?'
+3    ->   29	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 5    ->   21	 '+' '-' '*' '/' ')' ',' '?'
-11   ->   21	 ';' '+' '-' '*' '/' ',' '?'
-25   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-26   ->   21	 '+' '-' '*' '/' ')' ',' '?'
-31   ->   21	 ';' '+' '-' '*' '/' ',' '?'
-36   ->   21	 '+' '-' '*' '/' ']' ',' '?'
-40   ->   59	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-41   ->   60	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-42   ->   61	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-43   ->   62	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-44   ->   21	 '+' '-' '*' '/' '?' ':'
-46   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
-53   ->   21	 ';' '+' '-' '*' '/' ',' '?'
-65   ->   21	 '+' '-' '*' '/' ')' ',' '?'
-70   ->   21	 '+' '-' '*' '/' ')' ',' '?'
-71   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-0    ->   22	 ';' ','
-5    ->   22	 ')' ','
-11   ->   22	 ';' ','
-25   ->   47	 ';' ')' ']' ','
-26   ->   48	 ')' ','
-31   ->   22	 ';' ','
-36   ->   22	 ']' ','
-44   ->   63	 ':'
-46   ->   22	 ';' ')' ']' ','
-53   ->   22	 ';' ','
-65   ->   72	 ')' ','
-70   ->   48	 ')' ','
-71   ->   74	 ';' ')' ']' ',' ':'
+7    ->   33	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+12   ->   21	 ';' '+' '-' '*' '/' ',' '?'
+26   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+27   ->   21	 '+' '-' '*' '/' ')' ',' '?'
+32   ->   21	 ';' '+' '-' '*' '/' ',' '?'
+39   ->   21	 '+' '-' '*' '/' ']' ',' '?'
+43   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+44   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+45   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+46   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+47   ->   21	 '+' '-' '*' '/' '?' ':'
+49   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+56   ->   21	 ';' '+' '-' '*' '/' ',' '?'
+69   ->   21	 '+' '-' '*' '/' ')' ',' '?'
+74   ->   21	 '+' '-' '*' '/' ')' ',' '?'
+75   ->   21	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+0    ->   22	 ';' '+' '-' '*' '/' ',' '?'
+5    ->   22	 '+' '-' '*' '/' ')' ',' '?'
+12   ->   22	 ';' '+' '-' '*' '/' ',' '?'
+26   ->   22	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+27   ->   22	 '+' '-' '*' '/' ')' ',' '?'
+32   ->   22	 ';' '+' '-' '*' '/' ',' '?'
+39   ->   22	 '+' '-' '*' '/' ']' ',' '?'
+43   ->   63	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+44   ->   64	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+45   ->   65	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+46   ->   66	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
+47   ->   22	 '+' '-' '*' '/' '?' ':'
+49   ->   22	 ';' '+' '-' '*' '/' ')' ']' ',' '?'
+56   ->   22	 ';' '+' '-' '*' '/' ',' '?'
+69   ->   22	 '+' '-' '*' '/' ')' ',' '?'
+74   ->   22	 '+' '-' '*' '/' ')' ',' '?'
+75   ->   22	 ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
 0    ->   23	 ';' ','
 5    ->   23	 ')' ','
-11   ->   23	 ';' ','
-31   ->   23	 ';' ','
-36   ->   23	 ']' ','
-46   ->   64	 ';' ')' ']' ','
-53   ->   23	 ';' ','
+12   ->   23	 ';' ','
+26   ->   50	 ';' ')' ']' ','
+27   ->   51	 ')' ','
+32   ->   23	 ';' ','
+39   ->   23	 ']' ','
+47   ->   67	 ':'
+49   ->   23	 ';' ')' ']' ','
+56   ->   23	 ';' ','
+69   ->   76	 ')' ','
+74   ->   51	 ')' ','
+75   ->   78	 ';' ')' ']' ',' ':'
 0    ->   24	 ';' ','
-5    ->   30	 ')' ','
-11   ->   24	 ';' ','
-31   ->   24	 ';' ','
-36   ->   55	 ']' ','
-53   ->   24	 ';' ','
-26   ->   49	 ')' ','
-70   ->   49	 ')' ','
-26   ->   50	 ')'
-70   ->   73	 ')'
+5    ->   24	 ')' ','
+12   ->   24	 ';' ','
+32   ->   24	 ';' ','
+39   ->   24	 ']' ','
+49   ->   68	 ';' ')' ']' ','
+56   ->   24	 ';' ','
+0    ->   25	 ';' ','
+5    ->   31	 ')' ','
+12   ->   25	 ';' ','
+32   ->   25	 ';' ','
+39   ->   59	 ']' ','
+56   ->   25	 ';' ','
+27   ->   52	 ')' ','
+74   ->   52	 ')' ','
+27   ->   53	 ')'
+74   ->   77	 ')'
 
 Lookaheads:
 1:
   primary_expression ::= identifier _
   >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
-11:
+12:
   input ::= statements _
   >>> eoi
-15:
+16:
   unary_expression ::= primary_expression _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-21:
+22:
   conditional_expression ::= binary_op _
   >>> ';' ')' ']' ',' ':'
-26:
+27:
   expression_listopt ::= _
   >>> ')'
-27:
+28:
   primary_expression ::= identifier _
   >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-49:
+37:
+  primary_expression ::= exotic_call _
+  >>> '[' '.' '->'
+52:
   expression_listopt ::= expression_list _
   >>> ')'
-56:
+60:
   primary_expression ::= primary_expression '.' identifier _
   >>> ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-59:
+63:
   binary_op ::= binary_op '+' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-60:
+64:
   binary_op ::= binary_op '-' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-61:
+65:
   binary_op ::= binary_op '*' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-62:
+66:
   binary_op ::= binary_op '/' binary_op _
   >>> ';' '+' '-' '*' '/' ')' ']' ',' '?' ':'
-70:
+74:
   expression_listopt ::= _
   >>> ')'

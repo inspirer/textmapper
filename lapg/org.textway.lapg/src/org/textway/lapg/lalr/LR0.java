@@ -330,15 +330,15 @@ class LR0 extends ContextFree {
 	 */
 	private void nla_prepare(int startVar, int inherited_nla) {
 		int existing = var_nla[startVar];
-		if (existing > -2 && nla.isSubset(existing, inherited_nla)) {
+		if (existing > -2 && (nla == null || nla.isSubset(existing, inherited_nla))) {
 			return;
 		}
-		var_nla[startVar] = existing == -2 ? inherited_nla : nla.intersectSet(existing, inherited_nla);
+		var_nla[startVar] = existing == -2 ? inherited_nla : nla == null ? -1 : nla.intersectSet(existing, inherited_nla);
 
 		for (int ruleIndex : derives[startVar]) {
 			int e = rright[rindex[ruleIndex]];
 			if (e >= nterms) {
-				int composite_nla = nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
+				int composite_nla = nla == null ? -1 : nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
 				nla_prepare(e - nterms, composite_nla);
 			}
 		}
@@ -654,7 +654,11 @@ class LR0 extends ContextFree {
 			}
 		}
 
-		if(var_nla == null) return;
+		if(var_nla == null) {
+			var_nla = new int[nvars];
+			var_used = new int[varset];
+			var_templist = new int[nvars];
+		}
 		status.debug("\nRules for var:\n\n");
 
 		for (int var = 0; var < nvars; var++) {
