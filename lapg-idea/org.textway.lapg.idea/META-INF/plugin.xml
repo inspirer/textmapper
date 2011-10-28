@@ -18,7 +18,7 @@
 	<id>org.textway.lapg.idea</id>
 	<name>Lapg support</name>
 	<category>Custom Languages</category>
-	<version>1.3.10</version>
+	<version>1.3.11</version>
 	<vendor url="http://textway.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 	<idea-version since-build="103.72"/>
 
