@@ -53,6 +53,19 @@ public class IntegerSets {
 		return push(hash, set);
 	}
 
+	public int intersectSet(int i1, int i2) {
+		if (i1 == -1 || i2 == -1) return -1;
+		int hash = hashCodeIntersect(sets[i1], sets[i2]);
+		for (HashEntry bucket = htable[toHashIndex(hash)]; bucket != null; bucket = bucket.next) {
+			if (bucket.hash == hash && equalsIntersect(sets[bucket.index], sets[i1], sets[i2])) {
+				return bucket.index;
+			}
+		}
+		int[] set = intersect(sets[i1], sets[i2]);
+		if(set == null) return -1;
+		return push(hash, set);
+	}
+
 	public int mergeSets(int i1, int i2) {
 		if (i1 == -1) return i2;
 		if (i2 == -1) return i1;
@@ -69,6 +82,12 @@ public class IntegerSets {
 	public boolean isStrictSubset(int subset, int set) {
 		if (set == -1 || set == subset) return false;
 		if (subset == -1) return true;
+		return isSubset(subset, set);
+	}
+
+	public boolean isSubset(int subset, int set) {
+		if (set == subset || subset == -1) return true;
+		if (set == -1) return false;
 		int[] set_arr = sets[set];
 		int set_index = 0;
 		for (int el : sets[subset]) {
@@ -126,6 +145,24 @@ public class IntegerSets {
 		return result;
 	}
 
+	private static int hashCodeIntersect(int a[], int b[]) {
+		int result = 1;
+		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
+			if (a[ai] != b[bi]) {
+				if(a[ai] < b[bi])
+					ai++;
+				else bi++;
+				continue;
+			}
+			int element = a[ai++];
+			bi++;
+
+			result = 31 * result + element;
+		}
+
+		return result;
+	}
+
 	private static int[] merge(int a[], int b[]) {
 		int len = a.length + b.length;
 		for (int ai = 0, bi = 0; ai < a.length || bi < b.length; ) {
@@ -151,6 +188,38 @@ public class IntegerSets {
 		return result;
 	}
 
+	private static int[] intersect(int a[], int b[]) {
+		int len = 0;
+		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
+			if (a[ai] != b[bi]) {
+				if(a[ai] < b[bi])
+					ai++;
+				else bi++;
+				continue;
+			}
+			ai++;
+			bi++;
+			len++;
+		}
+		if(len == 0) return null;
+		int[] result = new int[len];
+		int i = 0;
+		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
+			if (a[ai] != b[bi]) {
+				if(a[ai] < b[bi])
+					ai++;
+				else bi++;
+				continue;
+			}
+			int element = a[ai++];
+			bi++;
+			result[i++] = element;
+		}
+
+		assert i == len;
+		return result;
+	}
+
 	private static boolean equals(int[] expected, int[] a, int[] b) {
 		int length = expected.length;
 
@@ -165,5 +234,24 @@ public class IntegerSets {
 		}
 		return i == length && ai == a.length && bi == b.length;
 
+	}
+
+	private static boolean equalsIntersect(int[] expected, int[] a, int[] b) {
+		int length = expected.length;
+
+		int i = 0, ai = 0, bi = 0;
+		while (i < length && ai < a.length && bi < b.length) {
+			if (a[ai] != b[bi]) {
+				if(a[ai] < b[bi])
+					ai++;
+				else bi++;
+				continue;
+			}
+			int element = a[ai++];
+			bi++;
+			if (expected[i++] != element)
+				return false;
+		}
+		return i == length && (ai == a.length || bi == b.length);
 	}
 }

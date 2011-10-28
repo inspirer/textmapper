@@ -101,6 +101,7 @@ expr ::
 	expr ::= Lint
 	expr ::= Lid
 innerexpr ::
+	constraints = (?!Lid)expr innerexpr
 	expr ::= '(' innerexpr ')'
 	expr ::= Lint
 	innerexpr ::= expr

@@ -98,6 +98,9 @@ public class IntegerSetsTest extends TestCase {
 		assertFalse(sets.isStrictSubset(-1, -1));
 		assertFalse(sets.isStrictSubset(1, -1));
 
+		assertFalse(sets.isSubset(1, -1));
+		assertTrue(sets.isSubset(-1, 1));
+
 		sets = new IntegerSets();
 		assertEquals(0, sets.storeSet(new int[]{1, 2}));
 		assertEquals(1, sets.storeSet(new int[]{1}));
@@ -105,5 +108,39 @@ public class IntegerSetsTest extends TestCase {
 		assertFalse(sets.isStrictSubset(0, 1));
 		assertFalse(sets.isStrictSubset(0, 0));
 		assertFalse(sets.isStrictSubset(1, 1));
+
+		assertTrue(sets.isSubset(1, 1));
+		assertTrue(sets.isSubset(0, 0));
+		assertTrue(sets.isSubset(1, 0));
+		assertFalse(sets.isSubset(0, 1));
+	}
+
+	public void testIntersect() {
+		IntegerSets sets = new IntegerSets();
+		assertEquals(-1, sets.intersectSet(-1, -1));
+		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
+		assertEquals(1, sets.storeSet(new int[]{2, 4, 6}));
+		assertEquals(-1, sets.intersectSet(0, 1));
+		assertEquals(-1, sets.intersectSet(-1, 0));
+		assertEquals(-1, sets.intersectSet(1, -1));
+
+		sets = new IntegerSets();
+		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
+		assertEquals(1, sets.storeSet(new int[]{2, 3, 4}));
+		assertEquals(2, sets.intersectSet(0, 1));
+		assertTrue(Arrays.equals(new int[]{3}, sets.sets[2]));
+
+		sets = new IntegerSets();
+		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
+		assertEquals(1, sets.storeSet(new int[]{3}));
+		assertEquals(1, sets.intersectSet(0, 1));
+
+		sets = new IntegerSets();
+		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
+		assertEquals(1, sets.storeSet(new int[]{3, 5, 8}));
+		assertEquals(2, sets.intersectSet(0, 1));
+		assertTrue(Arrays.equals(new int[]{3, 5}, sets.sets[2]));
+		assertEquals(2, sets.intersectSet(0, 1));
+		assertEquals(2, sets.intersectSet(1, 0));
 	}
 }
