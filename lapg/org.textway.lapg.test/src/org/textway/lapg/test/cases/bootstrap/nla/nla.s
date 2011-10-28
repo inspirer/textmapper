@@ -82,10 +82,8 @@ closure ::=
 	'{' '->' statements_noreset '}' ;
 
 statements_noreset ::=
-#	  statements_noreset (?! Lreset) statement
-#	| (?! Lreset) statement
-	  statements_noreset statement
-	| statement
+	  statements_noreset (?! Lreset) statement
+	| (?! Lreset) statement
 ;
 
 
@@ -93,8 +91,7 @@ exotic_call ::=
 	exotic_call_prefix '(' ')' ;
 
 exotic_call_prefix ::=
-#	(?! '(' | '{')
-	primary_expression '->' Linvoke ;
+	(?! '(' | '{') primary_expression '->' Linvoke ;
 
 unary_expression (ExpressionNode) ::=
 	primary_expression

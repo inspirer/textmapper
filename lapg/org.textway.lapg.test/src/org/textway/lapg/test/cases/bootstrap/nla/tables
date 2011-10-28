@@ -226,7 +226,6 @@ States
 11: (from 0, Lexotic)
   statement ::= Lexotic _ exotic_call ';'
   primary_expression ::= _ identifier
-  primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
   primary_expression ::= _ Lnull
   primary_expression ::= _ identifier '(' expression_listopt ')'
@@ -235,9 +234,7 @@ States
   primary_expression ::= _ primary_expression '[' expression ']'
   primary_expression ::= _ exotic_call
   primary_expression ::= _ closure_rule
-  closure_rule ::= _ closure
   closure_rule ::= _ '*' identifier
-  closure ::= _ '{' '->' statements_noreset '}'
   exotic_call ::= _ exotic_call_prefix '(' ')'
   exotic_call_prefix ::= _ primary_expression '->' Linvoke
 
@@ -404,12 +401,9 @@ States
   expression ::= expression _ ',' assignment_expression
 
 32: (from 6, '->')
-  statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
   statement ::= _ Lexotic exotic_call ';'
-  control_statement ::= _ reset_statement
-  reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -692,12 +686,9 @@ States
   statements_noreset ::= statement _
 
 56: (from 32, statements_noreset)
-  statement ::= _ control_statement
   statement ::= _ expression ';'
   statement ::= _ Lnop ';'
   statement ::= _ Lexotic exotic_call ';'
-  control_statement ::= _ reset_statement
-  reset_statement ::= _ Lreset identifier ';'
   primary_expression ::= _ identifier
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
@@ -903,6 +894,7 @@ States
 Rules for var:
 
 input ::
+	constraints = input statements statement control_statement reset_statement primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression assignment_expression expression
 	input ::= statements
 	statements ::= statements statement
 	statements ::= statement
@@ -942,6 +934,7 @@ input ::
 	expression ::= assignment_expression
 	expression ::= expression ',' assignment_expression
 statements ::
+	constraints = statements statement control_statement reset_statement primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression assignment_expression expression
 	statements ::= statements statement
 	statements ::= statement
 	statement ::= control_statement
@@ -980,6 +973,7 @@ statements ::
 	expression ::= assignment_expression
 	expression ::= expression ',' assignment_expression
 statement ::
+	constraints = statement control_statement reset_statement primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression assignment_expression expression
 	statement ::= control_statement
 	statement ::= expression ';'
 	statement ::= Lnop ';'
@@ -1021,6 +1015,7 @@ control_statement ::
 reset_statement ::
 	reset_statement ::= Lreset identifier ';'
 primary_expression ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1043,12 +1038,10 @@ closure_rule ::
 closure ::
 	closure ::= '{' '->' statements_noreset '}'
 statements_noreset ::
-	statement ::= control_statement
+	constraints = (?!Lreset)statement (?!Lreset)primary_expression (?!Lreset)closure_rule (?!Lreset)closure statements_noreset (?!Lreset)exotic_call (?!Lreset)exotic_call_prefix (?!Lreset)unary_expression (?!Lreset)binary_op (?!Lreset)conditional_expression (?!Lreset)assignment_expression (?!Lreset)expression
 	statement ::= expression ';'
 	statement ::= Lnop ';'
 	statement ::= Lexotic exotic_call ';'
-	control_statement ::= reset_statement
-	reset_statement ::= Lreset identifier ';'
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1081,8 +1074,8 @@ statements_noreset ::
 	expression ::= assignment_expression
 	expression ::= expression ',' assignment_expression
 exotic_call ::
+	constraints = (?!'(', '{')primary_expression (?!'(', '{')closure_rule exotic_call exotic_call_prefix
 	primary_expression ::= identifier
-	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
 	primary_expression ::= Lnull
 	primary_expression ::= identifier '(' expression_listopt ')'
@@ -1091,14 +1084,12 @@ exotic_call ::
 	primary_expression ::= primary_expression '[' expression ']'
 	primary_expression ::= exotic_call
 	primary_expression ::= closure_rule
-	closure_rule ::= closure
 	closure_rule ::= '*' identifier
-	closure ::= '{' '->' statements_noreset '}'
 	exotic_call ::= exotic_call_prefix '(' ')'
 	exotic_call_prefix ::= primary_expression '->' Linvoke
 exotic_call_prefix ::
+	constraints = (?!'(', '{')primary_expression (?!'(', '{')closure_rule (?!'(', '{')exotic_call exotic_call_prefix
 	primary_expression ::= identifier
-	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
 	primary_expression ::= Lnull
 	primary_expression ::= identifier '(' expression_listopt ')'
@@ -1107,12 +1098,11 @@ exotic_call_prefix ::
 	primary_expression ::= primary_expression '[' expression ']'
 	primary_expression ::= exotic_call
 	primary_expression ::= closure_rule
-	closure_rule ::= closure
 	closure_rule ::= '*' identifier
-	closure ::= '{' '->' statements_noreset '}'
 	exotic_call ::= exotic_call_prefix '(' ')'
 	exotic_call_prefix ::= primary_expression '->' Linvoke
 unary_expression ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1132,6 +1122,7 @@ unary_expression ::
 	unary_expression ::= '!' unary_expression
 	unary_expression ::= '-' unary_expression
 binary_op ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1156,6 +1147,7 @@ binary_op ::
 	binary_op ::= binary_op '+' binary_op
 	binary_op ::= binary_op '-' binary_op
 conditional_expression ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1182,6 +1174,7 @@ conditional_expression ::
 	conditional_expression ::= binary_op
 	conditional_expression ::= binary_op '?' conditional_expression ':' conditional_expression
 assignment_expression ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression assignment_expression
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1210,6 +1203,7 @@ assignment_expression ::
 	assignment_expression ::= conditional_expression
 	assignment_expression ::= identifier '=' conditional_expression
 expression ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression assignment_expression expression
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1240,6 +1234,7 @@ expression ::
 	expression ::= assignment_expression
 	expression ::= expression ',' assignment_expression
 expression_list ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression expression_list
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1268,6 +1263,7 @@ expression_list ::
 	expression_list ::= conditional_expression
 	expression_list ::= expression_list ',' conditional_expression
 expression_listopt ::
+	constraints = primary_expression closure_rule closure exotic_call exotic_call_prefix unary_expression binary_op conditional_expression expression_list expression_listopt
 	primary_expression ::= identifier
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
@@ -1303,153 +1299,148 @@ Graph:
  1:  3 2
  2:  6
  3:  7
- 4:  8
- 5:  9
- 6:  10
- 7:  11
- 8:  12
- 9:  13
- 14:  75 34
- 15:  76 35
- 16:  77 36
- 17:  78 37
- 18:  79 38
- 19:  80 39
- 20:  81 40
- 21:  82 41
- 22:  83 42
- 23:  84 43
- 24:  85 44
- 25:  86 45
- 26:  87 46
- 27:  88 47
- 28:  89 48
- 29:  90 49
- 30:  91 50
- 31:  92 51
- 32:  93 52
- 33:  94 53
- 34:  54
- 35:  55
- 36:  56
- 37:  57
- 38:  58
- 39:  59
- 40:  60
- 41:  61
- 42:  62
- 43:  63
- 44:  64
- 45:  65
- 46:  66
- 47:  67
- 48:  68
- 49:  69
- 50:  70
- 51:  71
- 52:  72
- 53:  73
- 74:  5 4
- 115:  14 118 116
- 116:  15 118 116
- 117:  16 118 116
- 118:  17 118 116
- 119:  19 118 116
- 120:  20 118 116
- 121:  21 118 116
- 122:  22 118 116
- 123:  23 118 116
- 124:  24 118 116
- 125:  25 118 116
- 126:  26 118 116
- 127:  27 118 116
- 128:  28 118 116
- 129:  29 118 116
- 130:  30 118 116
- 131:  31 118 116
- 132:  32 118 116
- 133:  33 118 116
- 134:  115 143 144 141 142
- 135:  117 143 144 141 142
- 136:  119 143 144 141 142
- 137:  120 143 144 141 142
- 138:  121 143 144 141 142
- 139:  122 143 144 141 142
- 140:  123 143 144 141 142
- 141:  124 143 144 141 142
- 142:  125 143 144 141 142
- 143:  126 143 144 141 142
- 144:  127 143 144 141 142
- 145:  128 143 144 141 142
- 146:  129 143 144 141 142
- 147:  130 143 144 141 142
- 148:  131 143 144 141 142
- 149:  132 143 144 141 142
- 150:  133 143 144 141 142
- 151:  134 163
- 152:  135 163
- 153:  136 163
- 154:  137 163
- 155:  138 163
- 156:  139 163
- 157:  140 163
- 158:  145 163
- 159:  146 163
- 160:  147 163
- 161:  148 163
- 162:  149 163
- 163:  150 163
- 164:  151 154
- 165:  152 154
- 166:  153 154
- 167:  156 154
- 168:  157 154
- 169:  159 154
- 170:  160 154
- 171:  164 169
- 172:  165 169
- 173:  166 169
- 174:  167 169
- 175:  168 169
- 176:  170 169
- 177:  155 161
- 178:  162 161
- 179:  177
- 180:  178
+ 6:  8
+ 7:  9
+ 10:  70 30
+ 11:  71 31
+ 12:  72 32
+ 13:  73 33
+ 14:  74 34
+ 15:  75 35
+ 16:  76 36
+ 17:  77 37
+ 18:  78 38
+ 19:  79 39
+ 20:  80 40
+ 21:  81 41
+ 22:  82 42
+ 23:  83 43
+ 24:  84 44
+ 25:  85 45
+ 26:  86 46
+ 27:  87 47
+ 28:  88 48
+ 29:  89 49
+ 30:  50
+ 31:  51
+ 32:  52
+ 33:  53
+ 35:  54
+ 36:  55
+ 37:  56
+ 38:  57
+ 39:  58
+ 40:  59
+ 41:  60
+ 42:  61
+ 43:  62
+ 44:  63
+ 45:  64
+ 46:  65
+ 47:  66
+ 48:  67
+ 49:  68
+ 69:  5 4
+ 110:  10 113 111
+ 111:  11 113 111
+ 112:  12 113 111
+ 113:  13 113 111
+ 114:  15 113 111
+ 115:  16 113 111
+ 116:  17 113 111
+ 117:  18 113 111
+ 118:  19 113 111
+ 119:  20 113 111
+ 120:  21 113 111
+ 121:  22 113 111
+ 122:  23 113 111
+ 123:  24 113 111
+ 124:  25 113 111
+ 125:  26 113 111
+ 126:  27 113 111
+ 127:  28 113 111
+ 128:  29 113 111
+ 129:  110 138 139 136 137
+ 130:  112 138 139 136 137
+ 131:  114 138 139 136 137
+ 132:  115 138 139 136 137
+ 133:  116 138 139 136 137
+ 134:  117 138 139 136 137
+ 135:  118 138 139 136 137
+ 136:  119 138 139 136 137
+ 137:  120 138 139 136 137
+ 138:  121 138 139 136 137
+ 139:  122 138 139 136 137
+ 140:  123 138 139 136 137
+ 141:  124 138 139 136 137
+ 142:  125 138 139 136 137
+ 143:  126 138 139 136 137
+ 144:  127 138 139 136 137
+ 145:  128 138 139 136 137
+ 146:  129 158
+ 147:  130 158
+ 148:  131 158
+ 149:  132 158
+ 150:  133 158
+ 151:  134 158
+ 152:  135 158
+ 153:  140 158
+ 154:  141 158
+ 155:  142 158
+ 156:  143 158
+ 157:  144 158
+ 158:  145 158
+ 159:  146 149
+ 160:  147 149
+ 161:  148 149
+ 162:  151 149
+ 163:  152 149
+ 164:  154 149
+ 165:  155 149
+ 166:  159 164
+ 167:  160 164
+ 168:  161 164
+ 169:  162 164
+ 170:  163 164
+ 171:  165 164
+ 172:  150 156
+ 173:  157 156
+ 174:  172
+ 175:  173
 
 Graph:
  1:  0
  2:  1
  3:  1
- 4:  74
- 5:  74
+ 4:  69
+ 5:  69
  6:  2
  7:  3
- 8:  4
- 9:  5
- 10:  6
- 11:  7
- 12:  8
- 13:  9
- 14:  115
- 15:  116
- 16:  117
- 17:  118
- 19:  119
- 20:  120
- 21:  121
- 22:  122
- 23:  123
- 24:  124
- 25:  125
- 26:  126
- 27:  127
- 28:  128
- 29:  129
- 30:  130
- 31:  131
- 32:  132
- 33:  133
+ 8:  6
+ 9:  7
+ 10:  110
+ 11:  111
+ 12:  112
+ 13:  113
+ 15:  114
+ 16:  115
+ 17:  116
+ 18:  117
+ 19:  118
+ 20:  119
+ 21:  120
+ 22:  121
+ 23:  122
+ 24:  123
+ 25:  124
+ 26:  125
+ 27:  126
+ 28:  127
+ 29:  128
+ 30:  10
+ 31:  11
+ 32:  12
+ 33:  13
  34:  14
  35:  15
  36:  16
@@ -1470,50 +1461,50 @@ Graph:
  51:  31
  52:  32
  53:  33
- 54:  34
- 55:  35
- 56:  36
- 57:  37
- 58:  38
- 59:  39
- 60:  40
- 61:  41
- 62:  42
- 63:  43
- 64:  44
- 65:  45
- 66:  46
- 67:  47
- 68:  48
- 69:  49
- 70:  50
- 71:  51
- 72:  52
- 73:  53
- 75:  14
- 76:  15
- 77:  16
- 78:  17
- 79:  18
- 80:  19
- 81:  20
- 82:  21
- 83:  22
- 84:  23
- 85:  24
- 86:  25
- 87:  26
- 88:  27
- 89:  28
- 90:  29
- 91:  30
- 92:  31
- 93:  32
- 94:  33
- 115:  134
- 116:  115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133
- 117:  135
- 118:  115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133
+ 54:  35
+ 55:  36
+ 56:  37
+ 57:  38
+ 58:  39
+ 59:  40
+ 60:  41
+ 61:  42
+ 62:  43
+ 63:  44
+ 64:  45
+ 65:  46
+ 66:  47
+ 67:  48
+ 68:  49
+ 70:  10
+ 71:  11
+ 72:  12
+ 73:  13
+ 74:  14
+ 75:  15
+ 76:  16
+ 77:  17
+ 78:  18
+ 79:  19
+ 80:  20
+ 81:  21
+ 82:  22
+ 83:  23
+ 84:  24
+ 85:  25
+ 86:  26
+ 87:  27
+ 88:  28
+ 89:  29
+ 110:  129
+ 111:  110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128
+ 112:  130
+ 113:  110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128
+ 114:  131
+ 115:  132
+ 116:  133
+ 117:  134
+ 118:  135
  119:  136
  120:  137
  121:  138
@@ -1531,58 +1522,49 @@ Graph:
  133:  150
  134:  151
  135:  152
- 136:  153
- 137:  154
- 138:  155
- 139:  156
- 140:  157
- 141:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
- 142:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
- 143:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
- 144:  134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150
+ 136:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
+ 137:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
+ 138:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
+ 139:  129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145
+ 140:  153
+ 141:  154
+ 142:  155
+ 143:  156
+ 144:  157
  145:  158
  146:  159
  147:  160
  148:  161
- 149:  162
- 150:  163
- 151:  164
- 152:  165
- 153:  166
- 154:  164 165 166 167 168 169 170
- 155:  177
- 156:  167
- 157:  168
- 159:  169
- 160:  170
- 161:  177 178
- 162:  178
- 163:  151 152 153 154 155 156 157 158 159 160 161 162 163
- 164:  171
- 165:  172
- 166:  173
- 167:  174
- 168:  175
- 169:  171 172 173 174 175 176
- 170:  176
- 177:  179
- 178:  180
+ 149:  159 160 161 162 163 164 165
+ 150:  172
+ 151:  162
+ 152:  163
+ 154:  164
+ 155:  165
+ 156:  172 173
+ 157:  173
+ 158:  146 147 148 149 150 151 152 153 154 155 156 157 158
+ 159:  166
+ 160:  167
+ 161:  168
+ 162:  169
+ 163:  170
+ 164:  166 167 168 169 170 171
+ 165:  171
+ 172:  174
+ 173:  175
 
 Follow:
 0    ->   80	 eoi
 0    ->   12	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
 0    ->   13	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
 12   ->   38	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
-32   ->   55	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
-56   ->   72	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+32   ->   55	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lnop Lexotic
+56   ->   72	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lnop Lexotic
 0    ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
 12   ->   14	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
-32   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
-56   ->   14	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
 0    ->   15	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
 12   ->   15	 eoi identifier icon '-' '*' '(' '{' '!' Lnull Linvoke Lreset Lnop Lexotic
-32   ->   15	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
-56   ->   15	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
 0    ->   16	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   16	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   16	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
@@ -1627,7 +1609,6 @@ Follow:
 3    ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 7    ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-11   ->   18	 '[' '.' '->'
 12   ->   18	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 26   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' '->'
 27   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
@@ -1643,7 +1624,7 @@ Follow:
 69   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 74   ->   18	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'
 75   ->   18	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
-32   ->   56	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lreset Lnop Lexotic
+32   ->   56	 identifier icon '-' '*' '(' '{' '}' '!' Lnull Linvoke Lnop Lexotic
 0    ->   19	 ';' '+' '-' '*' '/' '[' ',' '.' '?' '->'
 3    ->   19	 ';' '+' '-' '*' '/' ')' '[' ']' ',' '.' '?' ':' '->'
 5    ->   19	 '+' '-' '*' '/' ')' '[' ',' '.' '?' '->'

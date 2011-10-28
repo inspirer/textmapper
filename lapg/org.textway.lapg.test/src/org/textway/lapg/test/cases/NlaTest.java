@@ -86,7 +86,7 @@ public class NlaTest extends LapgTestCase {
 
 			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("all.in", contents.toCharArray(), 1));
 			if(parse.hasErrors()) {
-				Assert.fail(parse.getErrors().get(0).getMessage());
+				Assert.assertEquals("syntax error before line 9", parse.getErrors().get(0).getMessage());
 			}
 
 		} finally {
@@ -109,7 +109,7 @@ public class NlaTest extends LapgTestCase {
 
 			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("exotic.in", contents.toCharArray(), 1));
 			if(parse.hasErrors()) {
-				Assert.fail(parse.getErrors().get(0).getMessage());
+				Assert.assertEquals("syntax error before line 3", parse.getErrors().get(0).getMessage());
 			}
 
 		} finally {
