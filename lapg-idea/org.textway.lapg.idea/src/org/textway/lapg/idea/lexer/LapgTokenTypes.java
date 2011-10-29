@@ -65,12 +65,13 @@ public interface LapgTokenTypes {
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
 	IElementType OP_PLUS = new LapgElementType(Lexems.PLUS, "+");
 	IElementType OP_QMARK = new LapgElementType(Lexems.QUESTIONMARK, "?");
+	IElementType QP_QMARK_EXCL = new LapgElementType(Lexems.QUESTIONMARKEXCLAMATION, "?!");
 	IElementType OP_AND = new LapgElementType(Lexems.AMPERSAND, "&");
 	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, OP_AND, OP_AT
+			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, QP_QMARK_EXCL, OP_AND, OP_AT
 	);
 
 	// keywords
