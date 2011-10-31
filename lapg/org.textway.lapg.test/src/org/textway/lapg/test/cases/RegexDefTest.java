@@ -41,6 +41,16 @@ public class RegexDefTest extends TestCase {
 		checkRegex("(((([^A-Z])+)|B)A)");
 	}
 
+	public void testSpecialChars() {
+		checkRegex("\\a");
+		checkRegex("\\b");
+		checkRegex("\\f");
+		checkRegex("\\n");
+		checkRegex("\\r");
+		checkRegex("\\t");
+		checkRegex("\\v");
+	}
+
 	public void testCharClasses() {
 		checkRegex("");
 		checkRegex("\\xf40");

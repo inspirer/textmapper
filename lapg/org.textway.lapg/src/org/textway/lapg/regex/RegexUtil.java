@@ -135,26 +135,6 @@ public class RegexUtil {
 		return c >= 0x20;
 	}
 
-	static char unescape(char c) {
-		switch (c) {
-			case 'a':
-				return 7;
-			case 'b':
-				return '\b';
-			case 'f':
-				return '\f';
-			case 'n':
-				return '\n';
-			case 'r':
-				return '\r';
-			case 't':
-				return '\t';
-			case 'v':
-				return 0xb;
-		}
-		return c;
-	}
-
 	static char unescapeOct(String s) {
 		throw new UnsupportedOperationException("not implemented");
 	}
@@ -257,25 +237,30 @@ public class RegexUtil {
 		}
 	}
 
-	static CharacterSet getClassSet(char c, Builder builder) {
+	static CharacterSet getClassSet(String cl, Builder builder) {
 		builder.clear();
-		if (c == 'w' || c == 'W') {
-			builder.addRange('0', '9');
-			builder.addRange('a', 'z');
-			builder.addRange('A', 'Z');
-			builder.addSymbol('_');
-			return builder.create(c == 'W');
-		} else if (c == 's' || c == 'S') {
-			builder.addSymbol('\n');
-			builder.addSymbol('\r');
-			builder.addSymbol('\f');
-			builder.addSymbol('\t');
-			builder.addSymbol(0x0b);   // \v (Vertical Tab)
-			builder.addSymbol(' ');
-			return builder.create(c == 'S');
-		} else if (c == 'd' || c == 'D') {
-			builder.addRange('0', '9');
-			return builder.create(c == 'D');
+		if(cl.length() == 1) {
+			char c = cl.charAt(0);
+			if (c == 'w' || c == 'W') {
+				builder.addRange('0', '9');
+				builder.addRange('a', 'z');
+				builder.addRange('A', 'Z');
+				builder.addSymbol('_');
+				return builder.create(c == 'W');
+			} else if (c == 's' || c == 'S') {
+				builder.addSymbol('\n');
+				builder.addSymbol('\r');
+				builder.addSymbol('\f');
+				builder.addSymbol('\t');
+				builder.addSymbol(0x0b);   // \v (Vertical Tab)
+				builder.addSymbol(' ');
+				return builder.create(c == 'S');
+			} else if (c == 'd' || c == 'D') {
+				builder.addRange('0', '9');
+				return builder.create(c == 'D');
+			}
+		} else {
+			throw new UnsupportedOperationException("class: " + cl);
 		}
 		return null;
 	}

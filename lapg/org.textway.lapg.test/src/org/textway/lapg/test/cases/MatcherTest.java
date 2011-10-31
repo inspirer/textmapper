@@ -45,6 +45,23 @@ public class MatcherTest extends TestCase {
 		checkMatch("a|ax", "ay", false);
 	}
 
+	public void testSpecialChars() throws RegexpParseException {
+		checkMatch("\\a", "\\a", false);
+		checkMatch("\\a", "\007", true);
+		checkMatch("\\b", "\b", true);
+		checkMatch("\\b", "\\b", false);
+		checkMatch("\\f", "\f", true);
+		checkMatch("\\f", "\\f", false);
+		checkMatch("\\f", "f", false);
+		checkMatch("\\n", "\n", true);
+		checkMatch("\\n", "\\", false);
+		checkMatch("\\n", "\\n", false);
+		checkMatch("\\n", "n", false);
+		checkMatch("\\r", "\r", true);
+		checkMatch("\\t", "\t", true);
+		checkMatch("\\v", "\u000b", true);
+	}
+
 	public void testQuantifiers() {
 		checkMatch("lapg(T*)", "lapgTTTT", true);
 		checkMatch("lapg(T*)", "prefixlapgTTTTTTTTT", false);

@@ -24,11 +24,19 @@ endpositions = "offset"
 genCopyright = true
 
 char(Character): /[^(){}\[\]\.\|\\\/*?+^-]/      							{ $lexem = current().charAt(0); break; }
-char(Character): /\\[^\r\n\t0-9uUxXwWsSdD]/									{ $lexem = RegexUtil.unescape(current().charAt(1)); break; }
+char(Character): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/						{ $lexem = current().charAt(1); break; }
+char(Character): /\\a/														{ $lexem = (char) 7; break; }
+char(Character): /\\b/														{ $lexem = '\b'; break; }
+char(Character): /\\f/														{ $lexem = '\f'; break; }
+char(Character): /\\n/														{ $lexem = '\n'; break; }
+char(Character): /\\r/														{ $lexem = '\r'; break; }
+char(Character): /\\t/														{ $lexem = '\t'; break; }
+char(Character): /\\v/														{ $lexem = (char) 0xb; break; }
 char(Character): /\\[0-7][0-7][0-7]/										{ $lexem = RegexUtil.unescapeOct(current().substring(1)); break; }
 char(Character): /\\[xX][0-9A-Fa-f][0-9A-Fa-f]/								{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
 char(Character): /\\[uU][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f][0-9A-Fa-f]/		{ $lexem = RegexUtil.unescapeHex(current().substring(2)); break; }
-charclass(Character): /\\[wWsSdD]/											{ $lexem = current().charAt(1); break; }
+charclass(String): /\\[wWsSdD]/												{ $lexem = current().substring(1); break; }
+charclass(String): /\\p\{\w+\}/												{ $lexem = current().substring(3, current().length() - 1); break; }
 
 '.':  /\./
 '-':  /-/

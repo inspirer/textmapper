@@ -23,16 +23,16 @@ import org.textway.lapg.regex.RegexDefTree.TextSource;
  */
 public class RegexCharClass extends RegexSet {
 
-	private final char c;
+	private final String cl;
 
-	public RegexCharClass(char c, CharacterSet set, TextSource source, int offset, int endoffset) {
+	public RegexCharClass(String c, CharacterSet set, TextSource source, int offset, int endoffset) {
 		super(set, null, source, offset, endoffset);
-		this.c = c;
+		this.cl = c;
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
 		sb.append('\\');
-		sb.append(c);
+		sb.append(cl.length() == 1 ? cl : "p{" + cl + "}");
 	}
 }

@@ -275,7 +275,7 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 12:  // primitive_part ::= charclass
-				 lapg_gg.sym = new RegexCharClass(((Character)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((Character)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexCharClass(((String)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 13:  // primitive_part ::= '.'
 				 lapg_gg.sym = new RegexAny(source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -311,7 +311,7 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head-0].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 24:  // setsymbol ::= charclass
-				 lapg_gg.sym = new RegexCharClass(((Character)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((Character)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexCharClass(((String)lapg_m[lapg_head-0].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head-0].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 25:  // setsymbol ::= '('
 				 lapg_gg.sym = new RegexChar('(', source, lapg_gg.offset, lapg_gg.endoffset); 
