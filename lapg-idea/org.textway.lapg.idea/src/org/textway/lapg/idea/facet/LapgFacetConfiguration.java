@@ -39,10 +39,12 @@ public class LapgFacetConfiguration implements FacetConfiguration, PersistentSta
 		return new FacetEditorTab[] { new LapgFacetEditorTab() };
 	}
 
+	@SuppressWarnings({"deprecation"})
 	public void readExternal(Element element) throws InvalidDataException {
 		// ignore
 	}
 
+	@SuppressWarnings({"deprecation"})
 	public void writeExternal(Element element) throws WriteExternalException {
 		// ignore
 	}

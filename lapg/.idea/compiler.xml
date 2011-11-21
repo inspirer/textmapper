@@ -23,6 +23,7 @@
       <entry name="?*.types" />
       <entry name="?*.in" />
       <entry name="?*.out" />
+      <entry name="?*.txt" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
