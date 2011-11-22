@@ -76,21 +76,6 @@ public class GeneratedFile {
 	}
 
 	private String fixLineSeparators(String contents) {
-		StringBuilder sb = new StringBuilder(contents.length());
-		int size = contents.length();
-		for (int i = 0; i < size; i++) {
-			char c = contents.charAt(i);
-			if (c == '\n') {
-				sb.append(forceLF ? "\n" : NL);
-			} else if (c == '\r') {
-				sb.append(forceLF ? "\n" : NL);
-				if (i + 1 < size && contents.charAt(i + 1) == '\n') {
-					i++;
-				}
-			} else {
-				sb.append(c);
-			}
-		}
-		return sb.toString();
+		return FileUtil.fixLineSeparators(contents, forceLF ? "\n" : NL);
 	}
 }

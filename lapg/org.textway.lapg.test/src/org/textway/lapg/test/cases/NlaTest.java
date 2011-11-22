@@ -72,6 +72,7 @@ public class NlaTest extends LapgTestCase {
 		er.assertDone();
 
 		String expectedDebug = FileUtil.getFileContents(openStream("syntax_nla1.debug", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
+		expectedDebug = FileUtil.fixLineSeparators(expectedDebug, "\n");
 		Assert.assertEquals(expectedDebug, debugText.toString());
 	}
 
