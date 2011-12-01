@@ -178,7 +178,7 @@ public class BootstrapTest extends TestCase {
 				Assert.assertTrue("file is not generated: " + s, strategy.created.contains(s));
 			}
 
-			Assert.assertEquals((expectedResolvedConflicts - status.conflictCount) + " conflicts instead of " + expectedResolvedConflicts, 0, status.conflictCount);
+			Assert.assertEquals(expectedResolvedConflicts - status.conflictCount + " conflicts instead of " + expectedResolvedConflicts, 0, status.conflictCount);
 
 		} catch (Exception ex) {
 			Assert.fail(ex.getMessage());
@@ -196,6 +196,7 @@ public class BootstrapTest extends TestCase {
 			this.conflictCount = conflictCount;
 		}
 
+		@Override
 		public void report(int kind, String message, SourceElement... anchors) {
 			super.report(kind, message, anchors);
 
@@ -218,6 +219,7 @@ public class BootstrapTest extends TestCase {
 			Assert.fail("exception happend: " + message + ", " + th.toString());
 		}
 
+		@Override
 		public void report(ParserConflict conflict) {
 			super.report(conflict);
 			if (conflict.getKind() == ParserConflict.FIXED) {
@@ -228,6 +230,7 @@ public class BootstrapTest extends TestCase {
 			Assert.fail("parser conflict is not expected: " + conflict.getText());
 		}
 
+		@Override
 		public void debug(String info) {
 			super.debug(info);
 			if (!isDebugMode()) {

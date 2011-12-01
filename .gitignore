@@ -1,6 +1,8 @@
 .DS_Store
+.gradle
 workspace.xml
 dictionaries
+/lapg/.idea/gradle.xml
 /lapg/build.properties
 /lapg/build/
 /lapg/libs/lapg-1*

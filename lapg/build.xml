@@ -9,7 +9,7 @@
 	<property name="source" value="1.5"/>
 
 	<tstamp>
-		<format property="lapg.build.date" pattern="EEE MMM d HH:mm:ss z yyyy" />
+		<format property="lapg.build.date" pattern="EEE MMM d HH:mm:ss z yyyy"/>
 	</tstamp>
 
 	<target name="all" depends="clean,test,deploy">
@@ -20,10 +20,22 @@
 	</target>
 
 	<target name="rev" unless="lapg.revision">
-		<exec executable="git" outputproperty="lapg.revision">
+		<exec executable="git" outputproperty="lapg.revision" osfamily="unix" failifexecutionfails="false" failonerror="false">
 			<arg value="rev-parse"/>
 			<arg value="HEAD"/>
 		</exec>
+		<exec executable="cmd" outputproperty="lapg.revision" osfamily="windows" failifexecutionfails="false" failonerror="false">
+			<arg value="/c"/>
+			<arg value="git"/>
+			<arg value="rev-parse"/>
+			<arg value="HEAD"/>
+		</exec>
+		<condition property="lapg.revision" value="SNAPSHOT">
+			<not>
+				<isset property="lapg.revision"/>
+			</not>
+		</condition>
+		<echo message="revision: ${lapg.revision}"/>
 	</target>
 
 	<target name="build" depends="rev">
@@ -32,7 +44,8 @@
 			<fileset dir="org.textway.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
 			<fileset dir="org.textway.templates/src" excludes="**/*.launch, **/*.java, **/syntax"/>
 		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}" includeantruntime="true">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}"
+			   includeantruntime="true">
 			<src path="org.textway.lapg/src"/>
 			<src path="org.textway.lapg.ant/src"/>
 			<src path="org.textway.templates/src"/>
@@ -76,7 +89,8 @@
 			<fileset dir="org.textway.lapg.test/src" excludes="**/*.launch, **/*.java"/>
 			<fileset dir="org.textway.templates.test/src" excludes="**/*.launch, **/*.java"/>
 		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}" includeantruntime="false">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
+			   includeantruntime="false">
 			<classpath>
 				<pathelement location="build/lapg.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
@@ -133,7 +147,9 @@
 			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla"><arg value="-e"/></java>
+			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla">
+			<arg value="-e"/>
+		</java>
 	</target>
 
 	<target name="plugin" depends="rev">
@@ -187,16 +203,16 @@
 
 	<target name="archive-plugin" depends="plugin">
 		<zip destfile="libs/lapg-idea-${suffix}.zip">
-		    <zipfileset dir="build" includes="lapg/**"/>
-		    <zipfileset file="../lapg-idea/README.txt"/>
+			<zipfileset dir="build" includes="lapg/**"/>
+			<zipfileset file="../lapg-idea/README.txt"/>
 		</zip>
 	</target>
 
 	<target name="archive-lapg">
 		<zip destfile="libs/lapg-${suffix}.zip">
-		    <zipfileset file="libs/lapg-${suffix}.jar"/>
-		    <zipfileset file="libs/lapg-${suffix}-src.jar"/>
-		    <zipfileset file="libs/lapg.sh"/>
+			<zipfileset file="libs/lapg-${suffix}.jar"/>
+			<zipfileset file="libs/lapg-${suffix}-src.jar"/>
+			<zipfileset file="libs/lapg.sh"/>
 		</zip>
 	</target>
 </project>
