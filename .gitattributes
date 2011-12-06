@@ -5,6 +5,7 @@
 *.dsp text
 *.dsw text
 *.txt text
+*.gradle text
 .project text
 *.iml text
 *.s eol=lf
