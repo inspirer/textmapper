@@ -17,7 +17,7 @@ package org.textway.templates.test;
 
 import junit.framework.TestCase;
 
-public class TemplateTestCase extends TestCase {
+public abstract class TemplateTestCase extends TestCase {
 
 	protected String path;
 
