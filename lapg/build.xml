@@ -86,8 +86,8 @@
 	<target name="test" depends="build">
 		<mkdir dir="build/bintests"/>
 		<copy includeemptydirs="false" todir="build/bintests">
-			<fileset dir="org.textway.lapg.test/src" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="org.textway.templates.test/src" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="org.textway.lapg/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="org.textway.templates/tests" excludes="**/*.launch, **/*.java"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
 			   includeantruntime="false">
@@ -95,8 +95,8 @@
 				<pathelement location="build/lapg.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
-			<src path="org.textway.lapg.test/src"/>
-			<src path="org.textway.templates.test/src"/>
+			<src path="org.textway.lapg/tests"/>
+			<src path="org.textway.templates/tests"/>
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
 			<test name="org.textway.lapg.test.TestRunner"/>
@@ -138,16 +138,16 @@
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla">
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 	</target>
