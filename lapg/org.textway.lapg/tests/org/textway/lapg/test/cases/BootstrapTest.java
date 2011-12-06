@@ -105,7 +105,7 @@ public class BootstrapTest extends TestCase {
 
 	public void testSampleA() {
 		bootstrap(
-				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/a",
+				"org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/a",
 				"sample1.s",
 				new String[0],
 				new String[]{
@@ -116,7 +116,7 @@ public class BootstrapTest extends TestCase {
 
 	public void testSampleB() {
 		bootstrap(
-				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/b",
+				"org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/b",
 				"sample2.s",
 				new String[0],
 				new String[]{
@@ -127,7 +127,7 @@ public class BootstrapTest extends TestCase {
 
 	public void testSampleNoParser() {
 		bootstrap(
-				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/lexeronly",
+				"org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/lexeronly",
 				"noparser.s",
 				new String[0],
 				new String[]{
@@ -137,7 +137,7 @@ public class BootstrapTest extends TestCase {
 
 	public void testNLA() {
 		bootstrap(
-				"org.textway.lapg.test/src/org/textway/lapg/test/cases/bootstrap/nla",
+				"org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla",
 				"nla.s",
 				new String[]{"-e"},
 				new String[]{
@@ -215,6 +215,7 @@ public class BootstrapTest extends TestCase {
 			Assert.fail("error reported: " + message);
 		}
 
+		@Override
 		public void report(String message, Throwable th) {
 			Assert.fail("exception happend: " + message + ", " + th.toString());
 		}
@@ -269,6 +270,7 @@ public class BootstrapTest extends TestCase {
 			this.root = root;
 		}
 
+		@Override
 		public void createFile(String name, String contents, ProcessingStatus status) {
 			try {
 				// FIXME encoding, newline
@@ -293,6 +295,7 @@ public class BootstrapTest extends TestCase {
 			}
 		}
 
+		@Override
 		public IResourceLoader createResourceLoader(String qualifiedName) {
 			File folder = new File(qualifiedName);
 			if (folder.isDirectory()) {

@@ -4,9 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/idea/org.textway.lapg.iml" filepath="$PROJECT_DIR$/idea/org.textway.lapg.iml" />
       <module fileurl="file://$PROJECT_DIR$/idea/org.textway.lapg.ant.iml" filepath="$PROJECT_DIR$/idea/org.textway.lapg.ant.iml" />
-      <module fileurl="file://$PROJECT_DIR$/idea/org.textway.lapg.test.iml" filepath="$PROJECT_DIR$/idea/org.textway.lapg.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/idea/org.textway.templates.iml" filepath="$PROJECT_DIR$/idea/org.textway.templates.iml" />
-      <module fileurl="file://$PROJECT_DIR$/idea/org.textway.templates.test.iml" filepath="$PROJECT_DIR$/idea/org.textway.templates.test.iml" />
     </modules>
   </component>
 </project>

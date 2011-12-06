@@ -41,15 +41,11 @@ sourceSets.each { [it.java, it.resources].each {it.setSrcDirs([])} }
 sourceSets {
     main {
 		java.srcDir file("src")
-		resources {
-			srcDir file("src")
-			include "**/*.s"
-        }
 	}
 	test {
-		java.srcDir file("../org.textway.templates.test/src")
+		java.srcDir file("tests")
 		resources {
-			srcDir file("../org.textway.templates.test/src")
+			srcDir file("tests")
 			include "**/*.ltp", "**/*.types"
         }
 	}

@@ -13,10 +13,12 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../org.textway.lapg">
       <sourceFolder url="file://$MODULE_DIR$/../org.textway.lapg/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../org.textway.lapg/tests" isTestSource="true" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="module" module-name="org.textway.templates" />
+    <orderEntry type="library" scope="TEST" name="JUnit 4" level="project" />
   </component>
 </module>
 

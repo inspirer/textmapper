@@ -10,9 +10,11 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../org.textway.templates">
       <sourceFolder url="file://$MODULE_DIR$/../org.textway.templates/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../org.textway.templates/tests" isTestSource="true" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" scope="TEST" name="JUnit 4" level="project" />
   </component>
 </module>
 
