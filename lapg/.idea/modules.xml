@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/idea/org.textway.lapg.iml" filepath="$PROJECT_DIR$/idea/org.textway.lapg.iml" />
-      <module fileurl="file://$PROJECT_DIR$/idea/org.textway.lapg.ant.iml" filepath="$PROJECT_DIR$/idea/org.textway.lapg.ant.iml" />
-      <module fileurl="file://$PROJECT_DIR$/idea/org.textway.templates.iml" filepath="$PROJECT_DIR$/idea/org.textway.templates.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textway.lapg/org.textway.lapg.iml" filepath="$PROJECT_DIR$/org.textway.lapg/org.textway.lapg.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textway.lapg.ant/org.textway.lapg.ant.iml" filepath="$PROJECT_DIR$/org.textway.lapg.ant/org.textway.lapg.ant.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textway.templates/org.textway.templates.iml" filepath="$PROJECT_DIR$/org.textway.templates/org.textway.templates.iml" />
     </modules>
   </component>
 </project>
