@@ -6,6 +6,8 @@
 *.dsw text
 *.txt text
 *.gradle text
+errors text
+tables text
 .project text
 *.iml text
 *.s eol=lf
