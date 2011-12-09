@@ -256,14 +256,14 @@ public class SampleAParser {
 				lapg_gg.sym = new AstClassdef(
 						((String)lapg_m[lapg_head-3].sym) /* identifier */,
 						((List<AstClassdef>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
-						null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head-0].endoffset);
+						null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdeflist ::= classdef
 				lapg_gg.sym = new ArrayList();
-				((List<AstClassdef>)lapg_gg.sym).add(((AstClassdef)lapg_m[lapg_head-0].sym));
+				((List<AstClassdef>)lapg_gg.sym).add(((AstClassdef)lapg_m[lapg_head].sym));
 				break;
 			case 5:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdef>)lapg_m[lapg_head-1].sym).add(((AstClassdef)lapg_m[lapg_head-0].sym));
+				((List<AstClassdef>)lapg_m[lapg_head-1].sym).add(((AstClassdef)lapg_m[lapg_head].sym));
 				break;
 		}
 	}

@@ -280,8 +280,8 @@ public class BootstrapTest extends TestCase {
 						checkName(name);
 						String expected;
 						try {
-							InputStream os = new FileInputStream(new File(root, name));
-							expected = FileUtil.getFileContents(os, charset);
+							InputStream is = new FileInputStream(new File(root, name));
+							expected = FileUtil.getFileContents(is, charset);
 						} catch (IOException ex) {
 							expected = "# Original data is not available (new file is created):\n# " + ex.getMessage();
 						}

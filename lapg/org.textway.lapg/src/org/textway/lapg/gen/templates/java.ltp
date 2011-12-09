@@ -374,33 +374,18 @@ ${template astAction(code)-}
 ${eval code, '#[generated action for '+self+']'-}
 ${end}
 
-${template getsym-}
-${if self.isLeft}lapg_gg${else}lapg_m[lapg_head-${self.rightOffset}]${end-}
+${query symText(property) =
+	(self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? '-' + self.rightOffset : '') + ']')
+	  + '.' + property }
+
+${template symAccess(property)-}
+${assert ['sym', 'line', 'column', 'offset', 'endline', 'endcolumn', 'endoffset'].contains(property)-}
+${if property == 'sym'-}
+${symbol->type() ? '((' + symbol->type() + ')' + self->symText(property) + ')' : self->symText(property) -}
+${else-}
+${self->symText(property)-}
+${end-}
 ${end}
-
-${template symbol-}
-${if symbol->type()-}
-((${symbol->type()})${call getsym-}.sym)${else-}
-${call getsym-}.sym${end-}
-${end}
-
-${template sym_line-}
-${call getsym}.line${end}
-
-${template sym_column-}
-${call getsym}.column${end}
-
-${template sym_offset-}
-${call getsym}.offset${end}
-
-${template sym_endline-}
-${call getsym}.endline${end}
-
-${template sym_endcolumn-}
-${call getsym}.endcolumn${end}
-
-${template sym_endoffset-}
-${call getsym}.endoffset${end}
 
 ${template err_location(symvar,lexervar)-}
 ${if opts.positions.contains('offset')}${symvar}.offset, ${end-}
