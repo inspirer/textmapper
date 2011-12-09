@@ -33,6 +33,7 @@ subprojects {
 	repositories {
 //	    mavenCentral()
 	    flatDir {
+	    	name "localLibs"
 	        dirs libsFolder
 	    }
 	}
@@ -62,6 +63,12 @@ subprojects {
 
 	test {
 		workingDir project(":").projectDir
+	}
+
+	uploadArchives {
+		repositories {
+			add project.repositories.localLibs
+		}
 	}
 }
 
