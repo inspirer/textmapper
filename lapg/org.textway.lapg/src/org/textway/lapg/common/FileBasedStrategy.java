@@ -16,7 +16,7 @@
 package org.textway.lapg.common;
 
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.ProcessingStrategy;
+import org.textway.lapg.gen.ProcessingStrategy;
 import org.textway.templates.storage.FileBasedResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
 

@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 import org.junit.Assert;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.ProcessingStrategy;
+import org.textway.lapg.gen.ProcessingStrategy;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileUtil;

@@ -17,7 +17,6 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.ProcessingStrategy;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;

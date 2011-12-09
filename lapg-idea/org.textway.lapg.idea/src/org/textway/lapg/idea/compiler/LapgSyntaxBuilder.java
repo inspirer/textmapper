@@ -19,7 +19,7 @@ package org.textway.lapg.idea.compiler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.ProcessingStrategy;
+import org.textway.lapg.gen.ProcessingStrategy;
 import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
