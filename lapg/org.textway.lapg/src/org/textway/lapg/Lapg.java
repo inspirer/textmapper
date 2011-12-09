@@ -26,6 +26,7 @@ import java.io.PrintStream;
 import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileBasedStrategy;
 import org.textway.lapg.common.FileUtil;
+import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.parser.LapgTree.TextSource;
@@ -173,7 +174,7 @@ public class Lapg {
 				if (debug == null) {
 					debug = openFile(OUT_TABLES);
 				}
-			 	debug.print(text);
+			 	debug.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
 			} else if(kind == KIND_WARN) {
 				if (!isAnalysisMode()) {
 					return;
@@ -181,7 +182,7 @@ public class Lapg {
 				if (warn == null) {
 					warn = openFile(OUT_ERRORS);
 				}
-				warn.print(text);
+				warn.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
 			}
 		}
 
