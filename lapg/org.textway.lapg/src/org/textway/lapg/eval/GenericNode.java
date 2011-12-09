@@ -28,7 +28,7 @@ public class GenericNode {
 	private final int endoffset;
 	private final GenericNode[] children;
 
-	public GenericNode(TextSource source, int offset, int endoffset, GenericNode ...children) {
+	public GenericNode(TextSource source, int offset, int endoffset, GenericNode... children) {
 		this.source = source;
 		this.offset = offset;
 		this.endoffset = endoffset;
@@ -69,16 +69,16 @@ public class GenericNode {
 	public void toString(StringBuilder sb) {
 		sb.append('[');
 		int offset = this.offset;
-		if(children != null) {
-			for(GenericNode node : children) {
-				if(offset < node.offset) {
+		if (children != null) {
+			for (GenericNode node : children) {
+				if (offset < node.offset) {
 					sb.append(source.getText(offset, node.offset));
 				}
 				node.toString(sb);
 				offset = node.endoffset;
 			}
 		}
-		if(offset < endoffset) {
+		if (offset < endoffset) {
 			sb.append(source.getText(offset, endoffset));
 		}
 		sb.append(']');

@@ -21,7 +21,7 @@ import org.textway.lapg.parser.ast.IAstNode;
 public class LiSymbol extends LiAnnotated implements Symbol {
 
 	private int index;
-    private String identifier;
+	private String identifier;
 	private final String name;
 	private String type;
 	private final boolean isTerm;
@@ -42,7 +42,7 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 
 	public void setId(int index, String identifier) {
 		this.index = index;
-        this.identifier = identifier;
+		this.identifier = identifier;
 	}
 
 	public String getName() {
@@ -74,6 +74,6 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	}
 
 	public String getId() {
-        return identifier;
-    }
+		return identifier;
+	}
 }

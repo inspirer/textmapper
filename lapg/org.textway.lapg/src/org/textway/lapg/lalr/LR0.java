@@ -233,8 +233,8 @@ class LR0 extends ContextFree {
 	/**
 	 * Converts restrictions (var_nla & var_used) to set of rules. Adds the result into array at offset.
 	 *
-	 * @param array			array, containing set of rules ([ruleset])
-	 * @param startIndex	offset in the array where the set starts
+	 * @param array	  array, containing set of rules ([ruleset])
+	 * @param startIndex offset in the array where the set starts
 	 */
 	public void nla_apply(int[] array, int startIndex) {
 		for (int var = 0; var < nvars; var++) {
@@ -654,7 +654,7 @@ class LR0 extends ContextFree {
 			}
 		}
 
-		if(var_nla == null) {
+		if (var_nla == null) {
 			var_nla = new int[nvars];
 			var_used = new int[varset];
 			var_templist = new int[nvars];

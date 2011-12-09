@@ -27,8 +27,8 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 	private final AstCode code;
 
 	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp,
-			Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
-			int endoffset) {
+					 Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
+					 int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.type = type;

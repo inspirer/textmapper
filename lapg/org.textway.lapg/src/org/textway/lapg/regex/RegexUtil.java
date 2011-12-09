@@ -19,7 +19,6 @@ import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.lex.CharacterSet.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
-import org.textway.lapg.regex.RegexDefLexer.Lexems;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.List;
@@ -71,7 +70,7 @@ public class RegexUtil {
 	}
 
 	static void addSetSymbol(List<RegexPart> charset, RegexPart right, ErrorReporter reporter) {
-		if(right instanceof RegexOr) {
+		if (right instanceof RegexOr) {
 			for (RegexPart regexPart : ((RegexOr) right).getVariants()) {
 				addSetSymbol(charset, regexPart, reporter);
 			}
@@ -167,7 +166,7 @@ public class RegexUtil {
 			case '*':
 			case '+':
 			case '?':
-				if(!inSet) {
+				if (!inSet) {
 					sb.append('\\');
 				}
 				sb.append(c);
@@ -239,7 +238,7 @@ public class RegexUtil {
 
 	static CharacterSet getClassSet(String cl, Builder builder) {
 		builder.clear();
-		if(cl.length() == 1) {
+		if (cl.length() == 1) {
 			char c = cl.charAt(0);
 			if (c == 'w' || c == 'W') {
 				builder.addRange('0', '9');

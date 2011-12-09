@@ -18,6 +18,8 @@ package org.textway.lapg.api;
 public interface SymbolRef extends Annotated, SourceElement {
 
 	Symbol getTarget();
+
 	String getAlias();
+
 	NegativeLookahead getNegativeLA();
 }

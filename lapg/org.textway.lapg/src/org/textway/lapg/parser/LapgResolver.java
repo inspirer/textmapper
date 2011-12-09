@@ -532,7 +532,7 @@ public class LapgResolver {
 
 		List<AstReference> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
 		List<LiSymbol> resolved = resolve(unwantedSymbols);
-		if(resolved.size() == 0) return null;
+		if (resolved.size() == 0) return null;
 
 		return new LiNegativeLookahead(resolved.toArray(new LiSymbol[resolved.size()]), astAnnotations.getNegativeLA());
 

@@ -212,7 +212,7 @@ public class CharacterSet implements Iterable<int[]> {
 		public CharacterSet intersect(CharacterSet set1, CharacterSet set2) {
 			clear();
 			int start, end;
-			for (int ind1 = 0, ind2 = 0; ind1 < set1.set.length;) {
+			for (int ind1 = 0, ind2 = 0; ind1 < set1.set.length; ) {
 				start = set1.set[ind1++];
 				end = set1.set[ind1++];
 				ind2 = intersectSegment(start, end, set2.set, ind2);
@@ -223,7 +223,7 @@ public class CharacterSet implements Iterable<int[]> {
 		public CharacterSet subtract(CharacterSet set1, CharacterSet set2) {
 			clear();
 			int start, end;
-			for (int ind1 = 0, ind2 = 0; ind1 < set1.set.length;) {
+			for (int ind1 = 0, ind2 = 0; ind1 < set1.set.length; ) {
 				start = set1.set[ind1++];
 				end = set1.set[ind1++];
 				ind2 = subtractSegment(start, end, set2.set, ind2);

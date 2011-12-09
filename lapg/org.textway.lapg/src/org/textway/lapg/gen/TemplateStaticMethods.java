@@ -33,7 +33,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		String[] sspl = s.split("\\r?\\n");
 		StringBuilder sb = new StringBuilder(s.length() + (padding + 1) * sspl.length);
 		for (String q : sspl) {
-			if(q.trim().length() > 0) {
+			if (q.trim().length() > 0) {
 				for (int i = 0; i < padding; i++) {
 					sb.append(paddingChar);
 				}
@@ -47,41 +47,41 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	public String shiftLeft(String text) {
 		String[] sspl = text.split("\\r?\\n");
 		String prefix = null;
-		for(int i = 0; i < sspl.length; i++) {
-			if(sspl[i].trim().length() == 0) {
+		for (int i = 0; i < sspl.length; i++) {
+			if (sspl[i].trim().length() == 0) {
 				sspl[i] = "";
 				continue;
 			}
 			int spaces = 0;
-			while(spaces < sspl[i].length()) {
+			while (spaces < sspl[i].length()) {
 				char c = sspl[i].charAt(spaces);
-				if(c == ' ' || c == '\t') {
+				if (c == ' ' || c == '\t') {
 					spaces++;
 				} else {
 					break;
 				}
 			}
-			if(prefix == null) {
+			if (prefix == null) {
 				prefix = sspl[i].substring(0, spaces);
 			} else {
 				int len = 0;
-				while(len < prefix.length() && len < spaces && prefix.charAt(len) == sspl[i].charAt(len)) len++;
-				if(len < prefix.length()) {
+				while (len < prefix.length() && len < spaces && prefix.charAt(len) == sspl[i].charAt(len)) len++;
+				if (len < prefix.length()) {
 					prefix = prefix.substring(0, len);
 				}
 			}
-			if(prefix.length() == 0) {
+			if (prefix.length() == 0) {
 				return text;
 			}
 		}
-		if(prefix == null) {
+		if (prefix == null) {
 			return text;
 		}
 
 		int padding = prefix.length();
 		StringBuilder sb = new StringBuilder(text.length());
 		for (String q : sspl) {
-			if(q.length() > 0) {
+			if (q.length() > 0) {
 				sb.append(q.substring(padding));
 			}
 			sb.append('\n');
@@ -143,7 +143,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			sb.append(" ");
 			int[] row = table[i];
 			for (int e = 0; e < row.length; e++) {
-				if(e > 0) {
+				if (e > 0) {
 					sb.append(", ");
 				}
 				sb.append(row[e]);

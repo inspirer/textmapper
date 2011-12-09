@@ -27,7 +27,7 @@ public class AstRoot extends AstNode {
 	private int templatesStart = -1;
 
 	public AstRoot(List<AstOptionPart> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
-			int offset, int endoffset) {
+				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;
 		this.lexer = lexer;
@@ -55,21 +55,21 @@ public class AstRoot extends AstNode {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(options != null) {
-			for(AstOptionPart o : options) {
+		if (options != null) {
+			for (AstOptionPart o : options) {
 				o.accept(v);
 			}
 		}
-		if(lexer != null) {
-			for(AstLexerPart l : lexer) {
+		if (lexer != null) {
+			for (AstLexerPart l : lexer) {
 				l.accept(v);
 			}
 		}
-		if(grammar != null) {
-			for(AstGrammarPart g : grammar) {
+		if (grammar != null) {
+			for (AstGrammarPart g : grammar) {
 				g.accept(v);
 			}
 		}

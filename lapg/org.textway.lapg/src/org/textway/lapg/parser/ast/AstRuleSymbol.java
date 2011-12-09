@@ -43,13 +43,13 @@ public class AstRuleSymbol extends AstNode implements AstRulePart {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(symbol != null) {
+		if (symbol != null) {
 			symbol.accept(v);
 		}
-		if(annotations != null) {
+		if (annotations != null) {
 			annotations.accept(v);
 		}
 	}

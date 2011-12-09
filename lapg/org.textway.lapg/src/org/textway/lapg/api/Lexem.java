@@ -26,14 +26,22 @@ public interface Lexem extends SourceElement {
 	public static final int KIND_SPACE = 3;
 
 	int getIndex();
+
 	Symbol getSymbol();
+
 	String getRegexp();
+
 	int getPriority();
+
 	int getGroups();
+
 	SourceElement getAction();
 
 	int getKind();
+
 	String getKindAsText();
+
 	Lexem getClassLexem();
+
 	boolean isExcluded();
 }

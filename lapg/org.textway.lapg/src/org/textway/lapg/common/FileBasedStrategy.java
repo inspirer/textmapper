@@ -15,13 +15,13 @@
  */
 package org.textway.lapg.common;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.ProcessingStrategy;
 import org.textway.templates.storage.FileBasedResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FileBasedStrategy implements ProcessingStrategy {
 
@@ -38,7 +38,7 @@ public class FileBasedStrategy implements ProcessingStrategy {
 		File folder = new File(qualifiedName);
 		if (folder.isDirectory()) {
 			// FIXME charset
-			return new FileBasedResourceLoader(new File[] { folder }, "utf8");
+			return new FileBasedResourceLoader(new File[]{folder}, "utf8");
 		}
 		return null;
 	}

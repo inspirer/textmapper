@@ -15,14 +15,6 @@
  */
 package org.textway.lapg;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileBasedStrategy;
 import org.textway.lapg.common.FileUtil;
@@ -30,6 +22,8 @@ import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.parser.LapgTree.TextSource;
+
+import java.io.*;
 
 /**
  * Main console entry point for Lapg engine.
@@ -40,18 +34,18 @@ public class Lapg {
 	public static final String BUILD = "2011";
 
 	public static final String HELP_MESSAGE =
-		"lapg - Lexer and Parser generator\n"+
-		"usage: lapg [OPTIONS]... [inputfile]\n"+
-		"       lapg [-h|-v]\n"+
-		"\n"+
-		"Options:\n"+
-		LapgOptions.HELP_OPTIONS+
-		"\n"+
-		"Operations:\n"+
-		"  -h,  --help                    display this help\n"+
-		"  -v,  --version                 version information\n"+
-		"\n"+
-		"Defaults:\n"+
+		"lapg - Lexer and Parser generator\n" +
+		"usage: lapg [OPTIONS]... [inputfile]\n" +
+		"       lapg [-h|-v]\n" +
+		"\n" +
+		"Options:\n" +
+		LapgOptions.HELP_OPTIONS +
+		"\n" +
+		"Operations:\n" +
+		"  -h,  --help                    display this help\n" +
+		"  -v,  --version                 version information\n" +
+		"\n" +
+		"Defaults:\n" +
 		"  inputfile = .s file in the current directory (if single)\n";
 
 	public static final String VERSION_MESSAGE =
@@ -78,14 +72,14 @@ public class Lapg {
 			return;
 		}
 
-		if(options.getInput() == null) {
+		if (options.getInput() == null) {
 			File[] grammars = new File(".").listFiles(new FileFilter() {
 				public boolean accept(File pathname) {
 					return pathname.isFile() && pathname.getName().endsWith(".s");
 				}
 			});
-			if(grammars == null || grammars.length != 1) {
-				if(grammars == null || grammars.length == 0) {
+			if (grammars == null || grammars.length != 1) {
+				if (grammars == null || grammars.length == 0) {
 					System.err.println("lapg: no syntax files found, please specify");
 				} else {
 					System.err.println("lapg: " + grammars.length + " syntax files found, please specify");
@@ -112,7 +106,7 @@ public class Lapg {
 			stream = System.in;
 		}
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		if(contents == null) {
+		if (contents == null) {
 			System.err.println("lapg: cannot read file: " + options.getInput());
 			System.exit(1);
 			return;
@@ -128,7 +122,7 @@ public class Lapg {
 		} finally {
 			status.dispose();
 		}
-		if(!success) {
+		if (!success) {
 			System.exit(1);
 		}
 	}
@@ -163,19 +157,19 @@ public class Lapg {
 
 		@Override
 		public void handle(int kind, String text) {
-			if(kind == KIND_ERROR || kind == KIND_FATAL) {
+			if (kind == KIND_ERROR || kind == KIND_FATAL) {
 				System.err.print(text);
-			} else if(kind == KIND_INFO) {
+			} else if (kind == KIND_INFO) {
 				System.out.print(text);
-			} else if(kind == KIND_DEBUG) {
+			} else if (kind == KIND_DEBUG) {
 				if (!isDebugMode()) {
 					return;
 				}
 				if (debug == null) {
 					debug = openFile(OUT_TABLES);
 				}
-			 	debug.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
-			} else if(kind == KIND_WARN) {
+				debug.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
+			} else if (kind == KIND_WARN) {
 				if (!isAnalysisMode()) {
 					return;
 				}
@@ -188,7 +182,7 @@ public class Lapg {
 
 		public void report(String message, Throwable th) {
 			System.err.print(message + "\n");
-			if(th != null) {
+			if (th != null) {
 				th.printStackTrace(System.err);
 			}
 		}

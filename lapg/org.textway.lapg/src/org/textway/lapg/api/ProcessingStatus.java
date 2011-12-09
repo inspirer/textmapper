@@ -24,7 +24,7 @@ public interface ProcessingStatus {
 	public static final int KIND_INFO = 3;
 	public static final int KIND_DEBUG = 4;
 
-	void report(int kind, String message, SourceElement ...anchors);
+	void report(int kind, String message, SourceElement... anchors);
 
 	void report(String message, Throwable th);
 

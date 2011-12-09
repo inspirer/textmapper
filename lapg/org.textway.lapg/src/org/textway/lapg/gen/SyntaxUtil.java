@@ -53,13 +53,13 @@ public class SyntaxUtil {
 		}
 		return null;
 	}
-	
+
 	private static int lapgKindToProcessingKind(int kind) {
-		switch(kind) {
-		case LapgTree.KIND_FATAL:
-			return ProcessingStatus.KIND_FATAL;
-		case LapgTree.KIND_WARN:
-			return ProcessingStatus.KIND_WARN;
+		switch (kind) {
+			case LapgTree.KIND_FATAL:
+				return ProcessingStatus.KIND_FATAL;
+			case LapgTree.KIND_WARN:
+				return ProcessingStatus.KIND_WARN;
 		}
 		return ProcessingStatus.KIND_ERROR;
 	}

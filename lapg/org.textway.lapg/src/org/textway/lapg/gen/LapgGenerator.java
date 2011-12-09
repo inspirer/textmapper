@@ -77,7 +77,7 @@ public final class LapgGenerator {
 
 			// prepare options
 			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
-			for (Entry<String,String> entry : options.getAdditionalOptions().entrySet()) {
+			for (Entry<String, String> entry : options.getAdditionalOptions().entrySet()) {
 
 				// TODO parse value, check type
 				genOptions.put(entry.getKey(), entry.getValue());
@@ -148,7 +148,7 @@ public final class LapgGenerator {
 
 	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
-		if(grammarTemplates != null) {
+		if (grammarTemplates != null) {
 			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));
@@ -163,7 +163,7 @@ public final class LapgGenerator {
 
 		String templPackage = getTemplatePackage(s);
 		IClass optsClass = types.getClass(templPackage + ".Options", null);
-		if(optsClass != null) {
+		if (optsClass != null) {
 			map.put("opts", new TiInstance(optsClass, genOptions));
 		} else {
 			map.put("opts", genOptions);
@@ -199,9 +199,9 @@ public final class LapgGenerator {
 		}
 
 		public void report(int kind, String message, org.textway.templates.api.SourceElement... anchors) {
-			if(anchors != null) {
+			if (anchors != null) {
 				SourceElement[] n = new SourceElement[anchors.length];
-				for(int i = 0; i < n.length; i++) {
+				for (int i = 0; i < n.length; i++) {
 					n[i] = anchors[i] != null ? new TemplateSourceElementAdapter(anchors[i]) : null;
 				}
 				status.report(kind, message, n);

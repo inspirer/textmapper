@@ -145,10 +145,10 @@ public class JavaArrayArchiver {
 		StringBuilder sb = new StringBuilder(table.length * 6);
 		sb.append('\"');
 		int lastBreak = 1;
-		for(int i = 0; i < table.length; i++) {
-			if(i > 0) {
+		for (int i = 0; i < table.length; i++) {
+			if (i > 0) {
 				sb.append(',');
-				if(sb.length() - lastBreak > 75) {
+				if (sb.length() - lastBreak > 75) {
 					sb.append("\" +\n");
 					for (int e = 0; e < indent; e++) {
 						sb.append("\t");
@@ -167,7 +167,7 @@ public class JavaArrayArchiver {
 		int[] res = new int[size];
 		int next = 0;
 		int comma;
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			comma = st.indexOf(',', next);
 			res[i] = Integer.parseInt(comma == -1 ? st.substring(next) : st.substring(next, comma));
 			next = comma + 1;
@@ -181,12 +181,12 @@ public class JavaArrayArchiver {
 		StringBuilder sb = new StringBuilder(table.length * 6);
 		sb.append('\"');
 		int lastBreak = 1;
-		for(int i = 0; i < table.length; i++) {
-			if(i > 0) {
+		for (int i = 0; i < table.length; i++) {
+			if (i > 0) {
 				sb.append(',');
-				if(sb.length() - lastBreak > 75) {
+				if (sb.length() - lastBreak > 75) {
 					sb.append("\" +\n");
-					for (int e = 0; e <  indent; e++) {
+					for (int e = 0; e < indent; e++) {
 						sb.append("\t");
 					}
 					sb.append('\"');
@@ -203,7 +203,7 @@ public class JavaArrayArchiver {
 		short[] res = new short[size];
 		int next = 0;
 		int comma;
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			comma = st.indexOf(',', next);
 			res[i] = Short.parseShort(comma == -1 ? st.substring(next) : st.substring(next, comma));
 			next = comma + 1;

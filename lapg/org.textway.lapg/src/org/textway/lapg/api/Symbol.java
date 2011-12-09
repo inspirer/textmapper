@@ -18,10 +18,16 @@ package org.textway.lapg.api;
 public interface Symbol extends Annotated, SourceElement {
 
 	int getIndex();
+
 	String getId();
+
 	String getName();
+
 	String getType();
+
 	boolean isTerm();
+
 	boolean isSoft();
+
 	Symbol getSoftClass();
 }

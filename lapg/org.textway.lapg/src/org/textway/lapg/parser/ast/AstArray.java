@@ -33,11 +33,11 @@ public class AstArray extends AstNode implements AstExpression {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(expressions != null) {
-			for(AstExpression n : expressions) {
+		if (expressions != null) {
+			for (AstExpression n : expressions) {
 				n.accept(v);
 			}
 		}

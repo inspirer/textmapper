@@ -23,19 +23,26 @@ import java.util.Map;
 public interface Grammar {
 
 	Symbol[] getSymbols();
+
 	Rule[] getRules();
+
 	Prio[] getPriorities();
 
 	Map<String, Object> getOptions();
 
 	Lexem[] getLexems();
+
 	NamedPattern[] getPatterns();
 
 	int getTerminals();
+
 	InputRef[] getInput();
+
 	Symbol getEoi();
+
 	Symbol getError();
 
 	SourceElement getTemplates();
+
 	boolean hasErrors();
 }

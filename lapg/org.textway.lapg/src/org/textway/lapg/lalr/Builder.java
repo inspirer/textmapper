@@ -15,14 +15,12 @@
  */
 package org.textway.lapg.lalr;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Symbol;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Builder extends Lalr1 {
 
@@ -41,7 +39,7 @@ public class Builder extends Lalr1 {
 
 		// search for symbols which accepts the empty chain
 		search_next_empty:
-		for (; ;) {
+		for (; ; ) {
 			for (i = 0; i < rules; i++) {
 				if (!sym_empty[rleft[i]]) {
 
@@ -72,7 +70,7 @@ public class Builder extends Lalr1 {
 
 		// search for the good symbols
 		get_next_good:
-		for (; ;) {
+		for (; ; ) {
 			for (i = 0; i < rules; i++) {
 				if (!sym_good[rleft[i]]) {
 
@@ -222,7 +220,7 @@ public class Builder extends Lalr1 {
 					actionset[setsize++] = (short) termSym;
 
 					// shift soft terms
-					if(classterm[termSym] == -1 && !t.softConflicts) {
+					if (classterm[termSym] == -1 && !t.softConflicts) {
 						for (int soft = softterms[termSym]; soft != -1; soft = softterms[soft]) {
 							assert next[soft] == -2;
 							next[soft] = -1;

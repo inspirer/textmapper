@@ -50,7 +50,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return (IxObject) o;
 		}
 		if (o instanceof IxWrapper) {
-			o = ((IxWrapper)o).getObject();
+			o = ((IxWrapper) o).getObject();
 		}
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);

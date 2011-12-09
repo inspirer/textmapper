@@ -101,7 +101,7 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 	}
 
 	void setClassLexem(LiLexem classLexem) {
-		if(this.kind == KIND_CLASS) throw new IllegalStateException();
+		if (this.kind == KIND_CLASS) throw new IllegalStateException();
 
 		this.classLexem = classLexem;
 	}

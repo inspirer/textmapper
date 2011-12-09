@@ -135,7 +135,7 @@ public class GenericLexer {
 			token.setLength(0);
 			int tokenStart = l - 1;
 
-			for (state = group; state >= 0;) {
+			for (state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
 				if (state >= -1 && chr != 0) {
 					currOffset++;
@@ -184,9 +184,9 @@ public class GenericLexer {
 
 	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) {
 		SourceElement action = grammar.getLexems()[lexemIndex].getAction();
-		if(action != null) {
+		if (action != null) {
 			String text = action.getText();
-			if(text.indexOf("return false") >= 0) {
+			if (text.indexOf("return false") >= 0) {
 				return false;
 			}
 		}

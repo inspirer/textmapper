@@ -20,5 +20,6 @@ package org.textway.lapg.api;
  */
 public interface NamedPattern extends SourceElement {
 	String getName();
+
 	String getRegexp();
 }

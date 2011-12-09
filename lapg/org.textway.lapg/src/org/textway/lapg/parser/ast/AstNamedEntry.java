@@ -35,7 +35,7 @@ public class AstNamedEntry extends AstNode {
 		super(error.getInput(), error.getOffset(), error.getEndOffset());
 		this.name = null;
 		this.expression = null;
-		this.error = error; 
+		this.error = error;
 	}
 
 	public String getName() {
@@ -51,14 +51,14 @@ public class AstNamedEntry extends AstNode {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(error != null) {
+		if (error != null) {
 			v.visit(error);
 			return;
 		}
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(expression != null) {
+		if (expression != null) {
 			expression.accept(v);
 		}
 	}

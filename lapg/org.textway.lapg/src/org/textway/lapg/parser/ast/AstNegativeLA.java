@@ -36,10 +36,10 @@ public class AstNegativeLA extends AstNode {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(unwantedSymbols != null) {
+		if (unwantedSymbols != null) {
 			for (AstReference unwantedSymbol : unwantedSymbols) {
 				unwantedSymbol.accept(v);
 			}

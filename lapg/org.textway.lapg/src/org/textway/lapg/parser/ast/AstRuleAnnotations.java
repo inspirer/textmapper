@@ -36,14 +36,14 @@ public class AstRuleAnnotations extends AstAnnotations {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(negativeLA != null) {
+		if (negativeLA != null) {
 			negativeLA.accept(v);
 		}
-		if(getAnnotations() != null) {
-			for(AstNamedEntry n : getAnnotations()) {
+		if (getAnnotations() != null) {
+			for (AstNamedEntry n : getAnnotations()) {
 				n.accept(v);
 			}
 		}

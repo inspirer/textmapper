@@ -72,17 +72,17 @@ public class RegexMatcher {
 		int index = 0;
 		boolean[] current = holders[0];
 		states[0].applyTo(current);
-		for(char c : text.toCharArray()) {
-			boolean[] next = holders[++index%2];
+		for (char c : text.toCharArray()) {
+			boolean[] next = holders[++index % 2];
 			Arrays.fill(next, false);
 			boolean isValid = false;
-			for(int i = 0; i < states.length; i++) {
-				if(current[i] && states[i].simplePart != null && accepts(states[i].simplePart, c)) {
-					states[i+1].applyTo(next);
+			for (int i = 0; i < states.length; i++) {
+				if (current[i] && states[i].simplePart != null && accepts(states[i].simplePart, c)) {
+					states[i + 1].applyTo(next);
 					isValid = true;
 				}
 			}
-			if(!isValid) {
+			if (!isValid) {
 				return false;
 			}
 			current = next;
@@ -91,11 +91,11 @@ public class RegexMatcher {
 	}
 
 	private boolean accepts(RegexPart simple, char c) {
-		if(simple instanceof RegexChar) {
-			return c == ((RegexChar)simple).getChar();
-		} else if(simple instanceof RegexSet) {
-			return ((RegexSet)simple).getSet().contains(c);
-		} else if(simple instanceof RegexAny) {
+		if (simple instanceof RegexChar) {
+			return c == ((RegexChar) simple).getChar();
+		} else if (simple instanceof RegexSet) {
+			return ((RegexSet) simple).getSet().contains(c);
+		} else if (simple instanceof RegexAny) {
 			return c != '\n';
 		}
 		return false;
@@ -128,7 +128,7 @@ public class RegexMatcher {
 		}
 
 		void applyTo(boolean[] target) {
-			for(int i = 0; i < target.length; i++) {
+			for (int i = 0; i < target.length; i++) {
 				target[i] |= closure[i];
 			}
 		}
@@ -176,7 +176,7 @@ public class RegexMatcher {
 
 		private State[] closure() {
 			State[] states = this.states.toArray(new State[this.states.size()]);
-			for(State s : states) {
+			for (State s : states) {
 				s.allocate(states.length);
 			}
 			// transitive closure of jumps
@@ -231,7 +231,7 @@ public class RegexMatcher {
 		public void visit(RegexExpand c) {
 			String name = c.getName();
 			RegexPart inner = namedPatterns.get(name);
-			if(inner == null) {
+			if (inner == null) {
 				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
 			}
 			inner.accept(this);

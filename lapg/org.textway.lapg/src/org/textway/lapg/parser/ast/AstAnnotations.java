@@ -33,11 +33,11 @@ public class AstAnnotations extends AstNode {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(annotations != null) {
-			for(AstNamedEntry n : annotations) {
+		if (annotations != null) {
+			for (AstNamedEntry n : annotations) {
 				n.accept(v);
 			}
 		}

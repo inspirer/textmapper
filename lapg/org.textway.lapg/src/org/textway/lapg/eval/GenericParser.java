@@ -68,7 +68,7 @@ public class GenericParser {
 	protected final int lapg_next(int state) throws IOException {
 		int p;
 		if (lapg_action[state] < -2) {
-			if(lapg_n == null) {
+			if (lapg_n == null) {
 				lapg_n = lapg_lexer.next();
 			}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
@@ -149,7 +149,7 @@ public class GenericParser {
 
 		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				if(lapg_n != null) {
+				if (lapg_n != null) {
 					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
 				} else {
 					reporter.error(lapg_lexer.getOffset(), lapg_lexer.getOffset(), lapg_lexer.getLine(), MessageFormat.format("syntax error before line {0}", lapg_lexer.getLine()));
@@ -161,7 +161,7 @@ public class GenericParser {
 	}
 
 	protected boolean restore() throws IOException {
-		if(lapg_n == null) {
+		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
 		if (lapg_n.lexem == 0) {
@@ -186,7 +186,7 @@ public class GenericParser {
 	}
 
 	protected void shift(boolean lazy) throws IOException {
-		if(lapg_n == null) {
+		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;

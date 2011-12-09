@@ -39,14 +39,14 @@ public class AstInstance extends AstNode implements AstExpression {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(className != null) {
+		if (className != null) {
 			className.accept(v);
 		}
-		if(mapEntries != null) {
-			for(AstNamedEntry n : mapEntries) {
+		if (mapEntries != null) {
+			for (AstNamedEntry n : mapEntries) {
 				n.accept(v);
 			}
 		}

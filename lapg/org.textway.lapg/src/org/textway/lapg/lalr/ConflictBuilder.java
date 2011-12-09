@@ -15,20 +15,13 @@
  */
 package org.textway.lapg.lalr;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.textway.lapg.api.ParserConflict;
+import org.textway.lapg.api.ParserConflict.Input;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.ParserConflict.Input;
 import org.textway.lapg.lalr.LalrConflict.InputImpl;
+
+import java.util.*;
 
 public class ConflictBuilder {
 
@@ -70,10 +63,10 @@ public class ConflictBuilder {
 			return Collections.emptyList();
 		}
 
-		for(ConflictData d : conflicts) {
+		for (ConflictData d : conflicts) {
 			int term = d.getConflictingTerm();
-			if(classterm[term] > 0) {
-				if(!hasConflict(classterm[term]) && next[classterm[term]] >= -1 ) {
+			if (classterm[term] > 0) {
+				if (!hasConflict(classterm[term]) && next[classterm[term]] >= -1) {
 					d.setSoft();
 				}
 			}
@@ -148,7 +141,7 @@ public class ConflictBuilder {
 
 		public int getKind() {
 			if (status == CONFLICT) {
-				if(isSoft) {
+				if (isSoft) {
 					return canShift ? ParserConflict.SHIFT_REDUCE_SOFT : ParserConflict.REDUCE_REDUCE_SOFT;
 				} else {
 					return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
@@ -166,7 +159,7 @@ public class ConflictBuilder {
 				case SYNTAXERR:
 					return "resolved as syntax error";
 				case CONFLICT:
-					if(isSoft) {
+					if (isSoft) {
 						return canShift ? "soft shift/reduce" : "soft reduce/reduce";
 					} else {
 						return canShift ? "shift/reduce" : "reduce/reduce";

@@ -20,27 +20,43 @@ package org.textway.lapg.regex;
  */
 public class RegexVisitor {
 
-	public void visit(RegexAny c) { }
+	public void visit(RegexAny c) {
+	}
 
-	public void visit(RegexChar c) { }
+	public void visit(RegexChar c) {
+	}
 
-	public void visit(RegexExpand c) { }
+	public void visit(RegexExpand c) {
+	}
 
-	public void visitBefore(RegexList c) { }
-	public void visitAfter(RegexList c) { }
+	public void visitBefore(RegexList c) {
+	}
 
-	public void visitBefore(RegexOr c) { }
-	public void visitBetween(RegexOr c) { }
-	public void visitAfter(RegexOr c) { }
+	public void visitAfter(RegexList c) {
+	}
 
-	public void visitBefore(RegexQuantifier c) { }
-	public void visitAfter(RegexQuantifier c) { }
+	public void visitBefore(RegexOr c) {
+	}
+
+	public void visitBetween(RegexOr c) {
+	}
+
+	public void visitAfter(RegexOr c) {
+	}
+
+	public void visitBefore(RegexQuantifier c) {
+	}
+
+	public void visitAfter(RegexQuantifier c) {
+	}
 
 	public boolean visit(RegexSet c) {
 		return false;
 	}
 
-	public void visit(RegexRange c) { }
+	public void visit(RegexRange c) {
+	}
 
-	public void visit(RegexEmpty c) { }
+	public void visit(RegexEmpty c) {
+	}
 }

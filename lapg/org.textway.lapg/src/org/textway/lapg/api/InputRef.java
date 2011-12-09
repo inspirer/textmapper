@@ -20,5 +20,6 @@ package org.textway.lapg.api;
  */
 public interface InputRef extends SourceElement {
 	Symbol getTarget();
+
 	boolean hasEoi();
 }

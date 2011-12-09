@@ -28,7 +28,7 @@ public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 	private final String alias;
 	private final LiNegativeLookahead negLA;
 
-	public LiSymbolRef(Symbol target, String alias, Map<String,Object> annotations, LiNegativeLookahead negLA,  IAstNode node) {
+	public LiSymbolRef(Symbol target, String alias, Map<String, Object> annotations, LiNegativeLookahead negLA, IAstNode node) {
 		super(annotations, node);
 		this.target = target;
 		this.alias = alias;

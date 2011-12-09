@@ -65,9 +65,9 @@ public class RegexList extends RegexPart {
 	@Override
 	public String getConstantValue() {
 		StringBuilder sb = new StringBuilder();
-		for(RegexPart p : elements) {
+		for (RegexPart p : elements) {
 			String current = p.getConstantValue();
-			if(current == null) {
+			if (current == null) {
 				return null;
 			}
 			sb.append(current);

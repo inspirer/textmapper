@@ -90,7 +90,7 @@ public class RegexpParser {
 		RegexpBuilder builder = new RegexpBuilder();
 		try {
 			regex.accept(builder);
-		} catch(IllegalArgumentException ex) {
+		} catch (IllegalArgumentException ex) {
 			throw new RegexpParseException(ex.getMessage(), 0);
 		}
 
@@ -98,7 +98,7 @@ public class RegexpParser {
 		int length = builder.getLength();
 		sym[++length] = -1 - number;
 
-		int[] compiled = new int[length+1];
+		int[] compiled = new int[length + 1];
 		System.arraycopy(sym, 0, compiled, 0, length + 1);
 		return compiled;
 	}
@@ -135,7 +135,7 @@ public class RegexpParser {
 		public void visit(RegexExpand c) {
 			String name = c.getName();
 			RegexPart inner = namedPatterns.get(name);
-			if(inner == null) {
+			if (inner == null) {
 				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
 			}
 			inner.accept(this);
@@ -143,7 +143,7 @@ public class RegexpParser {
 
 		@Override
 		public void visitBefore(RegexList c) {
-			if(c.isInParentheses()) {
+			if (c.isInParentheses()) {
 				yield(LexConstants.LBR);
 				stack[deep++] = length;
 			}
@@ -151,7 +151,7 @@ public class RegexpParser {
 
 		@Override
 		public void visitAfter(RegexList c) {
-			if(c.isInParentheses()) {
+			if (c.isInParentheses()) {
 				yield(LexConstants.RBR);
 				sym[stack[--deep]] |= length;
 			}
@@ -159,7 +159,7 @@ public class RegexpParser {
 
 		@Override
 		public void visitBefore(RegexOr c) {
-			if(length == -1) {
+			if (length == -1) {
 				outermostOr = c;
 				yield(LexConstants.LBR);
 			}
@@ -172,7 +172,7 @@ public class RegexpParser {
 
 		@Override
 		public void visitAfter(RegexOr c) {
-			if(outermostOr == c) {
+			if (outermostOr == c) {
 				yield(LexConstants.RBR);
 				sym[0] |= length;
 			}
@@ -184,12 +184,12 @@ public class RegexpParser {
 
 		@Override
 		public void visitAfter(RegexQuantifier c) {
-			if(c.getMin() == 0 && c.getMax() == 1) {
+			if (c.getMin() == 0 && c.getMax() == 1) {
 				sym[length] |= 3 << 29;
-			} else if(c.getMin() == 0 && c.getMax() == -1) {
+			} else if (c.getMin() == 0 && c.getMax() == -1) {
 				sym[length] |= 2 << 29;
 				yield(LexConstants.SPL);
-			} else if(c.getMin() == 1 && c.getMax() == -1) {
+			} else if (c.getMin() == 1 && c.getMax() == -1) {
 				sym[length] |= 1 << 29;
 				yield(LexConstants.SPL);
 			} else {
@@ -214,33 +214,33 @@ public class RegexpParser {
 			int ownSymbol = -1;
 			values.clear();
 			builder.clear();
-			for(int[] range : set) {
-				for(int ch = range[0]; ch <= range[1]; ch++) {
+			for (int[] range : set) {
+				for (int ch = range[0]; ch <= range[1]; ch++) {
 					int value;
 					try {
 						value = character2symbol[ch];
-					} catch(IndexOutOfBoundsException ex) {
+					} catch (IndexOutOfBoundsException ex) {
 						ensureCharacter(ch);
 						value = character2symbol[ch];
 					}
-					if(value == 1) {
-						if(ownSymbol == -1) {
+					if (value == 1) {
+						if (ownSymbol == -1) {
 							ownSymbol = symbolCount++;
 						}
 						character2symbol[ch] = ownSymbol;
 						builder.addSymbol(ch);
-					} else if(value >= base) {
+					} else if (value >= base) {
 						values.add(value);
 					}
 				}
 			}
-			if(ownSymbol >= base) {
+			if (ownSymbol >= base) {
 				symbol2chars.add(builder.create());
 			}
-			for(Integer e : values) {
+			for (Integer e : values) {
 				CharacterSet mset = symbol2chars.get(e - base);
 				CharacterSet extraItems = builder.subtract(mset, set);
-				if(!extraItems.isEmpty()) {
+				if (!extraItems.isEmpty()) {
 					symbol2chars.set(e - base, extraItems);
 
 					// new symbol for intersection
@@ -248,8 +248,8 @@ public class RegexpParser {
 					ownSymbol = symbolCount++;
 					symbol2chars.add(intersection);
 
-					for(int[] range : intersection) {
-						for(int ch = range[0]; ch <= range[1]; ch++) {
+					for (int[] range : intersection) {
+						for (int ch = range[0]; ch <= range[1]; ch++) {
 							character2symbol[ch] = ownSymbol;
 						}
 					}
@@ -261,25 +261,25 @@ public class RegexpParser {
 		for (int setind = 0; setind < setpool.size(); setind++) {
 			CharacterSet set = setpool.get(setind);
 			values.clear();
-			if(set.isInverted()) {
-				for(int i = 1; i < symbolCount; i++) {
+			if (set.isInverted()) {
+				for (int i = 1; i < symbolCount; i++) {
 					values.add(i);
 				}
-				for(int[] range : set) {
-					for(int ch = range[0]; ch <= range[1]; ch++) {
+				for (int[] range : set) {
+					for (int ch = range[0]; ch <= range[1]; ch++) {
 						values.remove(character2symbol[ch]);
 					}
 				}
 			} else {
-				for(int[] range : set) {
-					for(int ch = range[0]; ch <= range[1]; ch++) {
+				for (int[] range : set) {
+					for (int ch = range[0]; ch <= range[1]; ch++) {
 						values.add(character2symbol[ch]);
 					}
 				}
 			}
 			set2symbols[setind] = new int[values.size()];
 			Integer[] arr = values.toArray(new Integer[values.size()]);
-			for(int l = 0; l < set2symbols[setind].length; l++) {
+			for (int l = 0; l < set2symbols[setind].length; l++) {
 				set2symbols[setind][l] = arr[l];
 			}
 			Arrays.sort(set2symbols[setind]);

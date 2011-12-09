@@ -16,12 +16,7 @@
 package org.textway.lapg.gen;
 
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Represents generator options.
@@ -190,28 +185,28 @@ public class LapgOptions {
 
 	private static void setOption(LapgOptions opts, int optionId, String value) {
 		switch (optionId) {
-		case OPT_DEBUG:
-			opts.setDebug(LapgOptions.DEBUG_AMBIG);
-			break;
-		case OPT_EXT_DEBUG:
-			opts.setDebug(LapgOptions.DEBUG_TABLES);
-			break;
-		case OPT_NO_DEF:
-			opts.setUseDefaultTemplates(false);
-			break;
-		case OPT_INCLUDE:
-			for (String s : value.split(";")) {
-				if (s.trim().length() > 0) {
-					opts.getIncludeFolders().add(s);
+			case OPT_DEBUG:
+				opts.setDebug(LapgOptions.DEBUG_AMBIG);
+				break;
+			case OPT_EXT_DEBUG:
+				opts.setDebug(LapgOptions.DEBUG_TABLES);
+				break;
+			case OPT_NO_DEF:
+				opts.setUseDefaultTemplates(false);
+				break;
+			case OPT_INCLUDE:
+				for (String s : value.split(";")) {
+					if (s.trim().length() > 0) {
+						opts.getIncludeFolders().add(s);
+					}
 				}
-			}
-			break;
-		case OPT_TEMPLATE:
-			opts.setTemplateName(value);
-			break;
-		case OPT_OUTPUT:
-			opts.setOutputFolder(value);
-			break;
+				break;
+			case OPT_TEMPLATE:
+				opts.setTemplateName(value);
+				break;
+			case OPT_OUTPUT:
+				opts.setOutputFolder(value);
+				break;
 		}
 	}
 }

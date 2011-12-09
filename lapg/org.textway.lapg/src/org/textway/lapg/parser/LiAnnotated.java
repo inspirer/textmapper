@@ -24,9 +24,9 @@ import java.util.Map;
 
 public class LiAnnotated extends LiEntity implements Annotated {
 
-	private static final Map<String,Object> EMPTY_ANN = Collections.<String,Object>emptyMap();
+	private static final Map<String, Object> EMPTY_ANN = Collections.<String, Object>emptyMap();
 
-	private Map<String,Object> myAnnotations;
+	private Map<String, Object> myAnnotations;
 
 	public LiAnnotated(Map<String, Object> myAnnotations, IAstNode node) {
 		super(node);
@@ -34,7 +34,7 @@ public class LiAnnotated extends LiEntity implements Annotated {
 	}
 
 	public void addAnnotation(String name, Object value) {
-		if(myAnnotations == EMPTY_ANN) {
+		if (myAnnotations == EMPTY_ANN) {
 			myAnnotations = new HashMap<String, Object>();
 		}
 		myAnnotations.put(name, value);

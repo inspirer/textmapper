@@ -31,11 +31,11 @@ public class AstPrioClause extends AstNode implements AstRuleAttribute {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
 
-		if(reference != null) {
+		if (reference != null) {
 			reference.accept(v);
 		}
 	}

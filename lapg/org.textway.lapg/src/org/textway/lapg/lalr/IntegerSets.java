@@ -62,7 +62,7 @@ public class IntegerSets {
 			}
 		}
 		int[] set = intersect(sets[i1], sets[i2]);
-		if(set == null) return -1;
+		if (set == null) return -1;
 		return push(hash, set);
 	}
 
@@ -149,7 +149,7 @@ public class IntegerSets {
 		int result = 1;
 		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
 			if (a[ai] != b[bi]) {
-				if(a[ai] < b[bi])
+				if (a[ai] < b[bi])
 					ai++;
 				else bi++;
 				continue;
@@ -192,7 +192,7 @@ public class IntegerSets {
 		int len = 0;
 		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
 			if (a[ai] != b[bi]) {
-				if(a[ai] < b[bi])
+				if (a[ai] < b[bi])
 					ai++;
 				else bi++;
 				continue;
@@ -201,12 +201,12 @@ public class IntegerSets {
 			bi++;
 			len++;
 		}
-		if(len == 0) return null;
+		if (len == 0) return null;
 		int[] result = new int[len];
 		int i = 0;
 		for (int ai = 0, bi = 0; ai < a.length && bi < b.length; ) {
 			if (a[ai] != b[bi]) {
-				if(a[ai] < b[bi])
+				if (a[ai] < b[bi])
 					ai++;
 				else bi++;
 				continue;
@@ -242,7 +242,7 @@ public class IntegerSets {
 		int i = 0, ai = 0, bi = 0;
 		while (i < length && ai < a.length && bi < b.length) {
 			if (a[ai] != b[bi]) {
-				if(a[ai] < b[bi])
+				if (a[ai] < b[bi])
 					ai++;
 				else bi++;
 				continue;

@@ -100,9 +100,9 @@ abstract class ContextFree {
 			this.rindex[i] = curr_rindex;
 			SymbolRef[] wright = r.getRight();
 			for (SymbolRef element : wright) {
-				if(element.getNegativeLA() != null) {
+				if (element.getNegativeLA() != null) {
 					nla_count++;
-					if(element == wright[0]) {
+					if (element == wright[0]) {
 						nla_rcount++;
 					}
 				}
@@ -114,7 +114,7 @@ abstract class ContextFree {
 			}
 		}
 
-		if(nla_count > 0) {
+		if (nla_count > 0) {
 			sit_nla = new int[situations];
 			Arrays.fill(sit_nla, -1);
 			nla = new IntegerSets();
@@ -126,10 +126,10 @@ abstract class ContextFree {
 				SymbolRef[] wright = wrules[i].getRight();
 				for (SymbolRef element : wright) {
 					NegativeLookahead nl = element.getNegativeLA();
-					if(nl != null) {
+					if (nl != null) {
 						sit_nla[sit] = nla.storeSet(toSortedIds(nl.getUnwantedSet()));
 						nla_situations[nla_sit_index++] = sit;
-						if(element == wright[0]) {
+						if (element == wright[0]) {
 							nla_rules[nla_rule_index++] = i;
 						}
 					}
@@ -179,7 +179,7 @@ abstract class ContextFree {
 
 	private static int[] toSortedIds(Symbol[] list) {
 		int[] result = new int[list.length];
-		for(int i = 0; i < list.length; i++) {
+		for (int i = 0; i < list.length; i++) {
 			result[i] = list[i].getIndex();
 		}
 		Arrays.sort(result);

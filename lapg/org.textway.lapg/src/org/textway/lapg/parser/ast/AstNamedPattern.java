@@ -40,10 +40,10 @@ public class AstNamedPattern extends AstNode implements AstLexerPart {
 	}
 
 	public void accept(AbstractVisitor v) {
-		if(!v.visit(this)) {
+		if (!v.visit(this)) {
 			return;
 		}
-		if(regexp != null) {
+		if (regexp != null) {
 			regexp.accept(v);
 		}
 	}
