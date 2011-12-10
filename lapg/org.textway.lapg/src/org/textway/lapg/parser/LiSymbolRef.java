@@ -27,12 +27,14 @@ public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 	private final Symbol target;
 	private final String alias;
 	private final LiNegativeLookahead negLA;
+	private final boolean isHidden;
 
-	public LiSymbolRef(Symbol target, String alias, Map<String, Object> annotations, LiNegativeLookahead negLA, IAstNode node) {
+	public LiSymbolRef(Symbol target, String alias, Map<String, Object> annotations, LiNegativeLookahead negLA, boolean isHidden, IAstNode node) {
 		super(annotations, node);
 		this.target = target;
 		this.alias = alias;
 		this.negLA = negLA;
+		this.isHidden = isHidden;
 	}
 
 	public String getAlias() {
@@ -41,6 +43,11 @@ public class LiSymbolRef extends LiAnnotated implements SymbolRef {
 
 	public NegativeLookahead getNegativeLA() {
 		return negLA;
+	}
+
+	@Override
+	public boolean isHidden() {
+		return isHidden;
 	}
 
 	public Symbol getTarget() {

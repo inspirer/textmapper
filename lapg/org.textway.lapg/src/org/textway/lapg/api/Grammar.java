@@ -36,6 +36,8 @@ public interface Grammar {
 
 	int getTerminals();
 
+	int getGrammarSymbols();
+
 	InputRef[] getInput();
 
 	Symbol getEoi();

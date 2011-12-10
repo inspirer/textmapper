@@ -71,7 +71,6 @@ public class LapgResolver {
 		myTypesPackage = getTypesPackage();
 
 		collectLexems();
-		int terminals = symbols.size();
 
 		LiRule[] ruleArr;
 		LiPrio[] prioArr;
@@ -98,6 +97,8 @@ public class LapgResolver {
 			}
 			prioArr = priorities.toArray(new LiPrio[priorities.size()]);
 			inputArr = inputs.toArray(new InputRef[inputs.size()]);
+
+			// TODO collect layout symbols
 		} else {
 			ruleArr = null;
 			prioArr = null;
@@ -108,6 +109,15 @@ public class LapgResolver {
 		SourceElement templates = getTemplates();
 
 		LiSymbol[] symbolArr = symbols.toArray(new LiSymbol[symbols.size()]);
+		Arrays.sort(symbolArr, new Comparator<LiSymbol>() {
+			@Override
+			public int compare(LiSymbol o1, LiSymbol o2) {
+				// TODO do not merge Soft term & term
+				int kind1 = o1.getKind() == Symbol.KIND_SOFTTERM ? Symbol.KIND_TERM : o1.getKind();
+				int kind2 = o2.getKind() == Symbol.KIND_SOFTTERM ? Symbol.KIND_TERM : o2.getKind();
+				return new Integer(kind1).compareTo(kind2);
+			}
+		});
 		for (LiSymbol s : symbolArr) {
 			String name = s.getName();
 			if (FormatUtil.isIdentifier(name)) {
@@ -117,6 +127,15 @@ public class LapgResolver {
 		for (int i = 0; i < symbolArr.length; i++) {
 			symbolArr[i].setId(i, helper.generateId(symbolArr[i].getName(), i));
 		}
+		int terminals = 0;
+		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
+			terminals++;
+		}
+		int grammarSymbols = terminals;
+		while (grammarSymbols < symbolArr.length && symbolArr[grammarSymbols].getKind() != Symbol.KIND_LAYOUT) {
+			grammarSymbols++;
+		}
+
 		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
@@ -125,7 +144,7 @@ public class LapgResolver {
 
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr,
 				inputArr, eoi, error, options,
-				templates, terminals,
+				templates, terminals, grammarSymbols,
 				!tree.getErrors().isEmpty(), copyrightHeader);
 	}
 
@@ -142,20 +161,18 @@ public class LapgResolver {
 		return null;
 	}
 
-	private LiSymbol create(AstIdentifier id, String type, boolean isTerm, boolean isSoft) {
+	private LiSymbol create(AstIdentifier id, String type, int kind) {
 		String name = id.getName();
 		if (symbolsMap.containsKey(name)) {
 			LiSymbol sym = symbolsMap.get(name);
-			if (sym.isTerm() != isTerm) {
-				error(id, "redeclaration of " + (isTerm ? "non-terminal" : "terminal") + ": " + name);
-			} else if (sym.isSoft() != isSoft) {
-				error(id, "redeclaration of " + (isSoft ? "non-soft" : "soft") + " terminal: " + name);
+			if (sym.getKind() != kind) {
+				error(id, "redeclaration of " + sym.kindAsString() + ": " + name);
 			} else if (!LapgResolverHelper.safeEquals(sym.getType(), type)) {
 				error(id, "redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of " + (sym.getType() == null ? "<empty>" : sym.getType()));
 			}
 			return sym;
 		} else {
-			LiSymbol sym = new LiSymbol(name, type, isTerm, isSoft, id);
+			LiSymbol sym = new LiSymbol(kind, name, type, id);
 			symbolsMap.put(name, sym);
 			symbols.add(sym);
 			return sym;
@@ -169,9 +186,9 @@ public class LapgResolver {
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
-					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), false, false);
+					LiSymbol symopt = create(new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()), sym.getType(), Symbol.KIND_NONTERM);
 					rules.add(new LiRule(null, symopt, new LiSymbolRef[0], null, null, null, id));
-					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null, null)}, null, null, null, id));
+					rules.add(new LiRule(null, symopt, new LiSymbolRef[]{new LiSymbolRef(sym, null, null, null, false, null)}, null, null, null, id));
 					return symopt;
 				}
 			}
@@ -208,7 +225,7 @@ public class LapgResolver {
 	}
 
 	private void collectLexems() {
-		eoi = new LiSymbol("eoi", null, true, false, null);
+		eoi = new LiSymbol(Symbol.KIND_TERM, "eoi", null, null);
 		symbolsMap.put(eoi.getName(), eoi);
 		symbols.add(eoi);
 		int groups = 1;
@@ -226,7 +243,7 @@ public class LapgResolver {
 				AstLexeme lexeme = (AstLexeme) clause;
 				AstLexemAttrs attrs = lexeme.getAttrs();
 				int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
-				LiSymbol s = create(lexeme.getName(), lexeme.getType(), true, kind == Lexem.KIND_SOFT);
+				LiSymbol s = create(lexeme.getName(), lexeme.getType(), kind == Lexem.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM);
 				if (lexeme.getRegexp() != null) {
 					RegexPart regex;
 					try {
@@ -345,7 +362,7 @@ public class LapgResolver {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), false, false);
+				create(nonterm.getName(), nonterm.getType(), Symbol.KIND_NONTERM);
 			}
 		}
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
@@ -371,9 +388,9 @@ public class LapgResolver {
 				if (part instanceof AstCode) {
 					AstCode astCode = (AstCode) part;
 					if (astCode != lastAction) {
-						LiSymbol codeSym = new LiSymbol("{}", null, false, false, astCode);
+						LiSymbol codeSym = new LiSymbol(Symbol.KIND_NONTERM, "{}", null, astCode);
 						symbols.add(codeSym);
-						rightPart.add(new LiSymbolRef(codeSym, null, null, null, null));
+						rightPart.add(new LiSymbolRef(codeSym, null, null, null, false, null));
 						rules.add(new LiRule(null, codeSym, null, convert(astCode), null, null, astCode));
 					}
 
@@ -382,7 +399,7 @@ public class LapgResolver {
 					LiSymbol sym = resolve(rs.getSymbol());
 					if (sym != null) {
 						// TODO check duplicate alias
-						rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations(), "AnnotateReference"), convertLA(rs.getAnnotations()), rs.getSymbol()));
+						rightPart.add(new LiSymbolRef(sym, rs.getAlias(), convert(rs.getAnnotations(), "AnnotateReference"), convertLA(rs.getAnnotations()), false, rs.getSymbol()));
 					}
 				}
 			}

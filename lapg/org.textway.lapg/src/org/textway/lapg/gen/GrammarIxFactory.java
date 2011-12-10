@@ -84,19 +84,51 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					SymbolRef[] array = rule.getRight();
-					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
-					return new ActionSymbol(array[i].getTarget(), array[i], false, array.length - i - 1,
+					if (array == null || array.length == 0) {
+						throw new EvaluationException(methodName + "() cannot be used on empty rule");
+					}
+					int i;
+					if (methodName.charAt(0) == 'f') {
+						i = 0;
+						while (i < array.length && !isRulePart(array[i])) {
+							i++;
+						}
+					} else {
+						i = array.length - 1;
+						while (i >= 0 && !isRulePart(array[i])) {
+							i--;
+						}
+					}
+					if (i < 0 || i >= array.length) {
+						throw new EvaluationException(methodName + "() cannot be used in rules where all symbols are optionals");
+					}
+					return new ActionSymbol(array[i].getTarget(), array[i], false, getRightOffset(i, array),
 							evaluationStrategy, rootContext, templatePackage);
 				}
 			}
 			return super.callMethod(methodName, args);
 		}
 
+		private boolean isRulePart(SymbolRef ref) {
+			return !ref.isHidden() && ref.getTarget() != null && ref.getTarget().getKind() != Symbol.KIND_LAYOUT;
+		}
+
+		private int getRightOffset(int index, SymbolRef[] right) {
+			assert index >= 0 && index < right.length;
+			int rightOffset = 0;
+			for (int e = right.length - 1; e > index; e--) {
+				if (isRulePart(right[e])) {
+					rightOffset++;
+				}
+			}
+			return rightOffset;
+		}
+
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				SymbolRef[] array = rule.getRight();
-				return new ActionSymbol(array[i].getTarget(), array[i], false, array.length - i - 1,
+				return new ActionSymbol(array[i].getTarget(), array[i], false, getRightOffset(i, array),
 						evaluationStrategy, rootContext, templatePackage);
 			} else if (index instanceof String) {
 				return rule.getAnnotation((String) index);
@@ -108,25 +140,35 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		public Object getProperty(String id) throws EvaluationException {
 			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
-			if (rule.getLeft().getName().equals(id)) {
-				result.add(new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
-			}
 
+			int rightOffset = 0;
 			SymbolRef[] right = rule.getRight();
-			for (int i = 0; i < right.length; i++) {
-				String name = right[i].getTarget().getName();
+			for (int i = right.length - 1; i >= 0; i--) {
+				Symbol sym = right[i].getTarget();
+				if (sym == null || sym.getKind() == Symbol.KIND_LAYOUT) {
+					continue;
+				}
+				String name = sym.getName();
 				if (right[i].getAlias() != null) {
 					name = right[i].getAlias();
 				}
 				if (id.equals(name)) {
-					result.add(new ActionSymbol(right[i].getTarget(), right[i], false, right.length - i - 1,
+					result.add(new ActionSymbol(sym, right[i], false, rightOffset,
 							evaluationStrategy, rootContext, templatePackage));
 				}
+				if (isRulePart(right[i])) {
+					rightOffset++;
+				}
+			}
+
+			if (rule.getLeft().getName().equals(id)) {
+				result.add(new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
 			}
 
 			if (result.size() == 1) {
 				return result.get(0);
 			} else if (result.size() > 1) {
+				Collections.reverse(result);
 				return result;
 			}
 			throw new EvaluationException("symbol `" + id + "` is undefined");

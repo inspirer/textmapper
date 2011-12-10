@@ -50,7 +50,7 @@ abstract class ContextFree {
 		this.sym = g.getSymbols();
 		this.wrules = g.getRules();
 
-		this.nsyms = sym.length;
+		this.nsyms = g.getGrammarSymbols();
 		this.rules = wrules.length;
 		this.nterms = g.getTerminals();
 

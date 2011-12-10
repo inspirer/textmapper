@@ -126,7 +126,7 @@ public class InputTest extends LapgTestCase {
 
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,39: redeclaration of soft terminal: ssss\n" +
+				"syntax_lexems,39: redeclaration of soft-terminal: ssss\n" +
 				"syntax_lexems,42: soft lexem `wact' cannot have a semantic action\n" +
 				"syntax_lexems,22: lexem matches two classes `identifier' and `identifierX', using first\n" +
 				"syntax_lexems,25: soft lexem `L0choice' doesn't match any class lexem\n" +

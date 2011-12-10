@@ -162,6 +162,11 @@ public class LexerGeneratorTest extends TestCase {
 					return name;
 				}
 
+				@Override
+				public int getKind() {
+					return KIND_TERM;
+				}
+
 				public int getIndex() {
 					return index;
 				}

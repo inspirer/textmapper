@@ -20,20 +20,23 @@ import org.textway.lapg.parser.ast.IAstNode;
 
 public class LiSymbol extends LiAnnotated implements Symbol {
 
+	private final int kind;
+	private final String name;
 	private int index;
 	private String identifier;
-	private final String name;
 	private String type;
-	private final boolean isTerm;
-	private final boolean isSoft;
 	private Symbol softClass;
 
-	public LiSymbol(String name, String type, boolean isTerm, boolean isSoft, IAstNode node) {
+	public LiSymbol(int kind, String name, String type, IAstNode node) {
 		super(null, node);
+		this.kind = kind;
 		this.name = name;
 		this.type = type;
-		this.isTerm = isTerm;
-		this.isSoft = isSoft;
+	}
+
+	@Override
+	public int getKind() {
+		return kind;
 	}
 
 	public int getIndex() {
@@ -58,11 +61,11 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 	}
 
 	public boolean isTerm() {
-		return isTerm;
+		return kind == KIND_TERM || kind == KIND_SOFTTERM;
 	}
 
 	public boolean isSoft() {
-		return isSoft;
+		return kind == KIND_SOFTTERM;
 	}
 
 	public Symbol getSoftClass() {
@@ -75,5 +78,19 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 
 	public String getId() {
 		return identifier;
+	}
+
+	public String kindAsString() {
+		switch (kind) {
+			case KIND_TERM:
+				return "terminal";
+			case KIND_SOFTTERM:
+				return "soft-terminal";
+			case KIND_NONTERM:
+				return "non-terminal";
+			case KIND_LAYOUT:
+				return "layout";
+		}
+		return "<unknown>";
 	}
 }

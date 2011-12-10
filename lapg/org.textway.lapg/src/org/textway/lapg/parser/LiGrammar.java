@@ -34,12 +34,13 @@ public class LiGrammar implements Grammar {
 	private final Map<String, Object> options;
 	private final SourceElement templates;
 	private final int terminals;
+	private final int grammarSymbols;
 	private final boolean hasErrors;
 
 	private final String copyrightHeader;
 
 	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, NamedPattern[] patterns, InputRef[] inputs, Symbol eoi,
-					 Symbol error, Map<String, Object> options, SourceElement templates, int terminals, boolean hasErrors,
+					 Symbol error, Map<String, Object> options, SourceElement templates, int terminals, int grammarSymbols, boolean hasErrors,
 					 String copyrightHeader) {
 		this.symbols = symbols;
 		this.rules = rules;
@@ -52,6 +53,7 @@ public class LiGrammar implements Grammar {
 		this.options = options;
 		this.templates = templates;
 		this.terminals = terminals;
+		this.grammarSymbols = grammarSymbols;
 		this.hasErrors = hasErrors;
 		this.copyrightHeader = copyrightHeader;
 	}
@@ -98,6 +100,11 @@ public class LiGrammar implements Grammar {
 
 	public int getTerminals() {
 		return terminals;
+	}
+
+	@Override
+	public int getGrammarSymbols() {
+		return grammarSymbols;
 	}
 
 	public boolean hasErrors() {
