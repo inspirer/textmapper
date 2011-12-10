@@ -27,7 +27,7 @@ import java.io.FileNotFoundException;
 public class NlaTestMain {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		if(args.length < 1) {
+		if (args.length < 1) {
 			System.err.println("no input");
 			System.exit(1);
 		}
@@ -35,7 +35,7 @@ public class NlaTestMain {
 		String input = args[0];
 		String fileContents = FileUtil.getFileContents(new FileInputStream(input), "utf-8");
 		NlaTestTree<Object> parse = NlaTestTree.parse(new TextSource(input, fileContents.toCharArray(), 1));
-		if(parse.hasErrors()) {
+		if (parse.hasErrors()) {
 			System.err.println("bad input");
 			System.exit(1);
 		}

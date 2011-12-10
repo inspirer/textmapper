@@ -73,7 +73,7 @@ public class SActionParser {
 	protected final int lapg_next(int state) throws IOException {
 		int p;
 		if (lapg_action[state] < -2) {
-			if(lapg_n == null) {
+			if (lapg_n == null) {
 				lapg_n = lapg_lexer.next();
 			}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
@@ -143,7 +143,7 @@ public class SActionParser {
 	}
 
 	protected void shift() throws IOException {
-		if(lapg_n == null) {
+		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;

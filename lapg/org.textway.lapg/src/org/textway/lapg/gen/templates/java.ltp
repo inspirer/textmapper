@@ -61,7 +61,7 @@ ${if parser.nactions > 0-}
 		int p;
 		if (lapg_action[state] < -2) {
 ${if self->lazyNext()-}
-			if(lapg_n == null) {
+			if (lapg_n == null) {
 				lapg_n = lapg_lexer.next();
 			}
 ${end-}
@@ -172,7 +172,7 @@ ${end-}
 ${if syntax.error}
 	protected boolean restore() ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if self->lazyNext()-}
-		if(lapg_n == null) {
+		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
 ${end-}
@@ -215,7 +215,7 @@ ${end-}
 
 	protected void shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}boolean lazy${end}) throws java.io.@IOException {
 ${if self->lazyNext()-}
-		if(lapg_n == null) {
+		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
 ${end-}

@@ -50,7 +50,7 @@ public class NoparserLexer {
 		this.stream = stream;
 		this.group = 0;
 		int c = stream.read();
-		if(c == -1) {
+		if (c == -1) {
 			c = 0;
 		}
 		chr = (char) c;
@@ -64,7 +64,7 @@ public class NoparserLexer {
 		}
 		token.append(chr);
 		int c = stream.read();
-		if(c == -1) {
+		if (c == -1) {
 			c = 0;
 		}
 		chr = (char) c;
@@ -150,7 +150,7 @@ public class NoparserLexer {
 			}
 			token.setLength(0);
 
-			for (state = group; state >= 0;) {
+			for (state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.lexem = 0;
@@ -165,7 +165,7 @@ public class NoparserLexer {
 					}
 					token.append(chr);
 					int c = stream.read();
-					if(c == -1) {
+					if (c == -1) {
 						c = 0;
 					}
 					chr = (char) c;

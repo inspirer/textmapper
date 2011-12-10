@@ -55,7 +55,7 @@ ${template unpackShort-}
 		short[] res = new short[size];
 		int next = 0;
 		int comma;
-		for(int i = 0; i < size; i++) {
+		for (int i = 0; i < size; i++) {
 			comma = st.indexOf(',', next);
 			res[i] = Short.parseShort(comma == -1 ? st.substring(next) : st.substring(next, comma));
 			next = comma + 1;

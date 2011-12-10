@@ -63,9 +63,9 @@ public class SampleAParseContext {
 	public GenericNode convert(org.textway.lapg.eval.GenericParseContext.TextSource source, IAstClassdefNoEoi cd) {
 		AstClassdef def = (AstClassdef) cd;
 		GenericNode[] children = new GenericNode[def.getClassdeflistopt() != null ? def.getClassdeflistopt().size() : 0];
-		if(def.getClassdeflistopt() != null) {
+		if (def.getClassdeflistopt() != null) {
 			int i = 0;
-			for(AstClassdef c : def.getClassdeflistopt()) {
+			for (AstClassdef c : def.getClassdeflistopt()) {
 				children[i++] = convert(source, c);
 			}
 		}

@@ -217,7 +217,7 @@ public class RegexDefLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0;) {
+			for (state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
