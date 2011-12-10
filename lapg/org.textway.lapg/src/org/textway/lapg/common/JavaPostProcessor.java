@@ -24,7 +24,7 @@ public class JavaPostProcessor {
 
 	private static Pattern QUALIFIED_REFERENCE = Pattern.compile("((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)@([a-zA-Z_][a-zA-Z_0-9]*)");
 	private static Pattern IMPORT = Pattern.compile("import\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)+)([a-zA-Z_][a-zA-Z_0-9]*|\\*)\\s*;");
-	private static Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*[\\n\\r]{1,2}");
+	private static Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*(\\r?\\n){1,2}");
 
 	private String text;
 	private final Map<String, String> toimport = new HashMap<String, String>();
