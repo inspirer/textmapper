@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexSet extends RegexPart {
+class RegexSet extends RegexPart implements org.textway.lapg.api.regex.RegexSet {
 
 	private final CharacterSet set;
 	private final List<RegexPart> charset;

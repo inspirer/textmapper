@@ -72,6 +72,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 			Method meth = wrapped.getClass().getMethod(getAccessor);
+			meth.setAccessible(true);
 			return meth.invoke(wrapped);
 		} catch (NoSuchMethodException ex) {
 			throw new EvaluationException("symbol `" + id + "` is undefined");

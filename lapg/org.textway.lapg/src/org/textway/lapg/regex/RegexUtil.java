@@ -46,8 +46,8 @@ public class RegexUtil {
 			left = new RegexList(left);
 		}
 		if (right instanceof RegexList && !(((RegexList) right).isInParentheses())) {
-			for (RegexPart item : ((RegexList) right).getElements()) {
-				((RegexList) left).addElement(item);
+			for (org.textway.lapg.api.regex.RegexPart item : ((RegexList) right).getElements()) {
+				((RegexList) left).addElement((RegexPart) item);
 			}
 		} else {
 			((RegexList) left).addElement(right);
@@ -71,8 +71,8 @@ public class RegexUtil {
 
 	static void addSetSymbol(List<RegexPart> charset, RegexPart right, ErrorReporter reporter) {
 		if (right instanceof RegexOr) {
-			for (RegexPart regexPart : ((RegexOr) right).getVariants()) {
-				addSetSymbol(charset, regexPart, reporter);
+			for (org.textway.lapg.api.regex.RegexPart regexPart : ((RegexOr) right).getVariants()) {
+				addSetSymbol(charset, (RegexPart) regexPart, reporter);
 			}
 		} else {
 			charset.add(right);

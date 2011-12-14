@@ -18,10 +18,10 @@ package org.textway.lapg.lex;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.ProcessingStatus;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.parser.LiLexem;
 import org.textway.lapg.parser.LiNamedPattern;
-import org.textway.lapg.regex.RegexPart;
 
 import java.util.ArrayList;
 import java.util.Arrays;

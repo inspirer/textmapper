@@ -23,7 +23,7 @@ import org.textway.lapg.lex.LexConstants;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.lex.RegexpParser;
-import org.textway.lapg.regex.RegexPart;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.regex.RegexUtil;
 
 public class RegexpParseTest extends LapgTestCase {

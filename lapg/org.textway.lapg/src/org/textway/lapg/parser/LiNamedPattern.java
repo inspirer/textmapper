@@ -16,8 +16,8 @@
 package org.textway.lapg.parser;
 
 import org.textway.lapg.api.NamedPattern;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.lapg.regex.RegexPart;
 import org.textway.templates.api.INamedEntity;
 
 /**

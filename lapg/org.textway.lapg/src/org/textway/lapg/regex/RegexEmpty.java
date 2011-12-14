@@ -15,12 +15,13 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 5/6/11
  */
-public class RegexEmpty extends RegexPart {
+class RegexEmpty extends RegexPart implements org.textway.lapg.api.regex.RegexEmpty {
 
 	public RegexEmpty(TextSource source, int offset) {
 		super(source, offset, offset);

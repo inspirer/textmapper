@@ -15,7 +15,8 @@
  */
 package org.textway.lapg.lex;
 
-import org.textway.lapg.regex.*;
+import org.textway.lapg.api.regex.*;
+import org.textway.lapg.regex.RegexDefTree;
 import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -46,7 +47,7 @@ public class RegexMatcher {
 			throw new RegexpParseException("regexp is empty", 0);
 		}
 
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
+		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();

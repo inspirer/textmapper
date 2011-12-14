@@ -26,7 +26,7 @@ import org.textway.lapg.parser.LapgLexer.Lexems;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.parser.ast.*;
-import org.textway.lapg.regex.RegexPart;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;

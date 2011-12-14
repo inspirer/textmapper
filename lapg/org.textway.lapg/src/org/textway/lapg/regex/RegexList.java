@@ -15,13 +15,17 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexList extends RegexPart {
+class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexList {
 
 	private List<RegexPart> elements = new ArrayList<RegexPart>();
 	private boolean inParentheses;
@@ -40,8 +44,8 @@ public class RegexList extends RegexPart {
 		include(part);
 	}
 
-	public List<RegexPart> getElements() {
-		return elements;
+	public Collection<org.textway.lapg.api.regex.RegexPart> getElements() {
+		return Collections.<org.textway.lapg.api.regex.RegexPart>unmodifiableCollection(elements);
 	}
 
 	public void setInParentheses() {

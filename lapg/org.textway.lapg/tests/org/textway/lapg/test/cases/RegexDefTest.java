@@ -17,7 +17,8 @@ package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.textway.lapg.regex.*;
+import org.textway.lapg.api.regex.*;
+import org.textway.lapg.regex.RegexDefTree;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.ArrayList;
@@ -133,7 +134,7 @@ public class RegexDefTest extends TestCase {
 	}
 
 	private RegexPart checkRegex(String regex, String expected) {
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if(result.hasErrors()) {
 			Assert.fail(result.getErrors().get(0).getMessage());
 		}
@@ -144,7 +145,7 @@ public class RegexDefTest extends TestCase {
 	}
 
 	private void checkErrors(String regex, String ...expectedErrors) {
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		Assert.assertTrue("no errors :(", result.hasErrors());
 		for(int i = 0; i < Math.max(expectedErrors.length, result.getErrors().size()); i++) {
 			String expected = i < expectedErrors.length ? expectedErrors[i] : null;
@@ -154,7 +155,7 @@ public class RegexDefTest extends TestCase {
 	}
 
 	private void checkVisitor(String regex, String ...expectedElements) {
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if(result.hasErrors()) {
 			Assert.fail(result.getErrors().get(0).getMessage());
 		}

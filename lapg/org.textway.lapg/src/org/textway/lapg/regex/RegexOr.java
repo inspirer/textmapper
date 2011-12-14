@@ -15,13 +15,17 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexOr extends RegexPart {
+class RegexOr extends RegexPart implements org.textway.lapg.api.regex.RegexOr {
 
 	List<RegexPart> variants = new ArrayList<RegexPart>();
 
@@ -35,8 +39,8 @@ public class RegexOr extends RegexPart {
 		include(part);
 	}
 
-	public List<RegexPart> getVariants() {
-		return variants;
+	public Collection<org.textway.lapg.api.regex.RegexPart> getVariants() {
+		return Collections.<org.textway.lapg.api.regex.RegexPart>unmodifiableCollection(variants);
 	}
 
 	@Override

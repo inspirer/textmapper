@@ -19,7 +19,7 @@ import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.lapg.regex.RegexPart;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.templates.api.INamedEntity;
 
 public class LiLexem extends LiEntity implements Lexem, INamedEntity {

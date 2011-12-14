@@ -13,42 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textway.lapg.api.regex;
 
-/**
- * Gryaznov Evgeny, 4/5/11
- */
-public class RegexVisitor {
+public abstract class RegexVisitor {
 
-	public void visit(RegexAny c) {
-	}
+	public abstract void visit(RegexAny c);
 
-	public void visit(RegexChar c) {
-	}
+	public abstract void visit(RegexChar c);
 
-	public void visit(RegexExpand c) {
-	}
+	public abstract void visit(RegexExpand c);
 
-	public void visitBefore(RegexList c) {
-	}
+	public abstract void visitBefore(RegexList c);
 
-	public void visitAfter(RegexList c) {
-	}
+	public abstract void visitAfter(RegexList c);
 
-	public void visitBefore(RegexOr c) {
-	}
+	public abstract void visitBefore(RegexOr c);
 
-	public void visitBetween(RegexOr c) {
-	}
+	public abstract void visitBetween(RegexOr c);
 
-	public void visitAfter(RegexOr c) {
-	}
+	public abstract void visitAfter(RegexOr c);
 
-	public void visitBefore(RegexQuantifier c) {
-	}
+	public abstract void visitBefore(RegexQuantifier c);
 
-	public void visitAfter(RegexQuantifier c) {
-	}
+	public abstract void visitAfter(RegexQuantifier c);
 
 	public boolean visit(RegexSet c) {
 		return false;

@@ -15,12 +15,13 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexAny extends RegexPart {
+class RegexAny extends RegexPart implements org.textway.lapg.api.regex.RegexAny {
 
 	public RegexAny(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);

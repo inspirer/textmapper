@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.lex;
 
-import org.textway.lapg.regex.*;
+import org.textway.lapg.api.regex.*;
 
 import java.util.*;
 

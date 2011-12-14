@@ -13,26 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textway.lapg.api.regex;
 
 import org.textway.lapg.lex.CharacterSet;
-import org.textway.lapg.regex.RegexDefTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 4/5/11
- */
-class RegexCharClass extends RegexSet {
+public interface RegexSet extends RegexPart {
 
-	private final String cl;
-
-	public RegexCharClass(String c, CharacterSet set, TextSource source, int offset, int endoffset) {
-		super(set, null, source, offset, endoffset);
-		this.cl = c;
-	}
-
-	@Override
-	protected void toString(StringBuilder sb) {
-		sb.append('\\');
-		sb.append(cl.length() == 1 ? cl : "p{" + cl + "}");
-	}
+	CharacterSet getSet();
 }

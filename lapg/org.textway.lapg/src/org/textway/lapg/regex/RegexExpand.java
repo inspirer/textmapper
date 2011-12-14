@@ -15,12 +15,13 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexExpand extends RegexPart {
+class RegexExpand extends RegexPart implements org.textway.lapg.api.regex.RegexExpand {
 
 	private final String name;
 
