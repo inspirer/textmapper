@@ -81,6 +81,7 @@ Lnoeoi: /no-eoi/			(soft)
 Lsoft: /soft/				(soft)
 Lclass: /class/				(soft)
 Lspace: /space/				(soft)
+Llayout: /layout/			(soft)
 
 # reserved
 
@@ -112,7 +113,7 @@ symbol (AstIdentifier) ::=
 ;
 
 reference (AstReference) ::=
-	identifier											{ $$ = new AstReference($identifier, source, ${reference.offset}, ${reference.endoffset}); } 
+	identifier											{ $$ = new AstReference($identifier, source, ${reference.offset}, ${reference.endoffset}); }
 ;
 
 type (String) ::=
@@ -128,7 +129,7 @@ type_part ::=
 ;
 
 pattern (AstRegexp) ::=
-	regexp												{ $$ = new AstRegexp($regexp, source, ${pattern.offset}, ${pattern.endoffset}); } 
+	regexp												{ $$ = new AstRegexp($regexp, source, ${pattern.offset}, ${pattern.endoffset}); }
 ;
 
 lexer_parts (List<AstLexerPart>) ::= 
@@ -153,6 +154,7 @@ lexem_attribute (AstLexemAttrs) ::=
 	  Lsoft												{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
 	| Lclass											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
 	| Lspace											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 icon_list (List<Integer>) ::=

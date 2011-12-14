@@ -37,6 +37,11 @@ public class AstOption extends AstNode implements AstOptionPart {
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (value != null) {
+			value.accept(v);
+		}
 	}
 }
