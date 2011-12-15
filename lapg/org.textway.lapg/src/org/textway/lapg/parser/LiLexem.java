@@ -56,11 +56,7 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		return priority;
 	}
 
-	public String getRegexp() {
-		return regexp.toString();
-	}
-
-	public RegexPart getParsedRegexp() {
+	public RegexPart getRegexp() {
 		return regexp;
 	}
 

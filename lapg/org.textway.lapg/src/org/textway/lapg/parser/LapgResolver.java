@@ -292,9 +292,9 @@ public class LapgResolver {
 		}
 
 		for (LiLexem clLexem : classLexems) {
-			RegexMatcher m = new RegexMatcher(clLexem.getParsedRegexp(), namedPatternsMap);
+			RegexMatcher m = new RegexMatcher(clLexem.getRegexp(), namedPatternsMap);
 			for (LiLexem l : lexems) {
-				RegexPart lRegex = l.getParsedRegexp();
+				RegexPart lRegex = l.getRegexp();
 				if (lRegex.isConstant() && l.getKind() != Lexem.KIND_CLASS) {
 					if (clLexem.getGroups() == l.getGroups() && m.matches(lRegex.getConstantValue())) {
 						if (l.getClassLexem() != null) {
@@ -314,7 +314,7 @@ public class LapgResolver {
 			}
 			String name = l.getSymbol().getName();
 			if (l.getClassLexem() == null) {
-				if (!l.getParsedRegexp().isConstant()) {
+				if (!l.getRegexp().isConstant()) {
 					error(l, "soft lexem `" + name + "' should have a constant regexp");
 				} else {
 					error(l, "soft lexem `" + name + "' doesn't match any class lexem");

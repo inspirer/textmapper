@@ -15,6 +15,8 @@
  */
 package org.textway.lapg.api;
 
+import org.textway.lapg.api.regex.RegexPart;
+
 /**
  * Lexem rule.
  */
@@ -30,7 +32,7 @@ public interface Lexem extends SourceElement {
 
 	Symbol getSymbol();
 
-	String getRegexp();
+	RegexPart getRegexp();
 
 	int getPriority();
 

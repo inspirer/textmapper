@@ -235,7 +235,7 @@ ${if lexem->classHasInstances()-}
 	private static java.util.@Map<String,Integer> subTokensOf${lexem->classLexemName()} = new java.util.@HashMap<String,Integer>();
 	static {
 ${foreach instance in lexem->classInstances()-}
-		subTokensOf${lexem->classLexemName()}.put("${util.escape(instance.parsedRegexp.constantValue)}", ${instance.index});
+		subTokensOf${lexem->classLexemName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
 ${end-}
 	}
 ${end-}
@@ -251,12 +251,12 @@ ${end-}
 ${if lexem->classInstances().exists(x|x.action) || lexem.action-}
 		switch(lexemIndex) {
 ${foreach instance in lexem->classInstances().select(x|x.action)-}
-			case ${instance.index}:	// ${instance.parsedRegexp.constantValue}
+			case ${instance.index}:	// ${instance.regexp.constantValue}
 				${call lexerAction('lapg_n.sym') for instance-}
 ${end-}
 ${if lexem.action-}
 ${foreach instance in lexem->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
-			case ${instance.index}:	// ${instance.parsedRegexp.constantValue} (soft)
+			case ${instance.index}:	// ${instance.regexp.constantValue} (soft)
 ${end-}
 			case ${lexem.index}:	// <default>
 				${call lexerAction('lapg_n.sym') for lexem-}

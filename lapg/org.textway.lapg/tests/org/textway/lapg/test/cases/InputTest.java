@@ -81,10 +81,10 @@ public class InputTest extends LapgTestCase {
 
 		Lexem[] lexems = g.getLexems();
 		Assert.assertEquals(3, lexems.length);
-		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp());
+		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp().toString());
 		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
-				.getRegexp());
-		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp());
+				.getRegexp().toString());
+		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp().toString());
 		Assert.assertEquals(" continue; ", lexems[2].getAction().getText());
 	}
 

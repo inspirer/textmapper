@@ -21,8 +21,11 @@ import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
+import org.textway.lapg.lex.RegexMatcher;
+import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.test.TestStatus;
 
 public class LexerGeneratorTest extends TestCase {
@@ -48,7 +51,7 @@ public class LexerGeneratorTest extends TestCase {
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
-				Assert.assertEquals("For " + s + " Expected " + tl.getRegexp() + ";", tl.index, res);
+				Assert.assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
 			}
 		}
 	}
@@ -124,8 +127,14 @@ public class LexerGeneratorTest extends TestCase {
 			return prio;
 		}
 
-		public String getRegexp() {
-			return regexp;
+		@Override
+		public RegexPart getRegexp() {
+			try {
+				return RegexMatcher.parse(getSymbol().getName(), regexp);
+			} catch (RegexpParseException ex) {
+				Assert.fail(ex.toString());
+				return null;
+			}
 		}
 
 		public String[] getSamples() {

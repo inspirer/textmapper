@@ -20,7 +20,6 @@ import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
-import org.textway.lapg.parser.LiLexem;
 import org.textway.lapg.parser.LiNamedPattern;
 
 import java.util.ArrayList;
@@ -636,7 +635,7 @@ public class LexicalBuilder {
 					status.debug(" " + FormatUtil.asHex(lsym[e], 8));
 				}
 
-				status.debug(" (" + lexems[i].getRegexp() + ")\n");
+				status.debug(" (" + lexems[i].getRegexp().toString() + ")\n");
 			}
 
 			// only for small data
@@ -689,9 +688,7 @@ public class LexicalBuilder {
 
 	private int[] parseRegexp(RegexpParser rp, Lexem l) {
 		try {
-			RegexPart parsedRegex = l instanceof LiLexem
-					? ((LiLexem) l).getParsedRegexp()
-					: RegexMatcher.parse(l.getSymbol().getName(), l.getRegexp());
+			RegexPart parsedRegex = l.getRegexp();
 			return rp.compile(l.getIndex(), parsedRegex);
 
 		} catch (RegexpParseException ex) {
