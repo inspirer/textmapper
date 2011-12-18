@@ -13,63 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
 import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
-import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.templates.api.INamedEntity;
 
-import java.util.Map;
+class LiRule implements Rule {
 
-public class LiRule extends LiAnnotated implements Rule, INamedEntity {
-
-	private static final LiSymbolRef[] EMPTY_RIGHT = new LiSymbolRef[0];
-
-	private int index;
+	private final int index;
 	private final String alias;
-	private final LiSymbol left;
-	private final LiSymbolRef[] right;
-	private final SourceElement code;
-	private final LiSymbol priority;
-	private final IAstNode node;
+	private final Symbol left;
+	private final SymbolRef[] right;
+	private final Symbol priority;
 
-	public LiRule(String alias, LiSymbol left, LiSymbolRef[] right, SourceElement code, LiSymbol priority, Map<String, Object> annotations, IAstNode node) {
-		super(annotations, node);
+	public LiRule(int index, String alias, Symbol left, SymbolRef[] right, Symbol priority) {
+		this.index = index;
 		this.left = left;
-		this.right = right == null ? EMPTY_RIGHT : right;
-		this.code = code;
+		this.right = right;
 		this.priority = priority;
-		this.node = node;
 		this.alias = alias;
 	}
 
-	public SourceElement getAction() {
-		return code;
-	}
-
+	@Override
 	public int getIndex() {
 		return index;
 	}
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
-
+	@Override
 	public String getAlias() {
 		return alias;
 	}
 
+	@Override
 	public Symbol getLeft() {
 		return left;
 	}
 
+	@Override
 	public SymbolRef[] getRight() {
 		return right;
 	}
 
+	@Override
 	public int getPriority() {
 		if (priority != null) {
 			return priority.getIndex();
@@ -82,10 +68,6 @@ public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 		return -1;
 	}
 
-	public IAstNode getNode() {
-		return node;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -95,13 +77,9 @@ public class LiRule extends LiAnnotated implements Rule, INamedEntity {
 			sb.append(left.getName());
 		}
 		sb.append(" ::=");
-		for (LiSymbolRef s : right) {
+		for (SymbolRef s : right) {
 			sb.append(" ");
-			if (s.getTarget().getName() == null) {
-				sb.append("{}");
-			} else {
-				sb.append(s.getTarget().getName());
-			}
+			sb.append(s.getTarget().getName());
 		}
 		if (priority != null) {
 			sb.append(" %prio ");

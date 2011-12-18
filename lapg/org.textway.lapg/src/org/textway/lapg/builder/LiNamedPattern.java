@@ -13,36 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.templates.api.INamedEntity;
 
 /**
  * Gryaznov Evgeny, 6/23/11
  */
-public class LiNamedPattern extends LiEntity implements NamedPattern, INamedEntity {
+class LiNamedPattern implements NamedPattern {
 
 	private final String name;
 	private final RegexPart regexp;
 
-	public LiNamedPattern(String name, RegexPart regexp, IAstNode node) {
-		super(node);
+	public LiNamedPattern(String name, RegexPart regexp) {
 		this.name = name;
 		this.regexp = regexp;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	public String getRegexp() {
-		return regexp.toString();
-	}
-
-	public RegexPart getParsedRegexp() {
+	@Override
+	public RegexPart getRegexp() {
 		return regexp;
 	}
 

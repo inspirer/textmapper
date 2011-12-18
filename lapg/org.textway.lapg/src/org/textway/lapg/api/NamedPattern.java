@@ -15,11 +15,14 @@
  */
 package org.textway.lapg.api;
 
+import org.textway.lapg.api.regex.RegexPart;
+
 /**
  * Gryaznov Evgeny, 6/23/11
  */
 public interface NamedPattern extends SourceElement {
+
 	String getName();
 
-	String getRegexp();
+	RegexPart getRegexp();
 }

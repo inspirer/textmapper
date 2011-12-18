@@ -19,6 +19,7 @@ package org.textway.lapg.api;
  * Gryaznov Evgeny, 3/16/11
  */
 public interface InputRef extends SourceElement {
+
 	Symbol getTarget();
 
 	boolean hasEoi();

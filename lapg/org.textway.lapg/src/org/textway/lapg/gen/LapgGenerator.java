@@ -15,14 +15,15 @@
  */
 package org.textway.lapg.gen;
 
-import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textway.lapg.parser.TextSourceElement;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;
@@ -64,7 +65,7 @@ public final class LapgGenerator {
 			ResourceRegistry resources = createResourceRegistry();
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 
-			Grammar s = SyntaxUtil.parseSyntax(input, status, types);
+			LapgGrammar s = SyntaxUtil.parseSyntax(input, status, types);
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
@@ -84,9 +85,9 @@ public final class LapgGenerator {
 
 			// Generate tables
 			long start = System.currentTimeMillis();
-			boolean hasParser = s.getRules() != null;
-			LexerTables l = LexicalBuilder.compile(s.getLexems(), s.getPatterns(), status);
-			ParserTables r = hasParser ? Builder.compile(s, status) : null;
+			boolean hasParser = s.getGrammar().getRules() != null;
+			LexerTables l = LexicalBuilder.compile(s.getGrammar().getLexems(), s.getGrammar().getPatterns(), status);
+			ParserTables r = hasParser ? Builder.compile(s.getGrammar(), status) : null;
 			if (l == null || hasParser && r == null) {
 				return false;
 			}
@@ -95,7 +96,7 @@ public final class LapgGenerator {
 			// Generate text
 			start = System.currentTimeMillis();
 			EvaluationContext context = createEvaluationContext(types, s, genOptions, l, r);
-			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(getTemplatePackage(s), context), registry);
+			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context), registry);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
@@ -108,7 +109,7 @@ public final class LapgGenerator {
 		}
 	}
 
-	private String getTemplatePackage(Grammar g) {
+	private String getTemplatePackage(LapgGrammar g) {
 		String result = options.getTemplateName();
 		if (result != null) {
 			return result;
@@ -122,7 +123,7 @@ public final class LapgGenerator {
 		return "java";
 	}
 
-	private boolean checkOptions(Grammar s, TemplatesRegistry registry) {
+	private boolean checkOptions(LapgGrammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
 		IClass cl = registry.getTypesRegistry().getClass(templPackage + ".Options", null);
 
@@ -145,7 +146,7 @@ public final class LapgGenerator {
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private TemplatesRegistry createTemplateRegistry(SourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
+	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		if (grammarTemplates != null) {
 			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
@@ -154,7 +155,7 @@ public final class LapgGenerator {
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, Grammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, LapgGrammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
@@ -197,6 +198,7 @@ public final class LapgGenerator {
 			this.status = status;
 		}
 
+		@Override
 		public void report(int kind, String message, org.textway.templates.api.SourceElement... anchors) {
 			if (anchors != null) {
 				SourceElement[] n = new SourceElement[anchors.length];
@@ -218,7 +220,7 @@ public final class LapgGenerator {
 		private final org.textway.templates.api.SourceElement myWrapped;
 
 		public TemplateSourceElementAdapter(org.textway.templates.api.SourceElement element) {
-			this.myWrapped = element;
+			myWrapped = element;
 		}
 
 		public int getOffset() {

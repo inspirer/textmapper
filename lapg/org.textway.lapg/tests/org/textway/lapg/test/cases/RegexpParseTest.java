@@ -15,16 +15,16 @@
  */
 package org.textway.lapg.test.cases;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import junit.framework.Assert;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexConstants;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.lex.RegexpParser;
-import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.regex.RegexUtil;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 public class RegexpParseTest extends LapgTestCase {
 	private static char[] HEX = new char[] { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};

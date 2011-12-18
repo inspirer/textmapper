@@ -13,12 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textway.lapg.builder;
 
+import org.textway.lapg.api.InputRef;
+import org.textway.lapg.api.Symbol;
 
-public interface Annotated {
+/**
+ * Gryaznov Evgeny, 3/16/11
+ */
+class LiInputRef implements InputRef {
 
-	Object getAnnotation(String name);
+	private final Symbol target;
+	private final boolean hasEoi;
 
-	void addAnnotation(String name, Object value);
+	public LiInputRef(Symbol target, boolean hasEoi) {
+		this.target = target;
+		this.hasEoi = hasEoi;
+	}
+
+	@Override
+	public Symbol getTarget() {
+		return target;
+	}
+
+	@Override
+	public boolean hasEoi() {
+		return hasEoi;
+	}
 }

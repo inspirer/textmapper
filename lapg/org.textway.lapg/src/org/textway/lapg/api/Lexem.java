@@ -22,11 +22,11 @@ import org.textway.lapg.api.regex.RegexPart;
  */
 public interface Lexem extends SourceElement {
 
-	public static final int KIND_NONE = 0;
-	public static final int KIND_CLASS = 1;
-	public static final int KIND_SOFT = 2;
-	public static final int KIND_SPACE = 3;
-	public static final int KIND_LAYOUT = 4;
+	static final int KIND_NONE = 0;
+	static final int KIND_CLASS = 1;
+	static final int KIND_SOFT = 2;
+	static final int KIND_SPACE = 3;
+	static final int KIND_LAYOUT = 4;
 
 	int getIndex();
 
@@ -37,8 +37,6 @@ public interface Lexem extends SourceElement {
 	int getPriority();
 
 	int getGroups();
-
-	SourceElement getAction();
 
 	int getKind();
 

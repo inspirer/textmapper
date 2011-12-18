@@ -19,42 +19,48 @@ import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.parser.TextSourceElement;
+import org.textway.lapg.parser.ast.IAstNode;
+
+import java.util.Map;
 
 public abstract class AbstractProcessingStatus implements ProcessingStatus {
 
 	private final boolean isDebug;
 	private final boolean isAnalysis;
+	private Map<SourceElement, IAstNode> sourceMap;
 
 	protected AbstractProcessingStatus(boolean debug, boolean analysis) {
 		isDebug = debug;
 		isAnalysis = analysis;
 	}
 
+	public void setSourceMap(Map<SourceElement, IAstNode> sourceMap) {
+		this.sourceMap = sourceMap;
+	}
+
+	@Override
 	public void report(int kind, String message, SourceElement... anchors) {
 		SourceElement anchor = anchors != null && anchors.length > 0 ? anchors[0] : null;
+		if (anchor != null) {
+			String location = getLocation(anchor);
+			if (location != null) {
+				message = location + message;
+			}
+		}
 		switch (kind) {
 			case KIND_FATAL:
 			case KIND_ERROR:
-				if (anchor != null && anchor.getResourceName() != null) {
-					handle(KIND_ERROR, anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
 				handle(KIND_ERROR, message + "\n");
 				break;
 			case KIND_WARN:
-				if (anchor != null && anchor.getResourceName() != null) {
-					handle(KIND_WARN, anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
-				handle(KIND_WARN, message + "\n");
-				break;
 			case KIND_INFO:
-				if (anchor != null && anchor.getResourceName() != null) {
-					handle(KIND_INFO, anchor.getResourceName() + "," + anchor.getLine() + ": ");
-				}
-				handle(KIND_INFO, message + "\n");
+				handle(kind, message + "\n");
 				break;
 		}
 	}
 
+	@Override
 	public void report(ParserConflict conflict) {
 		Rule rule = conflict.getRules()[0];
 		if (conflict.getKind() == ParserConflict.FIXED) {
@@ -66,16 +72,34 @@ public abstract class AbstractProcessingStatus implements ProcessingStatus {
 		}
 	}
 
+	@Override
 	public boolean isDebugMode() {
 		return isDebug;
 	}
 
+	@Override
 	public boolean isAnalysisMode() {
 		return isAnalysis;
 	}
 
+	@Override
 	public void debug(String info) {
 		handle(KIND_DEBUG, info);
+	}
+
+	public String getLocation(SourceElement element) {
+		if (element instanceof TextSourceElement) {
+			TextSourceElement textElement = (TextSourceElement) element;
+			if (textElement.getResourceName() != null) {
+				return textElement.getResourceName() + "," + textElement.getLine() + ": ";
+			}
+		} else if (sourceMap != null && sourceMap.containsKey(element)) {
+			IAstNode node = sourceMap.get(element);
+			if (node.getInput().getFile() != null) {
+				return node.getInput().getFile() + "," + node.getLine() + ": ";
+			}
+		}
+		return null;
 	}
 
 	public abstract void handle(int kind, String text);

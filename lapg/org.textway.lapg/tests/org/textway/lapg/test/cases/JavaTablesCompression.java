@@ -16,9 +16,8 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.TestCase;
-import org.textway.lapg.common.JavaArrayArchiver;
-
 import org.junit.Assert;
+import org.textway.lapg.common.JavaArrayArchiver;
 
 
 public class JavaTablesCompression extends TestCase {

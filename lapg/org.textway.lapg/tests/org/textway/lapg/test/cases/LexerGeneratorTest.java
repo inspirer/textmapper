@@ -26,6 +26,7 @@ import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
+import org.textway.lapg.parser.TextSourceElement;
 import org.textway.lapg.test.TestStatus;
 
 public class LexerGeneratorTest extends TestCase {
@@ -83,7 +84,7 @@ public class LexerGeneratorTest extends TestCase {
 		return lr.lnum[-state - 3];
 	}
 
-	private static class TestLexem implements Lexem {
+	private static class TestLexem implements Lexem, TextSourceElement {
 
 		private final int index;
 		private final int prio;
@@ -103,26 +104,32 @@ public class LexerGeneratorTest extends TestCase {
 			return null;
 		}
 
+		@Override
 		public int getKind() {
 			return KIND_NONE;
 		}
 
+		@Override
 		public String getKindAsText() {
 			return "none";
 		}
 
+		@Override
 		public Lexem getClassLexem() {
 			return null;
 		}
 
+		@Override
 		public boolean isExcluded() {
 			return false;
 		}
 
+		@Override
 		public int getGroups() {
 			return 1;
 		}
 
+		@Override
 		public int getPriority() {
 			return prio;
 		}
@@ -141,28 +148,35 @@ public class LexerGeneratorTest extends TestCase {
 			return samples;
 		}
 
+		@Override
 		public int getIndex() {
 			return index;
 		}
 
+		@Override
 		public Symbol getSymbol() {
 			return new Symbol() {
+				@Override
 				public boolean isTerm() {
 					throw new UnsupportedOperationException();
 				}
 
+				@Override
 				public boolean isSoft() {
 					throw new UnsupportedOperationException();
 				}
 
+				@Override
 				public Symbol getSoftClass() {
 					throw new UnsupportedOperationException();
 				}
 
+				@Override
 				public String getType() {
 					throw new UnsupportedOperationException();
 				}
 
+				@Override
 				public String getName() {
 					return name;
 				}
@@ -176,6 +190,7 @@ public class LexerGeneratorTest extends TestCase {
 					return KIND_TERM;
 				}
 
+				@Override
 				public int getIndex() {
 					return index;
 				}
@@ -207,25 +222,35 @@ public class LexerGeneratorTest extends TestCase {
 				public String getResourceName() {
 					return null;
 				}
+
+				@Override
+				public String kindAsString() {
+					throw new UnsupportedOperationException();
+				}
 			};
 		}
 
+		@Override
 		public int getEndOffset() {
 			return 0;
 		}
 
+		@Override
 		public int getLine() {
 			return index + 1;
 		}
 
+		@Override
 		public String getText() {
 			throw new UnsupportedOperationException();
 		}
 
+		@Override
 		public int getOffset() {
 			return 0;
 		}
 
+		@Override
 		public String getResourceName() {
 			return "lexemtest";
 		}

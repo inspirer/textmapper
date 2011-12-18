@@ -15,8 +15,6 @@
  */
 package org.textway.lapg.api;
 
-import java.util.Map;
-
 /**
  * Input grammar definition.
  */
@@ -27,8 +25,6 @@ public interface Grammar {
 	Rule[] getRules();
 
 	Prio[] getPriorities();
-
-	Map<String, Object> getOptions();
 
 	Lexem[] getLexems();
 
@@ -43,8 +39,4 @@ public interface Grammar {
 	Symbol getEoi();
 
 	Symbol getError();
-
-	SourceElement getTemplates();
-
-	boolean hasErrors();
 }

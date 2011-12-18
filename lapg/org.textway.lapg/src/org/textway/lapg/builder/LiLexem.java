@@ -13,57 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
 import org.textway.lapg.api.Lexem;
-import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.parser.ast.IAstNode;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.templates.api.INamedEntity;
 
-public class LiLexem extends LiEntity implements Lexem, INamedEntity {
+class LiLexem implements Lexem {
 
-	private int kind;
+	private final int kind;
 	private final int index;
 	private final Symbol sym;
 	private final RegexPart regexp;
 	private final int groups;
 	private final int priority;
-	private final SourceElement action;
-	private LiLexem classLexem;
+	private final Lexem classLexem;
 
-	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, SourceElement action, IAstNode node) {
-		super(node);
+	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
 		this.groups = groups;
 		this.priority = priority;
-		this.action = action;
+		this.classLexem = classLexem;
 	}
 
-	public SourceElement getAction() {
-		return action;
-	}
-
+	@Override
 	public int getGroups() {
 		return groups;
 	}
 
+	@Override
 	public int getPriority() {
 		return priority;
 	}
 
+	@Override
 	public RegexPart getRegexp() {
 		return regexp;
 	}
 
+	@Override
 	public int getKind() {
 		return kind;
 	}
 
+	@Override
 	public String getKindAsText() {
 		switch (kind) {
 			case KIND_CLASS:
@@ -76,29 +72,27 @@ public class LiLexem extends LiEntity implements Lexem, INamedEntity {
 		return "none";
 	}
 
+	@Override
 	public int getIndex() {
 		return index;
 	}
 
+	@Override
 	public Symbol getSymbol() {
 		return sym;
 	}
 
+	@Override
 	public Lexem getClassLexem() {
 		return classLexem;
 	}
 
+	@Override
 	public boolean isExcluded() {
-		return this.classLexem != null;
+		return classLexem != null;
 	}
 
 	public String getTitle() {
 		return "Lexem `" + sym.getName() + "`";
-	}
-
-	void setClassLexem(LiLexem classLexem) {
-		if (this.kind == KIND_CLASS) throw new IllegalStateException();
-
-		this.classLexem = classLexem;
 	}
 }

@@ -25,10 +25,11 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 	private final AstLexemAttrs attrs;
 	private final int priority;
 	private final AstCode code;
+	private int groups;
 
 	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp,
-					 Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
-					 int endoffset) {
+			Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
+			int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.type = type;
@@ -62,6 +63,15 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		return code;
 	}
 
+	public int getGroups() {
+		return groups;
+	}
+
+	public void setGroups(int groups) {
+		this.groups = groups;
+	}
+
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;

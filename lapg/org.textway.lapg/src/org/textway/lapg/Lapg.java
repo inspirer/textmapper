@@ -34,23 +34,23 @@ public class Lapg {
 	public static final String BUILD = "2011";
 
 	public static final String HELP_MESSAGE =
-		"lapg - Lexer and Parser generator\n" +
-		"usage: lapg [OPTIONS]... [inputfile]\n" +
-		"       lapg [-h|-v]\n" +
-		"\n" +
-		"Options:\n" +
-		LapgOptions.HELP_OPTIONS +
-		"\n" +
-		"Operations:\n" +
-		"  -h,  --help                    display this help\n" +
-		"  -v,  --version                 version information\n" +
-		"\n" +
-		"Defaults:\n" +
-		"  inputfile = .s file in the current directory (if single)\n";
+			"lapg - Lexer and Parser generator\n" +
+					"usage: lapg [OPTIONS]... [inputfile]\n" +
+					"       lapg [-h|-v]\n" +
+					"\n" +
+					"Options:\n" +
+					LapgOptions.HELP_OPTIONS +
+					"\n" +
+					"Operations:\n" +
+					"  -h,  --help                    display this help\n" +
+					"  -v,  --version                 version information\n" +
+					"\n" +
+					"Defaults:\n" +
+					"  inputfile = .s file in the current directory (if single)\n";
 
 	public static final String VERSION_MESSAGE =
-		"lapg v" + VERSION + " build " + BUILD + "\n" +
-		"Evgeny Gryaznov, 2002-2011, egryaznov@gmail.com\n";
+			"lapg v" + VERSION + " build " + BUILD + "\n" +
+					"Evgeny Gryaznov, 2002-2011, egryaznov@gmail.com\n";
 
 
 	public static void main(String[] args) {
@@ -74,6 +74,7 @@ public class Lapg {
 
 		if (options.getInput() == null) {
 			File[] grammars = new File(".").listFiles(new FileFilter() {
+				@Override
 				public boolean accept(File pathname) {
 					return pathname.isFile() && pathname.getName().endsWith(".s");
 				}
@@ -142,8 +143,8 @@ public class Lapg {
 
 		public ConsoleStatus(int debuglev) {
 			super(debuglev >= LapgOptions.DEBUG_TABLES, debuglev >= LapgOptions.DEBUG_AMBIG);
-			this.debug = null;
-			this.warn = null;
+			debug = null;
+			warn = null;
 		}
 
 		private PrintStream openFile(String name) {
@@ -180,6 +181,7 @@ public class Lapg {
 			}
 		}
 
+		@Override
 		public void report(String message, Throwable th) {
 			System.err.print(message + "\n");
 			if (th != null) {

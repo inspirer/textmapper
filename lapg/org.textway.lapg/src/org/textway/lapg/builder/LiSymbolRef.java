@@ -13,31 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
-import org.textway.lapg.api.InputRef;
+import org.textway.lapg.api.NegativeLookahead;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.parser.ast.IAstNode;
+import org.textway.lapg.api.SymbolRef;
 
-/**
- * Gryaznov Evgeny, 3/16/11
- */
-public class LiInputRef extends LiEntity implements InputRef {
+class LiSymbolRef implements SymbolRef {
 
 	private final Symbol target;
-	private final boolean hasEoi;
+	private final String alias;
+	private final NegativeLookahead negLA;
+	private final boolean isHidden;
 
-	public LiInputRef(IAstNode node, Symbol target, boolean hasEoi) {
-		super(node);
+	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, boolean isHidden) {
 		this.target = target;
-		this.hasEoi = hasEoi;
+		this.alias = alias;
+		this.negLA = negLA;
+		this.isHidden = isHidden;
 	}
 
+	@Override
+	public String getAlias() {
+		return alias;
+	}
+
+	@Override
+	public NegativeLookahead getNegativeLA() {
+		return negLA;
+	}
+
+	@Override
+	public boolean isHidden() {
+		return isHidden;
+	}
+
+	@Override
 	public Symbol getTarget() {
 		return target;
-	}
-
-	public boolean hasEoi() {
-		return hasEoi;
 	}
 }

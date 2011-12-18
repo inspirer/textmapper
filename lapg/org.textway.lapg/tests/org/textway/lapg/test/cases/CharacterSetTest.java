@@ -15,11 +15,11 @@
  */
 package org.textway.lapg.test.cases;
 
-import java.util.Iterator;
-
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.textway.lapg.lex.CharacterSet;
+
+import java.util.Iterator;
 
 public class CharacterSetTest extends TestCase {
 

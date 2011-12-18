@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.parser.ast.IAstNode;
 
-public class LiSymbol extends LiAnnotated implements Symbol {
+class LiSymbol implements Symbol {
 
+	private int index;
 	private final int kind;
 	private final String name;
-	private int index;
-	private String identifier;
-	private String type;
-	private Symbol softClass;
+	private final String type;
+	private final Symbol softClass;
 
-	public LiSymbol(int kind, String name, String type, IAstNode node) {
-		super(null, node);
+	public LiSymbol(int kind, String name, String type) {
 		this.kind = kind;
 		this.name = name;
 		this.type = type;
+		softClass = null;
+	}
+
+	public LiSymbol(String name, Symbol softClass) {
+		kind = KIND_SOFTTERM;
+		this.name = name;
+		type = softClass.getType();
+		this.softClass = softClass;
 	}
 
 	@Override
@@ -39,47 +44,41 @@ public class LiSymbol extends LiAnnotated implements Symbol {
 		return kind;
 	}
 
+	@Override
 	public int getIndex() {
 		return index;
 	}
 
-	public void setId(int index, String identifier) {
+	void setIndex(int index) {
 		this.index = index;
-		this.identifier = identifier;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
 
-	void setType(String type) {
-		this.type = type;
-	}
-
+	@Override
 	public boolean isTerm() {
 		return kind == KIND_TERM || kind == KIND_SOFTTERM;
 	}
 
+	@Override
 	public boolean isSoft() {
 		return kind == KIND_SOFTTERM;
 	}
 
+	@Override
 	public Symbol getSoftClass() {
 		return softClass;
 	}
 
-	void setSoftClass(Symbol softClass) {
-		this.softClass = softClass;
-	}
-
-	public String getId() {
-		return identifier;
-	}
-
+	@Override
 	public String kindAsString() {
 		switch (kind) {
 			case KIND_TERM:

@@ -16,9 +16,8 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.TestCase;
-import org.textway.lapg.common.JavaPostProcessor;
-
 import org.junit.Assert;
+import org.textway.lapg.common.JavaPostProcessor;
 
 public class JavaPostProcessorTest extends TestCase {
 

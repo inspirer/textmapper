@@ -15,10 +15,10 @@
  */
 package org.textway.lapg.test.cases;
 
-import java.io.InputStream;
+import junit.framework.TestCase;
 import org.junit.Assert;
 
-import junit.framework.TestCase;
+import java.io.InputStream;
 
 public abstract class LapgTestCase extends TestCase {
 

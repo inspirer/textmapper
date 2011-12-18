@@ -16,7 +16,6 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
-import org.textway.lapg.api.Grammar;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.eval.GenericNode;
 import org.textway.lapg.eval.GenericParseContext;
@@ -27,6 +26,7 @@ import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
 import org.textway.lapg.test.cases.bootstrap.a.SampleAParseContext;
@@ -43,12 +43,13 @@ public class GrammarTest extends LapgTestCase {
 
 	private GenericParseContext loadGrammar(String grammarName) {
 		String contents = FileUtil.getFileContents(openStream(grammarName, TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
-		Grammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
+		Assert.assertNotNull(g.getGrammar());
 
-		LexerTables l = LexicalBuilder.compile(g.getLexems(), g.getPatterns(), new TestStatus());
-		ParserTables r = Builder.compile(g, new TestStatus());
-		return new GenericParseContext(g, r, l);
+		LexerTables l = LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), new TestStatus());
+		ParserTables r = Builder.compile(g.getGrammar(), new TestStatus());
+		return new GenericParseContext(g.getGrammar(), r, l);
 	}
 
 	private void testParser(GenericParseContext context, int inputIndex, String text, String expectedAst) {
@@ -66,6 +67,7 @@ public class GrammarTest extends LapgTestCase {
 		ResourceRegistry resources = new ResourceRegistry(
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
 		return new TypesRegistry(resources, new TemplatesStatus() {
+			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
 				Assert.fail(message);
 			}

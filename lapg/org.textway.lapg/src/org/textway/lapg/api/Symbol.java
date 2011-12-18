@@ -15,18 +15,21 @@
  */
 package org.textway.lapg.api;
 
-public interface Symbol extends Annotated, SourceElement {
+public interface Symbol extends SourceElement {
 
-	public static final int KIND_TERM = 0;
-	public static final int KIND_SOFTTERM = 1;
-	public static final int KIND_NONTERM = 2;
-	public static final int KIND_LAYOUT = 3;
+	static final String EOI = "eoi";
+	static final String ERROR = "error";
+
+	static final int KIND_TERM = 0;
+	static final int KIND_SOFTTERM = 1;
+	static final int KIND_NONTERM = 2;
+	static final int KIND_LAYOUT = 3;
 
 	int getKind();
 
-	int getIndex();
+	String kindAsString();
 
-	String getId();
+	int getIndex();
 
 	String getName();
 

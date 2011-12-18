@@ -15,12 +15,13 @@
  */
 package org.textway.lapg.api;
 
-public interface SymbolRef extends Annotated, SourceElement {
+public interface SymbolRef extends SourceElement {
 
 	Symbol getTarget();
 
 	/**
 	 * Alias cannot be set if target is layout symbol.
+	 *
 	 * @return null (no alias) or identifier
 	 */
 	String getAlias();
@@ -29,11 +30,11 @@ public interface SymbolRef extends Annotated, SourceElement {
 
 	/**
 	 * Rule:
-	 *     A ::= x y? { $$ = new A($x, $y); };
+	 * A ::= x y? { $$ = new A($x, $y); };
 	 * Is expanded into 2 rules with hidden refs:
-	 *     A ::=
-	 *         x y                 // $y -> lapg_m[lapg_head]
-	 *       | x y(hidden) ;       // $y -> null (because it is hidden)
+	 * A ::=
+	 * x y                 // $y -> lapg_m[lapg_head]
+	 * | x y(hidden) ;       // $y -> null (because it is hidden)
 	 *
 	 * @return true if reference is omited
 	 */

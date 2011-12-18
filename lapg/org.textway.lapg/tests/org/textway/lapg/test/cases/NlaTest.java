@@ -16,11 +16,11 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
-import org.textway.lapg.api.Grammar;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lex.LexicalBuilder;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
 import org.textway.lapg.test.cases.bootstrap.nla.NlaTestTree;
@@ -46,6 +46,7 @@ public class NlaTest extends LapgTestCase {
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
 		return new TypesRegistry(resources, new TemplatesStatus() {
+			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
 				Assert.fail(message);
 			}
@@ -54,7 +55,7 @@ public class NlaTest extends LapgTestCase {
 
 	public void testNla1() {
 		String contents = FileUtil.getFileContents(openStream("syntax_nla1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
-		Grammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_nla1", contents.toCharArray(), 1), new TestStatus(),
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_nla1", contents.toCharArray(), 1), new TestStatus(),
 				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
@@ -67,8 +68,8 @@ public class NlaTest extends LapgTestCase {
 				debugText.append(info);
 			}
 		};
-		LexicalBuilder.compile(g.getLexems(), g.getPatterns(), er);
-		Builder.compile(g, er);
+		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
+		Builder.compile(g.getGrammar(), er);
 		er.assertDone();
 
 		String expectedDebug = FileUtil.getFileContents(openStream("syntax_nla1.debug", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);

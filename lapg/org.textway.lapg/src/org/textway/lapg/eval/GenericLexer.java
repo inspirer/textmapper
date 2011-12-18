@@ -16,7 +16,7 @@
 package org.textway.lapg.eval;
 
 import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.Lexem;
 import org.textway.lapg.lex.LexerTables;
 
 import java.io.IOException;
@@ -67,18 +67,18 @@ public class GenericLexer {
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		this.lapg_char2no = tables.char2no;
-		this.lapg_lexem = tables.change;
-		this.lapg_lexemnum = tables.lnum;
+		lapg_char2no = tables.char2no;
+		lapg_lexem = tables.change;
+		lapg_lexemnum = tables.lnum;
 
 		reset(stream);
 	}
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.datalen = stream.read(data);
-		this.l = 0;
-		this.group = 0;
+		datalen = stream.read(data);
+		l = 0;
+		group = 0;
 		chr = l < datalen ? data[l++] : 0;
 	}
 
@@ -87,7 +87,7 @@ public class GenericLexer {
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		group = state;
 	}
 
 	public int getTokenLine() {
@@ -183,13 +183,7 @@ public class GenericLexer {
 	}
 
 	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) {
-		SourceElement action = grammar.getLexems()[lexemIndex].getAction();
-		if (action != null) {
-			String text = action.getText();
-			if (text.indexOf("return false") >= 0) {
-				return false;
-			}
-		}
-		return true;
+		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
+		return lexemKind != Lexem.KIND_SPACE;
 	}
 }

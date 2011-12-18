@@ -15,13 +15,13 @@
  */
 package org.textway.lapg.test.cases;
 
+import org.junit.Assert;
+import org.textway.lapg.gen.LapgOptions;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
-
-import org.textway.lapg.gen.LapgOptions;
-import org.junit.Assert;
 
 /**
  * Tests for {@link LapgOptions} command-line arguments parsing.

@@ -18,7 +18,7 @@ package org.textway.lapg.api;
 /**
  * Gryaznov Evgeny, 8/15/11
  */
-public interface NegativeLookahead {
+public interface NegativeLookahead extends SourceElement {
 
 	Symbol[] getUnwantedSet();
 }

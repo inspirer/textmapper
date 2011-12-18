@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
-import org.textway.lapg.api.NegativeLookahead;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.Prio;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.parser.ast.IAstNode;
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public class LiNegativeLookahead extends LiEntity implements SourceElement, NegativeLookahead {
+class LiPrio implements Prio {
 
-	private final LiSymbol[] symbols;
+	private final int prio;
+	private final Symbol[] symbols;
 
-	public LiNegativeLookahead(LiSymbol[] symbols, IAstNode node) {
-		super(node);
+	public LiPrio(int prio, Symbol[] symbols) {
+		this.prio = prio;
 		this.symbols = symbols;
 	}
 
-	public Symbol[] getUnwantedSet() {
+	@Override
+	public int getPrio() {
+		return prio;
+	}
+
+	@Override
+	public Symbol[] getSymbols() {
 		return symbols;
 	}
 }

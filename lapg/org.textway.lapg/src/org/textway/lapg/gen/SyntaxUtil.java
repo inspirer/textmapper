@@ -15,14 +15,15 @@
  */
 package org.textway.lapg.gen;
 
-import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileUtil;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textway.lapg.parser.TextSourceElement;
 import org.textway.lapg.parser.ast.AstExpression;
 import org.textway.lapg.parser.ast.AstRoot;
 import org.textway.templates.types.TypesRegistry;
@@ -31,11 +32,14 @@ import java.io.InputStream;
 
 public class SyntaxUtil {
 
-	public static Grammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, TypesRegistry types) {
+	public static LapgGrammar parseSyntax(LapgTree.TextSource input, ProcessingStatus status, TypesRegistry types) {
 		LapgTree<AstRoot> tree = LapgTree.parseInput(input);
-		Grammar result = null;
+		LapgGrammar result = null;
 		if (!tree.hasErrors()) {
 			result = new LapgResolver(tree, types).resolve();
+			if (status instanceof AbstractProcessingStatus) {
+				((AbstractProcessingStatus) status).setSourceMap(result.getSourceMap());
+			}
 		}
 		if (tree.hasErrors()) {
 			result = null;
@@ -64,7 +68,7 @@ public class SyntaxUtil {
 		return ProcessingStatus.KIND_ERROR;
 	}
 
-	private static class SourceElementAdapter implements SourceElement {
+	private static class SourceElementAdapter implements TextSourceElement {
 		private final LapgTree.TextSource source;
 		private final LapgProblem problem;
 
@@ -73,29 +77,34 @@ public class SyntaxUtil {
 			this.problem = problem;
 		}
 
+		@Override
 		public int getEndOffset() {
 			return problem.getEndOffset();
 		}
 
+		@Override
 		public int getLine() {
 			return source.lineForOffset(problem.getOffset());
 		}
 
+		@Override
 		public String getText() {
 			return source.getText(problem.getOffset(), problem.getEndOffset());
 		}
 
+		@Override
 		public int getOffset() {
 			return problem.getOffset();
 		}
 
+		@Override
 		public String getResourceName() {
 			return source.getFile();
 		}
 	}
 
 	@Deprecated
-	public static Grammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, TypesRegistry types) {
+	public static LapgGrammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, TypesRegistry types) {
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
 		return parseSyntax(new LapgTree.TextSource(inputName, contents.toCharArray(), 1), err, types);
 	}

@@ -19,6 +19,7 @@ import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
@@ -34,14 +35,17 @@ public class GrammarIxFactory extends JavaIxFactory {
 	private final String templatePackage;
 	private final EvaluationContext rootContext;
 	private IEvaluationStrategy evaluationStrategy;
+	private final LapgGrammar grammar;
 
-	public GrammarIxFactory(String templatePackage, EvaluationContext context) {
+	public GrammarIxFactory(LapgGrammar g, String templatePackage, EvaluationContext context) {
+		grammar = g;
 		this.templatePackage = templatePackage;
-		this.rootContext = context;
+		rootContext = context;
 	}
 
+	@Override
 	public void setStrategy(IEvaluationStrategy strategy) {
-		this.evaluationStrategy = strategy;
+		evaluationStrategy = strategy;
 	}
 
 	@Override
@@ -77,10 +81,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 			this.rule = rule;
 		}
 
+		@Override
 		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null || args.length == 0) {
 				if (methodName.equals("left")) {
-					return new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
+					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					SymbolRef[] array = rule.getRight();
@@ -102,7 +107,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					if (i < 0 || i >= array.length) {
 						throw new EvaluationException(methodName + "() cannot be used in rules where all symbols are optionals");
 					}
-					return new ActionSymbol(array[i].getTarget(), array[i], false, getRightOffset(i, array),
+					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
 							evaluationStrategy, rootContext, templatePackage);
 				}
 			}
@@ -124,20 +129,22 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return rightOffset;
 		}
 
+		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				SymbolRef[] array = rule.getRight();
-				return new ActionSymbol(array[i].getTarget(), array[i], false, getRightOffset(i, array),
+				return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
 						evaluationStrategy, rootContext, templatePackage);
 			} else if (index instanceof String) {
-				return rule.getAnnotation((String) index);
+				return grammar.getAnnotation(rule, (String) index);
 			} else {
 				throw new EvaluationException(
 						"index object should be integer (right part index) or string (annotation name)");
 			}
 		}
 
+		@Override
 		public Object getProperty(String id) throws EvaluationException {
 			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
 
@@ -153,7 +160,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					name = right[i].getAlias();
 				}
 				if (id.equals(name)) {
-					result.add(new ActionSymbol(sym, right[i], false, rightOffset,
+					result.add(new ActionSymbol(grammar, sym, right[i], false, rightOffset,
 							evaluationStrategy, rootContext, templatePackage));
 				}
 				if (isRulePart(right[i])) {
@@ -162,7 +169,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 
 			if (rule.getLeft().getName().equals(id)) {
-				result.add(new ActionSymbol(rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
+				result.add(new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
 			}
 
 			if (result.size() == 1) {
@@ -184,9 +191,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 			this.sym = sym;
 		}
 
+		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof String) {
-				return sym.getAnnotation((String) index);
+				return grammar.getAnnotation(sym, (String) index);
 			} else {
 				throw new EvaluationException("index object should be string (annotation name)");
 			}
@@ -202,9 +210,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 			this.sym = sym;
 		}
 
+		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof String) {
-				return sym.getAnnotation((String) index);
+				return grammar.getAnnotation(sym, (String) index);
 			} else {
 				throw new EvaluationException("index object should be string (annotation name)");
 			}
@@ -222,6 +231,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			this.grammar = grammar;
 		}
 
+		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("rules".equals(propertyName)) {
 				GrammarRules gr = rules.get(grammar);
@@ -287,24 +297,29 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return rulesWithSymbol;
 		}
 
+		@Override
 		public Iterator<Rule> iterator() {
 			return new Iterator<Rule>() {
 				int index = 0;
 
+				@Override
 				public boolean hasNext() {
 					return index < myRules.length;
 				}
 
+				@Override
 				public Rule next() {
 					return index < myRules.length ? myRules[index++] : null;
 				}
 
+				@Override
 				public void remove() {
 					throw new UnsupportedOperationException();
 				}
 			};
 		}
 
+		@Override
 		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
 				List<Rule> list = getRulesContainingSymbol().get(args[0]);
@@ -313,6 +328,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return asObject(myRules).callMethod(methodName, args);
 		}
 
+		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Symbol) {
 				List<Rule> list = getRulesBySymbol().get(index);
@@ -321,6 +337,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return asObject(myRules).getByIndex(index);
 		}
 
+		@Override
 		public Object getProperty(String id) throws EvaluationException {
 			return asObject(myRules).getProperty(id);
 		}

@@ -17,6 +17,7 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.api.Symbol;
 import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
 import org.textway.templates.api.IEvaluationStrategy;
@@ -33,26 +34,31 @@ public class ActionSymbol extends DefaultIxObject {
 	private final IEvaluationStrategy evaluationStrategy;
 	private final EvaluationContext context;
 	private final String templatePackage;
+	private final LapgGrammar grammar;
 
-	public ActionSymbol(Symbol symbol, SymbolRef ref, boolean isLeft, int rightOffset, IEvaluationStrategy strategy, EvaluationContext context, String templatePackage) {
+	public ActionSymbol(LapgGrammar grammar, Symbol symbol, SymbolRef ref, boolean isLeft, int rightOffset,
+						IEvaluationStrategy strategy, EvaluationContext context, String templatePackage) {
+		this.grammar = grammar;
 		this.symbol = symbol;
 		this.ref = ref;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
-		this.evaluationStrategy = strategy;
+		evaluationStrategy = strategy;
 		this.context = context;
 		this.templatePackage = templatePackage;
 	}
 
 	@Override
 	public String toString() {
-		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess", IBundleEntity.KIND_TEMPLATE, null);
+		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
+				IBundleEntity.KIND_TEMPLATE, null);
 		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), new Object[]{"sym"}, null);
 	}
 
+	@Override
 	public Object getByIndex(Object index) throws EvaluationException {
 		if (index instanceof String && ref != null) {
-			return ref.getAnnotation((String) index);
+			return grammar.getAnnotation(ref, (String) index);
 		}
 		return super.getByIndex(index);
 	}
@@ -67,6 +73,7 @@ public class ActionSymbol extends DefaultIxObject {
 		return false;
 	}
 
+	@Override
 	public Object getProperty(String id) throws EvaluationException {
 		if (id.equals("symbol")) {
 			return symbol;

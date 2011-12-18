@@ -20,7 +20,7 @@ import org.textway.lapg.common.FormatUtil;
 import java.util.HashSet;
 import java.util.Set;
 
-public class LapgResolverHelper {
+public class UniqueNameHelper {
 
 	private final Set<String> usedIdentifiers = new HashSet<String>();
 

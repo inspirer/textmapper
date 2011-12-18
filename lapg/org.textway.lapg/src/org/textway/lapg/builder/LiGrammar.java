@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textway.lapg.builder;
 
 import org.textway.lapg.api.*;
 
-import java.util.Map;
-
-public class LiGrammar implements Grammar {
+class LiGrammar implements Grammar {
 
 	private final Symbol[] symbols;
 	private final Rule[] rules;
@@ -31,17 +29,11 @@ public class LiGrammar implements Grammar {
 	private final Symbol eoi;
 	private final Symbol error;
 
-	private final Map<String, Object> options;
-	private final SourceElement templates;
 	private final int terminals;
 	private final int grammarSymbols;
-	private final boolean hasErrors;
-
-	private final String copyrightHeader;
 
 	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, NamedPattern[] patterns, InputRef[] inputs, Symbol eoi,
-					 Symbol error, Map<String, Object> options, SourceElement templates, int terminals, int grammarSymbols, boolean hasErrors,
-					 String copyrightHeader) {
+					 Symbol error, int terminals, int grammarSymbols) {
 		this.symbols = symbols;
 		this.rules = rules;
 		this.priorities = priorities;
@@ -50,54 +42,51 @@ public class LiGrammar implements Grammar {
 		this.inputs = inputs;
 		this.eoi = eoi;
 		this.error = error;
-		this.options = options;
-		this.templates = templates;
 		this.terminals = terminals;
 		this.grammarSymbols = grammarSymbols;
-		this.hasErrors = hasErrors;
-		this.copyrightHeader = copyrightHeader;
 	}
 
+	@Override
 	public Symbol[] getSymbols() {
 		return symbols;
 	}
 
+	@Override
 	public Rule[] getRules() {
 		return rules;
 	}
 
+	@Override
 	public Prio[] getPriorities() {
 		return priorities;
 	}
 
+	@Override
 	public Lexem[] getLexems() {
 		return lexems;
 	}
 
+	@Override
 	public NamedPattern[] getPatterns() {
 		return patterns;
 	}
 
+	@Override
 	public InputRef[] getInput() {
 		return inputs;
 	}
 
+	@Override
 	public Symbol getEoi() {
 		return eoi;
 	}
 
+	@Override
 	public Symbol getError() {
 		return error;
 	}
 
-	public Map<String, Object> getOptions() {
-		return options;
-	}
-
-	public SourceElement getTemplates() {
-		return templates;
-	}
-
+	@Override
 	public int getTerminals() {
 		return terminals;
 	}
@@ -105,13 +94,5 @@ public class LiGrammar implements Grammar {
 	@Override
 	public int getGrammarSymbols() {
 		return grammarSymbols;
-	}
-
-	public boolean hasErrors() {
-		return hasErrors;
-	}
-
-	public String getCopyrightHeader() {
-		return copyrightHeader;
 	}
 }
