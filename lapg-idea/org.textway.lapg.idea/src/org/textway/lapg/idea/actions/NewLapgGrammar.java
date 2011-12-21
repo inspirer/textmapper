@@ -43,15 +43,15 @@ public class NewLapgGrammar extends CreateElementActionBase {
 
 	@NotNull
 	@Override
-	protected PsiElement[] invokeDialog(Project project, PsiDirectory directory) {
-		MyInputValidator validator = new MyInputValidator(project, directory);
+	protected PsiElement[] invokeDialog(final Project project, final PsiDirectory directory) {
+		final MyInputValidator validator = new MyInputValidator(project, directory) {
+			@Override
+			public boolean checkInput(String inputString) {
+				return StringUtil.isJavaIdentifier(inputString);
+			}
+		};
 		Messages.showInputDialog(project, LapgBundle.message("newfile.dlg.text"), LapgBundle.message("newfile.dlg.title"), Messages.getQuestionIcon(), "", validator);
 		return validator.getCreatedElements();
-	}
-
-	@Override
-	protected void checkBeforeCreate(String newName, PsiDirectory directory) throws IncorrectOperationException {
-		checkCreateFile(directory, newName);
 	}
 
 	public static void checkCreateFile(@NotNull PsiDirectory directory, String name) throws IncorrectOperationException {
@@ -59,13 +59,14 @@ public class NewLapgGrammar extends CreateElementActionBase {
 			throw new IncorrectOperationException(LapgBundle.message("error.should.be.identifier", name));
 		}
 
-		String fileName = name + "." + LapgFileType.DEFAULT_EXTENSION;
+		String fileName	 = name + "." + LapgFileType.DEFAULT_EXTENSION;
 		directory.checkCreateFile(fileName);
 	}
 
 	@NotNull
 	@Override
 	protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception {
+		checkCreateFile(directory, newName);
 		PsiFile file = LapgTemplatesFactory.createFromTemplate(directory, newName, newName + "." + LapgFileType.DEFAULT_EXTENSION, LapgTemplatesFactory.GRAMMAR_FILE);
 		PsiElement lastChild = file.getLastChild();
 		final Project project = directory.getProject();
