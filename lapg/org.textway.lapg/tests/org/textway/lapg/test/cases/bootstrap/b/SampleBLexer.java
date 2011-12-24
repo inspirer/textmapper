@@ -34,19 +34,19 @@ public class SampleBLexer {
 	public interface Lexems {
 		public static final int eoi = 0;
 		public static final int identifier = 1;
-		public static final int _skip = 2;
-		public static final int Lclass = 3;
-		public static final int Lextends = 4;
-		public static final int LCURLY = 5;
-		public static final int RCURLY = 6;
-		public static final int LPAREN = 7;
-		public static final int RPAREN = 8;
-		public static final int Linterface = 9;
-		public static final int Lenum = 10;
-		public static final int error = 11;
-		public static final int numeric = 12;
-		public static final int octal = 13;
-		public static final int decimal = 14;
+		public static final int numeric = 2;
+		public static final int octal = 3;
+		public static final int decimal = 4;
+		public static final int _skip = 5;
+		public static final int Lclass = 6;
+		public static final int Lextends = 7;
+		public static final int LCURLY = 8;
+		public static final int RCURLY = 9;
+		public static final int LPAREN = 10;
+		public static final int RPAREN = 11;
+		public static final int Linterface = 12;
+		public static final int Lenum = 13;
+		public static final int error = 14;
 		public static final int eleven = 15;
 		public static final int _skipSoftKW = 16;
 	}
@@ -137,34 +137,34 @@ public class SampleBLexer {
 	}
 
 	private static final short lapg_char2no[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 1, 1, 10, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 1, 1, 12, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		10, 1, 1, 1, 1, 1, 1, 1, 4, 5, 1, 1, 1, 1, 1, 1,
-		6, 12, 12, 12, 12, 12, 12, 12, 9, 9, 1, 1, 1, 1, 1, 1,
-		1, 11, 11, 11, 11, 11, 11, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		12, 1, 1, 1, 1, 1, 1, 1, 6, 7, 1, 1, 1, 1, 1, 1,
+		2, 11, 11, 11, 11, 11, 11, 11, 9, 9, 1, 1, 1, 1, 1, 1,
+		1, 10, 10, 10, 10, 10, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8,
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 1, 1, 1, 1, 8,
-		1, 11, 11, 11, 11, 11, 11, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-		8, 8, 8, 8, 8, 8, 8, 8, 7, 8, 8, 2, 1, 3, 1, 1
+		1, 10, 10, 10, 10, 10, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+		8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 4, 1, 5, 1, 1
 	};
 
 	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16
+		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16
 	};
 
 	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 3, 4, 5, 6, 6, 7, 8, 6, 7},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8},
-		{ -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9},
+		{ -2, -1, 1, 2, 3, 4, 5, 6, 2, 7, 2, 7, 8},
+		{ -1, -1, 9, 10, -1, -1, -1, -1, -1, -1, -1, 9, -1},
+		{ -3, -3, 2, 2, -3, -3, -3, -3, 2, 2, 2, 2, -3},
 		{ -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10},
-		{ -1, -1, -1, -1, -1, -1, 9, 10, -1, -1, -1, -1, 9},
-		{ -3, -3, -3, -3, -3, -3, 6, 6, 6, 6, -3, 6, 6},
-		{ -1, -1, -1, -1, -1, -1, 11, -1, -1, 11, -1, -1, 11},
-		{ -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, 8, -4, -4},
-		{ -14, -14, -14, -14, -14, -14, 9, -14, -14, -14, -14, -14, 9},
-		{ -1, -1, -1, -1, -1, -1, 12, -1, -1, 12, -1, 12, 12},
-		{ -15, -15, -15, -15, -15, -15, 11, -15, -15, 11, -15, -15, 11},
-		{ -13, -13, -13, -13, -13, -13, 12, -13, -13, 12, -13, 12, 12}
+		{ -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11},
+		{ -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12},
+		{ -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13},
+		{ -1, -1, 11, -1, -1, -1, -1, -1, -1, 11, -1, 11, -1},
+		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, 8},
+		{ -5, -5, 9, -5, -5, -5, -5, -5, -5, -5, -5, 9, -5},
+		{ -1, -1, 12, -1, -1, -1, -1, -1, -1, 12, 12, 12, -1},
+		{ -6, -6, 11, -6, -6, -6, -6, -6, -6, 11, -6, 11, -6},
+		{ -4, -4, 12, -4, -4, -4, -4, -4, -4, 12, 12, 12, -4}
 	};
 
 	private static int mapCharacter(int chr) {
@@ -246,23 +246,23 @@ public class SampleBLexer {
 			case 0:
 				return createIdentifierToken(lapg_n, lexemIndex);
 			case 1:
-				 return false; 
-			case 10:
 				return createNumericToken(lapg_n, lexemIndex);
-			case 11:
+			case 2:
 				return createOctalToken(lapg_n, lexemIndex);
-			case 12:
+			case 3:
 				return createDecimalToken(lapg_n, lexemIndex);
+			case 4:
+				 return false; 
 		}
 		return true;
 	}
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
 	static {
-		subTokensOfIdentifier.put("class", 2);
-		subTokensOfIdentifier.put("extends", 3);
-		subTokensOfIdentifier.put("interface", 8);
-		subTokensOfIdentifier.put("enum", 9);
+		subTokensOfIdentifier.put("class", 5);
+		subTokensOfIdentifier.put("extends", 6);
+		subTokensOfIdentifier.put("interface", 11);
+		subTokensOfIdentifier.put("enum", 12);
 		subTokensOfIdentifier.put("xyzzz", 14);
 	}
 
@@ -273,13 +273,13 @@ public class SampleBLexer {
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
 		switch(lexemIndex) {
-			case 2:	// class
+			case 5:	// class
 				 lapg_n.sym = "class"; break; 
-			case 8:	// interface
+			case 11:	// interface
 				 lapg_n.sym = "interface"; break; 
-			case 9:	// enum
+			case 12:	// enum
 				 lapg_n.sym = new Object(); break; 
-			case 3:	// extends (soft)
+			case 6:	// extends (soft)
 			case 14:	// xyzzz (soft)
 			case 0:	// <default>
 				 lapg_n.sym = current(); break; 
@@ -293,7 +293,7 @@ public class SampleBLexer {
 
 	protected boolean createOctalToken(LapgSymbol lapg_n, int lexemIndex) {
 		switch(lexemIndex) {
-			case 11:	// <default>
+			case 2:	// <default>
 				 lapg_n.sym = Integer.parseInt(current(), 8); break; 
 		}
 		return true;

@@ -48,13 +48,13 @@ public class SampleBParser {
 	};
 
 	private static final short lapg_lalr[] = {
-		1, -1, 16, -1, 4, -1, 3, -1, 11, -1, 6, 1, -1, -2, 1, -1,
-		16, -1, 4, -1, 3, -1, 6, 2, -1, -2, 1, -1, 16, -1, 4, -1,
-		3, -1, 11, -1, 6, 1, -1, -2
+		1, -1, 16, -1, 7, -1, 6, -1, 14, -1, 9, 1, -1, -2, 1, -1,
+		16, -1, 7, -1, 6, -1, 9, 2, -1, -2, 1, -1, 16, -1, 7, -1,
+		6, -1, 14, -1, 9, 1, -1, -2
 	};
 
 	private static final short lapg_sym_goto[] = {
-		0, 0, 5, 5, 9, 16, 18, 20, 22, 25, 25, 25, 27, 27, 27, 27,
+		0, 0, 5, 5, 5, 5, 5, 9, 16, 18, 20, 22, 25, 25, 25, 27,
 		27, 32, 33, 37, 38, 40, 42
 	};
 
@@ -81,6 +81,9 @@ public class SampleBParser {
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",
 		"identifier",
+		"numeric",
+		"octal",
+		"decimal",
 		"_skip",
 		"Lclass",
 		"Lextends",
@@ -91,9 +94,6 @@ public class SampleBParser {
 		"Linterface",
 		"Lenum",
 		"error",
-		"numeric",
-		"octal",
-		"decimal",
 		"eleven",
 		"_skipSoftKW",
 		"classdef_NoEoi",
@@ -211,16 +211,16 @@ public class SampleBParser {
 		if (lapg_n.lexem == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 11) == -1) {
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 14) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new LapgSymbol();
-			lapg_m[lapg_head].lexem = 11;
+			lapg_m[lapg_head].lexem = 14;
 			lapg_m[lapg_head].sym = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 11);
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 14);
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
 			return true;
