@@ -35,4 +35,8 @@ public class TextSourceElementAdapter implements TextSourceElement {
 		return node.getInput().getText(node.getOffset(), node.getEndOffset());
 	}
 
+	@Override
+	public String toString() {
+		return getText();
+	}
 }

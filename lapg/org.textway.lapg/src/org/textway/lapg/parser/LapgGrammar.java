@@ -66,4 +66,8 @@ public class LapgGrammar {
 	public TextSourceElement getCode(SourceElement element) {
 		return codeMap.get(element);
 	}
+	
+	public String getId(Symbol sym) {
+		return identifierMap.get(sym);
+	}
 }

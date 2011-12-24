@@ -16,6 +16,7 @@
 package org.textway.templates.types;
 
 import org.textway.templates.api.EvaluationException;
+import org.textway.templates.api.INamedEntity;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IMethod;
@@ -23,7 +24,7 @@ import org.textway.templates.objects.DefaultIxObject;
 
 import java.util.Map;
 
-public class TiInstance extends DefaultIxObject {
+public class TiInstance extends DefaultIxObject implements INamedEntity {
 
 	private final IClass myClass;
 	private final Map<String, Object> myValues;
@@ -79,5 +80,10 @@ public class TiInstance extends DefaultIxObject {
 		}
 
 		return super.callMethod(methodName, args);
+	}
+
+	@Override
+	public String getTitle() {
+		return "[" + myClass.getQualifiedName() + "]";
 	}
 }

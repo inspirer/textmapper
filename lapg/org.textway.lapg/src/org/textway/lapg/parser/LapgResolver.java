@@ -448,6 +448,9 @@ public class LapgResolver {
 	}
 
 	private TextSourceElement convert(AstCode astCode) {
+		if(astCode == null) {
+			return null;
+		}
 		return new TextSourceElementAdapter(astCode);
 	}
 

@@ -15,10 +15,7 @@
  */
 package org.textway.lapg.gen;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.api.*;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.EvaluationException;
@@ -56,6 +53,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof IxWrapper) {
 			o = ((IxWrapper) o).getObject();
 		}
+		if (o instanceof Lexem) {
+			return new LexemIxObject((Lexem) o);
+		}
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);
 		}
@@ -68,8 +68,27 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof Grammar) {
 			return new GrammarIxObject((Grammar) o);
 		}
-
+		if (o instanceof LapgGrammar) {
+			return new LapgGrammarIxObject((LapgGrammar) o);
+		}
 		return super.asObject(o);
+	}
+
+	private final class LexemIxObject extends DefaultJavaIxObject {
+		private final Lexem lexem;
+
+		private LexemIxObject(Lexem lexem) {
+			super(lexem);
+			this.lexem = lexem;
+		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			if ("action".equals(propertyName)) {
+				return grammar.getCode(lexem);
+			}
+			return super.getProperty(propertyName);
+		}
 	}
 
 	private final class RuleIxObject extends DefaultJavaIxObject {
@@ -84,7 +103,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null || args.length == 0) {
-				if (methodName.equals("left")) {
+				if ("getAction".equals(methodName)) {
+					return grammar.getCode(rule);
+				}
+				if ("left".equals(methodName)) {
 					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
@@ -199,6 +221,14 @@ public class GrammarIxFactory extends JavaIxFactory {
 				throw new EvaluationException("index object should be string (annotation name)");
 			}
 		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			if ("id".equals(propertyName)) {
+				return grammar.getId(sym);
+			}
+			return super.getProperty(propertyName);
+		}
 	}
 
 	private final class SymbolRefIxObject extends DefaultJavaIxObject {
@@ -216,6 +246,25 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return grammar.getAnnotation(sym, (String) index);
 			} else {
 				throw new EvaluationException("index object should be string (annotation name)");
+			}
+		}
+	}
+
+	private final class LapgGrammarIxObject extends DefaultJavaIxObject {
+
+		private final GrammarIxObject grammarIxObject;
+
+		private LapgGrammarIxObject(LapgGrammar grammar) {
+			super(grammar);
+			grammarIxObject = new GrammarIxObject(grammar.getGrammar());
+		}
+
+		@Override
+		public Object getProperty(String id) throws EvaluationException {
+			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id) || "copyrightHeader".equals(id)) {
+				return super.getProperty(id);
+			} else {
+				return grammarIxObject.getProperty(id);
 			}
 		}
 	}
