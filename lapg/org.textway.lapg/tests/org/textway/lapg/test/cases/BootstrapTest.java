@@ -132,6 +132,7 @@ public class BootstrapTest extends TestCase {
 					+ expectedResolvedConflicts, 0, status.conflictCount);
 
 		} catch (Exception ex) {
+			ex.printStackTrace(System.err);
 			Assert.fail(ex.getMessage());
 		}
 	}
@@ -169,6 +170,7 @@ public class BootstrapTest extends TestCase {
 
 		@Override
 		public void report(String message, Throwable th) {
+			th.printStackTrace(System.err);
 			Assert.fail("exception happend: " + message + ", " + th.toString());
 		}
 

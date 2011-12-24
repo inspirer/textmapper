@@ -104,7 +104,7 @@ public final class LapgGenerator {
 			return true;
 		} catch (Exception t) {
 			String message = "lapg: internal error: " + t.getClass().getName();
-			status.report(message, options.getDebug() >= 2 ? t : null);
+			status.report(message, t);
 			return false;
 		}
 	}

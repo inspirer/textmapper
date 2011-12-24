@@ -10,6 +10,8 @@ public interface GrammarBuilder {
 	Symbol addSymbol(int kind, String name, String type);
 
 	Symbol addSoftSymbol(String name, Symbol softClass);
+	
+	Symbol getEoi();
 
 	NamedPattern addPattern(String name, RegexPart regexp);
 

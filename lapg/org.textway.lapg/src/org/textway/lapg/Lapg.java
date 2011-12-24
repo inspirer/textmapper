@@ -184,7 +184,7 @@ public class Lapg {
 		@Override
 		public void report(String message, Throwable th) {
 			System.err.print(message + "\n");
-			if (th != null) {
+			if (th != null && isDebugMode()) {
 				th.printStackTrace(System.err);
 			}
 		}

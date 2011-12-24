@@ -65,6 +65,7 @@ public class TestStatus extends AbstractProcessingStatus {
 	}
 
 	public void reset(String warns, String errors) {
+		assertDone();
 		this.warns.append(warns);
 		this.errors.append(errors);
 	}

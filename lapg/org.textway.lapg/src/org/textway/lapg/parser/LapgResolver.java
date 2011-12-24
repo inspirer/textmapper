@@ -72,6 +72,7 @@ public class LapgResolver {
 		myTypesPackage = getTypesPackage();
 
 		builder = GrammarFacade.createBuilder();
+		symbolsMap.put("eoi", builder.getEoi());
 		collectLexems();
 
 		if (tree.getRoot().getGrammar() != null) {

@@ -78,6 +78,11 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
+	public Symbol getEoi() {
+		return eoi;
+	}
+
+	@Override
 	public NamedPattern addPattern(String name, RegexPart regexp) {
 		if (name == null || regexp == null) {
 			throw new NullPointerException();
@@ -117,7 +122,9 @@ class LiGrammarBuilder implements GrammarBuilder {
 				throw new IllegalArgumentException("symbol `" + s.getName() + "' is not a terminal");
 			}
 		}
-		return new LiPrio(prio, symbols.toArray(new Symbol[symbols.size()]));
+		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Symbol[symbols.size()]));
+		priorities.add(liprio);
+		return liprio;
 	}
 
 	@Override
@@ -184,9 +191,19 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 		LiSymbol error = symbolsMap.get("error");
 
-		LiRule[] ruleArr = rules.toArray(new LiRule[rules.size()]);
-		LiPrio[] prioArr = priorities.toArray(new LiPrio[priorities.size()]);
-		LiInputRef[] inputArr = inputs.toArray(new LiInputRef[inputs.size()]);
+		LiRule[] ruleArr;
+		LiPrio[] prioArr;
+		LiInputRef[] inputArr;
+
+		if(rules.size() != 0) {
+			ruleArr = rules.toArray(new LiRule[rules.size()]);
+			prioArr = priorities.toArray(new LiPrio[priorities.size()]);
+			inputArr = inputs.toArray(new LiInputRef[inputs.size()]);
+		} else {
+			ruleArr = null;
+			prioArr = null;
+			inputArr = null;
+		}
 
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}

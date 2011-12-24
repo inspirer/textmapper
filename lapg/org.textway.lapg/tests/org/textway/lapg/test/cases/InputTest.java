@@ -154,12 +154,12 @@ public class InputTest extends LapgTestCase {
 	}
 
 	public void testCheckCSharpGrammar() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("input", openStream("syntax_cs", TESTCONTAINER), new TestStatus(),
+		TestStatus ts = new TestStatus();
+		LapgGrammar g = SyntaxUtil.parseSyntax("input", openStream("syntax_cs", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
-		TestStatus er = new TestStatus(
-				"input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
+		ts.reset("input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
 						+ "input,76: symbol `Lstackalloc` is useless\n"
 						+ "input,149: symbol `comment` is useless\n" + "input,155: symbol `'/*'` is useless\n"
 						+ "input,157: symbol `anysym1` is useless\n" + "input,159: symbol `'*/'` is useless\n",
@@ -170,46 +170,61 @@ public class InputTest extends LapgTestCase {
 								+ "\n"
 								+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
-		Builder.compile(g.getGrammar(), er);
+		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		Builder.compile(g.getGrammar(), ts);
 
-		er.assertDone();
+		ts.assertDone();
 
 		Assert.assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
 	}
 
 	public void testCheckConflictsHandling() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), new TestStatus(),
+		TestStatus ts = new TestStatus();
+		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
-		TestStatus er = new TestStatus(
+		ts.reset(
 				"",
 				"syntax_conflict1,17: input: Licon\n" +
 						"reduce/reduce conflict (next: fix1, fix2, fix3)\n" +
 						"    input1 ::= Licon\n" +
 						"    list_item ::= Licon\n" +
 						"\n" +
-				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
-		Builder.compile(g.getGrammar(), er);
+						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
+		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		Builder.compile(g.getGrammar(), ts);
 
-		er.assertDone();
+		ts.assertDone();
 	}
 
 	public void testCheckConflictsResolving() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), new TestStatus(),
+		final boolean[] isDebug = new boolean[] { false };
+		TestStatus ts = new TestStatus("", "", 0) {
+			@Override
+			public void handle(int kind, String text) {
+				if(kind == KIND_DEBUG && isDebug[0]) {
+					return; // ignore
+				}
+				super.handle(kind, text);
+			}
+
+			@Override
+			public boolean isAnalysisMode() {
+				return isDebug[0];
+			}
+		};
+		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
 		Assert.assertNotNull(g);
 
-		TestStatus er = new TestStatus(
-				"",
-				"", 0);
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
-		Builder.compile(g.getGrammar(), er);
-		er.assertDone();
+		ts.reset("", "");
+		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		Builder.compile(g.getGrammar(), ts);
+		ts.assertDone();
 
-		er = new TestStatus("syntax_conflict2resolved,42: input: Lid '=' expr '*' expr\n" +
+		isDebug[0] = true;
+		ts.reset("syntax_conflict2resolved,42: input: Lid '=' expr '*' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '*' expr\n" +
 				"\n" +
@@ -232,15 +247,10 @@ public class InputTest extends LapgTestCase {
 				"syntax_conflict2resolved,43: input: Lid '=' expr '/' expr\n" +
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
-				"\n", "", 1) {
-			@Override
-			public void debug(String info) {
-				// ignore
-			}
-		};
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
-		Builder.compile(g.getGrammar(), er);
+				"\n", "");
+		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		Builder.compile(g.getGrammar(), ts);
 
-		er.assertDone();
+		ts.assertDone();
 	}
 }
