@@ -16,19 +16,23 @@
 package org.textway.lapg.builder;
 
 import org.textway.lapg.api.NamedPattern;
+import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.DerivedSourceElement;
 import org.textway.lapg.api.regex.RegexPart;
 
 /**
  * Gryaznov Evgeny, 6/23/11
  */
-class LiNamedPattern implements NamedPattern {
+class LiNamedPattern implements NamedPattern, DerivedSourceElement {
 
 	private final String name;
 	private final RegexPart regexp;
+	private final SourceElement origin;
 
-	public LiNamedPattern(String name, RegexPart regexp) {
+	public LiNamedPattern(String name, RegexPart regexp, SourceElement origin) {
 		this.name = name;
 		this.regexp = regexp;
+		this.origin = origin;
 	}
 
 	@Override
@@ -43,5 +47,10 @@ class LiNamedPattern implements NamedPattern {
 
 	public String getTitle() {
 		return "Pattern `" + name + "`";
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

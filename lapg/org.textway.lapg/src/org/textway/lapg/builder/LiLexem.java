@@ -16,10 +16,12 @@
 package org.textway.lapg.builder;
 
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.DerivedSourceElement;
 import org.textway.lapg.api.regex.RegexPart;
 
-class LiLexem implements Lexem {
+class LiLexem implements Lexem, DerivedSourceElement {
 
 	private final int kind;
 	private final int index;
@@ -28,8 +30,9 @@ class LiLexem implements Lexem {
 	private final int groups;
 	private final int priority;
 	private final Lexem classLexem;
+	private final SourceElement origin;
 
-	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem) {
+	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
@@ -37,6 +40,7 @@ class LiLexem implements Lexem {
 		this.groups = groups;
 		this.priority = priority;
 		this.classLexem = classLexem;
+		this.origin = origin;
 	}
 
 	@Override
@@ -94,5 +98,10 @@ class LiLexem implements Lexem {
 
 	public String getTitle() {
 		return "Lexem `" + sym.getName() + "`";
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

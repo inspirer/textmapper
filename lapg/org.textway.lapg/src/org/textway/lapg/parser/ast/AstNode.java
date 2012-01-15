@@ -48,6 +48,14 @@ public abstract class AstNode implements IAstNode {
 		return source;
 	}
 
+	public String getResourceName() {
+		return source.getFile();
+	}
+
+	public String getText() {
+		return source.getText(offset, endoffset);
+	}
+
 	@Override
 	public String toString() {
 		return source.getText(offset, endoffset);

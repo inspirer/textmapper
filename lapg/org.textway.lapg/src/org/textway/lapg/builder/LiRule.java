@@ -15,24 +15,24 @@
  */
 package org.textway.lapg.builder;
 
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.api.*;
 
-class LiRule implements Rule {
+class LiRule implements Rule, DerivedSourceElement {
 
 	private final int index;
 	private final String alias;
 	private final Symbol left;
 	private final SymbolRef[] right;
 	private final Symbol priority;
+	private final SourceElement origin;
 
-	public LiRule(int index, String alias, Symbol left, SymbolRef[] right, Symbol priority) {
+	public LiRule(int index, String alias, Symbol left, SymbolRef[] right, Symbol priority, SourceElement origin) {
 		this.index = index;
 		this.left = left;
 		this.right = right;
 		this.priority = priority;
 		this.alias = alias;
+		this.origin = origin;
 	}
 
 	@Override
@@ -90,5 +90,10 @@ class LiRule implements Rule {
 
 	public String getTitle() {
 		return "Rule `" + toString() + "`";
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

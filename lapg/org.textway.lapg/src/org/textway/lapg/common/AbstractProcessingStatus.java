@@ -15,28 +15,17 @@
  */
 package org.textway.lapg.common;
 
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.*;
 import org.textway.lapg.parser.TextSourceElement;
-import org.textway.lapg.parser.ast.IAstNode;
-
-import java.util.Map;
 
 public abstract class AbstractProcessingStatus implements ProcessingStatus {
 
 	private final boolean isDebug;
 	private final boolean isAnalysis;
-	private Map<SourceElement, IAstNode> sourceMap;
 
 	protected AbstractProcessingStatus(boolean debug, boolean analysis) {
 		isDebug = debug;
 		isAnalysis = analysis;
-	}
-
-	public void setSourceMap(Map<SourceElement, IAstNode> sourceMap) {
-		this.sourceMap = sourceMap;
 	}
 
 	@Override
@@ -88,15 +77,13 @@ public abstract class AbstractProcessingStatus implements ProcessingStatus {
 	}
 
 	public String getLocation(SourceElement element) {
+		while (element instanceof DerivedSourceElement) {
+			element = ((DerivedSourceElement) element).getOrigin();
+		}
 		if (element instanceof TextSourceElement) {
 			TextSourceElement textElement = (TextSourceElement) element;
 			if (textElement.getResourceName() != null) {
 				return textElement.getResourceName() + "," + textElement.getLine() + ": ";
-			}
-		} else if (sourceMap != null && sourceMap.containsKey(element)) {
-			IAstNode node = sourceMap.get(element);
-			if (node.getInput().getFile() != null) {
-				return node.getInput().getFile() + "," + node.getLine() + ": ";
 			}
 		}
 		return null;

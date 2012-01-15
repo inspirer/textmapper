@@ -16,19 +16,23 @@
 package org.textway.lapg.builder;
 
 import org.textway.lapg.api.InputRef;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.DerivedSourceElement;
 
 /**
  * Gryaznov Evgeny, 3/16/11
  */
-class LiInputRef implements InputRef {
+class LiInputRef implements InputRef, DerivedSourceElement {
 
 	private final Symbol target;
 	private final boolean hasEoi;
+	private final SourceElement origin;
 
-	public LiInputRef(Symbol target, boolean hasEoi) {
+	public LiInputRef(Symbol target, boolean hasEoi, SourceElement origin) {
 		this.target = target;
 		this.hasEoi = hasEoi;
+		this.origin = origin;
 	}
 
 	@Override
@@ -39,5 +43,10 @@ class LiInputRef implements InputRef {
 	@Override
 	public boolean hasEoi() {
 		return hasEoi;
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

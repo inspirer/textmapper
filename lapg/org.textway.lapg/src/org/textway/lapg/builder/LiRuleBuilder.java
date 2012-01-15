@@ -15,10 +15,7 @@
  */
 package org.textway.lapg.builder;
 
-import org.textway.lapg.api.NegativeLookahead;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.api.*;
 import org.textway.lapg.api.builder.RuleBuilder;
 
 import java.util.ArrayList;
@@ -33,17 +30,19 @@ class LiRuleBuilder implements RuleBuilder {
 	private LiGrammarBuilder parent;
 	private final Symbol left;
 	private final String alias;
+	private final SourceElement origin;
 	private Symbol priority;
 	private List<SymbolRef> right = new ArrayList<SymbolRef>();
 
-	LiRuleBuilder(LiGrammarBuilder parent, Symbol left, String alias) {
+	LiRuleBuilder(LiGrammarBuilder parent, Symbol left, String alias, SourceElement origin) {
 		this.parent = parent;
 		this.left = left;
 		this.alias = alias;
+		this.origin = origin;
 	}
 
 	@Override
-	public SymbolRef addPart(String alias, Symbol sym, Collection<Symbol> unwanted) {
+	public SymbolRef addPart(String alias, Symbol sym, Collection<Symbol> unwanted, SourceElement origin) {
 		parent.check(sym);
 		NegativeLookahead nla = null;
 		if (unwanted != null && unwanted.size() > 0) {
@@ -55,27 +54,27 @@ class LiRuleBuilder implements RuleBuilder {
 			}
 			nla = new LiNegativeLookahead(unwanted.toArray(new Symbol[unwanted.size()]));
 		}
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, false);
+		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, false, origin);
 		right.add(ref);
 		return ref;
 	}
 
 	@Override
-	public SymbolRef addHidden(String alias, Symbol sym) {
+	public SymbolRef addHidden(String alias, Symbol sym, SourceElement origin) {
 		parent.check(sym);
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, null, true);
+		LiSymbolRef ref = new LiSymbolRef(sym, alias, null, true, origin);
 		right.add(ref);
 		return ref;
 	}
 
 	@Override
 	public Rule create() {
-		return parent.addRule(alias, left, right.toArray(new SymbolRef[right.size()]), priority);
+		return parent.addRule(alias, left, right.toArray(new SymbolRef[right.size()]), priority, origin);
 	}
 
 	@Override
 	public RuleBuilder copy() {
-		LiRuleBuilder res = new LiRuleBuilder(parent, left, alias);
+		LiRuleBuilder res = new LiRuleBuilder(parent, left, alias, origin);
 		res.priority = priority;
 		for (SymbolRef r : right) {
 			res.right.add(r);

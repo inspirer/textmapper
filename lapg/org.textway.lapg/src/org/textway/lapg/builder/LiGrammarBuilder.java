@@ -41,11 +41,11 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final Symbol eoi;
 
 	public LiGrammarBuilder() {
-		eoi = addSymbol(Symbol.KIND_TERM, "eoi", null);
+		eoi = addSymbol(Symbol.KIND_TERM, "eoi", null, null);
 	}
 
 	@Override
-	public Symbol addSymbol(int kind, String name, String type) {
+	public Symbol addSymbol(int kind, String name, String type, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -55,7 +55,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (kind != Symbol.KIND_TERM && kind != Symbol.KIND_NONTERM && kind != Symbol.KIND_LAYOUT) {
 			throw new IllegalArgumentException("wrong symbol kind");
 		}
-		LiSymbol s = new LiSymbol(kind, name, type);
+		LiSymbol s = new LiSymbol(kind, name, type, origin);
 		symbols.add(s);
 		symbolsSet.add(s);
 		symbolsMap.put(name, s);
@@ -63,14 +63,14 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Symbol addSoftSymbol(String name, Symbol softClass) {
+	public Symbol addSoftSymbol(String name, Symbol softClass, SourceElement origin) {
 		if (name == null || softClass == null) {
 			throw new NullPointerException();
 		}
 		if (symbolsMap.containsKey(name)) {
 			throw new IllegalStateException("symbol `" + name + "' already exists");
 		}
-		LiSymbol s = new LiSymbol(name, softClass);
+		LiSymbol s = new LiSymbol(name, softClass, origin);
 		symbols.add(s);
 		symbolsSet.add(s);
 		symbolsMap.put(name, s);
@@ -83,18 +83,18 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public NamedPattern addPattern(String name, RegexPart regexp) {
+	public NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin) {
 		if (name == null || regexp == null) {
 			throw new NullPointerException();
 		}
 		if (namedPatternsSet.contains(name)) {
 			throw new IllegalStateException("named pattern `" + name + "' already exists");
 		}
-		return new LiNamedPattern(name, regexp);
+		return new LiNamedPattern(name, regexp, origin);
 	}
 
 	@Override
-	public Lexem addLexem(int kind, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem) {
+	public Lexem addLexem(int kind, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
@@ -106,13 +106,13 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (symKind == Symbol.KIND_SOFTTERM != (kind == Lexem.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong lexem kind, doesn't match symbol kind");
 		}
-		LiLexem l = new LiLexem(kind, lexems.size(), sym, regexp, groups, priority, classLexem);
+		LiLexem l = new LiLexem(kind, lexems.size(), sym, regexp, groups, priority, classLexem, origin);
 		lexems.add(l);
 		return l;
 	}
 
 	@Override
-	public Prio addPrio(int prio, Collection<Symbol> symbols) {
+	public Prio addPrio(int prio, Collection<Symbol> symbols, SourceElement origin) {
 		if (prio != Prio.LEFT && prio != Prio.RIGHT && prio != Prio.NONASSOC) {
 			throw new IllegalArgumentException("wrong priority");
 		}
@@ -122,33 +122,33 @@ class LiGrammarBuilder implements GrammarBuilder {
 				throw new IllegalArgumentException("symbol `" + s.getName() + "' is not a terminal");
 			}
 		}
-		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Symbol[symbols.size()]));
+		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Symbol[symbols.size()]), origin);
 		priorities.add(liprio);
 		return liprio;
 	}
 
 	@Override
-	public InputRef addInput(Symbol inputSymbol, boolean hasEoi) {
+	public InputRef addInput(Symbol inputSymbol, boolean hasEoi, SourceElement origin) {
 		check(inputSymbol);
 		if (inputSymbol.getKind() != Symbol.KIND_NONTERM) {
 			throw new IllegalArgumentException("input symbol should be non-terminal");
 		}
-		LiInputRef inp = new LiInputRef(inputSymbol, hasEoi);
+		LiInputRef inp = new LiInputRef(inputSymbol, hasEoi, origin);
 		inputs.add(inp);
 		return inp;
 	}
 
 	@Override
-	public RuleBuilder rule(String alias, Symbol left) {
+	public RuleBuilder rule(String alias, Symbol left, SourceElement origin) {
 		check(left);
 		if (left.getKind() != Symbol.KIND_NONTERM) {
 			throw new IllegalArgumentException("left symbol of rule should be non-terminal");
 		}
-		return new LiRuleBuilder(this, left, alias);
+		return new LiRuleBuilder(this, left, alias, origin);
 	}
 
-	Rule addRule(String alias, Symbol left, SymbolRef[] right, Symbol priority) {
-		LiRule rule = new LiRule(rules.size(), alias, left, right, priority);
+	Rule addRule(String alias, Symbol left, SymbolRef[] right, Symbol priority, SourceElement origin) {
+		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
 		rules.add(rule);
 		return rule;
 	}

@@ -15,22 +15,22 @@
  */
 package org.textway.lapg.builder;
 
-import org.textway.lapg.api.NegativeLookahead;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textway.lapg.api.*;
 
-class LiSymbolRef implements SymbolRef {
+class LiSymbolRef implements SymbolRef, DerivedSourceElement {
 
 	private final Symbol target;
 	private final String alias;
 	private final NegativeLookahead negLA;
 	private final boolean isHidden;
+	private final SourceElement origin;
 
-	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, boolean isHidden) {
+	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, boolean isHidden, SourceElement origin) {
 		this.target = target;
 		this.alias = alias;
 		this.negLA = negLA;
 		this.isHidden = isHidden;
+		this.origin = origin;
 	}
 
 	@Override
@@ -51,5 +51,10 @@ class LiSymbolRef implements SymbolRef {
 	@Override
 	public Symbol getTarget() {
 		return target;
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

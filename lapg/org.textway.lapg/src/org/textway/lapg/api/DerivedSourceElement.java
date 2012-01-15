@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2011 Evgeny Gryaznov
+ * Copyright 2002-2012 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser.ast;
+package org.textway.lapg.api;
 
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.TextSourceElement;
+/**
+ * Gryaznov Evgeny, 1/15/12
+ */
+public interface DerivedSourceElement extends SourceElement {
 
-public interface IAstNode extends TextSourceElement {
-
-	int getLine();
-
-	int getOffset();
-
-	int getEndOffset();
-
-	TextSource getInput();
-
-	void accept(AbstractVisitor v);
+	SourceElement getOrigin();
 }

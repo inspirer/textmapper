@@ -15,28 +15,33 @@
  */
 package org.textway.lapg.builder;
 
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.DerivedSourceElement;
 
-class LiSymbol implements Symbol {
+class LiSymbol implements Symbol, DerivedSourceElement {
 
 	private int index;
 	private final int kind;
 	private final String name;
 	private final String type;
 	private final Symbol softClass;
+	private final SourceElement origin;
 
-	public LiSymbol(int kind, String name, String type) {
+	public LiSymbol(int kind, String name, String type, SourceElement origin) {
 		this.kind = kind;
 		this.name = name;
 		this.type = type;
-		softClass = null;
+		this.softClass = null;
+		this.origin = origin;
 	}
 
-	public LiSymbol(String name, Symbol softClass) {
-		kind = KIND_SOFTTERM;
+	public LiSymbol(String name, Symbol softClass, SourceElement origin) {
+		this.kind = KIND_SOFTTERM;
 		this.name = name;
-		type = softClass.getType();
+		this.type = softClass.getType();
 		this.softClass = softClass;
+		this.origin = origin;
 	}
 
 	@Override
@@ -91,5 +96,10 @@ class LiSymbol implements Symbol {
 				return "layout";
 		}
 		return "<unknown>";
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

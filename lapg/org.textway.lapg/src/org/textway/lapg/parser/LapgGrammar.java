@@ -15,20 +15,18 @@ public class LapgGrammar {
 	private final Map<String, Object> options;
 	private final String copyrightHeader;
 
-	private final Map<SourceElement, IAstNode> sourceMap;
 	private final Map<Symbol, String> identifierMap;
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
 	private final Map<SourceElement, TextSourceElement> codeMap;
 
 	public LapgGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-			String copyrightHeader, Map<SourceElement, IAstNode> sourceMap, Map<Symbol, String> identifierMap,
+			String copyrightHeader, Map<Symbol, String> identifierMap,
 			Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
 		this.options = options;
 		this.copyrightHeader = copyrightHeader;
-		this.sourceMap = sourceMap;
 		this.identifierMap = identifierMap;
 		this.annotationsMap = annotationsMap;
 		this.codeMap = codeMap;
@@ -52,10 +50,6 @@ public class LapgGrammar {
 
 	public String getCopyrightHeader() {
 		return copyrightHeader;
-	}
-
-	public Map<SourceElement, IAstNode> getSourceMap() {
-		return sourceMap;
 	}
 
 	public Object getAnnotation(SourceElement element, String name) {

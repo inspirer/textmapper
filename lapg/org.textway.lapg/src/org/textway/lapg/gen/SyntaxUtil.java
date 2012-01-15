@@ -37,9 +37,6 @@ public class SyntaxUtil {
 		LapgGrammar result = null;
 		if (!tree.hasErrors()) {
 			result = new LapgResolver(tree, types).resolve();
-			if (status instanceof AbstractProcessingStatus) {
-				((AbstractProcessingStatus) status).setSourceMap(result.getSourceMap());
-			}
 		}
 		if (tree.hasErrors()) {
 			result = null;

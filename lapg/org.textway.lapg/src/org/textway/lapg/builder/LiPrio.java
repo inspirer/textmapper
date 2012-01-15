@@ -16,16 +16,20 @@
 package org.textway.lapg.builder;
 
 import org.textway.lapg.api.Prio;
+import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.DerivedSourceElement;
 
-class LiPrio implements Prio {
+class LiPrio implements Prio, DerivedSourceElement {
 
 	private final int prio;
 	private final Symbol[] symbols;
+	private final SourceElement origin;
 
-	public LiPrio(int prio, Symbol[] symbols) {
+	public LiPrio(int prio, Symbol[] symbols, SourceElement origin) {
 		this.prio = prio;
 		this.symbols = symbols;
+		this.origin = origin;
 	}
 
 	@Override
@@ -36,5 +40,10 @@ class LiPrio implements Prio {
 	@Override
 	public Symbol[] getSymbols() {
 		return symbols;
+	}
+
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }
