@@ -37,6 +37,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.Chunk;
 import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.api.DerivedSourceElement;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
@@ -46,6 +47,7 @@ import org.textway.lapg.idea.facet.LapgFacet;
 import org.textway.lapg.idea.facet.LapgFacetType;
 import org.textway.lapg.idea.file.LapgFileType;
 import org.textway.lapg.idea.parser.LapgFile;
+import org.textway.lapg.parser.TextSourceElement;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,10 +197,13 @@ public class LapgCompiler implements TranslatingCompiler {
 				hasErrors = true;
 			}
 			SourceElement anchor = anchors != null && anchors.length >= 1 ? anchors[0] : null;
-			if (anchor == null) {
-				compileContext.addMessage(toIdeaKind(kind), message, fileUrl, 1, 1);
+			while (anchor instanceof DerivedSourceElement) {
+				anchor = ((DerivedSourceElement) anchor).getOrigin();
+			}
+			if (anchor instanceof TextSourceElement) {
+				compileContext.addMessage(toIdeaKind(kind), message, ((TextSourceElement) anchor).getResourceName(), ((TextSourceElement) anchor).getLine(), 1);
 			} else {
-				compileContext.addMessage(toIdeaKind(kind), message, anchor.getResourceName(), anchor.getLine(), 1);
+				compileContext.addMessage(toIdeaKind(kind), message, fileUrl, 1, 1);
 			}
 		}
 
