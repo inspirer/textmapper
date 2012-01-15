@@ -117,12 +117,11 @@ public class LapgResolver {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
 		if (offset < text.length && offset != -1) {
-			IAstNode n = new AstNode(tree.getSource(), offset, text.length) {
+			return new AstNode(tree.getSource(), offset, text.length) {
 				@Override
 				public void accept(AbstractVisitor v) {
 				}
 			};
-			return new TextSourceElementAdapter(n);
 		}
 		return null;
 	}
@@ -265,7 +264,7 @@ public class LapgResolver {
 				Lexem liLexem = builder.addLexem(Lexem.KIND_CLASS, s, regex, lexeme.getGroups(), lexeme.getPriority(),
 						null, lexeme);
 				classLexems.add(liLexem);
-				codeMap.put(liLexem, convert(lexeme.getCode()));
+				codeMap.put(liLexem, lexeme.getCode());
 			} else if (clause instanceof AstGroupsSelector) {
 				groups = convert((AstGroupsSelector) clause);
 			} else if (clause instanceof AstNamedPattern) {
@@ -345,7 +344,7 @@ public class LapgResolver {
 							kind == Lexem.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
 					Lexem liLexem = builder.addLexem(kind, s, regex, lexeme.getGroups(), lexeme.getPriority(),
 							classLexem, lexeme);
-					codeMap.put(liLexem, convert(lexeme.getCode()));
+					codeMap.put(liLexem, lexeme.getCode());
 				} else {
 					if (kind == Lexem.KIND_SOFT) {
 						error(lexeme, "soft lexem `" + lexeme.getName().getName() + "' should have regular expression");
@@ -406,7 +405,7 @@ public class LapgResolver {
 					if (astCode != lastAction) {
 						Symbol codeSym = createNested(Symbol.KIND_NONTERM, null, left, null, astCode);
 						Rule actionRule = builder.rule(null, codeSym, astCode).create();
-						codeMap.put(actionRule, convert(astCode));
+						codeMap.put(actionRule, astCode);
 						rule.addPart(null, codeSym, null, astCode);
 					}
 
@@ -436,14 +435,7 @@ public class LapgResolver {
 		// TODO check right.getAnnotations().getNegativeLA() == null
 		Rule result = rule.create();
 		annotationsMap.put(result, convert(right.getAnnotations(), "AnnotateRule"));
-		codeMap.put(result, convert(lastAction));
-	}
-
-	private TextSourceElement convert(AstCode astCode) {
-		if (astCode == null) {
-			return null;
-		}
-		return new TextSourceElementAdapter(astCode);
+		codeMap.put(result, lastAction);
 	}
 
 	private void collectRules() {
