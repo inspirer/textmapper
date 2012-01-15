@@ -15,8 +15,6 @@
  */
 package org.textway.lapg.api.regex;
 
-import org.textway.lapg.lex.CharacterSet;
-
 public interface RegexSet extends RegexPart {
 
 	CharacterSet getSet();

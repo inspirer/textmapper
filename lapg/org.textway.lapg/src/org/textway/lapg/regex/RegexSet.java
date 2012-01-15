@@ -15,8 +15,8 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.api.regex.RegexVisitor;
-import org.textway.lapg.lex.CharacterSet;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.List;

@@ -41,13 +41,14 @@
 	<target name="build" depends="rev">
 		<mkdir dir="build/bin"/>
 		<copy includeemptydirs="false" todir="build/bin">
-			<fileset dir="org.textway.lapg/src" excludes="**/*.launch, **/*.java, **/syntax"/>
-			<fileset dir="org.textway.templates/src" excludes="**/*.launch, **/*.java, **/syntax"/>
+			<fileset dir="org.textway.lapg/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="org.textway.lapg.core/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="org.textway.templates/src" excludes="**/*.java, **/*.s"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}"
 			   includeantruntime="true">
 			<src path="org.textway.lapg/src"/>
-			<src path="org.textway.lapg.ant/src"/>
+			<src path="org.textway.lapg.core/src"/>
 			<src path="org.textway.templates/src"/>
 		</javac>
 		<jar destfile="build/lapg.jar">
@@ -67,8 +68,9 @@
 	<target name="buildsource" depends="rev">
 		<mkdir dir="build/src"/>
 		<copy includeemptydirs="false" todir="build/src">
-			<fileset dir="org.textway.lapg/src" includes="**/*.java, **/syntax, **/*.ltp"/>
-			<fileset dir="org.textway.templates/src" includes="**/*.java, **/syntax, **/*.ltp"/>
+			<fileset dir="org.textway.lapg/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="org.textway.lapg.core/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="org.textway.templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 		</copy>
 		<jar destfile="build/lapg-src.jar">
 			<fileset dir="build/src"/>

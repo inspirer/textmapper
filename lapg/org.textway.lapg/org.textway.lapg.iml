@@ -17,6 +17,7 @@
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="module" module-name="org.textway.lapg.core" />
     <orderEntry type="module" module-name="org.textway.templates" />
     <orderEntry type="library" scope="TEST" name="JUnit 4" level="project" />
   </component>

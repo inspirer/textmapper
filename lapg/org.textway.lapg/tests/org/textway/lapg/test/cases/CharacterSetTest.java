@@ -17,7 +17,7 @@ package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.textway.lapg.lex.CharacterSet;
+import org.textway.lapg.api.regex.CharacterSet;
 
 import java.util.Iterator;
 

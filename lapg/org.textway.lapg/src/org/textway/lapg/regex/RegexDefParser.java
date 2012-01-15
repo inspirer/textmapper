@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.lapg.lex.CharacterSet;
+import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefLexer.LapgSymbol;
 import org.textway.lapg.regex.RegexDefLexer.Lexems;

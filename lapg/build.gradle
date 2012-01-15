@@ -74,6 +74,7 @@ subprojects {
 
 project(':org.textway.lapg') {
     dependencies {
+        compile project(':org.textway.lapg.core')
         compile project(':org.textway.templates')
     }
 }

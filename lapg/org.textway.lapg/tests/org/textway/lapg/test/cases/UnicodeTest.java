@@ -16,8 +16,8 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.TestCase;
-import org.textway.lapg.lex.CharacterSet;
-import org.textway.lapg.lex.CharacterSet.Builder;
+import org.textway.lapg.api.regex.CharacterSet;
+import org.textway.lapg.api.regex.CharacterSet.Builder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
