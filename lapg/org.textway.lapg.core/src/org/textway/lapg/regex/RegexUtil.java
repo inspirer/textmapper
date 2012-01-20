@@ -17,7 +17,6 @@ package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.api.regex.CharacterSet.Builder;
-import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -207,7 +206,14 @@ public class RegexUtil {
 			sb.append(c);
 			return;
 		}
-		FormatUtil.appendEscaped(sb, c);
+		String sym = Integer.toString(c, 16);
+		boolean isShort = sym.length() <= 2;
+		sb.append(isShort ? "\\x" : "\\u");
+		int len = isShort ? 2 : 4;
+		if (sym.length() < len) {
+			sb.append("0000".substring(sym.length() + (4 - len)));
+		}
+		sb.append(sym);
 	}
 
 	static RegexPart createQuantifier(RegexPart sym, TextSource source, int quantifierStart, int quantifierEnd, ErrorReporter reporter) {
