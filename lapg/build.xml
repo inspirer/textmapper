@@ -89,6 +89,7 @@
 		<mkdir dir="build/bintests"/>
 		<copy includeemptydirs="false" todir="build/bintests">
 			<fileset dir="org.textway.lapg/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="org.textway.lapg.core/tests" excludes="**/*.launch, **/*.java"/>
 			<fileset dir="org.textway.templates/tests" excludes="**/*.launch, **/*.java"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
@@ -98,11 +99,17 @@
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
 			<src path="org.textway.lapg/tests"/>
+			<src path="org.textway.lapg.core/tests"/>
 			<src path="org.textway.templates/tests"/>
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
 			<test name="org.textway.lapg.test.TestRunner"/>
 			<test name="org.textway.templates.test.TestRunner"/>
+			<batchtest fork="yes">
+			    <fileset dir="org.textway.lapg.core/tests">
+			        <include name="**/*Test.java" />
+			    </fileset>
+			</batchtest>
 			<formatter type="brief" usefile="false"/>
 			<classpath>
 				<pathelement location="build/bintests"/>

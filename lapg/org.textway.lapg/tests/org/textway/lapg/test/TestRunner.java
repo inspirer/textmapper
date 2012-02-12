@@ -34,12 +34,6 @@ public class TestRunner {
 		ts.addTestSuite(JavaTablesCompression.class);
 		ts.addTestSuite(ConsoleArgsTest.class);
 		ts.addTestSuite(BootstrapTest.class);
-
-		ts.addTestSuite(CharacterSetTest.class);
-		ts.addTestSuite(IntegerSetsTest.class);
-		ts.addTestSuite(MatcherTest.class);
-		ts.addTestSuite(RegexDefTest.class);
-		ts.addTestSuite(RegexpParseTest.class);
 		return ts;
 	}
 

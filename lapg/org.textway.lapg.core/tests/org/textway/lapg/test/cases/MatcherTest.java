@@ -15,18 +15,20 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 5/7/11
  */
-public class MatcherTest extends TestCase {
+public class MatcherTest {
 
+	@Test
 	public void testSimple() throws RegexpParseException {
 		checkMatch("axy", "ayy", false);
 		checkMatch("axy", "axy", true);
@@ -45,6 +47,7 @@ public class MatcherTest extends TestCase {
 		checkMatch("a|ax", "ay", false);
 	}
 
+	@Test
 	public void testSpecialChars() throws RegexpParseException {
 		checkMatch("\\a", "\\a", false);
 		checkMatch("\\a", "\007", true);
@@ -62,12 +65,14 @@ public class MatcherTest extends TestCase {
 		checkMatch("\\v", "\u000b", true);
 	}
 
+	@Test
 	public void testQuantifiers() {
 		checkMatch("lapg(T*)", "lapgTTTT", true);
 		checkMatch("lapg(T*)", "prefixlapgTTTTTTTTT", false);
 		checkMatch("lapg(T*)", "lapgTpostfix", false);
 	}
 
+	@Test
 	public void testIdentifier() throws RegexpParseException {
 		RegexMatcher matcher = new RegexMatcher("id", "[a-zA-Z_][a-zA-Z0-9_]+");
 		checkMatch(matcher, "aaaa", true);
@@ -76,6 +81,7 @@ public class MatcherTest extends TestCase {
 		checkMatch(matcher, "0aa0aa", false);
 	}
 
+	@Test
 	public void testRegex() throws RegexpParseException {
 		RegexMatcher matcher = new RegexMatcher("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
 		checkMatch(matcher, "/aaa/", true);
@@ -87,6 +93,7 @@ public class MatcherTest extends TestCase {
 		checkMatch(matcher, "/tt\\/", false);
 	}
 
+	@Test
 	public void testUnicode() {
 		for (int cp = 0; cp < 0x333; cp++) {
 			String s = "L" + new String(Character.toChars(cp)) + "R";
@@ -101,19 +108,19 @@ public class MatcherTest extends TestCase {
 
 	private static void checkPatternMatch(String regex, String sample, boolean expected) {
 		boolean matches = Pattern.matches(regex, sample);
-		Assert.assertEquals(expected, matches);
+		assertEquals(expected, matches);
 	}
 
 	private static void checkMatch(String regex, String sample, boolean expected) {
 		try {
 			RegexMatcher matcher = new RegexMatcher("unknown", regex);
-			Assert.assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
+			assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 		} catch (RegexpParseException ex) {
-			Assert.fail(ex.getMessage());
+			fail(ex.getMessage());
 		}
 	}
 
 	private static void checkMatch(RegexMatcher matcher, String sample, boolean expected) {
-		Assert.assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
+		assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 	}
 }

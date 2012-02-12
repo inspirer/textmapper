@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.api.regex.CharacterSet.Builder;
 
@@ -27,10 +27,12 @@ import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 11/16/11
  */
-public class UnicodeTest extends TestCase {
+public class UnicodeTest {
 
 	private static Map<String, Byte> categories = initCategories();
 
@@ -69,6 +71,7 @@ public class UnicodeTest extends TestCase {
 		return res;
 	}
 
+	@Test
 	public void testUnicodeData() throws IOException {
 		URL unicodeData =
 				UnicodeTest.class.getResource("data/UnicodeData.txt");

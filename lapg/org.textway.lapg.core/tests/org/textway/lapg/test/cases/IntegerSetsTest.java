@@ -15,16 +15,19 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.textway.lapg.lalr.IntegerSets;
 
 import java.util.Arrays;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 8/17/11
  */
-public class IntegerSetsTest extends TestCase {
+public class IntegerSetsTest {
 
+	@Test
 	public void testCreation() {
 		IntegerSets sets = new IntegerSets();
 		assertEquals(0, sets.storeSet(new int[]{1, 2, 3}));
@@ -34,6 +37,7 @@ public class IntegerSetsTest extends TestCase {
 		assertEquals(0, sets.mergeSets(0, 1));
 	}
 
+	@Test
 	public void testResize() {
 		IntegerSets sets = new IntegerSets();
 		for (int i = 0; i < 2222; i++) {
@@ -54,6 +58,7 @@ public class IntegerSetsTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testMerge() {
 		IntegerSets sets = new IntegerSets();
 		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
@@ -82,6 +87,7 @@ public class IntegerSetsTest extends TestCase {
 		assertEquals(2, sets.mergeSets(1, 0));
 	}
 
+	@Test
 	public void testSubset() {
 		IntegerSets sets = new IntegerSets();
 		assertEquals(0, sets.storeSet(new int[]{1, 3, 5}));
@@ -115,6 +121,7 @@ public class IntegerSetsTest extends TestCase {
 		assertFalse(sets.isSubset(0, 1));
 	}
 
+	@Test
 	public void testIntersect() {
 		IntegerSets sets = new IntegerSets();
 		assertEquals(-1, sets.intersectSet(-1, -1));
