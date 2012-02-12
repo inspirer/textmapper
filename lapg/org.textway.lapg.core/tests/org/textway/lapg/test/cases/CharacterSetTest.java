@@ -132,6 +132,7 @@ public class CharacterSetTest {
 		assertTrue("no exception", exc);
 	}
 
+	@Test
 	public void testSubtract2() {
 		subtract(new int[]{95, 95, 96, 96, 97, 97}, new int[]{96, 96}, "[95,97]");
 		subtract(new int[]{100, 200}, new int[]{1, 2, 3, 4, 80, 99}, "[100-200]");
@@ -160,6 +161,7 @@ public class CharacterSetTest {
 		subtract(new int[]{7, 7, 14, 14, 21, 21, 55, 55}, new int[]{1, 100}, "[]");
 	}
 
+	@Test
 	public void testRealloc() {
 		StringBuilder res = new StringBuilder();
 		CharacterSet.Builder b = new CharacterSet.Builder();
@@ -176,6 +178,7 @@ public class CharacterSetTest {
 		assertEquals(res.toString(), b.create().toString());
 	}
 
+	@Test
 	public void testReverseRealloc() {
 		StringBuilder res = new StringBuilder();
 		res.append("[");
@@ -198,6 +201,7 @@ public class CharacterSetTest {
 
 	private static final int TESTLEN = 9;
 
+	@Test
 	public void testSubtractGeneric() {
 		CharacterSet.Builder b = new CharacterSet.Builder();
 		CharacterSet s1, s2, s3;
@@ -233,6 +237,7 @@ public class CharacterSetTest {
 		}
 	}
 
+	@Test
 	public void testIntersectGeneric() {
 		CharacterSet.Builder b = new CharacterSet.Builder();
 		CharacterSet s1, s2, s3;
@@ -259,6 +264,7 @@ public class CharacterSetTest {
 
 	private static final int ARTESTLEN = 12;
 
+	@Test
 	public void testAddRangeGeneric() {
 		CharacterSet.Builder b = new CharacterSet.Builder();
 		CharacterSet s2, s3;
