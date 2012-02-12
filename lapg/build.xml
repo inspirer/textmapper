@@ -156,7 +156,7 @@
 
 	<target name="plugin" depends="rev">
 		<property file="build.properties"/>
-		<property name="ideaPath" value="${home.idea_ic_10}"/>
+		<property name="ideaPath" value="${home.idea_ic_11}"/>
 
 		<path id="javac2.classpath">
 			<pathelement location="${ideaPath}/lib/javac2.jar"/>
@@ -197,7 +197,7 @@
 	</target>
 
 	<target name="install-plugin" depends="plugin">
-		<property name="pluginPath" value="${home.idea_ic_10.plugins}"/>
+		<property name="pluginPath" value="${home.idea_ic_11.plugins}"/>
 		<copy includeemptydirs="false" todir="${pluginPath}/lapg/">
 			<fileset dir="build/lapg" includes="lib/**"/>
 		</copy>
