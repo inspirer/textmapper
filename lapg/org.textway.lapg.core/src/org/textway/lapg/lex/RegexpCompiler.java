@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexpParser {
+public class RegexpCompiler {
 
 	// result
 	private int[] character2symbol;
@@ -38,7 +38,7 @@ public class RegexpParser {
 	private final int[] sym;
 	private final int[] stack;
 
-	public RegexpParser(Map<String, RegexPart> namedPatterns) {
+	public RegexpCompiler(Map<String, RegexPart> namedPatterns) {
 		this.namedPatterns = namedPatterns;
 
 		this.sym = new int[LexConstants.MAX_ENTRIES];

@@ -16,17 +16,18 @@
 package org.textway.lapg.test.cases;
 
 import junit.framework.Assert;
+import junit.framework.TestCase;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexConstants;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
-import org.textway.lapg.lex.RegexpParser;
+import org.textway.lapg.lex.RegexpCompiler;
 import org.textway.lapg.regex.RegexUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-public class RegexpParseTest extends LapgTestCase {
+public class RegexpParseTest extends TestCase {
 	private static char[] HEX = new char[] { '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 
 	private String toHex4(int i) {
@@ -38,7 +39,7 @@ public class RegexpParseTest extends LapgTestCase {
 		Assert.assertEquals("abcf", toHex4(0xabcf));
 		Assert.assertEquals("75e1", toHex4(0x75e1));
 
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try{
 			for(int i = 20; i < 2020; i++) {
 				rp.compile(i, parseRegexp("[\\u" + toHex4(i * 10) + "-\\u" + toHex4(i * 10 + 6) + "]"));
@@ -55,7 +56,7 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testNewParser() {
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("Eea{1,2}"));
 			Assert.fail("no exception");
@@ -72,7 +73,7 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testRegexpParserInvertedSet() {
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("'[^'\n]+'"));
 			rp.compile(1, parseRegexp("%"));
@@ -92,19 +93,19 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testRegexpParser() {
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			rp.buildSets();
 			Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
 
-			rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			rp.compile(1, parseRegexp("do"));
 			rp.buildSets();
 			Assert.assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
 
-			rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			rp.compile(0, parseRegexp("[a-w][p-z]"));
 			rp.compile(1, parseRegexp("[b-c][y-z]"));
 			rp.buildSets();
@@ -120,7 +121,7 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testUnicode() {
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("[\\u5151-\\u5252][\\u1000-\\u2000]"));
 		} catch (RegexpParseException ex) {
@@ -164,7 +165,7 @@ public class RegexpParseTest extends LapgTestCase {
 
 	public void testParserParen() {
 		try {
-			RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+			RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			int[] result = rp.compile(0, parseRegexp("()"));
 			Assert.assertEquals(Arrays.toString(new int[]{ LexConstants.LBR + 1, LexConstants.RBR, -1 }), Arrays.toString(result));
 
@@ -191,7 +192,7 @@ public class RegexpParseTest extends LapgTestCase {
 	}
 
 	public void testParserExc() {
-		RegexpParser rp = new RegexpParser(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000"));
 			Assert.fail("no exception");

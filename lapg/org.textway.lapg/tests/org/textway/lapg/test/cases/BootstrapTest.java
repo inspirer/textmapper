@@ -48,7 +48,7 @@ public class BootstrapTest extends TestCase {
 	}
 
 	public void testRegexS() {
-		bootstrap("org.textway.lapg/src/org/textway/lapg/regex", "regex.s", new String[0], new String[] {
+		bootstrap("org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[] {
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java" }, 2);
 	}
 

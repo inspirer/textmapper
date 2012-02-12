@@ -540,7 +540,7 @@ public class LexicalBuilder {
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare() {
-		RegexpParser rp = new RegexpParser(loadNamedPatterns());
+		RegexpCompiler rp = new RegexpCompiler(loadNamedPatterns());
 		boolean success = true;
 
 		nsit = 0;
@@ -679,7 +679,7 @@ public class LexicalBuilder {
 		return result;
 	}
 
-	private int[] parseRegexp(RegexpParser rp, Lexem l) {
+	private int[] parseRegexp(RegexpCompiler rp, Lexem l) {
 		try {
 			RegexPart parsedRegex = l.getRegexp();
 			return rp.compile(l.getIndex(), parsedRegex);

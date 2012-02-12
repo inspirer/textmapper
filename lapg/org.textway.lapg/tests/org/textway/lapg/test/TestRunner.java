@@ -24,21 +24,22 @@ public class TestRunner {
 	public static Test suite() {
 		TestSuite ts = new TestSuite("lapg tests");
 		ts.addTestSuite(NlaTest.class);
-		ts.addTestSuite(IntegerSetsTest.class);
 		ts.addTestSuite(SoftTermsTest.class);
-		ts.addTestSuite(MatcherTest.class);
-		ts.addTestSuite(RegexDefTest.class);
 		ts.addTestSuite(GrammarTest.class);
 		ts.addTestSuite(TemplateStaticMethodsTest.class);
 		ts.addTestSuite(AnnotationsTest.class);
 		ts.addTestSuite(JavaPostProcessorTest.class);
-		ts.addTestSuite(CharacterSetTest.class);
 		ts.addTestSuite(LexerGeneratorTest.class);
-		ts.addTestSuite(RegexpParseTest.class);
 		ts.addTestSuite(InputTest.class);
 		ts.addTestSuite(JavaTablesCompression.class);
 		ts.addTestSuite(ConsoleArgsTest.class);
 		ts.addTestSuite(BootstrapTest.class);
+
+		ts.addTestSuite(CharacterSetTest.class);
+		ts.addTestSuite(IntegerSetsTest.class);
+		ts.addTestSuite(MatcherTest.class);
+		ts.addTestSuite(RegexDefTest.class);
+		ts.addTestSuite(RegexpParseTest.class);
 		return ts;
 	}
 
