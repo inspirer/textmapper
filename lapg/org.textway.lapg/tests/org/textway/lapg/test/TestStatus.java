@@ -15,14 +15,14 @@
  */
 package org.textway.lapg.test;
 
-import org.textway.lapg.gen.LapgOptions;
-
 import org.textway.lapg.common.AbstractProcessingStatus;
+import org.textway.lapg.gen.LapgOptions;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class TestStatus extends AbstractProcessingStatus {
 
@@ -47,7 +47,7 @@ public class TestStatus extends AbstractProcessingStatus {
 		if (errors.toString().startsWith(error)) {
 			errors.replace(0, error.length(), "");
 		} else {
-			Assert.assertEquals(errors.toString(), error);
+			assertEquals(errors.toString(), error);
 		}
 	}
 
@@ -55,13 +55,13 @@ public class TestStatus extends AbstractProcessingStatus {
 		if (warns.toString().startsWith(warning)) {
 			warns.replace(0, warning.length(), "");
 		} else {
-			Assert.assertEquals(warns.toString(), warning);
+			assertEquals(warns.toString(), warning);
 		}
 	}
 
 	public void assertDone() {
-		Assert.assertEquals(warns.toString(), "");
-		Assert.assertEquals(errors.toString(), "");
+		assertEquals(warns.toString(), "");
+		assertEquals(errors.toString(), "");
 	}
 
 	public void reset(String warns, String errors) {
@@ -90,11 +90,11 @@ public class TestStatus extends AbstractProcessingStatus {
 
 	@Override
 	public void handle(int kind, String text) {
-		if(kind == KIND_DEBUG) {
-			Assert.fail(text);
-		} else if(kind == KIND_ERROR || kind == KIND_FATAL) {
+		if (kind == KIND_DEBUG) {
+			fail(text);
+		} else if (kind == KIND_ERROR || kind == KIND_FATAL) {
 			error(text);
-		} else if(kind == KIND_WARN) {
+		} else if (kind == KIND_WARN) {
 			warn(text);
 		}
 	}

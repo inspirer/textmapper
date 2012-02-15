@@ -20,7 +20,7 @@ import org.textway.lapg.common.JavaArrayArchiver;
 
 import static org.junit.Assert.*;
 
-public class JavaTablesCompression {
+public class JavaTablesCompressionTest {
 
 	private void checkDecompression(int[][] a) {
 		String c = JavaArrayArchiver.packIntInt(a, 5);

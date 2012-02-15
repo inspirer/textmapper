@@ -22,7 +22,7 @@ import org.textway.templates.eval.DefaultStaticMethods;
 
 import static org.junit.Assert.assertEquals;
 
-public class ApiTests {
+public class ApiTest {
 
 	@Test
 	public void testCache() {

@@ -15,12 +15,13 @@
  */
 package org.textway.templates.test.cases;
 
-import junit.framework.Assert;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
 
-import java.io.File;
 import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class TestProblemCollector implements TemplatesStatus {
 	public ArrayList<String> nextErrors = new ArrayList<String>();
@@ -33,25 +34,25 @@ public class TestProblemCollector implements TemplatesStatus {
 
 	public void assertEmptyErrors() {
 		if (nextErrors.size() > 0) {
-			Assert.fail("error is not reported: " + nextErrors.get(0));
+			fail("error is not reported: " + nextErrors.get(0));
 		}
 	}
 
 	public void report(int kind, String message, SourceElement... anchors) {
-		if(kind == KIND_ERROR || kind == KIND_FATAL) {
-			if(anchors != null && anchors.length >= 1 && anchors[0] != null) {
+		if (kind == KIND_ERROR || kind == KIND_FATAL) {
+			if (anchors != null && anchors.length >= 1 && anchors[0] != null) {
 				String resourceName = anchors[0].getResourceName();
-				resourceName = resourceName.replaceAll("\\\\","/");
-				if(resourceName.indexOf('/') != -1) {
+				resourceName = resourceName.replaceAll("\\\\", "/");
+				if (resourceName.indexOf('/') != -1) {
 					resourceName = resourceName.substring(resourceName.lastIndexOf('/') + 1);
 				}
 				message = resourceName + "," + anchors[0].getLine() + ": " + message;
 			}
 			if (nextErrors.size() > 0) {
 				String next = nextErrors.remove(0);
-				Assert.assertEquals(next, message);
+				assertEquals(next, message);
 			} else {
-				Assert.fail(message);
+				fail(message);
 			}
 		}
 	}

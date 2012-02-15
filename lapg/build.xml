@@ -20,11 +20,13 @@
 	</target>
 
 	<target name="rev" unless="lapg.revision">
-		<exec executable="git" outputproperty="lapg.revision" osfamily="unix" failifexecutionfails="false" failonerror="false">
+		<exec executable="git" outputproperty="lapg.revision" osfamily="unix" failifexecutionfails="false"
+			  failonerror="false">
 			<arg value="rev-parse"/>
 			<arg value="HEAD"/>
 		</exec>
-		<exec executable="cmd" outputproperty="lapg.revision" osfamily="windows" failifexecutionfails="false" failonerror="false">
+		<exec executable="cmd" outputproperty="lapg.revision" osfamily="windows" failifexecutionfails="false"
+			  failonerror="false">
 			<arg value="/c"/>
 			<arg value="git"/>
 			<arg value="rev-parse"/>
@@ -103,12 +105,16 @@
 			<src path="org.textway.templates/tests"/>
 		</javac>
 		<junit fork="yes" haltonfailure="yes">
-			<test name="org.textway.lapg.test.TestRunner"/>
-			<test name="org.textway.templates.test.TestRunner"/>
 			<batchtest fork="yes">
-			    <fileset dir="org.textway.lapg.core/tests">
-			        <include name="**/*Test.java" />
-			    </fileset>
+				<fileset dir="org.textway.lapg.core/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
+				<fileset dir="org.textway.lapg/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
+				<fileset dir="org.textway.templates/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
 			</batchtest>
 			<formatter type="brief" usefile="false"/>
 			<classpath>
