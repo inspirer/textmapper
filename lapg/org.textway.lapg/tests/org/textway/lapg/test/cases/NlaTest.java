@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
@@ -34,6 +34,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 9/28/11
  */
@@ -48,16 +50,17 @@ public class NlaTest extends LapgTestCase {
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
-				Assert.fail(message);
+				fail(message);
 			}
 		});
 	}
 
+	@Test
 	public void testNla1() {
 		String contents = FileUtil.getFileContents(openStream("syntax_nla1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
 		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_nla1", contents.toCharArray(), 1), new TestStatus(),
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		final StringBuilder debugText = new StringBuilder();
 		TestStatus er = new TestStatus(
@@ -74,9 +77,10 @@ public class NlaTest extends LapgTestCase {
 
 		String expectedDebug = FileUtil.getFileContents(openStream("syntax_nla1.debug", TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
 		expectedDebug = FileUtil.fixLineSeparators(expectedDebug, "\n");
-		Assert.assertEquals(expectedDebug, debugText.toString());
+		assertEquals(expectedDebug, debugText.toString());
 	}
 
+	@Test
 	public void testInputAll() throws UnsupportedEncodingException {
 		String contents = FileUtil.getFileContents(openStream("all.in", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
 		String output;
@@ -87,8 +91,8 @@ public class NlaTest extends LapgTestCase {
 			System.setOut(new PrintStream(out));
 
 			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("all.in", contents.toCharArray(), 1));
-			if(parse.hasErrors()) {
-				Assert.assertEquals("syntax error before line 9", parse.getErrors().get(0).getMessage());
+			if (parse.hasErrors()) {
+				assertEquals("syntax error before line 9", parse.getErrors().get(0).getMessage());
 			}
 
 		} finally {
@@ -97,9 +101,10 @@ public class NlaTest extends LapgTestCase {
 		}
 
 		String expected = FileUtil.getFileContents(openStream("all.out", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
-		Assert.assertEquals(expected, output);
+		assertEquals(expected, output);
 	}
 
+	@Test
 	public void testExoticInput() throws UnsupportedEncodingException {
 		String contents = FileUtil.getFileContents(openStream("exotic.in", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
 		String output;
@@ -110,8 +115,8 @@ public class NlaTest extends LapgTestCase {
 			System.setOut(new PrintStream(out));
 
 			NlaTestTree<Object> parse = NlaTestTree.parse(new NlaTestTree.TextSource("exotic.in", contents.toCharArray(), 1));
-			if(parse.hasErrors()) {
-				Assert.assertEquals("syntax error before line 3", parse.getErrors().get(0).getMessage());
+			if (parse.hasErrors()) {
+				assertEquals("syntax error before line 3", parse.getErrors().get(0).getMessage());
 			}
 
 		} finally {
@@ -120,6 +125,6 @@ public class NlaTest extends LapgTestCase {
 		}
 
 		String expected = FileUtil.getFileContents(openStream("exotic.out", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
-		Assert.assertEquals(expected, output);
+		assertEquals(expected, output);
 	}
 }

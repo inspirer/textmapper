@@ -15,71 +15,76 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.Test;
 import org.textway.lapg.common.JavaPostProcessor;
 
-public class JavaPostProcessorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class JavaPostProcessorTest {
+
+	@Test
 	public void testSimple() throws Exception {
 		String res = new JavaPostProcessor(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"\n" +
-		"class B extends xxx.@C {}").process();
-		Assert.assertEquals(
+						"\n" +
+						"import xxx.A;\n" +
+						"\n" +
+						"class B extends xxx.@C {}").process();
+		assertEquals(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"import xxx.C;\n" +
-				"\n" +
-				"class B extends C {}", res);
+						"\n" +
+						"import xxx.A;\n" +
+						"import xxx.C;\n" +
+						"\n" +
+						"class B extends C {}", res);
 	}
 
+	@Test
 	public void testSeveral() throws Exception {
 		String res = new JavaPostProcessor(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"\n" +
-		"class B extends xxx.@C implements yyy.@QQ {}").process();
-		Assert.assertEquals(
+						"\n" +
+						"import xxx.A;\n" +
+						"\n" +
+						"class B extends xxx.@C implements yyy.@QQ {}").process();
+		assertEquals(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"import xxx.C;\n" +
-				"import yyy.QQ;\n" +
-				"\n" +
-				"class B extends C implements QQ {}", res);
+						"\n" +
+						"import xxx.A;\n" +
+						"import xxx.C;\n" +
+						"import yyy.QQ;\n" +
+						"\n" +
+						"class B extends C implements QQ {}", res);
 	}
 
+	@Test
 	public void testConflict() throws Exception {
 		String res = new JavaPostProcessor(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"\n" +
-		"class B extends aaa.@A implements qqq.@A {}").process();
-		Assert.assertEquals(
+						"\n" +
+						"import xxx.A;\n" +
+						"\n" +
+						"class B extends aaa.@A implements qqq.@A {}").process();
+		assertEquals(
 				"package p;\n" +
-				"\n" +
-				"import xxx.A;\n" +
-				"\n" +
-				"class B extends aaa.A implements qqq.A {}", res);
+						"\n" +
+						"import xxx.A;\n" +
+						"\n" +
+						"class B extends aaa.A implements qqq.A {}", res);
 	}
 
+	@Test
 	public void testNoImports() throws Exception {
 		String res = new JavaPostProcessor(
 				"package p;\n" +
-				"\n" +
-		"class B extends aaa.@A implements qqq.@B {}").process();
-		Assert.assertEquals(
+						"\n" +
+						"class B extends aaa.@A implements qqq.@B {}").process();
+		assertEquals(
 				"package p;\n" +
-				"\n" +
-				"import aaa.A;\n" +
-				"import qqq.B;\n" +
-				"\n" +
-				"class B extends A implements B {}", res);
+						"\n" +
+						"import aaa.A;\n" +
+						"import qqq.B;\n" +
+						"\n" +
+						"class B extends A implements B {}", res);
 	}
 }

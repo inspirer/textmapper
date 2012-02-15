@@ -15,8 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.Test;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
@@ -35,80 +34,92 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-public class BootstrapTest extends TestCase {
+import static org.junit.Assert.*;
 
+public class BootstrapTest {
+
+	@Test
 	public void testLapgS() {
-		bootstrap("org.textway.lapg/src/org/textway/lapg/parser", "lapg.s", new String[0], new String[] {
-				"LapgParser.java", "LapgLexer.java", "LapgTree.java" }, 2);
+		bootstrap("org.textway.lapg/src/org/textway/lapg/parser", "lapg.s", new String[0], new String[]{
+				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 2);
 	}
 
+	@Test
 	public void testSAction() {
 		bootstrap("org.textway.lapg/src/org/textway/lapg/parser/action", "saction.s", new String[0],
-				new String[] { "SActionLexer.java" }, 0);
+				new String[]{"SActionLexer.java"}, 0);
 	}
 
+	@Test
 	public void testRegexS() {
-		bootstrap("org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[] {
-				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java" }, 2);
+		bootstrap("org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
+				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 2);
 	}
 
+	@Test
 	public void testTypesS() {
-		bootstrap("org.textway.templates/src/org/textway/templates/types", "types.s", new String[0], new String[] {
+		bootstrap("org.textway.templates/src/org/textway/templates/types", "types.s", new String[0], new String[]{
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
 				"ast/AstMapEntriesItem.java", "ast/AstMultiplicity.java", "ast/AstTypeEx.java",
-		"ast/AstMethodDeclaration.java" }, 0);
+				"ast/AstMethodDeclaration.java"}, 0);
 	}
 
+	@Test
 	public void testTemplatesS() {
-		bootstrap("org.textway.templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[] {
-				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java" }, 18);
+		bootstrap("org.textway.templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[]{
+				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"}, 18);
 	}
 
+	@Test
 	public void testXmlS() {
-		bootstrap("org.textway.templates/src/org/textway/xml", "xml.s", new String[0], new String[] { "XmlParser.java",
-				"XmlTree.java", "XmlLexer.java" }, 0);
+		bootstrap("org.textway.templates/src/org/textway/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
+				"XmlTree.java", "XmlLexer.java"}, 0);
 	}
 
+	@Test
 	public void testSampleA() {
 		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/a", "sample1.s", new String[0],
-				new String[] { "SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
-		"ast/IAstClassdefNoEoi.java" }, 0);
+				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
+						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
+	@Test
 	public void testSampleB() {
 		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/b", "sample2.s", new String[0],
-				new String[] { "SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
-		"ast/IAstClassdefNoEoi.java" }, 0);
+				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
+						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
+	@Test
 	public void testSampleNoParser() {
 		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/lexeronly", "noparser.s",
-				new String[0], new String[] { "NoparserLexer.java" }, 0);
+				new String[0], new String[]{"NoparserLexer.java"}, 0);
 	}
 
+	@Test
 	public void testNLA() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla", "nla.s", new String[] { "-e" },
-				new String[] { "NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables" }, 6);
+		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla", "nla.s", new String[]{"-e"},
+				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
 	}
 
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles,
-			int expectedResolvedConflicts) {
+						   int expectedResolvedConflicts) {
 		try {
 			LapgOptions options = LapgOptions.parseArguments(args, new PrintStream(new CheckingErrorStream("")));
-			Assert.assertNotNull("cannot parse options", options);
+			assertNotNull("cannot parse options", options);
 
 			options.setInput(syntaxFile);
 
 			File root = new File(folder);
-			Assert.assertTrue("folder doesn't exist: " + root.getAbsolutePath(), root.exists() && root.isDirectory());
+			assertTrue("folder doesn't exist: " + root.getAbsolutePath(), root.exists() && root.isDirectory());
 
 			File source = new File(root, syntaxFile);
-			Assert.assertTrue("grammar source doesn't exist", source.exists() && source.isFile());
+			assertTrue("grammar source doesn't exist", source.exists() && source.isFile());
 
 			String contents = FileUtil.getFileContents(new FileInputStream(source), FileUtil.DEFAULT_ENCODING);
-			Assert.assertNotNull("cannot read " + syntaxFile, contents);
+			assertNotNull("cannot read " + syntaxFile, contents);
 
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
@@ -116,7 +127,7 @@ public class BootstrapTest extends TestCase {
 					options.getDebug() >= LapgOptions.DEBUG_TABLES, options.getDebug() >= LapgOptions.DEBUG_AMBIG);
 
 			boolean success = new LapgGenerator(options, status, strategy).compileGrammar(input);
-			Assert.assertTrue(success);
+			assertTrue(success);
 
 			if (status.isDebugMode()) {
 				strategy.createFile("tables", status.tablesFile != null ? status.tablesFile.toString() : "", status);
@@ -125,15 +136,15 @@ public class BootstrapTest extends TestCase {
 				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "", status);
 			}
 			for (String s : createdFiles) {
-				Assert.assertTrue("file is not generated: " + s, strategy.created.contains(s));
+				assertTrue("file is not generated: " + s, strategy.created.contains(s));
 			}
 
-			Assert.assertEquals(expectedResolvedConflicts - status.conflictCount + " conflicts instead of "
+			assertEquals(expectedResolvedConflicts - status.conflictCount + " conflicts instead of "
 					+ expectedResolvedConflicts, 0, status.conflictCount);
 
 		} catch (Exception ex) {
 			ex.printStackTrace(System.err);
-			Assert.fail(ex.getMessage());
+			fail(ex.getMessage());
 		}
 	}
 
@@ -165,13 +176,13 @@ public class BootstrapTest extends TestCase {
 				TextSourceElement textElement = (TextSourceElement) anchors[0];
 				message = textElement.getResourceName() + "," + textElement.getLine() + ": " + message;
 			}
-			Assert.fail("error reported: " + message);
+			fail("error reported: " + message);
 		}
 
 		@Override
 		public void report(String message, Throwable th) {
 			th.printStackTrace(System.err);
-			Assert.fail("exception happend: " + message + ", " + th.toString());
+			fail("exception happend: " + message + ", " + th.toString());
 		}
 
 		@Override
@@ -182,14 +193,14 @@ public class BootstrapTest extends TestCase {
 					return;
 				}
 			}
-			Assert.fail("parser conflict is not expected: " + conflict.getText());
+			fail("parser conflict is not expected: " + conflict.getText());
 		}
 
 		@Override
 		public void debug(String info) {
 			super.debug(info);
 			if (!isDebugMode()) {
-				Assert.fail("debug is forbidden: " + info);
+				fail("debug is forbidden: " + info);
 			}
 		}
 
@@ -240,12 +251,12 @@ public class BootstrapTest extends TestCase {
 							expected = "# Original data is not available (new file is created):\n# " + ex.getMessage();
 						}
 						String data = getData();
-						Assert.assertEquals(expected, data);
+						assertEquals(expected, data);
 						created.add(name);
 					}
 				}.check();
 			} catch (IOException e) {
-				Assert.fail(e.getMessage());
+				fail(e.getMessage());
 			}
 		}
 
@@ -253,7 +264,7 @@ public class BootstrapTest extends TestCase {
 		public IResourceLoader createResourceLoader(String qualifiedName) {
 			File folder = new File(qualifiedName);
 			if (folder.isDirectory()) {
-				return new FileBasedResourceLoader(new File[] { folder }, "utf8");
+				return new FileBasedResourceLoader(new File[]{folder}, "utf8");
 			}
 			return null;
 		}

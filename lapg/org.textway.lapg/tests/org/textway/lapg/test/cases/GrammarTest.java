@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.eval.GenericNode;
 import org.textway.lapg.eval.GenericParseContext;
@@ -36,6 +36,8 @@ import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 3/17/11
  */
@@ -44,8 +46,8 @@ public class GrammarTest extends LapgTestCase {
 	private GenericParseContext loadGrammar(String grammarName) {
 		String contents = FileUtil.getFileContents(openStream(grammarName, TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
 		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
-		Assert.assertNotNull(g.getGrammar());
+		assertNotNull(g);
+		assertNotNull(g.getGrammar());
 
 		LexerTables l = LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), new TestStatus());
 		ParserTables r = Builder.compile(g.getGrammar(), new TestStatus());
@@ -54,13 +56,13 @@ public class GrammarTest extends LapgTestCase {
 
 	private void testParser(GenericParseContext context, int inputIndex, String text, String expectedAst) {
 		Result root = context.parse(text, inputIndex);
-		if(root.getErrors().size() > 0) {
+		if (root.getErrors().size() > 0) {
 			ParseProblem parseProblem = root.getErrors().get(0);
-			Assert.fail(parseProblem.toString());
+			fail(parseProblem.toString());
 		}
 		GenericNode node = (GenericNode) root.getRoot();
-		Assert.assertNotNull(node);
-		Assert.assertEquals(expectedAst, node.toSignature());
+		assertNotNull(node);
+		assertEquals(expectedAst, node.toSignature());
 	}
 
 	private TypesRegistry createDefaultTypesRegistry() {
@@ -69,11 +71,12 @@ public class GrammarTest extends LapgTestCase {
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
-				Assert.fail(message);
+				fail(message);
 			}
 		});
 	}
 
+	@Test
 	public void testMultiInputStates() {
 		GenericParseContext context = loadGrammar("syntaxmultiinput");
 
@@ -90,6 +93,7 @@ public class GrammarTest extends LapgTestCase {
 		testParser(context, 1, "  aaa x  aaa y aaa aaa aaa    ", "[[[[[[[aaa] x]  aaa] y] aaa] aaa] aaa]");
 	}
 
+	@Test
 	public void testNoEoi() {
 		GenericParseContext context = loadGrammar("syntaxNoEoi");
 
@@ -102,21 +106,23 @@ public class GrammarTest extends LapgTestCase {
 
 	private void testSample1(String text, String expectedAst, boolean eoi) {
 		Result root = new SampleAParseContext().parse(text, eoi);
-		if(root.getErrors().size() > 0) {
+		if (root.getErrors().size() > 0) {
 			ParseProblem parseProblem = root.getErrors().get(0);
-			Assert.fail(parseProblem.toString());
+			fail(parseProblem.toString());
 		}
 		GenericNode node = (GenericNode) root.getRoot();
-		Assert.assertNotNull(node);
-		Assert.assertEquals(expectedAst, node.toSignature());
+		assertNotNull(node);
+		assertEquals(expectedAst, node.toSignature());
 	}
 
+	@Test
 	public void testNoEoiOnSample1() {
 		testSample1(" class A {}  class B { } ", "[class A {}]", false);
 		testSample1(" class A {}  ###  ", "[class A {}]", false);
 		testSample1(" class A {class B{} class C{} class D{}}  ####  ", "[class A {[class B{}] [class C{}] [class D{}]}]", false);
 	}
 
+	@Test
 	public void testEoiOnSample1() {
 		testSample1(" class A {}  ", "[class A {}]", true);
 		testSample1(" class A {class B{} class C{} class D{}}  ", "[class A {[class B{}] [class C{}] [class D{}]}]", true);

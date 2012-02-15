@@ -15,12 +15,11 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
 
 import java.io.InputStream;
 
-public abstract class LapgTestCase extends TestCase {
+public abstract class LapgTestCase {
 
 	protected static final String TESTCONTAINER = "org/textway/lapg/test/cases/input";
 

@@ -15,38 +15,40 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.textway.lapg.gen.TemplateStaticMethods;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Gryaznov Evgeny, 5/19/11
  */
-public class TemplateStaticMethodsTest extends TestCase {
+public class TemplateStaticMethodsTest {
 
-
+	@Test
 	public void testShiftLeft() {
-		Assert.assertEquals("AA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\tAA\n\t\tBB\n"));
-		Assert.assertEquals("AA\n\tBB\n", new TemplateStaticMethods().shiftLeft("\t\tAA\n\t\t\tBB\n"));
-		Assert.assertEquals("\tAA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\t\tAA\n\t\tBB\n"));
-		Assert.assertEquals(" AA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\t AA\n\t\tBB\n"));
-		Assert.assertEquals(
+		assertEquals("AA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\tAA\n\t\tBB\n"));
+		assertEquals("AA\n\tBB\n", new TemplateStaticMethods().shiftLeft("\t\tAA\n\t\t\tBB\n"));
+		assertEquals("\tAA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\t\tAA\n\t\tBB\n"));
+		assertEquals(" AA\nBB\n", new TemplateStaticMethods().shiftLeft("\t\t AA\n\t\tBB\n"));
+		assertEquals(
 				" AA\n" +
-				"\n" +
-				"BB\n", new TemplateStaticMethods().shiftLeft(
-						"\t\t AA\n" +
+						"\n" +
+						"BB\n", new TemplateStaticMethods().shiftLeft(
+				"\t\t AA\n" +
 						"\n" +
 						"\t\tBB\n"));
-		Assert.assertEquals(
+		assertEquals(
 				" AA\n" +
-				"\n" +
-				"BB\n", new TemplateStaticMethods().shiftLeft(
-						"\t\t AA\r\n" +
+						"\n" +
+						"BB\n", new TemplateStaticMethods().shiftLeft(
+				"\t\t AA\r\n" +
 						"\r\n" +
 						"\t\tBB\r\n"));
 	}
 
+	@Test
 	public void testShiftRight() {
-		Assert.assertEquals("\t\t\tAA\n\n\t\t\tBB\n", new TemplateStaticMethods().shiftRight("\t\tAA\n\n\t\tBB\n", 1));
+		assertEquals("\t\t\tAA\n\n\t\t\tBB\n", new TemplateStaticMethods().shiftRight("\t\tAA\n\n\t\tBB\n", 1));
 	}
 }

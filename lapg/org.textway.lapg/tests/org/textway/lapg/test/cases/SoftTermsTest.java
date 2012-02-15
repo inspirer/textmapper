@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lex.LexicalBuilder;
@@ -33,11 +33,14 @@ import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
+import static org.junit.Assert.*;
+
 /**
  * Gryaznov Evgeny, 6/3/11
  */
 public class SoftTermsTest extends LapgTestCase {
 
+	@Test
 	public void testSampleB() {
 		checkParsed(
 				"class P {\n" +
@@ -53,11 +56,12 @@ public class SoftTermsTest extends LapgTestCase {
 				"class:'P',class:'Q',meth:extends,class:(extends D)'E',meth:xyzzz,class:(extends D25)'E25',meth:q,");
 	}
 
+	@Test
 	public void testSoftConflictsHandling_ShiftShift() {
 		TestStatus er = new TestStatus();
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_ss", openStream("syntax_softconflicts_ss", TESTCONTAINER), er,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		er.reset(
 				"",
@@ -84,18 +88,19 @@ public class SoftTermsTest extends LapgTestCase {
 						"    member ::= identifier '(' ')'\n" +
 						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
 						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
-				"\n");
+						"\n");
 		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
 		er.assertDone();
 	}
 
+	@Test
 	public void testSoftConflictsHandling_ShiftReduce() {
 		TestStatus er = new TestStatus();
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_sr", openStream("syntax_softconflicts_sr", TESTCONTAINER), er,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		er.reset(
 				"",
@@ -103,18 +108,19 @@ public class SoftTermsTest extends LapgTestCase {
 						"soft shift/reduce conflict (next: Lof)\n" +
 						"    typename ::= identifier\n" +
 						"\n" +
-				"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+						"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
 		er.assertDone();
 	}
 
+	@Test
 	public void testSoftConflictsHandling_ReduceReduce() {
 		TestStatus er = new TestStatus();
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_rr", openStream("syntax_softconflicts_rr", TESTCONTAINER), er,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		er.reset(
 				"",
@@ -123,7 +129,7 @@ public class SoftTermsTest extends LapgTestCase {
 						"    varname ::= identifier\n" +
 						"    typename ::= identifier\n" +
 						"\n" +
-				"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
+						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
 		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
@@ -132,14 +138,14 @@ public class SoftTermsTest extends LapgTestCase {
 
 	private void checkParsed(String text, String expected) {
 		SampleBTree<IAstClassdefNoEoi> tree = SampleBTree.parse(new TextSource("input", text.toCharArray(), 1));
-		Assert.assertFalse(tree.hasErrors());
-		Assert.assertNotNull(tree.getRoot());
+		assertFalse(tree.hasErrors());
+		assertNotNull(tree.getRoot());
 		final StringBuilder sb = new StringBuilder();
 		tree.getRoot().accept(new AstVisitor() {
 			@Override
 			protected boolean visit(AstClassdef n) {
 				sb.append("class:");
-				if(n.getIdentifier() != null) {
+				if (n.getIdentifier() != null) {
 					sb.append("(extends ").append(n.getIdentifier()).append(")");
 				}
 				sb.append("'").append(n.getID()).append("'").append(',');
@@ -148,13 +154,13 @@ public class SoftTermsTest extends LapgTestCase {
 
 			@Override
 			protected boolean visit(AstClassdeflistItem n) {
-				if(n.getClassdef() == null) {
+				if (n.getClassdef() == null) {
 					sb.append("meth:").append(n.getIdentifier()).append(',');
 				}
 				return true;
 			}
 		});
-		Assert.assertEquals(expected, sb.toString());
+		assertEquals(expected, sb.toString());
 	}
 
 	private TypesRegistry createDefaultTypesRegistry() {
@@ -164,7 +170,7 @@ public class SoftTermsTest extends LapgTestCase {
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
-				Assert.fail(message);
+				fail(message);
 			}
 		});
 	}

@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
@@ -31,6 +31,8 @@ import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
 import org.textway.templates.types.TypesRegistry;
 
+import static org.junit.Assert.*;
+
 @SuppressWarnings({"deprecation"})
 public class InputTest extends LapgTestCase {
 
@@ -41,90 +43,95 @@ public class InputTest extends LapgTestCase {
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
-				Assert.fail(message);
+				fail(message);
 			}
 		});
 	}
 
+	@Test
 	public void testOptions() {
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1options", openStream("syntax1options", TESTCONTAINER), new TestStatus(),
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
-		Assert.assertEquals(0, g.getGrammar().getEoi().getIndex());
+		assertNotNull(g);
+		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
 		Object container = g.getOptions().get("container");
-		Assert.assertNotNull(container);
+		assertNotNull(container);
 	}
 
+	@Test
 	public void testCheckSimple1() {
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestStatus(),
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
-		Assert.assertEquals(0, g.getGrammar().getEoi().getIndex());
+		assertNotNull(g);
+		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
 		Symbol[] syms = g.getGrammar().getSymbols();
-		Assert.assertEquals(7, syms.length);
-		Assert.assertEquals("eoi", syms[0].getName());
-		Assert.assertEquals("identifier", syms[1].getName());
-		Assert.assertEquals("Licon", syms[2].getName());
-		Assert.assertEquals("_skip", syms[3].getName()); // TODO do not
+		assertEquals(7, syms.length);
+		assertEquals("eoi", syms[0].getName());
+		assertEquals("identifier", syms[1].getName());
+		assertEquals("Licon", syms[2].getName());
+		assertEquals("_skip", syms[3].getName()); // TODO do not
 		// collect skip
 		// symbols
-		Assert.assertEquals("input", syms[4].getName());
-		Assert.assertEquals("list", syms[5].getName());
-		Assert.assertEquals("list_item", syms[6].getName());
+		assertEquals("input", syms[4].getName());
+		assertEquals("list", syms[5].getName());
+		assertEquals("list_item", syms[6].getName());
 
 		Rule[] rules = g.getGrammar().getRules();
-		Assert.assertEquals(5, rules.length);
-		Assert.assertEquals("input", rules[0].getLeft().getName());
-		Assert.assertEquals("list", rules[0].getRight()[0].getTarget().getName());
-		Assert.assertEquals(1, rules[0].getRight().length);
+		assertEquals(5, rules.length);
+		assertEquals("input", rules[0].getLeft().getName());
+		assertEquals("list", rules[0].getRight()[0].getTarget().getName());
+		assertEquals(1, rules[0].getRight().length);
 
 		Lexem[] lexems = g.getGrammar().getLexems();
-		Assert.assertEquals(3, lexems.length);
-		Assert.assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp().toString());
-		Assert.assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
+		assertEquals(3, lexems.length);
+		assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp().toString());
+		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
 				.getRegexp().toString());
-		Assert.assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp().toString());
-		Assert.assertEquals(" continue; ", g.getCode(lexems[2]).getText());
+		assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp().toString());
+		assertEquals(" continue; ", g.getCode(lexems[2]).getText());
 	}
 
+	@Test
 	public void testCheckSimple2() {
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
-		Assert.assertEquals(0, g.getGrammar().getEoi().getIndex());
+		assertNotNull(g);
+		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
 		Symbol[] syms = g.getGrammar().getSymbols();
-		Assert.assertEquals(11, syms.length);
-		Assert.assertEquals("eoi", syms[0].getName());
-		Assert.assertEquals("a", syms[1].getName());
-		Assert.assertEquals("b", syms[2].getName());
-		Assert.assertEquals("'('", syms[3].getName());
-		Assert.assertEquals("')'", syms[4].getName());
-		Assert.assertEquals("input", syms[5].getName());
-		Assert.assertEquals("list", syms[6].getName());
-		Assert.assertEquals("item", syms[7].getName());
-		Assert.assertEquals("item3", syms[8].getName());
-		Assert.assertEquals("subitem", syms[9].getName());
-		Assert.assertEquals("listopt", syms[10].getName());
-		Assert.assertEquals(13, g.getGrammar().getRules().length);
-		Assert.assertEquals("  ${for a in b}..!..$$  ", g.getCode(g.getGrammar().getRules()[7]).getText());
-		Assert.assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
-		Assert.assertNotNull(g.getGrammar().getRules()[9].getRight()[0].getNegativeLA());
-		Assert.assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet().length);
-		Assert.assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet()[0].getIndex());
+		assertEquals(11, syms.length);
+		assertEquals("eoi", syms[0].getName());
+		assertEquals("a", syms[1].getName());
+		assertEquals("b", syms[2].getName());
+		assertEquals("'('", syms[3].getName());
+		assertEquals("')'", syms[4].getName());
+		assertEquals("input", syms[5].getName());
+		assertEquals("list", syms[6].getName());
+		assertEquals("item", syms[7].getName());
+		assertEquals("item3", syms[8].getName());
+		assertEquals("subitem", syms[9].getName());
+		assertEquals("listopt", syms[10].getName());
+		assertEquals(13, g.getGrammar().getRules().length);
+		assertEquals("  ${for a in b}..!..$$  ", g.getCode(g.getGrammar().getRules()[7]).getText());
+		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
+		assertNotNull(g.getGrammar().getRules()[9].getRight()[0].getNegativeLA());
+		assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet().length);
+		assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet()[0].getIndex());
 	}
 
+	@Test
 	public void testTextSource() {
 		TextSource source = new TextSource("file", "aa\nbb\n\nc".toCharArray(), 7);
 		int[] expected = new int[]{7, 7, 7, 8, 8, 8, 9, 10};
 
 		for (int i = 0; i < expected.length; i++) {
-			Assert.assertEquals("offset #" + i, expected[i], source.lineForOffset(i));
+			assertEquals("offset #" + i, expected[i], source.lineForOffset(i));
 		}
 	}
 
+	@Test
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
 				"syntax_lexems,22: lexem matches two classes `identifier' and `identifierX', using first\n" +
@@ -135,54 +142,57 @@ public class InputTest extends LapgTestCase {
 						"syntax_lexems,42: soft lexem `wact' cannot have a semantic action\n" +
 						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
 						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
-				);
+		);
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_lexems", openStream("syntax_lexems", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
-		Assert.assertNull(g);
+		assertNull(g);
 	}
 
+	@Test
 	public void testNamedPatterns() {
 		TestStatus notifier = new TestStatus("",
 				"syntax_patterns,7: regexp is incomplete\n" +
 						"syntax_patterns,16: redeclaration of named pattern `WORD'\n"
-				);
+		);
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_patterns", openStream("syntax_patterns", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
-		Assert.assertNull(g);
+		assertNull(g);
 	}
 
+	@Test
 	public void testCheckCSharpGrammar() {
 		TestStatus ts = new TestStatus();
 		LapgGrammar g = SyntaxUtil.parseSyntax("input", openStream("syntax_cs", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		ts.reset("input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
-						+ "input,76: symbol `Lstackalloc` is useless\n"
-						+ "input,149: symbol `comment` is useless\n" + "input,155: symbol `'/*'` is useless\n"
-						+ "input,157: symbol `anysym1` is useless\n" + "input,159: symbol `'*/'` is useless\n",
+				+ "input,76: symbol `Lstackalloc` is useless\n"
+				+ "input,149: symbol `comment` is useless\n" + "input,155: symbol `'/*'` is useless\n"
+				+ "input,157: symbol `anysym1` is useless\n" + "input,159: symbol `'*/'` is useless\n",
 
-						"input,481: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
-								+ "shift/reduce conflict (next: Lelse)\n"
-								+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
-								+ "\n"
-								+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
+				"input,481: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+						+ "shift/reduce conflict (next: Lelse)\n"
+						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
+						+ "\n"
+						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
 		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
 
-		Assert.assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
+		assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
 	}
 
+	@Test
 	public void testCheckConflictsHandling() {
 		TestStatus ts = new TestStatus();
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		ts.reset(
 				"",
@@ -198,12 +208,13 @@ public class InputTest extends LapgTestCase {
 		ts.assertDone();
 	}
 
+	@Test
 	public void testCheckConflictsResolving() {
-		final boolean[] isDebug = new boolean[] { false };
+		final boolean[] isDebug = new boolean[]{false};
 		TestStatus ts = new TestStatus("", "", 0) {
 			@Override
 			public void handle(int kind, String text) {
-				if(kind == KIND_DEBUG && isDebug[0]) {
+				if (kind == KIND_DEBUG && isDebug[0]) {
 					return; // ignore
 				}
 				super.handle(kind, text);
@@ -216,7 +227,7 @@ public class InputTest extends LapgTestCase {
 		};
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), ts,
 				createDefaultTypesRegistry());
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		ts.reset("", "");
 		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);

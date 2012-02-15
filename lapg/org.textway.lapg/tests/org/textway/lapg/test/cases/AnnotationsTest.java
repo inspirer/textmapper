@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
@@ -31,6 +31,8 @@ import org.textway.templates.types.TypesRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 @SuppressWarnings({"deprecation"})
 public class AnnotationsTest extends LapgTestCase {
 
@@ -41,64 +43,66 @@ public class AnnotationsTest extends LapgTestCase {
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
-				Assert.fail(message);
+				fail(message);
 			}
 		});
 	}
 
+	@Test
 	public void testAllAnnotations() {
 		LapgGrammar lg = SyntaxUtil.parseSyntax("syntax1annotated", openStream("syntax1annotated", TESTCONTAINER),
 				new TestStatus(), createDefaultTypesRegistry());
-		Assert.assertNotNull(lg);
+		assertNotNull(lg);
 
 		Grammar g = lg.getGrammar();
-		Assert.assertNotNull(g);
+		assertNotNull(g);
 
 		Rule[] listItemRules = rulesForName(g.getRules(), "list_item");
-		Assert.assertEquals(2, listItemRules.length);
+		assertEquals(2, listItemRules.length);
 
 		Symbol s = listItemRules[0].getLeft();
-		Assert.assertEquals(5, lg.getAnnotation(s, "weight"));
-		Assert.assertEquals("wwo", lg.getAnnotation(s, "name"));
-		Assert.assertEquals(Boolean.TRUE, lg.getAnnotation(s, "noast"));
+		assertEquals(5, lg.getAnnotation(s, "weight"));
+		assertEquals("wwo", lg.getAnnotation(s, "name"));
+		assertEquals(Boolean.TRUE, lg.getAnnotation(s, "noast"));
 
-		Assert.assertEquals("rule1", lg.getAnnotation(listItemRules[0], "name"));
-		Assert.assertEquals("rule2", lg.getAnnotation(listItemRules[1], "name"));
+		assertEquals("rule1", lg.getAnnotation(listItemRules[0], "name"));
+		assertEquals("rule2", lg.getAnnotation(listItemRules[1], "name"));
 
 		Object val = lg.getAnnotation(listItemRules[0].getRight()[0], "ids");
-		Assert.assertTrue(val instanceof List<?>);
+		assertTrue(val instanceof List<?>);
 
 		List<?> list = (List<?>) val;
-		Assert.assertEquals(3, list.size());
-		Assert.assertEquals(4, list.get(0));
-		Assert.assertEquals(2, list.get(1));
-		Assert.assertEquals(3, list.get(2));
+		assertEquals(3, list.size());
+		assertEquals(4, list.get(0));
+		assertEquals(2, list.get(1));
+		assertEquals(3, list.get(2));
 
 		Rule[] inputRules = rulesForName(g.getRules(), "input");
-		Assert.assertEquals(1, inputRules.length);
+		assertEquals(1, inputRules.length);
 		Symbol input = inputRules[0].getLeft();
 
-		Assert.assertNotNull(input);
+		assertNotNull(input);
 		Object refval = lg.getAnnotation(input, "ref");
-		Assert.assertNotNull(refval);
-		Assert.assertTrue(refval instanceof Symbol);
-		Assert.assertTrue(refval == s);
+		assertNotNull(refval);
+		assertTrue(refval instanceof Symbol);
+		assertTrue(refval == s);
 	}
 
+	@Test
 	public void testBadAnnotations() {
 		TestStatus notifier = new TestStatus("", "syntax1errannotated,23: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
 				notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
-		Assert.assertNull(g);
+		assertNull(g);
 	}
 
 	private static Rule[] rulesForName(Rule[] rules, String name) {
 		ArrayList<Rule> result = new ArrayList<Rule>();
 		for (Rule r : rules) {
-			Assert.assertNotNull(r.getLeft());
-			Assert.assertNotNull(r.getLeft().getName());
+			assertNotNull(r.getLeft());
+			assertNotNull(r.getLeft().getName());
 			if (r.getLeft().getName().equals(name)) {
 				result.add(r);
 			}

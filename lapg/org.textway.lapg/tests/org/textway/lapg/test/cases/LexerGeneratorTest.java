@@ -15,8 +15,7 @@
  */
 package org.textway.lapg.test.cases;
 
-import junit.framework.TestCase;
-import org.junit.Assert;
+import org.junit.Test;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.SourceElement;
@@ -29,7 +28,10 @@ import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.parser.TextSourceElement;
 import org.textway.lapg.test.TestStatus;
 
-public class LexerGeneratorTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+public class LexerGeneratorTest {
 
 	private final NamedPattern[] NO_PATTERNS = new NamedPattern[0];
 
@@ -47,21 +49,23 @@ public class LexerGeneratorTest extends TestCase {
 			new TestLexem(2, 0, "empty", "()"),
 	};
 
+	@Test
 	public void testGenerator() {
 		LexerTables lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s);
-				Assert.assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
+				assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
 			}
 		}
 	}
 
+	@Test
 	public void testLexGeneratorReporting() {
 		TestStatus notifier = new TestStatus(
 				"",
 				"lexemtest,3: empty: lexem is empty\n" +
-				"lexemtest,1: two lexems are identical: string and number\n");
+						"lexemtest,1: two lexems are identical: string and number\n");
 		LexicalBuilder.compile(ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();
 
@@ -139,7 +143,7 @@ public class LexerGeneratorTest extends TestCase {
 			try {
 				return RegexMatcher.parse(getSymbol().getName(), regexp);
 			} catch (RegexpParseException ex) {
-				Assert.fail(ex.toString());
+				fail(ex.toString());
 				return null;
 			}
 		}
