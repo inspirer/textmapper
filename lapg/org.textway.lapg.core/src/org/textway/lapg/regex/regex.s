@@ -137,7 +137,7 @@ scon ::=
 ${template java.classcode}
 ${call base-}
 org.textway.lapg.regex.RegexDefTree.@TextSource source;
-org.textway.lapg.api.regex.@CharacterSet.Builder setbuilder = new org.textway.lapg.api.regex.@CharacterSet.Builder();
+org.textway.lapg.regex.@CharacterSetImpl.Builder setbuilder = new org.textway.lapg.regex.@CharacterSetImpl.Builder();
 ${end}
 
 ${template java_tree.createParser-}

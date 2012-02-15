@@ -16,7 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.api.regex.CharacterSet.Builder;
+import org.textway.lapg.regex.CharacterSetImpl.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 

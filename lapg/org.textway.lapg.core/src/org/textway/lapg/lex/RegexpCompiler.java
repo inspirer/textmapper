@@ -16,6 +16,7 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
+import org.textway.lapg.regex.CharacterSetImpl;
 
 import java.util.*;
 
@@ -34,7 +35,7 @@ public class RegexpCompiler {
 	private final Map<String, RegexPart> namedPatterns;
 
 	// temporary variables
-	private final CharacterSet.Builder builder;
+	private final CharacterSetImpl.Builder builder;
 	private final int[] sym;
 	private final int[] stack;
 
@@ -43,7 +44,7 @@ public class RegexpCompiler {
 
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new int[LexConstants.MAX_DEEP];
-		this.builder = new CharacterSet.Builder();
+		this.builder = new CharacterSetImpl.Builder();
 
 		this.character2symbol = new int[128];
 		this.setpool = new ArrayList<CharacterSet>();

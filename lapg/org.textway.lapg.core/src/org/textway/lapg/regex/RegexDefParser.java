@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefLexer.LapgSymbol;
 import org.textway.lapg.regex.RegexDefLexer.Lexems;
@@ -43,7 +42,7 @@ public class RegexDefParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	CharacterSet.Builder setbuilder = new CharacterSet.Builder();
+	CharacterSetImpl.Builder setbuilder = new CharacterSetImpl.Builder();
 	private static final int lapg_action[] = {
 		-3, 11, 12, 13, 14, 15, -31, -59, -1, 16, 17, 18, -1, 41, -67, -99,
 		2, -1, 43, 44, -129, -1, 23, 24, 35, -1, 25, 26, 27, 28, 29, 30,

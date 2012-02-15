@@ -17,6 +17,7 @@ package org.textway.lapg.test.cases;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
+import org.textway.lapg.regex.CharacterSetImpl;
 
 import java.util.Iterator;
 
@@ -27,7 +28,7 @@ public class CharacterSetTest {
 	@Test
 	public void testCreation() {
 
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 
 		b.addRange(1, 10);
 		b.addRange(15, 30);
@@ -67,7 +68,7 @@ public class CharacterSetTest {
 
 	@Test
 	public void testSubtract1() {
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 
 		b.clear();
 		b.addRange('a', 'z');
@@ -84,7 +85,7 @@ public class CharacterSetTest {
 
 	@Test
 	public void testIterator() {
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 
 		b.clear();
 		b.addRange('a', 'l');
@@ -164,7 +165,7 @@ public class CharacterSetTest {
 	@Test
 	public void testRealloc() {
 		StringBuilder res = new StringBuilder();
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 		res.append("[");
 
 		for (int i = 0; i < 6000; i++) {
@@ -191,7 +192,7 @@ public class CharacterSetTest {
 		res.append("]");
 
 		// set in reverse order
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 		b.addSymbol(0);
 		for (int i = 6000 - 1; i > 0; i--) {
 			b.addSymbol(i * 4);
@@ -203,7 +204,7 @@ public class CharacterSetTest {
 
 	@Test
 	public void testSubtractGeneric() {
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 		CharacterSet s1, s2, s3;
 		int[] array1 = new int[TESTLEN];
 		int[] array2 = new int[TESTLEN];
@@ -239,7 +240,7 @@ public class CharacterSetTest {
 
 	@Test
 	public void testIntersectGeneric() {
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 		CharacterSet s1, s2, s3;
 		int[] array1 = new int[TESTLEN];
 		int[] array2 = new int[TESTLEN];
@@ -266,7 +267,7 @@ public class CharacterSetTest {
 
 	@Test
 	public void testAddRangeGeneric() {
-		CharacterSet.Builder b = new CharacterSet.Builder();
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 		CharacterSet s2, s3;
 		int[] array1 = new int[ARTESTLEN];
 		int[] array2 = new int[ARTESTLEN];
@@ -305,11 +306,11 @@ public class CharacterSetTest {
 	}
 
 	private static void subtract(int[] a1, int[] a2, String result) {
-		CharacterSet.Builder b = new CharacterSet.Builder();
-		assertEquals(result, b.subtract(new CharacterSet(a1, a1.length), new CharacterSet(a2, a2.length)).toString());
+		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
+		assertEquals(result, b.subtract(new CharacterSetImpl(a1, a1.length), new CharacterSetImpl(a2, a2.length)).toString());
 	}
 
-	private static CharacterSet fromArray(int[] arr, CharacterSet.Builder b) {
+	private static CharacterSet fromArray(int[] arr, CharacterSetImpl.Builder b) {
 		b.clear();
 		int i = 0;
 		while (i < arr.length) {

@@ -17,7 +17,7 @@ package org.textway.lapg.test.cases;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.api.regex.CharacterSet.Builder;
+import org.textway.lapg.regex.CharacterSetImpl.Builder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
