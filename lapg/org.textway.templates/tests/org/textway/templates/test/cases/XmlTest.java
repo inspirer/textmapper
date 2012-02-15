@@ -15,7 +15,7 @@
  */
 package org.textway.templates.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.types.ITypesRegistry;
 import org.textway.templates.bundle.DefaultTemplateLoader;
@@ -24,14 +24,16 @@ import org.textway.templates.bundle.TemplatesRegistry;
 import org.textway.templates.eval.TemplatesFacade;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.test.TemplateTestCase;
 import org.textway.templates.types.TypesRegistry;
 import org.textway.xml.XmlIxFactory;
 import org.textway.xml.XmlModel;
 import org.textway.xml.XmlNode;
 
-public class XmlTest extends TemplateTestCase {
+import static org.junit.Assert.assertEquals;
 
+public class XmlTest {
+
+	@Test
 	public void testSelector() {
 		XmlNode n = XmlModel.load(" <r><user name='jone'/>go<user name='go'/></r> ");
 
@@ -40,11 +42,11 @@ public class XmlTest extends TemplateTestCase {
 
 		// test 1
 		String q = env.executeTemplate("xmltest.xmldo", new EvaluationContext(n), null, null);
-		Assert.assertEquals("jone\ngo\n", q);
+		assertEquals("jone\ngo\n", q);
 		collector.assertEmptyErrors();
 
 		q = env.executeTemplate("xmltest.selectit", new EvaluationContext(n), null, null);
-		Assert.assertEquals("name=\"jone\"\n", q);
+		assertEquals("name=\"jone\"\n", q);
 		collector.assertEmptyErrors();
 	}
 

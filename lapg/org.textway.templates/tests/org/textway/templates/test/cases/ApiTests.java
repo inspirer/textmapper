@@ -15,30 +15,33 @@
  */
 package org.textway.templates.test.cases;
 
-import junit.framework.Assert;
+import org.junit.Test;
 import org.textway.templates.api.IEvaluationCache;
 import org.textway.templates.eval.DefaultEvaluationCache;
 import org.textway.templates.eval.DefaultStaticMethods;
-import org.textway.templates.test.TemplateTestCase;
 
-public class ApiTests extends TemplateTestCase {
+import static org.junit.Assert.assertEquals;
 
+public class ApiTests {
+
+	@Test
 	public void testCache() {
 		DefaultEvaluationCache cache = new DefaultEvaluationCache();
 		cache.cache(3, 1, 2, 5);
-		Assert.assertEquals(3, cache.lookup(1, 2, 5));
-		Assert.assertEquals(IEvaluationCache.MISSED, cache.lookup(1, 2, 6));
-		cache.cache(8, new Object[] { 3,4,7}, 9);
-		Assert.assertEquals(8, cache.lookup(new Object[] { 3,4,7}, 9));
-		Assert.assertEquals(IEvaluationCache.MISSED, cache.lookup(new Object[] { 3,5,7}, 9));
+		assertEquals(3, cache.lookup(1, 2, 5));
+		assertEquals(IEvaluationCache.MISSED, cache.lookup(1, 2, 6));
+		cache.cache(8, new Object[]{3, 4, 7}, 9);
+		assertEquals(8, cache.lookup(new Object[]{3, 4, 7}, 9));
+		assertEquals(IEvaluationCache.MISSED, cache.lookup(new Object[]{3, 5, 7}, 9));
 	}
 
+	@Test
 	public void testIds() {
 		DefaultStaticMethods util = new DefaultStaticMethods();
-		Assert.assertEquals("CamelCase", util.toCamelCase("camel_case", true));
-		Assert.assertEquals("camelCase", util.toCamelCase("camel_case", false));
-		Assert.assertEquals("camelCase", util.toCamelCase("_camel_case", false));
-		Assert.assertEquals("toDo", util.toCamelCase("_to_do_", false));
-		Assert.assertEquals("ToDo", util.toCamelCase("_to_do_", true));
+		assertEquals("CamelCase", util.toCamelCase("camel_case", true));
+		assertEquals("camelCase", util.toCamelCase("camel_case", false));
+		assertEquals("camelCase", util.toCamelCase("_camel_case", false));
+		assertEquals("toDo", util.toCamelCase("_to_do_", false));
+		assertEquals("ToDo", util.toCamelCase("_to_do_", true));
 	}
 }

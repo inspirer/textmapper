@@ -15,40 +15,42 @@
  */
 package org.textway.templates.test.cases;
 
-import org.junit.Assert;
+import org.junit.Test;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.storage.ClassResourceLoader;
 import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.test.TemplateTestCase;
 import org.textway.templates.types.TypesRegistry;
 
-public class TypesTest extends TemplateTestCase {
+import static org.junit.Assert.assertNotNull;
+
+public class TypesTest {
 
 	private static final String TEMPLATES_LOCATION = "org/textway/templates/test/ltp";
 
 	private static final String TEMPLATES_CHARSET = "utf8";
 
 	// eval.ltp
+	@Test
 	public void testEval() {
 		TestProblemCollector collector = new TestProblemCollector();
 
 		collector.addErrors(
-			"test1.types,14: several multiplicity constraints found (feature `name`)",
-			"test1.types,15: cannot combine 1 or 0..1 with other multiplicities",
-			"test1.types,17: only string type can have constraints (feature `term`)",
-			"test1.types,24: trying to initialize unknown feature/method `a` in class `test1.Symbol`",
-			"test1.types,25: expected value of type `string` instead of `int`",
-			"test1.types,26: expected value of type `test1.Symbol[]` instead of literal",
-			"test1.types,27: expected value of type `test1.Parser` instead of array",
-			"test1.types,32: cannot instantiate `test1.Parser1`: class not found",
-			"test1.types,33: `test1.Parser` is not a subtype of `test1.Symbol`"
+				"test1.types,14: several multiplicity constraints found (feature `name`)",
+				"test1.types,15: cannot combine 1 or 0..1 with other multiplicities",
+				"test1.types,17: only string type can have constraints (feature `term`)",
+				"test1.types,24: trying to initialize unknown feature/method `a` in class `test1.Symbol`",
+				"test1.types,25: expected value of type `string` instead of `int`",
+				"test1.types,26: expected value of type `test1.Symbol[]` instead of literal",
+				"test1.types,27: expected value of type `test1.Parser` instead of array",
+				"test1.types,32: cannot instantiate `test1.Parser1`: class not found",
+				"test1.types,33: `test1.Parser` is not a subtype of `test1.Symbol`"
 		);
 
 		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), TEMPLATES_LOCATION, TEMPLATES_CHARSET));
 		TypesRegistry types = new TypesRegistry(resources, collector);
 
 		IClass iClass = types.getClass("test1.Defaults", null);
-		Assert.assertNotNull(iClass);
+		assertNotNull(iClass);
 		collector.assertEmptyErrors();
 	}
 }
