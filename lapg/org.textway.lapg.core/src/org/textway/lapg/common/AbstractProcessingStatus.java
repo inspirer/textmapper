@@ -16,7 +16,7 @@
 package org.textway.lapg.common;
 
 import org.textway.lapg.api.*;
-import org.textway.lapg.parser.TextSourceElement;
+import org.textway.lapg.api.TextSourceElement;
 
 public abstract class AbstractProcessingStatus implements ProcessingStatus {
 

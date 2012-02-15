@@ -16,14 +16,13 @@
 package org.textway.lapg.gen;
 
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.common.AbstractProcessingStatus;
+import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.TextSourceElement;
 import org.textway.lapg.parser.ast.AstExpression;
 import org.textway.lapg.parser.ast.AstRoot;
 import org.textway.templates.types.TypesRegistry;

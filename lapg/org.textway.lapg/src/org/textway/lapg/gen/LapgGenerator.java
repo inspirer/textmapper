@@ -17,13 +17,13 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.TextSourceElement;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.api.types.IClass;

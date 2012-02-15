@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.textway.lapg.api.ParserConflict;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.SourceElement;
+import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.common.GeneratedFile;
@@ -26,7 +27,6 @@ import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
 import org.textway.lapg.gen.ProcessingStrategy;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.TextSourceElement;
 import org.textway.templates.storage.FileBasedResourceLoader;
 import org.textway.templates.storage.IResourceLoader;
 

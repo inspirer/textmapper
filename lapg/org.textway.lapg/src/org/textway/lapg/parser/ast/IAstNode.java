@@ -15,8 +15,8 @@
  */
 package org.textway.lapg.parser.ast;
 
+import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.TextSourceElement;
 
 public interface IAstNode extends TextSourceElement {
 

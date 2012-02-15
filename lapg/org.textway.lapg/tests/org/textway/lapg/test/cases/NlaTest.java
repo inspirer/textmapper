@@ -65,7 +65,7 @@ public class NlaTest extends LapgTestCase {
 		final StringBuilder debugText = new StringBuilder();
 		TestStatus er = new TestStatus(
 				"",
-				"", 1) {
+				"", false, true) {
 			@Override
 			public void debug(String info) {
 				debugText.append(info);

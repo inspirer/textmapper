@@ -211,7 +211,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testCheckConflictsResolving() {
 		final boolean[] isDebug = new boolean[]{false};
-		TestStatus ts = new TestStatus("", "", 0) {
+		TestStatus ts = new TestStatus("", "") {
 			@Override
 			public void handle(int kind, String text) {
 				if (kind == KIND_DEBUG && isDebug[0]) {

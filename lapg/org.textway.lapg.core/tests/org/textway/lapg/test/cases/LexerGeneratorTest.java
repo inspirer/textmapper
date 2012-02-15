@@ -16,16 +16,13 @@
 package org.textway.lapg.test.cases;
 
 import org.junit.Test;
-import org.textway.lapg.api.Lexem;
-import org.textway.lapg.api.NamedPattern;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.Symbol;
+import org.textway.lapg.api.*;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
-import org.textway.lapg.parser.TextSourceElement;
+import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.test.TestStatus;
 
 import static org.junit.Assert.assertEquals;

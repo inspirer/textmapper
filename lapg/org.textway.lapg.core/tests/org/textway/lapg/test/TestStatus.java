@@ -16,7 +16,6 @@
 package org.textway.lapg.test;
 
 import org.textway.lapg.common.AbstractProcessingStatus;
-import org.textway.lapg.gen.LapgOptions;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -34,11 +33,11 @@ public class TestStatus extends AbstractProcessingStatus {
 	}
 
 	public TestStatus(String warns, String errors) {
-		this(warns, errors, 0);
+		this(warns, errors, false, false);
 	}
 
-	public TestStatus(String warns, String errors, int debuglev) {
-		super(debuglev >= LapgOptions.DEBUG_TABLES, debuglev >= LapgOptions.DEBUG_AMBIG);
+	public TestStatus(String warns, String errors, boolean debug, boolean analysis) {
+		super(debug, analysis);
 		this.warns.append(warns);
 		this.errors.append(errors);
 	}

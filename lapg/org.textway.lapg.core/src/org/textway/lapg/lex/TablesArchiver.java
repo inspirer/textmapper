@@ -17,6 +17,7 @@ package org.textway.lapg.lex;
 
 import java.util.Arrays;
 
+// TODO
 public class TablesArchiver {
 
 	private final int nstates, nchars;

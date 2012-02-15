@@ -18,7 +18,7 @@ package org.textway.lapg.parser;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.Symbol;
-import org.textway.lapg.parser.ast.IAstNode;
+import org.textway.lapg.api.TextSourceElement;
 
 import java.util.Map;
 
