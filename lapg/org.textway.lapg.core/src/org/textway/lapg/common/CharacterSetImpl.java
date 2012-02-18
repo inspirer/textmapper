@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textway.lapg.common;
 
 import org.textway.lapg.api.regex.CharacterSet;
 
@@ -40,6 +40,10 @@ public class CharacterSetImpl implements CharacterSet {
 		this(set, size, false);
 	}
 
+	public CharacterSetImpl(int... set) {
+		this(set, set.length, false);
+	}
+
 	public boolean contains(int c) {
 		int sind = binarySearch(set, 0, set.length, c);
 		if (sind < 0) {
@@ -52,7 +56,7 @@ public class CharacterSetImpl implements CharacterSet {
 	}
 
 	public boolean isEmpty() {
-		return set.length == 0;
+		return set.length == 0 && !inverted;
 	}
 
 	public boolean isInverted() {
@@ -101,6 +105,25 @@ public class CharacterSetImpl implements CharacterSet {
 		}
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CharacterSetImpl ints = (CharacterSetImpl) o;
+
+		if (inverted != ints.inverted) return false;
+		return Arrays.equals(set, ints.set);
+
+	}
+
+	@Override
+	public int hashCode() {
+		int result = set != null ? Arrays.hashCode(set) : 0;
+		result = 31 * result + (inverted ? 1 : 0);
+		return result;
 	}
 
 	/**
@@ -215,7 +238,7 @@ public class CharacterSetImpl implements CharacterSet {
 			clear();
 			int ind2 = 0;
 			for (int[] range1 : set1) {
-				ind2 = intersectSegment(range1[0], range1[1], /* FIXME */ ((CharacterSetImpl)set2).set, ind2);
+				ind2 = intersectSegment(range1[0], range1[1], /* FIXME */ ((CharacterSetImpl) set2).set, ind2);
 			}
 			return create(false);
 		}
@@ -224,7 +247,7 @@ public class CharacterSetImpl implements CharacterSet {
 			clear();
 			int ind2 = 0;
 			for (int[] range1 : set1) {
-				ind2 = subtractSegment(range1[0], range1[1], /* FIXME */ ((CharacterSetImpl)set2).set, ind2);
+				ind2 = subtractSegment(range1[0], range1[1], /* FIXME */ ((CharacterSetImpl) set2).set, ind2);
 			}
 			return create(false);
 		}

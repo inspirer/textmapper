@@ -16,7 +16,8 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.regex.CharacterSetImpl.Builder;
+import org.textway.lapg.common.CharacterSetImpl.Builder;
+import org.textway.lapg.common.UnicodeData;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -264,9 +265,14 @@ public class RegexUtil {
 				builder.addRange('0', '9');
 				return builder.create(c == 'D');
 			}
-		} else {
-			throw new UnsupportedOperationException("class: " + cl);
 		}
-		return null;
+		Byte category = UnicodeData.categories.get(cl);
+		if(category != null) {
+			CharacterSet res = UnicodeData.getCategory(category);
+			if(res != null) {
+				return res;
+			}
+		}
+		throw new UnsupportedOperationException("class: " + cl);
 	}
 }

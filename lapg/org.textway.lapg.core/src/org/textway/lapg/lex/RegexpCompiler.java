@@ -16,7 +16,7 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.regex.CharacterSetImpl;
+import org.textway.lapg.common.CharacterSetImpl;
 
 import java.util.*;
 

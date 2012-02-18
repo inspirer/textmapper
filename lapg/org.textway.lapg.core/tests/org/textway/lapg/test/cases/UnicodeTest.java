@@ -17,7 +17,8 @@ package org.textway.lapg.test.cases;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.regex.CharacterSetImpl.Builder;
+import org.textway.lapg.common.CharacterSetImpl.Builder;
+import org.textway.lapg.common.UnicodeData;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,40 +35,40 @@ import static org.junit.Assert.*;
  */
 public class UnicodeTest {
 
-	private static Map<String, Byte> categories = initCategories();
+	private static final Map<Byte, String> javaRep = initRepresentation();
 
-	private static Map<String, Byte> initCategories() {
-		Map<String, Byte> res = new HashMap<String, Byte>();
-		res.put("Lu", Character.UPPERCASE_LETTER);
-		res.put("Ll", Character.LOWERCASE_LETTER);
-		res.put("Lt", Character.TITLECASE_LETTER);
-		res.put("Lm", Character.MODIFIER_LETTER);
-		res.put("Lo", Character.OTHER_LETTER);
-		res.put("Mn", Character.NON_SPACING_MARK);
-		res.put("Mc", Character.COMBINING_SPACING_MARK);
-		res.put("Me", Character.ENCLOSING_MARK);
-		res.put("Nd", Character.DECIMAL_DIGIT_NUMBER);
-		res.put("Nl", Character.LETTER_NUMBER);
-		res.put("No", Character.OTHER_NUMBER);
-		res.put("Pc", Character.CONNECTOR_PUNCTUATION);
-		res.put("Pd", Character.DASH_PUNCTUATION);
-		res.put("Ps", Character.START_PUNCTUATION);
-		res.put("Pe", Character.END_PUNCTUATION);
-		res.put("Pi", Character.INITIAL_QUOTE_PUNCTUATION);
-		res.put("Pf", Character.FINAL_QUOTE_PUNCTUATION);
-		res.put("Po", Character.OTHER_PUNCTUATION);
-		res.put("Sm", Character.MATH_SYMBOL);
-		res.put("Sc", Character.CURRENCY_SYMBOL);
-		res.put("Sk", Character.MODIFIER_SYMBOL);
-		res.put("So", Character.OTHER_SYMBOL);
-		res.put("Zs", Character.SPACE_SEPARATOR);
-		res.put("Zl", Character.LINE_SEPARATOR);
-		res.put("Zp", Character.PARAGRAPH_SEPARATOR);
-		res.put("Cc", Character.CONTROL);
-		res.put("Cf", Character.FORMAT);
-		res.put("Cs", Character.SURROGATE);
-		res.put("Co", Character.PRIVATE_USE);
-		res.put("Cn", Character.UNASSIGNED);
+	private static Map<Byte, String> initRepresentation() {
+		HashMap<Byte, String> res = new HashMap<Byte, String>();
+		res.put(Character.UPPERCASE_LETTER, "UPPERCASE_LETTER");
+		res.put(Character.LOWERCASE_LETTER, "LOWERCASE_LETTER");
+		res.put(Character.TITLECASE_LETTER, "TITLECASE_LETTER");
+		res.put(Character.MODIFIER_LETTER, "MODIFIER_LETTER");
+		res.put(Character.OTHER_LETTER, "OTHER_LETTER");
+		res.put(Character.NON_SPACING_MARK, "NON_SPACING_MARK");
+		res.put(Character.COMBINING_SPACING_MARK, "COMBINING_SPACING_MARK");
+		res.put(Character.ENCLOSING_MARK, "ENCLOSING_MARK");
+		res.put(Character.DECIMAL_DIGIT_NUMBER, "DECIMAL_DIGIT_NUMBER");
+		res.put(Character.LETTER_NUMBER, "LETTER_NUMBER");
+		res.put(Character.OTHER_NUMBER, "OTHER_NUMBER");
+		res.put(Character.CONNECTOR_PUNCTUATION, "CONNECTOR_PUNCTUATION");
+		res.put(Character.DASH_PUNCTUATION, "DASH_PUNCTUATION");
+		res.put(Character.START_PUNCTUATION, "START_PUNCTUATION");
+		res.put(Character.END_PUNCTUATION, "END_PUNCTUATION");
+		res.put(Character.INITIAL_QUOTE_PUNCTUATION, "INITIAL_QUOTE_PUNCTUATION");
+		res.put(Character.FINAL_QUOTE_PUNCTUATION, "FINAL_QUOTE_PUNCTUATION");
+		res.put(Character.OTHER_PUNCTUATION, "OTHER_PUNCTUATION");
+		res.put(Character.MATH_SYMBOL, "MATH_SYMBOL");
+		res.put(Character.CURRENCY_SYMBOL, "CURRENCY_SYMBOL");
+		res.put(Character.MODIFIER_SYMBOL, "MODIFIER_SYMBOL");
+		res.put(Character.OTHER_SYMBOL, "OTHER_SYMBOL");
+		res.put(Character.SPACE_SEPARATOR, "SPACE_SEPARATOR");
+		res.put(Character.LINE_SEPARATOR, "LINE_SEPARATOR");
+		res.put(Character.PARAGRAPH_SEPARATOR, "PARAGRAPH_SEPARATOR");
+		res.put(Character.CONTROL, "CONTROL");
+		res.put(Character.FORMAT, "FORMAT");
+		res.put(Character.SURROGATE, "SURROGATE");
+		res.put(Character.PRIVATE_USE, "PRIVATE_USE");
+		res.put(Character.UNASSIGNED, "UNASSIGNED");
 		return res;
 	}
 
@@ -75,13 +76,13 @@ public class UnicodeTest {
 	public void testUnicodeData() throws IOException {
 		URL unicodeData =
 				UnicodeTest.class.getResource("data/UnicodeData.txt");
-		//new URL("http://www.unicode.org/Public/UNIDATA/UnicodeData.txt");
+//		new URL("http://www.unicode.org/Public/UNIDATA/UnicodeData.txt");
 		URLConnection yc = unicodeData.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
 		String inputLine;
 
 		Map<String, Builder> allCharset = new HashMap<String, Builder>();
-		for (String category : categories.keySet()) {
+		for (String category : UnicodeData.categories.keySet()) {
 			allCharset.put(category, new Builder());
 		}
 
@@ -89,7 +90,7 @@ public class UnicodeTest {
 		while ((inputLine = in.readLine()) != null) {
 			String[] row = inputLine.split(";");
 			String categoryName = row[2];
-			assertTrue("wrong category name: " + inputLine, categoryName != null && categories.containsKey(categoryName));
+			assertTrue("wrong category name: " + inputLine, categoryName != null && UnicodeData.categories.containsKey(categoryName));
 			String character = row[0];
 			assertTrue("wrong character: " + inputLine, character != null && character.length() >= 4 && character.length() <= 6);
 			int c;
@@ -108,28 +109,34 @@ public class UnicodeTest {
 				}
 				allCharset.get("Cn").addSymbol(prevsym++);
 			}
-			if (c <= 0x200 && Character.getType(c) != categories.get(categoryName)) {
-				fail("Character " + character + " java: " + Character.getType(c) + ", unicode: " + categories.get(categoryName));
+			if (c <= 0x200 && Character.getType(c) != UnicodeData.categories.get(categoryName)) {
+				fail("Character " + character + " java: " + Character.getType(c) + ", unicode: " + UnicodeData.categories.get(categoryName));
 			}
 			allCharset.get(categoryName).addSymbol(c);
 			prevsym = c;
 		}
 		in.close();
 
-		for (String category : categories.keySet()) {
+		for (String category : UnicodeData.categories.keySet()) {
 			CharacterSet set = allCharset.get(category).create();
-//			StringBuilder sb = new StringBuilder();
-//			System.out.print(category + ": ");
-//			boolean first = true;
-//			for (int[] v : set) {
-//				if (first) {
-//					first = false;
-//				} else {
-//					System.out.print(", ");
-//				}
-//				System.out.print(v[0] + ", " + v[1]);
-//			}
-//			System.out.println();
+			CharacterSet actual = UnicodeData.getCategory(UnicodeData.categories.get(category));
+			assertFalse(actual.isInverted());
+			if(set.equals(actual)) continue;
+			
+			System.out.print("case Character." + javaRep.get(UnicodeData.categories.get(category)) + ": // " + category + "\n\treturn new CharacterSetImpl(");
+			boolean first = true;
+			int len = 0;
+			for (int[] v : set) {
+				if (first) {
+					first = false;
+				} else {
+					System.out.print(", ");
+				}
+				System.out.print("0x"+Long.toHexString(v[0]) + ", " + "0x"+Long.toHexString(v[1]));
+				len += 2;
+			}
+			System.out.println(");");
+			fail();
 		}
 	}
 
