@@ -33,7 +33,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
 	private final List<LiLexem> lexems = new ArrayList<LiLexem>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
-	private final Set<LiNamedPattern> namedPatternsSet = new HashSet<LiNamedPattern>();
+	private final Set<String> namedPatternsSet = new HashSet<String>();
 	private final List<LiRule> rules = new ArrayList<LiRule>();
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 
@@ -87,10 +87,12 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (name == null || regexp == null) {
 			throw new NullPointerException();
 		}
-		if (namedPatternsSet.contains(name)) {
+		if (!namedPatternsSet.add(name)) {
 			throw new IllegalStateException("named pattern `" + name + "' already exists");
 		}
-		return new LiNamedPattern(name, regexp, origin);
+		LiNamedPattern pattern = new LiNamedPattern(name, regexp, origin);
+		namedPatterns.add(pattern);
+		return pattern;
 	}
 
 	@Override
