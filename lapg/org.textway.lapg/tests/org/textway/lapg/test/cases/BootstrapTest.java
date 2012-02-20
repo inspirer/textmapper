@@ -104,6 +104,13 @@ public class BootstrapTest {
 				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
 	}
 
+	@Test
+	public void testUnicodeS() {
+		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/unicode", "unicode.s", new String[0],
+				new String[]{"UnicodeTestLexer.java"}, 0);
+	}
+
+
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles,
 						   int expectedResolvedConflicts) {
 		try {
