@@ -107,6 +107,12 @@ public class RegexUtil {
 			} else if (part instanceof RegexRange) {
 				RegexRange range = (RegexRange) part;
 				builder.addRange(range.getLeft(), range.getRight());
+			} else if (part instanceof RegexCharClass) {
+				for (int[] range : ((RegexCharClass) part).getSet()) {
+					builder.addRange(range[0], range[1]);
+				}
+			} else {
+				throw new IllegalStateException("unknown part: " + part.getClass());
 			}
 		}
 		return new RegexSet(builder.create(inverted), charset, charset.get(0).getInput(), charset.get(0).getOffset(), charset.get(charset.size() - 1).getEndOffset());
@@ -267,9 +273,9 @@ public class RegexUtil {
 			}
 		}
 		Byte category = UnicodeData.categories.get(cl);
-		if(category != null) {
+		if (category != null) {
 			CharacterSet res = UnicodeData.getCategory(category);
-			if(res != null) {
+			if (res != null) {
 				return res;
 			}
 		}

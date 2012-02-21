@@ -81,6 +81,18 @@ public class RegexDefTest {
 	}
 
 	@Test
+	public void testUnicodeSet() {
+		RegexPart r = checkRegex("[\\w\\p{Ll}]");
+		assertTrue(r instanceof RegexSet);
+
+		CharacterSet set = ((RegexSet) r).getSet();
+		assertTrue(set.contains('a'));
+		assertTrue(set.contains('_'));
+		assertTrue(set.contains('\u0458'));
+		assertTrue(!set.contains('\u0408'));
+	}
+
+	@Test
 	public void testQuantifiers() {
 		checkRegex("{aaa}");
 		checkErrors("{aaa }", "an expansion identifier is expected instead of `aaa '");
