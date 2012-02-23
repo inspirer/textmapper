@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.common;
 
+@Deprecated
 public class JavaArrayArchiver {
 
 	/***************************************************************
