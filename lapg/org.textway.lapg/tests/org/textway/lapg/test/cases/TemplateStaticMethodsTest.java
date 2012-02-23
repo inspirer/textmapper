@@ -21,6 +21,7 @@ import org.textway.lapg.gen.TemplateStaticMethods;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -54,8 +55,8 @@ public class TemplateStaticMethodsTest {
 	public void testShiftRight() {
 		assertEquals("\t\t\tAA\n\n\t\t\tBB\n", new TemplateStaticMethods().shiftRight("\t\tAA\n\n\t\tBB\n", 1));
 	}
-	
-	
+
+
 	@Test
 	public void testPackAsValAndCount() {
 		List<List<String>> res = TemplateStaticMethods.packAsValAndCount(new int[]{});
@@ -64,11 +65,51 @@ public class TemplateStaticMethodsTest {
 		res = TemplateStaticMethods.packAsValAndCount(new int[]{1});
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\1\"")), res);
 
-		res = TemplateStaticMethods.packAsValAndCount(new int[]{1,1,1,2,2,2});
+		res = TemplateStaticMethods.packAsValAndCount(new int[]{1, 1, 1, 2, 2, 2});
 		assertEquals(Arrays.asList(Arrays.asList("\"\\3\\1\\3\\2\"")), res);
 
-		res = TemplateStaticMethods.packAsValAndCount(new int[]{92,91,90});
+		res = TemplateStaticMethods.packAsValAndCount(new int[]{92, 91, 90});
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\134\\1\\133\\1\\132\"")), res);
 	}
-	
+
+	@Test
+	public void testUnpackAsValAndCount() {
+		char[] res = unpack_char2no(0, "");
+		assertArrayEquals(new char[]{}, res);
+
+		res = unpack_char2no(1, "\1\1");
+		assertArrayEquals(new char[]{1}, res);
+
+		res = unpack_char2no(1, "\1", "\1");
+		assertArrayEquals(new char[]{1}, res);
+
+		res = unpack_char2no(6, "\3\1\3\2");
+		assertArrayEquals(new char[]{1, 1, 1, 2, 2, 2}, res);
+
+		// splitted strings
+		res = unpack_char2no(6, "\3", "\1\3", "\2");
+		assertArrayEquals(new char[]{1, 1, 1, 2, 2, 2}, res);
+
+		res = unpack_char2no(3, "\1\134\1\133\1\132");
+		assertArrayEquals(new char[]{92, 91, 90}, res);
+	}
+
+
+	private static char[] unpack_char2no(int size, String... st) {
+		char[] res = new char[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					char val = s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 }

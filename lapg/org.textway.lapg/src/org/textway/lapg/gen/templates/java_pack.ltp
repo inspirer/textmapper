@@ -36,6 +36,26 @@ ${template unpackIntInt-}
 	}
 ${end}
 
+${template unpackChar2no-}
+	private static char[] unpack_char2no(int size, String... st) {
+		char[] res = new char[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					char val = s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
+${end}
+
 ${template unpackInt-}
 	private static int[] unpack_int(int size, String st) {
 		int[] res = new int[size];

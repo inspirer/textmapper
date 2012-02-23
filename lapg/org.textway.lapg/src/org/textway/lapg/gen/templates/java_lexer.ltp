@@ -318,7 +318,18 @@ ${end}
 
 
 ${template lexerTables-}
-${call java.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
+${if lex.char2no.size() > 128-}
+	private static final char lapg_char2no[] = unpack_char2no(${lex.char2no.size()},
+${foreach str in util.packAsValAndCount(lex.char2no) separator ',\n'-}
+${foreach spart in str separator ' +\n'-}
+		${spart}${end}${end});
+
+${call java_pack.unpackChar2no-}
+${else-}
+	private static final short lapg_char2no[] = {
+		${util.format(lex.char2no, 16, 2)}
+	};
+${end-}
 
 ${call java.parserTable(lex.lnum, 'short', 'lapg_lexemnum', 'LapgLexemToSymbol')-}
 
