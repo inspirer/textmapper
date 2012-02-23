@@ -17,7 +17,10 @@ package org.textway.lapg.gen;
 
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.common.JavaArrayArchiver;
+import org.textway.lapg.common.JavaArrayEncoder;
 import org.textway.templates.eval.DefaultStaticMethods;
+
+import java.util.List;
 
 public class TemplateStaticMethods extends DefaultStaticMethods {
 
@@ -155,6 +158,31 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		}
 		return sb.toString();
 	}
+
+	public static List<List<String>> packAsValAndCount(int[] arr) {
+		JavaArrayEncoder enc = new JavaArrayEncoder(80);
+		int count = 0;
+		int value = 0;
+		for (int i = 0; i < arr.length; i++) {
+			if (value == arr[i] && count < 0xffff) {
+				count++;
+			} else {
+				if (count > 0) {
+					enc.appendChar(count);
+					enc.appendChar(value);
+				}
+				count = 1;
+				value = arr[i];
+			}
+
+		}
+		if (count > 0) {
+			enc.appendChar(count);
+			enc.appendChar(value);
+		}
+		return enc.getResult();
+	}
+
 
 	public static String packIntInt(int[][] table, Integer leftpadding) {
 		return JavaArrayArchiver.packIntInt(table, leftpadding);
