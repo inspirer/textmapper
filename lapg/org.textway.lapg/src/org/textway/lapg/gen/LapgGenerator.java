@@ -16,7 +16,6 @@
 package org.textway.lapg.gen;
 
 import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lalr.ParserTables;
@@ -187,60 +186,6 @@ public final class LapgGenerator {
 		@Override
 		public void createStream(String name, String contents) {
 			strategy.createFile(name, contents, status);
-		}
-	}
-
-	private static final class TemplatesStatusAdapter implements TemplatesStatus {
-
-		private final ProcessingStatus status;
-
-		private TemplatesStatusAdapter(ProcessingStatus status) {
-			this.status = status;
-		}
-
-		@Override
-		public void report(int kind, String message, org.textway.templates.api.SourceElement... anchors) {
-			if (anchors != null) {
-				SourceElement[] n = new SourceElement[anchors.length];
-				for (int i = 0; i < n.length; i++) {
-					n[i] = anchors[i] != null ? new TemplateSourceElementAdapter(anchors[i]) : null;
-				}
-				status.report(kind, message, n);
-			} else {
-				status.report(kind, message);
-			}
-		}
-	}
-
-	private static final class TemplateSourceElementAdapter implements SourceElement {
-
-		/**
-		 * template node
-		 */
-		private final org.textway.templates.api.SourceElement myWrapped;
-
-		public TemplateSourceElementAdapter(org.textway.templates.api.SourceElement element) {
-			myWrapped = element;
-		}
-
-		public int getOffset() {
-			return myWrapped.getOffset();
-		}
-
-		public int getEndOffset() {
-			return myWrapped.getEndOffset();
-		}
-
-		public int getLine() {
-			return myWrapped.getLine();
-		}
-
-		public String getText() {
-			return myWrapped.toString();
-		}
-
-		public String getResourceName() {
-			return myWrapped.getResourceName();
 		}
 	}
 }
