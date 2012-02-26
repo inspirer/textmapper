@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.gen;
+package org.textway.lapg.test.common;
 
 import org.junit.Test;
 import org.textway.lapg.common.JavaArrayEncoder;
