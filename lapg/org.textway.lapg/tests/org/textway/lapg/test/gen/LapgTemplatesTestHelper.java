@@ -44,27 +44,35 @@ import static org.junit.Assert.*;
 /**
  * Gryaznov Evgeny, 2/26/12
  */
-public class LapgTemplatesTestUtil {
+public class LapgTemplatesTestHelper {
 
 	public static void generationTest(String template, String folder, String[] createdFiles) {
+		new LapgTemplatesTestHelper().gentest(template, folder + "/templates", folder, createdFiles);
+	}
+
+	public void gentest(String template, String templatesFolder, String folder, String[] createdFiles) {
 		try {
 			File root = new File(folder);
 			assertTrue("folder doesn't exist: " + root.getAbsolutePath(), root.exists() && root.isDirectory());
 
-			File tpl = new File(root, "templates");
+			File tpl = new File(templatesFolder);
 			assertTrue("folder doesn't exist: " + tpl.getAbsolutePath(), tpl.exists() && tpl.isDirectory());
 
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
 			TemplatesStatus templatesStatus = new TemplatesStatus() {
 				@Override
 				public void report(int kind, String message, SourceElement... anchors) {
-					fail((kind == KIND_INFO ? "info" : kind == KIND_WARN ? "warn" : "error") + " reported: " + message);
+					String location = "";
+					for (SourceElement el : anchors) {
+						location += el.getResourceName() + "," + el.getLine() + ": ";
+					}
+					fail((kind == KIND_INFO ? "info" : kind == KIND_WARN ? "warn" : "error") + " reported: " + location + message);
 				}
 			};
 			ResourceRegistry resources = createResourceRegistry(strategy, tpl.getAbsolutePath());
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 
-			Map<String, Object> genOptions = new HashMap<String, Object>();
+			Map<String, Object> genOptions = createOptions();
 			EvaluationContext context = createEvaluationContext(types, genOptions);
 			TemplatesFacade env = new TemplatesFacadeExt(
 					new JavaIxFactory(),
@@ -83,7 +91,11 @@ public class LapgTemplatesTestUtil {
 		}
 	}
 
-	private static ResourceRegistry createResourceRegistry(CheckingFileBasedStrategy strategy, String... folders) {
+	protected Map<String, Object> createOptions() {
+		return new HashMap<String, Object>();
+	}
+
+	protected ResourceRegistry createResourceRegistry(CheckingFileBasedStrategy strategy, String... folders) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
 		for (String path : folders) {
 			IResourceLoader resourceLoader = strategy.createResourceLoader(path);
@@ -95,7 +107,7 @@ public class LapgTemplatesTestUtil {
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private static EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
+	protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		String templPackage = "java";
 		IClass optsClass = types.getClass(templPackage + ".Options", null);
@@ -114,7 +126,7 @@ public class LapgTemplatesTestUtil {
 		return evaluationContext;
 	}
 
-	private static final class TemplatesFacadeExt extends TemplatesFacade {
+	protected final class TemplatesFacadeExt extends TemplatesFacade {
 
 		private final CheckingFileBasedStrategy strategy;
 

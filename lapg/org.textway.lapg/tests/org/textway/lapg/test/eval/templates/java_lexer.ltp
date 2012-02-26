@@ -1,0 +1,42 @@
+
+${template lexerCtor-}
+	private final org.textway.lapg.api.@Grammar grammar;
+	private final int[] lapg_char2no;
+	private final int[] lapg_lexemnum;
+	private final int[][] lapg_lexem;
+
+	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textway.lapg.lex.@LexerTables tables, org.textway.lapg.api.@Grammar grammar) throws java.io.@IOException {
+		this.reporter = reporter;
+		this.grammar = grammar;
+		lapg_char2no = tables.char2no;
+		lapg_lexem = tables.change;
+		lapg_lexemnum = tables.lnum;
+		reset(${if opts.lexerInput != 'custom'}stream${end});
+	}
+${end}
+
+${template mapCharacter-}
+	private int mapCharacter(int chr) {
+		if (chr >= 0 && chr < lapg_char2no.length) {
+			return lapg_char2no[chr];
+		}
+		return 1;
+	}
+${end}
+
+${template createToken}
+	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
+		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
+		return lexemKind != org.textway.lapg.api.@Lexem.KIND_SPACE;
+	}
+${end}
+
+${template lexemsInterface-}
+${end}
+
+${template lexerTables-}
+${end}
+
+${cached query hasLexemActions() = false}
+
+${cached query classLexems() = []}
