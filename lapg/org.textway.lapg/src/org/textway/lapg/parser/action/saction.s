@@ -20,6 +20,7 @@ package = "org.textway.lapg.parser.action"
 positions = "offset"
 endpositions = ""
 lexerInput = "custom"
+genCopyright = true
 
 
 '{':	/\{/

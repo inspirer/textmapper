@@ -144,7 +144,7 @@
 		<echo message="Action parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/regex"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg.core/src/org/textway/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
 		<echo message="Types parser"/>
@@ -165,6 +165,9 @@
 			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
+		<echo message="unicode test parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true"
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/unicode"/>
 	</target>
 
 	<target name="plugin" depends="rev">
