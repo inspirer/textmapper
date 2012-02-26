@@ -33,6 +33,8 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	}
 
 	private static String shiftRightWithChar(String s, Integer padding, char paddingChar) {
+		if (s.trim().isEmpty()) return s;
+
 		String[] sspl = s.split("\\r?\\n");
 		StringBuilder sb = new StringBuilder(s.length() + (padding + 1) * sspl.length);
 		for (String q : sspl) {
@@ -48,6 +50,8 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	}
 
 	public String shiftLeft(String text) {
+		if (text.trim().isEmpty()) return text;
+
 		String[] sspl = text.split("\\r?\\n");
 		String prefix = null;
 		for (int i = 0; i < sspl.length; i++) {

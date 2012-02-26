@@ -56,6 +56,10 @@ public class TemplateStaticMethodsTest {
 		assertEquals("\t\t\tAA\n\n\t\t\tBB\n", new TemplateStaticMethods().shiftRight("\t\tAA\n\n\t\tBB\n", 1));
 	}
 
+	@Test
+	public void testShiftRightForEmpty() {
+		assertEquals("", new TemplateStaticMethods().shiftRight("", 1));
+	}
 
 	@Test
 	public void testPackAsValAndCount() {

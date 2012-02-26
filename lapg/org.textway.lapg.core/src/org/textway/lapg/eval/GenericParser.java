@@ -15,21 +15,18 @@
  */
 package org.textway.lapg.eval;
 
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.eval.GenericLexer.ErrorReporter;
 import org.textway.lapg.eval.GenericLexer.ParseSymbol;
 import org.textway.lapg.eval.GenericParseContext.TextSource;
 import org.textway.lapg.lalr.ParserTables;
 
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Gryaznov Evgeny, 3/17/11
- */
 public class GenericParser {
+
 	public static class ParseException extends Exception {
 		private static final long serialVersionUID = 1L;
 
@@ -38,8 +35,8 @@ public class GenericParser {
 	}
 
 	private final ErrorReporter reporter;
-	protected TextSource source;
 
+	protected TextSource source;
 	protected final Grammar grammar;
 
 	private final int[] lapg_action;
@@ -229,7 +226,7 @@ public class GenericParser {
 				lapg_gg.sym = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
 			}
 		} else if (ruleLength > 1) {
-			List<GenericNode> children = new ArrayList<GenericNode>();
+			List<GenericNode> children = new ArrayList<GenericNode>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
 				if (lapg_m[lapg_head - i].sym instanceof GenericNode) {
 					children.add((GenericNode) lapg_m[lapg_head - i].sym);
@@ -239,13 +236,13 @@ public class GenericParser {
 		}
 	}
 
-	/*
+	/**
 	 *  disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(ParseSymbol sym) {
 	}
 
-	/*
+	/**
 	 *  cleans node removed from the stack
 	 */
 	protected void cleanup(ParseSymbol sym) {

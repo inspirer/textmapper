@@ -71,7 +71,6 @@ public class RegexDefLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
-
 	public RegexDefLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);

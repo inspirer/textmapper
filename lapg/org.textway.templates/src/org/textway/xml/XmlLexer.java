@@ -65,7 +65,6 @@ public class XmlLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
-
 	public XmlLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);

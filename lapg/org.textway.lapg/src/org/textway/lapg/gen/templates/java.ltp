@@ -28,24 +28,10 @@ ${call parseException-}
 
 	private final ${call package}.${opts.prefix}Lexer.@ErrorReporter reporter;
 
-	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter) {
-		this.reporter = reporter;
-	}
+${call parserCtor-}
 
 ${util.shiftRight(self->classcode(), 1)-}
 ${call parserTables-}
-
-${if self->needDebug()-}
-	protected static final String[] lapg_syms = new String[] {
-${foreach s in parser.sym-}
-		"${s.name}",
-${end-}
-	};
-
-${end-}
-${call tokensEnum-}
-${call rulesEnum-}
-
 	protected final int lapg_next(int state) ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if self->needActionsTable()-}
 		int p;
@@ -290,6 +276,13 @@ ${end-}
 }
 ${end}
 
+
+${template parserCtor-}
+	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter) {
+		this.reporter = reporter;
+	}
+${end}
+
 ${template applyRule-}
 	@SuppressWarnings("unchecked")
 	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
@@ -365,6 +358,18 @@ ${if opts.packTables }
 ${call java_pack.unpackInt-}
 ${call java_pack.unpackShort-}
 ${end-}
+
+${if self->needDebug()-}
+	protected static final String[] lapg_syms = new String[] {
+${foreach s in parser.sym-}
+		"${s.name}",
+${end-}
+	};
+
+${end-}
+${call tokensEnum-}
+${call rulesEnum-}
+
 ${end}
 
 
@@ -433,7 +438,9 @@ ${template imports-}
 ${end}
 
 ${template classcode-}
+${if self->needDebug()-}
 private static final boolean DEBUG_SYNTAX = false;
+${end-}
 ${end}
 
 ${template parseException-}

@@ -65,7 +65,6 @@ public class SampleALexer {
 	private int currColumn = 1;
 	private int currOffset = 0;
 
-
 	public SampleALexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);
