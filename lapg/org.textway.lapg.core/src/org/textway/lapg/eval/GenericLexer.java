@@ -15,17 +15,13 @@
  */
 package org.textway.lapg.eval;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.text.MessageFormat;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.lex.LexerTables;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.text.MessageFormat;
-
-/**
- * Gryaznov Evgeny, 3/17/11
- */
 public class GenericLexer {
 
 	public static class ParseSymbol {
@@ -45,7 +41,6 @@ public class GenericLexer {
 
 	private Reader stream;
 	final private ErrorReporter reporter;
-	private final Grammar grammar;
 
 	final private char[] data = new char[2048];
 	private int datalen, l, tokenStart;
@@ -59,10 +54,11 @@ public class GenericLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
+
+	private final Grammar grammar;
 	private final int[] lapg_char2no;
 	private final int[] lapg_lexemnum;
 	private final int[][] lapg_lexem;
-
 
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
 		this.reporter = reporter;
@@ -70,7 +66,6 @@ public class GenericLexer {
 		lapg_char2no = tables.char2no;
 		lapg_lexem = tables.change;
 		lapg_lexemnum = tables.lnum;
-
 		reset(stream);
 	}
 

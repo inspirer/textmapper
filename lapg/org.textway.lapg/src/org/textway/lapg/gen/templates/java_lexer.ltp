@@ -3,8 +3,9 @@ ${call java.header-}
 package ${call java.package};
 
 public ${if opts.lexerInput == 'custom'}abstract ${end}class ${opts.prefix}Lexer {
-
-${call innerDeclarations-}
+${call symbolClass-}
+${call lexemsInterface-}
+${call errorReporter-}
 
 	public static final int TOKEN_SIZE = ${opts.maxtoken};
 
@@ -31,10 +32,7 @@ ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 ${end-}
 ${util.shiftRight(self->lexercode(), 1)-}
 
-	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
-		this.reporter = reporter;
-		reset(${if opts.lexerInput != 'custom'}stream${end});
-	}
+${call lexerCtor-}
 
 	public void reset(${if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
 ${if opts.lexerInput != 'custom'-}
@@ -207,6 +205,13 @@ ${call createToken-}
 }
 ${end}
 
+${template lexerCtor-}
+	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
+		this.reporter = reporter;
+		reset(${if opts.lexerInput != 'custom'}stream${end});
+	}
+${end}
+
 ${template mapCharacter}
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
@@ -351,7 +356,7 @@ ${end-}
 ${end}
 
 
-${template innerDeclarations-}
+${template symbolClass}
 	public static class ${self->java.symbolClassName()} {
 		public Object sym;
 		public int lexem;
@@ -375,13 +380,17 @@ ${if opts.endpositions.contains('offset')-}
 		public int endoffset;
 ${end-}
 	}
+${end}
 
+${template lexemsInterface}
 	public interface Lexems {
 ${for i in [0, syntax.terminals - 1]-}
 		public static final int ${syntax.symbols[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
+${end}
 
+${template errorReporter}
 	public interface ErrorReporter {
 		void error(${call java.err_parameters()}String s);
 	}
