@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2011 Evgeny Gryaznov
+ * Copyright 2002-2012 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.test.gen;
 
 import org.junit.Test;
 import org.textway.lapg.gen.TemplateStaticMethods;
@@ -73,6 +73,16 @@ public class TemplateStaticMethodsTest {
 	}
 
 	@Test
+	public void testUnpackRoutineUpToDate() {
+		LapgTemplatesTestUtil.generationTest("java_pack.testClass", "org.textway.lapg/tests/org/textway/lapg/test/gen", new String[]{
+				"JavaTemplateRoutines.java"});
+	}
+
+	private static char[] unpack_char2no(int size, String... st) {
+		return JavaTemplateRoutines.test_unpack_char2no(size, st);
+	}
+
+	@Test
 	public void testUnpackAsValAndCount() {
 		char[] res = unpack_char2no(0, "");
 		assertArrayEquals(new char[]{}, res);
@@ -80,6 +90,7 @@ public class TemplateStaticMethodsTest {
 		res = unpack_char2no(1, "\1\1");
 		assertArrayEquals(new char[]{1}, res);
 
+		// splitted strings
 		res = unpack_char2no(1, "\1", "\1");
 		assertArrayEquals(new char[]{1}, res);
 
@@ -92,24 +103,5 @@ public class TemplateStaticMethodsTest {
 
 		res = unpack_char2no(3, "\1\134\1\133\1\132");
 		assertArrayEquals(new char[]{92, 91, 90}, res);
-	}
-
-
-	private static char[] unpack_char2no(int size, String... st) {
-		char[] res = new char[size];
-		int t = 0;
-		int count = 0;
-		for (String s : st) {
-			int slen = s.length();
-			for (int i = 0; i < slen; ) {
-				count = i > 0 || count == 0 ? s.charAt(i++) : count;
-				if (i < slen) {
-					char val = s.charAt(i++);
-					while (count-- > 0) res[t++] = val;
-				}
-			}
-		}
-		assert res.length == t;
-		return res;
 	}
 }
