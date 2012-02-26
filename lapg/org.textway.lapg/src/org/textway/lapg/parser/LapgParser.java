@@ -490,7 +490,7 @@ public class LapgParser {
 		return lapg_action[state];
 	}
 
-	protected static final int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -537,7 +537,7 @@ public class LapgParser {
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
+						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line,
 								MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
 					}
 					if (lapg_symbols_ok <= 1) {
@@ -557,9 +557,9 @@ public class LapgParser {
 
 		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
-					MessageFormat.format("syntax error before line {0}",
-					lapg_lexer.getTokenLine()));
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line,
+						MessageFormat.format("syntax error before line {0}",
+								lapg_lexer.getTokenLine()));
 			}
 			throw new ParseException();
 		}
@@ -888,13 +888,13 @@ public class LapgParser {
 	}
 
 	/**
-	 *  disposes symbol dropped by error recovery mechanism
+	 * disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(LapgSymbol sym) {
 	}
 
 	/**
-	 *  cleans node removed from the stack
+	 * cleans node removed from the stack
 	 */
 	protected void cleanup(LapgSymbol sym) {
 	}

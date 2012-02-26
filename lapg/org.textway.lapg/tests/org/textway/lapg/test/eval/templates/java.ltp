@@ -20,22 +20,78 @@ ${end}
 ${template main-}
 ${file opts.prefix+'Parser.java'}${call unit}${end-}
 ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
-${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
+${end}
+
+${template parserCtor-}
+	protected org.textway.lapg.eval.GenericParseContext.@TextSource source;
+	protected final org.textway.lapg.api.@Grammar grammar;
+
+	private final int[] lapg_action;
+	private final short[] lapg_lalr;
+	private final short[] lapg_sym_goto;
+	private final short[] lapg_sym_from;
+	private final short[] lapg_sym_to;
+	private final int[] lapg_rlen;
+	private final int[] lapg_rlex;
+
+	private final boolean debugSyntax;
+
+	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textway.lapg.lalr.@ParserTables tables, org.textway.lapg.api.@Grammar grammar, boolean debugSyntax) {
+		this.reporter = reporter;
+		this.grammar = grammar;
+		this.lapg_action = tables.action_index;
+		this.lapg_lalr = tables.action_table;
+		this.lapg_sym_goto = tables.sym_goto;
+		this.lapg_sym_to = tables.sym_to;
+		this.lapg_sym_from = tables.sym_from;
+		this.lapg_rlen = tables.getRuleLength();
+		this.lapg_rlex = tables.rleft;
+		this.debugSyntax = debugSyntax;
+	}
+${end}
+
+${template classcode-}
 ${end}
 
 ${template parserTables-}
 ${end}
 
-${template tokensEnum-}
+${template debugShift-}
+		if (debugSyntax) {
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[lapg_n.lexem].getName(), lapg_lexer.current()));
+		}
 ${end}
 
-${template rulesEnum-}
+${template debugReduce-}
+		if (debugSyntax) {
+			System.out.println("reduce to " + grammar.getSymbols()[lapg_rlex[rule]].getName());
+		}
+${end}
+
+${template dynamicRecoveringCheck-}
+				if (grammar.getError() == null) {
+					break;
+				}
 ${end}
 
 ${template applyRule-}
-	@SuppressWarnings("unchecked")
 	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
-	 // TODO
+		if (ruleLength == 1) {
+			Object right = lapg_m[lapg_head].sym;
+			if (right instanceof org.textway.lapg.eval.@GenericNode) {
+				lapg_gg.sym = right;
+			} else {
+				lapg_gg.sym = new org.textway.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+			}
+		} else if (ruleLength > 1) {
+			java.util.@List<org.textway.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textway.lapg.eval.@GenericNode>(ruleLength);
+			for (int i = ruleLength - 1; i >= 0; i--) {
+				if (lapg_m[lapg_head - i].sym instanceof org.textway.lapg.eval.@GenericNode) {
+					children.add((org.textway.lapg.eval.@GenericNode) lapg_m[lapg_head - i].sym);
+				}
+			}
+			lapg_gg.sym = new org.textway.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new org.textway.lapg.eval.@GenericNode[children.size()]));
+		}
 	}
 ${end}
 
@@ -45,10 +101,11 @@ ${end}
 ${cached query symbolClassName() = 'ParseSymbol'}
 
 ${cached query lazyNext() = true}
-${cached query needDebug() = false}
 
 ${cached query hasRecovering() = true}
 ${cached query errorLexem() = 'grammar.getError().getIndex()'}
+
+${query mainParseVisibility() = 'public'}
 
 ${cached query needActionsTable = true}
 ${cached query needInitialState = true}

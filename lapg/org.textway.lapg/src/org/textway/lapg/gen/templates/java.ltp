@@ -52,7 +52,7 @@ ${end-}
 		return lapg_action[state];
 	}
 
-	protected static final int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -75,8 +75,8 @@ ${end-}
 	protected ${self->symbolClassName()} lapg_n;
 	protected ${opts.prefix}Lexer lapg_lexer;
 
-	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end
-		} parse(${opts.prefix}Lexer lexer${if self->needInitialState()}, int initialState${end}${if self->needFinalState()}, int finalState${end
+	${self->mainParseVisibility()} ${self->mainParseReturnType()} parse(${opts.prefix}Lexer lexer${if self->needInitialState()
+		}, int initialState${end}${if self->needFinalState()}, int finalState${end
 		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
 		lapg_lexer = lexer;
@@ -102,9 +102,10 @@ ${end-}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 ${if self->hasRecovering()-}
+${call dynamicRecoveringCheck-}
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(${call err_location('lapg_n', 'lapg_lexer')}
+						reporter.error(${self->err_location('lapg_n', 'lapg_lexer').trim()}
 								java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
 								lapg_lexer.getTokenLine(), lapg_n.column)${else}", lapg_lexer.getTokenLine())${end});
 					}
@@ -128,9 +129,9 @@ ${end-}
 ${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${self->lazyNext() ? self->err_location_safe('lapg_n', 'lapg_lexer') : self->err_location('lapg_n', 'lapg_lexer')}
-					java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
-					lapg_lexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column${end}));
+${end}			reporter.error(${(self->lazyNext() ? self->err_location_safe('lapg_n', 'lapg_lexer') : self->err_location('lapg_n', 'lapg_lexer')).trim()}
+						java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
+								lapg_lexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column${end}));
 ${if self->hasRecovering()-}
 			}
 ${end-}
@@ -197,11 +198,7 @@ ${if self->lazyNext()-}
 ${end-}
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
-${if self->needDebug()-}
-		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
-		}
-${end-}
+${call debugShift-}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
 			lapg_n = ${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
@@ -218,11 +215,7 @@ ${end-}
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
-${if self->needDebug()-}
-		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
-		}
-${end-}
+${call debugReduce-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
 		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 ${if opts.positions.contains('line')-}
@@ -258,14 +251,14 @@ ${end-}
 ${call applyRule-}
 ${if self->hasRecovering()}
 	/**
-	 *  disposes symbol dropped by error recovery mechanism
+	 * disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(${self->symbolClassName()} sym) {
 	}
 ${end-}
 ${if opts.genCleanup}
 	/**
-	 *  cleans node removed from the stack
+	 * cleans node removed from the stack
 	 */
 	protected void cleanup(${self->symbolClassName()} sym) {
 	}
@@ -314,27 +307,16 @@ ${foreach inp in syntax.input}
 ${end-}
 ${end}
 
-
-${template tokensEnum-}
-	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
-		// non-terminals
-${for i in [parser.nterms, parser.nsyms-1]-}
-		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
-${end-}
-	}
+${template debugShift-}
+		if (DEBUG_SYNTAX) {
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+		}
 ${end}
 
-
-${template rulesEnum-}
-${if syntax.rules.exists(x|x.getAlias())}
-	public interface Rules {
-${foreach rule in syntax.rules-}
-${if rule.getAlias()-}
-		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
-${end-}
-${end-}
-	}
-${end-}
+${template debugReduce-}
+		if (DEBUG_SYNTAX) {
+			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+		}
 ${end}
 
 ${query needActionsTable() = parser.nactions > 0}
@@ -359,16 +341,27 @@ ${call java_pack.unpackInt-}
 ${call java_pack.unpackShort-}
 ${end-}
 
-${if self->needDebug()-}
 	protected static final String[] lapg_syms = new String[] {
 ${foreach s in parser.sym-}
 		"${s.name}",
 ${end-}
 	};
 
+	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
+		// non-terminals
+${for i in [parser.nterms, parser.nsyms-1]-}
+		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
 ${end-}
-${call tokensEnum-}
-${call rulesEnum-}
+	}
+${if syntax.rules.exists(x|x.getAlias())}
+	public interface Rules {
+${foreach rule in syntax.rules-}
+${if rule.getAlias()-}
+		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
+${end-}
+${end-}
+	}
+${end-}
 
 ${end}
 
@@ -438,9 +431,7 @@ ${template imports-}
 ${end}
 
 ${template classcode-}
-${if self->needDebug()-}
 private static final boolean DEBUG_SYNTAX = false;
-${end-}
 ${end}
 
 ${template parseException-}
@@ -456,6 +447,12 @@ ${query package() = opts.package ? opts.package : 'com.test' }
 
 ${cached query hasRecovering() = syntax.error}
 ${cached query errorLexem() = syntax.error.index}
+
+${template dynamicRecoveringCheck-}
+${end}
+
+${query mainParseVisibility() = self->needFinalState() ? 'private' : 'public'}
+${query mainParseReturnType() = !self->needFinalState() && syntax.input.first().target->type() ? syntax.input.first().target->type() : 'Object'}
 
 ${cached query needInitialState() = syntax.input.length > 1}
 ${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
@@ -493,5 +490,3 @@ ${end-}
 ${end}
 
 ${query symbolClassName() = 'LapgSymbol'}
-
-${query needDebug() = true}

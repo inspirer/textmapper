@@ -230,7 +230,7 @@ public class NlaTestParser {
 		return lapg_action[state];
 	}
 
-	protected static final int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -278,9 +278,9 @@ public class NlaTestParser {
 		}
 
 		if (lapg_m[lapg_head].state != 81) {
-			reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
-					MessageFormat.format("syntax error before line {0}",
-					lapg_lexer.getTokenLine()));
+			reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line,
+						MessageFormat.format("syntax error before line {0}",
+								lapg_lexer.getTokenLine()));
 			throw new ParseException();
 		}
 		return lapg_m[lapg_head - 1].sym;

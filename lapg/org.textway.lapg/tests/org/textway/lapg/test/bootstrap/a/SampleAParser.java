@@ -107,7 +107,7 @@ public class SampleAParser {
 		return lapg_action[state];
 	}
 
-	protected static final int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -154,7 +154,7 @@ public class SampleAParser {
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, 
+						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line,
 								MessageFormat.format("syntax error before line {0}, column {1}",
 								lapg_lexer.getTokenLine(), lapg_n.column));
 					}
@@ -175,9 +175,9 @@ public class SampleAParser {
 
 		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_n.line, 
-					MessageFormat.format("syntax error before line {0}, column {1}",
-					lapg_lexer.getTokenLine(), lapg_n == null ? lapg_lexer.getColumn() : lapg_n.column));
+				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_n.line,
+						MessageFormat.format("syntax error before line {0}, column {1}",
+								lapg_lexer.getTokenLine(), lapg_n == null ? lapg_lexer.getColumn() : lapg_n.column));
 			}
 			throw new ParseException();
 		}
@@ -269,7 +269,7 @@ public class SampleAParser {
 	}
 
 	/**
-	 *  disposes symbol dropped by error recovery mechanism
+	 * disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(LapgSymbol sym) {
 	}

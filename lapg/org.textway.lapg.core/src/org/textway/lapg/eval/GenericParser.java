@@ -123,22 +123,24 @@ public class GenericParser {
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
-				if (grammar.getError() != null) {
-					if (restore()) {
-						if (lapg_symbols_ok >= 4) {
-							reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
-						}
-						if (lapg_symbols_ok <= 1) {
-							lapg_n = lapg_lexer.next();
-						}
-						lapg_symbols_ok = 0;
-						continue;
+				if (grammar.getError() == null) {
+					break;
+				}
+				if (restore()) {
+					if (lapg_symbols_ok >= 4) {
+						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line,
+								MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
 					}
-					if (lapg_head < 0) {
-						lapg_head = 0;
-						lapg_m[0] = new ParseSymbol();
-						lapg_m[0].state = initialState;
+					if (lapg_symbols_ok <= 1) {
+						lapg_n = lapg_lexer.next();
 					}
+					lapg_symbols_ok = 0;
+					continue;
+				}
+				if (lapg_head < 0) {
+					lapg_head = 0;
+					lapg_m[0] = new ParseSymbol();
+					lapg_m[0].state = initialState;
 				}
 				break;
 			}
@@ -146,11 +148,9 @@ public class GenericParser {
 
 		if (lapg_m[lapg_head].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				if (lapg_n != null) {
-					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(), MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
-				} else {
-					reporter.error(lapg_lexer.getOffset(), lapg_lexer.getOffset(), lapg_lexer.getLine(), MessageFormat.format("syntax error before line {0}", lapg_lexer.getLine()));
-				}
+				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_n.line,
+						MessageFormat.format("syntax error before line {0}",
+								lapg_lexer.getTokenLine()));
 			}
 			throw new ParseException();
 		}
@@ -237,13 +237,13 @@ public class GenericParser {
 	}
 
 	/**
-	 *  disposes symbol dropped by error recovery mechanism
+	 * disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(ParseSymbol sym) {
 	}
 
 	/**
-	 *  cleans node removed from the stack
+	 * cleans node removed from the stack
 	 */
 	protected void cleanup(ParseSymbol sym) {
 	}

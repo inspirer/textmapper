@@ -28,10 +28,10 @@ public class GenericParserTest {
 
 	@Test
 	public void testGenericParser() {
-//		new LapgTemplatesTestHelperEx().gentest(
-//				"java.main", "org.textway.lapg/tests/org/textway/lapg/test/eval/templates",
-//				"org.textway.lapg.core/src/org/textway/lapg/eval",
-//				new String[]{"GenericParser.java", "GenericLexer.java"});
+		new LapgTemplatesTestHelperEx().gentest(
+				"java.main", "org.textway.lapg/tests/org/textway/lapg/test/eval/templates",
+				"org.textway.lapg.core/src/org/textway/lapg/eval",
+				new String[]{"GenericParser.java", "GenericLexer.java"});
 	}
 
 	private static class LapgTemplatesTestHelperEx extends LapgTemplatesTestHelper {
@@ -44,7 +44,7 @@ public class GenericParserTest {
 			res.put("endpositions", "offset");
 			res.put("lexerInput", "buffered");
 			res.put("maxtoken", 2048);
-			res.put("stack", 2048);
+			res.put("stack", 1024);
 			res.put("genast", false);
 			res.put("gentree", false);
 			res.put("genCleanup", true);

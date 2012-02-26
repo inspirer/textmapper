@@ -54,7 +54,6 @@ public class GenericLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
-
 	private final Grammar grammar;
 	private final int[] lapg_char2no;
 	private final int[] lapg_lexemnum;

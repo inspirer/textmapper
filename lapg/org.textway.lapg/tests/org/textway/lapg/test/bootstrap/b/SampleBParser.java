@@ -128,7 +128,7 @@ public class SampleBParser {
 		return lapg_action[state];
 	}
 
-	protected static final int lapg_state_sym(int state, int symbol) {
+	protected final int lapg_state_sym(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -175,7 +175,7 @@ public class SampleBParser {
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(), 
+						reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_lexer.getTokenLine(),
 								MessageFormat.format("syntax error before line {0}", lapg_lexer.getTokenLine()));
 					}
 					if (lapg_symbols_ok <= 1) {
@@ -195,9 +195,9 @@ public class SampleBParser {
 
 		if (lapg_m[lapg_head].state != 25) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_lexer.getTokenLine(), 
-					MessageFormat.format("syntax error before line {0}",
-					lapg_lexer.getTokenLine()));
+				reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getOffset() : lapg_n.endoffset, lapg_n == null ? lapg_lexer.getLine() : lapg_lexer.getTokenLine(),
+						MessageFormat.format("syntax error before line {0}",
+								lapg_lexer.getTokenLine()));
 			}
 			throw new ParseException();
 		}
@@ -322,7 +322,7 @@ public class SampleBParser {
 	}
 
 	/**
-	 *  disposes symbol dropped by error recovery mechanism
+	 * disposes symbol dropped by error recovery mechanism
 	 */
 	protected void dispose(LapgSymbol sym) {
 	}
