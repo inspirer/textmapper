@@ -41,21 +41,9 @@ ${foreach s in parser.sym-}
 ${end-}
 	};
 
-	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
-		// non-terminals
-${for i in [parser.nterms, parser.nsyms-1]-}
-		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
-${end-}
-	}
-${if syntax.rules.exists(x|x.getAlias())}
-	public interface Rules {
-${foreach rule in syntax.rules-}
-${if rule.getAlias()-}
-		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
-${end-}
-${end-}
-	}
-${end}
+${call tokensEnum-}
+${call rulesEnum-}
+
 	protected final int lapg_next(int state) ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if parser.nactions > 0-}
 		int p;
@@ -317,6 +305,28 @@ ${foreach inp in syntax.input}
 ${end-}
 ${end-}
 }
+${end}
+
+${template tokensEnum-}
+	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
+		// non-terminals
+${for i in [parser.nterms, parser.nsyms-1]-}
+		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
+${end-}
+	}
+${end}
+
+
+${template rulesEnum-}
+${if syntax.rules.exists(x|x.getAlias())}
+	public interface Rules {
+${foreach rule in syntax.rules-}
+${if rule.getAlias()-}
+		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
+${end-}
+${end-}
+	}
+${end-}
 ${end}
 
 ${template parserTables-}

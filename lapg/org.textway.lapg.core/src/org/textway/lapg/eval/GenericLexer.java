@@ -48,7 +48,7 @@ public class GenericLexer {
 	private final Grammar grammar;
 
 	final private char[] data = new char[2048];
-	private int datalen, l;
+	private int datalen, l, tokenStart;
 	private char chr;
 
 	private int group;
@@ -76,9 +76,27 @@ public class GenericLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
+		this.group = 0;
 		datalen = stream.read(data);
 		l = 0;
-		group = 0;
+		tokenStart = -1;
+		chr = l < datalen ? data[l++] : 0;
+	}
+
+	protected void advance() throws IOException {
+		if (chr == 0) return;
+		currOffset++;
+		if (chr == '\n') {
+			currLine++;
+		}
+		if (l >= datalen) {
+			if (tokenStart >= 0) {
+				token.append(data, tokenStart, l - tokenStart);
+				tokenStart = 0;
+			}
+			l = 0;
+			datalen = stream.read(data);
+		}
 		chr = l < datalen ? data[l++] : 0;
 	}
 
@@ -87,7 +105,7 @@ public class GenericLexer {
 	}
 
 	public void setState(int state) {
-		group = state;
+		this.group = state;
 	}
 
 	public int getTokenLine() {
@@ -115,7 +133,7 @@ public class GenericLexer {
 	}
 
 	private int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
+		if (chr >= 0 && chr < lapg_char2no.length) {
 			return lapg_char2no[chr];
 		}
 		return 1;
@@ -133,10 +151,18 @@ public class GenericLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			int tokenStart = l - 1;
+			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
 				state = lapg_lexem[state][mapCharacter(chr)];
+				if (state == -1 && chr == 0) {
+					lapg_n.endoffset = currOffset;
+					lapg_n.lexem = 0;
+					lapg_n.sym = null;
+					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					tokenStart = -1;
+					return lapg_n;
+				}
 				if (state >= -1 && chr != 0) {
 					currOffset++;
 					if (chr == '\n') {
@@ -144,8 +170,8 @@ public class GenericLexer {
 					}
 					if (l >= datalen) {
 						token.append(data, tokenStart, l - tokenStart);
-						datalen = stream.read(data);
 						tokenStart = l = 0;
+						datalen = stream.read(data);
 					}
 					chr = l < datalen ? data[l++] : 0;
 				}
@@ -153,14 +179,10 @@ public class GenericLexer {
 			lapg_n.endoffset = currOffset;
 
 			if (state == -1) {
-				if (chr == 0) {
-					reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, "Unexpected end of file reached");
-					break;
-				}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, currLine, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
 				lapg_n.lexem = -1;
 				continue;
 			}
@@ -168,6 +190,7 @@ public class GenericLexer {
 			if (state == -2) {
 				lapg_n.lexem = 0;
 				lapg_n.sym = null;
+				tokenStart = -1;
 				return lapg_n;
 			}
 
@@ -179,10 +202,11 @@ public class GenericLexer {
 			lapg_n.sym = null;
 
 		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		tokenStart = -1;
 		return lapg_n;
 	}
 
-	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) {
+	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) throws IOException {
 		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
 		return lexemKind != Lexem.KIND_SPACE;
 	}

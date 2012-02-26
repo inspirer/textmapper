@@ -111,13 +111,7 @@ ${end-}
 	}
 
 ${self->lexerTables()-}
-
-	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < ${lex.char2no.length}) {
-			return lapg_char2no[chr];
-		}
-		return 1;
-	}
+${call mapCharacter-}
 
 	public LapgSymbol next() throws java.io.@IOException {
 		LapgSymbol lapg_n = new LapgSymbol();
@@ -209,7 +203,21 @@ ${if opts.lexerInput == 'buffered'-}
 ${end-}
 		return lapg_n;
 	}
+${call createToken-}
+}
+${end}
 
+${template mapCharacter}
+	private static int mapCharacter(int chr) {
+		if (chr >= 0 && chr < ${lex.char2no.length}) {
+			return lapg_char2no[chr];
+		}
+		return 1;
+	}
+${end}
+
+
+${template createToken}
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws java.io.@IOException {
 ${if self->hasLexemActions()-}
 		switch (lexemIndex) {
@@ -266,9 +274,7 @@ ${end-}
 		return true;
 	}
 ${end-}
-}
 ${end}
-
 
 ${template advanceChar(inNext)-}
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
