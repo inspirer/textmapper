@@ -113,8 +113,8 @@ ${end-}
 ${self->lexerTables()-}
 ${call mapCharacter-}
 
-	public LapgSymbol next() throws java.io.@IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public ${self->java.symbolClassName()} next() throws java.io.@IOException {
+		${self->java.symbolClassName()} lapg_n = new ${self->java.symbolClassName()}();
 		int state;
 
 		do {
@@ -218,7 +218,7 @@ ${end}
 
 
 ${template createToken}
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws java.io.@IOException {
+	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
 ${if self->hasLexemActions()-}
 		switch (lexemIndex) {
 ${foreach lexem in syntax.lexems-}
@@ -248,7 +248,7 @@ ${end-}
 	}
 ${end-}
 
-	protected boolean create${lexem->classLexemName()}Token(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean create${lexem->classLexemName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
 ${if lexem->classHasInstances()-}
 		Integer replacement = subTokensOf${lexem->classLexemName()}.get(current());
 		if (replacement != null) {
@@ -352,7 +352,7 @@ ${end}
 
 
 ${template innerDeclarations-}
-	public static class LapgSymbol {
+	public static class ${self->java.symbolClassName()} {
 		public Object sym;
 		public int lexem;
 		public int state;

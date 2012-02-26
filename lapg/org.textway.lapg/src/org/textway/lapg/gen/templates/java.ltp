@@ -20,7 +20,7 @@ ${call header-}
 package ${call package};
 
 ${call imports-}
-import ${call package}.${opts.prefix}Lexer.LapgSymbol;
+import ${call package}.${opts.prefix}Lexer.${self->symbolClassName()};
 
 public class ${opts.prefix}Parser {
 
@@ -83,8 +83,8 @@ ${end-}
 	}
 
 	protected int lapg_head;
-	protected LapgSymbol[] lapg_m;
-	protected LapgSymbol lapg_n;
+	protected ${self->symbolClassName()}[] lapg_m;
+	protected ${self->symbolClassName()} lapg_n;
 	protected ${opts.prefix}Lexer lapg_lexer;
 
 	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end
@@ -92,12 +92,12 @@ ${end-}
 		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
 		lapg_lexer = lexer;
-		lapg_m = new LapgSymbol[${opts.stack}];
+		lapg_m = new ${self->symbolClassName()}[${opts.stack}];
 		lapg_head = 0;
 ${if syntax.error}		int lapg_symbols_ok = 4;
 ${end-}
 
-		lapg_m[0] = new LapgSymbol();
+		lapg_m[0] = new ${self->symbolClassName()}();
 		lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
 		lapg_n = lapg_lexer.next();
 
@@ -128,7 +128,7 @@ ${if syntax.error-}
 				}
 				if (lapg_head < 0) {
 					lapg_head = 0;
-					lapg_m[0] = new LapgSymbol();
+					lapg_m[0] = new ${self->symbolClassName()}();
 					lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
 				}
 ${end-}
@@ -173,7 +173,7 @@ ${end-}
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
-			lapg_m[++lapg_head] = new LapgSymbol();
+			lapg_m[++lapg_head] = new ${self->symbolClassName()}();
 			lapg_m[lapg_head].lexem = ${syntax.error.index};
 			lapg_m[lapg_head].sym = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${syntax.error.index});
@@ -224,7 +224,7 @@ ${end-}
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
+		${self->symbolClassName()} lapg_gg = new ${self->symbolClassName()}();
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
@@ -232,7 +232,7 @@ ${end-}
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
+		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 ${if opts.positions.contains('line')-}
 		lapg_gg.line = ${if self->lazyNext()}startsym == null ? lapg_lexer.getLine() : ${end}startsym.line;
 ${end-}
@@ -264,7 +264,7 @@ ${end-}
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
 ${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
 		switch (rule) {
 ${foreach rule in syntax.rules-}
@@ -286,14 +286,14 @@ ${if syntax.error}
 	/**
 	 *  disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(LapgSymbol sym) {
+	protected void dispose(${self->symbolClassName()} sym) {
 	}
 ${end-}
 ${if opts.genCleanup}
 	/**
 	 *  cleans node removed from the stack
 	 */
-	protected void cleanup(LapgSymbol sym) {
+	protected void cleanup(${self->symbolClassName()} sym) {
 	}
 ${end-}
 ${if self->needFinalState()-}
@@ -463,3 +463,5 @@ ${end-}
  */
 ${end-}
 ${end}
+
+${query symbolClassName() = 'LapgSymbol'}
