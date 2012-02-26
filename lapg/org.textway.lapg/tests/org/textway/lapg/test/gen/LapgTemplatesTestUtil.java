@@ -17,6 +17,7 @@ package org.textway.lapg.test.gen;
 
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.TemplateStaticMethods;
+import org.textway.lapg.test.CheckingFileBasedStrategy;
 import org.textway.templates.api.EvaluationContext;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;

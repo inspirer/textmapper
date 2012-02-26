@@ -153,21 +153,21 @@
 		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/a"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/b"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/lexeronly"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/nla">
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/cases/bootstrap/unicode"/>
+			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/unicode"/>
 	</target>
 
 	<target name="plugin" depends="rev">

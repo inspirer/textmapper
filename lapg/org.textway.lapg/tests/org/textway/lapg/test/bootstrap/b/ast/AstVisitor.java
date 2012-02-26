@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.test.bootstrap.b.ast;
 
-import static org.junit.Assert.*;
+public abstract class AstVisitor {
 
-import java.io.InputStream;
+	protected boolean visit(AstClassdef n) {
+		return true;
+	}
 
-public abstract class LapgTestCase {
-
-	protected static final String TESTCONTAINER = "org/textway/lapg/test/cases/input";
-
-	protected InputStream openStream(String name, String root) {
-		InputStream is = getClass().getClassLoader().getResourceAsStream(root + "/" + name);
-		assertNotNull("cannot open " + root + "/" + name, is);
-		return is;
+	protected boolean visit(AstClassdeflistItem n) {
+		return true;
 	}
 }

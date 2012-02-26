@@ -22,6 +22,7 @@
       <entry name="?*.tbl" />
       <entry name="?*.types" />
       <entry name="?*.in" />
+      <entry name="?*.st" />
       <entry name="?*.out" />
       <entry name="?*.txt" />
     </wildcardResourcePatterns>

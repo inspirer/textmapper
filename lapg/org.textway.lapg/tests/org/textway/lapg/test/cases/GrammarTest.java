@@ -29,7 +29,7 @@ import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
-import org.textway.lapg.test.cases.bootstrap.a.SampleAParseContext;
+import org.textway.lapg.test.bootstrap.a.SampleAParseContext;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
 import org.textway.templates.storage.ClassResourceLoader;
