@@ -60,7 +60,7 @@ public class CheckingFileBasedStrategy implements ProcessingStrategy {
 						expected = "# Original data is not available (new file is created):\n# " + ex.getMessage();
 					}
 					String data = getData();
-					assertEquals(expected, data);
+					assertEquals("diff for " + name, expected, data);
 					created.add(name);
 				}
 			}.check();
