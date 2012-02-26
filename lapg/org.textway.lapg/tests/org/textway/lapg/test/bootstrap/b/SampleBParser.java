@@ -258,7 +258,7 @@ public class SampleBParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -268,19 +268,19 @@ public class SampleBParser {
 				lapg_gg.sym = new AstClassdef(
 						true,
 						false,
-						((String)lapg_m[lapg_head-3].sym) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
+						((String)lapg_m[lapg_head - 3].sym) /* ID */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym) /* classdeflistopt */,
 						null /* identifier */,
-						null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head].endoffset);
+						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
 				lapg_gg.sym = new AstClassdef(
 						true,
 						true,
-						((String)lapg_m[lapg_head-5].sym) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
-						((String)lapg_m[lapg_head-3].sym) /* identifier */,
-						null /* input */, lapg_m[lapg_head-6].offset, lapg_m[lapg_head].endoffset);
+						((String)lapg_m[lapg_head - 5].sym) /* ID */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym) /* classdeflistopt */,
+						((String)lapg_m[lapg_head - 3].sym) /* identifier */,
+						null /* input */, lapg_m[lapg_head - 6].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 6:  // classdeflist ::= classdef
 				lapg_gg.sym = new ArrayList();
@@ -290,26 +290,26 @@ public class SampleBParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 7:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdeflistItem>)lapg_m[lapg_head-1].sym).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym).add(new AstClassdeflistItem(
 						((AstClassdef)lapg_m[lapg_head].sym) /* classdef */,
 						null /* identifier */,
-						null /* input */, lapg_m[lapg_head-1].offset, lapg_m[lapg_head].endoffset));
+						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 8:  // classdeflist ::= identifier '(' ')'
 				lapg_gg.sym = new ArrayList();
 				((List<AstClassdeflistItem>)lapg_gg.sym).add(new AstClassdeflistItem(
 						null /* classdef */,
-						((String)lapg_m[lapg_head-2].sym) /* identifier */,
-						null /* input */, lapg_m[lapg_head-2].offset, lapg_m[lapg_head].endoffset));
+						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
+						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 9:  // classdeflist ::= identifier '(' Lextends ')'
-				 String s = /* should be string */ ((String)lapg_m[lapg_head-1].sym); 
+				 String s = /* should be string */ ((String)lapg_m[lapg_head - 1].sym); 
 				break;
 			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
-				((List<AstClassdeflistItem>)lapg_m[lapg_head-3].sym).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_m[lapg_head - 3].sym).add(new AstClassdeflistItem(
 						null /* classdef */,
-						((String)lapg_m[lapg_head-2].sym) /* identifier */,
-						null /* input */, lapg_m[lapg_head-3].offset, lapg_m[lapg_head].endoffset));
+						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
+						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 11:  // classdeflist ::= error
 				lapg_gg.sym = new ArrayList();

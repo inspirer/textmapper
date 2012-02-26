@@ -285,7 +285,7 @@ JsTest.Parser.prototype = {
 			this.lapg_m[this.lapg_head--] = null;
 		}
 		this.lapg_m[++this.lapg_head] = lapg_gg;
-		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head-1].state, lapg_gg.lexem);
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, lapg_gg.lexem);
 	}
 };
 

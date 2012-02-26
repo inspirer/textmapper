@@ -246,7 +246,7 @@ public class SampleAParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -254,16 +254,16 @@ public class SampleAParser {
 		switch (rule) {
 			case 3:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
 				lapg_gg.sym = new AstClassdef(
-						((String)lapg_m[lapg_head-3].sym) /* identifier */,
-						((List<AstClassdef>)lapg_m[lapg_head-1].sym) /* classdeflistopt */,
-						null /* input */, lapg_m[lapg_head-4].offset, lapg_m[lapg_head].endoffset);
+						((String)lapg_m[lapg_head - 3].sym) /* identifier */,
+						((List<AstClassdef>)lapg_m[lapg_head - 1].sym) /* classdeflistopt */,
+						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdeflist ::= classdef
 				lapg_gg.sym = new ArrayList();
 				((List<AstClassdef>)lapg_gg.sym).add(((AstClassdef)lapg_m[lapg_head].sym));
 				break;
 			case 5:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdef>)lapg_m[lapg_head-1].sym).add(((AstClassdef)lapg_m[lapg_head].sym));
+				((List<AstClassdef>)lapg_m[lapg_head - 1].sym).add(((AstClassdef)lapg_m[lapg_head].sym));
 				break;
 		}
 	}

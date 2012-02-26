@@ -247,7 +247,7 @@ public class RegexDefParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -257,19 +257,19 @@ public class RegexDefParser {
 				 lapg_gg.sym = RegexUtil.emptyIfNull(((RegexPart)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset); 
 				break;
 			case 3:  // pattern ::= pattern '|' partsopt
-				 lapg_gg.sym = RegexUtil.createOr(((RegexPart)lapg_m[lapg_head-2].sym), ((RegexPart)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset); 
+				 lapg_gg.sym = RegexUtil.createOr(((RegexPart)lapg_m[lapg_head - 2].sym), ((RegexPart)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset); 
 				break;
 			case 5:  // part ::= primitive_part '*'
-				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head-1].sym), 0, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head - 1].sym), 0, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 6:  // part ::= primitive_part '+'
-				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head-1].sym), 1, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head - 1].sym), 1, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 7:  // part ::= primitive_part '?'
-				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head-1].sym), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexQuantifier(((RegexPart)lapg_m[lapg_head - 1].sym), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // part ::= primitive_part '{digit' sconopt '}'
-				 lapg_gg.sym = RegexUtil.createQuantifier(((RegexPart)lapg_m[lapg_head-3].sym), source, lapg_m[lapg_head-2].offset, lapg_gg.endoffset, reporter); 
+				 lapg_gg.sym = RegexUtil.createQuantifier(((RegexPart)lapg_m[lapg_head - 3].sym), source, lapg_m[lapg_head - 2].offset, lapg_gg.endoffset, reporter); 
 				break;
 			case 11:  // primitive_part ::= char
 				 lapg_gg.sym = new RegexChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -296,13 +296,13 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexChar('?', source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 19:  // primitive_part ::= '(' pattern ')'
-				 lapg_gg.sym = RegexUtil.wrap(((RegexPart)lapg_m[lapg_head-1].sym)); 
+				 lapg_gg.sym = RegexUtil.wrap(((RegexPart)lapg_m[lapg_head - 1].sym)); 
 				break;
 			case 20:  // primitive_part ::= '[' charset ']'
-				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head-1].sym), reporter, setbuilder, false); 
+				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head - 1].sym), reporter, setbuilder, false); 
 				break;
 			case 21:  // primitive_part ::= '[' '^' charset ']'
-				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head-1].sym), reporter, setbuilder, true); 
+				 lapg_gg.sym = RegexUtil.toSet(((List<RegexPart>)lapg_m[lapg_head - 1].sym), reporter, setbuilder, true); 
 				break;
 			case 22:  // primitive_part ::= '{letter' sconopt '}'
 				 lapg_gg.sym = new RegexExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexExpand) lapg_gg.sym, reporter); 
@@ -352,19 +352,19 @@ public class RegexDefParser {
 				 lapg_gg.sym = new ArrayList<RegexPart>(); RegexUtil.addSetSymbol(((List<RegexPart>)lapg_gg.sym), ((RegexPart)lapg_m[lapg_head].sym), reporter); 
 				break;
 			case 37:  // charset ::= charset setsymbol
-				 RegexUtil.addSetSymbol(((List<RegexPart>)lapg_m[lapg_head-1].sym), ((RegexPart)lapg_m[lapg_head].sym), reporter); 
+				 RegexUtil.addSetSymbol(((List<RegexPart>)lapg_m[lapg_head - 1].sym), ((RegexPart)lapg_m[lapg_head].sym), reporter); 
 				break;
 			case 38:  // charset ::= charset '^'
-				 ((List<RegexPart>)lapg_m[lapg_head-1].sym).add(new RegexChar('^', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
+				 ((List<RegexPart>)lapg_m[lapg_head - 1].sym).add(new RegexChar('^', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
 				break;
 			case 39:  // charset ::= charset '-' %prio char
-				 ((List<RegexPart>)lapg_m[lapg_head-1].sym).add(new RegexChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
+				 ((List<RegexPart>)lapg_m[lapg_head - 1].sym).add(new RegexChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
 				break;
 			case 40:  // charset ::= charset '-' char
-				 RegexUtil.applyRange(((List<RegexPart>)lapg_m[lapg_head-2].sym), new RegexChar(((Character)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
+				 RegexUtil.applyRange(((List<RegexPart>)lapg_m[lapg_head - 2].sym), new RegexChar(((Character)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
 				break;
 			case 42:  // parts ::= parts part
-				 lapg_gg.sym = RegexUtil.createSequence(((RegexPart)lapg_m[lapg_head-1].sym), ((RegexPart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.sym = RegexUtil.createSequence(((RegexPart)lapg_m[lapg_head - 1].sym), ((RegexPart)lapg_m[lapg_head].sym)); 
 				break;
 		}
 	}

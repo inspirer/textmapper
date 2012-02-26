@@ -35,17 +35,19 @@ ${call parseException-}
 ${util.shiftRight(self->classcode(), 1)-}
 ${call parserTables-}
 
+${if self->needDebug()-}
 	protected static final String[] lapg_syms = new String[] {
 ${foreach s in parser.sym-}
 		"${s.name}",
 ${end-}
 	};
 
+${end-}
 ${call tokensEnum-}
 ${call rulesEnum-}
 
 	protected final int lapg_next(int state) ${if self->lazyNext()}throws java.io.@IOException ${end}{
-${if parser.nactions > 0-}
+${if self->needActionsTable()-}
 		int p;
 		if (lapg_action[state] < -2) {
 ${if self->lazyNext()-}
@@ -88,17 +90,17 @@ ${end-}
 	protected ${opts.prefix}Lexer lapg_lexer;
 
 	${if self->needFinalState()}private Object${else}public ${if syntax.input.first().target->type()}${syntax.input.first().target->type()}${else}Object${end}${end
-		} parse(${opts.prefix}Lexer lexer${if syntax.input.length > 1}, int initialState${end}${if self->needFinalState()}, int finalState${end
+		} parse(${opts.prefix}Lexer lexer${if self->needInitialState()}, int initialState${end}${if self->needFinalState()}, int finalState${end
 		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
 		lapg_lexer = lexer;
 		lapg_m = new ${self->symbolClassName()}[${opts.stack}];
 		lapg_head = 0;
-${if syntax.error}		int lapg_symbols_ok = 4;
+${if self->hasRecovering()}		int lapg_symbols_ok = 4;
 ${end-}
 
 		lapg_m[0] = new ${self->symbolClassName()}();
-		lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
+		lapg_m[0].state = ${self->needInitialState() ? 'initialState' : 0};
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
@@ -108,12 +110,12 @@ ${end-}
 				reduce(lapg_i);
 			} else if (lapg_i == -1) {
 				shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}noEoi${end});
-${if syntax.error}				lapg_symbols_ok++;
+${if self->hasRecovering()}				lapg_symbols_ok++;
 ${end-}
 			}
 
 			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
-${if syntax.error-}
+${if self->hasRecovering()-}
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
 						reporter.error(${call err_location('lapg_n', 'lapg_lexer')}
@@ -129,7 +131,7 @@ ${if syntax.error-}
 				if (lapg_head < 0) {
 					lapg_head = 0;
 					lapg_m[0] = new ${self->symbolClassName()}();
-					lapg_m[0].state = ${syntax.input.length > 1 ? 'initialState' : 0};
+					lapg_m[0].state = ${self->needInitialState() ? 'initialState' : 0};
 				}
 ${end-}
 				break;
@@ -137,18 +139,18 @@ ${end-}
 		}
 
 		if (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
-${if syntax.error-}
+${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
 ${end}			reporter.error(${self->lazyNext() ? self->err_location_safe('lapg_n', 'lapg_lexer') : self->err_location('lapg_n', 'lapg_lexer')}
 					java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
 					lapg_lexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column${end}));
-${if syntax.error-}
+${if self->hasRecovering()-}
 			}
 ${end-}
 			throw new ParseException();
 		}
-		return ${if syntax.input.length == 1 && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
+		return ${if !self->needInitialState() && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
 			}lapg_m[${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
 					? 'noEoi ? lapg_head : lapg_head - 1' :
@@ -157,7 +159,7 @@ ${end-}
 				 	: 'lapg_head - 1'
 			}].sym;
 	}
-${if syntax.error}
+${if self->hasRecovering()}
 	protected boolean restore() ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if self->lazyNext()-}
 		if (lapg_n == null) {
@@ -167,16 +169,16 @@ ${end-}
 		if (lapg_n.lexem == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${syntax.error.index}) == -1) {
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${self->errorLexem()}) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new ${self->symbolClassName()}();
-			lapg_m[lapg_head].lexem = ${syntax.error.index};
+			lapg_m[lapg_head].lexem = ${self->errorLexem()};
 			lapg_m[lapg_head].sym = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${syntax.error.index});
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${self->errorLexem()});
 ${if opts.positions.contains('line')-}
 			lapg_m[lapg_head].line = lapg_n.line;
 ${end-}
@@ -209,9 +211,11 @@ ${if self->lazyNext()-}
 ${end-}
 		lapg_m[++lapg_head] = lapg_n;
 		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+${if self->needDebug()-}
 		if (DEBUG_SYNTAX) {
 			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
 		}
+${end-}
 		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
 			lapg_n = ${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
@@ -228,9 +232,11 @@ ${end-}
 		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
 		lapg_gg.lexem = lapg_rlex[rule];
 		lapg_gg.state = 0;
+${if self->needDebug()-}
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
+${end-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
 		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
 ${if opts.positions.contains('line')-}
@@ -260,9 +266,31 @@ ${end-}
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
+${call applyRule-}
+${if self->hasRecovering()}
+	/**
+	 *  disposes symbol dropped by error recovery mechanism
+	 */
+	protected void dispose(${self->symbolClassName()} sym) {
+	}
+${end-}
+${if opts.genCleanup}
+	/**
+	 *  cleans node removed from the stack
+	 */
+	protected void cleanup(${self->symbolClassName()} sym) {
+	}
+${end-}
+${if self->needFinalState()-}
+${call customParseRoutines-}
+${end-}
+}
+${end}
+
+${template applyRule-}
 	@SuppressWarnings("unchecked")
 	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
 ${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
@@ -282,30 +310,17 @@ ${end-}
 		}
 ${end-}
 	}
-${if syntax.error}
-	/**
-	 *  disposes symbol dropped by error recovery mechanism
-	 */
-	protected void dispose(${self->symbolClassName()} sym) {
-	}
-${end-}
-${if opts.genCleanup}
-	/**
-	 *  cleans node removed from the stack
-	 */
-	protected void cleanup(${self->symbolClassName()} sym) {
-	}
-${end-}
-${if self->needFinalState()-}
+${end}
+
+${template customParseRoutines-}
 ${foreach inp in syntax.input}
 	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if syntax.input.length > 1}, ${index}${end}, ${parser.final_states[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if self->needInitialState()}, ${index}${end}, ${parser.final_states[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
 				}, ${inp.hasEoi() ? 'false' : 'true'}${end});
 	}
 ${end-}
-${end-}
-}
 ${end}
+
 
 ${template tokensEnum-}
 	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
@@ -329,10 +344,12 @@ ${end-}
 ${end-}
 ${end}
 
+${query needActionsTable() = parser.nactions > 0}
+
 ${template parserTables-}
 ${call parserTable(parser.action_index, 'int', 'lapg_action', 'LapgAction')-}
 
-${if parser.nactions > 0-}
+${if self->needActionsTable()-}
 ${call parserTable(parser.action_table, 'short', 'lapg_lalr', 'LapgLalr')}
 ${end-}
 ${call parserTable(parser.sym_goto, 'short', 'lapg_sym_goto', 'LapgSymGoto')-}
@@ -385,7 +402,7 @@ ${eval code, '#[generated action for '+self+']'-}
 ${end}
 
 ${query symText(property) =
-	(self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? '-' + self.rightOffset : '') + ']')
+	(self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
 	  + '.' + property }
 
 ${template symAccess(property)-}
@@ -430,7 +447,11 @@ ${end}
 
 ${query package() = opts.package ? opts.package : 'com.test' }
 
-${cached query needFinalState = syntax.input.length > 1 || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
+${cached query hasRecovering() = syntax.error}
+${cached query errorLexem() = syntax.error.index}
+
+${cached query needInitialState() = syntax.input.length > 1}
+${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
 
 ${cached query hasNoEoiInputs() = syntax.input.exists(x|!x.hasEoi()) }
 ${cached query hasEoiInputs() = syntax.input.exists(x|x.hasEoi()) }
@@ -465,3 +486,5 @@ ${end-}
 ${end}
 
 ${query symbolClassName() = 'LapgSymbol'}
+
+${query needDebug() = true}

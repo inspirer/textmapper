@@ -225,7 +225,7 @@ public class XmlParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head-1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -241,10 +241,10 @@ public class XmlParser {
 				 lapg_gg.sym = new ArrayList<XmlElement>(); ((List<XmlElement>)lapg_gg.sym).add(((XmlElement)lapg_m[lapg_head].sym)); 
 				break;
 			case 3:  // xml_tag_or_space ::= tag_start tag_end
-				 checkTag(((XmlNode)lapg_m[lapg_head-1].sym),((String)lapg_m[lapg_head].sym),lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset,lapg_m[lapg_head].line); 
+				 checkTag(((XmlNode)lapg_m[lapg_head - 1].sym),((String)lapg_m[lapg_head].sym),lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset,lapg_m[lapg_head].line); 
 				break;
 			case 4:  // xml_tag_or_space ::= tag_start xml_tags tag_end
-				 checkTag(((XmlNode)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head].sym),lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset,lapg_m[lapg_head].line); ((XmlNode)lapg_m[lapg_head-2].sym).setData(((List<XmlElement>)lapg_m[lapg_head-1].sym)); 
+				 checkTag(((XmlNode)lapg_m[lapg_head - 2].sym),((String)lapg_m[lapg_head].sym),lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset,lapg_m[lapg_head].line); ((XmlNode)lapg_m[lapg_head - 2].sym).setData(((List<XmlElement>)lapg_m[lapg_head - 1].sym)); 
 				break;
 			case 6:  // xml_tag_or_space ::= any
 				 lapg_gg.sym = getData(lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset); 
@@ -253,16 +253,16 @@ public class XmlParser {
 				 lapg_gg.sym = ((String)lapg_m[lapg_head].sym); 
 				break;
 			case 8:  // tag_name ::= identifier ':' identifier
-				 lapg_gg.sym = ((String)lapg_m[lapg_head-2].sym) + ":" + ((String)lapg_m[lapg_head].sym); 
+				 lapg_gg.sym = ((String)lapg_m[lapg_head - 2].sym) + ":" + ((String)lapg_m[lapg_head].sym); 
 				break;
 			case 11:  // tag_start ::= '<' tag_name attributesopt '>'
-				 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-2].sym), ((List<XmlAttribute>)lapg_m[lapg_head-1].sym), lapg_m[lapg_head-3].line); 
+				 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head - 2].sym), ((List<XmlAttribute>)lapg_m[lapg_head - 1].sym), lapg_m[lapg_head - 3].line); 
 				break;
 			case 12:  // no_body_tag ::= '<' tag_name attributesopt '/' '>'
-				 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head-3].sym), ((List<XmlAttribute>)lapg_m[lapg_head-2].sym), lapg_m[lapg_head-4].line); 
+				 lapg_gg.sym = new XmlNode(((String)lapg_m[lapg_head - 3].sym), ((List<XmlAttribute>)lapg_m[lapg_head - 2].sym), lapg_m[lapg_head - 4].line); 
 				break;
 			case 13:  // tag_end ::= '<' '/' tag_name '>'
-				 lapg_gg.sym = ((String)lapg_m[lapg_head-1].sym); 
+				 lapg_gg.sym = ((String)lapg_m[lapg_head - 1].sym); 
 				break;
 			case 14:  // attributes ::= attributes attribute
 				 ((List<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head].sym)); 
@@ -271,7 +271,7 @@ public class XmlParser {
 				 lapg_gg.sym = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)lapg_gg.sym).add(((XmlAttribute)lapg_m[lapg_head].sym)); 
 				break;
 			case 16:  // attribute ::= identifier '=' ccon
-				 lapg_gg.sym = new XmlAttribute(((String)lapg_m[lapg_head-2].sym),((String)lapg_m[lapg_head].sym)); 
+				 lapg_gg.sym = new XmlAttribute(((String)lapg_m[lapg_head - 2].sym),((String)lapg_m[lapg_head].sym)); 
 				break;
 		}
 	}
