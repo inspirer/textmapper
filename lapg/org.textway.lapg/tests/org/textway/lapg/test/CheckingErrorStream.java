@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.test;
 
 import org.junit.Assert;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-class CheckingErrorStream extends OutputStream {
+public class CheckingErrorStream extends OutputStream {
 	byte[] bytes;
 	int index;
 

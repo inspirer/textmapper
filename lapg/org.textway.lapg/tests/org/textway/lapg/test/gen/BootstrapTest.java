@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.test.gen;
 
 import org.junit.Test;
 import org.textway.lapg.api.ParserConflict;
@@ -22,17 +22,14 @@ import org.textway.lapg.api.SourceElement;
 import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.common.AbstractProcessingStatus;
 import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.common.GeneratedFile;
 import org.textway.lapg.gen.LapgGenerator;
 import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.gen.ProcessingStrategy;
 import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.templates.storage.FileBasedResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
+import org.textway.lapg.test.CheckingErrorStream;
 
-import java.io.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.PrintStream;
 
 import static org.junit.Assert.*;
 
@@ -143,7 +140,7 @@ public class BootstrapTest {
 				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "", status);
 			}
 			for (String s : createdFiles) {
-				assertTrue("file is not generated: " + s, strategy.created.contains(s));
+				assertTrue("file is not generated: " + s, strategy.getCreated().contains(s));
 			}
 
 			assertEquals(expectedResolvedConflicts - status.conflictCount + " conflicts instead of "
@@ -155,7 +152,7 @@ public class BootstrapTest {
 		}
 	}
 
-	public static class BootstrapTestStatus extends AbstractProcessingStatus {
+	private static class BootstrapTestStatus extends AbstractProcessingStatus {
 
 		private int conflictCount;
 		private StringBuilder tablesFile;
@@ -230,50 +227,6 @@ public class BootstrapTest {
 				}
 				errorsFile.append(text);
 			}
-		}
-	}
-
-	public static class CheckingFileBasedStrategy implements ProcessingStrategy {
-
-		Set<String> created = new HashSet<String>();
-		private final File root;
-
-		public CheckingFileBasedStrategy(File root) {
-			this.root = root;
-		}
-
-		@Override
-		public void createFile(String name, String contents, ProcessingStatus status) {
-			try {
-				// FIXME encoding, newline
-				new GeneratedFile(name, contents, "utf8", false) {
-					public void check() throws IOException {
-						String name = getName();
-						checkName(name);
-						String expected;
-						try {
-							InputStream is = new FileInputStream(new File(root, name));
-							expected = FileUtil.getFileContents(is, charset);
-						} catch (IOException ex) {
-							expected = "# Original data is not available (new file is created):\n# " + ex.getMessage();
-						}
-						String data = getData();
-						assertEquals(expected, data);
-						created.add(name);
-					}
-				}.check();
-			} catch (IOException e) {
-				fail(e.getMessage());
-			}
-		}
-
-		@Override
-		public IResourceLoader createResourceLoader(String qualifiedName) {
-			File folder = new File(qualifiedName);
-			if (folder.isDirectory()) {
-				return new FileBasedResourceLoader(new File[]{folder}, "utf8");
-			}
-			return null;
 		}
 	}
 }

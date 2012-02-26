@@ -4,7 +4,7 @@
     <module name="org.textway.lapg" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
-    <option name="PACKAGE_NAME" value="org.textway.lapg.test.cases" />
+    <option name="PACKAGE_NAME" value="org.textway.lapg.test" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="package" />

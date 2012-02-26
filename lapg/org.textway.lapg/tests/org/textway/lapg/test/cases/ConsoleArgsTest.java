@@ -17,6 +17,7 @@ package org.textway.lapg.test.cases;
 
 import org.junit.Test;
 import org.textway.lapg.gen.LapgOptions;
+import org.textway.lapg.test.CheckingErrorStream;
 
 import java.io.IOException;
 import java.io.OutputStream;
