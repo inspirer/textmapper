@@ -104,8 +104,10 @@
 			<src path="org.textway.lapg.core/tests"/>
 			<src path="org.textway.templates/tests"/>
 		</javac>
-		<junit fork="yes" haltonfailure="yes">
-			<batchtest fork="yes">
+		<mkdir dir="build/results"/>
+		<junit haltonfailure="yes" printsummary="true">
+			<batchtest fork="yes"
+					todir="build/results">
 				<fileset dir="org.textway.lapg.core/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
@@ -116,7 +118,7 @@
 					<include name="**/*Test.java"/>
 				</fileset>
 			</batchtest>
-			<formatter type="brief" usefile="false"/>
+			<formatter type="xml"/>
 			<classpath>
 				<pathelement location="build/bintests"/>
 				<pathelement location="build/lapg.jar"/>
