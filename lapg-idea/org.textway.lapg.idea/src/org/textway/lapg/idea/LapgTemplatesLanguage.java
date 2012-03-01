@@ -16,14 +16,25 @@
  */
 package org.textway.lapg.idea;
 
-import com.intellij.openapi.util.IconLoader;
-
-import javax.swing.*;
+import com.intellij.lang.Language;
 
 /**
- * Gryaznov Evgeny, 3/13/11
+ * Gryaznov Evgeny, 3/1/12
  */
-public interface LapgIcons {
-	final Icon LAPG_ICON = IconLoader.findIcon("/icons/syntax.png");
-	final Icon LAPG_TEMPLATES_ICON = IconLoader.findIcon("/icons/ltp.png");
+public class LapgTemplatesLanguage extends Language {
+
+	public static final String ID = "Lapg Templates";
+
+	public LapgTemplatesLanguage() {
+		super(ID);
+
+//		SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new LapgHighlighterFactory());
+	}
+
+//	private static class LapgHighlighterFactory extends SingleLazyInstanceSyntaxHighlighterFactory {
+//		@NotNull
+//		protected SyntaxHighlighter createHighlighter() {
+//			return new LapgSyntaxHighlighter();
+//		}
+//	}
 }

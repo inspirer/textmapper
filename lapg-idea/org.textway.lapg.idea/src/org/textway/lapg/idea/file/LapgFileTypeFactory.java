@@ -24,5 +24,6 @@ public class LapgFileTypeFactory extends FileTypeFactory {
     @Override
     public void createFileTypes(@NotNull FileTypeConsumer consumer) {
         consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
+		consumer.consume(LapgTemplatesFileType.LAPG_TEMPLATES_FILE_TYPE, LapgTemplatesFileType.DEFAULT_EXTENSION);
     }
 }
