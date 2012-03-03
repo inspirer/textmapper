@@ -19,6 +19,7 @@ package org.textway.lapg.idea.lang.templates;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.SyntaxHighlighterColors;
+import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
@@ -41,8 +42,9 @@ public class LtplSyntaxHighlighter extends SyntaxHighlighterBase implements Ltpl
 
 		fillMap(attributes, SyntaxHighlighterColors.STRING, CCON);
 		fillMap(attributes, SyntaxHighlighterColors.NUMBER, ICON);
-		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER, ESCID, ESCINT);  // TODO fix
-		fillMap(attributes, HighlighterColors.TEXT, ANY);  // TODO fix
+		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);
+		fillMap(attributes, CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES, ESCID, ESCINT);
+		fillMap(attributes, SyntaxHighlighterColors.JAVA_BLOCK_COMMENT, ANY);
 
 		// [] ()
 		fillMap(attributes, SyntaxHighlighterColors.BRACKETS, OP_LSQUARE, OP_RSQUARE);

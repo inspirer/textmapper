@@ -37,6 +37,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 	private LapgSymbol lexem;
 	private int fDocumentLength;
 	private int fTokenOffset;
+	private int fState;
 	private int fTokenLength;
 	private IElementType current;
 
@@ -59,13 +60,15 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		}
 		lexer.setOffset(startOffset);
 		fTokenOffset = startOffset;
+		lexer.setState(initialState);
+		fState = initialState;
 		fTokenLength = 0;
 		lexem = null;
 		current = null;
 	}
 
 	public int getState() {
-		return 0;
+		return fState;
 	}
 
 	public IElementType getTokenType() {
@@ -105,6 +108,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
 		if (lexem == null) {
+			fState = lexer.getState();
 			readNext();
 		}
 		if (fTokenOffset < lexem.offset) {
