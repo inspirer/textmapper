@@ -14,17 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.file;
+package org.textway.lapg.idea.lang.templates.parser;
 
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.tree.IFileElementType;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
+import org.textway.lapg.idea.lang.templates.lexer.LtplElementType;
+import org.textway.templates.ast.TemplatesParser.Tokens;
 
-public class LapgFileTypeFactory extends FileTypeFactory {
-	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
-		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
-	}
+/**
+ * evgeny, 3/3/12
+ */
+public interface LtplElementTypes {
+	final IFileElementType FILE = new IFileElementType(LtplFileType.LTPL_LANGUAGE);
+
+	public static final IElementType BUNDLE = new LtplElementType(Tokens.input, "bundle");
+	public static final IElementType TEMPLATE = new LtplElementType(Tokens.definition, "template");
+	public static final IElementType QUERY = new LtplElementType(Tokens.query_def, "query");
 }

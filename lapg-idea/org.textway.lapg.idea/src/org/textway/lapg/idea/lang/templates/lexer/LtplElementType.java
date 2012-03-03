@@ -18,7 +18,7 @@ package org.textway.lapg.idea.lang.templates.lexer;
 
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.file.LapgTemplatesFileType;
+import org.textway.lapg.idea.lang.templates.LtplFileType;
 
 /**
  * Gryaznov Evgeny, 3/1/12
@@ -27,7 +27,7 @@ public class LtplElementType extends IElementType {
 	private final int symbol;
 
 	public LtplElementType(int symbol, @NotNull String debugName) {
-		super(debugName, LapgTemplatesFileType.LAPG_TEMPLATES_LANGUAGE);
+		super(debugName, LtplFileType.LTPL_LANGUAGE);
 		this.symbol = symbol;
 	}
 

@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.file;
+package org.textway.lapg.idea.lang.templates.psi;
 
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
+import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.templates.LtplFileType;
 
-public class LapgFileTypeFactory extends FileTypeFactory {
-	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
-		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
+/**
+ * evgeny, 3/3/12
+ */
+public class TpsiBundle extends TpsiElement {
+
+	public TpsiBundle(@NotNull ASTNode node) {
+		super(node);
 	}
 }

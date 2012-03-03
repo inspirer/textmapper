@@ -29,6 +29,9 @@ public interface LtplTokenTypes {
 	IElementType WHITESPACE = TokenType.WHITE_SPACE;
 	TokenSet whitespaces = TokenSet.create(WHITESPACE);
 
+	// comments
+	TokenSet comments = TokenSet.create();
+
 	// tokens
 	IElementType IDENTIFIER = new LtplElementType(Lexems.identifier, "identifier");
 	IElementType CCON = new LtplElementType(Lexems.ccon, "string");

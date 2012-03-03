@@ -87,5 +87,9 @@
 				key="Lapg Templates"
 				factoryClass="org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
 
+		<lang.parserDefinition
+				language="Lapg Templates"
+				implementationClass="org.textway.lapg.idea.lang.templates.parser.LtplParserDefinition"/>
+
 	</extensions>
 </idea-plugin>

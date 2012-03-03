@@ -30,7 +30,7 @@ import java.io.StringReader;
 /**
  * Gryaznov Evgeny, 3/1/12
  */
-public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes{
+public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 
 	private CharSequence myText;
 	private TemplatesLexer lexer;

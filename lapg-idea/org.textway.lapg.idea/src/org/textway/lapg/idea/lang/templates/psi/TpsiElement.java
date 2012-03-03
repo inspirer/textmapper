@@ -14,17 +14,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.file;
+package org.textway.lapg.idea.lang.templates.psi;
 
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.Language;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
 
-public class LapgFileTypeFactory extends FileTypeFactory {
+/**
+ * evgeny, 3/3/12
+ */
+public class TpsiElement extends ASTWrapperPsiElement {
+
+	IElementType type;
+
+	public TpsiElement(@NotNull ASTNode node) {
+		super(node);
+		type = node.getElementType();
+	}
+
+	@NotNull
 	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
-		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
+	public Language getLanguage() {
+		return LtplFileType.LTPL_LANGUAGE;
+	}
+
+	@NotNull
+	@Override
+	public SearchScope getUseScope() {
+		return new LocalSearchScope(getContainingFile());
+	}
+
+	@Override
+	public String toString() {
+		return "lapg templates psi: " + type;
 	}
 }

@@ -17,15 +17,42 @@
 package org.textway.lapg.idea.lang.templates;
 
 import com.intellij.lang.Language;
+import com.intellij.openapi.fileTypes.LanguageFileType;
+import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.idea.LapgIcons;
+
+import javax.swing.*;
 
 /**
  * Gryaznov Evgeny, 3/1/12
  */
-public class LapgTemplatesLanguage extends Language {
+public class LtplFileType extends LanguageFileType {
 
-	public static final String ID = "Lapg Templates";
+	public static final LtplFileType LTPL_FILE_TYPE = new LtplFileType();
+	public static final Language LTPL_LANGUAGE = LTPL_FILE_TYPE.getLanguage();
 
-	public LapgTemplatesLanguage() {
-		super(ID);
+	public static final String DEFAULT_EXTENSION = "ltp";
+
+	private LtplFileType() {
+		super(new LtplLanguage());
+	}
+
+	@NotNull
+	public String getName() {
+		return LtplLanguage.ID;
+	}
+
+	@NotNull
+	public String getDescription() {
+		return "Lapg Templates Bundle";
+	}
+
+	@NotNull
+	public String getDefaultExtension() {
+		return DEFAULT_EXTENSION;
+	}
+
+	public Icon getIcon() {
+		return LapgIcons.LAPG_TEMPLATES_ICON;
 	}
 }
