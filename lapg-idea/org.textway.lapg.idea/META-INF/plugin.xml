@@ -81,5 +81,11 @@
 		<lang.commenter
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgCommenter"/>
+
+		<!-- Lapg templates -->
+		<syntaxHighlighter
+				key="Lapg Templates"
+				factoryClass="org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
+
 	</extensions>
 </idea-plugin>

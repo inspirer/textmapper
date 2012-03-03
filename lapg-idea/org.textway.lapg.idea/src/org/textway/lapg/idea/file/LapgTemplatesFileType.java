@@ -20,7 +20,7 @@ import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.LapgTemplatesLanguage;
+import org.textway.lapg.idea.lang.templates.LapgTemplatesLanguage;
 
 import javax.swing.*;
 

@@ -14,27 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea;
+package org.textway.lapg.idea.lang.templates;
 
-import com.intellij.lang.Language;
+import com.intellij.openapi.fileTypes.FileType;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.fileTypes.SyntaxHighlighterProvider;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Gryaznov Evgeny, 3/1/12
+ * Gryaznov Evgeny, 3/3/12
  */
-public class LapgTemplatesLanguage extends Language {
+public class LtplSyntaxHighlighterProvider implements SyntaxHighlighterProvider {
 
-	public static final String ID = "Lapg Templates";
-
-	public LapgTemplatesLanguage() {
-		super(ID);
-
-//		SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new LapgHighlighterFactory());
+	public SyntaxHighlighter create(FileType fileType, @Nullable Project project, @Nullable VirtualFile file) {
+		return new LtplSyntaxHighlighter();
 	}
-
-//	private static class LapgHighlighterFactory extends SingleLazyInstanceSyntaxHighlighterFactory {
-//		@NotNull
-//		protected SyntaxHighlighter createHighlighter() {
-//			return new LapgSyntaxHighlighter();
-//		}
-//	}
 }
