@@ -22,14 +22,17 @@ import com.intellij.openapi.editor.SyntaxHighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
-import org.textway.lapg.idea.lexer.LapgLexerAdapter;
-import org.textway.lapg.idea.lexer.LapgTokenTypes;
 import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.idea.lang.templates.LtplFileType;
+import org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighter;
+import org.textway.lapg.idea.lexer.LapgTokenTypes;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements LapgTokenTypes {
+
+	private LtplSyntaxHighlighter fTemplatesHighlighter = new LtplSyntaxHighlighter();
 
 	private static final Map<IElementType, TextAttributesKey> attributes;
 
@@ -41,7 +44,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 		fillMap(attributes, SyntaxHighlighterColors.NUMBER, ICON);
 		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);  // TODO fix
 		fillMap(attributes, SyntaxHighlighterColors.VALID_STRING_ESCAPE, REGEXP); // TODO fix
-		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, TEMPLATES, TOKEN_ACTION); // TODO fix
+		fillMap(attributes, SyntaxHighlighterColors.DOC_COMMENT, TOKEN_ACTION); // TODO fix
 
 		// [] ()
 		fillMap(attributes, SyntaxHighlighterColors.BRACKETS, OP_LBRACKET, OP_RBRACKET);
@@ -59,11 +62,14 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 	@NotNull
 	public Lexer getHighlightingLexer() {
-		return new LapgLexerAdapter();
+		return new LapgHighlightingLexer();
 	}
 
 	@NotNull
 	public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
+		if (tokenType.getLanguage() == LtplFileType.LTPL_LANGUAGE) {
+			return fTemplatesHighlighter.getTokenHighlights(tokenType);
+		}
 		return pack(attributes.get(tokenType));
 	}
 }

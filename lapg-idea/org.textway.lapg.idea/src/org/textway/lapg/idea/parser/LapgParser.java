@@ -24,6 +24,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.lexer.LapgElementType;
+import org.textway.lapg.idea.lexer.LapgTemplatesElementType;
 import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
@@ -220,6 +221,9 @@ public class LapgParser implements PsiParser {
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
 				next.lexem = Lexems.eoi;
+			} else if (myBuilder.getTokenType() instanceof LapgTemplatesElementType) {
+				LapgTemplatesElementType tokenType = (LapgTemplatesElementType) myBuilder.getTokenType();
+				next.lexem = tokenType.getSymbol();
 			} else {
 				LapgElementType tokenType = (LapgElementType) myBuilder.getTokenType();
 				next.lexem = tokenType.getSymbol();

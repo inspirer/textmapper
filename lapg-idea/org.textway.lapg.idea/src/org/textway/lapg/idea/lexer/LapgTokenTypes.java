@@ -40,7 +40,7 @@ public interface LapgTokenTypes {
 
 	// inner tokens
 	IElementType TOKEN_ACTION = new LapgElementType(Lexems.code, "action");
-	IElementType TEMPLATES = new LapgElementType(Lexems.eoi, "templates");
+	IElementType TEMPLATES = new LapgTemplatesElementType(Lexems.eoi, false, "templates");
 
 	// [] ()
 	IElementType OP_LBRACKET = new LapgElementType(Lexems.LSQUARE, "[");
