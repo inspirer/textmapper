@@ -23,6 +23,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
+import org.textway.lapg.idea.lang.regex.lexer.RegexTokenTypes;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
 import org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighter;
 import org.textway.lapg.idea.lexer.LapgTokenTypes;
@@ -30,7 +31,7 @@ import org.textway.lapg.idea.lexer.LapgTokenTypes;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements LapgTokenTypes {
+public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements LapgTokenTypes, RegexTokenTypes {
 
 	private LtplSyntaxHighlighter fTemplatesHighlighter = new LtplSyntaxHighlighter();
 
@@ -58,6 +59,10 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 		// operators/keywords
 		fillMap(attributes, operators, SyntaxHighlighterColors.OPERATION_SIGN);
 		fillMap(attributes, keywords, SyntaxHighlighterColors.KEYWORD);
+
+		fillMap(attributes, SyntaxHighlighterColors.KEYWORD, RE_DOT, RE_MULT, RE_PLUS, RE_QUESTIONMARK);
+		fillMap(attributes, SyntaxHighlighterColors.VALID_STRING_ESCAPE, RE_CHAR, RE_CHARCLASS);
+		fillMap(attributes, SyntaxHighlighterColors.BRACES, RE_LCURLY, RE_RCURLY);
 	}
 
 	@NotNull

@@ -18,6 +18,7 @@ package org.textway.lapg.idea.highlighter;
 
 import com.intellij.lexer.LayeredLexer;
 import com.intellij.psi.tree.IElementType;
+import org.textway.lapg.idea.lang.regex.lexer.RegexLexerAdapter;
 import org.textway.lapg.idea.lang.templates.lexer.LtplLexerAdapter;
 import org.textway.lapg.idea.lexer.LapgLexerAdapter;
 import org.textway.lapg.idea.lexer.LapgTokenTypes;
@@ -31,6 +32,10 @@ public class LapgHighlightingLexer extends LayeredLexer {
 		super(new LapgLexerAdapter());
 		registerSelfStoppingLayer(new LtplLexerAdapter(),
 				new IElementType[]{LapgTokenTypes.TEMPLATES}, IElementType.EMPTY_ARRAY);
+		registerSelfStoppingLayer(new LtplLexerAdapter(),
+				new IElementType[]{LapgTokenTypes.TOKEN_ACTION}, IElementType.EMPTY_ARRAY);
+		registerSelfStoppingLayer(new RegexLexerAdapter(),
+				new IElementType[]{LapgTokenTypes.REGEXP}, IElementType.EMPTY_ARRAY);
 
 	}
 }
