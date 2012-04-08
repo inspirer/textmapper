@@ -22,7 +22,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.file.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
 
 import java.util.Arrays;
 import java.util.HashSet;

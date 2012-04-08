@@ -23,7 +23,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lexer.LapgTokenTypes;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,17 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.file;
+package org.textway.lapg.idea.lang.syntax.lexer;
 
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.templates.LtplFileType;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
 
-public class LapgFileTypeFactory extends FileTypeFactory {
+public class LapgElementType extends IElementType {
+	private final int symbol;
+
+	public LapgElementType(int symbol, @NotNull String debugName) {
+		super(debugName, LapgFileType.LAPG_LANGUAGE);
+		this.symbol = symbol;
+	}
+
+	public int getSymbol() {
+		return symbol;
+	}
+
 	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
-		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
+	public String toString() {
+		return "[lapg]" + super.toString();
 	}
 }

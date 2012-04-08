@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.highlighter;
+package org.textway.lapg.idea.lang.syntax;
 
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.HighlighterColors;
@@ -24,9 +24,10 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.lang.regex.lexer.RegexTokenTypes;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgHighlightingLexer;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
 import org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighter;
-import org.textway.lapg.idea.lexer.LapgTokenTypes;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 import java.util.HashMap;
 import java.util.Map;

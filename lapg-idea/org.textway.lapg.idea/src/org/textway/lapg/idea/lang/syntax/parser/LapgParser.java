@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.parser;
+package org.textway.lapg.idea.lang.syntax.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.PsiBuilder;
@@ -23,8 +23,8 @@ import com.intellij.lang.PsiParser;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lexer.LapgElementType;
-import org.textway.lapg.idea.lexer.LapgTemplatesElementType;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgElementType;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgTemplatesElementType;
 import org.textway.lapg.parser.LapgLexer;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;

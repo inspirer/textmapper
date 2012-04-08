@@ -14,31 +14,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.psi;
+package org.textway.lapg.idea.lang.syntax.psi;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
+import com.intellij.lang.Language;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.parser.LapgElementTypes;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
 
-import java.util.ArrayList;
-import java.util.List;
+public class LpsElement extends ASTWrapperPsiElement {
 
-/**
- * Gryaznov Evgeny, 1/26/11
- */
-public class LpsNonTerm extends LpsNamedElement {
+	IElementType type;
 
-	public LpsNonTerm(@NotNull ASTNode node) {
+	public LpsElement(@NotNull ASTNode node) {
 		super(node);
+		type = node.getElementType();
 	}
 
-	public LpsRule[] getRules() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.RULE));
-		List<LpsRule> result = new ArrayList<LpsRule>(nodes.length);
-		for (ASTNode node : nodes) {
-			result.add((LpsRule) node.getPsi());
-		}
-		return result.toArray(new LpsRule[result.size()]);
+	@NotNull
+	@Override
+	public Language getLanguage() {
+		return LapgFileType.LAPG_LANGUAGE;
+	}
+
+	@NotNull
+	@Override
+	public SearchScope getUseScope() {
+		return new LocalSearchScope(getContainingFile());
+	}
+
+	@Override
+	public String toString() {
+		return "lapg psi: " + type;
 	}
 }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.parser;
+package org.textway.lapg.idea.lang.syntax.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
@@ -22,9 +22,9 @@ import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.tree.TokenSet;
-import org.textway.lapg.idea.file.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.psi.LpsGrammar;
+import org.textway.lapg.idea.lang.syntax.psi.LpsGrammar;
 
 public class LapgFile extends PsiFileImpl {
 	protected LapgFile(FileViewProvider viewProvider) {

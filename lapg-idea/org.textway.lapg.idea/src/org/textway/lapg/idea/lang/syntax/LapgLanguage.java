@@ -14,14 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.psi;
+package org.textway.lapg.idea.lang.syntax;
 
-import com.intellij.lang.ASTNode;
+import com.intellij.lang.Language;
+import com.intellij.openapi.fileTypes.SingleLazyInstanceSyntaxHighlighterFactory;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import org.jetbrains.annotations.NotNull;
 
-public class LpsOption extends LpsElement {
+public class LapgLanguage extends Language {
 
-	public LpsOption(@NotNull ASTNode node) {
-		super(node);
+	public static final String ID = "Lapg Syntax";
+
+	public LapgLanguage() {
+		super(ID);
+
+		SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new LapgHighlighterFactory());
+	}
+
+	private static class LapgHighlighterFactory extends SingleLazyInstanceSyntaxHighlighterFactory {
+		@NotNull
+		protected SyntaxHighlighter createHighlighter() {
+			return new LapgSyntaxHighlighter();
+		}
 	}
 }

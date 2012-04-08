@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.parser;
+package org.textway.lapg.idea.lang.syntax.parser;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import org.textway.lapg.idea.file.LapgFileType;
-import org.textway.lapg.idea.lexer.LapgElementType;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgElementType;
 import org.textway.lapg.parser.LapgParser.Tokens;
 
 public interface LapgElementTypes {

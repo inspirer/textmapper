@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.psi;
+package org.textway.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;

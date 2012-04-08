@@ -14,17 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.psi;
+package org.textway.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Gryaznov Evgeny, 1/25/11
- */
-public class LpsSymbol extends LpsElement {
+public class LpsOption extends LpsElement {
 
-	public LpsSymbol(@NotNull ASTNode node) {
+	public LpsOption(@NotNull ASTNode node) {
 		super(node);
 	}
 }

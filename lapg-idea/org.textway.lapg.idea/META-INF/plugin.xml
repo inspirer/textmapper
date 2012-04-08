@@ -56,16 +56,16 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<facetType implementation="org.textway.lapg.idea.facet.LapgFacetType"/>
 		<frameworkSupport implementation="org.textway.lapg.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
-		<fileTypeFactory implementation="org.textway.lapg.idea.file.LapgFileTypeFactory"/>
+		<fileTypeFactory implementation="org.textway.lapg.idea.LapgFileTypeFactory"/>
 		<fileTemplateGroup implementation="org.textway.lapg.idea.actions.LapgTemplatesFactory"/>
 
 		<syntaxHighlighter
 				key="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.highlighter.LapgSyntaxHighlighter"/>
+				implementationClass="org.textway.lapg.idea.lang.syntax.LapgSyntaxHighlighter"/>
 
 		<lang.parserDefinition
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.parser.LapgParserDefinition"/>
+				implementationClass="org.textway.lapg.idea.lang.syntax.parser.LapgParserDefinition"/>
 
 		<lang.foldingBuilder
 				language="Lapg Syntax"

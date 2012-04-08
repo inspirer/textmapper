@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.file;
+package org.textway.lapg.idea.lang.syntax;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.LapgLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

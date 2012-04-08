@@ -14,21 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.regex.lexer;
+package org.textway.lapg.idea.lang.syntax.lexer;
 
-import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.tree.ILazyParseableElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.psi.LpsTemplates;
+import org.textway.lapg.idea.lang.templates.LtplFileType;
 
 /**
  * evgeny, 3/4/12
  */
-public class RegexElementType extends IElementType {
-	private final int symbol;
+public class LapgTemplatesElementType extends ILazyParseableElementType {
 
-	public RegexElementType(int symbol, @NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
+	private int symbol;
+	private boolean contentOnly;
+
+	public LapgTemplatesElementType(int symbol, boolean contentOnly, @NotNull String debugName) {
+		super(debugName, LtplFileType.LTPL_LANGUAGE);
 		this.symbol = symbol;
+		this.contentOnly = contentOnly;
 	}
 
 	public int getSymbol() {
@@ -36,9 +41,12 @@ public class RegexElementType extends IElementType {
 	}
 
 	@Override
+	public ASTNode createNode(CharSequence text) {
+		return new LpsTemplates(this, text);
+	}
+
+	@Override
 	public String toString() {
-		return "[lapg regex]" + super.toString();
+		return "[lapg]" + super.toString();
 	}
 }
-
-

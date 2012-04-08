@@ -45,8 +45,8 @@ import org.textway.lapg.idea.LapgBundle;
 import org.textway.lapg.idea.facet.LapgConfigurationBean;
 import org.textway.lapg.idea.facet.LapgFacet;
 import org.textway.lapg.idea.facet.LapgFacetType;
-import org.textway.lapg.idea.file.LapgFileType;
-import org.textway.lapg.idea.parser.LapgFile;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.parser.LapgFile;
 import org.textway.lapg.api.TextSourceElement;
 
 import java.io.File;

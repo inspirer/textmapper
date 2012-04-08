@@ -29,8 +29,8 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.LapgBundle;
 import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.file.LapgFileType;
-import org.textway.lapg.idea.lexer.LapgTokenTypes;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 /**
  * Gryaznov Evgeny, 3/13/11

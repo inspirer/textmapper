@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.textway.lapg.idea.LapgBundle;
 import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.file.LapgFileType;
+import org.textway.lapg.idea.lang.syntax.LapgFileType;
 
 import javax.swing.*;
 import java.util.Collection;

@@ -14,26 +14,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lexer;
+package org.textway.lapg.idea.lang.syntax.psi;
 
+import com.intellij.psi.impl.source.tree.LazyParseablePsiElement;
 import com.intellij.psi.tree.IElementType;
-import org.textway.lapg.idea.file.LapgFileType;
-import org.jetbrains.annotations.NotNull;
 
-public class LapgElementType extends IElementType {
-	private final int symbol;
+/**
+ * evgeny, 3/4/12
+ */
+public class LpsTemplates extends LazyParseablePsiElement {
 
-	public LapgElementType(int symbol, @NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
-		this.symbol = symbol;
-	}
-
-	public int getSymbol() {
-		return symbol;
-	}
-
-	@Override
-	public String toString() {
-		return "[lapg]" + super.toString();
+	public LpsTemplates(@org.jetbrains.annotations.NotNull IElementType type, CharSequence buffer) {
+		super(type, buffer);
 	}
 }
