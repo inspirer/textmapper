@@ -4,6 +4,7 @@
     <option name="PER_PROJECT_SETTINGS">
       <value>
         <option name="USE_SAME_INDENTS" value="true" />
+        <option name="IGNORE_SAME_INDENTS_FOR_LANGUAGES" value="true" />
         <option name="OTHER_INDENT_OPTIONS">
           <value>
             <option name="INDENT_SIZE" value="4" />
