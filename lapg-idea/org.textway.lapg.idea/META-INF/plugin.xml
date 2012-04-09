@@ -71,9 +71,11 @@
 				language="Lapg Syntax"
 				implementationClass="org.textway.lapg.idea.editor.LapgFoldingBuilder"/>
 
+		<colorSettingsPage implementation="org.textway.lapg.idea.lang.syntax.LapgColorsPage"/>
+
 		<annotator
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.editor.LapgAnnotator"/>
+				implementationClass="org.textway.lapg.idea.lang.syntax.LapgAnnotator"/>
 
 		<defaultLiveTemplatesProvider
 				implementation="org.textway.lapg.idea.templates.LapgDefaultLiveTemplatesProvider"/>

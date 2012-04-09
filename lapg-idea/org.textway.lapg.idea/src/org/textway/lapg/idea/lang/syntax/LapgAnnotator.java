@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.editor;
+package org.textway.lapg.idea.lang.syntax;
 
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -35,7 +35,7 @@ public class LapgAnnotator implements Annotator {
 			PsiElement target = ref.resolve();
 			if (target instanceof LpsLexem) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
-				infoAnnotation.setTextAttributes(CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
+				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.LEXEM_REFERENCE);
 			} else if (target == null) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
