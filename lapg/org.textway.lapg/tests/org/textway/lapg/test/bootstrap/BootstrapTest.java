@@ -51,7 +51,7 @@ public class BootstrapTest {
 	@Test
 	public void testRegexS() {
 		bootstrap("org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
-				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 2);
+				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 
 	@Test

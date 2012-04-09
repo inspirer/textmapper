@@ -531,6 +531,7 @@ public class LexicalBuilder {
 			current = current.next;
 		}
 
+		// first group (only) succeeds on EOI
 		first.change[0] = -2;
 
 		return lexemerrors == 0;

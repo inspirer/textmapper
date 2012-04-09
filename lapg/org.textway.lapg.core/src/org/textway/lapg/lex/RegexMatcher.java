@@ -51,14 +51,14 @@ public class RegexMatcher {
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();
-			if (message.startsWith("syntax error")) {
+			if (message.startsWith("syntax error") || message.startsWith("invalid lexem at")) {
 				if (problem.getOffset() >= regex.length()) {
 					message = "regexp is incomplete";
 				} else {
 					message = "regexp has syntax error near `" + regex.substring(problem.getOffset()) + "'";
 				}
 			} else if (message.equals("Unexpected end of input reached")) {
-				message = "unfinished escape sequence found";
+				message = "unfinished regexp";
 			}
 			throw new RegexpParseException(message, problem.getOffset());
 		}
@@ -242,14 +242,14 @@ public class RegexMatcher {
 		public void visitBefore(RegexList c) {
 			if (c.isInParentheses()) {
 				stack.push(new StackElement(index()));
-				yield(null);	/* ( */
+				yield(null);    /* ( */
 			}
 		}
 
 		@Override
 		public void visitAfter(RegexList c) {
 			if (c.isInParentheses()) {
-				yield(null);	/* ) */
+				yield(null);    /* ) */
 				stack.pop().done(states);
 			}
 		}
@@ -259,7 +259,7 @@ public class RegexMatcher {
 			if (states.size() == 0) {
 				outermostOr = c;
 				stack.push(new StackElement(index()));
-				yield(null);	/* ( */
+				yield(null);    /* ( */
 			}
 		}
 
@@ -267,13 +267,13 @@ public class RegexMatcher {
 		public void visitBetween(RegexOr c) {
 			stack.peek().addOr(index());
 			states.get(stack.peek().index).addJump(index() + 1);
-			yield(null);	/* | */
+			yield(null);    /* | */
 		}
 
 		@Override
 		public void visitAfter(RegexOr c) {
 			if (outermostOr == c) {
-				yield(null);	/* ) */
+				yield(null);    /* ) */
 				stack.pop().done(states);
 			}
 		}
@@ -290,7 +290,7 @@ public class RegexMatcher {
 				states.get(start).addJump(index());
 			} else if (c.getMin() == 0 && c.getMax() == -1) {
 				states.get(start).addJump(index());
-				yield(null);	/* splitter */
+				yield(null);    /* splitter */
 				states.get(index() - 1).addJump(start);
 			} else if (c.getMin() == 1 && c.getMax() == -1) {
 				yield(null);   /* splitter */

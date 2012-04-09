@@ -141,7 +141,18 @@ public class RegexUtil {
 	}
 
 	static char unescapeOct(String s) {
-		throw new UnsupportedOperationException("not implemented");
+		assert s.length() == 3;
+		int result = 0;
+		for (int i = 0; i < 3; i++) {
+			result <<= 3;
+			int c = s.codePointAt(i);
+			if (c >= '0' && c <= '7') {
+				result |= c - '0';
+			} else {
+				throw new NumberFormatException();
+			}
+		}
+		return (char) result;
 	}
 
 	public static char unescapeHex(String s) {

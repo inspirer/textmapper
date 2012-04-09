@@ -206,7 +206,7 @@ public class RegexpParseTest {
 			rp.compile(0, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000"));
 			fail("no exception");
 		} catch (RegexpParseException ex) {
-			assertEquals("regexp is incomplete", ex.getMessage());
+			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(29, ex.getErrorOffset());
 		}
 
@@ -262,7 +262,7 @@ public class RegexpParseTest {
 			rp.compile(7, parseRegexp("aaa\\"));
 			fail("no exception");
 		} catch (RegexpParseException ex) {
-			assertEquals("unfinished escape sequence found", ex.getMessage());
+			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
 
@@ -270,7 +270,7 @@ public class RegexpParseTest {
 			rp.compile(8, parseRegexp("aaa\\u4a5!zzz"));
 			fail("no exception");
 		} catch (RegexpParseException ex) {
-			assertEquals("invalid lexem at line 1: `\\u4a5!`, skipped", ex.getMessage());
+			assertEquals("regexp has syntax error near `\\u4a5!zzz'", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
 
@@ -278,18 +278,18 @@ public class RegexpParseTest {
 			rp.compile(9, parseRegexp("aaa\\u4a"));
 			fail("no exception");
 		} catch (RegexpParseException ex) {
-			assertEquals("unfinished escape sequence found", ex.getMessage());
+			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
 
 		try {
-			rp.compile(9, parseRegexp("aaa\\007"));
+			rp.compile(9, parseRegexp("aaa\\00"));
 			fail("no exception");
-		} catch (UnsupportedOperationException ex) {
-			/* TODO get rid of */
 		} catch (RegexpParseException ex) {
-			assertEquals("unfinished escape sequence found", ex.getMessage());
+			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
+		} catch (Exception ex) {
+			fail("wrong exception");
 		}
 	}
 

@@ -58,6 +58,10 @@ public class RegexDefTest {
 	@Test
 	public void testCharClasses() {
 		checkRegex("");
+		checkRegex("\\001", "\\x01");
+		checkRegex("\\011", "\\t");
+		checkRegex("\\022", "\\x12");
+		checkRegex("\\111", "I");
 		checkRegex("\\xf40");
 		checkErrors("\\u200", "Unexpected end of input reached");
 		checkErrors("\\x2x0", "invalid lexem at line 1: `\\x2x`, skipped");
@@ -75,8 +79,9 @@ public class RegexDefTest {
 	public void testSet() {
 		checkRegex("[a-z-]", "[a-z\\-]");
 		checkRegex("[-a-z]", "[\\-a-z]");
-		checkRegex("[a-{]", "[a\\-{]");
+		checkRegex("[a\\-{]", "[a\\-{]");
 
+		checkErrors("[a-{]", "invalid range in character class (after dash): `\\{', escape `-'");
 		checkErrors("[\\.-z]", "invalid range in character class (before dash): `\\.', escape `-'");
 	}
 
@@ -95,8 +100,8 @@ public class RegexDefTest {
 	@Test
 	public void testQuantifiers() {
 		checkRegex("{aaa}");
-		checkErrors("{aaa }", "an expansion identifier is expected instead of `aaa '");
-		checkErrors("a{aaa }", "an expansion identifier is expected instead of `aaa '");
+		checkErrors("{aaa }", "invalid lexem at line 1: `{aaa `, skipped");
+		checkErrors("a{aaa }", "invalid lexem at line 1: `{aaa `, skipped");
 		checkRegex("a{9}");
 		checkRegex("a{9,}");
 		checkRegex("a{9,10}");
