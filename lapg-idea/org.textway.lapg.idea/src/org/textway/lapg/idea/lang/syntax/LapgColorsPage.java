@@ -46,17 +46,17 @@ public class LapgColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Line comment", LapgSyntaxHighlighter.LINE_COMMENT),
 
 			new AttributesDescriptor("RegExp Text", LapgSyntaxHighlighter.RE_TEXT),
-			new AttributesDescriptor("RegExp Quantifier", LapgSyntaxHighlighter.RE_QUANTIFIER),
-			new AttributesDescriptor("RegExp Dot (any character)", LapgSyntaxHighlighter.RE_DOT),
 			new AttributesDescriptor("RegExp Escaped character", LapgSyntaxHighlighter.RE_ESCAPED),
+			new AttributesDescriptor("RegExp Character class", LapgSyntaxHighlighter.RE_CHAR_CLASS),
+			new AttributesDescriptor("RegExp Dot (any character)", LapgSyntaxHighlighter.RE_DOT),
+			new AttributesDescriptor("RegExp Quantifier", LapgSyntaxHighlighter.RE_QUANTIFIER),
 //			new AttributesDescriptor("RegExp Invalid escape sequence", LapgSyntaxHighlighter.RE_INVALID),
 //			new AttributesDescriptor("RegExp Redundant escape sequence", LapgSyntaxHighlighter.RE_REDUNDANT),
-			new AttributesDescriptor("RegExp Braces", LapgSyntaxHighlighter.RE_BRACES),
 			new AttributesDescriptor("RegExp Brackets", LapgSyntaxHighlighter.RE_BRACKETS),
 			new AttributesDescriptor("RegExp Parentheses", LapgSyntaxHighlighter.RE_PARENTHS),
+			new AttributesDescriptor("RegExp Expand", LapgSyntaxHighlighter.RE_EXPAND),
 //			new AttributesDescriptor("RegExp Comma", LapgSyntaxHighlighter.RE_COMMA),
 //			new AttributesDescriptor("RegExp Bad character", LapgSyntaxHighlighter.RE_BAD_CHAR),
-			new AttributesDescriptor("RegExp Character class", LapgSyntaxHighlighter.RE_CHAR_CLASS),
 //			new AttributesDescriptor("RegExp Quote character", LapgSyntaxHighlighter.QUOTE_CHARACTER),
 	};
 

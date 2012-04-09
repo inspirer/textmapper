@@ -25,22 +25,22 @@ import org.textway.lapg.regex.RegexDefLexer.Lexems;
 public interface RegexTokenTypes {
 
 	IElementType RE_CHAR = new RegexElementType(Lexems._char, "char");
+	IElementType RE_ESCAPED = new RegexElementType(Lexems.escaped, "\\escaped");
 	IElementType RE_CHARCLASS = new RegexElementType(Lexems.charclass, "charclass");
-
-	IElementType RE_MINUS = new RegexElementType(Lexems.MINUS, "-");
-	IElementType RE_XOR = new RegexElementType(Lexems.XOR, "^");
-	IElementType RE_LPAREN = new RegexElementType(Lexems.LPAREN, "(");
-	IElementType RE_OR = new RegexElementType(Lexems.OR, "|");
-	IElementType RE_RPAREN = new RegexElementType(Lexems.RPAREN, ")");
-	IElementType RE_LCURLY = new RegexElementType(Lexems.LCURLY, "{");
-	IElementType RE_LCURLYDIGIT = new RegexElementType(Lexems.LCURLYdigit, "{digit");
-	IElementType RE_LCURLYLETTER = new RegexElementType(Lexems.LCURLYletter, "{letter");
-	IElementType RE_RCURLY = new RegexElementType(Lexems.RCURLY, "}");
-	IElementType RE_LSQUARE = new RegexElementType(Lexems.LSQUARE, "[");
-	IElementType RE_RSQUARE = new RegexElementType(Lexems.RSQUARE, "]");
 
 	IElementType RE_DOT = new RegexElementType(Lexems.DOT, ".");
 	IElementType RE_MULT = new RegexElementType(Lexems.MULT, "*");
 	IElementType RE_PLUS = new RegexElementType(Lexems.PLUS, "+");
 	IElementType RE_QUESTIONMARK = new RegexElementType(Lexems.QUESTIONMARK, "?");
+	IElementType RE_QUANTFIER = new RegexElementType(Lexems.quantifier, "{n,m}");
+
+	IElementType RE_LPAREN = new RegexElementType(Lexems.LPAREN, "(");
+	IElementType RE_OR = new RegexElementType(Lexems.OR, "|");
+	IElementType RE_RPAREN = new RegexElementType(Lexems.RPAREN, ")");
+	IElementType RE_EXPAND = new RegexElementType(Lexems.expand, "{expand}");
+
+	IElementType RE_LSQUARE = new RegexElementType(Lexems.LSQUARE, "[");
+	IElementType RE_LSQUAREXOR = new RegexElementType(Lexems.LSQUAREXOR, "[^");
+	IElementType RE_MINUS = new RegexElementType(Lexems.MINUS, "-");
+	IElementType RE_RSQUARE = new RegexElementType(Lexems.RSQUARE, "]");
 }

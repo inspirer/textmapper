@@ -89,9 +89,14 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
 	);
 
-	static final TextAttributesKey RE_QUANTIFIER = TextAttributesKey.createTextAttributesKey(
-			"LAPG.RE_QUANTIFIER",
-			SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
+	static final TextAttributesKey RE_ESCAPED = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_ESCAPED",
+			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
+	);
+
+	static final TextAttributesKey RE_CHAR_CLASS = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_CHAR_CLASS",
+			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
 	);
 
 	static final TextAttributesKey RE_DOT = TextAttributesKey.createTextAttributesKey(
@@ -99,14 +104,9 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 			SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
 	);
 
-	static final TextAttributesKey RE_ESCAPED = TextAttributesKey.createTextAttributesKey(
-			"LAPG.RE_ESCAPED",
-			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
-	);
-
-	static final TextAttributesKey RE_BRACES = TextAttributesKey.createTextAttributesKey(
-			"LAPG.RE_BRACES",
-			SyntaxHighlighterColors.BRACES.getDefaultAttributes()
+	static final TextAttributesKey RE_QUANTIFIER = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_QUANTIFIER",
+			SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
 	);
 
 	static final TextAttributesKey RE_BRACKETS = TextAttributesKey.createTextAttributesKey(
@@ -119,9 +119,9 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 			SyntaxHighlighterColors.PARENTHS.getDefaultAttributes()
 	);
 
-	static final TextAttributesKey RE_CHAR_CLASS = TextAttributesKey.createTextAttributesKey(
-			"LAPG.RE_CHAR_CLASS",
-			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
+	static final TextAttributesKey RE_EXPAND = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_EXPAND",
+			CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES.getDefaultAttributes()
 	);
 
 	private static final Map<IElementType, TextAttributesKey> attributes;
@@ -147,14 +147,16 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 		// regexp
 		fillMap(attributes, RE_TEXT, RegexTokenTypes.RE_CHAR);
-		fillMap(attributes, RE_QUANTIFIER,
-				RegexTokenTypes.RE_MULT, RegexTokenTypes.RE_PLUS, RegexTokenTypes.RE_QUESTIONMARK);
-		fillMap(attributes, RE_DOT, RegexTokenTypes.RE_DOT);
-//		fillMap(attributes, RE_ESCAPED,  ... TODO );
-		fillMap(attributes, RE_BRACES, RegexTokenTypes.RE_LCURLY, RegexTokenTypes.RE_RCURLY);
-		fillMap(attributes, RE_BRACKETS, RegexTokenTypes.RE_LSQUARE, RegexTokenTypes.RE_RSQUARE);
-		fillMap(attributes, RE_PARENTHS, RegexTokenTypes.RE_LPAREN, RegexTokenTypes.RE_RPAREN);
+		fillMap(attributes, RE_ESCAPED, RegexTokenTypes.RE_ESCAPED);
 		fillMap(attributes, RE_CHAR_CLASS, RegexTokenTypes.RE_CHARCLASS);
+		fillMap(attributes, RE_DOT, RegexTokenTypes.RE_DOT);
+		fillMap(attributes, RE_QUANTIFIER,
+				RegexTokenTypes.RE_MULT, RegexTokenTypes.RE_PLUS, RegexTokenTypes.RE_QUESTIONMARK,
+				RegexTokenTypes.RE_QUANTFIER);
+		fillMap(attributes, RE_BRACKETS,
+				RegexTokenTypes.RE_LSQUARE, RegexTokenTypes.RE_LSQUAREXOR, RegexTokenTypes.RE_RSQUARE);
+		fillMap(attributes, RE_PARENTHS, RegexTokenTypes.RE_LPAREN, RegexTokenTypes.RE_RPAREN);
+		fillMap(attributes, RE_EXPAND, RegexTokenTypes.RE_EXPAND);
 	}
 
 	@NotNull
