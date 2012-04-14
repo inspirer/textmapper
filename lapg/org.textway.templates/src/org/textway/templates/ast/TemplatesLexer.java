@@ -98,6 +98,7 @@ public class TemplatesLexer {
 		public static final int COLON = 62;
 		public static final int QUESTIONMARK = 63;
 		public static final int _skip = 64;
+		public static final int error = 65;
 	}
 
 	public interface ErrorReporter {

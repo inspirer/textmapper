@@ -22,6 +22,7 @@ gentree = true
 positions = "line,offset"
 endpositions = "offset"
 genCopyright = true
+genCleanup = true
 
 # Vocabulary
 
@@ -101,6 +102,8 @@ Lassert:	/assert/
 
 _skip:      /[\t\r\n ]+/    { return false; }
 
+error:
+
 # Grammar
 
 input (List<org.textway.templates.bundle.@IBundleEntity>) ::=
@@ -113,10 +116,14 @@ definitions (List<org.textway.templates.bundle.@IBundleEntity>) ::=
 ;
 
 definition (org.textway.templates.bundle.@IBundleEntity) ::=
-	template_start instructions template_end		{ $template_start.setInstructions($instructions); }
-	| template_start template_end
+	  template_def
 	| query_def
 	| any											{ $$ = null; }
+;
+
+template_def (TemplateNode) ::=
+	template_start instructions template_end		{ $template_start.setInstructions($instructions); }
+	| template_start template_end
 ;
 
 query_def (QueryNode) ::=
@@ -153,8 +160,8 @@ template_end ::=
 	'${' Lend '}' ;
 
 instructions (ArrayList<Node>) ::=
-	instructions instruction						{ $instructions#0.add($instruction); }
-	| instruction 									{ $$ = new ArrayList<Node>(); $instructions.add($instruction); }
+	instructions instruction						{ if ($instruction != null) $instructions#0.add($instruction); }
+	| instruction 									{ $$ = new ArrayList<Node>(); if ($instruction!=null) $instructions.add($instruction); }
 ;
 
 '[-]}' ::=
@@ -182,6 +189,7 @@ sentence (Node) ::=
 													{ $$ = new CallTemplateNode($qualified_id, $template_argumentsopt, $template_for_expropt, templatePackage, true, source, ${sentence.offset},${sentence.endoffset}); }
 	| Leval conditional_expression comma_expropt	{ $$ = new EvalNode($conditional_expression, $comma_expropt, source, ${sentence.offset},${sentence.endoffset}); }
 	| Lassert expression							{ $$ = new AssertNode($expression, source, ${sentence.offset},${sentence.endoffset}); }
+	| syntax_problem								{ $$ = null; }
 ;
 
 comma_expr (ExpressionNode) ::=
@@ -375,6 +383,9 @@ body (TemplateNode) ::=
 							$body.setInstructions($instructions);
 						}
 ;
+
+syntax_problem ::=
+	error ;
 
 %input input, body;
 
