@@ -38,8 +38,8 @@ public interface LapgTokenTypes {
 	TokenSet strings = TokenSet.create(STRING);
 
 	// inner tokens
-	IElementType TOKEN_ACTION = new LapgElementType(Lexems.code, "action");
-	IElementType TEMPLATES = new LapgElementType(Lexems.eoi, "templates");
+	IElementType TOKEN_ACTION = new LapgTemplatesElementType(Lexems.code, true, "action");
+	IElementType TEMPLATES = new LapgTemplatesElementType(Lexems.eoi, false, "templates");
 
 	// [] ()
 	IElementType OP_LBRACKET = new LapgElementType(Lexems.LSQUARE, "[");

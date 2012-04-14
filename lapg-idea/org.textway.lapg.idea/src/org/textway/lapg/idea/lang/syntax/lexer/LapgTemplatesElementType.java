@@ -16,11 +16,14 @@
  */
 package org.textway.lapg.idea.lang.syntax.lexer;
 
-import com.intellij.lang.ASTNode;
+import com.intellij.lang.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.ILazyParseableElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textway.lapg.idea.lang.syntax.psi.LpsTemplates;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
+import org.textway.lapg.idea.lang.templates.parser.LtplParser;
 
 /**
  * evgeny, 3/4/12
@@ -43,6 +46,19 @@ public class LapgTemplatesElementType extends ILazyParseableElementType {
 	@Override
 	public ASTNode createNode(CharSequence text) {
 		return new LpsTemplates(this, text);
+	}
+
+	@Override
+	protected ASTNode doParseContents(@NotNull ASTNode chameleon, @NotNull PsiElement psi) {
+		final Project project = psi.getProject();
+		Language languageForParser = getLanguageForParser(psi);
+		final PsiBuilder builder = PsiBuilderFactory.getInstance().createBuilder(project, chameleon, null, languageForParser, chameleon.getChars());
+		final PsiParser parser = LanguageParserDefinitions.INSTANCE.forLanguage(languageForParser).createParser(project);
+		if (contentOnly) {
+			return ((LtplParser) parser).parseBody(this, builder).getFirstChildNode();
+		} else {
+			return parser.parse(this, builder).getFirstChildNode();
+		}
 	}
 
 	@Override

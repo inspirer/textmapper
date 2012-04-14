@@ -73,6 +73,14 @@ public class LtplParser implements PsiParser {
 		return builder.getTreeBuilt();
 	}
 
+	@NotNull
+	public ASTNode parseBody(IElementType root, PsiBuilder builder) {
+		final PsiBuilder.Marker file = builder.mark();
+		parseBody(builder);
+		file.done(root);
+		return builder.getTreeBuilt();
+	}
+
 	private void parseBundle(PsiBuilder builder) {
 		Marker grammar = builder.mark();
 
@@ -94,6 +102,29 @@ public class LtplParser implements PsiParser {
 			builder.advanceLexer();
 		}
 		grammar.done(LtplElementTypes.BUNDLE);
+	}
+
+	private void parseBody(PsiBuilder builder) {
+		Marker grammar = builder.mark();
+
+		LtplParserEx parser = new LtplParserEx(builder);
+		try {
+			parser.parseBody(new LtplLexerEx(builder));
+		} catch (IOException e) {
+			/* cannot happen */
+		} catch (ParseException e) {
+			/* syntax error, ok */
+		}
+
+		boolean cannotRecover = !parser.markers.isEmpty();
+		while (!parser.markers.isEmpty()) {
+			parser.markers.pop().drop();
+		}
+
+		while (!builder.eof()) {
+			builder.advanceLexer();
+		}
+		grammar.done(LtplElementTypes.TEMPLATE_BODY);
 	}
 
 	private static class LtplParserEx extends TemplatesParser {
@@ -167,7 +198,7 @@ public class LtplParser implements PsiParser {
 					}
 				}
 			}
-			if (lapg_gg.lexem == Tokens.input) {
+			if (lapg_gg.lexem == Tokens.input || lapg_gg.lexem == Tokens.body) {
 				drop(lapg_gg);
 			}
 		}

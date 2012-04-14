@@ -29,6 +29,8 @@ public interface LtplElementTypes {
 	final IFileElementType FILE = new IFileElementType(LtplFileType.LTPL_LANGUAGE);
 
 	public static final IElementType BUNDLE = new LtplElementType(Tokens.input, "bundle");
+	public static final IElementType TEMPLATE_BODY = new LtplElementType(Tokens.body, "body");
+
 	public static final IElementType TEMPLATE = new LtplElementType(Tokens.template_def, "template");
 	public static final IElementType QUERY = new LtplElementType(Tokens.query_def, "query");
 	public static final IElementType INSTRUCTION = new LtplElementType(Tokens.instruction, "instruction");
