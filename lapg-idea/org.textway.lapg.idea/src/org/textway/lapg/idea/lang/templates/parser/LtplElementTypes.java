@@ -29,6 +29,24 @@ public interface LtplElementTypes {
 	final IFileElementType FILE = new IFileElementType(LtplFileType.LTPL_LANGUAGE);
 
 	public static final IElementType BUNDLE = new LtplElementType(Tokens.input, "bundle");
-	public static final IElementType TEMPLATE = new LtplElementType(Tokens.definition, "template");
+	public static final IElementType TEMPLATE = new LtplElementType(Tokens.template_def, "template");
 	public static final IElementType QUERY = new LtplElementType(Tokens.query_def, "query");
+	public static final IElementType INSTRUCTION = new LtplElementType(Tokens.instruction, "instruction");
+
+	public static final IElementType[] allElements = {
+			TEMPLATE, QUERY, INSTRUCTION
+	};
+
+	public static final IElementType EXPRESSION = new LtplElementType(Tokens.expression, "expression");
+
+	public static final int[] allExpressions = {
+			Tokens.primary_expression,
+			Tokens.unary_expression,
+			Tokens.binary_op,
+			Tokens.instanceof_expression,
+			Tokens.equality_expression,
+			Tokens.conditional_op,
+			Tokens.assignment_expression,
+			Tokens.expression,
+	};
 }
