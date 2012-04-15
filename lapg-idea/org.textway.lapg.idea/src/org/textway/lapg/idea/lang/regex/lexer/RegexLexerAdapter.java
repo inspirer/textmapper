@@ -17,7 +17,6 @@
 package org.textway.lapg.idea.lang.regex.lexer;
 
 import com.intellij.lexer.LexerBase;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.textway.lapg.regex.RegexDefLexer;
 import org.textway.lapg.regex.RegexDefLexer.LapgSymbol;
@@ -39,6 +38,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	private int fTokenOffset;
 	private int fState;
 	private int fTokenLength;
+	private int fRegexpStartOffset;
 	private IElementType current;
 
 	public RegexLexerAdapter() {
@@ -47,7 +47,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
-		Reader reader = new StringReader(buffer.toString().substring(startOffset, endOffset));
+		Reader reader = new StringReader(buffer.subSequence(startOffset, endOffset).toString());
 
 		try {
 			if (lexer == null) {
@@ -60,7 +60,8 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		}
 		lexer.setOffset(startOffset);
 		fTokenOffset = startOffset;
-		lexer.setState(initialState);
+		fRegexpStartOffset = initialState == 0 ? startOffset : -1;
+		lexer.setState(initialState > 0 ? initialState - 1 : 0);
 		fState = initialState;
 		fTokenLength = 0;
 		lexem = null;
@@ -68,6 +69,9 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	}
 
 	public int getState() {
+		if (fTokenOffset == fRegexpStartOffset) {
+			return 0;
+		}
 		return fState;
 	}
 
@@ -108,12 +112,23 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
 		if (lexem == null) {
-			fState = lexer.getState();
+			fState = lexer.getState() + 1;
 			readNext();
 		}
 		if (fTokenOffset < lexem.offset) {
 			fTokenLength = lexem.offset - fTokenOffset;
-			return TokenType.BAD_CHARACTER;
+			if (fTokenOffset == fRegexpStartOffset && myText.charAt(fTokenOffset) == '/') {
+				fTokenLength = 1;
+				return RE_DELIMITERS;
+			}
+			if (lexem.lexem == Lexems.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
+				fTokenLength--;
+				return RE_BAD;
+			}
+			if (lexem.lexem == Lexems.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
+				return RE_DELIMITERS;
+			}
+			return RE_BAD;
 		}
 		int token = lexem.lexem;
 		fTokenLength = lexem.endoffset - fTokenOffset;
@@ -140,6 +155,8 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 
 			case Lexems.LPAREN:
 				return RE_LPAREN;
+			case Lexems.LPARENQUESTIONMARK:
+				return RE_LPARENQMARK;
 			case Lexems.OR:
 				return RE_OR;
 			case Lexems.RPAREN:
@@ -155,6 +172,15 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 				return RE_MINUS;
 			case Lexems.RSQUARE:
 				return RE_RSQUARE;
+
+			case Lexems.kw_eoi:
+				return RE_EOI;
+			case Lexems.op_intersect:
+				return RE_INTERSECT;
+			case Lexems.op_minus:
+				return RE_SETDIFF;
+			case Lexems.op_union:
+				return RE_SETUNION;
 		}
 
 		/* default, eoi */

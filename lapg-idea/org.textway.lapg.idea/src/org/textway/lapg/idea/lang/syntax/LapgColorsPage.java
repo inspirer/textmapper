@@ -45,6 +45,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Lexem reference", LapgSyntaxHighlighter.LEXEM_REFERENCE),
 			new AttributesDescriptor("Line comment", LapgSyntaxHighlighter.LINE_COMMENT),
 
+			new AttributesDescriptor("RegExp Delimiters", LapgSyntaxHighlighter.RE_DELIMITERS),
 			new AttributesDescriptor("RegExp Text", LapgSyntaxHighlighter.RE_TEXT),
 			new AttributesDescriptor("RegExp Escaped character", LapgSyntaxHighlighter.RE_ESCAPED),
 			new AttributesDescriptor("RegExp Character class", LapgSyntaxHighlighter.RE_CHAR_CLASS),
@@ -56,7 +57,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("RegExp Parentheses", LapgSyntaxHighlighter.RE_PARENTHS),
 			new AttributesDescriptor("RegExp Expand", LapgSyntaxHighlighter.RE_EXPAND),
 //			new AttributesDescriptor("RegExp Comma", LapgSyntaxHighlighter.RE_COMMA),
-//			new AttributesDescriptor("RegExp Bad character", LapgSyntaxHighlighter.RE_BAD_CHAR),
+			new AttributesDescriptor("RegExp Bad character", LapgSyntaxHighlighter.RE_BAD_CHAR),
 //			new AttributesDescriptor("RegExp Quote character", LapgSyntaxHighlighter.QUOTE_CHARACTER),
 	};
 

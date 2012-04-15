@@ -24,6 +24,8 @@ import org.textway.lapg.regex.RegexDefLexer.Lexems;
  */
 public interface RegexTokenTypes {
 
+	IElementType RE_DELIMITERS = new RegexElementType(-1, "/");
+
 	IElementType RE_CHAR = new RegexElementType(Lexems._char, "char");
 	IElementType RE_ESCAPED = new RegexElementType(Lexems.escaped, "\\escaped");
 	IElementType RE_CHARCLASS = new RegexElementType(Lexems.charclass, "charclass");
@@ -35,6 +37,7 @@ public interface RegexTokenTypes {
 	IElementType RE_QUANTFIER = new RegexElementType(Lexems.quantifier, "{n,m}");
 
 	IElementType RE_LPAREN = new RegexElementType(Lexems.LPAREN, "(");
+	IElementType RE_LPARENQMARK = new RegexElementType(Lexems.LPARENQUESTIONMARK, "(?");
 	IElementType RE_OR = new RegexElementType(Lexems.OR, "|");
 	IElementType RE_RPAREN = new RegexElementType(Lexems.RPAREN, ")");
 	IElementType RE_EXPAND = new RegexElementType(Lexems.expand, "{expand}");
@@ -43,4 +46,11 @@ public interface RegexTokenTypes {
 	IElementType RE_LSQUAREXOR = new RegexElementType(Lexems.LSQUAREXOR, "[^");
 	IElementType RE_MINUS = new RegexElementType(Lexems.MINUS, "-");
 	IElementType RE_RSQUARE = new RegexElementType(Lexems.RSQUARE, "]");
+
+	IElementType RE_SETDIFF = new RegexElementType(Lexems.op_minus, "{-}");
+	IElementType RE_SETUNION = new RegexElementType(Lexems.op_union, "{+}");
+	IElementType RE_INTERSECT = new RegexElementType(Lexems.op_intersect, "{&&}");
+	IElementType RE_EOI = new RegexElementType(Lexems.kw_eoi, "{eoi}");
+
+	IElementType RE_BAD = new RegexElementType(-1, "bad char");
 }

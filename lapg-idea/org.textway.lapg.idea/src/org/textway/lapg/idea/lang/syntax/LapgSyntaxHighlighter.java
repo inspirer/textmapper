@@ -21,6 +21,8 @@ import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.SyntaxHighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
+import com.intellij.openapi.editor.markup.EffectType;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
@@ -30,10 +32,11 @@ import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textway.lapg.idea.lang.templates.LtplFileType;
 import org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighter;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements LapgTokenTypes, RegexTokenTypes {
+public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 
 	private LtplSyntaxHighlighter fTemplatesHighlighter = new LtplSyntaxHighlighter();
 
@@ -84,9 +87,14 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 	// Regexp
 
+	static final TextAttributesKey RE_DELIMITERS = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_DELIMITERS",
+			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
+	);
+
 	static final TextAttributesKey RE_TEXT = TextAttributesKey.createTextAttributesKey(
 			"LAPG.RE_TEXT",
-			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
+			HighlighterColors.TEXT.getDefaultAttributes()
 	);
 
 	static final TextAttributesKey RE_ESCAPED = TextAttributesKey.createTextAttributesKey(
@@ -96,7 +104,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 	static final TextAttributesKey RE_CHAR_CLASS = TextAttributesKey.createTextAttributesKey(
 			"LAPG.RE_CHAR_CLASS",
-			SyntaxHighlighterColors.VALID_STRING_ESCAPE.getDefaultAttributes()
+			CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES.getDefaultAttributes()
 	);
 
 	static final TextAttributesKey RE_DOT = TextAttributesKey.createTextAttributesKey(
@@ -121,7 +129,12 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 
 	static final TextAttributesKey RE_EXPAND = TextAttributesKey.createTextAttributesKey(
 			"LAPG.RE_EXPAND",
-			CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES.getDefaultAttributes()
+			CodeInsightColors.STATIC_FIELD_ATTRIBUTES.getDefaultAttributes()
+	);
+
+	static final TextAttributesKey RE_BAD_CHAR = TextAttributesKey.createTextAttributesKey(
+			"LAPG.RE_BAD_CHAR",
+			new TextAttributes(new Color(0xaaaaaa), null, new Color(0x3d80ff), EffectType.WAVE_UNDERSCORE, Font.PLAIN)
 	);
 
 	private static final Map<IElementType, TextAttributesKey> attributes;
@@ -146,6 +159,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 		fillMap(attributes, SyntaxHighlighterColors.JAVA_SEMICOLON, LapgTokenTypes.OP_SEMICOLON);
 
 		// regexp
+		fillMap(attributes, RE_DELIMITERS, RegexTokenTypes.RE_DELIMITERS);
 		fillMap(attributes, RE_TEXT, RegexTokenTypes.RE_CHAR);
 		fillMap(attributes, RE_ESCAPED, RegexTokenTypes.RE_ESCAPED);
 		fillMap(attributes, RE_CHAR_CLASS, RegexTokenTypes.RE_CHARCLASS);
@@ -157,6 +171,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase implements Lapg
 				RegexTokenTypes.RE_LSQUARE, RegexTokenTypes.RE_LSQUAREXOR, RegexTokenTypes.RE_RSQUARE);
 		fillMap(attributes, RE_PARENTHS, RegexTokenTypes.RE_LPAREN, RegexTokenTypes.RE_RPAREN);
 		fillMap(attributes, RE_EXPAND, RegexTokenTypes.RE_EXPAND);
+		fillMap(attributes, RE_BAD_CHAR, RegexTokenTypes.RE_BAD);
 	}
 
 	@NotNull
