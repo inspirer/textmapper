@@ -56,6 +56,10 @@ charclass(String): /\\p\{\w+\}/					{ $lexem = current().substring(3, current().
 '?':  /?/										{ group = 0; break; }
 quantifier:  /\{[0-9]+(,[0-9]*)?\}/				{ group = 0; break; }
 
+op_minus:		/\{-\}/							{ group = 0; break; }
+op_union:		/\{+\}/							{ group = 0; break; }
+op_intersect:	/\{&&\}/						{ group = 0; break; }
+
 [0 2]
 
 char(Character): /[*+?]/						{ $lexem = current().charAt(0); quantifierReady(); break; }
@@ -65,12 +69,17 @@ char(Character): /[*+?]/						{ $lexem = current().charAt(0); quantifierReady();
 '(':  /\(/										{ group = 0; break; }
 '|':  /\|/										{ group = 0; break; }
 ')':  /\)/										{ quantifierReady(); break; }
-identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
-expand: /\{{identifier}\}/						{ quantifierReady(); break; }
 
-'[':  /\[/										{ group = 2; break; }
-'[^':  /\[^/									{ group = 2; break; }
+'(?':	/\(\?[is-]+:/							{ group = 0; break; }
+
+'[':	/\[/									{ group = 2; break; }
+'[^':	/\[^/									{ group = 2; break; }
 char(Character):  /-/							{ $lexem = current().charAt(0); quantifierReady(); break; }
+
+identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
+
+expand:			/\{{identifier}\}/	(class)		{ quantifierReady(); break; }
+kw_eoi:			/\{eoi\}/						{ group = 0; break; }
 
 [2]
 
