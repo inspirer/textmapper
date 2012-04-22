@@ -17,9 +17,9 @@ package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.common.CharacterSetImpl.Builder;
-import org.textway.lapg.common.UnicodeData;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
+import org.textway.lapg.unicode.UnicodeData;
 
 import java.util.List;
 import java.util.regex.Matcher;

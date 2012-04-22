@@ -18,15 +18,17 @@ package org.textway.lapg.test.cases;
 import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.common.CharacterSetImpl.Builder;
-import org.textway.lapg.common.UnicodeData;
+import org.textway.lapg.common.FileUtil;
+import org.textway.lapg.test.cases.data.UnicodeParser;
+import org.textway.lapg.test.cases.data.UnicodeParser.UnicodeBuilder;
+import org.textway.lapg.unicode.UnicodeData;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import static org.junit.Assert.*;
 
@@ -34,6 +36,8 @@ import static org.junit.Assert.*;
  * Gryaznov Evgeny, 11/16/11
  */
 public class UnicodeTest {
+
+	private static final boolean TEST_DATA_FILES = false;
 
 	private static final Map<Byte, String> javaRep = initRepresentation();
 
@@ -73,60 +77,89 @@ public class UnicodeTest {
 	}
 
 	@Test
-	public void testUnicodeData() throws IOException {
-		URL unicodeData =
-				UnicodeTest.class.getResource("data/UnicodeData.txt");
-//		new URL("http://www.unicode.org/Public/UNIDATA/UnicodeData.txt");
-		URLConnection yc = unicodeData.openConnection();
-		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
-		String inputLine;
+	public void testFilesUpToDate() throws IOException {
+		if (!TEST_DATA_FILES) return;
+		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/UNIDATA/UnicodeData.txt");
+	}
 
-		Map<String, Builder> allCharset = new HashMap<String, Builder>();
-		for (String category : UnicodeData.categories.keySet()) {
+	private void testContent(String resource, String httplocation) throws IOException {
+		String local = getContent(UnicodeTest.class.getResource(resource));
+		String remote = getContent(new URL(httplocation));
+		assertEquals(remote, local);
+	}
+
+	private static String getContent(URL location) throws IOException {
+		InputStream inputStream = location.openStream();
+		try {
+			return FileUtil.getFileContents(inputStream, "utf-8");
+		} finally {
+			inputStream.close();
+		}
+	}
+
+	@Test
+	public void testUnicodeData() throws IOException {
+
+		final Map<Byte, Builder> allCharset = new HashMap<Byte, Builder>();
+		for (byte category : UnicodeData.categories.values()) {
 			allCharset.put(category, new Builder());
 		}
 
-		int prevsym = -1;
-		while ((inputLine = in.readLine()) != null) {
-			String[] row = inputLine.split(";");
-			String categoryName = row[2];
-			assertTrue("wrong category name: " + inputLine, categoryName != null && UnicodeData.categories.containsKey(categoryName));
-			String character = row[0];
-			assertTrue("wrong character: " + inputLine, character != null && character.length() >= 4 && character.length() <= 6);
-			int c;
-			try {
-				c = Integer.parseInt(character, 16);
-			} catch (NumberFormatException ex) {
-				fail(ex.getMessage());
-				return;
-			}
-			assertTrue(c > prevsym);
-			prevsym++;
-			while (prevsym < c) {
-				if (prevsym < 0x200) {
-					// at least first 0x200 chars should be ok
-					assertEquals("Character " + Integer.toHexString(prevsym), Character.getType(prevsym), Character.UNASSIGNED);
-				}
-				allCharset.get("Cn").addSymbol(prevsym++);
-			}
-			if (c <= 0x200 && Character.getType(c) != UnicodeData.categories.get(categoryName) &&
-					/* exceptions: */ c != 0xa7 && c != 0xaa && c != 0xb6 && c != 0xba) {
-				fail("Character " + character + " java: " + Character.getType(c) + ", unicode: " + UnicodeData.categories.get(categoryName));
-			}
-			allCharset.get(categoryName).addSymbol(c);
-			prevsym = c;
-		}
-		in.close();
+		new UnicodeParser().parseData(UnicodeTest.class.getResource("data/UnicodeData.txt"), new UnicodeBuilder() {
+			private int prevsym = -1;
 
-		for (String category : UnicodeData.categories.keySet()) {
+			private void yield(int c, int category) {
+				if (c <= 0x200 && Character.getType(c) != category &&
+						/* exceptions: */ c != 0xa7 && c != 0xaa && c != 0xb6 && c != 0xba) {
+					// at least first 0x200 chars should be ok
+					fail("Character " + Integer.toHexString(c) + " java: " + Character.getType(c) + ", unicode: " + category);
+				}
+				allCharset.get((byte) category).addSymbol(c);
+			}
+
+			@Override
+			public void character(int c, String name, int category, int upper, int lower, int title) {
+				assertTrue(c > prevsym);
+				prevsym++;
+				while (prevsym < c) {
+					yield(prevsym++, Character.UNASSIGNED);
+				}
+				yield(c, category);
+
+			}
+
+			@Override
+			public void range(int start, int end, String rangeName, int category) {
+				assertTrue(start > prevsym);
+				prevsym++;
+				while (prevsym < start) {
+					yield(prevsym++, Character.UNASSIGNED);
+				}
+				while (prevsym < end) {
+					yield(prevsym++, category);
+				}
+				yield(end, category);
+			}
+
+			@Override
+			public void done() {
+			}
+		});
+
+		String[] categoryName = new String[32];
+		for (Entry<String, Byte> entry : UnicodeData.categories.entrySet()) {
+			categoryName[entry.getValue()] = entry.getKey();
+		}
+
+		for (byte category : UnicodeData.categories.values()) {
 			CharacterSet set = allCharset.get(category).create();
-			CharacterSet actual = UnicodeData.getCategory(UnicodeData.categories.get(category));
+			CharacterSet actual = UnicodeData.getCategory(category);
 			assertFalse(actual.isInverted());
 			if (set.equals(actual)) continue;
 
 			StringBuilder sb = new StringBuilder();
-			sb.append("case Character.").append(javaRep.get(UnicodeData.categories.get(category))).append(": // ");
-			sb.append(category);
+			sb.append("case Character.").append(javaRep.get(category)).append(": // ");
+			sb.append(categoryName[category]);
 			sb.append("\n\treturn new CharacterSetImpl(");
 			int size = 0;
 			for (int[] v : set) {
