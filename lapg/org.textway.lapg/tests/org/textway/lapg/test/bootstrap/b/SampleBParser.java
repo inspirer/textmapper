@@ -42,41 +42,31 @@ public class SampleBParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int lapg_action[] = {
-		-1, -1, 0, 5, -1, -1, -3, -1, -1, 11, 6, -17, -1, -29, -1, -1,
-		7, 3, -1, -1, 8, -1, 4, 9, 10, -2
-	};
+	private static final int[] lapg_action = SampleBLexer.unpack_int(26,
+		"\uffff\uffff\uffff\uffff\0\0\5\0\uffff\uffff\uffff\uffff\ufffd\uffff\uffff\uffff" +
+		"\uffff\uffff\13\0\6\0\uffef\uffff\uffff\uffff\uffe3\uffff\uffff\uffff\uffff\uffff" +
+		"\7\0\3\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\4\0\11\0\12\0\ufffe\uffff");
 
-	private static final short lapg_lalr[] = {
-		1, -1, 16, -1, 7, -1, 6, -1, 14, -1, 9, 1, -1, -2, 1, -1,
-		16, -1, 7, -1, 6, -1, 9, 2, -1, -2, 1, -1, 16, -1, 7, -1,
-		6, -1, 14, -1, 9, 1, -1, -2
-	};
+	private static final short[] lapg_lalr = SampleBLexer.unpack_short(40,
+		"\1\uffff\20\uffff\7\uffff\6\uffff\16\uffff\11\1\uffff\ufffe\1\uffff\20\uffff\7\uffff" +
+		"\6\uffff\11\2\uffff\ufffe\1\uffff\20\uffff\7\uffff\6\uffff\16\uffff\11\1\uffff\ufffe");
 
-	private static final short lapg_sym_goto[] = {
-		0, 0, 5, 5, 5, 5, 5, 9, 16, 18, 20, 22, 25, 25, 25, 27,
-		27, 32, 33, 37, 38, 40, 42
-	};
+	private static final short[] lapg_sym_goto = SampleBLexer.unpack_short(23,
+		"\0\0\5\5\5\5\5\11\20\22\24\26\31\31\31\33\33\40\41\45\46\50\52");
 
-	private static final short lapg_sym_from[] = {
-		1, 5, 6, 11, 13, 0, 6, 11, 13, 1, 4, 5, 6, 11, 13, 14,
-		4, 7, 12, 18, 8, 15, 14, 19, 21, 6, 13, 1, 5, 6, 11, 13,
-		0, 0, 6, 11, 13, 1, 6, 13, 6, 13
-	};
+	private static final short[] lapg_sym_from = SampleBLexer.unpack_short(42,
+		"\1\5\6\13\15\0\6\13\15\1\4\5\6\13\15\16\4\7\14\22\10\17\16\23\25\6\15\1\5\6\13\15" +
+		"\0\0\6\13\15\1\6\15\6\15");
 
-	private static final short lapg_sym_to[] = {
-		3, 7, 8, 15, 8, 1, 1, 1, 1, 3, 5, 7, 8, 15, 8, 19,
-		6, 13, 17, 22, 14, 21, 20, 23, 24, 9, 9, 3, 7, 8, 15, 8,
-		25, 2, 10, 16, 10, 4, 11, 11, 12, 18
-	};
+	private static final short[] lapg_sym_to = SampleBLexer.unpack_short(42,
+		"\3\7\10\17\10\1\1\1\1\3\5\7\10\17\10\23\6\15\21\26\16\25\24\27\30\11\11\3\7\10\17" +
+		"\10\31\2\12\20\12\4\13\13\14\22");
 
-	private static final short lapg_rlen[] = {
-		1, 0, 1, 5, 7, 1, 1, 2, 3, 4, 4, 1
-	};
+	private static final short[] lapg_rlen = SampleBLexer.unpack_short(12,
+		"\1\0\1\5\7\1\1\2\3\4\4\1");
 
-	private static final short lapg_rlex[] = {
-		17, 21, 21, 18, 18, 19, 20, 20, 20, 20, 20, 20
-	};
+	private static final short[] lapg_rlex = SampleBLexer.unpack_short(12,
+		"\21\25\25\22\22\23\24\24\24\24\24\24");
 
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",

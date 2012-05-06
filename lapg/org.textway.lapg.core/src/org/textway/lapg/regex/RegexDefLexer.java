@@ -159,11 +159,9 @@ public class RegexDefLexer {
 		12, 27, 9, 38, 10, 36, 11, 37, 33, 27, 27, 2, 21, 3, 1, 1
 	};
 
-	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 5,
-		6, 7, 8, 9, 10, 11, 12, 2, 13, 14, 15, 16, 17, 18, 2, 19,
-		20, 21, 2
-	};
+	private static final short[] lapg_lexemnum = unpack_short(35,
+		"\1\2\3\3\3\3\3\3\3\3\3\3\3\4\4\5\6\7\10\11\12\13\14\2\15\16\17\20\21\22\2\23\24\25" +
+		"\2");
 
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, 3, 4, 3, 5, 3, 3, 3, 3, 3, 3, 3, 3, 6, 7, 7, 7, 3, 8, 3, 9, 10, 11, 3, 12, 3, -1, 3, 3, -1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3},
@@ -392,5 +390,39 @@ public class RegexDefLexer {
 				 quantifierReady(); break; 
 		}
 		return true;
+	}
+
+	/* package */ static int[] unpack_int(int size, String... st) {
+		int[] res = new int[size];
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
+		}
+		assert !second;
+		assert res.length == t;
+		return res;
+	}
+
+	/* package */ static short[] unpack_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
+		}
+		assert res.length == t;
+		return res;
 	}
 }

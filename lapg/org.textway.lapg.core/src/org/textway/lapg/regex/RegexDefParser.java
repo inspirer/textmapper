@@ -44,56 +44,41 @@ public class RegexDefParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	CharacterSetImpl.Builder setbuilder = new CharacterSetImpl.Builder();
-	private static final int lapg_action[] = {
-		-3, 16, 9, 10, 11, 12, -25, -1, -1, -1, 26, -47, -79, 2, -1, 17,
-		18, 19, 20, 21, -1, -1, -103, 5, 6, 7, 8, 27, 13, 14, -127, 22,
-		15, 3, 24, 25, -2
-	};
+	private static final int[] lapg_action = RegexDefLexer.unpack_int(37,
+		"\ufffd\uffff\20\0\11\0\12\0\13\0\14\0\uffe7\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\32\0\uffd1\uffff\uffb1\uffff\2\0\uffff\uffff\21\0\22\0\23\0\24\0\25\0\uffff\uffff" +
+		"\uffff\uffff\uff99\uffff\5\0\6\0\7\0\10\0\33\0\15\0\16\0\uff81\uffff\26\0\17\0\3" +
+		"\0\30\0\31\0\ufffe\uffff");
 
-	private static final short lapg_lalr[] = {
-		1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 13, -1, 17, -1, 18, -1,
-		0, 0, 14, 0, -1, -2, 1, -1, 2, -1, 3, -1, 4, -1, 5, -1,
-		13, -1, 17, -1, 18, -1, 14, 0, 15, 0, -1, -2, 6, -1, 7, -1,
-		8, -1, 9, -1, 0, 4, 1, 4, 2, 4, 3, 4, 4, 4, 5, 4,
-		13, 4, 14, 4, 15, 4, 17, 4, 18, 4, -1, -2, 1, -1, 2, -1,
-		3, -1, 4, -1, 5, -1, 13, -1, 17, -1, 18, -1, 0, 1, 14, 1,
-		15, 1, -1, -2, 1, -1, 2, -1, 3, -1, 4, -1, 5, -1, 13, -1,
-		17, -1, 18, -1, 0, 0, 14, 0, 15, 0, -1, -2, 2, -1, 3, -1,
-		4, 23, 20, 23, 21, 23, -1, -2
-	};
+	private static final short[] lapg_lalr = RegexDefLexer.unpack_short(136,
+		"\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\15\uffff\21\uffff\22\uffff\0\0\16\0\uffff" +
+		"\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\15\uffff\21\uffff\22\uffff\16\0\17" +
+		"\0\uffff\ufffe\6\uffff\7\uffff\10\uffff\11\uffff\0\4\1\4\2\4\3\4\4\4\5\4\15\4\16" +
+		"\4\17\4\21\4\22\4\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\15\uffff\21" +
+		"\uffff\22\uffff\0\1\16\1\17\1\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff" +
+		"\15\uffff\21\uffff\22\uffff\0\0\16\0\17\0\uffff\ufffe\2\uffff\3\uffff\4\27\24\27" +
+		"\25\27\uffff\ufffe");
 
-	private static final short lapg_sym_goto[] = {
-		0, 1, 5, 14, 23, 31, 35, 36, 37, 38, 39, 39, 39, 39, 43, 45,
-		46, 46, 50, 54, 54, 56, 60, 62, 66, 70, 74, 76, 79, 82
-	};
+	private static final short[] lapg_sym_goto = RegexDefLexer.unpack_short(30,
+		"\0\1\5\16\27\37\43\44\45\46\47\47\47\47\53\55\56\56\62\66\66\70\74\76\102\106\112" +
+		"\114\117\122");
 
-	private static final short lapg_sym_from[] = {
-		9, 0, 6, 12, 22, 0, 6, 7, 8, 12, 20, 21, 22, 30, 0, 6,
-		7, 8, 12, 20, 21, 22, 30, 0, 6, 7, 8, 12, 20, 21, 22, 0,
-		6, 12, 22, 11, 11, 11, 11, 0, 6, 12, 22, 9, 14, 14, 0, 6,
-		12, 22, 0, 6, 12, 22, 20, 21, 7, 8, 20, 21, 0, 6, 0, 6,
-		12, 22, 0, 6, 12, 22, 7, 8, 20, 21, 7, 8, 0, 6, 22, 0,
-		6, 22
-	};
+	private static final short[] lapg_sym_from = RegexDefLexer.unpack_short(82,
+		"\11\0\6\14\26\0\6\7\10\14\24\25\26\36\0\6\7\10\14\24\25\26\36\0\6\7\10\14\24\25\26" +
+		"\0\6\14\26\13\13\13\13\0\6\14\26\11\16\16\0\6\14\26\0\6\14\26\24\25\7\10\24\25\0" +
+		"\6\0\6\14\26\0\6\14\26\7\10\24\25\7\10\0\6\26\0\6\26");
 
-	private static final short lapg_sym_to[] = {
-		36, 1, 1, 1, 1, 2, 2, 15, 15, 2, 15, 15, 2, 34, 3, 3,
-		16, 16, 3, 16, 16, 3, 35, 4, 4, 17, 17, 4, 17, 17, 4, 5,
-		5, 5, 5, 23, 24, 25, 26, 6, 6, 6, 6, 22, 22, 28, 7, 7,
-		7, 7, 8, 8, 8, 8, 29, 32, 18, 18, 30, 30, 9, 14, 10, 10,
-		27, 10, 11, 11, 11, 11, 19, 19, 31, 31, 20, 21, 12, 12, 12, 13,
-		13, 33
-	};
+	private static final short[] lapg_sym_to = RegexDefLexer.unpack_short(82,
+		"\44\1\1\1\1\2\2\17\17\2\17\17\2\42\3\3\20\20\3\20\20\3\43\4\4\21\21\4\21\21\4\5\5" +
+		"\5\5\27\30\31\32\6\6\6\6\26\26\34\7\7\7\7\10\10\10\10\35\40\22\22\36\36\11\16\12" +
+		"\12\33\12\13\13\13\13\23\23\37\37\24\25\14\14\14\15\15\41");
 
-	private static final short lapg_rlen[] = {
-		0, 1, 1, 3, 1, 2, 2, 2, 2, 1, 1, 1, 1, 3, 3, 3,
-		1, 1, 1, 1, 1, 1, 2, 2, 3, 3, 1, 2
-	};
+	private static final short[] lapg_rlen = RegexDefLexer.unpack_short(28,
+		"\0\1\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2");
 
-	private static final short lapg_rlex[] = {
-		28, 28, 22, 22, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24,
-		24, 25, 25, 25, 26, 26, 26, 26, 26, 26, 27, 27
-	};
+	private static final short[] lapg_rlex = RegexDefLexer.unpack_short(28,
+		"\34\34\26\26\27\27\27\27\27\30\30\30\30\30\30\30\30\31\31\31\32\32\32\32\32\32\33" +
+		"\33");
 
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",

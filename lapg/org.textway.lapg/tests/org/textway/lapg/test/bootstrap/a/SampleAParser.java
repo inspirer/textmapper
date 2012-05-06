@@ -41,33 +41,27 @@ public class SampleAParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int lapg_action[] = {
-		-1, -1, -1, 0, -1, -3, 6, 4, -11, -1, 5, 3, -2, -1, -2
-	};
+	private static final int[] lapg_action = SampleALexer.unpack_int(15,
+		"\uffff\uffff\uffff\uffff\uffff\uffff\0\0\uffff\uffff\ufffd\uffff\6\0\4\0\ufff5\uffff" +
+		"\uffff\uffff\5\0\3\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
 
-	private static final short lapg_lalr[] = {
-		3, -1, 6, -1, 5, 1, -1, -2, 3, -1, 5, 2, -1, -2
-	};
+	private static final short[] lapg_lalr = SampleALexer.unpack_short(14,
+		"\3\uffff\6\uffff\5\1\uffff\ufffe\3\uffff\5\2\uffff\ufffe");
 
-	private static final short lapg_sym_goto[] = {
-		0, 1, 2, 2, 6, 7, 8, 9, 10, 14, 15, 16
-	};
+	private static final short[] lapg_sym_goto = SampleALexer.unpack_short(12,
+		"\0\1\2\2\6\7\10\11\12\16\17\20");
 
-	private static final short lapg_sym_from[] = {
-		13, 2, 0, 1, 5, 8, 4, 9, 5, 0, 0, 1, 5, 8, 5, 5
-	};
+	private static final short[] lapg_sym_from = SampleALexer.unpack_short(16,
+		"\15\2\0\1\5\10\4\11\5\0\0\1\5\10\5\5");
 
-	private static final short lapg_sym_to[] = {
-		14, 4, 2, 2, 2, 2, 5, 11, 6, 12, 3, 13, 7, 10, 8, 9
-	};
+	private static final short[] lapg_sym_to = SampleALexer.unpack_short(16,
+		"\16\4\2\2\2\2\5\13\6\14\3\15\7\12\10\11");
 
-	private static final short lapg_rlen[] = {
-		1, 0, 1, 5, 1, 2, 1
-	};
+	private static final short[] lapg_rlen = SampleALexer.unpack_short(7,
+		"\1\0\1\5\1\2\1");
 
-	private static final short lapg_rlex[] = {
-		7, 10, 10, 8, 9, 9, 9
-	};
+	private static final short[] lapg_rlex = SampleALexer.unpack_short(7,
+		"\7\12\12\10\11\11\11");
 
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",

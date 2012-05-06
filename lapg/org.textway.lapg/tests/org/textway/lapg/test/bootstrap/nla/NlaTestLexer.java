@@ -157,10 +157,8 @@ public class NlaTestLexer {
 		20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 1, 11, 1, 1
 	};
 
-	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-		17, 18, 19, 20, 21, 22, 23, 24, 25, 26
-	};
+	private static final short[] lapg_lexemnum = unpack_short(26,
+		"\1\2\3\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32");
 
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, -1, 18, 19, 20},
@@ -294,5 +292,39 @@ public class NlaTestLexer {
 				 lapg_n.sym = current(); break; 
 		}
 		return true;
+	}
+
+	/* package */ static int[] unpack_int(int size, String... st) {
+		int[] res = new int[size];
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
+		}
+		assert !second;
+		assert res.length == t;
+		return res;
+	}
+
+	/* package */ static short[] unpack_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
+		}
+		assert res.length == t;
+		return res;
 	}
 }

@@ -37,34 +37,27 @@ public class SActionParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int lapg_action[] = {
-		-1, -3, -9, -15, 4, -1, -1, 3, 2, 5, -2
-	};
+	private static final int[] lapg_action = SActionLexer.unpack_int(11,
+		"\uffff\uffff\ufffd\uffff\ufff7\uffff\ufff1\uffff\4\0\uffff\uffff\uffff\uffff\3\0" +
+		"\2\0\5\0\ufffe\uffff");
 
-	private static final short lapg_lalr[] = {
-		1, -1, 3, 0, -1, -2, 1, -1, 3, 0, -1, -2, 1, -1, 3, 1,
-		-1, -2
-	};
+	private static final short[] lapg_lalr = SActionLexer.unpack_short(18,
+		"\1\uffff\3\0\uffff\ufffe\1\uffff\3\0\uffff\ufffe\1\uffff\3\1\uffff\ufffe");
 
-	private static final short lapg_sym_goto[] = {
-		0, 0, 4, 4, 6, 7, 9, 12, 14
-	};
+	private static final short[] lapg_sym_goto = SActionLexer.unpack_short(9,
+		"\0\0\4\4\6\7\11\14\16");
 
-	private static final short lapg_sym_from[] = {
-		0, 1, 2, 3, 5, 6, 0, 1, 2, 1, 2, 3, 1, 2
-	};
+	private static final short[] lapg_sym_from = SActionLexer.unpack_short(14,
+		"\0\1\2\3\5\6\0\1\2\1\2\3\1\2");
 
-	private static final short lapg_sym_to[] = {
-		1, 2, 2, 2, 8, 9, 10, 3, 3, 4, 4, 7, 5, 6
-	};
+	private static final short[] lapg_sym_to = SActionLexer.unpack_short(14,
+		"\1\2\2\2\10\11\12\3\3\4\4\7\5\6");
 
-	private static final short lapg_rlen[] = {
-		0, 1, 3, 2, 1, 3
-	};
+	private static final short[] lapg_rlen = SActionLexer.unpack_short(6,
+		"\0\1\3\2\1\3");
 
-	private static final short lapg_rlex[] = {
-		7, 7, 4, 5, 5, 6
-	};
+	private static final short[] lapg_rlex = SActionLexer.unpack_short(6,
+		"\7\7\4\5\5\6");
 
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",

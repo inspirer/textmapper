@@ -205,9 +205,8 @@ public class UnicodeTestLexer {
 		return res;
 	}
 
-	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4
-	};
+	private static final short[] lapg_lexemnum = unpack_short(4,
+		"\1\2\3\4");
 
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, -1, 1, 2, 3, 4, -1, 5},
@@ -304,5 +303,39 @@ public class UnicodeTestLexer {
 				 return false; 
 		}
 		return true;
+	}
+
+	/* package */ static int[] unpack_int(int size, String... st) {
+		int[] res = new int[size];
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
+		}
+		assert !second;
+		assert res.length == t;
+		return res;
+	}
+
+	/* package */ static short[] unpack_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
+		}
+		assert res.length == t;
+		return res;
 	}
 }

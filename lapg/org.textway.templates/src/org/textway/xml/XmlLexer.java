@@ -139,9 +139,8 @@ public class XmlLexer {
 		11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 1, 1, 1, 1, 1
 	};
 
-	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4, 5, 5, 6, 7, 8, 9, 10
-	};
+	private static final short[] lapg_lexemnum = unpack_short(11,
+		"\1\2\3\4\5\5\6\7\10\11\12");
 
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
@@ -258,5 +257,39 @@ public class XmlLexer {
 				 return false; 
 		}
 		return true;
+	}
+
+	/* package */ static int[] unpack_int(int size, String... st) {
+		int[] res = new int[size];
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
+		}
+		assert !second;
+		assert res.length == t;
+		return res;
+	}
+
+	/* package */ static short[] unpack_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
+		}
+		assert res.length == t;
+		return res;
 	}
 }

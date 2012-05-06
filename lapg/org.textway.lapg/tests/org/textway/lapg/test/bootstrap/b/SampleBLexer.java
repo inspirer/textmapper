@@ -146,9 +146,8 @@ public class SampleBLexer {
 		8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 4, 1, 5, 1, 1
 	};
 
-	private static final short lapg_lexemnum[] = {
-		1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16
-	};
+	private static final short[] lapg_lexemnum = unpack_short(15,
+		"\1\2\3\4\5\6\7\10\11\12\13\14\15\17\20");
 
 	private static final short[][] lapg_lexem = new short[][] {
 		{ -2, -1, 1, 2, 3, 4, 5, 6, 2, 7, 2, 7, 8},
@@ -314,5 +313,39 @@ public class SampleBLexer {
 				 lapg_n.sym = 11; break; 
 		}
 		return true;
+	}
+
+	/* package */ static int[] unpack_int(int size, String... st) {
+		int[] res = new int[size];
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
+		}
+		assert !second;
+		assert res.length == t;
+		return res;
+	}
+
+	/* package */ static short[] unpack_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
+		}
+		assert res.length == t;
+		return res;
 	}
 }
