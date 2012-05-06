@@ -17,6 +17,10 @@ package org.textway.lapg.test.common;
 
 import org.junit.Test;
 import org.textway.lapg.common.JavaArrayArchiver;
+import org.textway.lapg.gen.TemplateStaticMethods;
+import org.textway.lapg.test.gen.JavaTemplateRoutines;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -52,23 +56,33 @@ public class JavaTablesCompressionTest {
 	}
 
 	private void checkDecompression(int[] a) {
-		String c = JavaArrayArchiver.packInt(a, 5);
+		List<List<String>> c = TemplateStaticMethods.packInt(a);
 
 		StringBuilder extractedString = new StringBuilder();
-		char[] chs = c.toCharArray();
-		boolean isstring = false;
-		for (char ch : chs) {
-			if (ch == '"') {
-				isstring = !isstring;
-				continue;
-			}
-			if (isstring) {
-				extractedString.append(ch);
+		for (List<String> s2 : c) {
+			for (String s : s2) {
+				assertTrue(s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"');
+
+				char[] chs = s.substring(1, s.length() - 1).toCharArray();
+				int i = 0;
+				while (i < chs.length) {
+					assertEquals('\\', chs[i++]);
+					if (chs[i] == 'u') {
+						extractedString.append((char) Integer.parseInt(new String(chs, i + 1, 4), 16));
+						i += 5;
+					} else {
+						int start = i;
+						while (i < chs.length && chs[i] >= '0' && chs[i] <= '9') {
+							i++;
+						}
+						assertTrue(new String(chs, start, chs.length - start), i > start);
+						extractedString.append((char) Integer.parseInt(new String(chs, start, i - start), 8));
+					}
+				}
 			}
 		}
-		assertFalse(isstring);
 
-		int[] b = JavaArrayArchiver.unpackInt(a.length, extractedString.toString());
+		int[] b = JavaTemplateRoutines.test_unpack_int(a.length, extractedString.toString());
 		for (int i = 0; i < a.length; i++) {
 			if (a[i] != b[i]) {
 				fail("wrong decompression at " + i);

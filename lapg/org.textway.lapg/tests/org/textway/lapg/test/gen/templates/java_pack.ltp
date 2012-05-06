@@ -27,6 +27,18 @@ ${call unpackChar2no-}
 	public static char[] test_unpack_char2no(int size, String... st) {
 		return unpack_char2no(size, st);
 	}
+
+${call unpackShort-}
+
+	public static short[] test_unpack_short(int size, String... st) {
+		return unpack_short(size, st);
+	}
+
+${call unpackInt-}
+
+	public static int[] test_unpack_int(int size, String... st) {
+		return unpack_int(size, st);
+	}
 }
 ${end-}
 ${end}

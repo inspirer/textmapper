@@ -322,24 +322,21 @@ ${end}
 ${query needActionsTable() = parser.nactions > 0}
 
 ${template parserTables-}
-${call parserTable(parser.action_index, 'int', 'lapg_action', 'LapgAction')-}
+	private static final int[] lapg_action = ${opts.prefix}Lexer.${parser.action_index->java_pack.packInt()};
 
 ${if self->needActionsTable()-}
-${call parserTable(parser.action_table, 'short', 'lapg_lalr', 'LapgLalr')}
+	private static final short[] lapg_lalr = ${opts.prefix}Lexer.${parser.action_table->java_pack.packShort()};
+
 ${end-}
-${call parserTable(parser.sym_goto, 'short', 'lapg_sym_goto', 'LapgSymGoto')-}
+	private static final short[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.sym_goto->java_pack.packShort()};
 
-${call parserTable(parser.sym_from, 'short', 'lapg_sym_from', 'LapgSymFrom')-}
+	private static final short[] lapg_sym_from = ${opts.prefix}Lexer.${parser.sym_from->java_pack.packShort()};
 
-${call parserTable(parser.sym_to, 'short', 'lapg_sym_to', 'LapgSymTo')-}
+	private static final short[] lapg_sym_to = ${opts.prefix}Lexer.${parser.sym_to->java_pack.packShort()};
 
-${call parserTable(parser.ruleLength, 'short', 'lapg_rlen', 'LapgRLen')-}
+	private static final short[] lapg_rlen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packShort()};
 
-${call parserTable(parser.rleft, 'short', 'lapg_rlex', 'LapgRLex')-}
-${if opts.packTables }
-${call java_pack.unpackInt-}
-${call java_pack.unpackShort-}
-${end-}
+	private static final short[] lapg_rlex = ${opts.prefix}Lexer.${parser.rleft->java_pack.packShort()};
 
 	protected static final String[] lapg_syms = new String[] {
 ${foreach s in parser.sym-}
@@ -365,31 +362,6 @@ ${end-}
 
 ${end}
 
-
-${template parserTable(arr, atype, name, cname)-}
-${if opts.packTables -}
-	public interface ${cname} {
-${if arr.size() > 8000-}
-${if atype == 'short'-}
-		public static final short ${name}[] = unpack_short(${arr.size()},
-			${util.packShort(arr, 3)});
-${else-}
-		public static final int ${name}[] = unpack_int(${arr.size()},
-			${util.packInt(arr, 3)});
-${end-}
-${else-}
-		public static final ${atype} ${name}[] = {
-			${util.format(arr, 16, 3)}
-		};
-${end-}
-	}
-	private static final ${atype}[] ${name} = ${cname}.${name};
-${else-}
-	private static final ${atype} ${name}[] = {
-		${util.format(arr, 16, 2)}
-	};
-${end-}
-${end}
 
 ${template parserAction-}
 ${eval getAction()}

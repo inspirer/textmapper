@@ -57,29 +57,51 @@ ${template unpackChar2no-}
 ${end}
 
 ${template unpackInt-}
-	private static int[] unpack_int(int size, String st) {
+	/* package */ static int[] unpack_int(int size, String... st) {
 		int[] res = new int[size];
-		int next = 0;
-		int comma;
-		for (int i = 0; i < size; i++) {
-			comma = st.indexOf(',', next);
-			res[i] = Integer.parseInt(comma == -1 ? st.substring(next) : st.substring(next, comma));
-			next = comma + 1;					
+		boolean second = false;
+		char first = 0;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				if (second) {
+					res[t++] = (s.charAt(i) << 16) + first;
+				} else {
+					first = s.charAt(i);
+				}
+				second = !second;
+			}
 		}
+		assert !second;
+		assert res.length == t;
 		return res;
 	}
 ${end}
 
+${template packInt-}
+unpack_int(${self.size()},
+${foreach str in util.packInt(self) separator ',\n'-}
+${foreach spart in str separator ' +\n'-}
+		${spart}${end}${end})${end}
+
 ${template unpackShort-}
-	private static short[] unpack_short(int size, String st) {
+	/* package */ static short[] unpack_short(int size, String... st) {
 		short[] res = new short[size];
-		int next = 0;
-		int comma;
-		for (int i = 0; i < size; i++) {
-			comma = st.indexOf(',', next);
-			res[i] = Short.parseShort(comma == -1 ? st.substring(next) : st.substring(next, comma));
-			next = comma + 1;
+		int t = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; i++) {
+				res[t++] = (short) s.charAt(i);
+			}
 		}
+		assert res.length == t;
 		return res;
 	}
 ${end}
+
+${template packShort-}
+unpack_short(${self.size()},
+${foreach str in util.packShort(self) separator ',\n'-}
+${foreach spart in str separator ' +\n'-}
+		${spart}${end}${end})${end}

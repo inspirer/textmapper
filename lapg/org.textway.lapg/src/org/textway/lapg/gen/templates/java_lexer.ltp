@@ -202,8 +202,15 @@ ${end-}
 		return lapg_n;
 	}
 ${call createToken-}
+${call unpackRoutines-}
 }
 ${end}
+
+${template unpackRoutines}
+${call java_pack.unpackInt}
+${call java_pack.unpackShort-}
+${end}
+
 
 ${template lexerCtor-}
 	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
@@ -342,7 +349,7 @@ ${else-}
 	};
 ${end-}
 
-${call java.parserTable(lex.lnum, 'short', 'lapg_lexemnum', 'LapgLexemToSymbol')-}
+	private static final short[] lapg_lexemnum = ${lex.lnum->java_pack.packShort()};
 
 ${if !opts.packLexems-}
 	private static final short[][] lapg_lexem = new short[][] {

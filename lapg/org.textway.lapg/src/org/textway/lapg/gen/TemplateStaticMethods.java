@@ -187,17 +187,35 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return enc.getResult();
 	}
 
+	public static List<List<String>> packShort(short[] arr) {
+		JavaArrayEncoder enc = new JavaArrayEncoder(80);
+		for (short s : arr) {
+			enc.appendChar((char) s);
+		}
+		return enc.getResult();
+	}
+
+	public static List<List<String>> packShort(int[] arr) {
+		JavaArrayEncoder enc = new JavaArrayEncoder(80);
+		for (int i : arr) {
+			if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
+				throw new IllegalArgumentException("cannot convert int[] into short[], contains `" + i + "'");
+			}
+			enc.appendChar((char) ((short) i));
+		}
+		return enc.getResult();
+	}
 
 	public static String packIntInt(int[][] table, Integer leftpadding) {
 		return JavaArrayArchiver.packIntInt(table, leftpadding);
 	}
 
-	public static String packInt(int[] table, Integer leftpadding) {
-		return JavaArrayArchiver.packInt(table, leftpadding);
-	}
-
-	public static String packShort(short[] table, Integer leftpadding) {
-		return JavaArrayArchiver.packShort(table, leftpadding);
+	public static List<List<String>> packInt(int[] arr) {
+		JavaArrayEncoder enc = new JavaArrayEncoder(80);
+		for (int i : arr) {
+			enc.appendInt(i);
+		}
+		return enc.getResult();
 	}
 
 	public String escape(String s) {
