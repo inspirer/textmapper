@@ -73,6 +73,7 @@ public class JavaArrayEncoder {
 
 	private void append(char c) {
 		if (lengthInUtf8 >= MAX_LENGTH) {
+			newLine();
 			newString();
 		} else if(sb.length() > lineWidth) {
 			newLine();

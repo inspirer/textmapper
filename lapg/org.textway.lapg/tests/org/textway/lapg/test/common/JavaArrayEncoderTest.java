@@ -89,7 +89,7 @@ public class JavaArrayEncoderTest {
 		List<List<String>> res = enc.getResult();
 		assertEquals(2, res.size());
 		// first chunk
-		assertEquals(1637, res.get(0).size());
+		assertEquals(1638, res.get(0).size());
 		assertEquals("\"\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\\1\"", res.get(0).get(0));
 		// second chunk
 		assertEquals(1, res.get(1).size());
@@ -113,7 +113,7 @@ public class JavaArrayEncoderTest {
 		List<List<String>> res = enc.getResult();
 		assertEquals(2, res.size());
 		// first chunk
-		assertEquals(818, res.get(0).size());
+		assertEquals(819, res.get(0).size());
 		assertEquals("\"\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\\0\"", res.get(0).get(0));
 		// second chunk
 		assertEquals(1, res.get(1).size());
@@ -137,7 +137,7 @@ public class JavaArrayEncoderTest {
 		List<List<String>> res = enc.getResult();
 		assertEquals(2, res.size());
 		// first chunk
-		assertEquals(3119, res.get(0).size());
+		assertEquals(3120, res.get(0).size());
 		assertEquals("\"\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\"", res.get(0).get(0));
 		// second chunk
 		assertEquals(1, res.get(1).size());

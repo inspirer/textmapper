@@ -20,6 +20,7 @@ import org.textway.lapg.common.JavaArrayArchiver;
 import org.textway.lapg.gen.TemplateStaticMethods;
 import org.textway.lapg.test.gen.JavaTemplateRoutines;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -56,39 +57,60 @@ public class JavaTablesCompressionTest {
 	}
 
 	private void checkDecompression(int[] a) {
-		List<List<String>> c = TemplateStaticMethods.packInt(a);
+		List<List<String>> packed = TemplateStaticMethods.packInt(a);
+		String parsed = parsePackedJavaString(packed);
+		int[] b = JavaTemplateRoutines.test_unpack_int(a.length, parsed);
+		assertArrayEquals(a, b);
+	}
 
+	private void checkDecompression(short[] a) {
+		List<List<String>> packed = TemplateStaticMethods.packShort(a);
+		String parsed = parsePackedJavaString(packed);
+		short[] b = JavaTemplateRoutines.test_unpack_short(a.length, parsed);
+		assertArrayEquals(a, b);
+	}
+
+	private String parsePackedJavaString(List<List<String>> c) {
 		StringBuilder extractedString = new StringBuilder();
-		for (List<String> s2 : c) {
-			for (String s : s2) {
-				assertTrue(s.charAt(0) == '"' && s.charAt(s.length() - 1) == '"');
+		for (List<String> slist : c) {
+			for (String s : slist) {
+				parseJavaString(extractedString, s);
+			}
+		}
+		return extractedString.toString();
+	}
 
-				char[] chs = s.substring(1, s.length() - 1).toCharArray();
-				int i = 0;
-				while (i < chs.length) {
-					assertEquals('\\', chs[i++]);
-					if (chs[i] == 'u') {
-						extractedString.append((char) Integer.parseInt(new String(chs, i + 1, 4), 16));
-						i += 5;
-					} else {
-						int start = i;
-						while (i < chs.length && chs[i] >= '0' && chs[i] <= '9') {
-							i++;
-						}
-						assertTrue(new String(chs, start, chs.length - start), i > start);
-						extractedString.append((char) Integer.parseInt(new String(chs, start, i - start), 8));
-					}
+	private void parseJavaString(StringBuilder result, String javaStringInQuotes) {
+		assertEquals('"', javaStringInQuotes.charAt(0));
+		assertEquals('"', javaStringInQuotes.charAt(javaStringInQuotes.length() - 1));
+
+		char[] chs = javaStringInQuotes.substring(1, javaStringInQuotes.length() - 1).toCharArray();
+		int i = 0;
+		while (i < chs.length) {
+			assertEquals('\\', chs[i++]);
+			if (chs[i] == 'u') {
+				try {
+					result.append((char) Integer.parseInt(new String(chs, i + 1, 4), 16));
+				} catch (NumberFormatException ex) {
+					fail(ex.toString());
+				}
+				i += 5;
+			} else {
+				int start = i;
+				while (i < chs.length && chs[i] >= '0' && chs[i] <= '9') {
+					i++;
+				}
+				assertTrue(new String(chs, start, chs.length - start), i > start);
+				try {
+					result.append((char) Integer.parseInt(new String(chs, start, i - start), 8));
+				} catch (NumberFormatException ex) {
+					fail(ex.toString());
 				}
 			}
 		}
-
-		int[] b = JavaTemplateRoutines.test_unpack_int(a.length, extractedString.toString());
-		for (int i = 0; i < a.length; i++) {
-			if (a[i] != b[i]) {
-				fail("wrong decompression at " + i);
-			}
-		}
 	}
+
+	// TODO FIXME test short compression
 
 	@Test
 	public void testCompression1() {
@@ -198,5 +220,66 @@ public class JavaTablesCompressionTest {
 	@Test
 	public void testIntCompressionMin() {
 		checkDecompression(new int[]{Integer.MIN_VALUE});
+	}
+
+	@Test
+	public void testIntCompressionLong1() {
+		int[] s = new int[32768];
+		Arrays.fill(s, -1);
+		checkDecompression(s);
+	}
+
+	@Test
+	public void testIntCompressionLong2() {
+		int[] s = new int[65536];
+		for(int i = 0; i < s.length; i++) {
+			s[i] = i - 32768;
+		}
+		checkDecompression(s);
+	}
+
+	@Test
+	public void testShortCompression1() {
+		checkDecompression(new short[]{1, 2, 3, 4, 5, 6, 7, 8});
+	}
+
+	@Test
+	public void testShortCompressionEmpty() {
+		checkDecompression(new short[]{});
+	}
+
+	@Test
+	public void testShortCompressionOne() {
+		checkDecompression(new short[]{-100});
+		checkDecompression(new short[]{1});
+	}
+
+	@Test
+	public void testShortCompressionNearZero() {
+		checkDecompression(new short[]{0});
+		checkDecompression(new short[]{-1});
+	}
+
+	@Test
+	public void testShortCompression2() {
+		checkDecompression(new short[]{0, 0, 0});
+		checkDecompression(new short[]{Short.MAX_VALUE});
+	}
+
+	@Test
+	public void testShortCompressionMax() {
+		checkDecompression(new short[]{Short.MAX_VALUE});
+	}
+
+	@Test
+	public void testShortCompressionMin() {
+		checkDecompression(new short[]{Short.MIN_VALUE});
+	}
+
+	@Test
+	public void testShortCompressionLong() {
+		short[] s = new short[32768*4 + 7];
+		Arrays.fill(s, (short) -1);
+		checkDecompression(s);
 	}
 }
