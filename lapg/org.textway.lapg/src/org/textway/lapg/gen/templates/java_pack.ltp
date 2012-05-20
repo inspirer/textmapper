@@ -1,4 +1,4 @@
-${template unpackValueCount(positiveValues)-}
+${template unpackCountValue(positiveValues)-}
 	private static ${positiveValues ? 'char' : 'short'}[] unpack_vc_${positiveValues ? 'char' : 'short'}(int size, String... st) {
 		${positiveValues ? 'char' : 'short'}[] res = new ${positiveValues ? 'char' : 'short'}[size];
 		int t = 0;
@@ -18,9 +18,9 @@ ${template unpackValueCount(positiveValues)-}
 	}
 ${end}
 
-${template packValueCount(positiveValues)-}
+${template packCountValue(positiveValues)-}
 unpack_vc_${positiveValues ? 'char' : 'short'}(${self.size()},
-${foreach str in util.packValueCount(self, positiveValues) separator ',\n'-}
+${foreach str in util.packShortCountValue(self, positiveValues) separator ',\n'-}
 ${foreach spart in str separator ' +\n'-}
 		${spart}${end}${end})${end}
 

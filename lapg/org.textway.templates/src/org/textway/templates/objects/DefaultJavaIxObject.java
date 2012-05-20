@@ -79,7 +79,11 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		} catch (IllegalAccessException ex) {
 			throw new EvaluationException("IllegalAccessException");
 		} catch (InvocationTargetException ex) {
-			throw new EvaluationException("InvocationTargetException");
+			String message = ex.getMessage();
+			if (ex.getCause() != null) {
+				message = "(caused by " + ex.getCause().getClass().getCanonicalName() + "): " + message;
+			}
+			throw new EvaluationException(message);
 		}
 	}
 
@@ -107,7 +111,11 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		} catch (IllegalAccessException ex) {
 			throw new EvaluationException("IllegalAccessException");
 		} catch (InvocationTargetException ex) {
-			throw new EvaluationException("InvocationTargetException");
+			String message = ex.getMessage();
+			if (ex.getCause() != null) {
+				message = "(caused by " + ex.getCause().getClass().getCanonicalName() + "): " + message;
+			}
+			throw new EvaluationException(message);
 		}
 	}
 

@@ -162,7 +162,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return sb.toString();
 	}
 
-	public static List<List<String>> packValueCount(int[] arr, Boolean positiveOnly) {
+	public static List<List<String>> packShortCountValue(int[] arr, Boolean positiveOnly) {
 		JavaArrayEncoder enc = new JavaArrayEncoder(80);
 		int count = 0;
 		int value = 0;
@@ -180,8 +180,13 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 				}
 				count = 1;
 				value = arr[i];
-			}
 
+				if (!positiveOnly && (value < Short.MIN_VALUE || value > Short.MAX_VALUE)
+						|| positiveOnly && (value < 0 || value > Character.MAX_VALUE)) {
+					throw new IllegalArgumentException("cannot convert int[] into " +
+							(positiveOnly ? "char" : "short") + "[], contains `" + value + "'");
+				}
+			}
 		}
 		if (count > 0) {
 			enc.appendChar(count);

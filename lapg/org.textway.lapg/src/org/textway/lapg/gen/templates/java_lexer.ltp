@@ -338,9 +338,9 @@ ${end}
 
 ${template lexerTables-}
 ${if lex.char2no.size() > 128-}
-	private static final char[] lapg_char2no = ${lex.char2no->java_pack.packValueCount(true)};
+	private static final char[] lapg_char2no = ${lex.char2no->java_pack.packCountValue(true)};
 
-${call java_pack.unpackValueCount(true)-}
+${call java_pack.unpackCountValue(true)-}
 ${else-}
 	private static final short lapg_char2no[] = {
 		${util.format(lex.char2no, 16, 2)}
@@ -349,9 +349,9 @@ ${end-}
 
 	private static final short[] lapg_lexemnum = ${lex.lnum->java_pack.packShort()};
 
-	private static final short[] lapg_lexem = ${lex.change->java_pack.packValueCount(false)};
+	private static final short[] lapg_lexem = ${lex.change->java_pack.packCountValue(false)};
 
-${call java_pack.unpackValueCount(false)-}
+${call java_pack.unpackCountValue(false)-}
 ${end}
 
 

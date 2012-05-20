@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Gryaznov Evgeny, 5/19/11
@@ -62,29 +63,29 @@ public class TemplateStaticMethodsTest {
 	}
 
 	@Test
-	public void testPackValueCount() {
-		List<List<String>> res = TemplateStaticMethods.packValueCount(new int[]{}, true);
+	public void testpackCountValue() {
+		List<List<String>> res = TemplateStaticMethods.packShortCountValue(new int[]{}, true);
 		assertEquals(Arrays.asList(Arrays.asList("\"\"")), res);
 
-		res = TemplateStaticMethods.packValueCount(new int[]{1}, true);
+		res = TemplateStaticMethods.packShortCountValue(new int[]{1}, true);
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\1\"")), res);
 
-		res = TemplateStaticMethods.packValueCount(new int[]{1, 1, 1, 2, 2, 2}, true);
+		res = TemplateStaticMethods.packShortCountValue(new int[]{1, 1, 1, 2, 2, 2}, true);
 		assertEquals(Arrays.asList(Arrays.asList("\"\\3\\1\\3\\2\"")), res);
 
-		res = TemplateStaticMethods.packValueCount(new int[]{92, 91, 90}, true);
+		res = TemplateStaticMethods.packShortCountValue(new int[]{92, 91, 90}, true);
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\134\\1\\133\\1\\132\"")), res);
 	}
 
 	@Test
-	public void testPackValueCountNegative() {
-		List<List<String>> res = TemplateStaticMethods.packValueCount(new int[]{}, false);
+	public void testpackCountValueNegative() {
+		List<List<String>> res = TemplateStaticMethods.packShortCountValue(new int[]{}, false);
 		assertEquals(Arrays.asList(Arrays.asList("\"\"")), res);
 
-		res = TemplateStaticMethods.packValueCount(new int[]{-1, -1, -1}, false);
+		res = TemplateStaticMethods.packShortCountValue(new int[]{-1, -1, -1}, false);
 		assertEquals(Arrays.asList(Arrays.asList("\"\\3\\uffff\"")), res);
 
-		res = TemplateStaticMethods.packValueCount(new int[]{Short.MIN_VALUE, Short.MAX_VALUE}, false);
+		res = TemplateStaticMethods.packShortCountValue(new int[]{Short.MIN_VALUE, Short.MAX_VALUE}, false);
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\u8000\\1\\u7fff\"")), res);
 	}
 
@@ -94,30 +95,81 @@ public class TemplateStaticMethodsTest {
 				"JavaTemplateRoutines.java"});
 	}
 
-	private static char[] unpack_char2no(int size, String... st) {
+	private static char[] unpack_vc_char(int size, String... st) {
 		return JavaTemplateRoutines.test_unpack_vc_char(size, st);
 	}
 
 	@Test
-	public void testUnpackAsValAndCount() {
-		char[] res = unpack_char2no(0, "");
+	public void testUnpackCountValue() {
+		char[] res = unpack_vc_char(0, "");
 		assertArrayEquals(new char[]{}, res);
 
-		res = unpack_char2no(1, "\1\1");
+		res = unpack_vc_char(1, "\1\1");
 		assertArrayEquals(new char[]{1}, res);
 
 		// splitted strings
-		res = unpack_char2no(1, "\1", "\1");
+		res = unpack_vc_char(1, "\1", "\1");
 		assertArrayEquals(new char[]{1}, res);
 
-		res = unpack_char2no(6, "\3\1\3\2");
+		res = unpack_vc_char(6, "\3\1\3\2");
 		assertArrayEquals(new char[]{1, 1, 1, 2, 2, 2}, res);
 
 		// splitted strings
-		res = unpack_char2no(6, "\3", "\1\3", "\2");
+		res = unpack_vc_char(6, "\3", "\1\3", "\2");
 		assertArrayEquals(new char[]{1, 1, 1, 2, 2, 2}, res);
 
-		res = unpack_char2no(3, "\1\134\1\133\1\132");
+		res = unpack_vc_char(3, "\1\134\1\133\1\132");
 		assertArrayEquals(new char[]{92, 91, 90}, res);
+	}
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		return JavaTemplateRoutines.test_unpack_vc_short(size, st);
+	}
+
+	@Test
+	public void testUnpackCountValueNegative() {
+		short[] res = unpack_vc_short(0, "");
+		assertArrayEquals(new short[]{}, res);
+
+		res = unpack_vc_short(1, "\1\uffff");
+		assertArrayEquals(new short[]{-1}, res);
+
+		// splitted strings
+		res = unpack_vc_short(1, "\1", "\ufffe");
+		assertArrayEquals(new short[]{-2}, res);
+
+		res = unpack_vc_short(2, "\1\u8000\1\u7fff");
+		assertArrayEquals(new short[]{Short.MIN_VALUE, Short.MAX_VALUE}, res);
+
+		// splitted strings
+		res = unpack_vc_short(6, "\3", "\1\3", "\2");
+		assertArrayEquals(new short[]{1, 1, 1, 2, 2, 2}, res);
+
+		res = unpack_vc_short(3, "\1\134\1\133\1\132");
+		assertArrayEquals(new short[]{92, 91, 90}, res);
+	}
+
+	@Test
+	public void testConvertIntToShort() {
+		try {
+			TemplateStaticMethods.packShortCountValue(new int[] {-373}, true);
+			fail("no exception");
+		} catch(IllegalArgumentException ex) {
+			assertEquals("cannot convert int[] into char[], contains `-373'", ex.getMessage());
+		}
+
+		try {
+			TemplateStaticMethods.packShortCountValue(new int[] {65536}, true);
+			fail("no exception");
+		} catch(IllegalArgumentException ex) {
+			assertEquals("cannot convert int[] into char[], contains `65536'", ex.getMessage());
+		}
+
+		try {
+			TemplateStaticMethods.packShortCountValue(new int[] {32768}, false);
+			fail("no exception");
+		} catch(IllegalArgumentException ex) {
+			assertEquals("cannot convert int[] into short[], contains `32768'", ex.getMessage());
+		}
 	}
 }
