@@ -133,7 +133,7 @@ ${if opts.lexerInput == 'buffered'-}
 ${end-}
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * ${self->numOfChars()} + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 ${if opts.endpositions.contains('offset')-}
 					lapg_n.endoffset = currOffset;
@@ -211,6 +211,7 @@ ${call java_pack.unpackInt}
 ${call java_pack.unpackShort-}
 ${end}
 
+${query numOfChars = lex.nchars}
 
 ${template lexerCtor-}
 	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
@@ -337,12 +338,9 @@ ${end}
 
 ${template lexerTables-}
 ${if lex.char2no.size() > 128-}
-	private static final char lapg_char2no[] = unpack_char2no(${lex.char2no.size()},
-${foreach str in util.packAsValAndCount(lex.char2no) separator ',\n'-}
-${foreach spart in str separator ' +\n'-}
-		${spart}${end}${end});
+	private static final char[] lapg_char2no = ${lex.char2no->java_pack.packValueCount(true)};
 
-${call java_pack.unpackChar2no-}
+${call java_pack.unpackValueCount(true)-}
 ${else-}
 	private static final short lapg_char2no[] = {
 		${util.format(lex.char2no, 16, 2)}
@@ -351,15 +349,9 @@ ${end-}
 
 	private static final short[] lapg_lexemnum = ${lex.lnum->java_pack.packShort()};
 
-${if !opts.packLexems-}
-	private static final short[][] lapg_lexem = new short[][] {
-		${util.format(lex.change, 2, '{', '}')}
-	};
-${else-}
-	private int lapg_lexem[][] = unpackFromString(${util.packIntInt(lex.change, 2)});
+	private static final short[] lapg_lexem = ${lex.change->java_pack.packValueCount(false)};
 
-${call java_pack.unpackIntInt-}		
-${end-}
+${call java_pack.unpackValueCount(false)-}
 ${end}
 
 

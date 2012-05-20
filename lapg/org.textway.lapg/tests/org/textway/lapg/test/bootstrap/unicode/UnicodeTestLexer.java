@@ -121,7 +121,7 @@ public class UnicodeTestLexer {
 		return token.toString();
 	}
 
-	private static final char lapg_char2no[] = unpack_char2no(131072,
+	private static final char[] lapg_char2no = unpack_vc_char(131072,
 		"\1\0\10\1\2\7\2\1\1\7\22\1\1\7\1\1\1\3\12\1\1\2\2\1\12\5\7\1\32\4\4\1\1\4\1\1\32" +
 		"\4\72\1\1\6\51\1\30\6\1\1\10\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1" +
 		"\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1" +
@@ -187,7 +187,7 @@ public class UnicodeTestLexer {
 		"\1\32\6\32\1\34\6\34\1\31\6\1\1\6\6\32\1\31\6\1\1\6\6\32\1\31\6\1\1\6\6\32\1\31\6" +
 		"\1\1\6\6\32\1\31\6\1\1\6\6\1\1\1\6\u2834\1");
 
-	private static char[] unpack_char2no(int size, String... st) {
+	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
 		int t = 0;
 		int count = 0;
@@ -208,16 +208,27 @@ public class UnicodeTestLexer {
 	private static final short[] lapg_lexemnum = unpack_short(4,
 		"\1\2\3\4");
 
-	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 3, 4, -1, 5},
-		{ -1, -1, -1, -1, -1, 4, -1, -1},
-		{ -1, -1, -1, -1, 6, 6, 6, -1},
-		{ -3, -3, -3, -3, 3, 3, -3, -3},
-		{ -4, -4, -4, -4, -4, 4, -4, -4},
-		{ -6, -6, -6, -6, -6, -6, -6, 5},
-		{ -1, -1, -1, 7, 6, 6, 6, -1},
-		{ -5, -5, -5, -5, -5, -5, -5, -5}
-	};
+	private static final short[] lapg_lexem = unpack_vc_short(64,
+		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\uffff\1\5\5\uffff\1\4\6\uffff\3\6\1\uffff\4\ufffd" +
+		"\2\3\2\ufffd\5\ufffc\1\4\2\ufffc\7\ufffa\1\5\3\uffff\1\7\3\6\1\uffff\10\ufffb");
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 131072) {
@@ -241,7 +252,7 @@ public class UnicodeTestLexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.lexem = 0;
 					lapg_n.sym = null;

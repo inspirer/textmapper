@@ -707,9 +707,10 @@ public class LexicalBuilder {
 			return null;
 		}
 
-		int[][] stateChange = new int[states][];
-		for (State s = first; s != null; s = s.next) {
-			stateChange[s.number] = s.change;
+		int[] stateChange = new int[states * characters];
+		int t = 0;
+		for (State s = first; s != null; s = s.next, t += characters) {
+			System.arraycopy(s.change, 0, stateChange, t, characters);
 		}
 
 		return new LexerTables(states, characters, nlexems, lnum, char2no, groupset, stateChange);

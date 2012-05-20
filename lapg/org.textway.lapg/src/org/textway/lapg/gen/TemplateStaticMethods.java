@@ -16,7 +16,6 @@
 package org.textway.lapg.gen;
 
 import org.textway.lapg.common.FormatUtil;
-import org.textway.lapg.common.JavaArrayArchiver;
 import org.textway.lapg.common.JavaArrayEncoder;
 import org.textway.templates.eval.DefaultStaticMethods;
 
@@ -163,7 +162,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		return sb.toString();
 	}
 
-	public static List<List<String>> packAsValAndCount(int[] arr) {
+	public static List<List<String>> packValueCount(int[] arr, Boolean positiveOnly) {
 		JavaArrayEncoder enc = new JavaArrayEncoder(80);
 		int count = 0;
 		int value = 0;
@@ -173,7 +172,11 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			} else {
 				if (count > 0) {
 					enc.appendChar(count);
-					enc.appendChar(value);
+					if (positiveOnly) {
+						enc.appendChar(value);
+					} else {
+						enc.appendShort(value);
+					}
 				}
 				count = 1;
 				value = arr[i];
@@ -182,7 +185,11 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		}
 		if (count > 0) {
 			enc.appendChar(count);
-			enc.appendChar(value);
+			if (positiveOnly) {
+				enc.appendChar(value);
+			} else {
+				enc.appendShort(value);
+			}
 		}
 		return enc.getResult();
 	}
@@ -201,13 +208,9 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 			if (i < Short.MIN_VALUE || i > Short.MAX_VALUE) {
 				throw new IllegalArgumentException("cannot convert int[] into short[], contains `" + i + "'");
 			}
-			enc.appendChar((char) ((short) i));
+			enc.appendShort(i);
 		}
 		return enc.getResult();
-	}
-
-	public static String packIntInt(int[][] table, Integer leftpadding) {
-		return JavaArrayArchiver.packIntInt(table, leftpadding);
 	}
 
 	public static List<List<String>> packInt(int[] arr) {

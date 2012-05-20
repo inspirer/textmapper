@@ -22,8 +22,6 @@ class Options extends common.Options {
 	int maxtoken = 2048;
 	int stack = 1024;
 
-	bool packLexems = false;
-	bool packTables = false;
 	bool genCleanup = false;
 	bool genCopyright = false;
 }

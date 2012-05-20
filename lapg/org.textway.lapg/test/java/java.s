@@ -5,8 +5,6 @@ package = "org.textway.lapg.gen.java"
 gentree = true
 genast = true
 genastdef = true
-packLexems = true
-packTables = true
 positions = "line,offset"
 endpositions = "offset"
 

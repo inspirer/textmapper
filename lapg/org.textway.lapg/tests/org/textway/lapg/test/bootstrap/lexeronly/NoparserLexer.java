@@ -130,18 +130,28 @@ public class NoparserLexer {
 	private static final short[] lapg_lexemnum = unpack_short(5,
 		"\1\2\2\2\3");
 
-	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, 1, 2, 3, 1, 1, 4, 5},
-		{ -6, 1, -6, -6, 1, 1, -6, -6},
-		{ -3, -3, -3, -3, -3, -3, -3, -3},
-		{ -1, 3, 3, 6, 7, -1, 3, 3},
-		{ -1, 4, 4, 4, 8, -1, 9, 4},
-		{ -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -4, -4, -4, -4, -4, -4, -4, -4},
-		{ -1, 3, 3, 3, 3, -1, 3, 3},
-		{ -1, 4, 4, 4, 4, -1, 4, 4},
-		{ -5, -5, -5, -5, -5, -5, -5, -5}
-	};
+	private static final short[] lapg_lexem = unpack_vc_short(80,
+		"\1\ufffe\1\1\1\2\1\3\2\1\1\4\1\5\1\ufffa\1\1\2\ufffa\2\1\2\ufffa\10\ufffd\1\uffff" +
+		"\2\3\1\6\1\7\1\uffff\2\3\1\uffff\3\4\1\10\1\uffff\1\11\1\4\10\ufff9\10\ufffc\1\uffff" +
+		"\4\3\1\uffff\2\3\1\uffff\4\4\1\uffff\2\4\10\ufffb");
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
@@ -164,7 +174,7 @@ public class NoparserLexer {
 			token.setLength(0);
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.lexem = 0;
 					lapg_n.sym = null;

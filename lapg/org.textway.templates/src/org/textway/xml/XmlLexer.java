@@ -142,28 +142,30 @@ public class XmlLexer {
 	private static final short[] lapg_lexemnum = unpack_short(11,
 		"\1\2\3\4\5\5\6\7\10\11\12");
 
-	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-		{ -1, -1, -1, -1, -1, 4, 5, 6, 7, 8, 9, 10, -1, 11, 11},
-		{ -3, 2, -3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2},
-		{ -4, -4, -4, 12, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4},
-		{ -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9, -9},
-		{ -1, 5, 5, 5, 5, 5, 13, 5, 5, 5, 5, 5, 5, -1, 5},
-		{ -1, 6, 6, 6, 6, 6, 6, 14, 6, 6, 6, 6, 6, -1, 6},
-		{ -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10},
-		{ -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11},
-		{ -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12},
-		{ -6, -6, -6, -6, 10, -6, -6, -6, -6, -6, -6, 10, 10, -6, -6},
-		{ -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, 11, 11},
-		{ -1, -1, -1, -1, 15, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8, -8},
-		{ -1, -1, -1, -1, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
-		{ -1, 16, 16, 16, 17, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16},
-		{ -1, 16, 16, 16, 18, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16},
-		{ -1, 16, 16, 16, 16, 19, 16, 16, 16, 16, 16, 16, 16, 16, 16},
-		{ -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5, -5}
-	};
+	private static final short[] lapg_lexem = unpack_vc_short(300,
+		"\1\ufffe\1\2\1\3\14\2\5\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\uffff\2\13\1\ufffd" +
+		"\1\2\1\ufffd\14\2\3\ufffc\1\14\13\ufffc\17\ufff7\1\uffff\5\5\1\15\6\5\1\uffff\1\5" +
+		"\1\uffff\6\6\1\16\5\6\1\uffff\1\6\17\ufff6\17\ufff5\17\ufff4\4\ufffa\1\12\6\ufffa" +
+		"\2\12\2\ufffa\15\ufff3\2\13\4\uffff\1\17\12\uffff\17\ufff9\17\ufff8\4\uffff\1\20" +
+		"\13\uffff\3\20\1\21\12\20\1\uffff\3\20\1\22\12\20\1\uffff\4\20\1\23\11\20\17\ufffb");
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
@@ -187,7 +189,7 @@ public class XmlLexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * 15 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.lexem = 0;

@@ -149,21 +149,30 @@ public class SampleBLexer {
 	private static final short[] lapg_lexemnum = unpack_short(15,
 		"\1\2\3\4\5\6\7\10\11\12\13\14\15\17\20");
 
-	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 3, 4, 5, 6, 2, 7, 2, 7, 8},
-		{ -1, -1, 9, 10, -1, -1, -1, -1, -1, -1, -1, 9, -1},
-		{ -3, -3, 2, 2, -3, -3, -3, -3, 2, 2, 2, 2, -3},
-		{ -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10},
-		{ -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11, -11},
-		{ -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12, -12},
-		{ -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13, -13},
-		{ -1, -1, 11, -1, -1, -1, -1, -1, -1, 11, -1, 11, -1},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, 8},
-		{ -5, -5, 9, -5, -5, -5, -5, -5, -5, -5, -5, 9, -5},
-		{ -1, -1, 12, -1, -1, -1, -1, -1, -1, 12, 12, 12, -1},
-		{ -6, -6, 11, -6, -6, -6, -6, -6, -6, 11, -6, 11, -6},
-		{ -4, -4, 12, -4, -4, -4, -4, -4, -4, 12, 12, 12, -4}
-	};
+	private static final short[] lapg_lexem = unpack_vc_short(169,
+		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\2\1\7\1\10\2\uffff\1\11\1\12\7" +
+		"\uffff\1\11\1\uffff\2\ufffd\2\2\4\ufffd\4\2\1\ufffd\15\ufff6\15\ufff5\15\ufff4\15" +
+		"\ufff3\2\uffff\1\13\6\uffff\1\13\1\uffff\1\13\1\uffff\14\ufff9\1\10\2\ufffb\1\11" +
+		"\10\ufffb\1\11\1\ufffb\2\uffff\1\14\6\uffff\3\14\1\uffff\2\ufffa\1\13\6\ufffa\1\13" +
+		"\1\ufffa\1\13\1\ufffa\2\ufffc\1\14\6\ufffc\3\14\1\ufffc");
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
@@ -187,7 +196,7 @@ public class SampleBLexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * 13 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.lexem = 0;

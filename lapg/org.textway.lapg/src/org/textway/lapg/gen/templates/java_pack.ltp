@@ -1,44 +1,6 @@
-${template unpackIntInt-}
-	private static int[][] unpackFromString(int size1, int size2, String st) {
-		int colonIndex = -1;
-		String lengthString;
-		int sequenceLength = 0;
-		int sequenceInteger = 0;
-
-		int commaIndex;
-		String workString;
-
-		int res[][] = new int[size1][size2];
-		for (int i = 0; i < size1; i++) {
-			for (int j = 0; j < size2; j++) {
-				if (sequenceLength != 0) {
-					res[i][j] = sequenceInteger;
-					sequenceLength--;
-					continue;
-				}
-				commaIndex = st.indexOf(',');
-				workString = (commaIndex == -1) ? st : st.substring(0, commaIndex);
-				st = st.substring(commaIndex + 1);
-				colonIndex = workString.indexOf(':');
-				if (colonIndex == -1) {
-					res[i][j] = Integer.parseInt(workString);
-					continue;
-				}
-				lengthString = workString.substring(colonIndex + 1);
-				sequenceLength = Integer.parseInt(lengthString);
-				workString = workString.substring(0, colonIndex);
-				sequenceInteger = Integer.parseInt(workString);
-				res[i][j] = sequenceInteger;
-				sequenceLength--;
-			}
-		}
-		return res;
-	}
-${end}
-
-${template unpackChar2no-}
-	private static char[] unpack_char2no(int size, String... st) {
-		char[] res = new char[size];
+${template unpackValueCount(positiveValues)-}
+	private static ${positiveValues ? 'char' : 'short'}[] unpack_vc_${positiveValues ? 'char' : 'short'}(int size, String... st) {
+		${positiveValues ? 'char' : 'short'}[] res = new ${positiveValues ? 'char' : 'short'}[size];
 		int t = 0;
 		int count = 0;
 		for (String s : st) {
@@ -46,7 +8,7 @@ ${template unpackChar2no-}
 			for (int i = 0; i < slen; ) {
 				count = i > 0 || count == 0 ? s.charAt(i++) : count;
 				if (i < slen) {
-					char val = s.charAt(i++);
+					${positiveValues ? 'char' : 'short'} val = ${positiveValues ? '' : '(short) '}s.charAt(i++);
 					while (count-- > 0) res[t++] = val;
 				}
 			}
@@ -55,6 +17,13 @@ ${template unpackChar2no-}
 		return res;
 	}
 ${end}
+
+${template packValueCount(positiveValues)-}
+unpack_vc_${positiveValues ? 'char' : 'short'}(${self.size()},
+${foreach str in util.packValueCount(self, positiveValues) separator ',\n'-}
+${foreach spart in str separator ' +\n'-}
+		${spart}${end}${end})${end}
+
 
 ${template unpackInt-}
 	/* package */ static int[] unpack_int(int size, String... st) {

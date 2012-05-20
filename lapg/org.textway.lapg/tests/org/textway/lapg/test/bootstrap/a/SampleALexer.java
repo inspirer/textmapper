@@ -152,18 +152,29 @@ public class SampleALexer {
 	private static final short[] lapg_lexemnum = unpack_short(5,
 		"\1\2\3\4\5");
 
-	private static final short[][] lapg_lexem = new short[][] {
-		{ -2, -1, 1, 2, 2, 2, 3, 4, 2, -1, 5},
-		{ -3, -3, 2, 6, 2, 2, -3, -3, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 2, -3, -3, 2, 2, -3},
-		{ -6, -6, -6, -6, -6, -6, -6, -6, -6, -6, -6},
-		{ -7, -7, -7, -7, -7, -7, -7, -7, -7, -7, -7},
-		{ -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, 5},
-		{ -3, -3, 2, 2, 7, 2, -3, -3, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 8, -3, -3, 2, 2, -3},
-		{ -3, -3, 2, 2, 2, 9, -3, -3, 2, 2, -3},
-		{ -5, -5, 2, 2, 2, 2, -5, -5, 2, 2, -5}
-	};
+	private static final short[] lapg_lexem = unpack_vc_short(110,
+		"\1\ufffe\1\uffff\1\1\3\2\1\3\1\4\1\2\1\uffff\1\5\2\ufffd\1\2\1\6\2\2\2\ufffd\2\2" +
+		"\3\ufffd\4\2\2\ufffd\2\2\1\ufffd\13\ufffa\13\ufff9\12\ufffc\1\5\2\ufffd\2\2\1\7\1" +
+		"\2\2\ufffd\2\2\3\ufffd\3\2\1\10\2\ufffd\2\2\3\ufffd\3\2\1\11\2\ufffd\2\2\1\ufffd" +
+		"\2\ufffb\4\2\2\ufffb\2\2\1\ufffb");
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
@@ -188,7 +199,7 @@ public class SampleALexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * 11 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.endline = currLine;

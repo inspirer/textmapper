@@ -22,10 +22,16 @@ package org.textway.lapg.test.gen;
  */
 public class JavaTemplateRoutines {
 
-${call unpackChar2no-}
+${call unpackValueCount(true)-}
 
-	public static char[] test_unpack_char2no(int size, String... st) {
-		return unpack_char2no(size, st);
+	public static char[] test_unpack_vc_char(int size, String... st) {
+		return unpack_vc_char(size, st);
+	}
+
+${call unpackValueCount(false)-}
+
+	public static short[] test_unpack_vc_short(int size, String... st) {
+		return unpack_vc_short(size, st);
 	}
 
 ${call unpackShort-}

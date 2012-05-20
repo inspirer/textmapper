@@ -74,7 +74,7 @@ public class LexerGeneratorTest {
 
 		while (state >= 0) {
 			int chr = index < s.length() ? s.codePointAt(index++) : 0;
-			state = lr.change[state][chr >= 0 && chr < lr.char2no.length ? lr.char2no[chr] : 1];
+			state = lr.change[state * lr.nchars + (chr >= 0 && chr < lr.char2no.length ? lr.char2no[chr] : 1)];
 		}
 		if (state == -1) {
 			return -1;

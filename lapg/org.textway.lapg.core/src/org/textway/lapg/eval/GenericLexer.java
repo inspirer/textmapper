@@ -57,7 +57,8 @@ public class GenericLexer {
 	private final Grammar grammar;
 	private final int[] lapg_char2no;
 	private final int[] lapg_lexemnum;
-	private final int[][] lapg_lexem;
+	private final int[] lapg_lexem;
+	private final int lapg_nchars;
 
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
 		this.reporter = reporter;
@@ -65,6 +66,7 @@ public class GenericLexer {
 		lapg_char2no = tables.char2no;
 		lapg_lexem = tables.change;
 		lapg_lexemnum = tables.lnum;
+		lapg_nchars = tables.nchars;
 		reset(stream);
 	}
 
@@ -148,7 +150,7 @@ public class GenericLexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state][mapCharacter(chr)];
+				state = lapg_lexem[state * lapg_nchars + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.lexem = 0;

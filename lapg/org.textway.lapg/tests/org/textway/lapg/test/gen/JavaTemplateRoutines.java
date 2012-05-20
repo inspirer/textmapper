@@ -20,7 +20,7 @@ package org.textway.lapg.test.gen;
  */
 public class JavaTemplateRoutines {
 
-	private static char[] unpack_char2no(int size, String... st) {
+	private static char[] unpack_vc_char(int size, String... st) {
 		char[] res = new char[size];
 		int t = 0;
 		int count = 0;
@@ -38,8 +38,30 @@ public class JavaTemplateRoutines {
 		return res;
 	}
 
-	public static char[] test_unpack_char2no(int size, String... st) {
-		return unpack_char2no(size, st);
+	public static char[] test_unpack_vc_char(int size, String... st) {
+		return unpack_vc_char(size, st);
+	}
+
+	private static short[] unpack_vc_short(int size, String... st) {
+		short[] res = new short[size];
+		int t = 0;
+		int count = 0;
+		for (String s : st) {
+			int slen = s.length();
+			for (int i = 0; i < slen; ) {
+				count = i > 0 || count == 0 ? s.charAt(i++) : count;
+				if (i < slen) {
+					short val = (short) s.charAt(i++);
+					while (count-- > 0) res[t++] = val;
+				}
+			}
+		}
+		assert res.length == t;
+		return res;
+	}
+
+	public static short[] test_unpack_vc_short(int size, String... st) {
+		return unpack_vc_short(size, st);
 	}
 
 	/* package */ static short[] unpack_short(int size, String... st) {

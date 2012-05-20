@@ -33,13 +33,13 @@ public class JavaArrayEncoder {
 
 	public JavaArrayEncoder(int width) {
 		lineWidth = width;
-		sb = new StringBuilder(width+16);
+		sb = new StringBuilder(width + 16);
 		newString();
 	}
 
 	public List<List<String>> getResult() {
 		newLine();
-		if(result.size() == 1 && current.isEmpty()) {
+		if (result.size() == 1 && current.isEmpty()) {
 			current.add("\"\"");
 		}
 		return result;
@@ -55,6 +55,11 @@ public class JavaArrayEncoder {
 		append((char) i);
 	}
 
+	public void appendShort(int i) {
+		assert i >= Short.MIN_VALUE && i <= Short.MAX_VALUE;
+		append((char) ((short) i));
+	}
+
 	private void newString() {
 		current = new ArrayList<String>();
 		result.add(current);
@@ -62,20 +67,20 @@ public class JavaArrayEncoder {
 		sb.append("\"");
 		lengthInUtf8 = 0;
 	}
-	
+
 	private void newLine() {
-		if(sb.length() > 1) {
+		if (sb.length() > 1) {
 			sb.append("\"");
 			current.add(sb.toString());
 			sb.setLength(1);
 		}
-	} 
+	}
 
 	private void append(char c) {
 		if (lengthInUtf8 >= MAX_LENGTH) {
 			newLine();
 			newString();
-		} else if(sb.length() > lineWidth) {
+		} else if (sb.length() > lineWidth) {
 			newLine();
 		}
 

@@ -3,7 +3,8 @@ ${template lexerCtor-}
 	private final org.textway.lapg.api.@Grammar grammar;
 	private final int[] lapg_char2no;
 	private final int[] lapg_lexemnum;
-	private final int[][] lapg_lexem;
+	private final int[] lapg_lexem;
+	private final int lapg_nchars;
 
 	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textway.lapg.lex.@LexerTables tables, org.textway.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
@@ -11,6 +12,7 @@ ${template lexerCtor-}
 		lapg_char2no = tables.char2no;
 		lapg_lexem = tables.change;
 		lapg_lexemnum = tables.lnum;
+		lapg_nchars = tables.nchars;
 		reset(${if opts.lexerInput != 'custom'}stream${end});
 	}
 ${end}
@@ -43,3 +45,5 @@ ${end}
 ${cached query hasLexemActions() = false}
 
 ${cached query classLexems() = []}
+
+${query numOfChars = 'lapg_nchars'}
