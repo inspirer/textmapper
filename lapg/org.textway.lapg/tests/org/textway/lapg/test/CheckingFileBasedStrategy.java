@@ -48,9 +48,8 @@ public class CheckingFileBasedStrategy implements ProcessingStrategy {
 	public void createFile(String name, String contents, ProcessingStatus status) {
 		try {
 			// FIXME encoding, newline
-			new GeneratedFile(name, contents, "utf8", false) {
+			new GeneratedFile(root, name, contents, "utf8", false) {
 				public void check() throws IOException {
-					String name = getName();
 					checkName(name);
 					String expected;
 					try {

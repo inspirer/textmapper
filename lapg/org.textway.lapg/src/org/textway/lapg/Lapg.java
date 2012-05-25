@@ -117,7 +117,7 @@ public class Lapg {
 		boolean success;
 		try {
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
-			FileBasedStrategy strategy = new FileBasedStrategy();
+			FileBasedStrategy strategy = new FileBasedStrategy(null);
 
 			success = new LapgGenerator(options, status, strategy).compileGrammar(input);
 		} finally {

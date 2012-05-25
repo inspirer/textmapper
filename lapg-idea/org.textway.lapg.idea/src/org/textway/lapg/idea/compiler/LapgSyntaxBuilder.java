@@ -69,10 +69,9 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 	public void createFile(String name, String contents, ProcessingStatus status) {
 		try {
 			// FIXME encoding, newline
-			new GeneratedFile(name, contents, "utf8", false) {
+			new GeneratedFile(null, name, contents, "utf8", false) {
 				@Override
 				public void create() throws IOException {
-					String name = getName();
 					checkName(name);
 					String data = getData();
 					myGeneratedContent.put(name, data);

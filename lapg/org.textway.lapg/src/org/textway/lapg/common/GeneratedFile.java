@@ -26,6 +26,7 @@ public class GeneratedFile {
 
 	private static final Pattern FILENAME = Pattern.compile("([\\w-]+/)*[\\w-]+(\\.\\w+)?");
 
+	protected final File baseFolder;
 	protected final String name;
 	protected final String contents;
 	protected final String charset;
@@ -33,7 +34,8 @@ public class GeneratedFile {
 
 	public static String NL = System.getProperty("line.separator");
 
-	public GeneratedFile(String name, String contents, String charset, boolean forceLF) {
+	public GeneratedFile(File baseFolder, String name, String contents, String charset, boolean forceLF) {
+		this.baseFolder = baseFolder;
 		this.name = name;
 		this.contents = contents;
 		this.charset = charset;
@@ -48,14 +50,9 @@ public class GeneratedFile {
 		return fixLineSeparators(data);
 	}
 
-	protected String getName() {
-		return name;
-	}
-
 	public void create() throws IOException {
-		String name = getName();
 		checkName(name);
-		OutputStream os = new FileOutputStream(new File(name));
+		OutputStream os = new FileOutputStream(new File(baseFolder, name));
 		String data = getData();
 		os.write(data.getBytes(charset));
 		os.close();
@@ -68,7 +65,7 @@ public class GeneratedFile {
 		}
 		int lastSlash = name.lastIndexOf('/');
 		if (lastSlash != -1) {
-			File pf = new File(name.substring(0, lastSlash));
+			File pf = new File(baseFolder, name.substring(0, lastSlash));
 			if (!pf.exists() && !pf.mkdirs()) {
 				throw new IOException("cannot create folders for `" + name.substring(0, lastSlash) + "'");
 			}
