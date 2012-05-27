@@ -1,10 +1,27 @@
 1.3.11
 ------
 
-[+] Negative Lookahead syntax supported: noPlusExpr ::= (?! '+') expression ;
+[+] Negative Lookahead syntax: noPlusExpr ::= (?! '+') expression ;
+[+] \p{category} in lexer patterns
 [+] better syntax for space lexems: _skipNL: /[\n\r]+/ (space)
-[+] supported grammars without a parser
+[+] syntax files without a parser (just lexer)
 [!] fixed types in AST tree generation
 [!] code which skips semantic action was extracted into a separate "Action" parser: saction.s
-[+] soft keywords in lapg.s grammar: (soft/class/space)
-[+] new api: extracted AbstractProcessingStatus
+[+] soft keywords in lapg.s grammar: (soft/class/space), layout symbols (do not affect parsing)
+[+] new api: AbstractProcessingStatus
+[+] extracted org.textway.lapg.core module (lalr(1) and lexer cores) with GrammarFacade as entry point
+[!] fully migrated to JUnit4
+[+] improved regex parser: support set operations, modifiers and eoi matching
+[+] generate GenericLexer/Parser from templates
+[!] java: effective storage of huge parser/lexer tables in strings
+
+IDEA plugin:
+
+[+] Colors settings page for .s files
+[+] Highlighting for lexer regular expressions and semantic actions
+[+] Highlighting for .ltp files
+
+1.3.10  (July 14, 2011)
+------
+
+[+] first public release of Java version
