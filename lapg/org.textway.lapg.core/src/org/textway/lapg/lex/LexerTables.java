@@ -20,16 +20,29 @@ package org.textway.lapg.lex;
  */
 public class LexerTables {
 
-	public final int nstates, nchars, nterms;
-	public final int[] lnum, char2no, groupset, change;
+	private final int nchars;
+	private final int[] char2no, groupset, change;
 
-	public LexerTables(int nstates, int nchars, int nterms, int[] lnum, int[] char2no, int[] groupset, int[] change) {
-		this.nstates = nstates;
+	public LexerTables(int nchars, int[] char2no, int[] groupset, int[] change) {
 		this.nchars = nchars;
-		this.nterms = nterms;
-		this.lnum = lnum;
 		this.char2no = char2no;
 		this.groupset = groupset;
 		this.change = change;
+	}
+
+	public int getNchars() {
+		return nchars;
+	}
+
+	public int[] getChar2no() {
+		return char2no;
+	}
+
+	public int[] getGroupset() {
+		return groupset;
+	}
+
+	public int[] getChange() {
+		return change;
 	}
 }

@@ -63,10 +63,10 @@ public class GenericLexer {
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		lapg_char2no = tables.char2no;
-		lapg_lexem = tables.change;
-		lapg_lexemnum = tables.lnum;
-		lapg_nchars = tables.nchars;
+		lapg_lexemnum = getLexemNum(grammar);
+		lapg_char2no = tables.getChar2no();
+		lapg_lexem = tables.getChange();
+		lapg_nchars = tables.getNchars();
 		reset(stream);
 	}
 
@@ -205,5 +205,14 @@ public class GenericLexer {
 	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) throws IOException {
 		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
 		return lexemKind != Lexem.KIND_SPACE;
+	}
+
+	private static int[] getLexemNum(Grammar grammar) {
+		Lexem[] lexems = grammar.getLexems();
+		int[] result = new int[lexems.length];
+		for (int i = 0; i < lexems.length; i++) {
+			result[i] = lexems[i].getSymbol().getIndex();
+		}
+		return result;
 	}
 }

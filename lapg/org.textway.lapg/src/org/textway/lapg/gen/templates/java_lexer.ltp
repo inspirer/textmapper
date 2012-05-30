@@ -347,7 +347,7 @@ ${else-}
 	};
 ${end-}
 
-	private static final short[] lapg_lexemnum = ${lex.lnum->java_pack.packShort()};
+	private static final short[] lapg_lexemnum = ${syntax.lexemSymbols->java_pack.packShort()};
 
 	private static final short[] lapg_lexem = ${lex.change->java_pack.packCountValue(false)};
 

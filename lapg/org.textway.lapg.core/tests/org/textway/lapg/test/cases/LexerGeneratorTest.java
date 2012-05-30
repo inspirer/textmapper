@@ -51,7 +51,7 @@ public class LexerGeneratorTest {
 		LexerTables lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
-				int res = nextToken(lt, s);
+				int res = nextToken(lt, s, INPUT1);
 				assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
 			}
 		}
@@ -68,13 +68,13 @@ public class LexerGeneratorTest {
 
 	}
 
-	private int nextToken(LexerTables lr, String s) {
+	private int nextToken(LexerTables lr, String s, Lexem[] lexems) {
 		int state = 0;
 		int index = 0;
 
 		while (state >= 0) {
 			int chr = index < s.length() ? s.codePointAt(index++) : 0;
-			state = lr.change[state * lr.nchars + (chr >= 0 && chr < lr.char2no.length ? lr.char2no[chr] : 1)];
+			state = lr.getChange()[state * lr.getNchars() + (chr >= 0 && chr < lr.getChar2no().length ? lr.getChar2no()[chr] : 1)];
 		}
 		if (state == -1) {
 			return -1;
@@ -82,7 +82,7 @@ public class LexerGeneratorTest {
 		if (state == -2) {
 			return 0;
 		}
-		return lr.lnum[-state - 3];
+		return lexems[-state - 3].getSymbol().getIndex();
 	}
 
 	private static class TestLexem implements Lexem, TextSourceElement {

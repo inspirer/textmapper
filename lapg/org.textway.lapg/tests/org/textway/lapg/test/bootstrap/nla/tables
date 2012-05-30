@@ -22,11 +22,6 @@ _skip,3:  20000003 80040000 fffffffd ([\n\t\r ]+)
 '?',19:  80060011 ffffffed (\?)
 ':',20:  80060012 ffffffec (:)
 '->',21:  80060002 80060013 ffffffeb (\->)
-Lnull,22:  (null)
-Linvoke,23:  (invoke)
-Lreset,24:  (reset)
-Lnop,25:  (nop)
-Lexotic,26:  (exotic)
 
 Symbols:
 

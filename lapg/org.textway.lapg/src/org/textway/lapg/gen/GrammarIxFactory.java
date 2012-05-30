@@ -290,6 +290,14 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				return gr;
 			}
+			if ("lexemSymbols".equals(propertyName)) {
+				Lexem[] lexems = grammar.getLexems();
+				int[] result = new int[lexems.length];
+				for (int i = 0; i < lexems.length; i++) {
+					result[i] = lexems[i].getSymbol().getIndex();
+				}
+				return result;
+			}
 			return super.getProperty(propertyName);
 		}
 	}
