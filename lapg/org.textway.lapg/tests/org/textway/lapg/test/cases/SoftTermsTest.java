@@ -16,10 +16,12 @@
 package org.textway.lapg.test.cases;
 
 import org.junit.Test;
+import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgGrammar;
+import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.test.TestStatus;
 import org.textway.lapg.test.bootstrap.b.SampleBTree;
 import org.textway.lapg.test.bootstrap.b.SampleBTree.TextSource;
@@ -59,8 +61,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftShift() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_ss", openStream("syntax_softconflicts_ss", TESTCONTAINER), er,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_ss", FileUtil.getFileContents(openStream("syntax_softconflicts_ss", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -98,8 +99,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftReduce() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_sr", openStream("syntax_softconflicts_sr", TESTCONTAINER), er,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_sr", FileUtil.getFileContents(openStream("syntax_softconflicts_sr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -118,8 +118,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ReduceReduce() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_softconflicts_rr", openStream("syntax_softconflicts_rr", TESTCONTAINER), er,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_rr", FileUtil.getFileContents(openStream("syntax_softconflicts_rr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(

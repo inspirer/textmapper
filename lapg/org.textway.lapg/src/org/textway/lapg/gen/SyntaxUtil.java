@@ -98,10 +98,4 @@ public class SyntaxUtil {
 			return source.getFile();
 		}
 	}
-
-	@Deprecated
-	public static LapgGrammar parseSyntax(String inputName, InputStream stream, ProcessingStatus err, TypesRegistry types) {
-		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
-		return parseSyntax(new LapgTree.TextSource(inputName, contents.toCharArray(), 1), err, types);
-	}
 }

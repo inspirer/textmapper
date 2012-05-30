@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
 import org.textway.lapg.lex.LexicalBuilder;
@@ -50,8 +51,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testOptions() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1options", openStream("syntax1options", TESTCONTAINER), new TestStatus(),
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1options", FileUtil.getFileContents(openStream("syntax1options", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -61,8 +61,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testCheckSimple1() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1", openStream("syntax1", TESTCONTAINER), new TestStatus(),
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1", FileUtil.getFileContents(openStream("syntax1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -95,8 +94,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testCheckSimple2() {
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax2", openStream("syntax2", TESTCONTAINER), new TestStatus(),
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax2", FileUtil.getFileContents(openStream("syntax2", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -143,8 +141,7 @@ public class InputTest extends LapgTestCase {
 						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
 						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_lexems", openStream("syntax_lexems", TESTCONTAINER),
-				notifier, createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexems", FileUtil.getFileContents(openStream("syntax_lexems", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}
@@ -155,8 +152,7 @@ public class InputTest extends LapgTestCase {
 				"syntax_patterns,7: unfinished regexp\n" +
 						"syntax_patterns,16: redeclaration of named pattern `WORD'\n"
 		);
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_patterns", openStream("syntax_patterns", TESTCONTAINER),
-				notifier, createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}
@@ -164,8 +160,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testCheckCSharpGrammar() {
 		TestStatus ts = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax("input", openStream("syntax_cs", TESTCONTAINER), ts,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("input", FileUtil.getFileContents(openStream("syntax_cs", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset("input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
@@ -190,8 +185,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testCheckConflictsHandling() {
 		TestStatus ts = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict1", openStream("syntax_conflict1", TESTCONTAINER), ts,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict1", FileUtil.getFileContents(openStream("syntax_conflict1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset(
@@ -225,8 +219,7 @@ public class InputTest extends LapgTestCase {
 				return isDebug[0];
 			}
 		};
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax_conflict2resolved", openStream("syntax_conflict2resolved", TESTCONTAINER), ts,
-				createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict2resolved", FileUtil.getFileContents(openStream("syntax_conflict2resolved", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset("", "");

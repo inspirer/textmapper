@@ -19,8 +19,10 @@ import org.junit.Test;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Rule;
 import org.textway.lapg.api.Symbol;
+import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.parser.LapgGrammar;
+import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.test.TestStatus;
 import org.textway.templates.api.SourceElement;
 import org.textway.templates.api.TemplatesStatus;
@@ -50,8 +52,7 @@ public class AnnotationsTest extends LapgTestCase {
 
 	@Test
 	public void testAllAnnotations() {
-		LapgGrammar lg = SyntaxUtil.parseSyntax("syntax1annotated", openStream("syntax1annotated", TESTCONTAINER),
-				new TestStatus(), createDefaultTypesRegistry());
+		LapgGrammar lg = SyntaxUtil.parseSyntax(new TextSource("syntax1annotated", FileUtil.getFileContents(openStream("syntax1annotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(lg);
 
 		Grammar g = lg.getGrammar();
@@ -92,8 +93,7 @@ public class AnnotationsTest extends LapgTestCase {
 	public void testBadAnnotations() {
 		TestStatus notifier = new TestStatus("", "syntax1errannotated,23: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
-		LapgGrammar g = SyntaxUtil.parseSyntax("syntax1errannotated", openStream("syntax1errannotated", TESTCONTAINER),
-				notifier, createDefaultTypesRegistry());
+		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}
