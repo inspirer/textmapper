@@ -58,6 +58,8 @@ public class LexicalBuilder {
 		int[] set;
 	}
 
+	private static final int TABLE_SIZE = 1024; // should be power of 2
+
 	// initial information
 	private final ProcessingStatus status;
 
@@ -82,15 +84,19 @@ public class LexicalBuilder {
 		this.status = status;
 	}
 
-	private int add_set(int[] state, int size, int sum) {
-		State n;
-		int i;
+	private int add_set(int[] state, int size) {
+		int hCode = 1;
+		for (int i = 0; i < size; i++) {
+			hCode = hCode * 31 + state[i];
+		}
 
-		assert sum >= 0;
+		State n;
 
 		// search for existing
-		for (n = hash[sum]; n != null; n = n.hash) {
-			for (i = 0; n.set[i] >= 0 && state[i] >= 0 && n.set[i] == state[i]; i++) {
+		for (n = hash[hCode & (TABLE_SIZE - 1)]; n != null; n = n.hash) {
+			int i = 0;
+			while (state[i] >= 0 && n.set[i] == state[i]) {
+				i++;
 			}
 			if (n.set[i] == -1 && state[i] == -1) {
 				return n.number;
@@ -105,18 +111,20 @@ public class LexicalBuilder {
 		// create new
 		n = new State();
 		n.set = new int[size + 1];
-		last = last.next = n;
-		n.hash = hash[sum];
-		hash[sum] = n;
+		System.arraycopy(state, 0, n.set, 0, size);
+		n.set[size] = -1;
 		n.next = null;
-
 		n.number = states++;
 		n.change = null;
-		for (i = 0; i < size; i++) {
-			n.set[i] = state[i];
-		}
-		n.set[size] = -1;
 
+		n.hash = hash[hCode & (TABLE_SIZE - 1)];
+		hash[hCode & (TABLE_SIZE - 1)] = n;
+
+		if (first == null) {
+			first = last = n;
+		} else {
+			last = last.next = n;
+		}
 		return n.number;
 	}
 
@@ -357,10 +365,12 @@ public class LexicalBuilder {
 		int[] toshift = new int[charsetSize];
 
 		// allocate temporary storage
-		hash = new State[LexConstants.HASH_SIZE];
+		hash = new State[TABLE_SIZE];
+		Arrays.fill(hash, null);
 		clsr = new int[nsit];
 		int[] next = new int[nsit + 1];
 		nnext = 0;
+		states = 0;
 
 		// allocate temporary set
 		for (e = 1, i = 0; i < nlexems; i++) {
@@ -378,27 +388,13 @@ public class LexicalBuilder {
 		}
 		next[nnext] = -1;
 		nnext = closure(next);
-
-		for (i = 0, e = 0; next[i] >= 0; i++) {
-			e += next[i];
-		}
-		e = e % LexConstants.HASH_SIZE;
+		add_set(next, nnext);
 
 		groupset = new int[LexConstants.BITS];
 		groupset[0] = 0;
 
 		// create state
-		states = 1;
-		Arrays.fill(hash, null);
-
-		current = first = last = new State();
-		first.number = 0;
-		first.hash = first.next = null;
-		hash[e] = first;
-		first.set = new int[nnext + 1];
-		for (i = 0; i <= nnext; i++) {
-			first.set[i] = next[i];
-		}
+		current = first;
 
 		// create left group states
 		for (k = 1; k < LexConstants.BITS; k++) {
@@ -410,11 +406,7 @@ public class LexicalBuilder {
 				}
 				next[nnext] = -1;
 				nnext = closure(next);
-
-				for (i = 0, e = 0; next[i] >= 0; i++) {
-					e += next[i];
-				}
-				groupset[k] = add_set(next, nnext, e % LexConstants.HASH_SIZE);
+				groupset[k] = add_set(next, nnext);
 			} else {
 				groupset[k] = -1;
 			}
@@ -523,13 +515,7 @@ public class LexicalBuilder {
 					// closure
 					next[nnext] = -1;
 					nnext = closure(next);
-
-					// save new state
-					for (l = e = 0; e < nnext; e++) {
-						l += next[e];
-					}
-
-					current.change[sym] = add_set(next, nnext, l % LexConstants.HASH_SIZE);
+					current.change[sym] = add_set(next, nnext);
 
 					// Have we exceeded the limits?
 					if (current.change[sym] == -1) {

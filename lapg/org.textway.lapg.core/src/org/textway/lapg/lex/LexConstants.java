@@ -21,7 +21,6 @@ public interface LexConstants {
 	public static final int MAX_ENTRIES = 1024;
 	public static final int MAX_WORD = 0x7ff0;
 	public static final int MAX_DEEP = 128;
-	public static final int HASH_SIZE = 1023;
 
 	public static final int LBR = 0x80010000;
 	public static final int RBR = 0x80020000;
