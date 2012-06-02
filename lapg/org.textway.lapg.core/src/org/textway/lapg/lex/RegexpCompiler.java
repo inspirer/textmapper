@@ -25,6 +25,8 @@ import java.util.*;
  */
 public class RegexpCompiler {
 
+	private static final int MAX_UCHAR = 0x10ffff;
+
 	// result
 	private int[] character2symbol;
 	private int symbolCount;
@@ -37,19 +39,19 @@ public class RegexpCompiler {
 	// temporary variables
 	private final CharacterSetImpl.Builder builder;
 	private final int[] sym;
-	private final int[] stack;
+	private final Stack<Integer> stack;
 
 	public RegexpCompiler(Map<String, RegexPart> namedPatterns) {
 		this.namedPatterns = namedPatterns;
 
 		this.sym = new int[LexConstants.MAX_ENTRIES];
-		this.stack = new int[LexConstants.MAX_DEEP];
+		this.stack = new Stack<Integer>();
 		this.builder = new CharacterSetImpl.Builder();
 
 		this.character2symbol = new int[128];
 		this.setpool = new ArrayList<CharacterSet>();
 
-		// 0 - eof, 1 - any
+		// 0 - eoi, 1 - any
 		Arrays.fill(character2symbol, 1);
 		character2symbol[0] = 0;
 		symbolCount = 2;
@@ -62,7 +64,7 @@ public class RegexpCompiler {
 	}
 
 	private void useCharacter(int ch) {
-		if (ch <= 0 || ch >= 0x10000) {
+		if (ch <= 0 || ch > MAX_UCHAR) {
 			return;
 		}
 		ensureCharacter(ch);
@@ -72,10 +74,14 @@ public class RegexpCompiler {
 	}
 
 	private void ensureCharacter(int ch) {
+		assert ch >= 0 && ch <= MAX_UCHAR;
 		if (character2symbol.length <= ch) {
 			int newsize = character2symbol.length * 2;
 			while (newsize <= ch) {
 				newsize *= 2;
+			}
+			if (newsize > MAX_UCHAR + 1) {
+				newsize = MAX_UCHAR + 1;
 			}
 			int[] newc2sym = new int[newsize];
 			Arrays.fill(newc2sym, character2symbol.length, newc2sym.length, 1);
@@ -106,7 +112,7 @@ public class RegexpCompiler {
 
 	private class RegexpBuilder extends RegexVisitor {
 
-		int length = -1, deep = 1;
+		int length = -1;
 		RegexOr outermostOr;
 
 		public RegexpBuilder() {
@@ -146,7 +152,7 @@ public class RegexpCompiler {
 		public void visitBefore(RegexList c) {
 			if (c.isInParentheses()) {
 				yield(LexConstants.LBR);
-				stack[deep++] = length;
+				stack.push(length);
 			}
 		}
 
@@ -154,7 +160,8 @@ public class RegexpCompiler {
 		public void visitAfter(RegexList c) {
 			if (c.isInParentheses()) {
 				yield(LexConstants.RBR);
-				sym[stack[--deep]] |= length;
+				Integer left = stack.pop();
+				sym[left] |= length;
 			}
 		}
 
@@ -207,8 +214,8 @@ public class RegexpCompiler {
 
 	public void buildSets() {
 		int base = symbolCount;
-		ArrayList<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
-		HashSet<Integer> values = new HashSet<Integer>();
+		List<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
+		Set<Integer> values = new HashSet<Integer>();
 
 		for (int setind = 0; setind < setpool.size(); setind++) {
 			CharacterSet set = setpool.get(setind);
@@ -216,14 +223,10 @@ public class RegexpCompiler {
 			values.clear();
 			builder.clear();
 			for (int[] range : set) {
-				for (int ch = range[0]; ch <= range[1]; ch++) {
-					int value;
-					try {
-						value = character2symbol[ch];
-					} catch (IndexOutOfBoundsException ex) {
-						ensureCharacter(ch);
-						value = character2symbol[ch];
-					}
+				int max = Math.min(range[1], MAX_UCHAR);
+				ensureCharacter(max);
+				for (int ch = range[0]; ch <= max; ch++) {
+					int value = character2symbol[ch];
 					if (value == 1) {
 						if (ownSymbol == -1) {
 							ownSymbol = symbolCount++;
@@ -238,7 +241,7 @@ public class RegexpCompiler {
 			if (ownSymbol >= base) {
 				symbol2chars.add(builder.create());
 			}
-			for (Integer e : values) {
+			for (int e : toSortedArray(values)) {
 				CharacterSet mset = symbol2chars.get(e - base);
 				CharacterSet extraItems = builder.subtract(mset, set);
 				if (!extraItems.isEmpty()) {
@@ -278,13 +281,19 @@ public class RegexpCompiler {
 					}
 				}
 			}
-			set2symbols[setind] = new int[values.size()];
-			Integer[] arr = values.toArray(new Integer[values.size()]);
-			for (int l = 0; l < set2symbols[setind].length; l++) {
-				set2symbols[setind][l] = arr[l];
-			}
-			Arrays.sort(set2symbols[setind]);
+			set2symbols[setind] = toSortedArray(values);
 		}
+	}
+
+	private static int[] toSortedArray(Collection<Integer> collection) {
+		int[] sortedValues = new int[collection.size()];
+		int index = 0;
+		for (Integer i : collection) {
+			sortedValues[index++] = i;
+		}
+		assert index == collection.size();
+		Arrays.sort(sortedValues);
+		return sortedValues;
 	}
 
 	public int[][] getSetToSymbolsMap() {
