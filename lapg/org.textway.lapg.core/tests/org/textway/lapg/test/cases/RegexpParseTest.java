@@ -52,9 +52,8 @@ public class RegexpParseTest {
 		} catch (RegexpParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
-		rp.buildSets();
 
-		assertEquals(6002, rp.getSymbolCount());
+		assertEquals(6002, rp.getInputSymbols().getSymbolCount());
 	}
 
 	@Test
@@ -84,14 +83,13 @@ public class RegexpParseTest {
 		} catch (RegexpParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
-		rp.buildSets();
-		assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
+		assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 
-		int[] character2sym = rp.getCharacterMap();
+		int[] character2sym = rp.getInputSymbols().getCharacterMap();
 		assertEquals(character2sym['%'], 3);
 		assertEquals(character2sym['\''], 2);
 
-		int[][] res = rp.getSetToSymbolsMap();
+		int[][] res = rp.getInputSymbols().getSetToSymbolsMap();
 		assertEquals(1, res.length);
 		assertEquals("[1, 3]", Arrays.toString(res[0]));
 	}
@@ -101,21 +99,18 @@ public class RegexpParseTest {
 		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 		try {
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
-			rp.buildSets();
-			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
+			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 
 			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			rp.compile(1, parseRegexp("do"));
-			rp.buildSets();
-			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
+			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 
 			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			rp.compile(0, parseRegexp("[a-w][p-z]"));
 			rp.compile(1, parseRegexp("[b-c][y-z]"));
-			rp.buildSets();
-			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 6, 6, 1, 1, 1, 1, 1]", Arrays.toString(rp.getCharacterMap()));
-			int[][] p = rp.getSetToSymbolsMap();
+			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 6, 6, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
+			int[][] p = rp.getInputSymbols().getSetToSymbolsMap();
 			assertEquals("[2, 4, 5]", Arrays.toString(p[0]));
 			assertEquals("[3, 4, 6]", Arrays.toString(p[1]));
 			assertEquals("[5]", Arrays.toString(p[2]));
@@ -138,8 +133,7 @@ public class RegexpParseTest {
 		Arrays.fill(expected, 0x5151, 0x5252 + 1, 2);
 		Arrays.fill(expected, 0x1000, 0x2000 + 1, 3);
 		expected[0] = 0;
-		rp.buildSets();
-		assertEquals(Arrays.toString(expected), Arrays.toString(rp.getCharacterMap()));
+		assertEquals(Arrays.toString(expected), Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 	}
 
 	@Test
@@ -177,20 +171,23 @@ public class RegexpParseTest {
 			int[] result = rp.compile(0, parseRegexp("()"));
 			assertEquals(Arrays.toString(new int[]{LexConstants.LBR + 1, LexConstants.RBR, -1}), Arrays.toString(result));
 
+			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(a|)"));
 			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 3, LexConstants.SYM | rp.getCharacterMap()['a'],
+					{LexConstants.LBR + 3, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
 							LexConstants.OR, LexConstants.RBR, -1}), Arrays.toString(result));
 
+			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(.)"));
 			assertEquals(Arrays.toString(new int[]
 					{LexConstants.LBR + 2, LexConstants.ANY, LexConstants.RBR, -1}), Arrays.toString(result));
 
+			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(abc|)"));
 			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 5, LexConstants.SYM | rp.getCharacterMap()['a'],
-							LexConstants.SYM | rp.getCharacterMap()['b'],
-							LexConstants.SYM | rp.getCharacterMap()['c'],
+					{LexConstants.LBR + 5, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
+							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['b'],
+							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['c'],
 							LexConstants.OR, LexConstants.RBR, -1}), Arrays.toString(result));
 
 		} catch (RegexpParseException e) {

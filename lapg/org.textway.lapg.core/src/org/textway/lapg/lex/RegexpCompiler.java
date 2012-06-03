@@ -16,7 +16,6 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.common.CharacterSetImpl;
 
 import java.util.*;
 
@@ -25,19 +24,11 @@ import java.util.*;
  */
 public class RegexpCompiler {
 
-	private static final int MAX_UCHAR = 0x10ffff;
-
-	// result
-	private int[] character2symbol;
-	private int symbolCount;
-	private final List<CharacterSet> setpool;
-	private int[][] set2symbols;
-
 	// global vars
 	private final Map<String, RegexPart> namedPatterns;
+	private final LexerInputSymbols inputSymbols;
 
 	// temporary variables
-	private final CharacterSetImpl.Builder builder;
 	private final int[] sym;
 	private final Stack<Integer> stack;
 
@@ -46,48 +37,7 @@ public class RegexpCompiler {
 
 		this.sym = new int[LexConstants.MAX_ENTRIES];
 		this.stack = new Stack<Integer>();
-		this.builder = new CharacterSetImpl.Builder();
-
-		this.character2symbol = new int[128];
-		this.setpool = new ArrayList<CharacterSet>();
-
-		// 0 - eoi, 1 - any
-		Arrays.fill(character2symbol, 1);
-		character2symbol[0] = 0;
-		symbolCount = 2;
-	}
-
-	private int storeSet(CharacterSet set) {
-		int setIndex = setpool.size();
-		setpool.add(set);
-		return setIndex;
-	}
-
-	private void useCharacter(int ch) {
-		if (ch <= 0 || ch > MAX_UCHAR) {
-			return;
-		}
-		ensureCharacter(ch);
-		if (character2symbol[ch] == 1) {
-			character2symbol[ch] = symbolCount++;
-		}
-	}
-
-	private void ensureCharacter(int ch) {
-		assert ch >= 0 && ch <= MAX_UCHAR;
-		if (character2symbol.length <= ch) {
-			int newsize = character2symbol.length * 2;
-			while (newsize <= ch) {
-				newsize *= 2;
-			}
-			if (newsize > MAX_UCHAR + 1) {
-				newsize = MAX_UCHAR + 1;
-			}
-			int[] newc2sym = new int[newsize];
-			Arrays.fill(newc2sym, character2symbol.length, newc2sym.length, 1);
-			System.arraycopy(character2symbol, 0, newc2sym, 0, character2symbol.length);
-			character2symbol = newc2sym;
-		}
+		this.inputSymbols = new LexerInputSymbols();
 	}
 
 	/**
@@ -110,6 +60,10 @@ public class RegexpCompiler {
 		return compiled;
 	}
 
+	public LexerInputSymbols getInputSymbols() {
+		return inputSymbols;
+	}
+
 	private class RegexpBuilder extends RegexVisitor {
 
 		int length = -1;
@@ -128,14 +82,13 @@ public class RegexpCompiler {
 
 		@Override
 		public void visit(RegexAny c) {
-			useCharacter('\n');
+			inputSymbols.addCharacter('\n');
 			yield(LexConstants.ANY);
 		}
 
 		@Override
 		public void visit(RegexChar c) {
-			useCharacter(c.getChar());
-			yield(character2symbol[c.getChar()] | LexConstants.SYM);
+			yield(inputSymbols.addCharacter(c.getChar()) | LexConstants.SYM);
 		}
 
 		@Override
@@ -207,104 +160,8 @@ public class RegexpCompiler {
 
 		@Override
 		public boolean visit(RegexSet c) {
-			yield(storeSet(c.getSet()));
+			yield(inputSymbols.addSet(c.getSet()));
 			return false;
 		}
-	}
-
-	public void buildSets() {
-		int base = symbolCount;
-		List<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
-		Set<Integer> values = new HashSet<Integer>();
-
-		for (int setind = 0; setind < setpool.size(); setind++) {
-			CharacterSet set = setpool.get(setind);
-			int ownSymbol = -1;
-			values.clear();
-			builder.clear();
-			for (int[] range : set) {
-				int max = Math.min(range[1], MAX_UCHAR);
-				ensureCharacter(max);
-				for (int ch = range[0]; ch <= max; ch++) {
-					int value = character2symbol[ch];
-					if (value == 1) {
-						if (ownSymbol == -1) {
-							ownSymbol = symbolCount++;
-						}
-						character2symbol[ch] = ownSymbol;
-						builder.addSymbol(ch);
-					} else if (value >= base) {
-						values.add(value);
-					}
-				}
-			}
-			if (ownSymbol >= base) {
-				symbol2chars.add(builder.create());
-			}
-			for (int e : toSortedArray(values)) {
-				CharacterSet mset = symbol2chars.get(e - base);
-				CharacterSet extraItems = builder.subtract(mset, set);
-				if (!extraItems.isEmpty()) {
-					symbol2chars.set(e - base, extraItems);
-
-					// new symbol for intersection
-					CharacterSet intersection = builder.intersect(mset, set);
-					ownSymbol = symbolCount++;
-					symbol2chars.add(intersection);
-
-					for (int[] range : intersection) {
-						for (int ch = range[0]; ch <= range[1]; ch++) {
-							character2symbol[ch] = ownSymbol;
-						}
-					}
-				}
-			}
-		}
-
-		set2symbols = new int[setpool.size()][];
-		for (int setind = 0; setind < setpool.size(); setind++) {
-			CharacterSet set = setpool.get(setind);
-			values.clear();
-			if (set.isInverted()) {
-				for (int i = 1; i < symbolCount; i++) {
-					values.add(i);
-				}
-				for (int[] range : set) {
-					for (int ch = range[0]; ch <= range[1]; ch++) {
-						values.remove(character2symbol[ch]);
-					}
-				}
-			} else {
-				for (int[] range : set) {
-					for (int ch = range[0]; ch <= range[1]; ch++) {
-						values.add(character2symbol[ch]);
-					}
-				}
-			}
-			set2symbols[setind] = toSortedArray(values);
-		}
-	}
-
-	private static int[] toSortedArray(Collection<Integer> collection) {
-		int[] sortedValues = new int[collection.size()];
-		int index = 0;
-		for (Integer i : collection) {
-			sortedValues[index++] = i;
-		}
-		assert index == collection.size();
-		Arrays.sort(sortedValues);
-		return sortedValues;
-	}
-
-	public int[][] getSetToSymbolsMap() {
-		return set2symbols;
-	}
-
-	public int[] getCharacterMap() {
-		return character2symbol;
-	}
-
-	public int getSymbolCount() {
-		return symbolCount;
 	}
 }

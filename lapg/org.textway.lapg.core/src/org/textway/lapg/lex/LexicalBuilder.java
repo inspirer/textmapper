@@ -610,10 +610,10 @@ public class LexicalBuilder {
 			return false;
 		}
 
-		rp.buildSets();
-		char2no = rp.getCharacterMap();
-		characters = rp.getSymbolCount();
-		set2symbols = rp.getSetToSymbolsMap();
+		LexerInputSymbols inputSymbols = rp.getInputSymbols();
+		char2no = inputSymbols.getCharacterMap();
+		characters = inputSymbols.getSymbolCount();
+		set2symbols = inputSymbols.getSetToSymbolsMap();
 		charsetSize = (characters + LexConstants.BITS - 1) / LexConstants.BITS;
 
 		if (status.isDebugMode()) {
