@@ -36,7 +36,7 @@ public class RegexpCompiler {
 	public RegexpCompiler(Map<String, RegexPart> namedPatterns) {
 		this.namedPatterns = namedPatterns;
 
-		this.sym = new int[LexConstants.MAX_ENTRIES];
+		this.sym = new int[1024];
 		this.stack = new Stack<Integer>();
 		this.inputSymbols = new LexerInputSymbols();
 	}

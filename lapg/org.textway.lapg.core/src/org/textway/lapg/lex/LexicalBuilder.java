@@ -21,14 +21,13 @@ import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LexicalBuilder {
 
 	private static final int BITS = 32;
+	private static final int MAX_LEXEMS = 0x100000 - 1;
+	private static final int MAX_WORD = 0x7ff0;
 
 	private static class LexemData {
 		private final int prio;
@@ -47,6 +46,7 @@ public class LexicalBuilder {
 			this.group = l.getGroups();
 			this.sym = sym;
 			len = sym.length;
+			assert len > 0;
 			jmpset = (sym.length + BITS - 1) / BITS;
 			jmp = new int[sym.length * jmpset];
 			Arrays.fill(jmp, 0);
@@ -56,8 +56,8 @@ public class LexicalBuilder {
 	private static class State {
 		State next, hash;
 		int number;
-		int[] change;
 		int[] set;
+		int[] action;
 	}
 
 	private static final int TABLE_SIZE = 1024; // should be power of 2
@@ -86,10 +86,11 @@ public class LexicalBuilder {
 		this.status = status;
 	}
 
-	private int add_set(int[] state, int size) {
+	private int add_set(int[] state) {
 		int hCode = 1;
-		for (int i = 0; i < size; i++) {
-			hCode = hCode * 31 + state[i];
+		int lastIndex = 0;
+		while (state[lastIndex] >= 0) {
+			hCode = hCode * 31 + state[lastIndex++];
 		}
 
 		State n;
@@ -106,18 +107,19 @@ public class LexicalBuilder {
 		}
 
 		// have we exceed the limits
-		if (states >= LexConstants.MAX_WORD) {
+		if (states >= MAX_WORD) {
+			// TODO throw new ???
 			return -1;
 		}
 
 		// create new
 		n = new State();
-		n.set = new int[size + 1];
-		System.arraycopy(state, 0, n.set, 0, size);
-		n.set[size] = -1;
+		n.set = new int[lastIndex + 1];
+		System.arraycopy(state, 0, n.set, 0, lastIndex);
+		n.set[lastIndex] = -1;
 		n.next = null;
 		n.number = states++;
-		n.change = null;
+		n.action = null;
 
 		n.hash = hash[hCode & (TABLE_SIZE - 1)];
 		hash[hCode & (TABLE_SIZE - 1)] = n;
@@ -130,64 +132,45 @@ public class LexicalBuilder {
 		return n.number;
 	}
 
-	private final static boolean LEX_CLOSURE_DEBUG = false;
-
 	// builds closure of the given set (using jumps)
-	private int closure(int[] set) {
-		int n, p;
-		int i = 0, clind = 0, base, slen;
-		int k, l, m, word;
+	private void closure(int[] set) {
+		int lex = 0;
+		int outputSize = 0;
+		for (int p = 0; set[p] >= 0; ) {
 
-		if (LEX_CLOSURE_DEBUG) {
-			status.debug("\tclosure of: ");
-			for (n = 0; set[n] >= 0; n++) {
-				status.debug(" " + set[n]);
+			// search for next lexem
+			while (lex < nlexems && set[p] >= lindex[lex + 1]) {
+				lex++;
 			}
-			status.debug("\n");
-		}
-
-		for (p = 0; set[p] >= 0; ) {
-
-			// search for next terminal
-			while (i < nlexems && set[p] >= lindex[i + 1]) {
-				i++;
-			}
-			assert i < nlexems;
+			assert lex < nlexems;
 
 			// create closure for it in cset
-			slen = ldata[i].jmpset;
-			Arrays.fill(cset, 0);
+			int slen = ldata[lex].jmpset;
+			Arrays.fill(cset, 0, slen, 0);
+			int base = lindex[lex];
 
-			for (base = lindex[i], word = lindex[i + 1]; set[p] >= 0 && set[p] < word; p++) {
+			for (; set[p] >= 0 && set[p] < lindex[lex + 1]; p++) {
 				assert set[p] >= base;
-				int[] cjmp = ldata[i].jmp;
-				n = (set[p] - base) * slen;
-				for (l = 0; l < slen; l++) {
+				int[] cjmp = ldata[lex].jmp;
+				int n = (set[p] - base) * slen;
+				for (int l = 0; l < slen; l++) {
 					cset[l] |= cjmp[n++];
 				}
 			}
 
-			if (LEX_CLOSURE_DEBUG) {
-				status.debug("\t\t\tcset (" + i + ", base=" + base + ") = ");
-				for (l = 0; l < slen * BITS; l++) {
-					if ((cset[l / BITS] & 1 << l % BITS) != 0) {
-						status.debug(" " + l + "(" + FormatUtil.asHex(lsym[base + l], 2) + ")");
-					}
-				}
-				status.debug("\n");
-			}
-
-			// save cset in closure (exclude LBR, RBR, SPL, OR)
-			for (m = base, k = 0; k < slen; k++) {
-				if ((word = cset[k]) == 0) {
+			// save cset in closure (without parentheses & quantifiers)
+			int m = 0;
+			for (int k = 0; k < slen; k++) {
+				int word = cset[k];
+				if (word == 0) {
 					m += BITS;
 				} else {
-					for (l = 0; l < BITS; l++, m++) {
+					for (int l = 0; l < BITS; l++, m++) {
 						if ((word & 1 << l) != 0) {
-							int kind = lsym[m] & LexConstants.MASK;
+							int kind = ldata[lex].sym[m] & LexConstants.MASK;
 							if (kind == LexConstants.SET || kind == LexConstants.SYM || kind == LexConstants.ANY ||
 									kind == LexConstants.DONE) {
-								clsr[clind++] = m;
+								clsr[outputSize++] = base + m;
 							}
 						}
 					}
@@ -196,47 +179,31 @@ public class LexicalBuilder {
 		}
 
 		// save closure in initial array
-		for (i = 0; i < clind; i++) {
-			set[i] = clsr[i];
+		for (lex = 0; lex < outputSize; lex++) {
+			set[lex] = clsr[lex];
 		}
-		set[clind] = -1;
-
-		if (LEX_CLOSURE_DEBUG) {
-			status.debug("\t\t\tis: ");
-			for (n = 0; set[n] >= 0; n++) {
-				status.debug(" " + set[n]);
-			}
-			status.debug("\n");
-		}
-
-		return clind;
+		set[outputSize] = -1;
 	}
 
 	// fills: ljmp
 	private void buildJumps() {
-		int i, k, lex;
-		int[] stack = new int[LexConstants.MAX_DEEP];
+		int i, k;
+		Stack<Integer> stack = new Stack<Integer>();
 
 		if (status.isDebugMode()) {
 			status.debug("\nLexem jumps:\n");
 		}
 
-		for (lex = 0; lex < nlexems; lex++) {
-			if (ldata[lex].len == 0) {
-				// ignoring lexem
-				continue;
-			}
-
+		for (int lex = 0; lex < nlexems; lex++) {
 			int[] jumps = ldata[lex].jmp;
 			int jmpset = ldata[lex].jmpset;
-			int cd = -1, len = ldata[lex].len - 1;
-			int sym_index = lindex[lex];
+			int len = ldata[lex].len - 1;
 
 			// generate initial jumps
 			for (i = 0; i < len; i++) {
-				switch (lsym[sym_index + i] & LexConstants.MASK) {
+				switch (ldata[lex].sym[i] & LexConstants.MASK) {
 					case LexConstants.LBR: // (
-						stack[++cd] = i;
+						stack.push(i);
 						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
@@ -244,26 +211,26 @@ public class LexicalBuilder {
 						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 
 						if (i + 1 < len) {
-							switch (lsym[sym_index + i + 1]) {
+							switch (ldata[lex].sym[i + 1]) {
 								case LexConstants.PLUS:
-									jumps[(i + 1) * jmpset + stack[cd] / BITS] |= 1 << stack[cd] % BITS;
+									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
 									break;
 								case LexConstants.STAR:
-									jumps[(i + 1) * jmpset + stack[cd] / BITS] |= 1 << stack[cd] % BITS;
-									jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
+									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
 								case LexConstants.QMARK:
-									jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
 							}
 						}
-						cd--;
+						stack.pop();
 						break;
 
 					case LexConstants.OR: // |
-						k = lsym[sym_index + stack[cd]] & 0xffff;
+						k = ldata[lex].sym[stack.peek()] & 0xffff;
 						jumps[i * jmpset + (k + 1) / BITS] |= 1 << (k + 1) % BITS;
-						jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
+						jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
 					case LexConstants.STAR: // forbid two steps back
@@ -274,7 +241,7 @@ public class LexicalBuilder {
 
 					default: // SYM, ANY, SET
 						if (i + 1 < len) {
-							switch (lsym[sym_index + i + 1]) {
+							switch (ldata[lex].sym[i + 1]) {
 								case LexConstants.PLUS:
 									jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
 									break;
@@ -321,9 +288,9 @@ public class LexicalBuilder {
 						}
 					}
 					status.debug(") ");
-					switch (lsym[sym_index + i] & LexConstants.MASK) {
+					switch (ldata[lex].sym[i] & LexConstants.MASK) {
 						case LexConstants.LBR:
-							status.debug("LEFT(" + (lsym[sym_index + i] & 0xffff) + ")");
+							status.debug("LEFT(" + (ldata[lex].sym[i] & 0xffff) + ")");
 							break;
 						case LexConstants.RBR:
 							status.debug("RIGHT");
@@ -344,14 +311,14 @@ public class LexicalBuilder {
 							status.debug("ANY");
 							break;
 						case LexConstants.SYM:
-							if ((lsym[sym_index + i] & 0xffff) < 127 && (lsym[sym_index + i] & 0xffff) > 32) {
-								status.debug("\'" + (char) (lsym[sym_index + i] & 0xffff) + "\'");
+							if ((ldata[lex].sym[i] & 0xffff) < 127 && (ldata[lex].sym[i] & 0xffff) > 32) {
+								status.debug("\'" + (char) (ldata[lex].sym[i] & 0xffff) + "\'");
 							} else {
-								status.debug("#" + FormatUtil.asHex(lsym[sym_index + i] & 0xffff, 4));
+								status.debug("#" + FormatUtil.asHex(ldata[lex].sym[i] & 0xffff, 4));
 							}
 							break;
 						case LexConstants.SET:
-							status.debug("SET#" + (lsym[sym_index + i] & 0xffff));
+							status.debug("SET#" + (ldata[lex].sym[i] & 0xffff));
 							break;
 					}
 				}
@@ -392,8 +359,8 @@ public class LexicalBuilder {
 			}
 		}
 		next[nnext] = -1;
-		nnext = closure(next);
-		add_set(next, nnext);
+		closure(next);
+		add_set(next);
 
 		groupset = new int[BITS];
 		groupset[0] = 0;
@@ -410,8 +377,8 @@ public class LexicalBuilder {
 					}
 				}
 				next[nnext] = -1;
-				nnext = closure(next);
-				groupset[k] = add_set(next, nnext);
+				closure(next);
+				groupset[k] = add_set(next);
 			} else {
 				groupset[k] = -1;
 			}
@@ -427,10 +394,12 @@ public class LexicalBuilder {
 
 			for (int csi = 0; cset[csi] >= 0; csi++) {
 				int csval = cset[csi];
-				switch (lsym[csval] & LexConstants.MASK) {
+				int lex = lsym[csval];
+				int symValue = ldata[lex].sym[csval - lindex[lex]];
+				switch (symValue & LexConstants.MASK) {
 					case LexConstants.DONE:
 						// end of some regexp found
-						final int nlex = lsym[csval] & 0xffff;
+						final int nlex = symValue & 0xffff;
 						if (lexnum != -1 && lexnum != nlex) {
 
 							if (ldata[nlex].prio == ldata[lexnum].prio) {
@@ -452,7 +421,7 @@ public class LexicalBuilder {
 						}
 						break;
 					case LexConstants.SYM:
-						toshift[(lsym[csval] & 0xffff) / BITS] |= 1 << (lsym[csval] & 0xffff) % BITS;
+						toshift[(symValue & 0xffff) / BITS] |= 1 << (symValue & 0xffff) % BITS;
 						break;
 					case LexConstants.ANY: /* except \n and eof */
 						int nl = char2no['\n'];
@@ -469,7 +438,7 @@ public class LexicalBuilder {
 						}
 						break;
 					case LexConstants.SET:
-						e = lsym[csval] & 0xffff;
+						e = symValue & 0xffff;
 						int[] used = set2symbols[e];
 						for (i = 0; i < used.length; i++) {
 							toshift[used[i] / BITS] |= 1 << used[i] % BITS;
@@ -485,18 +454,17 @@ public class LexicalBuilder {
 			}
 
 			// allocate new change table
-			current.change = new int[characters];
+			current.action = new int[characters];
 
 			// try to shift all available symbols
 			for (int sym = 0; sym < characters; sym++) {
 				if ((toshift[sym / BITS] & 1 << sym % BITS) != 0) {
-					int l;
 
 					nnext = 0;
 					// create new state
 					for (int p = 0; cset[p] >= 0; p++) {
-						l = lsym[cset[p]];
-
+						int lex = lsym[cset[p]];
+						int l = ldata[lex].sym[cset[p] - lindex[lex]];
 						if ((l & LexConstants.MASK) == LexConstants.ANY) {
 							if (sym != char2no['\n']) {
 								next[nnext++] = cset[p] + 1;
@@ -516,28 +484,28 @@ public class LexicalBuilder {
 
 					// closure
 					next[nnext] = -1;
-					nnext = closure(next);
-					current.change[sym] = add_set(next, nnext);
+					closure(next);
+					current.action[sym] = add_set(next);
 
 					// Have we exceeded the limits?
-					if (current.change[sym] == -1) {
+					if (current.action[sym] == -1) {
 						status.report(ProcessingStatus.KIND_FATAL, "lexical analyzer is too big ...");
 						return false;
 					}
 
 				} else {
-					current.change[sym] = lexnum >= 0 ? -3 - lexnum : -1;
+					current.action[sym] = lexnum >= 0 ? -3 - lexnum : -1;
 				}
 			}
 
-			assert current.change[0] < 0;
+			assert current.action[0] < 0;
 
 			// next state
 			current = current.next;
 		}
 
 		// first group (only) succeeds on EOI
-		first.change[0] = -2;
+		first.action[0] = -2;
 
 		return lexemerrors == 0;
 	}
@@ -585,8 +553,8 @@ public class LexicalBuilder {
 		}
 
 		nlexems = syms.size();
-		if (nlexems >= LexConstants.MAX_LEXEMS) {
-			status.report(ProcessingStatus.KIND_ERROR, "too much lexems", syms.get(LexConstants.MAX_LEXEMS - 1).lexem);
+		if (nlexems > MAX_LEXEMS) {
+			status.report(ProcessingStatus.KIND_ERROR, "too many lexems", syms.get(MAX_LEXEMS).lexem);
 			return false;
 
 		} else if (nlexems == 0) {
@@ -600,8 +568,8 @@ public class LexicalBuilder {
 		lindex = new int[nlexems + 1];
 		int index = 0;
 		for (LexemData l : syms) {
+			Arrays.fill(lsym, nsit, nsit + l.sym.length, index);
 			lindex[index++] = nsit;
-			System.arraycopy(l.sym, 0, lsym, nsit, l.sym.length);
 			nsit += l.sym.length;
 		}
 		lindex[nlexems] = nsit;
@@ -629,8 +597,8 @@ public class LexicalBuilder {
 		status.debug("\nLexems:\n\n");
 		for (int i = 0; i < nlexems; i++) {
 			status.debug(ldata[i].name + "," + ldata[i].lexem.getSymbol().getIndex() + ": ");
-			for (int e = lindex[i]; e < lindex[i + 1]; e++) {
-				status.debug(" " + FormatUtil.asHex(lsym[e], 8));
+			for (int e = 0; e < ldata[i].len; e++) {
+				status.debug(" " + FormatUtil.asHex(ldata[i].sym[e], 8));
 			}
 
 			status.debug(" (" + ldata[i].lexem.getRegexp().toString() + ")\n");
@@ -700,7 +668,7 @@ public class LexicalBuilder {
 		int[] stateChange = new int[states * characters];
 		int t = 0;
 		for (State s = first; s != null; s = s.next, t += characters) {
-			System.arraycopy(s.change, 0, stateChange, t, characters);
+			System.arraycopy(s.action, 0, stateChange, t, characters);
 		}
 
 		return new LexerTables(characters, char2no, groupset, stateChange);

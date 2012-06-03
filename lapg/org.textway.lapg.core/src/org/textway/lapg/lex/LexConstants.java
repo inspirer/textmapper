@@ -16,11 +16,6 @@
 package org.textway.lapg.lex;
 
 public interface LexConstants {
-	public static final int MAX_LEXEMS = 0x100000;
-	public static final int MAX_ENTRIES = 1024;
-	public static final int MAX_WORD = 0x7ff0;
-	public static final int MAX_DEEP = 128;
-
 	public static final int LBR = 0x11000000;
 	public static final int RBR = 0x12000000;
 	public static final int OR = 0x13000000;
