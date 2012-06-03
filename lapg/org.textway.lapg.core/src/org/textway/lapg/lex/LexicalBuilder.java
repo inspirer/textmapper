@@ -28,6 +28,8 @@ import java.util.Map;
 
 public class LexicalBuilder {
 
+	private static final int BITS = 32;
+
 	private static class LexemData {
 		private final int prio;
 		private final int group;
@@ -45,7 +47,7 @@ public class LexicalBuilder {
 			this.group = l.getGroups();
 			this.sym = sym;
 			len = sym.length;
-			jmpset = (sym.length + LexConstants.BITS - 1) / LexConstants.BITS;
+			jmpset = (sym.length + BITS - 1) / BITS;
 			jmp = new int[sym.length * jmpset];
 			Arrays.fill(jmp, 0);
 		}
@@ -167,8 +169,8 @@ public class LexicalBuilder {
 
 			if (LEX_CLOSURE_DEBUG) {
 				status.debug("\t\t\tcset (" + i + ", base=" + base + ") = ");
-				for (l = 0; l < slen * LexConstants.BITS; l++) {
-					if ((cset[l / LexConstants.BITS] & 1 << l % LexConstants.BITS) != 0) {
+				for (l = 0; l < slen * BITS; l++) {
+					if ((cset[l / BITS] & 1 << l % BITS) != 0) {
 						status.debug(" " + l + "(" + FormatUtil.asHex(lsym[base + l], 2) + ")");
 					}
 				}
@@ -178,9 +180,9 @@ public class LexicalBuilder {
 			// save cset in closure (exclude LBR, RBR, SPL, OR)
 			for (m = base, k = 0; k < slen; k++) {
 				if ((word = cset[k]) == 0) {
-					m += LexConstants.BITS;
+					m += BITS;
 				} else {
-					for (l = 0; l < LexConstants.BITS; l++, m++) {
+					for (l = 0; l < BITS; l++, m++) {
 						if ((word & 1 << l) != 0) {
 							if ((lsym[m] & LexConstants.MASK) > LexConstants.SPL) {
 								clsr[clind++] = m;
@@ -233,22 +235,22 @@ public class LexicalBuilder {
 				switch (lsym[sym_index + i] & LexConstants.MASK) {
 					case LexConstants.LBR: // (
 						stack[++cd] = i;
-						jumps[i * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
 					case LexConstants.RBR: // )
-						jumps[i * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 
 						switch (lsym[sym_index + i] >> 29 & 3) {
 							case 1: // +
-								jumps[(i + 1) * jmpset + stack[cd] / LexConstants.BITS] |= 1 << stack[cd] % LexConstants.BITS;
+								jumps[(i + 1) * jmpset + stack[cd] / BITS] |= 1 << stack[cd] % BITS;
 								break;
 							case 2: // *
-								jumps[(i + 1) * jmpset + stack[cd] / LexConstants.BITS] |= 1 << stack[cd] % LexConstants.BITS;
-								jumps[stack[cd] * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+								jumps[(i + 1) * jmpset + stack[cd] / BITS] |= 1 << stack[cd] % BITS;
+								jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 								break;
 							case 3: // ?
-								jumps[stack[cd] * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+								jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 								break;
 						}
 						cd--;
@@ -256,25 +258,25 @@ public class LexicalBuilder {
 
 					case LexConstants.OR: // |
 						k = lsym[sym_index + stack[cd]] & 0xffff;
-						jumps[i * jmpset + (k + 1) / LexConstants.BITS] |= 1 << (k + 1) % LexConstants.BITS;
-						jumps[stack[cd] * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+						jumps[i * jmpset + (k + 1) / BITS] |= 1 << (k + 1) % BITS;
+						jumps[stack[cd] * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
 					case LexConstants.SPL: // forbid two steps back
-						jumps[i * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
 					default: // SYM, ANY, SET
 						switch (lsym[sym_index + i] >> 29 & 3) {
 							case 1: // +
-								jumps[(i + 1) * jmpset + i / LexConstants.BITS] |= 1 << i % LexConstants.BITS;
+								jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
 								break;
 							case 2: // *
-								jumps[(i + 1) * jmpset + i / LexConstants.BITS] |= 1 << i % LexConstants.BITS;
-								jumps[i * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+								jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
+								jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 								break;
 							case 3: // ?
-								jumps[i * jmpset + (i + 1) / LexConstants.BITS] |= 1 << (i + 1) % LexConstants.BITS;
+								jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 								break;
 						}
 						break;
@@ -285,10 +287,10 @@ public class LexicalBuilder {
 			int j, e;
 			for (i = 0; i <= len; i++) {
 				for (j = 0; j <= len; j++) {
-					if ((jumps[jmpset * j + i / LexConstants.BITS] & 1 << i % LexConstants.BITS) != 0) {
+					if ((jumps[jmpset * j + i / BITS] & 1 << i % BITS) != 0) {
 						for (e = 0; e <= len; e++) {
-							if ((jumps[jmpset * i + e / LexConstants.BITS] & 1 << e % LexConstants.BITS) != 0) {
-								jumps[jmpset * j + e / LexConstants.BITS] |= 1 << e % LexConstants.BITS;
+							if ((jumps[jmpset * i + e / BITS] & 1 << e % BITS) != 0) {
+								jumps[jmpset * j + e / BITS] |= 1 << e % BITS;
 							}
 						}
 					}
@@ -297,7 +299,7 @@ public class LexicalBuilder {
 
 			// reflexive
 			for (i = 0; i <= len; i++) {
-				jumps[jmpset * i + i / LexConstants.BITS] |= 1 << i % LexConstants.BITS;
+				jumps[jmpset * i + i / BITS] |= 1 << i % BITS;
 			}
 
 			// extended debug information
@@ -306,7 +308,7 @@ public class LexicalBuilder {
 				for (i = 0; i < len; i++) {
 					status.debug(" (" + i + ":");
 					for (k = 0; k <= len; k++) {
-						if ((jumps[i * jmpset + k / LexConstants.BITS] & 1 << k % LexConstants.BITS) != 0) {
+						if ((jumps[i * jmpset + k / BITS] & 1 << k % BITS) != 0) {
 							status.debug(" " + k);
 						}
 					}
@@ -390,14 +392,14 @@ public class LexicalBuilder {
 		nnext = closure(next);
 		add_set(next, nnext);
 
-		groupset = new int[LexConstants.BITS];
+		groupset = new int[BITS];
 		groupset[0] = 0;
 
 		// create state
 		current = first;
 
 		// create left group states
-		for (k = 1; k < LexConstants.BITS; k++) {
+		for (k = 1; k < BITS; k++) {
 			if ((totalgroups & 1 << k) != 0) {
 				for (nnext = i = 0; i < nlexems; i++) {
 					if ((ldata[i].group & 1 << k) != 0 && ldata[i].len != 0) {
@@ -449,12 +451,12 @@ public class LexicalBuilder {
 				} else {
 					switch (lsym[csval] & LexConstants.MASK) {
 						case LexConstants.SYM:
-							toshift[(lsym[csval] & 0xffff) / LexConstants.BITS] |= 1 << (lsym[csval] & 0xffff) % LexConstants.BITS;
+							toshift[(lsym[csval] & 0xffff) / BITS] |= 1 << (lsym[csval] & 0xffff) % BITS;
 							break;
 						case LexConstants.ANY: /* except \n and eof */
 							int nl = char2no['\n'];
 							for (i = 1; i < charsetSize; i++) {
-								if (i != nl / LexConstants.BITS) {
+								if (i != nl / BITS) {
 									toshift[i] = ~0;
 								}
 							}
@@ -462,14 +464,14 @@ public class LexicalBuilder {
 								toshift[0] |= ~((1 << nl) + 1);
 							} else {
 								toshift[0] |= ~1;
-								toshift[nl / LexConstants.BITS] |= ~(1 << nl % LexConstants.BITS);
+								toshift[nl / BITS] |= ~(1 << nl % BITS);
 							}
 							break;
 						default:
 							e = lsym[csval] & ~LexConstants.HIGH_STORAGE;
 							int[] used = set2symbols[e];
 							for (i = 0; i < used.length; i++) {
-								toshift[used[i] / LexConstants.BITS] |= 1 << used[i] % LexConstants.BITS;
+								toshift[used[i] / BITS] |= 1 << used[i] % BITS;
 							}
 							break;
 					}
@@ -487,7 +489,7 @@ public class LexicalBuilder {
 
 			// try to shift all available symbols
 			for (int sym = 0; sym < characters; sym++) {
-				if ((toshift[sym / LexConstants.BITS] & 1 << sym % LexConstants.BITS) != 0) {
+				if ((toshift[sym / BITS] & 1 << sym % BITS) != 0) {
 					int l;
 
 					nnext = 0;
@@ -614,7 +616,7 @@ public class LexicalBuilder {
 		char2no = inputSymbols.getCharacterMap();
 		characters = inputSymbols.getSymbolCount();
 		set2symbols = inputSymbols.getSetToSymbolsMap();
-		charsetSize = (characters + LexConstants.BITS - 1) / LexConstants.BITS;
+		charsetSize = (characters + BITS - 1) / BITS;
 
 		if (status.isDebugMode()) {
 			debugTables();
