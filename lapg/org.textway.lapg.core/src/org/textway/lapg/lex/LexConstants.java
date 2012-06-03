@@ -21,13 +21,16 @@ public interface LexConstants {
 	public static final int MAX_WORD = 0x7ff0;
 	public static final int MAX_DEEP = 128;
 
-	public static final int LBR = 0x80010000;
-	public static final int RBR = 0x80020000;
-	public static final int OR = 0x80030000;
-	public static final int SPL = 0x80040000;
-	public static final int ANY = 0x80050000;
-	public static final int SYM = 0x80060000;
-	public static final int MASK = 0x800f0000;
+	public static final int LBR = 0x11000000;
+	public static final int RBR = 0x12000000;
+	public static final int OR = 0x13000000;
+	public static final int PLUS = 0x14000000;
+	public static final int STAR = 0x15000000;
+	public static final int QMARK = 0x16000000;
+	public static final int ANY = 0x17000000;
+	public static final int SYM = 0x18000000;
+	public static final int SET = 0x19000000;
+	public static final int DONE = 0x1a000000;
 
-	public static final int HIGH_STORAGE = (1 << 29) + (1 << 30);
+	public static final int MASK = 0x1f000000;
 }

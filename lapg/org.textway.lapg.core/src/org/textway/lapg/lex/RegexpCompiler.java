@@ -17,7 +17,8 @@ package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Gryaznov Evgeny, 4/5/11
@@ -53,7 +54,7 @@ public class RegexpCompiler {
 
 
 		int length = builder.getLength();
-		sym[++length] = -1 - number;
+		sym[++length] = (LexConstants.DONE | number);
 
 		int[] compiled = new int[length + 1];
 		System.arraycopy(sym, 0, compiled, 0, length + 1);
@@ -146,13 +147,11 @@ public class RegexpCompiler {
 		@Override
 		public void visitAfter(RegexQuantifier c) {
 			if (c.getMin() == 0 && c.getMax() == 1) {
-				sym[length] |= 3 << 29;
+				yield(LexConstants.QMARK);
 			} else if (c.getMin() == 0 && c.getMax() == -1) {
-				sym[length] |= 2 << 29;
-				yield(LexConstants.SPL);
+				yield(LexConstants.STAR);
 			} else if (c.getMin() == 1 && c.getMax() == -1) {
-				sym[length] |= 1 << 29;
-				yield(LexConstants.SPL);
+				yield(LexConstants.PLUS);
 			} else {
 				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
 			}
@@ -160,7 +159,7 @@ public class RegexpCompiler {
 
 		@Override
 		public boolean visit(RegexSet c) {
-			yield(inputSymbols.addSet(c.getSet()));
+			yield(LexConstants.SET | inputSymbols.addSet(c.getSet()));
 			return false;
 		}
 	}

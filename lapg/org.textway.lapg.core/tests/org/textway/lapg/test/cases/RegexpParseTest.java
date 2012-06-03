@@ -169,18 +169,18 @@ public class RegexpParseTest {
 		try {
 			RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			int[] result = rp.compile(0, parseRegexp("()"));
-			assertEquals(Arrays.toString(new int[]{LexConstants.LBR + 1, LexConstants.RBR, -1}), Arrays.toString(result));
+			assertEquals(Arrays.toString(new int[]{LexConstants.LBR + 1, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
 
 			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(a|)"));
 			assertEquals(Arrays.toString(new int[]
 					{LexConstants.LBR + 3, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
-							LexConstants.OR, LexConstants.RBR, -1}), Arrays.toString(result));
+							LexConstants.OR, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
 
 			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(.)"));
 			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 2, LexConstants.ANY, LexConstants.RBR, -1}), Arrays.toString(result));
+					{LexConstants.LBR + 2, LexConstants.ANY, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
 
 			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
 			result = rp.compile(0, parseRegexp("(abc|)"));
@@ -188,7 +188,7 @@ public class RegexpParseTest {
 					{LexConstants.LBR + 5, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
 							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['b'],
 							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['c'],
-							LexConstants.OR, LexConstants.RBR, -1}), Arrays.toString(result));
+							LexConstants.OR, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
 
 		} catch (RegexpParseException e) {
 			fail(e.toString());
