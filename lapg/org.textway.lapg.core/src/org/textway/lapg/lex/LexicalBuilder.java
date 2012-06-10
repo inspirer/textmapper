@@ -18,6 +18,7 @@ package org.textway.lapg.lex;
 import org.textway.lapg.api.Lexem;
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.ProcessingStatus;
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
 
@@ -30,25 +31,25 @@ public class LexicalBuilder {
 	private static final int MAX_WORD = 0x7ff0;
 
 	private static class LexemData {
+		private final Lexem lexem;
+		private final RegexInstruction[] pattern;
 		private final int prio;
 		private final int group;
-		private final int[] sym;
 		private final int len;
 		private final int jmpset;
 		private final int[] jmp;
 		private final String name;
-		private final Lexem lexem;
 
-		private LexemData(Lexem l, int[] sym) {
+		private LexemData(Lexem l, RegexInstruction[] pattern) {
 			this.lexem = l;
+			this.pattern = pattern;
 			this.name = l.getSymbol().getName();
 			this.prio = l.getPriority();
 			this.group = l.getGroups();
-			this.sym = sym;
-			len = sym.length;
+			len = pattern.length;
 			assert len > 0;
-			jmpset = (sym.length + BITS - 1) / BITS;
-			jmp = new int[sym.length * jmpset];
+			jmpset = (len + BITS - 1) / BITS;
+			jmp = new int[len * jmpset];
 			Arrays.fill(jmp, 0);
 		}
 	}
@@ -167,9 +168,9 @@ public class LexicalBuilder {
 				} else {
 					for (int l = 0; l < BITS; l++, m++) {
 						if ((word & 1 << l) != 0) {
-							int kind = ldata[lex].sym[m] & LexConstants.MASK;
-							if (kind == LexConstants.SET || kind == LexConstants.SYM || kind == LexConstants.ANY ||
-									kind == LexConstants.DONE) {
+							RegexInstructionKind kind = ldata[lex].pattern[m].getKind();
+							if (kind == RegexInstructionKind.Set || kind == RegexInstructionKind.Symbol || kind == RegexInstructionKind.Any ||
+									kind == RegexInstructionKind.Done) {
 								clsr[outputSize++] = base + m;
 							}
 						}
@@ -201,25 +202,25 @@ public class LexicalBuilder {
 
 			// generate initial jumps
 			for (i = 0; i < len; i++) {
-				switch (ldata[lex].sym[i] & LexConstants.MASK) {
-					case LexConstants.LBR: // (
+				switch (ldata[lex].pattern[i].getKind()) {
+					case LeftParen: // (
 						stack.push(i);
 						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
-					case LexConstants.RBR: // )
+					case RightParen: // )
 						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 
 						if (i + 1 < len) {
-							switch (ldata[lex].sym[i + 1]) {
-								case LexConstants.PLUS:
+							switch (ldata[lex].pattern[i + 1].getKind()) {
+								case OneOrMore:
 									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
 									break;
-								case LexConstants.STAR:
+								case ZeroOrMore:
 									jumps[(i + 1) * jmpset + stack.peek() / BITS] |= 1 << stack.peek() % BITS;
 									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
-								case LexConstants.QMARK:
+								case Optional:
 									jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
 							}
@@ -227,29 +228,29 @@ public class LexicalBuilder {
 						stack.pop();
 						break;
 
-					case LexConstants.OR: // |
-						k = ldata[lex].sym[stack.peek()] & 0xffff;
+					case Or: // |
+						k = ldata[lex].pattern[stack.peek()].getValue();
 						jumps[i * jmpset + (k + 1) / BITS] |= 1 << (k + 1) % BITS;
 						jumps[stack.peek() * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
-					case LexConstants.STAR: // forbid two steps back
-					case LexConstants.PLUS:
-					case LexConstants.QMARK:
+					case ZeroOrMore: // forbid two steps back
+					case OneOrMore:
+					case Optional:
 						jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 						break;
 
 					default: // SYM, ANY, SET
 						if (i + 1 < len) {
-							switch (ldata[lex].sym[i + 1]) {
-								case LexConstants.PLUS:
+							switch (ldata[lex].pattern[i + 1].getKind()) {
+								case OneOrMore:
 									jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
 									break;
-								case LexConstants.STAR:
+								case ZeroOrMore:
 									jumps[(i + 1) * jmpset + i / BITS] |= 1 << i % BITS;
 									jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
-								case LexConstants.QMARK:
+								case Optional:
 									jumps[i * jmpset + (i + 1) / BITS] |= 1 << (i + 1) % BITS;
 									break;
 							}
@@ -288,39 +289,7 @@ public class LexicalBuilder {
 						}
 					}
 					status.debug(") ");
-					switch (ldata[lex].sym[i] & LexConstants.MASK) {
-						case LexConstants.LBR:
-							status.debug("LEFT(" + (ldata[lex].sym[i] & 0xffff) + ")");
-							break;
-						case LexConstants.RBR:
-							status.debug("RIGHT");
-							break;
-						case LexConstants.OR:
-							status.debug("OR");
-							break;
-						case LexConstants.PLUS:
-							status.debug("PLUS");
-							break;
-						case LexConstants.STAR:
-							status.debug("STAR");
-							break;
-						case LexConstants.QMARK:
-							status.debug("QMARK");
-							break;
-						case LexConstants.ANY:
-							status.debug("ANY");
-							break;
-						case LexConstants.SYM:
-							if ((ldata[lex].sym[i] & 0xffff) < 127 && (ldata[lex].sym[i] & 0xffff) > 32) {
-								status.debug("\'" + (char) (ldata[lex].sym[i] & 0xffff) + "\'");
-							} else {
-								status.debug("#" + FormatUtil.asHex(ldata[lex].sym[i] & 0xffff, 4));
-							}
-							break;
-						case LexConstants.SET:
-							status.debug("SET#" + (ldata[lex].sym[i] & 0xffff));
-							break;
-					}
+					status.debug(ldata[lex].pattern[i].toString());
 				}
 				status.debug("  [" + ldata[lex].name + "," + ldata[lex].lexem.getSymbol().getIndex() + "]\n");
 			}
@@ -395,11 +364,11 @@ public class LexicalBuilder {
 			for (int csi = 0; cset[csi] >= 0; csi++) {
 				int csval = cset[csi];
 				int lex = lsym[csval];
-				int symValue = ldata[lex].sym[csval - lindex[lex]];
-				switch (symValue & LexConstants.MASK) {
-					case LexConstants.DONE:
+				RegexInstruction instruction = ldata[lex].pattern[csval - lindex[lex]];
+				switch (instruction.getKind()) {
+					case Done:
 						// end of some regexp found
-						final int nlex = symValue & 0xffff;
+						final int nlex = instruction.getValue();
 						if (lexnum != -1 && lexnum != nlex) {
 
 							if (ldata[nlex].prio == ldata[lexnum].prio) {
@@ -420,10 +389,11 @@ public class LexicalBuilder {
 							lexnum = nlex;
 						}
 						break;
-					case LexConstants.SYM:
-						toshift[(symValue & 0xffff) / BITS] |= 1 << (symValue & 0xffff) % BITS;
+					case Symbol:
+						int symValue = instruction.getValue();
+						toshift[symValue / BITS] |= 1 << symValue % BITS;
 						break;
-					case LexConstants.ANY: /* except \n and eof */
+					case Any: /* except \n and eof */
 						int nl = char2no['\n'];
 						for (i = 1; i < charsetSize; i++) {
 							if (i != nl / BITS) {
@@ -437,8 +407,8 @@ public class LexicalBuilder {
 							toshift[nl / BITS] |= ~(1 << nl % BITS);
 						}
 						break;
-					case LexConstants.SET:
-						e = symValue & 0xffff;
+					case Set:
+						e = instruction.getValue();
 						int[] used = set2symbols[e];
 						for (i = 0; i < used.length; i++) {
 							toshift[used[i] / BITS] |= 1 << used[i] % BITS;
@@ -464,21 +434,24 @@ public class LexicalBuilder {
 					// create new state
 					for (int p = 0; cset[p] >= 0; p++) {
 						int lex = lsym[cset[p]];
-						int l = ldata[lex].sym[cset[p] - lindex[lex]];
-						if ((l & LexConstants.MASK) == LexConstants.ANY) {
-							if (sym != char2no['\n']) {
-								next[nnext++] = cset[p] + 1;
-							}
-						} else if ((l & LexConstants.MASK) == LexConstants.SYM) {
-							if (sym == (l & 0xffff)) {
-								next[nnext++] = cset[p] + 1;
-							}
-						} else if ((l & LexConstants.MASK) == LexConstants.SET) {
-							int o = l & 0xffff;
-							int[] used = set2symbols[o];
-							if (Arrays.binarySearch(used, sym) >= 0) {
-								next[nnext++] = cset[p] + 1;
-							}
+						RegexInstruction instruction = ldata[lex].pattern[cset[p] - lindex[lex]];
+						switch (instruction.getKind()) {
+							case Any:
+								if (sym != char2no['\n']) {
+									next[nnext++] = cset[p] + 1;
+								}
+								break;
+							case Symbol:
+								if (sym == instruction.getValue()) {
+									next[nnext++] = cset[p] + 1;
+								}
+								break;
+							case Set:
+								int[] used = set2symbols[instruction.getValue()];
+								if (Arrays.binarySearch(used, sym) >= 0) {
+									next[nnext++] = cset[p] + 1;
+								}
+								break;
 						}
 					}
 
@@ -514,7 +487,7 @@ public class LexicalBuilder {
 	 * Fills initial arrays from lexems descriptions
 	 */
 	private boolean prepare(Lexem[] lexems, NamedPattern[] patterns) {
-		RegexpCompiler rp = new RegexpCompiler(loadNamedPatterns(patterns));
+		RegexpCompiler rp = new RegexpCompiler(createContext(patterns));
 		boolean success = true;
 
 		ArrayList<LexemData> syms = new ArrayList<LexemData>();
@@ -539,14 +512,14 @@ public class LexicalBuilder {
 				continue;
 			}
 
-			int[] lexem_sym = parseRegexp(rp, l);
-			if (lexem_sym == null) {
+			RegexInstruction[] pattern = parseRegexp(rp, l);
+			if (pattern == null) {
 				success = false;
 				continue;
 			}
 
-			syms.add(new LexemData(l, lexem_sym));
-			lsym_size += lexem_sym.length;
+			syms.add(new LexemData(l, pattern));
+			lsym_size += pattern.length;
 		}
 		if (!success) {
 			return false;
@@ -568,9 +541,9 @@ public class LexicalBuilder {
 		lindex = new int[nlexems + 1];
 		int index = 0;
 		for (LexemData l : syms) {
-			Arrays.fill(lsym, nsit, nsit + l.sym.length, index);
+			Arrays.fill(lsym, nsit, nsit + l.pattern.length, index);
 			lindex[index++] = nsit;
-			nsit += l.sym.length;
+			nsit += l.pattern.length;
 		}
 		lindex[nlexems] = nsit;
 		assert lsym_size == nsit;
@@ -597,10 +570,10 @@ public class LexicalBuilder {
 		status.debug("\nLexems:\n\n");
 		for (int i = 0; i < nlexems; i++) {
 			status.debug(ldata[i].name + "," + ldata[i].lexem.getSymbol().getIndex() + ": ");
-			for (int e = 0; e < ldata[i].len; e++) {
-				status.debug(" " + FormatUtil.asHex(ldata[i].sym[e], 8));
+			for (RegexInstruction instruction : ldata[i].pattern) {
+				status.debug(" ");
+				status.debug(instruction.toString());
 			}
-
 			status.debug(" (" + ldata[i].lexem.getRegexp().toString() + ")\n");
 		}
 
@@ -633,17 +606,22 @@ public class LexicalBuilder {
 		}
 	}
 
-	private Map<String, RegexPart> loadNamedPatterns(NamedPattern[] patterns) {
-		Map<String, RegexPart> result = new HashMap<String, RegexPart>();
+	private RegexContext createContext(NamedPattern[] patterns) {
+		final Map<String, RegexPart> result = new HashMap<String, RegexPart>();
 		for (NamedPattern p : patterns) {
 			String name = p.getName();
 			RegexPart regex = p.getRegexp();
 			result.put(name, regex);
 		}
-		return result;
+		return new RegexContext() {
+			@Override
+			public RegexPart resolvePattern(String name) {
+				return result.get(name);
+			}
+		};
 	}
 
-	private int[] parseRegexp(RegexpCompiler rp, Lexem l) {
+	private RegexInstruction[] parseRegexp(RegexpCompiler rp, Lexem l) {
 		try {
 			RegexPart parsedRegex = l.getRegexp();
 			return rp.compile(l.getIndex(), parsedRegex);

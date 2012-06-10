@@ -16,15 +16,12 @@
 package org.textway.lapg.test.cases;
 
 import org.junit.Test;
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.LexConstants;
-import org.textway.lapg.lex.RegexMatcher;
-import org.textway.lapg.lex.RegexpCompiler;
-import org.textway.lapg.lex.RegexpParseException;
+import org.textway.lapg.lex.*;
 import org.textway.lapg.regex.RegexUtil;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -41,7 +38,7 @@ public class RegexpParseTest {
 		assertEquals("abcf", toHex4(0xabcf));
 		assertEquals("75e1", toHex4(0x75e1));
 
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			for (int i = 20; i < 2020; i++) {
 				rp.compile(i, parseRegexp("[\\u" + toHex4(i * 10) + "-\\u" + toHex4(i * 10 + 6) + "]"));
@@ -58,7 +55,7 @@ public class RegexpParseTest {
 
 	@Test
 	public void testNewParser() {
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("Eea{1,2}"));
 			fail("no exception");
@@ -76,7 +73,7 @@ public class RegexpParseTest {
 
 	@Test
 	public void testRegexpParserInvertedSet() {
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("'[^'\n]+'"));
 			rp.compile(1, parseRegexp("%"));
@@ -96,17 +93,17 @@ public class RegexpParseTest {
 
 	@Test
 	public void testRegexpParser() {
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 
-			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+			rp = createTestCompiler();
 			rp.compile(0, parseRegexp("[a-zA-Z_][a-zA-Z0-9_]*"));
 			rp.compile(1, parseRegexp("do"));
 			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 4, 1, 4, 4, 4, 2, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
 
-			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+			rp = createTestCompiler();
 			rp.compile(0, parseRegexp("[a-w][p-z]"));
 			rp.compile(1, parseRegexp("[b-c][y-z]"));
 			assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 5, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 4, 4, 4, 4, 4, 4, 3, 6, 6, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
@@ -122,7 +119,7 @@ public class RegexpParseTest {
 
 	@Test
 	public void testUnicode() {
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("[\\u5151-\\u5252][\\u1000-\\u2000]"));
 		} catch (RegexpParseException ex) {
@@ -167,28 +164,45 @@ public class RegexpParseTest {
 	@Test
 	public void testParserParen() {
 		try {
-			RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
-			int[] result = rp.compile(0, parseRegexp("()"));
-			assertEquals(Arrays.toString(new int[]{LexConstants.LBR + 1, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
+			RegexpCompiler rp = createTestCompiler();
+			RegexInstruction[] result = rp.compile(0, parseRegexp("()"));
+			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.LeftParen, 1),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
 
-			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(a|)"));
-			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 3, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
-							LexConstants.OR, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
+			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.LeftParen, 3),
+					new RegexInstruction(RegexInstructionKind.Symbol, rp.getInputSymbols().getCharacterMap()['a']),
+					new RegexInstruction(RegexInstructionKind.Or, 0),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
 
-			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(.)"));
-			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 2, LexConstants.ANY, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
+			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.LeftParen, 2),
+					new RegexInstruction(RegexInstructionKind.Any, 0),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
 
-			rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(abc|)"));
-			assertEquals(Arrays.toString(new int[]
-					{LexConstants.LBR + 5, LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['a'],
-							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['b'],
-							LexConstants.SYM | rp.getInputSymbols().getCharacterMap()['c'],
-							LexConstants.OR, LexConstants.RBR, LexConstants.DONE}), Arrays.toString(result));
+
+			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.LeftParen, 5),
+					new RegexInstruction(RegexInstructionKind.Symbol, rp.getInputSymbols().getCharacterMap()['a']),
+					new RegexInstruction(RegexInstructionKind.Symbol, rp.getInputSymbols().getCharacterMap()['b']),
+					new RegexInstruction(RegexInstructionKind.Symbol, rp.getInputSymbols().getCharacterMap()['c']),
+					new RegexInstruction(RegexInstructionKind.Or, 0),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
 
 		} catch (RegexpParseException e) {
 			fail(e.toString());
@@ -198,7 +212,7 @@ public class RegexpParseTest {
 
 	@Test
 	public void testParserExc() {
-		RegexpCompiler rp = new RegexpCompiler(Collections.<String, RegexPart>emptyMap());
+		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000"));
 			fail("no exception");
@@ -292,5 +306,14 @@ public class RegexpParseTest {
 
 	private static RegexPart parseRegexp(String s) throws RegexpParseException {
 		return RegexMatcher.parse("", s);
+	}
+
+	private static RegexpCompiler createTestCompiler() {
+		return new RegexpCompiler(new RegexContext() {
+			@Override
+			public RegexPart resolvePattern(String name) {
+				return null;
+			}
+		});
 	}
 }

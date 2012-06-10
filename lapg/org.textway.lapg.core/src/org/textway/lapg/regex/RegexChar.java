@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -52,5 +53,10 @@ class RegexChar extends RegexPart implements org.textway.lapg.api.regex.RegexCha
 	@Override
 	public void accept(RegexVisitor visitor) {
 		visitor.visit(this);
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		return 1;
 	}
 }

@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -44,5 +45,14 @@ class RegexExpand extends RegexPart implements org.textway.lapg.api.regex.RegexE
 
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		org.textway.lapg.api.regex.RegexPart regexPart = context.resolvePattern(name);
+		if (regexPart == null) {
+			return -1;
+		}
+		return regexPart.getLength(context);
 	}
 }

@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -72,5 +73,16 @@ class RegexQuantifier extends RegexPart implements org.textway.lapg.api.regex.Re
 		visitor.visitBefore(this);
 		inner.accept(visitor);
 		visitor.visitAfter(this);
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		if (min == max && min >= 0) {
+			int length = inner.getLength(context);
+			if (length >= 0) {
+				return min * length;
+			}
+		}
+		return -1;
 	}
 }

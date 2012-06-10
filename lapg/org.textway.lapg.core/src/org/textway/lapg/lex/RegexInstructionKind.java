@@ -13,21 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api.regex;
+package org.textway.lapg.lex;
 
-public interface RegexPart {
+/**
+ * evgeny, 5/30/12
+ */
+public enum RegexInstructionKind {
+	LeftParen,
+	RightParen,
+	Or,
+	Any,
+	Symbol,
+	Set,
 
-	/**
-	 * @return true if regular expression is constant
-	 */
-	boolean isConstant();
+	OneOrMore,
+	ZeroOrMore,
+	Optional,
 
-	String getConstantValue();
-
-	/**
-	 * @return expected length, or -1 if length is variable
-	 */
-	int getLength(RegexContext context);
-
-	void accept(RegexVisitor visitor);
+	Done
 }

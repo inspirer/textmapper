@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexVisitor;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -44,5 +45,10 @@ class RegexEmpty extends RegexPart implements org.textway.lapg.api.regex.RegexEm
 	@Override
 	public String getConstantValue() {
 		return "";
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		return 0;
 	}
 }

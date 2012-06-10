@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexVisitor;
 
 import java.util.ArrayList;
@@ -99,5 +100,18 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 			element.accept(visitor);
 		}
 		visitor.visitAfter(this);
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		int result = 0;
+		for (RegexPart element : elements) {
+			int len = element.getLength(context);
+			if (len == -1) {
+				return -1;
+			}
+			result += len;
+		}
+		return result;
 	}
 }
