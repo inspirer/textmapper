@@ -15,11 +15,12 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexOr;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.api.regex.RegexSwitch;
-import org.textway.lapg.regex.RegexDefTree.TextSource;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -27,48 +28,52 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexSet extends RegexPart implements org.textway.lapg.api.regex.RegexSet {
+class RegexAstOr extends RegexAstPart implements RegexOr {
 
-	private final CharacterSet set;
-	private final List<RegexPart> charset;
+	List<RegexAstPart> variants = new ArrayList<RegexAstPart>();
 
-	public RegexSet(CharacterSet set, List<RegexPart> charset, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.set = set;
-		this.charset = charset;
+	public RegexAstOr(RegexAstPart initialPart) {
+		super(initialPart.getInput(), initialPart.getOffset(), initialPart.getEndOffset());
+		variants.add(initialPart);
 	}
 
-	public CharacterSet getSet() {
-		return set;
+	public void addVariant(RegexAstPart part) {
+		variants.add(part);
+		include(part);
 	}
 
-	public Collection<org.textway.lapg.api.regex.RegexPart> getCharset() {
-		return Collections.<org.textway.lapg.api.regex.RegexPart>unmodifiableCollection(charset);
+	public Collection<RegexPart> getVariants() {
+		return Collections.<RegexPart>unmodifiableCollection(variants);
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append('[');
-		if (set.isInverted()) {
-			sb.append('^');
-		}
-		for (RegexPart p : charset) {
-			if (p instanceof RegexChar) {
-				RegexUtil.escape(sb, ((RegexChar) p).getChar(), true);
+		boolean first = true;
+		for (RegexAstPart p : variants) {
+			if (!first) {
+				sb.append("|");
 			} else {
-				p.toString(sb);
+				first = false;
 			}
+			p.toString(sb);
 		}
-		sb.append(']');
 	}
 
 	@Override
 	public int getLength(RegexContext context) {
-		return 1;
+		int result = -1;
+		for (RegexAstPart variant : variants) {
+			int len = variant.getLength(context);
+			if (len == -1 || result != -1 && len != result) {
+				return -1;
+			}
+			result = len;
+		}
+		return result;
 	}
 
 	@Override
 	public void accept(RegexSwitch switch_) {
-		switch_.caseSet(this);
+		switch_.caseOr(this);
 	}
 }

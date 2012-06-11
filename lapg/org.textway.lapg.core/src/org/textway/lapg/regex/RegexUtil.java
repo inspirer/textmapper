@@ -16,6 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.CharacterSetImpl.Builder;
 import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
@@ -33,59 +34,59 @@ class RegexUtil {
 	private static final Pattern QUANTIFIER = Pattern.compile("(\\d+)(,(\\d+)?)?");
 	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");
 
-	static RegexPart wrap(RegexPart part) {
-		if (!(part instanceof RegexList) || ((RegexList) part).isInParentheses()) {
-			part = new RegexList(part);
+	static RegexAstPart wrap(RegexAstPart part) {
+		if (!(part instanceof RegexAstList) || ((RegexAstList) part).isInParentheses()) {
+			part = new RegexAstList(part);
 		}
-		((RegexList) part).setInParentheses();
+		((RegexAstList) part).setInParentheses();
 		return part;
 	}
 
-	static RegexPart createSequence(RegexPart left, RegexPart right) {
-		if (!(left instanceof RegexList) || ((RegexList) left).isInParentheses()) {
-			left = new RegexList(left);
+	static RegexAstPart createSequence(RegexAstPart left, RegexAstPart right) {
+		if (!(left instanceof RegexAstList) || ((RegexAstList) left).isInParentheses()) {
+			left = new RegexAstList(left);
 		}
-		if (right instanceof RegexList && !(((RegexList) right).isInParentheses())) {
-			for (org.textway.lapg.api.regex.RegexPart item : ((RegexList) right).getElements()) {
-				((RegexList) left).addElement((RegexPart) item);
+		if (right instanceof RegexAstList && !(((RegexAstList) right).isInParentheses())) {
+			for (RegexPart item : ((RegexAstList) right).getElements()) {
+				((RegexAstList) left).addElement((RegexAstPart) item);
 			}
 		} else {
-			((RegexList) left).addElement(right);
+			((RegexAstList) left).addElement(right);
 		}
 		return left;
 	}
 
-	static RegexPart emptyIfNull(RegexPart part, TextSource source, int offset) {
+	static RegexAstPart emptyIfNull(RegexAstPart part, TextSource source, int offset) {
 		return part != null
 				? part
-				: new RegexEmpty(source, offset);
+				: new RegexAstEmpty(source, offset);
 	}
 
-	static RegexPart createOr(RegexPart left, RegexPart right, TextSource source, int offset) {
-		if (!(left instanceof RegexOr)) {
-			left = new RegexOr(left);
+	static RegexAstPart createOr(RegexAstPart left, RegexAstPart right, TextSource source, int offset) {
+		if (!(left instanceof RegexAstOr)) {
+			left = new RegexAstOr(left);
 		}
-		((RegexOr) left).addVariant(emptyIfNull(right, source, offset));
+		((RegexAstOr) left).addVariant(emptyIfNull(right, source, offset));
 		return left;
 	}
 
-	static void addSetSymbol(List<RegexPart> charset, RegexPart right, ErrorReporter reporter) {
-		if (right instanceof RegexOr) {
-			for (org.textway.lapg.api.regex.RegexPart regexPart : ((RegexOr) right).getVariants()) {
-				addSetSymbol(charset, (RegexPart) regexPart, reporter);
+	static void addSetSymbol(List<RegexAstPart> charset, RegexAstPart right, ErrorReporter reporter) {
+		if (right instanceof RegexAstOr) {
+			for (RegexPart regexPart : ((RegexAstOr) right).getVariants()) {
+				addSetSymbol(charset, (RegexAstPart) regexPart, reporter);
 			}
 		} else {
 			charset.add(right);
 		}
 	}
 
-	static void applyRange(List<RegexPart> charset, RegexChar right, ErrorReporter reporter) {
-		RegexPart last = charset.get(charset.size() - 1);
+	static void applyRange(List<RegexAstPart> charset, RegexAstChar right, ErrorReporter reporter) {
+		RegexAstPart last = charset.get(charset.size() - 1);
 
-		if (last instanceof RegexChar && isRangeChar(((RegexChar) last).getChar())) {
+		if (last instanceof RegexAstChar && isRangeChar(((RegexAstChar) last).getChar())) {
 			if (isRangeChar(right.getChar())) {
 				charset.remove(charset.size() - 1);
-				charset.add(new RegexRange(((RegexChar) last).getChar(), right.getChar(), right.getInput(), last.getOffset(), right.getEndOffset()));
+				charset.add(new RegexAstRange(((RegexAstChar) last).getChar(), right.getChar(), right.getInput(), last.getOffset(), right.getEndOffset()));
 				return;
 			} else {
 				reporter.error(right.getOffset(), right.getEndOffset(), right.getInput().lineForOffset(right.getOffset()), "invalid range in character class (after dash): `" + right.toString() + "', escape `-'");
@@ -94,28 +95,28 @@ class RegexUtil {
 			reporter.error(last.getOffset(), right.getEndOffset(), right.getInput().lineForOffset(last.getOffset()), "invalid range in character class (before dash): `" + last.toString() + "', escape `-'");
 		}
 
-		charset.add(new RegexChar('-', right.getInput(), right.getOffset() - 1, right.getOffset()));
+		charset.add(new RegexAstChar('-', right.getInput(), right.getOffset() - 1, right.getOffset()));
 		charset.add(right);
 	}
 
-	static RegexSet toSet(List<RegexPart> charset, ErrorReporter reporter, Builder builder, boolean inverted) {
+	static RegexAstSet toSet(List<RegexAstPart> charset, ErrorReporter reporter, Builder builder, boolean inverted) {
 		builder.clear();
-		for (RegexPart part : charset) {
-			if (part instanceof RegexChar) {
-				char c = ((RegexChar) part).getChar();
+		for (RegexAstPart part : charset) {
+			if (part instanceof RegexAstChar) {
+				char c = ((RegexAstChar) part).getChar();
 				builder.addSymbol(c);
-			} else if (part instanceof RegexRange) {
-				RegexRange range = (RegexRange) part;
+			} else if (part instanceof RegexAstRange) {
+				RegexAstRange range = (RegexAstRange) part;
 				builder.addRange(range.getLeft(), range.getRight());
-			} else if (part instanceof RegexCharClass) {
-				for (int[] range : ((RegexCharClass) part).getSet()) {
+			} else if (part instanceof RegexAstCharClass) {
+				for (int[] range : ((RegexAstCharClass) part).getSet()) {
 					builder.addRange(range[0], range[1]);
 				}
 			} else {
 				throw new IllegalStateException("unknown part: " + part.getClass());
 			}
 		}
-		return new RegexSet(builder.create(inverted), charset, charset.get(0).getInput(), charset.get(0).getOffset(), charset.get(charset.size() - 1).getEndOffset());
+		return new RegexAstSet(builder.create(inverted), charset, charset.get(0).getInput(), charset.get(0).getOffset(), charset.get(charset.size() - 1).getEndOffset());
 	}
 
 	private static boolean isRangeChar(char c) {
@@ -234,7 +235,7 @@ class RegexUtil {
 		sb.append(sym);
 	}
 
-	static RegexPart createQuantifier(RegexPart sym, TextSource source, int quantifierStart, int quantifierEnd, ErrorReporter reporter) {
+	static RegexAstPart createQuantifier(RegexAstPart sym, TextSource source, int quantifierStart, int quantifierEnd, ErrorReporter reporter) {
 		String innerText = source.getText(quantifierStart + 1, quantifierEnd - 1);
 		Matcher matcher = QUANTIFIER.matcher(innerText);
 		if (matcher.matches()) {
@@ -244,7 +245,7 @@ class RegexUtil {
 				String second = matcher.group(3);
 				max = second != null ? Integer.parseInt(second) : -1;
 			}
-			return new RegexQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierEnd);
+			return new RegexAstQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierEnd);
 		}
 
 		reporter.error(quantifierStart, quantifierEnd, source.lineForOffset(quantifierStart),
@@ -252,7 +253,7 @@ class RegexUtil {
 		return sym;
 	}
 
-	static void checkExpand(RegexExpand expand, ErrorReporter reporter) {
+	static void checkExpand(RegexAstExpand expand, ErrorReporter reporter) {
 		String innerText = expand.getInput().getText(expand.getOffset() + 1, expand.getEndOffset() - 1);
 		if (!IDENTIFIER.matcher(innerText).matches()) {
 			reporter.error(expand.getOffset(), expand.getEndOffset(), expand.getInput().lineForOffset(expand.getOffset()),

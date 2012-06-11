@@ -15,6 +15,7 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexChar;
 import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
@@ -22,65 +23,41 @@ import org.textway.lapg.regex.RegexDefTree.TextSource;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexQuantifier extends RegexPart implements org.textway.lapg.api.regex.RegexQuantifier {
+class RegexAstChar extends RegexAstPart implements RegexChar {
 
-	private final int min, max;
-	private RegexPart inner;
+	private final char c;
 
-	public RegexQuantifier(RegexPart inner, int min, int max, TextSource source, int offset, int endoffset) {
+	public RegexAstChar(char c, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.min = min;
-		this.max = max;
-		this.inner = inner;
+		this.c = c;
 	}
 
-	public int getMin() {
-		return min;
+	public char getChar() {
+		return c;
 	}
 
-	public int getMax() {
-		return max;
+	@Override
+	public boolean isConstant() {
+		return true;
 	}
 
-	public RegexPart getInner() {
-		return inner;
+	@Override
+	public String getConstantValue() {
+		return Character.toString(c);
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		inner.toString(sb);
-		if (min == 0 && max == -1) {
-			sb.append('*');
-		} else if (min == 0 && max == 1) {
-			sb.append('?');
-		} else if (min == 1 && max == -1) {
-			sb.append('+');
-		} else {
-			sb.append('{');
-			sb.append(min);
-			if (min != max) {
-				sb.append(',');
-				if (max != -1) {
-					sb.append(max);
-				}
-			}
-			sb.append('}');
-		}
+		RegexUtil.escape(sb, c, false);
 	}
 
 	@Override
 	public int getLength(RegexContext context) {
-		if (min == max && min >= 0) {
-			int length = inner.getLength(context);
-			if (length >= 0) {
-				return min * length;
-			}
-		}
-		return -1;
+		return 1;
 	}
 
 	@Override
 	public void accept(RegexSwitch switch_) {
-		switch_.caseQuantifier(this);
+		switch_.caseChar(this);
 	}
 }

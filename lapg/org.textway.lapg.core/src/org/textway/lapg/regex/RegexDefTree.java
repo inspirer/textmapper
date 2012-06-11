@@ -53,7 +53,7 @@ public class RegexDefTree<T> {
 	}
 
 
-	public static RegexDefTree<RegexPart> parse(TextSource source) {
+	public static RegexDefTree<RegexAstPart> parse(TextSource source) {
 		final List<RegexDefProblem> list = new ArrayList<RegexDefProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -67,15 +67,15 @@ public class RegexDefTree<T> {
 
 			RegexDefParser parser = new RegexDefParser(reporter);
 			parser.source = source;
-			RegexPart result = parser.parse(lexer);
+			RegexAstPart result = parser.parse(lexer);
 
-			return new RegexDefTree<RegexPart>(source, result, list);
+			return new RegexDefTree<RegexAstPart>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new RegexDefProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new RegexDefTree<RegexPart>(source, null, list);
+		return new RegexDefTree<RegexAstPart>(source, null, list);
 	}
 
 

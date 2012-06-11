@@ -16,15 +16,16 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexEmpty;
 import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 5/6/11
  */
-class RegexEmpty extends RegexPart implements org.textway.lapg.api.regex.RegexEmpty {
+class RegexAstEmpty extends RegexAstPart implements RegexEmpty {
 
-	public RegexEmpty(TextSource source, int offset) {
+	public RegexAstEmpty(TextSource source, int offset) {
 		super(source, offset, offset);
 	}
 

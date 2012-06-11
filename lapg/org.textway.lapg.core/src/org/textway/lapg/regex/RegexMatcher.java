@@ -16,23 +16,15 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.api.regex.RegexAny;
-import org.textway.lapg.api.regex.RegexChar;
-import org.textway.lapg.api.regex.RegexExpand;
-import org.textway.lapg.api.regex.RegexList;
-import org.textway.lapg.api.regex.RegexOr;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.api.regex.RegexQuantifier;
-import org.textway.lapg.api.regex.RegexSet;
 
 import java.util.*;
 
 public class RegexMatcher {
 
-	private final org.textway.lapg.api.regex.RegexPart regex;
+	private final RegexPart regex;
 	private State[] states;
 
-	public RegexMatcher(org.textway.lapg.api.regex.RegexPart regex, RegexContext context) {
+	public RegexMatcher(RegexPart regex, RegexContext context) {
 		this.regex = regex;
 		compile(context);
 	}
@@ -69,12 +61,12 @@ public class RegexMatcher {
 		return current[states.length - 1];
 	}
 
-	private boolean accepts(org.textway.lapg.api.regex.RegexPart simple, char c) {
-		if (simple instanceof org.textway.lapg.api.regex.RegexChar) {
-			return c == ((org.textway.lapg.api.regex.RegexChar) simple).getChar();
-		} else if (simple instanceof org.textway.lapg.api.regex.RegexSet) {
-			return ((org.textway.lapg.api.regex.RegexSet) simple).getSet().contains(c);
-		} else if (simple instanceof org.textway.lapg.api.regex.RegexAny) {
+	private boolean accepts(RegexPart simple, char c) {
+		if (simple instanceof RegexChar) {
+			return c == ((RegexChar) simple).getChar();
+		} else if (simple instanceof RegexSet) {
+			return ((RegexSet) simple).getSet().contains(c);
+		} else if (simple instanceof RegexAny) {
 			return c != '\n';
 		}
 		return false;
@@ -88,7 +80,7 @@ public class RegexMatcher {
 	private static class State {
 		int index;
 		List<Integer> jumps;
-		org.textway.lapg.api.regex.RegexPart simplePart;   /* any, char, charclass, set */
+		RegexPart simplePart;   /* any, char, charclass, set */
 		boolean[] closure;
 
 		void addJump(int target) {
@@ -139,7 +131,7 @@ public class RegexMatcher {
 
 		private List<State> states = new ArrayList<State>();
 		private Stack<StackElement> stack = new Stack<StackElement>();
-		private org.textway.lapg.api.regex.RegexOr outermostOr;
+		private RegexOr outermostOr;
 		private final RegexContext context;
 
 		public RegexpBuilder(RegexContext context) {
@@ -174,7 +166,7 @@ public class RegexMatcher {
 			return states;
 		}
 
-		private State yield(org.textway.lapg.api.regex.RegexPart simplepart) {
+		private State yield(RegexPart simplepart) {
 			State s = new State();
 			s.index = states.size();
 			if (simplepart != null) {
@@ -217,7 +209,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(org.textway.lapg.api.regex.RegexList c) {
+		public void visitBefore(RegexList c) {
 			if (c.isInParentheses()) {
 				stack.push(new StackElement(index()));
 				yield(null);    /* ( */
@@ -233,7 +225,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(org.textway.lapg.api.regex.RegexOr c) {
+		public void visitBefore(RegexOr c) {
 			if (states.size() == 0) {
 				outermostOr = c;
 				stack.push(new StackElement(index()));
@@ -242,7 +234,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBetween(org.textway.lapg.api.regex.RegexOr c) {
+		public void visitBetween(RegexOr c) {
 			stack.peek().addOr(index());
 			states.get(stack.peek().index).addJump(index() + 1);
 			yield(null);    /* | */
@@ -257,7 +249,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(org.textway.lapg.api.regex.RegexQuantifier c) {
+		public void visitBefore(RegexQuantifier c) {
 			stack.push(new StackElement(index()));
 		}
 

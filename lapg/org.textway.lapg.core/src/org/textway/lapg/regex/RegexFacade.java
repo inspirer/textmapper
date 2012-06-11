@@ -16,6 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
@@ -27,21 +28,21 @@ import java.util.Map;
  */
 public class RegexFacade {
 
-	public static RegexContext createContext(final Map<String, org.textway.lapg.api.regex.RegexPart> map) {
+	public static RegexContext createContext(final Map<String, RegexPart> map) {
 		return new RegexContext() {
 			@Override
-			public org.textway.lapg.api.regex.RegexPart resolvePattern(String name) {
+			public RegexPart resolvePattern(String name) {
 				return map.get(name);
 			}
 		};
 	}
 
-	public static org.textway.lapg.api.regex.RegexPart parse(String alias, String regex) throws RegexpParseException {
+	public static RegexPart parse(String alias, String regex) throws RegexpParseException {
 		if (regex.length() == 0) {
 			throw new RegexpParseException("regexp is empty", 0);
 		}
 
-		RegexDefTree<RegexPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();

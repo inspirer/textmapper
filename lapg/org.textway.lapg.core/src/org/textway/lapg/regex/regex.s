@@ -91,49 +91,49 @@ char(Character):  /[\(\|\)]/					{ $lexem = current().charAt(0); break; }
 
 %input pattern;
 
-pattern (RegexPart) ::=
+pattern (RegexAstPart) ::=
 	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }
 	| left=pattern '|' partsopt					{ $$ = RegexUtil.createOr($left, $partsopt, source, ${partsopt.offset}); }
 ;
 
-part (RegexPart) ::=
+part (RegexAstPart) ::=
 	  primitive_part
-	| primitive_part '*'						{ $$ = new RegexQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
-	| primitive_part '+'						{ $$ = new RegexQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
-	| primitive_part '?'						{ $$ = new RegexQuantifier($primitive_part, 0, 1, source, ${left().offset}, ${left().endoffset}); }
+	| primitive_part '*'						{ $$ = new RegexAstQuantifier($primitive_part, 0, -1, source, ${left().offset}, ${left().endoffset}); }
+	| primitive_part '+'						{ $$ = new RegexAstQuantifier($primitive_part, 1, -1, source, ${left().offset}, ${left().endoffset}); }
+	| primitive_part '?'						{ $$ = new RegexAstQuantifier($primitive_part, 0, 1, source, ${left().offset}, ${left().endoffset}); }
 	| primitive_part quantifier					{ $$ = RegexUtil.createQuantifier($primitive_part, source, ${quantifier.offset}, ${left().endoffset}, reporter); }
 ;
 
-primitive_part (RegexPart) ::=
-	  char										{ $$ = new RegexChar($char, source, ${left().offset}, ${left().endoffset}); }
-	| escaped									{ $$ = new RegexChar($escaped, source, ${left().offset}, ${left().endoffset}); }
-	| charclass									{ $$ = new RegexCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
-	| '.'										{ $$ = new RegexAny(source, ${left().offset}, ${left().endoffset}); }
+primitive_part (RegexAstPart) ::=
+	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
+	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
+	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
+	| '.'										{ $$ = new RegexAstAny(source, ${left().offset}, ${left().endoffset}); }
 	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern); }
 	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false); }
 	| '[^' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, true); }
-	| expand									{ $$ = new RegexExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexExpand) $$, reporter); }
+	| expand									{ $$ = new RegexAstExpand(source, ${left().offset}, ${left().endoffset}); RegexUtil.checkExpand((RegexAstExpand) $$, reporter); }
 ;
 
-setsymbol (RegexPart) ::=
-	  char										{ $$ = new RegexChar($char, source, ${left().offset}, ${left().endoffset}); }
-	| escaped									{ $$ = new RegexChar($escaped, source, ${left().offset}, ${left().endoffset}); }
-	| charclass									{ $$ = new RegexCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
+setsymbol (RegexAstPart) ::=
+	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
+	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
+	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
 ;
 
 %right char escaped;
 
-charset (java.util.@List<RegexPart>) ::=
-	  sym='-'									{ $$ = new java.util.@ArrayList<RegexPart>(); $charset.add(new RegexChar('-', source, ${sym.offset}, ${sym.endoffset})); }
-	| setsymbol									{ $$ = new java.util.@ArrayList<RegexPart>(); RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
+charset (java.util.@List<RegexAstPart>) ::=
+	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); $charset.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
+	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
 	| charset setsymbol							{ RegexUtil.addSetSymbol($charset#1, $setsymbol, reporter); }
-	| charset sym='-'							{ $charset#1.add(new RegexChar('-', source, ${sym.offset}, ${sym.endoffset})); }
+	| charset sym='-'							{ $charset#1.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
 			%prio char
-	| charset '-' char							{ RegexUtil.applyRange($charset#1, new RegexChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
-	| charset '-' escaped						{ RegexUtil.applyRange($charset#1, new RegexChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
+	| charset '-' char							{ RegexUtil.applyRange($charset#1, new RegexAstChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
+	| charset '-' escaped						{ RegexUtil.applyRange($charset#1, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
 ;
 
-parts (RegexPart) ::=
+parts (RegexAstPart) ::=
 	  part
 	| list=parts part							{ $$ = RegexUtil.createSequence($list, $part); }
 ;

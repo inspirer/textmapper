@@ -15,39 +15,49 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexSwitch;
+import org.textway.lapg.api.regex.*;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexChar extends RegexPart implements org.textway.lapg.api.regex.RegexChar {
+class RegexAstSet extends RegexAstPart implements RegexSet {
 
-	private final char c;
+	private final CharacterSet set;
+	private final List<RegexAstPart> charset;
 
-	public RegexChar(char c, TextSource source, int offset, int endoffset) {
+	public RegexAstSet(CharacterSet set, List<RegexAstPart> charset, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.c = c;
+		this.set = set;
+		this.charset = charset;
 	}
 
-	public char getChar() {
-		return c;
+	public CharacterSet getSet() {
+		return set;
 	}
 
-	@Override
-	public boolean isConstant() {
-		return true;
-	}
-
-	@Override
-	public String getConstantValue() {
-		return Character.toString(c);
+	public Collection<RegexPart> getCharset() {
+		return Collections.<RegexPart>unmodifiableCollection(charset);
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		RegexUtil.escape(sb, c, false);
+		sb.append('[');
+		if (set.isInverted()) {
+			sb.append('^');
+		}
+		for (RegexAstPart p : charset) {
+			if (p instanceof RegexAstChar) {
+				RegexUtil.escape(sb, ((RegexAstChar) p).getChar(), true);
+			} else {
+				p.toString(sb);
+			}
+		}
+		sb.append(']');
 	}
 
 	@Override
@@ -57,6 +67,6 @@ class RegexChar extends RegexPart implements org.textway.lapg.api.regex.RegexCha
 
 	@Override
 	public void accept(RegexSwitch switch_) {
-		switch_.caseChar(this);
+		switch_.caseSet(this);
 	}
 }

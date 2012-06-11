@@ -16,43 +16,46 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexRange;
 import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexExpand extends RegexPart implements org.textway.lapg.api.regex.RegexExpand {
+class RegexAstRange extends RegexAstPart implements RegexRange {
 
-	private final String name;
+	private char left;
+	private char right;
 
-	public RegexExpand(TextSource source, int offset, int endoffset) {
+	public RegexAstRange(char left, char right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = source.getText(offset + 1, endoffset - 1);
+		this.left = left;
+		this.right = right;
+	}
+
+	public char getLeft() {
+		return left;
+	}
+
+	public char getRight() {
+		return right;
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append('{');
-		sb.append(name);
-		sb.append('}');
-	}
-
-	public String getName() {
-		return name;
+		RegexUtil.escape(sb, left, true);
+		sb.append('-');
+		RegexUtil.escape(sb, right, true);
 	}
 
 	@Override
 	public int getLength(RegexContext context) {
-		org.textway.lapg.api.regex.RegexPart regexPart = context.resolvePattern(name);
-		if (regexPart == null) {
-			return -1;
-		}
-		return regexPart.getLength(context);
+		return 1;
 	}
 
 	@Override
 	public void accept(RegexSwitch switch_) {
-		switch_.caseExpand(this);
+		switch_.caseRange(this);
 	}
 }

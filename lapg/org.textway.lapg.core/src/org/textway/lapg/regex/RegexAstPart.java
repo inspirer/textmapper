@@ -15,18 +15,19 @@
  */
 package org.textway.lapg.regex;
 
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-abstract class RegexPart implements org.textway.lapg.api.regex.RegexPart {
+abstract class RegexAstPart implements RegexPart {
 
 	private final TextSource source;
 	private int offset, endoffset;
 
-	public RegexPart(TextSource source, int offset, int endoffset) {
+	public RegexAstPart(TextSource source, int offset, int endoffset) {
 		this.source = source;
 		this.offset = offset;
 		this.endoffset = endoffset;
@@ -44,7 +45,7 @@ abstract class RegexPart implements org.textway.lapg.api.regex.RegexPart {
 		return source;
 	}
 
-	protected void include(RegexPart part) {
+	protected void include(RegexAstPart part) {
 		if (part.offset < this.offset) {
 			this.offset = part.offset;
 		}

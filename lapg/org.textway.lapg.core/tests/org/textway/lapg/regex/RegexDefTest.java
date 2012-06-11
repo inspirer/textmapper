@@ -17,14 +17,6 @@ package org.textway.lapg.regex;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.api.regex.RegexAny;
-import org.textway.lapg.api.regex.RegexChar;
-import org.textway.lapg.api.regex.RegexExpand;
-import org.textway.lapg.api.regex.RegexList;
-import org.textway.lapg.api.regex.RegexOr;
-import org.textway.lapg.api.regex.RegexQuantifier;
-import org.textway.lapg.api.regex.RegexRange;
-import org.textway.lapg.api.regex.RegexSet;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 import java.util.ArrayList;
@@ -94,10 +86,10 @@ public class RegexDefTest {
 
 	@Test
 	public void testUnicodeSet() {
-		org.textway.lapg.api.regex.RegexPart r = checkRegex("[\\w\\p{Ll}]");
-		assertTrue(r instanceof org.textway.lapg.api.regex.RegexSet);
+		RegexPart r = checkRegex("[\\w\\p{Ll}]");
+		assertTrue(r instanceof RegexSet);
 
-		CharacterSet set = ((org.textway.lapg.api.regex.RegexSet) r).getSet();
+		CharacterSet set = ((RegexSet) r).getSet();
 		assertTrue(set.contains('a'));
 		assertTrue(set.contains('_'));
 		assertTrue(set.contains('\u0458'));
@@ -156,29 +148,29 @@ public class RegexDefTest {
 
 
 	private void checkConstantRegex(String regex, String converted, String value) {
-		org.textway.lapg.api.regex.RegexPart regexPart = checkRegex(regex, converted == null ? regex : converted);
+		RegexPart regexPart = checkRegex(regex, converted == null ? regex : converted);
 		assertTrue(regexPart.isConstant());
 		String val = regexPart.getConstantValue();
 		assertEquals(value, val);
 	}
 
-	private org.textway.lapg.api.regex.RegexPart checkRegex(String regex) {
+	private RegexPart checkRegex(String regex) {
 		return checkRegex(regex, regex);
 	}
 
-	private org.textway.lapg.api.regex.RegexPart checkRegex(String regex, String expected) {
-		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+	private RegexPart checkRegex(String regex, String expected) {
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			fail(result.getErrors().get(0).getMessage());
 		}
-		org.textway.lapg.api.regex.RegexPart root = result.getRoot();
+		RegexPart root = result.getRoot();
 		assertNotNull(root);
 		assertEquals(expected, root.toString());
 		return root;
 	}
 
 	private void checkErrors(String regex, String... expectedErrors) {
-		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		assertTrue("no errors :(", result.hasErrors());
 		for (int i = 0; i < Math.max(expectedErrors.length, result.getErrors().size()); i++) {
 			String expected = i < expectedErrors.length ? expectedErrors[i] : null;
@@ -188,11 +180,11 @@ public class RegexDefTest {
 	}
 
 	private void checkVisitor(String regex, String... expectedElements) {
-		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			fail(result.getErrors().get(0).getMessage());
 		}
-		org.textway.lapg.api.regex.RegexPart root = result.getRoot();
+		RegexPart root = result.getRoot();
 		final List<String> actual = new ArrayList<String>();
 		root.accept(new RegexVisitor() {
 			@Override
@@ -211,7 +203,7 @@ public class RegexDefTest {
 			}
 
 			@Override
-			public void visitBefore(org.textway.lapg.api.regex.RegexList c) {
+			public void visitBefore(RegexList c) {
 				actual.add("before: " + c.toString());
 			}
 
@@ -221,12 +213,12 @@ public class RegexDefTest {
 			}
 
 			@Override
-			public void visitBefore(org.textway.lapg.api.regex.RegexOr c) {
+			public void visitBefore(RegexOr c) {
 				actual.add("before: " + c.toString());
 			}
 
 			@Override
-			public void visitBetween(org.textway.lapg.api.regex.RegexOr c) {
+			public void visitBetween(RegexOr c) {
 				actual.add("between: " + c.toString());
 			}
 
@@ -236,7 +228,7 @@ public class RegexDefTest {
 			}
 
 			@Override
-			public void visitBefore(org.textway.lapg.api.regex.RegexQuantifier c) {
+			public void visitBefore(RegexQuantifier c) {
 				actual.add("before: " + c.toString());
 			}
 

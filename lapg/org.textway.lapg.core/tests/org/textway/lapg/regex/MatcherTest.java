@@ -131,6 +131,6 @@ public class MatcherTest {
 	}
 
 	private static RegexContext createEmptyContext() {
-		return RegexFacade.createContext(Collections.<String, org.textway.lapg.api.regex.RegexPart>emptyMap());
+		return RegexFacade.createContext(Collections.<String, RegexPart>emptyMap());
 	}
 }

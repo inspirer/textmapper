@@ -311,6 +311,6 @@ public class RegexpParseTest {
 	}
 
 	private static RegexpCompiler createTestCompiler() {
-		return new RegexpCompiler(RegexFacade.createContext(Collections.<String, org.textway.lapg.api.regex.RegexPart>emptyMap()));
+		return new RegexpCompiler(RegexFacade.createContext(Collections.<String, RegexPart>emptyMap()));
 	}
 }

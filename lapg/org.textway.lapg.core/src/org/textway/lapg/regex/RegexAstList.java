@@ -16,6 +16,8 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexList;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.api.regex.RegexSwitch;
 
 import java.util.ArrayList;
@@ -26,18 +28,18 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexList {
+class RegexAstList extends RegexAstPart implements RegexList {
 
-	private List<RegexPart> elements = new ArrayList<RegexPart>();
+	private List<RegexAstPart> elements = new ArrayList<RegexAstPart>();
 	private boolean inParentheses;
 
-	public RegexList(RegexPart initialPart) {
+	public RegexAstList(RegexAstPart initialPart) {
 		super(initialPart.getInput(), initialPart.getOffset(), initialPart.getEndOffset());
 		elements.add(initialPart);
 		inParentheses = false;
 	}
 
-	public void addElement(RegexPart part) {
+	public void addElement(RegexAstPart part) {
 		if (inParentheses) {
 			throw new IllegalStateException("cannot add elements");
 		}
@@ -45,8 +47,8 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 		include(part);
 	}
 
-	public Collection<org.textway.lapg.api.regex.RegexPart> getElements() {
-		return Collections.<org.textway.lapg.api.regex.RegexPart>unmodifiableCollection(elements);
+	public Collection<RegexPart> getElements() {
+		return Collections.<RegexPart>unmodifiableCollection(elements);
 	}
 
 	public void setInParentheses() {
@@ -59,7 +61,7 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 
 	@Override
 	public boolean isConstant() {
-		for (RegexPart p : elements) {
+		for (RegexAstPart p : elements) {
 			if (!p.isConstant()) {
 				return false;
 			}
@@ -70,7 +72,7 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 	@Override
 	public String getConstantValue() {
 		StringBuilder sb = new StringBuilder();
-		for (RegexPart p : elements) {
+		for (RegexAstPart p : elements) {
 			String current = p.getConstantValue();
 			if (current == null) {
 				return null;
@@ -85,7 +87,7 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 		if (inParentheses) {
 			sb.append('(');
 		}
-		for (RegexPart p : elements) {
+		for (RegexAstPart p : elements) {
 			p.toString(sb);
 		}
 		if (inParentheses) {
@@ -96,7 +98,7 @@ class RegexList extends RegexPart implements org.textway.lapg.api.regex.RegexLis
 	@Override
 	public int getLength(RegexContext context) {
 		int result = 0;
-		for (RegexPart element : elements) {
+		for (RegexAstPart element : elements) {
 			int len = element.getLength(context);
 			if (len == -1) {
 				return -1;

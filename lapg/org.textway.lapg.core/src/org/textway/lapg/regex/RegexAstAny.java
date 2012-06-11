@@ -15,24 +15,32 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.api.regex.CharacterSet;
+import org.textway.lapg.api.regex.RegexAny;
+import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-class RegexCharClass extends RegexSet {
+class RegexAstAny extends RegexAstPart implements RegexAny {
 
-	private final String cl;
-
-	public RegexCharClass(String c, CharacterSet set, TextSource source, int offset, int endoffset) {
-		super(set, null, source, offset, endoffset);
-		this.cl = c;
+	public RegexAstAny(TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append('\\');
-		sb.append(cl.length() == 1 ? cl : "p{" + cl + "}");
+		sb.append('.');
+	}
+
+	@Override
+	public int getLength(RegexContext context) {
+		return 1;
+	}
+
+	@Override
+	public void accept(RegexSwitch switch_) {
+		switch_.caseAny(this);
 	}
 }
