@@ -16,7 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,21 +58,6 @@ class RegexOr extends RegexPart implements org.textway.lapg.api.regex.RegexOr {
 	}
 
 	@Override
-	public void accept(RegexVisitor visitor) {
-		visitor.visitBefore(this);
-		boolean first = true;
-		for (RegexPart element : variants) {
-			if (!first) {
-				visitor.visitBetween(this);
-			} else {
-				first = false;
-			}
-			element.accept(visitor);
-		}
-		visitor.visitAfter(this);
-	}
-
-	@Override
 	public int getLength(RegexContext context) {
 		int result = -1;
 		for (RegexPart variant : variants) {
@@ -83,5 +68,10 @@ class RegexOr extends RegexPart implements org.textway.lapg.api.regex.RegexOr {
 			result = len;
 		}
 		return result;
+	}
+
+	@Override
+	public void accept(RegexSwitch switch_) {
+		switch_.caseOr(this);
 	}
 }

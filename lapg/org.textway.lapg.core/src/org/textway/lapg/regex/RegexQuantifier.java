@@ -16,7 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
@@ -69,13 +69,6 @@ class RegexQuantifier extends RegexPart implements org.textway.lapg.api.regex.Re
 	}
 
 	@Override
-	public void accept(RegexVisitor visitor) {
-		visitor.visitBefore(this);
-		inner.accept(visitor);
-		visitor.visitAfter(this);
-	}
-
-	@Override
 	public int getLength(RegexContext context) {
 		if (min == max && min >= 0) {
 			int length = inner.getLength(context);
@@ -84,5 +77,10 @@ class RegexQuantifier extends RegexPart implements org.textway.lapg.api.regex.Re
 			}
 		}
 		return -1;
+	}
+
+	@Override
+	public void accept(RegexSwitch switch_) {
+		switch_.caseQuantifier(this);
 	}
 }

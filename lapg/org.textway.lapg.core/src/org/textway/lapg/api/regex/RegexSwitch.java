@@ -15,11 +15,44 @@
  */
 package org.textway.lapg.api.regex;
 
-import java.util.Collection;
+/**
+ * evgeny, 6/11/12
+ */
+public class RegexSwitch<T> {
 
-public interface RegexSet extends RegexPart {
+	public T caseAny(RegexAny c) {
+		return null;
+	}
 
-	CharacterSet getSet();
+	public T caseChar(RegexChar c) {
+		return null;
+	}
 
-	Collection<RegexPart> getCharset();
+	public T caseEmpty(RegexEmpty c) {
+		return null;
+	}
+
+	public T caseExpand(RegexExpand c) {
+		return null;
+	}
+
+	public T caseList(RegexList c) {
+		return null;
+	}
+
+	public T caseOr(RegexOr c) {
+		return null;
+	}
+
+	public T caseQuantifier(RegexQuantifier c) {
+		return null;
+	}
+
+	public T caseRange(RegexRange c) {
+		return null;
+	}
+
+	public T caseSet(RegexSet c) {
+		return null;
+	}
 }

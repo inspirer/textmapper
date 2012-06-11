@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.api.regex;
 
-public abstract class RegexVisitor {
+public abstract class RegexVisitor extends RegexSwitch<Void> {
 
 	public abstract void visit(RegexAny c);
 
@@ -45,5 +45,82 @@ public abstract class RegexVisitor {
 	}
 
 	public void visit(RegexEmpty c) {
+	}
+
+	@Override
+	public Void caseAny(RegexAny c) {
+		visit(c);
+		return null;
+	}
+
+	@Override
+	public Void caseChar(RegexChar c) {
+		visit(c);
+		return null;
+	}
+
+	@Override
+	public Void caseEmpty(RegexEmpty c) {
+		visit(c);
+		return null;
+	}
+
+	@Override
+	public Void caseExpand(RegexExpand c) {
+		visit(c);
+		return null;
+	}
+
+	@Override
+	public Void caseList(RegexList c) {
+		visitBefore(c);
+		for (RegexPart element : c.getElements()) {
+			element.accept(this);
+		}
+		visitAfter(c);
+		return null;
+	}
+
+	@Override
+	public Void caseOr(RegexOr c) {
+		visitBefore(c);
+		boolean first = true;
+		for (RegexPart element : c.getVariants()) {
+			if (!first) {
+				visitBetween(c);
+			} else {
+				first = false;
+			}
+			element.accept(this);
+		}
+		visitAfter(c);
+		return null;
+	}
+
+	@Override
+	public Void caseQuantifier(RegexQuantifier c) {
+		visitBefore(c);
+		c.getInner().accept(this);
+		visitAfter(c);
+		return null;
+	}
+
+	@Override
+	public Void caseRange(RegexRange c) {
+		return null;
+	}
+
+	@Override
+	public Void caseSet(RegexSet c) {
+		if (!visit(c)) {
+			return null;
+		}
+
+		if (c.getSet() != null) {
+			for (RegexPart part : c.getCharset()) {
+				part.accept(this);
+			}
+		}
+		return null;
 	}
 }

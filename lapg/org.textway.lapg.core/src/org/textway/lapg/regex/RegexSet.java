@@ -17,9 +17,11 @@ package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.CharacterSet;
 import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,6 +42,10 @@ class RegexSet extends RegexPart implements org.textway.lapg.api.regex.RegexSet 
 		return set;
 	}
 
+	public Collection<org.textway.lapg.api.regex.RegexPart> getCharset() {
+		return Collections.<org.textway.lapg.api.regex.RegexPart>unmodifiableCollection(charset);
+	}
+
 	@Override
 	protected void toString(StringBuilder sb) {
 		sb.append('[');
@@ -57,20 +63,12 @@ class RegexSet extends RegexPart implements org.textway.lapg.api.regex.RegexSet 
 	}
 
 	@Override
-	public void accept(RegexVisitor visitor) {
-		if (!visitor.visit(this)) {
-			return;
-		}
-
-		if (charset != null) {
-			for (RegexPart part : charset) {
-				part.accept(visitor);
-			}
-		}
+	public int getLength(RegexContext context) {
+		return 1;
 	}
 
 	@Override
-	public int getLength(RegexContext context) {
-		return 1;
+	public void accept(RegexSwitch switch_) {
+		switch_.caseSet(this);
 	}
 }

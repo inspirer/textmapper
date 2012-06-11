@@ -16,7 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
@@ -38,11 +38,6 @@ class RegexExpand extends RegexPart implements org.textway.lapg.api.regex.RegexE
 		sb.append('}');
 	}
 
-	@Override
-	public void accept(RegexVisitor visitor) {
-		visitor.visit(this);
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -54,5 +49,10 @@ class RegexExpand extends RegexPart implements org.textway.lapg.api.regex.RegexE
 			return -1;
 		}
 		return regexPart.getLength(context);
+	}
+
+	@Override
+	public void accept(RegexSwitch switch_) {
+		switch_.caseExpand(this);
 	}
 }

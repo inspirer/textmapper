@@ -16,7 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
@@ -49,12 +49,12 @@ class RegexRange extends RegexPart implements org.textway.lapg.api.regex.RegexRa
 	}
 
 	@Override
-	public void accept(RegexVisitor visitor) {
-		visitor.visit(this);
+	public int getLength(RegexContext context) {
+		return 1;
 	}
 
 	@Override
-	public int getLength(RegexContext context) {
-		return 1;
+	public void accept(RegexSwitch switch_) {
+		switch_.caseRange(this);
 	}
 }

@@ -29,5 +29,5 @@ public interface RegexPart {
 	 */
 	int getLength(RegexContext context);
 
-	void accept(RegexVisitor visitor);
+	void accept(RegexSwitch switch_);
 }

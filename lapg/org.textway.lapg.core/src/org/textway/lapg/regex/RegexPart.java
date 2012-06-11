@@ -15,7 +15,7 @@
  */
 package org.textway.lapg.regex;
 
-import org.textway.lapg.api.regex.RegexVisitor;
+import org.textway.lapg.api.regex.RegexSwitch;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
 /**
@@ -70,5 +70,5 @@ public abstract class RegexPart implements org.textway.lapg.api.regex.RegexPart 
 
 	protected abstract void toString(StringBuilder sb);
 
-	public abstract void accept(RegexVisitor visitor);
+	public abstract void accept(RegexSwitch switch_);
 }
