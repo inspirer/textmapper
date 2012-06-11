@@ -22,7 +22,7 @@ import java.util.Arrays;
  * <p/>
  * Effectively stores and merges integer sets (represented as sorted arrays)
  */
-public class IntegerSets {
+final class IntegerSets {
 
 	public int[][] sets = new int[512][];
 

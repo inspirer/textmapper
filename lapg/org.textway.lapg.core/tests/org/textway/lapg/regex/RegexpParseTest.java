@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.regex;
 
 import org.junit.Test;
-import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.*;
-import org.textway.lapg.regex.RegexUtil;
+import org.textway.lapg.lex.RegexInstruction;
+import org.textway.lapg.lex.RegexInstructionKind;
+import org.textway.lapg.lex.RegexpCompiler;
+import org.textway.lapg.lex.RegexpParseException;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 
@@ -305,15 +307,10 @@ public class RegexpParseTest {
 	}
 
 	private static RegexPart parseRegexp(String s) throws RegexpParseException {
-		return RegexMatcher.parse("", s);
+		return RegexFacade.parse("", s);
 	}
 
 	private static RegexpCompiler createTestCompiler() {
-		return new RegexpCompiler(new RegexContext() {
-			@Override
-			public RegexPart resolvePattern(String name) {
-				return null;
-			}
-		});
+		return new RegexpCompiler(RegexFacade.createContext(Collections.<String, org.textway.lapg.api.regex.RegexPart>emptyMap()));
 	}
 }

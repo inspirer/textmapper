@@ -21,6 +21,7 @@ import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
+import org.textway.lapg.regex.RegexFacade;
 
 import java.util.*;
 
@@ -613,12 +614,7 @@ public class LexicalBuilder {
 			RegexPart regex = p.getRegexp();
 			result.put(name, regex);
 		}
-		return new RegexContext() {
-			@Override
-			public RegexPart resolvePattern(String name) {
-				return result.get(name);
-			}
-		};
+		return RegexFacade.createContext(result);
 	}
 
 	private RegexInstruction[] parseRegexp(RegexpCompiler rp, Lexem l) {

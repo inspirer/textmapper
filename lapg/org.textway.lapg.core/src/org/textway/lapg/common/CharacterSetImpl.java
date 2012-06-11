@@ -23,7 +23,7 @@ import java.util.Iterator;
 /**
  * Handles set of unicode characters.
  */
-public class CharacterSetImpl implements CharacterSet {
+public final class CharacterSetImpl implements CharacterSet {
 
 	private final int[] set;
 	private final boolean inverted;
@@ -129,7 +129,7 @@ public class CharacterSetImpl implements CharacterSet {
 	/**
 	 * CharacterSet factory.
 	 */
-	public static class Builder {
+	public static final class Builder {
 
 		private int[] set;
 		private int length;

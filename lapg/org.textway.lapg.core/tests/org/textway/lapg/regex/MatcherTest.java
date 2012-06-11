@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.regex;
 
 import org.junit.Test;
-import org.textway.lapg.lex.RegexMatcher;
+import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.RegexpParseException;
 
+import java.util.Collections;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Gryaznov Evgeny, 5/7/11
@@ -74,7 +77,8 @@ public class MatcherTest {
 
 	@Test
 	public void testIdentifier() throws RegexpParseException {
-		RegexMatcher matcher = new RegexMatcher("id", "[a-zA-Z_][a-zA-Z0-9_]+");
+		RegexPart parsedRegex = RegexFacade.parse("id", "[a-zA-Z_][a-zA-Z0-9_]+");
+		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "aaaa", true);
 		checkMatch(matcher, "aa0aa", true);
 		checkMatch(matcher, "aa0aa ", false);
@@ -83,7 +87,8 @@ public class MatcherTest {
 
 	@Test
 	public void testRegex() throws RegexpParseException {
-		RegexMatcher matcher = new RegexMatcher("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
+		RegexPart parsedRegex = RegexFacade.parse("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
+		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "/aaa/", true);
 		checkMatch(matcher, "/tt\\\\t+/", true);
 		checkMatch(matcher, "//", true);
@@ -99,7 +104,7 @@ public class MatcherTest {
 			String s = "L" + new String(Character.toChars(cp)) + "R";
 			checkMatch("L" + String.format("\\u%04x", cp) + "R", s, true);
 			checkMatch("L[" + String.format("\\u%04x", cp) + "]R", s, true);
-			if(cp < 0xff) {
+			if (cp < 0xff) {
 				checkMatch("L" + String.format("\\x%02x", cp) + "R", s, true);
 				checkMatch("L[" + String.format("\\x%02x", cp) + "]R", s, true);
 			}
@@ -113,7 +118,8 @@ public class MatcherTest {
 
 	private static void checkMatch(String regex, String sample, boolean expected) {
 		try {
-			RegexMatcher matcher = new RegexMatcher("unknown", regex);
+			RegexPart parsedRegex = RegexFacade.parse("unknown", regex);
+			RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 			assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 		} catch (RegexpParseException ex) {
 			fail(ex.getMessage());
@@ -122,5 +128,9 @@ public class MatcherTest {
 
 	private static void checkMatch(RegexMatcher matcher, String sample, boolean expected) {
 		assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
+	}
+
+	private static RegexContext createEmptyContext() {
+		return RegexFacade.createContext(Collections.<String, org.textway.lapg.api.regex.RegexPart>emptyMap());
 	}
 }

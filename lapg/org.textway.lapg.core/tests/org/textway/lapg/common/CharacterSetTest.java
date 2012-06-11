@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textway.lapg.common;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.common.CharacterSetImpl;
 
 import java.util.Iterator;
 

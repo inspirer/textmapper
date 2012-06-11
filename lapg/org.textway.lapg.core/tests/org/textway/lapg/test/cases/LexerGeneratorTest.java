@@ -20,9 +20,9 @@ import org.textway.lapg.api.*;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.lex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.api.TextSourceElement;
+import org.textway.lapg.regex.RegexFacade;
 import org.textway.lapg.test.TestStatus;
 
 import static org.junit.Assert.assertEquals;
@@ -138,7 +138,7 @@ public class LexerGeneratorTest {
 		@Override
 		public RegexPart getRegexp() {
 			try {
-				return RegexMatcher.parse(getSymbol().getName(), regexp);
+				return RegexFacade.parse(getSymbol().getName(), regexp);
 			} catch (RegexpParseException ex) {
 				fail(ex.toString());
 				return null;

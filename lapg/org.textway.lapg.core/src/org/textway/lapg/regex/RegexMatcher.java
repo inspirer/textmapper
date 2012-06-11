@@ -13,56 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
+package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.regex.RegexDefTree;
-import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
-import org.textway.lapg.regex.RegexDefTree.TextSource;
+import org.textway.lapg.api.regex.RegexAny;
+import org.textway.lapg.api.regex.RegexChar;
+import org.textway.lapg.api.regex.RegexExpand;
+import org.textway.lapg.api.regex.RegexList;
+import org.textway.lapg.api.regex.RegexOr;
+import org.textway.lapg.api.regex.RegexPart;
+import org.textway.lapg.api.regex.RegexQuantifier;
+import org.textway.lapg.api.regex.RegexSet;
 
 import java.util.*;
 
 public class RegexMatcher {
 
-	private final RegexPart regex;
+	private final org.textway.lapg.api.regex.RegexPart regex;
 	private State[] states;
 
-	public RegexMatcher(String alias, String regex) throws RegexpParseException {
-		this(parse(alias, regex), Collections.<String, RegexPart>emptyMap());
-	}
-
-	public RegexMatcher(RegexPart regex, Map<String, RegexPart> namedPatterns) {
+	public RegexMatcher(org.textway.lapg.api.regex.RegexPart regex, RegexContext context) {
 		this.regex = regex;
-		compile(namedPatterns);
+		compile(context);
 	}
 
-	private void compile(Map<String, RegexPart> namedPatterns) {
-		RegexpBuilder builder = new RegexpBuilder(namedPatterns);
+	private void compile(RegexContext context) {
+		RegexpBuilder builder = new RegexpBuilder(context);
 		regex.accept(builder);
 		states = builder.getResult();
-	}
-
-	public static RegexPart parse(String alias, String regex) throws RegexpParseException {
-		if (regex.length() == 0) {
-			throw new RegexpParseException("regexp is empty", 0);
-		}
-
-		RegexDefTree<org.textway.lapg.regex.RegexPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
-		if (result.hasErrors()) {
-			RegexDefProblem problem = result.getErrors().get(0);
-			String message = problem.getMessage();
-			if (message.startsWith("syntax error") || message.startsWith("invalid lexem at")) {
-				if (problem.getOffset() >= regex.length()) {
-					message = "regexp is incomplete";
-				} else {
-					message = "regexp has syntax error near `" + regex.substring(problem.getOffset()) + "'";
-				}
-			} else if (message.equals("Unexpected end of input reached")) {
-				message = "unfinished regexp";
-			}
-			throw new RegexpParseException(message, problem.getOffset());
-		}
-		return result.getRoot();
 	}
 
 	public boolean matches(String text) {
@@ -91,12 +69,12 @@ public class RegexMatcher {
 		return current[states.length - 1];
 	}
 
-	private boolean accepts(RegexPart simple, char c) {
-		if (simple instanceof RegexChar) {
-			return c == ((RegexChar) simple).getChar();
-		} else if (simple instanceof RegexSet) {
-			return ((RegexSet) simple).getSet().contains(c);
-		} else if (simple instanceof RegexAny) {
+	private boolean accepts(org.textway.lapg.api.regex.RegexPart simple, char c) {
+		if (simple instanceof org.textway.lapg.api.regex.RegexChar) {
+			return c == ((org.textway.lapg.api.regex.RegexChar) simple).getChar();
+		} else if (simple instanceof org.textway.lapg.api.regex.RegexSet) {
+			return ((org.textway.lapg.api.regex.RegexSet) simple).getSet().contains(c);
+		} else if (simple instanceof org.textway.lapg.api.regex.RegexAny) {
 			return c != '\n';
 		}
 		return false;
@@ -110,7 +88,7 @@ public class RegexMatcher {
 	private static class State {
 		int index;
 		List<Integer> jumps;
-		RegexPart simplePart;   /* any, char, charclass, set */
+		org.textway.lapg.api.regex.RegexPart simplePart;   /* any, char, charclass, set */
 		boolean[] closure;
 
 		void addJump(int target) {
@@ -161,11 +139,11 @@ public class RegexMatcher {
 
 		private List<State> states = new ArrayList<State>();
 		private Stack<StackElement> stack = new Stack<StackElement>();
-		private RegexOr outermostOr;
-		private final Map<String, RegexPart> namedPatterns;
+		private org.textway.lapg.api.regex.RegexOr outermostOr;
+		private final RegexContext context;
 
-		public RegexpBuilder(Map<String, RegexPart> namedPatterns) {
-			this.namedPatterns = namedPatterns;
+		public RegexpBuilder(RegexContext context) {
+			this.context = context;
 		}
 
 		public State[] getResult() {
@@ -196,7 +174,7 @@ public class RegexMatcher {
 			return states;
 		}
 
-		private State yield(RegexPart simplepart) {
+		private State yield(org.textway.lapg.api.regex.RegexPart simplepart) {
 			State s = new State();
 			s.index = states.size();
 			if (simplepart != null) {
@@ -231,7 +209,7 @@ public class RegexMatcher {
 		@Override
 		public void visit(RegexExpand c) {
 			String name = c.getName();
-			RegexPart inner = namedPatterns.get(name);
+			RegexPart inner = context.resolvePattern(name);
 			if (inner == null) {
 				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
 			}
@@ -239,7 +217,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(RegexList c) {
+		public void visitBefore(org.textway.lapg.api.regex.RegexList c) {
 			if (c.isInParentheses()) {
 				stack.push(new StackElement(index()));
 				yield(null);    /* ( */
@@ -255,7 +233,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(RegexOr c) {
+		public void visitBefore(org.textway.lapg.api.regex.RegexOr c) {
 			if (states.size() == 0) {
 				outermostOr = c;
 				stack.push(new StackElement(index()));
@@ -264,7 +242,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBetween(RegexOr c) {
+		public void visitBetween(org.textway.lapg.api.regex.RegexOr c) {
 			stack.peek().addOr(index());
 			states.get(stack.peek().index).addJump(index() + 1);
 			yield(null);    /* | */
@@ -279,7 +257,7 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visitBefore(RegexQuantifier c) {
+		public void visitBefore(org.textway.lapg.api.regex.RegexQuantifier c) {
 			stack.push(new StackElement(index()));
 		}
 

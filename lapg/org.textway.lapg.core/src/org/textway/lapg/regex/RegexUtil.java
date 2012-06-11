@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public class RegexUtil {
+class RegexUtil {
 
 	private static final Pattern QUANTIFIER = Pattern.compile("(\\d+)(,(\\d+)?)?");
 	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");

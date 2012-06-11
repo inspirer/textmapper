@@ -21,7 +21,7 @@ import org.textway.lapg.regex.RegexDefTree.TextSource;
 /**
  * Gryaznov Evgeny, 4/5/11
  */
-public abstract class RegexPart implements org.textway.lapg.api.regex.RegexPart {
+abstract class RegexPart implements org.textway.lapg.api.regex.RegexPart {
 
 	private final TextSource source;
 	private int offset, endoffset;

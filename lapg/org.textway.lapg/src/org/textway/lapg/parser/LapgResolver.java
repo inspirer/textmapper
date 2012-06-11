@@ -18,11 +18,12 @@ package org.textway.lapg.parser;
 import org.textway.lapg.api.*;
 import org.textway.lapg.api.builder.GrammarBuilder;
 import org.textway.lapg.api.builder.RuleBuilder;
+import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.builder.GrammarFacade;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.gen.TemplateStaticMethods;
-import org.textway.lapg.lex.RegexMatcher;
+import org.textway.lapg.regex.RegexMatcher;
 import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
@@ -30,6 +31,7 @@ import org.textway.lapg.parser.LapgLexer.Lexems;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.lapg.parser.ast.*;
+import org.textway.lapg.regex.RegexFacade;
 import org.textway.templates.api.types.IClass;
 import org.textway.templates.api.types.IFeature;
 import org.textway.templates.api.types.IType;
@@ -255,7 +257,7 @@ public class LapgResolver {
 				Symbol s = create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
 				RegexPart regex;
 				try {
-					regex = RegexMatcher.parse(s.getName(), lexeme.getRegexp().getRegexp());
+					regex = RegexFacade.parse(s.getName(), lexeme.getRegexp().getRegexp());
 				} catch (RegexpParseException e) {
 					error(lexeme.getRegexp(), e.getMessage());
 					continue;
@@ -272,7 +274,7 @@ public class LapgResolver {
 				String name = astpattern.getName();
 				RegexPart regex;
 				try {
-					regex = RegexMatcher.parse(name, astpattern.getRegexp().getRegexp());
+					regex = RegexFacade.parse(name, astpattern.getRegexp().getRegexp());
 				} catch (RegexpParseException e) {
 					error(astpattern.getRegexp(), e.getMessage());
 					continue;
@@ -288,9 +290,10 @@ public class LapgResolver {
 
 		// Step 2. Process other lexems. Match soft lexems with their classes.
 
+		RegexContext context = RegexFacade.createContext(namedPatternsMap);
 		Map<Lexem, RegexMatcher> classMatchers = new LinkedHashMap<Lexem, RegexMatcher>();
 		for (Lexem clLexem : classLexems) {
-			classMatchers.put(clLexem, new RegexMatcher(clLexem.getRegexp(), namedPatternsMap));
+			classMatchers.put(clLexem, new RegexMatcher(clLexem.getRegexp(), context));
 		}
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
@@ -305,7 +308,7 @@ public class LapgResolver {
 					String name = lexeme.getName().getName();
 					RegexPart regex;
 					try {
-						regex = RegexMatcher.parse(name, lexeme.getRegexp().getRegexp());
+						regex = RegexFacade.parse(name, lexeme.getRegexp().getRegexp());
 					} catch (RegexpParseException e) {
 						error(lexeme.getRegexp(), e.getMessage());
 						continue;
