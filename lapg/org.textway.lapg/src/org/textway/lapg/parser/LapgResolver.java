@@ -24,7 +24,7 @@ import org.textway.lapg.builder.GrammarFacade;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.gen.TemplateStaticMethods;
 import org.textway.lapg.regex.RegexMatcher;
-import org.textway.lapg.lex.RegexpParseException;
+import org.textway.lapg.regex.RegexParseException;
 import org.textway.lapg.parser.LapgLexer.ErrorReporter;
 import org.textway.lapg.parser.LapgLexer.LapgSymbol;
 import org.textway.lapg.parser.LapgLexer.Lexems;
@@ -258,7 +258,7 @@ public class LapgResolver {
 				RegexPart regex;
 				try {
 					regex = RegexFacade.parse(s.getName(), lexeme.getRegexp().getRegexp());
-				} catch (RegexpParseException e) {
+				} catch (RegexParseException e) {
 					error(lexeme.getRegexp(), e.getMessage());
 					continue;
 				}
@@ -275,7 +275,7 @@ public class LapgResolver {
 				RegexPart regex;
 				try {
 					regex = RegexFacade.parse(name, astpattern.getRegexp().getRegexp());
-				} catch (RegexpParseException e) {
+				} catch (RegexParseException e) {
 					error(astpattern.getRegexp(), e.getMessage());
 					continue;
 				}
@@ -309,7 +309,7 @@ public class LapgResolver {
 					RegexPart regex;
 					try {
 						regex = RegexFacade.parse(name, lexeme.getRegexp().getRegexp());
-					} catch (RegexpParseException e) {
+					} catch (RegexParseException e) {
 						error(lexeme.getRegexp(), e.getMessage());
 						continue;
 					}

@@ -20,7 +20,6 @@ import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.RegexInstruction;
 import org.textway.lapg.lex.RegexInstructionKind;
 import org.textway.lapg.lex.RegexpCompiler;
-import org.textway.lapg.lex.RegexpParseException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +47,7 @@ public class RegexpParseTest {
 			for (int i = 20; i < 2020; i++) {
 				rp.compile(i, parseRegexp("[\\u" + toHex4(i * 10 + 3) + "-\\u" + toHex4(i * 10 + 8) + "]"));
 			}
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
 
@@ -61,14 +60,14 @@ public class RegexpParseTest {
 		try {
 			rp.compile(0, parseRegexp("Eea{1,2}"));
 			fail("no exception");
-		} catch (RegexpParseException e) {
+		} catch (RegexParseException e) {
 			assertEquals("unsupported quantifier: a{1,2}", e.getMessage());
 		}
 
 		try {
 			rp.compile(1, parseRegexp("Eea{bbi}"));
 			fail("no exception");
-		} catch (RegexpParseException e) {
+		} catch (RegexParseException e) {
 			assertEquals("cannot expand {bbi}, not found", e.getMessage());
 		}
 	}
@@ -79,7 +78,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(0, parseRegexp("'[^'\n]+'"));
 			rp.compile(1, parseRegexp("%"));
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
 		assertEquals("[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", Arrays.toString(rp.getInputSymbols().getCharacterMap()));
@@ -114,7 +113,7 @@ public class RegexpParseTest {
 			assertEquals("[3, 4, 6]", Arrays.toString(p[1]));
 			assertEquals("[5]", Arrays.toString(p[2]));
 			assertEquals("[6]", Arrays.toString(p[3]));
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
 	}
@@ -124,7 +123,7 @@ public class RegexpParseTest {
 		RegexpCompiler rp = createTestCompiler();
 		try {
 			rp.compile(0, parseRegexp("[\\u5151-\\u5252][\\u1000-\\u2000]"));
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			fail("parse failed: " + ex.getMessage());
 		}
 		int[] expected = new int[0x8000];
@@ -206,7 +205,7 @@ public class RegexpParseTest {
 					new RegexInstruction(RegexInstructionKind.Done, 0),
 			}, result);
 
-		} catch (RegexpParseException e) {
+		} catch (RegexParseException e) {
 			fail(e.toString());
 		}
 
@@ -218,7 +217,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(0, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(29, ex.getErrorOffset());
 		}
@@ -226,7 +225,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(1, parseRegexp("[\\x5151-\\x5252][\\x1000-\\x2000]]"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp has syntax error near `]'", ex.getMessage());
 			assertEquals(30, ex.getErrorOffset());
 		}
@@ -234,7 +233,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(2, parseRegexp("[\\x5151]]-\\x5252]][\\x1000-\\x2000"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp has syntax error near `]-\\x5252]][\\x1000-\\x2000'", ex.getMessage());
 			assertEquals(8, ex.getErrorOffset());
 		}
@@ -242,7 +241,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(3, parseRegexp(""));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp is empty", ex.getMessage());
 			assertEquals(0, ex.getErrorOffset());
 		}
@@ -250,7 +249,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(4, parseRegexp("(abc"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp is incomplete", ex.getMessage());
 			assertEquals(4, ex.getErrorOffset());
 		}
@@ -258,7 +257,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(5, parseRegexp("(abc))xyz"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp has syntax error near `)xyz'", ex.getMessage());
 			assertEquals(5, ex.getErrorOffset());
 		}
@@ -266,7 +265,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(6, parseRegexp("((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((abc))"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp is incomplete", ex.getMessage());
 			assertEquals(135, ex.getErrorOffset());
 		}
@@ -274,7 +273,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(7, parseRegexp("aaa\\"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
@@ -282,7 +281,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(8, parseRegexp("aaa\\u4a5!zzz"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("regexp has syntax error near `\\u4a5!zzz'", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
@@ -290,7 +289,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(9, parseRegexp("aaa\\u4a"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		}
@@ -298,7 +297,7 @@ public class RegexpParseTest {
 		try {
 			rp.compile(9, parseRegexp("aaa\\00"));
 			fail("no exception");
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			assertEquals("unfinished regexp", ex.getMessage());
 			assertEquals(3, ex.getErrorOffset());
 		} catch (Exception ex) {
@@ -306,7 +305,7 @@ public class RegexpParseTest {
 		}
 	}
 
-	private static RegexPart parseRegexp(String s) throws RegexpParseException {
+	private static RegexPart parseRegexp(String s) throws RegexParseException {
 		return RegexFacade.parse("", s);
 	}
 

@@ -20,7 +20,7 @@ import org.textway.lapg.api.*;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.lex.RegexpParseException;
+import org.textway.lapg.regex.RegexParseException;
 import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.regex.RegexFacade;
 import org.textway.lapg.test.TestStatus;
@@ -139,7 +139,7 @@ public class LexerGeneratorTest {
 		public RegexPart getRegexp() {
 			try {
 				return RegexFacade.parse(getSymbol().getName(), regexp);
-			} catch (RegexpParseException ex) {
+			} catch (RegexParseException ex) {
 				fail(ex.toString());
 				return null;
 			}

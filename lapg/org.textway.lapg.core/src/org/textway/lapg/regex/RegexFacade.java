@@ -17,7 +17,6 @@ package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.RegexpParseException;
 import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
@@ -37,9 +36,9 @@ public class RegexFacade {
 		};
 	}
 
-	public static RegexPart parse(String alias, String regex) throws RegexpParseException {
+	public static RegexPart parse(String alias, String regex) throws RegexParseException {
 		if (regex.length() == 0) {
-			throw new RegexpParseException("regexp is empty", 0);
+			throw new RegexParseException("regexp is empty", 0);
 		}
 
 		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
@@ -55,7 +54,7 @@ public class RegexFacade {
 			} else if (message.equals("Unexpected end of input reached")) {
 				message = "unfinished regexp";
 			}
-			throw new RegexpParseException(message, problem.getOffset());
+			throw new RegexParseException(message, problem.getOffset());
 		}
 		return result.getRoot();
 	}

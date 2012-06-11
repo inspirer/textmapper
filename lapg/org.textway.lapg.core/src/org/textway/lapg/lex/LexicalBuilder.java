@@ -22,6 +22,7 @@ import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.regex.RegexFacade;
+import org.textway.lapg.regex.RegexParseException;
 
 import java.util.*;
 
@@ -622,7 +623,7 @@ public class LexicalBuilder {
 			RegexPart parsedRegex = l.getRegexp();
 			return rp.compile(l.getIndex(), parsedRegex);
 
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
 			return null;
 		}

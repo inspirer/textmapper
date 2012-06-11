@@ -16,6 +16,7 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
+import org.textway.lapg.regex.RegexParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +45,13 @@ public class RegexpCompiler {
 	/**
 	 * @return Engine representation of regular expression
 	 */
-	public RegexInstruction[] compile(int number, RegexPart regex) throws RegexpParseException {
+	public RegexInstruction[] compile(int number, RegexPart regex) throws RegexParseException {
 		RegexpBuilder builder = new RegexpBuilder();
 		result.clear();
 		try {
 			regex.accept(builder);
 		} catch (IllegalArgumentException ex) {
-			throw new RegexpParseException(ex.getMessage(), 0);
+			throw new RegexParseException(ex.getMessage(), 0);
 		}
 
 		builder.yield(RegexInstructionKind.Done, number);

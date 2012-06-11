@@ -18,7 +18,6 @@ package org.textway.lapg.regex;
 import org.junit.Test;
 import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.RegexpParseException;
 
 import java.util.Collections;
 import java.util.regex.Pattern;
@@ -32,7 +31,7 @@ import static org.junit.Assert.fail;
 public class MatcherTest {
 
 	@Test
-	public void testSimple() throws RegexpParseException {
+	public void testSimple() throws RegexParseException {
 		checkMatch("axy", "ayy", false);
 		checkMatch("axy", "axy", true);
 		checkMatch("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz", true);
@@ -51,7 +50,7 @@ public class MatcherTest {
 	}
 
 	@Test
-	public void testSpecialChars() throws RegexpParseException {
+	public void testSpecialChars() throws RegexParseException {
 		checkMatch("\\a", "\\a", false);
 		checkMatch("\\a", "\007", true);
 		checkMatch("\\b", "\b", true);
@@ -76,7 +75,7 @@ public class MatcherTest {
 	}
 
 	@Test
-	public void testIdentifier() throws RegexpParseException {
+	public void testIdentifier() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("id", "[a-zA-Z_][a-zA-Z0-9_]+");
 		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "aaaa", true);
@@ -86,7 +85,7 @@ public class MatcherTest {
 	}
 
 	@Test
-	public void testRegex() throws RegexpParseException {
+	public void testRegex() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
 		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "/aaa/", true);
@@ -121,7 +120,7 @@ public class MatcherTest {
 			RegexPart parsedRegex = RegexFacade.parse("unknown", regex);
 			RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
 			assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
-		} catch (RegexpParseException ex) {
+		} catch (RegexParseException ex) {
 			fail(ex.getMessage());
 		}
 	}
