@@ -73,7 +73,7 @@ class RegexAstOr extends RegexAstPart implements RegexOr {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseOr(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseOr(this);
 	}
 }

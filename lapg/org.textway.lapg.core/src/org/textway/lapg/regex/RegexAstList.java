@@ -109,7 +109,7 @@ class RegexAstList extends RegexAstPart implements RegexList {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseList(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseList(this);
 	}
 }

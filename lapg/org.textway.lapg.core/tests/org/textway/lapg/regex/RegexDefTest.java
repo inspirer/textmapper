@@ -19,9 +19,6 @@ import org.junit.Test;
 import org.textway.lapg.api.regex.*;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.*;
 
 /**
@@ -123,29 +120,43 @@ public class RegexDefTest {
 	}
 
 	@Test
-	public void testVisitor1() {
-		checkVisitor("(a|[a-z]+){name}+a{9,10}\\\\.",
-				"before: (a|[a-z]+){name}+a{9,10}\\\\.",
-				"before: (a|[a-z]+)",
-				"before: a|[a-z]+",
-				"a",
-				"between: a|[a-z]+",
-				"before: [a-z]+",
-				"[a-z]",
-				"after: [a-z]+",
-				"after: a|[a-z]+",
-				"after: (a|[a-z]+)",
-				"before: {name}+",
-				"{name}",
-				"after: {name}+",
-				"before: a{9,10}",
-				"a",
-				"after: a{9,10}",
-				"\\\\",
-				".",
-				"after: (a|[a-z]+){name}+a{9,10}\\\\.");
+	public void testSwitch1() {
+		checkParserViaSwitch("(a|[a-z]+){name}+a{9,10}\\\\.",
+				"list () [\n" +
+						"\tlist (in paren) [\n" +
+						"\t\tor [\n" +
+						"\t\t\ta\n" +
+						"\t\t\tquantifier {1,-1} [\n" +
+						"\t\t\t\t[a-z]\n" +
+						"\t\t\t]\n" +
+						"\t\t]\n" +
+						"\t]\n" +
+						"\tquantifier {1,-1} [\n" +
+						"\t\t{name}\n" +
+						"\t]\n" +
+						"\tquantifier {9,10} [\n" +
+						"\t\ta\n" +
+						"\t]\n" +
+						"\t\\\\\n" +
+						"\t.\n" +
+						"]\n");
 	}
 
+	@Test
+	public void testSwitch2() {
+		checkParserViaSwitch("(a|)++",
+				"list () [\n" +
+						"\tquantifier {1,-1} [\n" +
+						"\t\tlist (in paren) [\n" +
+						"\t\t\tor [\n" +
+						"\t\t\t\ta\n" +
+						"\t\t\t\t<empty>\n" +
+						"\t\t\t]\n" +
+						"\t\t]\n" +
+						"\t]\n" +
+						"\t\\+\n" +
+						"]\n");
+	}
 
 	private void checkConstantRegex(String regex, String converted, String value) {
 		RegexPart regexPart = checkRegex(regex, converted == null ? regex : converted);
@@ -179,80 +190,85 @@ public class RegexDefTest {
 		}
 	}
 
-	private void checkVisitor(String regex, String... expectedElements) {
+	private void checkParserViaSwitch(String regex, String expected) {
 		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
 		if (result.hasErrors()) {
 			fail(result.getErrors().get(0).getMessage());
 		}
 		RegexPart root = result.getRoot();
-		final List<String> actual = new ArrayList<String>();
-		root.accept(new RegexVisitor() {
+		String actual = root.accept(new RegexSwitch<String>() {
 			@Override
-			public void visit(RegexAny c) {
-				actual.add(c.toString());
+			public String caseAny(RegexAny c) {
+				return c.toString();
 			}
 
 			@Override
-			public void visit(RegexChar c) {
-				actual.add(c.toString());
+			public String caseChar(RegexChar c) {
+				return c.toString();
 			}
 
 			@Override
-			public void visit(RegexExpand c) {
-				actual.add(c.toString());
+			public String caseExpand(RegexExpand c) {
+				return c.toString();
 			}
 
 			@Override
-			public void visitBefore(RegexList c) {
-				actual.add("before: " + c.toString());
+			public String caseList(RegexList c) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("list (").append(c.isInParentheses() ? "in paren" : "").append(") [\n");
+				for (RegexPart regexPart : c.getElements()) {
+					String s = regexPart.accept(this);
+					for (String line : s.split("\n")) {
+						sb.append('\t').append(line).append('\n');
+					}
+				}
+				sb.append("]\n");
+				return sb.toString();
 			}
 
 			@Override
-			public void visitAfter(RegexList c) {
-				actual.add("after: " + c.toString());
+			public String caseOr(RegexOr c) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("or [\n");
+				for (RegexPart regexPart : c.getVariants()) {
+					String s = regexPart.accept(this);
+					for (String line : s.split("\n")) {
+						sb.append('\t').append(line).append('\n');
+					}
+				}
+				sb.append("]\n");
+				return sb.toString();
 			}
 
 			@Override
-			public void visitBefore(RegexOr c) {
-				actual.add("before: " + c.toString());
+			public String caseQuantifier(RegexQuantifier c) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("quantifier {" + c.getMin() + "," + c.getMax() + "} [\n");
+				String s = c.getInner().accept(this);
+				for (String line : s.split("\n")) {
+					sb.append('\t').append(line).append('\n');
+				}
+				sb.append("]\n");
+				return sb.toString();
 			}
 
 			@Override
-			public void visitBetween(RegexOr c) {
-				actual.add("between: " + c.toString());
+			public String caseSet(RegexSet c) {
+				return c.toString();
 			}
 
 			@Override
-			public void visitAfter(RegexOr c) {
-				actual.add("after: " + c.toString());
+			public String caseEmpty(RegexEmpty c) {
+				return "<empty>";
 			}
 
 			@Override
-			public void visitBefore(RegexQuantifier c) {
-				actual.add("before: " + c.toString());
-			}
-
-			@Override
-			public void visitAfter(RegexQuantifier c) {
-				actual.add("after: " + c.toString());
-			}
-
-			@Override
-			public boolean visit(RegexSet c) {
-				actual.add(c.toString());
-				return false;
-			}
-
-			@Override
-			public void visit(RegexRange c) {
+			public String caseRange(RegexRange c) {
 				fail();
+				return null;
 			}
 		});
-		for (int i = 0; i < Math.max(expectedElements.length, actual.size()); i++) {
-			String expected = i < expectedElements.length ? expectedElements[i] : null;
-			String act = i < actual.size() ? actual.get(i) : null;
-			assertEquals(expected, act);
-		}
+		assertEquals(expected, actual);
 	}
 }
 

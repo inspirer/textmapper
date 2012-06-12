@@ -71,5 +71,5 @@ abstract class RegexAstPart implements RegexPart {
 
 	protected abstract void toString(StringBuilder sb);
 
-	public abstract void accept(RegexSwitch switch_);
+	public abstract <T> T accept(RegexSwitch<T> switch_);
 }

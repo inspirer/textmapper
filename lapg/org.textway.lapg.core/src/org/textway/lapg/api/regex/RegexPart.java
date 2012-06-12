@@ -29,5 +29,5 @@ public interface RegexPart {
 	 */
 	int getLength(RegexContext context);
 
-	void accept(RegexSwitch switch_);
+	<T> T accept(RegexSwitch<T> switch_);
 }

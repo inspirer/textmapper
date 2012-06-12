@@ -66,7 +66,7 @@ class RegexAstSet extends RegexAstPart implements RegexSet {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseSet(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseSet(this);
 	}
 }

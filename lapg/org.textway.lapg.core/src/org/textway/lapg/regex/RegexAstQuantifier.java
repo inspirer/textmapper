@@ -81,7 +81,7 @@ class RegexAstQuantifier extends RegexAstPart implements RegexQuantifier {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseQuantifier(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseQuantifier(this);
 	}
 }

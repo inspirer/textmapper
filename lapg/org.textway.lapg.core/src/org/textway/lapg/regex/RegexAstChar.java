@@ -57,7 +57,7 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseChar(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseChar(this);
 	}
 }

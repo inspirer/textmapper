@@ -49,7 +49,7 @@ class RegexAstEmpty extends RegexAstPart implements RegexEmpty {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseEmpty(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseEmpty(this);
 	}
 }

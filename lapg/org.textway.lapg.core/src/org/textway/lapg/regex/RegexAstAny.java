@@ -40,7 +40,7 @@ class RegexAstAny extends RegexAstPart implements RegexAny {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseAny(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseAny(this);
 	}
 }

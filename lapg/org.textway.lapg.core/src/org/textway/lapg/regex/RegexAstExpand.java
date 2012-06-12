@@ -54,7 +54,7 @@ class RegexAstExpand extends RegexAstPart implements RegexExpand {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseExpand(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseExpand(this);
 	}
 }

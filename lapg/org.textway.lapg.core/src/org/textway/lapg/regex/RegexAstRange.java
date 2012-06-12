@@ -55,7 +55,7 @@ class RegexAstRange extends RegexAstPart implements RegexRange {
 	}
 
 	@Override
-	public void accept(RegexSwitch switch_) {
-		switch_.caseRange(this);
+	public <T> T accept(RegexSwitch<T> switch_) {
+		return switch_.caseRange(this);
 	}
 }
