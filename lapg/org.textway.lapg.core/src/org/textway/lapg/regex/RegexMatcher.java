@@ -127,11 +127,10 @@ public class RegexMatcher {
 		}
 	}
 
-	private static class RegexpBuilder extends RegexVisitor {
+	private static class RegexpBuilder extends RegexSwitch<Void> {
 
 		private List<State> states = new ArrayList<State>();
 		private Stack<StackElement> stack = new Stack<StackElement>();
-		private RegexOr outermostOr;
 		private final RegexContext context;
 
 		public RegexpBuilder(RegexContext context) {
@@ -183,78 +182,80 @@ public class RegexMatcher {
 		}
 
 		@Override
-		public void visit(RegexAny c) {
+		public Void caseAny(RegexAny c) {
 			yield(c);
+			return null;
 		}
 
 		@Override
-		public void visit(RegexChar c) {
+		public Void caseChar(RegexChar c) {
 			yield(c);
+			return null;
 		}
 
 		@Override
-		public boolean visit(RegexSet c) {
+		public Void caseSet(RegexSet c) {
 			yield(c);
-			return false;
+			return null;
 		}
 
 		@Override
-		public void visit(RegexExpand c) {
+		public Void caseExpand(RegexExpand c) {
 			String name = c.getName();
 			RegexPart inner = context.resolvePattern(name);
 			if (inner == null) {
 				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
 			}
 			inner.accept(this);
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexList c) {
+		public Void caseList(RegexList c) {
 			if (c.isInParentheses()) {
 				stack.push(new StackElement(index()));
 				yield(null);    /* ( */
 			}
-		}
-
-		@Override
-		public void visitAfter(RegexList c) {
+			for (RegexPart e : c.getElements()) {
+				e.accept(this);
+			}
 			if (c.isInParentheses()) {
 				yield(null);    /* ) */
 				stack.pop().done(states);
 			}
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexOr c) {
-			if (states.size() == 0) {
-				outermostOr = c;
+		public Void caseOr(RegexOr c) {
+			boolean isOutermost = states.size() == 0;
+			if (isOutermost) {
 				stack.push(new StackElement(index()));
 				yield(null);    /* ( */
 			}
-		}
 
-		@Override
-		public void visitBetween(RegexOr c) {
-			stack.peek().addOr(index());
-			states.get(stack.peek().index).addJump(index() + 1);
-			yield(null);    /* | */
-		}
-
-		@Override
-		public void visitAfter(RegexOr c) {
-			if (outermostOr == c) {
+			boolean first = true;
+			for (RegexPart element : c.getVariants()) {
+				if (!first) {
+					stack.peek().addOr(index());
+					states.get(stack.peek().index).addJump(index() + 1);
+					yield(null);    /* | */
+				} else {
+					first = false;
+				}
+				element.accept(this);
+			}
+			if (isOutermost) {
 				yield(null);    /* ) */
 				stack.pop().done(states);
 			}
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexQuantifier c) {
+		public Void caseQuantifier(RegexQuantifier c) {
 			stack.push(new StackElement(index()));
-		}
-
-		@Override
-		public void visitAfter(RegexQuantifier c) {
+			c.getInner().accept(this);
 			int start = stack.pop().index;
 			if (c.getMin() == 0 && c.getMax() == 1) {
 				states.get(start).addJump(index());
@@ -268,6 +269,7 @@ public class RegexMatcher {
 			} else {
 				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
 			}
+			return null;
 		}
 	}
 }

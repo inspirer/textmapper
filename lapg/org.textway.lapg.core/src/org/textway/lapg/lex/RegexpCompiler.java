@@ -20,7 +20,6 @@ import org.textway.lapg.regex.RegexParseException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 /**
  * Gryaznov Evgeny, 4/5/11
@@ -33,12 +32,10 @@ public class RegexpCompiler {
 
 	// temporary variables
 	private final List<RegexInstruction> result;
-	private final Stack<Integer> stack;
 
 	public RegexpCompiler(RegexContext context) {
 		this.context = context;
 		this.result = new ArrayList<RegexInstruction>(256);
-		this.stack = new Stack<Integer>();
 		this.inputSymbols = new LexerInputSymbols();
 	}
 
@@ -64,9 +61,7 @@ public class RegexpCompiler {
 		return inputSymbols;
 	}
 
-	private class RegexpBuilder extends RegexVisitor {
-
-		RegexOr outermostOr;
+	private class RegexpBuilder extends RegexSwitch<Void> {
 
 		public RegexpBuilder() {
 		}
@@ -80,70 +75,70 @@ public class RegexpCompiler {
 		}
 
 		@Override
-		public void visit(RegexAny c) {
+		public Void caseAny(RegexAny c) {
 			inputSymbols.addCharacter('\n');
 			yield(RegexInstructionKind.Any, 0);
+			return null;
 		}
 
 		@Override
-		public void visit(RegexChar c) {
+		public Void caseChar(RegexChar c) {
 			yield(RegexInstructionKind.Symbol, inputSymbols.addCharacter(c.getChar()));
+			return null;
 		}
 
 		@Override
-		public void visit(RegexExpand c) {
+		public Void caseExpand(RegexExpand c) {
 			String name = c.getName();
 			RegexPart inner = context.resolvePattern(name);
 			if (inner == null) {
 				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
 			}
 			inner.accept(this);
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexList c) {
+		public Void caseList(RegexList c) {
+			int start = getLength();
 			if (c.isInParentheses()) {
-				stack.push(getLength());
 				yield(RegexInstructionKind.LeftParen, 0);
 			}
-		}
-
-		@Override
-		public void visitAfter(RegexList c) {
+			for (RegexPart e : c.getElements()) {
+				e.accept(this);
+			}
 			if (c.isInParentheses()) {
-				Integer left = stack.pop();
-				result.set(left, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
+				result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
 				yield(RegexInstructionKind.RightParen, 0);
 			}
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexOr c) {
-			if (getLength() == 0) {
-				outermostOr = c;
+		public Void caseOr(RegexOr c) {
+			boolean isOutermost = getLength() == 0;
+			if (isOutermost) {
 				yield(RegexInstructionKind.LeftParen, 0);
 			}
-		}
-
-		@Override
-		public void visitBetween(RegexOr c) {
-			yield(RegexInstructionKind.Or, 0);
-		}
-
-		@Override
-		public void visitAfter(RegexOr c) {
-			if (outermostOr == c) {
+			boolean first = true;
+			for (RegexPart element : c.getVariants()) {
+				if (!first) {
+					yield(RegexInstructionKind.Or, 0);
+				} else {
+					first = false;
+				}
+				element.accept(this);
+			}
+			if (isOutermost) {
 				result.set(0, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
 				yield(RegexInstructionKind.RightParen, 0);
 			}
+			return null;
 		}
 
 		@Override
-		public void visitBefore(RegexQuantifier c) {
-		}
-
-		@Override
-		public void visitAfter(RegexQuantifier c) {
+		public Void caseQuantifier(RegexQuantifier c) {
+			c.getInner().accept(this);
 			if (c.getMin() == 0 && c.getMax() == 1) {
 				yield(RegexInstructionKind.Optional, 0);
 			} else if (c.getMin() == 0 && c.getMax() == -1) {
@@ -153,13 +148,13 @@ public class RegexpCompiler {
 			} else {
 				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
 			}
+			return null;
 		}
 
 		@Override
-		public boolean visit(RegexSet c) {
+		public Void caseSet(RegexSet c) {
 			yield(RegexInstructionKind.Set, inputSymbols.addSet(c.getSet()));
-			return false;
+			return null;
 		}
 	}
-
 }
