@@ -23,10 +23,12 @@ public interface ParserData {
 	Symbol[] getSymbols();
 
 	int getRules();
+
 	int getNsyms();
+
 	int getNterms();
+
 	int getStatesCount();
-	int getErrorToken();
 
 	short[] getSymGoto();
 

@@ -24,14 +24,14 @@ import org.textway.lapg.api.Symbol;
 class ParserTables implements ParserData {
 
 	private Symbol[] sym;
-	private int rules, nsyms, nterms, nstates, errorn;
+	private int rules, nsyms, nterms, nstates;
 	private int[] rleft, rlen;
 	private short[] sym_goto, sym_from, sym_to, action_table;
 	private int[] action_index;
 	private int[] final_states;
 
 	ParserTables(Symbol[] sym,
-				 int rules, int nsyms, int nterms, int nstates, int errorn,
+				 int rules, int nsyms, int nterms, int nstates,
 				 int[] rleft, int[] rlen,
 				 short[] sym_goto, short[] sym_from, short[] sym_to,
 				 short[] action_table, int[] action_index, int[] final_states) {
@@ -40,7 +40,6 @@ class ParserTables implements ParserData {
 		this.nsyms = nsyms;
 		this.nterms = nterms;
 		this.nstates = nstates;
-		this.errorn = errorn;
 		this.rleft = rleft;
 		this.rlen = rlen;
 		this.sym_goto = sym_goto;
@@ -78,11 +77,6 @@ class ParserTables implements ParserData {
 	@Override
 	public int getStatesCount() {
 		return nstates;
-	}
-
-	@Override
-	public int getErrorToken() {
-		return errorn;
 	}
 
 	@Override
