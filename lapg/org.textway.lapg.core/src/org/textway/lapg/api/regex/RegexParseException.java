@@ -13,38 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
+package org.textway.lapg.api.regex;
 
-import org.textway.lapg.api.LexerData;
+public class RegexParseException extends Exception {
+	private static final long serialVersionUID = -8052552834958196703L;
 
-/**
- * Representation of generated lexer tables.
- */
-class LexerTables implements LexerData {
+	private final int errorOffset;
 
-	private final int nchars;
-	private final int[] char2no, groupset, change;
-
-	LexerTables(int nchars, int[] char2no, int[] groupset, int[] change) {
-		this.nchars = nchars;
-		this.char2no = char2no;
-		this.groupset = groupset;
-		this.change = change;
+	public RegexParseException(String message, int offset) {
+		super(message);
+		this.errorOffset = offset;
 	}
 
-	public int getNchars() {
-		return nchars;
-	}
-
-	public int[] getChar2no() {
-		return char2no;
-	}
-
-	public int[] getGroupset() {
-		return groupset;
-	}
-
-	public int[] getChange() {
-		return change;
+	public int getErrorOffset() {
+		return errorOffset;
 	}
 }

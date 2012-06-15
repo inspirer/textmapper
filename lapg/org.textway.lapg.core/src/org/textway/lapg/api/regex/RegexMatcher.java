@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textway.lapg.api.regex;
 
-public class RegexParseException extends Exception {
-	private static final long serialVersionUID = -8052552834958196703L;
+/**
+ * Gryaznov Evgeny, 6/13/12
+ */
+public interface RegexMatcher {
 
-	private final int errorOffset;
-
-	public RegexParseException(String message, int offset) {
-		super(message);
-		this.errorOffset = offset;
-	}
-
-	public int getErrorOffset() {
-		return errorOffset;
-	}
+	boolean matches(String text);
 }

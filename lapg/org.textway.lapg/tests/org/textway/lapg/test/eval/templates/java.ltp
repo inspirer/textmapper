@@ -36,16 +36,16 @@ ${template parserCtor-}
 
 	private final boolean debugSyntax;
 
-	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textway.lapg.lalr.@ParserTables tables, org.textway.lapg.api.@Grammar grammar, boolean debugSyntax) {
+	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textway.lapg.api.@ParserData tables, org.textway.lapg.api.@Grammar grammar, boolean debugSyntax) {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		this.lapg_action = tables.action_index;
-		this.lapg_lalr = tables.action_table;
-		this.lapg_sym_goto = tables.sym_goto;
-		this.lapg_sym_to = tables.sym_to;
-		this.lapg_sym_from = tables.sym_from;
+		this.lapg_action = tables.getAction();
+		this.lapg_lalr = tables.getLalr();
+		this.lapg_sym_goto = tables.getSymGoto();
+		this.lapg_sym_to = tables.getSymTo();
+		this.lapg_sym_from = tables.getSymFrom();
 		this.lapg_rlen = tables.getRuleLength();
-		this.lapg_rlex = tables.rleft;
+		this.lapg_rlex = tables.getLeft();
 		this.debugSyntax = debugSyntax;
 	}
 ${end}

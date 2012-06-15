@@ -17,6 +17,7 @@ package org.textway.lapg.lalr;
 
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.ParserConflict;
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.api.ProcessingStatus;
 
 import java.util.ArrayList;
@@ -370,28 +371,22 @@ public class Builder extends Lalr1 {
 	}
 
 	private ParserTables createResult() {
-		ParserTables r = new ParserTables();
-		r.sym = this.sym;
-		r.rules = this.rules;
-		r.nsyms = this.nsyms;
-		r.nterms = this.nterms;
-		r.nstates = this.nstates;
-		r.errorn = this.errorn;
-		r.rleft = this.rleft;
-		r.rright = this.rright;
-		r.rindex = this.rindex;
-		r.rprio = this.rprio;
-		r.sym_goto = this.term_goto;
-		r.sym_from = this.term_from;
-		r.sym_to = this.term_to;
-		r.action_table = this.action_table;
-		r.action_index = this.action_index;
-		r.nactions = this.nactions;
-		r.final_states = this.final_states;
+		int[] rlen = new int[rules];
+		for (int i = 0; i < rules; i++) {
+			int e = 0;
+			for (; rright[rindex[i] + e] >= 0; e++) {
+			}
+			rlen[i] = e;
+		}
+		ParserTables r = new ParserTables(sym,
+				rules, nsyms, nterms, nstates, errorn,
+				rleft, rlen,
+				term_goto, term_from, term_to,
+				action_table, action_index, final_states);
 		return r;
 	}
 
-	public static ParserTables compile(Grammar g, ProcessingStatus status) {
+	public static ParserData compile(Grammar g, ProcessingStatus status) {
 		Builder en = new Builder(g, status);
 		return en.generate();
 	}

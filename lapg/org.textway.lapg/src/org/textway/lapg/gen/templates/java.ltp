@@ -89,7 +89,7 @@ ${end-}
 		lapg_m[0].state = ${self->needInitialState() ? 'initialState' : 0};
 		lapg_n = lapg_lexer.next();
 
-		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
+		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
 			int lapg_i = lapg_next(lapg_m[lapg_head].state);
 
 			if (lapg_i >= 0) {
@@ -125,7 +125,7 @@ ${end-}
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.nstates-1}) {
+		if (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
 ${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
@@ -301,7 +301,7 @@ ${end}
 ${template customParseRoutines-}
 ${foreach inp in syntax.input}
 	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if self->needInitialState()}, ${index}${end}, ${parser.final_states[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if self->needInitialState()}, ${index}${end}, ${parser.finalStates[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
 				}, ${inp.hasEoi() ? 'false' : 'true'}${end});
 	}
 ${end-}
@@ -319,27 +319,27 @@ ${template debugReduce-}
 		}
 ${end}
 
-${query needActionsTable() = parser.nactions > 0}
+${query needActionsTable() = parser.lalr.size() > 0}
 
 ${template parserTables-}
-	private static final int[] lapg_action = ${opts.prefix}Lexer.${parser.action_index->java_pack.packInt()};
+	private static final int[] lapg_action = ${opts.prefix}Lexer.${parser.action->java_pack.packInt()};
 
 ${if self->needActionsTable()-}
-	private static final short[] lapg_lalr = ${opts.prefix}Lexer.${parser.action_table->java_pack.packShort()};
+	private static final short[] lapg_lalr = ${opts.prefix}Lexer.${parser.lalr->java_pack.packShort()};
 
 ${end-}
-	private static final short[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.sym_goto->java_pack.packShort()};
+	private static final short[] lapg_sym_goto = ${opts.prefix}Lexer.${parser.symGoto->java_pack.packShort()};
 
-	private static final short[] lapg_sym_from = ${opts.prefix}Lexer.${parser.sym_from->java_pack.packShort()};
+	private static final short[] lapg_sym_from = ${opts.prefix}Lexer.${parser.symFrom->java_pack.packShort()};
 
-	private static final short[] lapg_sym_to = ${opts.prefix}Lexer.${parser.sym_to->java_pack.packShort()};
+	private static final short[] lapg_sym_to = ${opts.prefix}Lexer.${parser.symTo->java_pack.packShort()};
 
 	private static final short[] lapg_rlen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packShort()};
 
-	private static final short[] lapg_rlex = ${opts.prefix}Lexer.${parser.rleft->java_pack.packShort()};
+	private static final short[] lapg_rlex = ${opts.prefix}Lexer.${parser.left->java_pack.packShort()};
 
 	protected static final String[] lapg_syms = new String[] {
-${foreach s in parser.sym-}
+${foreach s in parser.symbols-}
 		"${s.name}",
 ${end-}
 	};
@@ -347,7 +347,7 @@ ${end-}
 	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
 		// non-terminals
 ${for i in [parser.nterms, parser.nsyms-1]-}
-		public static final int ${parser.sym[i].id->escapeJavaReserved()} = ${i};
+		public static final int ${parser.symbols[i].id->escapeJavaReserved()} = ${i};
 ${end-}
 	}
 ${if syntax.rules.exists(x|x.getAlias())}
@@ -427,7 +427,7 @@ ${query mainParseVisibility() = self->needFinalState() ? 'private' : 'public'}
 ${query mainParseReturnType() = !self->needFinalState() && syntax.input.first().target->type() ? syntax.input.first().target->type() : 'Object'}
 
 ${cached query needInitialState() = syntax.input.length > 1}
-${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.final_states[0] != parser.nstates - 1 }
+${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.finalStates[0] != parser.statesCount - 1 }
 
 ${cached query hasNoEoiInputs() = syntax.input.exists(x|!x.hasEoi()) }
 ${cached query hasEoiInputs() = syntax.input.exists(x|x.hasEoi()) }

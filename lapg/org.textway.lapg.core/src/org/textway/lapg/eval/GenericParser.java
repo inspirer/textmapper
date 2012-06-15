@@ -20,10 +20,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.eval.GenericLexer.ErrorReporter;
 import org.textway.lapg.eval.GenericLexer.ParseSymbol;
 import org.textway.lapg.eval.GenericParseContext.TextSource;
-import org.textway.lapg.lalr.ParserTables;
 
 public class GenericParser {
 
@@ -49,16 +49,16 @@ public class GenericParser {
 
 	private final boolean debugSyntax;
 
-	public GenericParser(ErrorReporter reporter, ParserTables tables, Grammar grammar, boolean debugSyntax) {
+	public GenericParser(ErrorReporter reporter, ParserData tables, Grammar grammar, boolean debugSyntax) {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		this.lapg_action = tables.action_index;
-		this.lapg_lalr = tables.action_table;
-		this.lapg_sym_goto = tables.sym_goto;
-		this.lapg_sym_to = tables.sym_to;
-		this.lapg_sym_from = tables.sym_from;
+		this.lapg_action = tables.getAction();
+		this.lapg_lalr = tables.getLalr();
+		this.lapg_sym_goto = tables.getSymGoto();
+		this.lapg_sym_to = tables.getSymTo();
+		this.lapg_sym_from = tables.getSymFrom();
 		this.lapg_rlen = tables.getRuleLength();
-		this.lapg_rlex = tables.rleft;
+		this.lapg_rlex = tables.getLeft();
 		this.debugSyntax = debugSyntax;
 	}
 

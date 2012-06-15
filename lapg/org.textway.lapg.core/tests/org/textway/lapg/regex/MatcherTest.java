@@ -17,6 +17,7 @@ package org.textway.lapg.regex;
 
 import org.junit.Test;
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexParseException;
 import org.textway.lapg.api.regex.RegexPart;
 
 import java.util.Collections;
@@ -77,7 +78,7 @@ public class MatcherTest {
 	@Test
 	public void testIdentifier() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("id", "[a-zA-Z_][a-zA-Z0-9_]+");
-		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
+		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "aaaa", true);
 		checkMatch(matcher, "aa0aa", true);
 		checkMatch(matcher, "aa0aa ", false);
@@ -87,7 +88,7 @@ public class MatcherTest {
 	@Test
 	public void testRegex() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
-		RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
+		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
 		checkMatch(matcher, "/aaa/", true);
 		checkMatch(matcher, "/tt\\\\t+/", true);
 		checkMatch(matcher, "//", true);
@@ -118,14 +119,14 @@ public class MatcherTest {
 	private static void checkMatch(String regex, String sample, boolean expected) {
 		try {
 			RegexPart parsedRegex = RegexFacade.parse("unknown", regex);
-			RegexMatcher matcher = new RegexMatcher(parsedRegex, createEmptyContext());
+			RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
 			assertEquals("regex: `" + regex + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 		} catch (RegexParseException ex) {
 			fail(ex.getMessage());
 		}
 	}
 
-	private static void checkMatch(RegexMatcher matcher, String sample, boolean expected) {
+	private static void checkMatch(RegexMatcherImpl matcher, String sample, boolean expected) {
 		assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
 	}
 

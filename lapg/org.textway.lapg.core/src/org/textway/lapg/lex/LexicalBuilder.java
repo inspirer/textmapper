@@ -16,13 +16,14 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.Lexem;
+import org.textway.lapg.api.LexerData;
 import org.textway.lapg.api.NamedPattern;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.regex.RegexContext;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.common.FormatUtil;
 import org.textway.lapg.regex.RegexFacade;
-import org.textway.lapg.regex.RegexParseException;
+import org.textway.lapg.api.regex.RegexParseException;
 
 import java.util.*;
 
@@ -652,7 +653,7 @@ public class LexicalBuilder {
 	/*
 	 * Generates lexer tables from lexems descriptions
 	 */
-	public static LexerTables compile(Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
+	public static LexerData compile(Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
 		LexicalBuilder lb = new LexicalBuilder(status);
 		return lb.generate(lexems, patterns);
 	}

@@ -16,7 +16,7 @@
 package org.textway.lapg.lex;
 
 import org.textway.lapg.api.regex.*;
-import org.textway.lapg.regex.RegexParseException;
+import org.textway.lapg.api.regex.RegexParseException;
 
 import java.util.ArrayList;
 import java.util.List;

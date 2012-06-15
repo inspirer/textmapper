@@ -16,10 +16,10 @@
 package org.textway.lapg.eval;
 
 import org.textway.lapg.api.Grammar;
+import org.textway.lapg.api.LexerData;
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.eval.GenericLexer.ErrorReporter;
 import org.textway.lapg.eval.GenericParser.ParseException;
-import org.textway.lapg.lalr.ParserTables;
-import org.textway.lapg.lex.LexerTables;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -34,10 +34,10 @@ import java.util.List;
 public class GenericParseContext {
 
 	private final Grammar grammar;
-	private final ParserTables parserTables;
-	private final LexerTables lexerTables;
+	private final ParserData parserTables;
+	private final LexerData lexerTables;
 
-	public GenericParseContext(Grammar grammar, ParserTables parserTables, LexerTables lexerTables) {
+	public GenericParseContext(Grammar grammar, ParserData parserTables, LexerData lexerTables) {
 		this.grammar = grammar;
 		this.parserTables = parserTables;
 		this.lexerTables = lexerTables;
@@ -61,7 +61,7 @@ public class GenericParseContext {
 
 			GenericParser parser = createParser(source, reporter);
 			parser.source = source;
-			Object result = parser.parse(lexer, inputIndex, parserTables.final_states[inputIndex], !grammar.getInput()[inputIndex].hasEoi());
+			Object result = parser.parse(lexer, inputIndex, parserTables.getFinalStates()[inputIndex], !grammar.getInput()[inputIndex].hasEoi());
 
 			return new Result(source, result, list);
 		} catch (ParseException ex) {

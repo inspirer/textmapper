@@ -16,6 +16,7 @@
 package org.textway.lapg.regex;
 
 import org.junit.Test;
+import org.textway.lapg.api.regex.RegexParseException;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.lex.RegexInstruction;
 import org.textway.lapg.lex.RegexInstructionKind;

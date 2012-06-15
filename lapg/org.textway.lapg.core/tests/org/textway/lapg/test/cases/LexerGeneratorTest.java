@@ -17,11 +17,9 @@ package org.textway.lapg.test.cases;
 
 import org.junit.Test;
 import org.textway.lapg.api.*;
+import org.textway.lapg.api.regex.RegexParseException;
 import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.regex.RegexParseException;
-import org.textway.lapg.api.TextSourceElement;
 import org.textway.lapg.regex.RegexFacade;
 import org.textway.lapg.test.TestStatus;
 
@@ -48,7 +46,7 @@ public class LexerGeneratorTest {
 
 	@Test
 	public void testGenerator() {
-		LexerTables lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
+		LexerData lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s, INPUT1);
@@ -68,7 +66,7 @@ public class LexerGeneratorTest {
 
 	}
 
-	private int nextToken(LexerTables lr, String s, Lexem[] lexems) {
+	private int nextToken(LexerData lr, String s, Lexem[] lexems) {
 		int state = 0;
 		int index = 0;
 

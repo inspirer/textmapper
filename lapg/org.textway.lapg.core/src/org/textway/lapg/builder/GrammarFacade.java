@@ -22,5 +22,4 @@ public class GrammarFacade {
 	public static GrammarBuilder createBuilder() {
 		return new LiGrammarBuilder();
 	}
-
 }

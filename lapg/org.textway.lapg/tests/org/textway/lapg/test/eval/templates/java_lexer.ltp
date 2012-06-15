@@ -6,13 +6,13 @@ ${template lexerCtor-}
 	private final int[] lapg_lexem;
 	private final int lapg_nchars;
 
-	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textway.lapg.lex.@LexerTables tables, org.textway.lapg.api.@Grammar grammar) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textway.lapg.api.@LexerData lexerData, org.textway.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		lapg_lexemnum = getLexemNum(grammar);
-		lapg_char2no = tables.getChar2no();
-		lapg_lexem = tables.getChange();
-		lapg_nchars = tables.getNchars();
+		lapg_char2no = lexerData.getChar2no();
+		lapg_lexem = lexerData.getChange();
+		lapg_nchars = lexerData.getNchars();
 		reset(${if opts.lexerInput != 'custom'}stream${end});
 	}
 ${end}

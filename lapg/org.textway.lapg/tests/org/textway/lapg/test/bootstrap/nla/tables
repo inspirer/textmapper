@@ -1,85 +1,4 @@
 
-Lexems:
-
-identifier,1:  Set(0) Set(1) ZeroOrMore Done(0) ([a-zA-Z_][a-zA-Z_0-9]*)
-icon,2:  Symbol(2) Optional Set(2) OneOrMore Done(1) (\-?[0-9]+)
-_skip,3:  Set(3) OneOrMore Done(2) ([\n\t\r ]+)
-'=',4:  Symbol(3) Done(3) (=)
-';',5:  Symbol(4) Done(4) (;)
-'+',6:  Symbol(5) Done(5) (\+)
-'-',7:  Symbol(2) Done(6) (\-)
-'*',8:  Symbol(6) Done(7) (\*)
-'/',9:  Symbol(7) Done(8) (\/)
-'(',10:  Symbol(8) Done(9) (\()
-')',11:  Symbol(9) Done(10) (\))
-'{',12:  Symbol(10) Done(11) (\{)
-'}',13:  Symbol(11) Done(12) (\})
-'[',14:  Symbol(12) Done(13) (\[)
-']',15:  Symbol(13) Done(14) (\])
-',',16:  Symbol(14) Done(15) (,)
-'.',17:  Symbol(15) Done(16) (\.)
-'!',18:  Symbol(16) Done(17) (!)
-'?',19:  Symbol(17) Done(18) (\?)
-':',20:  Symbol(18) Done(19) (:)
-'->',21:  Symbol(2) Symbol(19) Done(20) (\->)
-
-Symbols:
-
-0: \x0000
-1: \x0001\x0002\x0003\x0004\x0005\x0006\x0007\x0008\x000b\x000c\x000e\x000f\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x001c\x001d\x001e\x001f"#$%&'<@\^`|~
-2: -
-3: =
-4: ;
-5: +
-6: *
-7: /
-8: (
-9: )
-10: {
-11: }
-12: [
-13: ]
-14: ,
-15: .
-16: !
-17: ?
-18: :
-19: >
-20: ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
-21: 0123456789
-22: \x0009\x000a\x000d\x0020
-
-Sets:
-
-0:  20
-1:  20 21
-2:  21
-3:  22
-
-Lexem jumps:
- 0:  (0: 0) Set(0) (1: 1 2 3) Set(1) (2: 1 2 3) ZeroOrMore  [identifier,1]
- 1:  (0: 0 1 2) Symbol(2) (1: 1 2) Optional (2: 2) Set(2) (3: 2 3 4) OneOrMore  [icon,2]
- 2:  (0: 0) Set(3) (1: 0 1 2) OneOrMore  [_skip,3]
- 3:  (0: 0) Symbol(3)  ['=',4]
- 4:  (0: 0) Symbol(4)  [';',5]
- 5:  (0: 0) Symbol(5)  ['+',6]
- 6:  (0: 0) Symbol(2)  ['-',7]
- 7:  (0: 0) Symbol(6)  ['*',8]
- 8:  (0: 0) Symbol(7)  ['/',9]
- 9:  (0: 0) Symbol(8)  ['(',10]
-10:  (0: 0) Symbol(9)  [')',11]
-11:  (0: 0) Symbol(10)  ['{',12]
-12:  (0: 0) Symbol(11)  ['}',13]
-13:  (0: 0) Symbol(12)  ['[',14]
-14:  (0: 0) Symbol(13)  [']',15]
-15:  (0: 0) Symbol(14)  [',',16]
-16:  (0: 0) Symbol(15)  ['.',17]
-17:  (0: 0) Symbol(16)  ['!',18]
-18:  (0: 0) Symbol(17)  ['?',19]
-19:  (0: 0) Symbol(18)  [':',20]
-20:  (0: 0) Symbol(2) (1: 1) Symbol(19)  ['->',21]
-
-
 States
 0:
   input ::= _ statements
@@ -1770,3 +1689,84 @@ Lookaheads:
 74:
   expression_listopt ::= _
   >>> ')'
+
+Lexems:
+
+identifier,1:  Set(0) Set(1) ZeroOrMore Done(0) ([a-zA-Z_][a-zA-Z_0-9]*)
+icon,2:  Symbol(2) Optional Set(2) OneOrMore Done(1) (\-?[0-9]+)
+_skip,3:  Set(3) OneOrMore Done(2) ([\n\t\r ]+)
+'=',4:  Symbol(3) Done(3) (=)
+';',5:  Symbol(4) Done(4) (;)
+'+',6:  Symbol(5) Done(5) (\+)
+'-',7:  Symbol(2) Done(6) (\-)
+'*',8:  Symbol(6) Done(7) (\*)
+'/',9:  Symbol(7) Done(8) (\/)
+'(',10:  Symbol(8) Done(9) (\()
+')',11:  Symbol(9) Done(10) (\))
+'{',12:  Symbol(10) Done(11) (\{)
+'}',13:  Symbol(11) Done(12) (\})
+'[',14:  Symbol(12) Done(13) (\[)
+']',15:  Symbol(13) Done(14) (\])
+',',16:  Symbol(14) Done(15) (,)
+'.',17:  Symbol(15) Done(16) (\.)
+'!',18:  Symbol(16) Done(17) (!)
+'?',19:  Symbol(17) Done(18) (\?)
+':',20:  Symbol(18) Done(19) (:)
+'->',21:  Symbol(2) Symbol(19) Done(20) (\->)
+
+Symbols:
+
+0: \x0000
+1: \x0001\x0002\x0003\x0004\x0005\x0006\x0007\x0008\x000b\x000c\x000e\x000f\x0010\x0011\x0012\x0013\x0014\x0015\x0016\x0017\x0018\x0019\x001a\x001b\x001c\x001d\x001e\x001f"#$%&'<@\^`|~
+2: -
+3: =
+4: ;
+5: +
+6: *
+7: /
+8: (
+9: )
+10: {
+11: }
+12: [
+13: ]
+14: ,
+15: .
+16: !
+17: ?
+18: :
+19: >
+20: ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+21: 0123456789
+22: \x0009\x000a\x000d\x0020
+
+Sets:
+
+0:  20
+1:  20 21
+2:  21
+3:  22
+
+Lexem jumps:
+ 0:  (0: 0) Set(0) (1: 1 2 3) Set(1) (2: 1 2 3) ZeroOrMore  [identifier,1]
+ 1:  (0: 0 1 2) Symbol(2) (1: 1 2) Optional (2: 2) Set(2) (3: 2 3 4) OneOrMore  [icon,2]
+ 2:  (0: 0) Set(3) (1: 0 1 2) OneOrMore  [_skip,3]
+ 3:  (0: 0) Symbol(3)  ['=',4]
+ 4:  (0: 0) Symbol(4)  [';',5]
+ 5:  (0: 0) Symbol(5)  ['+',6]
+ 6:  (0: 0) Symbol(2)  ['-',7]
+ 7:  (0: 0) Symbol(6)  ['*',8]
+ 8:  (0: 0) Symbol(7)  ['/',9]
+ 9:  (0: 0) Symbol(8)  ['(',10]
+10:  (0: 0) Symbol(9)  [')',11]
+11:  (0: 0) Symbol(10)  ['{',12]
+12:  (0: 0) Symbol(11)  ['}',13]
+13:  (0: 0) Symbol(12)  ['[',14]
+14:  (0: 0) Symbol(13)  [']',15]
+15:  (0: 0) Symbol(14)  [',',16]
+16:  (0: 0) Symbol(15)  ['.',17]
+17:  (0: 0) Symbol(16)  ['!',18]
+18:  (0: 0) Symbol(17)  ['?',19]
+19:  (0: 0) Symbol(18)  [':',20]
+20:  (0: 0) Symbol(2) (1: 1) Symbol(19)  ['->',21]
+

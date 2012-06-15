@@ -16,6 +16,8 @@
 package org.textway.lapg.test.cases;
 
 import org.junit.Test;
+import org.textway.lapg.api.LexerData;
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.common.FileUtil;
 import org.textway.lapg.eval.GenericNode;
 import org.textway.lapg.eval.GenericParseContext;
@@ -23,8 +25,6 @@ import org.textway.lapg.eval.GenericParseContext.ParseProblem;
 import org.textway.lapg.eval.GenericParseContext.Result;
 import org.textway.lapg.gen.SyntaxUtil;
 import org.textway.lapg.lalr.Builder;
-import org.textway.lapg.lalr.ParserTables;
-import org.textway.lapg.lex.LexerTables;
 import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
@@ -49,8 +49,8 @@ public class GrammarTest extends LapgTestCase {
 		assertNotNull(g);
 		assertNotNull(g.getGrammar());
 
-		LexerTables l = LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), new TestStatus());
-		ParserTables r = Builder.compile(g.getGrammar(), new TestStatus());
+		LexerData l = LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), new TestStatus());
+		ParserData r = Builder.compile(g.getGrammar(), new TestStatus());
 		return new GenericParseContext(g.getGrammar(), r, l);
 	}
 

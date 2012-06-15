@@ -13,38 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
-
-import org.textway.lapg.api.LexerData;
+package org.textway.lapg.api;
 
 /**
- * Representation of generated lexer tables.
+ * Gryaznov Evgeny, 6/13/12
  */
-class LexerTables implements LexerData {
+public interface LexerData {
 
-	private final int nchars;
-	private final int[] char2no, groupset, change;
+	public int getNchars();
 
-	LexerTables(int nchars, int[] char2no, int[] groupset, int[] change) {
-		this.nchars = nchars;
-		this.char2no = char2no;
-		this.groupset = groupset;
-		this.change = change;
-	}
+	public int[] getChar2no();
 
-	public int getNchars() {
-		return nchars;
-	}
+	public int[] getGroupset();
 
-	public int[] getChar2no() {
-		return char2no;
-	}
-
-	public int[] getGroupset() {
-		return groupset;
-	}
-
-	public int[] getChange() {
-		return change;
-	}
+	public int[] getChange();
 }

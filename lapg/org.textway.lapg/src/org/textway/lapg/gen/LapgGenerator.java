@@ -15,12 +15,11 @@
  */
 package org.textway.lapg.gen;
 
+import org.textway.lapg.LapgCore;
+import org.textway.lapg.api.LexerData;
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.api.ProcessingStatus;
 import org.textway.lapg.api.TextSourceElement;
-import org.textway.lapg.lalr.Builder;
-import org.textway.lapg.lalr.ParserTables;
-import org.textway.lapg.lex.LexerTables;
-import org.textway.lapg.lex.LexicalBuilder;
 import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgTree.TextSource;
 import org.textway.templates.api.EvaluationContext;
@@ -84,12 +83,18 @@ public final class LapgGenerator {
 
 			// Generate tables
 			long start = System.currentTimeMillis();
-			boolean hasParser = s.getGrammar().getRules() != null;
-			LexerTables l = LexicalBuilder.compile(s.getGrammar().getLexems(), s.getGrammar().getPatterns(), status);
-			ParserTables r = hasParser ? Builder.compile(s.getGrammar(), status) : null;
-			if (l == null || hasParser && r == null) {
+			ParserData r = null;
+			if (s.getGrammar().getRules() != null) {
+				r = LapgCore.generateParser(s.getGrammar(), status);
+				if (r == null) {
+					return false;
+				}
+			}
+			LexerData l = LapgCore.generateLexer(s.getGrammar(), status);
+			if (l == null) {
 				return false;
 			}
+
 			long generationTime = System.currentTimeMillis() - start;
 
 			// Generate text
@@ -154,7 +159,7 @@ public final class LapgGenerator {
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, LapgGrammar s, Map<String, Object> genOptions, LexerTables l, ParserTables r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, LapgGrammar s, Map<String, Object> genOptions, LexerData l, ParserData r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))

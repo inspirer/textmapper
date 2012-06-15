@@ -15,29 +15,108 @@
  */
 package org.textway.lapg.lalr;
 
+import org.textway.lapg.api.ParserData;
 import org.textway.lapg.api.Symbol;
 
 /**
  * Representation of generated parser tables.
  */
-public class ParserTables {
+class ParserTables implements ParserData {
 
-	public Symbol[] sym;
-	public int rules, nsyms, nterms, nstates, errorn;
-	public int[] rleft, rright, rindex, rprio;
-	public short[] sym_goto, sym_from, sym_to, action_table;
-	public int[] action_index;
-	public int[] final_states;
-	public int nactions;
+	private Symbol[] sym;
+	private int rules, nsyms, nterms, nstates, errorn;
+	private int[] rleft, rlen;
+	private short[] sym_goto, sym_from, sym_to, action_table;
+	private int[] action_index;
+	private int[] final_states;
+
+	ParserTables(Symbol[] sym,
+				 int rules, int nsyms, int nterms, int nstates, int errorn,
+				 int[] rleft, int[] rlen,
+				 short[] sym_goto, short[] sym_from, short[] sym_to,
+				 short[] action_table, int[] action_index, int[] final_states) {
+		this.sym = sym;
+		this.rules = rules;
+		this.nsyms = nsyms;
+		this.nterms = nterms;
+		this.nstates = nstates;
+		this.errorn = errorn;
+		this.rleft = rleft;
+		this.rlen = rlen;
+		this.sym_goto = sym_goto;
+		this.sym_from = sym_from;
+		this.sym_to = sym_to;
+		this.action_table = action_table;
+		this.action_index = action_index;
+		this.final_states = final_states;
+	}
 
 	public int[] getRuleLength() {
-		int[] result = new int[rules];
-		for (int i = 0; i < rules; i++) {
-			int e = 0;
-			for (; rright[rindex[i] + e] >= 0; e++) {
-			}
-			result[i] = e;
-		}
-		return result;
+		return rlen;
+	}
+
+	@Override
+	public Symbol[] getSymbols() {
+		return sym;
+	}
+
+	@Override
+	public int getRules() {
+		return rules;
+	}
+
+	@Override
+	public int getNsyms() {
+		return nsyms;
+	}
+
+	@Override
+	public int getNterms() {
+		return nterms;
+	}
+
+	@Override
+	public int getStatesCount() {
+		return nstates;
+	}
+
+	@Override
+	public int getErrorToken() {
+		return errorn;
+	}
+
+	@Override
+	public short[] getSymGoto() {
+		return sym_goto;
+	}
+
+	@Override
+	public short[] getSymFrom() {
+		return sym_from;
+	}
+
+	@Override
+	public short[] getSymTo() {
+		return sym_to;
+	}
+
+	@Override
+	public short[] getLalr() {
+		return action_table;
+	}
+
+	@Override
+	public int[] getAction() {
+		return action_index;
+	}
+
+	@Override
+	public int[] getFinalStates() {
+		return final_states;
+	}
+
+	@Override
+	public int[] getLeft() {
+		return rleft;
 	}
 }

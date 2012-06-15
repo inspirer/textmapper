@@ -20,7 +20,7 @@ import java.io.Reader;
 import java.text.MessageFormat;
 import org.textway.lapg.api.Grammar;
 import org.textway.lapg.api.Lexem;
-import org.textway.lapg.lex.LexerTables;
+import org.textway.lapg.api.LexerData;
 
 public class GenericLexer {
 
@@ -60,13 +60,13 @@ public class GenericLexer {
 	private final int[] lapg_lexem;
 	private final int lapg_nchars;
 
-	public GenericLexer(Reader stream, ErrorReporter reporter, LexerTables tables, Grammar grammar) throws IOException {
+	public GenericLexer(Reader stream, ErrorReporter reporter, LexerData lexerData, Grammar grammar) throws IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		lapg_lexemnum = getLexemNum(grammar);
-		lapg_char2no = tables.getChar2no();
-		lapg_lexem = tables.getChange();
-		lapg_nchars = tables.getNchars();
+		lapg_char2no = lexerData.getChar2no();
+		lapg_lexem = lexerData.getChange();
+		lapg_nchars = lexerData.getNchars();
 		reset(stream);
 	}
 

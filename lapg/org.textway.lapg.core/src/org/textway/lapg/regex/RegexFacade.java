@@ -16,6 +16,8 @@
 package org.textway.lapg.regex;
 
 import org.textway.lapg.api.regex.RegexContext;
+import org.textway.lapg.api.regex.RegexMatcher;
+import org.textway.lapg.api.regex.RegexParseException;
 import org.textway.lapg.api.regex.RegexPart;
 import org.textway.lapg.regex.RegexDefTree.RegexDefProblem;
 import org.textway.lapg.regex.RegexDefTree.TextSource;
@@ -57,5 +59,9 @@ public class RegexFacade {
 			throw new RegexParseException(message, problem.getOffset());
 		}
 		return result.getRoot();
+	}
+
+	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) {
+		return new RegexMatcherImpl(regex, context);
 	}
 }

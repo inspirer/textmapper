@@ -19,12 +19,12 @@ import org.textway.lapg.api.regex.*;
 
 import java.util.*;
 
-public class RegexMatcher {
+class RegexMatcherImpl implements RegexMatcher {
 
 	private final RegexPart regex;
 	private State[] states;
 
-	public RegexMatcher(RegexPart regex, RegexContext context) {
+	RegexMatcherImpl(RegexPart regex, RegexContext context) {
 		this.regex = regex;
 		compile(context);
 	}
