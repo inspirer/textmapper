@@ -7,4 +7,6 @@ dictionaries
 /lapg/build/
 /lapg/libs/lapg-1*
 /lapg-idea/org.textway.lapg.idea/lib/lapg-1*
+/lapg-eclipse/build/build
+/lapg-eclipse/update-site
 bin
