@@ -132,6 +132,8 @@
 		<copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
 		<copy file="build/lapg.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}.jar"/>
 		<copy file="build/lapg-src.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}-src.jar"/>
+		<copy file="build/lapg.jar" tofile="../lapg-eclipse/plugins/org.textway.lapg/lapg-${suffix}.jar"/>
+		<copy file="build/lapg-src.jar" tofile="../lapg-eclipse/plugins/org.textway.lapg/lapg-${suffix}-src.jar"/>
 	</target>
 
 	<!-- TODO Lapg task
