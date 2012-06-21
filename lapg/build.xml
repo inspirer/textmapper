@@ -105,7 +105,7 @@
 			<src path="org.textway.templates/tests"/>
 		</javac>
 		<mkdir dir="build/results"/>
-		<junit haltonfailure="yes" printsummary="true">
+		<junit haltonfailure="yes" printsummary="true" dir="org.textway.lapg">
 			<batchtest fork="yes"
 					todir="build/results">
 				<fileset dir="org.textway.lapg.core/tests">

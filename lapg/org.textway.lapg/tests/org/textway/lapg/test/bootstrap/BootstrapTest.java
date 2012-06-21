@@ -38,25 +38,25 @@ public class BootstrapTest {
 
 	@Test
 	public void testLapgS() {
-		bootstrap("org.textway.lapg/src/org/textway/lapg/parser", "lapg.s", new String[0], new String[]{
+		bootstrap("src/org/textway/lapg/parser", "lapg.s", new String[0], new String[]{
 				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 2);
 	}
 
 	@Test
 	public void testSAction() {
-		bootstrap("org.textway.lapg/src/org/textway/lapg/parser/action", "saction.s", new String[0],
+		bootstrap("src/org/textway/lapg/parser/action", "saction.s", new String[0],
 				new String[]{"SActionLexer.java"}, 0);
 	}
 
 	@Test
 	public void testRegexS() {
-		bootstrap("org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
+		bootstrap("../org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 
 	@Test
 	public void testTypesS() {
-		bootstrap("org.textway.templates/src/org/textway/templates/types", "types.s", new String[0], new String[]{
+		bootstrap("../org.textway.templates/src/org/textway/templates/types", "types.s", new String[0], new String[]{
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
@@ -66,45 +66,45 @@ public class BootstrapTest {
 
 	@Test
 	public void testTemplatesS() {
-		bootstrap("org.textway.templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[]{
+		bootstrap("../org.textway.templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[]{
 				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"}, 18);
 	}
 
 	@Test
 	public void testXmlS() {
-		bootstrap("org.textway.templates/src/org/textway/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
+		bootstrap("../org.textway.templates/src/org/textway/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
 				"XmlTree.java", "XmlLexer.java"}, 0);
 	}
 
 	@Test
 	public void testSampleA() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/bootstrap/a", "sample1.s", new String[0],
+		bootstrap("tests/org/textway/lapg/test/bootstrap/a", "sample1.s", new String[0],
 				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testSampleB() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/bootstrap/b", "sample2.s", new String[0],
+		bootstrap("tests/org/textway/lapg/test/bootstrap/b", "sample2.s", new String[0],
 				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testSampleNoParser() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/bootstrap/lexeronly", "noparser.s",
+		bootstrap("tests/org/textway/lapg/test/bootstrap/lexeronly", "noparser.s",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);
 	}
 
 	@Test
 	public void testNLA() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/bootstrap/nla", "nla.s", new String[]{"-e"},
+		bootstrap("tests/org/textway/lapg/test/bootstrap/nla", "nla.s", new String[]{"-e"},
 				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
 	}
 
 	@Test
 	public void testUnicodeS() {
-		bootstrap("org.textway.lapg/tests/org/textway/lapg/test/bootstrap/unicode", "unicode.s", new String[0],
+		bootstrap("tests/org/textway/lapg/test/bootstrap/unicode", "unicode.s", new String[0],
 				new String[]{"UnicodeTestLexer.java"}, 0);
 	}
 
