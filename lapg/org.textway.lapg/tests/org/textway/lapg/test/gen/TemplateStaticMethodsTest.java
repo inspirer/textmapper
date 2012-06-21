@@ -62,6 +62,7 @@ public class TemplateStaticMethodsTest {
 		assertEquals("", new TemplateStaticMethods().shiftRight("", 1));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testpackCountValue() {
 		List<List<String>> res = TemplateStaticMethods.packShortCountValue(new int[]{}, true);
@@ -77,6 +78,7 @@ public class TemplateStaticMethodsTest {
 		assertEquals(Arrays.asList(Arrays.asList("\"\\1\\134\\1\\133\\1\\132\"")), res);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testpackCountValueNegative() {
 		List<List<String>> res = TemplateStaticMethods.packShortCountValue(new int[]{}, false);
