@@ -27,7 +27,6 @@
 		<groupId>org.textmapper</groupId>
 		<artifactId>lapg-master</artifactId>
 		<version>1.3.11-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
