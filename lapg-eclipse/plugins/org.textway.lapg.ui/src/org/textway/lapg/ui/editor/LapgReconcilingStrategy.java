@@ -36,6 +36,7 @@ import org.textway.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textway.lapg.common.ui.editor.StructuredTextEditor;
 import org.textway.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
 import org.textway.lapg.gen.LapgOptions;
+import org.textway.lapg.parser.LapgGrammar;
 import org.textway.lapg.parser.LapgResolver;
 import org.textway.lapg.parser.LapgTree;
 import org.textway.lapg.parser.LapgTree.LapgProblem;
@@ -63,7 +64,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
 	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<LapgProblem> problems) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
-		if(options != null && options.getIncludeFolders() != null) {
+		if (options != null && options.getIncludeFolders() != null) {
 			for (String path : options.getIncludeFolders()) {
 				IResourceLoader resourceLoader = WorkspaceResourceLoader.create(project, path);
 				if (resourceLoader != null) {
@@ -78,7 +79,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
-	
+
 	@Override
 	protected ISourceStructure validate(boolean first, StructuredTextEditor seditor, IDocument doc, IProgressMonitor monitor) {
 		LapgSourceEditor editor = (LapgSourceEditor) seditor;
@@ -103,18 +104,19 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		Grammar grammar = null;
 		if (problems.size() == 0) {
 			LapgOptions options = editor.getOptions();
-			
+
 			TemplatesStatus templatesStatus = new TemplatesStatus() {
 				public void report(int kind, String message,
-						SourceElement... anchors) {
+								   SourceElement... anchors) {
 					// ignore, TODO fix
 				}
 			};
 			ResourceRegistry resources = createResourceRegistry(options, mainResource.getProject(), problems);
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
-			
+
 			LapgResolver resolver = new LapgResolver(ast, types);
-			grammar = resolver.resolve();
+			LapgGrammar lg = resolver.resolve();
+			grammar = lg != null ? lg.getGrammar() : null;
 			sources.add(LapgResolver.RESOLVER_SOURCE);
 		}
 		LapgSourceStructure model = new LapgSourceStructure(grammar, ast, mainResource);
@@ -131,7 +133,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		}
 
 		List<Annotation> annotationsToRemove = new ArrayList<Annotation>();
-		for (Iterator<?> iter = model.getAnnotationIterator(); iter.hasNext();) {
+		for (Iterator<?> iter = model.getAnnotationIterator(); iter.hasNext(); ) {
 			Annotation annotation = (Annotation) iter.next();
 			if (annotation instanceof LapgAnnotation) {
 				if (sources.contains(((LapgAnnotation) annotation).getSource())) {
@@ -165,15 +167,15 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 	private LapgAnnotation createProblemAnnotation(LapgProblem problem) {
 		String type;
 		switch (problem.getKind()) {
-		//		case LapgTree.KIND_INFO:
-		//			type = LapgAnnotations.ANNOTATION_INFO;
-		//			break;
-		case LapgTree.KIND_WARN:
-			type = ANNOTATION_WARN;
-			break;
-		default:
-			type = ANNOTATION_ERROR;
-			break;
+			//		case LapgTree.KIND_INFO:
+			//			type = LapgAnnotations.ANNOTATION_INFO;
+			//			break;
+			case LapgTree.KIND_WARN:
+				type = ANNOTATION_WARN;
+				break;
+			default:
+				type = ANNOTATION_ERROR;
+				break;
 		}
 		return new LapgAnnotation(type, problem.getMessage(), problem.getSource());
 	}

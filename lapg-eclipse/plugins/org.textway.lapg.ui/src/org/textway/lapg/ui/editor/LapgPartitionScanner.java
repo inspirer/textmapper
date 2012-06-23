@@ -41,56 +41,39 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 
 	public IToken nextToken() {
 		fTokenOffset += fTokenLength;
-		if(lexem == null) {
+		if (lexem == null) {
 			readNext();
 		}
-		if(fTokenOffset < lexem.offset) {
+		if (fTokenOffset < lexem.offset) {
 			fTokenLength = lexem.offset - fTokenOffset;
 			return fText;
 		}
 		int token = lexem.lexem;
-		switch(token) {
-		case Lexems._skip_comment:
-		case Lexems.scon:
-		case Lexems.regexp:
-			fTokenLength = lexem.endoffset - fTokenOffset;
-			lexem = null;
-			if(token == Lexems._skip_comment) {
-				return fComment;
-			} else if(token == Lexems.scon) {
-				return fString;
-			} else {
-				return fRegexp;
-			}
-		case Lexems.LCURLY:
-			skipAction();
-			fTokenLength = lexem.endoffset - fTokenOffset;
-			lexem = null;
-			return fAction;
+		switch (token) {
+			case Lexems._skip_comment:
+			case Lexems.scon:
+			case Lexems.regexp:
+				fTokenLength = lexem.endoffset - fTokenOffset;
+				lexem = null;
+				if (token == Lexems._skip_comment) {
+					return fComment;
+				} else if (token == Lexems.scon) {
+					return fString;
+				} else {
+					return fRegexp;
+				}
+			case Lexems.code:
+				fTokenLength = lexem.endoffset - fTokenOffset;
+				lexem = null;
+				return fAction;
 		}
 		/* default, eoi */
-		if(lexem.endoffset < fDocumentLength) {
+		if (lexem.endoffset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
 			lexem.offset = lexem.endoffset = fDocumentLength;
 			return fTemplates;
 		}
 		return Token.EOF;
-	}
-
-	private void skipAction() {
-		int deep = 1;
-		while(lexem.lexem != Lexems.eoi && deep > 0) {
-			readNext();
-			switch(lexem.lexem) {
-			case Lexems.iLCURLY:
-			case Lexems.LCURLY:
-				deep++;
-				break;
-			case Lexems.RCURLY:
-				deep--;
-				break;
-			}
-		}
 	}
 
 	private void readNext() {
@@ -105,12 +88,12 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 	protected void reset(Reader reader, int offset, int length) {
 		fDocumentLength = offset + length;
 		try {
-			if(lexer == null) {
+			if (lexer == null) {
 				lexer = new SkippingLapgLexer(reader);
 			} else {
 				lexer.reset(reader);
 			}
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			/* never happens */
 		}
 		lexer.setOffset(offset);
@@ -120,22 +103,21 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 	private static class SkippingLapgLexer extends LapgLexer {
 		public SkippingLapgLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
-				public void error(int start, int end, int line, String s) {}
+				public void error(int start, int end, int line, String s) {
+				}
 			});
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) {
-			switch(lapg_n.lexem) {
-			case Lexems._skip_comment:
-			case Lexems.scon:
-			case Lexems.regexp:
-			case Lexems.eoi:
-				return true;
-			case Lexems.LCURLY:
-			case Lexems.RCURLY:
-			case Lexems.iLCURLY:
-				return super.createToken(lapg_n, lexemIndex);
+		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+			switch (lapg_n.lexem) {
+				case Lexems._skip_comment:
+				case Lexems.scon:
+				case Lexems.regexp:
+				case Lexems.eoi:
+					return true;
+				case Lexems.code:
+					return super.createToken(lapg_n, lexemIndex);
 			}
 			return false;
 		}
