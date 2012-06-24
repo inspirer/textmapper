@@ -28,6 +28,7 @@
     <modules>
         <module>plugins</module>
         <module>features</module>
+        <module>build</module>
     </modules>
 
     <build>
