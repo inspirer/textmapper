@@ -89,9 +89,7 @@ public class LexerInputSymbols {
 	}
 
 	private void buildSets() {
-		if (sealed) {
-			throw new IllegalStateException();
-		}
+		assert !sealed;
 		sealed = true;
 		int base = symbolCount;
 		List<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
