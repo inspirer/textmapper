@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Lapg tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" />
-    <module name="org.textway.lapg" />
+    <module name="lapg-tool" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="PACKAGE_NAME" value="org.textway.lapg" />
@@ -10,7 +10,7 @@
     <option name="TEST_OBJECT" value="package" />
     <option name="VM_PARAMETERS" value="-ea" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/org.textway.lapg" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/lapg-tool" />
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="TEST_SEARCH_SCOPE">

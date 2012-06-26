@@ -50,13 +50,13 @@ public class BootstrapTest {
 
 	@Test
 	public void testRegexS() {
-		bootstrap("../org.textway.lapg.core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
+		bootstrap("../lapg-core/src/org/textway/lapg/regex", "regex.s", new String[0], new String[]{
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 
 	@Test
 	public void testTypesS() {
-		bootstrap("../org.textway.templates/src/org/textway/templates/types", "types.s", new String[0], new String[]{
+		bootstrap("../templates/src/org/textway/templates/types", "types.s", new String[0], new String[]{
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
@@ -66,13 +66,13 @@ public class BootstrapTest {
 
 	@Test
 	public void testTemplatesS() {
-		bootstrap("../org.textway.templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[]{
+		bootstrap("../templates/src/org/textway/templates/ast", "templates.s", new String[0], new String[]{
 				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"}, 18);
 	}
 
 	@Test
 	public void testXmlS() {
-		bootstrap("../org.textway.templates/src/org/textway/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
+		bootstrap("../templates/src/org/textway/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
 				"XmlTree.java", "XmlLexer.java"}, 0);
 	}
 

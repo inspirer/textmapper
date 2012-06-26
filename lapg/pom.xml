@@ -33,10 +33,10 @@
 	</licenses>
 
 	<modules>
-		<module>org.textway.lapg</module>
-		<module>org.textway.lapg.core</module>
-		<module>org.textway.templates</module>
-		<module>org.textway.lapg.distrib</module>
+		<module>templates</module>
+		<module>lapg-core</module>
+		<module>lapg-tool</module>
+		<module>lapg-dist</module>
 	</modules>
 
 	<properties>

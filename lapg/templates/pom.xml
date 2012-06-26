@@ -18,7 +18,7 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.textmapper</groupId>
-	<artifactId>lapg-templates</artifactId>
+	<artifactId>templates</artifactId>
 	<packaging>jar</packaging>
 	<name>Lapg Templates</name>
 	<version>1.3.11-SNAPSHOT</version>

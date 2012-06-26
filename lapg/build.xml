@@ -43,15 +43,15 @@
 	<target name="build" depends="rev">
 		<mkdir dir="build/bin"/>
 		<copy includeemptydirs="false" todir="build/bin">
-			<fileset dir="org.textway.lapg/src" excludes="**/*.java, **/*.s"/>
-			<fileset dir="org.textway.lapg.core/src" excludes="**/*.java, **/*.s"/>
-			<fileset dir="org.textway.templates/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="lapg-tool/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="lapg-core/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="templates/src" excludes="**/*.java, **/*.s"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}"
 			   includeantruntime="true">
-			<src path="org.textway.lapg/src"/>
-			<src path="org.textway.lapg.core/src"/>
-			<src path="org.textway.templates/src"/>
+			<src path="lapg-tool/src"/>
+			<src path="lapg-core/src"/>
+			<src path="templates/src"/>
 		</javac>
 		<jar destfile="build/lapg.jar">
 			<fileset dir="build/bin"/>
@@ -70,9 +70,9 @@
 	<target name="buildsource" depends="rev">
 		<mkdir dir="build/src"/>
 		<copy includeemptydirs="false" todir="build/src">
-			<fileset dir="org.textway.lapg/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-			<fileset dir="org.textway.lapg.core/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-			<fileset dir="org.textway.templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="lapg-tool/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="lapg-core/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 		</copy>
 		<jar destfile="build/lapg-src.jar">
 			<fileset dir="build/src"/>
@@ -90,9 +90,9 @@
 	<target name="test" depends="build">
 		<mkdir dir="build/bintests"/>
 		<copy includeemptydirs="false" todir="build/bintests">
-			<fileset dir="org.textway.lapg/tests" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="org.textway.lapg.core/tests" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="org.textway.templates/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="lapg-tool/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="lapg-core/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="templates/tests" excludes="**/*.launch, **/*.java"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
 			   includeantruntime="false">
@@ -100,21 +100,21 @@
 				<pathelement location="build/lapg.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
-			<src path="org.textway.lapg/tests"/>
-			<src path="org.textway.lapg.core/tests"/>
-			<src path="org.textway.templates/tests"/>
+			<src path="lapg-tool/tests"/>
+			<src path="lapg-core/tests"/>
+			<src path="templates/tests"/>
 		</javac>
 		<mkdir dir="build/results"/>
-		<junit haltonfailure="yes" printsummary="true" dir="org.textway.lapg">
+		<junit haltonfailure="yes" printsummary="true" dir="lapg-tool">
 			<batchtest fork="yes"
 					todir="build/results">
-				<fileset dir="org.textway.lapg.core/tests">
+				<fileset dir="lapg-core/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
-				<fileset dir="org.textway.lapg/tests">
+				<fileset dir="lapg-tool/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
-				<fileset dir="org.textway.templates/tests">
+				<fileset dir="templates/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
 			</batchtest>
@@ -144,34 +144,34 @@
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textway/lapg/parser"/>
 		<echo message="Action parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg/src/org/textway/lapg/parser/action"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textway/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.lapg.core/src/org/textway/lapg/regex"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-core/src/org/textway/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/ast"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/templates/ast"/>
 		<echo message="Types parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/templates/types"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/templates/types"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="org.textway.templates/src/org/textway/xml"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/a"/>
+			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/b"/>
+			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/lexeronly"/>
+			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/nla">
+			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="org.textway.lapg/tests/org/textway/lapg/test/bootstrap/unicode"/>
+			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/unicode"/>
 	</target>
 
 	<target name="plugin" depends="rev">
