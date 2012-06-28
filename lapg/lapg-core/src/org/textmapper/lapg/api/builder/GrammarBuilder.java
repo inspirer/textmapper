@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api.builder;
+package org.textmapper.lapg.api.builder;
 
-import org.textway.lapg.api.*;
-import org.textway.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.regex.RegexPart;
 
 import java.util.Collection;
 

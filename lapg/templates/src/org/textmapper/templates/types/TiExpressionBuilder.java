@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
-import org.textway.templates.api.types.*;
-import org.textway.templates.api.types.IDataType.Constraint;
-import org.textway.templates.api.types.IDataType.DataTypeKind;
+import org.textmapper.templates.api.types.*;
+import org.textmapper.templates.api.types.IDataType.Constraint;
+import org.textmapper.templates.api.types.IDataType.DataTypeKind;
 
 import java.util.ArrayList;
 import java.util.HashMap;

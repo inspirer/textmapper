@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lalr;
+package org.textmapper.lapg.lalr;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ParserConflict.Input;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.lalr.LalrConflict.InputImpl;
-import org.textway.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.ParserConflict.Input;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
+import org.textmapper.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
 
 import java.util.Arrays;
 import java.util.Stack;

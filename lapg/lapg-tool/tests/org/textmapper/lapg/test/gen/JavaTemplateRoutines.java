@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.gen;
+package org.textmapper.lapg.test.gen;
 
 /*
  *  Note: Generated from templates. Do not EDIT!

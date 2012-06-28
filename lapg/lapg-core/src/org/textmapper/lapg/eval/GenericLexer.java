@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.eval;
+package org.textmapper.lapg.eval;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.Lexem;
-import org.textway.lapg.api.LexerData;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.Lexem;
+import org.textmapper.lapg.api.LexerData;
 
 public class GenericLexer {
 

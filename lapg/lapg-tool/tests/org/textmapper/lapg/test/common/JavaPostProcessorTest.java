@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.common;
+package org.textmapper.lapg.test.common;
 
 import org.junit.Test;
-import org.textway.lapg.common.JavaPostProcessor;
+import org.textmapper.lapg.common.JavaPostProcessor;
 
 import static org.junit.Assert.assertEquals;
 

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationCache;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.types.IClosureType;
-import org.textway.templates.api.types.IType;
-import org.textway.templates.ast.ExpressionNode;
-import org.textway.templates.ast.ParameterNode;
-import org.textway.templates.objects.DefaultIxObject;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationCache;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.types.IClosureType;
+import org.textmapper.templates.api.types.IType;
+import org.textmapper.templates.ast.ExpressionNode;
+import org.textmapper.templates.ast.ParameterNode;
+import org.textmapper.templates.objects.DefaultIxObject;
 
 import java.util.Collection;
 

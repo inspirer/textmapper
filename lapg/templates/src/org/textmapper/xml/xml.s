@@ -16,7 +16,7 @@
 
 lang = "java" 
 prefix = "Xml"
-package = "org.textway.xml"
+package = "org.textmapper.xml"
 maxtoken = 2048
 breaks = true
 gentree = true
@@ -112,7 +112,7 @@ ${end}
 ${template java.classcode}
 ${call base-}
 
-org.textway.xml.XmlTree.@TextSource source;
+org.textmapper.xml.XmlTree.@TextSource source;
 
 private XmlData getData(int start, int end) {
 	return new XmlData(source.getContents(), start, end-start);

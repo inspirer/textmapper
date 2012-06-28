@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api.types;
+package org.textmapper.templates.api.types;
 
-import org.textway.templates.api.SourceElement;
+import org.textmapper.templates.api.SourceElement;
 
 public interface ITypesRegistry {
 

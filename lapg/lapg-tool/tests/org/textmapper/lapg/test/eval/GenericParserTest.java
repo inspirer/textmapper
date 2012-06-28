@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.eval;
+package org.textmapper.lapg.test.eval;
 
 import org.junit.Test;
-import org.textway.lapg.test.gen.LapgTemplatesTestHelper;
+import org.textmapper.lapg.test.gen.LapgTemplatesTestHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class GenericParserTest {
 		protected Map<String, Object> createOptions() {
 			HashMap<String, Object> res = new HashMap<String, Object>();
 			res.put("prefix", "Generic");
-			res.put("package", "org.textway.lapg.eval");
+			res.put("package", "org.textmapper.lapg.eval");
 			res.put("positions", "line,offset");
 			res.put("endpositions", "offset");
 			res.put("lexerInput", "buffered");

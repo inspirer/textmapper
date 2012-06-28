@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser.ast;
+package org.textmapper.lapg.parser.ast;
 
-import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
 
 public class AstReference extends AstNode implements AstExpression {
 

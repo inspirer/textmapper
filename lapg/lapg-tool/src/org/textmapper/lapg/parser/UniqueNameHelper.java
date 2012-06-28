@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
-import org.textway.lapg.common.FormatUtil;
+import org.textmapper.lapg.common.FormatUtil;
 
 import java.util.HashSet;
 import java.util.Set;

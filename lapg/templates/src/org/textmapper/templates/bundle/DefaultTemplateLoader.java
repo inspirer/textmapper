@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textmapper.templates.bundle;
 
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.storage.IResourceLoader;
-import org.textway.templates.storage.Resource;
-import org.textway.templates.storage.ResourceRegistry;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.templates.storage.Resource;
+import org.textmapper.templates.storage.ResourceRegistry;
 
 /**
  * Loads templates from specified folders;

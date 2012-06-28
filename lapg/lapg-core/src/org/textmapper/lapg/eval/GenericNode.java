@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.eval;
+package org.textmapper.lapg.eval;
 
 
-import org.textway.lapg.eval.GenericParseContext.TextSource;
+import org.textmapper.lapg.eval.GenericParseContext.TextSource;
 
 /**
  * Gryaznov Evgeny, 3/28/11

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.nla;
+package org.textmapper.lapg.test.bootstrap.nla;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -21,8 +21,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.lapg.test.bootstrap.nla.NlaTestLexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.nla.NlaTestParser.ParseException;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestLexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestParser.ParseException;
 
 public class NlaTestTree<T> {
 

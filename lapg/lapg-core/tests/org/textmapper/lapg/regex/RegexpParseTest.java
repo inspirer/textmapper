@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textmapper.lapg.regex;
 
 import org.junit.Test;
-import org.textway.lapg.api.regex.RegexParseException;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.RegexInstruction;
-import org.textway.lapg.lex.RegexInstructionKind;
-import org.textway.lapg.lex.RegexpCompiler;
+import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.lex.RegexInstruction;
+import org.textmapper.lapg.lex.RegexInstructionKind;
+import org.textmapper.lapg.lex.RegexpCompiler;
 
 import java.util.Arrays;
 import java.util.Collections;

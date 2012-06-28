@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.common;
+package org.textmapper.lapg.common;
 
-import org.textway.lapg.api.*;
-import org.textway.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TextSourceElement;
 
 public abstract class AbstractProcessingStatus implements ProcessingStatus {
 

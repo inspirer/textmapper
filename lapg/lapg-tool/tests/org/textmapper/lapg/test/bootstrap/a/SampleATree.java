@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.a;
+package org.textmapper.lapg.test.bootstrap.a;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -21,10 +21,10 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.a.SampleAParser.ParseException;
-import org.textway.lapg.test.bootstrap.a.ast.AstClassdef;
-import org.textway.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
+import org.textmapper.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.a.SampleAParser.ParseException;
+import org.textmapper.lapg.test.bootstrap.a.ast.AstClassdef;
+import org.textmapper.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
 
 public class SampleATree<T> {
 

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
+package org.textmapper.lapg.lex;
 
-import org.textway.lapg.api.regex.*;
-import org.textway.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.*;
+import org.textmapper.lapg.api.regex.RegexParseException;
 
 import java.util.ArrayList;
 import java.util.List;

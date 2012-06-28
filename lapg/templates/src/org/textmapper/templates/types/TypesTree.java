@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.templates.types.TypesLexer.ErrorReporter;
-import org.textway.templates.types.TypesParser.ParseException;
-import org.textway.templates.types.ast.AstInput;
+import org.textmapper.templates.types.TypesLexer.ErrorReporter;
+import org.textmapper.templates.types.TypesParser.ParseException;
+import org.textmapper.templates.types.ast.AstInput;
 
 public class TypesTree<T> {
 

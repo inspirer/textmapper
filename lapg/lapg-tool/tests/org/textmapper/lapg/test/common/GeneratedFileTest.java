@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.common;
+package org.textmapper.lapg.test.common;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.common.GeneratedFile;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.common.GeneratedFile;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.unicode;
+package org.textmapper.lapg.test.bootstrap.unicode;
 
 import org.junit.Test;
-import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.test.bootstrap.unicode.UnicodeTestLexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.unicode.UnicodeTestLexer.LapgSymbol;
-import org.textway.lapg.test.bootstrap.unicode.UnicodeTestLexer.Lexems;
-import org.textway.lapg.unicode.UnicodeData;
+import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.test.bootstrap.unicode.UnicodeTestLexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.unicode.UnicodeTestLexer.LapgSymbol;
+import org.textmapper.lapg.test.bootstrap.unicode.UnicodeTestLexer.Lexems;
+import org.textmapper.lapg.unicode.UnicodeData;
 
 import java.io.IOException;
 import java.io.StringReader;

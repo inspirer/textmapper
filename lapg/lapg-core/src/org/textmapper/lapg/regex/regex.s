@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "RegexDef"
-package = "org.textway.lapg.regex"
+package = "org.textmapper.lapg.regex"
 breaks = true
 gentree = true
 positions = "offset"
@@ -143,8 +143,8 @@ parts (RegexAstPart) ::=
 
 ${template java.classcode}
 ${call base-}
-org.textway.lapg.regex.RegexDefTree.@TextSource source;
-org.textway.lapg.common.@CharacterSetImpl.Builder setbuilder = new org.textway.lapg.common.@CharacterSetImpl.Builder();
+org.textmapper.lapg.regex.RegexDefTree.@TextSource source;
+org.textmapper.lapg.common.@CharacterSetImpl.Builder setbuilder = new org.textmapper.lapg.common.@CharacterSetImpl.Builder();
 ${end}
 
 ${template java_lexer.lexercode}

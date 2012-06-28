@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.TextSourceElement;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
 
 /**
  * Gryaznov Evgeny, 2/25/12

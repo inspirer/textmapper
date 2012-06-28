@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types.ast;
+package org.textmapper.templates.types.ast;
 
 import java.util.List;
-import org.textway.templates.types.TypesTree.TextSource;
+import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstStringConstraint extends AstNode {
 

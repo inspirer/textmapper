@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.builder;
+package org.textmapper.lapg.builder;
 
-import org.textway.lapg.api.InputRef;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.InputRef;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.DerivedSourceElement;
 
 /**
  * Gryaznov Evgeny, 3/16/11

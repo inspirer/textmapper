@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.ast;
+package org.textmapper.templates.ast;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.api.types.IType;
-import org.textway.templates.ast.TemplatesTree.TextSource;
-import org.textway.templates.types.TiClosure;
-import org.textway.templates.types.TiExpressionBuilder;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.api.types.IType;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.types.TiClosure;
+import org.textmapper.templates.types.TiExpressionBuilder;
 
 import java.util.Arrays;
 import java.util.Collections;

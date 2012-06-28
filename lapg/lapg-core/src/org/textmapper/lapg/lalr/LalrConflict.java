@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lalr;
+package org.textmapper.lapg.lalr;
 
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.Symbol;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.Rule;
+import org.textmapper.lapg.api.Symbol;
 
 public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 

@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.common.FormatUtil;
-import org.textway.lapg.common.JavaArrayEncoder;
-import org.textway.templates.eval.DefaultStaticMethods;
+import org.textmapper.lapg.common.FormatUtil;
+import org.textmapper.lapg.common.JavaArrayEncoder;
+import org.textmapper.templates.eval.DefaultStaticMethods;
 
 import java.util.List;
 

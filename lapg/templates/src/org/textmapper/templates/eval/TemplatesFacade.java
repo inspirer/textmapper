@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.eval;
+package org.textmapper.templates.eval;
 
-import org.textway.templates.api.*;
-import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.objects.IxFactory;
+import org.textmapper.templates.api.*;
+import org.textmapper.templates.bundle.IBundleEntity;
+import org.textmapper.templates.bundle.TemplatesRegistry;
+import org.textmapper.templates.objects.IxFactory;
 
 public class TemplatesFacade {
 

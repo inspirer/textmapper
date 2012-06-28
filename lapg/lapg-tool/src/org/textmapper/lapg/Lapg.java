@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg;
+package org.textmapper.lapg;
 
-import org.textway.lapg.common.AbstractProcessingStatus;
-import org.textway.lapg.common.FileBasedStrategy;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.common.GeneratedFile;
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.common.AbstractProcessingStatus;
+import org.textmapper.lapg.common.FileBasedStrategy;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.common.GeneratedFile;
+import org.textmapper.lapg.gen.LapgGenerator;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
 
 import java.io.*;
 

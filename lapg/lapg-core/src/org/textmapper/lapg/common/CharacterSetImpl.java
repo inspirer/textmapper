@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.common;
+package org.textmapper.lapg.common;
 
-import org.textway.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.api.regex.CharacterSet;
 
 import java.util.Arrays;
 import java.util.Iterator;

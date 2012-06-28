@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "Noparser"
-package = "org.textway.lapg.test.bootstrap.lexeronly"
+package = "org.textmapper.lapg.test.bootstrap.lexeronly"
 lexerInput = "char"
 genCopyright = true
 

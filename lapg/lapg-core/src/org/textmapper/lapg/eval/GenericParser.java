@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.eval;
+package org.textmapper.lapg.eval;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.ParserData;
-import org.textway.lapg.eval.GenericLexer.ErrorReporter;
-import org.textway.lapg.eval.GenericLexer.ParseSymbol;
-import org.textway.lapg.eval.GenericParseContext.TextSource;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.ParserData;
+import org.textmapper.lapg.eval.GenericLexer.ErrorReporter;
+import org.textmapper.lapg.eval.GenericLexer.ParseSymbol;
+import org.textmapper.lapg.eval.GenericParseContext.TextSource;
 
 public class GenericParser {
 

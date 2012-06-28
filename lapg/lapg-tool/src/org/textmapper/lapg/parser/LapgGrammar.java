@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.TextSourceElement;
 
 import java.util.Map;
 

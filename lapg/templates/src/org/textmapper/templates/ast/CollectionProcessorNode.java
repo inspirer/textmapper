@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.ast;
+package org.textmapper.templates.ast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,10 +25,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
 
 
 public class CollectionProcessorNode extends ExpressionNode {

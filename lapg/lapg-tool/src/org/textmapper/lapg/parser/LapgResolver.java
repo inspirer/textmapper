@@ -13,30 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
-import org.textway.lapg.LapgCore;
-import org.textway.lapg.api.*;
-import org.textway.lapg.api.builder.GrammarBuilder;
-import org.textway.lapg.api.builder.RuleBuilder;
-import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexMatcher;
-import org.textway.lapg.api.regex.RegexParseException;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.common.FormatUtil;
-import org.textway.lapg.gen.TemplateStaticMethods;
-import org.textway.lapg.parser.LapgLexer.ErrorReporter;
-import org.textway.lapg.parser.LapgLexer.LapgSymbol;
-import org.textway.lapg.parser.LapgLexer.Lexems;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.ast.*;
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.api.types.IFeature;
-import org.textway.templates.api.types.IType;
-import org.textway.templates.types.TiExpressionBuilder;
-import org.textway.templates.types.TypesRegistry;
-import org.textway.templates.types.TypesUtil;
+import org.textmapper.lapg.LapgCore;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.builder.RuleBuilder;
+import org.textmapper.lapg.api.regex.RegexContext;
+import org.textmapper.lapg.api.regex.RegexMatcher;
+import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.common.FormatUtil;
+import org.textmapper.lapg.gen.TemplateStaticMethods;
+import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
+import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
+import org.textmapper.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.ast.*;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.api.types.IFeature;
+import org.textmapper.templates.api.types.IType;
+import org.textmapper.templates.types.TiExpressionBuilder;
+import org.textmapper.templates.types.TypesRegistry;
+import org.textmapper.templates.types.TypesUtil;
 
 import java.io.IOException;
 import java.util.*;

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.nla;
+package org.textmapper.lapg.test.bootstrap.nla;
 
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.test.bootstrap.nla.NlaTestTree.TextSource;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestTree.TextSource;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

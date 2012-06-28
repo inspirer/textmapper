@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.test.cases;
+package org.textmapper.templates.test.cases;
 
 import org.junit.Test;
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.bundle.DefaultTemplateLoader;
-import org.textway.templates.bundle.IBundleLoader;
-import org.textway.templates.bundle.StringTemplateLoader;
-import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.eval.DefaultStaticMethods;
-import org.textway.templates.eval.TemplatesFacade;
-import org.textway.templates.objects.JavaIxFactory;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.Resource;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.types.ITypesRegistry;
+import org.textmapper.templates.bundle.DefaultTemplateLoader;
+import org.textmapper.templates.bundle.IBundleLoader;
+import org.textmapper.templates.bundle.StringTemplateLoader;
+import org.textmapper.templates.bundle.TemplatesRegistry;
+import org.textmapper.templates.eval.DefaultStaticMethods;
+import org.textmapper.templates.eval.TemplatesFacade;
+import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.Resource;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TypesRegistry;
 
 import java.net.URI;
 import java.util.*;

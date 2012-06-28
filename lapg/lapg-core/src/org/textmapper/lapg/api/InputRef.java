@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textmapper.lapg.api;
 
 /**
  * Gryaznov Evgeny, 3/16/11

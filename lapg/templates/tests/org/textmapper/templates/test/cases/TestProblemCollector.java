@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.test.cases;
+package org.textmapper.templates.test.cases;
 
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
 
 import java.util.ArrayList;
 

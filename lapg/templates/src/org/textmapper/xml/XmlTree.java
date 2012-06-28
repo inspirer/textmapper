@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.xml;
+package org.textmapper.xml;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.text.MessageFormat;
-import org.textway.xml.XmlLexer.ErrorReporter;
-import org.textway.xml.XmlParser.ParseException;
+import org.textmapper.xml.XmlLexer.ErrorReporter;
+import org.textmapper.xml.XmlParser.ParseException;
 
 public class XmlTree<T> {
 

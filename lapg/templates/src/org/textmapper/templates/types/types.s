@@ -16,7 +16,7 @@
 
 lang = "java" 
 prefix = "Types"
-package = "org.textway.templates.types"
+package = "org.textmapper.templates.types"
 gentree = true
 genast = true
 astprefix = "Ast"

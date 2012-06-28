@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.api.*;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.objects.DefaultJavaIxObject;
-import org.textway.templates.objects.IxObject;
-import org.textway.templates.objects.IxWrapper;
-import org.textway.templates.objects.JavaIxFactory;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.objects.DefaultJavaIxObject;
+import org.textmapper.templates.objects.IxObject;
+import org.textmapper.templates.objects.IxWrapper;
+import org.textmapper.templates.objects.JavaIxFactory;
 
 import java.util.*;
 

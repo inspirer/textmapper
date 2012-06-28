@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser.ast;
+package org.textmapper.lapg.parser.ast;
 
 /**
  * Gryaznov Evgeny, 8/15/11

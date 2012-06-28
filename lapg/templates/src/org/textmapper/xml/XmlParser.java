@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.xml;
+package org.textmapper.xml;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.MessageFormat;
-import org.textway.xml.XmlLexer.ErrorReporter;
-import org.textway.xml.XmlLexer.LapgSymbol;
-import org.textway.xml.XmlLexer.Lexems;
-import org.textway.xml.XmlTree.TextSource;
+import org.textmapper.xml.XmlLexer.ErrorReporter;
+import org.textmapper.xml.XmlLexer.LapgSymbol;
+import org.textmapper.xml.XmlLexer.Lexems;
+import org.textmapper.xml.XmlTree.TextSource;
 
 public class XmlParser {
 

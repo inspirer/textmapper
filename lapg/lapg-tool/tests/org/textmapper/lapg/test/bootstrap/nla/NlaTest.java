@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.nla;
+package org.textmapper.lapg.test.bootstrap.nla;
 
 import org.junit.Test;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.gen.SyntaxUtil;
-import org.textway.lapg.lalr.Builder;
-import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.test.TestStatus;
-import org.textway.lapg.test.cases.LapgTestCase;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.gen.SyntaxUtil;
+import org.textmapper.lapg.lalr.Builder;
+import org.textmapper.lapg.lex.LexicalBuilder;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.test.TestStatus;
+import org.textmapper.lapg.test.cases.LapgTestCase;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TypesRegistry;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

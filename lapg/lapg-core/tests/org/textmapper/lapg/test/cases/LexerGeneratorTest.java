@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textmapper.lapg.test.cases;
 
 import org.junit.Test;
-import org.textway.lapg.api.*;
-import org.textway.lapg.api.regex.RegexParseException;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.regex.RegexFacade;
-import org.textway.lapg.test.TestStatus;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.lex.LexicalBuilder;
+import org.textmapper.lapg.regex.RegexFacade;
+import org.textmapper.lapg.test.TestStatus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

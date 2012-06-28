@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textmapper.templates.bundle;
 
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.ast.TemplatesTree;
-import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
-import org.textway.templates.ast.TemplatesTree.TextSource;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.ast.TemplatesTree;
+import org.textmapper.templates.ast.TemplatesTree.TemplatesProblem;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.storage.Resource;
 
 import java.util.List;
 

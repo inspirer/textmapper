@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
+package org.textmapper.lapg.lex;
 
-import org.textway.lapg.api.Lexem;
-import org.textway.lapg.api.LexerData;
-import org.textway.lapg.api.NamedPattern;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.common.FormatUtil;
-import org.textway.lapg.regex.RegexFacade;
-import org.textway.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.Lexem;
+import org.textmapper.lapg.api.LexerData;
+import org.textmapper.lapg.api.NamedPattern;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.regex.RegexContext;
+import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.common.FormatUtil;
+import org.textmapper.lapg.regex.RegexFacade;
+import org.textmapper.lapg.api.regex.RegexParseException;
 
 import java.util.*;
 

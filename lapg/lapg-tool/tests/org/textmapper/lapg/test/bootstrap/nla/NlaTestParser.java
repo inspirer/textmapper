@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.nla;
+package org.textmapper.lapg.test.bootstrap.nla;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import org.textway.lapg.test.bootstrap.nla.NlaTestLexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.nla.NlaTestLexer.LapgSymbol;
-import org.textway.lapg.test.bootstrap.nla.NlaTestLexer.Lexems;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestLexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestLexer.LapgSymbol;
+import org.textmapper.lapg.test.bootstrap.nla.NlaTestLexer.Lexems;
 
 public class NlaTestParser {
 

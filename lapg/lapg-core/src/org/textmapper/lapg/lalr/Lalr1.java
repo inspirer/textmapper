@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lalr;
+package org.textmapper.lapg.lalr;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.ProcessingStatus;
 
 import java.text.MessageFormat;
 import java.util.Arrays;

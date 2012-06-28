@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.api.types.IFeature;
-import org.textway.templates.api.types.IMethod;
-import org.textway.templates.api.types.IType;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.api.types.IFeature;
+import org.textmapper.templates.api.types.IMethod;
+import org.textmapper.templates.api.types.IType;
 
 import java.util.*;
 

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.eval;
+package org.textmapper.lapg.eval;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.LexerData;
-import org.textway.lapg.api.ParserData;
-import org.textway.lapg.eval.GenericLexer.ErrorReporter;
-import org.textway.lapg.eval.GenericParser.ParseException;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.LexerData;
+import org.textmapper.lapg.api.ParserData;
+import org.textmapper.lapg.eval.GenericLexer.ErrorReporter;
+import org.textmapper.lapg.eval.GenericParser.ParseException;
 
 import java.io.CharArrayReader;
 import java.io.IOException;

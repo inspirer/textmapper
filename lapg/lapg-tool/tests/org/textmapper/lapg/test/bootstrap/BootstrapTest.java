@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap;
+package org.textmapper.lapg.test.bootstrap;
 
 import org.junit.Test;
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.TextSourceElement;
-import org.textway.lapg.common.AbstractProcessingStatus;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.test.CheckingErrorStream;
-import org.textway.lapg.test.CheckingFileBasedStrategy;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.common.AbstractProcessingStatus;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.gen.LapgGenerator;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.test.CheckingErrorStream;
+import org.textmapper.lapg.test.CheckingFileBasedStrategy;
 
 import java.io.File;
 import java.io.FileInputStream;

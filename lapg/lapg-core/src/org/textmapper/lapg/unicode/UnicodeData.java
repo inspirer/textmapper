@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.unicode;
+package org.textmapper.lapg.unicode;
 
-import org.textway.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.api.regex.CharacterSet;
 
 import java.util.HashMap;
 import java.util.Map;

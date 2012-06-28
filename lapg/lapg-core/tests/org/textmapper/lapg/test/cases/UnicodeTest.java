@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textmapper.lapg.test.cases;
 
 import org.junit.Test;
-import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.common.CharacterSetImpl.Builder;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.test.cases.data.UnicodeParser;
-import org.textway.lapg.test.cases.data.UnicodeParser.UnicodeBuilder;
-import org.textway.lapg.unicode.UnicodeData;
+import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.common.CharacterSetImpl.Builder;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.test.cases.data.UnicodeParser;
+import org.textmapper.lapg.test.cases.data.UnicodeParser.UnicodeBuilder;
+import org.textmapper.lapg.unicode.UnicodeData;
 
 import java.io.IOException;
 import java.io.InputStream;

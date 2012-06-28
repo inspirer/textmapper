@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.ITemplate;
-import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.objects.DefaultIxObject;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.SymbolRef;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.ITemplate;
+import org.textmapper.templates.bundle.IBundleEntity;
+import org.textmapper.templates.objects.DefaultIxObject;
 
 public class ActionSymbol extends DefaultIxObject {
 

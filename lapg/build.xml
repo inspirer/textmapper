@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="all" name="org.textway.lapg">
+<project basedir="." default="all" name="org.textmapper.lapg">
 	<property name="lapg.version" value="1.3.11"/>
 	<property name="lapg.qualifier" value="SNAPSHOT"/>
 	<property name="suffix" value="${lapg.version}"/>
@@ -56,7 +56,7 @@
 		<jar destfile="build/lapg.jar">
 			<fileset dir="build/bin"/>
 			<manifest>
-				<attribute name="Main-Class" value="org.textway.lapg.Lapg"/>
+				<attribute name="Main-Class" value="org.textmapper.lapg.Lapg"/>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Built-Date" value="${lapg.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
@@ -138,7 +138,7 @@
 
 	<!-- TODO Lapg task
 	<target name="syntax">
-		<taskdef name="lapg" classname="org.textway.lapg.ant.Lapg" classpath="libs/lapg-1.3.11.jar"/>
+		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="libs/lapg-1.3.11.jar"/>
 		<lapg source="syntax"/>
 	</target> -->
 

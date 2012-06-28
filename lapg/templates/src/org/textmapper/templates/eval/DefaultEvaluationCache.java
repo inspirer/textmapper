@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.eval;
+package org.textmapper.templates.eval;
 
-import org.textway.templates.api.IEvaluationCache;
+import org.textmapper.templates.api.IEvaluationCache;
 
 import java.util.HashMap;
 import java.util.Map;

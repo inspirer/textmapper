@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.api;
+package org.textmapper.templates.api;
 
-import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.ast.ExpressionNode;
-import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.objects.IxFactory;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.api.types.ITypesRegistry;
+import org.textmapper.templates.ast.ExpressionNode;
+import org.textmapper.templates.bundle.IBundleEntity;
+import org.textmapper.templates.objects.IxFactory;
+import org.textmapper.templates.storage.Resource;
 
 /**
  * Defines environment for evaluating set of templates.

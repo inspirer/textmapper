@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -21,9 +21,9 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import org.textway.lapg.parser.LapgLexer.ErrorReporter;
-import org.textway.lapg.parser.LapgParser.ParseException;
-import org.textway.lapg.parser.ast.*;
+import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
+import org.textmapper.lapg.parser.LapgParser.ParseException;
+import org.textmapper.lapg.parser.ast.*;
 
 public class LapgTree<T> {
 

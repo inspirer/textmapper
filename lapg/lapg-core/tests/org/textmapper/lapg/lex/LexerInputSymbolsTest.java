@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lex;
+package org.textmapper.lapg.lex;
 
 import org.junit.Test;
-import org.textway.lapg.common.CharacterSetImpl;
+import org.textmapper.lapg.common.CharacterSetImpl;
 
 import java.util.Arrays;
 

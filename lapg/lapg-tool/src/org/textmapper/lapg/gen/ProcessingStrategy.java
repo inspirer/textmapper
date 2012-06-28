@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.templates.storage.IResourceLoader;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.templates.storage.IResourceLoader;
 
 public interface ProcessingStrategy {
 

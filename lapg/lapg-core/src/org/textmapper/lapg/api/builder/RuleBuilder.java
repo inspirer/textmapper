@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api.builder;
+package org.textmapper.lapg.api.builder;
 
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.Symbol;
-import org.textway.lapg.api.SymbolRef;
+import org.textmapper.lapg.api.Rule;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.SymbolRef;
 
 import java.util.Collection;
 

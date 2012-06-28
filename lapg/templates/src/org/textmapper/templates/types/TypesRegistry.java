@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.storage.IResourceLoader;
-import org.textway.templates.storage.Resource;
-import org.textway.templates.storage.ResourceRegistry;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.api.types.ITypesRegistry;
+import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.templates.storage.Resource;
+import org.textmapper.templates.storage.ResourceRegistry;
 
 import java.util.*;
 

@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.gen;
+package org.textmapper.lapg.gen;
 
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.TextSourceElement;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.lapg.parser.LapgResolver;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.ast.AstExpression;
-import org.textway.lapg.parser.ast.AstRoot;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.parser.LapgResolver;
+import org.textmapper.lapg.parser.LapgTree;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.ast.AstExpression;
+import org.textmapper.lapg.parser.ast.AstRoot;
+import org.textmapper.templates.types.TypesRegistry;
 
 import java.io.InputStream;
 

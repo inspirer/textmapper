@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.api.types.*;
-import org.textway.templates.api.types.IDataType.Constraint;
-import org.textway.templates.api.types.IDataType.ConstraintKind;
-import org.textway.templates.api.types.IDataType.DataTypeKind;
-import org.textway.templates.storage.Resource;
-import org.textway.templates.types.TiFeature.TiMultiplicity;
-import org.textway.templates.types.TypesTree.TypesProblem;
-import org.textway.templates.types.ast.*;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.api.types.*;
+import org.textmapper.templates.api.types.IDataType.Constraint;
+import org.textmapper.templates.api.types.IDataType.ConstraintKind;
+import org.textmapper.templates.api.types.IDataType.DataTypeKind;
+import org.textmapper.templates.storage.Resource;
+import org.textmapper.templates.types.TiFeature.TiMultiplicity;
+import org.textmapper.templates.types.TypesTree.TypesProblem;
+import org.textmapper.templates.types.ast.*;
 
 import java.util.*;
 

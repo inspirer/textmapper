@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.a.ast;
+package org.textmapper.lapg.test.bootstrap.a.ast;
 
 import java.util.List;
-import org.textway.lapg.test.bootstrap.a.SampleATree.TextSource;
+import org.textmapper.lapg.test.bootstrap.a.SampleATree.TextSource;
 
 public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 

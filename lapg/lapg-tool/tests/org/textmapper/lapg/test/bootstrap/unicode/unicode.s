@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "UnicodeTest"
-package = "org.textway.lapg.test.bootstrap.unicode"
+package = "org.textmapper.lapg.test.bootstrap.unicode"
 genCopyright = true
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $lexem = current(); break; }

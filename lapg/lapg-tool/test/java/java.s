@@ -1,7 +1,7 @@
 
 lang = "last"
 prefix = "Java"
-package = "org.textway.lapg.gen.java"
+package = "org.textmapper.lapg.gen.java"
 gentree = true
 genast = true
 genastdef = true

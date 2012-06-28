@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.test.cases;
+package org.textmapper.templates.test.cases;
 
 import org.junit.Test;
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TypesRegistry;
 
 import static org.junit.Assert.assertNotNull;
 

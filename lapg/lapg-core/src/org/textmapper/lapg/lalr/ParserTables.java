@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.lalr;
+package org.textmapper.lapg.lalr;
 
-import org.textway.lapg.api.ParserData;
-import org.textway.lapg.api.Symbol;
+import org.textmapper.lapg.api.ParserData;
+import org.textmapper.lapg.api.Symbol;
 
 /**
  * Representation of generated parser tables.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api.regex;
+package org.textmapper.lapg.api.regex;
 
 public class RegexParseException extends Exception {
 	private static final long serialVersionUID = -8052552834958196703L;

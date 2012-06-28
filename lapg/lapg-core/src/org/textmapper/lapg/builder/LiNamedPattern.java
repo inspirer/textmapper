@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.builder;
+package org.textmapper.lapg.builder;
 
-import org.textway.lapg.api.NamedPattern;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.DerivedSourceElement;
-import org.textway.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.NamedPattern;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.regex.RegexPart;
 
 /**
  * Gryaznov Evgeny, 6/23/11

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.a;
+package org.textmapper.lapg.test.bootstrap.a;
 
-import org.textway.lapg.eval.GenericNode;
-import org.textway.lapg.eval.GenericParseContext;
-import org.textway.lapg.eval.GenericParseContext.ParseProblem;
-import org.textway.lapg.eval.GenericParseContext.Result;
-import org.textway.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.a.SampleAParser.ParseException;
-import org.textway.lapg.test.bootstrap.a.SampleATree.TextSource;
-import org.textway.lapg.test.bootstrap.a.ast.AstClassdef;
-import org.textway.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
+import org.textmapper.lapg.eval.GenericNode;
+import org.textmapper.lapg.eval.GenericParseContext;
+import org.textmapper.lapg.eval.GenericParseContext.ParseProblem;
+import org.textmapper.lapg.eval.GenericParseContext.Result;
+import org.textmapper.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.a.SampleAParser.ParseException;
+import org.textmapper.lapg.test.bootstrap.a.SampleATree.TextSource;
+import org.textmapper.lapg.test.bootstrap.a.ast.AstClassdef;
+import org.textmapper.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class SampleAParseContext {
 
 	public Result parse(String text, boolean eoi) {
 		TextSource source = new TextSource("input", text.toCharArray(), 1);
-		org.textway.lapg.eval.GenericParseContext.TextSource source2 = new org.textway.lapg.eval.GenericParseContext.TextSource(source.getFile(), source.getContents(), 1);
+		org.textmapper.lapg.eval.GenericParseContext.TextSource source2 = new org.textmapper.lapg.eval.GenericParseContext.TextSource(source.getFile(), source.getContents(), 1);
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -60,7 +60,7 @@ public class SampleAParseContext {
 		return new Result(source2, null, list);
 	}
 
-	public GenericNode convert(org.textway.lapg.eval.GenericParseContext.TextSource source, IAstClassdefNoEoi cd) {
+	public GenericNode convert(org.textmapper.lapg.eval.GenericParseContext.TextSource source, IAstClassdefNoEoi cd) {
 		AstClassdef def = (AstClassdef) cd;
 		GenericNode[] children = new GenericNode[def.getClassdeflistopt() != null ? def.getClassdeflistopt().size() : 0];
 		if (def.getClassdeflistopt() != null) {

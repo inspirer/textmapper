@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.xml;
+package org.textmapper.xml;
 
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.objects.DefaultJavaIxObject;
-import org.textway.templates.objects.IxObject;
-import org.textway.templates.objects.JavaIxFactory;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.objects.DefaultJavaIxObject;
+import org.textmapper.templates.objects.IxObject;
+import org.textmapper.templates.objects.JavaIxFactory;
 
 import java.util.ArrayList;
 

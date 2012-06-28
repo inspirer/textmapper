@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types.ast;
+package org.textmapper.templates.types.ast;
 
 public enum AstMapSeparator {
 	COLON,

@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textmapper.lapg.test.cases;
 
 import org.junit.Test;
-import org.textway.lapg.api.LexerData;
-import org.textway.lapg.api.ParserData;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.eval.GenericNode;
-import org.textway.lapg.eval.GenericParseContext;
-import org.textway.lapg.eval.GenericParseContext.ParseProblem;
-import org.textway.lapg.eval.GenericParseContext.Result;
-import org.textway.lapg.gen.SyntaxUtil;
-import org.textway.lapg.lalr.Builder;
-import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.test.TestStatus;
-import org.textway.lapg.test.bootstrap.a.SampleAParseContext;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.lapg.api.LexerData;
+import org.textmapper.lapg.api.ParserData;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.eval.GenericNode;
+import org.textmapper.lapg.eval.GenericParseContext;
+import org.textmapper.lapg.eval.GenericParseContext.ParseProblem;
+import org.textmapper.lapg.eval.GenericParseContext.Result;
+import org.textmapper.lapg.gen.SyntaxUtil;
+import org.textmapper.lapg.lalr.Builder;
+import org.textmapper.lapg.lex.LexicalBuilder;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.test.TestStatus;
+import org.textmapper.lapg.test.bootstrap.a.SampleAParseContext;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TypesRegistry;
 
 import static org.junit.Assert.*;
 

@@ -17,7 +17,7 @@
 
 lang = "java"
 prefix = "SampleA"
-package = "org.textway.lapg.test.bootstrap.a"
+package = "org.textmapper.lapg.test.bootstrap.a"
 maxtoken = 2048
 breaks = true
 genast = true

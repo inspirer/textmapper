@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ArrayList;
-import org.textway.lapg.api.Lexem;
-import org.textway.lapg.parser.LapgLexer.ErrorReporter;
-import org.textway.lapg.parser.LapgLexer.Lexems;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.ast.*;
-import org.textway.lapg.parser.LapgLexer.LapgSymbol;
+import org.textmapper.lapg.api.Lexem;
+import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
+import org.textmapper.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.ast.*;
+import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 
 public class LapgParser {
 

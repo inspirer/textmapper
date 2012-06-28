@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.parser;
+package org.textmapper.lapg.parser;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
-import org.textway.lapg.parser.action.SActionLexer;
-import org.textway.lapg.parser.action.SActionParser;
+import org.textmapper.lapg.parser.action.SActionLexer;
+import org.textmapper.lapg.parser.action.SActionParser;
 
 public class LapgLexer {
 

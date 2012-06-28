@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textmapper.lapg.regex;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -21,8 +21,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.lapg.regex.RegexDefLexer.ErrorReporter;
-import org.textway.lapg.regex.RegexDefParser.ParseException;
+import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
+import org.textmapper.lapg.regex.RegexDefParser.ParseException;
 
 public class RegexDefTree<T> {
 

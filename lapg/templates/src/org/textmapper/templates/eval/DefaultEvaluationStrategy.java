@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package org.textway.templates.eval;
+package org.textmapper.templates.eval;
 
-import org.textway.templates.api.*;
-import org.textway.templates.api.types.ITypesRegistry;
-import org.textway.templates.ast.TemplatesTree;
-import org.textway.templates.ast.TemplatesTree.TemplatesProblem;
-import org.textway.templates.ast.TemplatesTree.TextSource;
-import org.textway.templates.ast.ExpressionNode;
-import org.textway.templates.ast.TemplateNode;
-import org.textway.templates.bundle.IBundleEntity;
-import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.objects.*;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.api.*;
+import org.textmapper.templates.api.types.ITypesRegistry;
+import org.textmapper.templates.ast.TemplatesTree;
+import org.textmapper.templates.ast.TemplatesTree.TemplatesProblem;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.ast.ExpressionNode;
+import org.textmapper.templates.ast.TemplateNode;
+import org.textmapper.templates.bundle.IBundleEntity;
+import org.textmapper.templates.bundle.TemplatesRegistry;
+import org.textmapper.templates.objects.*;
+import org.textmapper.templates.storage.Resource;
 
 import java.util.Collection;
 

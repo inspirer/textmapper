@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.test.cases;
+package org.textmapper.templates.test.cases;
 
 import org.junit.Test;
-import org.textway.templates.api.IEvaluationCache;
-import org.textway.templates.eval.DefaultEvaluationCache;
-import org.textway.templates.eval.DefaultStaticMethods;
+import org.textmapper.templates.api.IEvaluationCache;
+import org.textmapper.templates.eval.DefaultEvaluationCache;
+import org.textmapper.templates.eval.DefaultStaticMethods;
 
 import static org.junit.Assert.assertEquals;
 

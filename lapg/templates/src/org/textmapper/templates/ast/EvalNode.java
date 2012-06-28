@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.ast;
+package org.textmapper.templates.ast;
 
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.EvaluationException;
-import org.textway.templates.api.IEvaluationStrategy;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.ast.TemplatesTree.TextSource;
-import org.textway.templates.objects.IxWrapper;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.objects.IxWrapper;
+import org.textmapper.templates.storage.Resource;
 
 import java.net.URI;
 

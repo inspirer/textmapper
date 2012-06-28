@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.regex;
+package org.textmapper.lapg.regex;
 
-import org.textway.lapg.api.regex.CharacterSet;
-import org.textway.lapg.regex.RegexDefTree.TextSource;
+import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.regex.RegexDefTree.TextSource;
 
 /**
  * Gryaznov Evgeny, 4/5/11

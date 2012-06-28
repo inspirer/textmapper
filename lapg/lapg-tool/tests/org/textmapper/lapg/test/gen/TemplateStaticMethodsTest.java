@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.gen;
+package org.textmapper.lapg.test.gen;
 
 import org.junit.Test;
-import org.textway.lapg.gen.TemplateStaticMethods;
+import org.textmapper.lapg.gen.TemplateStaticMethods;
 
 import java.util.Arrays;
 import java.util.List;

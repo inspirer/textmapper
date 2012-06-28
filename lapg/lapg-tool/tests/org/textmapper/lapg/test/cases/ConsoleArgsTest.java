@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.cases;
+package org.textmapper.lapg.test.cases;
 
 import org.junit.Test;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.test.CheckingErrorStream;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.test.CheckingErrorStream;
 
 import java.io.IOException;
 import java.io.OutputStream;

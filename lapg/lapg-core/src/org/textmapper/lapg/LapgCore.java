@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg;
+package org.textmapper.lapg;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.api.LexerData;
-import org.textway.lapg.api.ParserData;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.builder.GrammarBuilder;
-import org.textway.lapg.api.regex.RegexContext;
-import org.textway.lapg.api.regex.RegexMatcher;
-import org.textway.lapg.api.regex.RegexParseException;
-import org.textway.lapg.api.regex.RegexPart;
-import org.textway.lapg.builder.GrammarFacade;
-import org.textway.lapg.lalr.Builder;
-import org.textway.lapg.lex.LexicalBuilder;
-import org.textway.lapg.regex.RegexFacade;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.LexerData;
+import org.textmapper.lapg.api.ParserData;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.regex.RegexContext;
+import org.textmapper.lapg.api.regex.RegexMatcher;
+import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.builder.GrammarFacade;
+import org.textmapper.lapg.lalr.Builder;
+import org.textmapper.lapg.lex.LexicalBuilder;
+import org.textmapper.lapg.regex.RegexFacade;
 
 import java.util.Map;
 

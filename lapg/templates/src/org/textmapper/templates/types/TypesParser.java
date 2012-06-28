@@ -13,31 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.types;
+package org.textmapper.templates.types;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.templates.types.TypesLexer.ErrorReporter;
-import org.textway.templates.types.TypesLexer.LapgSymbol;
-import org.textway.templates.types.TypesLexer.Lexems;
-import org.textway.templates.types.ast.AstConstraint;
-import org.textway.templates.types.ast.AstFeatureDeclaration;
-import org.textway.templates.types.ast.AstInput;
-import org.textway.templates.types.ast.AstLiteralExpression;
-import org.textway.templates.types.ast.AstMapEntriesItem;
-import org.textway.templates.types.ast.AstMapSeparator;
-import org.textway.templates.types.ast.AstMethodDeclaration;
-import org.textway.templates.types.ast.AstMultiplicity;
-import org.textway.templates.types.ast.AstStringConstraint;
-import org.textway.templates.types.ast.AstStructuralExpression;
-import org.textway.templates.types.ast.AstType;
-import org.textway.templates.types.ast.AstTypeDeclaration;
-import org.textway.templates.types.ast.AstTypeEx;
-import org.textway.templates.types.ast.Ast_String;
-import org.textway.templates.types.ast.IAstExpression;
-import org.textway.templates.types.ast.IAstMemberDeclaration;
+import org.textmapper.templates.types.TypesLexer.ErrorReporter;
+import org.textmapper.templates.types.TypesLexer.LapgSymbol;
+import org.textmapper.templates.types.TypesLexer.Lexems;
+import org.textmapper.templates.types.ast.AstConstraint;
+import org.textmapper.templates.types.ast.AstFeatureDeclaration;
+import org.textmapper.templates.types.ast.AstInput;
+import org.textmapper.templates.types.ast.AstLiteralExpression;
+import org.textmapper.templates.types.ast.AstMapEntriesItem;
+import org.textmapper.templates.types.ast.AstMapSeparator;
+import org.textmapper.templates.types.ast.AstMethodDeclaration;
+import org.textmapper.templates.types.ast.AstMultiplicity;
+import org.textmapper.templates.types.ast.AstStringConstraint;
+import org.textmapper.templates.types.ast.AstStructuralExpression;
+import org.textmapper.templates.types.ast.AstType;
+import org.textmapper.templates.types.ast.AstTypeDeclaration;
+import org.textmapper.templates.types.ast.AstTypeEx;
+import org.textmapper.templates.types.ast.Ast_String;
+import org.textmapper.templates.types.ast.IAstExpression;
+import org.textmapper.templates.types.ast.IAstMemberDeclaration;
 
 public class TypesParser {
 

@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "NlaTest"
-package = "org.textway.lapg.test.bootstrap.nla"
+package = "org.textmapper.lapg.test.bootstrap.nla"
 breaks = true
 gentree = true
 positions = "line,offset"

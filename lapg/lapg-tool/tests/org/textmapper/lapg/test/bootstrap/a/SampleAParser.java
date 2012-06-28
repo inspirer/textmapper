@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.bootstrap.a;
+package org.textmapper.lapg.test.bootstrap.a;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
-import org.textway.lapg.test.bootstrap.a.SampleALexer.LapgSymbol;
-import org.textway.lapg.test.bootstrap.a.SampleALexer.Lexems;
-import org.textway.lapg.test.bootstrap.a.ast.AstClassdef;
-import org.textway.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
+import org.textmapper.lapg.test.bootstrap.a.SampleALexer.ErrorReporter;
+import org.textmapper.lapg.test.bootstrap.a.SampleALexer.LapgSymbol;
+import org.textmapper.lapg.test.bootstrap.a.SampleALexer.Lexems;
+import org.textmapper.lapg.test.bootstrap.a.ast.AstClassdef;
+import org.textmapper.lapg.test.bootstrap.a.ast.IAstClassdefNoEoi;
 
 public class SampleAParser {
 

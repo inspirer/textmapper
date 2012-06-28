@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test;
+package org.textmapper.lapg.test;
 
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.common.FileUtil;
-import org.textway.lapg.common.GeneratedFile;
-import org.textway.lapg.gen.ProcessingStrategy;
-import org.textway.templates.storage.FileBasedResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.common.GeneratedFile;
+import org.textmapper.lapg.gen.ProcessingStrategy;
+import org.textmapper.templates.storage.FileBasedResourceLoader;
+import org.textmapper.templates.storage.IResourceLoader;
 
 import java.io.File;
 import java.io.FileInputStream;

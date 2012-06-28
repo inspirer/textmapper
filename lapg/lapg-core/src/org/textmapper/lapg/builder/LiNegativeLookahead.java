@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.builder;
+package org.textmapper.lapg.builder;
 
-import org.textway.lapg.api.NegativeLookahead;
-import org.textway.lapg.api.Symbol;
+import org.textmapper.lapg.api.NegativeLookahead;
+import org.textmapper.lapg.api.Symbol;
 
 /**
  * Gryaznov Evgeny, 8/15/11

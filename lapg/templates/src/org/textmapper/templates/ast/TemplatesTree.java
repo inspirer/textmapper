@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.ast;
+package org.textmapper.templates.ast;
 
 
 import java.io.CharArrayReader;
@@ -22,9 +22,9 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.templates.ast.TemplatesLexer.ErrorReporter;
-import org.textway.templates.ast.TemplatesParser.ParseException;
-import org.textway.templates.bundle.IBundleEntity;
+import org.textmapper.templates.ast.TemplatesLexer.ErrorReporter;
+import org.textmapper.templates.ast.TemplatesParser.ParseException;
+import org.textmapper.templates.bundle.IBundleEntity;
 
 public class TemplatesTree<T> {
 

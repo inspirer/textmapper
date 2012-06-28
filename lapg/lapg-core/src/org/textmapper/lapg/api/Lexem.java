@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.api;
+package org.textmapper.lapg.api;
 
-import org.textway.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.regex.RegexPart;
 
 /**
  * Lexem rule.

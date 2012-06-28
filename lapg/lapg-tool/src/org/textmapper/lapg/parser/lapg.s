@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "Lapg"
-package = "org.textway.lapg.parser"
+package = "org.textmapper.lapg.parser"
 maxtoken = 2048
 breaks = true
 gentree = true
@@ -151,10 +151,10 @@ lexem_attrs (AstLexemAttrs) ::=
 ;
 
 lexem_attribute (AstLexemAttrs) ::=
-	  Lsoft												{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
-	| Lclass											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
-	| Lspace											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
-	| Llayout											{ $$ = new AstLexemAttrs(org.textway.lapg.api.@Lexem.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
+	  Lsoft												{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@Lexem.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@Lexem.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@Lexem.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@Lexem.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 icon_list (List<Integer>) ::=
@@ -330,7 +330,7 @@ ${template java.imports-}
 ${call base-}
 import java.util.List;
 import java.util.ArrayList;
-import org.textway.lapg.parser.ast.*;
+import org.textmapper.lapg.parser.ast.*;
 ${end}
 
 ${template java_lexer.lexercode}
@@ -348,12 +348,12 @@ public void setSkipComments(boolean skip) {
 
 private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
-	org.textway.lapg.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textway.lapg.parser.action.@SActionLexer.ErrorReporter() {
+	org.textmapper.lapg.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.lapg.parser.action.@SActionLexer.ErrorReporter() {
 		public void error(int start, int line, String s) {
 			reporter.error(start, start + 1, line, s);
 		}
 	};
-	org.textway.lapg.parser.action.@SActionLexer l = new org.textway.lapg.parser.action.@SActionLexer(innerreporter) {
+	org.textmapper.lapg.parser.action.@SActionLexer l = new org.textmapper.lapg.parser.action.@SActionLexer(innerreporter) {
 		@Override
 		protected char nextChar() throws java.io.@IOException {
 			if (ind[0] < 2) {
@@ -363,10 +363,10 @@ private boolean skipAction() throws java.io.@IOException {
 			return chr;
 		}
 	};
-	org.textway.lapg.parser.action.@SActionParser p = new org.textway.lapg.parser.action.@SActionParser(innerreporter);
+	org.textmapper.lapg.parser.action.@SActionParser p = new org.textmapper.lapg.parser.action.@SActionParser(innerreporter);
 	try {
 		p.parse(l);
-	} catch (org.textway.lapg.parser.action.@SActionParser.ParseException e) {
+	} catch (org.textmapper.lapg.parser.action.@SActionParser.ParseException e) {
 		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
 		return false;
 	}
@@ -405,7 +405,7 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-org.textway.lapg.parser.LapgTree.@TextSource source;
+org.textmapper.lapg.parser.LapgTree.@TextSource source;
 ${end}
 
 ${template java_tree.createParser-}

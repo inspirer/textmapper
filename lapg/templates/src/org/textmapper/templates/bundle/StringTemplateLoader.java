@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.bundle;
+package org.textmapper.templates.bundle;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.storage.Resource;
 
 /**
  * In-memory template loader.

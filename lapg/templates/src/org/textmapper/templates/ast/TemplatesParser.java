@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.templates.ast;
+package org.textmapper.templates.ast;
 
 
 import java.io.IOException;
@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.textway.templates.ast.TemplatesLexer.ErrorReporter;
-import org.textway.templates.ast.TemplatesLexer.LapgSymbol;
-import org.textway.templates.ast.TemplatesLexer.Lexems;
-import org.textway.templates.ast.TemplatesTree.TextSource;
-import org.textway.templates.bundle.IBundleEntity;
+import org.textmapper.templates.ast.TemplatesLexer.ErrorReporter;
+import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textmapper.templates.ast.TemplatesLexer.Lexems;
+import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.bundle.IBundleEntity;
 
 public class TemplatesParser {
 

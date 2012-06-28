@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textway.lapg.test.gen;
+package org.textmapper.lapg.test.gen;
 
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.gen.TemplateStaticMethods;
-import org.textway.lapg.test.CheckingFileBasedStrategy;
-import org.textway.templates.api.EvaluationContext;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.api.types.IClass;
-import org.textway.templates.bundle.DefaultTemplateLoader;
-import org.textway.templates.bundle.TemplatesRegistry;
-import org.textway.templates.eval.TemplatesFacade;
-import org.textway.templates.objects.IxFactory;
-import org.textway.templates.objects.JavaIxFactory;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TiInstance;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.lapg.gen.LapgGenerator;
+import org.textmapper.lapg.gen.TemplateStaticMethods;
+import org.textmapper.lapg.test.CheckingFileBasedStrategy;
+import org.textmapper.templates.api.EvaluationContext;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.api.types.IClass;
+import org.textmapper.templates.bundle.DefaultTemplateLoader;
+import org.textmapper.templates.bundle.TemplatesRegistry;
+import org.textmapper.templates.eval.TemplatesFacade;
+import org.textmapper.templates.objects.IxFactory;
+import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TiInstance;
+import org.textmapper.templates.types.TypesRegistry;
 
 import java.io.File;
 import java.util.ArrayList;
