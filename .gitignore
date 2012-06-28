@@ -1,3 +1,6 @@
+/eclipse
+/temp
+/grammars
 .DS_Store
 workspace.xml
 dictionaries

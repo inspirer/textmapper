@@ -50,7 +50,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.textmapper</groupId>
-			<artifactId>lapg-templates</artifactId>
+			<artifactId>templates</artifactId>
 			<version>1.3.11-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
