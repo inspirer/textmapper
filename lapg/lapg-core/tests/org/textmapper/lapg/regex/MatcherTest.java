@@ -99,6 +99,32 @@ public class MatcherTest {
 	}
 
 	@Test
+	public void testComplexQuantifiers() throws RegexParseException {
+		// optional
+		checkMatch("a{0,1}", "", true);
+		checkMatch("a{0,1}", "a", true);
+		checkMatch("a{0,1}", "aa", false);
+
+		// upper bound
+		checkMatch("a{0,7}", "", true);
+		checkMatch("a{0,7}", "a", true);
+		checkMatch("a{0,7}", "aaaaaa", true);
+		checkMatch("a{0,7}", "aaaaaaa", true);
+		checkMatch("a{0,7}", "aaaaaaaa", false);
+
+		// range
+		checkMatch("a{6,9}", "aaaaa", false);
+		checkMatch("a{6,9}", "aaaaaa", true);
+		checkMatch("a{6,9}", "aaaaaaaaa", true);
+		checkMatch("a{6,9}", "aaaaaaaaaa", false);
+
+		// exact match
+		checkMatch("[a-z]{4}", "aza", false);
+		checkMatch("[a-z]{4}", "azaz", true);
+		checkMatch("[a-z]{4}", "azazy", false);
+	}
+
+	@Test
 	public void testUnicode() {
 		for (int cp = 0; cp < 0x333; cp++) {
 			String s = "L" + new String(Character.toChars(cp)) + "R";

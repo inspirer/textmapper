@@ -254,20 +254,47 @@ class RegexMatcherImpl implements RegexMatcher {
 
 		@Override
 		public Void caseQuantifier(RegexQuantifier c) {
+			int min = c.getMin();
+			int max = c.getMax();
+			if (min < 0 || max == 0 || max < -1 || max > 0 && min > max) {
+				throw new IllegalArgumentException("wrong quantifier: " + c.toString());
+			}
+
+			while (min > 1) {
+				c.getInner().accept(this);
+				min--;
+				if (max != -1) {
+					max--;
+				}
+			}
+
+			assert min == 0 || min == 1;
+
+			while (max > 1) {
+				stack.push(new StackElement(index()));
+				c.getInner().accept(this);
+				int start = stack.pop().index;
+				states.get(start).addJump(index());  // optional (forward jump)
+				max--;
+			}
+
+			assert max == -1 || max == 1;
+
 			stack.push(new StackElement(index()));
 			c.getInner().accept(this);
 			int start = stack.pop().index;
-			if (c.getMin() == 0 && c.getMax() == 1) {
+			if (min == 0 && max == 1) {
 				states.get(start).addJump(index());
-			} else if (c.getMin() == 0 && c.getMax() == -1) {
+			} else if (min == 0 && max == -1) {
 				states.get(start).addJump(index());
 				yield(null);    /* splitter */
 				states.get(index() - 1).addJump(start);
-			} else if (c.getMin() == 1 && c.getMax() == -1) {
+			} else if (min == 1 && max == -1) {
 				yield(null);   /* splitter */
 				states.get(index() - 1).addJump(start);
 			} else {
-				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
+				assert min == 1 && max == 1;
+				// nop
 			}
 			return null;
 		}
