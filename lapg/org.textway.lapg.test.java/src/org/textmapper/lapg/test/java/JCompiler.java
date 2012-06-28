@@ -1,4 +1,4 @@
-package org.textway.lapg.test.java;
+package org.textmapper.lapg.test.java;
 
 import java.io.File;
 import java.util.ArrayList;

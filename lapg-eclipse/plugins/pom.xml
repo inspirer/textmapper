@@ -16,9 +16,9 @@
 
     <modules>
         <!-- plugins -->
-        <module>org.textway.common.ui</module>
-        <module>org.textway.lapg</module>
-        <module>org.textway.lapg.ui</module>
+        <module>org.textmapper.common.ui</module>
+        <module>org.textmapper.lapg</module>
+        <module>org.textmapper.lapg.ui</module>
     </modules>
 
     <build>

@@ -16,6 +16,6 @@
 
     <modules>
         <!-- features -->
-        <module>org.textway.lapg</module>
+        <module>org.textmapper.lapg</module>
     </modules>
 </project>

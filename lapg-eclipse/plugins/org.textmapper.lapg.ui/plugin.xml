@@ -18,9 +18,9 @@
          name="%source_editor"
          icon="icons/syntax.gif"
          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-         class="org.textway.lapg.ui.editor.LapgSourceEditor"
-         id="org.textway.lapg.ui.editor.LapgSourceEditor">
-         <contentTypeBinding contentTypeId="org.textway.lapg.ui.lapgText"/> 
+         class="org.textmapper.lapg.ui.editor.LapgSourceEditor"
+         id="org.textmapper.lapg.ui.editor.LapgSourceEditor">
+         <contentTypeBinding contentTypeId="org.textmapper.lapg.ui.lapgText"/> 
       </editor>
    </extension>
    
@@ -29,14 +29,14 @@
          name="Lapg Source Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            contentTypeId="org.textway.lapg.ui.lapgText"
-            class="org.textway.lapg.ui.editor.LapgSourceSetupParticipant">
+            contentTypeId="org.textmapper.lapg.ui.lapgText"
+            class="org.textmapper.lapg.ui.editor.LapgSourceSetupParticipant">
       </participant>
    </extension>
 
    <extension point="org.eclipse.ui.contexts" id="textEditorContexts">
       <context
-            id="org.textway.lapg.ui.scope"
+            id="org.textmapper.lapg.ui.scope"
             name="%editor_context_name"
             parentId="org.eclipse.ui.textEditorScope">
       </context>
@@ -44,50 +44,50 @@
 
    <extension point="org.eclipse.ui.editors.annotationTypes" id="textAnnotationTypes">
       <type
-         name="org.textway.lapg.ui.editor.error"
+         name="org.textmapper.lapg.ui.editor.error"
          super="org.eclipse.ui.workbench.texteditor.error"
          markerSeverity="2">
       </type>
       <type
-         name="org.textway.lapg.ui.editor.warning"
+         name="org.textmapper.lapg.ui.editor.warning"
          super="org.eclipse.ui.workbench.texteditor.warning"
          markerSeverity="1">
       </type>
       <type
-         name="org.textway.lapg.ui.editor.info"
+         name="org.textmapper.lapg.ui.editor.info"
          super="org.eclipse.ui.workbench.texteditor.info"
          markerSeverity="0">
       </type>
    </extension>
 
    <extension point="org.eclipse.core.runtime.preferences" id="preferenceInitializers">
-      <initializer class="org.textway.lapg.ui.preferences.LapgUIPreferencesInitializer"/>
+      <initializer class="org.textmapper.lapg.ui.preferences.LapgUIPreferencesInitializer"/>
    </extension>
 
    <extension point="org.eclipse.ui.preferencePages" id="preferencePages">
       <page
             name="%pref_root_name"
-            class="org.textway.lapg.ui.preferences.LapgPreferencePage"
-            id="org.textway.lapg.ui.preferences.RootPreferencePage">
+            class="org.textmapper.lapg.ui.preferences.LapgPreferencePage"
+            id="org.textmapper.lapg.ui.preferences.RootPreferencePage">
       </page>
       <page
             name="%pref_syntaxcoloring_name"
-            category="org.textway.lapg.ui.preferences.RootPreferencePage"
-            class="org.textway.lapg.ui.preferences.LapgColorsPreferencePage"
-            id="org.textway.lapg.ui.preferences.ColorPreferencePage">
+            category="org.textmapper.lapg.ui.preferences.RootPreferencePage"
+            class="org.textmapper.lapg.ui.preferences.LapgColorsPreferencePage"
+            id="org.textmapper.lapg.ui.preferences.ColorPreferencePage">
       </page>
    </extension>
    
    <extension point="org.eclipse.ui.newWizards" id="newWizards">
       <category
-            id="org.textway.lapg.ui.wizards"
+            id="org.textmapper.lapg.ui.wizards"
             name="%lapg_wizard_category">
       </category>
       <wizard
-            id="org.textway.lapg.ui.wizard.newSyntax"
+            id="org.textmapper.lapg.ui.wizard.newSyntax"
             name="%wizard_name"
-            class="org.textway.lapg.ui.wizard.CreateSyntaxFileWizard"
-            category="org.textway.lapg.ui.wizards"
+            class="org.textmapper.lapg.ui.wizard.CreateSyntaxFileWizard"
+            category="org.textmapper.lapg.ui.wizards"
             icon="icons/syntax.gif">
          <description>%wizard_description</description>
          <selection class="org.eclipse.core.resources.IResource"/>
@@ -97,7 +97,7 @@
    <extension point="org.eclipse.core.resources.builders" id="lapgBuilder" name="%lapgBuilder.name">
       <builder hasNature="false">
       	<run
-             class="org.textway.lapg.ui.build.IncrementalLapgBuilder">
+             class="org.textmapper.lapg.ui.build.IncrementalLapgBuilder">
       	</run>
       </builder>
    </extension>

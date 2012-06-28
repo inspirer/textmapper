@@ -1,6 +1,6 @@
-package org.textway.lapg.test.java;
+package org.textmapper.lapg.test.java;
 
-import org.textway.lapg.test.java.cases.JavaGen;
+import org.textmapper.lapg.test.java.cases.JavaGen;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 

@@ -75,7 +75,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 			}
 		}
 		if (options == null || options.isUseDefaultTemplates()) {
-			loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+			loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}

@@ -1,9 +1,9 @@
-package org.textway.lapg.test.java.cases;
+package org.textmapper.lapg.test.java.cases;
 
 import org.eclipse.jdt.core.compiler.CategorizedProblem;
 import org.eclipse.jdt.internal.compiler.CompilationResult;
 
-import org.textway.lapg.test.java.JCompiler;
+import org.textmapper.lapg.test.java.JCompiler;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

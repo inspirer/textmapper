@@ -2,7 +2,7 @@
 
 lang = "java"
 prefix = "Settings"
-package = "org.textway.lapg.ui.settings"
+package = "org.textmapper.lapg.ui.settings"
 gentree = true
 genast = true
 positions = "offset"
