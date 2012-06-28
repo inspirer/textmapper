@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.compiler;
+package org.textmapper.lapg.idea.compiler;
 
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.gen.ProcessingStrategy;
-import org.textway.lapg.common.GeneratedFile;
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.templates.storage.FileBasedResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.gen.ProcessingStrategy;
+import org.textmapper.lapg.common.GeneratedFile;
+import org.textmapper.lapg.gen.LapgGenerator;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.templates.storage.FileBasedResourceLoader;
+import org.textmapper.templates.storage.IResourceLoader;
 
 import java.io.*;
 import java.util.HashMap;

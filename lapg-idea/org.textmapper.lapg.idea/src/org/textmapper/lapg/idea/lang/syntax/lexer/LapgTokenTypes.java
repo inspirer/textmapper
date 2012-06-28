@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.syntax.lexer;
+package org.textmapper.lapg.idea.lang.syntax.lexer;
 
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.textway.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.lapg.parser.LapgLexer.Lexems;
 
 public interface LapgTokenTypes {
 

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.templates.parser;
+package org.textmapper.lapg.idea.lang.templates.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -28,12 +28,12 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.templates.lexer.LtplLexerAdapter;
-import org.textway.lapg.idea.lang.templates.lexer.LtplTokenTypes;
-import org.textway.lapg.idea.lang.templates.psi.TpsiBundle;
-import org.textway.lapg.idea.lang.templates.psi.TpsiElement;
-import org.textway.lapg.idea.lang.templates.psi.TpsiQuery;
-import org.textway.lapg.idea.lang.templates.psi.TpsiTemplate;
+import org.textmapper.lapg.idea.lang.templates.lexer.LtplLexerAdapter;
+import org.textmapper.lapg.idea.lang.templates.lexer.LtplTokenTypes;
+import org.textmapper.lapg.idea.lang.templates.psi.TpsiBundle;
+import org.textmapper.lapg.idea.lang.templates.psi.TpsiElement;
+import org.textmapper.lapg.idea.lang.templates.psi.TpsiQuery;
+import org.textmapper.lapg.idea.lang.templates.psi.TpsiTemplate;
 
 /**
  * evgeny, 3/3/12

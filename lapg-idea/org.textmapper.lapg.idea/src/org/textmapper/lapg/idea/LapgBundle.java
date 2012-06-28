@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea;
+package org.textmapper.lapg.idea;
 
 import com.intellij.CommonBundle;
 import org.jetbrains.annotations.NonNls;
@@ -31,7 +31,7 @@ public class LapgBundle {
 	private static Reference<ResourceBundle> ourBundle;
 
 	@NonNls
-	private static final String BUNDLE = "org.textway.lapg.idea.LapgBundle";
+	private static final String BUNDLE = "org.textmapper.lapg.idea.LapgBundle";
 
 	public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
 		return CommonBundle.message(getBundle(), key, params);

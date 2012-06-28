@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.facet;
+package org.textmapper.lapg.idea.facet;
 
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetType;
@@ -28,9 +28,9 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.textway.lapg.idea.LapgBundle;
-import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.LapgBundle;
+import org.textmapper.lapg.idea.LapgIcons;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 
 import javax.swing.*;
 import java.util.Collection;

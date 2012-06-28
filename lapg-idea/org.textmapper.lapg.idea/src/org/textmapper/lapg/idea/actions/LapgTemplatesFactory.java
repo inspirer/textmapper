@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.actions;
+package org.textmapper.lapg.idea.actions;
 
 import com.intellij.ide.fileTemplates.*;
 import com.intellij.psi.PsiDirectory;
@@ -22,8 +22,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
-import org.textway.lapg.idea.LapgBundle;
-import org.textway.lapg.idea.LapgIcons;
+import org.textmapper.lapg.idea.LapgBundle;
+import org.textmapper.lapg.idea.LapgIcons;
 
 import java.util.Properties;
 

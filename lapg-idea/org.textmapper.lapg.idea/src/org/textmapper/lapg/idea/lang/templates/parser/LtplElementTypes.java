@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.templates.parser;
+package org.textmapper.lapg.idea.lang.templates.parser;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import org.textway.lapg.idea.lang.templates.LtplFileType;
-import org.textway.lapg.idea.lang.templates.lexer.LtplElementType;
-import org.textway.templates.ast.TemplatesParser.Tokens;
+import org.textmapper.lapg.idea.lang.templates.LtplFileType;
+import org.textmapper.lapg.idea.lang.templates.lexer.LtplElementType;
+import org.textmapper.templates.ast.TemplatesParser.Tokens;
 
 /**
  * evgeny, 3/3/12

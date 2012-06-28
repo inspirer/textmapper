@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.syntax.parser;
+package org.textmapper.lapg.idea.lang.syntax.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -28,9 +28,9 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
-import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
-import org.textway.lapg.idea.lang.syntax.psi.*;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.lapg.idea.lang.syntax.psi.*;
 
 public class LapgParserDefinition implements ParserDefinition {
 

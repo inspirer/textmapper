@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.syntax;
+package org.textmapper.lapg.idea.lang.syntax;
 
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
@@ -22,8 +22,8 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.psi.LpsLexem;
-import org.textway.lapg.idea.lang.syntax.psi.LpsReference;
+import org.textmapper.lapg.idea.lang.syntax.psi.LpsLexem;
+import org.textmapper.lapg.idea.lang.syntax.psi.LpsReference;
 
 /**
  * Gryaznov Evgeny, 1/30/11

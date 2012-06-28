@@ -130,8 +130,8 @@
 	<target name="deploy" depends="build,buildsource">
 		<copy file="build/lapg.jar" tofile="libs/lapg-${suffix}.jar"/>
 		<copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
-		<copy file="build/lapg.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}.jar"/>
-		<copy file="build/lapg-src.jar" tofile="../lapg-idea/org.textway.lapg.idea/lib/lapg-${suffix}-src.jar"/>
+		<copy file="build/lapg.jar" tofile="../lapg-idea/org.textmapper.lapg.idea/lib/lapg-${suffix}.jar"/>
+		<copy file="build/lapg-src.jar" tofile="../lapg-idea/org.textmapper.lapg.idea/lib/lapg-${suffix}-src.jar"/>
 		<copy file="build/lapg.jar" tofile="../lapg-eclipse/plugins/org.textway.lapg/lapg.jar"/>
 		<copy file="build/lapg-src.jar" tofile="../lapg-eclipse/plugins/org.textway.lapg/lapg-src.jar"/>
 	</target>
@@ -189,14 +189,14 @@
 
 		<mkdir dir="build/lapg/classes"/>
 		<copy includeemptydirs="false" todir="build/lapg">
-			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
+			<fileset dir="../lapg-idea/org.textmapper.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
 		</copy>
 		<copy includeemptydirs="false" todir="build/lapg/classes">
-			<fileset dir="../lapg-idea/org.textway.lapg.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="../lapg-idea/org.textway.lapg.idea/resources"/>
+			<fileset dir="../lapg-idea/org.textmapper.lapg.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="../lapg-idea/org.textmapper.lapg.idea/resources"/>
 		</copy>
 		<javac2 destdir="build/lapg/classes" source="${source}" target="${target}" includeantruntime="false">
-			<src path="../lapg-idea/org.textway.lapg.idea/src"/>
+			<src path="../lapg-idea/org.textmapper.lapg.idea/src"/>
 			<classpath>
 				<fileset dir="build/lapg/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>

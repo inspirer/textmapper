@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.editor;
+package org.textmapper.lapg.idea.editor;
 
 import com.intellij.lang.Commenter;
 

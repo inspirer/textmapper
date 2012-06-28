@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.templates.lexer;
+package org.textmapper.lapg.idea.lang.templates.lexer;
 
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.templates.LtplFileType;
+import org.textmapper.lapg.idea.lang.templates.LtplFileType;
 
 /**
  * Gryaznov Evgeny, 3/1/12

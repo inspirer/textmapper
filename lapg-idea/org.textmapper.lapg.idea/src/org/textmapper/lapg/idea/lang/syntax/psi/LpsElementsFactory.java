@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.syntax.psi;
+package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
@@ -22,8 +22,8 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
-import org.textway.lapg.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.lang.syntax.parser.LapgFile;
 
 /**
  * Gryaznov Evgeny, 1/26/11

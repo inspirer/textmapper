@@ -15,11 +15,11 @@
   ~ along with this program.  If not, see http://www.gnu.org/licenses/.
   -->
 <idea-plugin version="2">
-	<id>org.textway.lapg.idea</id>
+	<id>org.textmapper.lapg.idea</id>
 	<name>Lapg support</name>
 	<category>Custom Languages</category>
 	<version>1.3.11</version>
-	<vendor url="http://textway.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
+	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 	<idea-version since-build="103.72"/>
 
 	<description><![CDATA[
@@ -36,62 +36,62 @@
 
 	<application-components>
 		<component>
-			<implementation-class>org.textway.lapg.idea.LapgLoader</implementation-class>
+			<implementation-class>org.textmapper.lapg.idea.LapgLoader</implementation-class>
 		</component>
 	</application-components>
 
 	<project-components>
 		<component>
-			<implementation-class>org.textway.lapg.idea.compiler.LapgCompilerProjectComponent</implementation-class>
+			<implementation-class>org.textmapper.lapg.idea.compiler.LapgCompilerProjectComponent</implementation-class>
 		</component>
 	</project-components>
 
 	<actions>
-		<action id="org.textway.lapg.idea.actions.NewLapgGrammar" class="org.textway.lapg.idea.actions.NewLapgGrammar"
+		<action id="org.textmapper.lapg.idea.actions.NewLapgGrammar" class="org.textmapper.lapg.idea.actions.NewLapgGrammar"
 				text="Lapg Grammar" description="Creates new Lapg Grammar">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<facetType implementation="org.textway.lapg.idea.facet.LapgFacetType"/>
-		<frameworkSupport implementation="org.textway.lapg.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
-		<fileTypeFactory implementation="org.textway.lapg.idea.LapgFileTypeFactory"/>
-		<fileTemplateGroup implementation="org.textway.lapg.idea.actions.LapgTemplatesFactory"/>
+		<facetType implementation="org.textmapper.lapg.idea.facet.LapgFacetType"/>
+		<frameworkSupport implementation="org.textmapper.lapg.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
+		<fileTypeFactory implementation="org.textmapper.lapg.idea.LapgFileTypeFactory"/>
+		<fileTemplateGroup implementation="org.textmapper.lapg.idea.actions.LapgTemplatesFactory"/>
 
 		<syntaxHighlighter
 				key="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.lang.syntax.LapgSyntaxHighlighter"/>
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.LapgSyntaxHighlighter"/>
 
 		<lang.parserDefinition
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.lang.syntax.parser.LapgParserDefinition"/>
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.parser.LapgParserDefinition"/>
 
 		<lang.foldingBuilder
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.editor.LapgFoldingBuilder"/>
+				implementationClass="org.textmapper.lapg.idea.editor.LapgFoldingBuilder"/>
 
-		<colorSettingsPage implementation="org.textway.lapg.idea.lang.syntax.LapgColorsPage"/>
+		<colorSettingsPage implementation="org.textmapper.lapg.idea.lang.syntax.LapgColorsPage"/>
 
 		<annotator
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.lang.syntax.LapgAnnotator"/>
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.LapgAnnotator"/>
 
 		<defaultLiveTemplatesProvider
-				implementation="org.textway.lapg.idea.templates.LapgDefaultLiveTemplatesProvider"/>
+				implementation="org.textmapper.lapg.idea.templates.LapgDefaultLiveTemplatesProvider"/>
 
 		<lang.commenter
 				language="Lapg Syntax"
-				implementationClass="org.textway.lapg.idea.editor.LapgCommenter"/>
+				implementationClass="org.textmapper.lapg.idea.editor.LapgCommenter"/>
 
 		<!-- Lapg templates -->
 		<syntaxHighlighter
 				key="Lapg Templates"
-				factoryClass="org.textway.lapg.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
+				factoryClass="org.textmapper.lapg.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
 
 		<lang.parserDefinition
 				language="Lapg Templates"
-				implementationClass="org.textway.lapg.idea.lang.templates.parser.LtplParserDefinition"/>
+				implementationClass="org.textmapper.lapg.idea.lang.templates.parser.LtplParserDefinition"/>
 
 	</extensions>
 </idea-plugin>

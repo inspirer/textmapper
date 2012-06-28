@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.compiler;
+package org.textmapper.lapg.idea.compiler;
 
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.components.ProjectComponent;
@@ -22,7 +22,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 
 import java.util.Arrays;
 import java.util.HashSet;

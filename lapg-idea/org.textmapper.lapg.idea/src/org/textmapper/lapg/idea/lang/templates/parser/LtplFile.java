@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.lang.templates.parser;
+package org.textmapper.lapg.idea.lang.templates.parser;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
@@ -23,8 +23,8 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.templates.LtplFileType;
-import org.textway.lapg.idea.lang.templates.psi.TpsiBundle;
+import org.textmapper.lapg.idea.lang.templates.LtplFileType;
+import org.textmapper.lapg.idea.lang.templates.psi.TpsiBundle;
 
 /**
  * evgeny, 3/3/12

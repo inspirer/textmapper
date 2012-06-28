@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.actions;
+package org.textmapper.lapg.idea.actions;
 
 import com.intellij.CommonBundle;
 import com.intellij.ide.actions.CreateElementActionBase;
@@ -27,10 +27,10 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.LapgBundle;
-import org.textway.lapg.idea.LapgIcons;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
-import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.lapg.idea.LapgBundle;
+import org.textmapper.lapg.idea.LapgIcons;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 /**
  * Gryaznov Evgeny, 3/13/11

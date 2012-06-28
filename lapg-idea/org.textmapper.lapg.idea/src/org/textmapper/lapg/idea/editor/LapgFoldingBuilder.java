@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.editor;
+package org.textmapper.lapg.idea.editor;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.folding.FoldingBuilder;
@@ -23,7 +23,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 import java.util.ArrayList;
 import java.util.List;

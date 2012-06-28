@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textway.lapg.idea.compiler;
+package org.textmapper.lapg.idea.compiler;
 
 import com.intellij.compiler.impl.CompilerUtil;
 import com.intellij.compiler.impl.javaCompiler.OutputItemImpl;
@@ -37,17 +37,17 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.Chunk;
 import org.jetbrains.annotations.NotNull;
-import org.textway.lapg.api.DerivedSourceElement;
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.idea.LapgBundle;
-import org.textway.lapg.idea.facet.LapgConfigurationBean;
-import org.textway.lapg.idea.facet.LapgFacet;
-import org.textway.lapg.idea.facet.LapgFacetType;
-import org.textway.lapg.idea.lang.syntax.LapgFileType;
-import org.textway.lapg.idea.lang.syntax.parser.LapgFile;
-import org.textway.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.idea.LapgBundle;
+import org.textmapper.lapg.idea.facet.LapgConfigurationBean;
+import org.textmapper.lapg.idea.facet.LapgFacet;
+import org.textmapper.lapg.idea.facet.LapgFacetType;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.lapg.api.TextSourceElement;
 
 import java.io.File;
 import java.io.IOException;
