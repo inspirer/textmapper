@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
-<listEntry value="/org.textway.templates/tests/org/textway/templates/test/TestRunner.java"/>
+<listEntry value="/org.textmapper.templates/tests/org/textmapper/templates/test/TestRunner.java"/>
 </listAttribute>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="1"/>
@@ -14,6 +14,6 @@
 <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
 <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
 <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
-<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.textway.templates.test.TestRunner"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.textway.templates"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.textmapper.templates.test.TestRunner"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.textmapper.templates"/>
 </launchConfiguration>

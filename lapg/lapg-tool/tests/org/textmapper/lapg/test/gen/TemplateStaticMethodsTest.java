@@ -93,7 +93,7 @@ public class TemplateStaticMethodsTest {
 
 	@Test
 	public void testUnpackRoutineUpToDate() {
-		LapgTemplatesTestHelper.generationTest("java_pack.testClass", "tests/org/textway/lapg/test/gen", new String[]{
+		LapgTemplatesTestHelper.generationTest("java_pack.testClass", "tests/org/textmapper/lapg/test/gen", new String[]{
 				"JavaTemplateRoutines.java"});
 	}
 

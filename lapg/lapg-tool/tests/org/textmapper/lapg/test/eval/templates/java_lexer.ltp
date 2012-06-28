@@ -1,12 +1,12 @@
 
 ${template lexerCtor-}
-	private final org.textway.lapg.api.@Grammar grammar;
+	private final org.textmapper.lapg.api.@Grammar grammar;
 	private final int[] lapg_char2no;
 	private final int[] lapg_lexemnum;
 	private final int[] lapg_lexem;
 	private final int lapg_nchars;
 
-	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textway.lapg.api.@LexerData lexerData, org.textway.lapg.api.@Grammar grammar) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		lapg_lexemnum = getLexemNum(grammar);
@@ -29,7 +29,7 @@ ${end}
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
 		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
-		return lexemKind != org.textway.lapg.api.@Lexem.KIND_SPACE;
+		return lexemKind != org.textmapper.lapg.api.@Lexem.KIND_SPACE;
 	}
 ${end}
 
@@ -37,8 +37,8 @@ ${template lexemsInterface-}
 ${end}
 
 ${template unpackRoutines}
-	private static int[] getLexemNum(org.textway.lapg.api.@Grammar grammar) {
-		org.textway.lapg.api.@Lexem[] lexems = grammar.getLexems();
+	private static int[] getLexemNum(org.textmapper.lapg.api.@Grammar grammar) {
+		org.textmapper.lapg.api.@Lexem[] lexems = grammar.getLexems();
 		int[] result = new int[lexems.length];
 		for (int i = 0; i < lexems.length; i++) {
 			result[i] = lexems[i].getSymbol().getIndex();

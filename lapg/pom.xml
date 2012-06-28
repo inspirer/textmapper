@@ -22,7 +22,7 @@
 	<packaging>pom</packaging>
 	<version>1.3.11-SNAPSHOT</version>
 	<name>Lapg Master</name>
-	<url>http://textway.org</url>
+	<url>http://textmapper.org</url>
 
 	<licenses>
 		<license>

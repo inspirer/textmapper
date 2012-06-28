@@ -25,7 +25,7 @@ import static org.junit.Assert.assertNotNull;
 
 public class TypesTest {
 
-	private static final String TEMPLATES_LOCATION = "org/textway/templates/test/ltp";
+	private static final String TEMPLATES_LOCATION = "org/textmapper/templates/test/ltp";
 
 	private static final String TEMPLATES_CHARSET = "utf8";
 

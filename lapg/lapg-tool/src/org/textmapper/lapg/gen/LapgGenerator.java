@@ -145,7 +145,7 @@ public final class LapgGenerator {
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+			loaders.add(new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}

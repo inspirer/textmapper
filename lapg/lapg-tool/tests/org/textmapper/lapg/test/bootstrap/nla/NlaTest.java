@@ -41,12 +41,12 @@ import static org.junit.Assert.*;
  */
 public class NlaTest extends LapgTestCase {
 
-	private static final String NLA_INPUT = "org/textway/lapg/test/bootstrap/nla/input";
+	private static final String NLA_INPUT = "org/textmapper/lapg/test/bootstrap/nla/input";
 
 	private TypesRegistry createDefaultTypesRegistry() {
 		ResourceRegistry resources = new ResourceRegistry(
-				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/test/cases/templates", "utf8"),
-				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/lapg/test/cases/templates", "utf8"),
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {

@@ -67,7 +67,7 @@ public class GrammarTest extends LapgTestCase {
 
 	private TypesRegistry createDefaultTypesRegistry() {
 		ResourceRegistry resources = new ResourceRegistry(
-				new ClassResourceLoader(getClass().getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {

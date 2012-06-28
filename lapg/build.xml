@@ -144,34 +144,34 @@
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textway/lapg/parser"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser"/>
 		<echo message="Action parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textway/lapg/parser/action"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-core/src/org/textway/lapg/regex"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-core/src/org/textmapper/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/templates/ast"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
 		<echo message="Types parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/templates/types"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/types"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textway/xml"/>
+		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/a"/>
+			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/b"/>
+			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/lexeronly"/>
+			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/nla">
+			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
 		<java jar="libs/lapg-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textway/lapg/test/bootstrap/unicode"/>
+			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
 	</target>
 
 	<target name="plugin" depends="rev">

@@ -103,7 +103,7 @@ public class LapgTemplatesTestHelper {
 				loaders.add(resourceLoader);
 			}
 		}
-		loaders.add(new ClassResourceLoader(LapgGenerator.class.getClassLoader(), "org/textway/lapg/gen/templates", "utf8"));
+		loaders.add(new ClassResourceLoader(LapgGenerator.class.getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 

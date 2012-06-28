@@ -5,7 +5,7 @@
    =========================================================================
 
    Lexer and Parser Generator
-   http://textway.org/
+   http://textmapper.org/
    Copyright 2002-2012 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com

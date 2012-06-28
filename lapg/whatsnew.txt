@@ -9,7 +9,7 @@
 [!] code which skips semantic action was extracted into a separate "Action" parser: saction.s
 [+] soft keywords in lapg.s grammar: (soft/class/space), layout symbols (do not affect parsing)
 [+] new api: AbstractProcessingStatus
-[+] extracted org.textway.lapg.core module (lalr(1) and lexer cores) with GrammarFacade as entry point
+[+] extracted org.textmapper.lapg.core module (lalr(1) and lexer cores) with GrammarFacade as entry point
 [!] fully migrated to JUnit4
 [+] improved regex parser: support set operations, modifiers and eoi matching
 [+] generate GenericLexer/Parser from templates

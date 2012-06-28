@@ -51,7 +51,7 @@ public class XmlTest {
 	}
 
 	private TemplatesRegistry createRegistry(TestProblemCollector collector) {
-		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), "org/textway/templates/test/ltp", "utf8"));
+		ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/templates/test/ltp", "utf8"));
 		ITypesRegistry types = new TypesRegistry(resources, collector);
 		return new TemplatesRegistry(collector, types, (IBundleLoader) new DefaultTemplateLoader(resources));
 	}

@@ -23,8 +23,8 @@ ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
 ${end}
 
 ${template parserCtor-}
-	protected org.textway.lapg.eval.GenericParseContext.@TextSource source;
-	protected final org.textway.lapg.api.@Grammar grammar;
+	protected org.textmapper.lapg.eval.GenericParseContext.@TextSource source;
+	protected final org.textmapper.lapg.api.@Grammar grammar;
 
 	private final int[] lapg_action;
 	private final short[] lapg_lalr;
@@ -36,7 +36,7 @@ ${template parserCtor-}
 
 	private final boolean debugSyntax;
 
-	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textway.lapg.api.@ParserData tables, org.textway.lapg.api.@Grammar grammar, boolean debugSyntax) {
+	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textmapper.lapg.api.@ParserData tables, org.textmapper.lapg.api.@Grammar grammar, boolean debugSyntax) {
 		this.reporter = reporter;
 		this.grammar = grammar;
 		this.lapg_action = tables.getAction();
@@ -78,19 +78,19 @@ ${template applyRule-}
 	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
 		if (ruleLength == 1) {
 			Object right = lapg_m[lapg_head].sym;
-			if (right instanceof org.textway.lapg.eval.@GenericNode) {
+			if (right instanceof org.textmapper.lapg.eval.@GenericNode) {
 				lapg_gg.sym = right;
 			} else {
-				lapg_gg.sym = new org.textway.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+				lapg_gg.sym = new org.textmapper.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
 			}
 		} else if (ruleLength > 1) {
-			java.util.@List<org.textway.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textway.lapg.eval.@GenericNode>(ruleLength);
+			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textmapper.lapg.eval.@GenericNode>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
-				if (lapg_m[lapg_head - i].sym instanceof org.textway.lapg.eval.@GenericNode) {
-					children.add((org.textway.lapg.eval.@GenericNode) lapg_m[lapg_head - i].sym);
+				if (lapg_m[lapg_head - i].sym instanceof org.textmapper.lapg.eval.@GenericNode) {
+					children.add((org.textmapper.lapg.eval.@GenericNode) lapg_m[lapg_head - i].sym);
 				}
 			}
-			lapg_gg.sym = new org.textway.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new org.textway.lapg.eval.@GenericNode[children.size()]));
+			lapg_gg.sym = new org.textmapper.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new org.textmapper.lapg.eval.@GenericNode[children.size()]));
 		}
 	}
 ${end}
