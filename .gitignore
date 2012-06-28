@@ -8,6 +8,6 @@ dictionaries
 /lapg/build/
 /lapg/libs/lapg-1*
 /lapg-idea/org.textmapper.lapg.idea/lib/lapg-1*
-/lapg-eclipse/plugins/org.textway.lapg/lapg*
+/lapg-eclipse/plugins/org.textmapper.lapg/lapg*
 target
 bin
