@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.preferences;
+package org.textmapper.lapg.common.ui.preferences;
 
 import org.eclipse.core.runtime.Assert;
 

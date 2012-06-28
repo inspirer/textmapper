@@ -10,11 +10,11 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.textway.lapg.common.ui.editor.StructuredTextProblemHover;
+import org.textmapper.lapg.common.ui.editor.StructuredTextProblemHover;
 
 public class LapgProblemHover extends StructuredTextProblemHover {
 

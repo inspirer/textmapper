@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui;
+package org.textmapper.lapg.ui;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,11 +27,11 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultColorManager;
 
 public class LapgUIActivator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.textway.lapg.ui";
+	public static final String PLUGIN_ID = "org.textmapper.lapg.ui";
 	public static final String PROBLEM_MARKER = PLUGIN_ID + ".lapgProblem";
 
 	private static LapgUIActivator myDefault;

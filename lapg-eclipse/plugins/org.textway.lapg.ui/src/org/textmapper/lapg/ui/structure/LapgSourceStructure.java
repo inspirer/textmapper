@@ -1,16 +1,16 @@
-package org.textway.lapg.ui.structure;
+package org.textmapper.lapg.ui.structure;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.common.ui.editor.ISourceStructure;
-import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.ast.AbstractVisitor;
-import org.textway.lapg.parser.ast.AstRoot;
-import org.textway.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.common.ui.editor.ISourceStructure;
+import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textmapper.lapg.parser.LapgTree;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.ast.AbstractVisitor;
+import org.textmapper.lapg.parser.ast.AstRoot;
+import org.textmapper.lapg.ui.LapgUIActivator;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;

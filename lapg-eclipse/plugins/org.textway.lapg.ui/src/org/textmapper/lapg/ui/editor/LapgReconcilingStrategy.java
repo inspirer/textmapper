@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,31 +29,31 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
-import org.textway.lapg.Lapg;
-import org.textway.lapg.api.Grammar;
-import org.textway.lapg.common.ui.editor.ISourceStructure;
-import org.textway.lapg.common.ui.editor.IStructuredDocumentProvider;
-import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.parser.LapgGrammar;
-import org.textway.lapg.parser.LapgResolver;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.parser.ast.AstRoot;
-import org.textway.lapg.ui.WorkspaceResourceLoader;
-import org.textway.lapg.ui.structure.LapgSourceStructure;
-import org.textway.templates.api.SourceElement;
-import org.textway.templates.api.TemplatesStatus;
-import org.textway.templates.storage.ClassResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
-import org.textway.templates.storage.ResourceRegistry;
-import org.textway.templates.types.TypesRegistry;
+import org.textmapper.lapg.Lapg;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.common.ui.editor.ISourceStructure;
+import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
+import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
+import org.textmapper.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.parser.LapgResolver;
+import org.textmapper.lapg.parser.LapgTree;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.ast.AstRoot;
+import org.textmapper.lapg.ui.WorkspaceResourceLoader;
+import org.textmapper.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.templates.api.SourceElement;
+import org.textmapper.templates.api.TemplatesStatus;
+import org.textmapper.templates.storage.ClassResourceLoader;
+import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.templates.storage.ResourceRegistry;
+import org.textmapper.templates.types.TypesRegistry;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
-	public static final String ANNOTATION_PREFIX = "org.textway.lapg.ui.editor"; //$NON-NLS-1$
+	public static final String ANNOTATION_PREFIX = "org.textmapper.lapg.ui.editor"; //$NON-NLS-1$
 	public static final String ANNOTATION_ERROR = ANNOTATION_PREFIX + ".error"; //$NON-NLS-1$
 	public static final String ANNOTATION_WARN = ANNOTATION_PREFIX + ".warning"; //$NON-NLS-1$
 	public static final String ANNOTATION_INFO = ANNOTATION_PREFIX + ".info"; //$NON-NLS-1$

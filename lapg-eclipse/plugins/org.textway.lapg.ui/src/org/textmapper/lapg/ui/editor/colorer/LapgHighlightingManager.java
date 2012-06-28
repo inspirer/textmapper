@@ -10,15 +10,15 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor.colorer;
+package org.textmapper.lapg.ui.editor.colorer;
 
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.graphics.RGB;
-import org.textway.lapg.common.ui.editor.colorer.ColorDefinition;
-import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.ColorDefinition;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 
 public class LapgHighlightingManager extends DefaultHighlightingManager {
 

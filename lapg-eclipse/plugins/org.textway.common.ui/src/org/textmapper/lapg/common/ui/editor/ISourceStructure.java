@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.editor;
+package org.textmapper.lapg.common.ui.editor;
 
 public interface ISourceStructure {
 

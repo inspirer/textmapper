@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.common.ui.preferences;
+package org.textmapper.lapg.common.ui.preferences;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,11 +47,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PreferencesUtil;
-import org.textway.lapg.common.ui.editor.colorer.ColorDefinition;
-import org.textway.lapg.common.ui.editor.colorer.ColorGroupDefinition;
-import org.textway.lapg.common.ui.editor.colorer.DefaultColorManager;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+import org.textmapper.lapg.common.ui.editor.colorer.ColorDefinition;
+import org.textmapper.lapg.common.ui.editor.colorer.ColorGroupDefinition;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultColorManager;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
 
 public abstract class DefaultColoringConfigurationBlock {
 

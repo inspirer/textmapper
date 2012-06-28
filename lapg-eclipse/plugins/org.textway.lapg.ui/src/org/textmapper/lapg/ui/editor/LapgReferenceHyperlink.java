@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
@@ -18,15 +18,15 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.textway.lapg.parser.ast.AstGrammarPart;
-import org.textway.lapg.parser.ast.AstIdentifier;
-import org.textway.lapg.parser.ast.AstLexeme;
-import org.textway.lapg.parser.ast.AstLexerPart;
-import org.textway.lapg.parser.ast.AstNonTerm;
-import org.textway.lapg.parser.ast.AstReference;
-import org.textway.lapg.parser.ast.AstRoot;
-import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.lapg.parser.ast.AstGrammarPart;
+import org.textmapper.lapg.parser.ast.AstIdentifier;
+import org.textmapper.lapg.parser.ast.AstLexeme;
+import org.textmapper.lapg.parser.ast.AstLexerPart;
+import org.textmapper.lapg.parser.ast.AstNonTerm;
+import org.textmapper.lapg.parser.ast.AstReference;
+import org.textmapper.lapg.parser.ast.AstRoot;
+import org.textmapper.lapg.parser.ast.IAstNode;
+import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 
 public class LapgReferenceHyperlink implements IHyperlink {
 

@@ -10,13 +10,13 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
-import org.textway.lapg.common.ui.editor.StructuredTextViewer;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewer;
 
 public class LapgSourceViewer extends StructuredTextViewer {
 

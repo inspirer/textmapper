@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.editor.colorer;
+package org.textmapper.lapg.common.ui.editor.colorer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,11 +20,11 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.custom.StyleRange;
-import org.textway.lapg.common.ui.LapgCommonActivator;
-import org.textway.lapg.common.ui.editor.StructuredTextViewer;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
-import org.textway.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
+import org.textmapper.lapg.common.ui.LapgCommonActivator;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewer;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+import org.textmapper.lapg.common.ui.editor.colorer.SemanticHighlightingManager.HighlightedPosition;
 
 /**
  * Semantic highlighting presenter - UI thread implementation.

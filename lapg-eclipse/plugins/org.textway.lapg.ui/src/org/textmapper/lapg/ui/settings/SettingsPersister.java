@@ -1,4 +1,4 @@
-package org.textway.lapg.ui.settings;
+package org.textmapper.lapg.ui.settings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,8 +10,8 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.ui.settings.SettingsTree.TextSource;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.ui.settings.SettingsTree.TextSource;
 
 public class SettingsPersister {
 

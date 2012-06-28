@@ -1,4 +1,4 @@
-package org.textway.lapg.ui.settings;
+package org.textmapper.lapg.ui.settings;
 
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -6,8 +6,8 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.textway.lapg.ui.settings.SettingsLexer.ErrorReporter;
-import org.textway.lapg.ui.settings.SettingsParser.ParseException;
+import org.textmapper.lapg.ui.settings.SettingsLexer.ErrorReporter;
+import org.textmapper.lapg.ui.settings.SettingsParser.ParseException;
 
 public class SettingsTree<T> {
 

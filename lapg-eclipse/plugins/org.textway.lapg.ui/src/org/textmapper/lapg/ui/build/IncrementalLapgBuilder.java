@@ -1,4 +1,4 @@
-package org.textway.lapg.ui.build;
+package org.textmapper.lapg.ui.build;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,24 +26,24 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.textway.lapg.api.DerivedSourceElement;
-import org.textway.lapg.api.ParserConflict;
-import org.textway.lapg.api.ProcessingStatus;
-import org.textway.lapg.api.Rule;
-import org.textway.lapg.api.SourceElement;
-import org.textway.lapg.api.TextSourceElement;
-import org.textway.lapg.common.GeneratedFile;
-import org.textway.lapg.gen.LapgGenerator;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.gen.ProcessingStrategy;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.LapgTree.LapgProblem;
-import org.textway.lapg.parser.LapgTree.TextSource;
-import org.textway.lapg.ui.FileUtil;
-import org.textway.lapg.ui.LapgProjectSettings;
-import org.textway.lapg.ui.LapgUIActivator;
-import org.textway.lapg.ui.WorkspaceResourceLoader;
-import org.textway.templates.storage.IResourceLoader;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.Rule;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.common.GeneratedFile;
+import org.textmapper.lapg.gen.LapgGenerator;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.gen.ProcessingStrategy;
+import org.textmapper.lapg.parser.LapgTree;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.ui.FileUtil;
+import org.textmapper.lapg.ui.LapgProjectSettings;
+import org.textmapper.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.ui.WorkspaceResourceLoader;
+import org.textmapper.templates.storage.IResourceLoader;
 
 public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 

@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.common.ui.editor;
+package org.textmapper.lapg.common.ui.editor;
 
 import java.io.IOException;
 import java.io.Reader;

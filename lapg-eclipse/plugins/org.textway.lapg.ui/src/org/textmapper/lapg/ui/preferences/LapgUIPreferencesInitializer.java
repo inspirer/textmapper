@@ -10,15 +10,15 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.preferences;
+package org.textmapper.lapg.ui.preferences;
 
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.editors.text.EditorsUI;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import org.textway.lapg.ui.LapgUIActivator;
-import org.textway.lapg.ui.editor.colorer.LapgHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.ui.editor.colorer.LapgHighlightingManager;
 
 public class LapgUIPreferencesInitializer extends AbstractPreferenceInitializer {
 

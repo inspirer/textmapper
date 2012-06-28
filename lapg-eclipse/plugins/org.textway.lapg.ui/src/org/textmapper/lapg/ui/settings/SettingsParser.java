@@ -1,12 +1,12 @@
-package org.textway.lapg.ui.settings;
+package org.textmapper.lapg.ui.settings;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import org.textway.lapg.ui.settings.SettingsLexer.ErrorReporter;
-import org.textway.lapg.ui.settings.SettingsLexer.LapgSymbol;
-import org.textway.lapg.ui.settings.SettingsLexer.Lexems;
+import org.textmapper.lapg.ui.settings.SettingsLexer.ErrorReporter;
+import org.textmapper.lapg.ui.settings.SettingsLexer.LapgSymbol;
+import org.textmapper.lapg.ui.settings.SettingsLexer.Lexems;
 
 public class SettingsParser {
 

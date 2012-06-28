@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.wizard;
+package org.textmapper.lapg.ui.wizard;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,8 +30,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
-import org.textway.lapg.ui.LapgUIActivator;
-import org.textway.lapg.ui.build.IncrementalLapgBuilder;
+import org.textmapper.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.ui.build.IncrementalLapgBuilder;
 
 public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 

@@ -1,6 +1,6 @@
-package org.textway.lapg.ui.settings;
+package org.textmapper.lapg.ui.settings;
 
-import org.textway.lapg.ui.settings.SettingsTree.TextSource;
+import org.textmapper.lapg.ui.settings.SettingsTree.TextSource;
 
 public abstract class AstNode implements IAstNode {
 	

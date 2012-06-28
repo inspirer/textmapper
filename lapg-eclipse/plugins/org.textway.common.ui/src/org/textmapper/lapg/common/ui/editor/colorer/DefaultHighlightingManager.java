@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.common.ui.editor.colorer;
+package org.textmapper.lapg.common.ui.editor.colorer;
 
 import java.util.ArrayList;
 import java.util.Collections;

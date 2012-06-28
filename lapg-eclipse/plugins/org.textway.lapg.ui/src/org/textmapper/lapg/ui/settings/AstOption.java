@@ -1,7 +1,7 @@
-package org.textway.lapg.ui.settings;
+package org.textmapper.lapg.ui.settings;
 
 import java.util.List;
-import org.textway.lapg.ui.settings.SettingsTree.TextSource;
+import org.textmapper.lapg.ui.settings.SettingsTree.TextSource;
 
 public class AstOption extends AstNode {
 

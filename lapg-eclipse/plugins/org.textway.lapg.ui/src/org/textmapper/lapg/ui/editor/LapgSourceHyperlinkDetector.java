@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
@@ -20,15 +20,15 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import org.textway.lapg.common.ui.editor.IStructuredDocumentProvider;
-import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import org.textway.lapg.parser.LapgTree;
-import org.textway.lapg.parser.ast.AbstractVisitor;
-import org.textway.lapg.parser.ast.AstReference;
-import org.textway.lapg.parser.ast.AstRoot;
-import org.textway.lapg.parser.ast.IAstNode;
-import org.textway.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
+import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
+import org.textmapper.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textmapper.lapg.parser.LapgTree;
+import org.textmapper.lapg.parser.ast.AbstractVisitor;
+import org.textmapper.lapg.parser.ast.AstReference;
+import org.textmapper.lapg.parser.ast.AstRoot;
+import org.textmapper.lapg.parser.ast.IAstNode;
+import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 
 public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 

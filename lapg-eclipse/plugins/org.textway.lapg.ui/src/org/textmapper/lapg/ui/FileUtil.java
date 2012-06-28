@@ -1,4 +1,4 @@
-package org.textway.lapg.ui;
+package org.textmapper.lapg.ui;
 
 import java.io.IOException;
 import java.io.InputStream;

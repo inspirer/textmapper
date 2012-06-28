@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import java.util.Map;
 import java.util.Set;
@@ -26,16 +26,16 @@ import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
-import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import org.textway.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.ui.LapgUIActivator;
-import org.textway.lapg.ui.LapgUIActivator.LapgSettingsListener;
-import org.textway.lapg.ui.editor.colorer.LapgHighlightingManager;
-import org.textway.lapg.ui.editor.colorer.LapgSemanticHighlighter;
+import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
+import org.textmapper.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.ui.LapgUIActivator.LapgSettingsListener;
+import org.textmapper.lapg.ui.editor.colorer.LapgHighlightingManager;
+import org.textmapper.lapg.ui.editor.colorer.LapgSemanticHighlighter;
 
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener, LapgSettingsListener {
 
@@ -47,7 +47,7 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 
 	@Override
 	protected void initializeKeyBindingScopes() {
-		setKeyBindingScopes(new String[] { "org.textway.lapg.ui.scope" }); //$NON-NLS-1$
+		setKeyBindingScopes(new String[] { "org.textmapper.lapg.ui.scope" }); //$NON-NLS-1$
 	}
 
 	public IAnnotationModel getAnnotationModel() {
@@ -126,8 +126,8 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 	protected String[] collectContextMenuPreferencePages() {
 		String[] inheritedPages = super.collectContextMenuPreferencePages();
 		String[] result = new String[inheritedPages.length + 2];
-		result[0] = "org.textway.lapg.ui.preferences.RootPreferencePage"; //$NON-NLS-1$
-		result[1] = "org.textway.lapg.ui.preferences.ColorPreferencePage"; //$NON-NLS-1$
+		result[0] = "org.textmapper.lapg.ui.preferences.RootPreferencePage"; //$NON-NLS-1$
+		result[1] = "org.textmapper.lapg.ui.preferences.ColorPreferencePage"; //$NON-NLS-1$
 		System.arraycopy(inheritedPages, 0, result, 2, inheritedPages.length);
 		return result;
 	}

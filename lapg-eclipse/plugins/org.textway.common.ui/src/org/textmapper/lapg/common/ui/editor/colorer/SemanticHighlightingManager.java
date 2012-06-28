@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.editor.colorer;
+package org.textmapper.lapg.common.ui.editor.colorer;
 
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -9,12 +9,12 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextViewer;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
+import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewer;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration.StructuredTextPresentationReconciler;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager.Highlighting;
 
 public class SemanticHighlightingManager implements IPropertyChangeListener, IHighlightingStyleListener {
 

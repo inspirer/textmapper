@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor.colorer;
+package org.textmapper.lapg.ui.editor.colorer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ import org.eclipse.jface.text.rules.NumberRule;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.jface.text.rules.WhitespaceRule;
 import org.eclipse.jface.text.rules.WordRule;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
-import org.textway.lapg.common.ui.editor.colorer.CommentScanner.DefaultKeywordDetector;
-import org.textway.lapg.common.ui.editor.colorer.CommentScanner.WhitespaceDetector;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textmapper.lapg.common.ui.editor.colorer.CommentScanner.DefaultKeywordDetector;
+import org.textmapper.lapg.common.ui.editor.colorer.CommentScanner.WhitespaceDetector;
 
 
 public class LapgSourceScanner extends BufferedRuleBasedScanner {

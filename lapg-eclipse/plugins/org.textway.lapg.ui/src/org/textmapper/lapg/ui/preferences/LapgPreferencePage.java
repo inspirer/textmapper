@@ -10,13 +10,13 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.preferences;
+package org.textmapper.lapg.ui.preferences;
 
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
-import org.textway.lapg.ui.LapgUIActivator;
+import org.textmapper.lapg.ui.LapgUIActivator;
 
 public class LapgPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 

@@ -10,15 +10,15 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import java.io.IOException;
 import java.io.Reader;
 
-import org.textway.lapg.common.ui.editor.LexerBasedPartitionScanner;
-import org.textway.lapg.parser.LapgLexer;
-import org.textway.lapg.parser.LapgLexer.LapgSymbol;
-import org.textway.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
+import org.textmapper.lapg.parser.LapgLexer;
+import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
+import org.textmapper.lapg.parser.LapgLexer.Lexems;
 
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;

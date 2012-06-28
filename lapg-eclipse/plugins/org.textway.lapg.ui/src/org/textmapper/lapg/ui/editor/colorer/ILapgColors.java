@@ -10,9 +10,9 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor.colorer;
+package org.textmapper.lapg.ui.editor.colorer;
 
-import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textmapper.lapg.common.ui.editor.colorer.ICommonColors;
 
 public interface ILapgColors extends ICommonColors {
 

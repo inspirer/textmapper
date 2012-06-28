@@ -1,4 +1,4 @@
-package org.textway.lapg.ui;
+package org.textmapper.lapg.ui;
 
 import java.io.IOException;
 
@@ -9,8 +9,8 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
-import org.textway.templates.storage.IResourceLoader;
-import org.textway.templates.storage.Resource;
+import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.templates.storage.Resource;
 
 public class WorkspaceResourceLoader implements IResourceLoader {
 	

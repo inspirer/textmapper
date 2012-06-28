@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.ui.editor;
+package org.textmapper.lapg.ui.editor;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
@@ -23,13 +23,13 @@ import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.rules.RuleBasedScanner;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.textway.lapg.common.ui.editor.StructuredTextEditor;
-import org.textway.lapg.common.ui.editor.StructuredTextViewerConfiguration;
-import org.textway.lapg.common.ui.editor.colorer.CommentScanner;
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
-import org.textway.lapg.common.ui.editor.colorer.ICommonColors;
-import org.textway.lapg.ui.editor.colorer.ILapgColors;
-import org.textway.lapg.ui.editor.colorer.LapgSourceScanner;
+import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
+import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration;
+import org.textmapper.lapg.common.ui.editor.colorer.CommentScanner;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
+import org.textmapper.lapg.common.ui.editor.colorer.ICommonColors;
+import org.textmapper.lapg.ui.editor.colorer.ILapgColors;
+import org.textmapper.lapg.ui.editor.colorer.LapgSourceScanner;
 
 public final class LapgSourceViewerConfiguration extends StructuredTextViewerConfiguration {
 

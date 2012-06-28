@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.editor.colorer;
+package org.textmapper.lapg.common.ui.editor.colorer;
 
 import java.util.HashMap;
 import java.util.Iterator;

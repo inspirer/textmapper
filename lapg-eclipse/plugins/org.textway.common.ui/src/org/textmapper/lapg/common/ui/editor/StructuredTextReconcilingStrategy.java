@@ -1,4 +1,4 @@
-package org.textway.lapg.common.ui.editor;
+package org.textmapper.lapg.common.ui.editor;
 
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -7,7 +7,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategyExtension;
-import org.textway.lapg.common.ui.LapgCommonActivator;
+import org.textmapper.lapg.common.ui.LapgCommonActivator;
 
 public abstract class StructuredTextReconcilingStrategy implements IReconcilingStrategy, IReconcilingStrategyExtension {
 

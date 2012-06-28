@@ -10,7 +10,7 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.common.ui;
+package org.textmapper.lapg.common.ui;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -19,7 +19,7 @@ import org.osgi.framework.BundleContext;
 
 public class LapgCommonActivator extends AbstractUIPlugin {
 
-	public static final String PLUGIN_ID = "org.textway.lapg.common.ui";
+	public static final String PLUGIN_ID = "org.textmapper.lapg.common.ui";
 
 	private static LapgCommonActivator plugin;
 

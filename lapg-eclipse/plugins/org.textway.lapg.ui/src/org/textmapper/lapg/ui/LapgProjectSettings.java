@@ -1,4 +1,4 @@
-package org.textway.lapg.ui;
+package org.textmapper.lapg.ui;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,8 +15,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.textway.lapg.gen.LapgOptions;
-import org.textway.lapg.ui.settings.SettingsPersister;
+import org.textmapper.lapg.gen.LapgOptions;
+import org.textmapper.lapg.ui.settings.SettingsPersister;
 
 public class LapgProjectSettings {
 

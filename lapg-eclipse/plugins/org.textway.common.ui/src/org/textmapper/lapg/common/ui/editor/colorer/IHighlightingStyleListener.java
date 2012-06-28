@@ -10,9 +10,9 @@
  * Contributors:
  *    Evgeny Gryaznov - initial API and implementation
  */
-package org.textway.lapg.common.ui.editor.colorer;
+package org.textmapper.lapg.common.ui.editor.colorer;
 
-import org.textway.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
+import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager.ColorDescriptor;
 
 public interface IHighlightingStyleListener {
 
