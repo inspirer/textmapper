@@ -45,10 +45,6 @@ class LiNamedPattern implements NamedPattern, DerivedSourceElement {
 		return regexp;
 	}
 
-	public String getTitle() {
-		return "Pattern `" + name + "`";
-	}
-
 	@Override
 	public SourceElement getOrigin() {
 		return origin;

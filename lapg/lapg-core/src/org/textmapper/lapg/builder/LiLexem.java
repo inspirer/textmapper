@@ -96,10 +96,6 @@ class LiLexem implements Lexem, DerivedSourceElement {
 		return classLexem != null;
 	}
 
-	public String getTitle() {
-		return "Lexem `" + sym.getName() + "`";
-	}
-
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
