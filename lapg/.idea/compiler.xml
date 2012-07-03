@@ -2,10 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
-    <resourceExtensions>
-      <entry name=".+\.(properties|xml|html|dtd|tld)" />
-      <entry name=".+\.(gif|png|jpeg|jpg)" />
-    </resourceExtensions>
+    <resourceExtensions />
     <wildcardResourcePatterns>
       <entry name="?*.properties" />
       <entry name="?*.xml" />
@@ -27,6 +24,9 @@
       <entry name="?*.txt" />
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-target 1.6" />
   </component>
 </project>
 
