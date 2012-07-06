@@ -250,7 +250,7 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 11:  // primitive_part ::= charclass
-				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 12:  // primitive_part ::= '.'
 				 lapg_gg.sym = new RegexAstAny(source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -274,7 +274,7 @@ public class RegexDefParser {
 				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 19:  // setsymbol ::= charclass
-				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 20:  // charset ::= '-'
 				 lapg_gg.sym = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)lapg_gg.sym).add(new RegexAstChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 

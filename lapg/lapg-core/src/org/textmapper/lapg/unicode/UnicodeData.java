@@ -16,6 +16,7 @@
 package org.textmapper.lapg.unicode;
 
 import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.common.CharacterSetImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,45 +26,48 @@ import java.util.Map;
  */
 public class UnicodeData {
 
-	public static final String VERSION = "6.1.0";
+	private static UnicodeData INSTANCE = new UnicodeData();
 
-	public static final Map<String, Byte> categories;
-
-	static {
-		categories = new HashMap<String, Byte>();
-		categories.put("Lu", Character.UPPERCASE_LETTER);
-		categories.put("Ll", Character.LOWERCASE_LETTER);
-		categories.put("Lt", Character.TITLECASE_LETTER);
-		categories.put("Lm", Character.MODIFIER_LETTER);
-		categories.put("Lo", Character.OTHER_LETTER);
-		categories.put("Mn", Character.NON_SPACING_MARK);
-		categories.put("Mc", Character.COMBINING_SPACING_MARK);
-		categories.put("Me", Character.ENCLOSING_MARK);
-		categories.put("Nd", Character.DECIMAL_DIGIT_NUMBER);
-		categories.put("Nl", Character.LETTER_NUMBER);
-		categories.put("No", Character.OTHER_NUMBER);
-		categories.put("Pc", Character.CONNECTOR_PUNCTUATION);
-		categories.put("Pd", Character.DASH_PUNCTUATION);
-		categories.put("Ps", Character.START_PUNCTUATION);
-		categories.put("Pe", Character.END_PUNCTUATION);
-		categories.put("Pi", Character.INITIAL_QUOTE_PUNCTUATION);
-		categories.put("Pf", Character.FINAL_QUOTE_PUNCTUATION);
-		categories.put("Po", Character.OTHER_PUNCTUATION);
-		categories.put("Sm", Character.MATH_SYMBOL);
-		categories.put("Sc", Character.CURRENCY_SYMBOL);
-		categories.put("Sk", Character.MODIFIER_SYMBOL);
-		categories.put("So", Character.OTHER_SYMBOL);
-		categories.put("Zs", Character.SPACE_SEPARATOR);
-		categories.put("Zl", Character.LINE_SEPARATOR);
-		categories.put("Zp", Character.PARAGRAPH_SEPARATOR);
-		categories.put("Cc", Character.CONTROL);
-		categories.put("Cf", Character.FORMAT);
-		categories.put("Cs", Character.SURROGATE);
-		categories.put("Co", Character.PRIVATE_USE);
-		categories.put("Cn", Character.UNASSIGNED);
+	public static UnicodeData getInstance() {
+		return INSTANCE;
 	}
 
-	public static CharacterSet getCategory(byte categoryId) {
-		return UnicodeDataTables.getCategory(categoryId);
+	private Map<String, String> rawData;
+	private Map<String, CharacterSet> set = new HashMap<String, CharacterSet>();
+
+	private UnicodeData() {
+	}
+
+	public CharacterSet getCharacterSet(String cl) {
+		if (rawData == null) {
+			rawData = new HashMap<String, String>();
+			String[] properties = UnicodeDataTables.PROPERTIES;
+			for (int i = 0; i < properties.length; ) {
+				rawData.put(properties[i++], properties[i++]);
+			}
+		}
+		CharacterSet result = set.get(cl);
+		if (result != null || !(rawData.containsKey(cl))) {
+			return result;
+		}
+
+		String data = rawData.get(cl);
+		result = decode(data);
+		set.put(cl, result);
+		return result;
+	}
+
+	private static CharacterSet decode(String data) {
+		int len = data.charAt(0);
+		int[] set = new int[len];
+		int index = 1;
+		for (int i = 0; i < len; i++) {
+			int val = data.codePointAt(index++);
+			set[i] = val;
+			if (val > 0xffff) {
+				index++;
+			}
+		}
+		return new CharacterSetImpl(set);
 	}
 }

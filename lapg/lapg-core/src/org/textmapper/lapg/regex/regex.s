@@ -107,7 +107,7 @@ part (RegexAstPart) ::=
 primitive_part (RegexAstPart) ::=
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
-	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
+	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
 	| '.'										{ $$ = new RegexAstAny(source, ${left().offset}, ${left().endoffset}); }
 	| '(' pattern ')'							{ $$ = RegexUtil.wrap($pattern); }
 	| '[' charset ']'							{ $$ = RegexUtil.toSet($charset, reporter, setbuilder, false); }
@@ -118,7 +118,7 @@ primitive_part (RegexAstPart) ::=
 setsymbol (RegexAstPart) ::=
 	  char										{ $$ = new RegexAstChar($char, source, ${left().offset}, ${left().endoffset}); }
 	| escaped									{ $$ = new RegexAstChar($escaped, source, ${left().offset}, ${left().endoffset}); }
-	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder), source, ${left().offset}, ${left().endoffset}); }
+	| charclass									{ $$ = new RegexAstCharClass($charclass, RegexUtil.getClassSet($charclass, setbuilder, reporter, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
 ;
 
 %right char escaped;

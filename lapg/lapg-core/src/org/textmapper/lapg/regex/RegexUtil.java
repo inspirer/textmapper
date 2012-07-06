@@ -17,6 +17,7 @@ package org.textmapper.lapg.regex;
 
 import org.textmapper.lapg.api.regex.CharacterSet;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.common.CharacterSetImpl;
 import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textmapper.lapg.regex.RegexDefTree.TextSource;
@@ -261,7 +262,7 @@ class RegexUtil {
 		}
 	}
 
-	static CharacterSet getClassSet(String cl, Builder builder) {
+	static CharacterSet getClassSet(String cl, Builder builder, ErrorReporter reporter, int offset, int endoffset) {
 		builder.clear();
 		if (cl.length() == 1) {
 			char c = cl.charAt(0);
@@ -284,13 +285,11 @@ class RegexUtil {
 				return builder.create(c == 'D');
 			}
 		}
-		Byte category = UnicodeData.categories.get(cl);
-		if (category != null) {
-			CharacterSet res = UnicodeData.getCategory(category);
-			if (res != null) {
-				return res;
-			}
+		CharacterSet res = UnicodeData.getInstance().getCharacterSet(cl);
+		if (res != null) {
+			return res;
 		}
-		throw new UnsupportedOperationException("class: " + cl);
+		reporter.error(offset, endoffset, 1, "unsupported character class: " + cl);
+		return new CharacterSetImpl();
 	}
 }

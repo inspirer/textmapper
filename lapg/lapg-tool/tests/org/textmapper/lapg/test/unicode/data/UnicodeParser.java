@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.test.cases.data;
+package org.textmapper.lapg.test.unicode.data;
 
 import org.textmapper.lapg.unicode.UnicodeData;
 
@@ -22,13 +22,21 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Gryaznov Evgeny, 4/22/12
  */
 public class UnicodeParser {
+
+	public static final Set<String> CATEGORIES = new HashSet<String>(Arrays.asList(
+			"Lu", "Ll", "Lt", "Lm", "Lo",
+			"Mn", "Mc", "Me",
+			"Nd", "Nl", "No",
+			"Pc", "Pd", "Ps", "Pe", "Pi", "Pf", "Po",
+			"Sm", "Sc", "Sk", "So",
+			"Zs", "Zl", "Zp",
+			"Cc", "Cf", "Cs", "Co", "Cn"));
 
 	private int parseOptionalChar(int line, String charCode) throws IOException {
 		if (charCode.isEmpty()) {
@@ -48,12 +56,11 @@ public class UnicodeParser {
 		}
 	}
 
-	private int parseCategory(int line, String categoryName) throws IOException {
-		Byte category = UnicodeData.categories.get(categoryName);
-		if (category == null) {
+	private String parseCategory(int line, String categoryName) throws IOException {
+		if (!CATEGORIES.contains(categoryName)) {
 			throw new IOException(line + ": wrong category name: " + categoryName);
 		}
-		return category;
+		return categoryName;
 	}
 
 	private String parseRangeName(int line, String fullName, boolean isFirst) throws IOException {
@@ -93,7 +100,7 @@ public class UnicodeParser {
 			String[] row = split(inputLine);
 			int c = parseChar(line, row[0]);
 			String charName = row[1];
-			int category = parseCategory(line, row[2]);
+			String category = parseCategory(line, row[2]);
 			if (prevsym >= c) {
 				throw new IOException(line + ": not ordered `" + row[0] + "'");
 			}
@@ -105,7 +112,7 @@ public class UnicodeParser {
 					throw new IOException(line + ": incomplete range, unexpected end-of-file");
 				}
 				row = split(inputLine);
-				if (!parseRangeName(line, row[1], false).equals(rangeName) || parseCategory(line, row[2]) != category) {
+				if (!parseRangeName(line, row[1], false).equals(rangeName) || !parseCategory(line, row[2]).equals(category)) {
 					throw new IOException(line + ": bad range, different properties for first/last characters");
 				}
 				builder.range(c, parseChar(line, row[0]), rangeName, category);
@@ -124,9 +131,9 @@ public class UnicodeParser {
 
 	public interface UnicodeBuilder {
 
-		void character(int code, String name, int category, int upper, int lower, int title);
+		void character(int code, String name, String category, int upper, int lower, int title);
 
-		void range(int start, int end, String rangeName, int category);
+		void range(int start, int end, String rangeName, String category);
 
 		void done();
 	}

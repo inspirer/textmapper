@@ -49,7 +49,7 @@ public class UnicodeTest {
 	@Test
 	public void testStrings() {
 		valid("\"a\"", Lexems.string);
-		CharacterSet Ll = UnicodeData.getCategory(Character.LOWERCASE_LETTER);
+		CharacterSet Ll = UnicodeData.getInstance().getCharacterSet("Ll");
 		for (int[] range : Ll) {
 			for (int i = range[0]; i < range[1]; i++) {
 				// TODO support > 0xffff
