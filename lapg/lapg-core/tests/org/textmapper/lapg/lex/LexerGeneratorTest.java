@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.test.cases;
+package org.textmapper.lapg.lex;
 
 import org.junit.Test;
+import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
-import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.lapg.regex.RegexFacade;
 import org.textmapper.lapg.test.TestStatus;
 
 import static org.junit.Assert.assertEquals;
@@ -136,7 +135,7 @@ public class LexerGeneratorTest {
 		@Override
 		public RegexPart getRegexp() {
 			try {
-				return RegexFacade.parse(getSymbol().getName(), regexp);
+				return LapgCore.parse(getSymbol().getName(), regexp);
 			} catch (RegexParseException ex) {
 				fail(ex.toString());
 				return null;

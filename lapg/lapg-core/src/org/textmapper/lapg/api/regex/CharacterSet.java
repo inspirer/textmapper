@@ -25,4 +25,6 @@ public interface CharacterSet extends Iterable<int[]> {
 	boolean isInverted();
 
 	boolean contains(int c);
+
+	int[] toArray();
 }

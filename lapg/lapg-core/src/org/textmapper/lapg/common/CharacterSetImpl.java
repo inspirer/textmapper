@@ -63,6 +63,13 @@ public final class CharacterSetImpl implements CharacterSet {
 		return inverted;
 	}
 
+	public int[] toArray() {
+		if (inverted) {
+			throw new UnsupportedOperationException();
+		}
+		return Arrays.copyOf(set, set.length);
+	}
+
 	public Iterator<int[]> iterator() {
 		return new Iterator<int[]>() {
 			int[] token = new int[2];

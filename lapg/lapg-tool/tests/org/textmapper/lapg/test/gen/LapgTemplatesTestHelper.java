@@ -79,7 +79,7 @@ public class LapgTemplatesTestHelper {
 					new TemplatesRegistry(templatesStatus, types, new DefaultTemplateLoader(resources)),
 					strategy);
 			String res = env.executeTemplate(template, context, null, null);
-			assertEquals("", res);
+			assertEquals("template output should be empty", "", res);
 
 			for (String s : createdFiles) {
 				assertTrue("file is not generated: " + s, strategy.getCreated().contains(s));
