@@ -70,7 +70,9 @@ public class UnicodeTest {
 			allCharset.put(category, new Builder());
 		}
 
-		new UnicodeParser().parseData(UnicodeTest.class.getResource("data/UnicodeData.txt"), new UnicodeBuilder() {
+		URL resource = UnicodeTest.class.getResource("data/UnicodeData.txt");
+		assertNotNull("cannot open UnicodeData.txt", resource);
+		new UnicodeParser().parseData(resource, new UnicodeBuilder() {
 			private int prevsym = -1;
 
 			private void yield(int c, String category) {

@@ -40,14 +40,6 @@
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<testSourceDirectory>tests</testSourceDirectory>
-		<testResources>
-			<testResource>
-				<directory>tests</directory>
-				<includes>
-					<include>**/*.txt</include>
-				</includes>
-			</testResource>
-		</testResources>
 
 		<plugins>
 			<plugin>

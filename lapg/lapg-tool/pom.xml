@@ -78,6 +78,7 @@
 					<include>**/*.in</include>
 					<include>**/*.out</include>
 					<include>**/syntax*</include>
+					<include>**/*.txt</include>
 				</includes>
 			</testResource>
 		</testResources>
