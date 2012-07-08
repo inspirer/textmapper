@@ -15,6 +15,9 @@
  */
 package org.textmapper.lapg.test.unicode;
 
+import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.common.CharacterSetImpl;
+import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 import org.textmapper.lapg.common.JavaArrayEncoder;
 
 import java.util.List;
@@ -24,14 +27,22 @@ import java.util.List;
  */
 public class UnicodeTemplateUtil {
 
-	public static List<String> packCodePoint(int[] arr) {
+	@SuppressWarnings("UnusedDeclaration")
+	public static List<String> packCodePoint(CharacterSet set) {
 		JavaArrayEncoder enc = new JavaArrayEncoder(80);
+		boolean containsSurrogate = !new Builder().intersect(set, new CharacterSetImpl(0xd800, 0xdfff)).isEmpty();
+		int[] arr = set.toArray();
 		if (arr.length > 0xffff) {
 			throw new IllegalArgumentException("array is too big");
 		}
+		if (containsSurrogate) {
+			enc.appendChar(0);
+		}
 		enc.appendChar(arr.length);
 		for (int i : arr) {
-			if (i >= 0 && i <= 0xffff) {
+			if (containsSurrogate) {
+				enc.appendInt(i);
+			} else if (i >= 0 && i <= 0xffff) {
 				enc.appendChar(i);
 			} else {
 				for (char c : Character.toChars(i)) {

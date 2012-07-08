@@ -17,11 +17,13 @@ package org.textmapper.lapg.test.unicode;
 
 import org.junit.Test;
 import org.textmapper.lapg.api.regex.CharacterSet;
+import org.textmapper.lapg.common.CharacterSetImpl;
 import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.lapg.test.gen.LapgTemplatesTestHelper;
 import org.textmapper.lapg.test.unicode.data.UnicodeParser;
 import org.textmapper.lapg.test.unicode.data.UnicodeParser.UnicodeBuilder;
+import org.textmapper.lapg.unicode.UnicodeData;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.types.TypesRegistry;
 
@@ -30,8 +32,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Gryaznov Evgeny, 11/16/11
@@ -110,10 +111,13 @@ public class UnicodeTest {
 		Arrays.sort(categories);
 		for (String category : categories) {
 			CharacterSet set = allCharset.get(category).create();
-// TODO
-//			CharacterSet actual = UnicodeData.getCategory(category);
-//			assertFalse(actual.isInverted());
-//			if (set.equals(actual)) continue;
+			CharacterSet actual = UnicodeData.getInstance().getCharacterSet(category);
+			assertFalse(actual.isInverted());
+			assertTrue(set.equals(actual));
+			if (!"Cs".equals(category)) {
+				// only Cs category contains surrogates
+				assertTrue(new Builder().intersect(set, new CharacterSetImpl(0xd800, 0xdfff)).isEmpty());
+			}
 			result.add(new NamedSet(category, set));
 		}
 
@@ -147,8 +151,8 @@ public class UnicodeTest {
 			return name;
 		}
 
-		public int[] getSet() {
-			return set.toArray();
+		public CharacterSet getSet() {
+			return set;
 		}
 	}
 }

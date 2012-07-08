@@ -135,7 +135,7 @@ class UnicodeDataTables {
 		"Co",
 		"\6\ue000\uf8ff\udb80\udc00\udbbf\udffd\udbc0\udc00\udbff\udffd",
 		"Cs",
-		"\2\ud800\udfff",
+		"\0\2\ud800\0\udfff\0",
 		"Ll",
 		"\u04c6\141\172\265\265\337\366\370\377\u0101\u0101\u0103\u0103\u0105\u0105\u0107" +
 		"\u0107\u0109\u0109\u010b\u010b\u010d\u010d\u010f\u010f\u0111\u0111\u0113\u0113\u0115" +

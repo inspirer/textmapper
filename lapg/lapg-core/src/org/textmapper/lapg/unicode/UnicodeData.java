@@ -59,14 +59,23 @@ public class UnicodeData {
 
 	private static CharacterSet decode(String data) {
 		int len = data.charAt(0);
-		int[] set = new int[len];
+		boolean containsSurrogate = len == 0;
 		int index = 1;
+		if (containsSurrogate) {
+			len = data.charAt(index++);
+		}
+		int[] set = new int[len];
 		for (int i = 0; i < len; i++) {
-			int val = data.codePointAt(index++);
-			set[i] = val;
-			if (val > 0xffff) {
-				index++;
+			int val;
+			if (containsSurrogate) {
+				val = data.charAt(index++) + (data.charAt(index++) << 16);
+			} else {
+				val = data.codePointAt(index++);
+				if (val > 0xffff) {
+					index++;
+				}
 			}
+			set[i] = val;
 		}
 		return new CharacterSetImpl(set);
 	}
