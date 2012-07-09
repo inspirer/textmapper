@@ -57,6 +57,22 @@ public class UnicodeData {
 		return result;
 	}
 
+	public static String toCanonicalName(String propertyName) {
+		// see http://www.unicode.org/reports/tr44/#UAX44-LM3
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < propertyName.length(); i++) {
+			char c = propertyName.charAt(i);
+			if (c == '-' || c == '_' || Character.isWhitespace(c)) {
+				continue;
+			}
+			sb.append(Character.toLowerCase(c));
+		}
+		if (sb.indexOf("is") == 0) {
+			sb.delete(0, 2);
+		}
+		return sb.toString();
+	}
+
 	private static CharacterSet decode(String data) {
 		int len = data.charAt(0);
 		boolean containsSurrogate = len == 0;

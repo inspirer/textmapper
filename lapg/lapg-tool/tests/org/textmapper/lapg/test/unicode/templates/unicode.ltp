@@ -26,14 +26,15 @@ class UnicodeDataTables {
 
 	static final String[] PROPERTIES = {
 ${foreach p in properties-}
-		"${p.name}",
-${p.set->packCodePoint()},
+		"${p.propertyName}",
+${p.set->packCharacterSet()},
 ${end-}
 	};
 }
 ${end-}
 ${end}
 
-${template packCodePoint-}
-${foreach spart in util.packCodePoint(self) separator ' +\n'-}
-		${spart}${end}${end}
+${template packCharacterSet-}
+${foreach spart in util.packCharacterSet(self) separator ' +\n'-}
+		${spart}${end-}
+${end}

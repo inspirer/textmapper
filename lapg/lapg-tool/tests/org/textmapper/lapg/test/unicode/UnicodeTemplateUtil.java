@@ -28,7 +28,7 @@ import java.util.List;
 public class UnicodeTemplateUtil {
 
 	@SuppressWarnings("UnusedDeclaration")
-	public static List<String> packCodePoint(CharacterSet set) {
+	public static List<String> packCharacterSet(CharacterSet set) {
 		JavaArrayEncoder enc = new JavaArrayEncoder(80);
 		boolean containsSurrogate = !new Builder().intersect(set, new CharacterSetImpl(0xd800, 0xdfff)).isEmpty();
 		int[] arr = set.toArray();

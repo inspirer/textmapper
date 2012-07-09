@@ -15,8 +15,6 @@
  */
 package org.textmapper.lapg.test.unicode.data;
 
-import org.textmapper.lapg.unicode.UnicodeData;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,9 +25,9 @@ import java.util.*;
 /**
  * Gryaznov Evgeny, 4/22/12
  */
-public class UnicodeParser {
+public class UnicodeDataParser {
 
-	public static final Set<String> CATEGORIES = new HashSet<String>(Arrays.asList(
+	public static final Set<String> GENERAL_CATEGORIES = new HashSet<String>(Arrays.asList(
 			"Lu", "Ll", "Lt", "Lm", "Lo",
 			"Mn", "Mc", "Me",
 			"Nd", "Nl", "No",
@@ -57,7 +55,7 @@ public class UnicodeParser {
 	}
 
 	private String parseCategory(int line, String categoryName) throws IOException {
-		if (!CATEGORIES.contains(categoryName)) {
+		if (!GENERAL_CATEGORIES.contains(categoryName)) {
 			throw new IOException(line + ": wrong category name: " + categoryName);
 		}
 		return categoryName;
@@ -88,7 +86,7 @@ public class UnicodeParser {
 		return result.toArray(new String[result.size()]);
 	}
 
-	public void parseData(URL unicodeData, UnicodeBuilder builder) throws IOException {
+	public void parseData(URL unicodeData, UnicodeDataBuilder builder) throws IOException {
 		URLConnection yc = unicodeData.openConnection();
 		BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
 		String inputLine;
@@ -129,7 +127,7 @@ public class UnicodeParser {
 		in.close();
 	}
 
-	public interface UnicodeBuilder {
+	public interface UnicodeDataBuilder {
 
 		void character(int code, String name, String category, int upper, int lower, int title);
 

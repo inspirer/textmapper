@@ -21,8 +21,10 @@ import org.textmapper.lapg.common.CharacterSetImpl;
 import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.lapg.test.gen.LapgTemplatesTestHelper;
-import org.textmapper.lapg.test.unicode.data.UnicodeParser;
-import org.textmapper.lapg.test.unicode.data.UnicodeParser.UnicodeBuilder;
+import org.textmapper.lapg.test.unicode.data.NamedRangesParser;
+import org.textmapper.lapg.test.unicode.data.NamedRangesParser.NamedRangesBuilder;
+import org.textmapper.lapg.test.unicode.data.UnicodeDataParser;
+import org.textmapper.lapg.test.unicode.data.UnicodeDataParser.UnicodeDataBuilder;
 import org.textmapper.lapg.unicode.UnicodeData;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.types.TypesRegistry;
@@ -47,6 +49,14 @@ public class UnicodeTest {
 		testContent("data/UnicodeData.txt", "http://www.unicode.org/Public/UNIDATA/UnicodeData.txt");
 	}
 
+	@Test
+	public void testCanonicalRepresentation() throws IOException {
+		assertEquals("a", UnicodeData.toCanonicalName("A"));
+		assertEquals("a", UnicodeData.toCanonicalName("isA"));
+		assertEquals("a", UnicodeData.toCanonicalName(" is A "));
+		assertEquals("aaaaaa", UnicodeData.toCanonicalName("aaA-Aaa"));
+	}
+
 	private void testContent(String resource, String httplocation) throws IOException {
 		String local = getContent(UnicodeTest.class.getResource(resource));
 		String remote = getContent(new URL(httplocation));
@@ -64,15 +74,14 @@ public class UnicodeTest {
 
 	@Test
 	public void testUnicodeData() throws IOException {
-
 		final Map<String, Builder> allCharset = new HashMap<String, Builder>();
-		for (String category : UnicodeParser.CATEGORIES) {
+		for (String category : UnicodeDataParser.GENERAL_CATEGORIES) {
 			allCharset.put(category, new Builder());
 		}
 
 		URL resource = UnicodeTest.class.getResource("data/UnicodeData.txt");
 		assertNotNull("cannot open UnicodeData.txt", resource);
-		new UnicodeParser().parseData(resource, new UnicodeBuilder() {
+		new UnicodeDataParser().parseData(resource, new UnicodeDataBuilder() {
 			private int prevsym = -1;
 
 			private void yield(int c, String category) {
@@ -109,20 +118,34 @@ public class UnicodeTest {
 		});
 
 		final List<NamedSet> result = new ArrayList<NamedSet>();
-		String[] categories = UnicodeParser.CATEGORIES.toArray(new String[UnicodeParser.CATEGORIES.size()]);
-		Arrays.sort(categories);
+		String[] categories = UnicodeDataParser.GENERAL_CATEGORIES.toArray(new String[UnicodeDataParser.GENERAL_CATEGORIES.size()]);
 		for (String category : categories) {
 			CharacterSet set = allCharset.get(category).create();
-			CharacterSet actual = UnicodeData.getInstance().getCharacterSet(category);
-			assertFalse(actual.isInverted());
-			assertTrue(set.equals(actual));
 			if (!"Cs".equals(category)) {
 				// only Cs category contains surrogates
 				assertTrue(new Builder().intersect(set, new CharacterSetImpl(0xd800, 0xdfff)).isEmpty());
 			}
-			result.add(new NamedSet(category, set));
+			result.add(new NamedSet(UnicodeData.toCanonicalName(category), set));
 		}
 
+		// add Blocks
+		resource = UnicodeTest.class.getResource("data/Blocks.txt");
+		assertNotNull("cannot open Blocks.txt", resource);
+		new NamedRangesParser().parseData(resource, new NamedRangesBuilder() {
+			@Override
+			public void block(int start, int end, String name) {
+				result.add(new NamedSet(UnicodeData.toCanonicalName("block:" + name), new CharacterSetImpl(start, end)));
+			}
+
+			@Override
+			public void done() {
+			}
+		});
+
+		// sort properties
+		Collections.sort(result);
+
+		// generation test
 		new LapgTemplatesTestHelper() {
 			@Override
 			protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
@@ -137,24 +160,37 @@ public class UnicodeTest {
 				"unicode.tables", "tests/org/textmapper/lapg/test/unicode/templates",
 				"../lapg-core/src/org/textmapper/lapg/unicode",
 				new String[]{"UnicodeDataTables.java"});
+
+		// test current data
+		for (NamedSet namedSet : result) {
+			CharacterSet actual = UnicodeData.getInstance().getCharacterSet(namedSet.getPropertyName());
+			assertNotNull("`" + namedSet.getPropertyName() + "` doesn't exist", actual);
+			assertFalse(actual.isInverted());
+			assertTrue("persistence for " + namedSet.getPropertyName() + " is broken", namedSet.getSet().equals(actual));
+		}
 	}
 
-	public static class NamedSet {
+	public static class NamedSet implements Comparable {
 
-		private final String name;
+		private final String propertyName;
 		private final CharacterSet set;
 
-		public NamedSet(String name, CharacterSet set) {
-			this.name = name;
+		public NamedSet(String propertyName, CharacterSet set) {
+			this.propertyName = propertyName;
 			this.set = set;
 		}
 
-		public String getName() {
-			return name;
+		public String getPropertyName() {
+			return propertyName;
 		}
 
 		public CharacterSet getSet() {
 			return set;
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			return propertyName.compareTo(((NamedSet)o).getPropertyName());
 		}
 	}
 }
