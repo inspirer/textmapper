@@ -18,6 +18,7 @@ package org.textmapper.lapg.unicode;
 import org.textmapper.lapg.api.regex.CharacterSet;
 import org.textmapper.lapg.common.CharacterSetImpl;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,13 +39,20 @@ public class UnicodeData {
 	private UnicodeData() {
 	}
 
+	public String getVersion() {
+		return UnicodeDataTables.VERSION;
+	}
+
+	public Collection<String> getAvailableProperties() {
+		if (rawData == null) {
+			initData();
+		}
+		return rawData.keySet();
+	}
+
 	public CharacterSet getCharacterSet(String propertyName) {
 		if (rawData == null) {
-			rawData = new HashMap<String, String>();
-			String[] properties = UnicodeDataTables.PROPERTIES;
-			for (int i = 0; i < properties.length; ) {
-				rawData.put(properties[i++], properties[i++]);
-			}
+			initData();
 		}
 		String canonicalName = toCanonicalName(propertyName);
 		CharacterSet result = set.get(canonicalName);
@@ -56,6 +64,17 @@ public class UnicodeData {
 		result = decode(data);
 		set.put(canonicalName, result);
 		return result;
+	}
+
+	private void initData() {
+		if (rawData != null) {
+			return;
+		}
+		rawData = new HashMap<String, String>();
+		String[] properties = UnicodeDataTables.PROPERTIES;
+		for (int i = 0; i < properties.length; ) {
+			rawData.put(properties[i++], properties[i++]);
+		}
 	}
 
 	public static String toCanonicalName(String propertyName) {

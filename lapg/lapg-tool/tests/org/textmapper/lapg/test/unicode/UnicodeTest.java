@@ -199,6 +199,10 @@ public class UnicodeTest {
 
 			@Override
 			public void done() {
+				prevsym++;
+				while (prevsym <= 0x10FFFF) {
+					yield(prevsym++, "Cn");
+				}
 			}
 		});
 
