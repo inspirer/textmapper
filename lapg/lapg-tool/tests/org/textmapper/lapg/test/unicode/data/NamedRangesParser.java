@@ -28,7 +28,15 @@ import java.util.regex.Pattern;
  */
 public class NamedRangesParser {
 
-	Pattern ROW = Pattern.compile("^([0-9a-fA-F]{4,6})..([0-9a-fA-F]{4,6})\\s*;\\s*([\\w -]+)(\\s*#.*)?$");
+	private static final Pattern ROW = Pattern.compile("^([0-9a-fA-F]{4,6})(..([0-9a-fA-F]{4,6}))?\\s*;\\s*([\\w -]+)(\\s*#.*)?$");
+
+	private final boolean isOrdered;
+	private final boolean rangeOnly;
+
+	public NamedRangesParser(boolean ordered, boolean rangeOnly) {
+		this.isOrdered = ordered;
+		this.rangeOnly = rangeOnly;
+	}
 
 	public void parseData(URL unicodeFile, NamedRangesBuilder builder) throws IOException {
 		URLConnection yc = unicodeFile.openConnection();
@@ -36,7 +44,7 @@ public class NamedRangesParser {
 		String inputLine;
 
 		int line = 0;
-		int prevsym = -1;
+		int prev = -1;
 		while ((inputLine = in.readLine()) != null) {
 			line++;
 			if (inputLine.startsWith("#") || inputLine.trim().isEmpty()) {
@@ -48,15 +56,19 @@ public class NamedRangesParser {
 			}
 			try {
 				int start = Integer.parseInt(m.group(1), 16);
-				if (prevsym >= start) {
+				if (prev >= start && isOrdered) {
 					throw new IOException(line + ": not ordered `" + m.group(1) + "'");
 				}
-				int end = Integer.parseInt(m.group(2), 16);
+				String to = m.group(3);
+				if (rangeOnly && to == null) {
+					throw new IOException(line + ": range is expected");
+				}
+				int end = to != null ? Integer.parseInt(to, 16) : start;
 				if (end < start) {
 					throw new IOException(line + ": end < start");
 				}
-				prevsym = end;
-				builder.block(start, end, m.group(3));
+				prev = end;
+				builder.block(start, end, m.group(4));
 			} catch (Exception ex) {
 				throw ex instanceof IOException
 						? (IOException) ex

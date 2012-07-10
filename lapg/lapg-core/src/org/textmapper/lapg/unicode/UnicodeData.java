@@ -38,7 +38,7 @@ public class UnicodeData {
 	private UnicodeData() {
 	}
 
-	public CharacterSet getCharacterSet(String cl) {
+	public CharacterSet getCharacterSet(String propertyName) {
 		if (rawData == null) {
 			rawData = new HashMap<String, String>();
 			String[] properties = UnicodeDataTables.PROPERTIES;
@@ -46,14 +46,15 @@ public class UnicodeData {
 				rawData.put(properties[i++], properties[i++]);
 			}
 		}
-		CharacterSet result = set.get(cl);
-		if (result != null || !(rawData.containsKey(cl))) {
+		String canonicalName = toCanonicalName(propertyName);
+		CharacterSet result = set.get(canonicalName);
+		if (result != null || !(rawData.containsKey(canonicalName))) {
 			return result;
 		}
 
-		String data = rawData.get(cl);
+		String data = rawData.get(canonicalName);
 		result = decode(data);
-		set.put(cl, result);
+		set.put(canonicalName, result);
 		return result;
 	}
 
