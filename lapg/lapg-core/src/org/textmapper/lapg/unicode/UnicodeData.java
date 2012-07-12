@@ -67,9 +67,7 @@ public class UnicodeData {
 			if (composites.containsKey(canonicalName)) {
 				Builder b = new Builder();
 				for (String part : composites.get(canonicalName)) {
-					for (int[] range : getCharacterSet(part)) {
-						b.addRange(range[0], range[1]);
-					}
+					b.addSet(getCharacterSet(part));
 				}
 				result = b.create();
 				set.put(canonicalName, result);

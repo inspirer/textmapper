@@ -233,6 +233,12 @@ public final class CharacterSetImpl implements CharacterSet {
 			throw new IllegalStateException();
 		}
 
+		public void addSet(CharacterSet set) {
+			for (int[] range : set) {
+				addRange(range[0], range[1]);
+			}
+		}
+
 		public CharacterSet create(boolean inverted) {
 			return new CharacterSetImpl(set, length, inverted);
 		}

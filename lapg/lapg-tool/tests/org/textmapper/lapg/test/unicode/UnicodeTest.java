@@ -87,9 +87,10 @@ public class UnicodeTest {
 		final NamedSetCollection propertiesCollection = new NamedSetCollection();
 		addCategoriesList(propertiesCollection);
 		addBlocks(propertiesCollection);
-		addProperties(propertiesCollection, "DerivedCoreProperties.txt");
-		addProperties(propertiesCollection, "PropList.txt");
-		addProperties(propertiesCollection, "Scripts.txt");
+		addProperties(propertiesCollection, "DerivedCoreProperties.txt", null);
+		addProperties(propertiesCollection, "PropList.txt", null);
+		addProperties(propertiesCollection, "Scripts.txt", "unknown");
+		addCustomProperties(propertiesCollection);
 
 		Set<String> availableProperties = new HashSet<String>(propertiesCollection.collection.keySet());
 
@@ -143,6 +144,45 @@ public class UnicodeTest {
 		}
 	}
 
+	private void addCustomProperties(NamedSetCollection propertiesCollection) {
+		// http://www.unicode.org/reports/tr18/,  annex C
+		Builder b = new Builder();
+
+		// blank ::= \p{Whitespace} -- [\N{LF} \N{VT} \N{FF} \N{CR} \N{NEL} \p{gc=Line_Separator} \p{gc=Paragraph_Separator}]
+		CharacterSet blank = propertiesCollection.get("whitespace").getSet();
+		blank = b.subtract(blank, new CharacterSetImpl(0xa, 0xf, 0x85, 0x85)); // lf, vt, ff, cr, nel
+		blank = b.subtract(blank, propertiesCollection.get("zl").getSet()); // Line_Separator
+		blank = b.subtract(blank, propertiesCollection.get("zp").getSet()); // Paragraph_Separator
+		propertiesCollection.add(new NamedSet("blank", blank));
+
+		// graph ::= [^ \p{space} \p{gc=Control} \p{gc= Surrogate} \p{gc=Unassigned}]
+		CharacterSet graph = new CharacterSetImpl(0, 0x10ffff);
+		graph = b.subtract(graph, propertiesCollection.get("whitespace").getSet());
+		graph = b.subtract(graph, propertiesCollection.get("cc").getSet()); // Control
+		graph = b.subtract(graph, propertiesCollection.get("cs").getSet()); // Surrogate
+		graph = b.subtract(graph, propertiesCollection.get("cn").getSet()); // Unassigned
+		propertiesCollection.add(new NamedSet("graph", graph));
+
+		// print ::= \p{graph} \p{blank} -- \p{cntrl}
+		b.clear();
+		b.addSet(propertiesCollection.get("graph").getSet());
+		b.addSet(propertiesCollection.get("blank").getSet());
+		CharacterSet print = b.create();
+		print = b.subtract(print, propertiesCollection.get("cc").getSet());
+		propertiesCollection.add(new NamedSet("print", print));
+
+		// Any matches all code points
+		propertiesCollection.add(new NamedSet("any", new CharacterSetImpl(0, 0x10ffff)));
+
+		// ASCII is equivalent to [\u0000-\u007F]
+		propertiesCollection.add(new NamedSet("ascii", new CharacterSetImpl(0, 0x7f)));
+
+		// Assigned ::= not Cn
+		CharacterSet assigned = propertiesCollection.get("any").getSet();
+		assigned = b.subtract(assigned, propertiesCollection.get("cn").getSet());
+		propertiesCollection.add(new NamedSet("assigned", assigned));
+	}
+
 	private void addCompositeProperties(Collection<CompositeProperty> result) {
 		// hardcoded
 		result.add(new CompositeProperty("c", Arrays.asList("cc", "cf", "cn", "co", "cs")));
@@ -154,9 +194,12 @@ public class UnicodeTest {
 		result.add(new CompositeProperty("s", Arrays.asList("sc", "sk", "sm", "so")));
 		result.add(new CompositeProperty("z", Arrays.asList("zl", "zp", "zs")));
 
+		// http://www.unicode.org/reports/tr18/,  annex C
+		result.add(new CompositeProperty("xdigit", Arrays.asList("nd", "hexdigit")));
+		result.add(new CompositeProperty("alnum", Arrays.asList("alphabetic", "nd")));
 	}
 
-	private void addProperties(final NamedSetCollection result, String filename) throws IOException {
+	private void addProperties(final NamedSetCollection result, String filename, final String defaultName) throws IOException {
 		// add derived core properties
 		URL resource = UnicodeTest.class.getResource("data/" + filename);
 		assertNotNull("cannot open " + filename, resource);
@@ -179,6 +222,16 @@ public class UnicodeTest {
 			public void done() {
 				for (String s : psets.keySet()) {
 					result.add(new NamedSet(UnicodeData.toCanonicalName(s), psets.get(s).create()));
+				}
+				if (defaultName != null) {
+					CharacterSet rest = new CharacterSetImpl(0, 0x10ffff);
+					Builder b = new Builder();
+					for (Builder v : psets.values()) {
+						rest = b.subtract(rest, v.create());
+					}
+					if (!rest.isEmpty()) {
+						result.add(new NamedSet(UnicodeData.toCanonicalName(defaultName), rest));
+					}
 				}
 			}
 		});
@@ -203,6 +256,11 @@ public class UnicodeTest {
 					canonicalName = UnicodeData.toCanonicalName(gcName);
 					assertTrue(canonicalName, canonicalName.length() == 1 && availableProperties.contains(canonicalName) || UnicodeDataParser.GENERAL_CATEGORIES.contains(canonicalName) || canonicalName.equals("lc"));
 					aliases.add(longName);
+					if (!availableProperties.contains(canonicalName)) return;
+					for (String alias : aliases) {
+						result.add(new Alias(UnicodeData.toCanonicalName(alias), canonicalName));
+					}
+				} else if (propertyName.equals("sc")) {
 					if (!availableProperties.contains(canonicalName)) return;
 					for (String alias : aliases) {
 						result.add(new Alias(UnicodeData.toCanonicalName(alias), canonicalName));
@@ -299,6 +357,10 @@ public class UnicodeTest {
 				throw new IllegalStateException("duplicate NamedSet: " + s.getPropertyName());
 			}
 			collection.put(s.getPropertyName(), s);
+		}
+
+		public NamedSet get(String name) {
+			return collection.get(name);
 		}
 
 		public Collection<NamedSet> asList() {
