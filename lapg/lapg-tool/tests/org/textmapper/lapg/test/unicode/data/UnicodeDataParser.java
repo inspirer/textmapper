@@ -28,13 +28,13 @@ import java.util.*;
 public class UnicodeDataParser {
 
 	public static final Set<String> GENERAL_CATEGORIES = new HashSet<String>(Arrays.asList(
-			"Lu", "Ll", "Lt", "Lm", "Lo",
-			"Mn", "Mc", "Me",
-			"Nd", "Nl", "No",
-			"Pc", "Pd", "Ps", "Pe", "Pi", "Pf", "Po",
-			"Sm", "Sc", "Sk", "So",
-			"Zs", "Zl", "Zp",
-			"Cc", "Cf", "Cs", "Co", "Cn"));
+			"lu", "ll", "lt", "lm", "lo",
+			"mn", "mc", "me",
+			"nd", "nl", "no",
+			"pc", "pd", "ps", "pe", "pi", "pf", "po",
+			"sm", "sc", "sk", "so",
+			"zs", "zl", "zp",
+			"cc", "cf", "cs", "co", "cn"));
 
 	private int parseOptionalChar(int line, String charCode) throws IOException {
 		if (charCode.isEmpty()) {
@@ -55,10 +55,10 @@ public class UnicodeDataParser {
 	}
 
 	private String parseCategory(int line, String categoryName) throws IOException {
-		if (!GENERAL_CATEGORIES.contains(categoryName)) {
+		if (!GENERAL_CATEGORIES.contains(categoryName.toLowerCase())) {
 			throw new IOException(line + ": wrong category name: " + categoryName);
 		}
-		return categoryName;
+		return categoryName.toLowerCase();
 	}
 
 	private String parseRangeName(int line, String fullName, boolean isFirst) throws IOException {

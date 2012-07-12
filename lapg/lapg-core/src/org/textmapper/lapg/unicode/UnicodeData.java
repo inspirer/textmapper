@@ -17,10 +17,9 @@ package org.textmapper.lapg.unicode;
 
 import org.textmapper.lapg.api.regex.CharacterSet;
 import org.textmapper.lapg.common.CharacterSetImpl;
+import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Gryaznov Evgeny, 4/22/12
@@ -34,6 +33,8 @@ public class UnicodeData {
 	}
 
 	private Map<String, String> rawData;
+	private Map<String, String> aliases;
+	private Map<String, Collection<String>> composites;
 	private Map<String, CharacterSet> set = new HashMap<String, CharacterSet>();
 
 	private UnicodeData() {
@@ -44,19 +45,35 @@ public class UnicodeData {
 	}
 
 	public Collection<String> getAvailableProperties() {
-		if (rawData == null) {
-			initData();
-		}
-		return rawData.keySet();
+		initRawData();
+		initAliases();
+		initComposites();
+		List<String> list = new ArrayList<String>(rawData.size() + aliases.size() + composites.size());
+		list.addAll(rawData.keySet());
+		list.addAll(aliases.keySet());
+		list.addAll(composites.keySet());
+		return list;
 	}
 
 	public CharacterSet getCharacterSet(String propertyName) {
-		if (rawData == null) {
-			initData();
-		}
-		String canonicalName = toCanonicalName(propertyName);
+		initRawData();
+		String canonicalName = resolveAlias(toCanonicalName(propertyName));
 		CharacterSet result = set.get(canonicalName);
-		if (result != null || !(rawData.containsKey(canonicalName))) {
+		if (result != null) {
+			return result;
+		}
+		if (!(rawData.containsKey(canonicalName))) {
+			initComposites();
+			if (composites.containsKey(canonicalName)) {
+				Builder b = new Builder();
+				for (String part : composites.get(canonicalName)) {
+					for (int[] range : getCharacterSet(part)) {
+						b.addRange(range[0], range[1]);
+					}
+				}
+				result = b.create();
+				set.put(canonicalName, result);
+			}
 			return result;
 		}
 
@@ -66,7 +83,38 @@ public class UnicodeData {
 		return result;
 	}
 
-	private void initData() {
+	private String resolveAlias(String propertyName) {
+		initAliases();
+		String val = aliases.get(propertyName);
+		return val != null ? val : propertyName;
+	}
+
+	private void initAliases() {
+		if (aliases != null) {
+			return;
+		}
+		aliases = new HashMap<String, String>();
+		for (int i = 0; i < UnicodeDataTables.ALIASES.length; ) {
+			aliases.put(UnicodeDataTables.ALIASES[i++], UnicodeDataTables.ALIASES[i++]);
+		}
+	}
+
+	private void initComposites() {
+		if (composites != null) {
+			return;
+		}
+		composites = new HashMap<String, Collection<String>>();
+		for (int i = 0; i < UnicodeDataTables.COMPOSITES.length; i++) {
+			String name = UnicodeDataTables.COMPOSITES[i++];
+			Collection<String> properties = new ArrayList<String>();
+			while (UnicodeDataTables.COMPOSITES[i] != null) {
+				properties.add(UnicodeDataTables.COMPOSITES[i++]);
+			}
+			composites.put(name, properties);
+		}
+	}
+
+	private void initRawData() {
 		if (rawData != null) {
 			return;
 		}

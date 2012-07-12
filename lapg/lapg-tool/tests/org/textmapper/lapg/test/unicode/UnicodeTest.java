@@ -21,6 +21,8 @@ import org.textmapper.lapg.common.CharacterSetImpl;
 import org.textmapper.lapg.common.CharacterSetImpl.Builder;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.lapg.test.gen.LapgTemplatesTestHelper;
+import org.textmapper.lapg.test.unicode.data.AliasesParser;
+import org.textmapper.lapg.test.unicode.data.AliasesParser.AliasBuilder;
 import org.textmapper.lapg.test.unicode.data.NamedRangesParser;
 import org.textmapper.lapg.test.unicode.data.NamedRangesParser.NamedRangesBuilder;
 import org.textmapper.lapg.test.unicode.data.UnicodeDataParser;
@@ -51,6 +53,8 @@ public class UnicodeTest {
 		testContent("data/Scripts.txt", "http://www.unicode.org/Public/UNIDATA/Scripts.txt");
 		testContent("data/PropList.txt", "http://www.unicode.org/Public/UNIDATA/PropList.txt");
 		testContent("data/DerivedCoreProperties.txt", "http://www.unicode.org/Public/UNIDATA/DerivedCoreProperties.txt");
+		testContent("data/PropertyAliases.txt", "http://www.unicode.org/Public/UNIDATA/PropertyAliases.txt");
+		testContent("data/PropertyValueAliases.txt", "http://www.unicode.org/Public/UNIDATA/PropertyValueAliases.txt");
 	}
 
 	@Test
@@ -79,15 +83,38 @@ public class UnicodeTest {
 
 	@Test
 	public void testUnicodeData() throws IOException {
-		final NamedSetCollection result = new NamedSetCollection();
+		// set properties
+		final NamedSetCollection propertiesCollection = new NamedSetCollection();
+		addCategoriesList(propertiesCollection);
+		addBlocks(propertiesCollection);
+		addProperties(propertiesCollection, "DerivedCoreProperties.txt");
+		addProperties(propertiesCollection, "PropList.txt");
+		addProperties(propertiesCollection, "Scripts.txt");
 
-		addCategoriesList(result);
-		addBlocks(result);
-		addProperties(result, "DerivedCoreProperties.txt");
-		addProperties(result, "PropList.txt");
-		addProperties(result, "Scripts.txt");
+		Set<String> availableProperties = new HashSet<String>(propertiesCollection.collection.keySet());
 
-		final Collection<NamedSet> properties = result.asList();
+		// composite properties
+		final List<CompositeProperty> compositeProperties = new ArrayList<CompositeProperty>();
+		addCompositeProperties(compositeProperties);
+
+		// test composite properties
+		for (CompositeProperty composite : compositeProperties) {
+			for (String content : composite.getContent()) {
+				assertTrue(availableProperties.contains(content));
+			}
+		}
+		for (CompositeProperty composite : compositeProperties) {
+			availableProperties.add(composite.getPropertyName());
+		}
+
+		// aliases
+		final AliasCollection aliasesCollection = new AliasCollection();
+		readAliases(aliasesCollection, "PropertyAliases.txt", false, availableProperties);
+		readAliases(aliasesCollection, "PropertyValueAliases.txt", true, availableProperties);
+
+		final Collection<NamedSet> properties = propertiesCollection.asList();
+		final Collection<Alias> aliases = aliasesCollection.asList();
+		Collections.sort(compositeProperties);
 
 		// generation test
 		new LapgTemplatesTestHelper() {
@@ -96,6 +123,8 @@ public class UnicodeTest {
 				HashMap<String, Object> res = new HashMap<String, Object>();
 				res.put("version", "6.1.0");
 				res.put("properties", properties);
+				res.put("aliases", aliases);
+				res.put("composites", compositeProperties);
 				EvaluationContext evaluationContext = new EvaluationContext(res);
 				evaluationContext.setVariable("util", new UnicodeTemplateUtil());
 				return evaluationContext;
@@ -112,6 +141,19 @@ public class UnicodeTest {
 			assertFalse(actual.isInverted());
 			assertTrue("persistence for " + namedSet.getPropertyName() + " is broken", namedSet.getSet().equals(actual));
 		}
+	}
+
+	private void addCompositeProperties(Collection<CompositeProperty> result) {
+		// hardcoded
+		result.add(new CompositeProperty("c", Arrays.asList("cc", "cf", "cn", "co", "cs")));
+		result.add(new CompositeProperty("l", Arrays.asList("ll", "lm", "lo", "lt", "lu")));
+		result.add(new CompositeProperty("lc", Arrays.asList("ll", "lt", "lu")));
+		result.add(new CompositeProperty("m", Arrays.asList("mc", "me", "mn")));
+		result.add(new CompositeProperty("n", Arrays.asList("nd", "nl", "no")));
+		result.add(new CompositeProperty("p", Arrays.asList("pc", "pd", "pe", "pf", "pi", "po", "ps")));
+		result.add(new CompositeProperty("s", Arrays.asList("sc", "sk", "sm", "so")));
+		result.add(new CompositeProperty("z", Arrays.asList("zl", "zp", "zs")));
+
 	}
 
 	private void addProperties(final NamedSetCollection result, String filename) throws IOException {
@@ -138,6 +180,38 @@ public class UnicodeTest {
 				for (String s : psets.keySet()) {
 					result.add(new NamedSet(UnicodeData.toCanonicalName(s), psets.get(s).create()));
 				}
+			}
+		});
+	}
+
+	private void readAliases(final AliasCollection result, String filename, final boolean isValueAliases, final Set<String> availableProperties) throws IOException {
+		URL resource = UnicodeTest.class.getResource("data/" + filename);
+		assertNotNull("cannot open " + filename, resource);
+		new AliasesParser(isValueAliases).parseData(resource, new AliasBuilder() {
+			@Override
+			public void alias(Collection<String> aliases, String longName, String propertyName) {
+				assertTrue(isValueAliases ? propertyName != null : propertyName == null);
+				String canonicalName = UnicodeData.toCanonicalName(longName);
+				if (!isValueAliases) {
+					if (!availableProperties.contains(canonicalName)) return;
+					for (String alias : aliases) {
+						result.add(new Alias(UnicodeData.toCanonicalName(alias), canonicalName));
+					}
+				} else if (propertyName.equals("gc")) {
+					String gcName = aliases.iterator().next();
+					aliases.remove(gcName);
+					canonicalName = UnicodeData.toCanonicalName(gcName);
+					assertTrue(canonicalName, canonicalName.length() == 1 && availableProperties.contains(canonicalName) || UnicodeDataParser.GENERAL_CATEGORIES.contains(canonicalName) || canonicalName.equals("lc"));
+					aliases.add(longName);
+					if (!availableProperties.contains(canonicalName)) return;
+					for (String alias : aliases) {
+						result.add(new Alias(UnicodeData.toCanonicalName(alias), canonicalName));
+					}
+				}
+			}
+
+			@Override
+			public void done() {
 			}
 		});
 	}
@@ -178,7 +252,7 @@ public class UnicodeTest {
 				assertTrue(c > prevsym);
 				prevsym++;
 				while (prevsym < c) {
-					yield(prevsym++, "Cn");
+					yield(prevsym++, "cn");
 				}
 				yield(c, category);
 
@@ -189,7 +263,7 @@ public class UnicodeTest {
 				assertTrue(start > prevsym);
 				prevsym++;
 				while (prevsym < start) {
-					yield(prevsym++, "Cn");
+					yield(prevsym++, "cn");
 				}
 				while (prevsym < end) {
 					yield(prevsym++, category);
@@ -201,7 +275,7 @@ public class UnicodeTest {
 			public void done() {
 				prevsym++;
 				while (prevsym <= 0x10FFFF) {
-					yield(prevsym++, "Cn");
+					yield(prevsym++, "cn");
 				}
 			}
 		});
@@ -209,7 +283,7 @@ public class UnicodeTest {
 		String[] categories = UnicodeDataParser.GENERAL_CATEGORIES.toArray(new String[UnicodeDataParser.GENERAL_CATEGORIES.size()]);
 		for (String category : categories) {
 			CharacterSet set = allCharset.get(category).create();
-			if (!"Cs".equals(category)) {
+			if (!"cs".equals(category)) {
 				// only Cs category contains surrogates
 				assertTrue(new Builder().intersect(set, new CharacterSetImpl(0xd800, 0xdfff)).isEmpty());
 			}
@@ -234,6 +308,46 @@ public class UnicodeTest {
 		}
 	}
 
+	public static class AliasCollection {
+		private final Map<String, Alias> collection = new HashMap<String, Alias>();
+
+		public void add(Alias s) {
+			if (collection.containsKey(s.getAlias())) {
+				throw new IllegalStateException("duplicate Alias: " + s.getAlias());
+			}
+			collection.put(s.getAlias(), s);
+		}
+
+		public Collection<Alias> asList() {
+			List<Alias> list = new ArrayList<Alias>(collection.values());
+			Collections.sort(list);
+			return list;
+		}
+	}
+
+	public static class Alias implements Comparable {
+		private String alias;
+		private String target;
+
+		public Alias(String alias, String target) {
+			this.alias = alias;
+			this.target = target;
+		}
+
+		public String getAlias() {
+			return alias;
+		}
+
+		public String getTarget() {
+			return target;
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			return alias.compareTo(((Alias) o).getAlias());
+		}
+	}
+
 	public static class NamedSet implements Comparable {
 
 		private final String propertyName;
@@ -255,6 +369,30 @@ public class UnicodeTest {
 		@Override
 		public int compareTo(Object o) {
 			return propertyName.compareTo(((NamedSet) o).getPropertyName());
+		}
+	}
+
+	public static class CompositeProperty implements Comparable {
+		private final String propertyName;
+		private final List<String> content;
+
+		public CompositeProperty(String propertyName, Collection<String> content) {
+			this.propertyName = propertyName;
+			this.content = new ArrayList<String>(content);
+			Collections.sort(this.content);
+		}
+
+		public String getPropertyName() {
+			return propertyName;
+		}
+
+		public Collection<String> getContent() {
+			return content;
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			return propertyName.compareTo(((CompositeProperty) o).getPropertyName());
 		}
 	}
 }

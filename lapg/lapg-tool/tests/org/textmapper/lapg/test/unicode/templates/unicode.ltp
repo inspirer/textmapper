@@ -30,6 +30,18 @@ ${foreach p in properties-}
 ${p.set->packCharacterSet()},
 ${end-}
 	};
+
+	static final String[] ALIASES = {
+${foreach a in aliases-}
+		"${a.alias}", "${a.target}",
+${end-}
+	};
+
+	static final String[] COMPOSITES = {
+${foreach c in composites-}
+		"${c.propertyName}", ${foreach v in c.content separator ', '}"${v}"${end}, null,
+${end-}
+	};
 }
 ${end-}
 ${end}
