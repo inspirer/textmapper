@@ -44,6 +44,102 @@ public class LexerGeneratorTest {
 	};
 
 	@Test
+	public void testSimple() throws RegexParseException {
+		checkMatch("axy", "ayy", false);
+		checkMatch("axy", "axy", true);
+		checkMatch("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz", true);
+		checkMatch("\\u1234", "\u1234", true);
+		checkMatch("(b)", "b", true);
+		checkMatch("a(b)c", "abc", true);
+		checkMatch("a(X|Y)c", "aYc", true);
+		checkMatch("a(X|Y)c", "aXc", true);
+		checkMatch("X|Y", "X", true);
+		checkMatch("X|Y", "Y", true);
+		checkMatch("X|Y", "Z", false);
+
+		// set
+		checkMatch("[@]", "@", true);
+		checkMatch("[^@]", "@", false);
+		checkMatch("[^@]", "\u1234", true);
+
+		// or
+		checkMatch("a|ax", "ax", true);
+		checkMatch("a|ax", "a", true);
+		checkMatch("a|ax", "ay", false);
+	}
+
+	@Test
+	public void testSpecialChars() throws RegexParseException {
+		checkMatch("\\a", "\\a", false);
+		checkMatch("\\a", "\007", true);
+		checkMatch("\\b", "\b", true);
+		checkMatch("\\b", "\\b", false);
+		checkMatch("\\f", "\f", true);
+		checkMatch("\\f", "\\f", false);
+		checkMatch("\\f", "f", false);
+		checkMatch("\\n", "\n", true);
+		checkMatch("\\n", "\\", false);
+		checkMatch("\\n", "\\n", false);
+		checkMatch("\\n", "n", false);
+		checkMatch("\\r", "\r", true);
+		checkMatch("\\t", "\t", true);
+		checkMatch("\\v", "\u000b", true);
+	}
+
+	@Test
+	public void testQuantifiers() {
+		checkMatch("lapg(T*)", "lapgTTTT", true);
+		checkMatch("lapg(T*)", "prefixlapgTTTTTTTTT", false);
+		checkMatch("lapg(T*)", "lapgTpostfix", false);
+	}
+
+	@Test
+	public void testComplexQuantifiers() throws RegexParseException {
+		// optional
+		checkMatch("qa{0,1}", "q", true);
+		checkMatch("qa{0,1}", "qa", true);
+		checkMatch("qa{0,1}", "qaa", false);
+
+		// upper bound
+		checkMatch("a{0,7}z", "z", true);
+		checkMatch("a{0,7}z", "az", true);
+		checkMatch("a{0,7}z", "aaaaaaz", true);
+		checkMatch("a{0,7}z", "aaaaaaaz", true);
+		checkMatch("a{0,7}z", "aaaaaaaaz", false);
+
+		// range
+		checkMatch("a{6,9}", "aaaaa", false);
+		checkMatch("a{6,9}", "aaaaaa", true);
+		checkMatch("a{6,9}", "aaaaaaaaa", true);
+		checkMatch("a{6,9}", "aaaaaaaaaa", false);
+
+		// exact match
+		checkMatch("[a-z]{4}", "aza", false);
+		checkMatch("[a-z]{4}", "azaz", true);
+		checkMatch("[a-z]{4}", "azazy", false);
+	}
+
+	@Test
+	public void testUnicode() {
+		for (int cp = 1; cp < 0x333; cp++) {
+			String s = "L" + new String(Character.toChars(cp)) + "R";
+			checkMatch("L" + String.format("\\u%04x", cp) + "R", s, true);
+			checkMatch("L[" + String.format("\\u%04x", cp) + "]R", s, true);
+			if (cp < 0xff) {
+				checkMatch("L" + String.format("\\x%02x", cp) + "R", s, true);
+				checkMatch("L[" + String.format("\\x%02x", cp) + "]R", s, true);
+			}
+		}
+	}
+
+	private void checkMatch(String regex, String sample, boolean expected) {
+		TestLexem[] input = {new TestLexem(0, 0, "test", regex)};
+		LexerData lt = LexicalBuilder.compile(input, NO_PATTERNS, new TestStatus());
+		int token = nextToken(lt, sample, input);
+		assertEquals(sample + " !~ /" + regex, expected, token == 0);
+	}
+
+	@Test
 	public void testGenerator() {
 		LexerData lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
@@ -65,19 +161,24 @@ public class LexerGeneratorTest {
 
 	}
 
+	/* returns token index if s matches regexp */
 	private int nextToken(LexerData lr, String s, Lexem[] lexems) {
 		int state = 0;
 		int index = 0;
 
 		while (state >= 0) {
-			int chr = index < s.length() ? s.codePointAt(index++) : 0;
+			int chr = index < s.length() ? s.codePointAt(index) : 0;
+			index++;
 			state = lr.getChange()[state * lr.getNchars() + (chr >= 0 && chr < lr.getChar2no().length ? lr.getChar2no()[chr] : 1)];
+		}
+		if (index != s.length() + 1) {
+			return -1;
 		}
 		if (state == -1) {
 			return -1;
 		}
 		if (state == -2) {
-			return 0;
+			return -1;
 		}
 		return lexems[-state - 3].getSymbol().getIndex();
 	}

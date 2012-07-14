@@ -16,7 +16,7 @@
 package org.textmapper.lapg.lex;
 
 import org.textmapper.lapg.api.regex.*;
-import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.regex.RegexCompilingSwitch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ public class RegexpCompiler {
 		return inputSymbols;
 	}
 
-	private class RegexpBuilder extends RegexSwitch<Void> {
+	private class RegexpBuilder extends RegexCompilingSwitch {
 
 		public RegexpBuilder() {
 		}
@@ -137,18 +137,13 @@ public class RegexpCompiler {
 		}
 
 		@Override
-		public Void caseQuantifier(RegexQuantifier c) {
-			c.getInner().accept(this);
-			if (c.getMin() == 0 && c.getMax() == 1) {
-				yield(RegexInstructionKind.Optional, 0);
-			} else if (c.getMin() == 0 && c.getMax() == -1) {
-				yield(RegexInstructionKind.ZeroOrMore, 0);
-			} else if (c.getMin() == 1 && c.getMax() == -1) {
+		public void yield(RegexPart part, boolean optional, boolean multiple) {
+			part.accept(this);
+			if (optional) {
+				yield(multiple ? RegexInstructionKind.ZeroOrMore : RegexInstructionKind.Optional, 0);
+			} else if (multiple) {
 				yield(RegexInstructionKind.OneOrMore, 0);
-			} else {
-				throw new IllegalArgumentException("unsupported quantifier: " + c.toString());
 			}
-			return null;
 		}
 
 		@Override

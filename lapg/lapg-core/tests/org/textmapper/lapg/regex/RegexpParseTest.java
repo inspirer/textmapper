@@ -59,10 +59,10 @@ public class RegexpParseTest {
 	public void testNewParser() {
 		RegexpCompiler rp = createTestCompiler();
 		try {
-			rp.compile(0, parseRegexp("Eea{1,2}"));
+			rp.compile(0, parseRegexp("Eea{3,2}"));
 			fail("no exception");
 		} catch (RegexParseException e) {
-			assertEquals("unsupported quantifier: a{1,2}", e.getMessage());
+			assertEquals("wrong quantifier: a{3,2}", e.getMessage());
 		}
 
 		try {

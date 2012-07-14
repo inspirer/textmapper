@@ -38,6 +38,12 @@ public class MatcherTest {
 		checkMatch("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz", true);
 		checkMatch("\\u1234", "\u1234", true);
 		checkMatch("(b)", "b", true);
+		checkMatch("a(b)c", "abc", true);
+		checkMatch("a(X|Y)c", "aYc", true);
+		checkMatch("a(X|Y)c", "aXc", true);
+		checkMatch("X|Y", "X", true);
+		checkMatch("X|Y", "Y", true);
+		checkMatch("X|Y", "Z", false);
 
 		// set
 		checkMatch("[@]", "@", true);

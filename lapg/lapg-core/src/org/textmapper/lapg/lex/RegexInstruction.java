@@ -19,6 +19,7 @@ package org.textmapper.lapg.lex;
  * evgeny, 6/10/12
  */
 public class RegexInstruction {
+
 	private final RegexInstructionKind kind;
 	private final int value;
 

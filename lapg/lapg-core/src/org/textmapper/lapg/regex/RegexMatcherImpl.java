@@ -17,7 +17,10 @@ package org.textmapper.lapg.regex;
 
 import org.textmapper.lapg.api.regex.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 class RegexMatcherImpl implements RegexMatcher {
 
@@ -105,32 +108,9 @@ class RegexMatcherImpl implements RegexMatcher {
 		}
 	}
 
-	private static class StackElement {
-		final int index;
-		List<Integer> orlocations;
-
-		private StackElement(int index) {
-			this.index = index;
-		}
-
-		void addOr(int index) {
-			if (orlocations == null) orlocations = new LinkedList<Integer>();
-			orlocations.add(index);
-		}
-
-		void done(List<State> states) {
-			if (orlocations != null) {
-				for (int i : orlocations) {
-					states.get(i).addJump(states.size());
-				}
-			}
-		}
-	}
-
-	private static class RegexpBuilder extends RegexSwitch<Void> {
+	private static class RegexpBuilder extends RegexCompilingSwitch {
 
 		private List<State> states = new ArrayList<State>();
-		private Stack<StackElement> stack = new Stack<StackElement>();
 		private final RegexContext context;
 
 		public RegexpBuilder(RegexContext context) {
@@ -212,91 +192,46 @@ class RegexMatcherImpl implements RegexMatcher {
 
 		@Override
 		public Void caseList(RegexList c) {
-			if (c.isInParentheses()) {
-				stack.push(new StackElement(index()));
-				yield(null);    /* ( */
-			}
 			for (RegexPart e : c.getElements()) {
 				e.accept(this);
-			}
-			if (c.isInParentheses()) {
-				yield(null);    /* ) */
-				stack.pop().done(states);
 			}
 			return null;
 		}
 
 		@Override
 		public Void caseOr(RegexOr c) {
-			boolean isOutermost = states.size() == 0;
-			if (isOutermost) {
-				stack.push(new StackElement(index()));
-				yield(null);    /* ( */
-			}
-
+			List<Integer> orlocations = new LinkedList<Integer>();
+			int startIndex = index();
+			yield(null);    /* ( */
 			boolean first = true;
 			for (RegexPart element : c.getVariants()) {
 				if (!first) {
-					stack.peek().addOr(index());
-					states.get(stack.peek().index).addJump(index() + 1);
+					orlocations.add(index());
+					states.get(startIndex).addJump(index() + 1);
 					yield(null);    /* | */
 				} else {
 					first = false;
 				}
 				element.accept(this);
 			}
-			if (isOutermost) {
-				yield(null);    /* ) */
-				stack.pop().done(states);
+			yield(null);    /* ) */
+			for (int i : orlocations) {
+				states.get(i).addJump(index());
 			}
 			return null;
 		}
 
 		@Override
-		public Void caseQuantifier(RegexQuantifier c) {
-			int min = c.getMin();
-			int max = c.getMax();
-			if (min < 0 || max == 0 || max < -1 || max > 0 && min > max) {
-				throw new IllegalArgumentException("wrong quantifier: " + c.toString());
+		public void yield(RegexPart part, boolean optional, boolean multiple) {
+			int startIndex = index();
+			part.accept(this);
+			if (optional) {
+				states.get(startIndex).addJump(index());
 			}
-
-			while (min > 1) {
-				c.getInner().accept(this);
-				min--;
-				if (max != -1) {
-					max--;
-				}
-			}
-
-			assert min == 0 || min == 1;
-
-			while (max > 1) {
-				stack.push(new StackElement(index()));
-				c.getInner().accept(this);
-				int start = stack.pop().index;
-				states.get(start).addJump(index());  // optional (forward jump)
-				max--;
-			}
-
-			assert max == -1 || max == 1;
-
-			stack.push(new StackElement(index()));
-			c.getInner().accept(this);
-			int start = stack.pop().index;
-			if (min == 0 && max == 1) {
-				states.get(start).addJump(index());
-			} else if (min == 0 && max == -1) {
-				states.get(start).addJump(index());
+			if (multiple) {
 				yield(null);    /* splitter */
-				states.get(index() - 1).addJump(start);
-			} else if (min == 1 && max == -1) {
-				yield(null);   /* splitter */
-				states.get(index() - 1).addJump(start);
-			} else {
-				assert min == 1 && max == 1;
-				// nop
+				states.get(index() - 1).addJump(startIndex);
 			}
-			return null;
 		}
 	}
 }
