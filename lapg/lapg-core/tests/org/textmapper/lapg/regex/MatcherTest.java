@@ -45,6 +45,10 @@ public class MatcherTest {
 		checkMatch("X|Y", "Y", true);
 		checkMatch("X|Y", "Z", false);
 
+		checkMatch("a(cz)+q", "aczq", true);
+		checkMatch("a(cz)+q", "aczczq", true);
+		checkMatch("a(cz)+q", "aczcq", false);
+
 		// set
 		checkMatch("[@]", "@", true);
 		checkMatch("[^@]", "@", false);
