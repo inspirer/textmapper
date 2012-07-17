@@ -55,19 +55,12 @@
 			<name>TextMapper repository</name>
 			<url>scp://mibew.org/home/inspirer/textmapper.org/htdocs/mvn</url>
 		</repository>
-	</distributionManagement>
-
-	<repositories>
-		<repository>
-			<id>textmapper-repo</id>
+		<snapshotRepository>
+			<id>textmapper-snapshot</id>
 			<name>TextMapper repository</name>
-			<url>http://textmapper.org/mvn</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
-	</repositories>
+			<url>scp://mibew.org/home/inspirer/textmapper.org/htdocs/snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
@@ -79,6 +72,36 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<defaultGoal>install</defaultGoal>
@@ -136,6 +159,17 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 				<version>2.3.2</version>
+				<configuration>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<releaseProfiles>release</releaseProfiles>
+					<localCheckout>true</localCheckout>
+					<scmCommentPrefix>[release] </scmCommentPrefix>
+					<releaseProfiles>release</releaseProfiles>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<!-- we are releasing from a branch, skip this -->
+					<updateWorkingCopyVersions>false</updateWorkingCopyVersions>
+					<pushChanges>false</pushChanges>
+				</configuration>
 			</plugin>
 
 			<plugin>

@@ -6,8 +6,8 @@ workspace.xml
 dictionaries
 /lapg/build.properties
 /lapg/build/
-/lapg/libs/lapg-1*
-/lapg-idea/org.textmapper.lapg.idea/lib/lapg-1*
+/lapg/libs/lapg-*
+/lapg-idea/org.textmapper.lapg.idea/lib/lapg-*
 /lapg-eclipse/plugins/org.textmapper.lapg/lapg*
 target
 bin
