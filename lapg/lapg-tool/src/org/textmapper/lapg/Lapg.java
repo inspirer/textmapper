@@ -30,7 +30,7 @@ import java.io.*;
  */
 public class Lapg {
 
-	public static final String VERSION = "1.3.11/java";
+	public static final String VERSION = "0.9.1/java";
 	public static final String BUILD = "2012";
 
 	public static final String HELP_MESSAGE =
