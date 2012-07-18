@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.textmapper.eclipse</groupId>
     <artifactId>repository</artifactId>
-    <version>1.3.11-SNAPSHOT</version>
+    <version>0.9.1-SNAPSHOT</version>
     <packaging>eclipse-repository</packaging>
 
     <parent>
         <groupId>org.textmapper.eclipse</groupId>
         <artifactId>master</artifactId>
-        <version>1.3.11-SNAPSHOT</version>
+        <version>0.9.1-SNAPSHOT</version>
     </parent>
 </project>
