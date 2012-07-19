@@ -7,4 +7,4 @@ while [ -L "$SCRIPT_LOCATION" ]; do
 done
 
 BASE=`dirname "$SCRIPT_LOCATION"`
-java -cp ${BASE}/lapg-1.3.??.jar org.textmapper.lapg.Lapg $*
+java -cp ${BASE}/lapg-0.9.?.jar org.textmapper.lapg.Lapg $*
