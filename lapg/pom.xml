@@ -53,12 +53,12 @@
 		<repository>
 			<id>textmapper-repo</id>
 			<name>TextMapper repository</name>
-			<url>scp://mibew.org/home/inspirer/textmapper.org/htdocs/mvn</url>
+			<url>scp://mibew.org/home/inspirer/mvn.textmapper.org/htdocs/release</url>
 		</repository>
 		<snapshotRepository>
 			<id>textmapper-snapshot</id>
 			<name>TextMapper repository</name>
-			<url>scp://mibew.org/home/inspirer/textmapper.org/htdocs/snapshot</url>
+			<url>scp://mibew.org/home/inspirer/mvn.textmapper.org/htdocs/snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>
 
