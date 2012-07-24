@@ -1,0 +1,5 @@
+language: java
+before_script: cd lapg
+jdk:
+  - openjdk7
+  - openjdk6
