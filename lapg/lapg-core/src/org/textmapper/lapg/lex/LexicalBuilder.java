@@ -470,7 +470,7 @@ public class LexicalBuilder {
 					}
 
 				} else {
-					current.action[sym] = lexnum >= 0 ? -3 - lexnum : -1;
+					current.action[sym] = lexnum >= 0 ? -3 - ldata[lexnum].lexem.getIndex() : -1;
 				}
 			}
 
@@ -515,7 +515,7 @@ public class LexicalBuilder {
 				continue;
 			}
 
-			RegexInstruction[] pattern = parseRegexp(rp, l);
+			RegexInstruction[] pattern = parseRegexp(rp, l, syms.size());
 			if (pattern == null) {
 				success = false;
 				continue;
@@ -619,10 +619,10 @@ public class LexicalBuilder {
 		return RegexFacade.createContext(result);
 	}
 
-	private RegexInstruction[] parseRegexp(RegexpCompiler rp, Lexem l) {
+	private RegexInstruction[] parseRegexp(RegexpCompiler rp, Lexem l, int index) {
 		try {
 			RegexPart parsedRegex = l.getRegexp();
-			return rp.compile(l.getIndex(), parsedRegex);
+			return rp.compile(index, parsedRegex);
 
 		} catch (RegexParseException ex) {
 			status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": " + ex.getMessage(), l);
