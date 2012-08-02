@@ -100,26 +100,16 @@ public class RegexpCompiler {
 
 		@Override
 		public Void caseList(RegexList c) {
-			int start = getLength();
-			if (c.isInParentheses()) {
-				yield(RegexInstructionKind.LeftParen, 0);
-			}
 			for (RegexPart e : c.getElements()) {
 				e.accept(this);
-			}
-			if (c.isInParentheses()) {
-				result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
-				yield(RegexInstructionKind.RightParen, 0);
 			}
 			return null;
 		}
 
 		@Override
 		public Void caseOr(RegexOr c) {
-			boolean isOutermost = getLength() == 0;
-			if (isOutermost) {
-				yield(RegexInstructionKind.LeftParen, 0);
-			}
+			int start = getLength();
+			yield(RegexInstructionKind.LeftParen, 0);
 			boolean first = true;
 			for (RegexPart element : c.getVariants()) {
 				if (!first) {
@@ -129,16 +119,18 @@ public class RegexpCompiler {
 				}
 				element.accept(this);
 			}
-			if (isOutermost) {
-				result.set(0, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
-				yield(RegexInstructionKind.RightParen, 0);
-			}
+			result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
+			yield(RegexInstructionKind.RightParen, 0);
 			return null;
 		}
 
 		@Override
 		public void yield(RegexPart part, boolean optional, boolean multiple) {
+			int start = getLength();
+			yield(RegexInstructionKind.LeftParen, 0);
 			part.accept(this);
+			result.set(start, new RegexInstruction(RegexInstructionKind.LeftParen, getLength()));
+			yield(RegexInstructionKind.RightParen, 0);
 			if (optional) {
 				yield(multiple ? RegexInstructionKind.ZeroOrMore : RegexInstructionKind.Optional, 0);
 			} else if (multiple) {

@@ -169,8 +169,6 @@ public class RegexpParseTest {
 			RegexpCompiler rp = createTestCompiler();
 			RegexInstruction[] result = rp.compile(0, parseRegexp("()"));
 			assertArrayEquals(new RegexInstruction[]{
-					new RegexInstruction(RegexInstructionKind.LeftParen, 1),
-					new RegexInstruction(RegexInstructionKind.RightParen, 0),
 					new RegexInstruction(RegexInstructionKind.Done, 0),
 			}, result);
 
@@ -187,9 +185,27 @@ public class RegexpParseTest {
 			rp = createTestCompiler();
 			result = rp.compile(0, parseRegexp("(.)"));
 			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.Any, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
+
+			rp = createTestCompiler();
+			result = rp.compile(0, parseRegexp("(.)+"));
+			assertArrayEquals(new RegexInstruction[]{
 					new RegexInstruction(RegexInstructionKind.LeftParen, 2),
 					new RegexInstruction(RegexInstructionKind.Any, 0),
 					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.OneOrMore, 0),
+					new RegexInstruction(RegexInstructionKind.Done, 0),
+			}, result);
+
+			rp = createTestCompiler();
+			result = rp.compile(0, parseRegexp(".+"));
+			assertArrayEquals(new RegexInstruction[]{
+					new RegexInstruction(RegexInstructionKind.LeftParen, 2),
+					new RegexInstruction(RegexInstructionKind.Any, 0),
+					new RegexInstruction(RegexInstructionKind.RightParen, 0),
+					new RegexInstruction(RegexInstructionKind.OneOrMore, 0),
 					new RegexInstruction(RegexInstructionKind.Done, 0),
 			}, result);
 
