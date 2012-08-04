@@ -1,5 +1,5 @@
 language: java
-before_script: cd lapg
+before_script: cd tm-tool
 jdk:
   - openjdk7
   - openjdk6

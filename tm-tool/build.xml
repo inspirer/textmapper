@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="all" name="org.textmapper.lapg">
-	<property name="lapg.version" value="0.9.1"/>
-	<property name="lapg.qualifier" value="SNAPSHOT"/>
-	<property name="suffix" value="${lapg.version}"/>
+<project basedir="." default="all" name="org.textmapper.tool">
+	<property name="tm.version" value="0.9.1"/>
+	<property name="tm.qualifier" value="SNAPSHOT"/>
+	<property name="suffix" value="${tm.version}"/>
 
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
 	<property name="source" value="1.5"/>
 
 	<tstamp>
-		<format property="lapg.build.date" pattern="EEE MMM d HH:mm:ss z yyyy"/>
+		<format property="tm.build.date" pattern="EEE MMM d HH:mm:ss z yyyy"/>
 	</tstamp>
 
 	<target name="all" depends="clean,test,deploy">
@@ -19,25 +19,25 @@
 		<delete dir="build"/>
 	</target>
 
-	<target name="rev" unless="lapg.revision">
-		<exec executable="git" outputproperty="lapg.revision" osfamily="unix" failifexecutionfails="false"
+	<target name="rev" unless="tm.revision">
+		<exec executable="git" outputproperty="tm.revision" osfamily="unix" failifexecutionfails="false"
 			  failonerror="false">
 			<arg value="rev-parse"/>
 			<arg value="HEAD"/>
 		</exec>
-		<exec executable="cmd" outputproperty="lapg.revision" osfamily="windows" failifexecutionfails="false"
+		<exec executable="cmd" outputproperty="tm.revision" osfamily="windows" failifexecutionfails="false"
 			  failonerror="false">
 			<arg value="/c"/>
 			<arg value="git"/>
 			<arg value="rev-parse"/>
 			<arg value="HEAD"/>
 		</exec>
-		<condition property="lapg.revision" value="SNAPSHOT">
+		<condition property="tm.revision" value="SNAPSHOT">
 			<not>
-				<isset property="lapg.revision"/>
+				<isset property="tm.revision"/>
 			</not>
 		</condition>
-		<echo message="revision: ${lapg.revision}"/>
+		<echo message="revision: ${tm.revision}"/>
 	</target>
 
 	<target name="build" depends="rev">
@@ -53,15 +53,15 @@
 			<src path="lapg-core/src"/>
 			<src path="templates/src"/>
 		</javac>
-		<jar destfile="build/lapg.jar">
+		<jar destfile="build/textmapper.jar">
 			<fileset dir="build/bin"/>
 			<manifest>
 				<attribute name="Main-Class" value="org.textmapper.lapg.Lapg"/>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${lapg.build.date}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
-				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
+				<attribute name="Implementation-Title" value="TextMapper (a tool for language development)"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="." includes="*.txt"/>
 		</jar>
@@ -74,14 +74,14 @@
 			<fileset dir="lapg-core/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 			<fileset dir="templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 		</copy>
-		<jar destfile="build/lapg-src.jar">
+		<jar destfile="build/textmapper-src.jar">
 			<fileset dir="build/src"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${lapg.build.date}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="Lexer and Parser Generator"/>
-				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
+				<attribute name="Implementation-Title" value="TextMapper (a tool for language development)"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="." includes="*.txt"/>
 		</jar>
@@ -97,7 +97,7 @@
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
 			   includeantruntime="false">
 			<classpath>
-				<pathelement location="build/lapg.jar"/>
+				<pathelement location="build/textmapper.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
 			<src path="lapg-tool/tests"/>
@@ -121,56 +121,56 @@
 			<formatter type="xml"/>
 			<classpath>
 				<pathelement location="build/bintests"/>
-				<pathelement location="build/lapg.jar"/>
+				<pathelement location="build/textmapper.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
 		</junit>
 	</target>
 
 	<target name="deploy" depends="build,buildsource">
-		<copy file="build/lapg.jar" tofile="libs/lapg-${suffix}.jar"/>
-		<copy file="build/lapg-src.jar" tofile="libs/lapg-${suffix}-src.jar"/>
-		<copy file="build/lapg.jar" tofile="../lapg-idea/org.textmapper.lapg.idea/lib/lapg-${suffix}.jar"/>
-		<copy file="build/lapg-src.jar" tofile="../lapg-idea/org.textmapper.lapg.idea/lib/lapg-${suffix}-src.jar"/>
-		<copy file="build/lapg.jar" tofile="../lapg-eclipse/plugins/org.textmapper.lapg/lapg.jar"/>
-		<copy file="build/lapg-src.jar" tofile="../lapg-eclipse/plugins/org.textmapper.lapg/lapg-src.jar"/>
+		<copy file="build/textmapper.jar" tofile="libs/textmapper-${suffix}.jar"/>
+		<copy file="build/textmapper-src.jar" tofile="libs/textmapper-${suffix}-src.jar"/>
+		<copy file="build/textmapper.jar" tofile="../tm-idea/org.textmapper.lapg.idea/lib/textmapper-${suffix}.jar"/>
+		<copy file="build/textmapper-src.jar" tofile="../tm-idea/org.textmapper.lapg.idea/lib/textmapper-${suffix}-src.jar"/>
+		<copy file="build/textmapper.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper.jar"/>
+		<copy file="build/textmapper-src.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper-src.jar"/>
 	</target>
 
 	<!-- TODO Lapg task
 	<target name="syntax">
-		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="libs/lapg-0.9.1.jar"/>
+		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="libs/textmapper-0.9.1.jar"/>
 		<lapg source="syntax"/>
 	</target> -->
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser"/>
 		<echo message="Action parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser/action"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="lapg-core/src/org/textmapper/lapg/regex"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-core/src/org/textmapper/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
 		<echo message="Types parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/types"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/types"/>
 		<echo message="XML parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true"
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true"
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true"
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true"
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
-		<java jar="libs/lapg-${suffix}.jar" fork="true"
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
 	</target>
 
@@ -187,54 +187,54 @@
 		</path>
 		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
 
-		<mkdir dir="build/lapg/classes"/>
-		<copy includeemptydirs="false" todir="build/lapg">
-			<fileset dir="../lapg-idea/org.textmapper.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
+		<mkdir dir="build/textmapper/classes"/>
+		<copy includeemptydirs="false" todir="build/textmapper">
+			<fileset dir="../tm-idea/org.textmapper.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
 		</copy>
-		<copy includeemptydirs="false" todir="build/lapg/classes">
-			<fileset dir="../lapg-idea/org.textmapper.lapg.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="../lapg-idea/org.textmapper.lapg.idea/resources"/>
+		<copy includeemptydirs="false" todir="build/textmapper/classes">
+			<fileset dir="../tm-idea/org.textmapper.lapg.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="../tm-idea/org.textmapper.lapg.idea/resources"/>
 		</copy>
-		<javac2 destdir="build/lapg/classes" source="${source}" target="${target}" includeantruntime="false">
-			<src path="../lapg-idea/org.textmapper.lapg.idea/src"/>
+		<javac2 destdir="build/textmapper/classes" source="${source}" target="${target}" includeantruntime="false">
+			<src path="../tm-idea/org.textmapper.lapg.idea/src"/>
 			<classpath>
-				<fileset dir="build/lapg/lib" includes="*.jar"/>
+				<fileset dir="build/textmapper/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 			</classpath>
 		</javac2>
-		<jar destfile="build/lapg/lib/lapg-plugin.jar">
-			<fileset dir="build/lapg/classes"/>
+		<jar destfile="build/textmapper/lib/tm-plugin.jar">
+			<fileset dir="build/textmapper/classes"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${lapg.build.date}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="Lexer and Parser Generator IDEA Plug-in"/>
-				<attribute name="Implementation-Version" value="${lapg.version}-${lapg.qualifier}, ${lapg.revision}"/>
+				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
-			<metainf dir="../lapg-idea" includes="LICENSE.txt"/>
+			<metainf dir="../tm-idea" includes="LICENSE.txt"/>
 		</jar>
-		<delete dir="build/lapg/classes"/>
+		<delete dir="build/textmapper/classes"/>
 	</target>
 
 	<target name="install-plugin" depends="plugin">
 		<property name="pluginPath" value="${home.idea_ic_11.plugins}"/>
-		<copy includeemptydirs="false" todir="${pluginPath}/lapg/">
-			<fileset dir="build/lapg" includes="lib/**"/>
+		<copy includeemptydirs="false" todir="${pluginPath}/textmapper/">
+			<fileset dir="build/textmapper" includes="lib/**"/>
 		</copy>
 	</target>
 
 	<target name="archive-plugin" depends="plugin">
-		<zip destfile="libs/lapg-idea-${suffix}.zip">
-			<zipfileset dir="build" includes="lapg/**"/>
-			<zipfileset file="../lapg-idea/README.txt"/>
+		<zip destfile="libs/tm-idea-${suffix}.zip">
+			<zipfileset dir="build" includes="textmapper/**"/>
+			<zipfileset file="../tm-idea/README.txt"/>
 		</zip>
 	</target>
 
 	<target name="archive-lapg">
-		<zip destfile="libs/lapg-${suffix}.zip">
-			<zipfileset file="libs/lapg-${suffix}.jar"/>
-			<zipfileset file="libs/lapg-${suffix}-src.jar"/>
-			<zipfileset file="libs/lapg.sh"/>
+		<zip destfile="libs/textmapper-${suffix}.zip">
+			<zipfileset file="libs/textmapper-${suffix}.jar"/>
+			<zipfileset file="libs/textmapper-${suffix}-src.jar"/>
+			<zipfileset file="libs/textmapper.sh"/>
 		</zip>
 	</target>
 </project>
