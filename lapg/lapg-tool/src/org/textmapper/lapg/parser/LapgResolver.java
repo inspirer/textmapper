@@ -168,6 +168,43 @@ public class LapgResolver {
 		return sym;
 	}
 
+	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
+		if (rulesymref instanceof AstRuleDefaultSymbolRef) {
+			return resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
+
+		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
+			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
+			for (AstRule right : rules) {
+				if (!right.hasSyntaxError()) {
+					createRule(nested, right);
+				}
+			}
+			return nested;
+
+		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
+			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			Symbol inner = resolve(outer, ((AstRuleNestedQuantifier) rulesymref).getInner());
+
+			RuleBuilder rb = builder.rule(null, nested, rulesymref);
+			int quantifier = ((AstRuleNestedQuantifier) rulesymref).getQuantifier();
+			if (quantifier != AstRuleNestedQuantifier.KIND_OPTIONAL) {
+				// list
+				rb.addPart(null, nested, null, rulesymref);
+			}
+			rb.addPart(null, inner, null, rulesymref);
+			rb.create();
+			rb = builder.rule(null, nested, rulesymref);
+			if (quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE) {
+				// one or more list
+				rb.addPart(null, inner, null, rulesymref);
+			}
+			rb.create();
+			return nested;
+		}
+		return null;
+	}
+
 	private Symbol resolve(AstReference id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);
@@ -411,12 +448,12 @@ public class LapgResolver {
 						rule.addPart(null, codeSym, null, astCode);
 					}
 
-				} else if (part instanceof AstRuleSymbol) {
-					AstRuleSymbol rs = (AstRuleSymbol) part;
-					Symbol sym = resolve(rs.getSymbol());
+				} else if (part instanceof AstRefRulePart) {
+					AstRefRulePart rs = (AstRefRulePart) part;
+					Symbol sym = resolve(left, rs.getReference());
 					if (sym != null) {
 						// TODO check duplicate alias
-						SymbolRef ref = rule.addPart(rs.getAlias(), sym, convertLA(rs.getAnnotations()), rs.getSymbol());
+						SymbolRef ref = rule.addPart(rs.getAlias(), sym, convertLA(rs.getAnnotations()), rs.getReference());
 						annotationsMap.put(ref, convert(rs.getAnnotations(), "AnnotateReference"));
 					}
 				}

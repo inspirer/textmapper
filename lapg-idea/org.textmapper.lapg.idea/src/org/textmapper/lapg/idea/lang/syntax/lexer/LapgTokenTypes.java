@@ -64,13 +64,13 @@ public interface LapgTokenTypes {
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
 	IElementType OP_PLUS = new LapgElementType(Lexems.PLUS, "+");
 	IElementType OP_QMARK = new LapgElementType(Lexems.QUESTIONMARK, "?");
-	IElementType QP_QMARK_EXCL = new LapgElementType(Lexems.QUESTIONMARKEXCLAMATION, "?!");
+	IElementType QP_LPAREN_QMARK_EXCL = new LapgElementType(Lexems.LPARENQUESTIONMARKEXCLAMATION, "(?!");
 	IElementType OP_AND = new LapgElementType(Lexems.AMPERSAND, "&");
 	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, QP_QMARK_EXCL, OP_AND, OP_AT
+			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, QP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
 
 	// keywords
@@ -82,11 +82,12 @@ public interface LapgTokenTypes {
 	IElementType KW_INPUT = new LapgElementType(Lexems.Linput, "input");
 	IElementType KW_LEFT = new LapgElementType(Lexems.Lleft, "left");
 	IElementType KW_RIGHT = new LapgElementType(Lexems.Lright, "right");
+	IElementType KW_NEW = new LapgElementType(Lexems.Lnew, "new");
 	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 	IElementType KW_NOEOI = new LapgElementType(Lexems.Lnoeoi, "no-eoi");
 	IElementType KW_SOFT = new LapgElementType(Lexems.Lsoft, "soft");
 	IElementType KW_CLASS = new LapgElementType(Lexems.Lclass, "class");
 	IElementType KW_SPACE = new LapgElementType(Lexems.Lspace, "space");
 
-	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE, KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC, KW_NOEOI);
+	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_PRIO, KW_SHIFT, KW_REDUCE, KW_INPUT, KW_LEFT, KW_RIGHT, KW_NEW, KW_NONASSOC, KW_NOEOI);
 }

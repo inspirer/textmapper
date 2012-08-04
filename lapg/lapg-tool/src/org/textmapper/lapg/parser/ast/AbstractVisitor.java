@@ -69,7 +69,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstRuleSymbol n) {
+	public boolean visit(AstRefRulePart n) {
 		return true;
 	}
 
@@ -118,6 +118,18 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(AstNegativeLA n) {
+		return true;
+	}
+
+	public boolean visit(AstRuleDefaultSymbolRef n) {
+		return true;
+	}
+
+	public boolean visit(AstRuleNestedNonTerm n) {
+		return true;
+	}
+
+	public boolean visit(AstRuleNestedQuantifier n) {
 		return true;
 	}
 }

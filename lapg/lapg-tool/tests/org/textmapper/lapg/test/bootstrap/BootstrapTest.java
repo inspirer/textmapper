@@ -39,7 +39,7 @@ public class BootstrapTest {
 	@Test
 	public void testLapgS() {
 		bootstrap("src/org/textmapper/lapg/parser", "lapg.s", new String[0], new String[]{
-				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 2);
+				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 1);
 	}
 
 	@Test

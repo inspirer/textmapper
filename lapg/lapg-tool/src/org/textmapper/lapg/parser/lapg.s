@@ -54,18 +54,19 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 '[':    /\[/
 ']':    /\]/
 '(':	/\(/
+'(?!':	/\(\?!/
 ')':	/\)/
 '<':	/</
 '>':	/>/
 '*':	/*/
 '+':	/+/
 '?':	/?/
-'?!':	/?!/
 '&':	/&/
 '@':	/@/
 
 Ltrue:  /true/
 Lfalse: /false/
+Lnew:   /new/
 
 Lprio:  /prio/				(soft)
 Lshift: /shift/				(soft)
@@ -222,25 +223,23 @@ ruleparts (List<AstRulePart>) ::=
 ;
 
 %left '&';
-%nonassoc '?' '*' '+';
 
 rulepart (AstRulePart) ::=
-	  ruleannotations identifier '=' reference			{ $$ = new AstRuleSymbol($identifier, $reference, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| ruleannotations reference 						{ $$ = new AstRuleSymbol(null, $reference, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| identifier '=' reference							{ $$ = new AstRuleSymbol($identifier, $reference, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| reference 										{ $$ = new AstRuleSymbol(null, $reference, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	  ruleannotations identifier '=' rulesymref			{ $$ = new AstRefRulePart($identifier, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| ruleannotations rulesymref 						{ $$ = new AstRefRulePart(null, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| identifier '=' rulesymref							{ $$ = new AstRefRulePart($identifier, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| command
 
-	| '(' ruleparts_choice ')'							{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
 	| rulepart '&' rulepart								{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulepart '?'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulepart '*'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
-	| rulepart '+'										{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
 ;
 
-ruleparts_choice ::=
-	  ruleparts
-	| ruleparts_choice '|' ruleparts
+rulesymref (AstRuleSymbolRef) ::=
+	  reference											{ $$ = new AstRuleDefaultSymbolRef($reference, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '?'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '*'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '+'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 ruleannotations (AstRuleAnnotations) ::=
@@ -260,12 +259,12 @@ annotation_list (java.util.@List<AstNamedEntry>) ::=
 
 annotation (AstNamedEntry) ::=
 	  '@' identifier 									{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
-	| '@' identifier '(' expression ')'					{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' identifier '=' expression						{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
 negative_la (AstNegativeLA) ::=
-	'(' '?!' negative_la_clause ')'						{ $$ = new AstNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
+	'(?!' negative_la_clause ')'						{ $$ = new AstNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 negative_la_clause (java.util.@List<AstReference>) ::=
@@ -281,7 +280,7 @@ expression (AstExpression) ::=
 	| Ltrue                                             { $$ = new AstLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
 	| Lfalse                                            { $$ = new AstLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 	| reference
-	| name '(' map_entriesopt ')'						{ $$ = new AstInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
+	| Lnew name '(' map_entriesopt ')'					{ $$ = new AstInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
 	| '[' expression_listopt ']'						{ $$ = new AstArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;

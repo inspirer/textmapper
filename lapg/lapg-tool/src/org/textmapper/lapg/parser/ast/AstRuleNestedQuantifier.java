@@ -17,40 +17,39 @@ package org.textmapper.lapg.parser.ast;
 
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 
-public class AstRuleSymbol extends AstNode implements AstRulePart {
+/**
+ * evgeny, 8/3/12
+ */
+public class AstRuleNestedQuantifier extends AstNode implements AstRuleSymbolRef {
 
-	private final String alias;
-	private final AstReference symbol;
-	private final AstRuleAnnotations annotations;
+	public static final int KIND_OPTIONAL = 0;
+	public static final int KIND_ZEROORMORE = 1;
+	public static final int KIND_ONEORMORE = 2;
 
-	public AstRuleSymbol(String alias, AstReference symbol, AstRuleAnnotations annotations, TextSource source, int offset, int endoffset) {
+	private final int quantifier;
+	private final AstRuleSymbolRef inner;
+
+	public AstRuleNestedQuantifier(AstRuleSymbolRef inner, int quantifier, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.alias = alias;
-		this.symbol = symbol;
-		this.annotations = annotations;
+		this.inner = inner;
+		this.quantifier = quantifier;
 	}
 
-	public AstReference getSymbol() {
-		return symbol;
+	public int getQuantifier() {
+		return quantifier;
 	}
 
-	public String getAlias() {
-		return alias;
+	public AstRuleSymbolRef getInner() {
+		return inner;
 	}
 
-	public AstRuleAnnotations getAnnotations() {
-		return annotations;
-	}
-
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (symbol != null) {
-			symbol.accept(v);
-		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (inner != null) {
+			inner.accept(v);
 		}
 	}
 }

@@ -6,7 +6,7 @@ _skip:      /[\t\r\n ]+/    { continue; }
 aaaa: /aaaa/
 bbbb: /bbbb/
 
-@ref(list_item)
+@ref=list_item
 input ::=
 	list ;
 	
@@ -15,8 +15,8 @@ list ::=
 	| list list_item
 ;
 
-@weight(5) @name("wwo") @noast
+@weight=5 @name="wwo" @noast
 list_item ::=
-	@name("rule1"): @ids([4,2,3]) identifier
-	| @name("rule2"): Licon
+	@name="rule1": @ids=[4,2,3] identifier
+	| @name="rule2": Licon
 ;
