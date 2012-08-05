@@ -19,8 +19,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
-    <orderEntry type="module" module-name="lapg-core" />
-    <orderEntry type="module" module-name="lapg-core" scope="TEST" />
+    <orderEntry type="module" module-name="lapg" />
+    <orderEntry type="module" module-name="lapg" scope="TEST" />
     <orderEntry type="module" module-name="templates" />
   </component>
 </module>

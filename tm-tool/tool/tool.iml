@@ -8,8 +8,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="lapg-tool" />
-    <orderEntry type="module" module-name="lapg-core" />
+    <orderEntry type="module" module-name="textmapper" />
+    <orderEntry type="module" module-name="lapg" />
     <orderEntry type="module" module-name="templates" />
   </component>
 </module>

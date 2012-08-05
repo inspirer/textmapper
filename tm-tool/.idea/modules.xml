@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/lapg-core/lapg-core.iml" filepath="$PROJECT_DIR$/lapg-core/lapg-core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lapg-dist/lapg-dist.iml" filepath="$PROJECT_DIR$/lapg-dist/lapg-dist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lapg/lapg.iml" filepath="$PROJECT_DIR$/lapg/lapg.iml" />
       <module fileurl="file://$PROJECT_DIR$/lapg-master.iml" filepath="$PROJECT_DIR$/lapg-master.iml" />
-      <module fileurl="file://$PROJECT_DIR$/lapg-tool/lapg-tool.iml" filepath="$PROJECT_DIR$/lapg-tool/lapg-tool.iml" />
       <module fileurl="file://$PROJECT_DIR$/templates/templates.iml" filepath="$PROJECT_DIR$/templates/templates.iml" />
+      <module fileurl="file://$PROJECT_DIR$/textmapper/textmapper.iml" filepath="$PROJECT_DIR$/textmapper/textmapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tool/tool.iml" filepath="$PROJECT_DIR$/tool/tool.iml" />
     </modules>
   </component>
 </project>

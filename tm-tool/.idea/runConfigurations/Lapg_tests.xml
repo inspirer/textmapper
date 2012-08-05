@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Lapg tests" type="JUnit" factoryName="JUnit">
     <extension name="coverage" enabled="false" merge="false" />
-    <module name="lapg-tool" />
+    <module name="textmapper" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="PACKAGE_NAME" value="org.textmapper.lapg" />
