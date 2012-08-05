@@ -18,7 +18,7 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.textmapper</groupId>
-	<artifactId>lapg-dist</artifactId>
+	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
 	<name>Lapg</name>
 	<version>0.9.1-SNAPSHOT</version>
@@ -32,7 +32,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.textmapper</groupId>
-			<artifactId>lapg-tool</artifactId>
+			<artifactId>textmapper</artifactId>
 			<version>0.9.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
@@ -51,7 +51,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>lapg-dist.xml</descriptor>
+								<descriptor>tool.xml</descriptor>
 							</descriptors>
 							<archive>
 								<manifest>

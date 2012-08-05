@@ -43,14 +43,14 @@
 	<target name="build" depends="rev">
 		<mkdir dir="build/bin"/>
 		<copy includeemptydirs="false" todir="build/bin">
-			<fileset dir="lapg-tool/src" excludes="**/*.java, **/*.s"/>
-			<fileset dir="lapg-core/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="textmapper/src" excludes="**/*.java, **/*.s"/>
+			<fileset dir="lapg/src" excludes="**/*.java, **/*.s"/>
 			<fileset dir="templates/src" excludes="**/*.java, **/*.s"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}"
 			   includeantruntime="true">
-			<src path="lapg-tool/src"/>
-			<src path="lapg-core/src"/>
+			<src path="textmapper/src"/>
+			<src path="lapg/src"/>
 			<src path="templates/src"/>
 		</javac>
 		<jar destfile="build/textmapper.jar">
@@ -70,8 +70,8 @@
 	<target name="buildsource" depends="rev">
 		<mkdir dir="build/src"/>
 		<copy includeemptydirs="false" todir="build/src">
-			<fileset dir="lapg-tool/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-			<fileset dir="lapg-core/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="textmapper/src" includes="**/*.java, **/*.s, **/*.ltp"/>
+			<fileset dir="lapg/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 			<fileset dir="templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
 		</copy>
 		<jar destfile="build/textmapper-src.jar">
@@ -90,8 +90,8 @@
 	<target name="test" depends="build">
 		<mkdir dir="build/bintests"/>
 		<copy includeemptydirs="false" todir="build/bintests">
-			<fileset dir="lapg-tool/tests" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="lapg-core/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="textmapper/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="lapg/tests" excludes="**/*.launch, **/*.java"/>
 			<fileset dir="templates/tests" excludes="**/*.launch, **/*.java"/>
 		</copy>
 		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
@@ -100,18 +100,18 @@
 				<pathelement location="build/textmapper.jar"/>
 				<fileset dir="libs" includes="junit*.jar"/>
 			</classpath>
-			<src path="lapg-tool/tests"/>
-			<src path="lapg-core/tests"/>
+			<src path="textmapper/tests"/>
+			<src path="lapg/tests"/>
 			<src path="templates/tests"/>
 		</javac>
 		<mkdir dir="build/results"/>
-		<junit haltonfailure="yes" printsummary="true" dir="lapg-tool">
+		<junit haltonfailure="yes" printsummary="true" dir="textmapper">
 			<batchtest fork="yes"
 					todir="build/results">
-				<fileset dir="lapg-core/tests">
+				<fileset dir="lapg/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
-				<fileset dir="lapg-tool/tests">
+				<fileset dir="textmapper/tests">
 					<include name="**/*Test.java"/>
 				</fileset>
 				<fileset dir="templates/tests">
@@ -144,11 +144,11 @@
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/lapg/parser"/>
 		<echo message="Action parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-tool/src/org/textmapper/lapg/parser/action"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/lapg/parser/action"/>
 		<echo message="Regexp parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg-core/src/org/textmapper/lapg/regex"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg/src/org/textmapper/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
 		<echo message="Types parser"/>
@@ -157,21 +157,21 @@
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/a"/>
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/b"/>
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/b"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/nla">
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="lapg-tool/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
 	</target>
 
 	<target name="plugin" depends="rev">

@@ -132,7 +132,7 @@ public class UnicodeTest {
 			}
 		}.gentest(
 				"unicode.tables", "tests/org/textmapper/lapg/test/unicode/templates",
-				"../lapg-core/src/org/textmapper/lapg/unicode",
+				"../lapg/src/org/textmapper/lapg/unicode",
 				new String[]{"UnicodeDataTables.java"});
 
 		// test current data

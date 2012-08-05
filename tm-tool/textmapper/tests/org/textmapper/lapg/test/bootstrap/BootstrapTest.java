@@ -50,7 +50,7 @@ public class BootstrapTest {
 
 	@Test
 	public void testRegexS() {
-		bootstrap("../lapg-core/src/org/textmapper/lapg/regex", "regex.s", new String[0], new String[]{
+		bootstrap("../lapg/src/org/textmapper/lapg/regex", "regex.s", new String[0], new String[]{
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 

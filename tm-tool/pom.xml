@@ -34,9 +34,9 @@
 
 	<modules>
 		<module>templates</module>
-		<module>lapg-core</module>
-		<module>lapg-tool</module>
-		<module>lapg-dist</module>
+		<module>lapg</module>
+		<module>textmapper</module>
+		<module>tool</module>
 	</modules>
 
 	<properties>
