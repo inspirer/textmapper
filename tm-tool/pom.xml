@@ -21,7 +21,7 @@
 	<artifactId>lapg-master</artifactId>
 	<packaging>pom</packaging>
 	<version>0.9.1-SNAPSHOT</version>
-	<name>Lapg Master</name>
+	<name>TextMapper Master</name>
 	<url>http://textmapper.org</url>
 
 	<licenses>

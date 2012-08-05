@@ -20,7 +20,7 @@
 	<groupId>org.textmapper</groupId>
 	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
-	<name>Lapg</name>
+	<name>TextMapper tool</name>
 	<version>0.9.1-SNAPSHOT</version>
 	<url>http://textmapper.org</url>
 	<parent>

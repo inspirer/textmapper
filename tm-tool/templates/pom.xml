@@ -20,7 +20,7 @@
 	<groupId>org.textmapper</groupId>
 	<artifactId>templates</artifactId>
 	<packaging>jar</packaging>
-	<name>Lapg Templates</name>
+	<name>TextMapper templates</name>
 	<version>0.9.1-SNAPSHOT</version>
 	<url>http://textmapper.org</url>
 	<parent>
