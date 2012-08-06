@@ -4,7 +4,7 @@ Bundle-SymbolicName: org.textmapper.lapg
 Bundle-Version: 0.9.1.qualifier
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
-Bundle-ClassPath: lapg.jar
+Bundle-ClassPath: textmapper.jar
 Bundle-Localization: plugin
 Export-Package: org.textmapper.lapg,
  org.textmapper.lapg.api,
