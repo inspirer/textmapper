@@ -30,6 +30,10 @@ import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 import org.textmapper.lapg.parser.LapgLexer.Lexems;
 import org.textmapper.lapg.parser.LapgTree.LapgProblem;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.parser.LapgRuleBuilder.AbstractRulePart;
+import org.textmapper.lapg.parser.LapgRuleBuilder.CompositeRulePart;
+import org.textmapper.lapg.parser.LapgRuleBuilder.RulePart;
+import org.textmapper.lapg.parser.LapgRuleBuilder.UnorderedRulePart;
 import org.textmapper.lapg.parser.ast.*;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
@@ -166,43 +170,6 @@ public class LapgResolver {
 		symbolsMap.put(name, sym);
 		lastIndex.put(outer, index + 1);
 		return sym;
-	}
-
-	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
-		if (rulesymref instanceof AstRuleDefaultSymbolRef) {
-			return resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
-
-		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
-			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
-			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
-			for (AstRule right : rules) {
-				if (!right.hasSyntaxError()) {
-					createRule(nested, right);
-				}
-			}
-			return nested;
-
-		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
-			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
-			Symbol inner = resolve(outer, ((AstRuleNestedQuantifier) rulesymref).getInner());
-
-			RuleBuilder rb = builder.rule(null, nested, rulesymref);
-			int quantifier = ((AstRuleNestedQuantifier) rulesymref).getQuantifier();
-			if (quantifier != AstRuleNestedQuantifier.KIND_OPTIONAL) {
-				// list
-				rb.addPart(null, nested, null, rulesymref);
-			}
-			rb.addPart(null, inner, null, rulesymref);
-			rb.create();
-			rb = builder.rule(null, nested, rulesymref);
-			if (quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE) {
-				// one or more list
-				rb.addPart(null, inner, null, rulesymref);
-			}
-			rb.create();
-			return nested;
-		}
-		return null;
 	}
 
 	private Symbol resolve(AstReference id) {
@@ -429,33 +396,20 @@ public class LapgResolver {
 	}
 
 	private void createRule(Symbol left, AstRule right) {
-		RuleBuilder rule = builder.rule(right.getAlias(), left, right);
+		LapgRuleBuilder ruleBuilder = new LapgRuleBuilder(builder, right.getAlias(), left, right, annotationsMap);
 		List<AstRulePart> list = right.getList();
 		AstCode lastAction = null;
 		if (list != null) {
 			AstRulePart last = list.size() > 0 ? list.get(list.size() - 1) : null;
 			if (last instanceof AstCode) {
 				lastAction = (AstCode) last;
+				list = list.subList(0, list.size() - 1);
 			}
 
 			for (AstRulePart part : list) {
-				if (part instanceof AstCode) {
-					AstCode astCode = (AstCode) part;
-					if (astCode != lastAction) {
-						Symbol codeSym = createNested(Symbol.KIND_NONTERM, null, left, null, astCode);
-						Rule actionRule = builder.rule(null, codeSym, astCode).create();
-						codeMap.put(actionRule, astCode);
-						rule.addPart(null, codeSym, null, astCode);
-					}
-
-				} else if (part instanceof AstRefRulePart) {
-					AstRefRulePart rs = (AstRefRulePart) part;
-					Symbol sym = resolve(left, rs.getReference());
-					if (sym != null) {
-						// TODO check duplicate alias
-						SymbolRef ref = rule.addPart(rs.getAlias(), sym, convertLA(rs.getAnnotations()), rs.getReference());
-						annotationsMap.put(ref, convert(rs.getAnnotations(), "AnnotateReference"));
-					}
+				AbstractRulePart rulePart = convertRulePart(left, part);
+				if (rulePart != null) {
+					ruleBuilder.add(rulePart);
 				}
 			}
 		}
@@ -465,16 +419,189 @@ public class LapgResolver {
 		if (rulePrio != null) {
 			Symbol prio = resolve(rulePrio);
 			if (prio != null) {
-				rule.setPriority(prio);
+				ruleBuilder.setPriority(prio);
 			}
 		}
 
 		// TODO store %shift attribute
 		// TODO check prio is term
 		// TODO check right.getAnnotations().getNegativeLA() == null
-		Rule result = rule.create();
-		annotationsMap.put(result, convert(right.getAnnotations(), "AnnotateRule"));
-		codeMap.put(result, lastAction);
+		Rule[] result = ruleBuilder.create();
+		Map<String, Object> annotations = convert(right.getAnnotations(), "AnnotateRule");
+		for (Rule r : result) {
+			annotationsMap.put(r, annotations);
+			codeMap.put(r, lastAction);
+		}
+	}
+
+	private AbstractRulePart convertRulePart(Symbol outer, AstRulePart part) {
+		if (part instanceof AstCode) {
+			AstCode astCode = (AstCode) part;
+			Symbol codeSym = createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
+			Rule actionRule = builder.rule(null, codeSym, astCode).create();
+			codeMap.put(actionRule, astCode);
+			return new RulePart(null, codeSym, null, null, astCode);
+
+		} else if (part instanceof AstUnorderedRulePart) {
+			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
+			extractUnorderedParts(part, refParts);
+			AbstractRulePart[] resolved = new AbstractRulePart[refParts.size()];
+			int index = 0;
+			for (AstRefRulePart refPart : refParts) {
+				AbstractRulePart rulePart = convertRulePart(outer, refPart);
+				if (rulePart == null) {
+					return null;
+				}
+				resolved[index++] = rulePart;
+			}
+			return new UnorderedRulePart(resolved);
+
+		} else if (!(part instanceof AstRefRulePart)) {
+			error(part, "unknown rule part");
+			return null;
+		}
+
+		AstRefRulePart refPart = (AstRefRulePart) part;
+		String alias = refPart.getAlias();
+		Collection<Symbol> nla = convertLA(refPart.getAnnotations());
+		Map<String, Object> annotations = convert(refPart.getAnnotations(), "AnnotateReference");
+
+		// inline ...? and (...)?
+		if (isOptionalPart(refPart)) {
+			AstRuleSymbolRef optionalPart = getOptionalPart(refPart);
+			if (isGroupPart(optionalPart) &&
+					alias == null &&
+					refPart.getAnnotations() == null) {
+				List<AstRulePart> groupPart = getGroupPart(optionalPart);
+				return convertGroup(outer, groupPart, true);
+			} else {
+				Symbol optsym = resolve(outer, optionalPart);
+				return new CompositeRulePart(true, new RulePart(alias, optsym, nla, annotations, refPart.getReference()));
+			}
+		}
+
+		// inline (...)
+		if (isGroupPart(refPart)) {
+			List<AstRulePart> groupPart = getGroupPart(refPart.getReference());
+			return convertGroup(outer, groupPart, false);
+		}
+
+		Symbol sym = resolve(outer, refPart.getReference());
+		return new RulePart(alias, sym, nla, annotations, refPart.getReference());
+	}
+
+	private AbstractRulePart convertGroup(Symbol outer, List<AstRulePart> groupPart, boolean isOptional) {
+		List<AbstractRulePart> groupResult = new ArrayList<AbstractRulePart>();
+		for (AstRulePart innerPart : groupPart) {
+			AbstractRulePart rulePart = convertRulePart(outer, innerPart);
+			if (rulePart != null) {
+				groupResult.add(rulePart);
+			}
+		}
+		return groupResult.size() > 0
+				? new CompositeRulePart(isOptional, groupResult.toArray(new AbstractRulePart[groupResult.size()]))
+				: null;
+	}
+
+	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
+		if (rulesymref instanceof AstRuleDefaultSymbolRef) {
+			return resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
+
+		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
+			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
+			for (AstRule right : rules) {
+				if (!right.hasSyntaxError()) {
+					createRule(nested, right);
+				}
+			}
+			return nested;
+
+		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
+			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			AstRuleSymbolRef innerSymRef = ((AstRuleNestedQuantifier) rulesymref).getInner();
+			AbstractRulePart inner;
+			if (isGroupPart(innerSymRef)) {
+				List<AstRulePart> groupPart = getGroupPart(innerSymRef);
+				inner = convertGroup(outer, groupPart, false);
+			} else {
+				Symbol innerTarget = resolve(outer, innerSymRef);
+				inner = new RulePart(innerTarget, innerSymRef);
+			}
+
+			LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, nested, rulesymref, annotationsMap);
+			int quantifier = ((AstRuleNestedQuantifier) rulesymref).getQuantifier();
+			if (quantifier != AstRuleNestedQuantifier.KIND_OPTIONAL) {
+				// list
+				rb.add(new RulePart(nested, rulesymref));
+			}
+			rb.add(inner);
+			rb.create();
+			rb = new LapgRuleBuilder(builder, null, nested, rulesymref, annotationsMap);
+			if (quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE) {
+				// one or more list
+				rb.add(inner);
+			}
+			rb.create();
+			return nested;
+		}
+		return null;
+	}
+
+	private boolean isOptionalPart(AstRefRulePart part) {
+		AstRuleSymbolRef ref = part.getReference();
+		return ref instanceof AstRuleNestedQuantifier &&
+				((AstRuleNestedQuantifier) ref).getQuantifier() == AstRuleNestedQuantifier.KIND_OPTIONAL;
+	}
+
+	private AstRuleSymbolRef getOptionalPart(AstRefRulePart part) {
+		return ((AstRuleNestedQuantifier) part.getReference()).getInner();
+	}
+
+	private boolean isGroupPart(AstRefRulePart part) {
+		if (!(part.getReference() instanceof AstRuleNestedNonTerm)) {
+			return false;
+		}
+		return part.getAlias() == null
+				&& part.getAnnotations() == null
+				&& isGroupPart(part.getReference());
+
+	}
+
+	private boolean isGroupPart(AstRuleSymbolRef symbolRef) {
+		if (!(symbolRef instanceof AstRuleNestedNonTerm)) {
+			return false;
+		}
+		List<AstRule> innerRules = ((AstRuleNestedNonTerm) symbolRef).getRules();
+		if (innerRules.size() == 1) {
+			AstRule first = innerRules.get(0);
+			if (first != null
+					&& first.getAnnotations() == null
+					&& first.getAttribute() == null
+					&& first.getAlias() == null
+					&& !first.getList().isEmpty()
+					&& !first.hasSyntaxError()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<AstRulePart> getGroupPart(AstRuleSymbolRef symbolRef) {
+		return ((AstRuleNestedNonTerm) symbolRef).getRules().get(0).getList();
+	}
+
+	private void extractUnorderedParts(AstRulePart unorderedRulePart, List<AstRefRulePart> result) {
+		if (unorderedRulePart instanceof AstUnorderedRulePart) {
+			extractUnorderedParts(((AstUnorderedRulePart) unorderedRulePart).getLeft(), result);
+			extractUnorderedParts(((AstUnorderedRulePart) unorderedRulePart).getRight(), result);
+		} else if (unorderedRulePart instanceof AstRefRulePart) {
+			result.add((AstRefRulePart) unorderedRulePart);
+		} else if (unorderedRulePart instanceof AstCode) {
+			error(unorderedRulePart, "semantic action cannot be used as a part of unordered group");
+		} else if (!(unorderedRulePart instanceof AstError)) {
+			error(unorderedRulePart, "cannot be used as a part of unordered group");
+		}
 	}
 
 	private void collectRules() {

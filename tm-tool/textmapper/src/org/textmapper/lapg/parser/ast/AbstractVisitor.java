@@ -132,4 +132,8 @@ public class AbstractVisitor {
 	public boolean visit(AstRuleNestedQuantifier n) {
 		return true;
 	}
+
+	public boolean visit(AstUnorderedRulePart n) {
+		return true;
+	}
 }

@@ -230,8 +230,7 @@ rulepart (AstRulePart) ::=
 	| identifier '=' rulesymref							{ $$ = new AstRefRulePart($identifier, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| command
-
-	| rulepart '&' rulepart								{ reporter.error(${context->java.err_location('lapg_gg', 'lapg_lexer') }"unsupported, TODO"); }
+	| left=rulepart '&' right=rulepart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rulesymref (AstRuleSymbolRef) ::=
