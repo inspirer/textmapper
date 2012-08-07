@@ -33,10 +33,6 @@ public abstract class AstVisitor {
 		return true;
 	}
 
-	protected boolean visit(AstMapEntriesItem n) {
-		return true;
-	}
-
 	protected boolean visit(AstMethodDeclaration n) {
 		return true;
 	}
@@ -54,6 +50,10 @@ public abstract class AstVisitor {
 	}
 
 	protected boolean visit(AstStructuralExpression n) {
+		return true;
+	}
+
+	protected boolean visit(AstStructuralExpressionDOLLAR1Item n) {
 		return true;
 	}
 

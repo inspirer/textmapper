@@ -73,16 +73,13 @@ declarations ::=
 	declarations type_declaration | type_declaration ;
 
 type_declaration ::=
-	Lclass name=identifier extends=extends_clauseopt '{' member_declarationsopt '}'
+	Lclass name=identifier extends=extends_clauseopt '{' members=member_declaration* '}'
 ;
 
 extends_clause ::=
 	Lextends @pass name_list ;
 
 ##### DECLARATIONS
-
-member_declarations ::=
-	member_declarations member_declaration | member_declaration ;
 
 member_declaration ::=
 	feature_declaration
@@ -102,13 +99,10 @@ defaultval ::=
 	'=' @pass expression ;
 
 modifiers ::=
-	'[' @pass constraints ']' ;
-
-constraints ::=
-	constraints ';' constraint | constraint ;
+	'[' @pass (constraint separator ';')+ ']' ;
 
 constraint ::=
-	string_constraint | multiplicity_list ;
+	string_constraint | (multiplicity separator ',')+ ;
 
 string_constraint ::=
 	kind=Lset ':' strings
@@ -122,22 +116,18 @@ strings ::=
 string ::=
 	identifier | scon ;	
 
-multiplicity_list ::=
-	multiplicity
-  | multiplicity_list ',' multiplicity
-;
-
 multiplicity ::=
 	lo=icon
   | lo=icon '..' hasNoUpperBound='*'
   | lo=icon '..' hi=icon
 ;
 
+
 ##### TYPES
 
 type_ex ::=
 	type
-  |	type '[' multiplicity_list ']'
+  |	type '[' (multiplicity separator ',')+ ']'
 ;
 
 type ::=
@@ -161,18 +151,13 @@ literal_expression ::=
 ;
 
 structural_expression ::=
-	  name '(' map_entriesopt ')'
+	  name '(' mapEntries=(identifier map_separator expression separator ',')* ')'
 	| '[' expression_listopt ']'
 ;
 
 expression_list ::=
 	expression
 	| expression_list ',' expression
-;
-
-map_entries ::=
-	  identifier map_separator expression
-	| map_entries ',' identifier map_separator expression
 ;
 
 map_separator ::=

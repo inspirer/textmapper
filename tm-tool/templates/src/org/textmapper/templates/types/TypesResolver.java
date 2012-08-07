@@ -101,8 +101,8 @@ class TypesResolver {
 	private TiClass convertClass(final AstTypeDeclaration td) {
 		List<IFeature> features = new ArrayList<IFeature>();
 		List<IMethod> methods = new ArrayList<IMethod>();
-		if (td.getMemberDeclarationsopt() != null) {
-			for (IAstMemberDeclaration memberDeclaration : td.getMemberDeclarationsopt()) {
+		if (td.getMembers() != null) {
+			for (IAstMemberDeclaration memberDeclaration : td.getMembers()) {
 				if (memberDeclaration instanceof AstFeatureDeclaration) {
 					features.add(convertFeature((AstFeatureDeclaration) memberDeclaration));
 				} else if (memberDeclaration instanceof AstMethodDeclaration) {
@@ -259,8 +259,8 @@ class TypesResolver {
 					scanRequiredClasses(inner);
 				}
 			}
-			if (expr.getMapEntriesopt() != null) {
-				for (AstMapEntriesItem item : expr.getMapEntriesopt()) {
+			if (expr.getMapEntries() != null) {
+				for (AstStructuralExpressionDOLLAR1Item item : expr.getMapEntries()) {
 					scanRequiredClasses(item.getExpression());
 				}
 			}
@@ -434,9 +434,9 @@ class TypesResolver {
 							qualifiedName = myPackage + "." + qualifiedName;
 						}
 						Map<String, IAstExpression> props = null;
-						if (expr.getMapEntriesopt() != null) {
+						if (expr.getMapEntries() != null) {
 							props = new HashMap<String, IAstExpression>();
-							for (AstMapEntriesItem i : expr.getMapEntriesopt()) {
+							for (AstStructuralExpressionDOLLAR1Item i : expr.getMapEntries()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}
 						}

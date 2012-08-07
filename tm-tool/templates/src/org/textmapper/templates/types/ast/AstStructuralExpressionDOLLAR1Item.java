@@ -17,13 +17,13 @@ package org.textmapper.templates.types.ast;
 
 import org.textmapper.templates.types.TypesTree.TextSource;
 
-public class AstMapEntriesItem extends AstNode {
+public class AstStructuralExpressionDOLLAR1Item extends AstNode {
 
 	private String identifier;
 	private AstMapSeparator mapSeparator;
 	private IAstExpression expression;
 
-	public AstMapEntriesItem(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource input, int start, int end) {
+	public AstStructuralExpressionDOLLAR1Item(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.identifier = identifier;
 		this.mapSeparator = mapSeparator;

@@ -22,13 +22,13 @@ public class AstTypeDeclaration extends AstNode {
 
 	private String name;
 	private List<List<String>> _extends;
-	private List<IAstMemberDeclaration> memberDeclarationsopt;
+	private List<IAstMemberDeclaration> members;
 
-	public AstTypeDeclaration(String name, List<List<String>> _extends, List<IAstMemberDeclaration> memberDeclarationsopt, TextSource input, int start, int end) {
+	public AstTypeDeclaration(String name, List<List<String>> _extends, List<IAstMemberDeclaration> members, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
 		this._extends = _extends;
-		this.memberDeclarationsopt = memberDeclarationsopt;
+		this.members = members;
 	}
 
 	public String getName() {
@@ -37,8 +37,8 @@ public class AstTypeDeclaration extends AstNode {
 	public List<List<String>> getExtends() {
 		return _extends;
 	}
-	public List<IAstMemberDeclaration> getMemberDeclarationsopt() {
-		return memberDeclarationsopt;
+	public List<IAstMemberDeclaration> getMembers() {
+		return members;
 	}
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
@@ -47,8 +47,8 @@ public class AstTypeDeclaration extends AstNode {
 
 		// TODO for name
 		// TODO for _extends
-		if (memberDeclarationsopt != null) {
-			for (IAstMemberDeclaration it : memberDeclarationsopt) {
+		if (members != null) {
+			for (IAstMemberDeclaration it : members) {
 				it.accept(v);
 			}
 		}
