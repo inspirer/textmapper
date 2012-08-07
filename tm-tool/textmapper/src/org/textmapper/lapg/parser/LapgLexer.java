@@ -67,19 +67,20 @@ public class LapgLexer {
 		public static final int Ltrue = 29;
 		public static final int Lfalse = 30;
 		public static final int Lnew = 31;
-		public static final int Lprio = 32;
-		public static final int Lshift = 33;
-		public static final int Linput = 34;
-		public static final int Lleft = 35;
-		public static final int Lright = 36;
-		public static final int Lnonassoc = 37;
-		public static final int Lnoeoi = 38;
-		public static final int Lsoft = 39;
-		public static final int Lclass = 40;
-		public static final int Lspace = 41;
-		public static final int Llayout = 42;
-		public static final int Lreduce = 43;
-		public static final int code = 44;
+		public static final int Lseparator = 32;
+		public static final int Lprio = 33;
+		public static final int Lshift = 34;
+		public static final int Linput = 35;
+		public static final int Lleft = 36;
+		public static final int Lright = 37;
+		public static final int Lnonassoc = 38;
+		public static final int Lnoeoi = 39;
+		public static final int Lsoft = 40;
+		public static final int Lclass = 41;
+		public static final int Lspace = 42;
+		public static final int Llayout = 43;
+		public static final int Lreduce = 44;
+		public static final int code = 45;
 	}
 
 	public interface ErrorReporter {
@@ -244,9 +245,9 @@ public class LapgLexer {
 		29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 28, 12, 1, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(44,
+	private static final short[] lapg_lexemnum = unpack_short(45,
 		"\1\3\4\5\0\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35" +
-		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54");
+		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55");
 
 	private static final short[] lapg_lexem = unpack_vc_short(1376,
 		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15" +
@@ -255,7 +256,7 @@ public class LapgLexer {
 		"\uffff\1\41\32\3\1\uffff\2\4\1\42\1\uffff\1\4\1\43\31\4\36\uffff\1\33\1\uffff\40" +
 		"\ufff8\1\ufff6\3\7\1\ufff6\33\7\12\uffee\1\44\25\uffee\15\ufff3\1\45\22\ufff3\40" +
 		"\ufff4\40\uffe7\40\ufff1\40\ufff0\40\uffef\40\uffed\40\uffec\24\uffeb\1\46\13\uffeb" +
-		"\40\uffe4\40\uffe9\40\uffe8\40\uffe6\40\uffe5\40\uffe3\40\uffe2\40\uffd2\7\ufffd" +
+		"\40\uffe4\40\uffe9\40\uffe8\40\uffe6\40\uffe5\40\uffe3\40\uffe2\40\uffd1\7\ufffd" +
 		"\1\47\25\ufffd\2\32\1\ufffd\36\ufffa\1\33\1\ufffa\37\ufff7\1\34\40\ufffd\1\uffff" +
 		"\3\1\1\uffff\33\1\10\ufff8\1\50\27\ufff8\1\uffff\3\3\1\uffff\33\3\40\ufffc\1\uffff" +
 		"\3\4\1\uffff\33\4\40\ufffb\13\uffff\1\51\24\uffff\40\ufff2\25\uffff\1\52\21\uffff" +
@@ -369,7 +370,7 @@ public class LapgLexer {
 				 return false; 
 			case 7:
 				 return !skipComments; 
-			case 43:
+			case 44:
 				 skipAction(); lapg_n.endoffset = getOffset(); break; 
 		}
 		return true;
@@ -380,18 +381,19 @@ public class LapgLexer {
 		subTokensOfIdentifier.put("true", 28);
 		subTokensOfIdentifier.put("false", 29);
 		subTokensOfIdentifier.put("new", 30);
-		subTokensOfIdentifier.put("prio", 31);
-		subTokensOfIdentifier.put("shift", 32);
-		subTokensOfIdentifier.put("input", 33);
-		subTokensOfIdentifier.put("left", 34);
-		subTokensOfIdentifier.put("right", 35);
-		subTokensOfIdentifier.put("nonassoc", 36);
-		subTokensOfIdentifier.put("no-eoi", 37);
-		subTokensOfIdentifier.put("soft", 38);
-		subTokensOfIdentifier.put("class", 39);
-		subTokensOfIdentifier.put("space", 40);
-		subTokensOfIdentifier.put("layout", 41);
-		subTokensOfIdentifier.put("reduce", 42);
+		subTokensOfIdentifier.put("separator", 31);
+		subTokensOfIdentifier.put("prio", 32);
+		subTokensOfIdentifier.put("shift", 33);
+		subTokensOfIdentifier.put("input", 34);
+		subTokensOfIdentifier.put("left", 35);
+		subTokensOfIdentifier.put("right", 36);
+		subTokensOfIdentifier.put("nonassoc", 37);
+		subTokensOfIdentifier.put("no-eoi", 38);
+		subTokensOfIdentifier.put("soft", 39);
+		subTokensOfIdentifier.put("class", 40);
+		subTokensOfIdentifier.put("space", 41);
+		subTokensOfIdentifier.put("layout", 42);
+		subTokensOfIdentifier.put("reduce", 43);
 	}
 
 	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
@@ -401,17 +403,17 @@ public class LapgLexer {
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
 		switch(lexemIndex) {
-			case 31:	// prio (soft)
-			case 32:	// shift (soft)
-			case 33:	// input (soft)
-			case 34:	// left (soft)
-			case 35:	// right (soft)
-			case 36:	// nonassoc (soft)
-			case 37:	// no-eoi (soft)
-			case 38:	// soft (soft)
-			case 39:	// class (soft)
-			case 40:	// space (soft)
-			case 41:	// layout (soft)
+			case 32:	// prio (soft)
+			case 33:	// shift (soft)
+			case 34:	// input (soft)
+			case 35:	// left (soft)
+			case 36:	// right (soft)
+			case 37:	// nonassoc (soft)
+			case 38:	// no-eoi (soft)
+			case 39:	// soft (soft)
+			case 40:	// class (soft)
+			case 41:	// space (soft)
+			case 42:	// layout (soft)
 			case 0:	// <default>
 				 lapg_n.sym = current(); break; 
 		}

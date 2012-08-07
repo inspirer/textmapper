@@ -177,6 +177,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return KW_TRUE;
 			case Lexems.Lfalse:
 				return KW_FALSE;
+			case Lexems.Lseparator:
+				return KW_SEPARATOR;
 			case Lexems.Lprio:
 				return KW_PRIO;
 			case Lexems.Lshift:

@@ -28,12 +28,12 @@ import org.textmapper.lapg.gen.TemplateStaticMethods;
 import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
 import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 import org.textmapper.lapg.parser.LapgLexer.Lexems;
-import org.textmapper.lapg.parser.LapgTree.LapgProblem;
-import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.parser.LapgRuleBuilder.AbstractRulePart;
 import org.textmapper.lapg.parser.LapgRuleBuilder.CompositeRulePart;
 import org.textmapper.lapg.parser.LapgRuleBuilder.RulePart;
 import org.textmapper.lapg.parser.LapgRuleBuilder.UnorderedRulePart;
+import org.textmapper.lapg.parser.LapgTree.LapgProblem;
+import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.parser.ast.*;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
@@ -57,6 +57,7 @@ public class LapgResolver {
 	private final Map<Symbol, String> identifierMap = new HashMap<Symbol, String>();
 	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
 	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
+	private final Map<ListDescriptor, Symbol> listsMap = new HashMap<ListDescriptor, Symbol>();
 
 	private Map<String, Object> options;
 	private GrammarBuilder builder;
@@ -155,11 +156,11 @@ public class LapgResolver {
 		}
 	}
 
-	private Map<Symbol, Integer> lastIndex = new HashMap<Symbol, Integer>();
+	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
 
 	private Symbol createNested(int kind, String type, Symbol outer, Symbol softClass, IAstNode source) {
-		int index = lastIndex.containsKey(outer) ? lastIndex.get(outer) : 1;
-		String base_ = outer.getName() + "$";
+		final String base_ = outer.getName() + "$";
+		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 		while (symbolsMap.containsKey(base_ + index)) {
 			index++;
 		}
@@ -168,7 +169,20 @@ public class LapgResolver {
 				? builder.addSoftSymbol(name, softClass, source)
 				: builder.addSymbol(kind, name, type, source);
 		symbolsMap.put(name, sym);
-		lastIndex.put(outer, index + 1);
+		lastIndex.put(base_, index + 1);
+		return sym;
+	}
+
+	private Symbol createListSymbol(Symbol element, IAstNode source) {
+		final String base_ = element.getName() + "_list";
+		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
+		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
+			index++;
+		}
+		String name = index == 0 ? base_ : base_ + index;
+		Symbol sym = builder.addSymbol(Symbol.KIND_NONTERM, name, null, source);
+		symbolsMap.put(name, sym);
+		lastIndex.put(base_, index + 1);
 		return sym;
 	}
 
@@ -517,10 +531,30 @@ public class LapgResolver {
 			}
 			return nested;
 
+		} else if (rulesymref instanceof AstRuleNestedListWithSeparator) {
+			AstRuleNestedListWithSeparator listWithSeparator = (AstRuleNestedListWithSeparator) rulesymref;
+
+			AbstractRulePart inner = convertGroup(outer, listWithSeparator.getRuleParts(), false);
+			List<AbstractRulePart> sep = new ArrayList<AbstractRulePart>();
+			for (AstReference ref : listWithSeparator.getSeparator()) {
+				Symbol s = resolve(ref);
+				if (s == null) {
+					continue;
+				}
+				if (s.isTerm()) {
+					sep.add(new RulePart(s, ref));
+				} else {
+					error(ref, "separator should be terminal symbol");
+				}
+			}
+			AbstractRulePart separator = new CompositeRulePart(false, sep.toArray(new AbstractRulePart[sep.size()]));
+			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, rulesymref);
+
 		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
-			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
-			AstRuleSymbolRef innerSymRef = ((AstRuleNestedQuantifier) rulesymref).getInner();
+			AstRuleNestedQuantifier nestedQuantifier = (AstRuleNestedQuantifier) rulesymref;
+
 			AbstractRulePart inner;
+			AstRuleSymbolRef innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
 				List<AstRulePart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, false);
@@ -528,24 +562,46 @@ public class LapgResolver {
 				Symbol innerTarget = resolve(outer, innerSymRef);
 				inner = new RulePart(innerTarget, innerSymRef);
 			}
-
-			LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, nested, rulesymref, annotationsMap);
-			int quantifier = ((AstRuleNestedQuantifier) rulesymref).getQuantifier();
-			if (quantifier != AstRuleNestedQuantifier.KIND_OPTIONAL) {
-				// list
-				rb.add(new RulePart(nested, rulesymref));
+			int quantifier = nestedQuantifier.getQuantifier();
+			if (quantifier == AstRuleNestedQuantifier.KIND_OPTIONAL) {
+				error(rulesymref, "? cannot be a child of another quantifier");
+				return null;
 			}
-			rb.add(inner);
-			rb.create();
-			rb = new LapgRuleBuilder(builder, null, nested, rulesymref, annotationsMap);
-			if (quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE) {
-				// one or more list
-				rb.add(inner);
-			}
-			rb.create();
-			return nested;
+			return createList(outer, inner, quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE, null, rulesymref);
 		}
+
 		return null;
+	}
+
+	private Symbol createList(Symbol outer, AbstractRulePart inner, boolean atLeastOne, AbstractRulePart separator, AstRuleSymbolRef origin) {
+		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
+		Symbol listSymbol = listsMap.get(descr);
+		if (listSymbol != null) {
+			return listSymbol;
+		}
+
+		Symbol representative = inner.getRepresentative();
+		listSymbol = representative != null
+				? createListSymbol(representative, origin) /* TODO type? */
+				: createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
+
+		listsMap.put(descr, listSymbol);
+		LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
+		// list
+		rb.add(new RulePart(listSymbol, origin));
+		// separator
+		if (separator != null) {
+			rb.add(separator);
+		}
+		rb.add(inner);
+		rb.create();
+		rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
+		if (atLeastOne) {
+			// one or more list
+			rb.add(inner);
+		}
+		rb.create();
+		return listSymbol;
 	}
 
 	private boolean isOptionalPart(AstRefRulePart part) {
@@ -893,6 +949,40 @@ public class LapgResolver {
 		@Override
 		public String getSource() {
 			return RESOLVER_SOURCE;
+		}
+	}
+
+	private static class ListDescriptor {
+		private final AbstractRulePart inner;
+		private final AbstractRulePart separator;
+		private final boolean atLeastOne;
+
+		private ListDescriptor(AbstractRulePart inner, AbstractRulePart separator, boolean atLeastOne) {
+			this.inner = inner;
+			this.separator = separator;
+			this.atLeastOne = atLeastOne;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ListDescriptor that = (ListDescriptor) o;
+
+			if (atLeastOne != that.atLeastOne) return false;
+			if (!inner.equals(that.inner)) return false;
+			if (separator != null ? !separator.equals(that.separator) : that.separator != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = inner.hashCode();
+			result = 31 * result + (separator != null ? separator.hashCode() : 0);
+			result = 31 * result + (atLeastOne ? 1 : 0);
+			return result;
 		}
 	}
 }

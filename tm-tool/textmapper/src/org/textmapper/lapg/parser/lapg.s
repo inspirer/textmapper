@@ -67,6 +67,7 @@ _skip_comment:  /#.*/					{ return !skipComments; }
 Ltrue:  /true/
 Lfalse: /false/
 Lnew:   /new/
+Lseparator: /separator/
 
 Lprio:  /prio/				(soft)
 Lshift: /shift/				(soft)
@@ -236,6 +237,8 @@ rulepart (AstRulePart) ::=
 rulesymref (AstRuleSymbolRef) ::=
 	  reference											{ $$ = new AstRuleDefaultSymbolRef($reference, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
+	| '(' ruleparts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, true, source, ${left().offset}, ${left().endoffset}); }
+	| '(' ruleparts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, false, source, ${left().offset}, ${left().endoffset}); }
 	| rulesymref '?'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
 	| rulesymref '*'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
 	| rulesymref '+'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }

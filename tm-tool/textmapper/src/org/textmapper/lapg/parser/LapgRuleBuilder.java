@@ -68,6 +68,8 @@ public class LapgRuleBuilder {
 
 	interface AbstractRulePart {
 		List<RulePart[]> expand();
+
+		Symbol getRepresentative();
 	}
 
 	static class RulePart implements AbstractRulePart {
@@ -78,6 +80,7 @@ public class LapgRuleBuilder {
 		private final SourceElement origin;
 
 		public RulePart(String alias, Symbol sym, Collection<Symbol> unwanted, Map<String, Object> annotations, SourceElement origin) {
+			assert sym != null;
 			this.alias = alias;
 			this.sym = sym;
 			this.unwanted = unwanted;
@@ -93,6 +96,38 @@ public class LapgRuleBuilder {
 		public List<RulePart[]> expand() {
 			return Collections.singletonList(new RulePart[]{this});
 		}
+
+		@Override
+		public Symbol getRepresentative() {
+			return sym;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			RulePart rulePart = (RulePart) o;
+
+			if (alias != null ? !alias.equals(rulePart.alias) : rulePart.alias != null) return false;
+			if (annotations != null ? !annotations.equals(rulePart.annotations) : rulePart.annotations != null)
+				return false;
+			if (origin != null ? !origin.equals(rulePart.origin) : rulePart.origin != null) return false;
+			if (!sym.equals(rulePart.sym)) return false;
+			if (unwanted != null ? !unwanted.equals(rulePart.unwanted) : rulePart.unwanted != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = alias != null ? alias.hashCode() : 0;
+			result = 31 * result + sym.hashCode();
+			result = 31 * result + (unwanted != null ? unwanted.hashCode() : 0);
+			result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
+			result = 31 * result + (origin != null ? origin.hashCode() : 0);
+			return result;
+		}
 	}
 
 	static class CompositeRulePart implements AbstractRulePart {
@@ -100,6 +135,7 @@ public class LapgRuleBuilder {
 		private final boolean isOptional;
 
 		public CompositeRulePart(boolean optional, AbstractRulePart... parts) {
+			assert parts != null;
 			isOptional = optional;
 			this.parts = parts;
 		}
@@ -141,6 +177,14 @@ public class LapgRuleBuilder {
 			}
 		}
 
+		@Override
+		public Symbol getRepresentative() {
+			if (parts.length == 1) {
+				return parts[0].getRepresentative();
+			}
+			return null;
+		}
+
 		public List<RulePart[]> cartesianProduct(List<RulePart[]> left, List<RulePart[]> right) {
 			List<RulePart[]> result = new ArrayList<RulePart[]>(left.size() * right.size());
 			for (RulePart[] leftElement : left) {
@@ -153,12 +197,33 @@ public class LapgRuleBuilder {
 			}
 			return result;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			CompositeRulePart that = (CompositeRulePart) o;
+
+			if (isOptional != that.isOptional) return false;
+			if (!Arrays.equals(parts, that.parts)) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = Arrays.hashCode(parts);
+			result = 31 * result + (isOptional ? 1 : 0);
+			return result;
+		}
 	}
 
 	static class UnorderedRulePart implements AbstractRulePart {
 		private final AbstractRulePart[] parts;
 
 		public UnorderedRulePart(AbstractRulePart... parts) {
+			assert parts != null;
 			this.parts = parts;
 		}
 
@@ -169,6 +234,28 @@ public class LapgRuleBuilder {
 				result.addAll(part.expand());
 			}
 			return result;
+		}
+
+		@Override
+		public Symbol getRepresentative() {
+			return null;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			UnorderedRulePart that = (UnorderedRulePart) o;
+
+			if (!Arrays.equals(parts, that.parts)) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(parts);
 		}
 	}
 }
