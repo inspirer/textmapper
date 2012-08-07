@@ -258,6 +258,7 @@ ${query codeForList for ast.AstListRule =
 				? '$' + index
 				: null
 		) : null,
+	listkind == 'empty'  ? '$$ = new java.util.@ArrayList();\n' :
 	!newexpr ? null :
 	listkind == 'left'	 ? '$0.add(' + newexpr + ');\n' :
 	listkind == 'right'	 ? '$'+(rule.getRight().size()-1)+'.add(0, ' + newexpr + ');\n' :

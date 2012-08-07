@@ -22,7 +22,7 @@ class AstOptionalRule extends AstRule {
 }
 
 class AstListRule extends AstRule {
-    string listkind[choice:"left","right","normal","none"];
+    string listkind[choice:"left","right","normal","empty"];
     common.SymbolRef* listitem;
 }
 

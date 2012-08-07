@@ -29,7 +29,7 @@ ${cached query astRule() =
 					kkind == 'leftrec' ? 'left' :
 					kkind == 'rightrec' ? 'right' :
 					kkind == 'normal' ? 'normal'
-						: 'none'),
+						: 'empty'),
 			listitem => context->hasListItem(getLeft())
 				? (
 					item = context->getListItem(getLeft()),
@@ -193,11 +193,15 @@ ${cached query getOptionalTarget(sym) = syntax.rules[sym].collect(x|x.getRight()
 
 ${cached query isList(sym) = self->isLeftList(sym) || self->isRightList(sym)} 
 
-${cached query isLeftList(sym) = syntax.rules[sym].
-	collect(x|self->intListRuleKind(x))->containsBothOnly('leftrec', 'normal')}
+${cached query ruleKinds(sym) = syntax.rules[sym].collect(x|self->intListRuleKind(x)) }
 
-${cached query isRightList(sym) = syntax.rules[sym].
-	collect(x|self->intListRuleKind(x))->containsBothOnly('rightrec', 'normal')}
+${cached query isLeftList(sym) =
+	self->ruleKinds(sym)->containsBothOnly('leftrec', 'normal')
+	|| self->ruleKinds(sym)->containsBothOnly('leftrec', 'empty')}
+
+${cached query isRightList(sym) =
+	self->ruleKinds(sym)->containsBothOnly('rightrec', 'normal')
+	||self->ruleKinds(sym)->containsBothOnly('rightrec', 'empty')}
 
 ${query containsBothOnly(x,y) = 
 	self.contains(x) && self.contains(y) && self.forAll(q|q==x || q==y)}

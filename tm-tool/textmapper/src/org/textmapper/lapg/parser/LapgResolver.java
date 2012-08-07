@@ -173,8 +173,8 @@ public class LapgResolver {
 		return sym;
 	}
 
-	private Symbol createListSymbol(Symbol element, IAstNode source) {
-		final String base_ = element.getName() + "_list";
+	private Symbol createDerived(Symbol element, String suffix, IAstNode source) {
+		final String base_ = element.getName() + suffix;
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
 		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
 			index++;
@@ -582,7 +582,7 @@ public class LapgResolver {
 
 		Symbol representative = inner.getRepresentative();
 		listSymbol = representative != null
-				? createListSymbol(representative, origin) /* TODO type? */
+				? createDerived(representative, "_list", origin) /* TODO type? */
 				: createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
 
 		listsMap.put(descr, listSymbol);
@@ -596,11 +596,22 @@ public class LapgResolver {
 		rb.add(inner);
 		rb.create();
 		rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
-		if (atLeastOne) {
+		if (atLeastOne || separator != null) {
 			// one or more list
 			rb.add(inner);
 		}
 		rb.create();
+
+		if (separator != null && !atLeastOne) {
+			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
+			Symbol symopt = createDerived(listSymbol, "_opt", origin);
+			RuleBuilder b = builder.rule(null, symopt, origin);
+			b.create();
+			b.addPart(null, listSymbol, null, origin);
+			b.create();
+			return symopt;
+		}
+
 		return listSymbol;
 	}
 

@@ -112,7 +112,6 @@ public class LapgRuleBuilder {
 			if (alias != null ? !alias.equals(rulePart.alias) : rulePart.alias != null) return false;
 			if (annotations != null ? !annotations.equals(rulePart.annotations) : rulePart.annotations != null)
 				return false;
-			if (origin != null ? !origin.equals(rulePart.origin) : rulePart.origin != null) return false;
 			if (!sym.equals(rulePart.sym)) return false;
 			if (unwanted != null ? !unwanted.equals(rulePart.unwanted) : rulePart.unwanted != null) return false;
 
@@ -125,7 +124,6 @@ public class LapgRuleBuilder {
 			result = 31 * result + sym.hashCode();
 			result = 31 * result + (unwanted != null ? unwanted.hashCode() : 0);
 			result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
-			result = 31 * result + (origin != null ? origin.hashCode() : 0);
 			return result;
 		}
 	}
