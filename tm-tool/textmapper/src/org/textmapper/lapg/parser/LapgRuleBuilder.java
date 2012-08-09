@@ -49,7 +49,7 @@ public class LapgRuleBuilder {
 	}
 
 	public Rule[] create() {
-		List<RulePart[]> rules = new CompositeRulePart(false, parts.toArray(new AbstractRulePart[parts.size()])).expand();
+		List<RulePart[]> rules = expandList(parts.toArray(new AbstractRulePart[parts.size()]));
 		Rule[] result = new Rule[rules.size()];
 		int index = 0;
 		for (RulePart[] parts : rules) {
@@ -128,6 +128,65 @@ public class LapgRuleBuilder {
 		}
 	}
 
+	private static List<RulePart[]> expandList(AbstractRulePart[] list) {
+		boolean simplePartsOnly = true;
+		for (AbstractRulePart part : list) {
+			if (!(part instanceof RulePart)) {
+				simplePartsOnly = false;
+				break;
+			}
+		}
+		if (simplePartsOnly) {
+			RulePart[] parts = new RulePart[list.length];
+			System.arraycopy(list, 0, parts, 0, parts.length);
+			return Collections.singletonList(parts);
+
+		} else {
+			List<RulePart[]> result = Collections.singletonList(new RulePart[0]);
+			for (AbstractRulePart part : list) {
+				List<RulePart[]> val = part.expand();
+				result = cartesianProduct(result, val);
+			}
+			return result;
+		}
+	}
+
+	private static List<RulePart[]> cartesianProduct(List<RulePart[]> left, List<RulePart[]> right) {
+		List<RulePart[]> result = new ArrayList<RulePart[]>(left.size() * right.size());
+		for (RulePart[] leftElement : left) {
+			for (RulePart[] rightElement : right) {
+				RulePart[] elem = new RulePart[leftElement.length + rightElement.length];
+				System.arraycopy(leftElement, 0, elem, 0, leftElement.length);
+				System.arraycopy(rightElement, 0, elem, leftElement.length, rightElement.length);
+				result.add(elem);
+			}
+		}
+		return result;
+	}
+
+	static boolean permute(int[] a) {
+		int k = a.length - 2;
+		while (k >= 0 && a[k] >= a[k + 1]) {
+			k--;
+		}
+		if (k == -1) {
+			return false;
+		}
+		int l = a.length - 1;
+		while (a[k] >= a[l]) {
+			l--;
+		}
+		int t = a[k];
+		a[k] = a[l];
+		a[l] = t;
+		for (int i = k + 1, j = a.length - 1; i < j; i++, j--) {
+			t = a[i];
+			a[i] = a[j];
+			a[j] = t;
+		}
+		return true;
+	}
+
 	static class CompositeRulePart implements AbstractRulePart {
 		private final AbstractRulePart[] parts;
 		private final boolean isOptional;
@@ -140,39 +199,19 @@ public class LapgRuleBuilder {
 
 		@Override
 		public List<RulePart[]> expand() {
-			boolean simplePartsOnly = true;
-			for (AbstractRulePart part : parts) {
-				if (!(part instanceof RulePart)) {
-					simplePartsOnly = false;
-					break;
-				}
-			}
-			if (simplePartsOnly) {
-				RulePart[] parts = new RulePart[this.parts.length];
-				System.arraycopy(this.parts, 0, parts, 0, parts.length);
-				if (isOptional && parts.length > 0) {
-					return Arrays.asList(new RulePart[0],
-							parts);
-				} else {
-					return Collections.singletonList(parts);
-				}
-
-			} else {
-				List<RulePart[]> result = Collections.singletonList(new RulePart[0]);
-				for (AbstractRulePart part : parts) {
-					List<RulePart[]> val = part.expand();
-					result = cartesianProduct(result, val);
-				}
-				if (isOptional) {
-					for (RulePart[] p : result) {
-						if (p.length == 0) {
-							return result;
-						}
+			List<RulePart[]> result = expandList(parts);
+			if (isOptional) {
+				for (RulePart[] p : result) {
+					if (p.length == 0) {
+						return result;
 					}
-					result.add(new RulePart[0]);
 				}
-				return result;
+				if (result.size() < 2) {
+					result = new ArrayList<RulePart[]>(result);
+				}
+				result.add(new RulePart[0]);
 			}
+			return result;
 		}
 
 		@Override
@@ -181,19 +220,6 @@ public class LapgRuleBuilder {
 				return parts[0].getRepresentative();
 			}
 			return null;
-		}
-
-		public List<RulePart[]> cartesianProduct(List<RulePart[]> left, List<RulePart[]> right) {
-			List<RulePart[]> result = new ArrayList<RulePart[]>(left.size() * right.size());
-			for (RulePart[] leftElement : left) {
-				for (RulePart[] rightElement : right) {
-					RulePart[] elem = new RulePart[leftElement.length + rightElement.length];
-					System.arraycopy(leftElement, 0, elem, 0, leftElement.length);
-					System.arraycopy(rightElement, 0, elem, leftElement.length, rightElement.length);
-					result.add(elem);
-				}
-			}
-			return result;
 		}
 
 		@Override
@@ -217,10 +243,10 @@ public class LapgRuleBuilder {
 		}
 	}
 
-	static class UnorderedRulePart implements AbstractRulePart {
+	static class ChoiceRulePart implements AbstractRulePart {
 		private final AbstractRulePart[] parts;
 
-		public UnorderedRulePart(AbstractRulePart... parts) {
+		public ChoiceRulePart(AbstractRulePart... parts) {
 			assert parts != null;
 			this.parts = parts;
 		}
@@ -231,6 +257,54 @@ public class LapgRuleBuilder {
 			for (AbstractRulePart part : parts) {
 				result.addAll(part.expand());
 			}
+			return result;
+		}
+
+		@Override
+		public Symbol getRepresentative() {
+			return null;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ChoiceRulePart that = (ChoiceRulePart) o;
+
+			if (!Arrays.equals(parts, that.parts)) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			return Arrays.hashCode(parts);
+		}
+	}
+
+	static class UnorderedRulePart implements AbstractRulePart {
+		private final AbstractRulePart[] parts;
+
+		public UnorderedRulePart(AbstractRulePart... parts) {
+			assert parts != null && parts.length >= 2 && parts.length <= 5;
+			this.parts = parts;
+		}
+
+		@Override
+		public List<RulePart[]> expand() {
+			List<RulePart[]> result = new ArrayList<RulePart[]>();
+			int[] permutation = new int[parts.length];
+			for (int i = 0; i < permutation.length; i++) {
+				permutation[i] = i;
+			}
+			AbstractRulePart[] temp = new AbstractRulePart[parts.length];
+			do {
+				for (int i = 0; i < parts.length; i++) {
+					temp[i] = parts[permutation[i]];
+				}
+				result.addAll(expandList(temp));
+			} while (permute(permutation));
 			return result;
 		}
 

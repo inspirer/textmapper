@@ -28,10 +28,7 @@ import org.textmapper.lapg.gen.TemplateStaticMethods;
 import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
 import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 import org.textmapper.lapg.parser.LapgLexer.Lexems;
-import org.textmapper.lapg.parser.LapgRuleBuilder.AbstractRulePart;
-import org.textmapper.lapg.parser.LapgRuleBuilder.CompositeRulePart;
-import org.textmapper.lapg.parser.LapgRuleBuilder.RulePart;
-import org.textmapper.lapg.parser.LapgRuleBuilder.UnorderedRulePart;
+import org.textmapper.lapg.parser.LapgRuleBuilder.*;
 import org.textmapper.lapg.parser.LapgTree.LapgProblem;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.parser.ast.*;
@@ -459,6 +456,10 @@ public class LapgResolver {
 		} else if (part instanceof AstUnorderedRulePart) {
 			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
 			extractUnorderedParts(part, refParts);
+			if (refParts.size() < 2 || refParts.size() > 5) {
+				error(part, "max 5 elements are allowed for permutation");
+				return null;
+			}
 			AbstractRulePart[] resolved = new AbstractRulePart[refParts.size()];
 			int index = 0;
 			for (AstRefRulePart refPart : refParts) {
@@ -483,25 +484,50 @@ public class LapgResolver {
 		// inline ...? and (...)?
 		if (isOptionalPart(refPart)) {
 			AstRuleSymbolRef optionalPart = getOptionalPart(refPart);
-			if (isGroupPart(optionalPart) &&
-					alias == null &&
+			if (alias == null &&
 					refPart.getAnnotations() == null) {
-				List<AstRulePart> groupPart = getGroupPart(optionalPart);
-				return convertGroup(outer, groupPart, true);
-			} else {
-				Symbol optsym = resolve(outer, optionalPart);
-				return new CompositeRulePart(true, new RulePart(alias, optsym, nla, annotations, refPart.getReference()));
+				if (isGroupPart(optionalPart)) {
+					List<AstRulePart> groupPart = getGroupPart(optionalPart);
+					return convertGroup(outer, groupPart, true);
+				} else if (isChoicePart(optionalPart)) {
+					List<AstRule> rules = ((AstRuleNestedNonTerm) optionalPart).getRules();
+					return convertChoice(outer, rules, true);
+				}
 			}
+
+			Symbol optsym = resolve(outer, optionalPart);
+			return new CompositeRulePart(true, new RulePart(alias, optsym, nla, annotations, refPart.getReference()));
 		}
 
 		// inline (...)
 		if (isGroupPart(refPart)) {
 			List<AstRulePart> groupPart = getGroupPart(refPart.getReference());
 			return convertGroup(outer, groupPart, false);
+
+			// inline (...|...|...)
+		} else if (isChoicePart(refPart)) {
+			List<AstRule> rules = ((AstRuleNestedNonTerm) refPart.getReference()).getRules();
+			return convertChoice(outer, rules, false);
 		}
 
 		Symbol sym = resolve(outer, refPart.getReference());
 		return new RulePart(alias, sym, nla, annotations, refPart.getReference());
+	}
+
+	private AbstractRulePart convertChoice(Symbol outer, List<AstRule> rules, boolean isOptional) {
+		AbstractRulePart[] result = new AbstractRulePart[rules.size()];
+		int index = 0;
+		for (AstRule rule : rules) {
+			AbstractRulePart abstractRulePart = convertGroup(outer, rule.getList(), false);
+			if (abstractRulePart == null) {
+				return null;
+			}
+			result[index++] = abstractRulePart;
+		}
+		if (isOptional) {
+			return new CompositeRulePart(true, new ChoiceRulePart(result));
+		}
+		return new ChoiceRulePart(result);
 	}
 
 	private AbstractRulePart convertGroup(Symbol outer, List<AstRulePart> groupPart, boolean isOptional) {
@@ -635,6 +661,16 @@ public class LapgResolver {
 
 	}
 
+	private boolean isChoicePart(AstRefRulePart part) {
+		if (!(part.getReference() instanceof AstRuleNestedNonTerm)) {
+			return false;
+		}
+		return part.getAlias() == null
+				&& part.getAnnotations() == null
+				&& isChoicePart(part.getReference());
+
+	}
+
 	private boolean isGroupPart(AstRuleSymbolRef symbolRef) {
 		if (!(symbolRef instanceof AstRuleNestedNonTerm)) {
 			return false;
@@ -642,16 +678,34 @@ public class LapgResolver {
 		List<AstRule> innerRules = ((AstRuleNestedNonTerm) symbolRef).getRules();
 		if (innerRules.size() == 1) {
 			AstRule first = innerRules.get(0);
-			if (first != null
-					&& first.getAnnotations() == null
-					&& first.getAttribute() == null
-					&& first.getAlias() == null
-					&& !first.getList().isEmpty()
-					&& !first.hasSyntaxError()) {
-				return true;
-			}
+			return isSimpleNonEmpty(first);
 		}
 		return false;
+	}
+
+	private boolean isChoicePart(AstRuleSymbolRef symbolRef) {
+		if (!(symbolRef instanceof AstRuleNestedNonTerm)) {
+			return false;
+		}
+		List<AstRule> innerRules = ((AstRuleNestedNonTerm) symbolRef).getRules();
+		if (innerRules.size() < 2) {
+			return false;
+		}
+		for (AstRule rule : innerRules) {
+			if (!(isSimpleNonEmpty(rule))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isSimpleNonEmpty(AstRule rule) {
+		return rule != null
+				&& rule.getAnnotations() == null
+				&& rule.getAttribute() == null
+				&& rule.getAlias() == null
+				&& !rule.getList().isEmpty()
+				&& !rule.hasSyntaxError();
 	}
 
 	private List<AstRulePart> getGroupPart(AstRuleSymbolRef symbolRef) {
