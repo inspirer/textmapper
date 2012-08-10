@@ -168,7 +168,7 @@ public class TypesParser {
 		"name",
 		"name_list",
 		"extends_clauseopt",
-		"member_declaration_list",
+		"member_declaration_optlist",
 		"modifiersopt",
 		"defaultvalopt",
 		"parametersopt",
@@ -206,7 +206,7 @@ public class TypesParser {
 		public static final int name = 49;
 		public static final int name_list = 50;
 		public static final int extends_clauseopt = 51;
-		public static final int member_declaration_list = 52;
+		public static final int member_declaration_optlist = 52;
 		public static final int modifiersopt = 53;
 		public static final int defaultvalopt = 54;
 		public static final int parametersopt = 55;
@@ -332,13 +332,13 @@ public class TypesParser {
 				lapg_gg.sym = new ArrayList();
 				((List<AstTypeDeclaration>)lapg_gg.sym).add(((AstTypeDeclaration)lapg_m[lapg_head].sym));
 				break;
-			case 5:  // member_declaration_list ::= member_declaration_list member_declaration
+			case 5:  // member_declaration_optlist ::= member_declaration_optlist member_declaration
 				((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].sym).add(((IAstMemberDeclaration)lapg_m[lapg_head].sym));
 				break;
-			case 6:  // member_declaration_list ::=
+			case 6:  // member_declaration_optlist ::=
 				lapg_gg.sym = new ArrayList();
 				break;
-			case 7:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_list '}'
+			case 7:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_optlist '}'
 				lapg_gg.sym = new AstTypeDeclaration(
 						((String)lapg_m[lapg_head - 4].sym) /* name */,
 						((List<List<String>>)lapg_m[lapg_head - 3].sym) /* _extends */,

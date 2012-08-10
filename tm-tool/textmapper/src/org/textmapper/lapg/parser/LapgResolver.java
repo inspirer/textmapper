@@ -608,10 +608,9 @@ public class LapgResolver {
 
 		Symbol representative = inner.getRepresentative();
 		listSymbol = representative != null
-				? createDerived(representative, "_list", origin) /* TODO type? */
+				? createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
 				: createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
 
-		listsMap.put(descr, listSymbol);
 		LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
 		// list
 		rb.add(new RulePart(listSymbol, origin));
@@ -635,9 +634,10 @@ public class LapgResolver {
 			b.create();
 			b.addPart(null, listSymbol, null, origin);
 			b.create();
-			return symopt;
+			listSymbol = symopt;
 		}
 
+		listsMap.put(descr, listSymbol);
 		return listSymbol;
 	}
 
