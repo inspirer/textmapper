@@ -40,6 +40,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Number", LapgSyntaxHighlighter.NUMBER),
 			new AttributesDescriptor("Identifier", LapgSyntaxHighlighter.IDENTIFIER),
 			new AttributesDescriptor("Operator sign", LapgSyntaxHighlighter.OPERATOR),
+			new AttributesDescriptor("Quantifier", LapgSyntaxHighlighter.QUANTIFIER),
 			new AttributesDescriptor("Brackets", LapgSyntaxHighlighter.BRACKETS),
 			new AttributesDescriptor("Parenthesis", LapgSyntaxHighlighter.PARENTHS),
 			new AttributesDescriptor("Lexem reference", LapgSyntaxHighlighter.LEXEM_REFERENCE),
@@ -106,6 +107,9 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (class)\n" +
 				"                 { $lexem = current(); break; }\n" +
 				"kw_eval:  /eval/ (soft)\n" +
+				"'(': /\\(/\n" +
+				"')': /\\)/\n" +
+				"',': /,/\n" +
 				"'*': /*/\n" +
 				"'+': /+/\n" +
 				"complex: /\\p{Lu}-a{1,8}-[^a-z] \\y . forwardSlash:\\/ /\n" +
@@ -114,17 +118,18 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"# Grammar\n" +
 				"\n" +
 				"%input root;\n" +
-				"%left '+';\n" +
-				"%left '*';\n" +
+				"%left <lexemRef>'+'</lexemRef>;\n" +
+				"%left <lexemRef>'*'</lexemRef>;\n" +
 				"\n" +
 				"root (ParsedRoot) ::=\n" +
 				"      <lexemRef>kw_eval</lexemRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
 				";\n" +
 				"\n" +
 				"expr ::=\n" +
-				"      identifier\n" +
-				"    | expr '+' expr\n" +
-				"    | expr '*' expr\n" +
+				"      <lexemRef>identifier</lexemRef>\n" +
+				"    | expr <lexemRef>'+'</lexemRef> expr\n" +
+				"    | expr <lexemRef>'*'</lexemRef> expr\n" +
+				"    | <lexemRef>identifier</lexemRef> <lexemRef>'('</lexemRef> (expr separator <lexemRef>','</lexemRef>)* <lexemRef>')'</lexemRef>\n" +
 				";\n" +
 				"%%\n" +
 				"\n" +

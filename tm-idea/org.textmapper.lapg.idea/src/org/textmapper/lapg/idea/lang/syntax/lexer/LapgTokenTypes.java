@@ -70,8 +70,10 @@ public interface LapgTokenTypes {
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_STAR, OP_PLUS, OP_QMARK, QP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
+			OP_LT, OP_GT, QP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
+
+	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);
 
 	// keywords
 	IElementType KW_TRUE = new LapgElementType(Lexems.Ltrue, "true");
