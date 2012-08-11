@@ -17,11 +17,9 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.parser.LapgElementTypes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,29 +32,15 @@ public class LpsGrammar extends LpsElement {
 	}
 
 	public LpsNamedElement[] getNamedElements() {
-		List<LpsNamedElement> result = new ArrayList<LpsNamedElement>();
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM, LapgElementTypes.LEXEM));
-		for (ASTNode node : nodes) {
-			LpsNamedElement named = (LpsNamedElement) node.getPsi();
-			if (named == null) {
-				continue;
-			}
-			result.add(named);
-		}
-		return result.toArray(new LpsNamedElement[result.size()]);
+		return PsiTreeUtil.getChildrenOfType(this, LpsNamedElement.class);
 	}
 
 	public LpsNamedElement resolve(String name) {
-		if(name.endsWith("opt") && name.length() > 3) {
+		if (name.endsWith("opt") && name.length() > 3) {
 			name = name.substring(0, name.length() - 3);
 		}
 
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM, LapgElementTypes.LEXEM));
-		for (ASTNode node : nodes) {
-			LpsNamedElement named = (LpsNamedElement) node.getPsi();
-			if (named == null) {
-				continue;
-			}
+		for (LpsNamedElement named : getNamedElements()) {
 			if (name.equals(named.getName())) {
 				return named;
 			}
@@ -64,12 +48,11 @@ public class LpsGrammar extends LpsElement {
 		return null;
 	}
 
-	public LpsNonTerm[] getNonTerms() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.NONTERM));
-		List<LpsNonTerm> result = new ArrayList<LpsNonTerm>(nodes.length);
-		for (ASTNode node : nodes) {
-			result.add((LpsNonTerm) node.getPsi());
-		}
-		return result.toArray(new LpsNonTerm[result.size()]);
+	public List<LpsLexem> getLexems() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsLexem.class);
+	}
+
+	public List<LpsNonTerm> getNonTerms() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsNonTerm.class);
 	}
 }

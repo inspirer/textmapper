@@ -75,6 +75,10 @@ public class LapgParserDefinition implements ParserDefinition {
 			return new LpsGrammar(node);
 		} else if (type == LapgElementTypes.RULE) {
 			return new LpsRule(node);
+		} else if (type == LapgElementTypes.RULEPART) {
+			return new LpsRulePart(node);
+		} else if (type == LapgElementTypes.RULESYMREF) {
+			return new LpsRuleSymRef(node);
 		} else if (type == LapgElementTypes.NONTERM) {
 			return new LpsNonTerm(node);
 		} else if (type == LapgElementTypes.LEXEM) {

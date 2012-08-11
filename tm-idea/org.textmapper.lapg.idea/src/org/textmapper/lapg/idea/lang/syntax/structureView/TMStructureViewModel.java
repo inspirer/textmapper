@@ -14,24 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.lapg.idea.lang.syntax.psi;
+package org.textmapper.lapg.idea.lang.syntax.structureView;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.ide.structureView.StructureViewModelBase;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import org.textmapper.lapg.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.lapg.idea.lang.syntax.psi.LpsElement;
 
 /**
- * Gryaznov Evgeny, 1/26/11
+ * evgeny, 8/11/12
  */
-public class LpsNonTerm extends LpsNamedElement {
-
-	public LpsNonTerm(@NotNull ASTNode node) {
-		super(node);
-	}
-
-	public List<LpsRule> getRules() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsRule.class);
+public class TMStructureViewModel extends StructureViewModelBase {
+	public TMStructureViewModel(@NotNull LapgFile file) {
+		super(file, new TMStructureViewElement(file));
+		withSuitableClasses(LpsElement.class);
 	}
 }

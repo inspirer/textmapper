@@ -19,11 +19,10 @@ package org.textmapper.lapg.idea.lang.syntax.psi;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.parser.LapgElementTypes;
 
 /**
  * Gryaznov Evgeny, 1/26/11
@@ -35,11 +34,7 @@ public abstract class LpsNamedElement extends LpsElement implements PsiNamedElem
 	}
 
 	public LpsSymbol getNameSymbol() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.SYMBOL));
-		if (nodes != null && nodes.length == 1) {
-			return (LpsSymbol) nodes[0].getPsi();
-		}
-		return null;
+		return PsiTreeUtil.getChildOfType(this, LpsSymbol.class);
 	}
 
 	public String getName() {
@@ -49,7 +44,7 @@ public abstract class LpsNamedElement extends LpsElement implements PsiNamedElem
 
 	public PsiElement setName(@NonNls String name) throws IncorrectOperationException {
 		LpsSymbol nameSymbol = getNameSymbol();
-		if(nameSymbol == null) {
+		if (nameSymbol == null) {
 			throw new IncorrectOperationException();
 		}
 		nameSymbol.replace(LpsElementsFactory.createSymbol(getProject(), name));

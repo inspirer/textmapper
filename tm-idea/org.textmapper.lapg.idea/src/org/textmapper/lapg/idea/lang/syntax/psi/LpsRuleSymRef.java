@@ -20,18 +20,16 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
- * Gryaznov Evgeny, 1/26/11
+ * evgeny, 8/11/12
  */
-public class LpsNonTerm extends LpsNamedElement {
+public class LpsRuleSymRef extends LpsElement {
 
-	public LpsNonTerm(@NotNull ASTNode node) {
+	public LpsRuleSymRef(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public List<LpsRule> getRules() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsRule.class);
+	public LpsReference getReference() {
+		return PsiTreeUtil.getChildOfType(this, LpsReference.class);
 	}
 }

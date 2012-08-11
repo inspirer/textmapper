@@ -34,10 +34,12 @@ public interface LapgElementTypes {
 	public static final IElementType SYMBOL = new LapgElementType(Tokens.symbol, "symbol");
 	public static final IElementType QUALIFIED_ID = new LapgElementType(Tokens.qualified_id, "qualified identifier");
 	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
+	public static final IElementType RULEPART = new LapgElementType(Tokens.rulepart, "rulepart");
+	public static final IElementType RULESYMREF = new LapgElementType(Tokens.rulesymref, "rulesymref");
 	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
 
 	public static final IElementType[] allElements = {
-		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, ANNOTATION, ACTION
+		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, RULEPART, RULESYMREF, ANNOTATION, ACTION
 	};
 
 	public static final IElementType LEXEM = new LapgElementType(Tokens.lexer_part, "lexem");

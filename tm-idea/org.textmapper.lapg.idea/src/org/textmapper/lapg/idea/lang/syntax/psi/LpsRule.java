@@ -17,11 +17,9 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.parser.LapgElementTypes;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,13 +31,7 @@ public class LpsRule extends LpsElement {
 		super(node);
 	}
 
-	public LpsReference[] getRuleRefs() {
-		final ASTNode[] nodes = getNode().getChildren(TokenSet.create(LapgElementTypes.REFERENCE));
-		List<LpsReference> result = new ArrayList<LpsReference>(nodes.length);
-		for (ASTNode node : nodes) {
-			result.add((LpsReference) node.getPsi());
-		}
-		return result.toArray(new LpsReference[result.size()]);
+	public List<LpsRulePart> getRuleParts() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsRulePart.class);
 	}
-
 }

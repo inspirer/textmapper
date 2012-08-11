@@ -42,7 +42,7 @@ public class LapgFileType extends LanguageFileType {
 
     @NotNull
     public String getDescription() {
-        return "Grammar file";
+        return "TextMapper syntax";
     }
 
     @NotNull

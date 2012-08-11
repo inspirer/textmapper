@@ -16,14 +16,13 @@
  */
 package org.textmapper.lapg.idea.lang.syntax.parser;
 
-import com.intellij.lang.ASTNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.impl.source.PsiFileImpl;
-import com.intellij.psi.tree.TokenSet;
-import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 import org.textmapper.lapg.idea.lang.syntax.psi.LpsGrammar;
 
 public class LapgFile extends PsiFileImpl {
@@ -41,14 +40,10 @@ public class LapgFile extends PsiFileImpl {
 	}
 
 	public LpsGrammar getGrammar() {
-		ASTNode[] children = getNode().getChildren(TokenSet.create(LapgElementTypes.GRAMMAR));
-		if(children != null && children.length == 1) {
-			return (LpsGrammar) children[0].getPsi();
-		}
-		return null;
+		return PsiTreeUtil.getChildOfType(this, LpsGrammar.class);
 	}
 
 	public String toString() {
-		return "LapgFile(syntax):" + getName();
+		return "TMFile(syntax):" + getName();
 	}
 }

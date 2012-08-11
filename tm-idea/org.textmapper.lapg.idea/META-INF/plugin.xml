@@ -47,8 +47,9 @@
 	</project-components>
 
 	<actions>
-		<action id="org.textmapper.lapg.idea.actions.NewLapgGrammar" class="org.textmapper.lapg.idea.actions.NewLapgGrammar"
-				text="Lapg Grammar" description="Creates new Lapg Grammar">
+		<action id="org.textmapper.lapg.idea.actions.NewLapgGrammar"
+				class="org.textmapper.lapg.idea.actions.NewLapgGrammar"
+				text="TextMapper syntax file" description="Creates new TextMapper syntax file">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>
 	</actions>
@@ -70,6 +71,17 @@
 		<lang.foldingBuilder
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.editor.LapgFoldingBuilder"/>
+
+		<lang.psiStructureViewFactory
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.structureView.TMStructureViewFactory"/>
+
+		<lang.findUsagesProvider
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesProvider"/>
+
+		<findUsagesHandlerFactory
+				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
 
 		<colorSettingsPage implementation="org.textmapper.lapg.idea.lang.syntax.LapgColorsPage"/>
 

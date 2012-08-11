@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 import org.textmapper.lapg.idea.lang.syntax.parser.LapgFile;
 
+import java.util.List;
+
 /**
  * Gryaznov Evgeny, 1/26/11
  */
@@ -34,32 +36,43 @@ public class LpsElementsFactory {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
 		LapgFile aFile = createDummyFile(p, text);
 		LpsGrammar grammar = aFile.getGrammar();
-		LpsNonTerm[] s = grammar.getNonTerms();
-		if (s == null || s.length != 1 || s[0].getNameSymbol() == null) {
+		List<LpsNonTerm> s = grammar.getNonTerms();
+		if (s == null || s.size() != 1 || s.get(0).getNameSymbol() == null) {
 			throw new IncorrectOperationException();
 		}
-		return s[0].getNameSymbol();
+		return s.get(0).getNameSymbol();
 	}
 
 	public static LpsReference createReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
 		LapgFile aFile = createDummyFile(p, text);
 		LpsGrammar grammar = aFile.getGrammar();
-		LpsNonTerm[] s = grammar.getNonTerms();
-		if (s == null || s.length != 1) {
+		List<LpsNonTerm> s = grammar.getNonTerms();
+		if (s == null || s.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		LpsRule[] rules = s[0].getRules();
-		if (rules == null || rules.length != 1) {
+		List<LpsRule> rules = s.get(0).getRules();
+		if (rules == null || rules.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		LpsReference[] references = rules[0].getRuleRefs();
-		if (references == null || references.length != 1) {
+		List<LpsRulePart> parts = rules.get(0).getRuleParts();
+		if (parts == null || parts.size() != 1) {
 			throw new IncorrectOperationException();
 		}
-		return references[0];
+
+		LpsRuleSymRef symbolRef = parts.get(0).getSymbolRef();
+		if (symbolRef == null) {
+			throw new IncorrectOperationException();
+		}
+
+		LpsReference ref = symbolRef.getReference();
+		if (ref == null) {
+			throw new IncorrectOperationException();
+		}
+
+		return ref;
 	}
 
 	private static LapgFile createDummyFile(Project p, String text) {
