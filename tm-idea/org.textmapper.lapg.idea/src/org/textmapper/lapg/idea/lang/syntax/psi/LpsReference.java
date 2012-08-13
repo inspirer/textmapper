@@ -69,7 +69,8 @@ public class LpsReference extends LpsElement implements PsiReference {
 	}
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-		return replace(LpsElementsFactory.createReference(getProject(), newElementName));
+		boolean isOptional = getCanonicalText().endsWith("opt");
+		return replace(LpsElementsFactory.createReference(getProject(), isOptional ? newElementName + "opt" : newElementName));
 	}
 
 	public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {

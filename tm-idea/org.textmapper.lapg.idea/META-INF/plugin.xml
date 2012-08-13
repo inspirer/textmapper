@@ -80,6 +80,13 @@
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesProvider"/>
 
+		<lang.namesValidator
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.refactoring.TMNamesValidator"/>
+
+		<referencesSearch
+				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
+
 		<findUsagesHandlerFactory
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
 
