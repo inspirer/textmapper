@@ -198,9 +198,13 @@ references (List<AstReference>) ::=
 	| list=references reference							{ $list.add($reference); }
 ;
 
-rules (List<AstRule>) ::= 
-	  rule0												{ $$ = new ArrayList<AstRule>(); $rules.add($rule0); }
-	| list=rules '|' rule0								{ $list.add($rule0); }
+rules (List<AstRule>) ::=
+ 	rule_list
+;
+
+rule_list (List<AstRule>) ::=
+	  rule0												{ $$ = new ArrayList<AstRule>(); $rule_list.add($rule0); }
+	| list=rule_list '|' rule0							{ $list.add($rule0); }
 ;
 
 rule0 (AstRule) ::=

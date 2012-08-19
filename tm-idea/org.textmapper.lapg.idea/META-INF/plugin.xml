@@ -84,6 +84,10 @@
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.refactoring.TMNamesValidator"/>
 
+		<lang.formatter
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.formatter.TMFormattingModelBuilder"/>
+
 		<referencesSearch
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
 
