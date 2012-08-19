@@ -19,36 +19,31 @@ package org.textmapper.lapg.idea.lang.syntax.psi;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 /**
- * Gryaznov Evgeny, 1/26/11
+ * evgeny, 8/14/12
  */
-public abstract class LpsNamedElement extends LpsElement implements PsiNamedElement {
+public class TmNamedPattern extends TmElement implements PsiNamedElement {
 
-	public LpsNamedElement(@NotNull ASTNode node) {
+	public TmNamedPattern(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public LpsSymbol getNameSymbol() {
-		return PsiTreeUtil.getChildOfType(this, LpsSymbol.class);
+	public ASTNode getIdentifier() {
+		return getNode().findChildByType(LapgTokenTypes.IDENTIFIER);
 	}
 
 	public String getName() {
-		LpsSymbol nameSymbol = getNameSymbol();
+		ASTNode nameSymbol = getIdentifier();
 		return nameSymbol != null ? nameSymbol.getText() : null;
 	}
 
-	public PsiElement setName(@NonNls String name) throws IncorrectOperationException {
-		LpsSymbol nameSymbol = getNameSymbol();
-		if (nameSymbol == null) {
-			throw new IncorrectOperationException();
-		}
-		nameSymbol.replace(LpsElementsFactory.createSymbol(getProject(), name));
-		return this;
+	@Override
+	public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
+		throw new IncorrectOperationException();
 	}
-
 }

@@ -26,9 +26,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Gryaznov Evgeny, 1/25/11
  */
-public class LpsReference extends LpsElement implements PsiReference {
+public class TmReference extends TmElement implements PsiReference {
 
-	public LpsReference(@NotNull ASTNode node) {
+	public TmReference(@NotNull ASTNode node) {
 		super(node);
 	}
 
@@ -41,8 +41,8 @@ public class LpsReference extends LpsElement implements PsiReference {
 		if (referenceText == null) return null;
 		PsiElement context = this.getContext();
 		while (context != null) {
-			if (context instanceof LpsGrammar) {
-				LpsGrammar grammar = (LpsGrammar) context;
+			if (context instanceof TmGrammar) {
+				TmGrammar grammar = (TmGrammar) context;
 				return grammar.resolve(referenceText);
 			}
 			context = context.getContext();
@@ -70,7 +70,7 @@ public class LpsReference extends LpsElement implements PsiReference {
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
 		boolean isOptional = getCanonicalText().endsWith("opt");
-		return replace(LpsElementsFactory.createReference(getProject(), isOptional ? newElementName + "opt" : newElementName));
+		return replace(TmElementsFactory.createReference(getProject(), isOptional ? newElementName + "opt" : newElementName));
 	}
 
 	public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
@@ -85,8 +85,8 @@ public class LpsReference extends LpsElement implements PsiReference {
 	public Object[] getVariants() {
 		PsiElement context = this.getContext();
 		while (context != null) {
-			if (context instanceof LpsGrammar) {
-				LpsGrammar grammar = (LpsGrammar) context;
+			if (context instanceof TmGrammar) {
+				TmGrammar grammar = (TmGrammar) context;
 				return grammar.getNamedElements();
 			}
 			context = context.getContext();

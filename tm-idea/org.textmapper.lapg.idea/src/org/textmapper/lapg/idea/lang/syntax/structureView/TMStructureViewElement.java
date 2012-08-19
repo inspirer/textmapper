@@ -94,9 +94,9 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 	private String getElementText() {
 		if (myElement instanceof LapgFile) {
 			return "file";
-		} else if (myElement instanceof LpsLexem) {
+		} else if (myElement instanceof TmLexem) {
 			return myElement.getName();
-		} else if (myElement instanceof LpsNonTerm) {
+		} else if (myElement instanceof TmNonTerm) {
 			return myElement.getName();
 		}
 		return "unknown";
@@ -106,7 +106,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 	public TreeElement[] getChildren() {
 		if (myElement instanceof LapgFile) {
 			final LapgFile tmFile = (LapgFile) myElement;
-			LpsGrammar grammar = tmFile.getGrammar();
+			TmGrammar grammar = tmFile.getGrammar();
 			if (grammar != null) {
 				return wrapDeclarations(grammar.getNonTerms());
 			}
@@ -114,7 +114,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 		return new TreeElement[0];  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	private TreeElement[] wrapDeclarations(List<? extends LpsNamedElement> declarations) {
+	private TreeElement[] wrapDeclarations(List<? extends TmNamedElement> declarations) {
 		TreeElement[] result = new TreeElement[declarations.size()];
 		for (int i = 0; i < declarations.size(); i++) {
 			result[i] = new TMStructureViewElement(declarations.get(i));

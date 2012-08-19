@@ -22,18 +22,18 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsLexem;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsReference;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmLexem;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmReference;
 
 /**
  * Gryaznov Evgeny, 1/30/11
  */
 public class LapgAnnotator implements Annotator {
 	public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-		if (element instanceof LpsReference) {
-			LpsReference ref = (LpsReference) element;
+		if (element instanceof TmReference) {
+			TmReference ref = (TmReference) element;
 			PsiElement target = ref.resolve();
-			if (target instanceof LpsLexem) {
+			if (target instanceof TmLexem) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.LEXEM_REFERENCE);
 			} else if (target == null) {

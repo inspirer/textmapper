@@ -30,44 +30,49 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class LpsElementsFactory {
+public class TmElementsFactory {
 
-	public static LpsSymbol createSymbol(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
+	public static TmSymbol createSymbol(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
 		LapgFile aFile = createDummyFile(p, text);
-		LpsGrammar grammar = aFile.getGrammar();
-		List<LpsNonTerm> s = grammar.getNonTerms();
+		TmGrammar grammar = aFile.getGrammar();
+		List<TmNonTerm> s = grammar.getNonTerms();
 		if (s == null || s.size() != 1 || s.get(0).getNameSymbol() == null) {
 			throw new IncorrectOperationException();
 		}
 		return s.get(0).getNameSymbol();
 	}
 
-	public static LpsReference createReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
+	public static TmReference createReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
 		LapgFile aFile = createDummyFile(p, text);
-		LpsGrammar grammar = aFile.getGrammar();
-		List<LpsNonTerm> s = grammar.getNonTerms();
+		TmGrammar grammar = aFile.getGrammar();
+		List<TmNonTerm> s = grammar.getNonTerms();
 		if (s == null || s.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		List<LpsRule> rules = s.get(0).getRules();
+		TmRuleGroup ruleGroup = s.get(0).getRuleGroup();
+		if (ruleGroup == null) {
+			throw new IncorrectOperationException();
+		}
+
+		List<TmRule> rules = ruleGroup.getRules();
 		if (rules == null || rules.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		List<LpsRulePart> parts = rules.get(0).getRuleParts();
+		List<TmRulePart> parts = rules.get(0).getRuleParts();
 		if (parts == null || parts.size() != 1) {
 			throw new IncorrectOperationException();
 		}
 
-		LpsRuleSymRef symbolRef = parts.get(0).getSymbolRef();
+		TmRuleSymRef symbolRef = parts.get(0).getSymbolRef();
 		if (symbolRef == null) {
 			throw new IncorrectOperationException();
 		}
 
-		LpsReference ref = symbolRef.getReference();
+		TmReference ref = symbolRef.getReference();
 		if (ref == null) {
 			throw new IncorrectOperationException();
 		}

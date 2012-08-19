@@ -23,7 +23,7 @@ import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsGrammar;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmGrammar;
 
 public class LapgFile extends PsiFileImpl {
 	protected LapgFile(FileViewProvider viewProvider) {
@@ -39,8 +39,8 @@ public class LapgFile extends PsiFileImpl {
 		visitor.visitFile(this);
 	}
 
-	public LpsGrammar getGrammar() {
-		return PsiTreeUtil.getChildOfType(this, LpsGrammar.class);
+	public TmGrammar getGrammar() {
+		return PsiTreeUtil.getChildOfType(this, TmGrammar.class);
 	}
 
 	public String toString() {

@@ -16,15 +16,21 @@
  */
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
-import com.intellij.psi.impl.source.tree.LazyParseablePsiElement;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * evgeny, 3/4/12
+ * evgeny, 8/11/12
  */
-public class LpsTemplates extends LazyParseablePsiElement {
+public class TmRulePart extends TmElement {
 
-	public LpsTemplates(@org.jetbrains.annotations.NotNull IElementType type, CharSequence buffer) {
-		super(type, buffer);
+	public TmRulePart(@NotNull ASTNode node) {
+		super(node);
 	}
+
+	public TmRuleSymRef getSymbolRef() {
+		return PsiTreeUtil.getChildOfType(this, TmRuleSymRef.class);
+	}
+
 }

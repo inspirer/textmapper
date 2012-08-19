@@ -45,7 +45,10 @@ public class LapgParser implements PsiParser {
 	private static Map<Integer, IElementType> initTypes() {
 		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
 		for (IElementType t : LapgElementTypes.allElements) {
-			result.put(((LapgElementType) t).getSymbol(), t);
+			int symbol = ((LapgElementType) t).getSymbol();
+			if (symbol >= 0) {
+				result.put(symbol, t);
+			}
 		}
 		result.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
 		return result;
@@ -57,9 +60,17 @@ public class LapgParser implements PsiParser {
 			return type;
 		}
 
-		if (token == Tokens.lexer_part && (rule != Rules.lexer_part_alias && rule != Rules.lexer_part_group_selector)) {
+		if (token == Tokens.lexer_part) {
+			if (rule == Rules.lexer_part_alias) {
+				return LapgElementTypes.NAMED_PATTERN;
+			} else if (rule == Rules.lexer_part_group_selector) {
+				return LapgElementTypes.STATE_SELECTOR;
+			}
 			return LapgElementTypes.LEXEM;
-		} else if (token == Tokens.grammar_part && rule != Rules.grammar_part_directive) {
+		} else if (token == Tokens.grammar_part) {
+			if (rule == Rules.grammar_part_directive) {
+				return LapgElementTypes.DIRECTIVE;
+			}
 			return LapgElementTypes.NONTERM;
 		}
 		return null;

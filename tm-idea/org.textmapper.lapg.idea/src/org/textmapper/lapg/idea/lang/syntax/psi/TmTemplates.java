@@ -16,22 +16,15 @@
  */
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
+import com.intellij.psi.impl.source.tree.LazyParseablePsiElement;
+import com.intellij.psi.tree.IElementType;
 
 /**
- * Gryaznov Evgeny, 1/26/11
+ * evgeny, 3/4/12
  */
-public class LpsNonTerm extends LpsNamedElement {
+public class TmTemplates extends LazyParseablePsiElement {
 
-	public LpsNonTerm(@NotNull ASTNode node) {
-		super(node);
-	}
-
-	public List<LpsRule> getRules() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsRule.class);
+	public TmTemplates(@org.jetbrains.annotations.NotNull IElementType type, CharSequence buffer) {
+		super(type, buffer);
 	}
 }

@@ -16,21 +16,38 @@
  */
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.lang.Language;
+import com.intellij.psi.search.LocalSearchScope;
+import com.intellij.psi.search.SearchScope;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 
-/**
- * evgeny, 8/11/12
- */
-public class LpsRulePart extends LpsElement {
+public class TmElement extends ASTWrapperPsiElement {
 
-	public LpsRulePart(@NotNull ASTNode node) {
+	IElementType type;
+
+	public TmElement(@NotNull ASTNode node) {
 		super(node);
+		type = node.getElementType();
 	}
 
-	public LpsRuleSymRef getSymbolRef() {
-		return PsiTreeUtil.getChildOfType(this, LpsRuleSymRef.class);
+	@NotNull
+	@Override
+	public Language getLanguage() {
+		return LapgFileType.LAPG_LANGUAGE;
 	}
 
+	@NotNull
+	@Override
+	public SearchScope getUseScope() {
+		return new LocalSearchScope(getContainingFile());
+	}
+
+	@Override
+	public String toString() {
+		return "lapg psi: " + type;
+	}
 }

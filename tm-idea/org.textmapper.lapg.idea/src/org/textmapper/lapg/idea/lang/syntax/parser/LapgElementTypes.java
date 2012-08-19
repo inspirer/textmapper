@@ -27,21 +27,37 @@ public interface LapgElementTypes {
 
 	public static final IElementType GRAMMAR = new LapgElementType(Tokens.input, "grammar");
 
-	public static final IElementType ACTION = new LapgElementType(Tokens.command, "action");
 	public static final IElementType OPTION = new LapgElementType(Tokens.option, "option");
+
+	public static final IElementType LEXEM = new LapgElementType(-1, "lexem");
+	public static final IElementType STATE_SELECTOR = new LapgElementType(-1, "lexer state");
+	public static final IElementType NAMED_PATTERN = new LapgElementType(-1, "pattern");
+	public static final IElementType LEXEM_ATTRS = new LapgElementType(Tokens.lexem_attrs, "lexem attrs");
+
+	public static final IElementType NONTERM = new LapgElementType(-1, "non-terminal");
+	public static final IElementType DIRECTIVE = new LapgElementType(-1, "directive");
+
+	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
+	public static final IElementType RULES = new LapgElementType(Tokens.rules, "rules");
+	public static final IElementType RULEPREFIX = new LapgElementType(Tokens.ruleprefix, "ruleprefix");
+	public static final IElementType RULEATTRS = new LapgElementType(Tokens.rule_attrs, "ruleattrs");
+	public static final IElementType RULEPART = new LapgElementType(Tokens.rulepart, "rulepart");
+	public static final IElementType RULESYMREF = new LapgElementType(Tokens.rulesymref, "rulesymref");
+	public static final IElementType NEGATIVE_LA = new LapgElementType(Tokens.negative_la, "negative_la");
+
+	public static final IElementType ACTION = new LapgElementType(Tokens.command, "action");
+	public static final IElementType TYPE = new LapgElementType(Tokens.type, "type");
+	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
 	public static final IElementType EXPRESSION = new LapgElementType(Tokens.expression, "expression");
 	public static final IElementType REFERENCE = new LapgElementType(Tokens.reference, "reference");
 	public static final IElementType SYMBOL = new LapgElementType(Tokens.symbol, "symbol");
 	public static final IElementType QUALIFIED_ID = new LapgElementType(Tokens.qualified_id, "qualified identifier");
-	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
-	public static final IElementType RULEPART = new LapgElementType(Tokens.rulepart, "rulepart");
-	public static final IElementType RULESYMREF = new LapgElementType(Tokens.rulesymref, "rulesymref");
-	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
 
 	public static final IElementType[] allElements = {
-		OPTION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID, RULE, RULEPART, RULESYMREF, ANNOTATION, ACTION
+			OPTION,
+			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS,
+			NONTERM, DIRECTIVE,
+			RULE, RULES, RULEPREFIX, RULEATTRS, RULEPART, RULESYMREF, NEGATIVE_LA,
+			ACTION, TYPE, ANNOTATION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID
 	};
-
-	public static final IElementType LEXEM = new LapgElementType(Tokens.lexer_part, "lexem");
-	public static final IElementType NONTERM = new LapgElementType(Tokens.grammar_part, "non-terminal declaration");
 }

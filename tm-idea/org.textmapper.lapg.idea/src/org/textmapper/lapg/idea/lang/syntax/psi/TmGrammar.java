@@ -25,13 +25,38 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class LpsRule extends LpsElement {
+public class TmGrammar extends TmElement {
 
-	public LpsRule(@NotNull ASTNode node) {
+	public TmGrammar(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public List<LpsRulePart> getRuleParts() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsRulePart.class);
+	public TmNamedElement[] getNamedElements() {
+		return PsiTreeUtil.getChildrenOfType(this, TmNamedElement.class);
+	}
+
+	public TmNamedElement resolve(String name) {
+		if (name.endsWith("opt") && name.length() > 3) {
+			name = name.substring(0, name.length() - 3);
+		}
+
+		for (TmNamedElement named : getNamedElements()) {
+			if (name.equals(named.getName())) {
+				return named;
+			}
+		}
+		return null;
+	}
+
+	public List<TmOption> getOptions() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmOption.class);
+	}
+
+	public List<TmLexem> getLexems() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexem.class);
+	}
+
+	public List<TmNonTerm> getNonTerms() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonTerm.class);
 	}
 }

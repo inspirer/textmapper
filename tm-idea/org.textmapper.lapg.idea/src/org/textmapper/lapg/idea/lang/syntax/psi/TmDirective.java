@@ -19,9 +19,12 @@ package org.textmapper.lapg.idea.lang.syntax.psi;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-public class LpsOption extends LpsElement {
+/**
+ * evgeny, 8/14/12
+ */
+public class TmDirective extends TmElement {
 
-	public LpsOption(@NotNull ASTNode node) {
+	public TmDirective(@NotNull ASTNode node) {
 		super(node);
 	}
 }

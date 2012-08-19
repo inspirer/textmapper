@@ -20,7 +20,7 @@ import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsNamedElement;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmNamedElement;
 
 /**
  * evgeny, 8/11/12
@@ -28,12 +28,12 @@ import org.textmapper.lapg.idea.lang.syntax.psi.LpsNamedElement;
 public class TMFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
     @Override
     public boolean canFindUsages(@NotNull PsiElement element) {
-        return element instanceof LpsNamedElement;
+        return element instanceof TmNamedElement;
     }
 
     @Override
     public FindUsagesHandler createFindUsagesHandler(@NotNull PsiElement element, boolean forHighlightUsages) {
-        if (element instanceof LpsNamedElement) {
+        if (element instanceof TmNamedElement) {
             return new FindUsagesHandler(element){};
         }
         throw new IllegalArgumentException("unexpected element type: " + element);

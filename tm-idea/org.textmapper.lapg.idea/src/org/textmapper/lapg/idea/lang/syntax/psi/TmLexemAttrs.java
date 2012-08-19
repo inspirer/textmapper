@@ -17,42 +17,13 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
- * Gryaznov Evgeny, 1/26/11
+ * evgeny, 8/14/12
  */
-public class LpsGrammar extends LpsElement {
-
-	public LpsGrammar(@NotNull ASTNode node) {
+public class TmLexemAttrs extends TmElement {
+	public TmLexemAttrs(@NotNull ASTNode node) {
 		super(node);
-	}
-
-	public LpsNamedElement[] getNamedElements() {
-		return PsiTreeUtil.getChildrenOfType(this, LpsNamedElement.class);
-	}
-
-	public LpsNamedElement resolve(String name) {
-		if (name.endsWith("opt") && name.length() > 3) {
-			name = name.substring(0, name.length() - 3);
-		}
-
-		for (LpsNamedElement named : getNamedElements()) {
-			if (name.equals(named.getName())) {
-				return named;
-			}
-		}
-		return null;
-	}
-
-	public List<LpsLexem> getLexems() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsLexem.class);
-	}
-
-	public List<LpsNonTerm> getNonTerms() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, LpsNonTerm.class);
 	}
 }

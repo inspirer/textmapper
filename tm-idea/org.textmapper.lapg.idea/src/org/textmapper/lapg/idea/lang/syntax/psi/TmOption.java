@@ -17,19 +17,11 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * evgeny, 8/11/12
- */
-public class LpsRuleSymRef extends LpsElement {
+public class TmOption extends TmElement {
 
-	public LpsRuleSymRef(@NotNull ASTNode node) {
+	public TmOption(@NotNull ASTNode node) {
 		super(node);
-	}
-
-	public LpsReference getReference() {
-		return PsiTreeUtil.getChildOfType(this, LpsReference.class);
 	}
 }

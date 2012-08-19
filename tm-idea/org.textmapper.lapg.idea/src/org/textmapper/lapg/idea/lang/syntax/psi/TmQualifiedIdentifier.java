@@ -20,11 +20,11 @@ import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Gryaznov Evgeny, 1/25/11
+ * evgeny, 8/14/12
  */
-public class LpsSymbol extends LpsElement {
+public class TmQualifiedIdentifier extends TmElement {
 
-	public LpsSymbol(@NotNull ASTNode node) {
+	public TmQualifiedIdentifier(@NotNull ASTNode node) {
 		super(node);
 	}
 }

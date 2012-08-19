@@ -21,7 +21,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.ILazyParseableElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsTemplates;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmTemplates;
 import org.textmapper.lapg.idea.lang.templates.LtplFileType;
 import org.textmapper.lapg.idea.lang.templates.parser.LtplParser;
 
@@ -45,7 +45,7 @@ public class LapgTemplatesElementType extends ILazyParseableElementType {
 
 	@Override
 	public ASTNode createNode(CharSequence text) {
-		return new LpsTemplates(this, text);
+		return new TmTemplates(this, text);
 	}
 
 	@Override

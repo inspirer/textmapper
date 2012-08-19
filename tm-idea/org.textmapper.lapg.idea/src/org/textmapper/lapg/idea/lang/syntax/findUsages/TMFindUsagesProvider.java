@@ -25,9 +25,9 @@ import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsLexem;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsNamedElement;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsNonTerm;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmLexem;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmNamedElement;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmNonTerm;
 
 /**
  * evgeny, 8/11/12
@@ -43,7 +43,7 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 
 	@Override
 	public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-		return psiElement instanceof LpsNamedElement;
+		return psiElement instanceof TmNamedElement;
 	}
 
 	@Override
@@ -54,10 +54,10 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 	@NotNull
 	@Override
 	public String getType(@NotNull PsiElement psiElement) {
-		if (psiElement instanceof LpsNonTerm) {
+		if (psiElement instanceof TmNonTerm) {
 			return "nonterm";
 		}
-		if (psiElement instanceof LpsLexem) {
+		if (psiElement instanceof TmLexem) {
 			return "lexem";
 		}
 		return "";

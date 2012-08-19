@@ -26,7 +26,7 @@ import com.intellij.psi.search.searches.ReferencesSearch;
 import com.intellij.psi.search.searches.ReferencesSearch.SearchParameters;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.psi.LpsNamedElement;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmNamedElement;
 
 /**
  * evgeny, 8/13/12
@@ -40,12 +40,12 @@ public class TMOptReferencesSearcher extends QueryExecutorBase<PsiReference, Sea
 	@Override
 	public void processQuery(@NotNull ReferencesSearch.SearchParameters queryParameters, @NotNull Processor<PsiReference> consumer) {
 		PsiElement refElement = queryParameters.getElementToSearch();
-		if (!(refElement instanceof LpsNamedElement)) return;
+		if (!(refElement instanceof TmNamedElement)) return;
 
-		addOptionalUsages((LpsNamedElement) refElement, queryParameters.getEffectiveSearchScope(), queryParameters.getOptimizer());
+		addOptionalUsages((TmNamedElement) refElement, queryParameters.getEffectiveSearchScope(), queryParameters.getOptimizer());
 	}
 
-	static void addOptionalUsages(LpsNamedElement element, SearchScope scope, SearchRequestCollector collector) {
+	static void addOptionalUsages(TmNamedElement element, SearchScope scope, SearchRequestCollector collector) {
 		String name = element.getName();
 		if (name == null || name.startsWith("'")) return;
 		final String optName = name + "opt";

@@ -28,9 +28,11 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgElementType;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textmapper.lapg.idea.lang.syntax.psi.*;
+import org.textmapper.lapg.parser.LapgParser.Tokens;
 
 public class LapgParserDefinition implements ParserDefinition {
 
@@ -65,29 +67,58 @@ public class LapgParserDefinition implements ParserDefinition {
 	@NotNull
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
-		if (type == LapgElementTypes.REFERENCE) {
-			return new LpsReference(node);
-		} else if (type == LapgElementTypes.SYMBOL) {
-			return new LpsSymbol(node);
-		} else if (type == LapgElementTypes.OPTION) {
-			return new LpsOption(node);
-		} else if (type == LapgElementTypes.GRAMMAR) {
-			return new LpsGrammar(node);
-		} else if (type == LapgElementTypes.RULE) {
-			return new LpsRule(node);
-		} else if (type == LapgElementTypes.RULEPART) {
-			return new LpsRulePart(node);
-		} else if (type == LapgElementTypes.RULESYMREF) {
-			return new LpsRuleSymRef(node);
-		} else if (type == LapgElementTypes.NONTERM) {
-			return new LpsNonTerm(node);
-		} else if (type == LapgElementTypes.LEXEM) {
-			return new LpsLexem(node);
-		} else if (type == LapgElementTypes.ACTION) {
-			return new LpsAction(node);
+		if (type == LapgElementTypes.LEXEM) {
+			return new TmLexem(node);
+		} else if (type == LapgElementTypes.STATE_SELECTOR) {
+			return new TmLexerStateSelector(node);
+		} else if (type == LapgElementTypes.NAMED_PATTERN) {
+			return new TmNamedPattern(node);
 		}
 
-		return new LpsElement(node);
+		if (type == LapgElementTypes.NONTERM) {
+			return new TmNonTerm(node);
+		} else if(type == LapgElementTypes.DIRECTIVE) {
+			return new TmDirective(node);
+		}
+
+		switch (((LapgElementType) type).getSymbol()) {
+			case Tokens.input:
+				return new TmGrammar(node);
+			case Tokens.option:
+				return new TmOption(node);
+			case Tokens.lexem_attrs:
+				return new TmLexemAttrs(node);
+			case Tokens.rule0:
+				return new TmRule(node);
+			case Tokens.rules:
+				return new TmRuleGroup(node);
+			case Tokens.ruleprefix:
+				return new TmRulePrefix(node);
+			case Tokens.rule_attrs:
+				return new TmRuleAttrs(node);
+			case Tokens.rulepart:
+				return new TmRulePart(node);
+			case Tokens.rulesymref:
+				return new TmRuleSymRef(node);
+			case Tokens.negative_la:
+				return new TmNegativeLA(node);
+			case Tokens.command:
+				return new TmAction(node);
+			case Tokens.type:
+				return new TmType(node);
+			case Tokens.annotation:
+				return new TmAnnotation(node);
+			case Tokens.expression:
+				return new TmExpression(node);
+			case Tokens.reference:
+				return new TmReference(node);
+			case Tokens.symbol:
+				return new TmSymbol(node);
+			case Tokens.qualified_id:
+				return new TmQualifiedIdentifier(node);
+		}
+
+		return new TmElement(node);
 	}
 
 	public PsiFile createFile(FileViewProvider viewProvider) {
