@@ -179,7 +179,7 @@ public class InputTest extends LapgTestCase {
 
 		ts.assertDone();
 
-		assertTrue(g.getTemplates().getText().startsWith("\n//#define DEBUG_syntax"));
+		assertTrue(g.getTemplates().getText().startsWith("//#define DEBUG_syntax"));
 	}
 
 	@Test

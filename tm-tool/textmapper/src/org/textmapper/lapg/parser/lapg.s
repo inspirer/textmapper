@@ -38,11 +38,11 @@ regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, 
 scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); break; }
 icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
 
-eoi:           /\n%%.*/					{ templatesStart = lapg_n.endoffset; break; }
-'%':           /\n%|%/
-_skip:         /\n|[\t\r ]+/    		{ return false; }
-_skip_comment:  /#.*/					{ return !skipComments; }
+eoi:           /%%.*(\r?\n)?/					{ templatesStart = lapg_n.endoffset; break; }
+_skip:         /[\n\r\t ]+/				{ return false; }
+_skip_comment:  /#.*(\r?\n)?/			{ return !skipComments; }
 
+'%':	/%/
 '::=':  /::=/
 '|':    /\|/
 '=':	/=/

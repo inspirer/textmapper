@@ -41,9 +41,9 @@ public class LapgLexer {
 		public static final int regexp = 3;
 		public static final int scon = 4;
 		public static final int icon = 5;
-		public static final int PERCENT = 6;
-		public static final int _skip = 7;
-		public static final int _skip_comment = 8;
+		public static final int _skip = 6;
+		public static final int _skip_comment = 7;
+		public static final int PERCENT = 8;
 		public static final int COLONCOLONEQUAL = 9;
 		public static final int OR = 10;
 		public static final int EQUAL = 11;
@@ -235,32 +235,32 @@ public class LapgLexer {
 	}
 
 	private static final short lapg_char2no[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 31, 4, 1, 1, 31, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 32, 4, 1, 1, 9, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		31, 21, 6, 9, 1, 8, 26, 2, 19, 22, 24, 25, 16, 7, 15, 5,
-		30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 10, 14, 23, 11, 13, 20,
-		27, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29,
-		29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 17, 3, 18, 1, 29,
-		1, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29,
-		29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 28, 12, 1, 1, 1
+		32, 22, 6, 10, 1, 8, 27, 2, 20, 23, 25, 26, 17, 7, 16, 5,
+		31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 11, 15, 24, 12, 14, 21,
+		28, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+		30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 18, 3, 19, 1, 30,
+		1, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+		30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 29, 13, 1, 1, 1
 	};
 
 	private static final short[] lapg_lexemnum = unpack_short(45,
 		"\1\3\4\5\0\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35" +
 		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55");
 
-	private static final short[] lapg_lexem = unpack_vc_short(1376,
-		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15" +
-		"\1\16\1\17\1\20\1\21\1\22\1\uffff\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1" +
-		"\34\1\uffff\1\1\1\35\1\36\1\uffff\33\1\10\ufff7\1\37\27\ufff7\1\uffff\2\3\1\40\1" +
-		"\uffff\1\41\32\3\1\uffff\2\4\1\42\1\uffff\1\4\1\43\31\4\36\uffff\1\33\1\uffff\40" +
-		"\ufff8\1\ufff6\3\7\1\ufff6\33\7\12\uffee\1\44\25\uffee\15\ufff3\1\45\22\ufff3\40" +
-		"\ufff4\40\uffe7\40\ufff1\40\ufff0\40\uffef\40\uffed\40\uffec\24\uffeb\1\46\13\uffeb" +
-		"\40\uffe4\40\uffe9\40\uffe8\40\uffe6\40\uffe5\40\uffe3\40\uffe2\40\uffd1\7\ufffd" +
-		"\1\47\25\ufffd\2\32\1\ufffd\36\ufffa\1\33\1\ufffa\37\ufff7\1\34\40\ufffd\1\uffff" +
-		"\3\1\1\uffff\33\1\10\ufff8\1\50\27\ufff8\1\uffff\3\3\1\uffff\33\3\40\ufffc\1\uffff" +
-		"\3\4\1\uffff\33\4\40\ufffb\13\uffff\1\51\24\uffff\40\ufff2\25\uffff\1\52\21\uffff" +
-		"\1\47\25\uffff\2\32\1\uffff\1\ufff9\3\50\1\ufff9\33\50\40\ufff5\40\uffea");
+	private static final short[] lapg_lexem = unpack_vc_short(1419,
+		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\10\1\11\1\12\1\13\1\14" +
+		"\1\15\1\16\1\17\1\20\1\21\1\22\1\uffff\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1" +
+		"\33\1\2\1\uffff\1\1\1\34\1\35\1\uffff\34\1\4\ufff8\1\2\4\ufff8\1\2\26\ufff8\1\2\1" +
+		"\uffff\2\3\1\36\1\uffff\1\37\33\3\1\uffff\2\4\1\40\1\uffff\1\4\1\41\32\4\37\uffff" +
+		"\1\33\1\uffff\10\ufff6\1\42\30\ufff6\1\ufff7\3\7\1\43\34\7\13\uffee\1\44\25\uffee" +
+		"\16\ufff3\1\45\22\ufff3\41\ufff4\41\uffe7\41\ufff1\41\ufff0\41\uffef\41\uffed\41" +
+		"\uffec\25\uffeb\1\46\13\uffeb\41\uffe4\41\uffe9\41\uffe8\41\uffe6\41\uffe5\41\uffe3" +
+		"\41\uffe2\41\uffd1\7\ufffd\1\47\26\ufffd\2\32\1\ufffd\37\ufffa\1\33\1\ufffa\41\ufffd" +
+		"\1\uffff\3\1\1\uffff\34\1\1\uffff\3\3\1\uffff\34\3\41\ufffc\1\uffff\3\4\1\uffff\34" +
+		"\4\41\ufffb\1\ufff9\3\42\1\50\34\42\41\ufff7\14\uffff\1\51\24\uffff\41\ufff2\26\uffff" +
+		"\1\52\21\uffff\1\47\26\uffff\2\32\1\uffff\41\ufff9\41\ufff5\41\uffea");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -302,7 +302,7 @@ public class LapgLexer {
 			tokenStart = l - 1;
 
 			for (state = group; state >= 0; ) {
-				state = lapg_lexem[state * 32 + mapCharacter(chr)];
+				state = lapg_lexem[state * 33 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.lexem = 0;
@@ -366,9 +366,9 @@ public class LapgLexer {
 				 lapg_n.sym = Integer.parseInt(current()); break; 
 			case 4:
 				 templatesStart = lapg_n.endoffset; break; 
-			case 6:
+			case 5:
 				 return false; 
-			case 7:
+			case 6:
 				 return !skipComments; 
 			case 44:
 				 skipAction(); lapg_n.endoffset = getOffset(); break; 

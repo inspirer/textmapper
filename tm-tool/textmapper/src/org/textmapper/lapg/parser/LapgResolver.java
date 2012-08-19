@@ -975,6 +975,9 @@ public class LapgResolver {
 			StringBuilder sb = new StringBuilder();
 			while (sym.lexem == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
 				String val = lexer.current().substring(1);
+				if (val.endsWith("\n")) {
+					val = val.substring(0, val.length() - (val.endsWith("\r\n") ? 2 : 1));
+				}
 				if (sym.line > lastline + 1 && sb.length() > 0) {
 					headers.add(sb.toString());
 					sb.setLength(0);
