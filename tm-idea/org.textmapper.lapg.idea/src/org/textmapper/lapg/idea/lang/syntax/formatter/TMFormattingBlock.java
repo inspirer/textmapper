@@ -63,6 +63,19 @@ public class TMFormattingBlock extends AbstractBlock {
 		return spacingBuilder.getSpacing(this, child1, child2);
 	}
 
+	@NotNull
+	@Override
+	public ChildAttributes getChildAttributes(int newChildIndex) {
+		final IElementType type = getNode().getElementType();
+		if (type == LapgElementTypes.RULES) {
+			return new ChildAttributes(Indent.getNormalIndent(), null);
+		}
+		if (isIncomplete()) {
+			return super.getChildAttributes(newChildIndex);
+		}
+		return new ChildAttributes(Indent.getNoneIndent(), null);
+	}
+
 	@Override
 	public boolean isLeaf() {
 		return myNode.getFirstChildNode() == null;
