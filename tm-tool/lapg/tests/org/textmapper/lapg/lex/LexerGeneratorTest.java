@@ -22,6 +22,8 @@ import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.test.TestStatus;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -29,18 +31,22 @@ public class LexerGeneratorTest {
 
 	private final NamedPattern[] NO_PATTERNS = new NamedPattern[0];
 
+	LexerState[] LEXER_STATES = {
+			new TestLexerState(0, "initial")
+	};
+
 	TestLexem[] INPUT1 = {
-			new TestLexem(0, 0, "string", "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
-			new TestLexem(1, 0, "number", "[0-9]+", "1", "12", "323", "2111111"),
-			new TestLexem(2, 0, "hex", "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
-			new TestLexem(3, 0, "hex", "\\n|\\t|\\r", "\n", "\t", "\r"),
-			new TestLexem(4, 0, "hex", "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
+			new TestLexem(0, 0, "string", LEXER_STATES[0], "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
+			new TestLexem(1, 0, "number", LEXER_STATES[0], "[0-9]+", "1", "12", "323", "2111111"),
+			new TestLexem(2, 0, "hex", LEXER_STATES[0], "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
+			new TestLexem(3, 0, "hex", LEXER_STATES[0], "\\n|\\t|\\r", "\n", "\t", "\r"),
+			new TestLexem(4, 0, "hex", LEXER_STATES[0], "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
 	};
 
 	TestLexem[] ERRINPUT = {
-			new TestLexem(0, 0, "string", "[a-z0-9][A-Z]?"),
-			new TestLexem(1, 0, "number", "[0-9]+"),
-			new TestLexem(2, 0, "empty", "()"),
+			new TestLexem(0, 0, "string", LEXER_STATES[0], "[a-z0-9][A-Z]?"),
+			new TestLexem(1, 0, "number", LEXER_STATES[0], "[0-9]+"),
+			new TestLexem(2, 0, "empty", LEXER_STATES[0], "()"),
 	};
 
 	@Test
@@ -137,15 +143,15 @@ public class LexerGeneratorTest {
 	}
 
 	private void checkMatch(String regex, String sample, boolean expected) {
-		TestLexem[] input = {new TestLexem(0, 0, "test", regex)};
-		LexerData lt = LexicalBuilder.compile(input, NO_PATTERNS, new TestStatus());
+		TestLexem[] input = {new TestLexem(0, 0, "test", LEXER_STATES[0], regex)};
+		LexerData lt = LexicalBuilder.compile(LEXER_STATES, input, NO_PATTERNS, new TestStatus());
 		int token = nextToken(lt, sample, input);
 		assertEquals(sample + " !~ /" + regex, expected, token == 0);
 	}
 
 	@Test
 	public void testGenerator() {
-		LexerData lt = LexicalBuilder.compile(INPUT1, NO_PATTERNS, new TestStatus());
+		LexerData lt = LexicalBuilder.compile(LEXER_STATES, INPUT1, NO_PATTERNS, new TestStatus());
 		for (TestLexem tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s, INPUT1);
@@ -160,7 +166,7 @@ public class LexerGeneratorTest {
 				"",
 				"lexemtest,3: empty: lexem is empty\n" +
 						"lexemtest,1: two lexems are identical: string and number\n");
-		LexicalBuilder.compile(ERRINPUT, NO_PATTERNS, notifier);
+		LexicalBuilder.compile(LEXER_STATES, ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();
 
 	}
@@ -187,18 +193,41 @@ public class LexerGeneratorTest {
 		return lexems[-state - 3].getSymbol().getIndex();
 	}
 
+	private static class TestLexerState implements LexerState {
+
+		final int index;
+		final String name;
+
+		private TestLexerState(int index, String name) {
+			this.index = index;
+			this.name = name;
+		}
+
+		@Override
+		public int getIndex() {
+			return index;
+		}
+
+		@Override
+		public String getName() {
+			return name;
+		}
+	}
+
 	private static class TestLexem implements Lexem, TextSourceElement {
 
 		private final int index;
 		private final int prio;
 		private final String name;
+		private final LexerState initial;
 		private final String regexp;
 		private final String[] samples;
 
-		public TestLexem(int index, int prio, String name, String regexp, String... samples) {
+		public TestLexem(int index, int prio, String name, LexerState initial, String regexp, String... samples) {
 			this.index = index;
 			this.prio = prio;
 			this.name = name;
+			this.initial = initial;
 			this.regexp = regexp;
 			this.samples = samples;
 		}
@@ -228,13 +257,13 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public int getGroups() {
-			return 1;
+		public int getPriority() {
+			return prio;
 		}
 
 		@Override
-		public int getPriority() {
-			return prio;
+		public Iterable<LexerState> getStates() {
+			return Collections.singleton(initial);
 		}
 
 		@Override

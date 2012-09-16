@@ -26,17 +26,15 @@ genCopyright = true
 
 # Vocabulary
 
-[0]
-
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1   (class)
-			{ $lexem = current(); break; }
+			{ $lexem = current(); }
 
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); break; }
-icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
-bcon(Boolean):  /true|false/			{ $lexem = current().equals("true"); break; }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); }
+bcon(Boolean):  /true|false/			{ $lexem = current().equals("true"); }
 
-_skip:         /[\n\t\r ]+/    		{ return false; }
-_skip:  /#.*/						{ return false; }
+_skip:         /[\n\t\r ]+/	(space)
+_skip:  /#.*/	(space)
 
 '..':    /\.\./
 '.':    /\./

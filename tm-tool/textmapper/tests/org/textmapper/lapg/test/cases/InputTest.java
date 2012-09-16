@@ -174,7 +174,7 @@ public class InputTest extends LapgTestCase {
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -196,7 +196,7 @@ public class InputTest extends LapgTestCase {
 						"    list_item ::= Licon\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -223,7 +223,7 @@ public class InputTest extends LapgTestCase {
 		assertNotNull(g);
 
 		ts.reset("", "");
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 		ts.assertDone();
 
@@ -252,7 +252,7 @@ public class InputTest extends LapgTestCase {
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
 				"\n", "");
-		LexicalBuilder.compile(g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();

@@ -17,29 +17,38 @@ package org.textmapper.lapg.parser.ast;
 
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 
-public class AstReference extends AstNode implements AstExpression {
+/**
+ * Gryaznov Evgeny, 9/9/12
+ */
+public class AstLexerState extends AstNode {
 
-	public static final String DEFAULT = "symbol";
-	public static final String STATE = "state";
+	private AstIdentifier name;
+	private AstReference defaultTransition;
 
-	private final String name;
-	private final String scope;
-
-	public AstReference(String name, String scope, TextSource source, int offset, int endoffset) {
+	public AstLexerState(AstIdentifier name, AstReference defaultTransition, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
-		this.scope = scope;
+		this.defaultTransition = defaultTransition;
 	}
 
-	public String getName() {
+	public AstIdentifier getName() {
 		return name;
 	}
 
-	public String getScope() {
-		return scope;
+	public AstReference getDefaultTransition() {
+		return defaultTransition;
 	}
 
+	@Override
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (name != null) {
+			name.accept(v);
+		}
+		if (defaultTransition != null) {
+			defaultTransition.accept(v);
+		}
 	}
 }

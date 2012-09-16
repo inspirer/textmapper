@@ -15,10 +15,8 @@
  */
 package org.textmapper.lapg.parser;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.parser.ast.AstLexeme;
 
 import java.util.Map;
 
@@ -33,10 +31,12 @@ public class LapgGrammar {
 	private final Map<Symbol, String> identifierMap;
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
 	private final Map<SourceElement, TextSourceElement> codeMap;
+	private final Map<Lexem, LapgLexemeTransitionSwitch> transitionMap;
 
 	public LapgGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-			String copyrightHeader, Map<Symbol, String> identifierMap,
-			Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap) {
+					   String copyrightHeader, Map<Symbol, String> identifierMap,
+					   Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap,
+					   Map<Lexem, LapgLexemeTransitionSwitch> transitionMap) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
@@ -45,6 +45,7 @@ public class LapgGrammar {
 		this.identifierMap = identifierMap;
 		this.annotationsMap = annotationsMap;
 		this.codeMap = codeMap;
+		this.transitionMap = transitionMap;
 	}
 
 	public Grammar getGrammar() {
@@ -78,5 +79,9 @@ public class LapgGrammar {
 	
 	public String getId(Symbol sym) {
 		return identifierMap.get(sym);
+	}
+
+	public LapgLexemeTransitionSwitch getTransition(Lexem l) {
+		return transitionMap.get(l);
 	}
 }

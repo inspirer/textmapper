@@ -67,14 +67,6 @@ public class LapgParserDefinition implements ParserDefinition {
 	@NotNull
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
-		if (type == LapgElementTypes.LEXEM) {
-			return new TmLexem(node);
-		} else if (type == LapgElementTypes.STATE_SELECTOR) {
-			return new TmLexerStateSelector(node);
-		} else if (type == LapgElementTypes.NAMED_PATTERN) {
-			return new TmNamedPattern(node);
-		}
-
 		if (type == LapgElementTypes.NONTERM) {
 			return new TmNonTerm(node);
 		} else if(type == LapgElementTypes.DIRECTIVE) {
@@ -88,6 +80,10 @@ public class LapgParserDefinition implements ParserDefinition {
 				return new TmOption(node);
 			case Tokens.lexem_attrs:
 				return new TmLexemAttrs(node);
+			case Tokens.state_selector:
+				return new TmLexerStateSelector(node);
+			case Tokens.lexer_state:
+				return new TmLexerState(node);
 			case Tokens.rule0:
 				return new TmRule(node);
 			case Tokens.rules:
@@ -110,12 +106,18 @@ public class LapgParserDefinition implements ParserDefinition {
 				return new TmAnnotation(node);
 			case Tokens.expression:
 				return new TmExpression(node);
-			case Tokens.reference:
-				return new TmReference(node);
-			case Tokens.symbol:
-				return new TmSymbol(node);
+			case Tokens.symref:
+				return new TmSymbolReference(node);
+			case Tokens.stateref:
+				return new TmStateReference(node);
+			case Tokens.identifier:
+				return new TmIdentifier(node);
 			case Tokens.qualified_id:
 				return new TmQualifiedIdentifier(node);
+			case Tokens.lexeme:
+				return new TmLexem(node);
+			case Tokens.named_pattern:
+				return new TmNamedPattern(node);
 		}
 
 		return new TmElement(node);

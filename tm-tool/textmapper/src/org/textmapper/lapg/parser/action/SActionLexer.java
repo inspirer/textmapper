@@ -46,7 +46,7 @@ public abstract class SActionLexer {
 
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -60,7 +60,7 @@ public abstract class SActionLexer {
 	}
 
 	public void reset() throws IOException {
-		this.group = 0;
+		this.state = 0;
 		chr = nextChar();
 	}
 
@@ -77,11 +77,11 @@ public abstract class SActionLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -165,7 +165,7 @@ public abstract class SActionLexer {
 			}
 			token.setLength(0);
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.lexem = 0;
@@ -203,15 +203,19 @@ public abstract class SActionLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
-			case 1:
-				return false;
-			case 2:
-				return false;
-			case 3:
-				return false;
+			case 1: // _skip: /'([^\n\\']|\\.)*'/
+				spaceToken = true;
+				break;
+			case 2: // _skip: /"([^\n\\"]|\\.)*"/
+				spaceToken = true;
+				break;
+			case 3: // _skip: /[^'"{}]+/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

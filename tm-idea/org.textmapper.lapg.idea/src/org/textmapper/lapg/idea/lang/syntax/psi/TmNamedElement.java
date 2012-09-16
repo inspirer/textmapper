@@ -33,22 +33,21 @@ public abstract class TmNamedElement extends TmElement implements PsiNamedElemen
 		super(node);
 	}
 
-	public TmSymbol getNameSymbol() {
-		return PsiTreeUtil.getChildOfType(this, TmSymbol.class);
+	public TmIdentifier getNameIdentifier() {
+		return PsiTreeUtil.getChildOfType(this, TmIdentifier.class);
 	}
 
 	public String getName() {
-		TmSymbol nameSymbol = getNameSymbol();
-		return nameSymbol != null ? nameSymbol.getText() : null;
+		TmIdentifier nameIdentifier = getNameIdentifier();
+		return nameIdentifier != null ? nameIdentifier.getText() : null;
 	}
 
 	public PsiElement setName(@NonNls String name) throws IncorrectOperationException {
-		TmSymbol nameSymbol = getNameSymbol();
-		if (nameSymbol == null) {
+		TmIdentifier nameIdentifier = getNameIdentifier();
+		if (nameIdentifier == null) {
 			throw new IncorrectOperationException();
 		}
-		nameSymbol.replace(TmElementsFactory.createSymbol(getProject(), name));
+		nameIdentifier.replace(TmElementsFactory.createIdentifier(getProject(), name));
 		return this;
 	}
-
 }

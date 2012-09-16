@@ -29,7 +29,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstGroupsSelector n) {
+	public boolean visit(AstStateSelector n) {
 		return true;
 	}
 
@@ -138,6 +138,10 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(AstRuleNestedListWithSeparator n) {
+		return true;
+	}
+
+	public boolean visit(AstLexerState n) {
 		return true;
 	}
 }

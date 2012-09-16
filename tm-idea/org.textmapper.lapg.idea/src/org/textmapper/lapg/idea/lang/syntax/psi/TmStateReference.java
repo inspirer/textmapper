@@ -23,12 +23,15 @@ import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Gryaznov Evgeny, 1/25/11
- */
-public class TmReference extends TmElement implements PsiReference {
+import java.util.ArrayList;
+import java.util.List;
 
-	public TmReference(@NotNull ASTNode node) {
+/**
+ * Gryaznov Evgeny, 9/12/12
+ */
+public class TmStateReference extends TmElement implements PsiReference {
+
+	public TmStateReference(@NotNull ASTNode node) {
 		super(node);
 	}
 
@@ -43,7 +46,7 @@ public class TmReference extends TmElement implements PsiReference {
 		while (context != null) {
 			if (context instanceof TmGrammar) {
 				TmGrammar grammar = (TmGrammar) context;
-				return grammar.resolve(referenceText);
+				return grammar.resolveState(referenceText);
 			}
 			context = context.getContext();
 		}
@@ -69,8 +72,7 @@ public class TmReference extends TmElement implements PsiReference {
 	}
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
-		boolean isOptional = getCanonicalText().endsWith("opt");
-		return replace(TmElementsFactory.createReference(getProject(), isOptional ? newElementName + "opt" : newElementName));
+		return replace(TmElementsFactory.createStateReference(getProject(), newElementName));
 	}
 
 	public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
@@ -87,7 +89,11 @@ public class TmReference extends TmElement implements PsiReference {
 		while (context != null) {
 			if (context instanceof TmGrammar) {
 				TmGrammar grammar = (TmGrammar) context;
-				return grammar.getNamedElements();
+				List<TmLexerState> states = new ArrayList<TmLexerState>();
+				for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
+					states.addAll(selector.getStates());
+				}
+				return states.toArray();
 			}
 			context = context.getContext();
 		}

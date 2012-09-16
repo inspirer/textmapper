@@ -32,18 +32,18 @@ import java.util.List;
  */
 public class TmElementsFactory {
 
-	public static TmSymbol createSymbol(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
+	public static TmIdentifier createIdentifier(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
 		LapgFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonTerm> s = grammar.getNonTerms();
-		if (s == null || s.size() != 1 || s.get(0).getNameSymbol() == null) {
+		if (s == null || s.size() != 1 || s.get(0).getNameIdentifier() == null) {
 			throw new IncorrectOperationException();
 		}
-		return s.get(0).getNameSymbol();
+		return s.get(0).getNameIdentifier();
 	}
 
-	public static TmReference createReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
+	public static TmSymbolReference createSymbolReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
 		LapgFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
@@ -72,7 +72,29 @@ public class TmElementsFactory {
 			throw new IncorrectOperationException();
 		}
 
-		TmReference ref = symbolRef.getReference();
+		TmSymbolReference ref = symbolRef.getReference();
+		if (ref == null) {
+			throw new IncorrectOperationException();
+		}
+
+		return ref;
+	}
+
+	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
+		@NonNls String text = "[" + name + "->" + name + "]";
+		LapgFile aFile = createDummyFile(p, text);
+		TmGrammar grammar = aFile.getGrammar();
+		List<TmLexerStateSelector> s = grammar.getStateSelectors();
+		if (s == null || s.size() != 1) {
+			throw new IncorrectOperationException();
+		}
+
+		List<TmLexerState> states = s.get(0).getStates();
+		if (states == null || states.size() != 1) {
+			throw new IncorrectOperationException();
+		}
+
+		TmStateReference ref = states.get(0).getDefaultTransition();
 		if (ref == null) {
 			throw new IncorrectOperationException();
 		}

@@ -35,6 +35,22 @@ public class TmGrammar extends TmElement {
 		return PsiTreeUtil.getChildrenOfType(this, TmNamedElement.class);
 	}
 
+	public List<TmOption> getOptions() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmOption.class);
+	}
+
+	public List<TmLexem> getLexems() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexem.class);
+	}
+
+	public List<TmNonTerm> getNonTerms() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonTerm.class);
+	}
+
+	public List<TmLexerStateSelector> getStateSelectors() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexerStateSelector.class);
+	}
+
 	public TmNamedElement resolve(String name) {
 		if (name.endsWith("opt") && name.length() > 3) {
 			name = name.substring(0, name.length() - 3);
@@ -48,15 +64,14 @@ public class TmGrammar extends TmElement {
 		return null;
 	}
 
-	public List<TmOption> getOptions() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmOption.class);
-	}
-
-	public List<TmLexem> getLexems() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexem.class);
-	}
-
-	public List<TmNonTerm> getNonTerms() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonTerm.class);
+	public TmNamedElement resolveState(String name) {
+		for (TmLexerStateSelector selector : getStateSelectors()) {
+			for (TmLexerState tmLexerState : selector.getStates()) {
+				if (name.equals(tmLexerState.getName())) {
+					return tmLexerState;
+				}
+			}
+		}
+		return null;
 	}
 }

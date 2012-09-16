@@ -64,7 +64,7 @@ public class SampleBLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -79,7 +79,7 @@ public class SampleBLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -104,11 +104,11 @@ public class SampleBLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -195,7 +195,7 @@ public class SampleBLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 13 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
@@ -249,6 +249,7 @@ public class SampleBLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
 			case 0:
 				return createIdentifierToken(lapg_n, lexemIndex);
@@ -258,10 +259,11 @@ public class SampleBLexer {
 				return createOctalToken(lapg_n, lexemIndex);
 			case 3:
 				return createDecimalToken(lapg_n, lexemIndex);
-			case 4:
-				 return false; 
+			case 4: // _skip: /[\n\t\r ]+/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
@@ -279,19 +281,24 @@ public class SampleBLexer {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 5:	// class
-				 lapg_n.sym = "class"; break; 
+				 lapg_n.sym = "class"; 
+				break;
 			case 11:	// interface
-				 lapg_n.sym = "interface"; break; 
+				 lapg_n.sym = "interface"; 
+				break;
 			case 12:	// enum
-				 lapg_n.sym = new Object(); break; 
+				 lapg_n.sym = new Object(); 
+				break;
 			case 6:	// extends (soft)
 			case 14:	// xyzzz (soft)
 			case 0:	// <default>
-				 lapg_n.sym = current(); break; 
+				 lapg_n.sym = current(); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	protected boolean createNumericToken(LapgSymbol lapg_n, int lexemIndex) {
@@ -299,11 +306,13 @@ public class SampleBLexer {
 	}
 
 	protected boolean createOctalToken(LapgSymbol lapg_n, int lexemIndex) {
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 2:	// <default>
-				 lapg_n.sym = Integer.parseInt(current(), 8); break; 
+				 lapg_n.sym = Integer.parseInt(current(), 8); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	private static Map<String,Integer> subTokensOfDecimal = new HashMap<String,Integer>();
@@ -317,11 +326,13 @@ public class SampleBLexer {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 13:	// 11
-				 lapg_n.sym = 11; break; 
+				 lapg_n.sym = 11; 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

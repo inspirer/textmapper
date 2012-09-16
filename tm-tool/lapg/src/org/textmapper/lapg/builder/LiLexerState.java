@@ -13,33 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.parser.ast;
+package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.LexerState;
+import org.textmapper.lapg.api.SourceElement;
 
-public class AstReference extends AstNode implements AstExpression {
+/**
+ * Gryaznov Evgeny, 9/10/12
+ */
+public class LiLexerState implements LexerState, DerivedSourceElement {
 
-	public static final String DEFAULT = "symbol";
-	public static final String STATE = "state";
-
+	private final int index;
 	private final String name;
-	private final String scope;
+	private final SourceElement origin;
 
-	public AstReference(String name, String scope, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public LiLexerState(int index, String name, SourceElement origin) {
+		this.index = index;
 		this.name = name;
-		this.scope = scope;
+		this.origin = origin;
 	}
 
+	@Override
+	public int getIndex() {
+		return index;
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}
 
-	public String getScope() {
-		return scope;
-	}
-
-	public void accept(AbstractVisitor v) {
-		v.visit(this);
+	@Override
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.Lexem;
+import org.textmapper.lapg.api.LexerState;
 import org.textmapper.lapg.api.Prio;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -51,14 +52,42 @@ public class GrammarFacadeErrTest {
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullSymbol() throws Exception {
 		GrammarFacade.createBuilder().addLexem(
-				Lexem.KIND_NONE, null, LapgCore.parse("id", "a"), 1, 0, null, null);
+				Lexem.KIND_NONE, null, LapgCore.parse("id", "a"), Collections.<LexerState>emptyList(), 0, null, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testWrongState() throws Exception {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Symbol symbol = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		builder.addLexem(Lexem.KIND_NONE, symbol, LapgCore.parse("id", "a"),
+				Collections.singletonList(GrammarFacade.createBuilder().addState("initial", null)), 0, null, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testNoStates() throws Exception {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Symbol symbol = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		builder.addLexem(Lexem.KIND_NONE, symbol, LapgCore.parse("id", "a"),
+				Collections.<LexerState>emptyList(), 0, null, null);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void testNullState() throws Exception {
+		GrammarFacade.createBuilder().addState(null, null);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testDuplicateState() throws Exception {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		builder.addState("name", null);
+		builder.addState("name", null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorCrossBuilderSymbols() throws Exception {
 		Symbol symbolFromAnotherBuilder = GrammarFacade.createBuilder().addSymbol(Symbol.KIND_TERM, "sym", "string", null);
 		GrammarFacade.createBuilder().addLexem(
-				Lexem.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), 1, 0, null, null);
+				Lexem.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -79,14 +108,14 @@ public class GrammarFacadeErrTest {
 	public void testErrorNoRegexp() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Symbol term = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
-		builder.addLexem(Lexem.KIND_NONE, term, null, 1, 0, null, null);
+		builder.addLexem(Lexem.KIND_NONE, term, null, Collections.<LexerState>emptyList(), 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorNonTermAsLexem() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Symbol nonterm = builder.addSymbol(Symbol.KIND_NONTERM, "input", null, null);
-		builder.addLexem(Lexem.KIND_NONE, nonterm, LapgCore.parse("id", "a"), 1, 0, null, null);
+		builder.addLexem(Lexem.KIND_NONE, nonterm, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -94,14 +123,14 @@ public class GrammarFacadeErrTest {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Symbol classterm = builder.addSymbol(Symbol.KIND_TERM, "id", "string", null);
 		Symbol softterm = builder.addSoftSymbol("keyword", classterm, null);
-		builder.addLexem(Lexem.KIND_NONE, softterm, LapgCore.parse("id", "a"), 1, 0, null, null);
+		builder.addLexem(Lexem.KIND_NONE, softterm, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorSoftVsNonSoft2() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Symbol term = builder.addSymbol(Lexem.KIND_NONE, "s", "s", null);
-		builder.addLexem(Lexem.KIND_SOFT, term, LapgCore.parse("id", "a"), 1, 0, null, null);
+		builder.addLexem(Lexem.KIND_SOFT, term, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

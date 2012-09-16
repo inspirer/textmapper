@@ -29,10 +29,11 @@ public interface LapgElementTypes {
 
 	public static final IElementType OPTION = new LapgElementType(Tokens.option, "option");
 
-	public static final IElementType LEXEM = new LapgElementType(-1, "lexem");
-	public static final IElementType STATE_SELECTOR = new LapgElementType(-1, "lexer state");
-	public static final IElementType NAMED_PATTERN = new LapgElementType(-1, "pattern");
+	public static final IElementType LEXEM = new LapgElementType(Tokens.lexeme, "lexem");
+	public static final IElementType NAMED_PATTERN = new LapgElementType(Tokens.named_pattern, "pattern");
+	public static final IElementType STATE_SELECTOR = new LapgElementType(Tokens.state_selector, "lexer state selector");
 	public static final IElementType LEXEM_ATTRS = new LapgElementType(Tokens.lexem_attrs, "lexem attrs");
+	public static final IElementType LEXER_STATE = new LapgElementType(Tokens.lexer_state, "lexer state");
 
 	public static final IElementType NONTERM = new LapgElementType(-1, "non-terminal");
 	public static final IElementType DIRECTIVE = new LapgElementType(-1, "directive");
@@ -49,15 +50,16 @@ public interface LapgElementTypes {
 	public static final IElementType TYPE = new LapgElementType(Tokens.type, "type");
 	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
 	public static final IElementType EXPRESSION = new LapgElementType(Tokens.expression, "expression");
-	public static final IElementType REFERENCE = new LapgElementType(Tokens.reference, "reference");
-	public static final IElementType SYMBOL = new LapgElementType(Tokens.symbol, "symbol");
+	public static final IElementType SYMREF = new LapgElementType(Tokens.symref, "symbol reference");
+	public static final IElementType STATEREF = new LapgElementType(Tokens.stateref, "state reference");
+	public static final IElementType IDENTIFIER = new LapgElementType(Tokens.identifier, "symbol");
 	public static final IElementType QUALIFIED_ID = new LapgElementType(Tokens.qualified_id, "qualified identifier");
 
 	public static final IElementType[] allElements = {
 			OPTION,
-			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS,
+			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, DIRECTIVE,
 			RULE, RULES, RULEPREFIX, RULEATTRS, RULEPART, RULESYMREF, NEGATIVE_LA,
-			ACTION, TYPE, ANNOTATION, EXPRESSION, REFERENCE, SYMBOL, QUALIFIED_ID
+			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};
 }

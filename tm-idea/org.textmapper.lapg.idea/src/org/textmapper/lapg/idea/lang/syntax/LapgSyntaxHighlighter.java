@@ -150,7 +150,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, LapgTokenTypes.keywords, KEYWORD);
 		fillMap(attributes, STRING, LapgTokenTypes.STRING);
 		fillMap(attributes, NUMBER, LapgTokenTypes.ICON);
-		fillMap(attributes, IDENTIFIER, LapgTokenTypes.IDENTIFIER);
+		fillMap(attributes, IDENTIFIER, LapgTokenTypes.ID);
 		fillMap(attributes, LINE_COMMENT, LapgTokenTypes.COMMENT);
 
 		// [] () and operators

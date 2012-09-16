@@ -22,18 +22,19 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 	private final AstIdentifier name;
 	private final String type;
 	private final AstRegexp regexp;
+	private final AstReference transition;
 	private final AstLexemAttrs attrs;
 	private final int priority;
 	private final AstCode code;
-	private int groups;
 
-	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp,
-			Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
-			int endoffset) {
+	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp, AstReference transition,
+					 Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
+					 int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.type = type;
 		this.regexp = regexp;
+		this.transition = transition;
 		this.attrs = attrs;
 		this.priority = priority != null ? priority : 0;
 		this.code = code;
@@ -51,6 +52,10 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		return regexp;
 	}
 
+	public AstReference getTransition() {
+		return transition;
+	}
+
 	public int getPriority() {
 		return priority;
 	}
@@ -63,14 +68,6 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		return code;
 	}
 
-	public int getGroups() {
-		return groups;
-	}
-
-	public void setGroups(int groups) {
-		this.groups = groups;
-	}
-
 	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
@@ -81,6 +78,12 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		}
 		if (regexp != null) {
 			regexp.accept(v);
+		}
+		if (transition != null) {
+			transition.accept(v);
+		}
+		if (attrs != null) {
+			attrs.accept(v);
 		}
 		if (code != null) {
 			code.accept(v);

@@ -26,6 +26,8 @@ public interface Grammar {
 
 	Prio[] getPriorities();
 
+	LexerState[] getLexerStates();
+
 	Lexem[] getLexems();
 
 	NamedPattern[] getPatterns();

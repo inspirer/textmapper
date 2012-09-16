@@ -30,7 +30,9 @@ public interface GrammarBuilder {
 
 	NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin);
 
-	Lexem addLexem(int kind, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem, SourceElement origin);
+	LexerState addState(String name, SourceElement origin);
+
+	Lexem addLexem(int kind, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin);
 
 	InputRef addInput(Symbol inputSymbol, boolean hasEoi, SourceElement origin);
 

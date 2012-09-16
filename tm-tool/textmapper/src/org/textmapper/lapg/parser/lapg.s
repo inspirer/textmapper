@@ -29,18 +29,16 @@ genCopyright = true
 
 error:
 
-[0]
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
+			{ $lexem = current(); }
 
-identifier(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
-			{ $lexem = current(); break; }
+regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); }
 
-regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); break; }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); break; }
-icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); break; }
-
-eoi:           /%%.*(\r?\n)?/					{ templatesStart = lapg_n.endoffset; break; }
-_skip:         /[\n\r\t ]+/				{ return false; }
-_skip_comment:  /#.*(\r?\n)?/			{ return !skipComments; }
+eoi:           /%%.*(\r?\n)?/			{ templatesStart = lapg_n.endoffset; }
+_skip:         /[\n\r\t ]+/		(space)
+_skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 
 '%':	/%/
 '::=':  /::=/
@@ -55,6 +53,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ return !skipComments; }
 ']':    /\]/
 '(':	/\(/
 '(?!':	/\(\?!/
+# TODO overlaps with ID '->':	/->/
 ')':	/\)/
 '<':	/</
 '>':	/>/
@@ -89,7 +88,7 @@ Llayout: /layout/			(soft)
 
 Lreduce: /reduce/
 
-code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); break; }
+code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 
 # Grammar
 
@@ -106,16 +105,16 @@ options (List<AstOptionPart>) ::=
 ;
 
 option (AstOptionPart) ::=
-	  identifier '=' expression 						{ $$ = new AstOption($identifier, $expression, source, ${option.offset}, ${option.endoffset}); }
+	  ID '=' expression 								{ $$ = new AstOption($ID, $expression, source, ${option.offset}, ${option.endoffset}); }
 	| syntax_problem
 ;
 
-symbol (AstIdentifier) ::=
-	identifier											{ $$ = new AstIdentifier($identifier, source, ${symbol.offset}, ${symbol.endoffset}); } 
+identifier (AstIdentifier) ::=
+	ID													{ $$ = new AstIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-reference (AstReference) ::=
-	identifier											{ $$ = new AstReference($identifier, source, ${reference.offset}, ${reference.endoffset}); }
+symref (AstReference) ::=
+	ID													{ $$ = new AstReference($ID, AstReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
@@ -127,7 +126,7 @@ type_part_list ::=
 	type_part_list type_part | type_part ;
 
 type_part ::=
-	'<' | '>' | '[' | ']' | identifier | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')'
+	'<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')'
 ;
 
 pattern (AstRegexp) ::=
@@ -141,11 +140,23 @@ lexer_parts (List<AstLexerPart>) ::=
 ;
 
 lexer_part (AstLexerPart) ::=
-	  group_selector: '[' icon_list ']'					{ $$ = new AstGroupsSelector($icon_list, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| alias: identifier '=' pattern						{ $$ = new AstNamedPattern($identifier, $pattern, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| symbol typeopt ':'								{ $$ = new AstLexeme($symbol, $typeopt, null, null, null, null, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
-	| symbol typeopt ':' pattern iconopt lexem_attrsopt commandopt
-														{ $$ = new AstLexeme($symbol, $typeopt, $pattern, $iconopt, $lexem_attrsopt, $commandopt, source, ${lexer_part.offset}, ${lexer_part.endoffset}); }
+	  state_selector
+	| named_pattern
+	| lexeme
+;
+
+named_pattern ::=
+	  ID '=' pattern									{ $$ = new AstNamedPattern($ID, $pattern, source, ${left().offset}, ${left().endoffset}); }
+;
+
+lexeme ::=
+	  identifier typeopt ':'							{ $$ = new AstLexeme($identifier, $typeopt, null, null, null, null, null, source, ${left().offset}, ${left().endoffset}); }
+	| identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
+                                                    	{ $$ = new AstLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
+;
+
+lexem_transition (AstReference) ::=
+	'=>' stateref										{ $$ = $1; }
 ;
 
 lexem_attrs (AstLexemAttrs) ::=
@@ -159,9 +170,22 @@ lexem_attribute (AstLexemAttrs) ::=
 	| Llayout											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@Lexem.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-icon_list (List<Integer>) ::=
-	  icon 												{ $$ = new ArrayList<Integer>(4); $icon_list.add($icon); } 
-	| list=icon_list icon  								{ $list.add($icon); }
+state_selector ::=
+	  '[' state_list ']'								{ $$ = new AstStateSelector($state_list, source, ${left().offset}, ${left().endoffset}); }
+;
+
+state_list (List<AstLexerState>) ::=
+	  lexer_state										{ $$ = new ArrayList<Integer>(4); $state_list.add($lexer_state); }
+	| list=state_list ',' lexer_state					{ $list.add($lexer_state); }
+;
+
+stateref (AstReference) ::=
+	ID													{ $$ = new AstReference($ID, AstReference.STATE, source, ${left().offset}, ${left().endoffset}); }
+;
+
+lexer_state (AstLexerState) ::=
+	  identifier										{ $$ = new AstLexerState($identifier, null, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '=>' defaultTransition=stateref		{ $$ = new AstLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 grammar_parts (List<AstGrammarPart>) ::=
@@ -171,8 +195,8 @@ grammar_parts (List<AstGrammarPart>) ::=
 ;
 
 grammar_part (AstGrammarPart) ::= 
-	  symbol typeopt '::=' rules ';'					{ $$ = new AstNonTerm($symbol, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| annotations symbol typeopt '::=' rules ';'		{ $$ = new AstNonTerm($symbol, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	  identifier typeopt '::=' rules ';'				{ $$ = new AstNonTerm($identifier, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
+	| annotations identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
 	| directive: directive								{ $$ = $directive; }
 ;
 
@@ -190,12 +214,12 @@ inputs (List<AstInputRef>) ::=
 ;
 
 inputref (AstInputRef) ::=
-	reference Lnoeoiopt									{ $$ = new AstInputRef($reference, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
+	symref Lnoeoiopt									{ $$ = new AstInputRef($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 references (List<AstReference>) ::= 
-	  reference 										{ $$ = new ArrayList<AstReference>(); $references.add($reference); }
-	| list=references reference							{ $list.add($reference); }
+	  symref											{ $$ = new ArrayList<AstReference>(); $references.add($symref); }
+	| list=references symref							{ $list.add($symref); }
 ;
 
 rules (List<AstRule>) ::=
@@ -217,8 +241,8 @@ rule0 (AstRule) ::=
 
 ruleprefix (AstRulePrefix) ::=
 	  annotations ':'									{ $$ = new AstRulePrefix($annotations, null); }
-	| ruleannotations identifier ':'					{ $$ = new AstRulePrefix($ruleannotations, $identifier); }
-	| identifier ':'									{ $$ = new AstRulePrefix(null, $identifier); }
+	| ruleannotations ID ':'							{ $$ = new AstRulePrefix($ruleannotations, $ID); }
+	| ID ':'											{ $$ = new AstRulePrefix(null, $ID); }
 ;
 
 ruleparts (List<AstRulePart>) ::=
@@ -230,16 +254,16 @@ ruleparts (List<AstRulePart>) ::=
 %left '&';
 
 rulepart (AstRulePart) ::=
-	  ruleannotations identifier '=' rulesymref			{ $$ = new AstRefRulePart($identifier, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	  ruleannotations ID '=' rulesymref					{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| ruleannotations rulesymref 						{ $$ = new AstRefRulePart(null, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| identifier '=' rulesymref							{ $$ = new AstRefRulePart($identifier, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	| ID '=' rulesymref									{ $$ = new AstRefRulePart($ID, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
 	| command
 	| left=rulepart '&' right=rulepart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rulesymref (AstRuleSymbolRef) ::=
-	  reference											{ $$ = new AstRuleDefaultSymbolRef($reference, source, ${left().offset}, ${left().endoffset}); }
+	  symref											{ $$ = new AstRuleDefaultSymbolRef($symref, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
 	| '(' ruleparts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, true, source, ${left().offset}, ${left().endoffset}); }
 	| '(' ruleparts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, false, source, ${left().offset}, ${left().endoffset}); }
@@ -264,8 +288,8 @@ annotation_list (java.util.@List<AstNamedEntry>) ::=
 ;
 
 annotation (AstNamedEntry) ::=
-	  '@' identifier 									{ $$ = new AstNamedEntry($identifier, null, source, ${left().offset}, ${left().endoffset}); }
-	| '@' identifier '=' expression						{ $$ = new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset}); }
+	  '@' ID											{ $$ = new AstNamedEntry($ID, null, source, ${left().offset}, ${left().endoffset}); }
+	| '@' ID '=' expression								{ $$ = new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
 ;
 
@@ -274,8 +298,8 @@ negative_la (AstNegativeLA) ::=
 ;
 
 negative_la_clause (java.util.@List<AstReference>) ::=
-	  reference											{ $$ = new java.util.@ArrayList<AstReference>(); $negative_la_clause.add($reference); }
-	| negative_la_clause '|' reference					{ $negative_la_clause#0.add($reference); }
+	  symref											{ $$ = new java.util.@ArrayList<AstReference>(); $negative_la_clause.add($symref); }
+	| negative_la_clause '|' symref						{ $negative_la_clause#0.add($symref); }
 ;
 
 ##### EXPRESSIONS
@@ -285,7 +309,7 @@ expression (AstExpression) ::=
 	| icon                                              { $$ = new AstLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
 	| Ltrue                                             { $$ = new AstLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
 	| Lfalse                                            { $$ = new AstLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
-	| reference
+	| symref
 	| Lnew name '(' map_entriesopt ')'					{ $$ = new AstInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
 	| '[' expression_listopt ']'						{ $$ = new AstArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
@@ -297,8 +321,8 @@ expression_list (List<AstExpression>) ::=
 ;
 
 map_entries (java.util.@List<AstNamedEntry>) ::=
-	  identifier map_separator expression				{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($identifier, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' identifier map_separator expression	{ $map_entries#0.add(new AstNamedEntry($identifier, $expression, source, ${identifier.offset}, ${expression.endoffset})); }
+	  ID map_separator expression						{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' ID map_separator expression		{ $map_entries#0.add(new AstNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
 ;
 
 map_separator ::=
@@ -309,13 +333,13 @@ name (AstName) ::=
 ;
 
 qualified_id (String) ::=
-	  identifier
-	| qualified_id '.' identifier						{ $$ = $qualified_id#1 + "." + $identifier; }
+	  ID
+	| qualified_id '.' ID								{ $$ = $qualified_id#1 + "." + $ID; }
 ;
 
 
 rule_attrs (AstRuleAttribute) ::=
-	'%' Lprio reference									{ $$ = new AstPrioClause($reference, source, ${left().offset}, ${left().endoffset}); }
+	'%' Lprio symref									{ $$ = new AstPrioClause($symref, source, ${left().offset}, ${left().endoffset}); }
 	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 

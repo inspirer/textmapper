@@ -41,7 +41,7 @@ public class TMNamesValidator implements NamesValidator {
 	public boolean isIdentifier(String name, Project project) {
 		try {
 			LapgLexer lapgLexer = new ValidatingLexer(name);
-			return lapgLexer.next().lexem == Lexems.identifier && lapgLexer.next().lexem == Lexems.eoi;
+			return lapgLexer.next().lexem == Lexems.ID && lapgLexer.next().lexem == Lexems.eoi;
 		} catch (Exception ignored) {
 		}
 		return false;

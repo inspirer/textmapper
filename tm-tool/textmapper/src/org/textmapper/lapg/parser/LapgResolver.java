@@ -45,6 +45,7 @@ import java.util.*;
 public class LapgResolver {
 
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
+	private static final String INITIAL_STATE = "initial";
 
 	private final LapgTree<AstRoot> tree;
 	private final TypesRegistry types;
@@ -52,6 +53,9 @@ public class LapgResolver {
 
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<Symbol, String> identifierMap = new HashMap<Symbol, String>();
+	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
+	private final Map<AstLexeme, LapgLexeme> lexemeMap = new HashMap<AstLexeme, LapgLexeme>();
+
 	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
 	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
 	private final Map<ListDescriptor, Symbol> listsMap = new HashMap<ListDescriptor, Symbol>();
@@ -73,6 +77,7 @@ public class LapgResolver {
 
 		builder = LapgCore.createBuilder();
 		symbolsMap.put("eoi", builder.getEoi());
+		collectLexerStates();
 		collectLexems();
 
 		if (tree.getRoot().getGrammar() != null) {
@@ -112,8 +117,15 @@ public class LapgResolver {
 			identifierMap.put(sym, helper.generateId(sym.getName(), i));
 		}
 
+		Map<Lexem, LapgLexemeTransitionSwitch> transitionMap = new HashMap<Lexem, LapgLexemeTransitionSwitch>();
+		for (Lexem l : g.getLexems()) {
+			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) l).getOrigin();
+			LapgLexeme lapgLexeme = lexemeMap.get(astLexeme);
+			transitionMap.put(l, lapgLexeme.getTransitions());
+		}
+
 		return new LapgGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader,
-				identifierMap, annotationsMap, codeMap);
+				identifierMap, annotationsMap, codeMap, transitionMap);
 	}
 
 	private TextSourceElement getTemplates() {
@@ -205,24 +217,59 @@ public class LapgResolver {
 		return sym;
 	}
 
-	private int convert(AstGroupsSelector selector) {
-		int result = 0;
-		for (Integer i : selector.getGroups()) {
-			if (i == null || i < 0 || i > 31) {
-				error(selector, "group id should be in range 0..31");
-				return 1;
-			} else if ((result & 1 << i) != 0) {
-				error(selector, "duplicate group id: " + i);
-				return 1;
-			} else {
-				result |= 1 << i;
-			}
-		}
-		if (result == 0) {
-			error(selector, "empty group set");
-			return 1;
+	private List<LexerState> convertApplicableStates(AstStateSelector selector) {
+		List<LexerState> result = new ArrayList<LexerState>();
+		for (AstLexerState state : selector.getStates()) {
+			LexerState applicable = statesMap.get(state.getName().getName());
+			result.add(applicable);
 		}
 		return result;
+	}
+
+	private LapgLexemeTransitionSwitch convertTransitions(AstStateSelector selector) {
+		boolean noDefault = false;
+		for (AstLexerState state : selector.getStates()) {
+			if (state.getDefaultTransition() == null) {
+				noDefault = true;
+			}
+		}
+
+		LexerState defaultTransition = null;
+		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<LexerState, LexerState>();
+		for (AstLexerState state : selector.getStates()) {
+			if (state.getDefaultTransition() == null) {
+				continue;
+			}
+			String targetName = state.getDefaultTransition().getName();
+			LexerState target = statesMap.get(targetName);
+			if (target == null) {
+				error(state.getDefaultTransition(), targetName + " cannot be resolved");
+				continue;
+			}
+
+			if (defaultTransition == null && !(noDefault)) {
+				defaultTransition = target;
+			} else if (defaultTransition != target) {
+				LexerState source = statesMap.get(state.getName().getName());
+				stateSwitch.put(source, target);
+			}
+		}
+		return stateSwitch.isEmpty() && defaultTransition == null ? null
+				: new LapgLexemeTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
+	}
+
+	private LapgLexemeTransitionSwitch getTransition(AstLexeme lexeme, LapgLexemeTransitionSwitch active) {
+		AstReference transition = lexeme.getTransition();
+		if (transition != null) {
+			String targetName = transition.getName();
+			LexerState target = statesMap.get(targetName);
+			if (target == null) {
+				error(transition, targetName + " cannot be resolved");
+			} else {
+				return new LapgLexemeTransitionSwitch(target);
+			}
+		}
+		return active;
 	}
 
 	private Lexem getClassLexem(Map<Lexem, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
@@ -231,7 +278,8 @@ public class LapgResolver {
 		int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
 		if (regex.isConstant() && kind != Lexem.KIND_CLASS) {
 			for (Lexem classLexem : classMatchers.keySet()) {
-				if (l.getGroups() != classLexem.getGroups()) {
+				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) classLexem).getOrigin();
+				if (!lexemeMap.get(astClassLexeme).canBeClassFor(lexemeMap.get(l))) {
 					continue;
 				}
 				RegexMatcher m = classMatchers.get(classLexem);
@@ -248,17 +296,49 @@ public class LapgResolver {
 		return result;
 	}
 
+	private void collectLexerStates() {
+		AstIdentifier initialOrigin = null;
+		for (AstLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof AstStateSelector) {
+				for (AstLexerState state : ((AstStateSelector) clause).getStates()) {
+					if (state.getName().getName().equals(INITIAL_STATE)) {
+						initialOrigin = state.getName();
+						break;
+					}
+				}
+				if (initialOrigin != null) {
+					break;
+				}
+			}
+		}
+
+		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
+		for (AstLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof AstStateSelector) {
+				AstStateSelector selector = (AstStateSelector) clause;
+				for (AstLexerState state : selector.getStates()) {
+					String name = state.getName().getName();
+					if (!statesMap.containsKey(name)) {
+						statesMap.put(name, builder.addState(name, state.getName()));
+					}
+				}
+			}
+		}
+	}
+
 	private void collectLexems() {
 		List<Lexem> classLexems = new LinkedList<Lexem>();
 		Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 		// Step 1. Process class lexems, named patterns & groups.
 
-		int groups = 1;
+		LapgLexemeTransitionSwitch activeTransitions = null;
+		List<LexerState> activeStates = Collections.singletonList(statesMap.get(INITIAL_STATE));
+
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				lexeme.setGroups(groups);
+				lexemeMap.put(lexeme, new LapgLexeme(lexeme, getTransition(lexeme, activeTransitions), activeStates));
 				AstLexemAttrs attrs = lexeme.getAttrs();
 				if (attrs == null || attrs.getKind() != Lexem.KIND_CLASS) {
 					continue;
@@ -277,12 +357,13 @@ public class LapgResolver {
 					continue;
 				}
 
-				Lexem liLexem = builder.addLexem(Lexem.KIND_CLASS, s, regex, lexeme.getGroups(), lexeme.getPriority(),
+				Lexem liLexem = builder.addLexem(Lexem.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 						null, lexeme);
 				classLexems.add(liLexem);
 				codeMap.put(liLexem, lexeme.getCode());
-			} else if (clause instanceof AstGroupsSelector) {
-				groups = convert((AstGroupsSelector) clause);
+			} else if (clause instanceof AstStateSelector) {
+				activeStates = convertApplicableStates((AstStateSelector) clause);
+				activeTransitions = convertTransitions((AstStateSelector) clause);
 			} else if (clause instanceof AstNamedPattern) {
 				AstNamedPattern astpattern = (AstNamedPattern) clause;
 				String name = astpattern.getName();
@@ -359,7 +440,7 @@ public class LapgResolver {
 
 					Symbol s = create(lexeme.getName(), lexeme.getType(),
 							kind == Lexem.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
-					Lexem liLexem = builder.addLexem(kind, s, regex, lexeme.getGroups(), lexeme.getPriority(),
+					Lexem liLexem = builder.addLexem(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 							classLexem, lexeme);
 					codeMap.put(liLexem, lexeme.getCode());
 				} else {

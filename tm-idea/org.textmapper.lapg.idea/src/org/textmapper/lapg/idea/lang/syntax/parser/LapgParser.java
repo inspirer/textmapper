@@ -60,14 +60,7 @@ public class LapgParser implements PsiParser {
 			return type;
 		}
 
-		if (token == Tokens.lexer_part) {
-			if (rule == Rules.lexer_part_alias) {
-				return LapgElementTypes.NAMED_PATTERN;
-			} else if (rule == Rules.lexer_part_group_selector) {
-				return LapgElementTypes.STATE_SELECTOR;
-			}
-			return LapgElementTypes.LEXEM;
-		} else if (token == Tokens.grammar_part) {
+		if (token == Tokens.grammar_part) {
 			if (rule == Rules.grammar_part_directive) {
 				return LapgElementTypes.DIRECTIVE;
 			}

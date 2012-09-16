@@ -36,7 +36,7 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 	@Override
 	public WordsScanner getWordsScanner() {
 		return new DefaultWordsScanner(new LapgLexerAdapter(),
-				TokenSet.create(LapgTokenTypes.IDENTIFIER),
+				TokenSet.create(LapgTokenTypes.ID),
 				LapgTokenTypes.comments,
 				TokenSet.create(LapgTokenTypes.STRING));
 	}

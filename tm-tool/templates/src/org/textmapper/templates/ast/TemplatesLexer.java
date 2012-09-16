@@ -32,6 +32,11 @@ public class TemplatesLexer {
 		public int endoffset;
 	}
 
+	public interface States {
+		public static final int initial = 0;
+		public static final int query = 1;
+	}
+
 	public interface Lexems {
 		public static final int eoi = 0;
 		public static final int identifier = 1;
@@ -114,7 +119,7 @@ public class TemplatesLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -159,7 +164,7 @@ public class TemplatesLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -184,11 +189,11 @@ public class TemplatesLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -288,7 +293,7 @@ public class TemplatesLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 37 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
@@ -342,29 +347,40 @@ public class TemplatesLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
 			case 0:
 				return createIdentifierToken(lapg_n, lexemIndex);
-			case 3:
-				 lapg_n.sym = token.toString().substring(1, token.length()); break; 
-			case 4:
-				 lapg_n.sym = Integer.parseInt(token.toString().substring(1, token.length())); break; 
-			case 5:
-				 deep = 1; group = 1; break; 
-			case 7:
-				 lapg_n.sym = Integer.parseInt(current()); break; 
-			case 8:
-				 lapg_n.sym = unescape(current(), 1, token.length()-1); break; 
-			case 34:
-				 deep++; break; 
-			case 35:
-				 if (--deep == 0) { group = 0; } break; 
-			case 36:
-				 group = 0; break; 
-			case 63:
-				 return false; 
+			case 3: // escid: /$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/
+				 lapg_n.sym = token.toString().substring(1, token.length()); 
+				break;
+			case 4: // escint: /$[0-9]+/
+				 lapg_n.sym = Integer.parseInt(token.toString().substring(1, token.length())); 
+				break;
+			case 5: // '${': /$\{/
+				state = States.query;
+				 deep = 1;
+				break;
+			case 7: // icon: /[0-9]+/
+				 lapg_n.sym = Integer.parseInt(current()); 
+				break;
+			case 8: // ccon: /'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
+				 lapg_n.sym = unescape(current(), 1, token.length()-1); 
+				break;
+			case 34: // '{': /\{/
+				 deep++; 
+				break;
+			case 35: // '}': /\}/
+				 if (--deep == 0) { state = 0; } 
+				break;
+			case 36: // '-}': /\-\}/
+				state = States.initial;
+				break;
+			case 63: // _skip: /[\t\r\n ]+/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
@@ -402,11 +418,13 @@ public class TemplatesLexer {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 0:	// <default>
-				 lapg_n.sym = current(); break; 
+				 lapg_n.sym = current(); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

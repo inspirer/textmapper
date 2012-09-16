@@ -32,7 +32,7 @@ public interface LapgTokenTypes {
 	// tokens
 	IElementType STRING = new LapgElementType(Lexems.scon, "string");
 	IElementType ICON = new LapgElementType(Lexems.icon, "int");
-	IElementType IDENTIFIER = new LapgElementType(Lexems.identifier, "identifier");
+	IElementType ID = new LapgElementType(Lexems.ID, "ID");
 	IElementType REGEXP = new LapgElementType(Lexems.regexp, "regexp");
 
 	TokenSet strings = TokenSet.create(STRING);
@@ -64,13 +64,14 @@ public interface LapgTokenTypes {
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
 	IElementType OP_PLUS = new LapgElementType(Lexems.PLUS, "+");
 	IElementType OP_QMARK = new LapgElementType(Lexems.QUESTIONMARK, "?");
-	IElementType QP_LPAREN_QMARK_EXCL = new LapgElementType(Lexems.LPARENQUESTIONMARKEXCLAMATION, "(?!");
+	//TODO IElementType OP_ARROW = new LapgElementType(Lexems.MINUSGREATER, "->");
+	IElementType OP_LPAREN_QMARK_EXCL = new LapgElementType(Lexems.LPARENQUESTIONMARKEXCLAMATION, "(?!");
 	IElementType OP_AND = new LapgElementType(Lexems.AMPERSAND, "&");
 	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, QP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
+			OP_LT, OP_GT/*, OP_ARROW*/, OP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
 
 	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);

@@ -34,6 +34,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiLexem> lexems = new ArrayList<LiLexem>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
+	private final Set<String> stateNamesSet = new HashSet<String>();
+	private final Set<LexerState> statesSet = new LinkedHashSet<LexerState>();
 	private final List<LiRule> rules = new ArrayList<LiRule>();
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 
@@ -96,7 +98,20 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Lexem addLexem(int kind, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem, SourceElement origin) {
+	public LexerState addState(String name, SourceElement origin) {
+		if (name == null) {
+			throw new NullPointerException();
+		}
+		if (!stateNamesSet.add(name)) {
+			throw new IllegalStateException("state `" + name + "' already exists");
+		}
+		LiLexerState state = new LiLexerState(statesSet.size(), name, origin);
+		statesSet.add(state);
+		return state;
+	}
+
+	@Override
+	public Lexem addLexem(int kind, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
@@ -108,7 +123,17 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (symKind == Symbol.KIND_SOFTTERM != (kind == Lexem.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong lexem kind, doesn't match symbol kind");
 		}
-		LiLexem l = new LiLexem(kind, lexems.size(), sym, regexp, groups, priority, classLexem, origin);
+		List<LexerState> liStates = new ArrayList<LexerState>();
+		for (LexerState state : states) {
+			if (!statesSet.contains(state)) {
+				throw new IllegalArgumentException("unknown state passed `" + state.getName() + "'");
+			}
+			liStates.add(state);
+		}
+		if (liStates.isEmpty()) {
+			throw new IllegalArgumentException("no states passed");
+		}
+		LiLexem l = new LiLexem(kind, lexems.size(), sym, regexp, liStates, priority, classLexem, origin);
 		lexems.add(l);
 		return l;
 	}
@@ -197,7 +222,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiPrio[] prioArr;
 		LiInputRef[] inputArr;
 
-		if(rules.size() != 0) {
+		if (rules.size() != 0) {
 			ruleArr = rules.toArray(new LiRule[rules.size()]);
 			prioArr = priorities.toArray(new LiPrio[priorities.size()]);
 			inputArr = inputs.toArray(new LiInputRef[inputs.size()]);
@@ -206,7 +231,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 			prioArr = null;
 			inputArr = null;
 		}
+		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr, inputArr, eoi, error, terminals, grammarSymbols);
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}
 }

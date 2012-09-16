@@ -17,33 +17,14 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
-import com.intellij.util.IncorrectOperationException;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 
 /**
- * evgeny, 8/14/12
+ * Gryaznov Evgeny, 1/25/11
  */
-public class TmNamedPattern extends TmElement implements PsiNamedElement {
+public class TmIdentifier extends TmElement {
 
-	public TmNamedPattern(@NotNull ASTNode node) {
+	public TmIdentifier(@NotNull ASTNode node) {
 		super(node);
-	}
-
-	public ASTNode getIdentifier() {
-		return getNode().findChildByType(LapgTokenTypes.ID);
-	}
-
-	public String getName() {
-		ASTNode nameSymbol = getIdentifier();
-		return nameSymbol != null ? nameSymbol.getText() : null;
-	}
-
-	@Override
-	public PsiElement setName(@NonNls @NotNull String name) throws IncorrectOperationException {
-		throw new IncorrectOperationException();
 	}
 }

@@ -15,15 +15,12 @@
  */
 package org.textmapper.lapg.lex;
 
-import org.textmapper.lapg.api.Lexem;
-import org.textmapper.lapg.api.LexerData;
-import org.textmapper.lapg.api.NamedPattern;
-import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexContext;
+import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.regex.RegexFacade;
-import org.textmapper.lapg.api.regex.RegexParseException;
 
 import java.util.*;
 
@@ -37,18 +34,18 @@ public class LexicalBuilder {
 		private final Lexem lexem;
 		private final RegexInstruction[] pattern;
 		private final int prio;
-		private final int group;
+		private final int[] applicableStates;
 		private final int len;
 		private final int jmpset;
 		private final int[] jmp;
 		private final String name;
 
-		private LexemData(Lexem l, RegexInstruction[] pattern) {
+		private LexemData(Lexem l, int[] applicableStates, RegexInstruction[] pattern) {
 			this.lexem = l;
 			this.pattern = pattern;
 			this.name = l.getSymbol().getName();
 			this.prio = l.getPriority();
-			this.group = l.getGroups();
+			this.applicableStates = applicableStates;
 			len = pattern.length;
 			assert len > 0;
 			jmpset = (len + BITS - 1) / BITS;
@@ -70,7 +67,7 @@ public class LexicalBuilder {
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
-	int nsit, nlexems, totalgroups;
+	int nsit, nlexems, nlexerStates;
 	int characters, charsetSize;
 	int[] char2no;
 	private int[][] set2symbols;
@@ -326,7 +323,7 @@ public class LexicalBuilder {
 
 		// create first set
 		for (i = 0; i < nlexems; i++) {
-			if ((ldata[i].group & 1) != 0 && ldata[i].len != 0) {
+			if ((ldata[i].applicableStates[0] & 1) != 0 && ldata[i].len != 0) {
 				next[nnext++] = lindex[i];
 			}
 		}
@@ -334,20 +331,20 @@ public class LexicalBuilder {
 		closure(next);
 		add_set(next);
 
-		groupset = new int[BITS];
+		groupset = new int[nlexerStates];
 		groupset[0] = 0;
 
 		// create state
 		current = first;
 
 		// create left group states
-		for (k = 1; k < BITS; k++) {
-			if ((totalgroups & 1 << k) != 0) {
-				for (nnext = i = 0; i < nlexems; i++) {
-					if ((ldata[i].group & 1 << k) != 0 && ldata[i].len != 0) {
-						next[nnext++] = lindex[i];
-					}
+		for (k = 1; k < nlexerStates; k++) {
+			for (nnext = i = 0; i < nlexems; i++) {
+				if ((ldata[i].applicableStates[k / BITS] & (1 << (k % BITS))) != 0 && ldata[i].len != 0) {
+					next[nnext++] = lindex[i];
 				}
+			}
+			if (nnext > 0) {
 				next[nnext] = -1;
 				closure(next);
 				groupset[k] = add_set(next);
@@ -489,24 +486,18 @@ public class LexicalBuilder {
 	/*
 	 * Fills initial arrays from lexems descriptions
 	 */
-	private boolean prepare(Lexem[] lexems, NamedPattern[] patterns) {
+	private boolean prepare(LexerState[] lexerStates, Lexem[] lexems, NamedPattern[] patterns) {
 		RegexpCompiler rp = new RegexpCompiler(createContext(patterns));
 		boolean success = true;
 
 		ArrayList<LexemData> syms = new ArrayList<LexemData>();
 
-		totalgroups = 0;
+		nlexerStates = lexerStates.length;
 
 		int lsym_size = 0;
 		for (Lexem l : lexems) {
 			if (l.isExcluded()) {
 				continue;
-			}
-			totalgroups |= l.getGroups();
-
-			if (l.getGroups() == 0) {
-				status.report(ProcessingStatus.KIND_ERROR, l.getSymbol().getName() + ": defined lexem without a group", l);
-				success = false;
 			}
 
 			if (l.getSymbol().getName().equals("error")) {
@@ -521,7 +512,13 @@ public class LexicalBuilder {
 				continue;
 			}
 
-			syms.add(new LexemData(l, pattern));
+			int[] applicableStates = new int[(nlexerStates + BITS - 1) / BITS];
+			for (LexerState lexerState : l.getStates()) {
+				int index = lexerState.getIndex();
+				applicableStates[index / BITS] |= 1 << (index % BITS);
+			}
+
+			syms.add(new LexemData(l, applicableStates, pattern));
 			lsym_size += pattern.length;
 		}
 		if (!success) {
@@ -551,8 +548,16 @@ public class LexicalBuilder {
 		lindex[nlexems] = nsit;
 		assert lsym_size == nsit;
 
-		if ((totalgroups & 1) == 0) {
-			status.report(ProcessingStatus.KIND_ERROR, "no lexems in the first group", nlexems > 0 ? ldata[0].lexem : null);
+		boolean initialStateIsEmpty = true;
+		for (LexemData l : syms) {
+			if ((l.applicableStates[0] & 1) != 0) {
+				initialStateIsEmpty = false;
+				break;
+			}
+		}
+
+		if (initialStateIsEmpty) {
+			status.report(ProcessingStatus.KIND_ERROR, "no lexemes in the first group", nlexems > 0 ? ldata[0].lexem : null);
 			return false;
 		}
 
@@ -630,9 +635,9 @@ public class LexicalBuilder {
 		}
 	}
 
-	private LexerTables generate(Lexem[] lexems, NamedPattern[] patterns) {
+	private LexerTables generate(LexerState[] lexerStates, Lexem[] lexems, NamedPattern[] patterns) {
 
-		if (!prepare(lexems, patterns)) {
+		if (!prepare(lexerStates, lexems, patterns)) {
 			return null;
 		}
 
@@ -653,8 +658,8 @@ public class LexicalBuilder {
 	/*
 	 * Generates lexer tables from lexems descriptions
 	 */
-	public static LexerData compile(Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
+	public static LexerData compile(LexerState[] states, Lexem[] lexems, NamedPattern[] patterns, ProcessingStatus status) {
 		LexicalBuilder lb = new LexicalBuilder(status);
-		return lb.generate(lexems, patterns);
+		return lb.generate(states, lexems, patterns);
 	}
 }

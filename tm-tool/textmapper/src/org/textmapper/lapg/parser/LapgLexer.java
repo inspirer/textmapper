@@ -36,7 +36,7 @@ public class LapgLexer {
 
 	public interface Lexems {
 		public static final int eoi = 0;
-		public static final int identifier = 1;
+		public static final int ID = 1;
 		public static final int error = 2;
 		public static final int regexp = 3;
 		public static final int scon = 4;
@@ -96,7 +96,7 @@ public class LapgLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -178,7 +178,7 @@ public class LapgLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -203,11 +203,11 @@ public class LapgLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -301,7 +301,7 @@ public class LapgLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 33 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
@@ -355,53 +355,62 @@ public class LapgLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, lexemIndex);
-			case 1:
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
-			case 2:
-				 lapg_n.sym = unescape(current(), 1, token.length()-1); break; 
-			case 3:
-				 lapg_n.sym = Integer.parseInt(current()); break; 
-			case 4:
-				 templatesStart = lapg_n.endoffset; break; 
-			case 5:
-				 return false; 
-			case 6:
-				 return !skipComments; 
-			case 44:
-				 skipAction(); lapg_n.endoffset = getOffset(); break; 
+				return createIDToken(lapg_n, lexemIndex);
+			case 1: // regexp: /\/([^\/\\\n]|\\.)*\//
+				 lapg_n.sym = token.toString().substring(1, token.length()-1); 
+				break;
+			case 2: // scon: /"([^\n\\"]|\\.)*"/
+				 lapg_n.sym = unescape(current(), 1, token.length()-1); 
+				break;
+			case 3: // icon: /\-?[0-9]+/
+				 lapg_n.sym = Integer.parseInt(current()); 
+				break;
+			case 4: // eoi: /%%.*(\r?\n)?/
+				 templatesStart = lapg_n.endoffset; 
+				break;
+			case 5: // _skip: /[\n\r\t ]+/
+				spaceToken = true;
+				break;
+			case 6: // _skip_comment: /#.*(\r?\n)?/
+				 spaceToken = skipComments; 
+				break;
+			case 44: // code: /\{/
+				 skipAction(); lapg_n.endoffset = getOffset(); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfID = new HashMap<String,Integer>();
 	static {
-		subTokensOfIdentifier.put("true", 28);
-		subTokensOfIdentifier.put("false", 29);
-		subTokensOfIdentifier.put("new", 30);
-		subTokensOfIdentifier.put("separator", 31);
-		subTokensOfIdentifier.put("prio", 32);
-		subTokensOfIdentifier.put("shift", 33);
-		subTokensOfIdentifier.put("input", 34);
-		subTokensOfIdentifier.put("left", 35);
-		subTokensOfIdentifier.put("right", 36);
-		subTokensOfIdentifier.put("nonassoc", 37);
-		subTokensOfIdentifier.put("no-eoi", 38);
-		subTokensOfIdentifier.put("soft", 39);
-		subTokensOfIdentifier.put("class", 40);
-		subTokensOfIdentifier.put("space", 41);
-		subTokensOfIdentifier.put("layout", 42);
-		subTokensOfIdentifier.put("reduce", 43);
+		subTokensOfID.put("true", 28);
+		subTokensOfID.put("false", 29);
+		subTokensOfID.put("new", 30);
+		subTokensOfID.put("separator", 31);
+		subTokensOfID.put("prio", 32);
+		subTokensOfID.put("shift", 33);
+		subTokensOfID.put("input", 34);
+		subTokensOfID.put("left", 35);
+		subTokensOfID.put("right", 36);
+		subTokensOfID.put("nonassoc", 37);
+		subTokensOfID.put("no-eoi", 38);
+		subTokensOfID.put("soft", 39);
+		subTokensOfID.put("class", 40);
+		subTokensOfID.put("space", 41);
+		subTokensOfID.put("layout", 42);
+		subTokensOfID.put("reduce", 43);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
-		Integer replacement = subTokensOfIdentifier.get(current());
+	protected boolean createIDToken(LapgSymbol lapg_n, int lexemIndex) {
+		Integer replacement = subTokensOfID.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 32:	// prio (soft)
 			case 33:	// shift (soft)
@@ -415,9 +424,10 @@ public class LapgLexer {
 			case 41:	// space (soft)
 			case 42:	// layout (soft)
 			case 0:	// <default>
-				 lapg_n.sym = current(); break; 
+				 lapg_n.sym = current(); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

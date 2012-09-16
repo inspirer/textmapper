@@ -29,7 +29,7 @@ public class TmRuleSymRef extends TmElement {
 		super(node);
 	}
 
-	public TmReference getReference() {
-		return PsiTreeUtil.getChildOfType(this, TmReference.class);
+	public TmSymbolReference getReference() {
+		return PsiTreeUtil.getChildOfType(this, TmSymbolReference.class);
 	}
 }

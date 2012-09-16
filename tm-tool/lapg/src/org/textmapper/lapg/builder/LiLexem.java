@@ -15,10 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Lexem;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexPart;
 
 class LiLexem implements Lexem, DerivedSourceElement {
@@ -27,25 +24,25 @@ class LiLexem implements Lexem, DerivedSourceElement {
 	private final int index;
 	private final Symbol sym;
 	private final RegexPart regexp;
-	private final int groups;
+	private final Iterable<LexerState> states;
 	private final int priority;
 	private final Lexem classLexem;
 	private final SourceElement origin;
 
-	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, int groups, int priority, Lexem classLexem, SourceElement origin) {
+	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
-		this.groups = groups;
+		this.states = states;
 		this.priority = priority;
 		this.classLexem = classLexem;
 		this.origin = origin;
 	}
 
 	@Override
-	public int getGroups() {
-		return groups;
+	public Iterable<LexerState> getStates() {
+		return states;
 	}
 
 	@Override

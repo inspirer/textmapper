@@ -153,7 +153,7 @@ _skip:		/#.*/
 _skip:      /[\t\r\n ]+/    { continue; }
 
 '/*':   /\/\*/          { group = @1;continue; }
-[1]
+[inComment]
 anysym1: /[^*]+/		{ continue; }
 anysym1: /*/
 '*/':    /\*\//         { group = @0;continue; }

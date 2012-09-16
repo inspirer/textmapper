@@ -23,21 +23,30 @@ import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.psi.TmLexem;
-import org.textmapper.lapg.idea.lang.syntax.psi.TmReference;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmStateReference;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmSymbolReference;
 
 /**
  * Gryaznov Evgeny, 1/30/11
  */
 public class LapgAnnotator implements Annotator {
 	public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
-		if (element instanceof TmReference) {
-			TmReference ref = (TmReference) element;
+		if (element instanceof TmSymbolReference) {
+			TmSymbolReference ref = (TmSymbolReference) element;
 			PsiElement target = ref.resolve();
 			if (target instanceof TmLexem) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.LEXEM_REFERENCE);
 			} else if (target == null) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve `" + ref.getReferenceText() + "'");
+				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
+			}
+		}
+		if (element instanceof TmStateReference) {
+			TmStateReference ref = (TmStateReference) element;
+			PsiElement target = ref.resolve();
+			if (target == null) {
+				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve state `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}
 		}

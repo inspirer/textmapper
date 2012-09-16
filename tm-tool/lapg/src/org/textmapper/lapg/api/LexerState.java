@@ -13,26 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.parser.ast;
+package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.parser.LapgTree.TextSource;
+/**
+ * Gryaznov Evgeny, 9/10/12
+ */
+public interface LexerState extends SourceElement {
 
-import java.util.List;
+	int getIndex();
 
-public class AstGroupsSelector extends AstNode implements AstLexerPart {
-
-	private final List<Integer> groups;
-
-	public AstGroupsSelector(List<Integer> groups, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.groups = groups;
-	}
-
-	public List<Integer> getGroups() {
-		return groups;
-	}
-
-	public void accept(AbstractVisitor v) {
-		v.visit(this);
-	}
+	String getName();
 }

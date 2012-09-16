@@ -50,7 +50,7 @@ public class UnicodeTestLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -65,7 +65,7 @@ public class UnicodeTestLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -90,11 +90,11 @@ public class UnicodeTestLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -251,7 +251,7 @@ public class UnicodeTestLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.lexem = 0;
@@ -303,17 +303,22 @@ public class UnicodeTestLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
-			case 0:
-				 lapg_n.sym = current(); break; 
-			case 1:
-				 lapg_n.sym = Integer.parseInt(current()); break; 
-			case 2:
-				 lapg_n.sym = current(); break; 
-			case 3:
-				 return false; 
+			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
+				 lapg_n.sym = current(); 
+				break;
+			case 1: // icon: /\-?[0-9]+/
+				 lapg_n.sym = Integer.parseInt(current()); 
+				break;
+			case 2: // string: /"({schar})+"/
+				 lapg_n.sym = current(); 
+				break;
+			case 3: // _skip: /[\n\t\r ]+/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

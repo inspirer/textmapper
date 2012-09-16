@@ -17,14 +17,19 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Gryaznov Evgeny, 1/25/11
+ * Gryaznov Evgeny, 9/11/12
  */
-public class TmSymbol extends TmElement {
+public class TmLexerState extends TmNamedElement {
 
-	public TmSymbol(@NotNull ASTNode node) {
+	public TmLexerState(@NotNull ASTNode node) {
 		super(node);
+	}
+
+	public TmStateReference getDefaultTransition() {
+		return PsiTreeUtil.getChildOfType(this, TmStateReference.class);
 	}
 }

@@ -75,7 +75,7 @@ public class TypesLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -118,7 +118,7 @@ public class TypesLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -143,11 +143,11 @@ public class TypesLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -240,7 +240,7 @@ public class TypesLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 32 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
@@ -294,21 +294,27 @@ public class TypesLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
 			case 0:
 				return createIdentifierToken(lapg_n, lexemIndex);
-			case 1:
-				 lapg_n.sym = unescape(current(), 1, token.length()-1); break; 
-			case 2:
-				 lapg_n.sym = Integer.parseInt(current()); break; 
-			case 3:
-				 lapg_n.sym = current().equals("true"); break; 
-			case 4:
-				 return false; 
-			case 5:
-				 return false; 
+			case 1: // scon: /"([^\n\\"]|\\.)*"/
+				 lapg_n.sym = unescape(current(), 1, token.length()-1); 
+				break;
+			case 2: // icon: /\-?[0-9]+/
+				 lapg_n.sym = Integer.parseInt(current()); 
+				break;
+			case 3: // bcon: /true|false/
+				 lapg_n.sym = current().equals("true"); 
+				break;
+			case 4: // _skip: /[\n\t\r ]+/
+				spaceToken = true;
+				break;
+			case 5: // _skip: /#.*/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
@@ -328,11 +334,13 @@ public class TypesLexer {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
 		}
+		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 0:	// <default>
-				 lapg_n.sym = current(); break; 
+				 lapg_n.sym = current(); 
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

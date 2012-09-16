@@ -91,6 +91,12 @@ public class BootstrapTest {
 	}
 
 	@Test
+	public void testStates() {
+		bootstrap("tests/org/textmapper/lapg/test/bootstrap/states", "states.s", new String[0],
+				new String[]{"StatesLexer.java"}, 0);
+	}
+
+	@Test
 	public void testSampleNoParser() {
 		bootstrap("tests/org/textmapper/lapg/test/bootstrap/lexeronly", "noparser.s",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);

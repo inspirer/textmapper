@@ -123,8 +123,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return STRING;
 			case Lexems.icon:
 				return ICON;
-			case Lexems.identifier:
-				return IDENTIFIER;
+			case Lexems.ID:
+				return ID;
 			case Lexems.regexp:
 				return REGEXP;
 
@@ -165,8 +165,10 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return OP_PLUS;
 			case Lexems.QUESTIONMARK:
 				return OP_QMARK;
+//			case Lexems.MINUSGREATER:
+//				return OP_ARROW;
 			case Lexems.LPARENQUESTIONMARKEXCLAMATION:
-				return QP_LPAREN_QMARK_EXCL;
+				return OP_LPAREN_QMARK_EXCL;
 			case Lexems.AMPERSAND:
 				return OP_AND;
 			case Lexems.ATSIGN:

@@ -17,29 +17,29 @@ package org.textmapper.lapg.parser.ast;
 
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 
-public class AstReference extends AstNode implements AstExpression {
+import java.util.List;
 
-	public static final String DEFAULT = "symbol";
-	public static final String STATE = "state";
+public class AstStateSelector extends AstNode implements AstLexerPart {
 
-	private final String name;
-	private final String scope;
+	private final List<AstLexerState> states;
 
-	public AstReference(String name, String scope, TextSource source, int offset, int endoffset) {
+	public AstStateSelector(List<AstLexerState> states, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.scope = scope;
+		this.states = states;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getScope() {
-		return scope;
+	public List<AstLexerState> getStates() {
+		return states;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (states != null) {
+			for (AstLexerState state : states) {
+				state.accept(v);
+			}
+		}
 	}
 }

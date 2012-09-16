@@ -30,6 +30,11 @@ public class XmlLexer {
 		public int endoffset;
 	}
 
+	public interface States {
+		public static final int initial = 0;
+		public static final int inTag = 1;
+	}
+
 	public interface Lexems {
 		public static final int eoi = 0;
 		public static final int any = 1;
@@ -57,7 +62,7 @@ public class XmlLexer {
 	private int datalen, l, tokenStart;
 	private char chr;
 
-	private int group;
+	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
@@ -72,7 +77,7 @@ public class XmlLexer {
 
 	public void reset(Reader stream) throws IOException {
 		this.stream = stream;
-		this.group = 0;
+		this.state = 0;
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
@@ -97,11 +102,11 @@ public class XmlLexer {
 	}
 
 	public int getState() {
-		return group;
+		return state;
 	}
 
 	public void setState(int state) {
-		this.group = state;
+		this.state = state;
 	}
 
 	public int getTokenLine() {
@@ -188,7 +193,7 @@ public class XmlLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = group; state >= 0; ) {
+			for (state = this.state; state >= 0; ) {
 				state = lapg_lexem[state * 15 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
@@ -242,23 +247,31 @@ public class XmlLexer {
 	}
 
 	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+		boolean spaceToken = false;
 		switch (lexemIndex) {
-			case 1:
-				 group = 1; break; 
-			case 2:
-				 return false; 
-			case 3:
-				 lapg_n.sym = current(); break; 
-			case 4:
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
-			case 5:
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); break; 
-			case 6:
-				 group = 0; break; 
-			case 10:
-				 return false; 
+			case 1: // '<': /</
+				state = States.inTag;
+				break;
+			case 2: // _skipcomment: /<!\-\-([^\-]|\-[^\-]|\-\-[^>])*\-\->/
+				spaceToken = true;
+				break;
+			case 3: // identifier: /[a-zA-Z_][A-Za-z_0-9\-]*/
+				 lapg_n.sym = current(); 
+				break;
+			case 4: // ccon: /"[^\n"]*"/
+				 lapg_n.sym = token.toString().substring(1, token.length()-1); 
+				break;
+			case 5: // ccon: /'[^\n']*'/
+				 lapg_n.sym = token.toString().substring(1, token.length()-1); 
+				break;
+			case 6: // '>': />/
+				state = States.initial;
+				break;
+			case 10: // _skip: /[\t\r\n ]+/
+				spaceToken = true;
+				break;
 		}
-		return true;
+		return !(spaceToken);
 	}
 
 	/* package */ static int[] unpack_int(int size, String... st) {

@@ -161,6 +161,9 @@
 		<echo message="Sample2 parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/b"/>
+		<echo message="States parser"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true"
+			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/states"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
 			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>

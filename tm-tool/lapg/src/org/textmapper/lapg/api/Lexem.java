@@ -36,7 +36,7 @@ public interface Lexem extends SourceElement {
 
 	int getPriority();
 
-	int getGroups();
+	Iterable<LexerState> getStates();
 
 	int getKind();
 

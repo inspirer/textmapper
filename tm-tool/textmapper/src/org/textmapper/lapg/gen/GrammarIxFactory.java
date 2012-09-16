@@ -17,6 +17,7 @@ package org.textmapper.lapg.gen;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.parser.LapgLexeme;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
@@ -86,6 +87,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("action".equals(propertyName)) {
 				return grammar.getCode(lexem);
+			}
+			if("transitions".equals(propertyName)) {
+				return grammar.getTransition(lexem);
 			}
 			return super.getProperty(propertyName);
 		}

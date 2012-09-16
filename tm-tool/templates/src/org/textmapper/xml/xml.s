@@ -26,26 +26,26 @@ genCopyright = true
 
 # Vocabulary
 
-[0]
+[initial]
 
 any:	/[^<]+/
 
-'<':	/</         { group = 1; break; }
+'<':	/</  => inTag
 
-_skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/		{ return false; }
+_skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/ (space)
 
-[1]
+[inTag]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $lexem = current(); break; }
-ccon(String):	/"[^\n"]*"/							{ $lexem = token.toString().substring(1, token.length()-1); break; }
-ccon(String):	/'[^\n']*'/							{ $lexem = token.toString().substring(1, token.length()-1); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $lexem = current(); }
+ccon(String):	/"[^\n"]*"/							{ $lexem = token.toString().substring(1, token.length()-1); }
+ccon(String):	/'[^\n']*'/							{ $lexem = token.toString().substring(1, token.length()-1); }
 
-'>':	    />/          { group = 0; break; }
+'>':	    />/  => initial
 '=':		/=/
 ':':		/:/
 '/':		/\//
 
-_skip:      /[\t\r\n ]+/    { return false; }
+_skip:      /[\t\r\n ]+/  (space)
 
 # Grammar
 

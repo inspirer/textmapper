@@ -26,23 +26,23 @@ genCleanup = true
 
 # Vocabulary
 
-[0]
+[initial]
 
 any:	/[^$]+/
 
 escdollar:		/$$/
-escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); break; }
-escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); break; }
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); }
+escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); }
 
-'${':	/$\{/		{ deep = 1; group = 1; break; }
+'${':	/$\{/ => query		{ deep = 1;}
 '$/':   /$\//
 
-[1]
+[query]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ (class) { $lexem = current(); break; }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ (class) { $lexem = current(); }
 
-icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); break; }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = unescape(current(), 1, token.length()-1); break; }
+icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = unescape(current(), 1, token.length()-1); }
 
 Lcall:		/call/
 Lcached:	/cached/
@@ -70,9 +70,9 @@ Ltrue:		/true/
 Lself:		/self/
 Lassert:	/assert/
 
-'{':		/\{/		{ deep++; break; }
-'}':		/\}/		{ if (--deep == 0) { group = 0; } break; }
-'-}':		/-\}/		{ group = 0; break; }
+'{':		/\{/		{ deep++; }
+'}':		/\}/		{ if (--deep == 0) { state = 0; } }
+'-}':		/-\}/ => initial
 '+':		/+/
 '-':		/-/
 '*':		/*/
@@ -100,7 +100,7 @@ Lassert:	/assert/
 ':':		/:/
 '?':		/?/
 
-_skip:      /[\t\r\n ]+/    { return false; }
+_skip:      /[\t\r\n ]+/	(space)
 
 error:
 
