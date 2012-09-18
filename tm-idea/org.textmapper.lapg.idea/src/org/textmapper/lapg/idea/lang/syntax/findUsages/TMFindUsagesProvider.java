@@ -22,12 +22,11 @@ import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
-import org.textmapper.lapg.idea.lang.syntax.psi.TmLexem;
-import org.textmapper.lapg.idea.lang.syntax.psi.TmNamedElement;
-import org.textmapper.lapg.idea.lang.syntax.psi.TmNonTerm;
+import org.textmapper.lapg.idea.lang.syntax.psi.*;
 
 /**
  * evgeny, 8/11/12
@@ -59,6 +58,9 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 		}
 		if (psiElement instanceof TmLexem) {
 			return "lexem";
+		}
+		if (psiElement instanceof TmLexerState) {
+			return "lexer state";
 		}
 		return "";
 	}

@@ -34,5 +34,4 @@ public class TmLexerStateSelector extends TmElement {
 	public List<TmLexerState> getStates() {
 		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexerState.class);
 	}
-
 }

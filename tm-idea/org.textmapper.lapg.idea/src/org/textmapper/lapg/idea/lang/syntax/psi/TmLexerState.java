@@ -17,6 +17,8 @@
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.navigation.ItemPresentation;
+import com.intellij.navigation.ItemPresentationProviders;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,5 +33,10 @@ public class TmLexerState extends TmNamedElement {
 
 	public TmStateReference getDefaultTransition() {
 		return PsiTreeUtil.getChildOfType(this, TmStateReference.class);
+	}
+
+	@Override
+	public ItemPresentation getPresentation() {
+		return ItemPresentationProviders.getItemPresentation(this);
 	}
 }

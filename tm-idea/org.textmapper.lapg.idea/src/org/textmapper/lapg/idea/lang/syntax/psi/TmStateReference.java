@@ -18,18 +18,21 @@ package org.textmapper.lapg.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiReference;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Gryaznov Evgeny, 9/12/12
  */
-public class TmStateReference extends TmElement implements PsiReference {
+public class TmStateReference extends TmElement implements PsiPolyVariantReference {
 
 	public TmStateReference(@NotNull ASTNode node) {
 		super(node);
@@ -39,18 +42,10 @@ public class TmStateReference extends TmElement implements PsiReference {
 		return getText();
 	}
 
+	@Nullable
 	public PsiElement resolve() {
-		String referenceText = getReferenceText();
-		if (referenceText == null) return null;
-		PsiElement context = this.getContext();
-		while (context != null) {
-			if (context instanceof TmGrammar) {
-				TmGrammar grammar = (TmGrammar) context;
-				return grammar.resolveState(referenceText);
-			}
-			context = context.getContext();
-		}
-		return null;
+		ResolveResult[] resolveResults = multiResolve(false);
+		return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
 	}
 
 	@Override
@@ -80,27 +75,50 @@ public class TmStateReference extends TmElement implements PsiReference {
 	}
 
 	public boolean isReferenceTo(PsiElement element) {
-		return getElement().getManager().areElementsEquivalent(resolve(), element);
+		if (element.getContainingFile() != this.getContainingFile()) return false;
+		String referenceText = getReferenceText();
+		if (referenceText == null) return false;
+		return element instanceof TmLexerState && referenceText.equals(((TmLexerState) element).getName());
 	}
 
 	@NotNull
 	public Object[] getVariants() {
-		PsiElement context = this.getContext();
-		while (context != null) {
-			if (context instanceof TmGrammar) {
-				TmGrammar grammar = (TmGrammar) context;
-				List<TmLexerState> states = new ArrayList<TmLexerState>();
-				for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
-					states.addAll(selector.getStates());
+		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
+		if (grammar != null) {
+			List<TmLexerState> states = new ArrayList<TmLexerState>();
+			Set<String> seen = new HashSet<String>();
+			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
+				for (TmLexerState tmLexerState : selector.getStates()) {
+					if (seen.add(tmLexerState.getName())) {
+						states.add(tmLexerState);
+					}
 				}
-				return states.toArray();
 			}
-			context = context.getContext();
+			return states.toArray();
 		}
 		return new Object[0];
 	}
 
 	public boolean isSoft() {
 		return false;
+	}
+
+	@NotNull
+	@Override
+	public ResolveResult[] multiResolve(boolean incompleteCode) {
+		String referenceText = getReferenceText();
+		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
+		if (grammar != null && referenceText != null) {
+			List<ResolveResult> states = new ArrayList<ResolveResult>();
+			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
+				for (TmLexerState state : selector.getStates()) {
+					if (referenceText.equals(state.getName())) {
+						states.add(new PsiElementResolveResult(state));
+					}
+				}
+			}
+			return states.toArray(new ResolveResult[states.size()]);
+		}
+		return new ResolveResult[0];
 	}
 }

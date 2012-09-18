@@ -19,23 +19,59 @@ package org.textmapper.lapg.idea.lang.syntax.findUsages;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmGrammar;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmLexerState;
+import org.textmapper.lapg.idea.lang.syntax.psi.TmLexerStateSelector;
 import org.textmapper.lapg.idea.lang.syntax.psi.TmNamedElement;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * evgeny, 8/11/12
  */
 public class TMFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
-    @Override
-    public boolean canFindUsages(@NotNull PsiElement element) {
-        return element instanceof TmNamedElement;
-    }
+	@Override
+	public boolean canFindUsages(@NotNull PsiElement element) {
+		return element instanceof TmNamedElement;
+	}
 
-    @Override
-    public FindUsagesHandler createFindUsagesHandler(@NotNull PsiElement element, boolean forHighlightUsages) {
-        if (element instanceof TmNamedElement) {
-            return new FindUsagesHandler(element){};
-        }
-        throw new IllegalArgumentException("unexpected element type: " + element);
-    }
+	@Override
+	public FindUsagesHandler createFindUsagesHandler(@NotNull PsiElement element, boolean forHighlightUsages) {
+		if (element instanceof TmLexerState) {
+			return new TMLexerStateFindUsagesHandler((TmLexerState) element);
+		}
+		if (element instanceof TmNamedElement) {
+			return new FindUsagesHandler(element) {};
+		}
+		throw new IllegalArgumentException("unexpected element type: " + element);
+	}
+
+	private static class TMLexerStateFindUsagesHandler extends FindUsagesHandler {
+		public TMLexerStateFindUsagesHandler(TmLexerState element) {
+			super(element);
+		}
+
+		@NotNull
+		@Override
+		public PsiElement[] getPrimaryElements() {
+			TmLexerState anchorState = (TmLexerState) getPsiElement();
+			String name = anchorState.getName();
+			TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(anchorState, TmGrammar.class);
+			if (grammar != null && name != null) {
+				List<TmLexerState> states = new ArrayList<TmLexerState>();
+				for (TmLexerStateSelector stateSet : grammar.getStateSelectors()) {
+					for (TmLexerState lexerState : stateSet.getStates()) {
+						if (name.equals(lexerState.getName())) {
+							states.add(lexerState);
+						}
+					}
+				}
+				return states.toArray(new PsiElement[states.size()]);
+			}
+			return super.getPrimaryElements();
+		}
+	}
 }

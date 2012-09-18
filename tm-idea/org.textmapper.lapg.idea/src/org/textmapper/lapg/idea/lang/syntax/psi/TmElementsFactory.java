@@ -81,7 +81,7 @@ public class TmElementsFactory {
 	}
 
 	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "[" + name + "->" + name + "]";
+		@NonNls String text = "[" + name + "=>" + name + "]";
 		LapgFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmLexerStateSelector> s = grammar.getStateSelectors();

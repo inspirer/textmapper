@@ -44,8 +44,7 @@ public class LapgAnnotator implements Annotator {
 		}
 		if (element instanceof TmStateReference) {
 			TmStateReference ref = (TmStateReference) element;
-			PsiElement target = ref.resolve();
-			if (target == null) {
+			if (ref.multiResolve(false).length == 0) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve state `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}

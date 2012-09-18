@@ -63,58 +63,47 @@
 		<syntaxHighlighter
 				key="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.LapgSyntaxHighlighter"/>
-
 		<lang.parserDefinition
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.parser.LapgParserDefinition"/>
-
 		<lang.foldingBuilder
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.editor.LapgFoldingBuilder"/>
-
 		<lang.psiStructureViewFactory
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.structureView.TMStructureViewFactory"/>
-
 		<lang.findUsagesProvider
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesProvider"/>
-
 		<lang.namesValidator
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.refactoring.TMNamesValidator"/>
-
 		<lang.formatter
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.formatter.TMFormattingModelBuilder"/>
-
 		<referencesSearch
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
-
+		<itemPresentationProvider forClass="org.textmapper.lapg.idea.lang.syntax.psi.TmLexerState"
+								  implementationClass="org.textmapper.lapg.idea.lang.syntax.presentation.LexerStatePresentationProvider"/>
 		<findUsagesHandlerFactory
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
-
+		<renamePsiElementProcessor
+				implementation="org.textmapper.lapg.idea.lang.syntax.refactoring.RenameTMLexerStateProcessor"/>
 		<colorSettingsPage implementation="org.textmapper.lapg.idea.lang.syntax.LapgColorsPage"/>
-
 		<annotator
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.LapgAnnotator"/>
-
 		<defaultLiveTemplatesProvider
 				implementation="org.textmapper.lapg.idea.templates.LapgDefaultLiveTemplatesProvider"/>
-
 		<lang.commenter
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.editor.LapgCommenter"/>
-
 		<!-- Lapg templates -->
 		<syntaxHighlighter
 				key="Lapg Templates"
 				factoryClass="org.textmapper.lapg.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
-
 		<lang.parserDefinition
 				language="Lapg Templates"
 				implementationClass="org.textmapper.lapg.idea.lang.templates.parser.LtplParserDefinition"/>
-
 	</extensions>
 </idea-plugin>
