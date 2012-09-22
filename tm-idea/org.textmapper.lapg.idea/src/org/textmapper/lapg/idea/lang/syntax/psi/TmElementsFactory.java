@@ -67,7 +67,7 @@ public class TmElementsFactory {
 			throw new IncorrectOperationException();
 		}
 
-		TmRuleSymRef symbolRef = parts.get(0).getSymbolRef();
+		TmRuleSymRef symbolRef = ((TmRefRulePart)parts.get(0)).getSymbolRef();
 		if (symbolRef == null) {
 			throw new IncorrectOperationException();
 		}

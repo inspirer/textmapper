@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class TmAction extends TmElement {
+public class TmAction extends TmElement implements TmRulePart {
 
 	public TmAction(@NotNull ASTNode node) {
 		super(node);

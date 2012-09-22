@@ -14,12 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.lapg.idea.lang.syntax.psi;
+package org.textmapper.lapg.idea.lang.syntax.lexer;
 
-import com.intellij.psi.PsiElement;
+import com.intellij.lang.DefaultASTFactoryImpl;
+import com.intellij.psi.impl.source.tree.LeafElement;
+import com.intellij.psi.tree.IElementType;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Gryaznov Evgeny, 9/20/12
+ * Gryaznov Evgeny, 9/21/12
  */
-public interface TmRulePart extends PsiElement {
+public class TmASTFactory extends DefaultASTFactoryImpl {
+
+	@Override
+	@NotNull
+	public LeafElement createLeaf(final IElementType type, final CharSequence text) {
+		if (LapgTokenTypes.comments.contains(type)) {
+			return createComment(type, text);
+		}
+
+		return new TmToken(type, text);
+	}
+
 }

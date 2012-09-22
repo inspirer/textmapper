@@ -29,7 +29,6 @@ import org.textmapper.lapg.parser.LapgLexer;
 import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
 import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 import org.textmapper.lapg.parser.LapgParser.ParseException;
-import org.textmapper.lapg.parser.LapgParser.Rules;
 import org.textmapper.lapg.parser.LapgParser.Tokens;
 
 import java.io.IOException;
@@ -54,19 +53,8 @@ public class LapgParser implements PsiParser {
 		return result;
 	}
 
-	private static IElementType reduceType(int token, int rule) {
-		IElementType type = types.get(token);
-		if (type != null) {
-			return type;
-		}
-
-		if (token == Tokens.grammar_part) {
-			if (rule == Rules.grammar_part_directive) {
-				return LapgElementTypes.DIRECTIVE;
-			}
-			return LapgElementTypes.NONTERM;
-		}
-		return null;
+	private static IElementType reduceType(int token) {
+		return types.get(token);
 	}
 
 	@NotNull
@@ -160,7 +148,7 @@ public class LapgParser implements PsiParser {
 
 			Marker m = (Marker) lapg_gg.sym;
 			if (m != null) {
-				IElementType elementType = reduceType(lapg_gg.lexem, rule);
+				IElementType elementType = reduceType(lapg_gg.lexem);
 				if (elementType != null) {
 					lapg_gg.sym = clone(m);
 

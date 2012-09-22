@@ -50,7 +50,6 @@ public class TMFormattingModelBuilder implements FormattingModelBuilder {
 				.after(OPTION).blankLines(1)
 
 				/* lexer */
-				.between(LEXEM, NAMED_PATTERN).blankLines(1)
 				.before(STATE_SELECTOR).blankLines(1)
 				.after(STATE_SELECTOR).lineBreakInCode()
 				.before(LEXEM).lineBreakInCode()
@@ -63,12 +62,9 @@ public class TMFormattingModelBuilder implements FormattingModelBuilder {
 				.before(NONTERM).lineBreakInCode()
 				.before(OP_CCEQ).spaces(1)
 				.after(OP_CCEQ).lineBreakInCode()
-				.afterInside(RULE, RULES).lineBreakInCode()
+				.afterInside(RULE, NONTERM).lineBreakInCode()
 				.after(OP_OR).spaces(1)
 				.beforeInside(OP_SEMICOLON, NONTERM).lineBreakInCode()
-
-				/* rule */
-				.between(RULEPART, RULEPART).spacing(1, 1, 0, true, 1)
 				;
 	}
 

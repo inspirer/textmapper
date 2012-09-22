@@ -81,10 +81,15 @@
 		<lang.formatter
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.lapg.idea.lang.syntax.formatter.TMFormattingModelBuilder"/>
+		<lang.ast.factory
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.lapg.idea.lang.syntax.lexer.TmASTFactory"/>
 		<referencesSearch
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
 		<itemPresentationProvider forClass="org.textmapper.lapg.idea.lang.syntax.psi.TmLexerState"
 								  implementationClass="org.textmapper.lapg.idea.lang.syntax.presentation.LexerStatePresentationProvider"/>
+		<extendWordSelectionHandler
+			implementation="org.textmapper.lapg.idea.lang.syntax.editor.RuleListSelectionHandlerBase" />
 		<findUsagesHandlerFactory
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
 		<renamePsiElementProcessor

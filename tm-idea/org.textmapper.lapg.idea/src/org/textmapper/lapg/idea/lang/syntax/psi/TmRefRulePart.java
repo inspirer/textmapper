@@ -16,10 +16,21 @@
  */
 package org.textmapper.lapg.idea.lang.syntax.psi;
 
-import com.intellij.psi.PsiElement;
+import com.intellij.lang.ASTNode;
+import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Gryaznov Evgeny, 9/20/12
+ * evgeny, 8/11/12
  */
-public interface TmRulePart extends PsiElement {
+public class TmRefRulePart extends TmElement implements TmRulePart {
+
+	public TmRefRulePart(@NotNull ASTNode node) {
+		super(node);
+	}
+
+	public TmRuleSymRef getSymbolRef() {
+		return PsiTreeUtil.getChildOfType(this, TmRuleSymRef.class);
+	}
+
 }

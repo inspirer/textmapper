@@ -95,8 +95,8 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 %input input, expression;
 
 input (AstRoot) ::=
-	options lexer_parts grammar_partsopt				{  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${input.offset}, ${input.endoffset}); }
-	| lexer_parts grammar_partsopt						{  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${input.offset}, ${input.endoffset}); }
+	options lexer_parts grammar_partsopt				{  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+	| lexer_parts grammar_partsopt						{  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 options (List<AstOptionPart>) ::=
@@ -105,7 +105,7 @@ options (List<AstOptionPart>) ::=
 ;
 
 option (AstOptionPart) ::=
-	  ID '=' expression 								{ $$ = new AstOption($ID, $expression, source, ${option.offset}, ${option.endoffset}); }
+	  ID '=' expression 								{ $$ = new AstOption($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 
@@ -130,7 +130,7 @@ type_part ::=
 ;
 
 pattern (AstRegexp) ::=
-	regexp												{ $$ = new AstRegexp($regexp, source, ${pattern.offset}, ${pattern.endoffset}); }
+	regexp												{ $$ = new AstRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_parts (List<AstLexerPart>) ::= 
@@ -194,10 +194,14 @@ grammar_parts (List<AstGrammarPart>) ::=
 	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
-grammar_part (AstGrammarPart) ::= 
-	  identifier typeopt '::=' rules ';'				{ $$ = new AstNonTerm($identifier, $typeopt, $rules, null, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| annotations identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${grammar_part.offset}, ${grammar_part.endoffset}); }
-	| directive: directive								{ $$ = $directive; }
+grammar_part (AstGrammarPart) ::=
+	  non_term
+	| directive
+;
+
+non_term ::=
+	  identifier typeopt '::=' rules ';'				{ $$ = new AstNonTerm($identifier, $typeopt, $rules, null, source, ${left().offset}, ${left().endoffset}); }
+	| annotations identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 priority_kw (String) ::=
@@ -232,10 +236,10 @@ rule_list (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix ruleparts rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 ruleparts rule_attrsopt				{ $$ = new AstRule(null, $ruleparts, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| ruleprefix rule_attrsopt  						{ $$ = new AstRule($ruleprefix, null, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
-	| 			 rule_attrsopt  						{ $$ = new AstRule(null, null, $rule_attrsopt, source, ${rule0.offset}, ${rule0.endoffset}); }
+	  ruleprefix ruleparts rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	| 			 ruleparts rule_attrsopt				{ $$ = new AstRule(null, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	| ruleprefix rule_attrsopt  						{ $$ = new AstRule($ruleprefix, null, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	| 			 rule_attrsopt  						{ $$ = new AstRule(null, null, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
@@ -254,12 +258,20 @@ ruleparts (List<AstRulePart>) ::=
 %left '&';
 
 rulepart (AstRulePart) ::=
-	  ruleannotations ID '=' rulesymref					{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| ruleannotations rulesymref 						{ $$ = new AstRefRulePart(null, $rulesymref, $ruleannotations, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| ID '=' rulesymref									{ $$ = new AstRefRulePart($ID, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
-	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${rulepart.offset}, ${rulepart.endoffset}); }
+	  refrulepart
 	| command
-	| left=rulepart '&' right=rulepart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
+	| unorderedrulepart
+;
+
+refrulepart ::=
+	  ruleannotations ID '=' rulesymref					{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
+	| ruleannotations rulesymref 						{ $$ = new AstRefRulePart(null, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
+	| ID '=' rulesymref									{ $$ = new AstRefRulePart($ID, $rulesymref, null, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${left().offset}, ${left().endoffset}); }
+;
+
+unorderedrulepart ::=
+	  left=rulepart '&' right=rulepart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rulesymref (AstRuleSymbolRef) ::=

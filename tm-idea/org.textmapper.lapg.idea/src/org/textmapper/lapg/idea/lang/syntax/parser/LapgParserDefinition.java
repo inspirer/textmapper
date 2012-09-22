@@ -67,12 +67,6 @@ public class LapgParserDefinition implements ParserDefinition {
 	@NotNull
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
-		if (type == LapgElementTypes.NONTERM) {
-			return new TmNonTerm(node);
-		} else if(type == LapgElementTypes.DIRECTIVE) {
-			return new TmDirective(node);
-		}
-
 		switch (((LapgElementType) type).getSymbol()) {
 			case Tokens.input:
 				return new TmGrammar(node);
@@ -92,8 +86,10 @@ public class LapgParserDefinition implements ParserDefinition {
 				return new TmRulePrefix(node);
 			case Tokens.rule_attrs:
 				return new TmRuleAttrs(node);
-			case Tokens.rulepart:
-				return new TmRulePart(node);
+			case Tokens.refrulepart:
+				return new TmRefRulePart(node);
+			case Tokens.unorderedrulepart:
+				return new TmUnorderedRulePart(node);
 			case Tokens.rulesymref:
 				return new TmRuleSymRef(node);
 			case Tokens.negative_la:
@@ -118,6 +114,10 @@ public class LapgParserDefinition implements ParserDefinition {
 				return new TmLexem(node);
 			case Tokens.named_pattern:
 				return new TmNamedPattern(node);
+			case Tokens.non_term:
+				return new TmNonTerm(node);
+			case Tokens.directive:
+				return new TmDirective(node);
 		}
 
 		return new TmElement(node);

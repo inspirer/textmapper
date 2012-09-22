@@ -25,6 +25,8 @@ import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
+import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textmapper.lapg.idea.lang.syntax.parser.LapgElementTypes;
 
 import java.util.ArrayList;
@@ -36,13 +38,13 @@ import java.util.List;
  */
 public class TMFormattingBlock extends AbstractBlock {
 
-	private Indent indent;
-	private CodeStyleSettings settings;
-	private SpacingBuilder spacingBuilder;
-	private List<Block> children;
+	protected Indent indent;
+	protected CodeStyleSettings settings;
+	protected SpacingBuilder spacingBuilder;
+	protected List<Block> children;
 
 	public TMFormattingBlock(@NotNull ASTNode node,
-							 Alignment alignment,
+							 @Nullable Alignment alignment,
 							 Indent indent,
 							 Wrap wrap,
 							 CodeStyleSettings settings,
@@ -63,17 +65,18 @@ public class TMFormattingBlock extends AbstractBlock {
 		return spacingBuilder.getSpacing(this, child1, child2);
 	}
 
-	@NotNull
-	@Override
-	public ChildAttributes getChildAttributes(int newChildIndex) {
-		final IElementType type = getNode().getElementType();
-		if (type == LapgElementTypes.RULES) {
-			return new ChildAttributes(Indent.getNormalIndent(), null);
+	protected boolean isAfter(final int newChildIndex, final IElementType[] elementTypes) {
+		final Block previousBlock = newChildIndex == 0 ? null : getSubBlocks().get(newChildIndex - 1);
+		if (!(previousBlock instanceof AbstractBlock)) {
+			return false;
 		}
-		if (isIncomplete()) {
-			return super.getChildAttributes(newChildIndex);
+		final IElementType previousElementType = ((AbstractBlock) previousBlock).getNode().getElementType();
+		for (IElementType elementType : elementTypes) {
+			if (previousElementType == elementType) {
+				return true;
+			}
 		}
-		return new ChildAttributes(Indent.getNoneIndent(), null);
+		return false;
 	}
 
 	@Override
@@ -92,6 +95,7 @@ public class TMFormattingBlock extends AbstractBlock {
 	private List<Block> buildChildrenInternal() {
 		List<Block> blocks = new ArrayList<Block>();
 
+		ASTNode prev = null;
 		for (ASTNode child = myNode.getFirstChildNode(); child != null; child = child.getTreeNext()) {
 			IElementType childType = child.getElementType();
 
@@ -101,31 +105,131 @@ public class TMFormattingBlock extends AbstractBlock {
 				continue;
 			}
 
-			blocks.add(buildChild(child, null));
+			blocks.add(buildChild(child, prev, null));
+			prev = child;
 		}
 		return Collections.unmodifiableList(blocks);
 	}
 
 	@NotNull
-	private Block buildChild(@NotNull ASTNode child, Alignment childAlignment) {
-		Wrap wrap = null;
-		return new TMFormattingBlock(child, childAlignment, createChildIndent(child), wrap, settings, spacingBuilder);
+	protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
+		IElementType elementType = child.getElementType();
+		if (elementType == LapgElementTypes.NONTERM) {
+			return new NonTermBlock(child, null, settings, spacingBuilder);
+		}
+		return new TMFormattingBlock(child, childAlignment, createChildIndent(child, prev), null, settings, spacingBuilder);
+	}
+
+	@NotNull
+	@Override
+	public ChildAttributes getChildAttributes(int newChildIndex) {
+		return new ChildAttributes(Indent.getNoneIndent(), null);
 	}
 
 	@Nullable
-	protected static Indent createChildIndent(@NotNull ASTNode child) {
-		IElementType type = child.getElementType();
-
-		if (type == LapgElementTypes.RULES) {
-			return Indent.getNormalIndent();
-		}
-		if (type == LapgElementTypes.RULE) {
-			return Indent.getIndent(Type.SPACES, 2, false, true);
-		}
-		if (type == LapgElementTypes.RULEPART) {
-			return Indent.getContinuationWithoutFirstIndent();
-		}
-
+	protected Indent createChildIndent(@NotNull ASTNode child, ASTNode prev) {
 		return Indent.getNoneIndent();
 	}
+
+	public static class NonTermBlock extends TMFormattingBlock {
+
+		private Alignment lastCodeBlock = Alignment.createAlignment(true);
+
+		public NonTermBlock(@NotNull ASTNode node, Wrap wrap, CodeStyleSettings settings, SpacingBuilder spacingBuilder) {
+			super(node, null, Indent.getNoneIndent(), wrap, settings, spacingBuilder);
+		}
+
+		@NotNull
+		@Override
+		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
+			if (child.getElementType() == LapgElementTypes.RULE) {
+				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == LapgTokenTypes.OP_CCEQ);
+			}
+			return super.buildChild(child, prev, childAlignment);
+		}
+
+		@NotNull
+		@Override
+		public ChildAttributes getChildAttributes(int newChildIndex) {
+			if (isAfter(newChildIndex, new IElementType[]{LapgElementTypes.TYPE, LapgElementTypes.IDENTIFIER})) {
+				return new ChildAttributes(Indent.getNoneIndent(), null);
+			} else if (isAfter(newChildIndex, new IElementType[]{LapgTokenTypes.OP_CCEQ})) {
+				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(LapgFileType.LAPG_FILE_TYPE) + 2, false, true), null);
+			} else {
+				if (getSubBlocks().size() == newChildIndex) {
+					return new ChildAttributes(Indent.getNoneIndent(), null);
+				} else {
+					return new ChildAttributes(Indent.getNormalIndent(), null);
+				}
+			}
+		}
+
+		@Override
+		protected Indent createChildIndent(@NotNull ASTNode child, ASTNode prev) {
+			IElementType type = child.getElementType();
+			if (type == LapgTokenTypes.OP_OR || type == LapgElementTypes.RULE) {
+				return Indent.getNormalIndent();
+			}
+
+			return Indent.getNoneIndent();
+		}
+	}
+
+	public static class RuleBlock extends TMFormattingBlock {
+
+		private final Alignment lastCodeBlock;
+		private final boolean first;
+
+		public RuleBlock(@NotNull ASTNode node, Wrap wrap, CodeStyleSettings settings,
+						 SpacingBuilder spacingBuilder,
+						 Alignment lastCodeBlock, boolean isFirst) {
+			super(node, null, Indent.getIndent(Indent.Type.NORMAL, false, true), wrap, settings, spacingBuilder);
+			this.lastCodeBlock = lastCodeBlock;
+			this.first = isFirst;
+		}
+
+		@NotNull
+		@Override
+		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
+			if (child.getElementType() == LapgElementTypes.ACTION) {
+				ASTNode treeNext = child.getTreeNext();
+				while (treeNext != null && treeNext.getElementType() == TokenType.WHITE_SPACE) {
+					treeNext = treeNext.getTreeNext();
+				}
+				if (treeNext == null || treeNext.getElementType() == LapgElementTypes.RULEATTRS) {
+					childAlignment = lastCodeBlock;
+				}
+			}
+			return super.buildChild(child, prev, childAlignment);
+		}
+
+		@NotNull
+		@Override
+		public ChildAttributes getChildAttributes(int newChildIndex) {
+			if (getSubBlocks().size() == newChildIndex) {
+				return new ChildAttributes(Indent.getNoneIndent(), null);
+			} else {
+				return new ChildAttributes(Indent.getContinuationIndent(), null);
+			}
+		}
+
+		@Override
+		protected Indent createChildIndent(@NotNull ASTNode child, ASTNode prev) {
+			IElementType type = child.getElementType();
+			if (prev == null) {
+				if (first) {
+					return Indent.getSpaceIndent(2);
+				} else {
+					return Indent.getNoneIndent();
+				}
+			}
+			if (type == LapgElementTypes.REF_RULEPART || type == LapgElementTypes.ACTION
+					|| type == LapgElementTypes.UNORDERED_RULEPART || type == LapgElementTypes.RULEATTRS) {
+				return Indent.getContinuationIndent();
+			}
+
+			return Indent.getNoneIndent();
+		}
+	}
+
 }

@@ -35,14 +35,14 @@ public interface LapgElementTypes {
 	public static final IElementType LEXEM_ATTRS = new LapgElementType(Tokens.lexem_attrs, "lexem attrs");
 	public static final IElementType LEXER_STATE = new LapgElementType(Tokens.lexer_state, "lexer state");
 
-	public static final IElementType NONTERM = new LapgElementType(-1, "non-terminal");
-	public static final IElementType DIRECTIVE = new LapgElementType(-1, "directive");
+	public static final IElementType NONTERM = new LapgElementType(Tokens.non_term, "non-terminal");
+	public static final IElementType DIRECTIVE = new LapgElementType(Tokens.directive, "directive");
 
 	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
-	public static final IElementType RULES = new LapgElementType(Tokens.rules, "rules");
 	public static final IElementType RULEPREFIX = new LapgElementType(Tokens.ruleprefix, "ruleprefix");
 	public static final IElementType RULEATTRS = new LapgElementType(Tokens.rule_attrs, "ruleattrs");
-	public static final IElementType RULEPART = new LapgElementType(Tokens.rulepart, "rulepart");
+	public static final IElementType REF_RULEPART = new LapgElementType(Tokens.refrulepart, "ref rulepart");
+	public static final IElementType UNORDERED_RULEPART = new LapgElementType(Tokens.unorderedrulepart, "unordered rulepart");
 	public static final IElementType RULESYMREF = new LapgElementType(Tokens.rulesymref, "rulesymref");
 	public static final IElementType NEGATIVE_LA = new LapgElementType(Tokens.negative_la, "negative_la");
 
@@ -59,7 +59,7 @@ public interface LapgElementTypes {
 			OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, DIRECTIVE,
-			RULE, RULES, RULEPREFIX, RULEATTRS, RULEPART, RULESYMREF, NEGATIVE_LA,
+			RULE, RULEPREFIX, RULEATTRS, REF_RULEPART, UNORDERED_RULEPART, RULESYMREF, NEGATIVE_LA,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};
 }
