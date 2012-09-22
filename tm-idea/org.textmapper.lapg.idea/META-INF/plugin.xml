@@ -92,6 +92,10 @@
 			implementation="org.textmapper.lapg.idea.lang.syntax.editor.RuleListSelectionHandlerBase" />
 		<findUsagesHandlerFactory
 				implementation="org.textmapper.lapg.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
+		<typedHandler
+			implementation="org.textmapper.lapg.idea.lang.syntax.editor.TmTypedHandler"/>
+		<enterHandlerDelegate
+			implementation="org.textmapper.lapg.idea.lang.syntax.editor.EnterAfterUnmatchedNonTermStartHandler"/>
 		<renamePsiElementProcessor
 				implementation="org.textmapper.lapg.idea.lang.syntax.refactoring.RenameTMLexerStateProcessor"/>
 		<colorSettingsPage implementation="org.textmapper.lapg.idea.lang.syntax.LapgColorsPage"/>
