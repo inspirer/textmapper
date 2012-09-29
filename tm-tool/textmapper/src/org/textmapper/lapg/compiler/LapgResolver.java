@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.parser;
+package org.textmapper.lapg.compiler;
 
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
@@ -25,10 +25,12 @@ import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.gen.TemplateStaticMethods;
+import org.textmapper.lapg.parser.LapgLexer;
 import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
 import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
 import org.textmapper.lapg.parser.LapgLexer.Lexems;
-import org.textmapper.lapg.parser.LapgRuleBuilder.*;
+import org.textmapper.lapg.compiler.LapgRuleBuilder.*;
+import org.textmapper.lapg.parser.LapgTree;
 import org.textmapper.lapg.parser.LapgTree.LapgProblem;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.parser.ast.*;

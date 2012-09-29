@@ -20,7 +20,7 @@ import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.lapg.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.compiler.LapgGrammar;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.lapg.test.cases.LapgTestCase;

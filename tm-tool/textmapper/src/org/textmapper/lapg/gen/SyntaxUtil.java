@@ -17,17 +17,14 @@ package org.textmapper.lapg.gen;
 
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.lapg.common.FileUtil;
-import org.textmapper.lapg.parser.LapgGrammar;
-import org.textmapper.lapg.parser.LapgResolver;
+import org.textmapper.lapg.compiler.LapgGrammar;
+import org.textmapper.lapg.compiler.LapgResolver;
 import org.textmapper.lapg.parser.LapgTree;
 import org.textmapper.lapg.parser.LapgTree.LapgProblem;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.parser.ast.AstExpression;
 import org.textmapper.lapg.parser.ast.AstRoot;
 import org.textmapper.templates.types.TypesRegistry;
-
-import java.io.InputStream;
 
 public class SyntaxUtil {
 

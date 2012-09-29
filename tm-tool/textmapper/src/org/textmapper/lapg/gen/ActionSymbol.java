@@ -17,7 +17,7 @@ package org.textmapper.lapg.gen;
 
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.SymbolRef;
-import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.compiler.LapgGrammar;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;

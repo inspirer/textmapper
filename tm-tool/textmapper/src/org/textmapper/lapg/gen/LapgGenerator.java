@@ -20,7 +20,7 @@ import org.textmapper.lapg.api.LexerData;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.lapg.parser.LapgGrammar;
+import org.textmapper.lapg.compiler.LapgGrammar;
 import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.TemplatesStatus;
