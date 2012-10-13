@@ -144,9 +144,9 @@
 
 	<target name="syntax">
 		<echo message="Lapg parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/lapg/parser"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/tool/parser"/>
 		<echo message="Action parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/lapg/parser/action"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/tool/parser/action"/>
 		<echo message="Regexp parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg/src/org/textmapper/lapg/regex"/>
 		<echo message="Lapg templates parser"/>
@@ -157,24 +157,24 @@
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/a"/>
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/b"/>
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/b"/>
 		<echo message="States parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/states"/>
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/states"/>
 		<echo message="lexeronly parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/lexeronly"/>
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
 		<echo message="NLA test parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/nla">
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/nla">
 			<arg value="-e"/>
 		</java>
 		<echo message="unicode test parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
+			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
 	</target>
 
 	<target name="loadVars">

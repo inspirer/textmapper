@@ -38,25 +38,25 @@ public class BootstrapTest {
 
 	@Test
 	public void testLapgS() {
-		bootstrap("src/org/textmapper/tool/parser", "lapg.s", new String[0], new String[]{
+		bootstrap("src/org/textmapper/tool/parser", "lapg.tm", new String[0], new String[]{
 				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 1);
 	}
 
 	@Test
 	public void testSAction() {
-		bootstrap("src/org/textmapper/tool/parser/action", "saction.s", new String[0],
+		bootstrap("src/org/textmapper/tool/parser/action", "saction.tm", new String[0],
 				new String[]{"SActionLexer.java"}, 0);
 	}
 
 	@Test
 	public void testRegexS() {
-		bootstrap("../lapg/src/org/textmapper/lapg/regex", "regex.s", new String[0], new String[]{
+		bootstrap("../lapg/src/org/textmapper/lapg/regex", "regex.tm", new String[0], new String[]{
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 
 	@Test
 	public void testTypesS() {
-		bootstrap("../templates/src/org/textmapper/templates/types", "types.s", new String[0], new String[]{
+		bootstrap("../templates/src/org/textmapper/templates/types", "types.tm", new String[0], new String[]{
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
@@ -66,51 +66,51 @@ public class BootstrapTest {
 
 	@Test
 	public void testTemplatesS() {
-		bootstrap("../templates/src/org/textmapper/templates/ast", "templates.s", new String[0], new String[]{
+		bootstrap("../templates/src/org/textmapper/templates/ast", "templates.tm", new String[0], new String[]{
 				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"}, 18);
 	}
 
 	@Test
 	public void testXmlS() {
-		bootstrap("../templates/src/org/textmapper/xml", "xml.s", new String[0], new String[]{"XmlParser.java",
+		bootstrap("../templates/src/org/textmapper/xml", "xml.tm", new String[0], new String[]{"XmlParser.java",
 				"XmlTree.java", "XmlLexer.java"}, 0);
 	}
 
 	@Test
 	public void testSampleA() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/a", "sample1.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/a", "sample1.tm", new String[0],
 				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testSampleB() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/b", "sample2.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/b", "sample2.tm", new String[0],
 				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testStates() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/states", "states.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/states", "states.tm", new String[0],
 				new String[]{"StatesLexer.java"}, 0);
 	}
 
 	@Test
 	public void testSampleNoParser() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/lexeronly", "noparser.s",
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/lexeronly", "noparser.tm",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);
 	}
 
 	@Test
 	public void testNLA() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/nla", "nla.s", new String[]{"-e"},
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/nla", "nla.tm", new String[]{"-e"},
 				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
 	}
 
 	@Test
 	public void testUnicodeS() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/unicode", "unicode.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/unicode", "unicode.tm", new String[0],
 				new String[]{"UnicodeTestLexer.java"}, 0);
 	}
 

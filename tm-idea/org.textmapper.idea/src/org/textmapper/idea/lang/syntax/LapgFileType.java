@@ -28,7 +28,7 @@ public class LapgFileType extends LanguageFileType {
 	public static final LapgFileType LAPG_FILE_TYPE = new LapgFileType();
 	public static final Language LAPG_LANGUAGE = LAPG_FILE_TYPE.getLanguage();
 
-	public static final String DEFAULT_EXTENSION = "s";
+	public static final String DEFAULT_EXTENSION = "tm";
 
     private LapgFileType() {
         super(new LapgLanguage());

@@ -46,7 +46,7 @@ public class Tool {
 					"  -v,  --version                 version information\n" +
 					"\n" +
 					"Defaults:\n" +
-					"  inputfile = .s file in the current directory (if single)\n";
+					"  inputfile = .tm file in the current directory (if single)\n";
 
 	public static final String VERSION_MESSAGE =
 			"textmapper v" + VERSION + " build " + BUILD + "\n" +
@@ -76,7 +76,7 @@ public class Tool {
 			File[] grammars = new File(".").listFiles(new FileFilter() {
 				@Override
 				public boolean accept(File pathname) {
-					return pathname.isFile() && pathname.getName().endsWith(".s");
+					return pathname.isFile() && pathname.getName().endsWith(".tm");
 				}
 			});
 			if (grammars == null || grammars.length != 1) {
