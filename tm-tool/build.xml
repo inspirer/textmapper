@@ -130,8 +130,8 @@
 	<target name="deploy" depends="build,buildsource">
 		<copy file="build/textmapper.jar" tofile="libs/textmapper-${suffix}.jar"/>
 		<copy file="build/textmapper-src.jar" tofile="libs/textmapper-${suffix}-src.jar"/>
-		<copy file="build/textmapper.jar" tofile="../tm-idea/org.textmapper.lapg.idea/lib/textmapper-${suffix}.jar"/>
-		<copy file="build/textmapper-src.jar" tofile="../tm-idea/org.textmapper.lapg.idea/lib/textmapper-${suffix}-src.jar"/>
+		<copy file="build/textmapper.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}.jar"/>
+		<copy file="build/textmapper-src.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}-src.jar"/>
 		<copy file="build/textmapper.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper.jar"/>
 		<copy file="build/textmapper-src.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper-src.jar"/>
 	</target>
@@ -192,14 +192,14 @@
 
 		<mkdir dir="build/textmapper/classes"/>
 		<copy includeemptydirs="false" todir="build/textmapper">
-			<fileset dir="../tm-idea/org.textmapper.lapg.idea" includes="lib/**" excludes="lib/.libraries"/>
+			<fileset dir="../tm-idea/org.textmapper.idea" includes="lib/**" excludes="lib/.libraries"/>
 		</copy>
 		<copy includeemptydirs="false" todir="build/textmapper/classes">
-			<fileset dir="../tm-idea/org.textmapper.lapg.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="../tm-idea/org.textmapper.lapg.idea/resources"/>
+			<fileset dir="../tm-idea/org.textmapper.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="../tm-idea/org.textmapper.idea/resources"/>
 		</copy>
 		<javac2 destdir="build/textmapper/classes" source="${source}" target="${target}" includeantruntime="false">
-			<src path="../tm-idea/org.textmapper.lapg.idea/src"/>
+			<src path="../tm-idea/org.textmapper.idea/src"/>
 			<classpath>
 				<fileset dir="build/textmapper/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
