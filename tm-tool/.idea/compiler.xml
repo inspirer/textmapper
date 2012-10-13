@@ -15,7 +15,7 @@
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
       <entry name="?*.ltp" />
-      <entry name="org/textmapper/lapg/test/cases/input/syntax*" />
+      <entry name="org/textmapper/tool/test/cases/input/syntax*" />
       <entry name="?*.tbl" />
       <entry name="?*.types" />
       <entry name="?*.in" />
