@@ -55,7 +55,7 @@
 							</descriptors>
 							<archive>
 								<manifest>
-									<mainClass>org.textmapper.lapg.Lapg</mainClass>
+									<mainClass>org.textmapper.tool.Lapg</mainClass>
 									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								</manifest>
 								<manifestEntries>
