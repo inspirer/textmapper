@@ -131,7 +131,7 @@ public class UnicodeTest {
 				return evaluationContext;
 			}
 		}.gentest(
-				"unicode.tables", "tests/org/textmapper/lapg/test/unicode/templates",
+				"unicode.tables", "tests/org/textmapper/tool/test/unicode/templates",
 				"../lapg/src/org/textmapper/lapg/unicode",
 				new String[]{"UnicodeDataTables.java"});
 

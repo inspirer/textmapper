@@ -28,15 +28,15 @@ import java.io.*;
 /**
  * Main console entry point for Lapg engine.
  */
-public class Lapg {
+public class Tool {
 
 	public static final String VERSION = "0.9.1/java";
 	public static final String BUILD = "2012";
 
 	public static final String HELP_MESSAGE =
-			"lapg - Lexer and Parser generator\n" +
-					"usage: lapg [OPTIONS]... [inputfile]\n" +
-					"       lapg [-h|-v]\n" +
+			"textmapper - Lexer and Parser generator\n" +
+					"usage: textmapper [OPTIONS]... [inputfile]\n" +
+					"       textmapper [-h|-v]\n" +
 					"\n" +
 					"Options:\n" +
 					LapgOptions.HELP_OPTIONS +
@@ -49,7 +49,7 @@ public class Lapg {
 					"  inputfile = .s file in the current directory (if single)\n";
 
 	public static final String VERSION_MESSAGE =
-			"lapg v" + VERSION + " build " + BUILD + "\n" +
+			"textmapper v" + VERSION + " build " + BUILD + "\n" +
 					"Evgeny Gryaznov, 2002-2012, egryaznov@gmail.com\n";
 
 
@@ -67,7 +67,7 @@ public class Lapg {
 
 		LapgOptions options = LapgOptions.parseArguments(args, System.err);
 		if (options == null) {
-			System.err.println("Try 'lapg --help' for more information.");
+			System.err.println("Try 'textmapper --help' for more information.");
 			System.exit(1);
 			return;
 		}
@@ -81,11 +81,11 @@ public class Lapg {
 			});
 			if (grammars == null || grammars.length != 1) {
 				if (grammars == null || grammars.length == 0) {
-					System.err.println("lapg: no syntax files found, please specify");
+					System.err.println("textmapper: no syntax files found, please specify");
 				} else {
-					System.err.println("lapg: " + grammars.length + " syntax files found, please specify");
+					System.err.println("textmapper: " + grammars.length + " syntax files found, please specify");
 				}
-				System.err.println("Try 'lapg --help' for more information.");
+				System.err.println("Try 'textmapper --help' for more information.");
 				System.exit(1);
 				return;
 			} else {
@@ -99,7 +99,7 @@ public class Lapg {
 			try {
 				stream = new FileInputStream(options.getInput());
 			} catch (FileNotFoundException ex) {
-				System.err.println("lapg: file not found: " + options.getInput());
+				System.err.println("textmapper: file not found: " + options.getInput());
 				System.exit(1);
 				return;
 			}
@@ -108,7 +108,7 @@ public class Lapg {
 		}
 		String contents = FileUtil.getFileContents(stream, FileUtil.DEFAULT_ENCODING);
 		if (contents == null) {
-			System.err.println("lapg: cannot read file: " + options.getInput());
+			System.err.println("textmapper: cannot read file: " + options.getInput());
 			System.exit(1);
 			return;
 		}
@@ -151,7 +151,7 @@ public class Lapg {
 			try {
 				return new PrintStream(new FileOutputStream(name));
 			} catch (FileNotFoundException ex) {
-				handle(KIND_ERROR, "lapg: IO error: " + ex.getMessage());
+				handle(KIND_ERROR, "textmapper: IO error: " + ex.getMessage());
 				return System.err;
 			}
 		}

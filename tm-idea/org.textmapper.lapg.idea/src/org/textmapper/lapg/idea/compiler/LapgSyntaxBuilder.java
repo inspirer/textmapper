@@ -19,11 +19,11 @@ package org.textmapper.lapg.idea.compiler;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.textmapper.lapg.api.ProcessingStatus;
-import org.textmapper.lapg.gen.ProcessingStrategy;
-import org.textmapper.lapg.common.GeneratedFile;
-import org.textmapper.lapg.gen.LapgGenerator;
-import org.textmapper.lapg.gen.LapgOptions;
-import org.textmapper.lapg.parser.LapgTree.TextSource;
+import org.textmapper.tool.gen.ProcessingStrategy;
+import org.textmapper.tool.common.GeneratedFile;
+import org.textmapper.tool.gen.LapgGenerator;
+import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.templates.storage.FileBasedResourceLoader;
 import org.textmapper.templates.storage.IResourceLoader;
 

@@ -23,8 +23,8 @@ import org.textmapper.lapg.api.Lexem;
 import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
 import org.textmapper.tool.parser.LapgLexer.Lexems;
 import org.textmapper.tool.parser.LapgTree.TextSource;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
 import org.textmapper.tool.parser.ast.*;
+import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
 
 public class LapgParser {
 
@@ -606,7 +606,7 @@ public class LapgParser {
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 2:  // input ::= options lexer_parts grammar_partsopt
-				  lapg_gg.sym = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head - 2].sym), ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset);
+				  lapg_gg.sym = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head - 2].sym), ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 3:  // input ::= lexer_parts grammar_partsopt
 				  lapg_gg.sym = new AstRoot(null, ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -624,7 +624,7 @@ public class LapgParser {
 				 lapg_gg.sym = new AstIdentifier(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 9:  // symref ::= ID
-				 lapg_gg.sym = new AstReference(((String)lapg_m[lapg_head].sym), AstReference.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset);
+				 lapg_gg.sym = new AstReference(((String)lapg_m[lapg_head].sym), AstReference.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // type ::= '(' scon ')'
 				 lapg_gg.sym = ((String)lapg_m[lapg_head - 1].sym); 
@@ -633,7 +633,7 @@ public class LapgParser {
 				 lapg_gg.sym = source.getText(lapg_m[lapg_head - 2].offset+1, lapg_m[lapg_head].endoffset-1); 
 				break;
 			case 28:  // pattern ::= regexp
-				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset);
+				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 29:  // lexer_parts ::= lexer_part
 				 lapg_gg.sym = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.sym).add(((AstLexerPart)lapg_m[lapg_head].sym)); 
@@ -648,7 +648,7 @@ public class LapgParser {
 				 lapg_gg.sym = new AstNamedPattern(((String)lapg_m[lapg_head - 2].sym), ((AstRegexp)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 38:  // lexeme ::= identifier typeopt ':'
-				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].sym), ((String)lapg_m[lapg_head - 1].sym), null, null, null, null, null, source, lapg_gg.offset, lapg_gg.endoffset);
+				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].sym), ((String)lapg_m[lapg_head - 1].sym), null, null, null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 47:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
 				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 7].sym), ((String)lapg_m[lapg_head - 6].sym), ((AstRegexp)lapg_m[lapg_head - 4].sym), ((AstReference)lapg_m[lapg_head - 3].sym), ((Integer)lapg_m[lapg_head - 2].sym), ((AstLexemAttrs)lapg_m[lapg_head - 1].sym), ((AstCode)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 

@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "Lapg"
-package = "org.textmapper.lapg.parser"
+package = "org.textmapper.tool.parser"
 maxtoken = 2048
 breaks = true
 gentree = true
@@ -371,7 +371,7 @@ ${template java.imports-}
 ${call base-}
 import java.util.List;
 import java.util.ArrayList;
-import org.textmapper.lapg.parser.ast.*;
+import org.textmapper.tool.parser.ast.*;
 ${end}
 
 ${template java_lexer.lexercode}
@@ -389,12 +389,12 @@ public void setSkipComments(boolean skip) {
 
 private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
-	org.textmapper.lapg.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.lapg.parser.action.@SActionLexer.ErrorReporter() {
+	org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter() {
 		public void error(int start, int line, String s) {
 			reporter.error(start, start + 1, line, s);
 		}
 	};
-	org.textmapper.lapg.parser.action.@SActionLexer l = new org.textmapper.lapg.parser.action.@SActionLexer(innerreporter) {
+	org.textmapper.tool.parser.action.@SActionLexer l = new org.textmapper.tool.parser.action.@SActionLexer(innerreporter) {
 		@Override
 		protected char nextChar() throws java.io.@IOException {
 			if (ind[0] < 2) {
@@ -404,10 +404,10 @@ private boolean skipAction() throws java.io.@IOException {
 			return chr;
 		}
 	};
-	org.textmapper.lapg.parser.action.@SActionParser p = new org.textmapper.lapg.parser.action.@SActionParser(innerreporter);
+	org.textmapper.tool.parser.action.@SActionParser p = new org.textmapper.tool.parser.action.@SActionParser(innerreporter);
 	try {
 		p.parse(l);
-	} catch (org.textmapper.lapg.parser.action.@SActionParser.ParseException e) {
+	} catch (org.textmapper.tool.parser.action.@SActionParser.ParseException e) {
 		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
 		return false;
 	}
@@ -446,7 +446,7 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-org.textmapper.lapg.parser.LapgTree.@TextSource source;
+org.textmapper.tool.parser.LapgTree.@TextSource source;
 ${end}
 
 ${template java_tree.createParser-}

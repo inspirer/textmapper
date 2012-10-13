@@ -32,7 +32,7 @@ import org.textmapper.lapg.idea.lang.syntax.lexer.LapgElementType;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgLexerAdapter;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textmapper.lapg.idea.lang.syntax.psi.*;
-import org.textmapper.lapg.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.LapgParser.Tokens;
 
 public class LapgParserDefinition implements ParserDefinition {
 

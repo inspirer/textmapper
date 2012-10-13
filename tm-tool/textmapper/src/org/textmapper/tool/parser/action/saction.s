@@ -16,7 +16,7 @@
 
 lang = "java"
 prefix = "SAction"
-package = "org.textmapper.lapg.parser.action"
+package = "org.textmapper.tool.parser.action"
 positions = "offset"
 endpositions = ""
 lexerInput = "custom"

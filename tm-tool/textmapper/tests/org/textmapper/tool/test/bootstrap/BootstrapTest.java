@@ -38,13 +38,13 @@ public class BootstrapTest {
 
 	@Test
 	public void testLapgS() {
-		bootstrap("src/org/textmapper/lapg/parser", "lapg.s", new String[0], new String[]{
+		bootstrap("src/org/textmapper/tool/parser", "lapg.s", new String[0], new String[]{
 				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 1);
 	}
 
 	@Test
 	public void testSAction() {
-		bootstrap("src/org/textmapper/lapg/parser/action", "saction.s", new String[0],
+		bootstrap("src/org/textmapper/tool/parser/action", "saction.s", new String[0],
 				new String[]{"SActionLexer.java"}, 0);
 	}
 
@@ -78,39 +78,39 @@ public class BootstrapTest {
 
 	@Test
 	public void testSampleA() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/a", "sample1.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/a", "sample1.s", new String[0],
 				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testSampleB() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/b", "sample2.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/b", "sample2.s", new String[0],
 				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
 						"ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test
 	public void testStates() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/states", "states.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/states", "states.s", new String[0],
 				new String[]{"StatesLexer.java"}, 0);
 	}
 
 	@Test
 	public void testSampleNoParser() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/lexeronly", "noparser.s",
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/lexeronly", "noparser.s",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);
 	}
 
 	@Test
 	public void testNLA() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/nla", "nla.s", new String[]{"-e"},
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/nla", "nla.s", new String[]{"-e"},
 				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
 	}
 
 	@Test
 	public void testUnicodeS() {
-		bootstrap("tests/org/textmapper/lapg/test/bootstrap/unicode", "unicode.s", new String[0],
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/unicode", "unicode.s", new String[0],
 				new String[]{"UnicodeTestLexer.java"}, 0);
 	}
 

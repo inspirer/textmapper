@@ -25,11 +25,11 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgElementType;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgTemplatesElementType;
-import org.textmapper.lapg.parser.LapgLexer;
-import org.textmapper.lapg.parser.LapgLexer.ErrorReporter;
-import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
-import org.textmapper.lapg.parser.LapgParser.ParseException;
-import org.textmapper.lapg.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.LapgLexer;
+import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
+import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
+import org.textmapper.tool.parser.LapgParser.ParseException;
+import org.textmapper.tool.parser.LapgParser.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -88,7 +88,7 @@ public class LapgParser implements PsiParser {
 		grammar.done(LapgElementTypes.GRAMMAR);
 	}
 
-	private static class LapgParserEx extends org.textmapper.lapg.parser.LapgParser {
+	private static class LapgParserEx extends org.textmapper.tool.parser.LapgParser {
 
 		private final PsiBuilder myBuilder;
 		private final Stack<Marker> markers = new Stack<Marker>();

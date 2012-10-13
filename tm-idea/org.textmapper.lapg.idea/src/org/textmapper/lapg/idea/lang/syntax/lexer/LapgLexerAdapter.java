@@ -19,9 +19,9 @@ package org.textmapper.lapg.idea.lang.syntax.lexer;
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import org.textmapper.lapg.parser.LapgLexer;
-import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
-import org.textmapper.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.LapgLexer;
+import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
+import org.textmapper.tool.parser.LapgLexer.Lexems;
 
 import java.io.IOException;
 import java.io.Reader;

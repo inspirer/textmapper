@@ -20,7 +20,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import org.textmapper.lapg.idea.lang.syntax.LapgFileType;
 import org.textmapper.lapg.idea.lang.syntax.lexer.LapgElementType;
-import org.textmapper.lapg.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.LapgParser.Tokens;
 
 public interface LapgElementTypes {
 	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE);

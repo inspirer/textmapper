@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Generate Java AST" type="Application" factoryName="Application">
     <extension name="coverage" enabled="false" merge="false" />
-    <option name="MAIN_CLASS_NAME" value="org.textmapper.lapg.Lapg" />
+    <option name="MAIN_CLASS_NAME" value="org.textmapper.tool.Tool" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="-x -i ../../src/org/textmapper/lapg/gen/templates" />
+    <option name="PROGRAM_PARAMETERS" value="-x -i ../../src/org/textmapper/tool/gen/templates" />
     <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/textmapper/test/java" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />

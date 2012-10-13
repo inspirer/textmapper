@@ -29,7 +29,7 @@ public class GenericParserTest {
 	@Test
 	public void testGenericParser() {
 		new LapgTemplatesTestHelperEx().gentest(
-				"java.main", "tests/org/textmapper/lapg/test/eval/templates",
+				"java.main", "tests/org/textmapper/tool/test/eval/templates",
 				"../lapg/src/org/textmapper/lapg/eval",
 				new String[]{"GenericParser.java", "GenericLexer.java"});
 	}

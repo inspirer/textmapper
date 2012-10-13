@@ -18,8 +18,8 @@ package org.textmapper.lapg.idea.lang.syntax.refactoring;
 
 import com.intellij.lang.refactoring.NamesValidator;
 import com.intellij.openapi.project.Project;
-import org.textmapper.lapg.parser.LapgLexer;
-import org.textmapper.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.LapgLexer;
+import org.textmapper.tool.parser.LapgLexer.Lexems;
 
 import java.io.IOException;
 import java.io.StringReader;

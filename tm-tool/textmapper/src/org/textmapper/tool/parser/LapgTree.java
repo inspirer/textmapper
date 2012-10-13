@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.ArrayList;
 import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
 import org.textmapper.tool.parser.LapgParser.ParseException;
-import org.textmapper.tool.parser.ast.AstExpression;
-import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.*;
 
 public class LapgTree<T> {
 

@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 public abstract class LapgTestCase {
 
-	protected static final String TESTCONTAINER = "org/textmapper/lapg/test/cases/input";
+	protected static final String TESTCONTAINER = "org/textmapper/tool/test/cases/input";
 
 	protected InputStream openStream(String name, String root) {
 		InputStream is = getClass().getClassLoader().getResourceAsStream(root + "/" + name);

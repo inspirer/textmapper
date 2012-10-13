@@ -19,7 +19,7 @@ package org.textmapper.lapg.idea.lang.syntax.lexer;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import org.textmapper.lapg.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.LapgLexer.Lexems;
 
 public interface LapgTokenTypes {
 

@@ -2,7 +2,7 @@
 
 lang = "java"
 prefix = "States"
-package = "org.textmapper.lapg.test.bootstrap.states"
+package = "org.textmapper.tool.test.bootstrap.states"
 
 [initial]
 
