@@ -177,9 +177,15 @@
 			  dir="textmapper/tests/org/textmapper/lapg/test/bootstrap/unicode"/>
 	</target>
 
-	<target name="plugin" depends="rev">
-		<property file="build.properties"/>
-		<property name="ideaPath" value="${home.idea_ic_11}"/>
+	<target name="loadVars">
+		<property environment="env"/>
+		<fail message="Please, define IDEA_PATH environment variable" unless="env.IDEA_PATH"/>
+		<property name="ideaPath" location="${env.IDEA_PATH}"/>
+		<fail message="Please, define IDEA_PLUGINS environment variable" unless="env.IDEA_PLUGINS"/>
+		<property name="ideaPlugins" location="${env.IDEA_PLUGINS}"/>
+	</target>
+
+	<target name="plugin" depends="rev, loadVars">
 
 		<path id="javac2.classpath">
 			<pathelement location="${ideaPath}/lib/javac2.jar"/>
@@ -219,8 +225,8 @@
 		<delete dir="build/textmapper/classes"/>
 	</target>
 
-	<target name="install-plugin" depends="plugin">
-		<property name="pluginPath" value="${home.idea_ic_11.plugins}"/>
+	<target name="install-plugin" depends="loadVars, plugin">
+		<property name="pluginPath" value="${ideaPlugins}"/>
 		<copy includeemptydirs="false" todir="${pluginPath}/textmapper/">
 			<fileset dir="build/textmapper" includes="lib/**"/>
 		</copy>
