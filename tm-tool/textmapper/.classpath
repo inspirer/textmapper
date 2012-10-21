@@ -5,6 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.textmapper.templates"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.textmapper.lapg.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.textmapper.lapg"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
