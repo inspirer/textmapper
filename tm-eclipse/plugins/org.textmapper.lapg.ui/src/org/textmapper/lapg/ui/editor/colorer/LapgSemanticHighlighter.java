@@ -3,12 +3,12 @@ package org.textmapper.lapg.ui.editor.colorer;
 import org.textmapper.lapg.common.ui.editor.ISourceStructure;
 import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textmapper.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
-import org.textmapper.lapg.parser.ast.AbstractVisitor;
-import org.textmapper.lapg.parser.ast.AstError;
-import org.textmapper.lapg.parser.ast.AstIdentifier;
-import org.textmapper.lapg.parser.ast.AstNode;
-import org.textmapper.lapg.parser.ast.AstReference;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.AstError;
+import org.textmapper.tool.parser.ast.AstIdentifier;
+import org.textmapper.tool.parser.ast.AstNode;
+import org.textmapper.tool.parser.ast.AstReference;
 
 public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanticHighlighter {
 

@@ -15,13 +15,12 @@ package org.textmapper.lapg.ui.editor;
 import java.io.IOException;
 import java.io.Reader;
 
-import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
-import org.textmapper.lapg.parser.LapgLexer;
-import org.textmapper.lapg.parser.LapgLexer.LapgSymbol;
-import org.textmapper.lapg.parser.LapgLexer.Lexems;
-
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
+import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
+import org.textmapper.tool.parser.LapgLexer;
+import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
+import org.textmapper.tool.parser.LapgLexer.Lexems;
 
 public class LapgPartitionScanner extends LexerBasedPartitionScanner implements IPartitions {
 

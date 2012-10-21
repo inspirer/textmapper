@@ -3,14 +3,14 @@
 <plugin>
    <extension point="org.eclipse.core.contenttype.contentTypes" id="contentTypes">
       <content-type
-         id="lapgText"
+         id="textmapperText"
          name="%source_name"    
          base-type="org.eclipse.core.runtime.text"
-         file-extensions="s"/>
+         file-extensions="tm"/>
    </extension>
 
    <extension point="org.eclipse.team.core.fileTypes" id="fileTypes">
-      <fileTypes extension="s" type="text"/>
+      <fileTypes extension="tm" type="text"/>
    </extension>
 
    <extension point="org.eclipse.ui.editors" id="textEditors">
@@ -20,7 +20,7 @@
          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
          class="org.textmapper.lapg.ui.editor.LapgSourceEditor"
          id="org.textmapper.lapg.ui.editor.LapgSourceEditor">
-         <contentTypeBinding contentTypeId="org.textmapper.lapg.ui.lapgText"/> 
+         <contentTypeBinding contentTypeId="org.textmapper.lapg.ui.textmapperText"/> 
       </editor>
    </extension>
    
@@ -29,7 +29,7 @@
          name="Lapg Source Setup Participant"
          point="org.eclipse.core.filebuffers.documentSetup">
       <participant
-            contentTypeId="org.textmapper.lapg.ui.lapgText"
+            contentTypeId="org.textmapper.lapg.ui.textmapperText"
             class="org.textmapper.lapg.ui.editor.LapgSourceSetupParticipant">
       </participant>
    </extension>

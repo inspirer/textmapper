@@ -31,11 +31,11 @@ import org.textmapper.lapg.common.ui.editor.StructuredTextReconciler.IReconcilin
 import org.textmapper.lapg.common.ui.editor.StructuredTextViewerConfiguration;
 import org.textmapper.lapg.common.ui.editor.colorer.DefaultHighlightingManager;
 import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import org.textmapper.lapg.gen.LapgOptions;
 import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.lapg.ui.LapgUIActivator.LapgSettingsListener;
 import org.textmapper.lapg.ui.editor.colorer.LapgHighlightingManager;
 import org.textmapper.lapg.ui.editor.colorer.LapgSemanticHighlighter;
+import org.textmapper.tool.gen.LapgOptions;
 
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener, LapgSettingsListener {
 

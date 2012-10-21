@@ -77,8 +77,9 @@ public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 	public void addPages() {
 		mainPage = new NewSyntaxFileCreationPage("newFilePage1", getSelection());
 		mainPage.setTitle("New Syntax File");
-		mainPage.setDescription("Create a new Lapg Syntax file (.s)");
-		mainPage.setFileName("syntax.s");
+		// FIXME use string from plugin.properties
+		mainPage.setDescription("Create a new Textmapper file (.tm)");
+		mainPage.setFileName("syntax.tm");
 		addPage(mainPage);
 	}
 

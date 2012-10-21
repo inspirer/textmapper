@@ -29,19 +29,11 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
-import org.textmapper.lapg.Lapg;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.common.ui.editor.ISourceStructure;
 import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
 import org.textmapper.lapg.common.ui.editor.StructuredTextReconcilingStrategy;
-import org.textmapper.lapg.gen.LapgOptions;
-import org.textmapper.lapg.parser.LapgGrammar;
-import org.textmapper.lapg.parser.LapgResolver;
-import org.textmapper.lapg.parser.LapgTree;
-import org.textmapper.lapg.parser.LapgTree.LapgProblem;
-import org.textmapper.lapg.parser.LapgTree.TextSource;
-import org.textmapper.lapg.parser.ast.AstRoot;
 import org.textmapper.lapg.ui.WorkspaceResourceLoader;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 import org.textmapper.templates.api.SourceElement;
@@ -50,6 +42,14 @@ import org.textmapper.templates.storage.ClassResourceLoader;
 import org.textmapper.templates.storage.IResourceLoader;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TypesRegistry;
+import org.textmapper.tool.Tool;
+import org.textmapper.tool.compiler.LapgGrammar;
+import org.textmapper.tool.compiler.LapgResolver;
+import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.ast.AstRoot;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
@@ -75,7 +75,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 			}
 		}
 		if (options == null || options.isUseDefaultTemplates()) {
-			loaders.add(new ClassResourceLoader(Lapg.class.getClassLoader(), "org/textmapper/lapg/gen/templates", "utf8"));
+			loaders.add(new ClassResourceLoader(Tool.class.getClassLoader(), "org/textmapper/tool/gen/templates", "utf8"));
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}

@@ -15,12 +15,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.textmapper.lapg.gen.LapgOptions;
 import org.textmapper.lapg.ui.settings.SettingsPersister;
+import org.textmapper.tool.gen.LapgOptions;
 
 public class LapgProjectSettings {
 
-	public static final IPath SETTINGS_FILE = new Path(".lapg");
+	public static final IPath SETTINGS_FILE = new Path(".textmapper");
 
 	private final IFile myFile;
 	private volatile Map<IPath, LapgOptions> mySettings;

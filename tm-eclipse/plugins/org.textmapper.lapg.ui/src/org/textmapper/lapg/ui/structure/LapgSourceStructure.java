@@ -3,19 +3,18 @@ package org.textmapper.lapg.ui.structure;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.common.ui.editor.ISourceStructure;
-import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
-import org.textmapper.lapg.parser.LapgTree;
-import org.textmapper.lapg.parser.LapgTree.LapgProblem;
-import org.textmapper.lapg.parser.ast.AbstractVisitor;
-import org.textmapper.lapg.parser.ast.AstRoot;
-import org.textmapper.lapg.ui.LapgUIActivator;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.common.ui.editor.ISourceStructure;
+import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
+import org.textmapper.lapg.ui.LapgUIActivator;
+import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.AstRoot;
 
 public class LapgSourceStructure implements ISourceStructure {
 

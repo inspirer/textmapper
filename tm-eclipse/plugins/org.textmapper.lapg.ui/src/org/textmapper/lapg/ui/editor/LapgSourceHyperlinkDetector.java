@@ -19,16 +19,14 @@ import org.eclipse.jface.text.hyperlink.AbstractHyperlinkDetector;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 import org.eclipse.ui.texteditor.ITextEditor;
-
 import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
-import org.textmapper.lapg.common.ui.editor.StructuredTextReconciler.IReconcilingListener;
-import org.textmapper.lapg.parser.LapgTree;
-import org.textmapper.lapg.parser.ast.AbstractVisitor;
-import org.textmapper.lapg.parser.ast.AstReference;
-import org.textmapper.lapg.parser.ast.AstRoot;
-import org.textmapper.lapg.parser.ast.IAstNode;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.AstReference;
+import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.IAstNode;
 
 public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 

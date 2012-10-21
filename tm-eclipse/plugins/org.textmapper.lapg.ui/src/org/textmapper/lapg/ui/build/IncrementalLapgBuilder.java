@@ -32,18 +32,18 @@ import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.lapg.common.GeneratedFile;
-import org.textmapper.lapg.gen.LapgGenerator;
-import org.textmapper.lapg.gen.LapgOptions;
-import org.textmapper.lapg.gen.ProcessingStrategy;
-import org.textmapper.lapg.parser.LapgTree;
-import org.textmapper.lapg.parser.LapgTree.LapgProblem;
-import org.textmapper.lapg.parser.LapgTree.TextSource;
 import org.textmapper.lapg.ui.FileUtil;
 import org.textmapper.lapg.ui.LapgProjectSettings;
 import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.lapg.ui.WorkspaceResourceLoader;
 import org.textmapper.templates.storage.IResourceLoader;
+import org.textmapper.tool.common.GeneratedFile;
+import org.textmapper.tool.gen.LapgGenerator;
+import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.ProcessingStrategy;
+import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.LapgTree.TextSource;
 
 public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 

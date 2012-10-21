@@ -18,15 +18,15 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.textmapper.lapg.parser.ast.AstGrammarPart;
-import org.textmapper.lapg.parser.ast.AstIdentifier;
-import org.textmapper.lapg.parser.ast.AstLexeme;
-import org.textmapper.lapg.parser.ast.AstLexerPart;
-import org.textmapper.lapg.parser.ast.AstNonTerm;
-import org.textmapper.lapg.parser.ast.AstReference;
-import org.textmapper.lapg.parser.ast.AstRoot;
-import org.textmapper.lapg.parser.ast.IAstNode;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
+import org.textmapper.tool.parser.ast.AstGrammarPart;
+import org.textmapper.tool.parser.ast.AstIdentifier;
+import org.textmapper.tool.parser.ast.AstLexeme;
+import org.textmapper.tool.parser.ast.AstLexerPart;
+import org.textmapper.tool.parser.ast.AstNonTerm;
+import org.textmapper.tool.parser.ast.AstReference;
+import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.IAstNode;
 
 public class LapgReferenceHyperlink implements IHyperlink {
 

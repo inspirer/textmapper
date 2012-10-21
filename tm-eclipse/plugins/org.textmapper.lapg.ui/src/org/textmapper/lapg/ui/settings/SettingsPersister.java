@@ -3,15 +3,14 @@ package org.textmapper.lapg.ui.settings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.textmapper.lapg.gen.LapgOptions;
 import org.textmapper.lapg.ui.settings.SettingsTree.TextSource;
+import org.textmapper.tool.gen.LapgOptions;
 
 public class SettingsPersister {
 

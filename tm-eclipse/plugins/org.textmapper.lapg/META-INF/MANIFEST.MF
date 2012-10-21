@@ -6,14 +6,15 @@ Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-ClassPath: textmapper.jar
 Bundle-Localization: plugin
-Export-Package: org.textmapper.lapg,
+Export-Package: org.textmapper.tool,
  org.textmapper.lapg.api,
- org.textmapper.lapg.common,
- org.textmapper.lapg.gen,
+ org.textmapper.tool.common,
+ org.textmapper.tool.gen,
  org.textmapper.lapg.lalr,
  org.textmapper.lapg.lex,
- org.textmapper.lapg.parser,
- org.textmapper.lapg.parser.ast,
+ org.textmapper.tool.compiler,
+ org.textmapper.tool.parser,
+ org.textmapper.tool.parser.ast,
  org.textmapper.templates.api,
  org.textmapper.templates.ast,
  org.textmapper.templates.storage,
