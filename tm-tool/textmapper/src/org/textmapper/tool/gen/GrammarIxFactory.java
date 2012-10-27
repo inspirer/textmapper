@@ -140,7 +140,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		private boolean isRulePart(SymbolRef ref) {
-			return !ref.isHidden() && ref.getTarget() != null && ref.getTarget().getKind() != Symbol.KIND_LAYOUT;
+			return ref.getTarget() != null && ref.getTarget().getKind() != Symbol.KIND_LAYOUT;
 		}
 
 		private int getRightOffset(int index, SymbolRef[] right) {

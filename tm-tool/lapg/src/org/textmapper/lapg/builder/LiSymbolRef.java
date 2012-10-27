@@ -22,14 +22,12 @@ class LiSymbolRef implements SymbolRef, DerivedSourceElement {
 	private final Symbol target;
 	private final String alias;
 	private final NegativeLookahead negLA;
-	private final boolean isHidden;
 	private final SourceElement origin;
 
-	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, boolean isHidden, SourceElement origin) {
+	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, SourceElement origin) {
 		this.target = target;
 		this.alias = alias;
 		this.negLA = negLA;
-		this.isHidden = isHidden;
 		this.origin = origin;
 	}
 
@@ -41,11 +39,6 @@ class LiSymbolRef implements SymbolRef, DerivedSourceElement {
 	@Override
 	public NegativeLookahead getNegativeLA() {
 		return negLA;
-	}
-
-	@Override
-	public boolean isHidden() {
-		return isHidden;
 	}
 
 	@Override

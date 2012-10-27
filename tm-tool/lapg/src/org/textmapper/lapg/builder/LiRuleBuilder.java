@@ -54,15 +54,7 @@ class LiRuleBuilder implements RuleBuilder {
 			}
 			nla = new LiNegativeLookahead(unwanted.toArray(new Symbol[unwanted.size()]));
 		}
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, false, origin);
-		right.add(ref);
-		return ref;
-	}
-
-	@Override
-	public SymbolRef addHidden(String alias, Symbol sym, SourceElement origin) {
-		parent.check(sym);
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, null, true, origin);
+		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, origin);
 		right.add(ref);
 		return ref;
 	}

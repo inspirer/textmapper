@@ -27,16 +27,4 @@ public interface SymbolRef extends SourceElement {
 	String getAlias();
 
 	NegativeLookahead getNegativeLA();
-
-	/**
-	 * Rule:
-	 * A ::= x y? { $$ = new A($x, $y); };
-	 * Is expanded into 2 rules with hidden refs:
-	 * A ::=
-	 * x y                 // $y -> lapg_m[lapg_head]
-	 * | x y(hidden) ;       // $y -> null (because it is hidden)
-	 *
-	 * @return true if reference is omited
-	 */
-	boolean isHidden();
 }

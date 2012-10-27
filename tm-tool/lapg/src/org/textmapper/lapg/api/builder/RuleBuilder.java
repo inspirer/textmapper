@@ -26,8 +26,6 @@ public interface RuleBuilder {
 
 	SymbolRef addPart(String alias, Symbol sym, Collection<Symbol> unwanted, SourceElement origin);
 
-	SymbolRef addHidden(String alias, Symbol sym, SourceElement origin);
-
 	void setPriority(Symbol sym);
 
 	RuleBuilder copy();
