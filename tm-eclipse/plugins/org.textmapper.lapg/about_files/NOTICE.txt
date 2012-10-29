@@ -6,10 +6,6 @@
 
    Lexer and Parser Generator
    http://sourceforge.net/projects/lapg/
-   Copyright 2002-2010 Evgeny Gryaznov
+   Copyright 2002-2012 Evgeny Gryaznov
 
    This product is developed by Evgeny Gryaznov, egryaznov@gmail.com
-
-   This product includes:
-     - emit_table_as_string/unpackFromString algorithm developed by Raimondas
-       Lencevicius for JLex
