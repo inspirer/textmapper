@@ -24,21 +24,21 @@ import org.textmapper.lapg.api.regex.RegexMatcher;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.common.FormatUtil;
-import org.textmapper.tool.gen.TemplateStaticMethods;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
-import org.textmapper.tool.compiler.LapgRuleBuilder.*;
-import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
-import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
 import org.textmapper.templates.api.types.IType;
 import org.textmapper.templates.types.TiExpressionBuilder;
 import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.templates.types.TypesUtil;
+import org.textmapper.tool.compiler.LapgRuleBuilder.*;
+import org.textmapper.tool.gen.TemplateStaticMethods;
+import org.textmapper.tool.parser.LapgLexer;
+import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
+import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
+import org.textmapper.tool.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.tool.parser.ast.*;
 
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class LapgResolver {
 
 	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
 	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
-	private final Map<ListDescriptor, Symbol> listsMap = new HashMap<ListDescriptor, Symbol>();
+	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
 
 	private Map<String, Object> options;
 	private GrammarBuilder builder;
@@ -143,7 +143,7 @@ public class LapgResolver {
 		return null;
 	}
 
-	private Symbol create(AstIdentifier id, String type, int kind, Symbol softClass) {
+	private Symbol create(AstIdentifier id, String type, int kind, Terminal softClass) {
 		String name = id.getName();
 		if (symbolsMap.containsKey(name)) {
 			Symbol sym = symbolsMap.get(name);
@@ -159,9 +159,16 @@ public class LapgResolver {
 			}
 			return sym;
 		} else {
-			Symbol sym = kind == Symbol.KIND_SOFTTERM
-					? builder.addSoftSymbol(name, softClass, id)
-					: builder.addSymbol(kind, name, type, id);
+			Symbol sym;
+			if (kind == Symbol.KIND_SOFTTERM) {
+				sym = builder.addSoftTerminal(name, softClass, id);
+			} else if (kind == Symbol.KIND_NONTERM) {
+				sym = builder.addNonterminal(name, type, id);
+			} else if (kind == Symbol.KIND_TERM) {
+				sym = builder.addTerminal(name, type, id);
+			} else {
+				throw new IllegalArgumentException();
+			}
 			symbolsMap.put(name, sym);
 			return sym;
 		}
@@ -169,29 +176,38 @@ public class LapgResolver {
 
 	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
 
-	private Symbol createNested(int kind, String type, Symbol outer, Symbol softClass, IAstNode source) {
+	private Symbol createNested(int kind, String type, Symbol outer, Terminal softClass, IAstNode source) {
 		final String base_ = outer.getName() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 		while (symbolsMap.containsKey(base_ + index)) {
 			index++;
 		}
 		String name = base_ + index;
-		Symbol sym = kind == Symbol.KIND_SOFTTERM
-				? builder.addSoftSymbol(name, softClass, source)
-				: builder.addSymbol(kind, name, type, source);
+
+		Symbol sym;
+		if (kind == Symbol.KIND_SOFTTERM) {
+			sym = builder.addSoftTerminal(name, softClass, source);
+		} else if (kind == Symbol.KIND_NONTERM) {
+			sym = builder.addNonterminal(name, type, source);
+		} else if (kind == Symbol.KIND_TERM) {
+			sym = builder.addTerminal(name, type, source);
+		} else {
+			throw new IllegalArgumentException();
+		}
+
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;
 	}
 
-	private Symbol createDerived(Symbol element, String suffix, IAstNode source) {
+	private Nonterminal createDerived(Symbol element, String suffix, IAstNode source) {
 		final String base_ = element.getName() + suffix;
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
 		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
 			index++;
 		}
 		String name = index == 0 ? base_ : base_ + index;
-		Symbol sym = builder.addSymbol(Symbol.KIND_NONTERM, name, null, source);
+		Nonterminal sym = builder.addNonterminal(name, null, source);
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;
@@ -204,7 +220,7 @@ public class LapgResolver {
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
-					Symbol symopt = create(
+					Nonterminal symopt = (Nonterminal) create(
 							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), Symbol.KIND_NONTERM, null);
 					RuleBuilder rb = builder.rule(null, symopt, id);
@@ -350,7 +366,7 @@ public class LapgResolver {
 					continue;
 				}
 
-				Symbol s = create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
+				Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
 				RegexPart regex;
 				try {
 					regex = LapgCore.parse(s.getName(), lexeme.getRegexp().getRegexp());
@@ -416,7 +432,7 @@ public class LapgResolver {
 								+ "' cannot have a semantic action");
 					}
 					Lexem classLexem = getClassLexem(classMatchers, lexeme, regex);
-					Symbol softClass = null;
+					Terminal softClass = null;
 					if (kind == Lexem.KIND_SOFT) {
 						if (classLexem == null) {
 							if (!regex.isConstant()) {
@@ -440,7 +456,7 @@ public class LapgResolver {
 						}
 					}
 
-					Symbol s = create(lexeme.getName(), lexeme.getType(),
+					Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(),
 							kind == Lexem.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
 					Lexem liLexem = builder.addLexem(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 							classLexem, lexeme);
@@ -489,7 +505,7 @@ public class LapgResolver {
 		}
 	}
 
-	private void createRule(Symbol left, AstRule right) {
+	private void createRule(Nonterminal left, AstRule right) {
 		LapgRuleBuilder ruleBuilder = new LapgRuleBuilder(builder, right.getAlias(), left, right, annotationsMap);
 		List<AstRulePart> list = right.getList();
 		AstCode lastAction = null;
@@ -531,7 +547,7 @@ public class LapgResolver {
 	private AbstractRulePart convertRulePart(Symbol outer, AstRulePart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
-			Symbol codeSym = createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
+			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
 			Rule actionRule = builder.rule(null, codeSym, astCode).create();
 			codeMap.put(actionRule, astCode);
 			return new RulePart(null, codeSym, null, null, astCode);
@@ -561,7 +577,7 @@ public class LapgResolver {
 
 		AstRefRulePart refPart = (AstRefRulePart) part;
 		String alias = refPart.getAlias();
-		Collection<Symbol> nla = convertLA(refPart.getAnnotations());
+		Collection<Terminal> nla = convertLA(refPart.getAnnotations());
 		Map<String, Object> annotations = convert(refPart.getAnnotations(), "AnnotateReference");
 
 		// inline ...? and (...)?
@@ -631,7 +647,7 @@ public class LapgResolver {
 			return resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
 
 		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
-			Symbol nested = createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			Nonterminal nested = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
 			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
 			for (AstRule right : rules) {
 				if (!right.hasSyntaxError()) {
@@ -684,7 +700,7 @@ public class LapgResolver {
 
 	private Symbol createList(Symbol outer, AbstractRulePart inner, boolean atLeastOne, AbstractRulePart separator, AstRuleSymbolRef origin) {
 		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
-		Symbol listSymbol = listsMap.get(descr);
+		Nonterminal listSymbol = listsMap.get(descr);
 		if (listSymbol != null) {
 			return listSymbol;
 		}
@@ -692,7 +708,7 @@ public class LapgResolver {
 		Symbol representative = inner.getRepresentative();
 		listSymbol = representative != null
 				? createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
-				: createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
+				: (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
 
 		LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
 		// list
@@ -712,7 +728,7 @@ public class LapgResolver {
 
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			Symbol symopt = createDerived(listSymbol, "_opt", origin);
+			Nonterminal symopt = createDerived(listSymbol, "_opt", origin);
 			RuleBuilder b = builder.rule(null, symopt, origin);
 			b.create();
 			b.addPart(null, listSymbol, null, origin);
@@ -813,24 +829,26 @@ public class LapgResolver {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
 				Symbol left = symbolsMap.get(nonterm.getName().getName());
-				if (left == null || left.getKind() != Symbol.KIND_NONTERM) {
+				if (left == null || !(left instanceof Nonterminal)) {
 					continue; /* error is already reported */
 				}
 				for (AstRule right : nonterm.getRules()) {
 					if (!right.hasSyntaxError()) {
-						createRule(left, right);
+						createRule((Nonterminal) left, right);
 					}
 				}
 			}
 		}
 	}
 
-	private List<Symbol> resolve(List<AstReference> input) {
-		List<Symbol> result = new ArrayList<Symbol>(input.size());
+	private List<Terminal> resolveTerminals(List<AstReference> input) {
+		List<Terminal> result = new ArrayList<Terminal>(input.size());
 		for (AstReference id : input) {
 			Symbol sym = resolve(id);
-			if (sym != null) {
-				result.add(sym);
+			if (sym instanceof Terminal) {
+				result.add((Terminal) sym);
+			} else if (sym != null) {
+				error(id, "terminal is expected");
 			}
 		}
 		return result;
@@ -841,7 +859,7 @@ public class LapgResolver {
 			if (clause instanceof AstDirective) {
 				AstDirective directive = (AstDirective) clause;
 				String key = directive.getKey();
-				List<Symbol> val = resolve(directive.getSymbols());
+				List<Terminal> val = resolveTerminals(directive.getSymbols());
 				int prio;
 				if (key.equals("left")) {
 					prio = Prio.LEFT;
@@ -924,13 +942,13 @@ public class LapgResolver {
 		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 
-	private Collection<Symbol> convertLA(AstRuleAnnotations astAnnotations) {
+	private Collection<Terminal> convertLA(AstRuleAnnotations astAnnotations) {
 		if (astAnnotations == null || astAnnotations.getNegativeLA() == null) {
 			return null;
 		}
 
 		List<AstReference> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
-		List<Symbol> resolved = resolve(unwantedSymbols);
+		List<Terminal> resolved = resolveTerminals(unwantedSymbols);
 		if (resolved.size() == 0) {
 			return null;
 		}

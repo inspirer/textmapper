@@ -22,23 +22,25 @@ import java.util.Collection;
 
 public interface GrammarBuilder {
 
-	Symbol addSymbol(int kind, String name, String type, SourceElement origin);
+	Terminal addTerminal(String name, String type, SourceElement origin);
 
-	Symbol addSoftSymbol(String name, Symbol softClass, SourceElement origin);
-	
-	Symbol getEoi();
+	Terminal addSoftTerminal(String name, Terminal softClass, SourceElement origin);
+
+	Nonterminal addNonterminal(String name, String type, SourceElement origin);
+
+	Terminal getEoi();
 
 	NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin);
 
 	LexerState addState(String name, SourceElement origin);
 
-	Lexem addLexem(int kind, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin);
+	Lexem addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin);
 
 	InputRef addInput(Symbol inputSymbol, boolean hasEoi, SourceElement origin);
 
-	Prio addPrio(int prio, Collection<Symbol> symbols, SourceElement origin);
+	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
 
-	RuleBuilder rule(String alias, Symbol left, SourceElement origin);
+	RuleBuilder rule(String alias, Nonterminal left, SourceElement origin);
 
 	Grammar create();
 }

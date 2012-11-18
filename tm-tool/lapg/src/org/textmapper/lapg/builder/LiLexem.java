@@ -22,14 +22,14 @@ class LiLexem implements Lexem, DerivedSourceElement {
 
 	private final int kind;
 	private final int index;
-	private final Symbol sym;
+	private final Terminal sym;
 	private final RegexPart regexp;
 	private final Iterable<LexerState> states;
 	private final int priority;
 	private final Lexem classLexem;
 	private final SourceElement origin;
 
-	public LiLexem(int kind, int index, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
+	public LiLexem(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
@@ -79,7 +79,7 @@ class LiLexem implements Lexem, DerivedSourceElement {
 	}
 
 	@Override
-	public Symbol getSymbol() {
+	public Terminal getSymbol() {
 		return sym;
 	}
 

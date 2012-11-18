@@ -19,34 +19,17 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.DerivedSourceElement;
 
-class LiSymbol implements Symbol, DerivedSourceElement {
+abstract class LiSymbol implements Symbol, DerivedSourceElement {
 
 	private int index;
-	private final int kind;
 	private final String name;
 	private final String type;
-	private final Symbol softClass;
 	private final SourceElement origin;
 
-	public LiSymbol(int kind, String name, String type, SourceElement origin) {
-		this.kind = kind;
+	protected LiSymbol(String name, String type, SourceElement origin) {
 		this.name = name;
 		this.type = type;
-		this.softClass = null;
 		this.origin = origin;
-	}
-
-	public LiSymbol(String name, Symbol softClass, SourceElement origin) {
-		this.kind = KIND_SOFTTERM;
-		this.name = name;
-		this.type = softClass.getType();
-		this.softClass = softClass;
-		this.origin = origin;
-	}
-
-	@Override
-	public int getKind() {
-		return kind;
 	}
 
 	@Override
@@ -70,22 +53,22 @@ class LiSymbol implements Symbol, DerivedSourceElement {
 
 	@Override
 	public boolean isTerm() {
-		return kind == KIND_TERM || kind == KIND_SOFTTERM;
+		return false;
 	}
 
 	@Override
 	public boolean isSoft() {
-		return kind == KIND_SOFTTERM;
+		return false;
 	}
 
 	@Override
 	public Symbol getSoftClass() {
-		return softClass;
+		return null;
 	}
 
 	@Override
 	public String kindAsString() {
-		switch (kind) {
+		switch (getKind()) {
 			case KIND_TERM:
 				return "terminal";
 			case KIND_SOFTTERM:

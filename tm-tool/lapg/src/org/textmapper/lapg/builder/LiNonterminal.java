@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
+
+import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.SourceElement;
 
 /**
- * Gryaznov Evgeny, 8/15/11
+ * evgeny, 10/27/12
  */
-public interface NegativeLookahead extends SourceElement {
+public class LiNonterminal extends LiSymbol implements Nonterminal {
 
-	Terminal[] getUnwantedSet();
+	public LiNonterminal(String name, String type, SourceElement origin) {
+		super(name, type, origin);
+	}
+
+	@Override
+	public int getKind() {
+		return KIND_NONTERM;
+	}
 }

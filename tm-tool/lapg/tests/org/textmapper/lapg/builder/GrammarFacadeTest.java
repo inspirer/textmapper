@@ -40,10 +40,10 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState("initial", null);
 
-		Symbol id = builder.addSymbol(Symbol.KIND_TERM, "id", null, null);
+		Terminal id = builder.addTerminal("id", null, null);
 		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
-		Symbol input = builder.addSymbol(Symbol.KIND_NONTERM, "input", null, null);
+		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
 		RuleBuilder rule = builder.rule(null, input, null);
 		rule.addPart(null, id, null, null);
@@ -109,11 +109,11 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState("initial", null);
 
-		Symbol id = builder.addSymbol(Symbol.KIND_TERM, "id", "string", null);
+		Terminal id = builder.addTerminal("id", "string", null);
 		Lexem idLexem = builder.addLexem(Lexem.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, null, null);
-		Symbol kw = builder.addSoftSymbol("kw", id, null);
+		Terminal kw = builder.addSoftTerminal("kw", id, null);
 		builder.addLexem(Lexem.KIND_SOFT, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, idLexem, null);
-		Symbol spc = builder.addSymbol(Symbol.KIND_TERM, "spc", null, null);
+		Terminal spc = builder.addTerminal("spc", null, null);
 		builder.addLexem(Lexem.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, null, null);
 		Grammar grammar = builder.create();
 
@@ -205,10 +205,10 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState("initial", null);
 
-		Symbol id = builder.addSymbol(Symbol.KIND_TERM, "id", null, null);
+		Terminal id = builder.addTerminal("id", null, null);
 		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
-		Symbol input = builder.addSymbol(Symbol.KIND_NONTERM, "input", null, null);
+		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
 		RuleBuilder rule = builder.rule(null, input, null);
 		rule.addPart(null, id, null, null);
@@ -238,7 +238,7 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState("initial", null);
 
 		builder.addPattern("pattern", LapgCore.parse("pattern", "[a-z]+"), null);
-		Symbol id = builder.addSymbol(Symbol.KIND_TERM, "id", "string", null);
+		Terminal id = builder.addTerminal("id", "string", null);
 		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "{pattern}"), Collections.singleton(initial), 0, null, null);
 		Grammar grammar = builder.create();
 

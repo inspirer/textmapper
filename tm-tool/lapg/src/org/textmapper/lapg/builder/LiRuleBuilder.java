@@ -28,13 +28,13 @@ import java.util.List;
 class LiRuleBuilder implements RuleBuilder {
 
 	private LiGrammarBuilder parent;
-	private final Symbol left;
+	private final Nonterminal left;
 	private final String alias;
 	private final SourceElement origin;
 	private Symbol priority;
 	private List<SymbolRef> right = new ArrayList<SymbolRef>();
 
-	LiRuleBuilder(LiGrammarBuilder parent, Symbol left, String alias, SourceElement origin) {
+	LiRuleBuilder(LiGrammarBuilder parent, Nonterminal left, String alias, SourceElement origin) {
 		this.parent = parent;
 		this.left = left;
 		this.alias = alias;
@@ -42,17 +42,14 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public SymbolRef addPart(String alias, Symbol sym, Collection<Symbol> unwanted, SourceElement origin) {
+	public SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
 		parent.check(sym);
 		NegativeLookahead nla = null;
 		if (unwanted != null && unwanted.size() > 0) {
-			for (Symbol u : unwanted) {
+			for (Terminal u : unwanted) {
 				parent.check(u);
-				if (!u.isTerm()) {
-					throw new IllegalArgumentException("negative lookahead should contain terminals only");
-				}
 			}
-			nla = new LiNegativeLookahead(unwanted.toArray(new Symbol[unwanted.size()]));
+			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
 		}
 		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, origin);
 		right.add(ref);

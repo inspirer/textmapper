@@ -40,47 +40,46 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
-	private final Symbol eoi;
+	private final Terminal eoi;
 
 	public LiGrammarBuilder() {
-		eoi = addSymbol(Symbol.KIND_TERM, "eoi", null, null);
+		eoi = addTerminal("eoi", null, null);
 	}
 
 	@Override
-	public Symbol addSymbol(int kind, String name, String type, SourceElement origin) {
+	public Terminal addTerminal(String name, String type, SourceElement origin) {
+		return addSymbol(new LiTerminal(name, type, origin));
+	}
+
+	@Override
+	public Nonterminal addNonterminal(String name, String type, SourceElement origin) {
+		return addSymbol(new LiNonterminal(name, type, origin));
+	}
+
+	@Override
+	public Terminal addSoftTerminal(String name, Terminal softClass, SourceElement origin) {
+		if (name == null || softClass == null) {
+			throw new NullPointerException();
+		}
+		return addSymbol(new LiTerminal(name, softClass, origin));
+	}
+
+	private <T extends LiSymbol> T addSymbol(T sym) {
+		String name = sym.getName();
 		if (name == null) {
 			throw new NullPointerException();
 		}
 		if (symbolsMap.containsKey(name)) {
 			throw new IllegalStateException("symbol `" + name + "' already exists");
 		}
-		if (kind != Symbol.KIND_TERM && kind != Symbol.KIND_NONTERM && kind != Symbol.KIND_LAYOUT) {
-			throw new IllegalArgumentException("wrong symbol kind");
-		}
-		LiSymbol s = new LiSymbol(kind, name, type, origin);
-		symbols.add(s);
-		symbolsSet.add(s);
-		symbolsMap.put(name, s);
-		return s;
+		symbols.add(sym);
+		symbolsSet.add(sym);
+		symbolsMap.put(name, sym);
+		return sym;
 	}
 
 	@Override
-	public Symbol addSoftSymbol(String name, Symbol softClass, SourceElement origin) {
-		if (name == null || softClass == null) {
-			throw new NullPointerException();
-		}
-		if (symbolsMap.containsKey(name)) {
-			throw new IllegalStateException("symbol `" + name + "' already exists");
-		}
-		LiSymbol s = new LiSymbol(name, softClass, origin);
-		symbols.add(s);
-		symbolsSet.add(s);
-		symbolsMap.put(name, s);
-		return s;
-	}
-
-	@Override
-	public Symbol getEoi() {
+	public Terminal getEoi() {
 		return eoi;
 	}
 
@@ -111,7 +110,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Lexem addLexem(int kind, Symbol sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
+	public Lexem addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
@@ -139,7 +138,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Prio addPrio(int prio, Collection<Symbol> symbols, SourceElement origin) {
+	public Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin) {
 		if (prio != Prio.LEFT && prio != Prio.RIGHT && prio != Prio.NONASSOC) {
 			throw new IllegalArgumentException("wrong priority");
 		}
@@ -166,7 +165,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public RuleBuilder rule(String alias, Symbol left, SourceElement origin) {
+	public RuleBuilder rule(String alias, Nonterminal left, SourceElement origin) {
 		check(left);
 		if (left.getKind() != Symbol.KIND_NONTERM) {
 			throw new IllegalArgumentException("left symbol of rule should be non-terminal");
@@ -174,7 +173,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		return new LiRuleBuilder(this, left, alias, origin);
 	}
 
-	Rule addRule(String alias, Symbol left, SymbolRef[] right, Symbol priority, SourceElement origin) {
+	Rule addRule(String alias, Nonterminal left, SymbolRef[] right, Symbol priority, SourceElement origin) {
 		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
 		rules.add(rule);
 		return rule;

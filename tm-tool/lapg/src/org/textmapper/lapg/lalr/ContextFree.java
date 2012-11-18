@@ -177,7 +177,7 @@ abstract class ContextFree {
 		return result;
 	}
 
-	private static int[] toSortedIds(Symbol[] list) {
+	private static int[] toSortedIds(Terminal[] list) {
 		int[] result = new int[list.length];
 		for (int i = 0; i < list.length; i++) {
 			result[i] = list[i].getIndex();

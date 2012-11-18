@@ -21,12 +21,12 @@ class LiRule implements Rule, DerivedSourceElement {
 
 	private final int index;
 	private final String alias;
-	private final Symbol left;
+	private final Nonterminal left;
 	private final SymbolRef[] right;
 	private final Symbol priority;
 	private final SourceElement origin;
 
-	public LiRule(int index, String alias, Symbol left, SymbolRef[] right, Symbol priority, SourceElement origin) {
+	public LiRule(int index, String alias, Nonterminal left, SymbolRef[] right, Symbol priority, SourceElement origin) {
 		this.index = index;
 		this.left = left;
 		this.right = right;
@@ -46,7 +46,7 @@ class LiRule implements Rule, DerivedSourceElement {
 	}
 
 	@Override
-	public Symbol getLeft() {
+	public Nonterminal getLeft() {
 		return left;
 	}
 

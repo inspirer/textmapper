@@ -15,10 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
-import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.SymbolRef;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.RuleBuilder;
 
@@ -34,7 +31,7 @@ public class LapgRuleBuilder {
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
 	private Symbol prio;
 
-	public LapgRuleBuilder(GrammarBuilder builder, String alias, Symbol left, SourceElement origin, Map<SourceElement, Map<String, Object>> annotationsMap) {
+	public LapgRuleBuilder(GrammarBuilder builder, String alias, Nonterminal left, SourceElement origin, Map<SourceElement, Map<String, Object>> annotationsMap) {
 		this.original = builder.rule(alias, left, origin);
 		this.parts = new ArrayList<AbstractRulePart>();
 		this.annotationsMap = annotationsMap;
@@ -75,11 +72,11 @@ public class LapgRuleBuilder {
 	static class RulePart implements AbstractRulePart {
 		private final String alias;
 		private final Symbol sym;
-		private final Collection<Symbol> unwanted;
+		private final Collection<Terminal> unwanted;
 		private final Map<String, Object> annotations;
 		private final SourceElement origin;
 
-		public RulePart(String alias, Symbol sym, Collection<Symbol> unwanted, Map<String, Object> annotations, SourceElement origin) {
+		public RulePart(String alias, Symbol sym, Collection<Terminal> unwanted, Map<String, Object> annotations, SourceElement origin) {
 			assert sym != null;
 			this.alias = alias;
 			this.sym = sym;

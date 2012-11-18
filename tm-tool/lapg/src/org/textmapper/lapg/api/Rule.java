@@ -21,7 +21,7 @@ public interface Rule extends SourceElement {
 
 	String getAlias();
 
-	Symbol getLeft();
+	Nonterminal getLeft();
 
 	SymbolRef[] getRight();
 

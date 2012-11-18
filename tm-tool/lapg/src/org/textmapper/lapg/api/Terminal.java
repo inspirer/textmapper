@@ -16,9 +16,7 @@
 package org.textmapper.lapg.api;
 
 /**
- * Gryaznov Evgeny, 8/15/11
+ * evgeny, 11/16/12
  */
-public interface NegativeLookahead extends SourceElement {
-
-	Terminal[] getUnwantedSet();
+public interface Terminal extends Symbol {
 }

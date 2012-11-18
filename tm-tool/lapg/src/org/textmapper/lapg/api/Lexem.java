@@ -30,7 +30,7 @@ public interface Lexem extends SourceElement {
 
 	int getIndex();
 
-	Symbol getSymbol();
+	Terminal getSymbol();
 
 	RegexPart getRegexp();
 

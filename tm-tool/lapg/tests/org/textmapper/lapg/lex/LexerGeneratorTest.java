@@ -286,8 +286,8 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public Symbol getSymbol() {
-			return new Symbol() {
+		public Terminal getSymbol() {
+			return new Terminal() {
 				@Override
 				public boolean isTerm() {
 					throw new UnsupportedOperationException();

@@ -17,10 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
-import org.textmapper.lapg.api.Lexem;
-import org.textmapper.lapg.api.LexerState;
-import org.textmapper.lapg.api.Prio;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 
 import java.util.Collections;
@@ -32,21 +29,21 @@ public class GrammarFacadeErrTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullName() {
-		GrammarFacade.createBuilder().addSymbol(Symbol.KIND_TERM, null, "string", null);
+		GrammarFacade.createBuilder().addTerminal(null, "string", null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testErrorDuplicateName() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
-		builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		builder.addTerminal("sym", "string", null);
+		builder.addTerminal("sym", "string", null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testErrorDuplicateSoftName() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol symbol = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
-		builder.addSoftSymbol("sym", symbol, null);
+		Terminal symbol = builder.addTerminal("sym", "string", null);
+		builder.addSoftTerminal("sym", symbol, null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -58,7 +55,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testWrongState() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol symbol = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		Terminal symbol = builder.addTerminal("sym", "string", null);
 		builder.addLexem(Lexem.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.singletonList(GrammarFacade.createBuilder().addState("initial", null)), 0, null, null);
 	}
@@ -66,7 +63,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNoStates() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol symbol = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		Terminal symbol = builder.addTerminal("sym", "string", null);
 		builder.addLexem(Lexem.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.<LexerState>emptyList(), 0, null, null);
 	}
@@ -85,74 +82,48 @@ public class GrammarFacadeErrTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorCrossBuilderSymbols() throws Exception {
-		Symbol symbolFromAnotherBuilder = GrammarFacade.createBuilder().addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		Terminal symbolFromAnotherBuilder = GrammarFacade.createBuilder().addTerminal("sym", "string", null);
 		GrammarFacade.createBuilder().addLexem(
 				Lexem.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testErrorRuleForTerm() throws Exception {
-		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol term = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
-		builder.rule(null, term, null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void testErrorTermAsInput() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol term = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		Terminal term = builder.addTerminal("sym", "string", null);
 		builder.addInput(term, true, null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorNoRegexp() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol term = builder.addSymbol(Symbol.KIND_TERM, "sym", "string", null);
+		Terminal term = builder.addTerminal("sym", "string", null);
 		builder.addLexem(Lexem.KIND_NONE, term, null, Collections.<LexerState>emptyList(), 0, null, null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testErrorNonTermAsLexem() throws Exception {
-		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol nonterm = builder.addSymbol(Symbol.KIND_NONTERM, "input", null, null);
-		builder.addLexem(Lexem.KIND_NONE, nonterm, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorSoftVsNonSoft() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol classterm = builder.addSymbol(Symbol.KIND_TERM, "id", "string", null);
-		Symbol softterm = builder.addSoftSymbol("keyword", classterm, null);
+		Terminal classterm = builder.addTerminal("id", "string", null);
+		Terminal softterm = builder.addSoftTerminal("keyword", classterm, null);
 		builder.addLexem(Lexem.KIND_NONE, softterm, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorSoftVsNonSoft2() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol term = builder.addSymbol(Lexem.KIND_NONE, "s", "s", null);
+		Terminal term = builder.addTerminal("s", "s", null);
 		builder.addLexem(Lexem.KIND_SOFT, term, LapgCore.parse("id", "a"), null, 0, null, null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testErrorSoftSymbolUsingWrongMethod() throws Exception {
-		GrammarFacade.createBuilder().addSymbol(Symbol.KIND_SOFTTERM, "s", "s", null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorSoftNullClass() throws Exception {
-		GrammarFacade.createBuilder().addSoftSymbol("name", null, null);
+		GrammarFacade.createBuilder().addSoftTerminal("name", null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorBadPriority() throws Exception {
-		GrammarFacade.createBuilder().addPrio(100, Collections.<Symbol>emptyList(), null);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void testErrorUsingNontermAsPrio() throws Exception {
-		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Symbol nonterm = builder.addSymbol(Symbol.KIND_NONTERM, "input", null, null);
-		builder.addPrio(Prio.LEFT, Collections.singleton(nonterm), null);
+		GrammarFacade.createBuilder().addPrio(100, Collections.<Terminal>emptyList(), null);
 	}
 
 	@Test(expected = NullPointerException.class)

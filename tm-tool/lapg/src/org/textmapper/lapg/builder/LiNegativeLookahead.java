@@ -16,21 +16,21 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.NegativeLookahead;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 
 /**
  * Gryaznov Evgeny, 8/15/11
  */
 class LiNegativeLookahead implements NegativeLookahead {
 
-	private final Symbol[] symbols;
+	private final Terminal[] symbols;
 
-	public LiNegativeLookahead(Symbol[] symbols) {
+	public LiNegativeLookahead(Terminal[] symbols) {
 		this.symbols = symbols;
 	}
 
 	@Override
-	public Symbol[] getUnwantedSet() {
+	public Terminal[] getUnwantedSet() {
 		return symbols;
 	}
 }

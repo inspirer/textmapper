@@ -15,16 +15,13 @@
  */
 package org.textmapper.lapg.api.builder;
 
-import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.SymbolRef;
+import org.textmapper.lapg.api.*;
 
 import java.util.Collection;
 
 public interface RuleBuilder {
 
-	SymbolRef addPart(String alias, Symbol sym, Collection<Symbol> unwanted, SourceElement origin);
+	SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
 
 	void setPriority(Symbol sym);
 
