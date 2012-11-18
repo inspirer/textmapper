@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Generate Java AST" type="Application" factoryName="Application">
-    <extension name="coverage" enabled="false" merge="false" />
+    <extension name="coverage" enabled="false" merge="false" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="org.textmapper.tool.Tool" />
     <option name="VM_PARAMETERS" value="" />
     <option name="PROGRAM_PARAMETERS" value="-x -i ../../src/org/textmapper/tool/gen/templates" />
