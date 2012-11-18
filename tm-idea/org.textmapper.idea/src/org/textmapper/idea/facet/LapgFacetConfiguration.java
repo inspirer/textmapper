@@ -61,11 +61,6 @@ public class LapgFacetConfiguration implements FacetConfiguration, PersistentSta
 
 		private LapgFacetEditorTabUI form;
 
-		@Override
-		public Icon getIcon() {
-			return LapgIcons.LAPG_ICON;
-		}
-
 		@Nls
 		public String getDisplayName() {
 			return "Lapg";

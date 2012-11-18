@@ -120,6 +120,7 @@
         <default-constraints vsize-policy="6" hsize-policy="0" anchor="0" fill="2" />
       </item>
     </group>
+    <group name="aaa" />
   </component>
 </project>
 

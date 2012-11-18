@@ -183,15 +183,17 @@
 		<property name="ideaPath" location="${env.IDEA_PATH}"/>
 		<fail message="Please, define IDEA_PLUGINS environment variable" unless="env.IDEA_PLUGINS"/>
 		<property name="ideaPlugins" location="${env.IDEA_PLUGINS}"/>
+
+		<echo message="IDEA: ${ideaPath}"/>
+		<echo message="Plugins: ${ideaPlugins}"/>
 	</target>
 
 	<target name="plugin" depends="rev, loadVars">
-
 		<path id="javac2.classpath">
 			<pathelement location="${ideaPath}/lib/javac2.jar"/>
 			<pathelement location="${ideaPath}/lib/jdom.jar"/>
 			<pathelement location="${ideaPath}/lib/asm.jar"/>
-			<pathelement location="${ideaPath}/lib/asm-commons.jar"/>
+			<pathelement location="${ideaPath}/lib/asm4-all.jar"/>
 			<pathelement location="${ideaPath}/lib/jgoodies-forms.jar"/>
 		</path>
 		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
@@ -204,7 +206,7 @@
 			<fileset dir="../tm-idea/org.textmapper.idea" includes="META-INF/plugin.xml"/>
 			<fileset dir="../tm-idea/org.textmapper.idea/resources"/>
 		</copy>
-		<javac2 destdir="build/textmapper/classes" source="${source}" target="${target}" includeantruntime="false">
+		<javac2 destdir="build/textmapper/classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
 			<src path="../tm-idea/org.textmapper.idea/src"/>
 			<classpath>
 				<fileset dir="build/textmapper/lib" includes="*.jar"/>
