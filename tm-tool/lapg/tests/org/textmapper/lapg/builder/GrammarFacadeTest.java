@@ -125,15 +125,17 @@ public class GrammarFacadeTest {
 		assertEquals("id", symbols[1].getName());
 		assertEquals(Symbol.KIND_TERM, symbols[1].getKind());
 		assertEquals("terminal", symbols[1].kindAsString());
-		assertFalse(symbols[1].isSoft());
-		assertNull(symbols[1].getSoftClass());
+		assertTrue(symbols[1] instanceof Terminal);
+		assertFalse(((Terminal)symbols[1]).isSoft());
+		assertNull(((Terminal)symbols[1]).getSoftClass());
 
 		// kw
 		assertEquals("kw", symbols[2].getName());
 		assertEquals(Symbol.KIND_SOFTTERM, symbols[2].getKind());
+		assertTrue(symbols[2] instanceof Terminal);
 		assertEquals("soft-terminal", symbols[2].kindAsString());
-		assertTrue(symbols[2].isSoft());
-		assertTrue(symbols[1] == symbols[2].getSoftClass());
+		assertTrue(((Terminal)symbols[2]).isSoft());
+		assertTrue(symbols[1] == ((Terminal)symbols[2]).getSoftClass());
 
 		// spc
 		assertEquals("spc", symbols[3].getName());
@@ -190,7 +192,7 @@ public class GrammarFacadeTest {
 	public void testEoi() throws Exception {
 		Symbol eoi = GrammarFacade.createBuilder().getEoi();
 		assertEquals(0, eoi.getIndex());
-		assertEquals("eoi", eoi.getName());
+		assertEquals(Symbol.EOI, eoi.getName());
 		assertNull(eoi.getType());
 		assertEquals("terminal", eoi.kindAsString());
 		assertEquals(Symbol.KIND_TERM, eoi.getKind());

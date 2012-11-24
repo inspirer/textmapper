@@ -19,4 +19,8 @@ package org.textmapper.lapg.api;
  * evgeny, 11/16/12
  */
 public interface Terminal extends Symbol {
+
+	boolean isSoft();
+
+	Symbol getSoftClass();
 }

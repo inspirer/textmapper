@@ -27,5 +27,5 @@ public interface Prio extends SourceElement {
 
 	int getPrio();
 
-	Symbol[] getSymbols();
+	Terminal[] getSymbols();
 }

@@ -57,16 +57,6 @@ abstract class LiSymbol implements Symbol, DerivedSourceElement {
 	}
 
 	@Override
-	public boolean isSoft() {
-		return false;
-	}
-
-	@Override
-	public Symbol getSoftClass() {
-		return null;
-	}
-
-	@Override
 	public String kindAsString() {
 		switch (getKind()) {
 			case KIND_TERM:

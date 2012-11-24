@@ -87,13 +87,6 @@ public class GrammarFacadeErrTest {
 				Lexem.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testErrorTermAsInput() throws Exception {
-		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal term = builder.addTerminal("sym", "string", null);
-		builder.addInput(term, true, null);
-	}
-
 	@Test(expected = NullPointerException.class)
 	public void testErrorNoRegexp() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();

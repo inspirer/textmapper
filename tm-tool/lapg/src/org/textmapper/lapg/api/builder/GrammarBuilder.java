@@ -36,7 +36,7 @@ public interface GrammarBuilder {
 
 	Lexem addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin);
 
-	InputRef addInput(Symbol inputSymbol, boolean hasEoi, SourceElement origin);
+	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
 
 	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
 

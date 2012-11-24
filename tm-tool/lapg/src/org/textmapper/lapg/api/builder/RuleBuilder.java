@@ -23,7 +23,7 @@ public interface RuleBuilder {
 
 	SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
 
-	void setPriority(Symbol sym);
+	void setPriority(Terminal sym);
 
 	RuleBuilder copy();
 

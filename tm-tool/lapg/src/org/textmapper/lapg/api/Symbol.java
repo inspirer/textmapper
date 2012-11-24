@@ -36,8 +36,4 @@ public interface Symbol extends SourceElement {
 	String getType();
 
 	boolean isTerm();
-
-	boolean isSoft();
-
-	Symbol getSoftClass();
 }

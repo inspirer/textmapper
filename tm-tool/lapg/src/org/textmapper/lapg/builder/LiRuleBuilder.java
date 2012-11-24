@@ -72,14 +72,11 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public void setPriority(Symbol sym) {
+	public void setPriority(Terminal sym) {
 		if (priority != null) {
 			throw new IllegalStateException("redeclaring rule priority");
 		}
 		parent.check(sym);
-		if (!sym.isTerm()) {
-			throw new IllegalArgumentException("symbol `" + sym.getName() + "' is not a terminal");
-		}
 		priority = sym;
 	}
 }

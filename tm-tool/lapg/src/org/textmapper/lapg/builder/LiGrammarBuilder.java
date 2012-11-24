@@ -43,7 +43,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final Terminal eoi;
 
 	public LiGrammarBuilder() {
-		eoi = addTerminal("eoi", null, null);
+		eoi = addTerminal(Symbol.EOI, null, null);
 	}
 
 	@Override
@@ -142,19 +142,16 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (prio != Prio.LEFT && prio != Prio.RIGHT && prio != Prio.NONASSOC) {
 			throw new IllegalArgumentException("wrong priority");
 		}
-		for (Symbol s : symbols) {
+		for (Terminal s : symbols) {
 			check(s);
-			if (s.getKind() != Symbol.KIND_TERM && s.getKind() != Symbol.KIND_SOFTTERM) {
-				throw new IllegalArgumentException("symbol `" + s.getName() + "' is not a terminal");
-			}
 		}
-		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Symbol[symbols.size()]), origin);
+		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Terminal[symbols.size()]), origin);
 		priorities.add(liprio);
 		return liprio;
 	}
 
 	@Override
-	public InputRef addInput(Symbol inputSymbol, boolean hasEoi, SourceElement origin) {
+	public InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin) {
 		check(inputSymbol);
 		if (inputSymbol.getKind() != Symbol.KIND_NONTERM) {
 			throw new IllegalArgumentException("input symbol should be non-terminal");

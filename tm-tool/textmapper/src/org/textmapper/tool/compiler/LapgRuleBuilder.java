@@ -29,7 +29,7 @@ public class LapgRuleBuilder {
 	private final RuleBuilder original;
 	private final List<AbstractRulePart> parts;
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
-	private Symbol prio;
+	private Terminal prio;
 
 	public LapgRuleBuilder(GrammarBuilder builder, String alias, Nonterminal left, SourceElement origin, Map<SourceElement, Map<String, Object>> annotationsMap) {
 		this.original = builder.rule(alias, left, origin);
@@ -41,7 +41,7 @@ public class LapgRuleBuilder {
 		parts.add(part);
 	}
 
-	public void setPriority(Symbol sym) {
+	public void setPriority(Terminal sym) {
 		prio = sym;
 	}
 

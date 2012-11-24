@@ -15,28 +15,25 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.InputRef;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.*;
 
 /**
  * Gryaznov Evgeny, 3/16/11
  */
 class LiInputRef implements InputRef, DerivedSourceElement {
 
-	private final Symbol target;
+	private final Nonterminal target;
 	private final boolean hasEoi;
 	private final SourceElement origin;
 
-	public LiInputRef(Symbol target, boolean hasEoi, SourceElement origin) {
+	public LiInputRef(Nonterminal target, boolean hasEoi, SourceElement origin) {
 		this.target = target;
 		this.hasEoi = hasEoi;
 		this.origin = origin;
 	}
 
 	@Override
-	public Symbol getTarget() {
+	public Nonterminal getTarget() {
 		return target;
 	}
 

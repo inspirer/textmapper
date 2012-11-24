@@ -67,7 +67,7 @@ public class InputTest extends LapgTestCase {
 
 		Symbol[] syms = g.getGrammar().getSymbols();
 		assertEquals(7, syms.length);
-		assertEquals("eoi", syms[0].getName());
+		assertEquals(Symbol.EOI, syms[0].getName());
 		assertEquals("identifier", syms[1].getName());
 		assertEquals("Licon", syms[2].getName());
 		assertEquals("_skip", syms[3].getName()); // TODO do not
@@ -100,7 +100,7 @@ public class InputTest extends LapgTestCase {
 
 		Symbol[] syms = g.getGrammar().getSymbols();
 		assertEquals(11, syms.length);
-		assertEquals("eoi", syms[0].getName());
+		assertEquals(Symbol.EOI, syms[0].getName());
 		assertEquals("a", syms[1].getName());
 		assertEquals("b", syms[2].getName());
 		assertEquals("'('", syms[3].getName());

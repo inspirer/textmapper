@@ -78,7 +78,7 @@ public class LapgResolver {
 		myTypesPackage = getTypesPackage();
 
 		builder = LapgCore.createBuilder();
-		symbolsMap.put("eoi", builder.getEoi());
+		symbolsMap.put(Symbol.EOI, builder.getEoi());
 		collectLexerStates();
 		collectLexems();
 
@@ -91,10 +91,10 @@ public class LapgResolver {
 				Symbol input = symbolsMap.get("input");
 				if (input == null) {
 					error(tree.getRoot(), "no input non-terminal");
-				} else if (input.isTerm()) {
+				} else if (!(input instanceof Nonterminal)) {
 					error(tree.getRoot(), "input should be non-terminal");
 				} else {
-					builder.addInput(input, true, input);
+					builder.addInput((Nonterminal) input, true, input);
 				}
 			}
 
@@ -153,9 +153,10 @@ public class LapgResolver {
 				error(id,
 						"redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of "
 								+ (sym.getType() == null ? "<empty>" : sym.getType()));
-			} else if (kind == Symbol.KIND_SOFTTERM && softClass != sym.getSoftClass()) {
+			} else if (kind == Symbol.KIND_SOFTTERM && softClass != ((Terminal) sym).getSoftClass()) {
+				Symbol symSoftClass = ((Terminal) sym).getSoftClass();
 				error(id, "redeclaration of soft class: " + (softClass == null ? "<undefined>" : softClass.getName())
-						+ " instead of " + (sym.getSoftClass() == null ? "<undefined>" : sym.getSoftClass().getName()));
+						+ " instead of " + (symSoftClass == null ? "<undefined>" : symSoftClass.getName()));
 			}
 			return sym;
 		} else {
@@ -528,13 +529,14 @@ public class LapgResolver {
 				: null;
 		if (rulePrio != null) {
 			Symbol prio = resolve(rulePrio);
-			if (prio != null) {
-				ruleBuilder.setPriority(prio);
+			if (prio instanceof Terminal) {
+				ruleBuilder.setPriority((Terminal) prio);
+			} else if (prio != null) {
+				error(rulePrio, "symbol `" + prio.getName() + "' is not a terminal");
 			}
 		}
 
 		// TODO store %shift attribute
-		// TODO check prio is term
 		// TODO check right.getAnnotations().getNegativeLA() == null
 		Rule[] result = ruleBuilder.create();
 		Map<String, Object> annotations = convert(right.getAnnotations(), "AnnotateRule");
@@ -666,7 +668,7 @@ public class LapgResolver {
 				if (s == null) {
 					continue;
 				}
-				if (s.isTerm()) {
+				if (s instanceof Terminal) {
 					sep.add(new RulePart(s, ref));
 				} else {
 					error(ref, "separator should be terminal symbol");
@@ -877,9 +879,11 @@ public class LapgResolver {
 				for (AstInputRef inputRef : refs) {
 					Symbol sym = resolve(inputRef.getReference());
 					boolean hasEoi = !inputRef.isNonEoi();
-					if (sym != null) {
-						builder.addInput(sym, hasEoi, inputRef);
+					if (sym instanceof Nonterminal) {
+						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
 						hasInputs = true;
+					} else if (sym != null) {
+						error(inputRef, "input should be non-terminal");
 					}
 				}
 			}

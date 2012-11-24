@@ -74,9 +74,10 @@ abstract class ContextFree {
 		Arrays.fill(this.softterms, -1);
 		Arrays.fill(this.classterm, 0);
 		for (int i = 0; i < nterms; i++) {
-			if (this.sym[i].isSoft()) {
-				int classindex = this.sym[i].getSoftClass().getIndex();
-				assert classindex < nterms && !this.sym[classindex].isSoft();
+			Terminal term = (Terminal) this.sym[i];
+			if (term.isSoft()) {
+				int classindex = term.getSoftClass().getIndex();
+				assert classindex < nterms && this.sym[classindex] instanceof Terminal && !((Terminal)this.sym[classindex]).isSoft();
 				this.classterm[i] = classindex;
 				this.classterm[classindex] = -1;
 				this.softterms[i] = this.softterms[classindex];

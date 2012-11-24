@@ -15,18 +15,15 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Prio;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.*;
 
 class LiPrio implements Prio, DerivedSourceElement {
 
 	private final int prio;
-	private final Symbol[] symbols;
+	private final Terminal[] symbols;
 	private final SourceElement origin;
 
-	public LiPrio(int prio, Symbol[] symbols, SourceElement origin) {
+	public LiPrio(int prio, Terminal[] symbols, SourceElement origin) {
 		this.prio = prio;
 		this.symbols = symbols;
 		this.origin = origin;
@@ -38,7 +35,7 @@ class LiPrio implements Prio, DerivedSourceElement {
 	}
 
 	@Override
-	public Symbol[] getSymbols() {
+	public Terminal[] getSymbols() {
 		return symbols;
 	}
 

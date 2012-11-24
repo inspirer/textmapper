@@ -20,7 +20,7 @@ package org.textmapper.lapg.api;
  */
 public interface InputRef extends SourceElement {
 
-	Symbol getTarget();
+	Nonterminal getTarget();
 
 	boolean hasEoi();
 }
