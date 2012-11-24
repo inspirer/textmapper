@@ -15,11 +15,8 @@
  */
 package org.textmapper.lapg.lalr;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ParserConflict.Input;
-import org.textmapper.lapg.api.ProcessingStatus;
-import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 import org.textmapper.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
 
@@ -543,13 +540,13 @@ class LR0 extends ContextFree {
 				if (conflict == null) {
 					current.softConflicts = true;
 					conflict = softconflicts.addConflict(current.number);
-					conflict.addSymbol(sym[classTerm]);
+					conflict.addSymbol((Terminal)sym[classTerm]);
 					core = symbase[classTerm];
 					for (int i = 0; i < symbasesize[classTerm]; i++) {
 						conflict.addRule(wrules[ruleIndex(core[i])]);
 					}
 				}
-				conflict.addSymbol(sym[soft]);
+				conflict.addSymbol((Terminal) sym[soft]);
 				core = symbase[soft];
 				for (int i = 0; i < symbasesize[soft]; i++) {
 					conflict.addRule(wrules[ruleIndex(core[i])]);

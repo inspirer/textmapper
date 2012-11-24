@@ -16,7 +16,7 @@
 package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 
 import java.util.*;
 
@@ -37,7 +37,7 @@ public class SoftConflictBuilder {
 	public static class SoftClassConflict {
 		private final int state;
 		private LinkedHashSet<Rule> rules = new LinkedHashSet<Rule>();
-		private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+		private ArrayList<Terminal> symbols = new ArrayList<Terminal>();
 
 		public SoftClassConflict(int state) {
 			this.state = state;
@@ -51,10 +51,10 @@ public class SoftConflictBuilder {
 			return rules.toArray(new Rule[rules.size()]);
 		}
 
-		public Symbol[] getSymbols() {
-			Symbol[] result = symbols.toArray(new Symbol[symbols.size()]);
-			Arrays.sort(result, new Comparator<Symbol>() {
-				public int compare(Symbol o1, Symbol o2) {
+		public Terminal[] getSymbols() {
+			Terminal[] result = symbols.toArray(new Terminal[symbols.size()]);
+			Arrays.sort(result, new Comparator<Terminal>() {
+				public int compare(Terminal o1, Terminal o2) {
 					return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
 				}
 			});
@@ -65,8 +65,8 @@ public class SoftConflictBuilder {
 			rules.add(rule);
 		}
 
-		public void addSymbol(Symbol sym) {
-			symbols.add(sym);
+		public void addSymbol(Terminal term) {
+			symbols.add(term);
 		}
 	}
 }

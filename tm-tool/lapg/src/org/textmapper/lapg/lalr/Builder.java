@@ -15,10 +15,7 @@
  */
 package org.textmapper.lapg.lalr;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.ParserConflict;
-import org.textmapper.lapg.api.ParserData;
-import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -312,30 +309,30 @@ public class Builder extends Lalr1 {
 
 	private void addReduce(short[] next, int termSym, short rule, ConflictBuilder builder) {
 		if (builder.hasConflict(termSym)) {
-			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
 
 		} else if (next[termSym] == -1) {
 			switch (compare_prio(rule, termSym)) {
 				case 0: // shift/reduce
-					builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
 					break;
 				case 1: // shift
-					builder.addReduce(termSym, sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SHIFT, wrules[rule], null);
 					break;
 				case 2: // reduce
-					builder.addReduce(termSym, sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.REDUCE, wrules[rule], null);
 					next[termSym] = rule;
 					break;
 				case 3: // error (non-assoc)
-					builder.addReduce(termSym, sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
+					builder.addReduce((Terminal) sym[termSym], ConflictBuilder.SYNTAXERR, wrules[rule], null);
 					next[termSym] = -3;
 					break;
 			}
 		} else if (next[termSym] == -3) {
-			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], null);
 		} else {
 			// reduce/reduce
-			builder.addReduce(termSym, sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], wrules[next[termSym]]);
+			builder.addReduce((Terminal) sym[termSym], ConflictBuilder.CONFLICT, wrules[rule], wrules[next[termSym]]);
 		}
 	}
 

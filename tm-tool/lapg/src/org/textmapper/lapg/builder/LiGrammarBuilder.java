@@ -116,9 +116,6 @@ class LiGrammarBuilder implements GrammarBuilder {
 			throw new NullPointerException();
 		}
 		int symKind = sym.getKind();
-		if (symKind != Symbol.KIND_TERM && symKind != Symbol.KIND_SOFTTERM) {
-			throw new IllegalArgumentException("symbol `" + sym.getName() + "' is not a terminal");
-		}
 		if (symKind == Symbol.KIND_SOFTTERM != (kind == Lexem.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong lexem kind, doesn't match symbol kind");
 		}

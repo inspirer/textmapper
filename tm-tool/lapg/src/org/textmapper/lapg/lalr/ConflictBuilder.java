@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.ParserConflict;
 import org.textmapper.lapg.api.ParserConflict.Input;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 
 import java.util.*;
@@ -48,7 +49,8 @@ public class ConflictBuilder {
 		return nextconfl[termSym] != null && nextconfl[termSym].isConflict();
 	}
 
-	public void addReduce(int termSym, Symbol sym, int status, Rule rule, Rule originalRule) {
+	public void addReduce(Terminal sym, int status, Rule rule, Rule originalRule) {
+		int termSym = sym.getIndex();
 		if (nextconfl[termSym] == null) {
 			conflicts.add(nextconfl[termSym] = new ConflictData(sym, originalRule == null));
 			if (originalRule != null) {
@@ -95,7 +97,7 @@ public class ConflictBuilder {
 
 	public static class ConflictData {
 
-		private final Symbol termSym;
+		private final Terminal termSym;
 		private final boolean canShift;
 		private boolean isSoft;
 		private final List<Rule> rules = new ArrayList<Rule>();
@@ -103,7 +105,7 @@ public class ConflictBuilder {
 
 		private ConflictData linked = null;
 
-		public ConflictData(Symbol termSym, boolean canShift) {
+		public ConflictData(Terminal termSym, boolean canShift) {
 			this.termSym = termSym;
 			this.canShift = canShift;
 			this.isSoft = false;
@@ -121,12 +123,12 @@ public class ConflictBuilder {
 			return rules.toArray(new Rule[rules.size()]);
 		}
 
-		public Symbol[] getSymbols() {
+		public Terminal[] getSymbols() {
 			int len = 0;
 			for (ConflictData curr = this; curr != null; curr = curr.linked) {
 				len++;
 			}
-			Symbol[] result = new Symbol[len];
+			Terminal[] result = new Terminal[len];
 			len = 0;
 			for (ConflictData curr = this; curr != null; curr = curr.linked) {
 				result[len++] = curr.termSym;

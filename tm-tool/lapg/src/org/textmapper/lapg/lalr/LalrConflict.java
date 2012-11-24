@@ -18,6 +18,7 @@ package org.textmapper.lapg.lalr;
 import org.textmapper.lapg.api.ParserConflict;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 
 public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 
@@ -25,10 +26,10 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 	private final String kindtext;
 	private final Input input;
 
-	private final Symbol[] symbols;	// sorted
+	private final Terminal[] symbols;	// sorted
 	private final Rule[] rules;
 
-	public LalrConflict(int kind, String kindtext, Input input, Symbol[] symbols, Rule[] rules) {
+	public LalrConflict(int kind, String kindtext, Input input, Terminal[] symbols, Rule[] rules) {
 		this.kind = kind;
 		this.input = input;
 		this.kindtext = kindtext;
@@ -52,7 +53,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 		return rules;
 	}
 
-	public Symbol[] getSymbols() {
+	public Terminal[] getSymbols() {
 		return symbols;
 	}
 
@@ -64,7 +65,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 		sb.append(getKindAsText());
 		sb.append(" conflict (next: ");
 		boolean first = true;
-		for (Symbol s : getSymbols()) {
+		for (Terminal s : getSymbols()) {
 			if (!first) {
 				sb.append(", ");
 			} else {

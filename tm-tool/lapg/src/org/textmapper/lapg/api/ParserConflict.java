@@ -31,7 +31,7 @@ public interface ParserConflict {
 
 	Rule[] getRules();
 
-	Symbol[] getSymbols();
+	Terminal[] getSymbols();
 
 	Input getInput();
 
