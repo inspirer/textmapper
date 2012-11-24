@@ -18,7 +18,7 @@ package org.textmapper.lapg.api;
 import org.textmapper.lapg.api.regex.RegexPart;
 
 /**
- * Lexem rule.
+ * Lexical rule.
  */
 public interface LexicalRule extends SourceElement {
 

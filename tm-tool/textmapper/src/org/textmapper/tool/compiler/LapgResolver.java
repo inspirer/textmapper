@@ -376,7 +376,7 @@ public class LapgResolver {
 					continue;
 				}
 
-				LexicalRule liLexicalRule = builder.addLexem(LexicalRule.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+				LexicalRule liLexicalRule = builder.addLexicalRule(LexicalRule.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 						null, lexeme);
 				classRules.add(liLexicalRule);
 				codeMap.put(liLexicalRule, lexeme.getCode());
@@ -459,7 +459,7 @@ public class LapgResolver {
 
 					Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(),
 							kind == LexicalRule.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
-					LexicalRule liLexicalRule = builder.addLexem(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+					LexicalRule liLexicalRule = builder.addLexicalRule(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 							classRule, lexeme);
 					codeMap.put(liLexicalRule, lexeme.getCode());
 				} else {

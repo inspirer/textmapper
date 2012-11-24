@@ -34,7 +34,7 @@ public interface GrammarBuilder {
 
 	LexerState addState(String name, SourceElement origin);
 
-	LexicalRule addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin);
+	LexicalRule addLexicalRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin);
 
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
 

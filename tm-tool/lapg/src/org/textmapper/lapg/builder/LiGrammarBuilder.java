@@ -31,7 +31,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 	private final Set<Symbol> symbolsSet = new HashSet<Symbol>();
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
-	private final List<LiLexicalRule> lexems = new ArrayList<LiLexicalRule>();
+	private final List<LiLexicalRule> lexicalRules = new ArrayList<LiLexicalRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
 	private final Set<String> stateNamesSet = new HashSet<String>();
@@ -110,14 +110,14 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public LexicalRule addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
+	public LexicalRule addLexicalRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
 		}
 		int symKind = sym.getKind();
 		if (symKind == Symbol.KIND_SOFTTERM != (kind == LexicalRule.KIND_SOFT)) {
-			throw new IllegalArgumentException("wrong lexem kind, doesn't match symbol kind");
+			throw new IllegalArgumentException("wrong rule kind, doesn't match symbol kind");
 		}
 		List<LexerState> liStates = new ArrayList<LexerState>();
 		for (LexerState state : states) {
@@ -129,8 +129,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (liStates.isEmpty()) {
 			throw new IllegalArgumentException("no states passed");
 		}
-		LiLexicalRule l = new LiLexicalRule(kind, lexems.size(), sym, regexp, liStates, priority, classLexicalRule, origin);
-		lexems.add(l);
+		LiLexicalRule l = new LiLexicalRule(kind, lexicalRules.size(), sym, regexp, liStates, priority, classLexicalRule, origin);
+		lexicalRules.add(l);
 		return l;
 	}
 
@@ -206,7 +206,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 			grammarSymbols++;
 		}
 
-		LiLexicalRule[] lexemArr = lexems.toArray(new LiLexicalRule[lexems.size()]);
+		LiLexicalRule[] lexicalRulesArr = lexicalRules.toArray(new LiLexicalRule[lexicalRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
@@ -226,6 +226,6 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexemArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexicalRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}
 }

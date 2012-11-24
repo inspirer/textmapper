@@ -164,8 +164,8 @@ public class LexerGeneratorTest {
 	public void testLexGeneratorReporting() {
 		TestStatus notifier = new TestStatus(
 				"",
-				"lexemtest,3: `empty' can produce empty lexeme\n" +
-						"lexemtest,1: two rules are identical: string and number\n");
+				"lexergentest,3: `empty' can produce empty lexeme\n" +
+						"lexergentest,1: two rules are identical: string and number\n");
 		LexicalBuilder.compile(LEXER_STATES, ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();
 
@@ -384,7 +384,7 @@ public class LexerGeneratorTest {
 
 		@Override
 		public String getResourceName() {
-			return "lexemtest";
+			return "lexergentest";
 		}
 	}
 

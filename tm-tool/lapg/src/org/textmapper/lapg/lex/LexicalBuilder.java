@@ -27,10 +27,10 @@ import java.util.*;
 public class LexicalBuilder {
 
 	private static final int BITS = 32;
-	private static final int MAX_LEXEMS = 0x100000 - 1;
+	private static final int MAX_RULES = 0x100000 - 1;
 	private static final int MAX_WORD = 0x7ff0;
 
-	private static class LexemData {
+	private static class RuleData {
 		private final LexicalRule lexicalRule;
 		private final RegexInstruction[] pattern;
 		private final int prio;
@@ -40,7 +40,7 @@ public class LexicalBuilder {
 		private final int[] jmp;
 		private final String name;
 
-		private LexemData(LexicalRule l, int[] applicableStates, RegexInstruction[] pattern) {
+		private RuleData(LexicalRule l, int[] applicableStates, RegexInstruction[] pattern) {
 			this.lexicalRule = l;
 			this.pattern = pattern;
 			this.name = l.getSymbol().getName();
@@ -67,13 +67,13 @@ public class LexicalBuilder {
 	private final ProcessingStatus status;
 
 	// lexical analyzer description
-	int nsit, nlexems, nlexerStates;
+	int nitems, nrules, nlexerStates;
 	int characters, charsetSize;
 	int[] char2no;
 	private int[][] set2symbols;
 	private int[] lsym;
 	private int[] lindex;
-	private LexemData[] ldata;
+	private RuleData[] ldata;
 
 	// generate-time variables
 	int states;
@@ -140,10 +140,10 @@ public class LexicalBuilder {
 		for (int p = 0; set[p] >= 0; ) {
 
 			// search for next lexem
-			while (lex < nlexems && set[p] >= lindex[lex + 1]) {
+			while (lex < nrules && set[p] >= lindex[lex + 1]) {
 				lex++;
 			}
-			assert lex < nlexems;
+			assert lex < nrules;
 
 			// create closure for it in cset
 			int slen = ldata[lex].jmpset;
@@ -192,10 +192,10 @@ public class LexicalBuilder {
 		Stack<Integer> stack = new Stack<Integer>();
 
 		if (status.isDebugMode()) {
-			status.debug("\nLexem jumps:\n");
+			status.debug("\nRegex jumps:\n");
 		}
 
-		for (int lex = 0; lex < nlexems; lex++) {
+		for (int lex = 0; lex < nrules; lex++) {
 			int[] jumps = ldata[lex].jmp;
 			int jmpset = ldata[lex].jmpset;
 			int len = ldata[lex].len - 1;
@@ -302,19 +302,19 @@ public class LexicalBuilder {
 
 	private boolean buildStates() {
 		int i, e, k;
-		int nnext, lexemerrors = 0;
+		int nnext, errors = 0;
 		int[] toshift = new int[charsetSize];
 
 		// allocate temporary storage
 		hash = new State[TABLE_SIZE];
 		Arrays.fill(hash, null);
-		clsr = new int[nsit];
-		int[] next = new int[nsit + 1];
+		clsr = new int[nitems];
+		int[] next = new int[nitems + 1];
 		nnext = 0;
 		states = 0;
 
 		// allocate temporary set
-		for (e = 1, i = 0; i < nlexems; i++) {
+		for (e = 1, i = 0; i < nrules; i++) {
 			if (ldata[i].jmpset > e) {
 				e = ldata[i].jmpset;
 			}
@@ -322,7 +322,7 @@ public class LexicalBuilder {
 		cset = new int[e];
 
 		// create first set
-		for (i = 0; i < nlexems; i++) {
+		for (i = 0; i < nrules; i++) {
 			if ((ldata[i].applicableStates[0] & 1) != 0 && ldata[i].len != 0) {
 				next[nnext++] = lindex[i];
 			}
@@ -339,7 +339,7 @@ public class LexicalBuilder {
 
 		// create left group states
 		for (k = 1; k < nlexerStates; k++) {
-			for (nnext = i = 0; i < nlexems; i++) {
+			for (nnext = i = 0; i < nrules; i++) {
 				if ((ldata[i].applicableStates[k / BITS] & (1 << (k % BITS))) != 0 && ldata[i].len != 0) {
 					next[nnext++] = lindex[i];
 				}
@@ -373,7 +373,7 @@ public class LexicalBuilder {
 
 							if (ldata[nlex].prio == ldata[lexnum].prio) {
 								status.report(ProcessingStatus.KIND_ERROR, "two rules are identical: " + ldata[lexnum].name + " and " + ldata[nlex].name, ldata[lexnum].lexicalRule, ldata[nlex].lexicalRule);
-								lexemerrors++;
+								errors++;
 
 							} else if (ldata[nlex].prio > ldata[lexnum].prio) {
 								if (status.isAnalysisMode()) {
@@ -420,7 +420,7 @@ public class LexicalBuilder {
 			// check for the empty lexeme
 			if (current == first && lexnum != -1) {
 				status.report(ProcessingStatus.KIND_ERROR, "`" + ldata[lexnum].name + "' can produce empty lexeme", ldata[lexnum].lexicalRule);
-				lexemerrors++;
+				errors++;
 			}
 
 			// allocate new change table
@@ -480,7 +480,7 @@ public class LexicalBuilder {
 		// first group (only) succeeds on EOI
 		first.action[0] = -2;
 
-		return lexemerrors == 0;
+		return errors == 0;
 	}
 
 	/*
@@ -490,7 +490,7 @@ public class LexicalBuilder {
 		RegexpCompiler rp = new RegexpCompiler(createContext(patterns));
 		boolean success = true;
 
-		ArrayList<LexemData> syms = new ArrayList<LexemData>();
+		ArrayList<RuleData> syms = new ArrayList<RuleData>();
 
 		nlexerStates = lexerStates.length;
 
@@ -518,38 +518,38 @@ public class LexicalBuilder {
 				applicableStates[index / BITS] |= 1 << (index % BITS);
 			}
 
-			syms.add(new LexemData(l, applicableStates, pattern));
+			syms.add(new RuleData(l, applicableStates, pattern));
 			lsym_size += pattern.length;
 		}
 		if (!success) {
 			return false;
 		}
 
-		nlexems = syms.size();
-		if (nlexems > MAX_LEXEMS) {
-			status.report(ProcessingStatus.KIND_ERROR, "too many lexical rules", syms.get(MAX_LEXEMS).lexicalRule);
+		nrules = syms.size();
+		if (nrules > MAX_RULES) {
+			status.report(ProcessingStatus.KIND_ERROR, "too many lexical rules", syms.get(MAX_RULES).lexicalRule);
 			return false;
 
-		} else if (nlexems == 0) {
+		} else if (nrules == 0) {
 			status.report(ProcessingStatus.KIND_ERROR, "no lexical rules");
 			return false;
 		}
 
-		nsit = 0;
+		nitems = 0;
 		lsym = new int[lsym_size];
-		ldata = syms.toArray(new LexemData[syms.size()]);
-		lindex = new int[nlexems + 1];
+		ldata = syms.toArray(new RuleData[syms.size()]);
+		lindex = new int[nrules + 1];
 		int index = 0;
-		for (LexemData l : syms) {
-			Arrays.fill(lsym, nsit, nsit + l.pattern.length, index);
-			lindex[index++] = nsit;
-			nsit += l.pattern.length;
+		for (RuleData l : syms) {
+			Arrays.fill(lsym, nitems, nitems + l.pattern.length, index);
+			lindex[index++] = nitems;
+			nitems += l.pattern.length;
 		}
-		lindex[nlexems] = nsit;
-		assert lsym_size == nsit;
+		lindex[nrules] = nitems;
+		assert lsym_size == nitems;
 
 		boolean initialStateIsEmpty = true;
-		for (LexemData l : syms) {
+		for (RuleData l : syms) {
 			if ((l.applicableStates[0] & 1) != 0) {
 				initialStateIsEmpty = false;
 				break;
@@ -557,7 +557,7 @@ public class LexicalBuilder {
 		}
 
 		if (initialStateIsEmpty) {
-			status.report(ProcessingStatus.KIND_ERROR, "no rules in the `initial' state", nlexems > 0 ? ldata[0].lexicalRule : null);
+			status.report(ProcessingStatus.KIND_ERROR, "no rules in the `initial' state", nrules > 0 ? ldata[0].lexicalRule : null);
 			return false;
 		}
 
@@ -575,8 +575,8 @@ public class LexicalBuilder {
 	}
 
 	private void debugTables() {
-		status.debug("\nLexems:\n\n");
-		for (int i = 0; i < nlexems; i++) {
+		status.debug("\nLexical rules:\n\n");
+		for (int i = 0; i < nrules; i++) {
 			status.debug(ldata[i].name + "," + ldata[i].lexicalRule.getSymbol().getIndex() + ": ");
 			for (RegexInstruction instruction : ldata[i].pattern) {
 				status.debug(" ");
@@ -656,7 +656,7 @@ public class LexicalBuilder {
 	}
 
 	/*
-	 * Generates lexer tables from lexems descriptions
+	 * Generates lexer tables
 	 */
 	public static LexerData compile(LexerState[] states, LexicalRule[] lexicalRules, NamedPattern[] patterns, ProcessingStatus status) {
 		LexicalBuilder lb = new LexicalBuilder(status);

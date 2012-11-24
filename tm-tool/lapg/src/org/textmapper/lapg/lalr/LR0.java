@@ -535,7 +535,7 @@ class LR0 extends ContextFree {
 		for (int soft = softterms[classTerm]; soft != -1; soft = softterms[soft]) {
 			assert soft < nterms && classterm[soft] == classTerm;
 			if (symbasesize[soft] != 0) {
-				// soft lexem conflict
+				// soft lexeme conflict
 				short[] core;
 				if (conflict == null) {
 					current.softConflicts = true;
