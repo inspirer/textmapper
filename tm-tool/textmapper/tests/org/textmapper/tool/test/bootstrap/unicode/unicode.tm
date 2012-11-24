@@ -19,12 +19,12 @@ prefix = "UnicodeTest"
 package = "org.textmapper.tool.test.bootstrap.unicode"
 genCopyright = true
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $lexem = current(); }
-icon(Integer):  /-?[0-9]+/                     { $lexem = Integer.parseInt(current()); }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $symbol = current(); }
+icon(Integer):  /-?[0-9]+/                     { $symbol = Integer.parseInt(current()); }
 
 
 schar = /[\w\p{Ll}]/
-string(String): /"({schar})+"/			   { $lexem = current(); }
+string(String): /"({schar})+"/			   { $symbol = current(); }
 _skip:          /[\n\t\r ]+/       (space)
 
 # grammar

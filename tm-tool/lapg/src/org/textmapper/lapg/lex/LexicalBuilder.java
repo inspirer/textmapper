@@ -139,7 +139,7 @@ public class LexicalBuilder {
 		int outputSize = 0;
 		for (int p = 0; set[p] >= 0; ) {
 
-			// search for next lexem
+			// search for next rule
 			while (lex < nrules && set[p] >= lindex[lex + 1]) {
 				lex++;
 			}
@@ -356,7 +356,7 @@ public class LexicalBuilder {
 		// generate states
 		while (current != null) {
 
-			// first of all we must search if there any lexem have been read already
+			// first of all we must search if there any lexeme have been read already
 			int lexnum = -1;
 			Arrays.fill(toshift, 0);
 			int[] cset = current.set;

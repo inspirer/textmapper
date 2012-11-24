@@ -27,7 +27,7 @@ endpositions = "line,column,offset"
 genCleanup = false
 genCopyright = true
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $lexem = current(); }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $symbol = current(); }
 _skip:          /[\n\t\r ]+/ (space)
 
 Lclass: /class/

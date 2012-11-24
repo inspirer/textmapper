@@ -115,7 +115,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 			fTokenLength = lexem.offset - fTokenOffset;
 			return TokenType.BAD_CHARACTER;
 		}
-		int token = lexem.lexem;
+		int token = lexem.symbol;
 		fTokenLength = lexem.endoffset - fTokenOffset;
 		LapgSymbol currentLexem = lexem;
 		lexem = null;
@@ -256,7 +256,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 
 		/* default, eoi */
 		lexem = currentLexem;
-		assert lexem.lexem == Lexems.eoi && lexem.endoffset == fDocumentLength;
+		assert lexem.symbol == Lexems.eoi && lexem.endoffset == fDocumentLength;
 		return null;
 	}
 

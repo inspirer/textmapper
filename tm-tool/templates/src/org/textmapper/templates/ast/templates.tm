@@ -31,18 +31,18 @@ genCleanup = true
 any:	/[^$]+/
 
 escdollar:		/$$/
-escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $lexem = token.toString().substring(1, token.length()); }
-escint(Integer):/$[0-9]+/							{ $lexem = Integer.parseInt(token.toString().substring(1, token.length())); }
+escid(String):	/$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/	{ $symbol = token.toString().substring(1, token.length()); }
+escint(Integer):/$[0-9]+/							{ $symbol = Integer.parseInt(token.toString().substring(1, token.length())); }
 
 '${':	/$\{/ => query		{ deep = 1;}
 '$/':   /$\//
 
 [query]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ (class) { $lexem = current(); }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9]*/ (class) { $symbol = current(); }
 
-icon(Integer):	/[0-9]+/							{ $lexem = Integer.parseInt(current()); }
-ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $lexem = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/[0-9]+/							{ $symbol = Integer.parseInt(current()); }
+ccon(String):	/'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/	{ $symbol = unescape(current(), 1, token.length()-1); }
 
 Lcall:		/call/
 Lcached:	/cached/

@@ -121,16 +121,16 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 				fTokenLength = 1;
 				return RE_DELIMITERS;
 			}
-			if (lexem.lexem == Lexems.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
+			if (lexem.symbol == Lexems.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
 				fTokenLength--;
 				return RE_BAD;
 			}
-			if (lexem.lexem == Lexems.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
+			if (lexem.symbol == Lexems.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
 				return RE_DELIMITERS;
 			}
 			return RE_BAD;
 		}
-		int token = lexem.lexem;
+		int token = lexem.symbol;
 		fTokenLength = lexem.endoffset - fTokenOffset;
 		LapgSymbol currentLexem = lexem;
 		lexem = null;
@@ -185,7 +185,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 
 		/* default, eoi */
 		lexem = currentLexem;
-		assert lexem.lexem == Lexems.eoi && lexem.endoffset == fDocumentLength;
+		assert lexem.symbol == Lexems.eoi && lexem.endoffset == fDocumentLength;
 		return null;
 	}
 

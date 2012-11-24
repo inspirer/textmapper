@@ -363,7 +363,7 @@ public class LapgResolver {
 					continue;
 				}
 				if (lexeme.getRegexp() == null) {
-					error(lexeme, "class lexem without regular expression, ignored");
+					error(lexeme, "class lexeme rule without regular expression, ignored");
 					continue;
 				}
 
@@ -429,7 +429,7 @@ public class LapgResolver {
 					}
 
 					if (kind == LexicalRule.KIND_SOFT && lexeme.getCode() != null) {
-						error(lexeme.getCode(), "soft lexem `" + lexeme.getName().getName()
+						error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getName()
 								+ "' cannot have a semantic action");
 					}
 					LexicalRule classRule = getClassRule(classMatchers, lexeme, regex);
@@ -437,9 +437,9 @@ public class LapgResolver {
 					if (kind == LexicalRule.KIND_SOFT) {
 						if (classRule == null) {
 							if (!regex.isConstant()) {
-								error(lexeme, "soft lexem `" + name + "' should have a constant regexp");
+								error(lexeme, "soft lexeme rule `" + name + "' should have a constant regexp");
 							} else {
-								error(lexeme, "soft lexem `" + name + "' doesn't match any class lexem");
+								error(lexeme, "soft lexeme rule `" + name + "' doesn't match any class rule");
 							}
 							kind = LexicalRule.KIND_NONE;
 						} else {
@@ -464,7 +464,7 @@ public class LapgResolver {
 					codeMap.put(liLexicalRule, lexeme.getCode());
 				} else {
 					if (kind == LexicalRule.KIND_SOFT) {
-						error(lexeme, "soft lexem `" + lexeme.getName().getName() + "' should have regular expression");
+						error(lexeme, "soft lexeme rule `" + lexeme.getName().getName() + "' should have a regular expression");
 					}
 					create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
 				}
@@ -1078,7 +1078,7 @@ public class LapgResolver {
 			LapgSymbol sym = lexer.next();
 			int lastline = 0;
 			StringBuilder sb = new StringBuilder();
-			while (sym.lexem == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
+			while (sym.symbol == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
 				String val = lexer.current().substring(1);
 				if (val.endsWith("\n")) {
 					val = val.substring(0, val.length() - (val.endsWith("\r\n") ? 2 : 1));

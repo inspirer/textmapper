@@ -42,7 +42,7 @@ ${if self->lazyNext()-}
 			}
 ${end-}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -144,7 +144,7 @@ ${end-}
 				self->hasNoEoiInputs()
 				 	? 'lapg_head'
 				 	: 'lapg_head - 1'
-			}].sym;
+			}].value;
 	}
 ${if self->hasRecovering()}
 	protected boolean restore() ${if self->lazyNext()}throws java.io.@IOException ${end}{
@@ -153,7 +153,7 @@ ${if self->lazyNext()-}
 			lapg_n = lapg_lexer.next();
 		}
 ${end-}
-		if (lapg_n.lexem == 0) {
+		if (lapg_n.symbol == 0) {
 			return false;
 		}
 		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, ${self->errorLexem()}) == -1) {
@@ -163,8 +163,8 @@ ${end-}
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new ${self->symbolClassName()}();
-			lapg_m[lapg_head].lexem = ${self->errorLexem()};
-			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].symbol = ${self->errorLexem()};
+			lapg_m[lapg_head].value = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, ${self->errorLexem()});
 ${if opts.positions.contains('line')-}
 			lapg_m[lapg_head].line = lapg_n.line;
@@ -197,9 +197,9 @@ ${if self->lazyNext()-}
 		}
 ${end-}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 ${call debugShift-}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = ${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
 					? 'lazy ? null : lapg_lexer.next()' :
@@ -212,8 +212,8 @@ ${call debugShift-}
 
 	protected void reduce(int rule) {
 		${self->symbolClassName()} lapg_gg = new ${self->symbolClassName()}();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 ${call debugReduce-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
@@ -245,7 +245,7 @@ ${end-}
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 ${call applyRule-}
@@ -253,14 +253,14 @@ ${if self->hasRecovering()}
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(${self->symbolClassName()} sym) {
+	protected void dispose(${self->symbolClassName()} value) {
 	}
 ${end-}
 ${if opts.genCleanup}
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(${self->symbolClassName()} sym) {
+	protected void cleanup(${self->symbolClassName()} value) {
 	}
 ${end-}
 ${if self->needFinalState()-}
@@ -309,7 +309,7 @@ ${end}
 
 ${template debugShift-}
 		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
 ${end}
 
@@ -376,8 +376,8 @@ ${query symText(property) =
 	  + '.' + property }
 
 ${template symAccess(property)-}
-${assert ['sym', 'line', 'column', 'offset', 'endline', 'endcolumn', 'endoffset'].contains(property)-}
-${if property == 'sym'-}
+${assert ['value', 'line', 'column', 'offset', 'endline', 'endcolumn', 'endoffset'].contains(property)-}
+${if property == 'value'-}
 ${symbol->type() ? '((' + symbol->type() + ')' + self->symText(property) + ')' : self->symText(property) -}
 ${else-}
 ${self->symText(property)-}

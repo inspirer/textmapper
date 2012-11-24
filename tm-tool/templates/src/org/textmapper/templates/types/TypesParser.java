@@ -221,7 +221,7 @@ public class TypesParser {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -283,24 +283,24 @@ public class TypesParser {
 								lapg_lexer.getTokenLine()));
 			throw new ParseException();
 		}
-		return (AstInput)lapg_m[lapg_head - 1].sym;
+		return (AstInput)lapg_m[lapg_head - 1].value;
 	}
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = lapg_lexer.next();
 		}
 	}
 
 	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
@@ -314,169 +314,169 @@ public class TypesParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 0:  // input ::= declarations
-				lapg_gg.sym = new AstInput(
-						((List<AstTypeDeclaration>)lapg_m[lapg_head].sym) /* declarations */,
+				lapg_gg.value = new AstInput(
+						((List<AstTypeDeclaration>)lapg_m[lapg_head].value) /* declarations */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 1:  // declarations ::= declarations type_declaration
-				((List<AstTypeDeclaration>)lapg_m[lapg_head - 1].sym).add(((AstTypeDeclaration)lapg_m[lapg_head].sym));
+				((List<AstTypeDeclaration>)lapg_m[lapg_head - 1].value).add(((AstTypeDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 2:  // declarations ::= type_declaration
-				lapg_gg.sym = new ArrayList();
-				((List<AstTypeDeclaration>)lapg_gg.sym).add(((AstTypeDeclaration)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<AstTypeDeclaration>)lapg_gg.value).add(((AstTypeDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 5:  // member_declaration_optlist ::= member_declaration_optlist member_declaration
-				((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].sym).add(((IAstMemberDeclaration)lapg_m[lapg_head].sym));
+				((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].value).add(((IAstMemberDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 6:  // member_declaration_optlist ::=
-				lapg_gg.sym = new ArrayList();
+				lapg_gg.value = new ArrayList();
 				break;
 			case 7:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_optlist '}'
-				lapg_gg.sym = new AstTypeDeclaration(
-						((String)lapg_m[lapg_head - 4].sym) /* name */,
-						((List<List<String>>)lapg_m[lapg_head - 3].sym) /* _extends */,
-						((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].sym) /* members */,
+				lapg_gg.value = new AstTypeDeclaration(
+						((String)lapg_m[lapg_head - 4].value) /* name */,
+						((List<List<String>>)lapg_m[lapg_head - 3].value) /* _extends */,
+						((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].value) /* members */,
 						null /* input */, lapg_m[lapg_head - 5].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 8:  // extends_clause ::= Lextends name_list
-				lapg_gg.sym = ((List<List<String>>)lapg_m[lapg_head].sym);
+				lapg_gg.value = ((List<List<String>>)lapg_m[lapg_head].value);
 				break;
 			case 15:  // feature_declaration ::= type_ex identifier modifiersopt defaultvalopt ';'
-				lapg_gg.sym = new AstFeatureDeclaration(
-						((String)lapg_m[lapg_head - 3].sym) /* name */,
-						((AstTypeEx)lapg_m[lapg_head - 4].sym) /* typeEx */,
-						((List<AstConstraint>)lapg_m[lapg_head - 2].sym) /* modifiersopt */,
-						((IAstExpression)lapg_m[lapg_head - 1].sym) /* defaultvalopt */,
+				lapg_gg.value = new AstFeatureDeclaration(
+						((String)lapg_m[lapg_head - 3].value) /* name */,
+						((AstTypeEx)lapg_m[lapg_head - 4].value) /* typeEx */,
+						((List<AstConstraint>)lapg_m[lapg_head - 2].value) /* modifiersopt */,
+						((IAstExpression)lapg_m[lapg_head - 1].value) /* defaultvalopt */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 18:  // method_declaration ::= type_ex identifier '(' parametersopt ')' ';'
-				lapg_gg.sym = new AstMethodDeclaration(
-						((AstTypeEx)lapg_m[lapg_head - 5].sym) /* returnType */,
-						((String)lapg_m[lapg_head - 4].sym) /* name */,
-						((List<AstTypeEx>)lapg_m[lapg_head - 2].sym) /* parametersopt */,
+				lapg_gg.value = new AstMethodDeclaration(
+						((AstTypeEx)lapg_m[lapg_head - 5].value) /* returnType */,
+						((String)lapg_m[lapg_head - 4].value) /* name */,
+						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parametersopt */,
 						null /* input */, lapg_m[lapg_head - 5].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 19:  // parameters ::= type_ex
-				lapg_gg.sym = new ArrayList();
-				((List<AstTypeEx>)lapg_gg.sym).add(((AstTypeEx)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<AstTypeEx>)lapg_gg.value).add(((AstTypeEx)lapg_m[lapg_head].value));
 				break;
 			case 20:  // parameters ::= parameters ',' type_ex
-				((List<AstTypeEx>)lapg_m[lapg_head - 2].sym).add(((AstTypeEx)lapg_m[lapg_head].sym));
+				((List<AstTypeEx>)lapg_m[lapg_head - 2].value).add(((AstTypeEx)lapg_m[lapg_head].value));
 				break;
 			case 21:  // defaultval ::= '=' expression
-				lapg_gg.sym = ((IAstExpression)lapg_m[lapg_head].sym);
+				lapg_gg.value = ((IAstExpression)lapg_m[lapg_head].value);
 				break;
 			case 22:  // constraint_list ::= constraint_list ';' constraint
-				((List<AstConstraint>)lapg_m[lapg_head - 2].sym).add(((AstConstraint)lapg_m[lapg_head].sym));
+				((List<AstConstraint>)lapg_m[lapg_head - 2].value).add(((AstConstraint)lapg_m[lapg_head].value));
 				break;
 			case 23:  // constraint_list ::= constraint
-				lapg_gg.sym = new ArrayList();
-				((List<AstConstraint>)lapg_gg.sym).add(((AstConstraint)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<AstConstraint>)lapg_gg.value).add(((AstConstraint)lapg_m[lapg_head].value));
 				break;
 			case 24:  // modifiers ::= '[' constraint_list ']'
-				lapg_gg.sym = ((List<AstConstraint>)lapg_m[lapg_head - 1].sym);
+				lapg_gg.value = ((List<AstConstraint>)lapg_m[lapg_head - 1].value);
 				break;
 			case 25:  // constraint ::= string_constraint
-				lapg_gg.sym = new AstConstraint(
-						((AstStringConstraint)lapg_m[lapg_head].sym) /* stringConstraint */,
+				lapg_gg.value = new AstConstraint(
+						((AstStringConstraint)lapg_m[lapg_head].value) /* stringConstraint */,
 						null /* multiplicityList */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 26:  // multiplicity_list ::= multiplicity_list ',' multiplicity
-				((List<AstMultiplicity>)lapg_m[lapg_head - 2].sym).add(((AstMultiplicity)lapg_m[lapg_head].sym));
+				((List<AstMultiplicity>)lapg_m[lapg_head - 2].value).add(((AstMultiplicity)lapg_m[lapg_head].value));
 				break;
 			case 27:  // multiplicity_list ::= multiplicity
-				lapg_gg.sym = new ArrayList();
-				((List<AstMultiplicity>)lapg_gg.sym).add(((AstMultiplicity)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<AstMultiplicity>)lapg_gg.value).add(((AstMultiplicity)lapg_m[lapg_head].value));
 				break;
 			case 28:  // constraint ::= multiplicity_list
-				lapg_gg.sym = new AstConstraint(
+				lapg_gg.value = new AstConstraint(
 						null /* stringConstraint */,
-						((List<AstMultiplicity>)lapg_m[lapg_head].sym) /* multiplicityList */,
+						((List<AstMultiplicity>)lapg_m[lapg_head].value) /* multiplicityList */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 29:  // string_constraint ::= Lset ':' strings
-				lapg_gg.sym = new AstStringConstraint(
+				lapg_gg.value = new AstStringConstraint(
 						AstStringConstraint.LSET,
-						((List<Ast_String>)lapg_m[lapg_head].sym) /* strings */,
+						((List<Ast_String>)lapg_m[lapg_head].value) /* strings */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 30:  // string_constraint ::= Lchoice ':' strings
-				lapg_gg.sym = new AstStringConstraint(
+				lapg_gg.value = new AstStringConstraint(
 						AstStringConstraint.LCHOICE,
-						((List<Ast_String>)lapg_m[lapg_head].sym) /* strings */,
+						((List<Ast_String>)lapg_m[lapg_head].value) /* strings */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 31:  // string_constraint ::= identifier
-				lapg_gg.sym = new AstStringConstraint(
+				lapg_gg.value = new AstStringConstraint(
 						0,
 						null /* strings */,
-						((String)lapg_m[lapg_head].sym) /* identifier */,
+						((String)lapg_m[lapg_head].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 32:  // strings ::= strings ',' string
-				((List<Ast_String>)lapg_m[lapg_head - 2].sym).add(((Ast_String)lapg_m[lapg_head].sym));
+				((List<Ast_String>)lapg_m[lapg_head - 2].value).add(((Ast_String)lapg_m[lapg_head].value));
 				break;
 			case 33:  // strings ::= string
-				lapg_gg.sym = new ArrayList();
-				((List<Ast_String>)lapg_gg.sym).add(((Ast_String)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<Ast_String>)lapg_gg.value).add(((Ast_String)lapg_m[lapg_head].value));
 				break;
 			case 34:  // string ::= identifier
-				lapg_gg.sym = new Ast_String(
-						((String)lapg_m[lapg_head].sym) /* identifier */,
+				lapg_gg.value = new Ast_String(
+						((String)lapg_m[lapg_head].value) /* identifier */,
 						null /* scon */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 35:  // string ::= scon
-				lapg_gg.sym = new Ast_String(
+				lapg_gg.value = new Ast_String(
 						null /* identifier */,
-						((String)lapg_m[lapg_head].sym) /* scon */,
+						((String)lapg_m[lapg_head].value) /* scon */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 36:  // multiplicity ::= icon
-				lapg_gg.sym = new AstMultiplicity(
-						((Integer)lapg_m[lapg_head].sym) /* lo */,
+				lapg_gg.value = new AstMultiplicity(
+						((Integer)lapg_m[lapg_head].value) /* lo */,
 						false,
 						null /* hi */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 37:  // multiplicity ::= icon '..' '*'
-				lapg_gg.sym = new AstMultiplicity(
-						((Integer)lapg_m[lapg_head - 2].sym) /* lo */,
+				lapg_gg.value = new AstMultiplicity(
+						((Integer)lapg_m[lapg_head - 2].value) /* lo */,
 						true,
 						null /* hi */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 38:  // multiplicity ::= icon '..' icon
-				lapg_gg.sym = new AstMultiplicity(
-						((Integer)lapg_m[lapg_head - 2].sym) /* lo */,
+				lapg_gg.value = new AstMultiplicity(
+						((Integer)lapg_m[lapg_head - 2].value) /* lo */,
 						false,
-						((Integer)lapg_m[lapg_head].sym) /* hi */,
+						((Integer)lapg_m[lapg_head].value) /* hi */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 39:  // type_ex ::= type
-				lapg_gg.sym = new AstTypeEx(
-						((AstType)lapg_m[lapg_head].sym) /* type */,
+				lapg_gg.value = new AstTypeEx(
+						((AstType)lapg_m[lapg_head].value) /* type */,
 						null /* multiplicityList */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 40:  // type_ex ::= type '[' multiplicity_list ']'
-				lapg_gg.sym = new AstTypeEx(
-						((AstType)lapg_m[lapg_head - 3].sym) /* type */,
-						((List<AstMultiplicity>)lapg_m[lapg_head - 1].sym) /* multiplicityList */,
+				lapg_gg.value = new AstTypeEx(
+						((AstType)lapg_m[lapg_head - 3].value) /* type */,
+						((List<AstMultiplicity>)lapg_m[lapg_head - 1].value) /* multiplicityList */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 41:  // type ::= Lint
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						AstType.LINT,
 						false,
 						false,
@@ -485,7 +485,7 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 42:  // type ::= Lstring
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						AstType.LSTRING,
 						false,
 						false,
@@ -494,7 +494,7 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 43:  // type ::= Lbool
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						AstType.LBOOL,
 						false,
 						false,
@@ -503,111 +503,111 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 44:  // type ::= name
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						0,
 						false,
 						false,
-						((List<String>)lapg_m[lapg_head].sym) /* name */,
+						((List<String>)lapg_m[lapg_head].value) /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 45:  // type ::= name '*'
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						0,
 						true,
 						false,
-						((List<String>)lapg_m[lapg_head - 1].sym) /* name */,
+						((List<String>)lapg_m[lapg_head - 1].value) /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 46:  // type ::= '{' parametersopt '=>' '}'
-				lapg_gg.sym = new AstType(
+				lapg_gg.value = new AstType(
 						0,
 						false,
 						true,
 						null /* name */,
-						((List<AstTypeEx>)lapg_m[lapg_head - 2].sym) /* parametersopt */,
+						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parametersopt */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 49:  // literal_expression ::= scon
-				lapg_gg.sym = new AstLiteralExpression(
-						((String)lapg_m[lapg_head].sym) /* scon */,
+				lapg_gg.value = new AstLiteralExpression(
+						((String)lapg_m[lapg_head].value) /* scon */,
 						null /* icon */,
 						null /* bcon */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 50:  // literal_expression ::= icon
-				lapg_gg.sym = new AstLiteralExpression(
+				lapg_gg.value = new AstLiteralExpression(
 						null /* scon */,
-						((Integer)lapg_m[lapg_head].sym) /* icon */,
+						((Integer)lapg_m[lapg_head].value) /* icon */,
 						null /* bcon */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 51:  // literal_expression ::= bcon
-				lapg_gg.sym = new AstLiteralExpression(
+				lapg_gg.value = new AstLiteralExpression(
 						null /* scon */,
 						null /* icon */,
-						((Boolean)lapg_m[lapg_head].sym) /* bcon */,
+						((Boolean)lapg_m[lapg_head].value) /* bcon */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 52:  // structural_expression$1 ::= structural_expression$1 ',' identifier map_separator expression
-				((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 4].sym).add(new AstStructuralExpressionDOLLAR1Item(
-						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
-						((AstMapSeparator)lapg_m[lapg_head - 1].sym) /* mapSeparator */,
-						((IAstExpression)lapg_m[lapg_head].sym) /* expression */,
+				((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 4].value).add(new AstStructuralExpressionDOLLAR1Item(
+						((String)lapg_m[lapg_head - 2].value) /* identifier */,
+						((AstMapSeparator)lapg_m[lapg_head - 1].value) /* mapSeparator */,
+						((IAstExpression)lapg_m[lapg_head].value) /* expression */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 53:  // structural_expression$1 ::= identifier map_separator expression
-				lapg_gg.sym = new ArrayList();
-				((List<AstStructuralExpressionDOLLAR1Item>)lapg_gg.sym).add(new AstStructuralExpressionDOLLAR1Item(
-						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
-						((AstMapSeparator)lapg_m[lapg_head - 1].sym) /* mapSeparator */,
-						((IAstExpression)lapg_m[lapg_head].sym) /* expression */,
+				lapg_gg.value = new ArrayList();
+				((List<AstStructuralExpressionDOLLAR1Item>)lapg_gg.value).add(new AstStructuralExpressionDOLLAR1Item(
+						((String)lapg_m[lapg_head - 2].value) /* identifier */,
+						((AstMapSeparator)lapg_m[lapg_head - 1].value) /* mapSeparator */,
+						((IAstExpression)lapg_m[lapg_head].value) /* expression */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 56:  // structural_expression ::= name '(' structural_expression$1_opt ')'
-				lapg_gg.sym = new AstStructuralExpression(
-						((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 1].sym) /* mapEntries */,
-						((List<String>)lapg_m[lapg_head - 3].sym) /* name */,
+				lapg_gg.value = new AstStructuralExpression(
+						((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 1].value) /* mapEntries */,
+						((List<String>)lapg_m[lapg_head - 3].value) /* name */,
 						null /* expressionListopt */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 59:  // structural_expression ::= '[' expression_listopt ']'
-				lapg_gg.sym = new AstStructuralExpression(
+				lapg_gg.value = new AstStructuralExpression(
 						null /* mapEntries */,
 						null /* name */,
-						((List<IAstExpression>)lapg_m[lapg_head - 1].sym) /* expressionListopt */,
+						((List<IAstExpression>)lapg_m[lapg_head - 1].value) /* expressionListopt */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 60:  // expression_list ::= expression
-				lapg_gg.sym = new ArrayList();
-				((List<IAstExpression>)lapg_gg.sym).add(((IAstExpression)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<IAstExpression>)lapg_gg.value).add(((IAstExpression)lapg_m[lapg_head].value));
 				break;
 			case 61:  // expression_list ::= expression_list ',' expression
-				((List<IAstExpression>)lapg_m[lapg_head - 2].sym).add(((IAstExpression)lapg_m[lapg_head].sym));
+				((List<IAstExpression>)lapg_m[lapg_head - 2].value).add(((IAstExpression)lapg_m[lapg_head].value));
 				break;
 			case 62:  // map_separator ::= ':'
-				lapg_gg.sym = AstMapSeparator.COLON;
+				lapg_gg.value = AstMapSeparator.COLON;
 				break;
 			case 63:  // map_separator ::= '='
-				lapg_gg.sym = AstMapSeparator.EQUAL;
+				lapg_gg.value = AstMapSeparator.EQUAL;
 				break;
 			case 64:  // map_separator ::= '=>'
-				lapg_gg.sym = AstMapSeparator.EQUALGREATER;
+				lapg_gg.value = AstMapSeparator.EQUALGREATER;
 				break;
 			case 65:  // name ::= identifier
-				lapg_gg.sym = new ArrayList();
-				((List<String>)lapg_gg.sym).add(((String)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<String>)lapg_gg.value).add(((String)lapg_m[lapg_head].value));
 				break;
 			case 66:  // name ::= name '.' identifier
-				((List<String>)lapg_m[lapg_head - 2].sym).add(((String)lapg_m[lapg_head].sym));
+				((List<String>)lapg_m[lapg_head - 2].value).add(((String)lapg_m[lapg_head].value));
 				break;
 			case 67:  // name_list ::= name
-				lapg_gg.sym = new ArrayList();
-				((List<List<String>>)lapg_gg.sym).add(((List<String>)lapg_m[lapg_head].sym));
+				lapg_gg.value = new ArrayList();
+				((List<List<String>>)lapg_gg.value).add(((List<String>)lapg_m[lapg_head].value));
 				break;
 			case 68:  // name_list ::= name_list ',' name
-				((List<List<String>>)lapg_m[lapg_head - 2].sym).add(((List<String>)lapg_m[lapg_head].sym));
+				((List<List<String>>)lapg_m[lapg_head - 2].value).add(((List<String>)lapg_m[lapg_head].value));
 				break;
 		}
 	}

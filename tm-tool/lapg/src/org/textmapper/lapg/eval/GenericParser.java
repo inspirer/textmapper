@@ -69,7 +69,7 @@ public class GenericParser {
 				lapg_n = lapg_lexer.next();
 			}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -154,14 +154,14 @@ public class GenericParser {
 			}
 			throw new ParseException();
 		}
-		return lapg_m[noEoi ? lapg_head : lapg_head - 1].sym;
+		return lapg_m[noEoi ? lapg_head : lapg_head - 1].value;
 	}
 
 	protected boolean restore() throws IOException {
 		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
-		if (lapg_n.lexem == 0) {
+		if (lapg_n.symbol == 0) {
 			return false;
 		}
 		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, grammar.getError().getIndex()) == -1) {
@@ -171,8 +171,8 @@ public class GenericParser {
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new ParseSymbol();
-			lapg_m[lapg_head].lexem = grammar.getError().getIndex();
-			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].symbol = grammar.getError().getIndex();
+			lapg_m[lapg_head].value = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, grammar.getError().getIndex());
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
@@ -187,19 +187,19 @@ public class GenericParser {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (debugSyntax) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[lapg_n.lexem].getName(), lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[lapg_n.symbol].getName(), lapg_lexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = lazy ? null : lapg_lexer.next();
 		}
 	}
 
 	protected void reduce(int rule) {
 		ParseSymbol lapg_gg = new ParseSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (debugSyntax) {
 			System.out.println("reduce to " + grammar.getSymbols()[lapg_rlex[rule]].getName());
@@ -214,37 +214,37 @@ public class GenericParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	protected void applyRule(ParseSymbol lapg_gg, int rule, int ruleLength) {
 		if (ruleLength == 1) {
-			Object right = lapg_m[lapg_head].sym;
+			Object right = lapg_m[lapg_head].value;
 			if (right instanceof GenericNode) {
-				lapg_gg.sym = right;
+				lapg_gg.value = right;
 			} else {
-				lapg_gg.sym = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+				lapg_gg.value = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
 			}
 		} else if (ruleLength > 1) {
 			List<GenericNode> children = new ArrayList<GenericNode>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
-				if (lapg_m[lapg_head - i].sym instanceof GenericNode) {
-					children.add((GenericNode) lapg_m[lapg_head - i].sym);
+				if (lapg_m[lapg_head - i].value instanceof GenericNode) {
+					children.add((GenericNode) lapg_m[lapg_head - i].value);
 				}
 			}
-			lapg_gg.sym = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new GenericNode[children.size()]));
+			lapg_gg.value = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new GenericNode[children.size()]));
 		}
 	}
 
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(ParseSymbol sym) {
+	protected void dispose(ParseSymbol value) {
 	}
 
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(ParseSymbol sym) {
+	protected void cleanup(ParseSymbol value) {
 	}
 }

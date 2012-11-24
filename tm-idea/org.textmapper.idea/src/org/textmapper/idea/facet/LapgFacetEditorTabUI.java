@@ -32,8 +32,8 @@ public class LapgFacetEditorTabUI {
 	private static final FileChooserDescriptor TEMPLATES_CHOOSER_DESCRIPTOR = FileChooserDescriptorFactory.createSingleFolderDescriptor();
 
 	static {
-		TEMPLATES_CHOOSER_DESCRIPTOR.setTitle("Choose Lapg Templates folder");
-		TEMPLATES_CHOOSER_DESCRIPTOR.setDescription("Choose the directory with custom Lapg templates");
+		TEMPLATES_CHOOSER_DESCRIPTOR.setTitle("Choose Textmapper Templates Folder");
+		TEMPLATES_CHOOSER_DESCRIPTOR.setDescription("Choose the directory with custom Textmapper templates");
 	}
 
 	public LapgFacetEditorTabUI() {

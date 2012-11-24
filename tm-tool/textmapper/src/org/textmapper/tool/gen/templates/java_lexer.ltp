@@ -145,8 +145,8 @@ ${end-}
 ${if opts.endpositions.contains('column')-}
 					lapg_n.endcolumn = currColumn;
 ${end-}
-					lapg_n.lexem = 0;
-					lapg_n.sym = null;
+					lapg_n.symbol = 0;
+					lapg_n.value = null;
 					reporter.error(${call java.err_location('lapg_n', 'this') }"Unexpected end of input reached");
 ${if opts.lexerInput == 'buffered'-}
 					tokenStart = -1;
@@ -173,14 +173,14 @@ ${if opts.lexerInput == 'buffered'-}
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
 ${end-}
-				reporter.error(${call java.err_location('lapg_n', 'this') }java.text.@MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
-				lapg_n.lexem = -1;
+				reporter.error(${call java.err_location('lapg_n', 'this') }java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				lapg_n.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.lexem = 0;
-				lapg_n.sym = null;
+				lapg_n.symbol = 0;
+				lapg_n.value = null;
 ${if opts.lexerInput == 'buffered'-}
 				tokenStart = -1;
 ${end-}
@@ -193,10 +193,10 @@ ${if opts.lexerInput == 'buffered'-}
 			}
 
 ${end-}
-			lapg_n.lexem = lapg_lexemnum[-state - 3];
-			lapg_n.sym = null;
+			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.value = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
 ${if opts.lexerInput == 'buffered'-}
 		tokenStart = -1;
 ${end-}
@@ -236,13 +236,13 @@ ${template createToken}
 ${if self->hasLexemActions()-}
 		boolean spaceToken = false;
 		switch (lexemIndex) {
-${foreach lexem in syntax.lexicalRules-}
-${if lexem.kindAsText == 'class'-}
-			case ${lexem.index}:
-				return create${lexem->classRuleName()}Token(lapg_n, lexemIndex);
-${else if lexem->hasActions() && !lexem.classRule-}
-			case ${lexem.index}: // ${lexem.symbol.name}: /${lexem.regexp}/
-${call lexerAction('lapg_n.sym') for lexem-}
+${foreach rule in syntax.lexicalRules-}
+${if rule.kindAsText == 'class'-}
+			case ${rule.index}:
+				return create${rule->classRuleName()}Token(lapg_n, lexemIndex);
+${else if rule->hasActions() && !rule.classRule-}
+			case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
+${call lexerAction('lapg_n.value') for rule-}
 				break;
 ${end-}
 ${end-}
@@ -252,39 +252,39 @@ ${else-}
 		return true;
 ${end-}
 	}
-${foreach lexem in self->classRules()-}
-${if lexem->classHasInstances()-}
+${foreach classRule in self->classRules()-}
+${if classRule->classHasInstances()-}
 
-	private static java.util.@Map<String,Integer> subTokensOf${lexem->classRuleName()} = new java.util.@HashMap<String,Integer>();
+	private static java.util.@Map<String,Integer> subTokensOf${classRule->classRuleName()} = new java.util.@HashMap<String,Integer>();
 	static {
-${foreach instance in lexem->classInstances()-}
-		subTokensOf${lexem->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
+${foreach instance in classRule->classInstances()-}
+		subTokensOf${classRule->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
 ${end-}
 	}
 ${end-}
 
-	protected boolean create${lexem->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
-${if lexem->classHasInstances()-}
-		Integer replacement = subTokensOf${lexem->classRuleName()}.get(current());
+	protected boolean create${classRule->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
+${if classRule->classHasInstances()-}
+		Integer replacement = subTokensOf${classRule->classRuleName()}.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
-			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+			lapg_n.symbol = lapg_lexemnum[lexemIndex];
 		}
 ${end-}
-${if lexem->classInstances().exists(x|x->hasActions()) || lexem->hasActions()-}
+${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActions()-}
 		boolean spaceToken = false;
 		switch(lexemIndex) {
-${foreach instance in lexem->classInstances().select(x|x->hasActions())-}
+${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
 			case ${instance.index}:	// ${instance.regexp.constantValue}
-${call lexerAction('lapg_n.sym') for instance-}
+${call lexerAction('lapg_n.value') for instance-}
 				break;
 ${end-}
-${if lexem->hasActions()-}
-${foreach instance in lexem->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
+${if classRule->hasActions()-}
+${foreach instance in classRule->classInstances().select(x|!x.action && x.kindAsText == 'soft')-}
 			case ${instance.index}:	// ${instance.regexp.constantValue} (soft)
 ${end-}
-			case ${lexem.index}:	// <default>
-${call lexerAction('lapg_n.sym') for lexem-}
+			case ${classRule.index}:	// <default>
+${call lexerAction('lapg_n.value') for classRule-}
 				break;
 ${end-}
 		}
@@ -338,7 +338,7 @@ ${end-}
 ${end}
 
 
-${template lexerAction(lexem)-}
+${template lexerAction(symbol)-}
 ${if self.kindAsText == 'space'-}
 				spaceToken = true;
 ${end-}
@@ -386,8 +386,8 @@ ${end}
 
 ${template symbolClass}
 	public static class ${self->java.symbolClassName()} {
-		public Object sym;
-		public int lexem;
+		public Object value;
+		public int symbol;
 		public int state;
 ${if opts.positions.contains('line')-}
 		public int line;

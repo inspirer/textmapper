@@ -15,7 +15,7 @@ TraditionalComment: /\/\*([^*]|\*+[^\/*])*\*+\// (space)
 Letter = /[a-zA-Z_\p{L}]/
 LetterOrDigit = /[a-zA-Z0-9_\p{L}]/
 
-# Lexem class - identifier
+# Lexeme class - identifier
 
 Identifier: /{Letter}{LetterOrDigit}*/  (class)
 

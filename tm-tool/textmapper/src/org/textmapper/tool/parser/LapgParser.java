@@ -463,7 +463,7 @@ public class LapgParser {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -545,11 +545,11 @@ public class LapgParser {
 			}
 			throw new ParseException();
 		}
-		return lapg_m[lapg_head - 1].sym;
+		return lapg_m[lapg_head - 1].value;
 	}
 
 	protected boolean restore() {
-		if (lapg_n.lexem == 0) {
+		if (lapg_n.symbol == 0) {
 			return false;
 		}
 		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 2) == -1) {
@@ -559,8 +559,8 @@ public class LapgParser {
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new LapgSymbol();
-			lapg_m[lapg_head].lexem = 2;
-			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].symbol = 2;
+			lapg_m[lapg_head].value = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 2);
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
@@ -572,19 +572,19 @@ public class LapgParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = lapg_lexer.next();
 		}
 	}
 
 	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
@@ -599,290 +599,290 @@ public class LapgParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 2:  // input ::= options lexer_parts grammar_partsopt
-				  lapg_gg.sym = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head - 2].sym), ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				  lapg_gg.value = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head - 2].value), ((List<AstLexerPart>)lapg_m[lapg_head - 1].value), ((List<AstGrammarPart>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 3:  // input ::= lexer_parts grammar_partsopt
-				  lapg_gg.sym = new AstRoot(null, ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym), ((List<AstGrammarPart>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				  lapg_gg.value = new AstRoot(null, ((List<AstLexerPart>)lapg_m[lapg_head - 1].value), ((List<AstGrammarPart>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 4:  // options ::= option
-				 lapg_gg.sym = new ArrayList<AstOptionPart>(16); ((List<AstOptionPart>)lapg_gg.sym).add(((AstOptionPart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstOptionPart>(16); ((List<AstOptionPart>)lapg_gg.value).add(((AstOptionPart)lapg_m[lapg_head].value)); 
 				break;
 			case 5:  // options ::= options option
-				 ((List<AstOptionPart>)lapg_m[lapg_head - 1].sym).add(((AstOptionPart)lapg_m[lapg_head].sym)); 
+				 ((List<AstOptionPart>)lapg_m[lapg_head - 1].value).add(((AstOptionPart)lapg_m[lapg_head].value)); 
 				break;
 			case 6:  // option ::= ID '=' expression
-				 lapg_gg.sym = new AstOption(((String)lapg_m[lapg_head - 2].sym), ((AstExpression)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstOption(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 8:  // identifier ::= ID
-				 lapg_gg.sym = new AstIdentifier(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstIdentifier(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 9:  // symref ::= ID
-				 lapg_gg.sym = new AstReference(((String)lapg_m[lapg_head].sym), AstReference.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstReference(((String)lapg_m[lapg_head].value), AstReference.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // type ::= '(' scon ')'
-				 lapg_gg.sym = ((String)lapg_m[lapg_head - 1].sym); 
+				 lapg_gg.value = ((String)lapg_m[lapg_head - 1].value); 
 				break;
 			case 11:  // type ::= '(' type_part_list ')'
-				 lapg_gg.sym = source.getText(lapg_m[lapg_head - 2].offset+1, lapg_m[lapg_head].endoffset-1); 
+				 lapg_gg.value = source.getText(lapg_m[lapg_head - 2].offset+1, lapg_m[lapg_head].endoffset-1); 
 				break;
 			case 28:  // pattern ::= regexp
-				 lapg_gg.sym = new AstRegexp(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRegexp(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 29:  // lexer_parts ::= lexer_part
-				 lapg_gg.sym = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.sym).add(((AstLexerPart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstLexerPart>(64); ((List<AstLexerPart>)lapg_gg.value).add(((AstLexerPart)lapg_m[lapg_head].value)); 
 				break;
 			case 30:  // lexer_parts ::= lexer_parts lexer_part
-				 ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym).add(((AstLexerPart)lapg_m[lapg_head].sym)); 
+				 ((List<AstLexerPart>)lapg_m[lapg_head - 1].value).add(((AstLexerPart)lapg_m[lapg_head].value)); 
 				break;
 			case 31:  // lexer_parts ::= lexer_parts syntax_problem
-				 ((List<AstLexerPart>)lapg_m[lapg_head - 1].sym).add(((AstError)lapg_m[lapg_head].sym)); 
+				 ((List<AstLexerPart>)lapg_m[lapg_head - 1].value).add(((AstError)lapg_m[lapg_head].value)); 
 				break;
 			case 35:  // named_pattern ::= ID '=' pattern
-				 lapg_gg.sym = new AstNamedPattern(((String)lapg_m[lapg_head - 2].sym), ((AstRegexp)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNamedPattern(((String)lapg_m[lapg_head - 2].value), ((AstRegexp)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 38:  // lexeme ::= identifier typeopt ':'
-				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].sym), ((String)lapg_m[lapg_head - 1].sym), null, null, null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head - 1].value), null, null, null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 47:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
-				 lapg_gg.sym = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 7].sym), ((String)lapg_m[lapg_head - 6].sym), ((AstRegexp)lapg_m[lapg_head - 4].sym), ((AstReference)lapg_m[lapg_head - 3].sym), ((Integer)lapg_m[lapg_head - 2].sym), ((AstLexemAttrs)lapg_m[lapg_head - 1].sym), ((AstCode)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 7].value), ((String)lapg_m[lapg_head - 6].value), ((AstRegexp)lapg_m[lapg_head - 4].value), ((AstReference)lapg_m[lapg_head - 3].value), ((Integer)lapg_m[lapg_head - 2].value), ((AstLexemAttrs)lapg_m[lapg_head - 1].value), ((AstCode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 48:  // lexem_transition ::= '=>' stateref
-				 lapg_gg.sym = ((AstReference)lapg_m[lapg_head].sym); 
+				 lapg_gg.value = ((AstReference)lapg_m[lapg_head].value); 
 				break;
 			case 49:  // lexem_attrs ::= '(' lexem_attribute ')'
-				 lapg_gg.sym = ((AstLexemAttrs)lapg_m[lapg_head - 1].sym); 
+				 lapg_gg.value = ((AstLexemAttrs)lapg_m[lapg_head - 1].value); 
 				break;
 			case 50:  // lexem_attribute ::= Lsoft
-				 lapg_gg.sym = new AstLexemAttrs(LexicalRule.KIND_SOFT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_SOFT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 51:  // lexem_attribute ::= Lclass
-				 lapg_gg.sym = new AstLexemAttrs(LexicalRule.KIND_CLASS, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_CLASS, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 52:  // lexem_attribute ::= Lspace
-				 lapg_gg.sym = new AstLexemAttrs(LexicalRule.KIND_SPACE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_SPACE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 53:  // lexem_attribute ::= Llayout
-				 lapg_gg.sym = new AstLexemAttrs(LexicalRule.KIND_LAYOUT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_LAYOUT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 54:  // state_selector ::= '[' state_list ']'
-				 lapg_gg.sym = new AstStateSelector(((List<AstLexerState>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstStateSelector(((List<AstLexerState>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 55:  // state_list ::= lexer_state
-				 lapg_gg.sym = new ArrayList<Integer>(4); ((List<AstLexerState>)lapg_gg.sym).add(((AstLexerState)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<Integer>(4); ((List<AstLexerState>)lapg_gg.value).add(((AstLexerState)lapg_m[lapg_head].value)); 
 				break;
 			case 56:  // state_list ::= state_list ',' lexer_state
-				 ((List<AstLexerState>)lapg_m[lapg_head - 2].sym).add(((AstLexerState)lapg_m[lapg_head].sym)); 
+				 ((List<AstLexerState>)lapg_m[lapg_head - 2].value).add(((AstLexerState)lapg_m[lapg_head].value)); 
 				break;
 			case 57:  // stateref ::= ID
-				 lapg_gg.sym = new AstReference(((String)lapg_m[lapg_head].sym), AstReference.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstReference(((String)lapg_m[lapg_head].value), AstReference.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 58:  // lexer_state ::= identifier
-				 lapg_gg.sym = new AstLexerState(((AstIdentifier)lapg_m[lapg_head].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexerState(((AstIdentifier)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 59:  // lexer_state ::= identifier '=>' stateref
-				 lapg_gg.sym = new AstLexerState(((AstIdentifier)lapg_m[lapg_head - 2].sym), ((AstReference)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexerState(((AstIdentifier)lapg_m[lapg_head - 2].value), ((AstReference)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 60:  // grammar_parts ::= grammar_part
-				 lapg_gg.sym = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.sym).add(((AstGrammarPart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.value).add(((AstGrammarPart)lapg_m[lapg_head].value)); 
 				break;
 			case 61:  // grammar_parts ::= grammar_parts grammar_part
-				 ((List<AstGrammarPart>)lapg_m[lapg_head - 1].sym).add(((AstGrammarPart)lapg_m[lapg_head].sym)); 
+				 ((List<AstGrammarPart>)lapg_m[lapg_head - 1].value).add(((AstGrammarPart)lapg_m[lapg_head].value)); 
 				break;
 			case 62:  // grammar_parts ::= grammar_parts syntax_problem
-				 ((List<AstGrammarPart>)lapg_m[lapg_head - 1].sym).add(((AstError)lapg_m[lapg_head].sym)); 
+				 ((List<AstGrammarPart>)lapg_m[lapg_head - 1].value).add(((AstError)lapg_m[lapg_head].value)); 
 				break;
 			case 65:  // non_term ::= identifier typeopt '::=' rules ';'
-				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].sym), ((String)lapg_m[lapg_head - 3].sym), ((List<AstRule>)lapg_m[lapg_head - 1].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].value), ((String)lapg_m[lapg_head - 3].value), ((List<AstRule>)lapg_m[lapg_head - 1].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 66:  // non_term ::= annotations identifier typeopt '::=' rules ';'
-				 lapg_gg.sym = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].sym), ((String)lapg_m[lapg_head - 3].sym), ((List<AstRule>)lapg_m[lapg_head - 1].sym), ((AstAnnotations)lapg_m[lapg_head - 5].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].value), ((String)lapg_m[lapg_head - 3].value), ((List<AstRule>)lapg_m[lapg_head - 1].value), ((AstAnnotations)lapg_m[lapg_head - 5].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 70:  // directive ::= '%' priority_kw references ';'
-				 lapg_gg.sym = new AstDirective(((String)lapg_m[lapg_head - 2].sym), ((List<AstReference>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstDirective(((String)lapg_m[lapg_head - 2].value), ((List<AstReference>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 71:  // directive ::= '%' Linput inputs ';'
-				 lapg_gg.sym = new AstInputDirective(((List<AstInputRef>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstInputDirective(((List<AstInputRef>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 72:  // inputs ::= inputref
-				 lapg_gg.sym = new ArrayList<AstInputRef>(); ((List<AstInputRef>)lapg_gg.sym).add(((AstInputRef)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstInputRef>(); ((List<AstInputRef>)lapg_gg.value).add(((AstInputRef)lapg_m[lapg_head].value)); 
 				break;
 			case 73:  // inputs ::= inputs ',' inputref
-				 ((List<AstInputRef>)lapg_m[lapg_head - 2].sym).add(((AstInputRef)lapg_m[lapg_head].sym)); 
+				 ((List<AstInputRef>)lapg_m[lapg_head - 2].value).add(((AstInputRef)lapg_m[lapg_head].value)); 
 				break;
 			case 76:  // inputref ::= symref Lnoeoiopt
-				 lapg_gg.sym = new AstInputRef(((AstReference)lapg_m[lapg_head - 1].sym), ((String)lapg_m[lapg_head].sym) != null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstInputRef(((AstReference)lapg_m[lapg_head - 1].value), ((String)lapg_m[lapg_head].value) != null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 77:  // references ::= symref
-				 lapg_gg.sym = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.sym).add(((AstReference)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 78:  // references ::= references symref
-				 ((List<AstReference>)lapg_m[lapg_head - 1].sym).add(((AstReference)lapg_m[lapg_head].sym)); 
+				 ((List<AstReference>)lapg_m[lapg_head - 1].value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 80:  // rule_list ::= rule0
-				 lapg_gg.sym = new ArrayList<AstRule>(); ((List<AstRule>)lapg_gg.sym).add(((AstRule)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstRule>(); ((List<AstRule>)lapg_gg.value).add(((AstRule)lapg_m[lapg_head].value)); 
 				break;
 			case 81:  // rule_list ::= rule_list '|' rule0
-				 ((List<AstRule>)lapg_m[lapg_head - 2].sym).add(((AstRule)lapg_m[lapg_head].sym)); 
+				 ((List<AstRule>)lapg_m[lapg_head - 2].value).add(((AstRule)lapg_m[lapg_head].value)); 
 				break;
 			case 84:  // rule0 ::= ruleprefix ruleparts rule_attrsopt
-				 lapg_gg.sym = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 2].sym), ((List<AstRulePart>)lapg_m[lapg_head - 1].sym), ((AstRuleAttribute)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 2].value), ((List<AstRulePart>)lapg_m[lapg_head - 1].value), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 85:  // rule0 ::= ruleparts rule_attrsopt
-				 lapg_gg.sym = new AstRule(null, ((List<AstRulePart>)lapg_m[lapg_head - 1].sym), ((AstRuleAttribute)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRule(null, ((List<AstRulePart>)lapg_m[lapg_head - 1].value), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 86:  // rule0 ::= ruleprefix rule_attrsopt
-				 lapg_gg.sym = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 1].sym), null, ((AstRuleAttribute)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 1].value), null, ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 87:  // rule0 ::= rule_attrsopt
-				 lapg_gg.sym = new AstRule(null, null, ((AstRuleAttribute)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRule(null, null, ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 88:  // rule0 ::= syntax_problem
-				 lapg_gg.sym = new AstRule(((AstError)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new AstRule(((AstError)lapg_m[lapg_head].value)); 
 				break;
 			case 89:  // ruleprefix ::= annotations ':'
-				 lapg_gg.sym = new AstRulePrefix(((AstAnnotations)lapg_m[lapg_head - 1].sym), null); 
+				 lapg_gg.value = new AstRulePrefix(((AstAnnotations)lapg_m[lapg_head - 1].value), null); 
 				break;
 			case 90:  // ruleprefix ::= ruleannotations ID ':'
-				 lapg_gg.sym = new AstRulePrefix(((AstRuleAnnotations)lapg_m[lapg_head - 2].sym), ((String)lapg_m[lapg_head - 1].sym)); 
+				 lapg_gg.value = new AstRulePrefix(((AstRuleAnnotations)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 91:  // ruleprefix ::= ID ':'
-				 lapg_gg.sym = new AstRulePrefix(null, ((String)lapg_m[lapg_head - 1].sym)); 
+				 lapg_gg.value = new AstRulePrefix(null, ((String)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 92:  // ruleparts ::= rulepart
-				 lapg_gg.sym = new ArrayList<AstRulePart>(); ((List<AstRulePart>)lapg_gg.sym).add(((AstRulePart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstRulePart>(); ((List<AstRulePart>)lapg_gg.value).add(((AstRulePart)lapg_m[lapg_head].value)); 
 				break;
 			case 93:  // ruleparts ::= ruleparts rulepart
-				 ((List<AstRulePart>)lapg_m[lapg_head - 1].sym).add(((AstRulePart)lapg_m[lapg_head].sym)); 
+				 ((List<AstRulePart>)lapg_m[lapg_head - 1].value).add(((AstRulePart)lapg_m[lapg_head].value)); 
 				break;
 			case 94:  // ruleparts ::= ruleparts syntax_problem
-				 ((List<AstRulePart>)lapg_m[lapg_head - 1].sym).add(((AstError)lapg_m[lapg_head].sym)); 
+				 ((List<AstRulePart>)lapg_m[lapg_head - 1].value).add(((AstError)lapg_m[lapg_head].value)); 
 				break;
 			case 98:  // refrulepart ::= ruleannotations ID '=' rulesymref
-				 lapg_gg.sym = new AstRefRulePart(((String)lapg_m[lapg_head - 2].sym), ((AstRuleSymbolRef)lapg_m[lapg_head].sym), ((AstRuleAnnotations)lapg_m[lapg_head - 3].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(((String)lapg_m[lapg_head - 2].value), ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)lapg_m[lapg_head - 3].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 99:  // refrulepart ::= ruleannotations rulesymref
-				 lapg_gg.sym = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].sym), ((AstRuleAnnotations)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 100:  // refrulepart ::= ID '=' rulesymref
-				 lapg_gg.sym = new AstRefRulePart(((String)lapg_m[lapg_head - 2].sym), ((AstRuleSymbolRef)lapg_m[lapg_head].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(((String)lapg_m[lapg_head - 2].value), ((AstRuleSymbolRef)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 101:  // refrulepart ::= rulesymref
-				 lapg_gg.sym = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 102:  // unorderedrulepart ::= rulepart '&' rulepart
-				 lapg_gg.sym = new AstUnorderedRulePart(((AstRulePart)lapg_m[lapg_head - 2].sym), ((AstRulePart)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstUnorderedRulePart(((AstRulePart)lapg_m[lapg_head - 2].value), ((AstRulePart)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 103:  // rulesymref ::= symref
-				 lapg_gg.sym = new AstRuleDefaultSymbolRef(((AstReference)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleDefaultSymbolRef(((AstReference)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 104:  // rulesymref ::= '(' rules ')'
-				 lapg_gg.sym = new AstRuleNestedNonTerm(((List<AstRule>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedNonTerm(((List<AstRule>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 105:  // rulesymref ::= '(' ruleparts Lseparator references ')' '+'
-				 lapg_gg.sym = new AstRuleNestedListWithSeparator(((List<AstRulePart>)lapg_m[lapg_head - 4].sym), ((List<AstReference>)lapg_m[lapg_head - 2].sym), true, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedListWithSeparator(((List<AstRulePart>)lapg_m[lapg_head - 4].value), ((List<AstReference>)lapg_m[lapg_head - 2].value), true, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 106:  // rulesymref ::= '(' ruleparts Lseparator references ')' '*'
-				 lapg_gg.sym = new AstRuleNestedListWithSeparator(((List<AstRulePart>)lapg_m[lapg_head - 4].sym), ((List<AstReference>)lapg_m[lapg_head - 2].sym), false, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedListWithSeparator(((List<AstRulePart>)lapg_m[lapg_head - 4].value), ((List<AstReference>)lapg_m[lapg_head - 2].value), false, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 107:  // rulesymref ::= rulesymref '?'
-				 lapg_gg.sym = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].sym), AstRuleNestedQuantifier.KIND_OPTIONAL, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].value), AstRuleNestedQuantifier.KIND_OPTIONAL, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 108:  // rulesymref ::= rulesymref '*'
-				 lapg_gg.sym = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].sym), AstRuleNestedQuantifier.KIND_ZEROORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].value), AstRuleNestedQuantifier.KIND_ZEROORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 109:  // rulesymref ::= rulesymref '+'
-				 lapg_gg.sym = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].sym), AstRuleNestedQuantifier.KIND_ONEORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleNestedQuantifier(((AstRuleSymbolRef)lapg_m[lapg_head - 1].value), AstRuleNestedQuantifier.KIND_ONEORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 110:  // ruleannotations ::= annotation_list
-				 lapg_gg.sym = new AstRuleAnnotations(null, ((List<AstNamedEntry>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleAnnotations(null, ((List<AstNamedEntry>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 111:  // ruleannotations ::= negative_la annotation_list
-				 lapg_gg.sym = new AstRuleAnnotations(((AstNegativeLA)lapg_m[lapg_head - 1].sym), ((List<AstNamedEntry>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleAnnotations(((AstNegativeLA)lapg_m[lapg_head - 1].value), ((List<AstNamedEntry>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 112:  // ruleannotations ::= negative_la
-				 lapg_gg.sym = new AstRuleAnnotations(((AstNegativeLA)lapg_m[lapg_head].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRuleAnnotations(((AstNegativeLA)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 113:  // annotations ::= annotation_list
-				 lapg_gg.sym = new AstAnnotations(((List<AstNamedEntry>)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstAnnotations(((List<AstNamedEntry>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 114:  // annotation_list ::= annotation
-				 lapg_gg.sym = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.sym).add(((AstNamedEntry)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
 				break;
 			case 115:  // annotation_list ::= annotation_list annotation
-				 ((List<AstNamedEntry>)lapg_gg.sym).add(((AstNamedEntry)lapg_m[lapg_head].sym)); 
+				 ((List<AstNamedEntry>)lapg_gg.value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
 				break;
 			case 116:  // annotation ::= '@' ID
-				 lapg_gg.sym = new AstNamedEntry(((String)lapg_m[lapg_head].sym), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 117:  // annotation ::= '@' ID '=' expression
-				 lapg_gg.sym = new AstNamedEntry(((String)lapg_m[lapg_head - 2].sym), ((AstExpression)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 118:  // annotation ::= '@' syntax_problem
-				 lapg_gg.sym = new AstNamedEntry(((AstError)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new AstNamedEntry(((AstError)lapg_m[lapg_head].value)); 
 				break;
 			case 119:  // negative_la ::= '(?!' negative_la_clause ')'
-				 lapg_gg.sym = new AstNegativeLA(((List<AstReference>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstNegativeLA(((List<AstReference>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 120:  // negative_la_clause ::= symref
-				 lapg_gg.sym = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.sym).add(((AstReference)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 121:  // negative_la_clause ::= negative_la_clause '|' symref
-				 ((List<AstReference>)lapg_gg.sym).add(((AstReference)lapg_m[lapg_head].sym)); 
+				 ((List<AstReference>)lapg_gg.value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 122:  // expression ::= scon
-				 lapg_gg.sym = new AstLiteralExpression(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLiteralExpression(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 123:  // expression ::= icon
-				 lapg_gg.sym = new AstLiteralExpression(((Integer)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLiteralExpression(((Integer)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 124:  // expression ::= Ltrue
-				 lapg_gg.sym = new AstLiteralExpression(Boolean.TRUE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLiteralExpression(Boolean.TRUE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 125:  // expression ::= Lfalse
-				 lapg_gg.sym = new AstLiteralExpression(Boolean.FALSE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLiteralExpression(Boolean.FALSE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 129:  // expression ::= Lnew name '(' map_entriesopt ')'
-				 lapg_gg.sym = new AstInstance(((AstName)lapg_m[lapg_head - 3].sym), ((List<AstNamedEntry>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstInstance(((AstName)lapg_m[lapg_head - 3].value), ((List<AstNamedEntry>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 132:  // expression ::= '[' expression_listopt ']'
-				 lapg_gg.sym = new AstArray(((List<AstExpression>)lapg_m[lapg_head - 1].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstArray(((List<AstExpression>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 134:  // expression_list ::= expression
-				 lapg_gg.sym = new ArrayList(); ((List<AstExpression>)lapg_gg.sym).add(((AstExpression)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = new ArrayList(); ((List<AstExpression>)lapg_gg.value).add(((AstExpression)lapg_m[lapg_head].value)); 
 				break;
 			case 135:  // expression_list ::= expression_list ',' expression
-				 ((List<AstExpression>)lapg_gg.sym).add(((AstExpression)lapg_m[lapg_head].sym)); 
+				 ((List<AstExpression>)lapg_gg.value).add(((AstExpression)lapg_m[lapg_head].value)); 
 				break;
 			case 136:  // map_entries ::= ID map_separator expression
-				 lapg_gg.sym = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.sym).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].sym), ((AstExpression)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset)); 
+				 lapg_gg.value = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.value).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset)); 
 				break;
 			case 137:  // map_entries ::= map_entries ',' ID map_separator expression
-				 ((List<AstNamedEntry>)lapg_gg.sym).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].sym), ((AstExpression)lapg_m[lapg_head].sym), source, lapg_m[lapg_head - 2].offset, lapg_gg.endoffset)); 
+				 ((List<AstNamedEntry>)lapg_gg.value).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 2].offset, lapg_gg.endoffset)); 
 				break;
 			case 141:  // name ::= qualified_id
-				 lapg_gg.sym = new AstName(((String)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstName(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 143:  // qualified_id ::= qualified_id '.' ID
-				 lapg_gg.sym = ((String)lapg_m[lapg_head - 2].sym) + "." + ((String)lapg_m[lapg_head].sym); 
+				 lapg_gg.value = ((String)lapg_m[lapg_head - 2].value) + "." + ((String)lapg_m[lapg_head].value); 
 				break;
 			case 144:  // rule_attrs ::= '%' Lprio symref
-				 lapg_gg.sym = new AstPrioClause(((AstReference)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstPrioClause(((AstReference)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 145:  // rule_attrs ::= '%' Lshift
-				 lapg_gg.sym = new AstShiftClause(source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstShiftClause(source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 146:  // command ::= code
-				 lapg_gg.sym = new AstCode(source, lapg_m[lapg_head].offset+1, lapg_m[lapg_head].endoffset-1); 
+				 lapg_gg.value = new AstCode(source, lapg_m[lapg_head].offset+1, lapg_m[lapg_head].endoffset-1); 
 				break;
 			case 147:  // syntax_problem ::= error
-				 lapg_gg.sym = new AstError(source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset); 
+				 lapg_gg.value = new AstError(source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset); 
 				break;
 		}
 	}
@@ -890,13 +890,13 @@ public class LapgParser {
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(LapgSymbol sym) {
+	protected void dispose(LapgSymbol value) {
 	}
 
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(LapgSymbol sym) {
+	protected void cleanup(LapgSymbol value) {
 	}
 
 	public AstRoot parseInput(LapgLexer lexer) throws IOException, ParseException {

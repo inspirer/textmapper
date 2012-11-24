@@ -24,8 +24,8 @@ import java.util.Map;
 public class RegexDefLexer {
 
 	public static class LapgSymbol {
-		public Object sym;
-		public int lexem;
+		public Object value;
+		public int symbol;
 		public int state;
 		public int offset;
 		public int endoffset;
@@ -235,8 +235,8 @@ public class RegexDefLexer {
 				state = lapg_lexem[state * 40 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
-					lapg_n.lexem = 0;
-					lapg_n.sym = null;
+					lapg_n.symbol = 0;
+					lapg_n.value = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), "Unexpected end of input reached");
 					tokenStart = -1;
 					return lapg_n;
@@ -260,14 +260,14 @@ public class RegexDefLexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
-				lapg_n.lexem = -1;
+				reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				lapg_n.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.lexem = 0;
-				lapg_n.sym = null;
+				lapg_n.symbol = 0;
+				lapg_n.value = null;
 				tokenStart = -1;
 				return lapg_n;
 			}
@@ -276,10 +276,10 @@ public class RegexDefLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = lapg_lexemnum[-state - 3];
-			lapg_n.sym = null;
+			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.value = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
 		tokenStart = -1;
 		return lapg_n;
 	}
@@ -290,46 +290,46 @@ public class RegexDefLexer {
 			case 0:
 				return createExpandToken(lapg_n, lexemIndex);
 			case 1: // char: /[^()\[\]\.|\\\/*?+\-]/
-				 lapg_n.sym = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
 			case 2: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-				 lapg_n.sym = current().charAt(1); quantifierReady(); 
+				 lapg_n.value = current().charAt(1); quantifierReady(); 
 				break;
 			case 3: // escaped: /\\a/
-				 lapg_n.sym = (char) 7; quantifierReady(); 
+				 lapg_n.value = (char) 7; quantifierReady(); 
 				break;
 			case 4: // escaped: /\\b/
-				 lapg_n.sym = '\b'; quantifierReady(); 
+				 lapg_n.value = '\b'; quantifierReady(); 
 				break;
 			case 5: // escaped: /\\f/
-				 lapg_n.sym = '\f'; quantifierReady(); 
+				 lapg_n.value = '\f'; quantifierReady(); 
 				break;
 			case 6: // escaped: /\\n/
-				 lapg_n.sym = '\n'; quantifierReady(); 
+				 lapg_n.value = '\n'; quantifierReady(); 
 				break;
 			case 7: // escaped: /\\r/
-				 lapg_n.sym = '\r'; quantifierReady(); 
+				 lapg_n.value = '\r'; quantifierReady(); 
 				break;
 			case 8: // escaped: /\\t/
-				 lapg_n.sym = '\t'; quantifierReady(); 
+				 lapg_n.value = '\t'; quantifierReady(); 
 				break;
 			case 9: // escaped: /\\v/
-				 lapg_n.sym = (char) 0xb; quantifierReady(); 
+				 lapg_n.value = (char) 0xb; quantifierReady(); 
 				break;
 			case 10: // escaped: /\\[0-7][0-7][0-7]/
-				 lapg_n.sym = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); 
+				 lapg_n.value = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); 
 				break;
 			case 11: // escaped: /\\[xX]{hx}{hx}/
-				 lapg_n.sym = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
+				 lapg_n.value = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
 				break;
 			case 12: // escaped: /\\[uU]{hx}{hx}{hx}{hx}/
-				 lapg_n.sym = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
+				 lapg_n.value = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
 				break;
 			case 13: // charclass: /\\[wWsSdD]/
-				 lapg_n.sym = current().substring(1); quantifierReady(); 
+				 lapg_n.value = current().substring(1); quantifierReady(); 
 				break;
 			case 14: // charclass: /\\p\{\w+\}/
-				 lapg_n.sym = current().substring(3, current().length() - 1); quantifierReady(); 
+				 lapg_n.value = current().substring(3, current().length() - 1); quantifierReady(); 
 				break;
 			case 15: // '.': /\./
 				 quantifierReady(); 
@@ -356,7 +356,7 @@ public class RegexDefLexer {
 				state = States.initial;
 				break;
 			case 23: // char: /[*+?]/
-				 lapg_n.sym = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
 			case 24: // '(': /\(/
 				 state = 0; 
@@ -377,13 +377,13 @@ public class RegexDefLexer {
 				state = States.inSet;
 				break;
 			case 30: // char: /\-/
-				 lapg_n.sym = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
 			case 32: // ']': /\]/
 				 state = 0; quantifierReady(); 
 				break;
 			case 34: // char: /[(|)]/
-				 lapg_n.sym = current().charAt(0); 
+				 lapg_n.value = current().charAt(0); 
 				break;
 		}
 		return !(spaceToken);
@@ -398,7 +398,7 @@ public class RegexDefLexer {
 		Integer replacement = subTokensOfExpand.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
-			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+			lapg_n.symbol = lapg_lexemnum[lexemIndex];
 		}
 		boolean spaceToken = false;
 		switch(lexemIndex) {

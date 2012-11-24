@@ -22,8 +22,8 @@ import java.text.MessageFormat;
 public class XmlLexer {
 
 	public static class LapgSymbol {
-		public Object sym;
-		public int lexem;
+		public Object value;
+		public int symbol;
 		public int state;
 		public int line;
 		public int offset;
@@ -197,8 +197,8 @@ public class XmlLexer {
 				state = lapg_lexem[state * 15 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
-					lapg_n.lexem = 0;
-					lapg_n.sym = null;
+					lapg_n.symbol = 0;
+					lapg_n.value = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
 					tokenStart = -1;
 					return lapg_n;
@@ -222,14 +222,14 @@ public class XmlLexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
-				lapg_n.lexem = -1;
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				lapg_n.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.lexem = 0;
-				lapg_n.sym = null;
+				lapg_n.symbol = 0;
+				lapg_n.value = null;
 				tokenStart = -1;
 				return lapg_n;
 			}
@@ -238,10 +238,10 @@ public class XmlLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = lapg_lexemnum[-state - 3];
-			lapg_n.sym = null;
+			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.value = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
 		tokenStart = -1;
 		return lapg_n;
 	}
@@ -256,13 +256,13 @@ public class XmlLexer {
 				spaceToken = true;
 				break;
 			case 3: // identifier: /[a-zA-Z_][A-Za-z_0-9\-]*/
-				 lapg_n.sym = current(); 
+				 lapg_n.value = current(); 
 				break;
 			case 4: // ccon: /"[^\n"]*"/
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); 
+				 lapg_n.value = token.toString().substring(1, token.length()-1); 
 				break;
 			case 5: // ccon: /'[^\n']*'/
-				 lapg_n.sym = token.toString().substring(1, token.length()-1); 
+				 lapg_n.value = token.toString().substring(1, token.length()-1); 
 				break;
 			case 6: // '>': />/
 				state = States.initial;

@@ -123,18 +123,18 @@ public class LapgParser implements PsiParser {
 		}
 
 		private void drop(LapgSymbol sym) {
-			if (sym.sym != null) {
-				Marker m = (Marker) sym.sym;
+			if (sym.value != null) {
+				Marker m = (Marker) sym.value;
 				free(m, true);
-				sym.sym = null;
+				sym.value = null;
 			}
 		}
 
 		@Override
 		protected void shift() throws IOException {
-			Marker marker = lapg_n.lexem != Tokens.eoi ? mark() : null;
+			Marker marker = lapg_n.symbol != Tokens.eoi ? mark() : null;
 			super.shift();
-			lapg_m[lapg_head].sym = marker;
+			lapg_m[lapg_head].value = marker;
 		}
 
 		@Override
@@ -143,23 +143,23 @@ public class LapgParser implements PsiParser {
 				drop(lapg_m[lapg_head - i]);
 			}
 			if (rulelen > 0) {
-				lapg_m[lapg_head - (rulelen - 1)].sym = null;
+				lapg_m[lapg_head - (rulelen - 1)].value = null;
 			}
 
-			Marker m = (Marker) lapg_gg.sym;
+			Marker m = (Marker) lapg_gg.value;
 			if (m != null) {
-				IElementType elementType = reduceType(lapg_gg.lexem);
+				IElementType elementType = reduceType(lapg_gg.symbol);
 				if (elementType != null) {
-					lapg_gg.sym = clone(m);
+					lapg_gg.value = clone(m);
 
-					if (lapg_gg.lexem == Tokens.syntax_problem) {
+					if (lapg_gg.symbol == Tokens.syntax_problem) {
 						m.error("syntax error");
 					} else {
 						m.done(elementType);
 					}
 				}
 			}
-			if (lapg_gg.lexem == Tokens.input) {
+			if (lapg_gg.symbol == Tokens.input) {
 				drop(lapg_gg);
 			}
 		}
@@ -169,7 +169,7 @@ public class LapgParser implements PsiParser {
 			boolean restored = super.restore();
 			if (restored) {
 				/* restored after syntax error - mark the location */
-				lapg_m[lapg_head].sym = mark();
+				lapg_m[lapg_head].value = mark();
 			}
 			return restored;
 		}
@@ -181,7 +181,7 @@ public class LapgParser implements PsiParser {
 
 		@Override
 		protected void cleanup(LapgSymbol sym) {
-			assert sym.sym == null;
+			assert sym.value == null;
 		}
 	}
 
@@ -212,14 +212,14 @@ public class LapgParser implements PsiParser {
 			}
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
-				next.lexem = Lexems.eoi;
+				next.symbol = Lexems.eoi;
 			} else if (myBuilder.getTokenType() instanceof LapgTemplatesElementType) {
 				LapgTemplatesElementType tokenType = (LapgTemplatesElementType) myBuilder.getTokenType();
-				next.lexem = tokenType.getSymbol();
+				next.symbol = tokenType.getSymbol();
 			} else {
 				LapgElementType tokenType = (LapgElementType) myBuilder.getTokenType();
-				next.lexem = tokenType.getSymbol();
-				if (next.lexem == Tokens.command) {
+				next.symbol = tokenType.getSymbol();
+				if (next.symbol == Tokens.command) {
 					// temp hack
 					return nextInternal();
 				}

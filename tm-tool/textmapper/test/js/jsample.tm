@@ -1,13 +1,13 @@
 #   Simple javascript grammar
 
-.lang        "js" 
-.prefix      "JsTest"
-.positions   "line,column,offset"
-.endpositions "line,column,offset"
+lang = "js"
+prefix = "JsTest"
+positions = "line,column,offset"
+endpositions = "line,column,offset"
 
 # Vocabulary
 
-Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/	{ $lexem = this.token; break; }
+Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/	{ $symbol = this.token; break; }
 _skip:      /\/\/.*/
 _skip:      /[\t\r\n ]+/    { return false; }
 

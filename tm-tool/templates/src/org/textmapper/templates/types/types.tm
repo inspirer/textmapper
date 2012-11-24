@@ -27,11 +27,11 @@ genCopyright = true
 # Vocabulary
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1   (class)
-			{ $lexem = current(); }
+			{ $symbol = current(); }
 
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); }
-icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); }
-bcon(Boolean):  /true|false/			{ $lexem = current().equals("true"); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $symbol = Integer.parseInt(current()); }
+bcon(Boolean):  /true|false/			{ $symbol = current().equals("true"); }
 
 _skip:         /[\n\t\r ]+/	(space)
 _skip:  /#.*/	(space)

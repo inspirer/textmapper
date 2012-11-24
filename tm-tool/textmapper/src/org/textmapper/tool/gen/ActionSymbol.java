@@ -52,7 +52,7 @@ public class ActionSymbol extends DefaultIxObject {
 	public String toString() {
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);
-		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), new Object[]{"sym"}, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), new Object[]{"value"}, null);
 	}
 
 	@Override

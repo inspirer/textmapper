@@ -178,7 +178,7 @@ public final class LapgGenerator {
 		EvaluationContext evaluationContext = new EvaluationContext(context);
 		evaluationContext.setVariable("util", new TemplateStaticMethods());
 		evaluationContext.setVariable("context", context);
-		evaluationContext.setVariable("$", "lapg_gg.sym");
+		evaluationContext.setVariable("$", "lapg_gg.value");
 		return evaluationContext;
 	}
 

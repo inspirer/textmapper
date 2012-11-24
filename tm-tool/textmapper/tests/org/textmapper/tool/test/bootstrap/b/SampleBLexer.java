@@ -24,8 +24,8 @@ import java.util.Map;
 public class SampleBLexer {
 
 	public static class LapgSymbol {
-		public Object sym;
-		public int lexem;
+		public Object value;
+		public int symbol;
 		public int state;
 		public int offset;
 		public int endoffset;
@@ -199,8 +199,8 @@ public class SampleBLexer {
 				state = lapg_lexem[state * 13 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
-					lapg_n.lexem = 0;
-					lapg_n.sym = null;
+					lapg_n.symbol = 0;
+					lapg_n.value = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), "Unexpected end of input reached");
 					tokenStart = -1;
 					return lapg_n;
@@ -224,14 +224,14 @@ public class SampleBLexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
-				lapg_n.lexem = -1;
+				reporter.error(lapg_n.offset, lapg_n.endoffset, this.getTokenLine(), MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				lapg_n.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.lexem = 0;
-				lapg_n.sym = null;
+				lapg_n.symbol = 0;
+				lapg_n.value = null;
 				tokenStart = -1;
 				return lapg_n;
 			}
@@ -240,10 +240,10 @@ public class SampleBLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = lapg_lexemnum[-state - 3];
-			lapg_n.sym = null;
+			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.value = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
 		tokenStart = -1;
 		return lapg_n;
 	}
@@ -279,23 +279,23 @@ public class SampleBLexer {
 		Integer replacement = subTokensOfIdentifier.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
-			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+			lapg_n.symbol = lapg_lexemnum[lexemIndex];
 		}
 		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 5:	// class
-				 lapg_n.sym = "class"; 
+				 lapg_n.value = "class"; 
 				break;
 			case 11:	// interface
-				 lapg_n.sym = "interface"; 
+				 lapg_n.value = "interface"; 
 				break;
 			case 12:	// enum
-				 lapg_n.sym = new Object(); 
+				 lapg_n.value = new Object(); 
 				break;
 			case 6:	// extends (soft)
 			case 14:	// xyzzz (soft)
 			case 0:	// <default>
-				 lapg_n.sym = current(); 
+				 lapg_n.value = current(); 
 				break;
 		}
 		return !(spaceToken);
@@ -309,7 +309,7 @@ public class SampleBLexer {
 		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 2:	// <default>
-				 lapg_n.sym = Integer.parseInt(current(), 8); 
+				 lapg_n.value = Integer.parseInt(current(), 8); 
 				break;
 		}
 		return !(spaceToken);
@@ -324,12 +324,12 @@ public class SampleBLexer {
 		Integer replacement = subTokensOfDecimal.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
-			lapg_n.lexem = lapg_lexemnum[lexemIndex];
+			lapg_n.symbol = lapg_lexemnum[lexemIndex];
 		}
 		boolean spaceToken = false;
 		switch(lexemIndex) {
 			case 13:	// 11
-				 lapg_n.sym = 11; 
+				 lapg_n.value = 11; 
 				break;
 		}
 		return !(spaceToken);

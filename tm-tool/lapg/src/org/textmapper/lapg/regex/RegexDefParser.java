@@ -127,7 +127,7 @@ public class RegexDefParser {
 		int p;
 		if (lapg_action[state] < -2) {
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -189,24 +189,24 @@ public class RegexDefParser {
 								lapg_lexer.getTokenLine()));
 			throw new ParseException();
 		}
-		return (RegexAstPart)lapg_m[lapg_head - 1].sym;
+		return (RegexAstPart)lapg_m[lapg_head - 1].value;
 	}
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = lapg_lexer.next();
 		}
 	}
 
 	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
@@ -219,83 +219,83 @@ public class RegexDefParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 2:  // pattern ::= partsopt
-				 lapg_gg.sym = RegexUtil.emptyIfNull(((RegexAstPart)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset); 
+				 lapg_gg.value = RegexUtil.emptyIfNull(((RegexAstPart)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset); 
 				break;
 			case 3:  // pattern ::= pattern '|' partsopt
-				 lapg_gg.sym = RegexUtil.createOr(((RegexAstPart)lapg_m[lapg_head - 2].sym), ((RegexAstPart)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset); 
+				 lapg_gg.value = RegexUtil.createOr(((RegexAstPart)lapg_m[lapg_head - 2].value), ((RegexAstPart)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset); 
 				break;
 			case 5:  // part ::= primitive_part '*'
-				 lapg_gg.sym = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].sym), 0, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].value), 0, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 6:  // part ::= primitive_part '+'
-				 lapg_gg.sym = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].sym), 1, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].value), 1, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 7:  // part ::= primitive_part '?'
-				 lapg_gg.sym = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].sym), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].value), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 8:  // part ::= primitive_part quantifier
-				 lapg_gg.sym = RegexUtil.createQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].sym), source, lapg_m[lapg_head].offset, lapg_gg.endoffset, reporter); 
+				 lapg_gg.value = RegexUtil.createQuantifier(((RegexAstPart)lapg_m[lapg_head - 1].value), source, lapg_m[lapg_head].offset, lapg_gg.endoffset, reporter); 
 				break;
 			case 9:  // primitive_part ::= char
-				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // primitive_part ::= escaped
-				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 11:  // primitive_part ::= charclass
-				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstCharClass(((String)lapg_m[lapg_head].value), RegexUtil.getClassSet(((String)lapg_m[lapg_head].value), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 12:  // primitive_part ::= '.'
-				 lapg_gg.sym = new RegexAstAny(source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstAny(source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 13:  // primitive_part ::= '(' pattern ')'
-				 lapg_gg.sym = RegexUtil.wrap(((RegexAstPart)lapg_m[lapg_head - 1].sym)); 
+				 lapg_gg.value = RegexUtil.wrap(((RegexAstPart)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 14:  // primitive_part ::= '[' charset ']'
-				 lapg_gg.sym = RegexUtil.toSet(((List<RegexAstPart>)lapg_m[lapg_head - 1].sym), reporter, setbuilder, false); 
+				 lapg_gg.value = RegexUtil.toSet(((List<RegexAstPart>)lapg_m[lapg_head - 1].value), reporter, setbuilder, false); 
 				break;
 			case 15:  // primitive_part ::= '[^' charset ']'
-				 lapg_gg.sym = RegexUtil.toSet(((List<RegexAstPart>)lapg_m[lapg_head - 1].sym), reporter, setbuilder, true); 
+				 lapg_gg.value = RegexUtil.toSet(((List<RegexAstPart>)lapg_m[lapg_head - 1].value), reporter, setbuilder, true); 
 				break;
 			case 16:  // primitive_part ::= expand
-				 lapg_gg.sym = new RegexAstExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexAstExpand) lapg_gg.sym, reporter); 
+				 lapg_gg.value = new RegexAstExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexAstExpand) lapg_gg.value, reporter); 
 				break;
 			case 17:  // setsymbol ::= char
-				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 18:  // setsymbol ::= escaped
-				 lapg_gg.sym = new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 19:  // setsymbol ::= charclass
-				 lapg_gg.sym = new RegexAstCharClass(((String)lapg_m[lapg_head].sym), RegexUtil.getClassSet(((String)lapg_m[lapg_head].sym), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new RegexAstCharClass(((String)lapg_m[lapg_head].value), RegexUtil.getClassSet(((String)lapg_m[lapg_head].value), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 20:  // charset ::= '-'
-				 lapg_gg.sym = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)lapg_gg.sym).add(new RegexAstChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
+				 lapg_gg.value = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)lapg_gg.value).add(new RegexAstChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
 				break;
 			case 21:  // charset ::= setsymbol
-				 lapg_gg.sym = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)lapg_gg.sym), ((RegexAstPart)lapg_m[lapg_head].sym), reporter); 
+				 lapg_gg.value = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)lapg_gg.value), ((RegexAstPart)lapg_m[lapg_head].value), reporter); 
 				break;
 			case 22:  // charset ::= charset setsymbol
-				 RegexUtil.addSetSymbol(((List<RegexAstPart>)lapg_m[lapg_head - 1].sym), ((RegexAstPart)lapg_m[lapg_head].sym), reporter); 
+				 RegexUtil.addSetSymbol(((List<RegexAstPart>)lapg_m[lapg_head - 1].value), ((RegexAstPart)lapg_m[lapg_head].value), reporter); 
 				break;
 			case 23:  // charset ::= charset '-' %prio char
-				 ((List<RegexAstPart>)lapg_m[lapg_head - 1].sym).add(new RegexAstChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
+				 ((List<RegexAstPart>)lapg_m[lapg_head - 1].value).add(new RegexAstChar('-', source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset)); 
 				break;
 			case 24:  // charset ::= charset '-' char
-				 RegexUtil.applyRange(((List<RegexAstPart>)lapg_m[lapg_head - 2].sym), new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
+				 RegexUtil.applyRange(((List<RegexAstPart>)lapg_m[lapg_head - 2].value), new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
 				break;
 			case 25:  // charset ::= charset '-' escaped
-				 RegexUtil.applyRange(((List<RegexAstPart>)lapg_m[lapg_head - 2].sym), new RegexAstChar(((Character)lapg_m[lapg_head].sym), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
+				 RegexUtil.applyRange(((List<RegexAstPart>)lapg_m[lapg_head - 2].value), new RegexAstChar(((Character)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset), reporter); 
 				break;
 			case 27:  // parts ::= parts part
-				 lapg_gg.sym = RegexUtil.createSequence(((RegexAstPart)lapg_m[lapg_head - 1].sym), ((RegexAstPart)lapg_m[lapg_head].sym)); 
+				 lapg_gg.value = RegexUtil.createSequence(((RegexAstPart)lapg_m[lapg_head - 1].value), ((RegexAstPart)lapg_m[lapg_head].value)); 
 				break;
 		}
 	}

@@ -30,11 +30,11 @@ genCopyright = true
 error:
 
 ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
-			{ $lexem = current(); }
+			{ $symbol = current(); }
 
-regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $lexem = token.toString().substring(1, token.length()-1); }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $lexem = unescape(current(), 1, token.length()-1); }
-icon(Integer):	/-?[0-9]+/				{ $lexem = Integer.parseInt(current()); }
+regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $symbol = token.toString().substring(1, token.length()-1); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $symbol = Integer.parseInt(current()); }
 
 eoi:           /%%.*(\r?\n)?/			{ templatesStart = lapg_n.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)

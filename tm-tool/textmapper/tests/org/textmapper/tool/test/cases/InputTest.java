@@ -133,11 +133,11 @@ public class InputTest extends LapgTestCase {
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
 				"syntax_lexems,22: regex matches two classes `identifier' and `identifierX', using first\n" +
-						"syntax_lexems,25: soft lexem `L0choice' doesn't match any class lexem\n" +
-						"syntax_lexems,28: soft lexem `int' should have a constant regexp\n" +
+						"syntax_lexems,25: soft lexeme rule `L0choice' doesn't match any class rule\n" +
+						"syntax_lexems,28: soft lexeme rule `int' should have a constant regexp\n" +
 						"syntax_lexems,36: redeclaration of soft class: icon instead of identifier\n" +
 						"syntax_lexems,39: redeclaration of soft-terminal: ssss\n" +
-						"syntax_lexems,42: soft lexem `wact' cannot have a semantic action\n" +
+						"syntax_lexems,42: soft lexeme rule `wact' cannot have a semantic action\n" +
 						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
 						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);

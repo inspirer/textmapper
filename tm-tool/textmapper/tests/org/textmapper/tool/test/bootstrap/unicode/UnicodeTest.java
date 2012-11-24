@@ -73,11 +73,11 @@ public class UnicodeTest {
 			for (int i = 0; i < expectedLexems.length; i++) {
 				int expected = expectedLexems[i];
 				next = lexer.next();
-				assertFalse(next.lexem == Lexems.eoi);
-				assertEquals(expected, next.lexem);
+				assertFalse(next.symbol == Lexems.eoi);
+				assertEquals(expected, next.symbol);
 			}
 			next = lexer.next();
-			assertTrue(next.lexem == Lexems.eoi);
+			assertTrue(next.symbol == Lexems.eoi);
 
 		} catch (IOException e) {
 			fail(e.toString());

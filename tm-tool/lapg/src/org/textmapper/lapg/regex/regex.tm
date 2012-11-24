@@ -30,22 +30,22 @@ genCopyright = true
 
 [initial, afterChar, inSet]
 
-char(Character): /[^()\[\]\.|\\\/*?+-]/			{ $lexem = current().charAt(0); quantifierReady(); }
+char(Character): /[^()\[\]\.|\\\/*?+-]/			{ $symbol = current().charAt(0); quantifierReady(); }
 escaped(Character): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-												{ $lexem = current().charAt(1); quantifierReady(); }
-escaped(Character): /\\a/						{ $lexem = (char) 7; quantifierReady(); }
-escaped(Character): /\\b/						{ $lexem = '\b'; quantifierReady(); }
-escaped(Character): /\\f/						{ $lexem = '\f'; quantifierReady(); }
-escaped(Character): /\\n/						{ $lexem = '\n'; quantifierReady(); }
-escaped(Character): /\\r/						{ $lexem = '\r'; quantifierReady(); }
-escaped(Character): /\\t/						{ $lexem = '\t'; quantifierReady(); }
-escaped(Character): /\\v/						{ $lexem = (char) 0xb; quantifierReady(); }
-escaped(Character): /\\[0-7][0-7][0-7]/			{ $lexem = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
+												{ $symbol = current().charAt(1); quantifierReady(); }
+escaped(Character): /\\a/						{ $symbol = (char) 7; quantifierReady(); }
+escaped(Character): /\\b/						{ $symbol = '\b'; quantifierReady(); }
+escaped(Character): /\\f/						{ $symbol = '\f'; quantifierReady(); }
+escaped(Character): /\\n/						{ $symbol = '\n'; quantifierReady(); }
+escaped(Character): /\\r/						{ $symbol = '\r'; quantifierReady(); }
+escaped(Character): /\\t/						{ $symbol = '\t'; quantifierReady(); }
+escaped(Character): /\\v/						{ $symbol = (char) 0xb; quantifierReady(); }
+escaped(Character): /\\[0-7][0-7][0-7]/			{ $symbol = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
 hx = /[0-9A-Fa-f]/
-escaped(Character): /\\[xX]{hx}{hx}/			{ $lexem = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
-escaped(Character): /\\[uU]{hx}{hx}{hx}{hx}/	{ $lexem = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
-charclass(String): /\\[wWsSdD]/					{ $lexem = current().substring(1); quantifierReady(); }
-charclass(String): /\\p\{\w+\}/					{ $lexem = current().substring(3, current().length() - 1); quantifierReady(); }
+escaped(Character): /\\[xX]{hx}{hx}/			{ $symbol = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
+escaped(Character): /\\[uU]{hx}{hx}{hx}{hx}/	{ $symbol = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
+charclass(String): /\\[wWsSdD]/					{ $symbol = current().substring(1); quantifierReady(); }
+charclass(String): /\\p\{\w+\}/					{ $symbol = current().substring(3, current().length() - 1); quantifierReady(); }
 
 '.':  /\./										{ quantifierReady(); }
 
@@ -62,7 +62,7 @@ op_intersect:	/\{&&\}/
 
 [initial, inSet]
 
-char(Character): /[*+?]/						{ $lexem = current().charAt(0); quantifierReady(); }
+char(Character): /[*+?]/						{ $symbol = current().charAt(0); quantifierReady(); }
 
 [initial, afterChar]
 
@@ -74,7 +74,7 @@ char(Character): /[*+?]/						{ $lexem = current().charAt(0); quantifierReady();
 
 '[':	/\[/  => inSet
 '[^':	/\[^/ => inSet
-char(Character):  /-/							{ $lexem = current().charAt(0); quantifierReady(); }
+char(Character):  /-/							{ $symbol = current().charAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
 
@@ -85,7 +85,7 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 
 ']':  /\]/										{ state = 0; quantifierReady(); }
 '-':  /-/
-char(Character):  /[\(\|\)]/					{ $lexem = current().charAt(0); }
+char(Character):  /[\(\|\)]/					{ $symbol = current().charAt(0); }
 
 # grammar
 

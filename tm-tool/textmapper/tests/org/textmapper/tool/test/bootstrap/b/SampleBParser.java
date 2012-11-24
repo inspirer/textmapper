@@ -109,7 +109,7 @@ public class SampleBParser {
 				lapg_n = lapg_lexer.next();
 			}
 			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.lexem) {
+				if (lapg_lalr[p] == lapg_n.symbol) {
 					break;
 				}
 			}
@@ -191,14 +191,14 @@ public class SampleBParser {
 			}
 			throw new ParseException();
 		}
-		return (IAstClassdefNoEoi)lapg_m[lapg_head].sym;
+		return (IAstClassdefNoEoi)lapg_m[lapg_head].value;
 	}
 
 	protected boolean restore() throws IOException {
 		if (lapg_n == null) {
 			lapg_n = lapg_lexer.next();
 		}
-		if (lapg_n.lexem == 0) {
+		if (lapg_n.symbol == 0) {
 			return false;
 		}
 		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 14) == -1) {
@@ -208,8 +208,8 @@ public class SampleBParser {
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new LapgSymbol();
-			lapg_m[lapg_head].lexem = 14;
-			lapg_m[lapg_head].sym = null;
+			lapg_m[lapg_head].symbol = 14;
+			lapg_m[lapg_head].value = null;
 			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 14);
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
@@ -223,19 +223,19 @@ public class SampleBParser {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.lexem], lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.lexem != 0) {
+		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
 			lapg_n = null;
 		}
 	}
 
 	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.sym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = lapg_rlex[rule];
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
@@ -248,62 +248,62 @@ public class SampleBParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.lexem);
+		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
-				lapg_gg.sym = new AstClassdef(
+				lapg_gg.value = new AstClassdef(
 						true,
 						false,
-						((String)lapg_m[lapg_head - 3].sym) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym) /* classdeflistopt */,
+						((String)lapg_m[lapg_head - 3].value) /* ID */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
-				lapg_gg.sym = new AstClassdef(
+				lapg_gg.value = new AstClassdef(
 						true,
 						true,
-						((String)lapg_m[lapg_head - 5].sym) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym) /* classdeflistopt */,
-						((String)lapg_m[lapg_head - 3].sym) /* identifier */,
+						((String)lapg_m[lapg_head - 5].value) /* ID */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
+						((String)lapg_m[lapg_head - 3].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head - 6].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 6:  // classdeflist ::= classdef
-				lapg_gg.sym = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.sym).add(new AstClassdeflistItem(
-						((AstClassdef)lapg_m[lapg_head].sym) /* classdef */,
+				lapg_gg.value = new ArrayList();
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 7:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].sym).add(new AstClassdeflistItem(
-						((AstClassdef)lapg_m[lapg_head].sym) /* classdef */,
+				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value).add(new AstClassdeflistItem(
+						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 8:  // classdeflist ::= identifier '(' ')'
-				lapg_gg.sym = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.sym).add(new AstClassdeflistItem(
+				lapg_gg.value = new ArrayList();
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
-						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
+						((String)lapg_m[lapg_head - 2].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 9:  // classdeflist ::= identifier '(' Lextends ')'
-				 String s = /* should be string */ ((String)lapg_m[lapg_head - 1].sym); 
+				 String s = /* should be string */ ((String)lapg_m[lapg_head - 1].value); 
 				break;
 			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
-				((List<AstClassdeflistItem>)lapg_m[lapg_head - 3].sym).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_m[lapg_head - 3].value).add(new AstClassdeflistItem(
 						null /* classdef */,
-						((String)lapg_m[lapg_head - 2].sym) /* identifier */,
+						((String)lapg_m[lapg_head - 2].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 11:  // classdeflist ::= error
-				lapg_gg.sym = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.sym).add(new AstClassdeflistItem(
+				lapg_gg.value = new ArrayList();
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
@@ -314,6 +314,6 @@ public class SampleBParser {
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(LapgSymbol sym) {
+	protected void dispose(LapgSymbol value) {
 	}
 }

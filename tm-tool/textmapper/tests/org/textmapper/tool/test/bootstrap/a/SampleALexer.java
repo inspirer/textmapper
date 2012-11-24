@@ -22,8 +22,8 @@ import java.text.MessageFormat;
 public class SampleALexer {
 
 	public static class LapgSymbol {
-		public Object sym;
-		public int lexem;
+		public Object value;
+		public int symbol;
 		public int state;
 		public int line;
 		public int column;
@@ -204,8 +204,8 @@ public class SampleALexer {
 					lapg_n.endoffset = currOffset;
 					lapg_n.endline = currLine;
 					lapg_n.endcolumn = currColumn;
-					lapg_n.lexem = 0;
-					lapg_n.sym = null;
+					lapg_n.symbol = 0;
+					lapg_n.value = null;
 					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
 					tokenStart = -1;
 					return lapg_n;
@@ -233,14 +233,14 @@ public class SampleALexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexem at line {0}: `{1}`, skipped", currLine, current()));
-				lapg_n.lexem = -1;
+				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				lapg_n.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.lexem = 0;
-				lapg_n.sym = null;
+				lapg_n.symbol = 0;
+				lapg_n.value = null;
 				tokenStart = -1;
 				return lapg_n;
 			}
@@ -249,10 +249,10 @@ public class SampleALexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.lexem = lapg_lexemnum[-state - 3];
-			lapg_n.sym = null;
+			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.value = null;
 
-		} while (lapg_n.lexem == -1 || !createToken(lapg_n, -state - 3));
+		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
 		tokenStart = -1;
 		return lapg_n;
 	}
@@ -261,7 +261,7 @@ public class SampleALexer {
 		boolean spaceToken = false;
 		switch (lexemIndex) {
 			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
-				 lapg_n.sym = current(); 
+				 lapg_n.value = current(); 
 				break;
 			case 1: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
