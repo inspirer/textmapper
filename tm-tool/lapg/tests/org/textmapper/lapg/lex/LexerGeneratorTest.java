@@ -35,18 +35,18 @@ public class LexerGeneratorTest {
 			new TestLexerState(0, "initial")
 	};
 
-	TestLexem[] INPUT1 = {
-			new TestLexem(0, 0, "string", LEXER_STATES[0], "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
-			new TestLexem(1, 0, "number", LEXER_STATES[0], "[0-9]+", "1", "12", "323", "2111111"),
-			new TestLexem(2, 0, "hex", LEXER_STATES[0], "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
-			new TestLexem(3, 0, "hex", LEXER_STATES[0], "\\n|\\t|\\r", "\n", "\t", "\r"),
-			new TestLexem(4, 0, "hex", LEXER_STATES[0], "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
+	TestRule[] INPUT1 = {
+			new TestRule(0, 0, "string", LEXER_STATES[0], "[a-z][A-Z]?", "bC", "aZ", "zA", "q"),
+			new TestRule(1, 0, "number", LEXER_STATES[0], "[0-9]+", "1", "12", "323", "2111111"),
+			new TestRule(2, 0, "hex", LEXER_STATES[0], "0x[0-9a-zA-Z]+", "0x23bd", "0x1", "0x0"),
+			new TestRule(3, 0, "hex", LEXER_STATES[0], "\\n|\\t|\\r", "\n", "\t", "\r"),
+			new TestRule(4, 0, "hex", LEXER_STATES[0], "[\\uAAAA-\\uAABB]", "\uaab0", "\uaabb", "\uaaaa", "\uaaaf"),
 	};
 
-	TestLexem[] ERRINPUT = {
-			new TestLexem(0, 0, "string", LEXER_STATES[0], "[a-z0-9][A-Z]?"),
-			new TestLexem(1, 0, "number", LEXER_STATES[0], "[0-9]+"),
-			new TestLexem(2, 0, "empty", LEXER_STATES[0], "()"),
+	TestRule[] ERRINPUT = {
+			new TestRule(0, 0, "string", LEXER_STATES[0], "[a-z0-9][A-Z]?"),
+			new TestRule(1, 0, "number", LEXER_STATES[0], "[0-9]+"),
+			new TestRule(2, 0, "empty", LEXER_STATES[0], "()"),
 	};
 
 	@Test
@@ -143,7 +143,7 @@ public class LexerGeneratorTest {
 	}
 
 	private void checkMatch(String regex, String sample, boolean expected) {
-		TestLexem[] input = {new TestLexem(0, 0, "test", LEXER_STATES[0], regex)};
+		TestRule[] input = {new TestRule(0, 0, "test", LEXER_STATES[0], regex)};
 		LexerData lt = LexicalBuilder.compile(LEXER_STATES, input, NO_PATTERNS, new TestStatus());
 		int token = nextToken(lt, sample, input);
 		assertEquals(sample + " !~ /" + regex, expected, token == 0);
@@ -152,7 +152,7 @@ public class LexerGeneratorTest {
 	@Test
 	public void testGenerator() {
 		LexerData lt = LexicalBuilder.compile(LEXER_STATES, INPUT1, NO_PATTERNS, new TestStatus());
-		for (TestLexem tl : INPUT1) {
+		for (TestRule tl : INPUT1) {
 			for (String s : tl.getSamples()) {
 				int res = nextToken(lt, s, INPUT1);
 				assertEquals("For " + s + " Expected " + tl.getRegexp().toString() + ";", tl.index, res);
@@ -164,15 +164,15 @@ public class LexerGeneratorTest {
 	public void testLexGeneratorReporting() {
 		TestStatus notifier = new TestStatus(
 				"",
-				"lexemtest,3: empty: lexem is empty\n" +
-						"lexemtest,1: two lexems are identical: string and number\n");
+				"lexemtest,3: `empty' can produce empty lexeme\n" +
+						"lexemtest,1: two rules are identical: string and number\n");
 		LexicalBuilder.compile(LEXER_STATES, ERRINPUT, NO_PATTERNS, notifier);
 		notifier.assertDone();
 
 	}
 
 	/* returns token index if s matches regexp */
-	private int nextToken(LexerData lr, String s, Lexem[] lexems) {
+	private int nextToken(LexerData lr, String s, LexicalRule[] lexicalRules) {
 		int state = 0;
 		int index = 0;
 
@@ -190,7 +190,7 @@ public class LexerGeneratorTest {
 		if (state == -2) {
 			return -1;
 		}
-		return lexems[-state - 3].getSymbol().getIndex();
+		return lexicalRules[-state - 3].getSymbol().getIndex();
 	}
 
 	private static class TestLexerState implements LexerState {
@@ -214,7 +214,7 @@ public class LexerGeneratorTest {
 		}
 	}
 
-	private static class TestLexem implements Lexem, TextSourceElement {
+	private static class TestRule implements LexicalRule, TextSourceElement {
 
 		private final int index;
 		private final int prio;
@@ -223,7 +223,7 @@ public class LexerGeneratorTest {
 		private final String regexp;
 		private final String[] samples;
 
-		public TestLexem(int index, int prio, String name, LexerState initial, String regexp, String... samples) {
+		public TestRule(int index, int prio, String name, LexerState initial, String regexp, String... samples) {
 			this.index = index;
 			this.prio = prio;
 			this.name = name;
@@ -247,7 +247,7 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public Lexem getClassLexem() {
+		public LexicalRule getClassRule() {
 			return null;
 		}
 

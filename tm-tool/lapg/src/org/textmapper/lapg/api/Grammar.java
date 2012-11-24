@@ -28,7 +28,7 @@ public interface Grammar {
 
 	LexerState[] getLexerStates();
 
-	Lexem[] getLexems();
+	LexicalRule[] getLexicalRules();
 
 	NamedPattern[] getPatterns();
 

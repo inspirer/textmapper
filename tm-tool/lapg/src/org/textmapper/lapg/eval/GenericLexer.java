@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
 import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.Lexem;
 import org.textmapper.lapg.api.LexerData;
+import org.textmapper.lapg.api.LexicalRule;
 
 public class GenericLexer {
 
@@ -203,15 +203,15 @@ public class GenericLexer {
 	}
 
 	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) throws IOException {
-		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
-		return lexemKind != Lexem.KIND_SPACE;
+		int lexemKind = grammar.getLexicalRules()[lexemIndex].getKind();
+		return lexemKind != LexicalRule.KIND_SPACE;
 	}
 
 	private static int[] getLexemNum(Grammar grammar) {
-		Lexem[] lexems = grammar.getLexems();
-		int[] result = new int[lexems.length];
-		for (int i = 0; i < lexems.length; i++) {
-			result[i] = lexems[i].getSymbol().getIndex();
+		LexicalRule[] lexicalRules = grammar.getLexicalRules();
+		int[] result = new int[lexicalRules.length];
+		for (int i = 0; i < lexicalRules.length; i++) {
+			result[i] = lexicalRules[i].getSymbol().getIndex();
 		}
 		return result;
 	}

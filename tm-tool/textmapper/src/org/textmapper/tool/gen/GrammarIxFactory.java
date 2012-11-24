@@ -53,8 +53,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof IxWrapper) {
 			o = ((IxWrapper) o).getObject();
 		}
-		if (o instanceof Lexem) {
-			return new LexemIxObject((Lexem) o);
+		if (o instanceof LexicalRule) {
+			return new LexicalRuleIxObject((LexicalRule) o);
 		}
 		if (o instanceof Rule) {
 			return new RuleIxObject((Rule) o);
@@ -74,21 +74,21 @@ public class GrammarIxFactory extends JavaIxFactory {
 		return super.asObject(o);
 	}
 
-	private final class LexemIxObject extends DefaultJavaIxObject {
-		private final Lexem lexem;
+	private final class LexicalRuleIxObject extends DefaultJavaIxObject {
+		private final LexicalRule lexicalRule;
 
-		private LexemIxObject(Lexem lexem) {
-			super(lexem);
-			this.lexem = lexem;
+		private LexicalRuleIxObject(LexicalRule lexicalRule) {
+			super(lexicalRule);
+			this.lexicalRule = lexicalRule;
 		}
 
 		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("action".equals(propertyName)) {
-				return grammar.getCode(lexem);
+				return grammar.getCode(lexicalRule);
 			}
 			if("transitions".equals(propertyName)) {
-				return grammar.getTransition(lexem);
+				return grammar.getTransition(lexicalRule);
 			}
 			return super.getProperty(propertyName);
 		}
@@ -294,10 +294,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return gr;
 			}
 			if ("lexemSymbols".equals(propertyName)) {
-				Lexem[] lexems = grammar.getLexems();
-				int[] result = new int[lexems.length];
-				for (int i = 0; i < lexems.length; i++) {
-					result[i] = lexems[i].getSymbol().getIndex();
+				LexicalRule[] lexicalRules = grammar.getLexicalRules();
+				int[] result = new int[lexicalRules.length];
+				for (int i = 0; i < lexicalRules.length; i++) {
+					result[i] = lexicalRules[i].getSymbol().getIndex();
 				}
 				return result;
 			}

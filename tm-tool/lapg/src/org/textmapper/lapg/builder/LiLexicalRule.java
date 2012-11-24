@@ -18,7 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexPart;
 
-class LiLexem implements Lexem, DerivedSourceElement {
+class LiLexicalRule implements LexicalRule, DerivedSourceElement {
 
 	private final int kind;
 	private final int index;
@@ -26,17 +26,17 @@ class LiLexem implements Lexem, DerivedSourceElement {
 	private final RegexPart regexp;
 	private final Iterable<LexerState> states;
 	private final int priority;
-	private final Lexem classLexem;
+	private final LexicalRule classLexicalRule;
 	private final SourceElement origin;
 
-	public LiLexem(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
+	public LiLexicalRule(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
 		this.states = states;
 		this.priority = priority;
-		this.classLexem = classLexem;
+		this.classLexicalRule = classLexicalRule;
 		this.origin = origin;
 	}
 
@@ -84,13 +84,13 @@ class LiLexem implements Lexem, DerivedSourceElement {
 	}
 
 	@Override
-	public Lexem getClassLexem() {
-		return classLexem;
+	public LexicalRule getClassRule() {
+		return classLexicalRule;
 	}
 
 	@Override
 	public boolean isExcluded() {
-		return classLexem != null;
+		return classLexicalRule != null;
 	}
 
 	@Override

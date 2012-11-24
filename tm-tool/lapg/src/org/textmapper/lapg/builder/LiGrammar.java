@@ -22,7 +22,7 @@ class LiGrammar implements Grammar {
 	private final Symbol[] symbols;
 	private final Rule[] rules;
 	private final Prio[] priorities;
-	private final Lexem[] lexems;
+	private final LexicalRule[] lexicalRules;
 	private final NamedPattern[] patterns;
 	private final LexerState[] lexerStates;
 
@@ -33,14 +33,14 @@ class LiGrammar implements Grammar {
 	private final int terminals;
 	private final int grammarSymbols;
 
-	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, Lexem[] lexems, NamedPattern[] patterns,
+	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, LexicalRule[] lexicalRules, NamedPattern[] patterns,
 					 LexerState[] lexerStates,
 					 InputRef[] inputs, Symbol eoi,
 					 Symbol error, int terminals, int grammarSymbols) {
 		this.symbols = symbols;
 		this.rules = rules;
 		this.priorities = priorities;
-		this.lexems = lexems;
+		this.lexicalRules = lexicalRules;
 		this.patterns = patterns;
 		this.lexerStates = lexerStates;
 		this.inputs = inputs;
@@ -71,8 +71,8 @@ class LiGrammar implements Grammar {
 	}
 
 	@Override
-	public Lexem[] getLexems() {
-		return lexems;
+	public LexicalRule[] getLexicalRules() {
+		return lexicalRules;
 	}
 
 	@Override

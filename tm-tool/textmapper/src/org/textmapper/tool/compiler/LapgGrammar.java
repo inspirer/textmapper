@@ -30,12 +30,12 @@ public class LapgGrammar {
 	private final Map<Symbol, String> identifierMap;
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
 	private final Map<SourceElement, TextSourceElement> codeMap;
-	private final Map<Lexem, LapgLexemeTransitionSwitch> transitionMap;
+	private final Map<LexicalRule, LapgStateTransitionSwitch> transitionMap;
 
 	public LapgGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
 					   String copyrightHeader, Map<Symbol, String> identifierMap,
 					   Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap,
-					   Map<Lexem, LapgLexemeTransitionSwitch> transitionMap) {
+					   Map<LexicalRule, LapgStateTransitionSwitch> transitionMap) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
@@ -80,7 +80,7 @@ public class LapgGrammar {
 		return identifierMap.get(sym);
 	}
 
-	public LapgLexemeTransitionSwitch getTransition(Lexem l) {
+	public LapgStateTransitionSwitch getTransition(LexicalRule l) {
 		return transitionMap.get(l);
 	}
 }

@@ -236,11 +236,11 @@ ${template createToken}
 ${if self->hasLexemActions()-}
 		boolean spaceToken = false;
 		switch (lexemIndex) {
-${foreach lexem in syntax.lexems-}
+${foreach lexem in syntax.lexicalRules-}
 ${if lexem.kindAsText == 'class'-}
 			case ${lexem.index}:
-				return create${lexem->classLexemName()}Token(lapg_n, lexemIndex);
-${else if lexem->hasActions() && !lexem.classLexem-}
+				return create${lexem->classRuleName()}Token(lapg_n, lexemIndex);
+${else if lexem->hasActions() && !lexem.classRule-}
 			case ${lexem.index}: // ${lexem.symbol.name}: /${lexem.regexp}/
 ${call lexerAction('lapg_n.sym') for lexem-}
 				break;
@@ -252,20 +252,20 @@ ${else-}
 		return true;
 ${end-}
 	}
-${foreach lexem in self->classLexems()-}
+${foreach lexem in self->classRules()-}
 ${if lexem->classHasInstances()-}
 
-	private static java.util.@Map<String,Integer> subTokensOf${lexem->classLexemName()} = new java.util.@HashMap<String,Integer>();
+	private static java.util.@Map<String,Integer> subTokensOf${lexem->classRuleName()} = new java.util.@HashMap<String,Integer>();
 	static {
 ${foreach instance in lexem->classInstances()-}
-		subTokensOf${lexem->classLexemName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
+		subTokensOf${lexem->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});
 ${end-}
 	}
 ${end-}
 
-	protected boolean create${lexem->classLexemName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
+	protected boolean create${lexem->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
 ${if lexem->classHasInstances()-}
-		Integer replacement = subTokensOf${lexem->classLexemName()}.get(current());
+		Integer replacement = subTokensOf${lexem->classRuleName()}.get(current());
 		if (replacement != null) {
 			lexemIndex = replacement;
 			lapg_n.lexem = lapg_lexemnum[lexemIndex];
@@ -441,14 +441,14 @@ ${template lexercode-}
 ${end}
 
 ${cached query hasLexemActions() =
-	syntax.lexems.exists(l|l->hasActions() && !l.classLexem || l.kindAsText == 'class')}
+	syntax.lexicalRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
 ${cached query hasActions() = self.action || self.transitions || self.kindAsText == 'space' }
 
-${cached query classLexems() = syntax.lexems.select(x|x.kindAsText == 'class')}
+${cached query classRules() = syntax.lexicalRules.select(x|x.kindAsText == 'class')}
 
 ${cached query classHasInstances() = self->classInstances().size() > 0 }
 
-${cached query classInstances() = context.syntax.lexems.select(x|x.classLexem && x.classLexem == self)}
+${cached query classInstances() = context.syntax.lexicalRules.select(x|x.classRule && x.classRule == self)}
 
-${cached query classLexemName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classlexem__')}
+${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}

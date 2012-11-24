@@ -22,16 +22,16 @@ import java.util.Map;
 /**
  * Gryaznov Evgeny, 9/11/12
  */
-public class LapgLexemeTransitionSwitch {
+public class LapgStateTransitionSwitch {
 
 	private Map<LexerState, LexerState> stateSwitch;
 	private LexerState defaultTransition;
 
-	public LapgLexemeTransitionSwitch(LexerState defaultTransition) {
+	public LapgStateTransitionSwitch(LexerState defaultTransition) {
 		this(null, defaultTransition);
 	}
 
-	public LapgLexemeTransitionSwitch(Map<LexerState, LexerState> stateSwitch, LexerState defaultTransition) {
+	public LapgStateTransitionSwitch(Map<LexerState, LexerState> stateSwitch, LexerState defaultTransition) {
 		this.stateSwitch = stateSwitch;
 		this.defaultTransition = defaultTransition;
 		assert stateSwitch != null || defaultTransition != null;
@@ -51,7 +51,7 @@ public class LapgLexemeTransitionSwitch {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		LapgLexemeTransitionSwitch that = (LapgLexemeTransitionSwitch) o;
+		LapgStateTransitionSwitch that = (LapgStateTransitionSwitch) o;
 
 		if (defaultTransition != null ? !defaultTransition.equals(that.defaultTransition) : that.defaultTransition != null)
 			return false;

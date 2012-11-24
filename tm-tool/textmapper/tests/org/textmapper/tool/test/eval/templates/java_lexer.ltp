@@ -28,8 +28,8 @@ ${end}
 
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
-		int lexemKind = grammar.getLexems()[lexemIndex].getKind();
-		return lexemKind != org.textmapper.lapg.api.@Lexem.KIND_SPACE;
+		int lexemKind = grammar.getLexicalRules()[lexemIndex].getKind();
+		return lexemKind != org.textmapper.lapg.api.@LexicalRule.KIND_SPACE;
 	}
 ${end}
 
@@ -41,10 +41,10 @@ ${end}
 
 ${template unpackRoutines}
 	private static int[] getLexemNum(org.textmapper.lapg.api.@Grammar grammar) {
-		org.textmapper.lapg.api.@Lexem[] lexems = grammar.getLexems();
-		int[] result = new int[lexems.length];
-		for (int i = 0; i < lexems.length; i++) {
-			result[i] = lexems[i].getSymbol().getIndex();
+		org.textmapper.lapg.api.@LexicalRule[] lexicalRules = grammar.getLexicalRules();
+		int[] result = new int[lexicalRules.length];
+		for (int i = 0; i < lexicalRules.length; i++) {
+			result[i] = lexicalRules[i].getSymbol().getIndex();
 		}
 		return result;
 	}

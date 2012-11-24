@@ -31,7 +31,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 	private final Set<Symbol> symbolsSet = new HashSet<Symbol>();
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
-	private final List<LiLexem> lexems = new ArrayList<LiLexem>();
+	private final List<LiLexicalRule> lexems = new ArrayList<LiLexicalRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
 	private final Set<String> stateNamesSet = new HashSet<String>();
@@ -110,13 +110,13 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Lexem addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, Lexem classLexem, SourceElement origin) {
+	public LexicalRule addLexem(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
 		}
 		int symKind = sym.getKind();
-		if (symKind == Symbol.KIND_SOFTTERM != (kind == Lexem.KIND_SOFT)) {
+		if (symKind == Symbol.KIND_SOFTTERM != (kind == LexicalRule.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong lexem kind, doesn't match symbol kind");
 		}
 		List<LexerState> liStates = new ArrayList<LexerState>();
@@ -129,7 +129,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (liStates.isEmpty()) {
 			throw new IllegalArgumentException("no states passed");
 		}
-		LiLexem l = new LiLexem(kind, lexems.size(), sym, regexp, liStates, priority, classLexem, origin);
+		LiLexicalRule l = new LiLexicalRule(kind, lexems.size(), sym, regexp, liStates, priority, classLexicalRule, origin);
 		lexems.add(l);
 		return l;
 	}
@@ -206,7 +206,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 			grammarSymbols++;
 		}
 
-		LiLexem[] lexemArr = lexems.toArray(new LiLexem[lexems.size()]);
+		LiLexicalRule[] lexemArr = lexems.toArray(new LiLexicalRule[lexems.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");

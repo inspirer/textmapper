@@ -16,7 +16,7 @@
 package org.textmapper.tool.test.cases;
 
 import org.junit.Test;
-import org.textmapper.lapg.api.Lexem;
+import org.textmapper.lapg.api.LexicalRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.common.FileUtil;
@@ -83,13 +83,13 @@ public class InputTest extends LapgTestCase {
 		assertEquals("list", rules[0].getRight()[0].getTarget().getName());
 		assertEquals(1, rules[0].getRight().length);
 
-		Lexem[] lexems = g.getGrammar().getLexems();
-		assertEquals(3, lexems.length);
-		assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexems[0].getRegexp().toString());
-		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexems[1]
+		LexicalRule[] lexicalRules = g.getGrammar().getLexicalRules();
+		assertEquals(3, lexicalRules.length);
+		assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexicalRules[0].getRegexp().toString());
+		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexicalRules[1]
 				.getRegexp().toString());
-		assertEquals("[\\t\\r\\n ]+", lexems[2].getRegexp().toString());
-		assertEquals(" continue; ", g.getCode(lexems[2]).getText());
+		assertEquals("[\\t\\r\\n ]+", lexicalRules[2].getRegexp().toString());
+		assertEquals(" continue; ", g.getCode(lexicalRules[2]).getText());
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,22: lexem matches two classes `identifier' and `identifierX', using first\n" +
+				"syntax_lexems,22: regex matches two classes `identifier' and `identifierX', using first\n" +
 						"syntax_lexems,25: soft lexem `L0choice' doesn't match any class lexem\n" +
 						"syntax_lexems,28: soft lexem `int' should have a constant regexp\n" +
 						"syntax_lexems,36: redeclaration of soft class: icon instead of identifier\n" +
@@ -174,7 +174,7 @@ public class InputTest extends LapgTestCase {
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -196,7 +196,7 @@ public class InputTest extends LapgTestCase {
 						"    list_item ::= Licon\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -223,7 +223,7 @@ public class InputTest extends LapgTestCase {
 		assertNotNull(g);
 
 		ts.reset("", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 		ts.assertDone();
 
@@ -252,7 +252,7 @@ public class InputTest extends LapgTestCase {
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
 				"\n", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();

@@ -49,7 +49,7 @@ public class GrammarTest extends LapgTestCase {
 		assertNotNull(g);
 		assertNotNull(g.getGrammar());
 
-		LexerData l = LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), new TestStatus());
+		LexerData l = LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), new TestStatus());
 		ParserData r = Builder.compile(g.getGrammar(), new TestStatus());
 		return new GenericParseContext(g.getGrammar(), r, l);
 	}

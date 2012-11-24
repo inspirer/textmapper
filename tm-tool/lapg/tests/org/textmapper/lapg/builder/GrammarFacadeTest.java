@@ -41,7 +41,7 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState("initial", null);
 
 		Terminal id = builder.addTerminal("id", null, null);
-		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
+		builder.addLexem(LexicalRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
@@ -73,14 +73,14 @@ public class GrammarFacadeTest {
 		assertNull(rules[0].getRight()[0].getNegativeLA());
 
 		// lexer
-		Lexem[] lexems = grammar.getLexems();
-		assertEquals(1, lexems.length);
-		assertFalse(lexems[0].isExcluded());
-		assertTrue(symbols[1] == lexems[0].getSymbol());
-		assertNull(lexems[0].getClassLexem());
-		assertEquals("none", lexems[0].getKindAsText());
-		assertEquals("[a-z][a-z0-9]+", lexems[0].getRegexp().toString());
-		assertLexerStates(Collections.singleton(initial), lexems[0].getStates());
+		LexicalRule[] lRules = grammar.getLexicalRules();
+		assertEquals(1, lRules.length);
+		assertFalse(lRules[0].isExcluded());
+		assertTrue(symbols[1] == lRules[0].getSymbol());
+		assertNull(lRules[0].getClassRule());
+		assertEquals("none", lRules[0].getKindAsText());
+		assertEquals("[a-z][a-z0-9]+", lRules[0].getRegexp().toString());
+		assertLexerStates(Collections.singleton(initial), lRules[0].getStates());
 
 		// input
 		InputRef[] inputRefs = grammar.getInput();
@@ -110,11 +110,11 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState("initial", null);
 
 		Terminal id = builder.addTerminal("id", "string", null);
-		Lexem idLexem = builder.addLexem(Lexem.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, null, null);
+		LexicalRule idLexicalRule = builder.addLexem(LexicalRule.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, null, null);
 		Terminal kw = builder.addSoftTerminal("kw", id, null);
-		builder.addLexem(Lexem.KIND_SOFT, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, idLexem, null);
+		builder.addLexem(LexicalRule.KIND_SOFT, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, idLexicalRule, null);
 		Terminal spc = builder.addTerminal("spc", null, null);
-		builder.addLexem(Lexem.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, null, null);
+		builder.addLexem(LexicalRule.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, null, null);
 		Grammar grammar = builder.create();
 
 		Symbol[] symbols = grammar.getSymbols();
@@ -146,35 +146,35 @@ public class GrammarFacadeTest {
 			assertNull(((DerivedSourceElement) symbols[i]).getOrigin());
 		}
 
-		Lexem[] lexems = grammar.getLexems();
-		for (int i = 0; i < lexems.length; i++) {
-			assertEquals(i, lexems[i].getIndex());
-			assertNull(((DerivedSourceElement) lexems[i]).getOrigin());
-			assertEquals(0, lexems[i].getPriority());
+		LexicalRule[] lRules = grammar.getLexicalRules();
+		for (int i = 0; i < lRules.length; i++) {
+			assertEquals(i, lRules[i].getIndex());
+			assertNull(((DerivedSourceElement) lRules[i]).getOrigin());
+			assertEquals(0, lRules[i].getPriority());
 		}
-		assertEquals(3, lexems.length);
+		assertEquals(3, lRules.length);
 		// id
-		assertTrue(symbols[1] == lexems[0].getSymbol());
-		assertNull(lexems[0].getClassLexem());
-		assertEquals("[a-z]+", lexems[0].getRegexp().toString());
-		assertLexerStates(Collections.singleton(initial), lexems[0].getStates());
-		assertEquals(Lexem.KIND_CLASS, lexems[0].getKind());
-		assertEquals("class", lexems[0].getKindAsText());
+		assertTrue(symbols[1] == lRules[0].getSymbol());
+		assertNull(lRules[0].getClassRule());
+		assertEquals("[a-z]+", lRules[0].getRegexp().toString());
+		assertLexerStates(Collections.singleton(initial), lRules[0].getStates());
+		assertEquals(LexicalRule.KIND_CLASS, lRules[0].getKind());
+		assertEquals("class", lRules[0].getKindAsText());
 		// kw
-		assertTrue(symbols[2] == lexems[1].getSymbol());
-		assertTrue(lexems[1].getClassLexem() == lexems[0]);
-		assertEquals("keyword", lexems[1].getRegexp().toString());
-		assertTrue(lexems[1].getRegexp().isConstant());
-		assertEquals("keyword", lexems[1].getRegexp().getConstantValue());
-		assertLexerStates(Collections.singleton(initial), lexems[1].getStates());
-		assertEquals(Lexem.KIND_SOFT, lexems[1].getKind());
-		assertEquals("soft", lexems[1].getKindAsText());
-		assertTrue(lexems[1].isExcluded());
+		assertTrue(symbols[2] == lRules[1].getSymbol());
+		assertTrue(lRules[1].getClassRule() == lRules[0]);
+		assertEquals("keyword", lRules[1].getRegexp().toString());
+		assertTrue(lRules[1].getRegexp().isConstant());
+		assertEquals("keyword", lRules[1].getRegexp().getConstantValue());
+		assertLexerStates(Collections.singleton(initial), lRules[1].getStates());
+		assertEquals(LexicalRule.KIND_SOFT, lRules[1].getKind());
+		assertEquals("soft", lRules[1].getKindAsText());
+		assertTrue(lRules[1].isExcluded());
 		// spc
-		assertTrue(symbols[3] == lexems[2].getSymbol());
-		assertEquals(Lexem.KIND_SPACE, lexems[2].getKind());
-		assertEquals("space", lexems[2].getKindAsText());
-		assertLexerStates(Collections.singleton(initial), lexems[2].getStates());
+		assertTrue(symbols[3] == lRules[2].getSymbol());
+		assertEquals(LexicalRule.KIND_SPACE, lRules[2].getKind());
+		assertEquals("space", lRules[2].getKindAsText());
+		assertLexerStates(Collections.singleton(initial), lRules[2].getStates());
 
 		// empty lists
 		assertNull(grammar.getRules());
@@ -208,7 +208,7 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState("initial", null);
 
 		Terminal id = builder.addTerminal("id", null, null);
-		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
+		builder.addLexem(LexicalRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
@@ -241,7 +241,7 @@ public class GrammarFacadeTest {
 
 		builder.addPattern("pattern", LapgCore.parse("pattern", "[a-z]+"), null);
 		Terminal id = builder.addTerminal("id", "string", null);
-		builder.addLexem(Lexem.KIND_NONE, id, LapgCore.parse("id", "{pattern}"), Collections.singleton(initial), 0, null, null);
+		builder.addLexem(LexicalRule.KIND_NONE, id, LapgCore.parse("id", "{pattern}"), Collections.singleton(initial), 0, null, null);
 		Grammar grammar = builder.create();
 
 		NamedPattern[] patterns = grammar.getPatterns();

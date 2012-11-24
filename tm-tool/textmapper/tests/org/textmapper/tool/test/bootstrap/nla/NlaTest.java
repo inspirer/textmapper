@@ -71,7 +71,7 @@ public class NlaTest extends LapgTestCase {
 				debugText.append(info);
 			}
 		};
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexems(), g.getGrammar().getPatterns(), er);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 		er.assertDone();
 

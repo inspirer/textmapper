@@ -56,7 +56,7 @@ public class LapgResolver {
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<Symbol, String> identifierMap = new HashMap<Symbol, String>();
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
-	private final Map<AstLexeme, LapgLexeme> lexemeMap = new HashMap<AstLexeme, LapgLexeme>();
+	private final Map<AstLexeme, LapgLexicalRule> lexemeMap = new HashMap<AstLexeme, LapgLexicalRule>();
 
 	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
 	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
@@ -119,11 +119,11 @@ public class LapgResolver {
 			identifierMap.put(sym, helper.generateId(sym.getName(), i));
 		}
 
-		Map<Lexem, LapgLexemeTransitionSwitch> transitionMap = new HashMap<Lexem, LapgLexemeTransitionSwitch>();
-		for (Lexem l : g.getLexems()) {
-			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) l).getOrigin();
-			LapgLexeme lapgLexeme = lexemeMap.get(astLexeme);
-			transitionMap.put(l, lapgLexeme.getTransitions());
+		Map<LexicalRule, LapgStateTransitionSwitch> transitionMap = new HashMap<LexicalRule, LapgStateTransitionSwitch>();
+		for (LexicalRule rule : g.getLexicalRules()) {
+			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
+			LapgLexicalRule lapgRule = lexemeMap.get(astLexeme);
+			transitionMap.put(rule, lapgRule.getTransitions());
 		}
 
 		return new LapgGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader,
@@ -245,7 +245,7 @@ public class LapgResolver {
 		return result;
 	}
 
-	private LapgLexemeTransitionSwitch convertTransitions(AstStateSelector selector) {
+	private LapgStateTransitionSwitch convertTransitions(AstStateSelector selector) {
 		boolean noDefault = false;
 		for (AstLexerState state : selector.getStates()) {
 			if (state.getDefaultTransition() == null) {
@@ -274,10 +274,10 @@ public class LapgResolver {
 			}
 		}
 		return stateSwitch.isEmpty() && defaultTransition == null ? null
-				: new LapgLexemeTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
+				: new LapgStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
 	}
 
-	private LapgLexemeTransitionSwitch getTransition(AstLexeme lexeme, LapgLexemeTransitionSwitch active) {
+	private LapgStateTransitionSwitch getTransition(AstLexeme lexeme, LapgStateTransitionSwitch active) {
 		AstReference transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
@@ -285,29 +285,29 @@ public class LapgResolver {
 			if (target == null) {
 				error(transition, targetName + " cannot be resolved");
 			} else {
-				return new LapgLexemeTransitionSwitch(target);
+				return new LapgStateTransitionSwitch(target);
 			}
 		}
 		return active;
 	}
 
-	private Lexem getClassLexem(Map<Lexem, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
-		Lexem result = null;
+	private LexicalRule getClassRule(Map<LexicalRule, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
+		LexicalRule result = null;
 		AstLexemAttrs attrs = l.getAttrs();
-		int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
-		if (regex.isConstant() && kind != Lexem.KIND_CLASS) {
-			for (Lexem classLexem : classMatchers.keySet()) {
-				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) classLexem).getOrigin();
+		int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
+		if (regex.isConstant() && kind != LexicalRule.KIND_CLASS) {
+			for (LexicalRule rule : classMatchers.keySet()) {
+				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
 				if (!lexemeMap.get(astClassLexeme).canBeClassFor(lexemeMap.get(l))) {
 					continue;
 				}
-				RegexMatcher m = classMatchers.get(classLexem);
+				RegexMatcher m = classMatchers.get(rule);
 				if (m.matches(regex.getConstantValue())) {
 					if (result != null) {
-						error(l, "lexem matches two classes `" + result.getSymbol().getName() + "' and `"
-								+ classLexem.getSymbol().getName() + "', using first");
+						error(l, "regex matches two classes `" + result.getSymbol().getName() + "' and `"
+								+ rule.getSymbol().getName() + "', using first");
 					} else {
-						result = classLexem;
+						result = rule;
 					}
 				}
 			}
@@ -346,20 +346,20 @@ public class LapgResolver {
 	}
 
 	private void collectLexems() {
-		List<Lexem> classLexems = new LinkedList<Lexem>();
+		List<LexicalRule> classRules = new LinkedList<LexicalRule>();
 		Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 		// Step 1. Process class lexems, named patterns & groups.
 
-		LapgLexemeTransitionSwitch activeTransitions = null;
+		LapgStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(statesMap.get(INITIAL_STATE));
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				lexemeMap.put(lexeme, new LapgLexeme(lexeme, getTransition(lexeme, activeTransitions), activeStates));
+				lexemeMap.put(lexeme, new LapgLexicalRule(lexeme, getTransition(lexeme, activeTransitions), activeStates));
 				AstLexemAttrs attrs = lexeme.getAttrs();
-				if (attrs == null || attrs.getKind() != Lexem.KIND_CLASS) {
+				if (attrs == null || attrs.getKind() != LexicalRule.KIND_CLASS) {
 					continue;
 				}
 				if (lexeme.getRegexp() == null) {
@@ -376,10 +376,10 @@ public class LapgResolver {
 					continue;
 				}
 
-				Lexem liLexem = builder.addLexem(Lexem.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+				LexicalRule liLexicalRule = builder.addLexem(LexicalRule.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 						null, lexeme);
-				classLexems.add(liLexem);
-				codeMap.put(liLexem, lexeme.getCode());
+				classRules.add(liLexicalRule);
+				codeMap.put(liLexicalRule, lexeme.getCode());
 			} else if (clause instanceof AstStateSelector) {
 				activeStates = convertApplicableStates((AstStateSelector) clause);
 				activeTransitions = convertTransitions((AstStateSelector) clause);
@@ -405,17 +405,17 @@ public class LapgResolver {
 		// Step 2. Process other lexems. Match soft lexems with their classes.
 
 		RegexContext context = LapgCore.createContext(namedPatternsMap);
-		Map<Lexem, RegexMatcher> classMatchers = new LinkedHashMap<Lexem, RegexMatcher>();
-		for (Lexem clLexem : classLexems) {
-			classMatchers.put(clLexem, LapgCore.createMatcher(clLexem.getRegexp(), context));
+		Map<LexicalRule, RegexMatcher> classMatchers = new LinkedHashMap<LexicalRule, RegexMatcher>();
+		for (LexicalRule clRule : classRules) {
+			classMatchers.put(clRule, LapgCore.createMatcher(clRule.getRegexp(), context));
 		}
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
 				AstLexemAttrs attrs = lexeme.getAttrs();
-				int kind = attrs == null ? Lexem.KIND_NONE : attrs.getKind();
-				if (kind == Lexem.KIND_CLASS) {
+				int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
+				if (kind == LexicalRule.KIND_CLASS) {
 					continue;
 				}
 				if (lexeme.getRegexp() != null) {
@@ -428,22 +428,22 @@ public class LapgResolver {
 						continue;
 					}
 
-					if (kind == Lexem.KIND_SOFT && lexeme.getCode() != null) {
+					if (kind == LexicalRule.KIND_SOFT && lexeme.getCode() != null) {
 						error(lexeme.getCode(), "soft lexem `" + lexeme.getName().getName()
 								+ "' cannot have a semantic action");
 					}
-					Lexem classLexem = getClassLexem(classMatchers, lexeme, regex);
+					LexicalRule classRule = getClassRule(classMatchers, lexeme, regex);
 					Terminal softClass = null;
-					if (kind == Lexem.KIND_SOFT) {
-						if (classLexem == null) {
+					if (kind == LexicalRule.KIND_SOFT) {
+						if (classRule == null) {
 							if (!regex.isConstant()) {
 								error(lexeme, "soft lexem `" + name + "' should have a constant regexp");
 							} else {
 								error(lexeme, "soft lexem `" + name + "' doesn't match any class lexem");
 							}
-							kind = Lexem.KIND_NONE;
+							kind = LexicalRule.KIND_NONE;
 						} else {
-							softClass = classLexem.getSymbol();
+							softClass = classRule.getSymbol();
 
 							String type = lexeme.getType();
 							String classtype = softClass.getType();
@@ -458,12 +458,12 @@ public class LapgResolver {
 					}
 
 					Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(),
-							kind == Lexem.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
-					Lexem liLexem = builder.addLexem(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
-							classLexem, lexeme);
-					codeMap.put(liLexem, lexeme.getCode());
+							kind == LexicalRule.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
+					LexicalRule liLexicalRule = builder.addLexem(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+							classRule, lexeme);
+					codeMap.put(liLexicalRule, lexeme.getCode());
 				} else {
-					if (kind == Lexem.KIND_SOFT) {
+					if (kind == LexicalRule.KIND_SOFT) {
 						error(lexeme, "soft lexem `" + lexeme.getName().getName() + "' should have regular expression");
 					}
 					create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
