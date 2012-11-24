@@ -15,9 +15,12 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.api.rule.RhsChoice;
+
 /**
  * evgeny, 10/27/12
  */
 public interface Nonterminal extends Symbol {
 
+	RhsChoice getDefinition();
 }

@@ -13,29 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
-
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsChoice;
+package org.textmapper.lapg.api.rule;
 
 /**
- * evgeny, 10/27/12
+ * evgeny, 11/24/12
  */
-public class LiNonterminal extends LiSymbol implements Nonterminal {
+public interface RhsUnordered extends RhsPart {
 
-	public LiNonterminal(String name, String type, SourceElement origin) {
-		super(name, type, origin);
-	}
-
-	@Override
-	public int getKind() {
-		return KIND_NONTERM;
-	}
-
-	@Override
-	public RhsChoice getDefinition() {
-		// TODO
-		return null;
-	}
+	RhsPart[] getParts();
 }
