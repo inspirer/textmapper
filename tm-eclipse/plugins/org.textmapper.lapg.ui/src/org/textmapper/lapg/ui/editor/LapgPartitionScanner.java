@@ -47,7 +47,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 			fTokenLength = lexem.offset - fTokenOffset;
 			return fText;
 		}
-		int token = lexem.lexem;
+		int token = lexem.symbol;
 		switch (token) {
 			case Lexems._skip_comment:
 			case Lexems.scon:
@@ -109,7 +109,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 
 		@Override
 		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			switch (lapg_n.lexem) {
+			switch (lapg_n.symbol) {
 				case Lexems._skip_comment:
 				case Lexems.scon:
 				case Lexems.regexp:
