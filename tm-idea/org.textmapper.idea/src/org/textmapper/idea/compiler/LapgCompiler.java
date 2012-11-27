@@ -37,12 +37,12 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.Chunk;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.idea.facet.TmConfigurationBean;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.ParserConflict;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.idea.LapgBundle;
-import org.textmapper.idea.facet.LapgConfigurationBean;
 import org.textmapper.idea.facet.LapgFacet;
 import org.textmapper.idea.facet.LapgFacetType;
 import org.textmapper.idea.lang.syntax.LapgFileType;
@@ -163,7 +163,7 @@ public class LapgCompiler implements TranslatingCompiler {
 		for (final Module module : modules) {
 			LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
 			if (facet != null) {
-				LapgConfigurationBean configuration = facet.getConfiguration().getState();
+				TmConfigurationBean configuration = facet.getConfiguration().getState();
 				boolean hasTemplatesFolder = configuration.templatesFolder.trim().length() > 0;
 
 				if (configuration.excludeDefaultTemplates && !hasTemplatesFolder) {

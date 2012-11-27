@@ -4,7 +4,11 @@ dictionaries
 /tm-tool/build.properties
 /tm-tool/build/
 /tm-tool/libs/textmapper-*
-/tm-idea/org.textmapper.idea/lib/textmapper-*
+/tm-idea/org.textmapper.idea/lib/*.jar
+/tm-idea/org.textmapper.idea/lib/jps/*.jar
+/tm-idea/availables.xml
+/tm-idea/caches
 /tm-eclipse/plugins/org.textmapper.lapg/textmapper*
 target
 bin
+classes

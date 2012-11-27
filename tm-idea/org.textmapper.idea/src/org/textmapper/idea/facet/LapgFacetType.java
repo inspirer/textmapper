@@ -40,7 +40,7 @@ public class LapgFacetType extends FacetType<LapgFacet, LapgFacetConfiguration> 
 	public static final FacetTypeId<LapgFacet> ID = new FacetTypeId<LapgFacet>("lapg");
 
 	public LapgFacetType() {
-		super(ID, "Lapg", "Lapg");
+		super(ID, TmFacetConstants.TM_FACET_ID, TmFacetConstants.TM_FACET_NAME);
 	}
 
 	@Override

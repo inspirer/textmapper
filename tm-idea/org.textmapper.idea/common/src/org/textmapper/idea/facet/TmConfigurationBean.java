@@ -16,7 +16,7 @@
  */
 package org.textmapper.idea.facet;
 
-public class LapgConfigurationBean {
+public class TmConfigurationBean {
 
 	public boolean verbose;
 	public boolean excludeDefaultTemplates;

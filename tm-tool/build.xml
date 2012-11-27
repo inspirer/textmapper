@@ -198,10 +198,58 @@
 		</path>
 		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
 
-		<mkdir dir="build/textmapper/classes"/>
+		<!-- prepare -->
+		<delete dir="build/textmapper"/>
 		<copy includeemptydirs="false" todir="build/textmapper">
 			<fileset dir="../tm-idea/org.textmapper.idea" includes="lib/**" excludes="lib/.libraries"/>
 		</copy>
+
+		<!-- tm-common.jar -->
+		<mkdir dir="build/textmapper/common-classes"/>
+		<javac2 destdir="build/textmapper/common-classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
+			<src path="../tm-idea/org.textmapper.idea/common/src"/>
+			<classpath>
+				<fileset dir="build/textmapper/lib" includes="*.jar"/>
+				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+			</classpath>
+		</javac2>
+		<jar destfile="build/textmapper/lib/tm-common.jar">
+			<fileset dir="build/textmapper/common-classes"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA Commons"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="../tm-idea" includes="LICENSE.txt"/>
+		</jar>
+		<delete dir="build/textmapper/common-classes"/>
+
+		<!-- jps/tm-jps-plugin.jar -->
+		<mkdir dir="build/textmapper/jps-classes"/>
+		<javac2 destdir="build/textmapper/jps-classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
+			<src path="../tm-idea/org.textmapper.idea/jps-plugin/src"/>
+			<classpath>
+				<fileset dir="build/textmapper/lib" includes="*.jar"/>
+				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+			</classpath>
+		</javac2>
+		<jar destfile="build/textmapper/lib/jps/tm-jps-plugin.jar">
+			<fileset dir="build/textmapper/jps-classes"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA, JPS plug-in"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="../tm-idea/org.textmapper.idea/jps-plugin/META-INF"/>
+		</jar>
+		<delete dir="build/textmapper/jps-classes"/>
+
+		<!-- tm-plugin.jar -->
+		<mkdir dir="build/textmapper/classes"/>
 		<copy includeemptydirs="false" todir="build/textmapper/classes">
 			<fileset dir="../tm-idea/org.textmapper.idea" includes="META-INF/plugin.xml"/>
 			<fileset dir="../tm-idea/org.textmapper.idea/resources"/>
@@ -229,6 +277,7 @@
 
 	<target name="install-plugin" depends="loadVars, plugin">
 		<property name="pluginPath" value="${ideaPlugins}"/>
+		<delete dir="${pluginPath}/textmapper"/>
 		<copy includeemptydirs="false" todir="${pluginPath}/textmapper/">
 			<fileset dir="build/textmapper" includes="lib/**"/>
 		</copy>

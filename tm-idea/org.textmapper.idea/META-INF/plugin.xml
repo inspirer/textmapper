@@ -20,7 +20,7 @@
 	<category>Custom Languages</category>
 	<version>0.9.1</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
-	<idea-version since-build="103.72"/>
+	<idea-version since-build="123.4"/>
 
 	<description><![CDATA[
 	<html>
@@ -55,6 +55,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
+		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.1.jar"/>
 		<facetType implementation="org.textmapper.idea.facet.LapgFacetType"/>
 		<frameworkSupport implementation="org.textmapper.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
 		<fileTypeFactory implementation="org.textmapper.idea.LapgFileTypeFactory"/>

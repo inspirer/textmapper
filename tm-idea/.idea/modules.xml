@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/org.textmapper.idea/lapg-idea.iml" filepath="$PROJECT_DIR$/org.textmapper.idea/lapg-idea.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textmapper.idea/common/tm-common.iml" filepath="$PROJECT_DIR$/org.textmapper.idea/common/tm-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textmapper.idea/tm-idea.iml" filepath="$PROJECT_DIR$/org.textmapper.idea/tm-idea.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textmapper.idea/jps-plugin/tm-jps-plugin.iml" filepath="$PROJECT_DIR$/org.textmapper.idea/jps-plugin/tm-jps-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/org.textmapper.startup/tm-startup.iml" filepath="$PROJECT_DIR$/org.textmapper.startup/tm-startup.iml" />
     </modules>
   </component>
 </project>

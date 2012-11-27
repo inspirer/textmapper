@@ -44,19 +44,19 @@ public class LapgFacetEditorTabUI {
 		return rootComponent;
 	}
 
-	public void setData(LapgConfigurationBean data) {
+	public void setData(TmConfigurationBean data) {
 		noDefaultTemplatesCheckBox.setSelected(data.excludeDefaultTemplates);
 		verboseOutputCheckBox.setSelected(data.verbose);
 		templatesFolder.setText(data.templatesFolder);
 	}
 
-	public void getData(LapgConfigurationBean data) {
+	public void getData(TmConfigurationBean data) {
 		data.excludeDefaultTemplates = noDefaultTemplatesCheckBox.isSelected();
 		data.verbose = verboseOutputCheckBox.isSelected();
 		data.templatesFolder = templatesFolder.getText();
 	}
 
-	public boolean isModified(LapgConfigurationBean data) {
+	public boolean isModified(TmConfigurationBean data) {
 		if (noDefaultTemplatesCheckBox.isSelected() != data.excludeDefaultTemplates) return true;
 		if (verboseOutputCheckBox.isSelected() != data.verbose) return true;
 		if (!templatesFolder.getText().equals(data.templatesFolder)) return true;

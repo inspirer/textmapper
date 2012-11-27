@@ -27,13 +27,12 @@ import com.intellij.openapi.util.WriteExternalException;
 import com.intellij.util.xmlb.XmlSerializerUtil;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nls;
-import org.textmapper.idea.LapgIcons;
 
 import javax.swing.*;
 
-public class LapgFacetConfiguration implements FacetConfiguration, PersistentStateComponent<LapgConfigurationBean> {
+public class LapgFacetConfiguration implements FacetConfiguration, PersistentStateComponent<TmConfigurationBean> {
 
-	private LapgConfigurationBean lapgConfigurationBean = new LapgConfigurationBean();
+	private TmConfigurationBean tmConfigurationBean = new TmConfigurationBean();
 
 	public FacetEditorTab[] createEditorTabs(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
 		return new FacetEditorTab[] { new LapgFacetEditorTab() };
@@ -49,12 +48,12 @@ public class LapgFacetConfiguration implements FacetConfiguration, PersistentSta
 		// ignore
 	}
 
-	public LapgConfigurationBean getState() {
-		return lapgConfigurationBean;
+	public TmConfigurationBean getState() {
+		return tmConfigurationBean;
 	}
 
-	public void loadState(LapgConfigurationBean state) {
-		XmlSerializerUtil.copyBean(state, lapgConfigurationBean);
+	public void loadState(TmConfigurationBean state) {
+		XmlSerializerUtil.copyBean(state, tmConfigurationBean);
 	}
 
 	public class LapgFacetEditorTab extends FacetEditorTab {
@@ -74,19 +73,19 @@ public class LapgFacetConfiguration implements FacetConfiguration, PersistentSta
 		}
 
 		public boolean isModified() {
-			return form != null && form.isModified(lapgConfigurationBean);
+			return form != null && form.isModified(tmConfigurationBean);
 		}
 
 		@Override
 		public void apply() throws ConfigurationException {
 			if(form != null) {
-				form.getData(lapgConfigurationBean);
+				form.getData(tmConfigurationBean);
 			}
 		}
 
 		public void reset() {
 			if(form != null) {
-				form.setData(lapgConfigurationBean);
+				form.setData(tmConfigurationBean);
 			}
 		}
 
