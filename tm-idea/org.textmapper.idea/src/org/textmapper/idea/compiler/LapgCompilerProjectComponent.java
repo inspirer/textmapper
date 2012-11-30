@@ -16,6 +16,8 @@
  */
 package org.textmapper.idea.compiler;
 
+import com.intellij.compiler.impl.CompilerUtil;
+import com.intellij.compiler.server.CustomBuilderMessageHandler;
 import com.intellij.openapi.compiler.CompilerManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.fileTypes.FileType;
@@ -24,8 +26,12 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.LapgFileType;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Gryaznov Evgeny, 3/13/11
@@ -40,10 +46,12 @@ public class LapgCompilerProjectComponent implements ProjectComponent {
 
 	public void projectOpened() {
 		CompilerManager compilerManager = CompilerManager.getInstance(project);
+		project.getMessageBus().connect().subscribe(CustomBuilderMessageHandler.TOPIC, new RefreshJavaCompilationStatusListener());
+
 		compilerManager.addCompilableFileType(LapgFileType.LAPG_FILE_TYPE);
 
 		for (LapgCompiler compiler : compilerManager.getCompilers(LapgCompiler.class)) {
-		  compilerManager.removeCompiler(compiler);
+			compilerManager.removeCompiler(compiler);
 		}
 		HashSet<FileType> inputSet = new HashSet<FileType>(Arrays.asList(LapgFileType.LAPG_FILE_TYPE));
 		HashSet<FileType> outputSet = new HashSet<FileType>(Arrays.asList(StdFileTypes.JAVA));
@@ -62,5 +70,31 @@ public class LapgCompilerProjectComponent implements ProjectComponent {
 	@NotNull
 	public String getComponentName() {
 		return "Lapg Compiler Component";
+	}
+
+	private class RefreshJavaCompilationStatusListener implements CustomBuilderMessageHandler {
+
+		private final AtomicReference<List<File>>
+				myAffectedFiles = new AtomicReference<List<File>>(new ArrayList<File>());
+
+		@Override
+		public void messageReceived(String builderId, String messageType, String messageText) {
+			if (!TmCompilerUtil.BUILDER_ID.equals(builderId)) {
+				return;
+			}
+
+			if (messageType.equals(TmBuilderMessages.MSG_CHANGED)) {
+				myAffectedFiles.get().add(new File(messageText));
+
+			} else if (messageType.equals(TmBuilderMessages.MSG_REFRESH)) {
+				final List<File> generatedJava = myAffectedFiles.getAndSet(new ArrayList<File>());
+				if (project.isDisposed() || generatedJava.isEmpty()) {
+					return;
+				}
+
+				// refresh affected files
+				CompilerUtil.refreshIOFiles(generatedJava);
+			}
+		}
 	}
 }

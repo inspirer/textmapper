@@ -4,7 +4,7 @@
     <facet type="Lapg" name="Lapg">
       <configuration>
         <option name="excludeDefaultTemplates" value="true" />
-        <option name="templatesFolder" value="$MODULE_DIR$/../textmapper/src/org/textmapper/lapg/gen/templates" />
+        <option name="templatesFolder" value="$MODULE_DIR$/../textmapper/src/org/textmapper/tool/gen/templates" />
       </configuration>
     </facet>
   </component>

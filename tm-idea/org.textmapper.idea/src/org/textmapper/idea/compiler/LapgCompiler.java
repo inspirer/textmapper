@@ -32,25 +32,24 @@ import com.intellij.openapi.roots.ui.configuration.ModulesConfigurator;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Computable;
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.Chunk;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.facet.TmConfigurationBean;
-import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.ParserConflict;
-import org.textmapper.lapg.api.ProcessingStatus;
-import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.idea.LapgBundle;
 import org.textmapper.idea.facet.LapgFacet;
 import org.textmapper.idea.facet.LapgFacetType;
+import org.textmapper.idea.facet.TmConfigurationBean;
 import org.textmapper.idea.lang.syntax.LapgFileType;
 import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.ParserConflict;
+import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.TextSourceElement;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -102,8 +101,7 @@ public class LapgCompiler implements TranslatingCompiler {
 		final Map<String, Collection<OutputItem>> outputs = new HashMap<String, Collection<OutputItem>>();
 		for (VirtualFile file : files) {
 			context.getProgressIndicator().checkCanceled();
-			context.getProgressIndicator().setText("Compiling " + file.getName());
-			compileFile(context, file, sink, filesToRefresh, outputs);
+			compileFile(context, file, sink, filesToRefresh, outputs, facet.getConfiguration().getState());
 		}
 		CompilerUtil.refreshIOFiles(filesToRefresh);
 		for (Map.Entry<String, Collection<OutputItem>> entry : outputs.entrySet()) {
@@ -111,47 +109,47 @@ public class LapgCompiler implements TranslatingCompiler {
 		}
 	}
 
-	private void compileFile(CompileContext context, VirtualFile file, OutputSink sink, List<File> filesToRefresh, Map<String, Collection<OutputItem>> outputs) {
-		VirtualFile outputDir = file.getParent();
+	private void compileFile(final CompileContext context, final VirtualFile sourceFile, OutputSink sink, final List<File> filesToRefresh, final Map<String, Collection<OutputItem>> outputs, TmConfigurationBean options) {
+		VirtualFile outputDir = sourceFile.getParent();
 		if (!outputDir.isDirectory() || !outputDir.isWritable()) {
 			// TODO ...
 			return;
 		}
 
-		IdeaProcessingStatus status = new IdeaProcessingStatus(file, context);
-		LapgSyntaxBuilder builder = new LapgSyntaxBuilder(file, status);
-		boolean success = builder.generate() && !status.hasErrors();
-
-		if (success) {
-			String outPath = outputDir.getPath();
-			Map<String, String> generatedContent = builder.getGeneratedContent();
-			try {
-				context.getProgressIndicator().setText("Saving " + file.getName());
-
-				for (Entry<String, String> entry : generatedContent.entrySet()) {
-					final File destFile = new File(outPath, entry.getKey());
-					LapgSyntaxBuilder.writeFile(destFile, entry.getValue());
-					filesToRefresh.add(destFile);
-
-					// report file
-					String outputDirPath = destFile.getParent();
-					Collection<OutputItem> collection = outputs.get(outputDirPath);
-					if (collection == null) {
-						collection = new ArrayList<OutputItem>();
-						outputs.put(outputDirPath, collection);
+		boolean success = TmCompilerUtil.compileFile(
+				new TmCompilerTask(
+						VfsUtil.virtualToIoFile(sourceFile),
+						VfsUtil.virtualToIoFile(outputDir),
+						options.verbose, options.excludeDefaultTemplates, options.templatesFolder),
+				new TmCompilerContext() {
+					@Override
+					public TmProcessingStatus createProcessingStatus() {
+						return new IdeaProcessingStatus(sourceFile, context);
 					}
-					collection.add(new OutputItemImpl(FileUtil.toSystemIndependentName(destFile.getPath()), file));
-				}
 
+					@Override
+					public void fileCreated(File newFile, boolean isUnchanged) {
+						filesToRefresh.add(newFile);
 
-			} catch (IOException e) {
-				context.addMessage(CompilerMessageCategory.ERROR, e.getMessage(), null, 0, 0);
-				success = false;
-			}
-		}
+						// report file
+						String outputDirPath = newFile.getParent();
+						Collection<OutputItem> collection = outputs.get(outputDirPath);
+						if (collection == null) {
+							collection = new ArrayList<OutputItem>();
+							outputs.put(outputDirPath, collection);
+						}
+						collection.add(new OutputItemImpl(FileUtil.toSystemIndependentName(newFile.getPath()), sourceFile));
+					}
+
+					@Override
+					public void reportProgress(String message) {
+						context.getProgressIndicator().setText(message);
+					}
+				});
+
 		if (!success) {
 			// recompile later
-			sink.add(outputDir.getPath(), Collections.<OutputItem>emptyList(), new VirtualFile[]{file});
+			sink.add(outputDir.getPath(), Collections.<OutputItem>emptyList(), new VirtualFile[]{sourceFile});
 		}
 	}
 
@@ -178,7 +176,7 @@ public class LapgCompiler implements TranslatingCompiler {
 		return true;
 	}
 
-	private static class IdeaProcessingStatus implements ProcessingStatus {
+	private static class IdeaProcessingStatus implements TmProcessingStatus {
 		private String fileUrl;
 		private CompileContext compileContext;
 		private boolean hasErrors = false;
