@@ -12,7 +12,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.textmapper.lapg,
+ org.textmapper,
  org.textmapper.common.ui
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.textmapper.lapg.ui.LapgUIActivator

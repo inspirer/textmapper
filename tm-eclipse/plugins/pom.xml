@@ -17,7 +17,7 @@
     <modules>
         <!-- plugins -->
         <module>org.textmapper.common.ui</module>
-        <module>org.textmapper.lapg</module>
+        <module>org.textmapper</module>
         <module>org.textmapper.lapg.ui</module>
     </modules>
 

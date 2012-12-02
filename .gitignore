@@ -8,7 +8,7 @@ dictionaries
 /tm-idea/org.textmapper.idea/lib/jps/*.jar
 /tm-idea/availables.xml
 /tm-idea/caches
-/tm-eclipse/plugins/org.textmapper.lapg/textmapper*
+/tm-eclipse/plugins/org.textmapper/textmapper*
 target
 bin
 classes

@@ -132,8 +132,8 @@
 		<copy file="build/textmapper-src.jar" tofile="libs/textmapper-${suffix}-src.jar"/>
 		<copy file="build/textmapper.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}.jar"/>
 		<copy file="build/textmapper-src.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}-src.jar"/>
-		<copy file="build/textmapper.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper.jar"/>
-		<copy file="build/textmapper-src.jar" tofile="../tm-eclipse/plugins/org.textmapper.lapg/textmapper-src.jar"/>
+		<copy file="build/textmapper.jar" tofile="../tm-eclipse/plugins/org.textmapper/textmapper.jar"/>
+		<copy file="build/textmapper-src.jar" tofile="../tm-eclipse/plugins/org.textmapper/textmapper-src.jar"/>
 	</target>
 
 	<!-- TODO Lapg task

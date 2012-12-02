@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="Lexer and Parser Generator for Eclipse" url="http://lapg-ui.googlecode.com/hg/update-site">
-      Update site for Lapg integration plug-ins
+   <description name="Textmapper for Eclipse" url="http://textmapper.org/update-site">
+      Update site for Textmapper support plug-ins
    </description>
-   <feature url="features/org.textmapper.lapg.feature_0.9.1.qualifier.jar" id="org.textmapper.lapg" version="0.9.1.qualifier">
-      <category name="Lapg Integration"/>
+   <feature url="features/org.textmapper.feature_0.9.1.qualifier.jar" id="org.textmapper" version="0.9.1.qualifier">
+      <category name="Textmapper Integration"/>
    </feature>
-   <category-def name="Lapg Integration" label="Lapg Integration"/>
+   <category-def name="Textmapper Integration" label="Textmapper Integration"/>
 </site>

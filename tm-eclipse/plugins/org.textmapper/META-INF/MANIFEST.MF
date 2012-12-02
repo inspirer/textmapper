@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.textmapper.lapg
+Bundle-SymbolicName: org.textmapper
 Bundle-Version: 0.9.1.qualifier
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
