@@ -16,12 +16,13 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Collection;
 
 public interface RuleBuilder {
 
-	SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+	RhsSymbol addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
 
 	void setPriority(Terminal sym);
 

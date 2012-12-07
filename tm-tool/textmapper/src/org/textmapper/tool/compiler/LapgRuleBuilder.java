@@ -18,6 +18,7 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.RuleBuilder;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.*;
 
@@ -55,7 +56,7 @@ public class LapgRuleBuilder {
 				builder.setPriority(prio);
 			}
 			for (RulePart part : parts) {
-				SymbolRef symbolRef = builder.addPart(part.alias, part.sym, part.unwanted, part.origin);
+				RhsSymbol symbolRef = builder.addPart(part.alias, part.sym, part.unwanted, part.origin);
 				annotationsMap.put(symbolRef, part.annotations);
 			}
 			result[index++] = builder.create();

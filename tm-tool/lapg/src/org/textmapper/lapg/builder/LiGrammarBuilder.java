@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.RuleBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.*;
 
@@ -167,7 +168,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		return new LiRuleBuilder(this, left, alias, origin);
 	}
 
-	Rule addRule(String alias, Nonterminal left, SymbolRef[] right, Symbol priority, SourceElement origin) {
+	Rule addRule(String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
 		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
 		rules.add(rule);
 		return rule;
@@ -201,10 +202,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
 			terminals++;
 		}
-		int grammarSymbols = terminals;
-		while (grammarSymbols < symbolArr.length && symbolArr[grammarSymbols].getKind() != Symbol.KIND_LAYOUT) {
-			grammarSymbols++;
-		}
+		int grammarSymbols = symbolArr.length;
 
 		LiLexicalRule[] lexicalRulesArr = lexicalRules.toArray(new LiLexicalRule[lexicalRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);

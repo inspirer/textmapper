@@ -22,5 +22,5 @@ public interface RhsSequence extends RhsPart {
 
 	RhsPart[] getParts();
 
-	boolean isInParentheses();
+	boolean isParenthesized();
 }

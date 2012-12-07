@@ -16,15 +16,16 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
-class LiSymbolRef implements SymbolRef, DerivedSourceElement {
+class LiRhsSymbol implements RhsSymbol, DerivedSourceElement {
 
 	private final Symbol target;
 	private final String alias;
 	private final NegativeLookahead negLA;
 	private final SourceElement origin;
 
-	public LiSymbolRef(Symbol target, String alias, NegativeLookahead negLA, SourceElement origin) {
+	public LiRhsSymbol(Symbol target, String alias, NegativeLookahead negLA, SourceElement origin) {
 		this.target = target;
 		this.alias = alias;
 		this.negLA = negLA;

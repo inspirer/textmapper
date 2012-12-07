@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.RuleBuilder;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +33,7 @@ class LiRuleBuilder implements RuleBuilder {
 	private final String alias;
 	private final SourceElement origin;
 	private Symbol priority;
-	private List<SymbolRef> right = new ArrayList<SymbolRef>();
+	private List<RhsSymbol> right = new ArrayList<RhsSymbol>();
 
 	LiRuleBuilder(LiGrammarBuilder parent, Nonterminal left, String alias, SourceElement origin) {
 		this.parent = parent;
@@ -42,7 +43,7 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
+	public RhsSymbol addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
 		parent.check(sym);
 		NegativeLookahead nla = null;
 		if (unwanted != null && unwanted.size() > 0) {
@@ -51,21 +52,21 @@ class LiRuleBuilder implements RuleBuilder {
 			}
 			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
 		}
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, origin);
+		LiRhsSymbol ref = new LiRhsSymbol(sym, alias, nla, origin);
 		right.add(ref);
 		return ref;
 	}
 
 	@Override
 	public Rule create() {
-		return parent.addRule(alias, left, right.toArray(new SymbolRef[right.size()]), priority, origin);
+		return parent.addRule(alias, left, right.toArray(new RhsSymbol[right.size()]), priority, origin);
 	}
 
 	@Override
 	public RuleBuilder copy() {
 		LiRuleBuilder res = new LiRuleBuilder(parent, left, alias, origin);
 		res.priority = priority;
-		for (SymbolRef r : right) {
+		for (RhsSymbol r : right) {
 			res.right.add(r);
 		}
 		return res;

@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public interface RegexList extends RegexPart {
 
-	boolean isInParentheses();
+	boolean isParenthesized();
 
 	Collection<RegexPart> getElements();
 }
