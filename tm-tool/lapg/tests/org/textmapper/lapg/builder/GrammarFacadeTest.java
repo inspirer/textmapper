@@ -46,7 +46,7 @@ public class GrammarFacadeTest {
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
 		RuleBuilder rule = builder.rule(null, input, null);
-		rule.addPart(null, id, null, null);
+		rule.addPart(rule.symbol(null, id, null, null));
 		rule.create();
 
 		Grammar grammar = builder.create();
@@ -213,7 +213,7 @@ public class GrammarFacadeTest {
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
 		RuleBuilder rule = builder.rule(null, input, null);
-		rule.addPart(null, id, null, null);
+		rule.addPart(rule.symbol(null, id, null, null));
 		rule.setPriority(id);
 		rule.create();
 

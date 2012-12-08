@@ -51,15 +51,17 @@ public class LapgRuleBuilder {
 		Rule[] result = new Rule[rules.size()];
 		int index = 0;
 		for (RulePart[] parts : rules) {
-			RuleBuilder builder = original.copy();
+			RuleBuilder builder = original.copy(); // TODO
 			if (prio != null) {
 				builder.setPriority(prio);
 			}
 			for (RulePart part : parts) {
-				RhsSymbol symbolRef = builder.addPart(part.alias, part.sym, part.unwanted, part.origin);
+				RhsSymbol symbolRef = builder.symbol(part.alias, part.sym, part.unwanted, part.origin);
+				builder.addPart(symbolRef);
 				annotationsMap.put(symbolRef, part.annotations);
 			}
-			result[index++] = builder.create();
+			// TODO
+			result[index++] = builder.create().iterator().next();
 		}
 		return result;
 	}

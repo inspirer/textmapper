@@ -226,7 +226,7 @@ public class LapgResolver {
 							sym.getType(), Symbol.KIND_NONTERM, null);
 					RuleBuilder rb = builder.rule(null, symopt, id);
 					rb.create();
-					rb.addPart(null, sym, null, id);
+					rb.addPart(rb.symbol(null, sym, null, id));
 					rb.create();
 					return symopt;
 				}
@@ -550,8 +550,10 @@ public class LapgResolver {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
-			Rule actionRule = builder.rule(null, codeSym, astCode).create();
-			codeMap.put(actionRule, astCode);
+			Collection<Rule> actionRules = builder.rule(null, codeSym, astCode).create();
+			for (Rule actionRule : actionRules) {
+				codeMap.put(actionRule, astCode);
+			}
 			return new RulePart(null, codeSym, null, null, astCode);
 
 		} else if (part instanceof AstUnorderedRulePart) {
@@ -733,7 +735,7 @@ public class LapgResolver {
 			Nonterminal symopt = createDerived(listSymbol, "_opt", origin);
 			RuleBuilder b = builder.rule(null, symopt, origin);
 			b.create();
-			b.addPart(null, listSymbol, null, origin);
+			b.addPart(b.symbol(null, listSymbol, null, origin));
 			b.create();
 			listSymbol = symopt;
 		}

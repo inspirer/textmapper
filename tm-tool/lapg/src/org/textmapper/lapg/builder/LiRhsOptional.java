@@ -15,46 +15,43 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsOptional;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
-class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
+/**
+ * evgeny, 12/5/12
+ */
+class LiRhsOptional extends LiRhsPart implements RhsOptional {
 
-	private final Symbol target;
-	private final String alias;
-	private final NegativeLookahead negLA;
+	private final LiRhsPart inner;
 
-	public LiRhsSymbol(Symbol target, String alias, NegativeLookahead negLA, SourceElement origin) {
+	public LiRhsOptional(LiRhsPart inner, SourceElement origin) {
 		super(origin);
-		this.target = target;
-		this.alias = alias;
-		this.negLA = negLA;
-
+		this.inner = inner;
 	}
 
 	@Override
-	public String getAlias() {
-		return alias;
-	}
-
-	@Override
-	public NegativeLookahead getNegativeLA() {
-		return negLA;
-	}
-
-	@Override
-	public Symbol getTarget() {
-		return target;
+	public RhsPart getPart() {
+		return inner;
 	}
 
 	@Override
 	List<RhsSymbol[]> expand() {
-		return Collections.singletonList(new RhsSymbol[]{this});
+		List<RhsSymbol[]> result = inner.expand();
+		for (RhsSymbol[] p : result) {
+			if (p.length == 0) {
+				return result;
+			}
+		}
+		if (result.size() < 2) {
+			result = new ArrayList<RhsSymbol[]>(result);
+		}
+		result.add(new RhsSymbol[0]);
+		return result;
 	}
 }

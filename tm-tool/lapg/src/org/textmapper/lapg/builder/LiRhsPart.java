@@ -16,45 +16,27 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
-import java.util.Collections;
 import java.util.List;
 
-class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
+/**
+ * evgeny, 12/5/12
+ */
+abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 
-	private final Symbol target;
-	private final String alias;
-	private final NegativeLookahead negLA;
+	private final SourceElement origin;
 
-	public LiRhsSymbol(Symbol target, String alias, NegativeLookahead negLA, SourceElement origin) {
-		super(origin);
-		this.target = target;
-		this.alias = alias;
-		this.negLA = negLA;
-
+	protected LiRhsPart(SourceElement origin) {
+		this.origin = origin;
 	}
 
-	@Override
-	public String getAlias() {
-		return alias;
-	}
+	abstract List<RhsSymbol[]> expand();
 
 	@Override
-	public NegativeLookahead getNegativeLA() {
-		return negLA;
-	}
-
-	@Override
-	public Symbol getTarget() {
-		return target;
-	}
-
-	@Override
-	List<RhsSymbol[]> expand() {
-		return Collections.singletonList(new RhsSymbol[]{this});
+	public SourceElement getOrigin() {
+		return origin;
 	}
 }

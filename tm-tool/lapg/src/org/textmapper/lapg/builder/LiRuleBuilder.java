@@ -17,11 +17,9 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.RuleBuilder;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * evgeny, 14.12.11
@@ -33,7 +31,8 @@ class LiRuleBuilder implements RuleBuilder {
 	private final String alias;
 	private final SourceElement origin;
 	private Symbol priority;
-	private List<RhsSymbol> right = new ArrayList<RhsSymbol>();
+	private List<LiRhsPart> parts = new ArrayList<LiRhsPart>();
+	private Set<RhsPart> mine = new HashSet<RhsPart>();
 
 	LiRuleBuilder(LiGrammarBuilder parent, Nonterminal left, String alias, SourceElement origin) {
 		this.parent = parent;
@@ -43,7 +42,7 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public RhsSymbol addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
+	public RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
 		parent.check(sym);
 		NegativeLookahead nla = null;
 		if (unwanted != null && unwanted.size() > 0) {
@@ -52,32 +51,89 @@ class LiRuleBuilder implements RuleBuilder {
 			}
 			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
 		}
-		LiRhsSymbol ref = new LiRhsSymbol(sym, alias, nla, origin);
-		right.add(ref);
-		return ref;
+		LiRhsSymbol result = new LiRhsSymbol(sym, alias, nla, origin);
+		mine.add(result);
+		return result;
 	}
 
 	@Override
-	public Rule create() {
-		return parent.addRule(alias, left, right.toArray(new RhsSymbol[right.size()]), priority, origin);
-	}
-
-	@Override
-	public RuleBuilder copy() {
-		LiRuleBuilder res = new LiRuleBuilder(parent, left, alias, origin);
-		res.priority = priority;
-		for (RhsSymbol r : right) {
-			res.right.add(r);
+	public RhsChoice choice(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
 		}
-		return res;
+		LiRhsChoice choice = new LiRhsChoice(liparts, origin);
+		mine.add(choice);
+		return choice;
+	}
+
+	@Override
+	public RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
+		}
+		LiRhsSequence seq = new LiRhsSequence(liparts, origin);
+		mine.add(seq);
+		return seq;
+	}
+
+	@Override
+	public RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
+		}
+		LiRhsUnordered unordered = new LiRhsUnordered(liparts, origin);
+		mine.add(unordered);
+		return unordered;
+	}
+
+	@Override
+	public RhsOptional optional(RhsPart inner, SourceElement origin) {
+		check(inner);
+		LiRhsOptional opt = new LiRhsOptional((LiRhsPart) inner, origin);
+		mine.add(opt);
+		return opt;
+	}
+
+	@Override
+	public void addPart(RhsPart part) {
+		check(part);
+		parts.add((LiRhsPart) part);
+	}
+
+	private void check(RhsPart part) {
+		if (part == null) {
+			throw new NullPointerException();
+		}
+		if (!mine.contains(part)) {
+			throw new IllegalArgumentException("unknown right-hand side entity passed");
+		}
 	}
 
 	@Override
 	public void setPriority(Terminal sym) {
 		if (priority != null) {
-			throw new IllegalStateException("redeclaring rule priority");
+			throw new IllegalStateException("re-declaring rule priority");
 		}
 		parent.check(sym);
 		priority = sym;
+	}
+
+	@Override
+	public Collection<Rule> create() {
+		List<RhsSymbol[]> rules = LiRhsSequence.expandList(parts.toArray(new LiRhsPart[parts.size()]));
+		List<Rule> result = new ArrayList<Rule>(rules.size());
+		for (RhsSymbol[] rhs : rules) {
+			result.add(parent.addRule(alias, left, rhs, priority, origin));
+		}
+		return result;
 	}
 }

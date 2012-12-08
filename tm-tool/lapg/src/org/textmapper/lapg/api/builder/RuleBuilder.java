@@ -16,17 +16,25 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.Collection;
 
 public interface RuleBuilder {
 
-	RhsSymbol addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+	RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+
+	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsOptional optional(RhsPart inner, SourceElement origin);
+
+	void addPart(RhsPart part);
 
 	void setPriority(Terminal sym);
 
-	RuleBuilder copy();
-
-	Rule create();
+	Collection<Rule> create();
 }

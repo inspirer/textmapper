@@ -21,6 +21,4 @@ package org.textmapper.lapg.api.rule;
 public interface RhsSequence extends RhsPart {
 
 	RhsPart[] getParts();
-
-	boolean isParenthesized();
 }
