@@ -28,6 +28,7 @@ import java.util.List;
 abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 
 	private final SourceElement origin;
+	private Object token;
 
 	protected LiRhsPart(SourceElement origin) {
 		this.origin = origin;
@@ -38,5 +39,77 @@ abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	protected void attach(Object token) {
+		if (this.token == null) {
+			this.token = token;
+		} else if (this.token != token) {
+			throw new IllegalStateException("passed right-hand side entity is already used in another rule");
+		}
+	}
+
+	public abstract boolean structuralEquals(LiRhsPart o);
+
+	public abstract int structuralHashCode();
+
+	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {
+		if (left == right) {
+			return true;
+		}
+		if (left == null || right == null) {
+			return false;
+		}
+
+		int length = left.length;
+		if (right.length != length) {
+			return false;
+		}
+
+		for (int i = 0; i < length; i++) {
+			LiRhsPart l = left[i];
+			LiRhsPart r = right[i];
+			if (l == null ? r != null : !l.structuralEquals(r))
+				return false;
+		}
+
+		return true;
+	}
+
+	public static int structuralHashCode(LiRhsPart a[]) {
+		if (a == null) {
+			return 0;
+		}
+		int result = 1;
+		for (LiRhsPart element : a) {
+			result = 31 * result + (element == null ? 0 : element.structuralHashCode());
+		}
+		return result;
+	}
+
+	@Override
+	public Object structuralNode() {
+		return new StructuralObject(this);
+	}
+
+	private static class StructuralObject {
+		private final LiRhsPart part;
+
+		private StructuralObject(LiRhsPart part) {
+			this.part = part;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			StructuralObject that = (StructuralObject) o;
+			return part.structuralEquals(that.part);
+		}
+
+		@Override
+		public int hashCode() {
+			return part.structuralHashCode();
+		}
 	}
 }

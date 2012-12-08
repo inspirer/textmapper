@@ -21,6 +21,7 @@ import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -47,5 +48,27 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 			result.addAll(part.expand());
 		}
 		return result;
+	}
+
+	@Override
+	protected void attach(Object token) {
+		super.attach(token);
+		for (LiRhsPart part : parts) {
+			part.attach(token);
+		}
+	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LiRhsChoice that = (LiRhsChoice) o;
+		return structuralEquals(parts, that.parts);
+
+	}
+
+	@Override
+	public int structuralHashCode() {
+		return structuralHashCode(parts);
 	}
 }

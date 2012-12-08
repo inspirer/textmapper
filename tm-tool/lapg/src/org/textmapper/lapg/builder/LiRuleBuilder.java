@@ -17,22 +17,25 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.RuleBuilder;
-import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * evgeny, 14.12.11
  */
 class LiRuleBuilder implements RuleBuilder {
 
-	private LiGrammarBuilder parent;
+	private final LiGrammarBuilder parent;
+	private final Object token = new Object();
 	private final Nonterminal left;
 	private final String alias;
 	private final SourceElement origin;
 	private Symbol priority;
 	private List<LiRhsPart> parts = new ArrayList<LiRhsPart>();
-	private Set<RhsPart> mine = new HashSet<RhsPart>();
 
 	LiRuleBuilder(LiGrammarBuilder parent, Nonterminal left, String alias, SourceElement origin) {
 		this.parent = parent;
@@ -42,80 +45,10 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
-		parent.check(sym);
-		NegativeLookahead nla = null;
-		if (unwanted != null && unwanted.size() > 0) {
-			for (Terminal u : unwanted) {
-				parent.check(u);
-			}
-			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
-		}
-		LiRhsSymbol result = new LiRhsSymbol(sym, alias, nla, origin);
-		mine.add(result);
-		return result;
-	}
-
-	@Override
-	public RhsChoice choice(Collection<RhsPart> parts, SourceElement origin) {
-		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
-		int index = 0;
-		for (RhsPart p : parts) {
-			check(p);
-			liparts[index++] = (LiRhsPart) p;
-		}
-		LiRhsChoice choice = new LiRhsChoice(liparts, origin);
-		mine.add(choice);
-		return choice;
-	}
-
-	@Override
-	public RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin) {
-		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
-		int index = 0;
-		for (RhsPart p : parts) {
-			check(p);
-			liparts[index++] = (LiRhsPart) p;
-		}
-		LiRhsSequence seq = new LiRhsSequence(liparts, origin);
-		mine.add(seq);
-		return seq;
-	}
-
-	@Override
-	public RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin) {
-		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
-		int index = 0;
-		for (RhsPart p : parts) {
-			check(p);
-			liparts[index++] = (LiRhsPart) p;
-		}
-		LiRhsUnordered unordered = new LiRhsUnordered(liparts, origin);
-		mine.add(unordered);
-		return unordered;
-	}
-
-	@Override
-	public RhsOptional optional(RhsPart inner, SourceElement origin) {
-		check(inner);
-		LiRhsOptional opt = new LiRhsOptional((LiRhsPart) inner, origin);
-		mine.add(opt);
-		return opt;
-	}
-
-	@Override
 	public void addPart(RhsPart part) {
-		check(part);
+		parent.check(part);
+		((LiRhsPart) part).attach(token);
 		parts.add((LiRhsPart) part);
-	}
-
-	private void check(RhsPart part) {
-		if (part == null) {
-			throw new NullPointerException();
-		}
-		if (!mine.contains(part)) {
-			throw new IllegalArgumentException("unknown right-hand side entity passed");
-		}
 	}
 
 	@Override

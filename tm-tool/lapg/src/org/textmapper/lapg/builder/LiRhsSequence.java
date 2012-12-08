@@ -29,6 +29,8 @@ import java.util.List;
  */
 class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
+	private static final List<RhsSymbol[]> ONE = Collections.singletonList(RhsSymbol.EMPTY_LIST);
+
 	private final LiRhsPart[] parts;
 
 	LiRhsSequence(LiRhsPart[] parts, SourceElement origin) {
@@ -46,6 +48,27 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		return expandList(parts);
 	}
 
+	@Override
+	protected void attach(Object token) {
+		super.attach(token);
+		for (LiRhsPart part : parts) {
+			part.attach(token);
+		}
+	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LiRhsSequence that = (LiRhsSequence) o;
+		return structuralEquals(parts, that.parts);
+	}
+
+	@Override
+	public int structuralHashCode() {
+		return structuralHashCode(parts);
+	}
+
 	static List<RhsSymbol[]> expandList(LiRhsPart[] list) {
 		boolean simplePartsOnly = true;
 		for (RhsPart part : list) {
@@ -60,7 +83,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 			return Collections.singletonList(parts);
 
 		} else {
-			List<RhsSymbol[]> result = Collections.singletonList(new RhsSymbol[0]);
+			List<RhsSymbol[]> result = ONE;
 			for (LiRhsPart part : list) {
 				List<RhsSymbol[]> val = part.expand();
 				result = cartesianProduct(result, val);
@@ -70,6 +93,9 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	private static List<RhsSymbol[]> cartesianProduct(List<RhsSymbol[]> left, List<RhsSymbol[]> right) {
+		if (left == ONE) {
+			return right;
+		}
 		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>(left.size() * right.size());
 		for (RhsSymbol[] leftElement : left) {
 			for (RhsSymbol[] rightElement : right) {

@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.builder;
+package org.textmapper.tool.compiler;
 
-import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
-import java.util.Collection;
+/**
+ * evgeny, 12/7/12
+ */
+public class RhsUtil {
 
-public interface RuleBuilder {
-
-	void addPart(RhsPart part);
-
-	void setPriority(Terminal sym);
-
-	Collection<Rule> create();
+	public static Symbol getRepresentative(RhsPart part) {
+		if (part instanceof RhsSymbol) {
+			return ((RhsSymbol) part).getTarget();
+		}
+		if (part instanceof RhsSequence) {
+			RhsSequence seq = (RhsSequence) part;
+			return seq.getParts().length == 1 ? getRepresentative(seq.getParts()[0]) : null;
+		}
+		return null;
+	}
 }

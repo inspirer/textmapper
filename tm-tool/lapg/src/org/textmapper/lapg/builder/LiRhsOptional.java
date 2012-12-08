@@ -51,7 +51,27 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 		if (result.size() < 2) {
 			result = new ArrayList<RhsSymbol[]>(result);
 		}
-		result.add(new RhsSymbol[0]);
+		result.add(RhsSymbol.EMPTY_LIST);
 		return result;
+	}
+
+	@Override
+	protected void attach(Object token) {
+		super.attach(token);
+		inner.attach(token);
+	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LiRhsOptional that = (LiRhsOptional) o;
+		return inner.structuralEquals(that.inner);
+
+	}
+
+	@Override
+	public int structuralHashCode() {
+		return inner.structuralHashCode();
 	}
 }

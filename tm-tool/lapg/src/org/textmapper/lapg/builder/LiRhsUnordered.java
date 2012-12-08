@@ -21,6 +21,7 @@ import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.api.rule.RhsUnordered;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -55,6 +56,28 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 			result.addAll(LiRhsSequence.expandList(temp));
 		} while (permute(permutation));
 		return result;
+	}
+
+	@Override
+	protected void attach(Object token) {
+		super.attach(token);
+		for (LiRhsPart part : parts) {
+			part.attach(token);
+		}
+	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LiRhsUnordered that = (LiRhsUnordered) o;
+		return structuralEquals(parts, that.parts);
+
+	}
+
+	@Override
+	public int structuralHashCode() {
+		return structuralHashCode(parts);
 	}
 
 	static boolean permute(int[] a) {

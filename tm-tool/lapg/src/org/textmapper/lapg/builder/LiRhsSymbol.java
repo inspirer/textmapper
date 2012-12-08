@@ -57,4 +57,23 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	List<RhsSymbol[]> expand() {
 		return Collections.singletonList(new RhsSymbol[]{this});
 	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiRhsSymbol that = (LiRhsSymbol) o;
+		if (alias != null ? !alias.equals(that.alias) : that.alias != null) return false;
+		if (negLA != null ? !negLA.equals(that.negLA) : that.negLA != null) return false;
+		return target.equals(that.target);
+	}
+
+	@Override
+	public int structuralHashCode() {
+		int result = target.hashCode();
+		result = 31 * result + (alias != null ? alias.hashCode() : 0);
+		result = 31 * result + (negLA != null ? negLA.hashCode() : 0);
+		return result;
+	}
 }

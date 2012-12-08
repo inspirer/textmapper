@@ -17,6 +17,7 @@ package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.Collection;
 
@@ -39,6 +40,16 @@ public interface GrammarBuilder {
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
 
 	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
+
+	RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+
+	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsOptional optional(RhsPart inner, SourceElement origin);
 
 	RuleBuilder rule(String alias, Nonterminal left, SourceElement origin);
 
