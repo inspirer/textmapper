@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class BootstrapTest {
 
 	@Test
-	public void testLapgS() {
+	public void testLapgTm() {
 		bootstrap("src/org/textmapper/tool/parser", "lapg.tm", new String[0], new String[]{
 				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 1);
 	}
@@ -49,13 +49,13 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testRegexS() {
+	public void testRegexTm() {
 		bootstrap("../lapg/src/org/textmapper/lapg/regex", "regex.tm", new String[0], new String[]{
 				"RegexDefParser.java", "RegexDefLexer.java", "RegexDefTree.java"}, 1);
 	}
 
 	@Test
-	public void testTypesS() {
+	public void testTypesTm() {
 		bootstrap("../templates/src/org/textmapper/templates/types", "types.tm", new String[0], new String[]{
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
@@ -65,13 +65,19 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testTemplatesS() {
+	public void testTemplatesTm() {
 		bootstrap("../templates/src/org/textmapper/templates/ast", "templates.tm", new String[0], new String[]{
 				"TemplatesParser.java", "TemplatesTree.java", "TemplatesLexer.java"}, 18);
 	}
 
 	@Test
-	public void testXmlS() {
+	public void testJavaTm() {
+		bootstrap("../templates/src/org/textmapper/templates/java", "java.tm", new String[0], new String[]{
+				"JavaParser.java", "JavaLexer.java"}, 25);
+	}
+
+	@Test
+	public void testXmlTm() {
 		bootstrap("../templates/src/org/textmapper/xml", "xml.tm", new String[0], new String[]{"XmlParser.java",
 				"XmlTree.java", "XmlLexer.java"}, 0);
 	}
