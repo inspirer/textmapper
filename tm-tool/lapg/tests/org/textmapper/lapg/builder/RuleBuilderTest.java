@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.tool.compiler;
+package org.textmapper.lapg.builder;
 
 import org.junit.Test;
-import org.textmapper.tool.compiler.LapgRuleBuilder;
 
 import java.util.Arrays;
 
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * evgeny, 8/9/12
  */
-public class LapgRuleBuilderTest {
+public class RuleBuilderTest {
 
 	@Test
 	public void testPermute() throws Exception {
@@ -34,7 +33,7 @@ public class LapgRuleBuilderTest {
 		do {
 			sb.append(Arrays.toString(numbers));
 			sb.append("\n");
-		} while (LapgRuleBuilder.permute(numbers));
+		} while (LiRhsUnordered.permute(numbers));
 
 		assertEquals("[0, 1, 2, 3, 4]\n" +
 				"[0, 1, 2, 4, 3]\n" +

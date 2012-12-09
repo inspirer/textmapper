@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.RuleBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.*;
 
@@ -38,6 +39,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final Set<LexerState> statesSet = new LinkedHashSet<LexerState>();
 	private final List<LiRule> rules = new ArrayList<LiRule>();
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
+	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
@@ -167,10 +169,81 @@ class LiGrammarBuilder implements GrammarBuilder {
 		return new LiRuleBuilder(this, left, alias, origin);
 	}
 
-	Rule addRule(String alias, Nonterminal left, SymbolRef[] right, Symbol priority, SourceElement origin) {
+	Rule addRule(String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
 		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
 		rules.add(rule);
 		return rule;
+	}
+
+	@Override
+	public RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
+		check(sym);
+		NegativeLookahead nla = null;
+		if (unwanted != null && unwanted.size() > 0) {
+			for (Terminal u : unwanted) {
+				check(u);
+			}
+			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
+		}
+		LiRhsSymbol result = new LiRhsSymbol(sym, alias, nla, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsChoice choice(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
+		}
+		LiRhsChoice result = new LiRhsChoice(liparts, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
+		}
+		LiRhsSequence result = new LiRhsSequence(liparts, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin) {
+		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
+		int index = 0;
+		for (RhsPart p : parts) {
+			check(p);
+			liparts[index++] = (LiRhsPart) p;
+		}
+		LiRhsUnordered result = new LiRhsUnordered(liparts, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsOptional optional(RhsPart inner, SourceElement origin) {
+		check(inner);
+		LiRhsOptional result = new LiRhsOptional((LiRhsPart) inner, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	void check(RhsPart part) {
+		if (part == null) {
+			throw new NullPointerException();
+		}
+		if (!rhsSet.contains(part)) {
+			throw new IllegalArgumentException("unknown right-hand side element passed");
+		}
 	}
 
 	void check(Symbol sym) {
@@ -201,10 +274,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
 			terminals++;
 		}
-		int grammarSymbols = terminals;
-		while (grammarSymbols < symbolArr.length && symbolArr[grammarSymbols].getKind() != Symbol.KIND_LAYOUT) {
-			grammarSymbols++;
-		}
+		int grammarSymbols = symbolArr.length;
 
 		LiLexicalRule[] lexicalRulesArr = lexicalRules.toArray(new LiLexicalRule[lexicalRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);

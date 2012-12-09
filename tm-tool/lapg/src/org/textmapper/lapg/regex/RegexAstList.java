@@ -55,7 +55,7 @@ class RegexAstList extends RegexAstPart implements RegexList {
 		this.inParentheses = true;
 	}
 
-	public boolean isInParentheses() {
+	public boolean isParenthesized() {
 		return inParentheses;
 	}
 

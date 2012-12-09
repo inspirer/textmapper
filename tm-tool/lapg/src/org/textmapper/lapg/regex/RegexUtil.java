@@ -36,7 +36,7 @@ class RegexUtil {
 	private static final Pattern IDENTIFIER = Pattern.compile("[a-zA-Z_][a-zA-Z_0-9]*|'([^\\n\\\\']|\\\\.)*'");
 
 	static RegexAstPart wrap(RegexAstPart part) {
-		if (!(part instanceof RegexAstList) || ((RegexAstList) part).isInParentheses()) {
+		if (!(part instanceof RegexAstList) || ((RegexAstList) part).isParenthesized()) {
 			part = new RegexAstList(part);
 		}
 		((RegexAstList) part).setInParentheses();
@@ -44,10 +44,10 @@ class RegexUtil {
 	}
 
 	static RegexAstPart createSequence(RegexAstPart left, RegexAstPart right) {
-		if (!(left instanceof RegexAstList) || ((RegexAstList) left).isInParentheses()) {
+		if (!(left instanceof RegexAstList) || ((RegexAstList) left).isParenthesized()) {
 			left = new RegexAstList(left);
 		}
-		if (right instanceof RegexAstList && !(((RegexAstList) right).isInParentheses())) {
+		if (right instanceof RegexAstList && !(((RegexAstList) right).isParenthesized())) {
 			for (RegexPart item : ((RegexAstList) right).getElements()) {
 				((RegexAstList) left).addElement((RegexAstPart) item);
 			}

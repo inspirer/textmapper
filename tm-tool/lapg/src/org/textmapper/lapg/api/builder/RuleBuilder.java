@@ -16,16 +16,15 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.Collection;
 
 public interface RuleBuilder {
 
-	SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+	void addPart(RhsPart part);
 
 	void setPriority(Terminal sym);
 
-	RuleBuilder copy();
-
-	Rule create();
+	Collection<Rule> create();
 }

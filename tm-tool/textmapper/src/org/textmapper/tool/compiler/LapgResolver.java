@@ -23,6 +23,9 @@ import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexMatcher;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.RhsOptional;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
@@ -30,7 +33,6 @@ import org.textmapper.templates.api.types.IType;
 import org.textmapper.templates.types.TiExpressionBuilder;
 import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.templates.types.TypesUtil;
-import org.textmapper.tool.compiler.LapgRuleBuilder.*;
 import org.textmapper.tool.gen.TemplateStaticMethods;
 import org.textmapper.tool.parser.LapgLexer;
 import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
@@ -225,8 +227,9 @@ public class LapgResolver {
 							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), Symbol.KIND_NONTERM, null);
 					RuleBuilder rb = builder.rule(null, symopt, id);
+					// TODO replace next 3 lines with: rb.addPart(builder.optional(builder.symbol(null, sym, null, id), id));
 					rb.create();
-					rb.addPart(null, sym, null, id);
+					rb.addPart(builder.symbol(null, sym, null, id));
 					rb.create();
 					return symopt;
 				}
@@ -507,7 +510,7 @@ public class LapgResolver {
 	}
 
 	private void createRule(Nonterminal left, AstRule right) {
-		LapgRuleBuilder ruleBuilder = new LapgRuleBuilder(builder, right.getAlias(), left, right, annotationsMap);
+		RuleBuilder ruleBuilder = builder.rule(right.getAlias(), left, right);
 		List<AstRulePart> list = right.getList();
 		AstCode lastAction = null;
 		if (list != null) {
@@ -518,9 +521,9 @@ public class LapgResolver {
 			}
 
 			for (AstRulePart part : list) {
-				AbstractRulePart rulePart = convertRulePart(left, part);
+				RhsPart rulePart = convertRulePart(left, part);
 				if (rulePart != null) {
-					ruleBuilder.add(rulePart);
+					ruleBuilder.addPart(rulePart);
 				}
 			}
 		}
@@ -538,7 +541,7 @@ public class LapgResolver {
 
 		// TODO store %shift attribute
 		// TODO check right.getAnnotations().getNegativeLA() == null
-		Rule[] result = ruleBuilder.create();
+		Collection<Rule> result = ruleBuilder.create();
 		Map<String, Object> annotations = convert(right.getAnnotations(), "AnnotateRule");
 		for (Rule r : result) {
 			annotationsMap.put(r, annotations);
@@ -546,13 +549,15 @@ public class LapgResolver {
 		}
 	}
 
-	private AbstractRulePart convertRulePart(Symbol outer, AstRulePart part) {
+	private RhsPart convertRulePart(Symbol outer, AstRulePart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
-			Rule actionRule = builder.rule(null, codeSym, astCode).create();
-			codeMap.put(actionRule, astCode);
-			return new RulePart(null, codeSym, null, null, astCode);
+			Collection<Rule> actionRules = builder.rule(null, codeSym, astCode).create();
+			for (Rule actionRule : actionRules) {
+				codeMap.put(actionRule, astCode);
+			}
+			return builder.symbol(null, codeSym, null, astCode);
 
 		} else if (part instanceof AstUnorderedRulePart) {
 			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
@@ -561,16 +566,15 @@ public class LapgResolver {
 				error(part, "max 5 elements are allowed for permutation");
 				return null;
 			}
-			AbstractRulePart[] resolved = new AbstractRulePart[refParts.size()];
-			int index = 0;
+			List<RhsPart> resolved = new ArrayList<RhsPart>(refParts.size());
 			for (AstRefRulePart refPart : refParts) {
-				AbstractRulePart rulePart = convertRulePart(outer, refPart);
+				RhsPart rulePart = convertRulePart(outer, refPart);
 				if (rulePart == null) {
 					return null;
 				}
-				resolved[index++] = rulePart;
+				resolved.add(rulePart);
 			}
-			return new UnorderedRulePart(resolved);
+			return builder.unordered(resolved, part);
 
 		} else if (!(part instanceof AstRefRulePart)) {
 			error(part, "unknown rule part");
@@ -589,59 +593,57 @@ public class LapgResolver {
 					refPart.getAnnotations() == null) {
 				if (isGroupPart(optionalPart)) {
 					List<AstRulePart> groupPart = getGroupPart(optionalPart);
-					return convertGroup(outer, groupPart, true);
+					return builder.optional(convertGroup(outer, groupPart, optionalPart), refPart.getReference());
 				} else if (isChoicePart(optionalPart)) {
 					List<AstRule> rules = ((AstRuleNestedNonTerm) optionalPart).getRules();
-					return convertChoice(outer, rules, true);
+					return builder.optional(convertChoice(outer, rules, optionalPart), refPart.getReference());
 				}
 			}
 
 			Symbol optsym = resolve(outer, optionalPart);
-			return new CompositeRulePart(true, new RulePart(alias, optsym, nla, annotations, refPart.getReference()));
+			RhsSymbol symbol = builder.symbol(alias, optsym, nla, optionalPart);
+			annotationsMap.put(symbol, annotations);
+			return builder.optional(symbol, refPart);
 		}
 
 		// inline (...)
 		if (isGroupPart(refPart)) {
 			List<AstRulePart> groupPart = getGroupPart(refPart.getReference());
-			return convertGroup(outer, groupPart, false);
+			return convertGroup(outer, groupPart, refPart.getReference());
 
 			// inline (...|...|...)
 		} else if (isChoicePart(refPart)) {
 			List<AstRule> rules = ((AstRuleNestedNonTerm) refPart.getReference()).getRules();
-			return convertChoice(outer, rules, false);
+			return convertChoice(outer, rules, refPart.getReference());
 		}
 
 		Symbol sym = resolve(outer, refPart.getReference());
-		return new RulePart(alias, sym, nla, annotations, refPart.getReference());
+		RhsSymbol rhsSymbol = builder.symbol(alias, sym, nla, refPart.getReference());
+		annotationsMap.put(rhsSymbol, annotations);
+		return rhsSymbol;
 	}
 
-	private AbstractRulePart convertChoice(Symbol outer, List<AstRule> rules, boolean isOptional) {
-		AbstractRulePart[] result = new AbstractRulePart[rules.size()];
-		int index = 0;
+	private RhsPart convertChoice(Symbol outer, List<AstRule> rules, SourceElement origin) {
+		Collection<RhsPart> result = new ArrayList<RhsPart>(rules.size());
 		for (AstRule rule : rules) {
-			AbstractRulePart abstractRulePart = convertGroup(outer, rule.getList(), false);
+			RhsPart abstractRulePart = convertGroup(outer, rule.getList(), rule);
 			if (abstractRulePart == null) {
 				return null;
 			}
-			result[index++] = abstractRulePart;
+			result.add(abstractRulePart);
 		}
-		if (isOptional) {
-			return new CompositeRulePart(true, new ChoiceRulePart(result));
-		}
-		return new ChoiceRulePart(result);
+		return builder.choice(result, origin);
 	}
 
-	private AbstractRulePart convertGroup(Symbol outer, List<AstRulePart> groupPart, boolean isOptional) {
-		List<AbstractRulePart> groupResult = new ArrayList<AbstractRulePart>();
+	private RhsPart convertGroup(Symbol outer, List<AstRulePart> groupPart, SourceElement origin) {
+		List<RhsPart> groupResult = new ArrayList<RhsPart>();
 		for (AstRulePart innerPart : groupPart) {
-			AbstractRulePart rulePart = convertRulePart(outer, innerPart);
+			RhsPart rulePart = convertRulePart(outer, innerPart);
 			if (rulePart != null) {
 				groupResult.add(rulePart);
 			}
 		}
-		return groupResult.size() > 0
-				? new CompositeRulePart(isOptional, groupResult.toArray(new AbstractRulePart[groupResult.size()]))
-				: null;
+		return groupResult.isEmpty() ? null : builder.sequence(groupResult, origin);
 	}
 
 	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
@@ -661,33 +663,33 @@ public class LapgResolver {
 		} else if (rulesymref instanceof AstRuleNestedListWithSeparator) {
 			AstRuleNestedListWithSeparator listWithSeparator = (AstRuleNestedListWithSeparator) rulesymref;
 
-			AbstractRulePart inner = convertGroup(outer, listWithSeparator.getRuleParts(), false);
-			List<AbstractRulePart> sep = new ArrayList<AbstractRulePart>();
+			RhsPart inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
+			List<RhsPart> sep = new ArrayList<RhsPart>();
 			for (AstReference ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolve(ref);
 				if (s == null) {
 					continue;
 				}
 				if (s instanceof Terminal) {
-					sep.add(new RulePart(s, ref));
+					sep.add(builder.symbol(null, s, null, ref));
 				} else {
 					error(ref, "separator should be terminal symbol");
 				}
 			}
-			AbstractRulePart separator = new CompositeRulePart(false, sep.toArray(new AbstractRulePart[sep.size()]));
+			RhsPart separator = builder.sequence(sep, listWithSeparator);
 			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, rulesymref);
 
 		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
 			AstRuleNestedQuantifier nestedQuantifier = (AstRuleNestedQuantifier) rulesymref;
 
-			AbstractRulePart inner;
+			RhsPart inner;
 			AstRuleSymbolRef innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
 				List<AstRulePart> groupPart = getGroupPart(innerSymRef);
-				inner = convertGroup(outer, groupPart, false);
+				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = resolve(outer, innerSymRef);
-				inner = new RulePart(innerTarget, innerSymRef);
+				inner = builder.symbol(null, innerTarget, null, innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == AstRuleNestedQuantifier.KIND_OPTIONAL) {
@@ -700,31 +702,37 @@ public class LapgResolver {
 		return null;
 	}
 
-	private Symbol createList(Symbol outer, AbstractRulePart inner, boolean atLeastOne, AbstractRulePart separator, AstRuleSymbolRef origin) {
+	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, AstRuleSymbolRef origin) {
 		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
 		Nonterminal listSymbol = listsMap.get(descr);
 		if (listSymbol != null) {
 			return listSymbol;
 		}
 
-		Symbol representative = inner.getRepresentative();
+		Symbol representative = RhsUtil.getRepresentative(inner);
 		listSymbol = representative != null
 				? createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
 				: (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
 
-		LapgRuleBuilder rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
+
+		List<RhsPart> list = new ArrayList<RhsPart>();
 		// list
-		rb.add(new RulePart(listSymbol, origin));
+		list.add(builder.symbol(null, listSymbol, null, origin));
 		// separator
 		if (separator != null) {
-			rb.add(separator);
+			list.add(separator);
 		}
-		rb.add(inner);
-		rb.create();
-		rb = new LapgRuleBuilder(builder, null, listSymbol, origin, annotationsMap);
+		RuleBuilder rb = builder.rule(null, listSymbol, origin);
 		if (atLeastOne || separator != null) {
-			// one or more list
-			rb.add(inner);
+			// list ::= (list <separator>)? inner
+			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
+			rb.addPart(optional);
+			rb.addPart(inner);
+		} else {
+			// list ::= (list inner)?
+			list.add(inner);
+			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
+			rb.addPart(optional);
 		}
 		rb.create();
 
@@ -733,7 +741,7 @@ public class LapgResolver {
 			Nonterminal symopt = createDerived(listSymbol, "_opt", origin);
 			RuleBuilder b = builder.rule(null, symopt, origin);
 			b.create();
-			b.addPart(null, listSymbol, null, origin);
+			b.addPart(builder.symbol(null, listSymbol, null, origin));
 			b.create();
 			listSymbol = symopt;
 		}
@@ -1126,13 +1134,13 @@ public class LapgResolver {
 	}
 
 	private static class ListDescriptor {
-		private final AbstractRulePart inner;
-		private final AbstractRulePart separator;
+		private final Object inner;
+		private final Object separator;
 		private final boolean atLeastOne;
 
-		private ListDescriptor(AbstractRulePart inner, AbstractRulePart separator, boolean atLeastOne) {
-			this.inner = inner;
-			this.separator = separator;
+		private ListDescriptor(RhsPart inner, RhsPart separator, boolean atLeastOne) {
+			this.inner = inner.structuralNode();
+			this.separator = separator == null ? null : separator.structuralNode();
 			this.atLeastOne = atLeastOne;
 		}
 

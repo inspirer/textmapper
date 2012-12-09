@@ -23,7 +23,6 @@ public interface Symbol extends SourceElement {
 	static final int KIND_TERM = 0;
 	static final int KIND_SOFTTERM = 1;
 	static final int KIND_NONTERM = 2;
-	static final int KIND_LAYOUT = 3;
 
 	int getKind();
 

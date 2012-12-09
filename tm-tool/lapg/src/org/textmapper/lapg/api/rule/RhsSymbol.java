@@ -15,10 +15,19 @@
  */
 package org.textmapper.lapg.api.rule;
 
+import org.textmapper.lapg.api.NegativeLookahead;
+import org.textmapper.lapg.api.Symbol;
+
 /**
  * evgeny, 11/24/12
  */
 public interface RhsSymbol extends RhsPart {
 
-	// TODO SymbolRef
+	public static final RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
+
+	NegativeLookahead getNegativeLA();
+
+	String getAlias();
+
+	Symbol getTarget();
 }

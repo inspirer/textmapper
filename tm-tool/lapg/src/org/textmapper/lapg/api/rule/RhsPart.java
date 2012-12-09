@@ -21,4 +21,6 @@ import org.textmapper.lapg.api.SourceElement;
  * evgeny, 11/24/12
  */
 public interface RhsPart extends SourceElement {
+
+	Object structuralNode();
 }

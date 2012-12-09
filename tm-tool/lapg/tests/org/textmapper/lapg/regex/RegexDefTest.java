@@ -215,7 +215,7 @@ public class RegexDefTest {
 			@Override
 			public String caseList(RegexList c) {
 				StringBuilder sb = new StringBuilder();
-				sb.append("list (").append(c.isInParentheses() ? "in paren" : "").append(") [\n");
+				sb.append("list (").append(c.isParenthesized() ? "in paren" : "").append(") [\n");
 				for (RegexPart regexPart : c.getElements()) {
 					String s = regexPart.accept(this);
 					for (String line : s.split("\n")) {

@@ -16,6 +16,7 @@
 package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Arrays;
 
@@ -99,8 +100,8 @@ abstract class ContextFree {
 			this.rleft[i] = r.getLeft().getIndex();
 			this.rprio[i] = r.getPriority();
 			this.rindex[i] = curr_rindex;
-			SymbolRef[] wright = r.getRight();
-			for (SymbolRef element : wright) {
+			RhsSymbol[] wright = r.getRight();
+			for (RhsSymbol element : wright) {
 				if (element.getNegativeLA() != null) {
 					nla_count++;
 					if (element == wright[0]) {
@@ -124,8 +125,8 @@ abstract class ContextFree {
 			int nla_sit_index = 0, nla_rule_index = 0;
 			for (int i = 0; i < wrules.length; i++) {
 				int sit = rindex[i];
-				SymbolRef[] wright = wrules[i].getRight();
-				for (SymbolRef element : wright) {
+				RhsSymbol[] wright = wrules[i].getRight();
+				for (RhsSymbol element : wright) {
 					NegativeLookahead nl = element.getNegativeLA();
 					if (nl != null) {
 						sit_nla[sit] = nla.storeSet(toSortedIds(nl.getUnwantedSet()));

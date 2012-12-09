@@ -17,6 +17,8 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.RuleBuilder;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,12 +29,13 @@ import java.util.List;
  */
 class LiRuleBuilder implements RuleBuilder {
 
-	private LiGrammarBuilder parent;
+	private final LiGrammarBuilder parent;
+	private final Object token = new Object();
 	private final Nonterminal left;
 	private final String alias;
 	private final SourceElement origin;
 	private Symbol priority;
-	private List<SymbolRef> right = new ArrayList<SymbolRef>();
+	private List<LiRhsPart> parts = new ArrayList<LiRhsPart>();
 
 	LiRuleBuilder(LiGrammarBuilder parent, Nonterminal left, String alias, SourceElement origin) {
 		this.parent = parent;
@@ -42,41 +45,28 @@ class LiRuleBuilder implements RuleBuilder {
 	}
 
 	@Override
-	public SymbolRef addPart(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
-		parent.check(sym);
-		NegativeLookahead nla = null;
-		if (unwanted != null && unwanted.size() > 0) {
-			for (Terminal u : unwanted) {
-				parent.check(u);
-			}
-			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
-		}
-		LiSymbolRef ref = new LiSymbolRef(sym, alias, nla, origin);
-		right.add(ref);
-		return ref;
-	}
-
-	@Override
-	public Rule create() {
-		return parent.addRule(alias, left, right.toArray(new SymbolRef[right.size()]), priority, origin);
-	}
-
-	@Override
-	public RuleBuilder copy() {
-		LiRuleBuilder res = new LiRuleBuilder(parent, left, alias, origin);
-		res.priority = priority;
-		for (SymbolRef r : right) {
-			res.right.add(r);
-		}
-		return res;
+	public void addPart(RhsPart part) {
+		parent.check(part);
+		((LiRhsPart) part).attach(token);
+		parts.add((LiRhsPart) part);
 	}
 
 	@Override
 	public void setPriority(Terminal sym) {
 		if (priority != null) {
-			throw new IllegalStateException("redeclaring rule priority");
+			throw new IllegalStateException("re-declaring rule priority");
 		}
 		parent.check(sym);
 		priority = sym;
+	}
+
+	@Override
+	public Collection<Rule> create() {
+		List<RhsSymbol[]> rules = LiRhsSequence.expandList(parts.toArray(new LiRhsPart[parts.size()]));
+		List<Rule> result = new ArrayList<Rule>(rules.size());
+		for (RhsSymbol[] rhs : rules) {
+			result.add(parent.addRule(alias, left, rhs, priority, origin));
+		}
+		return result;
 	}
 }

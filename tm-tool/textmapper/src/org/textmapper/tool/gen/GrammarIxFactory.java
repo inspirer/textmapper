@@ -16,6 +16,7 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
@@ -62,8 +63,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof Symbol) {
 			return new SymbolIxObject((Symbol) o);
 		}
-		if (o instanceof SymbolRef) {
-			return new SymbolRefIxObject((SymbolRef) o);
+		if (o instanceof RhsSymbol) {
+			return new RhsSymbolIxObject((RhsSymbol) o);
 		}
 		if (o instanceof Grammar) {
 			return new GrammarIxObject((Grammar) o);
@@ -113,7 +114,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
 				}
 				if (methodName.equals("last") || methodName.equals("first")) {
-					SymbolRef[] array = rule.getRight();
+					RhsSymbol[] array = rule.getRight();
 					if (array == null || array.length == 0) {
 						throw new EvaluationException(methodName + "() cannot be used on empty rule");
 					}
@@ -139,11 +140,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return super.callMethod(methodName, args);
 		}
 
-		private boolean isRulePart(SymbolRef ref) {
-			return ref.getTarget() != null && ref.getTarget().getKind() != Symbol.KIND_LAYOUT;
+		private boolean isRulePart(RhsSymbol ref) {
+			return ref.getTarget() != null;
 		}
 
-		private int getRightOffset(int index, SymbolRef[] right) {
+		private int getRightOffset(int index, RhsSymbol[] right) {
 			assert index >= 0 && index < right.length;
 			int rightOffset = 0;
 			for (int e = right.length - 1; e > index; e--) {
@@ -158,7 +159,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
-				SymbolRef[] array = rule.getRight();
+				RhsSymbol[] array = rule.getRight();
 				return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
 						evaluationStrategy, rootContext, templatePackage);
 			} else if (index instanceof String) {
@@ -174,10 +175,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
 
 			int rightOffset = 0;
-			SymbolRef[] right = rule.getRight();
+			RhsSymbol[] right = rule.getRight();
 			for (int i = right.length - 1; i >= 0; i--) {
 				Symbol sym = right[i].getTarget();
-				if (sym == null || sym.getKind() == Symbol.KIND_LAYOUT) {
+				if (sym == null) {
 					continue;
 				}
 				String name = sym.getName();
@@ -234,11 +235,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 	}
 
-	private final class SymbolRefIxObject extends DefaultJavaIxObject {
+	private final class RhsSymbolIxObject extends DefaultJavaIxObject {
 
-		private final SymbolRef sym;
+		private final RhsSymbol sym;
 
-		private SymbolRefIxObject(SymbolRef sym) {
+		private RhsSymbolIxObject(RhsSymbol sym) {
 			super(sym);
 			this.sym = sym;
 		}
@@ -340,7 +341,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			Set<Symbol> seen = new HashSet<Symbol>();
 			for (Rule r : myRules) {
 				seen.clear();
-				for (SymbolRef sref : r.getRight()) {
+				for (RhsSymbol sref : r.getRight()) {
 					Symbol s = sref.getTarget();
 					if (seen.contains(s)) {
 						continue;

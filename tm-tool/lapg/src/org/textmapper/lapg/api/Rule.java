@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.api.rule.RhsSymbol;
+
 public interface Rule extends SourceElement {
 
 	int getIndex();
@@ -23,7 +25,7 @@ public interface Rule extends SourceElement {
 
 	Nonterminal getLeft();
 
-	SymbolRef[] getRight();
+	RhsSymbol[] getRight();
 
 	int getPriority();
 }

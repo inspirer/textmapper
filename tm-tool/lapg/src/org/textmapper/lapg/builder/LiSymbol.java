@@ -65,8 +65,6 @@ abstract class LiSymbol implements Symbol, DerivedSourceElement {
 				return "soft-terminal";
 			case KIND_NONTERM:
 				return "non-terminal";
-			case KIND_LAYOUT:
-				return "layout";
 		}
 		return "<unknown>";
 	}

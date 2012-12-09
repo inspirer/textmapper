@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.tool.compiler;
 
-public interface SymbolRef extends SourceElement {
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
-	Symbol getTarget();
+/**
+ * evgeny, 12/7/12
+ */
+public class RhsUtil {
 
-	/**
-	 * Alias cannot be set if target is layout symbol.
-	 *
-	 * @return null (no alias) or identifier
-	 */
-	String getAlias();
-
-	NegativeLookahead getNegativeLA();
+	public static Symbol getRepresentative(RhsPart part) {
+		if (part instanceof RhsSymbol) {
+			return ((RhsSymbol) part).getTarget();
+		}
+		if (part instanceof RhsSequence) {
+			RhsSequence seq = (RhsSequence) part;
+			return seq.getParts().length == 1 ? getRepresentative(seq.getParts()[0]) : null;
+		}
+		return null;
+	}
 }
