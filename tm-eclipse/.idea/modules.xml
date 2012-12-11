@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper-feature.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper-feature.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper.common.ui.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper.common.ui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper.lapg.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper.lapg.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper.lapg-feature.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper.lapg-feature.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/org.textmapper.lapg.ui.iml" filepath="$PROJECT_DIR$/.idea/org.textmapper.lapg.ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/tm-eclipse.iml" filepath="$PROJECT_DIR$/.idea/tm-eclipse.iml" />
     </modules>

@@ -7,7 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/plugins/org.textmapper.lapg.ui/src" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="org.textmapper.lapg" />
+    <orderEntry type="module" module-name="org.textmapper" />
     <orderEntry type="module" module-name="org.textmapper.common.ui" />
     <orderEntry type="library" name="ECLIPSE" level="application" />
     <orderEntry type="inheritedJdk" />
