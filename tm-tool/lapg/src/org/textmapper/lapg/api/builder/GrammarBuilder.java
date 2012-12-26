@@ -47,11 +47,13 @@ public interface GrammarBuilder {
 
 	RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin);
 
+	RhsSequence empty(SourceElement origin);
+
 	RhsUnordered unordered(Collection<RhsPart> parts, SourceElement origin);
 
 	RhsOptional optional(RhsPart inner, SourceElement origin);
 
-	RuleBuilder rule(String alias, Nonterminal left, SourceElement origin);
+	Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhSide, Terminal prio);
 
 	Grammar create();
 }

@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.builder.RuleBuilder;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -45,9 +44,7 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
-		RuleBuilder rule = builder.rule(null, input, null);
-		rule.addPart(builder.symbol(null, id, null, null));
-		rule.create();
+		builder.addRule(null, input, builder.symbol(null, id, null, null), null);
 
 		Grammar grammar = builder.create();
 
@@ -212,10 +209,7 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
-		RuleBuilder rule = builder.rule(null, input, null);
-		rule.addPart(builder.symbol(null, id, null, null));
-		rule.setPriority(id);
-		rule.create();
+		builder.addRule(null, input, builder.symbol(null, id, null, null), id);
 
 		assertNotNull(builder.addPrio(Prio.RIGHT, Collections.singleton(id), null));
 

@@ -17,7 +17,6 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.builder.RuleBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 
@@ -161,15 +160,26 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public RuleBuilder rule(String alias, Nonterminal left, SourceElement origin) {
+	public Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhs, Terminal prio) {
 		check(left);
-		if (left.getKind() != Symbol.KIND_NONTERM) {
-			throw new IllegalArgumentException("left symbol of rule should be non-terminal");
+		check(rhs);
+		if (prio != null) {
+			check(prio);
 		}
-		return new LiRuleBuilder(this, left, alias, origin);
+
+		LiRhsPart right = (LiRhsPart) rhs;
+		right.attach(new Object());
+
+		List<RhsSymbol[]> rules = right.expand();
+		List<Rule> result = new ArrayList<Rule>(rules.size());
+		for (RhsSymbol[] r : rules) {
+			result.add(addRule(alias, left, r, prio, right));
+		}
+		((LiNonterminal) left).definition.addRule(right);
+		return result;
 	}
 
-	Rule addRule(String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
+	private Rule addRule(String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
 		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
 		rules.add(rule);
 		return rule;
@@ -214,6 +224,11 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiRhsSequence result = new LiRhsSequence(liparts, origin);
 		rhsSet.add(result);
 		return result;
+	}
+
+	@Override
+	public RhsSequence empty(SourceElement origin) {
+		return sequence(Collections.<RhsPart>emptyList(), origin);
 	}
 
 	@Override

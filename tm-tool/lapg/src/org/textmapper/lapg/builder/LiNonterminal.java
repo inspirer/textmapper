@@ -24,6 +24,8 @@ import org.textmapper.lapg.api.rule.RhsChoice;
  */
 public class LiNonterminal extends LiSymbol implements Nonterminal {
 
+	final LiRootRhsChoice definition = new LiRootRhsChoice();
+
 	public LiNonterminal(String name, String type, SourceElement origin) {
 		super(name, type, origin);
 	}
@@ -35,7 +37,6 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	@Override
 	public RhsChoice getDefinition() {
-		// TODO
-		return null;
+		return definition;
 	}
 }

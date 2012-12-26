@@ -18,7 +18,6 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.builder.RuleBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexMatcher;
 import org.textmapper.lapg.api.regex.RegexParseException;
@@ -226,11 +225,9 @@ public class LapgResolver {
 					Nonterminal symopt = (Nonterminal) create(
 							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), Symbol.KIND_NONTERM, null);
-					RuleBuilder rb = builder.rule(null, symopt, id);
-					// TODO replace next 3 lines with: rb.addPart(builder.optional(builder.symbol(null, sym, null, id), id));
-					rb.create();
-					rb.addPart(builder.symbol(null, sym, null, id));
-					rb.create();
+					// TODO replace next 2 lines with: ... builder.optional(builder.symbol(null, sym, null, id), id)
+					builder.addRule(null, symopt, builder.empty(id), null);
+					builder.addRule(null, symopt, builder.symbol(null, sym, null, id), null);
 					return symopt;
 				}
 			}
@@ -510,7 +507,7 @@ public class LapgResolver {
 	}
 
 	private void createRule(Nonterminal left, AstRule right) {
-		RuleBuilder ruleBuilder = builder.rule(right.getAlias(), left, right);
+		List<RhsPart> rhs = new ArrayList<RhsPart>();
 		List<AstRulePart> list = right.getList();
 		AstCode lastAction = null;
 		if (list != null) {
@@ -523,25 +520,26 @@ public class LapgResolver {
 			for (AstRulePart part : list) {
 				RhsPart rulePart = convertRulePart(left, part);
 				if (rulePart != null) {
-					ruleBuilder.addPart(rulePart);
+					rhs.add(rulePart);
 				}
 			}
 		}
 		AstRuleAttribute ruleAttribute = right.getAttribute();
 		AstReference rulePrio = ruleAttribute instanceof AstPrioClause ? ((AstPrioClause) ruleAttribute).getReference()
 				: null;
+		Terminal prio = null;
 		if (rulePrio != null) {
-			Symbol prio = resolve(rulePrio);
-			if (prio instanceof Terminal) {
-				ruleBuilder.setPriority((Terminal) prio);
-			} else if (prio != null) {
-				error(rulePrio, "symbol `" + prio.getName() + "' is not a terminal");
+			Symbol prioSym = resolve(rulePrio);
+			if (prioSym instanceof Terminal) {
+				prio = (Terminal) prioSym;
+			} else if (prioSym != null) {
+				error(rulePrio, "symbol `" + prioSym.getName() + "' is not a terminal");
 			}
 		}
 
 		// TODO store %shift attribute
 		// TODO check right.getAnnotations().getNegativeLA() == null
-		Collection<Rule> result = ruleBuilder.create();
+		Collection<Rule> result = builder.addRule(right.getAlias(), left, builder.sequence(rhs, right), prio);
 		Map<String, Object> annotations = convert(right.getAnnotations(), "AnnotateRule");
 		for (Rule r : result) {
 			annotationsMap.put(r, annotations);
@@ -553,7 +551,7 @@ public class LapgResolver {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
-			Collection<Rule> actionRules = builder.rule(null, codeSym, astCode).create();
+			Collection<Rule> actionRules = builder.addRule(null, codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
 				codeMap.put(actionRule, astCode);
 			}
@@ -722,27 +720,25 @@ public class LapgResolver {
 		if (separator != null) {
 			list.add(separator);
 		}
-		RuleBuilder rb = builder.rule(null, listSymbol, origin);
+		List<RhsPart> rhs = new ArrayList<RhsPart>();
 		if (atLeastOne || separator != null) {
 			// list ::= (list <separator>)? inner
 			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
-			rb.addPart(optional);
-			rb.addPart(inner);
+			rhs.add(optional);
+			rhs.add(inner);
 		} else {
 			// list ::= (list inner)?
 			list.add(inner);
 			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
-			rb.addPart(optional);
+			rhs.add(optional);
 		}
-		rb.create();
+		builder.addRule(null, listSymbol, builder.sequence(rhs, origin), null);
 
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
 			Nonterminal symopt = createDerived(listSymbol, "_opt", origin);
-			RuleBuilder b = builder.rule(null, symopt, origin);
-			b.create();
-			b.addPart(builder.symbol(null, listSymbol, null, origin));
-			b.create();
+			builder.addRule(null, symopt, builder.empty(origin), null);
+			builder.addRule(null, symopt, builder.symbol(null, listSymbol, null, origin), null);
 			listSymbol = symopt;
 		}
 
