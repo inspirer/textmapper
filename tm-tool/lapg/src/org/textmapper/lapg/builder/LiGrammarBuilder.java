@@ -170,19 +170,15 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiRhsPart right = (LiRhsPart) rhs;
 		right.attach(new Object());
 
-		List<RhsSymbol[]> rules = right.expand();
-		List<Rule> result = new ArrayList<Rule>(rules.size());
-		for (RhsSymbol[] r : rules) {
-			result.add(addRule(alias, left, r, prio, right));
+		List<RhsSymbol[]> expanded = right.expand();
+		List<Rule> result = new ArrayList<Rule>(expanded.size());
+		for (RhsSymbol[] r : expanded) {
+			LiRule rule = new LiRule(rules.size(), alias, left, r, prio, rhs);
+			rules.add(rule);
+			result.add(rule);
 		}
 		((LiNonterminal) left).definition.addRule(right);
 		return result;
-	}
-
-	private Rule addRule(String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
-		LiRule rule = new LiRule(rules.size(), alias, left, right, priority, origin);
-		rules.add(rule);
-		return rule;
 	}
 
 	@Override

@@ -17,11 +17,11 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.api.rule.RhsUnordered;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -101,5 +101,10 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 			a[j] = t;
 		}
 		return true;
+	}
+
+	@Override
+	public <T> T accept(RhsSwitch<T> switch_) {
+		return switch_.caseUnordered(this);
 	}
 }

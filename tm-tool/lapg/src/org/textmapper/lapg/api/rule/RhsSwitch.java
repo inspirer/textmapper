@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+/**
+ * evgeny, 12/30/12
+ */
+public class RhsSwitch<T> {
 
-public interface Rule extends SourceElement {
+	public T caseChoice(RhsChoice p) {
+		return null;
+	}
 
-	int getIndex();
+	public T caseOptional(RhsOptional p) {
+		return null;
+	}
 
-	String getAlias();
+	public T caseSequence(RhsSequence p) {
+		return null;
+	}
 
-	Nonterminal getLeft();
+	public T caseSymbol(RhsSymbol p) {
+		return null;
+	}
 
-	RhsSymbol[] getRight();
-
-	RhsPart getDefinition();
-
-	int getPriority();
+	public T caseUnordered(RhsUnordered p) {
+		return null;
+	}
 }

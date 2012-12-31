@@ -23,4 +23,6 @@ import org.textmapper.lapg.api.SourceElement;
 public interface RhsPart extends SourceElement {
 
 	Object structuralNode();
+
+	<T> T accept(RhsSwitch<T> switch_);
 }

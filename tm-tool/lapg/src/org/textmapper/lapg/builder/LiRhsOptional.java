@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
@@ -73,5 +74,10 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	@Override
 	public int structuralHashCode() {
 		return inner.structuralHashCode();
+	}
+
+	@Override
+	public <T> T accept(RhsSwitch<T> switch_) {
+		return switch_.caseOptional(this);
 	}
 }

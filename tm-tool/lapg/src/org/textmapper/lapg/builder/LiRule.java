@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 class LiRule implements Rule, DerivedSourceElement {
@@ -25,15 +26,15 @@ class LiRule implements Rule, DerivedSourceElement {
 	private final Nonterminal left;
 	private final RhsSymbol[] right;
 	private final Symbol priority;
-	private final SourceElement origin;
+	private final RhsPart definition;
 
-	public LiRule(int index, String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, SourceElement origin) {
+	public LiRule(int index, String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, RhsPart definition) {
 		this.index = index;
 		this.left = left;
 		this.right = right;
 		this.priority = priority;
+		this.definition = definition;
 		this.alias = alias;
-		this.origin = origin;
 	}
 
 	@Override
@@ -54,6 +55,11 @@ class LiRule implements Rule, DerivedSourceElement {
 	@Override
 	public RhsSymbol[] getRight() {
 		return right;
+	}
+
+	@Override
+	public RhsPart getDefinition() {
+		return definition;
 	}
 
 	@Override
@@ -95,6 +101,6 @@ class LiRule implements Rule, DerivedSourceElement {
 
 	@Override
 	public SourceElement getOrigin() {
-		return origin;
+		return definition;
 	}
 }

@@ -15,9 +15,11 @@
  */
 package org.textmapper.tool.gen;
 
-import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.LexicalRule;
+import org.textmapper.lapg.api.Rule;
+import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSymbol;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
@@ -25,6 +27,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.tool.compiler.LapgGrammar;
 
 import java.util.*;
 
@@ -88,7 +91,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if ("action".equals(propertyName)) {
 				return grammar.getCode(lexicalRule);
 			}
-			if("transitions".equals(propertyName)) {
+			if ("transitions".equals(propertyName)) {
 				return grammar.getTransition(lexicalRule);
 			}
 			return super.getProperty(propertyName);
@@ -118,21 +121,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					if (array == null || array.length == 0) {
 						throw new EvaluationException(methodName + "() cannot be used on empty rule");
 					}
-					int i;
-					if (methodName.charAt(0) == 'f') {
-						i = 0;
-						while (i < array.length && !isRulePart(array[i])) {
-							i++;
-						}
-					} else {
-						i = array.length - 1;
-						while (i >= 0 && !isRulePart(array[i])) {
-							i--;
-						}
-					}
-					if (i < 0 || i >= array.length) {
-						throw new EvaluationException(methodName + "() cannot be used in rules where all symbols are optionals");
-					}
+					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
 					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
 							evaluationStrategy, rootContext, templatePackage);
 				}
@@ -140,17 +129,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 			return super.callMethod(methodName, args);
 		}
 
-		private boolean isRulePart(RhsSymbol ref) {
-			return ref.getTarget() != null;
-		}
-
 		private int getRightOffset(int index, RhsSymbol[] right) {
 			assert index >= 0 && index < right.length;
 			int rightOffset = 0;
 			for (int e = right.length - 1; e > index; e--) {
-				if (isRulePart(right[e])) {
-					rightOffset++;
-				}
+				rightOffset++;
 			}
 			return rightOffset;
 		}
@@ -189,9 +172,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					result.add(new ActionSymbol(grammar, sym, right[i], false, rightOffset,
 							evaluationStrategy, rootContext, templatePackage));
 				}
-				if (isRulePart(right[i])) {
-					rightOffset++;
-				}
+				rightOffset++;
 			}
 
 			if (rule.getLeft().getName().equals(id)) {

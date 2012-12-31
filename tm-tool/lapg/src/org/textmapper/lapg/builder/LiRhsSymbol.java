@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Collections;
@@ -75,5 +76,10 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		result = 31 * result + (alias != null ? alias.hashCode() : 0);
 		result = 31 * result + (negLA != null ? negLA.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public <T> T accept(RhsSwitch<T> switch_) {
+		return switch_.caseSymbol(this);
 	}
 }
