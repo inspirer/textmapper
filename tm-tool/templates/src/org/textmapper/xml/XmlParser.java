@@ -224,7 +224,7 @@ public class XmlParser {
 				 lapg_gg.value = new XmlNode("<root>", null, 1); ((XmlNode)lapg_gg.value).setData(((List<XmlElement>)lapg_m[lapg_head].value)); 
 				break;
 			case 1:  // xml_tags ::= xml_tags xml_tag_or_space
-				 ((List<XmlElement>)lapg_gg.value).add(((XmlElement)lapg_m[lapg_head].value)); 
+				 ((List<XmlElement>)lapg_m[lapg_head - 1].value).add(((XmlElement)lapg_m[lapg_head].value)); 
 				break;
 			case 2:  // xml_tags ::= xml_tag_or_space
 				 lapg_gg.value = new ArrayList<XmlElement>(); ((List<XmlElement>)lapg_gg.value).add(((XmlElement)lapg_m[lapg_head].value)); 
@@ -254,7 +254,7 @@ public class XmlParser {
 				 lapg_gg.value = ((String)lapg_m[lapg_head - 1].value); 
 				break;
 			case 14:  // attributes ::= attributes attribute
-				 ((List<XmlAttribute>)lapg_gg.value).add(((XmlAttribute)lapg_m[lapg_head].value)); 
+				 ((List<XmlAttribute>)lapg_m[lapg_head - 1].value).add(((XmlAttribute)lapg_m[lapg_head].value)); 
 				break;
 			case 15:  // attributes ::= attribute
 				 lapg_gg.value = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)lapg_gg.value).add(((XmlAttribute)lapg_m[lapg_head].value)); 

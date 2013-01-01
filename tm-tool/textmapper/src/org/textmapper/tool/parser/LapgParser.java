@@ -816,7 +816,7 @@ public class LapgParser {
 				 lapg_gg.value = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
 				break;
 			case 115:  // annotation_list ::= annotation_list annotation
-				 ((List<AstNamedEntry>)lapg_gg.value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
+				 ((List<AstNamedEntry>)lapg_m[lapg_head - 1].value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
 				break;
 			case 116:  // annotation ::= '@' ID
 				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -834,7 +834,7 @@ public class LapgParser {
 				 lapg_gg.value = new ArrayList<AstReference>(); ((List<AstReference>)lapg_gg.value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 121:  // negative_la_clause ::= negative_la_clause '|' symref
-				 ((List<AstReference>)lapg_gg.value).add(((AstReference)lapg_m[lapg_head].value)); 
+				 ((List<AstReference>)lapg_m[lapg_head - 2].value).add(((AstReference)lapg_m[lapg_head].value)); 
 				break;
 			case 122:  // expression ::= scon
 				 lapg_gg.value = new AstLiteralExpression(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -858,13 +858,13 @@ public class LapgParser {
 				 lapg_gg.value = new ArrayList(); ((List<AstExpression>)lapg_gg.value).add(((AstExpression)lapg_m[lapg_head].value)); 
 				break;
 			case 135:  // expression_list ::= expression_list ',' expression
-				 ((List<AstExpression>)lapg_gg.value).add(((AstExpression)lapg_m[lapg_head].value)); 
+				 ((List<AstExpression>)lapg_m[lapg_head - 2].value).add(((AstExpression)lapg_m[lapg_head].value)); 
 				break;
 			case 136:  // map_entries ::= ID map_separator expression
 				 lapg_gg.value = new ArrayList<AstNamedEntry>(); ((List<AstNamedEntry>)lapg_gg.value).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset)); 
 				break;
 			case 137:  // map_entries ::= map_entries ',' ID map_separator expression
-				 ((List<AstNamedEntry>)lapg_gg.value).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 2].offset, lapg_gg.endoffset)); 
+				 ((List<AstNamedEntry>)lapg_m[lapg_head - 4].value).add(new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 2].offset, lapg_gg.endoffset)); 
 				break;
 			case 141:  // name ::= qualified_id
 				 lapg_gg.value = new AstName(((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 

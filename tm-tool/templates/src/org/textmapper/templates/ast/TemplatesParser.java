@@ -786,7 +786,7 @@ public class TemplatesParser {
 				 lapg_gg.value = new ArrayList(); if (((IBundleEntity)lapg_m[lapg_head].value) != null) ((List<IBundleEntity>)lapg_gg.value).add(((IBundleEntity)lapg_m[lapg_head].value)); 
 				break;
 			case 4:  // definitions ::= definitions definition
-				 if (((IBundleEntity)lapg_m[lapg_head].value) != null) ((List<IBundleEntity>)lapg_gg.value).add(((IBundleEntity)lapg_m[lapg_head].value)); 
+				 if (((IBundleEntity)lapg_m[lapg_head].value) != null) ((List<IBundleEntity>)lapg_m[lapg_head - 1].value).add(((IBundleEntity)lapg_m[lapg_head].value)); 
 				break;
 			case 7:  // definition ::= any
 				 lapg_gg.value = null; 
@@ -813,16 +813,16 @@ public class TemplatesParser {
 				 lapg_gg.value = new ArrayList(); ((List<ParameterNode>)lapg_gg.value).add(new ParameterNode(((String)lapg_m[lapg_head - 1].value), ((String)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 1].offset, lapg_gg.endoffset)); 
 				break;
 			case 24:  // parameter_list ::= parameter_list ',' identifier
-				 ((List<ParameterNode>)lapg_gg.value).add(new ParameterNode(null, ((String)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset, lapg_gg.endoffset)); 
+				 ((List<ParameterNode>)lapg_m[lapg_head - 2].value).add(new ParameterNode(null, ((String)lapg_m[lapg_head].value), source, lapg_m[lapg_head].offset, lapg_gg.endoffset)); 
 				break;
 			case 25:  // parameter_list ::= parameter_list ',' qualified_id identifier
-				 ((List<ParameterNode>)lapg_gg.value).add(new ParameterNode(((String)lapg_m[lapg_head - 1].value), ((String)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 1].offset, lapg_gg.endoffset)); 
+				 ((List<ParameterNode>)lapg_m[lapg_head - 3].value).add(new ParameterNode(((String)lapg_m[lapg_head - 1].value), ((String)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 1].offset, lapg_gg.endoffset)); 
 				break;
 			case 26:  // context_type ::= Lfor qualified_id
 				 lapg_gg.value = ((String)lapg_m[lapg_head].value); 
 				break;
 			case 28:  // instructions ::= instructions instruction
-				 if (((Node)lapg_m[lapg_head].value) != null) ((ArrayList<Node>)lapg_gg.value).add(((Node)lapg_m[lapg_head].value)); 
+				 if (((Node)lapg_m[lapg_head].value) != null) ((ArrayList<Node>)lapg_m[lapg_head - 1].value).add(((Node)lapg_m[lapg_head].value)); 
 				break;
 			case 29:  // instructions ::= instruction
 				 lapg_gg.value = new ArrayList<Node>(); if (((Node)lapg_m[lapg_head].value)!=null) ((ArrayList<Node>)lapg_gg.value).add(((Node)lapg_m[lapg_head].value)); 
@@ -846,13 +846,13 @@ public class TemplatesParser {
 				 lapg_gg.value = ((Node)lapg_m[lapg_head - 1].value); 
 				break;
 			case 45:  // sentence ::= Lcall qualified_id template_argumentsopt template_for_expropt
-				 lapg_gg.value = new CallTemplateNode(((String)lapg_m[lapg_head - 2].value), ((ArrayList)lapg_m[lapg_head - 1].value), ((ExpressionNode)lapg_m[lapg_head].value), templatePackage, true, source, lapg_gg.offset,lapg_gg.endoffset); 
+				 lapg_gg.value = new CallTemplateNode(((String)lapg_m[lapg_head - 2].value), ((ArrayList)lapg_m[lapg_head - 1].value), ((ExpressionNode)lapg_m[lapg_head].value), templatePackage, true, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 48:  // sentence ::= Leval conditional_expression comma_expropt
-				 lapg_gg.value = new EvalNode(((ExpressionNode)lapg_m[lapg_head - 1].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset,lapg_gg.endoffset); 
+				 lapg_gg.value = new EvalNode(((ExpressionNode)lapg_m[lapg_head - 1].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 49:  // sentence ::= Lassert expression
-				 lapg_gg.value = new AssertNode(((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset,lapg_gg.endoffset); 
+				 lapg_gg.value = new AssertNode(((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 50:  // sentence ::= syntax_problem
 				 lapg_gg.value = null; 
@@ -861,7 +861,7 @@ public class TemplatesParser {
 				 lapg_gg.value = ((ExpressionNode)lapg_m[lapg_head].value); 
 				break;
 			case 53:  // qualified_id ::= qualified_id '.' identifier
-				 lapg_gg.value = ((String)lapg_gg.value) + "." + ((String)lapg_m[lapg_head].value); 
+				 lapg_gg.value = ((String)lapg_m[lapg_head - 2].value) + "." + ((String)lapg_m[lapg_head].value); 
 				break;
 			case 54:  // template_for_expr ::= Lfor expression
 				 lapg_gg.value = ((ExpressionNode)lapg_m[lapg_head].value); 
@@ -870,7 +870,7 @@ public class TemplatesParser {
 				 lapg_gg.value = ((ArrayList)lapg_m[lapg_head - 1].value); 
 				break;
 			case 58:  // control_instruction ::= control_start instructions else_clause
-				 ((CompoundNode)lapg_gg.value).setInstructions(((ArrayList<Node>)lapg_m[lapg_head - 1].value)); applyElse(((CompoundNode)lapg_m[lapg_head - 2].value),((ElseIfNode)lapg_m[lapg_head].value), lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line); 
+				 ((CompoundNode)lapg_m[lapg_head - 2].value).setInstructions(((ArrayList<Node>)lapg_m[lapg_head - 1].value)); applyElse(((CompoundNode)lapg_m[lapg_head - 2].value),((ElseIfNode)lapg_m[lapg_head].value), lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line); 
 				break;
 			case 59:  // else_clause ::= '${' Lelse Lif expression '[-]}' instructions else_clause
 				 lapg_gg.value = new ElseIfNode(((ExpressionNode)lapg_m[lapg_head - 3].value), ((ArrayList<Node>)lapg_m[lapg_head - 1].value), ((ElseIfNode)lapg_m[lapg_head].value), source, lapg_m[lapg_head - 6].offset, lapg_m[lapg_head - 1].endoffset); 
@@ -891,13 +891,13 @@ public class TemplatesParser {
 				 lapg_gg.value = new ArrayList(); ((ArrayList)lapg_gg.value).add(((CaseNode)lapg_m[lapg_head].value)); 
 				break;
 			case 67:  // case_list ::= case_list one_case
-				 ((ArrayList)lapg_gg.value).add(((CaseNode)lapg_m[lapg_head].value)); 
+				 ((ArrayList)lapg_m[lapg_head - 1].value).add(((CaseNode)lapg_m[lapg_head].value)); 
 				break;
 			case 68:  // case_list ::= case_list instruction
-				 CaseNode.add(((ArrayList)lapg_gg.value), ((Node)lapg_m[lapg_head].value)); 
+				 CaseNode.add(((ArrayList)lapg_m[lapg_head - 1].value), ((Node)lapg_m[lapg_head].value)); 
 				break;
 			case 69:  // one_case ::= '${' Lcase expression '[-]}'
-				 lapg_gg.value = new CaseNode(((ExpressionNode)lapg_m[lapg_head - 1].value), source, lapg_gg.offset,lapg_gg.endoffset); 
+				 lapg_gg.value = new CaseNode(((ExpressionNode)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 70:  // control_start ::= '${' control_sentence '[-]}'
 				 lapg_gg.value = ((CompoundNode)lapg_m[lapg_head - 1].value); 
@@ -978,7 +978,7 @@ public class TemplatesParser {
 				 lapg_gg.value = new LinkedHashMap(); ((Map<String,ExpressionNode>)lapg_gg.value).put(((String)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value)); 
 				break;
 			case 104:  // map_entries ::= map_entries ',' identifier map_separator conditional_expression
-				 ((Map<String,ExpressionNode>)lapg_gg.value).put(((String)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value)); 
+				 ((Map<String,ExpressionNode>)lapg_m[lapg_head - 4].value).put(((String)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value)); 
 				break;
 			case 108:  // bcon ::= Ltrue
 				 lapg_gg.value = Boolean.TRUE; 
@@ -1020,16 +1020,16 @@ public class TemplatesParser {
 				 lapg_gg.value = new ConditionalNode(ConditionalNode.GE, ((ExpressionNode)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 124:  // instanceof_expression ::= instanceof_expression Lis qualified_id
-				 lapg_gg.value = new InstanceOfNode(((ExpressionNode)lapg_gg.value), ((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new InstanceOfNode(((ExpressionNode)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 125:  // instanceof_expression ::= instanceof_expression Lis ccon
-				 lapg_gg.value = new InstanceOfNode(((ExpressionNode)lapg_gg.value), ((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new InstanceOfNode(((ExpressionNode)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 127:  // equality_expression ::= equality_expression '==' instanceof_expression
-				 lapg_gg.value = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)lapg_gg.value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 128:  // equality_expression ::= equality_expression '!=' instanceof_expression
-				 lapg_gg.value = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)lapg_gg.value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 130:  // conditional_op ::= conditional_op '&&' conditional_op
 				 lapg_gg.value = new ConditionalNode(ConditionalNode.AND, ((ExpressionNode)lapg_m[lapg_head - 2].value), ((ExpressionNode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -1050,7 +1050,7 @@ public class TemplatesParser {
 				 lapg_gg.value = new ArrayList(); ((ArrayList)lapg_gg.value).add(((ExpressionNode)lapg_m[lapg_head].value)); 
 				break;
 			case 139:  // expression_list ::= expression_list ',' conditional_expression
-				 ((ArrayList)lapg_gg.value).add(((ExpressionNode)lapg_m[lapg_head].value)); 
+				 ((ArrayList)lapg_m[lapg_head - 2].value).add(((ExpressionNode)lapg_m[lapg_head].value)); 
 				break;
 			case 140:  // body ::= instructions
 				

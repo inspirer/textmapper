@@ -124,13 +124,13 @@ setsymbol (RegexAstPart) ::=
 %right char escaped;
 
 charset (java.util.@List<RegexAstPart>) ::=
-	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); $charset.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
-	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
-	| charset setsymbol							{ RegexUtil.addSetSymbol($charset#1, $setsymbol, reporter); }
-	| charset sym='-'							{ $charset#1.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
+	  sym='-'									{ $$ = new java.util.@ArrayList<RegexAstPart>(); ${left()}.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
+	| setsymbol									{ $$ = new java.util.@ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(${left()}, $setsymbol, reporter); }
+	| charset setsymbol							{ RegexUtil.addSetSymbol($charset, $setsymbol, reporter); }
+	| charset sym='-'							{ $charset.add(new RegexAstChar('-', source, ${sym.offset}, ${sym.endoffset})); }
 			%prio char
-	| charset '-' char							{ RegexUtil.applyRange($charset#1, new RegexAstChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
-	| charset '-' escaped						{ RegexUtil.applyRange($charset#1, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
+	| charset '-' char							{ RegexUtil.applyRange($charset, new RegexAstChar($char, source, ${char.offset}, ${char.endoffset}), reporter); }
+	| charset '-' escaped						{ RegexUtil.applyRange($charset, new RegexAstChar($escaped, source, ${escaped.offset}, ${escaped.endoffset}), reporter); }
 ;
 
 parts (RegexAstPart) ::=

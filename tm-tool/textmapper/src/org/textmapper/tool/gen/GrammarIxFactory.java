@@ -155,8 +155,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getProperty(String id) throws EvaluationException {
-			ArrayList<ActionSymbol> result = new ArrayList<ActionSymbol>();
-
+			ActionSymbol result = null;
 			int rightOffset = 0;
 			RhsSymbol[] right = rule.getRight();
 			for (int i = right.length - 1; i >= 0; i--) {
@@ -169,22 +168,19 @@ public class GrammarIxFactory extends JavaIxFactory {
 					name = right[i].getAlias();
 				}
 				if (id.equals(name)) {
-					result.add(new ActionSymbol(grammar, sym, right[i], false, rightOffset,
-							evaluationStrategy, rootContext, templatePackage));
+					if (result != null) {
+						throw new EvaluationException("symbol `" + id + "` is ambiguous");
+					}
+					result = new ActionSymbol(grammar, sym, right[i], false, rightOffset,
+							evaluationStrategy, rootContext, templatePackage);
 				}
 				rightOffset++;
 			}
 
-			if (rule.getLeft().getName().equals(id)) {
-				result.add(new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage));
-			}
-
-			if (result.size() == 1) {
-				return result.get(0);
-			} else if (result.size() > 1) {
-				Collections.reverse(result);
+			if (result != null) {
 				return result;
 			}
+
 			throw new EvaluationException("symbol `" + id + "` is undefined");
 		}
 	}

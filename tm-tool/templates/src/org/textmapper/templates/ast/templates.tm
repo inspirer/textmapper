@@ -111,8 +111,8 @@ input (List<org.textmapper.templates.bundle.@IBundleEntity>) ::=
 ;
 
 definitions (List<org.textmapper.templates.bundle.@IBundleEntity>) ::=
-	  definition									{ $$ = new ArrayList(); if ($definition != null) $definitions.add($definition); }
-	| definitions definition						{ if ($definition != null) $definitions#0.add($definition); }
+	  definition									{ $$ = new ArrayList(); if ($definition != null) ${left()}.add($definition); }
+	| definitions definition						{ if ($definition != null) $definitions.add($definition); }
 ;
 
 definition (org.textmapper.templates.bundle.@IBundleEntity) ::=
@@ -128,7 +128,7 @@ template_def (TemplateNode) ::=
 
 query_def (QueryNode) ::=
 	'${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
-                                                    { $$ = new QueryNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, $expression, $cached_flagopt != null, source, ${query_def.offset}, ${query_def.endoffset}); checkFqn($qualified_id, ${query_def.offset}, ${query_def.endoffset}, ${self[0].line}); }
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, $expression, $cached_flagopt != null, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${self[0].line}); }
 ;
 
 cached_flag (Boolean) ::=
@@ -137,7 +137,7 @@ cached_flag (Boolean) ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate qualified_id parametersopt context_typeopt '[-]}'
-                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, source, ${template_start.offset}, ${template_start.endoffset}); checkFqn($qualified_id, ${template_start.offset}, ${template_start.endoffset}, ${self[0].line}); }
+                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${self[0].line}); }
 ; 
 
 parameters (List<ParameterNode>) ::=
@@ -145,10 +145,10 @@ parameters (List<ParameterNode>) ::=
 ;
 
 parameter_list (List<ParameterNode>) ::=
-	  identifier                       				{ $$ = new ArrayList(); $parameter_list.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
-	| qualified_id identifier                       { $$ = new ArrayList(); $parameter_list.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
-	| parameter_list ',' identifier                 { $parameter_list#0.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
-	| parameter_list ',' qualified_id identifier    { $parameter_list#0.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
+	  identifier                       				{ $$ = new ArrayList(); ${left()}.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
+	| qualified_id identifier                       { $$ = new ArrayList(); ${left()}.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
+	| parameter_list ',' identifier                 { $parameter_list.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
+	| parameter_list ',' qualified_id identifier    { $parameter_list.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
 ;
 
 context_type (String) ::=
@@ -160,8 +160,8 @@ template_end ::=
 	'${' Lend '}' ;
 
 instructions (ArrayList<Node>) ::=
-	instructions instruction						{ if ($instruction != null) $instructions#0.add($instruction); }
-	| instruction 									{ $$ = new ArrayList<Node>(); if ($instruction!=null) $instructions.add($instruction); }
+	instructions instruction						{ if ($instruction != null) $instructions.add($instruction); }
+	| instruction 									{ $$ = new ArrayList<Node>(); if ($instruction!=null) ${left()}.add($instruction); }
 ;
 
 '[-]}' ::=
@@ -173,10 +173,10 @@ instruction (Node) ::=
 	  control_instruction
 	| switch_instruction
 	| simple_instruction
-	| escid											{ $$ = createEscapedId($escid, ${instruction.offset}, ${instruction.endoffset}); }
-	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint, source, ${instruction.offset}, ${instruction.endoffset}), source, ${instruction.offset}, ${instruction.endoffset}); }
-	| escdollar										{ $$ = new DollarNode(source, ${instruction.offset}, ${instruction.endoffset}); }
-	| any											{ $$ = new TextNode(source, rawText(${instruction.offset}, ${instruction.endoffset}), ${instruction.endoffset}); }
+	| escid											{ $$ = createEscapedId($escid, ${left().offset}, ${left().endoffset}); }
+	| escint										{ $$ = new IndexNode(null, new LiteralNode($escint, source, ${left().offset}, ${left().endoffset}), source, ${left().offset}, ${left().endoffset}); }
+	| escdollar										{ $$ = new DollarNode(source, ${left().offset}, ${left().endoffset}); }
+	| any											{ $$ = new TextNode(source, rawText(${left().offset}, ${left().endoffset}), ${left().endoffset}); }
 ;
 
 simple_instruction (Node) ::=
@@ -186,9 +186,9 @@ simple_instruction (Node) ::=
 sentence (Node) ::=
 	  expression
 	| Lcall qualified_id template_argumentsopt template_for_expropt
-													{ $$ = new CallTemplateNode($qualified_id, $template_argumentsopt, $template_for_expropt, templatePackage, true, source, ${sentence.offset},${sentence.endoffset}); }
-	| Leval conditional_expression comma_expropt	{ $$ = new EvalNode($conditional_expression, $comma_expropt, source, ${sentence.offset},${sentence.endoffset}); }
-	| Lassert expression							{ $$ = new AssertNode($expression, source, ${sentence.offset},${sentence.endoffset}); }
+													{ $$ = new CallTemplateNode($qualified_id, $template_argumentsopt, $template_for_expropt, templatePackage, true, source, ${left().offset}, ${left().endoffset}); }
+	| Leval conditional_expression comma_expropt	{ $$ = new EvalNode($conditional_expression, $comma_expropt, source, ${left().offset}, ${left().endoffset}); }
+	| Lassert expression							{ $$ = new AssertNode($expression, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem								{ $$ = null; }
 ;
 
@@ -198,7 +198,7 @@ comma_expr (ExpressionNode) ::=
 
 qualified_id (String) ::=
 	identifier
-	| qualified_id '.' identifier					{ $$ = $qualified_id#0 + "." + $identifier; }
+	| qualified_id '.' identifier					{ $$ = $qualified_id + "." + $identifier; }
 ;
 
 template_for_expr (ExpressionNode) ::=
@@ -210,12 +210,12 @@ template_arguments (ArrayList) ::=
 ;
 
 control_instruction (CompoundNode) ::=
-	control_start instructions else_clause 			{ $control_instruction.setInstructions($instructions); applyElse($control_start,$else_clause, ${left().offset}, ${left().endoffset}, ${left().line}); }
+	control_start instructions else_clause 			{ $control_start.setInstructions($instructions); applyElse($control_start,$else_clause, ${left().offset}, ${left().endoffset}, ${left().line}); }
 ;
 
 else_clause (ElseIfNode) ::=
 	  '${' Lelse Lif expression '[-]}' instructions else_clause
-	  												{ $$ = new ElseIfNode($expression, $instructions, $else_clause#1, source, ${first().offset}, ${instructions.endoffset}); }
+	  												{ $$ = new ElseIfNode($expression, $instructions, $else_clause, source, ${first().offset}, ${instructions.endoffset}); }
 	| '${' Lelse '[-]}' instructions control_end
 													{ $$ = new ElseIfNode(null, $instructions, null, source, ${first().offset}, ${instructions.endoffset}); }
 	| control_end
@@ -231,13 +231,13 @@ switch_instruction (CompoundNode) ::=
 ;
 
 case_list (ArrayList) ::=
-	one_case										{ $$ = new ArrayList(); $case_list.add($one_case); }	
-	| case_list one_case                            { $case_list#0.add($one_case); }
-	| case_list instruction                         { CaseNode.add($case_list#0, $instruction); }
+	one_case										{ $$ = new ArrayList(); ${left()}.add($one_case); }
+	| case_list one_case                            { $case_list.add($one_case); }
+	| case_list instruction                         { CaseNode.add($case_list, $instruction); }
 ;
 
 one_case (CaseNode) ::=
-	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression, source, ${one_case.offset},${one_case.endoffset}); } 
+	'${' Lcase expression '[-]}' 					{ $$ = new CaseNode($expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 control_start (CompoundNode) ::=
@@ -246,8 +246,8 @@ control_start (CompoundNode) ::=
 control_sentence (CompoundNode) ::=
 	  Lforeach identifier Lin expression separator_expropt
                                                     { $$ = new ForeachNode($identifier, $expression, null, $separator_expropt, source, ${left().offset}, ${left().endoffset}); }
-	| Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']' separator_expropt
-													{ $$ = new ForeachNode($identifier, $conditional_expression#0, $conditional_expression#1, $separator_expropt, source, ${left().offset}, ${left().endoffset}); }
+	| Lfor identifier Lin '[' start=conditional_expression ',' end=conditional_expression ']' separator_expropt
+													{ $$ = new ForeachNode($identifier, $start, $end, $separator_expropt, source, ${left().offset}, ${left().endoffset}); }
 	| Lif expression								{ $$ = new IfNode($expression, source, ${left().offset}, ${left().endoffset}); }
 	| Lfile expression								{ $$ = new FileNode($expression, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -262,26 +262,26 @@ control_end ::=
 ;
 
 primary_expression (ExpressionNode) ::=
-  	  identifier									{ $$ = new SelectNode(null, $identifier, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-    | '(' expression ')'							{ $$ = new ParenthesesNode($1, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-	| icon 											{ $$ = new LiteralNode($0, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-	| bcon                                          { $$ = new LiteralNode($0, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-	| ccon 											{ $$ = new LiteralNode($0, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-  	| Lself											{ $$ = new ThisNode(source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-  	| Lnull											{ $$ = new LiteralNode(null, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt, source, ${primary_expression.offset}, ${primary_expression.endoffset}); }
-    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression#1, $identifier, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
+  	  identifier									{ $$ = new SelectNode(null, $identifier, source, ${left().offset}, ${left().endoffset}); }
+    | '(' expression ')'							{ $$ = new ParenthesesNode($1, source, ${left().offset}, ${left().endoffset}); }
+	| icon 											{ $$ = new LiteralNode($0, source, ${left().offset}, ${left().endoffset}); }
+	| bcon                                          { $$ = new LiteralNode($0, source, ${left().offset}, ${left().endoffset}); }
+	| ccon 											{ $$ = new LiteralNode($0, source, ${left().offset}, ${left().endoffset}); }
+  	| Lself											{ $$ = new ThisNode(source, ${left().offset}, ${left().endoffset}); }
+  	| Lnull											{ $$ = new LiteralNode(null, source, ${left().offset}, ${left().endoffset}); }
+    | identifier '(' expression_listopt ')'         { $$ = new MethodCallNode(null, $identifier, $expression_listopt, source, ${left().offset}, ${left().endoffset}); }
+    | primary_expression '.' identifier				{ $$ = new SelectNode($primary_expression, $identifier, source, ${left().offset}, ${left().endoffset}); }
     | primary_expression '.' identifier '(' expression_listopt ')'   
-    												{ $$ = new MethodCallNode($primary_expression#1, $identifier, $expression_listopt, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
-    | primary_expression '.' identifier '(' identifier '|' expression ')'
-    												{ $$ = createCollectionProcessor($primary_expression#1, $identifier#0, $identifier#1, $expression, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}, ${primary_expression[0].line}); }
+    												{ $$ = new MethodCallNode($primary_expression, $identifier, $expression_listopt, source, ${left().offset}, ${left().endoffset}); }
+    | primary_expression '.' identifier '(' var=identifier '|' expression ')'
+    												{ $$ = createCollectionProcessor($primary_expression, $identifier, $var, $expression, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
     | primary_expression '.' identifier '(' var=identifier '|' key=expression ':' value=expression ')'
-    												{ $$ = createMapCollect($primary_expression#1, $identifier, $var, $key, $value, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}, ${primary_expression[0].line}); }
+    												{ $$ = createMapCollect($primary_expression, $identifier, $var, $key, $value, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
     | primary_expression '->' qualified_id '(' expression_listopt ')'
-    												{ $$ = new CallTemplateNode($qualified_id, $expression_listopt, $primary_expression#1, templatePackage, false, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
+    												{ $$ = new CallTemplateNode($qualified_id, $expression_listopt, $primary_expression, templatePackage, false, source, ${left().offset}, ${left().endoffset}); }
     | primary_expression '->' '(' expression ')' '(' expression_listopt ')'  
-    												{ $$ = new CallTemplateNode($expression,$expression_listopt,$primary_expression#1,templatePackage, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
-    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression#1, $expression, source, ${primary_expression[0].offset}, ${primary_expression[0].endoffset}); }
+    												{ $$ = new CallTemplateNode($expression,$expression_listopt,$primary_expression,templatePackage, source, ${left().offset}, ${left().endoffset}); }
+    | primary_expression '[' expression ']'			{ $$ = new IndexNode($primary_expression, $expression, source, ${left().offset}, ${left().endoffset}); }
     | complex_data
     | closure
 ;
@@ -299,9 +299,9 @@ complex_data (ExpressionNode) ::=
 
 map_entries (java.util.@Map<String,ExpressionNode>) ::=
 	identifier map_separator conditional_expression
-													{ $$ = new java.util.@LinkedHashMap(); $map_entries.put($identifier, $conditional_expression); }
+													{ $$ = new java.util.@LinkedHashMap(); ${left()}.put($identifier, $conditional_expression); }
 	| map_entries ',' identifier map_separator conditional_expression
-													{ $map_entries#0.put($identifier, $conditional_expression); }
+													{ $map_entries.put($identifier, $conditional_expression); }
 ;
 
 map_separator ::=
@@ -314,8 +314,8 @@ bcon (Boolean) ::=
 
 unary_expression (ExpressionNode) ::=
 	primary_expression
-	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression#1, source, ${unary_expression[0].offset}, ${unary_expression[0].endoffset}); }
-	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression#1, source, ${unary_expression[0].offset}, ${unary_expression[0].endoffset}); }
+	| '!' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.NOT, $unary_expression, source, ${left().offset}, ${left().endoffset}); }
+	| '-' unary_expression							{ $$ = new UnaryExpression(UnaryExpression.MINUS, $unary_expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 %left '||';
@@ -326,39 +326,39 @@ unary_expression (ExpressionNode) ::=
 
 binary_op (ExpressionNode) ::=
 	unary_expression
-	| binary_op '*' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-	| binary_op '/' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-	| binary_op '%' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.REM, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-	| binary_op '+' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-	| binary_op '-' binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-    | binary_op '<' binary_op						{ $$ = new ConditionalNode(ConditionalNode.LT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-    | binary_op '>' binary_op						{ $$ = new ConditionalNode(ConditionalNode.GT, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-    | binary_op '<=' binary_op 						{ $$ = new ConditionalNode(ConditionalNode.LE, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
-    | binary_op '>=' binary_op 						{ $$ = new ConditionalNode(ConditionalNode.GE, $binary_op#1, $binary_op#2, source, ${left().offset}, ${left().endoffset}); }
+	| left=binary_op '*' right=binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MULT, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+	| left=binary_op '/' right=binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.DIV, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+	| left=binary_op '%' right=binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.REM, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+	| left=binary_op '+' right=binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.PLUS, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+	| left=binary_op '-' right=binary_op						{ $$ = new ArithmeticNode(ArithmeticNode.MINUS, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+    | left=binary_op '<' right=binary_op						{ $$ = new ConditionalNode(ConditionalNode.LT, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+    | left=binary_op '>' right=binary_op						{ $$ = new ConditionalNode(ConditionalNode.GT, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+    | left=binary_op '<=' right=binary_op 						{ $$ = new ConditionalNode(ConditionalNode.LE, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+    | left=binary_op '>=' right=binary_op 						{ $$ = new ConditionalNode(ConditionalNode.GE, $left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 instanceof_expression (ExpressionNode) ::=
 	  binary_op
-	| instanceof_expression Lis qualified_id		{ $$ = new InstanceOfNode($instanceof_expression#0, $qualified_id, source, ${left().offset}, ${left().endoffset}); }
-	| instanceof_expression Lis ccon				{ $$ = new InstanceOfNode($instanceof_expression#0, $ccon, source, ${left().offset}, ${left().endoffset}); }
+	| instanceof_expression Lis qualified_id		{ $$ = new InstanceOfNode($instanceof_expression, $qualified_id, source, ${left().offset}, ${left().endoffset}); }
+	| instanceof_expression Lis ccon				{ $$ = new InstanceOfNode($instanceof_expression, $ccon, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 equality_expression (ExpressionNode) ::=
       instanceof_expression
-    | equality_expression '==' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression#0, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
-    | equality_expression '!=' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression#0, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
+    | equality_expression '==' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.EQ, $equality_expression, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
+    | equality_expression '!=' instanceof_expression { $$ = new ConditionalNode(ConditionalNode.NE, $equality_expression, $instanceof_expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 conditional_op (ExpressionNode) ::=
       equality_expression
-    | conditional_op '&&' conditional_op			{ $$ = new ConditionalNode(ConditionalNode.AND, $conditional_op#1, $conditional_op#2, source, ${left().offset}, ${left().endoffset}); }
-    | conditional_op '||' conditional_op			{ $$ = new ConditionalNode(ConditionalNode.OR, $conditional_op#1, $conditional_op#2, source, ${left().offset}, ${left().endoffset}); }
+    | left=conditional_op '&&' right=conditional_op			{ $$ = new ConditionalNode(ConditionalNode.AND, $left, $right, source, ${left().offset}, ${left().endoffset}); }
+    | left=conditional_op '||' right=conditional_op			{ $$ = new ConditionalNode(ConditionalNode.OR, $left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 conditional_expression (ExpressionNode) ::=
     conditional_op
-  | conditional_op '?' conditional_expression ':' conditional_expression
-  													{ $$ = new TriplexNode($conditional_op, $conditional_expression#1, $conditional_expression#2, source, ${left().offset}, ${left().endoffset}); }
+  | conditional_op '?' then=conditional_expression ':' else=conditional_expression
+  													{ $$ = new TriplexNode($conditional_op, $then, $else, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 assignment_expression (ExpressionNode) ::=
@@ -368,19 +368,19 @@ assignment_expression (ExpressionNode) ::=
 
 expression (ExpressionNode) ::=
 	assignment_expression
-  | expression ',' assignment_expression			{ $$ = new CommaNode($expression#1, $assignment_expression, source, ${left().offset}, ${left().endoffset}); }
+  | expression ',' assignment_expression			{ $$ = new CommaNode($expression, $assignment_expression, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 expression_list (ArrayList) ::=
-	conditional_expression							{ $$ = new ArrayList(); $expression_list.add($conditional_expression); }
-	| expression_list ',' conditional_expression	{ $expression_list#0.add($conditional_expression); }
+	conditional_expression							{ $$ = new ArrayList(); ${left()}.add($conditional_expression); }
+	| expression_list ',' conditional_expression	{ $expression_list.add($conditional_expression); }
 ;
 
 body (TemplateNode) ::=
 	instructions
 						{
-							$$ = new TemplateNode("inline", null, null, templatePackage, source, ${body.offset}, ${body.endoffset});
-							$body.setInstructions($instructions);
+							$$ = new TemplateNode("inline", null, null, templatePackage, source, ${left().offset}, ${left().endoffset});
+							${left()}.setInstructions($instructions);
 						}
 ;
 

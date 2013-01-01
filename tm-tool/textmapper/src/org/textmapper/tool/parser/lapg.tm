@@ -100,7 +100,7 @@ input (AstRoot) ::=
 ;
 
 options (List<AstOptionPart>) ::=
-	  option											{ $$ = new ArrayList<AstOptionPart>(16); $options.add($option); }
+	  option											{ $$ = new ArrayList<AstOptionPart>(16); ${left()}.add($option); }
 	| list=options option								{ $list.add($option); } 
 ;
 
@@ -134,7 +134,7 @@ pattern (AstRegexp) ::=
 ;
 
 lexer_parts (List<AstLexerPart>) ::= 
-	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); $lexer_parts.add($lexer_part); }
+	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); ${left()}.add($lexer_part); }
 	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
 	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
@@ -175,7 +175,7 @@ state_selector ::=
 ;
 
 state_list (List<AstLexerState>) ::=
-	  lexer_state										{ $$ = new ArrayList<Integer>(4); $state_list.add($lexer_state); }
+	  lexer_state										{ $$ = new ArrayList<Integer>(4); ${left()}.add($lexer_state); }
 	| list=state_list ',' lexer_state					{ $list.add($lexer_state); }
 ;
 
@@ -189,7 +189,7 @@ lexer_state (AstLexerState) ::=
 ;
 
 grammar_parts (List<AstGrammarPart>) ::=
-	  grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); $grammar_parts.add($grammar_part); }
+	  grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); ${left()}.add($grammar_part); }
 	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
 	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
@@ -213,7 +213,7 @@ directive ::=
 ;
 
 inputs (List<AstInputRef>) ::=
-	  inputref											{ $$ = new ArrayList<AstInputRef>(); $inputs.add($inputref); }
+	  inputref											{ $$ = new ArrayList<AstInputRef>(); ${left()}.add($inputref); }
 	| list=inputs ',' inputref               			{ $list.add($inputref); }
 ;
 
@@ -222,7 +222,7 @@ inputref (AstInputRef) ::=
 ;
 
 references (List<AstReference>) ::= 
-	  symref											{ $$ = new ArrayList<AstReference>(); $references.add($symref); }
+	  symref											{ $$ = new ArrayList<AstReference>(); ${left()}.add($symref); }
 	| list=references symref							{ $list.add($symref); }
 ;
 
@@ -231,7 +231,7 @@ rules (List<AstRule>) ::=
 ;
 
 rule_list (List<AstRule>) ::=
-	  rule0												{ $$ = new ArrayList<AstRule>(); $rule_list.add($rule0); }
+	  rule0												{ $$ = new ArrayList<AstRule>(); ${left()}.add($rule0); }
 	| list=rule_list '|' rule0							{ $list.add($rule0); }
 ;
 
@@ -250,7 +250,7 @@ ruleprefix (AstRulePrefix) ::=
 ;
 
 ruleparts (List<AstRulePart>) ::=
-	  rulepart											{ $$ = new ArrayList<AstRulePart>(); $ruleparts.add($rulepart); }
+	  rulepart											{ $$ = new ArrayList<AstRulePart>(); ${left()}.add($rulepart); }
 	| list=ruleparts rulepart 							{ $list.add($rulepart); }
 	| list=ruleparts syntax_problem						{ $list.add($syntax_problem); }
 ;
@@ -279,9 +279,9 @@ rulesymref (AstRuleSymbolRef) ::=
 	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
 	| '(' ruleparts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, true, source, ${left().offset}, ${left().endoffset}); }
 	| '(' ruleparts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, false, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '?'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '*'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '+'									{ $$ = new AstRuleNestedQuantifier($rulesymref#1, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '?'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '*'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rulesymref '+'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 ruleannotations (AstRuleAnnotations) ::=
@@ -295,8 +295,8 @@ annotations (AstAnnotations) ::=
 ;
 
 annotation_list (java.util.@List<AstNamedEntry>) ::=
-	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $annotation_list.add($annotation); }
-	| annotation_list annotation						{ $annotation_list#0.add($annotation); }
+	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); ${left()}.add($annotation); }
+	| annotation_list annotation						{ $annotation_list.add($annotation); }
 ;
 
 annotation (AstNamedEntry) ::=
@@ -310,8 +310,8 @@ negative_la (AstNegativeLA) ::=
 ;
 
 negative_la_clause (java.util.@List<AstReference>) ::=
-	  symref											{ $$ = new java.util.@ArrayList<AstReference>(); $negative_la_clause.add($symref); }
-	| negative_la_clause '|' symref						{ $negative_la_clause#0.add($symref); }
+	  symref											{ $$ = new java.util.@ArrayList<AstReference>(); ${left()}.add($symref); }
+	| negative_la_clause '|' symref						{ $negative_la_clause.add($symref); }
 ;
 
 ##### EXPRESSIONS
@@ -328,13 +328,13 @@ expression (AstExpression) ::=
 ;
 
 expression_list (List<AstExpression>) ::=
-	expression											{ $$ = new ArrayList(); $expression_list.add($expression); }
-	| expression_list ',' expression					{ $expression_list#0.add($expression); }
+	expression											{ $$ = new ArrayList(); ${left()}.add($expression); }
+	| expression_list ',' expression					{ $expression_list.add($expression); }
 ;
 
 map_entries (java.util.@List<AstNamedEntry>) ::=
-	  ID map_separator expression						{ $$ = new java.util.@ArrayList<AstNamedEntry>(); $map_entries.add(new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' ID map_separator expression		{ $map_entries#0.add(new AstNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
+	  ID map_separator expression						{ $$ = new java.util.@ArrayList<AstNamedEntry>(); ${left()}.add(new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' ID map_separator expression		{ $map_entries.add(new AstNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
 ;
 
 map_separator ::=
@@ -346,7 +346,7 @@ name (AstName) ::=
 
 qualified_id (String) ::=
 	  ID
-	| qualified_id '.' ID								{ $$ = $qualified_id#1 + "." + $ID; }
+	| qualified_id '.' ID								{ $$ = $qualified_id + "." + $ID; }
 ;
 
 

@@ -50,12 +50,12 @@ _skip:      /[\t\r\n ]+/  (space)
 # Grammar
 
 input (XmlNode) ::=
-	xml_tags										{ $$ = new XmlNode("<root>", null, 1); $input.setData($xml_tags); }
+	xml_tags										{ $$ = new XmlNode("<root>", null, 1); ${left()}.setData($xml_tags); }
 ;
 
 xml_tags (List<XmlElement>) ::=
-	xml_tags xml_tag_or_space 						{ $xml_tags#0.add($xml_tag_or_space); }
-	| xml_tag_or_space 								{ $$ = new ArrayList<XmlElement>(); $xml_tags.add($xml_tag_or_space); }
+	xml_tags xml_tag_or_space 						{ $xml_tags.add($xml_tag_or_space); }
+	| xml_tag_or_space 								{ $$ = new ArrayList<XmlElement>(); ${left()}.add($xml_tag_or_space); }
 ;
 
 xml_tag_or_space (XmlElement) ::=
@@ -67,7 +67,7 @@ xml_tag_or_space (XmlElement) ::=
 
 tag_name (String) ::=
 	identifier										{ $$ = $identifier; }
-	| identifier ':' identifier						{ $$ = $identifier#0 + ":" + $identifier#1; }
+	| ns=identifier ':' identifier						{ $$ = $ns + ":" + $identifier; }
 ;
 
 tag_start (XmlNode) ::=
@@ -83,8 +83,8 @@ tag_end (String) ::=
 ;
 
 attributes (List<XmlAttribute>) ::=
-	attributes attribute							{ $attributes#0.add($attribute); }
-	| attribute 									{ $$ = new ArrayList<XmlAttribute>(); $attributes.add($attribute); }
+	attributes attribute							{ $attributes.add($attribute); }
+	| attribute 									{ $$ = new ArrayList<XmlAttribute>(); ${left()}.add($attribute); }
 ;
 
 attribute (XmlAttribute) ::=
