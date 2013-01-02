@@ -28,7 +28,7 @@ public interface Rule extends SourceElement {
 
 	RhsSymbol[] getRight();
 
-	RhsPart getDefinition();
+	RhsPart getSource();
 
 	int getPriority();
 }

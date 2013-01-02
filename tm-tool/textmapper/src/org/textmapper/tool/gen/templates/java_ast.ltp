@@ -253,7 +253,7 @@ ${query codeForList for ast.AstListRule =
 	newexpr =
 		ruleclass ? self->createObject() :
 		listitem ? (
-			index = rule.getRight().indexOf(listitem),
+			index = rule.sourceSymbols().indexOf(listitem),
 			index >= 0
 				? '$' + index
 				: null

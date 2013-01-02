@@ -141,7 +141,7 @@ ${cached query propertiesInternal(cl) =
 
 ${cached query propertyIndex(prop,rule,cl) =
 		list = rule.getRight().select(x|prop.refs.contains(x)),
-		list.first() ? rule.getRight().indexOf(list.first()) : -1 }
+		list.first() ? rule.sourceSymbols().indexOf(list.first()) : -1 }
 
 
 ${cached query symbolKind(sym) =

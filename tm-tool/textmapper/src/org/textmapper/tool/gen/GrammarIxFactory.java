@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.LexicalRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
@@ -101,6 +102,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 	private final class RuleIxObject extends DefaultJavaIxObject {
 
 		private final Rule rule;
+		private RhsSymbol[] sourceSymbols;
 
 		private RuleIxObject(Rule rule) {
 			super(rule);
@@ -116,34 +118,48 @@ public class GrammarIxFactory extends JavaIxFactory {
 				if ("left".equals(methodName)) {
 					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
 				}
+				if ("sourceSymbols".equals(methodName)) {
+					loadSourceSymbols();
+					return sourceSymbols;
+				}
 				if (methodName.equals("last") || methodName.equals("first")) {
 					RhsSymbol[] array = rule.getRight();
 					if (array == null || array.length == 0) {
 						throw new EvaluationException(methodName + "() cannot be used on empty rule");
 					}
 					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
-					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
+					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, array.length - 1 - i,
 							evaluationStrategy, rootContext, templatePackage);
 				}
 			}
 			return super.callMethod(methodName, args);
 		}
 
-		private int getRightOffset(int index, RhsSymbol[] right) {
-			assert index >= 0 && index < right.length;
-			int rightOffset = 0;
-			for (int e = right.length - 1; e > index; e--) {
-				rightOffset++;
+		private void loadSourceSymbols() {
+			if (sourceSymbols == null) {
+				sourceSymbols = RuleUtil.getAllSymbols(rule.getSource());
 			}
-			return rightOffset;
 		}
 
 		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
-				RhsSymbol[] array = rule.getRight();
-				return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, getRightOffset(i, array),
+				loadSourceSymbols();
+				if (i < 0 || i >= sourceSymbols.length) {
+					throw new EvaluationException("index is out of range");
+				}
+				RhsSymbol ref = sourceSymbols[i];
+
+				RhsSymbol[] right = rule.getRight();
+				int rightOffset = -1;
+				for (i = 0; i < right.length; i++) {
+					if (right[i] == ref) {
+						rightOffset = right.length - 1 - i;
+						break;
+					}
+				}
+				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset,
 						evaluationStrategy, rootContext, templatePackage);
 			} else if (index instanceof String) {
 				return grammar.getAnnotation(rule, (String) index);
@@ -156,32 +172,29 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(String id) throws EvaluationException {
 			ActionSymbol result = null;
-			int rightOffset = 0;
+			Set<RhsSymbol> matching = RuleUtil.getSymbols(id, rule.getSource());
+			if (matching.isEmpty()) {
+				throw new EvaluationException("symbol `" + id + "' is ambiguous");
+			}
+
 			RhsSymbol[] right = rule.getRight();
-			for (int i = right.length - 1; i >= 0; i--) {
-				Symbol sym = right[i].getTarget();
-				if (sym == null) {
+			for (int i = 0; i < right.length; i++) {
+				if (!matching.contains(right[i])) {
 					continue;
 				}
-				String name = sym.getName();
-				if (right[i].getAlias() != null) {
-					name = right[i].getAlias();
+
+				if (result != null) {
+					throw new EvaluationException("symbol `" + id + "' is ambiguous");
 				}
-				if (id.equals(name)) {
-					if (result != null) {
-						throw new EvaluationException("symbol `" + id + "` is ambiguous");
-					}
-					result = new ActionSymbol(grammar, sym, right[i], false, rightOffset,
-							evaluationStrategy, rootContext, templatePackage);
-				}
-				rightOffset++;
+				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i,
+						evaluationStrategy, rootContext, templatePackage);
 			}
 
 			if (result != null) {
 				return result;
 			}
 
-			throw new EvaluationException("symbol `" + id + "` is undefined");
+			throw new EvaluationException("symbol `" + id + "' is undefined");
 		}
 	}
 

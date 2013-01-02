@@ -58,7 +58,7 @@ class LiRule implements Rule, DerivedSourceElement {
 	}
 
 	@Override
-	public RhsPart getDefinition() {
+	public RhsPart getSource() {
 		return definition;
 	}
 
