@@ -71,7 +71,7 @@ public class RuleUtil {
 	public static Set<RhsSymbol> getSymbols(final String name, RhsPart p) {
 		final Set<RhsSymbol> all = p.accept(new SymbolResolver(name));
 		if (all == null) {
-			return Collections.emptySet();
+			return null;
 		}
 		if (all.size() > 1) {
 			boolean withAlias = false;
@@ -129,6 +129,12 @@ public class RuleUtil {
 					} else {
 						if (result.size() < 2) {
 							result = new HashSet<RhsSymbol>(result);
+						}
+						RhsSymbol first = result.iterator().next();
+						for (RhsSymbol n : pr) {
+							if (first.getTarget() != n.getTarget()) {
+								return Collections.emptySet();
+							}
 						}
 						result.addAll(pr);
 					}

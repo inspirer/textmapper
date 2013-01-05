@@ -95,8 +95,8 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 %input input, expression;
 
 input (AstRoot) ::=
-	options lexer_parts grammar_partsopt				{  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
-	| lexer_parts grammar_partsopt						{  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+	  options lexer_parts grammar_partsopt              {  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+	| lexer_parts grammar_partsopt                      {  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 options (List<AstOptionPart>) ::=
@@ -110,27 +110,26 @@ option (AstOptionPart) ::=
 ;
 
 identifier (AstIdentifier) ::=
-	ID													{ $$ = new AstIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
+	  ID												{ $$ = new AstIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 symref (AstReference) ::=
-	ID													{ $$ = new AstReference($ID, AstReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
+	  ID												{ $$ = new AstReference($ID, AstReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
 	  '(' scon ')'										{ $$ = $scon; }
-	| '(' type_part_list ')'							{ $$ = source.getText(${self[0].offset}+1, ${self[2].endoffset}-1); }
+	| '(' type_part_list ')'							{ $$ = source.getText(${first().offset}+1, ${last().endoffset}-1); }
 ;
 
 type_part_list ::=
-	type_part_list type_part | type_part ;
+	  type_part_list type_part | type_part ;
 
 type_part ::=
-	'<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')'
-;
+	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')' ;
 
 pattern (AstRegexp) ::=
-	regexp												{ $$ = new AstRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
+	  regexp											{ $$ = new AstRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_parts (List<AstLexerPart>) ::= 
@@ -150,13 +149,12 @@ named_pattern ::=
 ;
 
 lexeme ::=
-	  identifier typeopt ':'							{ $$ = new AstLexeme($identifier, $typeopt, null, null, null, null, null, source, ${left().offset}, ${left().endoffset}); }
-	| identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
+	  identifier typeopt ':' (pattern lexem_transitionopt iconopt lexem_attrsopt commandopt)?
                                                     	{ $$ = new AstLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexem_transition (AstReference) ::=
-	'=>' stateref										{ $$ = $1; }
+	  '=>' stateref										{ $$ = $1; }
 ;
 
 lexem_attrs (AstLexemAttrs) ::=
@@ -180,12 +178,11 @@ state_list (List<AstLexerState>) ::=
 ;
 
 stateref (AstReference) ::=
-	ID													{ $$ = new AstReference($ID, AstReference.STATE, source, ${left().offset}, ${left().endoffset}); }
+	  ID                                                { $$ = new AstReference($ID, AstReference.STATE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_state (AstLexerState) ::=
-	  identifier										{ $$ = new AstLexerState($identifier, null, source, ${left().offset}, ${left().endoffset}); }
-	| identifier '=>' defaultTransition=stateref		{ $$ = new AstLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
+	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new AstLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 grammar_parts (List<AstGrammarPart>) ::=
@@ -200,8 +197,7 @@ grammar_part (AstGrammarPart) ::=
 ;
 
 non_term ::=
-	  identifier typeopt '::=' rules ';'				{ $$ = new AstNonTerm($identifier, $typeopt, $rules, null, source, ${left().offset}, ${left().endoffset}); }
-	| annotations identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+	  annotations? identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 priority_kw (String) ::=
@@ -236,10 +232,7 @@ rule_list (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix ruleparts rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
-	| 			 ruleparts rule_attrsopt				{ $$ = new AstRule(null, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
-	| ruleprefix rule_attrsopt  						{ $$ = new AstRule($ruleprefix, null, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
-	| 			 rule_attrsopt  						{ $$ = new AstRule(null, null, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	  ruleprefix? ruleparts? rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
@@ -264,10 +257,7 @@ rulepart (AstRulePart) ::=
 ;
 
 refrulepart ::=
-	  ruleannotations ID '=' rulesymref					{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
-	| ruleannotations rulesymref 						{ $$ = new AstRefRulePart(null, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
-	| ID '=' rulesymref									{ $$ = new AstRefRulePart($ID, $rulesymref, null, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref 										{ $$ = new AstRefRulePart(null, $rulesymref, null, source, ${left().offset}, ${left().endoffset}); }
+	  ruleannotations? (ID '=')? rulesymref				{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 unorderedrulepart ::=
@@ -300,9 +290,8 @@ annotation_list (java.util.@List<AstNamedEntry>) ::=
 ;
 
 annotation (AstNamedEntry) ::=
-	  '@' ID											{ $$ = new AstNamedEntry($ID, null, source, ${left().offset}, ${left().endoffset}); }
-	| '@' ID '=' expression								{ $$ = new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| '@' syntax_problem								{ $$ = new AstNamedEntry($syntax_problem); }
+	  '@' ID ('=' expression)?                          { $$ = new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' syntax_problem                                { $$ = new AstNamedEntry($syntax_problem); }
 ;
 
 negative_la (AstNegativeLA) ::=
@@ -356,11 +345,11 @@ rule_attrs (AstRuleAttribute) ::=
 ;
 
 command (AstCode) ::=
-	code												{ $$ = new AstCode(source, ${code.offset}+1, ${code.endoffset}-1); }
+	code												{ $$ = new AstCode(source, ${first().offset}+1, ${last().endoffset}-1); }
 ;
 
 syntax_problem (AstError) ::=
-	error												{ $$ = new AstError(source, ${self[0].offset}, ${self[0].endoffset}); }
+	error												{ $$ = new AstError(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 ##################################################################################

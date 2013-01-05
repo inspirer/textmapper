@@ -54,20 +54,20 @@ public class LapgParser {
 		"\uffff\66\0\2\0\22\0\uffff\uffff\24\0\25\0\20\0\21\0\uff19\uffff\16\0\17\0\23\0\26" +
 		"\0\30\0\27\0\uffff\uffff\15\0\ufee7\uffff\uffff\uffff\uffff\uffff\103\0\104\0\105" +
 		"\0\uffff\uffff\ufec1\uffff\166\0\uffff\uffff\ufe9f\uffff\75\0\76\0\ufe99\uffff\163" +
-		"\0\uffff\uffff\204\0\ufe93\uffff\uffff\uffff\71\0\73\0\70\0\12\0\ufe77\uffff\uffff" +
+		"\0\uffff\uffff\204\0\ufe93\uffff\uffff\uffff\71\0\72\0\70\0\12\0\ufe77\uffff\uffff" +
 		"\uffff\13\0\14\0\ufe45\uffff\ufe19\uffff\uffff\uffff\110\0\115\0\uffff\uffff\uffff" +
 		"\uffff\ufe11\uffff\uffff\uffff\uffff\uffff\207\0\uffff\uffff\ufde7\uffff\uffff\uffff" +
-		"\217\0\33\0\uffff\uffff\50\0\ufde1\uffff\113\0\114\0\107\0\uffff\uffff\106\0\116" +
-		"\0\165\0\ufdb7\uffff\uffff\uffff\ufd7d\uffff\uffff\uffff\222\0\147\0\uffff\uffff" +
+		"\217\0\33\0\uffff\uffff\47\0\ufde1\uffff\113\0\114\0\107\0\uffff\uffff\106\0\116" +
+		"\0\164\0\ufdb7\uffff\uffff\uffff\ufd7d\uffff\uffff\uffff\222\0\147\0\uffff\uffff" +
 		"\ufd53\uffff\120\0\ufd4b\uffff\ufd21\uffff\ufcf5\uffff\137\0\141\0\ufcc5\uffff\uffff" +
 		"\uffff\uffff\uffff\ufc8f\uffff\ufc6f\uffff\123\0\140\0\130\0\127\0\ufc51\uffff\213" +
-		"\0\214\0\212\0\uffff\uffff\uffff\uffff\201\0\60\0\52\0\ufc27\uffff\111\0\uffff\uffff" +
-		"\133\0\uffff\uffff\221\0\uffff\uffff\ufbff\uffff\170\0\uffff\uffff\101\0\ufbd3\uffff" +
-		"\ufba7\uffff\ufb6f\uffff\uffff\uffff\ufb43\uffff\126\0\ufb25\uffff\136\0\125\0\uffff" +
+		"\0\214\0\212\0\uffff\uffff\uffff\uffff\201\0\60\0\51\0\ufc27\uffff\111\0\uffff\uffff" +
+		"\133\0\uffff\uffff\221\0\uffff\uffff\ufbff\uffff\170\0\uffff\uffff\102\0\ufbd3\uffff" +
+		"\ufba7\uffff\ufb6f\uffff\uffff\uffff\ufb43\uffff\125\0\ufb25\uffff\136\0\126\0\uffff" +
 		"\uffff\154\0\155\0\153\0\ufaf5\uffff\ufabb\uffff\131\0\ufa85\uffff\uffff\uffff\210" +
-		"\0\uffff\uffff\uffff\uffff\54\0\ufa67\uffff\ufa41\uffff\220\0\150\0\uffff\uffff\uffff" +
-		"\uffff\167\0\121\0\124\0\ufa0b\uffff\uf9d3\uffff\uffff\uffff\132\0\102\0\uffff\uffff" +
-		"\62\0\63\0\64\0\65\0\uffff\uffff\56\0\57\0\uffff\uffff\171\0\uf9a3\uffff\211\0\61" +
+		"\0\uffff\uffff\uffff\uffff\53\0\ufa67\uffff\ufa41\uffff\220\0\150\0\uffff\uffff\uffff" +
+		"\uffff\167\0\121\0\124\0\ufa0b\uffff\uf9d3\uffff\uffff\uffff\132\0\101\0\uffff\uffff" +
+		"\62\0\63\0\64\0\65\0\uffff\uffff\55\0\56\0\uffff\uffff\171\0\uf9a3\uffff\211\0\61" +
 		"\0\uffff\uffff\152\0\151\0\uffff\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
 
 	private static final short[] lapg_lalr = LapgLexer.unpack_short(1680,
@@ -76,7 +76,7 @@ public class LapgParser {
 		"\uffff\2\uffff\10\uffff\21\uffff\34\uffff\0\0\uffff\ufffe\1\uffff\53\uffff\52\uffff" +
 		"\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43\uffff\42\uffff\41\uffff" +
 		"\2\uffff\4\uffff\5\uffff\21\uffff\35\uffff\36\uffff\37\uffff\22\202\uffff\ufffe\14" +
-		"\uffff\17\72\22\72\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff" +
+		"\uffff\17\73\22\73\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff" +
 		"\46\uffff\45\uffff\44\uffff\43\uffff\42\uffff\41\uffff\2\uffff\10\uffff\21\uffff" +
 		"\34\uffff\0\0\uffff\ufffe\13\uffff\11\10\20\10\23\10\uffff\ufffe\23\uffff\11\44\20" +
 		"\44\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45" +
@@ -85,21 +85,21 @@ public class LapgParser {
 		"\161\53\161\uffff\ufffe\17\uffff\22\203\uffff\ufffe\16\uffff\23\215\uffff\ufffe\1" +
 		"\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43" +
 		"\uffff\42\uffff\41\uffff\16\uffff\17\uffff\21\uffff\22\uffff\23\uffff\26\uffff\27" +
-		"\uffff\30\uffff\32\uffff\33\uffff\34\uffff\25\31\uffff\ufffe\3\uffff\0\46\1\46\2" +
-		"\46\10\46\21\46\34\46\41\46\42\46\43\46\44\46\45\46\46\46\47\46\50\46\51\46\52\46" +
-		"\53\46\uffff\ufffe\13\uffff\1\164\20\164\23\164\34\164\41\164\42\164\43\164\44\164" +
-		"\45\164\46\164\47\164\50\164\51\164\52\164\53\164\uffff\ufffe\23\uffff\11\44\uffff" +
+		"\uffff\30\uffff\32\uffff\33\uffff\34\uffff\25\31\uffff\ufffe\3\uffff\0\57\1\57\2" +
+		"\57\10\57\21\57\34\57\41\57\42\57\43\57\44\57\45\57\46\57\47\57\50\57\51\57\52\57" +
+		"\53\57\uffff\ufffe\13\uffff\1\165\20\165\23\165\34\165\41\165\42\165\43\165\44\165" +
+		"\45\165\46\165\47\165\50\165\51\165\52\165\53\165\uffff\ufffe\23\uffff\11\44\uffff" +
 		"\ufffe\23\uffff\11\44\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47" +
 		"\uffff\46\uffff\45\uffff\44\uffff\43\uffff\42\uffff\41\uffff\25\177\uffff\ufffe\1" +
 		"\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43" +
 		"\uffff\42\uffff\41\uffff\16\uffff\17\uffff\21\uffff\22\uffff\23\uffff\26\uffff\27" +
-		"\uffff\30\uffff\32\uffff\33\uffff\34\uffff\25\32\uffff\ufffe\14\uffff\0\47\1\47\2" +
-		"\47\5\47\10\47\21\47\23\47\34\47\41\47\42\47\43\47\44\47\45\47\46\47\47\47\50\47" +
-		"\51\47\52\47\53\47\55\47\uffff\ufffe\47\uffff\15\112\17\112\uffff\ufffe\1\uffff\53" +
+		"\uffff\30\uffff\32\uffff\33\uffff\34\uffff\25\32\uffff\ufffe\14\uffff\0\46\1\46\2" +
+		"\46\5\46\10\46\21\46\23\46\34\46\41\46\42\46\43\46\44\46\45\46\46\46\47\46\50\46" +
+		"\51\46\52\46\53\46\55\46\uffff\ufffe\47\uffff\15\112\17\112\uffff\ufffe\1\uffff\53" +
 		"\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43\uffff\42" +
 		"\uffff\41\uffff\2\uffff\10\uffff\23\uffff\24\uffff\34\uffff\55\uffff\12\122\15\122" +
-		"\uffff\ufffe\17\uffff\25\200\uffff\ufffe\5\uffff\0\51\1\51\2\51\10\51\21\51\23\51" +
-		"\34\51\41\51\42\51\43\51\44\51\45\51\46\51\47\51\50\51\51\51\52\51\53\51\55\51\uffff" +
+		"\uffff\ufffe\17\uffff\25\200\uffff\ufffe\5\uffff\0\50\1\50\2\50\10\50\21\50\23\50" +
+		"\34\50\41\50\42\50\43\50\44\50\45\50\46\50\47\50\50\50\51\50\52\50\53\50\55\50\uffff" +
 		"\ufffe\13\uffff\20\uffff\1\11\2\11\10\11\12\11\15\11\23\11\24\11\25\11\30\11\31\11" +
 		"\32\11\33\11\34\11\40\11\41\11\42\11\43\11\44\11\45\11\46\11\47\11\50\11\51\11\52" +
 		"\11\53\11\55\11\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff" +
@@ -119,8 +119,8 @@ public class LapgParser {
 		"\41\160\42\160\43\160\44\160\45\160\46\160\47\160\50\160\51\160\52\160\53\160\uffff" +
 		"\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44" +
 		"\uffff\43\uffff\42\uffff\41\uffff\2\uffff\10\uffff\23\uffff\24\uffff\34\uffff\55" +
-		"\uffff\12\122\15\122\uffff\ufffe\23\uffff\0\53\1\53\2\53\10\53\21\53\34\53\41\53" +
-		"\42\53\43\53\44\53\45\53\46\53\47\53\50\53\51\53\52\53\53\53\55\53\uffff\ufffe\1" +
+		"\uffff\12\122\15\122\uffff\ufffe\23\uffff\0\52\1\52\2\52\10\52\21\52\34\52\41\52" +
+		"\42\52\43\52\44\52\45\52\46\52\47\52\50\52\51\52\52\52\53\52\55\52\uffff\ufffe\1" +
 		"\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43" +
 		"\uffff\42\uffff\41\uffff\2\uffff\10\uffff\23\uffff\24\uffff\34\uffff\40\uffff\55" +
 		"\uffff\12\122\25\122\uffff\ufffe\1\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff" +
@@ -139,9 +139,9 @@ public class LapgParser {
 		"\30\uffff\31\uffff\32\uffff\1\143\2\143\10\143\12\143\15\143\23\143\24\143\25\143" +
 		"\33\143\34\143\40\143\41\143\42\143\43\143\44\143\45\143\46\143\47\143\50\143\51" +
 		"\143\52\143\53\143\55\143\uffff\ufffe\34\uffff\1\157\23\157\41\157\42\157\43\157" +
-		"\44\157\45\157\46\157\47\157\50\157\51\157\52\157\53\157\uffff\ufffe\55\uffff\0\55" +
-		"\1\55\2\55\10\55\21\55\34\55\41\55\42\55\43\55\44\55\45\55\46\55\47\55\50\55\51\55" +
-		"\52\55\53\55\uffff\ufffe\30\uffff\31\uffff\32\uffff\1\144\2\144\10\144\12\144\15" +
+		"\44\157\45\157\46\157\47\157\50\157\51\157\52\157\53\157\uffff\ufffe\55\uffff\0\54" +
+		"\1\54\2\54\10\54\21\54\34\54\41\54\42\54\43\54\44\54\45\54\46\54\47\54\50\54\51\54" +
+		"\52\54\53\54\uffff\ufffe\30\uffff\31\uffff\32\uffff\1\144\2\144\10\144\12\144\15" +
 		"\144\23\144\24\144\25\144\33\144\34\144\40\144\41\144\42\144\43\144\44\144\45\144" +
 		"\46\144\47\144\50\144\51\144\52\144\53\144\55\144\uffff\ufffe\13\uffff\1\11\2\11" +
 		"\10\11\12\11\15\11\23\11\24\11\25\11\30\11\31\11\32\11\33\11\34\11\40\11\41\11\42" +
@@ -266,14 +266,14 @@ public class LapgParser {
 		"\226\263\226\311\163\61");
 
 	private static final short[] lapg_rlen = LapgLexer.unpack_short(148,
-		"\0\1\3\2\1\2\3\1\1\1\3\3\2\1\1\1\1\1\1\1\1\1\1\1\1\0\1\3\1\1\2\2\1\1\1\3\0\1\3\0" +
-		"\1\0\1\0\1\0\1\10\2\3\1\1\1\1\3\1\3\1\1\3\1\2\2\1\1\5\6\1\1\1\4\4\1\3\0\1\2\1\2\1" +
-		"\1\3\0\1\3\2\2\1\1\2\3\2\1\2\2\1\1\1\4\2\3\1\3\1\3\6\6\2\2\2\1\2\1\1\1\2\2\4\2\3" +
+		"\0\1\3\2\1\2\3\1\1\1\3\3\2\1\1\1\1\1\1\1\1\1\1\1\1\0\1\3\1\1\2\2\1\1\1\3\0\1\0\1" +
+		"\0\1\0\1\0\1\10\3\2\3\1\1\1\1\3\1\3\1\3\1\1\2\2\1\1\6\5\1\1\1\4\4\1\3\0\1\2\1\2\1" +
+		"\1\3\0\1\3\2\2\1\1\2\3\2\1\2\2\1\1\1\4\2\3\1\3\1\3\6\6\2\2\2\1\2\1\1\1\2\4\2\2\3" +
 		"\1\3\1\1\1\1\1\0\1\5\0\1\3\1\1\3\3\5\1\1\1\1\1\3\3\2\1\1");
 
 	private static final short[] lapg_rlex = LapgLexer.unpack_short(148,
 		"\142\142\56\56\57\57\60\60\61\62\63\63\64\64\65\65\65\65\65\65\65\65\65\65\65\143" +
-		"\143\65\66\67\67\67\70\70\70\71\144\144\72\145\145\146\146\147\147\150\150\72\73" +
+		"\143\65\66\67\67\67\70\70\70\71\144\144\145\145\146\146\147\147\150\150\72\72\73" +
 		"\74\75\75\75\75\76\77\77\100\101\101\102\102\102\103\103\104\104\105\105\105\106" +
 		"\106\107\107\151\151\110\111\111\112\113\113\152\152\114\114\114\114\114\115\115" +
 		"\115\116\116\116\117\117\117\120\120\120\120\121\122\122\122\122\122\122\122\123" +
@@ -647,11 +647,11 @@ public class LapgParser {
 			case 35:  // named_pattern ::= ID '=' pattern
 				 lapg_gg.value = new AstNamedPattern(((String)lapg_m[lapg_head - 2].value), ((AstRegexp)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 38:  // lexeme ::= identifier typeopt ':'
-				 lapg_gg.value = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head - 1].value), null, null, null, null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
-				break;
-			case 47:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
+			case 46:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
 				 lapg_gg.value = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 7].value), ((String)lapg_m[lapg_head - 6].value), ((AstRegexp)lapg_m[lapg_head - 4].value), ((AstReference)lapg_m[lapg_head - 3].value), ((Integer)lapg_m[lapg_head - 2].value), ((AstLexemAttrs)lapg_m[lapg_head - 1].value), ((AstCode)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				break;
+			case 47:  // lexeme ::= identifier typeopt ':'
+				 lapg_gg.value = new AstLexeme(((AstIdentifier)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head - 1].value), ((AstRegexp)null), ((AstReference)null), ((Integer)null), ((AstLexemAttrs)null), ((AstCode)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 48:  // lexem_transition ::= '=>' stateref
 				 lapg_gg.value = ((AstReference)lapg_m[lapg_head].value); 
@@ -683,11 +683,11 @@ public class LapgParser {
 			case 57:  // stateref ::= ID
 				 lapg_gg.value = new AstReference(((String)lapg_m[lapg_head].value), AstReference.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 58:  // lexer_state ::= identifier
-				 lapg_gg.value = new AstLexerState(((AstIdentifier)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
-				break;
-			case 59:  // lexer_state ::= identifier '=>' stateref
+			case 58:  // lexer_state ::= identifier '=>' stateref
 				 lapg_gg.value = new AstLexerState(((AstIdentifier)lapg_m[lapg_head - 2].value), ((AstReference)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				break;
+			case 59:  // lexer_state ::= identifier
+				 lapg_gg.value = new AstLexerState(((AstIdentifier)lapg_m[lapg_head].value), ((AstReference)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 60:  // grammar_parts ::= grammar_part
 				 lapg_gg.value = new ArrayList<AstGrammarPart>(64); ((List<AstGrammarPart>)lapg_gg.value).add(((AstGrammarPart)lapg_m[lapg_head].value)); 
@@ -698,11 +698,11 @@ public class LapgParser {
 			case 62:  // grammar_parts ::= grammar_parts syntax_problem
 				 ((List<AstGrammarPart>)lapg_m[lapg_head - 1].value).add(((AstError)lapg_m[lapg_head].value)); 
 				break;
-			case 65:  // non_term ::= identifier typeopt '::=' rules ';'
-				 lapg_gg.value = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].value), ((String)lapg_m[lapg_head - 3].value), ((List<AstRule>)lapg_m[lapg_head - 1].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
-				break;
-			case 66:  // non_term ::= annotations identifier typeopt '::=' rules ';'
+			case 65:  // non_term ::= annotations identifier typeopt '::=' rules ';'
 				 lapg_gg.value = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].value), ((String)lapg_m[lapg_head - 3].value), ((List<AstRule>)lapg_m[lapg_head - 1].value), ((AstAnnotations)lapg_m[lapg_head - 5].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				break;
+			case 66:  // non_term ::= identifier typeopt '::=' rules ';'
+				 lapg_gg.value = new AstNonTerm(((AstIdentifier)lapg_m[lapg_head - 4].value), ((String)lapg_m[lapg_head - 3].value), ((List<AstRule>)lapg_m[lapg_head - 1].value), ((AstAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 70:  // directive ::= '%' priority_kw references ';'
 				 lapg_gg.value = new AstDirective(((String)lapg_m[lapg_head - 2].value), ((List<AstReference>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -734,14 +734,14 @@ public class LapgParser {
 			case 84:  // rule0 ::= ruleprefix ruleparts rule_attrsopt
 				 lapg_gg.value = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 2].value), ((List<AstRulePart>)lapg_m[lapg_head - 1].value), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 85:  // rule0 ::= ruleparts rule_attrsopt
-				 lapg_gg.value = new AstRule(null, ((List<AstRulePart>)lapg_m[lapg_head - 1].value), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+			case 85:  // rule0 ::= ruleprefix rule_attrsopt
+				 lapg_gg.value = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 1].value), ((List<AstRulePart>)null), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 86:  // rule0 ::= ruleprefix rule_attrsopt
-				 lapg_gg.value = new AstRule(((AstRulePrefix)lapg_m[lapg_head - 1].value), null, ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+			case 86:  // rule0 ::= ruleparts rule_attrsopt
+				 lapg_gg.value = new AstRule(((AstRulePrefix)null), ((List<AstRulePart>)lapg_m[lapg_head - 1].value), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 87:  // rule0 ::= rule_attrsopt
-				 lapg_gg.value = new AstRule(null, null, ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRule(((AstRulePrefix)null), ((List<AstRulePart>)null), ((AstRuleAttribute)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 88:  // rule0 ::= syntax_problem
 				 lapg_gg.value = new AstRule(((AstError)lapg_m[lapg_head].value)); 
@@ -768,13 +768,13 @@ public class LapgParser {
 				 lapg_gg.value = new AstRefRulePart(((String)lapg_m[lapg_head - 2].value), ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)lapg_m[lapg_head - 3].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 99:  // refrulepart ::= ruleannotations rulesymref
-				 lapg_gg.value = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(((String)null), ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 100:  // refrulepart ::= ID '=' rulesymref
-				 lapg_gg.value = new AstRefRulePart(((String)lapg_m[lapg_head - 2].value), ((AstRuleSymbolRef)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(((String)lapg_m[lapg_head - 2].value), ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 101:  // refrulepart ::= rulesymref
-				 lapg_gg.value = new AstRefRulePart(null, ((AstRuleSymbolRef)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstRefRulePart(((String)null), ((AstRuleSymbolRef)lapg_m[lapg_head].value), ((AstRuleAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 102:  // unorderedrulepart ::= rulepart '&' rulepart
 				 lapg_gg.value = new AstUnorderedRulePart(((AstRulePart)lapg_m[lapg_head - 2].value), ((AstRulePart)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -818,11 +818,11 @@ public class LapgParser {
 			case 115:  // annotation_list ::= annotation_list annotation
 				 ((List<AstNamedEntry>)lapg_m[lapg_head - 1].value).add(((AstNamedEntry)lapg_m[lapg_head].value)); 
 				break;
-			case 116:  // annotation ::= '@' ID
-				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
-				break;
-			case 117:  // annotation ::= '@' ID '=' expression
+			case 116:  // annotation ::= '@' ID '=' expression
 				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head - 2].value), ((AstExpression)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				break;
+			case 117:  // annotation ::= '@' ID
+				 lapg_gg.value = new AstNamedEntry(((String)lapg_m[lapg_head].value), ((AstExpression)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 118:  // annotation ::= '@' syntax_problem
 				 lapg_gg.value = new AstNamedEntry(((AstError)lapg_m[lapg_head].value)); 
@@ -882,7 +882,7 @@ public class LapgParser {
 				 lapg_gg.value = new AstCode(source, lapg_m[lapg_head].offset+1, lapg_m[lapg_head].endoffset-1); 
 				break;
 			case 147:  // syntax_problem ::= error
-				 lapg_gg.value = new AstError(source, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset); 
+				 lapg_gg.value = new AstError(source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 		}
 	}

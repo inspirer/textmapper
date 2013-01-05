@@ -372,7 +372,9 @@ ${eval code, '#[generated action for '+self+']'-}
 ${end}
 
 ${query symText(property) =
-	(self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
+	self.rightOffset == -1
+	? (property == 'value' ? 'null' : '-1')
+	: (self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
 	  + '.' + property }
 
 ${template symAccess(property)-}

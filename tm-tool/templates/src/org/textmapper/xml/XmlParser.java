@@ -236,7 +236,7 @@ public class XmlParser {
 				 checkTag(((XmlNode)lapg_m[lapg_head - 2].value),((String)lapg_m[lapg_head].value),lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset,lapg_m[lapg_head].line); ((XmlNode)lapg_m[lapg_head - 2].value).setData(((List<XmlElement>)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 6:  // xml_tag_or_space ::= any
-				 lapg_gg.value = getData(lapg_m[lapg_head].offset,lapg_m[lapg_head].endoffset); 
+				 lapg_gg.value = getData(lapg_gg.offset,lapg_gg.endoffset); 
 				break;
 			case 7:  // tag_name ::= identifier
 				 lapg_gg.value = ((String)lapg_m[lapg_head].value); 

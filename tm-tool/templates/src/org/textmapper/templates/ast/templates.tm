@@ -128,7 +128,7 @@ template_def (TemplateNode) ::=
 
 query_def (QueryNode) ::=
 	'${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
-                                                    { $$ = new QueryNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, $expression, $cached_flagopt != null, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${self[0].line}); }
+                                                    { $$ = new QueryNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, $expression, $cached_flagopt != null, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
 ;
 
 cached_flag (Boolean) ::=
@@ -137,7 +137,7 @@ cached_flag (Boolean) ::=
 
 template_start (TemplateNode) ::=
 	'${' Ltemplate qualified_id parametersopt context_typeopt '[-]}'
-                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${self[0].line}); }
+                                                    { $$ = new TemplateNode($qualified_id, $parametersopt, $context_typeopt, templatePackage, source, ${left().offset}, ${left().endoffset}); checkFqn($qualified_id, ${left().offset}, ${left().endoffset}, ${first().line}); }
 ; 
 
 parameters (List<ParameterNode>) ::=
@@ -165,7 +165,7 @@ instructions (ArrayList<Node>) ::=
 ;
 
 '[-]}' ::=
-	'-}'											{ skipSpaces(${self[0].offset}+1); }
+	'-}'											{ skipSpaces(${first().offset}+1); }
 	| '}'
 ;
 

@@ -62,7 +62,7 @@ xml_tag_or_space (XmlElement) ::=
 	tag_start tag_end								{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); }
 	| tag_start xml_tags tag_end					{ checkTag($tag_start,$tag_end,${tag_end.offset},${tag_end.endoffset},${tag_end.line}); $tag_start.setData($xml_tags); }
 	| no_body_tag
-	| any											{ $$ = getData(${self[0].offset},${self[0].endoffset}); }
+	| any											{ $$ = getData(${left().offset},${left().endoffset}); }
 ;
 
 tag_name (String) ::=
@@ -71,11 +71,11 @@ tag_name (String) ::=
 ;
 
 tag_start (XmlNode) ::=
-	'<' tag_name attributesopt '>'		            { $$ = new XmlNode($tag_name, $attributesopt, ${self[0].line}); }
+	'<' tag_name attributesopt '>'		            { $$ = new XmlNode($tag_name, $attributesopt, ${first().line}); }
 ;
 
 no_body_tag (XmlNode) ::=
-	'<' tag_name attributesopt '/' '>'		        { $$ = new XmlNode($tag_name, $attributesopt, ${self[0].line}); }
+	'<' tag_name attributesopt '/' '>'		        { $$ = new XmlNode($tag_name, $attributesopt, ${first().line}); }
 ;
 
 tag_end (String) ::=

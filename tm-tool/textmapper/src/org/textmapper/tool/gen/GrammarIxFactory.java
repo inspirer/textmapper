@@ -173,8 +173,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object getProperty(String id) throws EvaluationException {
 			ActionSymbol result = null;
 			Set<RhsSymbol> matching = RuleUtil.getSymbols(id, rule.getSource());
-			if (matching.isEmpty()) {
-				throw new EvaluationException("symbol `" + id + "' is ambiguous");
+			if (matching == null || matching.isEmpty()) {
+				throw new EvaluationException("symbol `" + id + "' is " + (matching == null ? "undefined" : "ambiguous"));
 			}
 
 			RhsSymbol[] right = rule.getRight();
@@ -183,9 +183,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					continue;
 				}
 
-				if (result != null) {
-					throw new EvaluationException("symbol `" + id + "' is ambiguous");
-				}
+				assert result == null : "internal error in RuleUtil.getSymbols()";
 				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i,
 						evaluationStrategy, rootContext, templatePackage);
 			}
@@ -194,7 +192,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return result;
 			}
 
-			throw new EvaluationException("symbol `" + id + "' is undefined");
+			final RhsSymbol first = matching.iterator().next();
+			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, evaluationStrategy, rootContext, templatePackage);
 		}
 	}
 
