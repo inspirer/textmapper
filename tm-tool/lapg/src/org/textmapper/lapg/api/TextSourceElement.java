@@ -15,8 +15,6 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.SourceElement;
-
 public interface TextSourceElement extends SourceElement {
 
 	String getResourceName();

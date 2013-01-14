@@ -32,17 +32,10 @@ import org.textmapper.templates.api.types.IType;
 import org.textmapper.templates.types.TiExpressionBuilder;
 import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.templates.types.TypesUtil;
-import org.textmapper.tool.gen.TemplateStaticMethods;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
 import org.textmapper.tool.parser.LapgTree;
 import org.textmapper.tool.parser.LapgTree.LapgProblem;
-import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.tool.parser.ast.*;
 
-import java.io.IOException;
 import java.util.*;
 
 public class LapgResolver {
@@ -104,7 +97,7 @@ public class LapgResolver {
 
 		collectOptions();
 		TextSourceElement templates = getTemplates();
-		String copyrightHeader = extractCopyright();
+		String copyrightHeader = TMTextUtil.extractCopyright(tree.getSource());
 
 		Grammar g = builder.create();
 
@@ -1062,58 +1055,6 @@ public class LapgResolver {
 				error(expression, message);
 			}
 		}.resolve(expression, type);
-	}
-
-	private String extractCopyright() {
-		TextSource source = tree.getSource();
-		final boolean[] hasErrors = new boolean[]{false};
-		ErrorReporter reporter = new ErrorReporter() {
-			@Override
-			public void error(int start, int end, int line, String s) {
-				hasErrors[0] = true;
-			}
-		};
-
-		try {
-			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
-			lexer.setSkipComments(false);
-			List<String> headers = new LinkedList<String>();
-
-			LapgSymbol sym = lexer.next();
-			int lastline = 0;
-			StringBuilder sb = new StringBuilder();
-			while (sym.symbol == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
-				String val = lexer.current().substring(1);
-				if (val.endsWith("\n")) {
-					val = val.substring(0, val.length() - (val.endsWith("\r\n") ? 2 : 1));
-				}
-				if (sym.line > lastline + 1 && sb.length() > 0) {
-					headers.add(sb.toString());
-					sb.setLength(0);
-				}
-				lastline = sym.line;
-				if (!(sym.line == 1 && val.startsWith("!"))) {
-					sb.append(val).append('\n');
-				}
-				sym = lexer.next();
-			}
-			if (hasErrors[0]) {
-				return null;
-			}
-			if (sb.length() > 0) {
-				headers.add(sb.toString());
-			}
-			for (String s : headers) {
-				if (s.toLowerCase().contains("license")) {
-					return new TemplateStaticMethods().shiftLeft(s);
-				}
-			}
-
-		} catch (IOException e) {
-			/* ignore */
-		}
-
-		return null;
 	}
 
 	private static class LapgResolverProblem extends LapgProblem {
