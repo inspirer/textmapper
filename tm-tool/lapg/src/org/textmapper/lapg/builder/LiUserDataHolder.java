@@ -13,36 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.UserDataHolder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Lexical rule.
+ * evgeny, 1/14/13
  */
-public interface LexicalRule extends SourceElement, UserDataHolder {
+public class LiUserDataHolder implements UserDataHolder {
 
-	static final int KIND_NONE = 0;
-	static final int KIND_CLASS = 1;
-	static final int KIND_SOFT = 2;
-	static final int KIND_SPACE = 3;
-	static final int KIND_LAYOUT = 4;
+	private Map<String, Object> userData;
 
-	int getIndex();
+	@Override
+	public Object getUserData(String key) {
+		return userData == null ? null : userData.get(key);
+	}
 
-	Terminal getSymbol();
-
-	RegexPart getRegexp();
-
-	int getPriority();
-
-	Iterable<LexerState> getStates();
-
-	int getKind();
-
-	String getKindAsText();
-
-	LexicalRule getClassRule();
-
-	boolean isExcluded();
+	@Override
+	public void putUserData(String key, Object value) {
+		if (userData == null) {
+			userData = new HashMap<String, Object>();
+		}
+		userData.put(key, value);
+	}
 }

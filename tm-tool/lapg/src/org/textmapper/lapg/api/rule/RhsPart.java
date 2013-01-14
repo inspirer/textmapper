@@ -17,11 +17,12 @@ package org.textmapper.lapg.api.rule;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.UserDataHolder;
 
 /**
  * evgeny, 11/24/12
  */
-public interface RhsPart extends SourceElement {
+public interface RhsPart extends SourceElement, UserDataHolder {
 
 	Nonterminal getLeft();
 

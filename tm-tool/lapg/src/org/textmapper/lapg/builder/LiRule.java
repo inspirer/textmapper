@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
-class LiRule implements Rule, DerivedSourceElement {
+class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 
 	private final int index;
 	private final String alias;

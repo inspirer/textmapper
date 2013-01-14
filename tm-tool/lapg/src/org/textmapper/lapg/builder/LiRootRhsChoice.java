@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * evgeny, 12/25/12
  */
-class LiRootRhsChoice implements RhsChoice {
+class LiRootRhsChoice extends LiUserDataHolder implements RhsChoice {
 
 	private List<RhsPart> rules = new ArrayList<RhsPart>();
 	private final Nonterminal left;

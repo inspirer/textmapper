@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * evgeny, 12/5/12
  */
-abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
+abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSourceElement {
 
 	private final SourceElement origin;
 	private Object token;

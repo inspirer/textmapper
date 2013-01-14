@@ -15,34 +15,12 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.regex.RegexPart;
-
 /**
- * Lexical rule.
+ * evgeny, 1/14/13
  */
-public interface LexicalRule extends SourceElement, UserDataHolder {
+public interface UserDataHolder {
 
-	static final int KIND_NONE = 0;
-	static final int KIND_CLASS = 1;
-	static final int KIND_SOFT = 2;
-	static final int KIND_SPACE = 3;
-	static final int KIND_LAYOUT = 4;
+	Object getUserData(String key);
 
-	int getIndex();
-
-	Terminal getSymbol();
-
-	RegexPart getRegexp();
-
-	int getPriority();
-
-	Iterable<LexerState> getStates();
-
-	int getKind();
-
-	String getKindAsText();
-
-	LexicalRule getClassRule();
-
-	boolean isExcluded();
+	void putUserData(String key, Object value);
 }

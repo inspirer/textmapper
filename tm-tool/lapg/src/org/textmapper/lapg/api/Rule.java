@@ -18,7 +18,7 @@ package org.textmapper.lapg.api;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
-public interface Rule extends SourceElement {
+public interface Rule extends SourceElement, UserDataHolder {
 
 	int getIndex();
 

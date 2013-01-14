@@ -18,7 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexPart;
 
-class LiLexicalRule implements LexicalRule, DerivedSourceElement {
+class LiLexicalRule extends LiUserDataHolder implements LexicalRule, DerivedSourceElement {
 
 	private final int kind;
 	private final int index;
