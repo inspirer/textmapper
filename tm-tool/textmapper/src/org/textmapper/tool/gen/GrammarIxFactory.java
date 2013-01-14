@@ -28,7 +28,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
-import org.textmapper.tool.compiler.LapgGrammar;
+import org.textmapper.tool.compiler.TMGrammar;
 
 import java.util.*;
 
@@ -37,9 +37,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 	private final String templatePackage;
 	private final EvaluationContext rootContext;
 	private IEvaluationStrategy evaluationStrategy;
-	private final LapgGrammar grammar;
+	private final TMGrammar grammar;
 
-	public GrammarIxFactory(LapgGrammar g, String templatePackage, EvaluationContext context) {
+	public GrammarIxFactory(TMGrammar g, String templatePackage, EvaluationContext context) {
 		grammar = g;
 		this.templatePackage = templatePackage;
 		rootContext = context;
@@ -73,8 +73,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 		if (o instanceof Grammar) {
 			return new GrammarIxObject((Grammar) o);
 		}
-		if (o instanceof LapgGrammar) {
-			return new LapgGrammarIxObject((LapgGrammar) o);
+		if (o instanceof TMGrammar) {
+			return new TMGrammarIxObject((TMGrammar) o);
 		}
 		return super.asObject(o);
 	}
@@ -243,11 +243,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 	}
 
-	private final class LapgGrammarIxObject extends DefaultJavaIxObject {
+	private final class TMGrammarIxObject extends DefaultJavaIxObject {
 
 		private final GrammarIxObject grammarIxObject;
 
-		private LapgGrammarIxObject(LapgGrammar grammar) {
+		private TMGrammarIxObject(TMGrammar grammar) {
 			super(grammar);
 			grammarIxObject = new GrammarIxObject(grammar.getGrammar());
 		}

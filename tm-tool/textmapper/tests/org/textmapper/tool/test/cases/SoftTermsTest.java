@@ -17,10 +17,10 @@ package org.textmapper.tool.test.cases;
 
 import org.junit.Test;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.tool.parser.LapgTree;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.tool.test.bootstrap.b.SampleBTree;
@@ -61,7 +61,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftShift() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_ss", FileUtil.getFileContents(openStream("syntax_softconflicts_ss", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_ss", FileUtil.getFileContents(openStream("syntax_softconflicts_ss", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -99,7 +99,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftReduce() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_sr", FileUtil.getFileContents(openStream("syntax_softconflicts_sr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_sr", FileUtil.getFileContents(openStream("syntax_softconflicts_sr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -118,7 +118,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ReduceReduce() {
 		TestStatus er = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_rr", FileUtil.getFileContents(openStream("syntax_softconflicts_rr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new LapgTree.TextSource("syntax_softconflicts_rr", FileUtil.getFileContents(openStream("syntax_softconflicts_rr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(

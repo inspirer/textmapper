@@ -23,10 +23,10 @@ import org.textmapper.lapg.eval.GenericNode;
 import org.textmapper.lapg.eval.GenericParseContext;
 import org.textmapper.lapg.eval.GenericParseContext.ParseProblem;
 import org.textmapper.lapg.eval.GenericParseContext.Result;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.tool.test.bootstrap.a.SampleAParseContext;
@@ -45,7 +45,7 @@ public class GrammarTest extends LapgTestCase {
 
 	private GenericParseContext loadGrammar(String grammarName) {
 		String contents = FileUtil.getFileContents(openStream(grammarName, TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertNotNull(g.getGrammar());
 

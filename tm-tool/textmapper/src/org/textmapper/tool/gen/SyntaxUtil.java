@@ -17,8 +17,8 @@ package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.tool.compiler.LapgGrammar;
-import org.textmapper.tool.compiler.LapgResolver;
+import org.textmapper.tool.compiler.TMGrammar;
+import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.parser.LapgTree;
 import org.textmapper.tool.parser.LapgTree.LapgProblem;
 import org.textmapper.tool.parser.LapgTree.TextSource;
@@ -28,11 +28,11 @@ import org.textmapper.templates.types.TypesRegistry;
 
 public class SyntaxUtil {
 
-	public static LapgGrammar parseSyntax(TextSource input, ProcessingStatus status, TypesRegistry types) {
+	public static TMGrammar parseSyntax(TextSource input, ProcessingStatus status, TypesRegistry types) {
 		LapgTree<AstRoot> tree = LapgTree.parseInput(input);
-		LapgGrammar result = null;
+		TMGrammar result = null;
 		if (!tree.hasErrors()) {
-			result = new LapgResolver(tree, types).resolve();
+			result = new TMCompiler(tree, types).resolve();
 		}
 		if (tree.hasErrors()) {
 			result = null;

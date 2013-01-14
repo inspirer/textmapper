@@ -38,7 +38,7 @@ import org.textmapper.tool.parser.ast.*;
 
 import java.util.*;
 
-public class LapgResolver {
+public class TMCompiler {
 
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 	private static final String INITIAL_STATE = "initial";
@@ -50,7 +50,7 @@ public class LapgResolver {
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<Symbol, String> identifierMap = new HashMap<Symbol, String>();
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
-	private final Map<AstLexeme, LapgLexicalRule> lexemeMap = new HashMap<AstLexeme, LapgLexicalRule>();
+	private final Map<AstLexeme, TMLexicalRule> lexemeMap = new HashMap<AstLexeme, TMLexicalRule>();
 
 	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
 	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
@@ -60,12 +60,12 @@ public class LapgResolver {
 	private GrammarBuilder builder;
 	private boolean hasInputs = false;
 
-	public LapgResolver(LapgTree<AstRoot> tree, TypesRegistry types) {
+	public TMCompiler(LapgTree<AstRoot> tree, TypesRegistry types) {
 		this.tree = tree;
 		this.types = types;
 	}
 
-	public LapgGrammar resolve() {
+	public TMGrammar resolve() {
 		if (tree.getRoot() == null) {
 			return null;
 		}
@@ -113,14 +113,14 @@ public class LapgResolver {
 			identifierMap.put(sym, helper.generateId(sym.getName(), i));
 		}
 
-		Map<LexicalRule, LapgStateTransitionSwitch> transitionMap = new HashMap<LexicalRule, LapgStateTransitionSwitch>();
+		Map<LexicalRule, TMStateTransitionSwitch> transitionMap = new HashMap<LexicalRule, TMStateTransitionSwitch>();
 		for (LexicalRule rule : g.getLexicalRules()) {
 			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
-			LapgLexicalRule lapgRule = lexemeMap.get(astLexeme);
+			TMLexicalRule lapgRule = lexemeMap.get(astLexeme);
 			transitionMap.put(rule, lapgRule.getTransitions());
 		}
 
-		return new LapgGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader,
+		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader,
 				identifierMap, annotationsMap, codeMap, transitionMap);
 	}
 
@@ -238,7 +238,7 @@ public class LapgResolver {
 		return result;
 	}
 
-	private LapgStateTransitionSwitch convertTransitions(AstStateSelector selector) {
+	private TMStateTransitionSwitch convertTransitions(AstStateSelector selector) {
 		boolean noDefault = false;
 		for (AstLexerState state : selector.getStates()) {
 			if (state.getDefaultTransition() == null) {
@@ -267,10 +267,10 @@ public class LapgResolver {
 			}
 		}
 		return stateSwitch.isEmpty() && defaultTransition == null ? null
-				: new LapgStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
+				: new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
 	}
 
-	private LapgStateTransitionSwitch getTransition(AstLexeme lexeme, LapgStateTransitionSwitch active) {
+	private TMStateTransitionSwitch getTransition(AstLexeme lexeme, TMStateTransitionSwitch active) {
 		AstReference transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
@@ -278,7 +278,7 @@ public class LapgResolver {
 			if (target == null) {
 				error(transition, targetName + " cannot be resolved");
 			} else {
-				return new LapgStateTransitionSwitch(target);
+				return new TMStateTransitionSwitch(target);
 			}
 		}
 		return active;
@@ -344,13 +344,13 @@ public class LapgResolver {
 
 		// Step 1. Process class lexems, named patterns & groups.
 
-		LapgStateTransitionSwitch activeTransitions = null;
+		TMStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(statesMap.get(INITIAL_STATE));
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				lexemeMap.put(lexeme, new LapgLexicalRule(lexeme, getTransition(lexeme, activeTransitions), activeStates));
+				lexemeMap.put(lexeme, new TMLexicalRule(lexeme, getTransition(lexeme, activeTransitions), activeStates));
 				AstLexemAttrs attrs = lexeme.getAttrs();
 				if (attrs == null || attrs.getKind() != LexicalRule.KIND_CLASS) {
 					continue;
@@ -1041,7 +1041,7 @@ public class LapgResolver {
 								+ "`");
 						return null;
 					}
-					return LapgResolver.this.resolve((AstReference) expression);
+					return TMCompiler.this.resolve((AstReference) expression);
 				}
 				if (expression instanceof AstLiteralExpression) {
 					Object literal = ((AstLiteralExpression) expression).getLiteral();

@@ -17,10 +17,10 @@ package org.textmapper.tool.test.bootstrap.nla;
 
 import org.junit.Test;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.tool.test.cases.LapgTestCase;
@@ -58,7 +58,7 @@ public class NlaTest extends LapgTestCase {
 	@Test
 	public void testNla1() {
 		String contents = FileUtil.getFileContents(openStream("syntax_nla1.st", NLA_INPUT), FileUtil.DEFAULT_ENCODING);
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_nla1.st", contents.toCharArray(), 1), new TestStatus(),
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_nla1.st", contents.toCharArray(), 1), new TestStatus(),
 				createDefaultTypesRegistry());
 		assertNotNull(g);
 

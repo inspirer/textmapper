@@ -20,8 +20,8 @@ import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.templates.api.SourceElement;
@@ -52,7 +52,7 @@ public class AnnotationsTest extends LapgTestCase {
 
 	@Test
 	public void testAllAnnotations() {
-		LapgGrammar lg = SyntaxUtil.parseSyntax(new TextSource("syntax1annotated", FileUtil.getFileContents(openStream("syntax1annotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar lg = SyntaxUtil.parseSyntax(new TextSource("syntax1annotated", FileUtil.getFileContents(openStream("syntax1annotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(lg);
 
 		Grammar g = lg.getGrammar();
@@ -93,7 +93,7 @@ public class AnnotationsTest extends LapgTestCase {
 	public void testBadAnnotations() {
 		TestStatus notifier = new TestStatus("", "syntax1errannotated,23: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}

@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.*;
 
 import java.util.Map;
 
-public class LapgGrammar {
+public class TMGrammar {
 
 	private final Grammar grammar;
 	private final TextSourceElement templates;
@@ -30,12 +30,12 @@ public class LapgGrammar {
 	private final Map<Symbol, String> identifierMap;
 	private final Map<SourceElement, Map<String, Object>> annotationsMap;
 	private final Map<SourceElement, TextSourceElement> codeMap;
-	private final Map<LexicalRule, LapgStateTransitionSwitch> transitionMap;
+	private final Map<LexicalRule, TMStateTransitionSwitch> transitionMap;
 
-	public LapgGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-					   String copyrightHeader, Map<Symbol, String> identifierMap,
-					   Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap,
-					   Map<LexicalRule, LapgStateTransitionSwitch> transitionMap) {
+	public TMGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
+					 String copyrightHeader, Map<Symbol, String> identifierMap,
+					 Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap,
+					 Map<LexicalRule, TMStateTransitionSwitch> transitionMap) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
@@ -80,7 +80,7 @@ public class LapgGrammar {
 		return identifierMap.get(sym);
 	}
 
-	public LapgStateTransitionSwitch getTransition(LexicalRule l) {
+	public TMStateTransitionSwitch getTransition(LexicalRule l) {
 		return transitionMap.get(l);
 	}
 }

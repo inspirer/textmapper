@@ -20,7 +20,7 @@ import org.textmapper.lapg.api.LexerData;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.tool.compiler.LapgGrammar;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.TemplatesStatus;
@@ -63,7 +63,7 @@ public final class LapgGenerator {
 			ResourceRegistry resources = createResourceRegistry();
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 
-			LapgGrammar s = SyntaxUtil.parseSyntax(input, status, types);
+			TMGrammar s = SyntaxUtil.parseSyntax(input, status, types);
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
@@ -113,7 +113,7 @@ public final class LapgGenerator {
 		}
 	}
 
-	private String getTemplatePackage(LapgGrammar g) {
+	private String getTemplatePackage(TMGrammar g) {
 		String result = options.getTemplateName();
 		if (result != null) {
 			return result;
@@ -127,7 +127,7 @@ public final class LapgGenerator {
 		return "java";
 	}
 
-	private boolean checkOptions(LapgGrammar s, TemplatesRegistry registry) {
+	private boolean checkOptions(TMGrammar s, TemplatesRegistry registry) {
 		String templPackage = getTemplatePackage(s);
 		IClass cl = registry.getTypesRegistry().getClass(templPackage + ".Options", null);
 
@@ -159,7 +159,7 @@ public final class LapgGenerator {
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, LapgGrammar s, Map<String, Object> genOptions, LexerData l, ParserData r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, Map<String, Object> genOptions, LexerData l, ParserData r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))

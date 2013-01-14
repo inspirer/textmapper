@@ -20,10 +20,10 @@ import org.textmapper.lapg.api.LexicalRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.tool.compiler.LapgGrammar;
 import org.textmapper.tool.parser.LapgTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.templates.api.SourceElement;
@@ -51,7 +51,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testOptions() {
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1options", FileUtil.getFileContents(openStream("syntax1options", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1options", FileUtil.getFileContents(openStream("syntax1options", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -61,7 +61,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testCheckSimple1() {
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1", FileUtil.getFileContents(openStream("syntax1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1", FileUtil.getFileContents(openStream("syntax1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -94,7 +94,7 @@ public class InputTest extends LapgTestCase {
 
 	@Test
 	public void testCheckSimple2() {
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax2", FileUtil.getFileContents(openStream("syntax2", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax2", FileUtil.getFileContents(openStream("syntax2", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertEquals(0, g.getGrammar().getEoi().getIndex());
 
@@ -141,7 +141,7 @@ public class InputTest extends LapgTestCase {
 						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
 						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexems", FileUtil.getFileContents(openStream("syntax_lexems", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexems", FileUtil.getFileContents(openStream("syntax_lexems", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}
@@ -152,7 +152,7 @@ public class InputTest extends LapgTestCase {
 				"syntax_patterns,7: unfinished regexp\n" +
 						"syntax_patterns,16: redeclaration of named pattern `WORD'\n"
 		);
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}
@@ -160,7 +160,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testCheckCSharpGrammar() {
 		TestStatus ts = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("input", FileUtil.getFileContents(openStream("syntax_cs", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("input", FileUtil.getFileContents(openStream("syntax_cs", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset("input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
@@ -185,7 +185,7 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testCheckConflictsHandling() {
 		TestStatus ts = new TestStatus();
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict1", FileUtil.getFileContents(openStream("syntax_conflict1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict1", FileUtil.getFileContents(openStream("syntax_conflict1", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset(
@@ -219,7 +219,7 @@ public class InputTest extends LapgTestCase {
 				return isDebug[0];
 			}
 		};
-		LapgGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict2resolved", FileUtil.getFileContents(openStream("syntax_conflict2resolved", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_conflict2resolved", FileUtil.getFileContents(openStream("syntax_conflict2resolved", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		ts.reset("", "");

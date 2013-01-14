@@ -25,12 +25,12 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 9/11/12
  */
-public class LapgLexicalRule {
+public class TMLexicalRule {
 	private final AstLexeme astLexeme;
-	private final LapgStateTransitionSwitch transitions;
+	private final TMStateTransitionSwitch transitions;
 	private final List<LexerState> applicableInStates;
 
-	public LapgLexicalRule(AstLexeme astLexeme, LapgStateTransitionSwitch transitions, List<LexerState> applicableInStates) {
+	public TMLexicalRule(AstLexeme astLexeme, TMStateTransitionSwitch transitions, List<LexerState> applicableInStates) {
 		this.astLexeme = astLexeme;
 		this.transitions = transitions;
 		this.applicableInStates = applicableInStates;
@@ -40,7 +40,7 @@ public class LapgLexicalRule {
 		return astLexeme;
 	}
 
-	public LapgStateTransitionSwitch getTransitions() {
+	public TMStateTransitionSwitch getTransitions() {
 		return transitions;
 	}
 
@@ -48,7 +48,7 @@ public class LapgLexicalRule {
 		return applicableInStates;
 	}
 
-	public boolean canBeClassFor(LapgLexicalRule l) {
+	public boolean canBeClassFor(TMLexicalRule l) {
 		if(applicableInStates.size() != l.getApplicableInStates().size()) {
 			return false;
 		}

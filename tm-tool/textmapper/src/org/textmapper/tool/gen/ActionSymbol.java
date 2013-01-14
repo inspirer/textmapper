@@ -17,7 +17,7 @@ package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSymbol;
-import org.textmapper.tool.compiler.LapgGrammar;
+import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
@@ -34,9 +34,9 @@ public class ActionSymbol extends DefaultIxObject {
 	private final IEvaluationStrategy evaluationStrategy;
 	private final EvaluationContext context;
 	private final String templatePackage;
-	private final LapgGrammar grammar;
+	private final TMGrammar grammar;
 
-	public ActionSymbol(LapgGrammar grammar, Symbol symbol, RhsSymbol ref, boolean isLeft, int rightOffset,
+	public ActionSymbol(TMGrammar grammar, Symbol symbol, RhsSymbol ref, boolean isLeft, int rightOffset,
 						IEvaluationStrategy strategy, EvaluationContext context, String templatePackage) {
 		this.grammar = grammar;
 		this.symbol = symbol;
