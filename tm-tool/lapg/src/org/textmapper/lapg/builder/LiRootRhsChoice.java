@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.rule.RhsChoice;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSwitch;
@@ -28,8 +29,10 @@ import java.util.List;
 class LiRootRhsChoice implements RhsChoice {
 
 	private List<RhsPart> rules = new ArrayList<RhsPart>();
+	private final Nonterminal left;
 
-	LiRootRhsChoice() {
+	LiRootRhsChoice(Nonterminal left) {
+		this.left = left;
 	}
 
 	void addRule(RhsPart rule) {
@@ -39,6 +42,11 @@ class LiRootRhsChoice implements RhsChoice {
 	@Override
 	public RhsPart[] getParts() {
 		return rules.toArray(new RhsPart[rules.size()]);
+	}
+
+	@Override
+	public Nonterminal getLeft() {
+		return left;
 	}
 
 	@Override

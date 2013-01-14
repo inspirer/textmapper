@@ -64,6 +64,11 @@ public class RuleUtil {
 				}
 				return null;
 			}
+
+			@Override
+			public Set<RhsSymbol> caseList(RhsList p) {
+				throw new UnsupportedOperationException();
+			}
 		});
 		return result.toArray(new RhsSymbol[result.size()]);
 	}
@@ -173,6 +178,11 @@ public class RuleUtil {
 		@Override
 		public Set<RhsSymbol> caseUnordered(RhsUnordered p) {
 			return fromList(p.getParts());
+		}
+
+		@Override
+		public Set<RhsSymbol> caseList(RhsList p) {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

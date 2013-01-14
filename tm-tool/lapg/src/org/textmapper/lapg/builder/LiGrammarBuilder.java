@@ -162,13 +162,13 @@ class LiGrammarBuilder implements GrammarBuilder {
 	@Override
 	public Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhs, Terminal prio) {
 		check(left);
-		check(rhs);
+		check(rhs, false);
 		if (prio != null) {
 			check(prio);
 		}
 
 		LiRhsPart right = (LiRhsPart) rhs;
-		right.attach(new Object());
+		right.attach(left, new Object());
 
 		List<RhsSymbol[]> expanded = right.expand();
 		List<Rule> result = new ArrayList<Rule>(expanded.size());
@@ -177,7 +177,13 @@ class LiGrammarBuilder implements GrammarBuilder {
 			rules.add(rule);
 			result.add(rule);
 		}
-		((LiNonterminal) left).definition.addRule(right);
+
+		final LiNonterminal liLeft = (LiNonterminal) left;
+		if (right.canBeChild()) {
+			liLeft.addRule(right);
+		} else {
+			liLeft.setDefinition(right);
+		}
 		return result;
 	}
 
@@ -201,7 +207,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p);
+			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsChoice result = new LiRhsChoice(liparts, origin);
@@ -214,7 +220,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p);
+			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsSequence result = new LiRhsSequence(liparts, origin);
@@ -232,7 +238,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p);
+			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsUnordered result = new LiRhsUnordered(liparts, origin);
@@ -242,18 +248,35 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 	@Override
 	public RhsOptional optional(RhsPart inner, SourceElement origin) {
-		check(inner);
+		check(inner, true);
 		LiRhsOptional result = new LiRhsOptional((LiRhsPart) inner, origin);
 		rhsSet.add(result);
 		return result;
 	}
 
-	void check(RhsPart part) {
+	@Override
+	public RhsList list(RhsPart inner, RhsPart separator, boolean nonEmpty, SourceElement origin) {
+		check(inner, true);
+		if (separator != null) {
+			check(separator, true);
+		}
+		if (!nonEmpty && separator != null) {
+			throw new IllegalArgumentException("list with separator should have at least one element");
+		}
+		LiRhsList result = new LiRhsList((LiRhsPart) inner, (LiRhsPart) separator, nonEmpty, null, false, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	void check(RhsPart part, boolean asChild) {
 		if (part == null) {
 			throw new NullPointerException();
 		}
 		if (!rhsSet.contains(part)) {
 			throw new IllegalArgumentException("unknown right-hand side element passed");
+		}
+		if (asChild && !((LiRhsPart) part).canBeChild()) {
+			throw new IllegalArgumentException("right-hand side element cannot be nested");
 		}
 	}
 

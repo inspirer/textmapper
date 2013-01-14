@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -29,6 +30,7 @@ abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 
 	private final SourceElement origin;
 	private Object token;
+	private Nonterminal left;
 
 	protected LiRhsPart(SourceElement origin) {
 		this.origin = origin;
@@ -41,17 +43,29 @@ abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 		return origin;
 	}
 
-	protected void attach(Object token) {
+	protected void attach(Nonterminal left, Object token) {
 		if (this.token == null) {
 			this.token = token;
+			this.left = left;
 		} else if (this.token != token) {
 			throw new IllegalStateException("passed right-hand side entity is already used in another rule");
+		} else if (this.left != left) {
+			throw new IllegalStateException("internal error: inconsistent left nonterminal");
 		}
 	}
 
 	public abstract boolean structuralEquals(LiRhsPart o);
 
 	public abstract int structuralHashCode();
+
+	protected boolean canBeChild() {
+		return true;
+	}
+
+	@Override
+	public Nonterminal getLeft() {
+		return left;
+	}
 
 	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {
 		if (left == right) {
@@ -88,7 +102,7 @@ abstract class LiRhsPart implements RhsPart, DerivedSourceElement {
 	}
 
 	@Override
-	public Object structuralNode() {
+	public final Object structuralNode() {
 		return new StructuralObject(this);
 	}
 

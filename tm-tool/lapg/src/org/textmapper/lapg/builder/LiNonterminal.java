@@ -17,14 +17,14 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsChoice;
+import org.textmapper.lapg.api.rule.RhsPart;
 
 /**
  * evgeny, 10/27/12
  */
 public class LiNonterminal extends LiSymbol implements Nonterminal {
 
-	final LiRootRhsChoice definition = new LiRootRhsChoice();
+	private RhsPart definition;
 
 	public LiNonterminal(String name, String type, SourceElement origin) {
 		super(name, type, origin);
@@ -35,8 +35,24 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		return KIND_NONTERM;
 	}
 
+	void setDefinition(RhsPart part) {
+		if (definition != null) {
+			throw new IllegalStateException("non-terminal is sealed");
+		}
+		this.definition = part;
+	}
+
+	void addRule(RhsPart part) {
+		if (definition == null) {
+			definition = new LiRootRhsChoice(this);
+		} else if (!(definition instanceof LiRootRhsChoice)) {
+			throw new IllegalStateException("non-terminal is sealed");
+		}
+		((LiRootRhsChoice) definition).addRule(part);
+	}
+
 	@Override
-	public RhsChoice getDefinition() {
+	public RhsPart getDefinition() {
 		return definition;
 	}
 }

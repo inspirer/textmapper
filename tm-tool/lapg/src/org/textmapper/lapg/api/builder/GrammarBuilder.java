@@ -31,15 +31,13 @@ public interface GrammarBuilder {
 
 	Terminal getEoi();
 
+
 	NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin);
 
 	LexerState addState(String name, SourceElement origin);
 
 	LexicalRule addLexicalRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin);
 
-	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
-
-	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
 
 	RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
 
@@ -53,7 +51,14 @@ public interface GrammarBuilder {
 
 	RhsOptional optional(RhsPart inner, SourceElement origin);
 
+	RhsList list(RhsPart inner, RhsPart separator, boolean nonEmpty, SourceElement origin);
+
 	Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhSide, Terminal prio);
+
+
+	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
+
+	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
 
 	Grammar create();
 }

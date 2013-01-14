@@ -15,12 +15,15 @@
  */
 package org.textmapper.lapg.api.rule;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 
 /**
  * evgeny, 11/24/12
  */
 public interface RhsPart extends SourceElement {
+
+	Nonterminal getLeft();
 
 	Object structuralNode();
 

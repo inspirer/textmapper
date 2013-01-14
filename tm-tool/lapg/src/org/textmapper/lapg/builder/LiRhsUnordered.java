@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSwitch;
@@ -59,10 +60,10 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	}
 
 	@Override
-	protected void attach(Object token) {
-		super.attach(token);
+	protected void attach(Nonterminal left, Object token) {
+		super.attach(left, token);
 		for (LiRhsPart part : parts) {
-			part.attach(token);
+			part.attach(left, token);
 		}
 	}
 

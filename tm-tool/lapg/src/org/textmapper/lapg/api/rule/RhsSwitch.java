@@ -18,25 +18,17 @@ package org.textmapper.lapg.api.rule;
 /**
  * evgeny, 12/30/12
  */
-public class RhsSwitch<T> {
+public abstract class RhsSwitch<T> {
 
-	public T caseChoice(RhsChoice p) {
-		return null;
-	}
+	public abstract T caseChoice(RhsChoice p);
 
-	public T caseOptional(RhsOptional p) {
-		return null;
-	}
+	public abstract T caseOptional(RhsOptional p);
 
-	public T caseSequence(RhsSequence p) {
-		return null;
-	}
+	public abstract T caseSequence(RhsSequence p);
 
-	public T caseSymbol(RhsSymbol p) {
-		return null;
-	}
+	public abstract T caseSymbol(RhsSymbol p);
 
-	public T caseUnordered(RhsUnordered p) {
-		return null;
-	}
+	public abstract T caseUnordered(RhsUnordered p);
+
+	public abstract T caseList(RhsList p);
 }
