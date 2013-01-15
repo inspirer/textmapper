@@ -186,10 +186,10 @@ public class TemplatesParser {
 		"\0\uffff\uffff\71\0\ufae7\uffff\uffff\uffff\uffff\uffff\110\0\111\0\146\0\uffff\uffff" +
 		"\uffff\uffff\102\0\ufadf\uffff\uffff\uffff\uffff\uffff\uffff\uffff\ufad3\uffff\uffff" +
 		"\uffff\uffff\uffff\uffff\uffff\205\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
-		"\ufaa5\uffff\uffff\uffff\uffff\uffff\104\0\103\0\100\0\31\0\141\0\150\0\uffff\uffff" +
+		"\ufaa5\uffff\uffff\uffff\uffff\uffff\104\0\103\0\101\0\31\0\141\0\150\0\uffff\uffff" +
 		"\131\0\ufa9d\uffff\134\0\uffff\uffff\uffff\uffff\74\0\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\20\0\ufa7f\uffff\105\0\uffff" +
-		"\uffff\132\0\uffff\uffff\135\0\73\0\112\0\uffff\uffff\uffff\uffff\101\0\133\0\uffff" +
+		"\uffff\132\0\uffff\uffff\135\0\73\0\112\0\uffff\uffff\uffff\uffff\100\0\133\0\uffff" +
 		"\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
 
 	private static final short[] lapg_lalr = TemplatesLexer.unpack_short(1414,
@@ -433,7 +433,7 @@ public class TemplatesParser {
 
 	private static final short[] lapg_rlen = TemplatesLexer.unpack_short(142,
 		"\0\1\1\1\2\1\1\1\3\2\0\1\0\1\0\1\11\1\6\0\1\3\1\2\3\4\2\3\2\1\1\1\1\1\1\1\1\1\1\3" +
-		"\1\0\1\0\1\4\0\1\3\2\1\2\1\3\2\0\1\3\3\7\5\1\0\1\7\13\1\2\2\4\3\0\1\5\11\2\2\2\3" +
+		"\1\0\1\0\1\4\0\1\3\2\1\2\1\3\2\0\1\3\3\7\5\1\0\1\13\7\1\2\2\4\3\0\1\5\11\2\2\2\3" +
 		"\1\1\3\1\1\1\1\1\4\3\6\10\12\6\10\4\1\1\6\3\3\0\1\5\3\5\1\1\1\1\1\1\2\2\1\3\3\3\3" +
 		"\3\3\3\3\3\1\3\3\1\3\3\1\3\3\1\5\1\3\1\3\1\3\1\1");
 
@@ -881,11 +881,11 @@ public class TemplatesParser {
 			case 61:  // else_clause ::= control_end
 				 lapg_gg.value = null; 
 				break;
-			case 64:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list control_end
-				 lapg_gg.value = new SwitchNode(((ExpressionNode)lapg_m[lapg_head - 4].value), ((ArrayList)lapg_m[lapg_head - 1].value), null, source, lapg_gg.offset,lapg_gg.endoffset); checkIsSpace(lapg_m[lapg_head - 2].offset,lapg_m[lapg_head - 2].endoffset, lapg_m[lapg_head - 2].line); 
-				break;
-			case 65:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list '${' Lelse '[-]}' instructions control_end
+			case 64:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list '${' Lelse '[-]}' instructions control_end
 				 lapg_gg.value = new SwitchNode(((ExpressionNode)lapg_m[lapg_head - 8].value), ((ArrayList)lapg_m[lapg_head - 5].value), ((ArrayList<Node>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset,lapg_gg.endoffset); checkIsSpace(lapg_m[lapg_head - 6].offset,lapg_m[lapg_head - 6].endoffset, lapg_m[lapg_head - 6].line); 
+				break;
+			case 65:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list control_end
+				 lapg_gg.value = new SwitchNode(((ExpressionNode)lapg_m[lapg_head - 4].value), ((ArrayList)lapg_m[lapg_head - 1].value), ((ArrayList<Node>)null), source, lapg_gg.offset,lapg_gg.endoffset); checkIsSpace(lapg_m[lapg_head - 2].offset,lapg_m[lapg_head - 2].endoffset, lapg_m[lapg_head - 2].line); 
 				break;
 			case 66:  // case_list ::= one_case
 				 lapg_gg.value = new ArrayList(); ((ArrayList)lapg_gg.value).add(((CaseNode)lapg_m[lapg_head].value)); 

@@ -223,10 +223,8 @@ else_clause (ElseIfNode) ::=
 ;   
 
 switch_instruction (CompoundNode) ::=
-	'${' Lswitch expression '[-]}' anyopt 
-           case_list control_end            		{ $$ = new SwitchNode($expression, $case_list, null, source, ${left().offset},${left().endoffset}); checkIsSpace(${anyopt.offset},${anyopt.endoffset}, ${anyopt.line}); }
-	| '${' Lswitch expression '[-]}' anyopt 
-           case_list '${' Lelse '[-]}' instructions control_end
+	'${' Lswitch expression '[-]}' anyopt
+           case_list ('${' Lelse '[-]}' instructions)? control_end
 													{ $$ = new SwitchNode($expression, $case_list, $instructions, source, ${left().offset},${left().endoffset}); checkIsSpace(${anyopt.offset},${anyopt.endoffset}, ${anyopt.line}); }
 ;
 
