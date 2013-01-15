@@ -16,10 +16,9 @@
 package org.textmapper.tool.test.cases;
 
 import org.junit.Test;
-import org.textmapper.lapg.api.LexicalRule;
-import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
@@ -89,7 +88,7 @@ public class InputTest extends LapgTestCase {
 		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexicalRules[1]
 				.getRegexp().toString());
 		assertEquals("[\\t\\r\\n ]+", lexicalRules[2].getRegexp().toString());
-		assertEquals(" continue; ", g.getCode(lexicalRules[2]).getText());
+		assertEquals(" continue; ", TMDataUtil.getCode(lexicalRules[2]).getText());
 	}
 
 	@Test
@@ -112,7 +111,7 @@ public class InputTest extends LapgTestCase {
 		assertEquals("subitem", syms[9].getName());
 		assertEquals("listopt", syms[10].getName());
 		assertEquals(13, g.getGrammar().getRules().length);
-		assertEquals("  ${for a in b}..!..$$  ", g.getCode(g.getGrammar().getRules()[7]).getText());
+		assertEquals("  ${for a in b}..!..$$  ", TMDataUtil.getCode(g.getGrammar().getRules()[7]).getText());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
 		assertNotNull(g.getGrammar().getRules()[9].getRight()[0].getNegativeLA());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet().length);

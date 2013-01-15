@@ -35,6 +35,7 @@ public class LiUserDataHolder implements UserDataHolder {
 	@Override
 	public void putUserData(String key, Object value) {
 		if (userData == null) {
+			if (value == null) return;
 			userData = new HashMap<String, Object>();
 		}
 		userData.put(key, value);

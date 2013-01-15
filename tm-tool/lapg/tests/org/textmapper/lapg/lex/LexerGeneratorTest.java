@@ -359,6 +359,16 @@ public class LexerGeneratorTest {
 				public String kindAsString() {
 					throw new UnsupportedOperationException();
 				}
+
+				@Override
+				public Object getUserData(String key) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public void putUserData(String key, Object value) {
+					throw new UnsupportedOperationException();
+				}
 			};
 		}
 

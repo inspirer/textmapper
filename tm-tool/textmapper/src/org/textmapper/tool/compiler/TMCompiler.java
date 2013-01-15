@@ -48,12 +48,9 @@ public class TMCompiler {
 	private String myTypesPackage;
 
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
-	private final Map<Symbol, String> identifierMap = new HashMap<Symbol, String>();
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<AstLexeme, TMLexicalRule> lexemeMap = new HashMap<AstLexeme, TMLexicalRule>();
 
-	private final Map<SourceElement, Map<String, Object>> annotationsMap = new HashMap<SourceElement, Map<String, Object>>();
-	private final Map<SourceElement, TextSourceElement> codeMap = new HashMap<SourceElement, TextSourceElement>();
 	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
 
 	private Map<String, Object> options;
@@ -110,18 +107,16 @@ public class TMCompiler {
 		}
 		for (int i = 0; i < g.getSymbols().length; i++) {
 			Symbol sym = g.getSymbols()[i];
-			identifierMap.put(sym, helper.generateId(sym.getName(), i));
+			TMDataUtil.putId(sym, helper.generateId(sym.getName(), i));
 		}
 
-		Map<LexicalRule, TMStateTransitionSwitch> transitionMap = new HashMap<LexicalRule, TMStateTransitionSwitch>();
 		for (LexicalRule rule : g.getLexicalRules()) {
 			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
 			TMLexicalRule lapgRule = lexemeMap.get(astLexeme);
-			transitionMap.put(rule, lapgRule.getTransitions());
+			TMDataUtil.putTransition(rule, lapgRule.getTransitions());
 		}
 
-		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader,
-				identifierMap, annotationsMap, codeMap, transitionMap);
+		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
 	}
 
 	private TextSourceElement getTemplates() {
@@ -372,10 +367,12 @@ public class TMCompiler {
 				LexicalRule liLexicalRule = builder.addLexicalRule(LexicalRule.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 						null, lexeme);
 				classRules.add(liLexicalRule);
-				codeMap.put(liLexicalRule, lexeme.getCode());
+				TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
+
 			} else if (clause instanceof AstStateSelector) {
 				activeStates = convertApplicableStates((AstStateSelector) clause);
 				activeTransitions = convertTransitions((AstStateSelector) clause);
+
 			} else if (clause instanceof AstNamedPattern) {
 				AstNamedPattern astpattern = (AstNamedPattern) clause;
 				String name = astpattern.getName();
@@ -454,7 +451,8 @@ public class TMCompiler {
 							kind == LexicalRule.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
 					LexicalRule liLexicalRule = builder.addLexicalRule(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 							classRule, lexeme);
-					codeMap.put(liLexicalRule, lexeme.getCode());
+					TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
+
 				} else {
 					if (kind == LexicalRule.KIND_SOFT) {
 						error(lexeme, "soft lexeme rule `" + lexeme.getName().getName() + "' should have a regular expression");
@@ -468,10 +466,10 @@ public class TMCompiler {
 	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {
 		if (annotations != null) {
 			Symbol sym = symbolsMap.get(id.getName());
-			Map<String, Object> symAnnotations = annotationsMap.get(sym);
+			Map<String, Object> symAnnotations = TMDataUtil.getAnnotations(sym);
 			if (symAnnotations == null) {
 				symAnnotations = new HashMap<String, Object>();
-				annotationsMap.put(sym, symAnnotations);
+				TMDataUtil.putAnnotations(sym, symAnnotations);
 			}
 			for (Map.Entry<String, Object> ann : annotations.entrySet()) {
 				if (symAnnotations.containsKey(ann.getKey())) {
@@ -535,8 +533,8 @@ public class TMCompiler {
 		Collection<Rule> result = builder.addRule(right.getAlias(), left, builder.sequence(rhs, right), prio);
 		Map<String, Object> annotations = convert(right.getAnnotations(), "AnnotateRule");
 		for (Rule r : result) {
-			annotationsMap.put(r, annotations);
-			codeMap.put(r, lastAction);
+			TMDataUtil.putAnnotations(r, annotations);
+			TMDataUtil.putCode(r, lastAction);
 		}
 	}
 
@@ -546,7 +544,7 @@ public class TMCompiler {
 			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
 			Collection<Rule> actionRules = builder.addRule(null, codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
-				codeMap.put(actionRule, astCode);
+				TMDataUtil.putCode(actionRule, astCode);
 			}
 			return builder.symbol(null, codeSym, null, astCode);
 
@@ -593,7 +591,7 @@ public class TMCompiler {
 
 			Symbol optsym = resolve(outer, optionalPart);
 			RhsSymbol symbol = builder.symbol(alias, optsym, nla, optionalPart);
-			annotationsMap.put(symbol, annotations);
+			TMDataUtil.putAnnotations(symbol, annotations);
 			return builder.optional(symbol, refPart);
 		}
 
@@ -610,7 +608,7 @@ public class TMCompiler {
 
 		Symbol sym = resolve(outer, refPart.getReference());
 		RhsSymbol rhsSymbol = builder.symbol(alias, sym, nla, refPart.getReference());
-		annotationsMap.put(rhsSymbol, annotations);
+		TMDataUtil.putAnnotations(rhsSymbol, annotations);
 		return rhsSymbol;
 	}
 

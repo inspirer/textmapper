@@ -27,24 +27,13 @@ public class TMGrammar {
 	private final Map<String, Object> options;
 	private final String copyrightHeader;
 
-	private final Map<Symbol, String> identifierMap;
-	private final Map<SourceElement, Map<String, Object>> annotationsMap;
-	private final Map<SourceElement, TextSourceElement> codeMap;
-	private final Map<LexicalRule, TMStateTransitionSwitch> transitionMap;
-
 	public TMGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-					 String copyrightHeader, Map<Symbol, String> identifierMap,
-					 Map<SourceElement, Map<String, Object>> annotationsMap, Map<SourceElement, TextSourceElement> codeMap,
-					 Map<LexicalRule, TMStateTransitionSwitch> transitionMap) {
+					 String copyrightHeader) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
 		this.options = options;
 		this.copyrightHeader = copyrightHeader;
-		this.identifierMap = identifierMap;
-		this.annotationsMap = annotationsMap;
-		this.codeMap = codeMap;
-		this.transitionMap = transitionMap;
 	}
 
 	public Grammar getGrammar() {
@@ -68,19 +57,8 @@ public class TMGrammar {
 	}
 
 	public Object getAnnotation(SourceElement element, String name) {
-		Map<String, Object> annotations = annotationsMap.get(element);
+		Map<String, Object> annotations = TMDataUtil.getAnnotations((UserDataHolder) element);
 		return annotations != null ? annotations.get(name) : null;
 	}
 
-	public TextSourceElement getCode(SourceElement element) {
-		return codeMap.get(element);
-	}
-	
-	public String getId(Symbol sym) {
-		return identifierMap.get(sym);
-	}
-
-	public TMStateTransitionSwitch getTransition(LexicalRule l) {
-		return transitionMap.get(l);
-	}
 }

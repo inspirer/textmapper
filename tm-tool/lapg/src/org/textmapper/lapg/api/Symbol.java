@@ -15,7 +15,7 @@
  */
 package org.textmapper.lapg.api;
 
-public interface Symbol extends SourceElement {
+public interface Symbol extends SourceElement, UserDataHolder {
 
 	static final String EOI = "eoi";
 	static final String ERROR = "error";

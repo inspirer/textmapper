@@ -15,10 +15,7 @@
  */
 package org.textmapper.tool.gen;
 
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.LexicalRule;
-import org.textmapper.lapg.api.Rule;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.templates.api.EvaluationContext;
@@ -28,6 +25,7 @@ import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.objects.JavaIxFactory;
+import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
 
 import java.util.*;
@@ -90,10 +88,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("action".equals(propertyName)) {
-				return grammar.getCode(lexicalRule);
+				return TMDataUtil.getCode(lexicalRule);
 			}
 			if ("transitions".equals(propertyName)) {
-				return grammar.getTransition(lexicalRule);
+				return TMDataUtil.getTransition(lexicalRule);
 			}
 			return super.getProperty(propertyName);
 		}
@@ -113,7 +111,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		public Object callMethod(String methodName, Object... args) throws EvaluationException {
 			if (args == null || args.length == 0) {
 				if ("getAction".equals(methodName)) {
-					return grammar.getCode(rule);
+					return TMDataUtil.getCode(rule);
 				}
 				if ("left".equals(methodName)) {
 					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
@@ -218,7 +216,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("id".equals(propertyName)) {
-				return grammar.getId(sym);
+				return TMDataUtil.getId(sym);
 			}
 			return super.getProperty(propertyName);
 		}

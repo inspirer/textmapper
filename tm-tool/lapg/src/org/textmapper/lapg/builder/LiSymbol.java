@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.DerivedSourceElement;
 
-abstract class LiSymbol implements Symbol, DerivedSourceElement {
+abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourceElement {
 
 	private int index;
 	private final String name;
