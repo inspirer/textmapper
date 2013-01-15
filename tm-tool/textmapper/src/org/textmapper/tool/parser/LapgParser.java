@@ -609,7 +609,7 @@ public class LapgParser {
 				  lapg_gg.value = new AstRoot(((List<AstOptionPart>)lapg_m[lapg_head - 2].value), ((List<AstLexerPart>)lapg_m[lapg_head - 1].value), ((List<AstGrammarPart>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 3:  // input ::= lexer_parts grammar_partsopt
-				  lapg_gg.value = new AstRoot(null, ((List<AstLexerPart>)lapg_m[lapg_head - 1].value), ((List<AstGrammarPart>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				  lapg_gg.value = new AstRoot(((List<AstOptionPart>)null), ((List<AstLexerPart>)lapg_m[lapg_head - 1].value), ((List<AstGrammarPart>)lapg_m[lapg_head].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 4:  // options ::= option
 				 lapg_gg.value = new ArrayList<AstOptionPart>(16); ((List<AstOptionPart>)lapg_gg.value).add(((AstOptionPart)lapg_m[lapg_head].value)); 
@@ -753,7 +753,7 @@ public class LapgParser {
 				 lapg_gg.value = new AstRulePrefix(((AstRuleAnnotations)lapg_m[lapg_head - 2].value), ((String)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 91:  // ruleprefix ::= ID ':'
-				 lapg_gg.value = new AstRulePrefix(null, ((String)lapg_m[lapg_head - 1].value)); 
+				 lapg_gg.value = new AstRulePrefix(((AstRuleAnnotations)null), ((String)lapg_m[lapg_head - 1].value)); 
 				break;
 			case 92:  // ruleparts ::= rulepart
 				 lapg_gg.value = new ArrayList<AstRulePart>(); ((List<AstRulePart>)lapg_gg.value).add(((AstRulePart)lapg_m[lapg_head].value)); 

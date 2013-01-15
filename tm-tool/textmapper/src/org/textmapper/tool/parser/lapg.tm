@@ -95,8 +95,7 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 %input input, expression;
 
 input (AstRoot) ::=
-	  options lexer_parts grammar_partsopt              {  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
-	| lexer_parts grammar_partsopt                      {  $$ = new AstRoot(null, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+	  options? lexer_parts grammar_partsopt              {  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 options (List<AstOptionPart>) ::=
@@ -238,8 +237,7 @@ rule0 (AstRule) ::=
 
 ruleprefix (AstRulePrefix) ::=
 	  annotations ':'									{ $$ = new AstRulePrefix($annotations, null); }
-	| ruleannotations ID ':'							{ $$ = new AstRulePrefix($ruleannotations, $ID); }
-	| ID ':'											{ $$ = new AstRulePrefix(null, $ID); }
+	| ruleannotations? alias=ID ':'						{ $$ = new AstRulePrefix($ruleannotations, $alias); }
 ;
 
 ruleparts (List<AstRulePart>) ::=
