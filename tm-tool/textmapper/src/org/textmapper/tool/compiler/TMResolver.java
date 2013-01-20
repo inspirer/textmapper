@@ -15,11 +15,15 @@
  */
 package org.textmapper.tool.compiler;
 
+import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.LexerState;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.regex.RegexContext;
+import org.textmapper.lapg.api.regex.RegexParseException;
+import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.tool.parser.LapgTree;
 import org.textmapper.tool.parser.LapgTree.LapgProblem;
 import org.textmapper.tool.parser.ast.*;
@@ -40,6 +44,7 @@ public class TMResolver {
 
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
+	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 	public TMResolver(LapgTree<AstRoot> tree, GrammarBuilder builder) {
 		this.tree = tree;
@@ -50,6 +55,11 @@ public class TMResolver {
 		symbolsMap.put(Symbol.EOI, builder.getEoi());
 
 		collectLexerStates();
+		collectTerminals();
+
+		if (tree.getRoot().getGrammar() != null) {
+			collectNonterminals();
+		}
 	}
 
 	private void collectLexerStates() {
@@ -82,12 +92,51 @@ public class TMResolver {
 		}
 	}
 
+	private void collectTerminals() {
+		for (AstLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof AstLexeme) {
+				// TODO
+
+			} else if (clause instanceof AstNamedPattern) {
+				AstNamedPattern astpattern = (AstNamedPattern) clause;
+				String name = astpattern.getName();
+				RegexPart regex;
+				try {
+					regex = LapgCore.parse(name, astpattern.getRegexp().getRegexp());
+				} catch (RegexParseException e) {
+					error(astpattern.getRegexp(), e.getMessage());
+					continue;
+				}
+				if (namedPatternsMap.get(name) != null) {
+					error(astpattern, "redeclaration of named pattern `" + name + "'");
+				} else {
+					builder.addPattern(name, regex, astpattern);
+					namedPatternsMap.put(name, regex);
+				}
+			}
+		}
+	}
+
+	private void collectNonterminals() {
+		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof AstNonTerm) {
+				AstNonTerm nonterm = (AstNonTerm) clause;
+				create(nonterm.getName(), nonterm.getType(), Symbol.KIND_NONTERM, null);
+			}
+		}
+	}
+
+
 	public LexerState getState(String name) {
 		return statesMap.get(name);
 	}
 
 	public Symbol getSymbol(String name) {
 		return symbolsMap.get(name);
+	}
+
+	public RegexContext createRegexContext() {
+		return LapgCore.createContext(namedPatternsMap);
 	}
 
 	// TODO make private

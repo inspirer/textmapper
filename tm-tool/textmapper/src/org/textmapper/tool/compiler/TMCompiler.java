@@ -67,10 +67,10 @@ public class TMCompiler {
 		resolver = new TMResolver(tree, builder);
 		resolver.collectSymbols();
 
-		collectLexems();
+		collectLexerRules();
 
 		if (tree.getRoot().getGrammar() != null) {
-			collectNonTerminals();
+			collectAnnotations();
 			collectRules();
 			collectDirectives();
 
@@ -211,9 +211,8 @@ public class TMCompiler {
 		return result;
 	}
 
-	private void collectLexems() {
+	private void collectLexerRules() {
 		List<LexicalRule> classRules = new LinkedList<LexicalRule>();
-		Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 		// Step 1. Process class lexems, named patterns & groups.
 
@@ -251,28 +250,12 @@ public class TMCompiler {
 				activeStates = convertApplicableStates((AstStateSelector) clause);
 				activeTransitions = convertTransitions((AstStateSelector) clause);
 
-			} else if (clause instanceof AstNamedPattern) {
-				AstNamedPattern astpattern = (AstNamedPattern) clause;
-				String name = astpattern.getName();
-				RegexPart regex;
-				try {
-					regex = LapgCore.parse(name, astpattern.getRegexp().getRegexp());
-				} catch (RegexParseException e) {
-					error(astpattern.getRegexp(), e.getMessage());
-					continue;
-				}
-				if (namedPatternsMap.get(name) != null) {
-					error(astpattern, "redeclaration of named pattern `" + name + "'");
-				} else {
-					builder.addPattern(name, regex, astpattern);
-					namedPatternsMap.put(name, regex);
-				}
 			}
 		}
 
 		// Step 2. Process other lexems. Match soft lexems with their classes.
 
-		RegexContext context = LapgCore.createContext(namedPatternsMap);
+		RegexContext context = resolver.createRegexContext();
 		Map<LexicalRule, RegexMatcher> classMatchers = new LinkedHashMap<LexicalRule, RegexMatcher>();
 		for (LexicalRule clRule : classRules) {
 			classMatchers.put(clRule, LapgCore.createMatcher(clRule.getRegexp(), context));
@@ -360,13 +343,7 @@ public class TMCompiler {
 		}
 	}
 
-	private void collectNonTerminals() {
-		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof AstNonTerm) {
-				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), Symbol.KIND_NONTERM, null);
-			}
-		}
+	private void collectAnnotations() {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
