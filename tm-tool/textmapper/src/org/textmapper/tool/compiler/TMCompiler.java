@@ -33,22 +33,17 @@ import org.textmapper.templates.types.TiExpressionBuilder;
 import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.templates.types.TypesUtil;
 import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
 import org.textmapper.tool.parser.ast.*;
 
 import java.util.*;
 
 public class TMCompiler {
 
-	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
-	private static final String INITIAL_STATE = "initial";
-
+	private TMResolver resolver;
 	private final LapgTree<AstRoot> tree;
 	private final TypesRegistry types;
 	private String myTypesPackage;
 
-	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
-	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<AstLexeme, TMLexicalRule> lexemeMap = new HashMap<AstLexeme, TMLexicalRule>();
 
 	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
@@ -69,8 +64,9 @@ public class TMCompiler {
 		myTypesPackage = getTypesPackage();
 
 		builder = LapgCore.createBuilder();
-		symbolsMap.put(Symbol.EOI, builder.getEoi());
-		collectLexerStates();
+		resolver = new TMResolver(tree, builder);
+		resolver.collectSymbols();
+
 		collectLexems();
 
 		if (tree.getRoot().getGrammar() != null) {
@@ -79,7 +75,7 @@ public class TMCompiler {
 			collectDirectives();
 
 			if (!hasInputs) {
-				Symbol input = symbolsMap.get("input");
+				Symbol input = resolver.getSymbol("input");
 				if (input == null) {
 					error(tree.getRoot(), "no input non-terminal");
 				} else if (!(input instanceof Nonterminal)) {
@@ -133,101 +129,13 @@ public class TMCompiler {
 	}
 
 	private Symbol create(AstIdentifier id, String type, int kind, Terminal softClass) {
-		String name = id.getName();
-		if (symbolsMap.containsKey(name)) {
-			Symbol sym = symbolsMap.get(name);
-			if (sym.getKind() != kind) {
-				error(id, "redeclaration of " + sym.kindAsString() + ": " + name);
-			} else if (!UniqueNameHelper.safeEquals(sym.getType(), type) && !(kind == Symbol.KIND_SOFTTERM && type == null)) {
-				error(id,
-						"redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of "
-								+ (sym.getType() == null ? "<empty>" : sym.getType()));
-			} else if (kind == Symbol.KIND_SOFTTERM && softClass != ((Terminal) sym).getSoftClass()) {
-				Symbol symSoftClass = ((Terminal) sym).getSoftClass();
-				error(id, "redeclaration of soft class: " + (softClass == null ? "<undefined>" : softClass.getName())
-						+ " instead of " + (symSoftClass == null ? "<undefined>" : symSoftClass.getName()));
-			}
-			return sym;
-		} else {
-			Symbol sym;
-			if (kind == Symbol.KIND_SOFTTERM) {
-				sym = builder.addSoftTerminal(name, softClass, id);
-			} else if (kind == Symbol.KIND_NONTERM) {
-				sym = builder.addNonterminal(name, type, id);
-			} else if (kind == Symbol.KIND_TERM) {
-				sym = builder.addTerminal(name, type, id);
-			} else {
-				throw new IllegalArgumentException();
-			}
-			symbolsMap.put(name, sym);
-			return sym;
-		}
-	}
-
-	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
-
-	private Symbol createNested(int kind, String type, Symbol outer, Terminal softClass, IAstNode source) {
-		final String base_ = outer.getName() + "$";
-		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
-		while (symbolsMap.containsKey(base_ + index)) {
-			index++;
-		}
-		String name = base_ + index;
-
-		Symbol sym;
-		if (kind == Symbol.KIND_SOFTTERM) {
-			sym = builder.addSoftTerminal(name, softClass, source);
-		} else if (kind == Symbol.KIND_NONTERM) {
-			sym = builder.addNonterminal(name, type, source);
-		} else if (kind == Symbol.KIND_TERM) {
-			sym = builder.addTerminal(name, type, source);
-		} else {
-			throw new IllegalArgumentException();
-		}
-
-		symbolsMap.put(name, sym);
-		lastIndex.put(base_, index + 1);
-		return sym;
-	}
-
-	private Nonterminal createDerived(Symbol element, String suffix, IAstNode source) {
-		final String base_ = element.getName() + suffix;
-		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
-		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
-			index++;
-		}
-		String name = index == 0 ? base_ : base_ + index;
-		Nonterminal sym = builder.addNonterminal(name, null, source);
-		symbolsMap.put(name, sym);
-		lastIndex.put(base_, index + 1);
-		return sym;
-	}
-
-	private Symbol resolve(AstReference id) {
-		String name = id.getName();
-		Symbol sym = symbolsMap.get(name);
-		if (sym == null) {
-			if (name.length() > 3 && name.endsWith("opt")) {
-				sym = symbolsMap.get(name.substring(0, name.length() - 3));
-				if (sym != null) {
-					Nonterminal symopt = (Nonterminal) create(
-							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
-							sym.getType(), Symbol.KIND_NONTERM, null);
-					// TODO replace next 2 lines with: ... builder.optional(builder.symbol(null, sym, null, id), id)
-					builder.addRule(null, symopt, builder.empty(id), null);
-					builder.addRule(null, symopt, builder.symbol(null, sym, null, id), null);
-					return symopt;
-				}
-			}
-			error(id, name + " cannot be resolved");
-		}
-		return sym;
+		return resolver.create(id, type, kind, softClass);
 	}
 
 	private List<LexerState> convertApplicableStates(AstStateSelector selector) {
 		List<LexerState> result = new ArrayList<LexerState>();
 		for (AstLexerState state : selector.getStates()) {
-			LexerState applicable = statesMap.get(state.getName().getName());
+			LexerState applicable = resolver.getState(state.getName().getName());
 			result.add(applicable);
 		}
 		return result;
@@ -248,7 +156,7 @@ public class TMCompiler {
 				continue;
 			}
 			String targetName = state.getDefaultTransition().getName();
-			LexerState target = statesMap.get(targetName);
+			LexerState target = resolver.getState(targetName);
 			if (target == null) {
 				error(state.getDefaultTransition(), targetName + " cannot be resolved");
 				continue;
@@ -257,7 +165,7 @@ public class TMCompiler {
 			if (defaultTransition == null && !(noDefault)) {
 				defaultTransition = target;
 			} else if (defaultTransition != target) {
-				LexerState source = statesMap.get(state.getName().getName());
+				LexerState source = resolver.getState(state.getName().getName());
 				stateSwitch.put(source, target);
 			}
 		}
@@ -269,7 +177,7 @@ public class TMCompiler {
 		AstReference transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
-			LexerState target = statesMap.get(targetName);
+			LexerState target = resolver.getState(targetName);
 			if (target == null) {
 				error(transition, targetName + " cannot be resolved");
 			} else {
@@ -303,36 +211,6 @@ public class TMCompiler {
 		return result;
 	}
 
-	private void collectLexerStates() {
-		AstIdentifier initialOrigin = null;
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstStateSelector) {
-				for (AstLexerState state : ((AstStateSelector) clause).getStates()) {
-					if (state.getName().getName().equals(INITIAL_STATE)) {
-						initialOrigin = state.getName();
-						break;
-					}
-				}
-				if (initialOrigin != null) {
-					break;
-				}
-			}
-		}
-
-		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstStateSelector) {
-				AstStateSelector selector = (AstStateSelector) clause;
-				for (AstLexerState state : selector.getStates()) {
-					String name = state.getName().getName();
-					if (!statesMap.containsKey(name)) {
-						statesMap.put(name, builder.addState(name, state.getName()));
-					}
-				}
-			}
-		}
-	}
-
 	private void collectLexems() {
 		List<LexicalRule> classRules = new LinkedList<LexicalRule>();
 		Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
@@ -340,7 +218,7 @@ public class TMCompiler {
 		// Step 1. Process class lexems, named patterns & groups.
 
 		TMStateTransitionSwitch activeTransitions = null;
-		List<LexerState> activeStates = Collections.singletonList(statesMap.get(INITIAL_STATE));
+		List<LexerState> activeStates = Collections.singletonList(resolver.getState(TMResolver.INITIAL_STATE));
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
@@ -465,7 +343,7 @@ public class TMCompiler {
 
 	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {
 		if (annotations != null) {
-			Symbol sym = symbolsMap.get(id.getName());
+			Symbol sym = resolver.getSymbol(id.getName());
 			Map<String, Object> symAnnotations = TMDataUtil.getAnnotations(sym);
 			if (symAnnotations == null) {
 				symAnnotations = new HashMap<String, Object>();
@@ -520,7 +398,7 @@ public class TMCompiler {
 				: null;
 		Terminal prio = null;
 		if (rulePrio != null) {
-			Symbol prioSym = resolve(rulePrio);
+			Symbol prioSym = resolver.resolve(rulePrio);
 			if (prioSym instanceof Terminal) {
 				prio = (Terminal) prioSym;
 			} else if (prioSym != null) {
@@ -541,7 +419,7 @@ public class TMCompiler {
 	private RhsPart convertRulePart(Symbol outer, AstRulePart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
-			Nonterminal codeSym = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
+			Nonterminal codeSym = (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
 			Collection<Rule> actionRules = builder.addRule(null, codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
 				TMDataUtil.putCode(actionRule, astCode);
@@ -637,10 +515,10 @@ public class TMCompiler {
 
 	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
 		if (rulesymref instanceof AstRuleDefaultSymbolRef) {
-			return resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
+			return resolver.resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
 
 		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
-			Nonterminal nested = (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			Nonterminal nested = (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
 			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
 			for (AstRule right : rules) {
 				if (!right.hasSyntaxError()) {
@@ -655,7 +533,7 @@ public class TMCompiler {
 			RhsPart inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
 			for (AstReference ref : listWithSeparator.getSeparator()) {
-				Symbol s = resolve(ref);
+				Symbol s = resolver.resolve(ref);
 				if (s == null) {
 					continue;
 				}
@@ -700,8 +578,8 @@ public class TMCompiler {
 
 		Symbol representative = RhsUtil.getRepresentative(inner);
 		listSymbol = representative != null
-				? createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
-				: (Nonterminal) createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
+				? resolver.createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
+				: (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
 
 
 		List<RhsPart> list = new ArrayList<RhsPart>();
@@ -727,7 +605,7 @@ public class TMCompiler {
 
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			Nonterminal symopt = createDerived(listSymbol, "_opt", origin);
+			Nonterminal symopt = resolver.createDerived(listSymbol, "_opt", origin);
 			builder.addRule(null, symopt, builder.empty(origin), null);
 			builder.addRule(null, symopt, builder.symbol(null, listSymbol, null, origin), null);
 			listSymbol = symopt;
@@ -825,7 +703,7 @@ public class TMCompiler {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				Symbol left = symbolsMap.get(nonterm.getName().getName());
+				Symbol left = resolver.getSymbol(nonterm.getName().getName());
 				if (left == null || !(left instanceof Nonterminal)) {
 					continue; /* error is already reported */
 				}
@@ -841,7 +719,7 @@ public class TMCompiler {
 	private List<Terminal> resolveTerminals(List<AstReference> input) {
 		List<Terminal> result = new ArrayList<Terminal>(input.size());
 		for (AstReference id : input) {
-			Symbol sym = resolve(id);
+			Symbol sym = resolver.resolve(id);
 			if (sym instanceof Terminal) {
 				result.add((Terminal) sym);
 			} else if (sym != null) {
@@ -872,7 +750,7 @@ public class TMCompiler {
 			} else if (clause instanceof AstInputDirective) {
 				List<AstInputRef> refs = ((AstInputDirective) clause).getInputRefs();
 				for (AstInputRef inputRef : refs) {
-					Symbol sym = resolve(inputRef.getReference());
+					Symbol sym = resolver.resolve(inputRef.getReference());
 					boolean hasEoi = !inputRef.isNonEoi();
 					if (sym instanceof Nonterminal) {
 						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
@@ -938,7 +816,7 @@ public class TMCompiler {
 	}
 
 	private void error(IAstNode n, String message) {
-		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
+		resolver.error(n, message);
 	}
 
 	private Collection<Terminal> convertLA(AstRuleAnnotations astAnnotations) {
@@ -1039,7 +917,7 @@ public class TMCompiler {
 								+ "`");
 						return null;
 					}
-					return TMCompiler.this.resolve((AstReference) expression);
+					return resolver.resolve((AstReference) expression);
 				}
 				if (expression instanceof AstLiteralExpression) {
 					Object literal = ((AstLiteralExpression) expression).getLiteral();
@@ -1053,19 +931,6 @@ public class TMCompiler {
 				error(expression, message);
 			}
 		}.resolve(expression, type);
-	}
-
-	private static class LapgResolverProblem extends LapgProblem {
-		private static final long serialVersionUID = 3810706800688899470L;
-
-		public LapgResolverProblem(int kind, int offset, int endoffset, String message) {
-			super(kind, offset, endoffset, message, null);
-		}
-
-		@Override
-		public String getSource() {
-			return RESOLVER_SOURCE;
-		}
 	}
 
 	private static class ListDescriptor {
