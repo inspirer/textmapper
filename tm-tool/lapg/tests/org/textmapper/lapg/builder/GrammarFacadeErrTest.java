@@ -39,12 +39,14 @@ public class GrammarFacadeErrTest {
 		builder.addTerminal("sym", "string", null);
 	}
 
+/*
 	@Test(expected = IllegalStateException.class)
 	public void testErrorDuplicateSoftName() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Terminal symbol = builder.addTerminal("sym", "string", null);
 		builder.addSoftTerminal("sym", symbol, null);
 	}
+*/
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullSymbol() throws Exception {
@@ -98,7 +100,8 @@ public class GrammarFacadeErrTest {
 	public void testErrorSoftVsNonSoft() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		Terminal classterm = builder.addTerminal("id", "string", null);
-		Terminal softterm = builder.addSoftTerminal("keyword", classterm, null);
+		Terminal softterm = builder.addTerminal("keyword", null, null);
+		builder.makeSoft(softterm, classterm);
 		builder.addLexicalRule(LexicalRule.KIND_NONE, softterm, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
@@ -109,10 +112,12 @@ public class GrammarFacadeErrTest {
 		builder.addLexicalRule(LexicalRule.KIND_SOFT, term, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
+/*
 	@Test(expected = NullPointerException.class)
 	public void testErrorSoftNullClass() throws Exception {
 		GrammarFacade.createBuilder().addSoftTerminal("name", null, null);
 	}
+*/
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorBadPriority() throws Exception {

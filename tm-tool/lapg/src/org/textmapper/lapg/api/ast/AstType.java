@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.api.ast;
 
-public interface Symbol extends SourceElement, UserDataHolder {
+public interface AstType {
 
-	static final String EOI = "eoi";
-	static final String ERROR = "error";
+	public static final AstType STRING = new PrimitiveType();
+	public static final AstType BOOL = new PrimitiveType();
 
-	int getIndex();
-
-	String getName();
-
-	String getType();
-
-	boolean isTerm();
+	static final class PrimitiveType implements AstType {
+	}
 }

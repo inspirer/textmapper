@@ -18,10 +18,6 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.regex.RegexContext;
-import org.textmapper.lapg.api.regex.RegexMatcher;
-import org.textmapper.lapg.api.regex.RegexParseException;
-import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -44,8 +40,6 @@ public class TMCompiler {
 	private final TypesRegistry types;
 	private String myTypesPackage;
 
-	private final Map<AstLexeme, TMLexicalRule> lexemeMap = new HashMap<AstLexeme, TMLexicalRule>();
-
 	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
 
 	private Map<String, Object> options;
@@ -67,7 +61,7 @@ public class TMCompiler {
 		resolver = new TMResolver(tree, builder);
 		resolver.collectSymbols();
 
-		collectLexerRules();
+		new TMLexerCompiler(resolver).collectLexerRules();
 
 		if (tree.getRoot().getGrammar() != null) {
 			collectAnnotations();
@@ -106,12 +100,6 @@ public class TMCompiler {
 			TMDataUtil.putId(sym, helper.generateId(sym.getName(), i));
 		}
 
-		for (LexicalRule rule : g.getLexicalRules()) {
-			AstLexeme astLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
-			TMLexicalRule lapgRule = lexemeMap.get(astLexeme);
-			TMDataUtil.putTransition(rule, lapgRule.getTransitions());
-		}
-
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
 	}
 
@@ -126,202 +114,6 @@ public class TMCompiler {
 			};
 		}
 		return null;
-	}
-
-	private Symbol create(AstIdentifier id, String type, int kind, Terminal softClass) {
-		return resolver.create(id, type, kind, softClass);
-	}
-
-	private List<LexerState> convertApplicableStates(AstStateSelector selector) {
-		List<LexerState> result = new ArrayList<LexerState>();
-		for (AstLexerState state : selector.getStates()) {
-			LexerState applicable = resolver.getState(state.getName().getName());
-			result.add(applicable);
-		}
-		return result;
-	}
-
-	private TMStateTransitionSwitch convertTransitions(AstStateSelector selector) {
-		boolean noDefault = false;
-		for (AstLexerState state : selector.getStates()) {
-			if (state.getDefaultTransition() == null) {
-				noDefault = true;
-			}
-		}
-
-		LexerState defaultTransition = null;
-		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<LexerState, LexerState>();
-		for (AstLexerState state : selector.getStates()) {
-			if (state.getDefaultTransition() == null) {
-				continue;
-			}
-			String targetName = state.getDefaultTransition().getName();
-			LexerState target = resolver.getState(targetName);
-			if (target == null) {
-				error(state.getDefaultTransition(), targetName + " cannot be resolved");
-				continue;
-			}
-
-			if (defaultTransition == null && !(noDefault)) {
-				defaultTransition = target;
-			} else if (defaultTransition != target) {
-				LexerState source = resolver.getState(state.getName().getName());
-				stateSwitch.put(source, target);
-			}
-		}
-		return stateSwitch.isEmpty() && defaultTransition == null ? null
-				: new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
-	}
-
-	private TMStateTransitionSwitch getTransition(AstLexeme lexeme, TMStateTransitionSwitch active) {
-		AstReference transition = lexeme.getTransition();
-		if (transition != null) {
-			String targetName = transition.getName();
-			LexerState target = resolver.getState(targetName);
-			if (target == null) {
-				error(transition, targetName + " cannot be resolved");
-			} else {
-				return new TMStateTransitionSwitch(target);
-			}
-		}
-		return active;
-	}
-
-	private LexicalRule getClassRule(Map<LexicalRule, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
-		LexicalRule result = null;
-		AstLexemAttrs attrs = l.getAttrs();
-		int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
-		if (regex.isConstant() && kind != LexicalRule.KIND_CLASS) {
-			for (LexicalRule rule : classMatchers.keySet()) {
-				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
-				if (!lexemeMap.get(astClassLexeme).canBeClassFor(lexemeMap.get(l))) {
-					continue;
-				}
-				RegexMatcher m = classMatchers.get(rule);
-				if (m.matches(regex.getConstantValue())) {
-					if (result != null) {
-						error(l, "regex matches two classes `" + result.getSymbol().getName() + "' and `"
-								+ rule.getSymbol().getName() + "', using first");
-					} else {
-						result = rule;
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	private void collectLexerRules() {
-		List<LexicalRule> classRules = new LinkedList<LexicalRule>();
-
-		// Step 1. Process class lexems, named patterns & groups.
-
-		TMStateTransitionSwitch activeTransitions = null;
-		List<LexerState> activeStates = Collections.singletonList(resolver.getState(TMResolver.INITIAL_STATE));
-
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstLexeme) {
-				AstLexeme lexeme = (AstLexeme) clause;
-				lexemeMap.put(lexeme, new TMLexicalRule(lexeme, getTransition(lexeme, activeTransitions), activeStates));
-				AstLexemAttrs attrs = lexeme.getAttrs();
-				if (attrs == null || attrs.getKind() != LexicalRule.KIND_CLASS) {
-					continue;
-				}
-				if (lexeme.getRegexp() == null) {
-					error(lexeme, "class lexeme rule without regular expression, ignored");
-					continue;
-				}
-
-				Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
-				RegexPart regex;
-				try {
-					regex = LapgCore.parse(s.getName(), lexeme.getRegexp().getRegexp());
-				} catch (RegexParseException e) {
-					error(lexeme.getRegexp(), e.getMessage());
-					continue;
-				}
-
-				LexicalRule liLexicalRule = builder.addLexicalRule(LexicalRule.KIND_CLASS, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
-						null, lexeme);
-				classRules.add(liLexicalRule);
-				TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
-
-			} else if (clause instanceof AstStateSelector) {
-				activeStates = convertApplicableStates((AstStateSelector) clause);
-				activeTransitions = convertTransitions((AstStateSelector) clause);
-
-			}
-		}
-
-		// Step 2. Process other lexems. Match soft lexems with their classes.
-
-		RegexContext context = resolver.createRegexContext();
-		Map<LexicalRule, RegexMatcher> classMatchers = new LinkedHashMap<LexicalRule, RegexMatcher>();
-		for (LexicalRule clRule : classRules) {
-			classMatchers.put(clRule, LapgCore.createMatcher(clRule.getRegexp(), context));
-		}
-
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstLexeme) {
-				AstLexeme lexeme = (AstLexeme) clause;
-				AstLexemAttrs attrs = lexeme.getAttrs();
-				int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
-				if (kind == LexicalRule.KIND_CLASS) {
-					continue;
-				}
-				if (lexeme.getRegexp() != null) {
-					String name = lexeme.getName().getName();
-					RegexPart regex;
-					try {
-						regex = LapgCore.parse(name, lexeme.getRegexp().getRegexp());
-					} catch (RegexParseException e) {
-						error(lexeme.getRegexp(), e.getMessage());
-						continue;
-					}
-
-					if (kind == LexicalRule.KIND_SOFT && lexeme.getCode() != null) {
-						error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getName()
-								+ "' cannot have a semantic action");
-					}
-					LexicalRule classRule = getClassRule(classMatchers, lexeme, regex);
-					Terminal softClass = null;
-					if (kind == LexicalRule.KIND_SOFT) {
-						if (classRule == null) {
-							if (!regex.isConstant()) {
-								error(lexeme, "soft lexeme rule `" + name + "' should have a constant regexp");
-							} else {
-								error(lexeme, "soft lexeme rule `" + name + "' doesn't match any class rule");
-							}
-							kind = LexicalRule.KIND_NONE;
-						} else {
-							softClass = classRule.getSymbol();
-
-							String type = lexeme.getType();
-							String classtype = softClass.getType();
-							if (type != null && !type.equals(classtype)) {
-								if (classtype == null) {
-									classtype = "<no type>";
-								}
-								error(lexeme, "soft terminal `" + name + "' overrides base type: expected `"
-										+ classtype + "', found `" + type + "'");
-							}
-						}
-					}
-
-					Terminal s = (Terminal) create(lexeme.getName(), lexeme.getType(),
-							kind == LexicalRule.KIND_SOFT ? Symbol.KIND_SOFTTERM : Symbol.KIND_TERM, softClass);
-					LexicalRule liLexicalRule = builder.addLexicalRule(kind, s, regex, lexemeMap.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
-							classRule, lexeme);
-					TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
-
-				} else {
-					if (kind == LexicalRule.KIND_SOFT) {
-						error(lexeme, "soft lexeme rule `" + lexeme.getName().getName() + "' should have a regular expression");
-					}
-					create(lexeme.getName(), lexeme.getType(), Symbol.KIND_TERM, null);
-				}
-			}
-		}
 	}
 
 	private void addSymbolAnnotations(AstIdentifier id, Map<String, Object> annotations) {
@@ -396,7 +188,7 @@ public class TMCompiler {
 	private RhsPart convertRulePart(Symbol outer, AstRulePart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
-			Nonterminal codeSym = (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, astCode);
+			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
 			Collection<Rule> actionRules = builder.addRule(null, codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
 				TMDataUtil.putCode(actionRule, astCode);
@@ -495,7 +287,7 @@ public class TMCompiler {
 			return resolver.resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
 
 		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
-			Nonterminal nested = (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, rulesymref);
+			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, rulesymref);
 			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
 			for (AstRule right : rules) {
 				if (!right.hasSyntaxError()) {
@@ -556,7 +348,7 @@ public class TMCompiler {
 		Symbol representative = RhsUtil.getRepresentative(inner);
 		listSymbol = representative != null
 				? resolver.createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
-				: (Nonterminal) resolver.createNested(Symbol.KIND_NONTERM, null, outer, null, origin);
+				: (Nonterminal) resolver.createNestedNonTerm(outer, origin);
 
 
 		List<RhsPart> list = new ArrayList<RhsPart>();

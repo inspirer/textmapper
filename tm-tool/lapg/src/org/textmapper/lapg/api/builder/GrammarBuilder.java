@@ -25,7 +25,7 @@ public interface GrammarBuilder {
 
 	Terminal addTerminal(String name, String type, SourceElement origin);
 
-	Terminal addSoftTerminal(String name, Terminal softClass, SourceElement origin);
+	void makeSoft(Terminal terminal, Terminal softClass);
 
 	Nonterminal addNonterminal(String name, String type, SourceElement origin);
 

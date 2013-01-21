@@ -52,10 +52,9 @@ public class GrammarFacadeTest {
 		assertEquals(3, symbols.length);
 		assertTrue(grammar.getEoi() == symbols[0]);
 		assertEquals("id", symbols[1].getName());
-		assertEquals(Symbol.KIND_TERM, symbols[1].getKind());
+		assertTrue(symbols[1].isTerm());
 		assertEquals("input", symbols[2].getName());
-		assertEquals(Symbol.KIND_NONTERM, symbols[2].getKind());
-		assertEquals("non-terminal", symbols[2].kindAsString());
+		assertFalse(symbols[2].isTerm());
 		for (int i = 0; i < symbols.length; i++) {
 			assertEquals(i, symbols[i].getIndex());
 		}
@@ -108,7 +107,8 @@ public class GrammarFacadeTest {
 
 		Terminal id = builder.addTerminal("id", "string", null);
 		LexicalRule idLexicalRule = builder.addLexicalRule(LexicalRule.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, null, null);
-		Terminal kw = builder.addSoftTerminal("kw", id, null);
+		Terminal kw = builder.addTerminal("kw", null, null);
+		builder.makeSoft(kw, id);
 		builder.addLexicalRule(LexicalRule.KIND_SOFT, kw, LapgCore.parse("kw", "keyword"), Collections.singleton(initial), 0, idLexicalRule, null);
 		Terminal spc = builder.addTerminal("spc", null, null);
 		builder.addLexicalRule(LexicalRule.KIND_SPACE, spc, LapgCore.parse("spc", "[\t ]+"), Collections.singleton(initial), 0, null, null);
@@ -120,24 +120,21 @@ public class GrammarFacadeTest {
 
 		// id
 		assertEquals("id", symbols[1].getName());
-		assertEquals(Symbol.KIND_TERM, symbols[1].getKind());
-		assertEquals("terminal", symbols[1].kindAsString());
+		assertTrue(symbols[1].isTerm());
 		assertTrue(symbols[1] instanceof Terminal);
 		assertFalse(((Terminal)symbols[1]).isSoft());
 		assertNull(((Terminal)symbols[1]).getSoftClass());
 
 		// kw
 		assertEquals("kw", symbols[2].getName());
-		assertEquals(Symbol.KIND_SOFTTERM, symbols[2].getKind());
+		assertTrue(symbols[2].isTerm());
 		assertTrue(symbols[2] instanceof Terminal);
-		assertEquals("soft-terminal", symbols[2].kindAsString());
 		assertTrue(((Terminal)symbols[2]).isSoft());
 		assertTrue(symbols[1] == ((Terminal)symbols[2]).getSoftClass());
 
 		// spc
 		assertEquals("spc", symbols[3].getName());
-		assertEquals(Symbol.KIND_TERM, symbols[3].getKind());
-		assertEquals("terminal", symbols[3].kindAsString());
+		assertTrue(symbols[3].isTerm());
 		for (int i = 0; i < symbols.length; i++) {
 			assertEquals(i, symbols[i].getIndex());
 			assertNull(((DerivedSourceElement) symbols[i]).getOrigin());
@@ -191,8 +188,7 @@ public class GrammarFacadeTest {
 		assertEquals(0, eoi.getIndex());
 		assertEquals(Symbol.EOI, eoi.getName());
 		assertNull(eoi.getType());
-		assertEquals("terminal", eoi.kindAsString());
-		assertEquals(Symbol.KIND_TERM, eoi.getKind());
+		assertTrue(eoi.isTerm());
 	}
 
 	@Test

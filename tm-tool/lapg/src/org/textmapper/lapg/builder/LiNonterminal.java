@@ -30,11 +30,6 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		super(name, type, origin);
 	}
 
-	@Override
-	public int getKind() {
-		return KIND_NONTERM;
-	}
-
 	void setDefinition(RhsPart part) {
 		if (definition != null) {
 			throw new IllegalStateException("non-terminal is sealed");

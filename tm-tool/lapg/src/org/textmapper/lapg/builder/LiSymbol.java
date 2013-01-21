@@ -57,19 +57,6 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	@Override
-	public String kindAsString() {
-		switch (getKind()) {
-			case KIND_TERM:
-				return "terminal";
-			case KIND_SOFTTERM:
-				return "soft-terminal";
-			case KIND_NONTERM:
-				return "non-terminal";
-		}
-		return "<unknown>";
-	}
-
-	@Override
 	public SourceElement getOrigin() {
 		return origin;
 	}

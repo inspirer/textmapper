@@ -153,6 +153,8 @@
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
 		<echo message="Types parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/types"/>
+		<echo message="java parser"/>
+		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/java"/>
 		<echo message="XML parser"/>
 		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>

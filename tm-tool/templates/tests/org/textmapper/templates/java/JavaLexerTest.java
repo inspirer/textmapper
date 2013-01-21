@@ -208,7 +208,7 @@ public class JavaLexerTest {
             JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter()) {
                 @Override
                 protected boolean createToken(JavaLexer.LapgSymbol lapg_n, int lexemIndex) throws IOException {
-                    if (lexemIndex == Lexems.EndOfLineComment || lexemIndex == Lexems.TraditionalComment) {
+                    if (lapg_n.symbol == Lexems.EndOfLineComment || lapg_n.symbol == Lexems.TraditionalComment) {
                         return true;
                     }
                     return super.createToken(lapg_n, lexemIndex);

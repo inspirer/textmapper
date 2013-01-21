@@ -39,6 +39,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiRule> rules = new ArrayList<LiRule>();
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
+	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
@@ -58,11 +59,26 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public Terminal addSoftTerminal(String name, Terminal softClass, SourceElement origin) {
-		if (name == null || softClass == null) {
-			throw new NullPointerException();
+	public void makeSoft(Terminal terminal, Terminal softClass) {
+		check(terminal);
+		check(softClass);
+		if (terminal == softClass) {
+			throw new IllegalArgumentException("terminal cannot be a class of itself");
 		}
-		return addSymbol(new LiTerminal(name, softClass, origin));
+		if (terminal.isSoft()) {
+			throw new IllegalStateException("terminal is already soft");
+		}
+		if (terminal.getType() != null && !terminal.getType().equals(softClass.getType())) {
+			throw new IllegalStateException("soft terminal cannot override class terminal's type");
+		}
+		if (sealedTerminals.contains(terminal)) {
+			throw new IllegalArgumentException("cannot convert terminal into a soft terminal (was already used as non-soft)");
+		}
+		if (softClass.isSoft()) {
+			throw new IllegalArgumentException("cannot use soft terminal as a class terminal");
+		}
+		sealedTerminals.add(softClass);
+		((LiTerminal) terminal).setSoftClass(softClass);
 	}
 
 	private <T extends LiSymbol> T addSymbol(T sym) {
@@ -116,8 +132,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (regexp == null) {
 			throw new NullPointerException();
 		}
-		int symKind = sym.getKind();
-		if (symKind == Symbol.KIND_SOFTTERM != (kind == LexicalRule.KIND_SOFT)) {
+		sealedTerminals.add(sym);
+		if (sym.isSoft() != (kind == LexicalRule.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong rule kind, doesn't match symbol kind");
 		}
 		List<LexerState> liStates = new ArrayList<LexerState>();
@@ -151,7 +167,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 	@Override
 	public InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin) {
 		check(inputSymbol);
-		if (inputSymbol.getKind() != Symbol.KIND_NONTERM) {
+		if (inputSymbol.isTerm()) {
 			throw new IllegalArgumentException("input symbol should be non-terminal");
 		}
 		LiInputRef inp = new LiInputRef(inputSymbol, hasEoi, origin);
@@ -295,9 +311,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 		Arrays.sort(symbolArr, new Comparator<LiSymbol>() {
 			@Override
 			public int compare(LiSymbol o1, LiSymbol o2) {
-				// TODO do not merge Soft term & term
-				int kind1 = o1.getKind() == Symbol.KIND_SOFTTERM ? Symbol.KIND_TERM : o1.getKind();
-				int kind2 = o2.getKind() == Symbol.KIND_SOFTTERM ? Symbol.KIND_TERM : o2.getKind();
+				int kind1 = o1.isTerm() ? 0 : 1;
+				int kind2 = o2.isTerm() ? 0 : 1;
 				return new Integer(kind1).compareTo(kind2);
 			}
 		});

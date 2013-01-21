@@ -24,21 +24,10 @@ import org.textmapper.lapg.api.Terminal;
  */
 public class LiTerminal extends LiSymbol implements Terminal {
 
-	private final Symbol softClass;
+	private Symbol softClass;
 
 	public LiTerminal(String name, String type, SourceElement origin) {
 		super(name, type, origin);
-		this.softClass = null;
-	}
-
-	public LiTerminal(String name, Terminal softClass, SourceElement origin) {
-		super(name, softClass.getType(), origin);
-		this.softClass = softClass;
-	}
-
-	@Override
-	public int getKind() {
-		return softClass == null ? KIND_TERM : KIND_SOFTTERM;
 	}
 
 	@Override
@@ -49,6 +38,22 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	@Override
 	public Symbol getSoftClass() {
 		return softClass;
+	}
+
+	void setSoftClass(Terminal sc) {
+		assert softClass == null;
+		assert getType() == null;
+		assert !sc.isSoft();
+
+		softClass = sc;
+	}
+
+	@Override
+	public String getType() {
+		if (softClass != null) {
+			return softClass.getType();
+		}
+		return super.getType();
 	}
 
 	@Override

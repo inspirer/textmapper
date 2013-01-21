@@ -134,8 +134,8 @@ public class InputTest extends LapgTestCase {
 				"syntax_lexems,22: regex matches two classes `identifier' and `identifierX', using first\n" +
 						"syntax_lexems,25: soft lexeme rule `L0choice' doesn't match any class rule\n" +
 						"syntax_lexems,28: soft lexeme rule `int' should have a constant regexp\n" +
-						"syntax_lexems,36: redeclaration of soft class: icon instead of identifier\n" +
-						"syntax_lexems,39: redeclaration of soft-terminal: ssss\n" +
+						"syntax_lexems,36: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
+						"syntax_lexems,39: redeclaration of soft terminal: ssss\n" +
 						"syntax_lexems,42: soft lexeme rule `wact' cannot have a semantic action\n" +
 						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
 						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
@@ -149,7 +149,7 @@ public class InputTest extends LapgTestCase {
 	public void testNamedPatterns() {
 		TestStatus notifier = new TestStatus("",
 				"syntax_patterns,7: unfinished regexp\n" +
-						"syntax_patterns,16: redeclaration of named pattern `WORD'\n"
+						"syntax_patterns,16: redeclaration of named pattern `WORD', ignored\n"
 		);
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();

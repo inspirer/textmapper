@@ -13,18 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.api.ast;
 
-public interface Symbol extends SourceElement, UserDataHolder {
+import org.textmapper.lapg.api.UserDataHolder;
 
-	static final String EOI = "eoi";
-	static final String ERROR = "error";
+public interface AstEnum extends AstType, UserDataHolder {
 
-	int getIndex();
+	AstEnumMember[] getMembers();
 
-	String getName();
-
-	String getType();
-
-	boolean isTerm();
 }

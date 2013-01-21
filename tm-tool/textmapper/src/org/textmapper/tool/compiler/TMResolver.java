@@ -37,7 +37,7 @@ import java.util.Map;
 public class TMResolver {
 
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
-	static final String INITIAL_STATE = "initial";
+	public static final String INITIAL_STATE = "initial"; //$NON-NLS-1$
 
 	private final LapgTree<AstRoot> tree;
 	private final GrammarBuilder builder;
@@ -51,11 +51,30 @@ public class TMResolver {
 		this.builder = builder;
 	}
 
+	public LapgTree<AstRoot> getTree() {
+		return tree;
+	}
+
+	public GrammarBuilder getBuilder() {
+		return builder;
+	}
+
+	public LexerState getState(String name) {
+		return statesMap.get(name);
+	}
+
+	public Symbol getSymbol(String name) {
+		return symbolsMap.get(name);
+	}
+
+	public RegexContext createRegexContext() {
+		return LapgCore.createContext(namedPatternsMap);
+	}
 	public void collectSymbols() {
 		symbolsMap.put(Symbol.EOI, builder.getEoi());
 
 		collectLexerStates();
-		collectTerminals();
+		collectLexerSymbols();
 
 		if (tree.getRoot().getGrammar() != null) {
 			collectNonterminals();
@@ -92,10 +111,11 @@ public class TMResolver {
 		}
 	}
 
-	private void collectTerminals() {
+	private void collectLexerSymbols() {
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
-				// TODO
+				AstLexeme lexeme = (AstLexeme) clause;
+				create(lexeme.getName(), lexeme.getType(), true);
 
 			} else if (clause instanceof AstNamedPattern) {
 				AstNamedPattern astpattern = (AstNamedPattern) clause;
@@ -108,7 +128,7 @@ public class TMResolver {
 					continue;
 				}
 				if (namedPatternsMap.get(name) != null) {
-					error(astpattern, "redeclaration of named pattern `" + name + "'");
+					error(astpattern, "redeclaration of named pattern `" + name + "', ignored");
 				} else {
 					builder.addPattern(name, regex, astpattern);
 					namedPatternsMap.put(name, regex);
@@ -121,52 +141,25 @@ public class TMResolver {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), Symbol.KIND_NONTERM, null);
+				create(nonterm.getName(), nonterm.getType(), false);
 			}
 		}
 	}
 
-
-	public LexerState getState(String name) {
-		return statesMap.get(name);
-	}
-
-	public Symbol getSymbol(String name) {
-		return symbolsMap.get(name);
-	}
-
-	public RegexContext createRegexContext() {
-		return LapgCore.createContext(namedPatternsMap);
-	}
-
-	// TODO make private
-	Symbol create(AstIdentifier id, String type, int kind, Terminal softClass) {
+	private Symbol create(AstIdentifier id, String type, boolean isTerm) {
 		String name = id.getName();
 		if (symbolsMap.containsKey(name)) {
 			Symbol sym = symbolsMap.get(name);
-			if (sym.getKind() != kind) {
-				error(id, "redeclaration of " + sym.kindAsString() + ": " + name);
-			} else if (!UniqueNameHelper.safeEquals(sym.getType(), type) && !(kind == Symbol.KIND_SOFTTERM && type == null)) {
+			if (sym.isTerm() != isTerm) {
+				error(id, "redeclaration of " + (sym.isTerm() ? "terminal" : "non-terminal") + ": " + name);
+			} else if (!(UniqueNameHelper.safeEquals(sym.getType(), type))) {
 				error(id,
 						"redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of "
 								+ (sym.getType() == null ? "<empty>" : sym.getType()));
-			} else if (kind == Symbol.KIND_SOFTTERM && softClass != ((Terminal) sym).getSoftClass()) {
-				Symbol symSoftClass = ((Terminal) sym).getSoftClass();
-				error(id, "redeclaration of soft class: " + (softClass == null ? "<undefined>" : softClass.getName())
-						+ " instead of " + (symSoftClass == null ? "<undefined>" : symSoftClass.getName()));
 			}
 			return sym;
 		} else {
-			Symbol sym;
-			if (kind == Symbol.KIND_SOFTTERM) {
-				sym = builder.addSoftTerminal(name, softClass, id);
-			} else if (kind == Symbol.KIND_NONTERM) {
-				sym = builder.addNonterminal(name, type, id);
-			} else if (kind == Symbol.KIND_TERM) {
-				sym = builder.addTerminal(name, type, id);
-			} else {
-				throw new IllegalArgumentException();
-			}
+			Symbol sym = isTerm ? builder.addTerminal(name, type, id) : builder.addNonterminal(name, type, id);
 			symbolsMap.put(name, sym);
 			return sym;
 		}
@@ -174,7 +167,7 @@ public class TMResolver {
 
 	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
 
-	Symbol createNested(int kind, String type, Symbol outer, Terminal softClass, IAstNode source) {
+	Symbol createNestedNonTerm(Symbol outer, IAstNode source) {
 		final String base_ = outer.getName() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 		while (symbolsMap.containsKey(base_ + index)) {
@@ -182,17 +175,7 @@ public class TMResolver {
 		}
 		String name = base_ + index;
 
-		Symbol sym;
-		if (kind == Symbol.KIND_SOFTTERM) {
-			sym = builder.addSoftTerminal(name, softClass, source);
-		} else if (kind == Symbol.KIND_NONTERM) {
-			sym = builder.addNonterminal(name, type, source);
-		} else if (kind == Symbol.KIND_TERM) {
-			sym = builder.addTerminal(name, type, source);
-		} else {
-			throw new IllegalArgumentException();
-		}
-
+		Symbol sym = builder.addNonterminal(name, null, source);
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;
@@ -220,7 +203,7 @@ public class TMResolver {
 				if (sym != null) {
 					Nonterminal symopt = (Nonterminal) create(
 							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
-							sym.getType(), Symbol.KIND_NONTERM, null);
+							sym.getType(), false);
 					// TODO replace next 2 lines with: ... builder.optional(builder.symbol(null, sym, null, id), id)
 					builder.addRule(null, symopt, builder.empty(id), null);
 					builder.addRule(null, symopt, builder.symbol(null, sym, null, id), null);

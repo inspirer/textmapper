@@ -318,11 +318,6 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public int getKind() {
-					return KIND_TERM;
-				}
-
-				@Override
 				public int getIndex() {
 					return index;
 				}
@@ -353,11 +348,6 @@ public class LexerGeneratorTest {
 
 				public String getResourceName() {
 					return null;
-				}
-
-				@Override
-				public String kindAsString() {
-					throw new UnsupportedOperationException();
 				}
 
 				@Override

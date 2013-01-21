@@ -48,11 +48,11 @@ public class SampleBParser {
 		"\7\0\3\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\4\0\11\0\12\0\ufffe\uffff");
 
 	private static final short[] lapg_lalr = SampleBLexer.unpack_short(40,
-		"\1\uffff\20\uffff\7\uffff\6\uffff\16\uffff\11\1\uffff\ufffe\1\uffff\20\uffff\7\uffff" +
-		"\6\uffff\11\2\uffff\ufffe\1\uffff\20\uffff\7\uffff\6\uffff\16\uffff\11\1\uffff\ufffe");
+		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\1\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
+		"\3\uffff\6\2\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\1\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleBLexer.unpack_short(23,
-		"\0\0\5\5\5\5\5\11\20\22\24\26\31\31\31\33\33\40\41\45\46\50\52");
+		"\0\0\5\5\11\20\22\24\26\31\31\31\33\33\33\33\33\40\41\45\46\50\52");
 
 	private static final short[] lapg_sym_from = SampleBLexer.unpack_short(42,
 		"\1\5\6\13\15\0\6\13\15\1\4\5\6\13\15\16\4\7\14\22\10\17\16\23\25\6\15\1\5\6\13\15" +
@@ -71,9 +71,6 @@ public class SampleBParser {
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",
 		"identifier",
-		"numeric",
-		"octal",
-		"decimal",
 		"_skip",
 		"Lclass",
 		"Lextends",
@@ -84,6 +81,9 @@ public class SampleBParser {
 		"Linterface",
 		"Lenum",
 		"error",
+		"numeric",
+		"octal",
+		"decimal",
 		"eleven",
 		"_skipSoftKW",
 		"classdef_NoEoi",
@@ -201,16 +201,16 @@ public class SampleBParser {
 		if (lapg_n.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 14) == -1) {
+		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 11) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
 		}
 		if (lapg_head >= 0) {
 			lapg_m[++lapg_head] = new LapgSymbol();
-			lapg_m[lapg_head].symbol = 14;
+			lapg_m[lapg_head].symbol = 11;
 			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 14);
+			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 11);
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
 			return true;

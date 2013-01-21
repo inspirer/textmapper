@@ -34,19 +34,19 @@ public class SampleBLexer {
 	public interface Lexems {
 		public static final int eoi = 0;
 		public static final int identifier = 1;
-		public static final int numeric = 2;
-		public static final int octal = 3;
-		public static final int decimal = 4;
-		public static final int _skip = 5;
-		public static final int Lclass = 6;
-		public static final int Lextends = 7;
-		public static final int LCURLY = 8;
-		public static final int RCURLY = 9;
-		public static final int LPAREN = 10;
-		public static final int RPAREN = 11;
-		public static final int Linterface = 12;
-		public static final int Lenum = 13;
-		public static final int error = 14;
+		public static final int _skip = 2;
+		public static final int Lclass = 3;
+		public static final int Lextends = 4;
+		public static final int LCURLY = 5;
+		public static final int RCURLY = 6;
+		public static final int LPAREN = 7;
+		public static final int RPAREN = 8;
+		public static final int Linterface = 9;
+		public static final int Lenum = 10;
+		public static final int error = 11;
+		public static final int numeric = 12;
+		public static final int octal = 13;
+		public static final int decimal = 14;
 		public static final int eleven = 15;
 		public static final int _skipSoftKW = 16;
 	}
@@ -147,7 +147,7 @@ public class SampleBLexer {
 	};
 
 	private static final short[] lapg_lexemnum = unpack_short(15,
-		"\1\2\3\4\5\6\7\10\11\12\13\14\15\17\20");
+		"\1\14\15\16\2\3\4\5\6\7\10\11\12\17\20");
 
 	private static final short[] lapg_lexem = unpack_vc_short(169,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\2\1\7\1\10\2\uffff\1\11\1\12\7" +

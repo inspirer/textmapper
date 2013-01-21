@@ -39,24 +39,24 @@ public class RegexDefLexer {
 
 	public interface Lexems {
 		public static final int eoi = 0;
-		public static final int expand = 1;
-		public static final int _char = 2;
-		public static final int escaped = 3;
-		public static final int charclass = 4;
-		public static final int DOT = 5;
-		public static final int MULT = 6;
-		public static final int PLUS = 7;
-		public static final int QUESTIONMARK = 8;
-		public static final int quantifier = 9;
-		public static final int op_minus = 10;
-		public static final int op_union = 11;
-		public static final int op_intersect = 12;
-		public static final int LPAREN = 13;
-		public static final int OR = 14;
-		public static final int RPAREN = 15;
-		public static final int LPARENQUESTIONMARK = 16;
-		public static final int LSQUARE = 17;
-		public static final int LSQUAREXOR = 18;
+		public static final int _char = 1;
+		public static final int escaped = 2;
+		public static final int charclass = 3;
+		public static final int DOT = 4;
+		public static final int MULT = 5;
+		public static final int PLUS = 6;
+		public static final int QUESTIONMARK = 7;
+		public static final int quantifier = 8;
+		public static final int op_minus = 9;
+		public static final int op_union = 10;
+		public static final int op_intersect = 11;
+		public static final int LPAREN = 12;
+		public static final int OR = 13;
+		public static final int RPAREN = 14;
+		public static final int LPARENQUESTIONMARK = 15;
+		public static final int LSQUARE = 16;
+		public static final int LSQUAREXOR = 17;
+		public static final int expand = 18;
 		public static final int kw_eoi = 19;
 		public static final int RSQUARE = 20;
 		public static final int MINUS = 21;
@@ -166,8 +166,8 @@ public class RegexDefLexer {
 	};
 
 	private static final short[] lapg_lexemnum = unpack_short(35,
-		"\1\2\3\3\3\3\3\3\3\3\3\3\3\4\4\5\6\7\10\11\12\13\14\2\15\16\17\20\21\22\2\23\24\25" +
-		"\2");
+		"\22\1\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24\25" +
+		"\1");
 
 	private static final short[] lapg_lexem = unpack_vc_short(2400,
 		"\1\ufffe\1\3\1\4\1\3\1\5\10\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
