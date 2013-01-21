@@ -15,7 +15,9 @@
  */
 package org.textmapper.lapg.api.ast;
 
-public interface AstList extends AstType {
+import org.textmapper.lapg.api.SourceElement;
+
+public interface AstList extends AstType, SourceElement {
 
 	AstType getInner();
 

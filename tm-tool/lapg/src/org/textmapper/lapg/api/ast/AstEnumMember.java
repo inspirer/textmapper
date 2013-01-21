@@ -15,11 +15,12 @@
  */
 package org.textmapper.lapg.api.ast;
 
+import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.UserDataHolder;
 
-public interface AstEnumMember extends UserDataHolder {
-
-	AstEnum getContainingEnum();
+public interface AstEnumMember extends UserDataHolder, SourceElement {
 
 	String getName();
+
+	AstEnum getContainingEnum();
 }

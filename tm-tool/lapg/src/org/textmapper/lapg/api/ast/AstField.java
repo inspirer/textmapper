@@ -15,11 +15,16 @@
  */
 package org.textmapper.lapg.api.ast;
 
-public interface AstField {
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.UserDataHolder;
+
+public interface AstField extends UserDataHolder, SourceElement {
 
 	String getName();
 
 	AstType getType();
 
 	boolean isNullable();
+
+	AstClass getContainingClass();
 }

@@ -13,14 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.ast;
+package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
+import org.textmapper.lapg.api.ast.*;
 
-public interface AstEnum extends AstType, UserDataHolder, SourceElement {
+public interface AstBuilder {
 
-	String getName();
+	AstType rawType(String type, SourceElement origin);
 
-	AstEnumMember[] getMembers();
+	AstList list(AstType inner, boolean notEmpty, SourceElement origin);
+
+	AstField addField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin);
+
+	AstClass addClass(String name, AstClass container, SourceElement origin);
+
+	AstEnum addEnum(String name, SourceElement origin);
+
+	AstEnumMember addMember(String name, AstEnum container, SourceElement origin);
+
+	void addExtends(AstClass cl, AstClass baseClass);
+
+	AstModel create();
 }

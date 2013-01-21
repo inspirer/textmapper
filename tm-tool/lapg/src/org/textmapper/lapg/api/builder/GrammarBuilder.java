@@ -16,6 +16,8 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 
@@ -59,6 +61,11 @@ public interface GrammarBuilder {
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);
 
 	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
+
+
+	void link(AstModel ast);
+
+	void map(RhsSymbol symbol, AstField field);
 
 	Grammar create();
 }

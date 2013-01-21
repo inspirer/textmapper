@@ -16,6 +16,9 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstClass;
+import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
@@ -40,6 +43,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
 	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
+	private final Set<AstField> knownFields = new HashSet<AstField>();
+	private AstModel astModel;
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
@@ -296,6 +301,16 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 	}
 
+
+	void check(AstField field) {
+		if (field == null) {
+			throw new NullPointerException();
+		}
+		if (!knownFields.contains(field)) {
+			throw new IllegalArgumentException("unknown ast field passed");
+		}
+	}
+
 	void check(Symbol sym) {
 		if (sym == null) {
 			throw new NullPointerException();
@@ -303,6 +318,31 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (!symbolsSet.contains(sym)) {
 			throw new IllegalArgumentException("unknown symbol passed");
 		}
+	}
+
+	@Override
+	public void link(AstModel ast) {
+		if (astModel != null) {
+			throw new IllegalStateException("cannot re-link ast model");
+		}
+		astModel = ast;
+		for (AstClass cl : astModel.getClasses()) {
+			link(cl);
+		}
+	}
+
+	private void link(AstClass cl) {
+		Collections.addAll(knownFields, cl.getFields());
+		for (AstClass inner : cl.getInner()) {
+			link(inner);
+		}
+	}
+
+	@Override
+	public void map(RhsSymbol symbol, AstField field) {
+		check(symbol, false);
+		check(field);
+		((LiRhsSymbol) symbol).setMapping(field);
 	}
 
 	@Override

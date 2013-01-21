@@ -39,15 +39,6 @@ public class GrammarFacadeErrTest {
 		builder.addTerminal("sym", "string", null);
 	}
 
-/*
-	@Test(expected = IllegalStateException.class)
-	public void testErrorDuplicateSoftName() {
-		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal("sym", "string", null);
-		builder.addSoftTerminal("sym", symbol, null);
-	}
-*/
-
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullSymbol() throws Exception {
 		GrammarFacade.createBuilder().addLexicalRule(
@@ -112,12 +103,53 @@ public class GrammarFacadeErrTest {
 		builder.addLexicalRule(LexicalRule.KIND_SOFT, term, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
-/*
 	@Test(expected = NullPointerException.class)
 	public void testErrorSoftNullClass() throws Exception {
-		GrammarFacade.createBuilder().addSoftTerminal("name", null, null);
+		GrammarFacade.createBuilder().makeSoft(null, null);
 	}
-*/
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testErrorClassOfItself() {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Terminal symbol = builder.addTerminal("sym", "string", null);
+		builder.makeSoft(symbol, symbol);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testMakeSoftTwice() {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Terminal cl = builder.addTerminal("sym", "string", null);
+		Terminal symbol = builder.addTerminal("ssym", null, null);
+		builder.makeSoft(symbol, cl);
+		builder.makeSoft(symbol, cl);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void testMakeSoftBadTypes() {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Terminal cl = builder.addTerminal("sym", "string", null);
+		Terminal symbol = builder.addTerminal("ssym", "int", null);
+		builder.makeSoft(symbol, cl);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testMakeSoftSealed() {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Terminal cl = builder.addTerminal("sym", null, null);
+		Terminal symbol = builder.addTerminal("ssym", null, null);
+		builder.makeSoft(symbol, cl);
+		builder.makeSoft(cl, symbol);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testMakeSoftWithSoftClass() {
+		GrammarBuilder builder = GrammarFacade.createBuilder();
+		Terminal cl = builder.addTerminal("sym", null, null);
+		Terminal symbol = builder.addTerminal("ssym", null, null);
+		builder.makeSoft(symbol, cl);
+		Terminal sym3 = builder.addTerminal("sym3", null, null);
+		builder.makeSoft(sym3, symbol);
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorBadPriority() throws Exception {

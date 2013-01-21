@@ -15,12 +15,9 @@
  */
 package org.textmapper.lapg.api.ast;
 
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
+public interface AstModel {
 
-public interface AstEnum extends AstType, UserDataHolder, SourceElement {
+	AstClass[] getClasses();
 
-	String getName();
-
-	AstEnumMember[] getMembers();
+	AstEnum[] getEnums();
 }
