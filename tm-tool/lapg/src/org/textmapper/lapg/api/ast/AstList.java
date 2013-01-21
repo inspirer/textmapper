@@ -15,11 +15,9 @@
  */
 package org.textmapper.lapg.api.ast;
 
-public interface AstField {
+public interface AstList extends AstType {
 
-	String getName();
+	AstType getInner();
 
-	AstType getType();
-
-	boolean isNullable();
+	boolean isNotEmpty();
 }
