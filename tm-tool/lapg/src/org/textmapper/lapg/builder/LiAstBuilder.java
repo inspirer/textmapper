@@ -19,34 +19,61 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class LiAstBuilder implements AstBuilder {
+class LiAstBuilder implements AstBuilder {
 
 	private final List<LiAstClass> classes = new ArrayList<LiAstClass>();
 	private final List<LiAstEnum> enums = new ArrayList<LiAstEnum>();
+	private final Set<AstType> mine = new HashSet<AstType>();
 
-	void check(AstType type) {
+	private final Map<AstType, Set<String>> usedNames = new HashMap<AstType, Set<String>>();
+	private final Set<String> usedGlobals = new HashSet<String>();
+
+	LiAstBuilder() {
+		mine.add(AstType.BOOL);
+		mine.add(AstType.STRING);
+	}
+
+	private void check(AstType type) {
 		if (type == null) {
 			throw new IllegalArgumentException();
 		}
-		// TODO
+		if (!mine.contains(type)) {
+			throw new IllegalArgumentException("unknown type");
+		}
+	}
+
+	private void checkName(AstType type, String childName) {
+		Set<String> taken = type == null ? usedGlobals : usedNames.get(type);
+		if (taken == null) {
+			taken = new HashSet<String>();
+			usedNames.put(type, taken);
+		}
+
+		if (!taken.add(childName)) {
+			throw new IllegalArgumentException("duplicate element `" + childName + "' in " + type);
+		}
 	}
 
 	@Override
 	public AstType rawType(String type, SourceElement origin) {
-		return new LiRawAstType(type, origin);
+		final LiRawAstType result = new LiRawAstType(type, origin);
+		mine.add(result);
+		return result;
 	}
 
 	@Override
 	public AstList list(AstType inner, boolean nonEmpty, SourceElement origin) {
-		return new LiAstList(inner, nonEmpty, origin);
+		final LiAstList result = new LiAstList(inner, nonEmpty, origin);
+		mine.add(result);
+		return result;
 	}
 
 	@Override
 	public AstField addField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin) {
 		check(container);
+		checkName(container, name);
 		LiAstField result = new LiAstField(name, type, nullable, container, origin);
 		((LiAstClass) container).addField(result);
 		return result;
@@ -57,12 +84,14 @@ public class LiAstBuilder implements AstBuilder {
 		if (container != null) {
 			check(container);
 		}
+		checkName(container, name);
 		LiAstClass result = new LiAstClass(name, container, origin);
 		if (container != null) {
 			((LiAstClass) container).addInner(result);
 		} else {
 			classes.add(result);
 		}
+		mine.add(result);
 		return result;
 	}
 
@@ -75,18 +104,27 @@ public class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public AstEnum addEnum(String name, SourceElement origin) {
-		// TODO
-		return null;
+		checkName(null, name);
+		LiAstEnum result = new LiAstEnum(name, origin);
+		enums.add(result);
+		mine.add(result);
+		return result;
 	}
 
 	@Override
 	public AstEnumMember addMember(String name, AstEnum container, SourceElement origin) {
-		// TODO
-		return null;
+		check(container);
+		checkName(container, name);
+		LiAstEnumMember member = new LiAstEnumMember(name, container, origin);
+		((LiAstEnum) container).addMember(member);
+		return member;
 	}
 
 	@Override
 	public AstModel create(SourceElement origin) {
-		return new LiAstModel(classes.toArray(new AstClass[classes.size()]), enums.toArray(new AstEnum[enums.size()]), origin);
+		return new LiAstModel(
+				classes.toArray(new AstClass[classes.size()]),
+				enums.toArray(new AstEnum[enums.size()]),
+				origin);
 	}
 }
