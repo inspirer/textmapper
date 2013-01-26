@@ -17,44 +17,29 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.ast.AstClass;
-import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.ast.AstList;
 import org.textmapper.lapg.api.ast.AstType;
 
-class LiAstField extends LiUserDataHolder implements AstField, DerivedSourceElement {
+class LiAstList implements AstList, DerivedSourceElement {
 
-	private final String name;
-	private final AstType type;
-	private final boolean isNullable;
-	private final AstClass container;
+	private final AstType innerType;
+	private final boolean nonEmpty;
 	private final SourceElement origin;
 
-	public LiAstField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin) {
-		this.name = name;
-		this.type = type;
-		this.isNullable = nullable;
-		this.container = container;
+	public LiAstList(AstType innerType, boolean nonEmpty, SourceElement origin) {
+		this.innerType = innerType;
+		this.nonEmpty = nonEmpty;
 		this.origin = origin;
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public AstType getInner() {
+		return innerType;
 	}
 
 	@Override
-	public AstType getType() {
-		return type;
-	}
-
-	@Override
-	public boolean isNullable() {
-		return isNullable;
-	}
-
-	@Override
-	public AstClass getContainingClass() {
-		return container;
+	public boolean isNotEmpty() {
+		return nonEmpty;
 	}
 
 	@Override

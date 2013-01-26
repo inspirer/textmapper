@@ -17,22 +17,17 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.ast.AstClass;
-import org.textmapper.lapg.api.ast.AstField;
-import org.textmapper.lapg.api.ast.AstType;
+import org.textmapper.lapg.api.ast.AstEnum;
+import org.textmapper.lapg.api.ast.AstEnumMember;
 
-class LiAstField extends LiUserDataHolder implements AstField, DerivedSourceElement {
+class LiAstEnumMember extends LiUserDataHolder implements AstEnumMember, DerivedSourceElement {
 
 	private final String name;
-	private final AstType type;
-	private final boolean isNullable;
-	private final AstClass container;
+	private final AstEnum container;
 	private final SourceElement origin;
 
-	public LiAstField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin) {
+	public LiAstEnumMember(String name, AstEnum container, SourceElement origin) {
 		this.name = name;
-		this.type = type;
-		this.isNullable = nullable;
 		this.container = container;
 		this.origin = origin;
 	}
@@ -43,17 +38,7 @@ class LiAstField extends LiUserDataHolder implements AstField, DerivedSourceElem
 	}
 
 	@Override
-	public AstType getType() {
-		return type;
-	}
-
-	@Override
-	public boolean isNullable() {
-		return isNullable;
-	}
-
-	@Override
-	public AstClass getContainingClass() {
+	public AstEnum getContainingEnum() {
 		return container;
 	}
 

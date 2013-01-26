@@ -17,23 +17,20 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.ast.AstClass;
-import org.textmapper.lapg.api.ast.AstField;
-import org.textmapper.lapg.api.ast.AstType;
+import org.textmapper.lapg.api.ast.AstEnum;
+import org.textmapper.lapg.api.ast.AstEnumMember;
 
-class LiAstField extends LiUserDataHolder implements AstField, DerivedSourceElement {
+import java.util.ArrayList;
+import java.util.List;
+
+class LiAstEnum extends LiUserDataHolder implements AstEnum, DerivedSourceElement {
 
 	private final String name;
-	private final AstType type;
-	private final boolean isNullable;
-	private final AstClass container;
+	private final List<LiAstEnumMember> memberList = new ArrayList<LiAstEnumMember>();
 	private final SourceElement origin;
 
-	public LiAstField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin) {
+	public LiAstEnum(String name, SourceElement origin) {
 		this.name = name;
-		this.type = type;
-		this.isNullable = nullable;
-		this.container = container;
 		this.origin = origin;
 	}
 
@@ -43,18 +40,12 @@ class LiAstField extends LiUserDataHolder implements AstField, DerivedSourceElem
 	}
 
 	@Override
-	public AstType getType() {
-		return type;
+	public AstEnumMember[] getMembers() {
+		return memberList.toArray(new AstEnumMember[memberList.size()]);
 	}
 
-	@Override
-	public boolean isNullable() {
-		return isNullable;
-	}
-
-	@Override
-	public AstClass getContainingClass() {
-		return container;
+	void addMember(LiAstEnumMember member) {
+		memberList.add(member);
 	}
 
 	@Override

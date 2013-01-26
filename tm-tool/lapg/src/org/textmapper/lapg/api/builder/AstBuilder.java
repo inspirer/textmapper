@@ -22,7 +22,7 @@ public interface AstBuilder {
 
 	AstType rawType(String type, SourceElement origin);
 
-	AstList list(AstType inner, boolean notEmpty, SourceElement origin);
+	AstList list(AstType inner, boolean nonEmpty, SourceElement origin);
 
 	AstField addField(String name, AstType type, boolean nullable, AstClass container, SourceElement origin);
 
@@ -34,5 +34,5 @@ public interface AstBuilder {
 
 	void addExtends(AstClass cl, AstClass baseClass);
 
-	AstModel create();
+	AstModel create(SourceElement origin);
 }

@@ -23,7 +23,7 @@ import org.textmapper.lapg.api.ast.AstField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElement {
+class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElement {
 
 	private final String name;
 	private final AstClass container;

@@ -25,6 +25,7 @@ import java.util.List;
 public class LiAstBuilder implements AstBuilder {
 
 	private final List<LiAstClass> classes = new ArrayList<LiAstClass>();
+	private final List<LiAstEnum> enums = new ArrayList<LiAstEnum>();
 
 	void check(AstType type) {
 		if (type == null) {
@@ -35,14 +36,12 @@ public class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public AstType rawType(String type, SourceElement origin) {
-		// TODO
-		return null;
+		return new LiRawAstType(type, origin);
 	}
 
 	@Override
-	public AstList list(AstType inner, boolean notEmpty, SourceElement origin) {
-		// TODO
-		return null;
+	public AstList list(AstType inner, boolean nonEmpty, SourceElement origin) {
+		return new LiAstList(inner, nonEmpty, origin);
 	}
 
 	@Override
@@ -87,8 +86,7 @@ public class LiAstBuilder implements AstBuilder {
 	}
 
 	@Override
-	public AstModel create() {
-		// TODO
-		return null;
+	public AstModel create(SourceElement origin) {
+		return new LiAstModel(classes.toArray(new AstClass[classes.size()]), enums.toArray(new AstEnum[enums.size()]), origin);
 	}
 }
