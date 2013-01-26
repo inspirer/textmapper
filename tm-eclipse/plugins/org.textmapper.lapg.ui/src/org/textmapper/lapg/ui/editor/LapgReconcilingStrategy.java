@@ -45,6 +45,7 @@ import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.tool.Tool;
 import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.compiler.TMGrammar;
+import org.textmapper.tool.compiler.TMResolver;
 import org.textmapper.tool.gen.LapgOptions;
 import org.textmapper.tool.parser.LapgTree;
 import org.textmapper.tool.parser.LapgTree.LapgProblem;
@@ -117,7 +118,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 			TMCompiler resolver = new TMCompiler(ast, types);
 			TMGrammar lg = resolver.resolve();
 			grammar = lg != null ? lg.getGrammar() : null;
-			sources.add(TMCompiler.RESOLVER_SOURCE);
+			sources.add(TMResolver.RESOLVER_SOURCE);
 		}
 		LapgSourceStructure model = new LapgSourceStructure(grammar, ast, mainResource);
 		documentProvider.setStructure(model);
