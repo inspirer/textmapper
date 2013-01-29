@@ -43,7 +43,7 @@ import org.textmapper.idea.facet.LapgFacet;
 import org.textmapper.idea.facet.LapgFacetType;
 import org.textmapper.idea.facet.TmConfigurationBean;
 import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.ParserConflict;
 import org.textmapper.lapg.api.SourceElement;
@@ -79,7 +79,7 @@ public class LapgCompiler implements TranslatingCompiler {
 			}
 		});
 
-		return fileType.equals(LapgFileType.LAPG_FILE_TYPE) && psi instanceof LapgFile;
+		return fileType.equals(LapgFileType.LAPG_FILE_TYPE) && psi instanceof TMPsiFile;
 	}
 
 

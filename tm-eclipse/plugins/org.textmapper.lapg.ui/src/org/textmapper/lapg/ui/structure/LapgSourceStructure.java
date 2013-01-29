@@ -11,18 +11,18 @@ import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.common.ui.editor.ISourceStructure;
 import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textmapper.lapg.ui.LapgUIActivator;
-import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.TMTree;
+import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.AbstractVisitor;
 import org.textmapper.tool.parser.ast.AstRoot;
 
 public class LapgSourceStructure implements ISourceStructure {
 
 	private final IFile file;    // can be null
-	private final LapgTree<AstRoot> ast;
+	private final TMTree<AstRoot> ast;
 	private final Grammar grammar;
 
-	public LapgSourceStructure(Grammar grammar, LapgTree<AstRoot> ast, IFile file) {
+	public LapgSourceStructure(Grammar grammar, TMTree<AstRoot> ast, IFile file) {
 		this.grammar = grammar;
 		this.ast = ast;
 		this.file = file;
@@ -32,7 +32,7 @@ public class LapgSourceStructure implements ISourceStructure {
 		return file;
 	}
 
-	public LapgTree<AstRoot> getAst() {
+	public TMTree<AstRoot> getAst() {
 		return ast;
 	}
 
@@ -40,16 +40,16 @@ public class LapgSourceStructure implements ISourceStructure {
 		return grammar;
 	}
 
-	public List<LapgProblem> getProblems() {
+	public List<TMProblem> getProblems() {
 		return ast.getErrors();
 	}
 
 	public IStatus getStatus() {
 		List<IStatus> errors = new ArrayList<IStatus>(ast.getErrors().size());
-		for (LapgProblem p : ast.getErrors()) {
+		for (TMProblem p : ast.getErrors()) {
 			switch (p.getKind()) {
-			case LapgTree.KIND_FATAL:
-			case LapgTree.KIND_ERROR:
+			case TMTree.KIND_FATAL:
+			case TMTree.KIND_ERROR:
 				errors.add(new Status(IStatus.ERROR, LapgUIActivator.PLUGIN_ID, 0, p.getMessage(), null));
 				break;
 			}

@@ -24,7 +24,7 @@ import org.textmapper.tool.common.GeneratedFile;
 import org.textmapper.tool.gen.LapgGenerator;
 import org.textmapper.tool.gen.LapgOptions;
 import org.textmapper.tool.gen.ProcessingStrategy;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.io.*;
 import java.util.HashMap;

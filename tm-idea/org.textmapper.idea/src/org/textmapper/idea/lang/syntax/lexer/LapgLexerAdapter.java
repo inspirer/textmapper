@@ -19,9 +19,9 @@ package org.textmapper.idea.lang.syntax.lexer;
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.TMLexer;
+import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Lexems;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -30,7 +30,7 @@ import java.io.StringReader;
 public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 
 	private CharSequence myText;
-	private LapgLexer lexer;
+	private TMLexer lexer;
 	private LapgSymbol lexem;
 	private int fDocumentLength;
 	private int fTokenOffset;
@@ -226,7 +226,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 	}
 
-	private static class IdeaLapgLexer extends LapgLexer {
+	private static class IdeaLapgLexer extends TMLexer {
 		public IdeaLapgLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				public void error(int start, int end, int line, String s) {

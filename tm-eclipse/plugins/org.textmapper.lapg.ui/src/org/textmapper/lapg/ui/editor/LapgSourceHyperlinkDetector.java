@@ -22,7 +22,8 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
-import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.TMTree;
+import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.AbstractVisitor;
 import org.textmapper.tool.parser.ast.AstReference;
 import org.textmapper.tool.parser.ast.AstRoot;
@@ -53,7 +54,7 @@ public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 			return null;
 		}
 
-		LapgTree<AstRoot> ast = model.getAst();
+		TMTree<AstRoot> ast = model.getAst();
 		if (ast == null || ast.getRoot() == null) {
 			return null;
 		}

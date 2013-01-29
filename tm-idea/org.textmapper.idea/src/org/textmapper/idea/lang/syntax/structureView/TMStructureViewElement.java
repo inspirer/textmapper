@@ -22,7 +22,7 @@ import com.intellij.navigation.ItemPresentation;
 import com.intellij.openapi.util.Iconable;
 import com.intellij.psi.NavigatablePsiElement;
 import com.intellij.util.PsiIconUtil;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 import org.textmapper.idea.lang.syntax.psi.*;
 
 import javax.swing.*;
@@ -92,7 +92,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 	}
 
 	private String getElementText() {
-		if (myElement instanceof LapgFile) {
+		if (myElement instanceof TMPsiFile) {
 			return "file";
 		} else if (myElement instanceof TmLexem) {
 			return myElement.getName();
@@ -104,8 +104,8 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 
 	@Override
 	public TreeElement[] getChildren() {
-		if (myElement instanceof LapgFile) {
-			final LapgFile tmFile = (LapgFile) myElement;
+		if (myElement instanceof TMPsiFile) {
+			final TMPsiFile tmFile = (TMPsiFile) myElement;
 			TmGrammar grammar = tmFile.getGrammar();
 			if (grammar != null) {
 				return wrapDeclarations(grammar.getNonTerms());

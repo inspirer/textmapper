@@ -25,9 +25,9 @@ import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.LapgFileType;
 import org.textmapper.idea.lang.syntax.psi.TmGrammar;
 
-public class LapgFile extends PsiFileImpl {
-	protected LapgFile(FileViewProvider viewProvider) {
-		super(LapgElementTypes.FILE, LapgElementTypes.FILE, viewProvider);
+public class TMPsiFile extends PsiFileImpl {
+	protected TMPsiFile(FileViewProvider viewProvider) {
+		super(TextmapperElementTypes.FILE, TextmapperElementTypes.FILE, viewProvider);
 	}
 
 	@NotNull

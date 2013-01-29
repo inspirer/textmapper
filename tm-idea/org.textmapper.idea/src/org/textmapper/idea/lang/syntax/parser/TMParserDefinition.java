@@ -32,9 +32,9 @@ import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
 import org.textmapper.idea.lang.syntax.lexer.LapgLexerAdapter;
 import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textmapper.idea.lang.syntax.psi.*;
-import org.textmapper.tool.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.TMParser.Tokens;
 
-public class LapgParserDefinition implements ParserDefinition {
+public class TMParserDefinition implements ParserDefinition {
 
 	@NotNull
 	public Lexer createLexer(Project project) {
@@ -42,11 +42,11 @@ public class LapgParserDefinition implements ParserDefinition {
 	}
 
 	public PsiParser createParser(Project project) {
-		return new LapgParser();
+		return new TMPsiParser();
 	}
 
 	public IFileElementType getFileNodeType() {
-		return LapgElementTypes.FILE;
+		return TextmapperElementTypes.FILE;
 	}
 
 	@NotNull
@@ -124,7 +124,7 @@ public class LapgParserDefinition implements ParserDefinition {
 	}
 
 	public PsiFile createFile(FileViewProvider viewProvider) {
-		return new LapgFile(viewProvider);
+		return new TMPsiFile(viewProvider);
 	}
 
 	public SpaceRequirements spaceExistanceTypeBetweenTokens(ASTNode left, ASTNode right) {

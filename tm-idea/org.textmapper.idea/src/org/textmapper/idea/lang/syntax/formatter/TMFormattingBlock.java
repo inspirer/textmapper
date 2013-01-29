@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.lang.syntax.LapgFileType;
 import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
-import org.textmapper.idea.lang.syntax.parser.LapgElementTypes;
+import org.textmapper.idea.lang.syntax.parser.TextmapperElementTypes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,7 +114,7 @@ public class TMFormattingBlock extends AbstractBlock {
 	@NotNull
 	protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
 		IElementType elementType = child.getElementType();
-		if (elementType == LapgElementTypes.NONTERM) {
+		if (elementType == TextmapperElementTypes.NONTERM) {
 			return new NonTermBlock(child, null, settings, spacingBuilder);
 		}
 		return new TMFormattingBlock(child, childAlignment, createChildIndent(child, prev), null, settings, spacingBuilder);
@@ -142,7 +142,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@NotNull
 		@Override
 		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
-			if (child.getElementType() == LapgElementTypes.RULE) {
+			if (child.getElementType() == TextmapperElementTypes.RULE) {
 				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == LapgTokenTypes.OP_CCEQ);
 			}
 			return super.buildChild(child, prev, childAlignment);
@@ -151,7 +151,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@NotNull
 		@Override
 		public ChildAttributes getChildAttributes(int newChildIndex) {
-			if (isAfter(newChildIndex, new IElementType[]{LapgElementTypes.TYPE, LapgElementTypes.IDENTIFIER})) {
+			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.TYPE, TextmapperElementTypes.IDENTIFIER})) {
 				return new ChildAttributes(Indent.getNoneIndent(), null);
 			} else if (isAfter(newChildIndex, new IElementType[]{LapgTokenTypes.OP_CCEQ})) {
 				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(LapgFileType.LAPG_FILE_TYPE) + 2, false, true), null);
@@ -167,7 +167,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@Override
 		protected Indent createChildIndent(@NotNull ASTNode child, ASTNode prev) {
 			IElementType type = child.getElementType();
-			if (type == LapgTokenTypes.OP_OR || type == LapgElementTypes.RULE) {
+			if (type == LapgTokenTypes.OP_OR || type == TextmapperElementTypes.RULE) {
 				return Indent.getNormalIndent();
 			}
 
@@ -191,12 +191,12 @@ public class TMFormattingBlock extends AbstractBlock {
 		@NotNull
 		@Override
 		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
-			if (child.getElementType() == LapgElementTypes.ACTION) {
+			if (child.getElementType() == TextmapperElementTypes.ACTION) {
 				ASTNode treeNext = child.getTreeNext();
 				while (treeNext != null && treeNext.getElementType() == TokenType.WHITE_SPACE) {
 					treeNext = treeNext.getTreeNext();
 				}
-				if (treeNext == null || treeNext.getElementType() == LapgElementTypes.RULEATTRS) {
+				if (treeNext == null || treeNext.getElementType() == TextmapperElementTypes.RULEATTRS) {
 					childAlignment = lastCodeBlock;
 				}
 			}
@@ -223,8 +223,8 @@ public class TMFormattingBlock extends AbstractBlock {
 					return Indent.getNoneIndent();
 				}
 			}
-			if (type == LapgElementTypes.REF_RULEPART || type == LapgElementTypes.ACTION
-					|| type == LapgElementTypes.UNORDERED_RULEPART || type == LapgElementTypes.RULEATTRS) {
+			if (type == TextmapperElementTypes.REF_RULEPART || type == TextmapperElementTypes.ACTION
+					|| type == TextmapperElementTypes.UNORDERED_RULEPART || type == TextmapperElementTypes.RULEATTRS) {
 				return Indent.getContinuationIndent();
 			}
 

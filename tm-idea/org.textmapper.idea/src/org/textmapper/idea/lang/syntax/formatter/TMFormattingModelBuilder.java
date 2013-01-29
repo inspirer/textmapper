@@ -25,7 +25,7 @@ import com.intellij.psi.codeStyle.CodeStyleSettings;
 import org.jetbrains.annotations.NotNull;
 
 import static org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes.*;
-import static org.textmapper.idea.lang.syntax.parser.LapgElementTypes.*;
+import static org.textmapper.idea.lang.syntax.parser.TextmapperElementTypes.*;
 
 /**
  * evgeny, 8/14/12

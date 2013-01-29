@@ -22,7 +22,7 @@ import com.intellij.ide.structureView.TreeBasedStructureViewBuilder;
 import com.intellij.lang.PsiStructureViewFactory;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 
 /**
  * evgeny, 8/11/12
@@ -31,8 +31,8 @@ public class TMStructureViewFactory implements PsiStructureViewFactory {
 
 	@Override
 	public StructureViewBuilder getStructureViewBuilder(PsiFile psiFile) {
-		if (psiFile instanceof LapgFile) {
-			final LapgFile file = (LapgFile) psiFile;
+		if (psiFile instanceof TMPsiFile) {
+			final TMPsiFile file = (TMPsiFile) psiFile;
 
 			return new TreeBasedStructureViewBuilder() {
 				@NotNull

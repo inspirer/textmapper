@@ -18,14 +18,14 @@ package org.textmapper.idea.lang.syntax.structureView;
 
 import com.intellij.ide.structureView.StructureViewModelBase;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 import org.textmapper.idea.lang.syntax.psi.TmElement;
 
 /**
  * evgeny, 8/11/12
  */
 public class TMStructureViewModel extends StructureViewModelBase {
-	public TMStructureViewModel(@NotNull LapgFile file) {
+	public TMStructureViewModel(@NotNull TMPsiFile file) {
 		super(file, new TMStructureViewElement(file));
 		withSuitableClasses(TmElement.class);
 	}

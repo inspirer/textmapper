@@ -20,9 +20,9 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import org.textmapper.idea.lang.syntax.LapgFileType;
 import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
-import org.textmapper.tool.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.TMParser.Tokens;
 
-public interface LapgElementTypes {
+public interface TextmapperElementTypes {
 	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE);
 
 	public static final IElementType GRAMMAR = new LapgElementType(Tokens.input, "grammar");

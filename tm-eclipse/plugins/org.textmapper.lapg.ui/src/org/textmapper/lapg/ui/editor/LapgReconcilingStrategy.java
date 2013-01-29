@@ -47,9 +47,9 @@ import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMResolver;
 import org.textmapper.tool.gen.LapgOptions;
-import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree;
+import org.textmapper.tool.parser.TMTree.TMProblem;
+import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.parser.ast.AstRoot;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
@@ -63,7 +63,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		super(editor);
 	}
 
-	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<LapgProblem> problems) {
+	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<TMProblem> problems) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
 		if (options != null && options.getIncludeFolders() != null) {
 			for (String path : options.getIncludeFolders()) {
@@ -71,7 +71,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 				if (resourceLoader != null) {
 					loaders.add(resourceLoader);
 				} else {
-					problems.add(new LapgProblem(LapgTree.KIND_ERROR, 0, 0, "cannot find template folder: " + path, null));
+					problems.add(new TMProblem(TMTree.KIND_ERROR, 0, 0, "cannot find template folder: " + path, null));
 				}
 			}
 		}
@@ -98,10 +98,10 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		String content = doc.get();
 
 		TextSource input = new TextSource(mainResource.getName(), content.toCharArray(), 1);
-		LapgTree<AstRoot> ast = LapgTree.parseInput(input);
-		sources.add(LapgTree.PARSER_SOURCE);
+		TMTree<AstRoot> ast = TMTree.parseInput(input);
+		sources.add(TMTree.PARSER_SOURCE);
 
-		List<LapgProblem> problems = ast.getErrors();
+		List<TMProblem> problems = ast.getErrors();
 		Grammar grammar = null;
 		if (problems.size() == 0) {
 			LapgOptions options = editor.getOptions();
@@ -128,7 +128,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		return model;
 	}
 
-	private void reportProblems(List<LapgProblem> compilationResult, IAnnotationModel model, Set<String> sources) {
+	private void reportProblems(List<TMProblem> compilationResult, IAnnotationModel model, Set<String> sources) {
 		if (compilationResult == null || model == null || model.getAnnotationIterator() == null) {
 			return;
 		}
@@ -144,7 +144,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		}
 
 		Map<Annotation, Position> annotationsToAdd = new HashMap<Annotation, Position>();
-		for (LapgProblem problem : compilationResult) {
+		for (TMProblem problem : compilationResult) {
 			if (problem != null && problem.getOffset() >= 0 && problem.getOffset() <= problem.getEndOffset()) {
 				annotationsToAdd.put(createProblemAnnotation(problem), new Position(problem.getOffset(), problem
 						.getEndOffset() - problem.getOffset()));
@@ -165,13 +165,13 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		}
 	}
 
-	private LapgAnnotation createProblemAnnotation(LapgProblem problem) {
+	private LapgAnnotation createProblemAnnotation(TMProblem problem) {
 		String type;
 		switch (problem.getKind()) {
-			//		case LapgTree.KIND_INFO:
+			//		case TMTree.KIND_INFO:
 			//			type = LapgAnnotations.ANNOTATION_INFO;
 			//			break;
-			case LapgTree.KIND_WARN:
+			case TMTree.KIND_WARN:
 				type = ANNOTATION_WARN;
 				break;
 			default:

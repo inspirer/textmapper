@@ -66,7 +66,7 @@
 				implementationClass="org.textmapper.idea.lang.syntax.LapgSyntaxHighlighter"/>
 		<lang.parserDefinition
 				language="Lapg Syntax"
-				implementationClass="org.textmapper.idea.lang.syntax.parser.LapgParserDefinition"/>
+				implementationClass="org.textmapper.idea.lang.syntax.parser.TMParserDefinition"/>
 		<lang.foldingBuilder
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.idea.editor.LapgFoldingBuilder"/>

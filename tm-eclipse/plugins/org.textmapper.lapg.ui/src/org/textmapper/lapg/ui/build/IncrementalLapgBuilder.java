@@ -41,9 +41,9 @@ import org.textmapper.tool.common.GeneratedFile;
 import org.textmapper.tool.gen.LapgGenerator;
 import org.textmapper.tool.gen.LapgOptions;
 import org.textmapper.tool.gen.ProcessingStrategy;
-import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree;
+import org.textmapper.tool.parser.TMTree.TMProblem;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 
@@ -236,9 +236,9 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private void createMarker(IFile file, LapgProblem p, TextSource source) {
+	private void createMarker(IFile file, TMProblem p, TextSource source) {
 		createMarker(file, p.getOffset(), p.getEndOffset(), source.lineForOffset(p.getOffset()),
-				p.getKind() == LapgTree.KIND_WARN, p.getMessage());
+				p.getKind() == TMTree.KIND_WARN, p.getMessage());
 	}
 
 	private void createMarker(IFile file, TextSourceElement element, boolean isWarning, String message) {

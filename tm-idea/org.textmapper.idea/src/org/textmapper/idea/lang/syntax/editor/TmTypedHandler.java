@@ -26,7 +26,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.util.text.CharArrayUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 import org.textmapper.idea.lang.syntax.psi.TmNonTerm;
 
 /**
@@ -35,7 +35,7 @@ import org.textmapper.idea.lang.syntax.psi.TmNonTerm;
 public class TmTypedHandler extends TypedHandlerDelegate {
 	@Override
 	public Result charTyped(char c, Project project, Editor editor, @NotNull PsiFile file) {
-		if (!(file instanceof LapgFile)) {
+		if (!(file instanceof TMPsiFile)) {
 			return Result.CONTINUE;
 		}
 		if (c == '|' || c == ';') {

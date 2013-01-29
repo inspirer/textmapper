@@ -25,11 +25,12 @@ import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
 import org.textmapper.idea.lang.syntax.lexer.LapgTemplatesElementType;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgParser.ParseException;
-import org.textmapper.tool.parser.LapgParser.Tokens;
+import org.textmapper.tool.parser.TMLexer;
+import org.textmapper.tool.parser.TMLexer.ErrorReporter;
+import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMParser;
+import org.textmapper.tool.parser.TMParser.ParseException;
+import org.textmapper.tool.parser.TMParser.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -37,13 +38,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-public class LapgParser implements PsiParser {
+public class TMPsiParser implements PsiParser {
 
 	private static final Map<Integer, IElementType> types = initTypes();
 
 	private static Map<Integer, IElementType> initTypes() {
 		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
-		for (IElementType t : LapgElementTypes.allElements) {
+		for (IElementType t : TextmapperElementTypes.allElements) {
 			int symbol = ((LapgElementType) t).getSymbol();
 			if (symbol >= 0) {
 				result.put(symbol, t);
@@ -68,9 +69,9 @@ public class LapgParser implements PsiParser {
 	private void parseGrammar(PsiBuilder builder) {
 		Marker grammar = builder.mark();
 
-		LapgParserEx parser = new LapgParserEx(builder);
+		TMParserEx parser = new TMParserEx(builder);
 		try {
-			parser.parseInput(new LapgLexerEx(builder));
+			parser.parseInput(new TMLexerEx(builder));
 		} catch (IOException e) {
 			/* cannot happen */
 		} catch (ParseException e) {
@@ -85,15 +86,15 @@ public class LapgParser implements PsiParser {
 		while (!builder.eof()) {
 			builder.advanceLexer();
 		}
-		grammar.done(LapgElementTypes.GRAMMAR);
+		grammar.done(TextmapperElementTypes.GRAMMAR);
 	}
 
-	private static class LapgParserEx extends org.textmapper.tool.parser.LapgParser {
+	private static class TMParserEx extends TMParser {
 
 		private final PsiBuilder myBuilder;
 		private final Stack<Marker> markers = new Stack<Marker>();
 
-		public LapgParserEx(PsiBuilder builder) {
+		public TMParserEx(PsiBuilder builder) {
 			super(new ErrorReporter() {
 				public void error(int start, int end, int line, String s) {
 					// ignore, errors are reported as syntax_problem productions
@@ -185,11 +186,11 @@ public class LapgParser implements PsiParser {
 		}
 	}
 
-	private static class LapgLexerEx extends LapgLexer {
+	private static class TMLexerEx extends TMLexer {
 		private final PsiBuilder myBuilder;
 		private LapgSymbol next;
 
-		public LapgLexerEx(PsiBuilder builder) throws IOException {
+		public TMLexerEx(PsiBuilder builder) throws IOException {
 			super(null, null);
 			myBuilder = builder;
 		}

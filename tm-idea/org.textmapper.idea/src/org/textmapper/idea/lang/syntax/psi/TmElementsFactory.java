@@ -23,7 +23,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.syntax.parser.LapgFile;
+import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public class TmElementsFactory {
 
 	public static TmIdentifier createIdentifier(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
-		LapgFile aFile = createDummyFile(p, text);
+		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonTerm> s = grammar.getNonTerms();
 		if (s == null || s.size() != 1 || s.get(0).getNameIdentifier() == null) {
@@ -45,7 +45,7 @@ public class TmElementsFactory {
 
 	public static TmSymbolReference createSymbolReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
-		LapgFile aFile = createDummyFile(p, text);
+		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonTerm> s = grammar.getNonTerms();
 		if (s == null || s.size() != 1) {
@@ -82,7 +82,7 @@ public class TmElementsFactory {
 
 	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
 		@NonNls String text = "[" + name + "=>" + name + "]";
-		LapgFile aFile = createDummyFile(p, text);
+		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmLexerStateSelector> s = grammar.getStateSelectors();
 		if (s == null || s.size() != 1) {
@@ -102,11 +102,11 @@ public class TmElementsFactory {
 		return ref;
 	}
 
-	private static LapgFile createDummyFile(Project p, String text) {
+	private static TMPsiFile createDummyFile(Project p, String text) {
 		String ext = LapgFileType.DEFAULT_EXTENSION;
 		@NonNls String fileName = "_Dummy_." + ext;
 		FileType type = LapgFileType.LAPG_FILE_TYPE;
 
-		return (LapgFile) PsiFileFactory.getInstance(p).createFileFromText(fileName, type, text);
+		return (TMPsiFile) PsiFileFactory.getInstance(p).createFileFromText(fileName, type, text);
 	}
 }
