@@ -127,7 +127,7 @@ public class TMLexerCompiler {
 		return result;
 	}
 
-	public void collectLexerRules() {
+	public void compile() {
 		Map<Terminal, Terminal> softToClass = new HashMap<Terminal, Terminal>();
 		Set<Terminal> nonSoft = new HashSet<Terminal>();
 
