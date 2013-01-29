@@ -18,9 +18,9 @@ import java.io.Reader;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
+import org.textmapper.tool.parser.TMLexer;
+import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Lexems;
 
 public class LapgPartitionScanner extends LexerBasedPartitionScanner implements IPartitions {
 
@@ -31,7 +31,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 	private final IToken fAction = new Token(LAPG_ACTION);
 	private final IToken fTemplates = new Token(LAPG_TEMPLATES);
 
-	private LapgLexer lexer;
+	private TMLexer lexer;
 	private LapgSymbol lexem;
 	private int fDocumentLength;
 
@@ -88,7 +88,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		fDocumentLength = offset + length;
 		try {
 			if (lexer == null) {
-				lexer = new SkippingLapgLexer(reader);
+				lexer = new SkippingTMLexer(reader);
 			} else {
 				lexer.reset(reader);
 			}
@@ -99,8 +99,8 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		lexem = null;
 	}
 
-	private static class SkippingLapgLexer extends LapgLexer {
-		public SkippingLapgLexer(Reader stream) throws IOException {
+	private static class SkippingTMLexer extends TMLexer {
+		public SkippingTMLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				public void error(int start, int end, int line, String s) {
 				}
