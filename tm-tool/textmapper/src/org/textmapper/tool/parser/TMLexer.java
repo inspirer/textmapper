@@ -23,7 +23,7 @@ import java.util.Map;
 import org.textmapper.tool.parser.action.SActionLexer;
 import org.textmapper.tool.parser.action.SActionParser;
 
-public class LapgLexer {
+public class TMLexer {
 
 	public static class LapgSymbol {
 		public Object value;
@@ -129,7 +129,7 @@ public class LapgLexer {
 				if (ind[0] < 2) {
 					return ind[0]++ == 0 ? '{' : chr;
 				}
-				LapgLexer.this.advance();
+				TMLexer.this.advance();
 				return chr;
 			}
 		};
@@ -171,7 +171,7 @@ public class LapgLexer {
 		return sb.toString();
 	}
 
-	public LapgLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public TMLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);
 	}

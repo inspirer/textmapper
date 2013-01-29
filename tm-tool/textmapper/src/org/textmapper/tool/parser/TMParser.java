@@ -20,13 +20,13 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.ArrayList;
 import org.textmapper.lapg.api.LexicalRule;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMLexer.ErrorReporter;
+import org.textmapper.tool.parser.TMLexer.Lexems;
+import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.parser.ast.*;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.LapgSymbol;
 
-public class LapgParser {
+public class TMParser {
 
 	public static class ParseException extends Exception {
 		private static final long serialVersionUID = 1L;
@@ -37,14 +37,14 @@ public class LapgParser {
 
 	private final ErrorReporter reporter;
 
-	public LapgParser(ErrorReporter reporter) {
+	public TMParser(ErrorReporter reporter) {
 		this.reporter = reporter;
 	}
 
 
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	private static final int[] lapg_action = LapgLexer.unpack_int(227,
+	private static final int[] lapg_action = TMLexer.unpack_int(227,
 		"\uffff\uffff\uffff\uffff\223\0\ufffd\uffff\uffff\uffff\uffff\uffff\4\0\ufff5\uffff" +
 		"\uffef\uffff\35\0\41\0\42\0\40\0\7\0\11\0\172\0\173\0\uffcb\uffff\174\0\175\0\uffff" +
 		"\uffff\176\0\205\0\uffff\uffff\10\0\uffa1\uffff\uffff\uffff\67\0\5\0\uff99\uffff" +
@@ -70,7 +70,7 @@ public class LapgParser {
 		"\62\0\63\0\64\0\65\0\uffff\uffff\55\0\56\0\uffff\uffff\171\0\uf9a3\uffff\211\0\61" +
 		"\0\uffff\uffff\152\0\151\0\uffff\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = LapgLexer.unpack_short(1680,
+	private static final short[] lapg_lalr = TMLexer.unpack_short(1680,
 		"\13\uffff\20\10\23\10\uffff\ufffe\23\uffff\20\44\uffff\ufffe\1\uffff\2\uffff\53\uffff" +
 		"\52\uffff\51\uffff\50\uffff\47\uffff\46\uffff\45\uffff\44\uffff\43\uffff\42\uffff" +
 		"\41\uffff\10\uffff\21\uffff\34\uffff\0\0\uffff\ufffe\1\uffff\2\uffff\53\uffff\52" +
@@ -152,7 +152,7 @@ public class LapgParser {
 		"\40\142\41\142\42\142\43\142\44\142\45\142\46\142\47\142\50\142\51\142\52\142\53" +
 		"\142\55\142\uffff\ufffe");
 
-	private static final short[] lapg_sym_goto = LapgLexer.unpack_short(110,
+	private static final short[] lapg_sym_goto = TMLexer.unpack_short(110,
 		"\0\2\26\106\111\121\131\131\131\144\147\151\162\166\172\177\207\216\235\243\272\303" +
 		"\313\317\323\334\341\351\360\u0105\u010c\u0113\u011a\u011b\u014c\u017d\u01ae\u01df" +
 		"\u0210\u0241\u0272\u02a3\u02d4\u0305\u0336\u0336\u0340\u0341\u0342\u0344\u034c\u0369" +
@@ -162,7 +162,7 @@ public class LapgParser {
 		"\u0420\u0421\u0429\u0433\u0447\u0449\u044a\u044e\u044f\u0450\u0451\u0452\u0453\u045b" +
 		"\u045c\u045d");
 
-	private static final short[] lapg_sym_from = LapgLexer.unpack_short(1117,
+	private static final short[] lapg_sym_from = TMLexer.unpack_short(1117,
 		"\337\340\0\1\5\10\21\27\35\43\46\132\154\155\202\212\227\233\247\253\255\317\0\1" +
 		"\4\5\10\21\24\27\35\36\43\46\52\70\71\102\111\115\121\132\134\135\142\153\154\155" +
 		"\166\174\202\203\211\212\217\227\233\234\242\244\247\253\255\256\264\305\306\314" +
@@ -215,7 +215,7 @@ public class LapgParser {
 		"\253\255\317\10\35\102\7\44\125\130\146\170\240\301\147\155\202\211\212\227\247\253" +
 		"\255\134\21");
 
-	private static final short[] lapg_sym_to = LapgLexer.unpack_short(1117,
+	private static final short[] lapg_sym_to = TMLexer.unpack_short(1117,
 		"\341\342\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\3\16\30\3\41\16\62\16\41\74\122" +
 		"\30\30\136\30\74\74\16\16\16\161\164\74\16\16\200\136\16\200\16\254\254\270\200\16" +
 		"\276\16\16\254\200\254\312\254\16\16\16\16\16\65\65\65\17\17\17\75\17\17\17\17\20" +
@@ -265,13 +265,13 @@ public class LapgParser {
 		"\225\26\262\225\262\26\56\73\143\40\124\156\157\170\240\301\326\172\226\226\260\263" +
 		"\226\263\226\311\163\61");
 
-	private static final short[] lapg_rlen = LapgLexer.unpack_short(148,
+	private static final short[] lapg_rlen = TMLexer.unpack_short(148,
 		"\0\1\3\2\1\2\3\1\1\1\3\3\2\1\1\1\1\1\1\1\1\1\1\1\1\0\1\3\1\1\2\2\1\1\1\3\0\1\0\1" +
 		"\0\1\0\1\0\1\10\3\2\3\1\1\1\1\3\1\3\1\3\1\1\2\2\1\1\6\5\1\1\1\4\4\1\3\0\1\2\1\2\1" +
 		"\1\3\0\1\3\2\2\1\1\2\3\2\1\2\2\1\1\1\4\2\3\1\3\1\3\6\6\2\2\2\1\2\1\1\1\2\4\2\2\3" +
 		"\1\3\1\1\1\1\1\0\1\5\0\1\3\1\1\3\3\5\1\1\1\1\1\3\3\2\1\1");
 
-	private static final short[] lapg_rlex = LapgLexer.unpack_short(148,
+	private static final short[] lapg_rlex = TMLexer.unpack_short(148,
 		"\142\142\56\56\57\57\60\60\61\62\63\63\64\64\65\65\65\65\65\65\65\65\65\65\65\143" +
 		"\143\65\66\67\67\67\70\70\70\71\144\144\145\145\146\146\147\147\150\150\72\72\73" +
 		"\74\75\75\75\75\76\77\77\100\101\101\102\102\102\103\103\104\104\105\105\105\106" +
@@ -493,9 +493,9 @@ public class LapgParser {
 	protected int lapg_head;
 	protected LapgSymbol[] lapg_m;
 	protected LapgSymbol lapg_n;
-	protected LapgLexer lapg_lexer;
+	protected TMLexer lapg_lexer;
 
-	private Object parse(LapgLexer lexer, int initialState, int finalState) throws IOException, ParseException {
+	private Object parse(TMLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		lapg_lexer = lexer;
 		lapg_m = new LapgSymbol[1024];
@@ -899,11 +899,11 @@ public class LapgParser {
 	protected void cleanup(LapgSymbol value) {
 	}
 
-	public AstRoot parseInput(LapgLexer lexer) throws IOException, ParseException {
+	public AstRoot parseInput(TMLexer lexer) throws IOException, ParseException {
 		return (AstRoot) parse(lexer, 0, 225);
 	}
 
-	public AstExpression parseExpression(LapgLexer lexer) throws IOException, ParseException {
+	public AstExpression parseExpression(TMLexer lexer) throws IOException, ParseException {
 		return (AstExpression) parse(lexer, 1, 226);
 	}
 }

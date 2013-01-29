@@ -19,13 +19,12 @@ import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.LexerState;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
-import org.textmapper.tool.parser.LapgTree;
-import org.textmapper.tool.parser.LapgTree.LapgProblem;
+import org.textmapper.tool.parser.TMTree;
+import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
 
 import java.util.HashMap;
@@ -39,19 +38,19 @@ public class TMResolver {
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 	public static final String INITIAL_STATE = "initial"; //$NON-NLS-1$
 
-	private final LapgTree<AstRoot> tree;
+	private final TMTree<AstRoot> tree;
 	private final GrammarBuilder builder;
 
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
-	public TMResolver(LapgTree<AstRoot> tree, GrammarBuilder builder) {
+	public TMResolver(TMTree<AstRoot> tree, GrammarBuilder builder) {
 		this.tree = tree;
 		this.builder = builder;
 	}
 
-	public LapgTree<AstRoot> getTree() {
+	public TMTree<AstRoot> getTree() {
 		return tree;
 	}
 
@@ -70,6 +69,7 @@ public class TMResolver {
 	public RegexContext createRegexContext() {
 		return LapgCore.createContext(namedPatternsMap);
 	}
+
 	public void collectSymbols() {
 		symbolsMap.put(Symbol.EOI, builder.getEoi());
 
@@ -216,10 +216,10 @@ public class TMResolver {
 	}
 
 	void error(IAstNode n, String message) {
-		tree.getErrors().add(new LapgResolverProblem(LapgTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
+		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 
-	private static class LapgResolverProblem extends LapgProblem {
+	private static class LapgResolverProblem extends TMProblem {
 		private static final long serialVersionUID = 3810706800688899470L;
 
 		public LapgResolverProblem(int kind, int offset, int endoffset, String message) {

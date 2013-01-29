@@ -16,11 +16,11 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.tool.gen.TemplateStaticMethods;
-import org.textmapper.tool.parser.LapgLexer;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgLexer.LapgSymbol;
-import org.textmapper.tool.parser.LapgLexer.Lexems;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMLexer;
+import org.textmapper.tool.parser.TMLexer.ErrorReporter;
+import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Lexems;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public class TMTextUtil {
 		};
 
 		try {
-			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getStream(), reporter);
 			lexer.setSkipComments(false);
 			List<String> headers = new LinkedList<String>();
 

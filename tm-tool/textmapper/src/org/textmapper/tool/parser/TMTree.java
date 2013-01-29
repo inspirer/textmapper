@@ -21,17 +21,17 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import org.textmapper.tool.parser.LapgLexer.ErrorReporter;
-import org.textmapper.tool.parser.LapgParser.ParseException;
+import org.textmapper.tool.parser.TMLexer.ErrorReporter;
+import org.textmapper.tool.parser.TMParser.ParseException;
 import org.textmapper.tool.parser.ast.*;
 
-public class LapgTree<T> {
+public class TMTree<T> {
 
 	private final TextSource source;
 	private final T root;
-	private final List<LapgProblem> errors;
+	private final List<TMProblem> errors;
 
-	public LapgTree(TextSource source, T root, List<LapgProblem> errors) {
+	public TMTree(TextSource source, T root, List<TMProblem> errors) {
 		this.source = source;
 		this.root = root;
 		this.errors = errors;
@@ -45,7 +45,7 @@ public class LapgTree<T> {
 		return root;
 	}
 
-	public List<LapgProblem> getErrors() {
+	public List<TMProblem> getErrors() {
 		return errors;
 	}
 
@@ -54,57 +54,57 @@ public class LapgTree<T> {
 	}
 
 
-	public static LapgTree<AstRoot> parseInput(TextSource source) {
-		final List<LapgProblem> list = new ArrayList<LapgProblem>();
+	public static TMTree<AstRoot> parseInput(TextSource source) {
+		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new LapgProblem(KIND_ERROR, start, end, s, null));
+				list.add(new TMProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			LapgParser parser = new LapgParser(reporter);
+			TMParser parser = new TMParser(reporter);
 			parser.source = source;
 			AstRoot result = parser.parseInput(lexer);
 			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
 
-			return new LapgTree<AstRoot>(source, result, list);
+			return new TMTree<AstRoot>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new LapgTree<AstRoot>(source, null, list);
+		return new TMTree<AstRoot>(source, null, list);
 	}
 
-	public static LapgTree<AstExpression> parseExpression(TextSource source) {
-		final List<LapgProblem> list = new ArrayList<LapgProblem>();
+	public static TMTree<AstExpression> parseExpression(TextSource source) {
+		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
-				list.add(new LapgProblem(KIND_ERROR, start, end, s, null));
+				list.add(new TMProblem(KIND_ERROR, start, end, s, null));
 			}
 		};
 
 		try {
-			LapgLexer lexer = new LapgLexer(source.getStream(), reporter);
+			TMLexer lexer = new TMLexer(source.getStream(), reporter);
 			lexer.setLine(source.getInitialLine());
 
-			LapgParser parser = new LapgParser(reporter);
+			TMParser parser = new TMParser(reporter);
 			parser.source = source;
 			AstExpression result = parser.parseExpression(lexer);
 
-			return new LapgTree<AstExpression>(source, result, list);
+			return new TMTree<AstExpression>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new LapgProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new LapgTree<AstExpression>(source, null, list);
+		return new TMTree<AstExpression>(source, null, list);
 	}
 
 
@@ -114,14 +114,14 @@ public class LapgTree<T> {
 
 	public static final String PARSER_SOURCE = "parser";
 
-	public static class LapgProblem extends Exception {
+	public static class TMProblem extends Exception {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
 		private final int offset;
 		private final int endoffset;
 
-		public LapgProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public TMProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;

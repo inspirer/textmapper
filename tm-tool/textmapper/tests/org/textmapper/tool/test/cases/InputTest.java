@@ -23,7 +23,7 @@ import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
 import org.textmapper.lapg.lex.LexicalBuilder;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.api.TemplatesStatus;

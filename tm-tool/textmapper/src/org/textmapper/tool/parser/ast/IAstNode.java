@@ -16,7 +16,7 @@
 package org.textmapper.tool.parser.ast;
 
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public interface IAstNode extends TextSourceElement {
 

@@ -15,7 +15,7 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class AstError extends AstNode implements AstLexerPart, AstGrammarPart, AstOptionPart, AstExpression, AstRulePart {
 

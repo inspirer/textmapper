@@ -15,7 +15,7 @@
 #  limitations under the License.
 
 lang = "java"
-prefix = "Lapg"
+prefix = "TM"
 package = "org.textmapper.tool.parser"
 maxtoken = 2048
 breaks = true
@@ -387,7 +387,7 @@ private boolean skipAction() throws java.io.@IOException {
 			if (ind[0] < 2) {
 				return ind[0]++ == 0 ? '{' : chr;
 			}
-			LapgLexer.this.advance();
+			TMLexer.this.advance();
 			return chr;
 		}
 	};
@@ -433,7 +433,7 @@ ${end}
 
 ${template java.classcode}
 ${call base-}
-org.textmapper.tool.parser.LapgTree.@TextSource source;
+org.textmapper.tool.parser.TMTree.@TextSource source;
 ${end}
 
 ${template java_tree.createParser-}

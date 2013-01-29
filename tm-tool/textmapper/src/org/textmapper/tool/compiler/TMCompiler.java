@@ -28,7 +28,7 @@ import org.textmapper.templates.api.types.IType;
 import org.textmapper.templates.types.TiExpressionBuilder;
 import org.textmapper.templates.types.TypesRegistry;
 import org.textmapper.templates.types.TypesUtil;
-import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 
 import java.util.*;
@@ -36,7 +36,7 @@ import java.util.*;
 public class TMCompiler {
 
 	private TMResolver resolver;
-	private final LapgTree<AstRoot> tree;
+	private final TMTree<AstRoot> tree;
 	private final TypesRegistry types;
 	private String myTypesPackage;
 
@@ -46,7 +46,7 @@ public class TMCompiler {
 	private GrammarBuilder builder;
 	private boolean hasInputs = false;
 
-	public TMCompiler(LapgTree<AstRoot> tree, TypesRegistry types) {
+	public TMCompiler(TMTree<AstRoot> tree, TypesRegistry types) {
 		this.tree = tree;
 		this.types = types;
 	}

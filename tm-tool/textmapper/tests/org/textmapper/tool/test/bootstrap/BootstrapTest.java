@@ -24,7 +24,7 @@ import org.textmapper.lapg.common.AbstractProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.tool.gen.LapgGenerator;
 import org.textmapper.tool.gen.LapgOptions;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.test.CheckingErrorStream;
 import org.textmapper.tool.test.CheckingFileBasedStrategy;
 
@@ -38,8 +38,8 @@ public class BootstrapTest {
 
 	@Test
 	public void testLapgTm() {
-		bootstrap("src/org/textmapper/tool/parser", "lapg.tm", new String[0], new String[]{
-				"LapgParser.java", "LapgLexer.java", "LapgTree.java"}, 1);
+		bootstrap("src/org/textmapper/tool/parser", "textmapper.tm", new String[0], new String[]{
+				"TMParser.java", "TMLexer.java", "TMTree.java"}, 1);
 	}
 
 	@Test

@@ -22,7 +22,7 @@ import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexMatcher;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
-import org.textmapper.tool.parser.LapgTree;
+import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 
 import java.util.*;
@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class TMLexerCompiler {
 
-	private final LapgTree<AstRoot> tree;
+	private final TMTree<AstRoot> tree;
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 

@@ -21,7 +21,7 @@ import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
 import org.textmapper.tool.compiler.TMGrammar;
-import org.textmapper.tool.parser.LapgTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.TemplatesStatus;
 import org.textmapper.templates.api.types.IClass;
