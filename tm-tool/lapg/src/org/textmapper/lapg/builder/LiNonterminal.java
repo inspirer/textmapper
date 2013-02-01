@@ -16,8 +16,12 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * evgeny, 10/27/12
@@ -25,9 +29,26 @@ import org.textmapper.lapg.api.rule.RhsPart;
 public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	private RhsPart definition;
+	private boolean isNullable;
+	private final List<Rule> rules = new ArrayList<Rule>();
 
 	public LiNonterminal(String name, String type, SourceElement origin) {
 		super(name, type, origin);
+	}
+
+	@Override
+	public RhsPart getDefinition() {
+		return definition;
+	}
+
+	@Override
+	public Iterable<Rule> getRules() {
+		return rules;
+	}
+
+	@Override
+	public boolean isNullable() {
+		return isNullable;
 	}
 
 	void setDefinition(RhsPart part) {
@@ -46,8 +67,11 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		((LiRootRhsChoice) definition).addRule(part);
 	}
 
-	@Override
-	public RhsPart getDefinition() {
-		return definition;
+	void addRule(LiRule rule) {
+		rules.add(rule);
+	}
+
+	void setNullable(boolean nullable) {
+		isNullable = nullable;
 	}
 }

@@ -483,10 +483,7 @@ IfStatement ::=
 	  kw_if '(' Expression ')' Statement (kw_else Statement)? %prio kw_else ;
 
 SwitchStatement ::=
-	  kw_switch '(' Expression ')' SwitchBlock ;
-
-SwitchBlock ::=
-	  '{' SwitchBlockStatementGroup* SwitchLabel+? '}' ;
+	  kw_switch '(' Expression ')' '{' SwitchBlockStatementGroup* SwitchLabel+? '}' ;
 
 SwitchBlockStatementGroup ::=
 	SwitchLabel+ BlockStatement+ ;
@@ -642,10 +639,8 @@ UnaryExpressionNotPlusMinus ::=
 
 CastExpression ::=
 	  '(' PrimitiveType Dimsopt ')' UnaryExpression
-	| '(' QualifiedIdentifier TypeArguments Dimsopt ')' UnaryExpressionNotPlusMinus
-	| '(' QualifiedIdentifier TypeArguments '.' ClassOrInterfaceType Dimsopt ')' UnaryExpressionNotPlusMinus
-	| '(' QualifiedIdentifier ')' UnaryExpressionNotPlusMinus
-	| '(' QualifiedIdentifier Dims ')' UnaryExpressionNotPlusMinus
+	| '(' QualifiedIdentifier TypeArguments ('.' ClassOrInterfaceType)? Dimsopt ')' UnaryExpressionNotPlusMinus
+	| '(' QualifiedIdentifier Dims? ')' UnaryExpressionNotPlusMinus
 ;
 
 ConditionalExpression ::=
@@ -717,12 +712,7 @@ ReferenceType1 ::=
 ;
 
 Wildcard ::=
-	  '?' WildcardBounds? ;
-
-WildcardBounds ::=
-	  kw_extends ReferenceType
-	| kw_super ReferenceType
-;
+	  '?' ((kw_extends|kw_super) ReferenceType)? ;
 
 DeeperTypeArgument ::=
 	  ('?' (kw_extends|kw_super))? ClassOrInterface '<' TypeArgumentList ;

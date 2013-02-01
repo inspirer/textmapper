@@ -64,6 +64,9 @@ public class TMCompiler {
 		Grammar g = builder.create();
 		generateUniqueIds(g);
 
+		// TODO only when options.genast = true
+		new TMMapper(g).mapAST();
+
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
 	}
 

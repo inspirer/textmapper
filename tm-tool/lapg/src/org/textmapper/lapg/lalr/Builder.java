@@ -35,6 +35,8 @@ public class Builder extends Lalr1 {
 		int i, e, h;
 		boolean k;
 
+		// TODO use sym[i].isNullable to initialize sym_empty
+
 		// search for symbols which accepts the empty chain
 		search_next_empty:
 		for (; ; ) {
@@ -55,6 +57,11 @@ public class Builder extends Lalr1 {
 				}
 			}
 			break;
+		}
+
+		for (i = nterms; i < nsyms; i++) {
+			assert sym_empty[i] == ((Nonterminal) sym[i]).isNullable()
+					: "old = " + sym_empty[i] + ", new = " + ((Nonterminal) sym[i]).isNullable() + " for " + sym[i].getName();
 		}
 
 		boolean[] sym_good = new boolean[nsyms];

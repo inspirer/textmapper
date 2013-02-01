@@ -385,6 +385,64 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
+		annotateNullables();
+		new LiRewriter(symbolArr).rewriteLists();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexicalRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
+	}
+
+	public void annotateNullables() {
+		// a set of non-empty rules without terminals on the right side
+		Set<Rule> candidates = new HashSet<Rule>();
+		for (Rule r : rules) {
+			if (r.getRight().length == 0) {
+				((LiNonterminal) r.getLeft()).setNullable(true);
+				continue;
+			}
+			boolean candidate = true;
+			for (RhsSymbol rhsSymbol : r.getRight()) {
+				if (rhsSymbol.getTarget().isTerm()) {
+					candidate = false;
+					break;
+				}
+			}
+			if (candidate) {
+				candidates.add(r);
+			}
+		}
+
+		// effectively invalidate potential nullable nonterminals
+		Queue<Rule> queue = new LinkedList<Rule>(candidates);
+		Set<Rule> inQueue = new HashSet<Rule>(candidates);
+		Rule next;
+		while ((next = queue.poll()) != null) {
+			if (next.getLeft().isNullable()) {
+				inQueue.remove(next);
+				continue;
+			}
+
+			boolean isEmpty = true;
+			for (RhsSymbol rhsSymbol : next.getRight()) {
+				if (!((Nonterminal) rhsSymbol.getTarget()).isNullable()) {
+					isEmpty = false;
+					break;
+				}
+			}
+
+			if (isEmpty) {
+				final LiNonterminal left = (LiNonterminal) next.getLeft();
+				left.setNullable(true);
+				for (RhsSymbol usage : left.getUsages()) {
+					if (usage.getLeft().isNullable()) continue;
+
+					for (Rule usingRule : usage.getLeft().getRules()) {
+						if (!inQueue.contains(usingRule) && candidates.contains(usingRule)) {
+							queue.add(usingRule);
+							inQueue.add(usingRule);
+						}
+					}
+				}
+			}
+			inQueue.remove(next);
+		}
 	}
 }

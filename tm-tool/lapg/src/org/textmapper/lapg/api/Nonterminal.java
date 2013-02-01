@@ -23,4 +23,11 @@ import org.textmapper.lapg.api.rule.RhsPart;
 public interface Nonterminal extends Symbol {
 
 	RhsPart getDefinition();
+
+	Iterable<Rule> getRules();
+
+	/**
+	 * @return true if it can derive an empty string
+	 */
+	boolean isNullable();
 }

@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.api.rule.RhsSymbol;
+
 public interface Symbol extends SourceElement, UserDataHolder {
 
 	static final String EOI = "eoi";
@@ -27,4 +29,6 @@ public interface Symbol extends SourceElement, UserDataHolder {
 	String getType();
 
 	boolean isTerm();
+
+	Iterable<RhsSymbol> getUsages();
 }

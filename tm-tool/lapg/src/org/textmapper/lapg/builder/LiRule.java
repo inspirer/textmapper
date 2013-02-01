@@ -35,6 +35,7 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 		this.priority = priority;
 		this.definition = definition;
 		this.alias = alias;
+		((LiNonterminal)left).addRule(this);
 	}
 
 	@Override

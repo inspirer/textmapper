@@ -38,6 +38,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		this.target = target;
 		this.alias = alias;
 		this.negLA = negLA;
+		((LiSymbol) target).addUsage(this);
 
 	}
 

@@ -89,40 +89,38 @@ public class JavaParserTest {
                         "    '{' '}'", tree);
     }
 
-    @Test
-    public void testTripleGenerics2() throws Exception {
-        AstNode tree = parse(
-                "class MapNested<X, Q extends List<Map<X, ? super X>>> { }");
-        assertTree(
-                "ClassDeclaration\n" +
-                        "  kw_class\n" +
-                        "  'MapNested'\n" +
-                        "  TypeParameters\n" +
-                        "    '<'\n" +
-                        "    'X'\n" +
-                        "    ','\n" +
-                        "    TypeParameter1\n" +
-                        "      'Q'\n" +
-                        "      kw_extends\n" +
-                        "      ReferenceType1\n" +
-                        "        'List'\n" +
-                        "        '<'\n" +
-                        "        DeeperTypeArgument\n" +
-                        "          'Map'\n" +
-                        "          '<'\n" +
-                        "          TypeArgumentList\n" +
-                        "            'X'\n" +
-                        "            ','\n" +
-                        "            Wildcard\n" +
-                        "              '?'\n" +
-                        "              WildcardBounds\n" +
-                        "                kw_super 'X'\n" +
-                        "        '>>>'\n" +
-                        "  ClassBody\n" +
-                        "    '{' '}'", tree);
-    }
+	@Test
+	public void testTripleGenerics2() throws Exception {
+		AstNode tree = parse(
+				"class MapNested<X, Q extends List<Map<X, ? super X>>> { }");
+		assertTree(
+				"ClassDeclaration\n" +
+						"  kw_class\n" +
+						"  'MapNested'\n" +
+						"  TypeParameters\n" +
+						"    '<'\n" +
+						"    'X'\n" +
+						"    ','\n" +
+						"    TypeParameter1\n" +
+						"      'Q'\n" +
+						"      kw_extends\n" +
+						"      ReferenceType1\n" +
+						"        'List'\n" +
+						"        '<'\n" +
+						"        DeeperTypeArgument\n" +
+						"          'Map'\n" +
+						"          '<'\n" +
+						"          TypeArgumentList\n" +
+						"            'X'\n" +
+						"            ','\n" +
+						"            Wildcard\n" +
+						"              '?' kw_super 'X'\n" +
+						"        '>>>'\n" +
+						"  ClassBody\n" +
+						"    '{' '}'", tree);
+	}
 
-    @Test
+	@Test
     public void testGenericArgs() throws Exception {
         AstNode tree = parse("interface ConvertibleTo<T> {\n" +
                 "    T convert();\n" +

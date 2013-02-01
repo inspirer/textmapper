@@ -20,6 +20,7 @@ import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.test.TestStatus;
 
 import java.util.Collections;
@@ -290,6 +291,11 @@ public class LexerGeneratorTest {
 			return new Terminal() {
 				@Override
 				public boolean isTerm() {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public Iterable<RhsSymbol> getUsages() {
 					throw new UnsupportedOperationException();
 				}
 

@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.common;
 
+import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.*;
 
 import java.util.*;
@@ -66,7 +67,7 @@ public class RuleUtil {
 			}
 
 			@Override
-			public Set<RhsSymbol> caseList(RhsList p) {
+			public Object caseList(RhsList p) {
 				throw new UnsupportedOperationException();
 			}
 		});
@@ -185,4 +186,48 @@ public class RuleUtil {
 			throw new UnsupportedOperationException();
 		}
 	}
+
+	public static boolean containsRef(RhsPart part, final Symbol ref) {
+		return part.accept(new RhsSwitch<Boolean>() {
+			private Boolean caseAny(RhsPart[] parts) {
+				for (RhsPart part : parts) {
+					if (part.accept(this)) {
+						return Boolean.TRUE;
+					}
+				}
+				return Boolean.FALSE;
+			}
+
+			@Override
+			public Boolean caseChoice(RhsChoice p) {
+				return caseAny(p.getParts());
+			}
+
+			@Override
+			public Boolean caseOptional(RhsOptional p) {
+				return p.getPart().accept(this);
+			}
+
+			@Override
+			public Boolean caseSequence(RhsSequence p) {
+				return caseAny(p.getParts());
+			}
+
+			@Override
+			public Boolean caseSymbol(RhsSymbol p) {
+				return p.getTarget() == ref;
+			}
+
+			@Override
+			public Boolean caseUnordered(RhsUnordered p) {
+				return caseAny(p.getParts());
+			}
+
+			@Override
+			public Boolean caseList(RhsList p) {
+				throw new IllegalStateException();
+			}
+		});
+	}
+
 }
