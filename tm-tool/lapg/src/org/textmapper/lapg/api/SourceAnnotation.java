@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.rule;
+package org.textmapper.lapg.api;
 
 /**
- * evgeny, 11/24/12
+ * evgeny, 2/3/13
  */
-public interface RhsSequence extends RhsPart {
+public interface SourceAnnotation {
 
 	String getName();
-
-	RhsPart[] getParts();
 }

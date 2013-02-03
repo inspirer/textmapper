@@ -15,12 +15,14 @@
  */
 package org.textmapper.lapg.api.rule;
 
+import org.textmapper.lapg.api.Symbol;
+
 /**
- * evgeny, 11/24/12
+ * evgeny, 2/3/13
  */
-public interface RhsSequence extends RhsPart {
+public interface RhsCast {
 
-	String getName();
+	Symbol getResult();
 
-	RhsPart[] getParts();
+	RhsPart getPart();
 }

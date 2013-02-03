@@ -16,11 +16,13 @@
 package org.textmapper.lapg.api.rule;
 
 /**
- * evgeny, 11/24/12
+ * evgeny, 2/3/13
  */
-public interface RhsSequence extends RhsPart {
+public interface RhsAssignment extends RhsPart {
 
 	String getName();
 
-	RhsPart[] getParts();
+	RhsPart getPart();
+
+	boolean isAddition();
 }
