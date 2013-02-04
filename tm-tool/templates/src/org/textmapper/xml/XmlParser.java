@@ -59,8 +59,8 @@ public class XmlParser {
 		"\0\uffff\uffff\ufffe\uffff");
 
 	private static final short[] lapg_lalr = XmlLexer.unpack_short(34,
-		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\11\11" +
-		"\11\uffff\ufffe\4\uffff\6\12\11\12\uffff\ufffe");
+		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\12\11" +
+		"\12\uffff\ufffe\4\uffff\6\11\11\11\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = XmlLexer.unpack_short(22,
 		"\0\1\5\11\11\17\20\23\24\25\27\27\30\32\36\41\45\51\53\54\56\57");
@@ -74,7 +74,7 @@ public class XmlParser {
 		"\10\31\5\5\5\5\6\6\6\6\14\23\17\20\26\21");
 
 	private static final short[] lapg_rlen = XmlLexer.unpack_short(17,
-		"\1\2\1\2\3\1\1\1\3\0\1\4\5\4\2\1\3");
+		"\1\2\1\2\3\1\1\1\3\1\0\4\5\4\2\1\3");
 
 	private static final short[] lapg_rlex = XmlLexer.unpack_short(17,
 		"\13\14\14\15\15\15\15\16\16\24\24\17\20\21\22\22\23");

@@ -51,12 +51,12 @@ public class RegexDefParser {
 		"\0\30\0\31\0\ufffe\uffff");
 
 	private static final short[] lapg_lalr = RegexDefLexer.unpack_short(136,
-		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\0\15\0\uffff" +
-		"\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\15\0\16" +
-		"\0\uffff\ufffe\5\uffff\6\uffff\7\uffff\10\uffff\0\4\1\4\2\4\3\4\4\4\14\4\15\4\16" +
+		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\1\15\1\uffff" +
+		"\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\15\1\16" +
+		"\1\uffff\ufffe\5\uffff\6\uffff\7\uffff\10\uffff\0\4\1\4\2\4\3\4\4\4\14\4\15\4\16" +
 		"\4\20\4\21\4\22\4\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21" +
-		"\uffff\22\uffff\0\1\15\1\16\1\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff" +
-		"\20\uffff\21\uffff\22\uffff\0\0\15\0\16\0\uffff\ufffe\1\uffff\2\uffff\3\27\24\27" +
+		"\uffff\22\uffff\0\0\15\0\16\0\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff" +
+		"\20\uffff\21\uffff\22\uffff\0\1\15\1\16\1\uffff\ufffe\1\uffff\2\uffff\3\27\24\27" +
 		"\25\27\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = RegexDefLexer.unpack_short(30,
@@ -74,7 +74,7 @@ public class RegexDefParser {
 		"\12\33\12\13\13\13\13\23\23\37\37\24\25\14\14\14\15\15\41");
 
 	private static final short[] lapg_rlen = RegexDefLexer.unpack_short(28,
-		"\0\1\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2");
+		"\1\0\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2");
 
 	private static final short[] lapg_rlex = RegexDefLexer.unpack_short(28,
 		"\34\34\26\26\27\27\27\27\27\30\30\30\30\30\30\30\30\31\31\31\32\32\32\32\32\32\33" +

@@ -48,8 +48,8 @@ public class SampleBParser {
 		"\7\0\3\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\4\0\11\0\12\0\ufffe\uffff");
 
 	private static final short[] lapg_lalr = SampleBLexer.unpack_short(40,
-		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\1\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
-		"\3\uffff\6\2\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\1\uffff\ufffe");
+		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\2\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
+		"\3\uffff\6\1\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\2\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleBLexer.unpack_short(23,
 		"\0\0\5\5\11\20\22\24\26\31\31\31\33\33\33\33\33\40\41\45\46\50\52");
@@ -63,7 +63,7 @@ public class SampleBParser {
 		"\10\31\2\12\20\12\4\13\13\14\22");
 
 	private static final short[] lapg_rlen = SampleBLexer.unpack_short(12,
-		"\1\0\1\5\7\1\1\2\3\4\4\1");
+		"\1\1\0\5\7\1\1\2\3\4\4\1");
 
 	private static final short[] lapg_rlex = SampleBLexer.unpack_short(12,
 		"\21\25\25\22\22\23\24\24\24\24\24\24");

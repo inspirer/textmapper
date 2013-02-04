@@ -273,8 +273,8 @@ States
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
   primary_expression ::= _ Lnull
-  expression_listopt ::= _
   expression_listopt ::= _ expression_list
+  expression_listopt ::= _
   primary_expression ::= _ identifier '(' expression_listopt ')'
   primary_expression ::= identifier '(' _ expression_listopt ')'
   primary_expression ::= _ primary_expression '.' identifier
@@ -734,8 +734,8 @@ States
   primary_expression ::= _ '(' expression ')'
   primary_expression ::= _ icon
   primary_expression ::= _ Lnull
-  expression_listopt ::= _
   expression_listopt ::= _ expression_list
+  expression_listopt ::= _
   primary_expression ::= _ identifier '(' expression_listopt ')'
   primary_expression ::= _ primary_expression '.' identifier
   primary_expression ::= _ primary_expression '.' identifier '(' expression_listopt ')'
@@ -1182,8 +1182,8 @@ expression_listopt ::
 	primary_expression ::= '(' expression ')'
 	primary_expression ::= icon
 	primary_expression ::= Lnull
-	expression_listopt ::=
 	expression_listopt ::= expression_list
+	expression_listopt ::=
 	primary_expression ::= identifier '(' expression_listopt ')'
 	primary_expression ::= primary_expression '.' identifier
 	primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'

@@ -46,7 +46,7 @@ public class SampleAParser {
 		"\uffff\uffff\5\0\3\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
 
 	private static final short[] lapg_lalr = SampleALexer.unpack_short(14,
-		"\3\uffff\6\uffff\5\1\uffff\ufffe\3\uffff\5\2\uffff\ufffe");
+		"\3\uffff\6\uffff\5\2\uffff\ufffe\3\uffff\5\1\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleALexer.unpack_short(12,
 		"\0\1\2\2\6\7\10\11\12\16\17\20");
@@ -58,7 +58,7 @@ public class SampleAParser {
 		"\16\4\2\2\2\2\5\13\6\14\3\15\7\12\10\11");
 
 	private static final short[] lapg_rlen = SampleALexer.unpack_short(7,
-		"\1\0\1\5\1\2\1");
+		"\1\1\0\5\1\2\1");
 
 	private static final short[] lapg_rlex = SampleALexer.unpack_short(7,
 		"\7\12\12\10\11\11\11");

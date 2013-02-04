@@ -54,15 +54,15 @@ public class NlaTestParser {
 		"\uffff\26\uffff\30\uffff\31\uffff\32\uffff\0\0\uffff\ufffe\16\uffff\21\uffff\25\uffff" +
 		"\5\34\6\34\7\34\10\34\11\34\13\34\17\34\20\34\23\34\24\34\uffff\ufffe\6\uffff\7\uffff" +
 		"\10\uffff\11\uffff\23\uffff\5\44\13\44\17\44\20\44\24\44\uffff\ufffe\1\uffff\27\uffff" +
-		"\2\uffff\7\uffff\10\uffff\12\uffff\14\uffff\22\uffff\26\uffff\13\15\uffff\ufffe\12" +
+		"\2\uffff\7\uffff\10\uffff\12\uffff\14\uffff\22\uffff\26\uffff\13\16\uffff\ufffe\12" +
 		"\uffff\5\11\6\11\7\11\10\11\11\11\13\11\16\11\17\11\20\11\21\11\23\11\24\11\25\11" +
-		"\uffff\ufffe\5\uffff\16\23\21\23\25\23\uffff\ufffe\20\uffff\13\16\uffff\ufffe\12" +
+		"\uffff\ufffe\5\uffff\16\23\21\23\25\23\uffff\ufffe\20\uffff\13\15\uffff\ufffe\12" +
 		"\uffff\5\20\6\20\7\20\10\20\11\20\13\20\16\20\17\20\20\20\21\20\23\20\24\20\25\20" +
 		"\uffff\ufffe\6\42\7\42\10\uffff\11\uffff\5\42\13\42\17\42\20\42\23\42\24\42\uffff" +
 		"\ufffe\6\43\7\43\10\uffff\11\uffff\5\43\13\43\17\43\20\43\23\43\24\43\uffff\ufffe" +
 		"\6\40\7\40\10\40\11\40\5\40\13\40\17\40\20\40\23\40\24\40\uffff\ufffe\6\41\7\41\10" +
 		"\41\11\41\5\41\13\41\17\41\20\41\23\41\24\41\uffff\ufffe\1\uffff\27\uffff\2\uffff" +
-		"\7\uffff\10\uffff\12\uffff\14\uffff\22\uffff\26\uffff\13\15\uffff\ufffe");
+		"\7\uffff\10\uffff\12\uffff\14\uffff\22\uffff\26\uffff\13\16\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = NlaTestLexer.unpack_short(46,
 		"\0\1\30\54\54\55\61\66\116\147\154\203\207\232\233\235\236\242\244\267\270\271\274" +
@@ -105,7 +105,7 @@ public class NlaTestParser {
 		"\64\65\115");
 
 	private static final short[] lapg_rlen = NlaTestLexer.unpack_short(44,
-		"\1\2\1\1\2\2\3\1\3\1\3\1\1\0\1\4\3\6\4\1\1\1\2\4\2\1\3\3\1\2\2\1\3\3\3\3\1\5\1\3" +
+		"\1\2\1\1\2\2\3\1\3\1\3\1\1\1\0\4\3\6\4\1\1\1\2\4\2\1\3\3\1\2\2\1\3\3\3\3\1\5\1\3" +
 		"\1\3\1\3");
 
 	private static final short[] lapg_rlex = NlaTestLexer.unpack_short(44,

@@ -56,13 +56,13 @@ public class TypesParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int[] lapg_action = TypesLexer.unpack_int(108,
-		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\4\0\uffff\uffff" +
+		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\3\0\uffff\uffff" +
 		"\101\0\ufff1\uffff\uffe9\uffff\uffe3\uffff\uffff\uffff\uffff\uffff\uffff\uffff\102" +
 		"\0\uffd5\uffff\uffcd\uffff\7\0\51\0\53\0\52\0\5\0\11\0\12\0\uffff\uffff\uffbf\uffff" +
 		"\uffb3\uffff\uffa3\uffff\23\0\uffff\uffff\uff9b\uffff\uffff\uffff\55\0\uffff\uffff" +
-		"\uffff\uffff\uff91\uffff\uffff\uffff\14\0\uff83\uffff\uff7d\uffff\33\0\uffff\uffff" +
+		"\uffff\uffff\uff91\uffff\uffff\uffff\13\0\uff83\uffff\uff7d\uffff\33\0\uffff\uffff" +
 		"\24\0\56\0\uffff\uffff\37\0\uffff\uffff\uffff\uffff\27\0\31\0\uffff\uffff\uff73\uffff" +
-		"\uffff\uffff\16\0\uffff\uffff\uffff\uffff\uffff\uffff\50\0\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\15\0\uffff\uffff\uffff\uffff\uffff\uffff\50\0\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\uffff\uffff\30\0\61\0\62\0\63\0\uff6b\uffff\25\0\60\0\57\0\uffff\uffff" +
 		"\17\0\46\0\45\0\32\0\22\0\42\0\43\0\uff5d\uffff\41\0\uff55\uffff\26\0\74\0\uff4d" +
 		"\uffff\uffff\uffff\uff47\uffff\uffff\uffff\uffff\uffff\73\0\uffff\uffff\uff41\uffff" +
@@ -70,16 +70,16 @@ public class TypesParser {
 		"\uffff\uffff\64\0\uffff\uffff\ufffe\uffff");
 
 	private static final short[] lapg_lalr = TypesLexer.unpack_short(194,
-		"\24\uffff\0\0\uffff\ufffe\25\uffff\16\3\uffff\ufffe\7\uffff\12\103\16\103\uffff\ufffe" +
+		"\24\uffff\0\0\uffff\ufffe\25\uffff\16\4\uffff\ufffe\7\uffff\12\103\16\103\uffff\ufffe" +
 		"\12\uffff\16\10\uffff\ufffe\1\6\16\6\17\6\26\6\27\6\30\6\uffff\ufffe\7\uffff\12\104" +
-		"\16\104\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\15\20\uffff\ufffe" +
+		"\16\104\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\15\21\uffff\ufffe" +
 		"\22\uffff\1\47\12\47\15\47\21\47\uffff\ufffe\7\uffff\10\uffff\1\54\12\54\15\54\21" +
-		"\54\22\54\uffff\ufffe\12\uffff\15\21\21\21\uffff\ufffe\20\uffff\22\uffff\11\13\14" +
-		"\13\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\21\20\uffff\ufffe\14" +
-		"\uffff\11\15\uffff\ufffe\6\uffff\11\44\12\44\23\44\uffff\ufffe\12\uffff\11\34\23" +
-		"\34\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\22\uffff\23\71\uffff\ufffe\12\uffff" +
-		"\11\35\23\35\uffff\ufffe\12\uffff\11\36\23\36\uffff\ufffe\12\uffff\23\72\uffff\ufffe" +
-		"\1\uffff\21\66\uffff\ufffe\12\uffff\21\67\uffff\ufffe");
+		"\54\22\54\uffff\ufffe\12\uffff\15\20\21\20\uffff\ufffe\20\uffff\22\uffff\11\14\14" +
+		"\14\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\21\21\uffff\ufffe\14" +
+		"\uffff\11\16\uffff\ufffe\6\uffff\11\44\12\44\23\44\uffff\ufffe\12\uffff\11\34\23" +
+		"\34\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\22\uffff\23\72\uffff\ufffe\12\uffff" +
+		"\11\35\23\35\uffff\ufffe\12\uffff\11\36\23\36\uffff\ufffe\12\uffff\23\71\uffff\ufffe" +
+		"\1\uffff\21\67\uffff\ufffe\12\uffff\21\66\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = TypesLexer.unpack_short(62,
 		"\0\1\26\36\50\55\55\56\62\64\67\77\103\106\111\116\120\122\124\133\136\140\141\145" +
@@ -107,8 +107,8 @@ public class TypesParser {
 		"\34\34\110\110\110\110\110\13\10\17\50\70\37\56\64\53\65\65\134\135\126");
 
 	private static final short[] lapg_rlen = TypesLexer.unpack_short(69,
-		"\1\2\1\0\1\2\0\6\2\1\1\0\1\0\1\5\0\1\6\1\3\2\3\1\3\1\3\1\1\3\3\1\3\1\1\1\1\3\3\1" +
-		"\4\1\1\1\1\2\4\1\1\1\1\1\5\3\0\1\4\0\1\3\1\3\1\1\1\1\3\1\3");
+		"\1\2\1\1\0\2\0\6\2\1\1\1\0\1\0\5\1\0\6\1\3\2\3\1\3\1\3\1\1\3\3\1\3\1\1\1\1\3\3\1" +
+		"\4\1\1\1\1\2\4\1\1\1\1\1\5\3\1\0\4\1\0\3\1\3\1\1\1\1\3\1\3");
 
 	private static final short[] lapg_rlex = TypesLexer.unpack_short(69,
 		"\33\34\34\63\63\64\64\35\36\37\37\65\65\66\66\40\67\67\41\42\42\43\70\70\44\45\71" +

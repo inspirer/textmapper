@@ -15,6 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsOptional;
@@ -373,8 +374,7 @@ public class TMParserCompiler {
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
 			Nonterminal symopt = resolver.createDerived(listSymbol, "_opt", origin);
-			builder.addRule(null, symopt, builder.empty(origin), null);
-			builder.addRule(null, symopt, builder.symbol(null, listSymbol, null, origin), null);
+			builder.addRule(null, symopt, builder.optional(builder.symbol(null, listSymbol, null, origin), origin), null);
 			listSymbol = symopt;
 		}
 
