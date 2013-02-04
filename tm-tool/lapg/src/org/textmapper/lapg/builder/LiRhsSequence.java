@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
@@ -38,6 +37,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	LiRhsSequence(LiRhsPart[] parts, SourceElement origin) {
 		super(origin);
 		this.parts = parts;
+		register(parts);
 	}
 
 	@Override
@@ -54,14 +54,6 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	@Override
 	List<RhsSymbol[]> expand() {
 		return expandList(parts);
-	}
-
-	@Override
-	protected void attach(Nonterminal left, Object token) {
-		super.attach(left, token);
-		for (LiRhsPart part : parts) {
-			part.attach(left, token);
-		}
 	}
 
 	@Override

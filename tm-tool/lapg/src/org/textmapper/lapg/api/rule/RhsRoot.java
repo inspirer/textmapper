@@ -15,20 +15,8 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
-
 /**
- * evgeny, 11/24/12
+ * evgeny, 2/4/13
  */
-public interface RhsPart extends SourceElement, UserDataHolder {
-
-	Nonterminal getLeft();
-
-	RhsPart getParent();
-
-	Object structuralNode();
-
-	<T> T accept(RhsSwitch<T> switch_);
+public interface RhsRoot extends RhsPart {
 }

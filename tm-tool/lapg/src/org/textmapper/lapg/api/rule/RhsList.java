@@ -3,7 +3,7 @@ package org.textmapper.lapg.api.rule;
 /**
  * evgeny, 1/3/13
  */
-public interface RhsList extends RhsPart {
+public interface RhsList extends RhsRoot {
 
 	RhsPart getElement();
 

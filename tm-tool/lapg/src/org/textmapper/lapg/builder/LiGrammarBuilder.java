@@ -189,8 +189,6 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 
 		LiRhsPart right = (LiRhsPart) rhs;
-		right.attach(left, new Object());
-
 		List<RhsSymbol[]> expanded = right.expand();
 		List<Rule> result = new ArrayList<Rule>(expanded.size());
 		for (RhsSymbol[] r : expanded) {
@@ -200,10 +198,10 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 
 		final LiNonterminal liLeft = (LiNonterminal) left;
-		if (right.canBeChild()) {
-			liLeft.addRule(right);
+		if (right instanceof LiRhsRoot) {
+			liLeft.setDefinition((LiRhsRoot) right);
 		} else {
-			liLeft.setDefinition(right);
+			liLeft.addRule(right);
 		}
 		return result;
 	}
@@ -296,7 +294,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (!rhsSet.contains(part)) {
 			throw new IllegalArgumentException("unknown right-hand side element passed");
 		}
-		if (asChild && !((LiRhsPart) part).canBeChild()) {
+		if (asChild && part instanceof RhsRoot) {
 			throw new IllegalArgumentException("right-hand side element cannot be nested");
 		}
 	}

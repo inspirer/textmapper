@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsRoot;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.List;
@@ -28,9 +29,8 @@ import java.util.List;
  */
 abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSourceElement {
 
+	private RhsPart parent;
 	private final SourceElement origin;
-	private Object token;
-	private Nonterminal left;
 
 	protected LiRhsPart(SourceElement origin) {
 		this.origin = origin;
@@ -43,28 +43,40 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		return origin;
 	}
 
-	protected void attach(Nonterminal left, Object token) {
-		if (this.token == null) {
-			this.token = token;
-			this.left = left;
-		} else if (this.token != token) {
-			throw new IllegalStateException("passed right-hand side entity is already used in another rule");
-		} else if (this.left != left) {
-			throw new IllegalStateException("internal error: inconsistent left nonterminal");
+	protected final void register(LiRhsPart... children) {
+		for (LiRhsPart part : children) {
+			if (part != null) {
+				part.setParent(this);
+			}
 		}
+	}
+
+	protected void setParent(RhsPart parent) {
+		if (this.parent != null && this.parent != parent) {
+			throw new IllegalStateException("passed right-hand side entity is already used somewhere else");
+		}
+		this.parent = parent;
 	}
 
 	public abstract boolean structuralEquals(LiRhsPart o);
 
 	public abstract int structuralHashCode();
 
-	protected boolean canBeChild() {
-		return true;
+	@Override
+	public RhsPart getParent() {
+		return parent;
 	}
 
 	@Override
 	public Nonterminal getLeft() {
-		return left;
+		RhsPart part = getParent();
+		while (part != null) {
+			if (part instanceof RhsRoot) {
+				return part.getLeft();
+			}
+			part = part.getParent();
+		}
+		throw new IllegalStateException("getLeft doesn't work on detached parts");
 	}
 
 	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {

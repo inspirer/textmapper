@@ -51,14 +51,15 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		return isNullable;
 	}
 
-	void setDefinition(RhsPart part) {
+	void setDefinition(LiRhsRoot part) {
 		if (definition != null) {
 			throw new IllegalStateException("non-terminal is sealed");
 		}
 		this.definition = part;
+		part.setLeft(this);
 	}
 
-	void addRule(RhsPart part) {
+	void addRule(LiRhsPart part) {
 		if (definition == null) {
 			definition = new LiRootRhsChoice(this);
 		} else if (!(definition instanceof LiRootRhsChoice)) {

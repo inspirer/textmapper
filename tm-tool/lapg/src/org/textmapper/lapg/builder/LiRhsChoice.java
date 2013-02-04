@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsChoice;
 import org.textmapper.lapg.api.rule.RhsPart;
@@ -35,6 +34,7 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	LiRhsChoice(LiRhsPart[] parts, SourceElement origin) {
 		super(origin);
 		this.parts = parts;
+		register(parts);
 	}
 
 	@Override
@@ -49,14 +49,6 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 			result.addAll(part.expand());
 		}
 		return result;
-	}
-
-	@Override
-	protected void attach(Nonterminal left, Object token) {
-		super.attach(left, token);
-		for (LiRhsPart part : parts) {
-			part.attach(left, token);
-		}
 	}
 
 	@Override

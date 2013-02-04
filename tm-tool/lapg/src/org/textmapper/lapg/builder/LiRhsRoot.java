@@ -13,22 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.rule;
+package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsRoot;
 
 /**
- * evgeny, 11/24/12
+ * evgeny, 2/4/13
  */
-public interface RhsPart extends SourceElement, UserDataHolder {
+abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 
-	Nonterminal getLeft();
+	private Nonterminal left;
 
-	RhsPart getParent();
+	protected LiRhsRoot(Nonterminal left, SourceElement origin) {
+		super(origin);
+		this.left = left;
+	}
 
-	Object structuralNode();
+	@Override
+	public Nonterminal getLeft() {
+		return left;
+	}
 
-	<T> T accept(RhsSwitch<T> switch_);
+	void setLeft(Nonterminal left) {
+		this.left = left;
+	}
+
+	@Override
+	public RhsPart getParent() {
+		return null;
+	}
+
+	@Override
+	protected void setParent(RhsPart parent) {
+		throw new IllegalStateException("root element cannot be nested");
+	}
 }

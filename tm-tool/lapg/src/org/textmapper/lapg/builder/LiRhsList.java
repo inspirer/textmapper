@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * evgeny, 1/3/13
  */
-public class LiRhsList extends LiRhsPart implements RhsList {
+public class LiRhsList extends LiRhsRoot implements RhsList {
 
 	private final LiRhsPart element;
 	private final LiRhsPart separator;
@@ -38,7 +38,7 @@ public class LiRhsList extends LiRhsPart implements RhsList {
 	public LiRhsList(LiRhsPart element, LiRhsPart separator, boolean nonEmpty,
 					 LiRhsPart customInitialElement, boolean rightRecursive,
 					 SourceElement origin) {
-		super(origin);
+		super(null, origin);
 		if (element == null) {
 			throw new NullPointerException();
 		}
@@ -53,6 +53,7 @@ public class LiRhsList extends LiRhsPart implements RhsList {
 		this.nonEmpty = nonEmpty;
 		this.customInitialElement = customInitialElement;
 		this.rightRecursive = rightRecursive;
+		register(element, separator, customInitialElement);
 	}
 
 	@Override
@@ -78,11 +79,6 @@ public class LiRhsList extends LiRhsPart implements RhsList {
 	@Override
 	public LiRhsPart getCustomInitialElement() {
 		return customInitialElement;
-	}
-
-	@Override
-	protected boolean canBeChild() {
-		return false;
 	}
 
 	@Override
@@ -112,7 +108,8 @@ public class LiRhsList extends LiRhsPart implements RhsList {
 		LiRhsList that = (LiRhsList) o;
 
 		if (separator != null ? !separator.structuralEquals(that.separator) : that.separator != null) return false;
-		if (customInitialElement != null ? !customInitialElement.structuralEquals(that.customInitialElement) : that.customInitialElement != null) return false;
+		if (customInitialElement != null ? !customInitialElement.structuralEquals(that.customInitialElement) : that.customInitialElement != null)
+			return false;
 		if (nonEmpty != that.nonEmpty) return false;
 		if (rightRecursive != that.rightRecursive) return false;
 		return element.structuralEquals(that.element);

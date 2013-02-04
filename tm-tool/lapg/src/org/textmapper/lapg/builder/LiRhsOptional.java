@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
@@ -35,6 +34,7 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	public LiRhsOptional(LiRhsPart inner, SourceElement origin) {
 		super(origin);
 		this.inner = inner;
+		register(inner);
 	}
 
 	@Override
@@ -55,12 +55,6 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 		}
 		result.add(RhsSymbol.EMPTY_LIST);
 		return result;
-	}
-
-	@Override
-	protected void attach(Nonterminal left, Object token) {
-		super.attach(left, token);
-		inner.attach(left, token);
 	}
 
 	@Override

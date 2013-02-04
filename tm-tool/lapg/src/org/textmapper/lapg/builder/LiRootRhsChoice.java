@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.rule.RhsChoice;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSwitch;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +27,17 @@ import java.util.List;
 /**
  * evgeny, 12/25/12
  */
-class LiRootRhsChoice extends LiUserDataHolder implements RhsChoice {
+class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
-	private List<RhsPart> rules = new ArrayList<RhsPart>();
-	private final Nonterminal left;
+	private List<LiRhsPart> rules = new ArrayList<LiRhsPart>();
 
 	LiRootRhsChoice(Nonterminal left) {
-		this.left = left;
+		super(left, null);
 	}
 
-	void addRule(RhsPart rule) {
+	void addRule(LiRhsPart rule) {
 		rules.add(rule);
+		rule.setParent(this);
 	}
 
 	@Override
@@ -44,14 +45,30 @@ class LiRootRhsChoice extends LiUserDataHolder implements RhsChoice {
 		return rules.toArray(new RhsPart[rules.size()]);
 	}
 
-	@Override
-	public Nonterminal getLeft() {
-		return left;
+	LiRhsPart[] getLiParts() {
+		return rules.toArray(new LiRhsPart[rules.size()]);
 	}
 
 	@Override
-	public Object structuralNode() {
-		return this;
+	List<RhsSymbol[]> expand() {
+		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
+		for (LiRhsPart part : rules) {
+			result.addAll(part.expand());
+		}
+		return result;
+	}
+
+	@Override
+	public boolean structuralEquals(LiRhsPart o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		LiRootRhsChoice that = (LiRootRhsChoice) o;
+		return structuralEquals(getLiParts(), that.getLiParts());
+	}
+
+	@Override
+	public int structuralHashCode() {
+		return structuralHashCode(getLiParts());
 	}
 
 	@Override
