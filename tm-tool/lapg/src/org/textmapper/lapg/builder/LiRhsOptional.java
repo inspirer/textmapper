@@ -29,7 +29,7 @@ import java.util.List;
  */
 class LiRhsOptional extends LiRhsPart implements RhsOptional {
 
-	private final LiRhsPart inner;
+	private LiRhsPart inner;
 
 	public LiRhsOptional(LiRhsPart inner, SourceElement origin) {
 		super(origin);
@@ -55,6 +55,15 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 		}
 		result.add(RhsSymbol.EMPTY_LIST);
 		return result;
+	}
+
+	@Override
+	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
+		if (inner == child) {
+			inner = newChild;
+			return true;
+		}
+		return false;
 	}
 
 	@Override

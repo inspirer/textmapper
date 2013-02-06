@@ -17,11 +17,11 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.rule.RhsChoice;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,24 +29,24 @@ import java.util.List;
  */
 class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
-	private List<LiRhsPart> rules = new ArrayList<LiRhsPart>();
+	private List<LiRhsPart> rulesList = new ArrayList<LiRhsPart>();
+	private LiRhsPart[] rules;
 
 	LiRootRhsChoice(Nonterminal left) {
 		super(left, null);
 	}
 
 	void addRule(LiRhsPart rule) {
-		rules.add(rule);
+		toList();
+		rulesList.add(rule);
 		rule.setParent(this);
 	}
 
-	@Override
-	public RhsPart[] getParts() {
-		return rules.toArray(new RhsPart[rules.size()]);
-	}
 
-	LiRhsPart[] getLiParts() {
-		return rules.toArray(new LiRhsPart[rules.size()]);
+	@Override
+	public LiRhsPart[] getParts() {
+		toArr();
+		return rules;
 	}
 
 	@Override
@@ -59,20 +59,41 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	}
 
 	@Override
+	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
+		toArr();
+		return replaceInArray(rules, child, newChild);
+	}
+
+	@Override
 	public boolean structuralEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRootRhsChoice that = (LiRootRhsChoice) o;
-		return structuralEquals(getLiParts(), that.getLiParts());
+		return structuralEquals(getParts(), that.getParts());
 	}
 
 	@Override
 	public int structuralHashCode() {
-		return structuralHashCode(getLiParts());
+		return structuralHashCode(getParts());
 	}
 
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseChoice(this);
+	}
+
+	private void toArr() {
+		if (rules == null) {
+			rules = rulesList.toArray(new LiRhsPart[rulesList.size()]);
+			rulesList = null;
+		}
+	}
+
+	private void toList() {
+		if (rulesList == null) {
+			rulesList = new ArrayList<LiRhsPart>(rules.length);
+			rulesList.addAll(Arrays.asList(rules));
+			rules = null;
+		}
 	}
 }

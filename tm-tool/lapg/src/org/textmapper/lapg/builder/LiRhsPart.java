@@ -29,7 +29,7 @@ import java.util.List;
  */
 abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSourceElement {
 
-	private RhsPart parent;
+	private LiRhsPart parent;
 	private final SourceElement origin;
 
 	protected LiRhsPart(SourceElement origin) {
@@ -51,7 +51,32 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		}
 	}
 
-	protected void setParent(RhsPart parent) {
+	protected void rewrite(RhsPart part) {
+		if (parent == null) {
+			throw new IllegalStateException("cannot rewrite detached part");
+		}
+		if (part instanceof RhsRoot) {
+			throw new IllegalArgumentException("cannot rewrite with a root part");
+		}
+		if (!parent.replaceChild(this, (LiRhsPart) part)) {
+			throw new IllegalStateException("cannot rewrite: tree is inconsistent");
+		}
+		parent = null;
+	}
+
+	protected abstract boolean replaceChild(LiRhsPart child, LiRhsPart newChild);
+
+	protected final boolean replaceInArray(LiRhsPart[] parts, LiRhsPart old, LiRhsPart new_) {
+		for (int i = 0; i < parts.length; i++) {
+			if (parts[i] == old) {
+				parts[i] = new_;
+				return true;
+			}
+		}
+		return false;
+	}
+
+	protected void setParent(LiRhsPart parent) {
 		if (this.parent != null && this.parent != parent) {
 			throw new IllegalStateException("passed right-hand side entity is already used somewhere else");
 		}

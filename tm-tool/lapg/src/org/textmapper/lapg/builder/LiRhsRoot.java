@@ -47,7 +47,16 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 	}
 
 	@Override
-	protected void setParent(RhsPart parent) {
+	protected void rewrite(RhsPart part) {
+		if (!(part instanceof RhsRoot)) {
+			throw new IllegalArgumentException("cannot rewrite with a non-root part");
+		}
+		((LiNonterminal) left).rewriteDefinition(this, part);
+		left = null;
+	}
+
+	@Override
+	protected void setParent(LiRhsPart parent) {
 		throw new IllegalStateException("root element cannot be nested");
 	}
 }

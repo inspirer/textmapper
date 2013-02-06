@@ -29,10 +29,10 @@ import java.util.List;
  */
 public class LiRhsList extends LiRhsRoot implements RhsList {
 
-	private final LiRhsPart element;
-	private final LiRhsPart separator;
+	private LiRhsPart element;
+	private LiRhsPart separator;
 	private final boolean nonEmpty;
-	private final LiRhsPart customInitialElement;
+	private LiRhsPart customInitialElement;
 	private final boolean rightRecursive;
 
 	public LiRhsList(LiRhsPart element, LiRhsPart separator, boolean nonEmpty,
@@ -99,6 +99,23 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 
 		result.addAll(LiRhsSequence.expandList(listRule.toArray(new LiRhsPart[listRule.size()])));
 		return result;
+	}
+
+	@Override
+	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
+		if (element == child) {
+			element = newChild;
+			return true;
+		}
+		if (separator == child) {
+			separator = newChild;
+			return true;
+		}
+		if (customInitialElement == child) {
+			customInitialElement = newChild;
+			return true;
+		}
+		return false;
 	}
 
 	@Override

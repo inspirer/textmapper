@@ -68,6 +68,12 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		((LiRootRhsChoice) definition).addRule(part);
 	}
 
+	void rewriteDefinition(RhsPart old, RhsPart new_) {
+		if (old == definition) {
+			definition = new_;
+		}
+	}
+
 	void addRule(LiRule rule) {
 		rules.add(rule);
 	}
