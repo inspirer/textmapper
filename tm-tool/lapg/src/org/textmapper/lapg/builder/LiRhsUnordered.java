@@ -105,4 +105,11 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseUnordered(this);
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		toString(sb, parts, " & ");
+		sb.append(")");
+	}
 }

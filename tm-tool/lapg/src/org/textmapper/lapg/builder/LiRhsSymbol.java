@@ -99,4 +99,13 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseSymbol(this);
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		// TODO negLA? mapping?
+		if (alias != null) {
+			sb.append(alias).append("=");
+		}
+		sb.append(target.getName());
+	}
 }

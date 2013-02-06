@@ -70,6 +70,13 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	}
 
 	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		toString(sb, parts, " | ");
+		sb.append(")");
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseChoice(this);
 	}

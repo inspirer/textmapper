@@ -96,4 +96,16 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 			rules = null;
 		}
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		toArr();
+		if (rules.length >= 1) {
+			sb.append("  ");
+			toString(sb, rules, "\n| ");
+			sb.append("\n");
+		} else {
+			sb.append("<broken choice>");
+		}
+	}
 }

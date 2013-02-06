@@ -117,4 +117,11 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseSequence(this);
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		toString(sb, parts, " ");
+		sb.append(")");
+	}
 }

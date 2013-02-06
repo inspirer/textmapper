@@ -83,4 +83,12 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseOptional(this);
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		inner.toString(sb);
+		sb.append(")?");
+	}
+
 }

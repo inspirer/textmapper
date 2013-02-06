@@ -146,4 +146,22 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseList(this);
 	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		element.toString(sb);
+		if (separator != null) {
+			sb.append(" separator ");
+			separator.toString(sb);
+		}
+		if (customInitialElement != null) {
+			sb.append(" /first ");
+			customInitialElement.toString(sb);
+		}
+		if (rightRecursive) {
+			sb.append(" /rr");
+		}
+		sb.append(")").append(nonEmpty ? "+" : "*");
+	}
 }

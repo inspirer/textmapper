@@ -143,6 +143,27 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		return new StructuralObject(this);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		toString(sb);
+		return sb.toString();
+	}
+
+	protected abstract void toString(StringBuilder sb);
+
+	protected final void toString(StringBuilder sb, LiRhsPart[] parts, String separator) {
+		boolean first = true;
+		for (LiRhsPart p : parts) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(separator);
+			}
+			p.toString(sb);
+		}
+	}
+
 	private static class StructuralObject {
 		private final LiRhsPart part;
 
