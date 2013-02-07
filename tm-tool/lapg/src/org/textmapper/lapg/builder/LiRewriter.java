@@ -134,22 +134,22 @@ public class LiRewriter {
 			}
 		}
 
-		LiRhsPart element = asChoice(elements);
-		LiRhsPart customInitialElement = asChoice(initialElements);
+		LiRhsPart element = merge(elements, MergeStrategy.CHOICE);
+		LiRhsPart customInitialElement = merge(initialElements, MergeStrategy.CHOICE);
 		if (customInitialElement != null && element.structuralEquals(customInitialElement)) {
 			customInitialElement = null;
 		}
 
 		if (emptyRule != null && (customInitialElement != null || separator != null)) {
 			initialElements.add(emptyRule);
-			customInitialElement = asChoice(initialElements);
+			customInitialElement = merge(initialElements, MergeStrategy.CHOICE);
 			if (element.structuralEquals(customInitialElement)) {
 				customInitialElement = null;
 			}
 			emptyRule = null;
 		}
 
-		return new LiRhsList(element, asChoice(separator), emptyRule == null, customInitialElement, rightRecursive, def);
+		return new LiRhsList(element, merge(separator, MergeStrategy.SEQUENCE), emptyRule == null, customInitialElement, rightRecursive, def);
 	}
 
 	private static List<LiRhsSymbol> getCommonSeparator(Collection<LiRhsSequence> listRules, boolean rightRecursive) {
@@ -192,7 +192,12 @@ public class LiRewriter {
 		return result.isEmpty() ? null : result;
 	}
 
-	private static LiRhsPart asChoice(List<? extends LiRhsPart> parts) {
+	private enum MergeStrategy {
+		CHOICE,
+		SEQUENCE
+	}
+
+	private static LiRhsPart merge(List<? extends LiRhsPart> parts, MergeStrategy strategy) {
 		if (parts == null || parts.isEmpty()) {
 			return null;
 		}
@@ -204,7 +209,10 @@ public class LiRewriter {
 		if (parts.size() == 1) {
 			return first;
 		}
-		return new LiRhsChoice(parts.toArray(new LiRhsPart[parts.size()]), first);
+		return
+			strategy == MergeStrategy.CHOICE
+				? new LiRhsChoice(parts.toArray(new LiRhsPart[parts.size()]), first)
+				: new LiRhsSequence(parts.toArray(new LiRhsPart[parts.size()]), first);
 	}
 
 	private static Terminal asConstantTerminal(RhsPart part) {

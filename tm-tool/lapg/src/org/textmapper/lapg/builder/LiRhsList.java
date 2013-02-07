@@ -16,10 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsList;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSwitch;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,28 +147,49 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	@Override
 	protected void toString(StringBuilder sb) {
 		if (customInitialElement != null) {
-			sb.append("(");
-			if (!rightRecursive) {
-				customInitialElement.toString(sb);
-				sb.append(" ");
+			boolean nonEmptyInitial = !(customInitialElement instanceof RhsSequence && ((RhsSequence) customInitialElement).getParts().length == 0);
+			if (nonEmptyInitial) {
+				sb.append("(");
 			}
-		}
-		sb.append("(");
-		element.toString(sb);
-		if (separator != null) {
-			sb.append(" separator ");
-			separator.toString(sb);
-		}
-		if (rightRecursive) {
-			sb.append(" /rr");
-		}
-		sb.append(")").append(nonEmpty && customInitialElement == null ? "+" : "*");
-		if (customInitialElement != null) {
 			if (rightRecursive) {
-				sb.append(" ");
-				customInitialElement.toString(sb);
+				sb.append("(");
+				element.toString(sb);
+				if (separator != null) {
+					sb.append(" ");
+					separator.toString(sb);
+				}
+				sb.append(" /rr)*");
+				if (nonEmptyInitial) {
+					sb.append(' ');
+					customInitialElement.toString(sb);
+				}
+			} else {
+				if (nonEmptyInitial) {
+					customInitialElement.toString(sb);
+					sb.append(" ");
+				}
+				sb.append("(");
+				if (separator != null) {
+					separator.toString(sb);
+					sb.append(" ");
+				}
+				element.toString(sb);
+				sb.append(")*");
 			}
-			sb.append(")");
+			if (nonEmptyInitial) {
+				sb.append(")");
+			}
+		} else {
+			sb.append("(");
+			element.toString(sb);
+			if (separator != null) {
+				sb.append(" separator ");
+				separator.toString(sb);
+			}
+			if (rightRecursive) {
+				sb.append(" /rr");
+			}
+			sb.append(")").append(nonEmpty ? "+" : "*");
 		}
 	}
 }

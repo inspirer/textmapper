@@ -15,7 +15,6 @@
  */
 package org.textmapper.tool.compiler;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsOptional;
@@ -253,6 +252,9 @@ public class TMParserCompiler {
 		}
 
 		Symbol sym = resolve(outer, refPart.getReference());
+		if (sym == null) {
+			return null;
+		}
 		RhsSymbol rhsSymbol = builder.symbol(alias, sym, nla, refPart.getReference());
 		TMDataUtil.putAnnotations(rhsSymbol, annotations);
 		return rhsSymbol;
@@ -272,6 +274,9 @@ public class TMParserCompiler {
 
 	private RhsPart convertGroup(Symbol outer, List<AstRulePart> groupPart, SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<RhsPart>();
+		if (groupPart == null) {
+			return null;
+		}
 		for (AstRulePart innerPart : groupPart) {
 			RhsPart rulePart = convertRulePart(outer, innerPart);
 			if (rulePart != null) {
@@ -445,6 +450,7 @@ public class TMParserCompiler {
 				&& rule.getAnnotations() == null
 				&& rule.getAttribute() == null
 				&& rule.getAlias() == null
+				&& rule.getList() != null
 				&& !rule.getList().isEmpty()
 				&& !rule.hasSyntaxError();
 	}
