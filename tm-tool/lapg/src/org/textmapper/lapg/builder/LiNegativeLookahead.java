@@ -17,6 +17,9 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.common.SymbolUtil;
+
+import java.util.Arrays;
 
 /**
  * Gryaznov Evgeny, 8/15/11
@@ -27,10 +30,27 @@ class LiNegativeLookahead implements NegativeLookahead {
 
 	public LiNegativeLookahead(Terminal[] symbols) {
 		this.symbols = symbols;
+		Arrays.sort(symbols, SymbolUtil.COMPARATOR);
 	}
 
 	@Override
 	public Terminal[] getUnwantedSet() {
 		return symbols;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiNegativeLookahead that = (LiNegativeLookahead) o;
+
+		return Arrays.equals(symbols, that.symbols);
+
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(symbols);
 	}
 }

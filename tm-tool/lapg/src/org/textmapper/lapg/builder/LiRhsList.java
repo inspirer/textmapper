@@ -149,19 +149,29 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 
 	@Override
 	protected void toString(StringBuilder sb) {
+		if (customInitialElement != null) {
+			sb.append("(");
+			if (!rightRecursive) {
+				customInitialElement.toString(sb);
+				sb.append(" ");
+			}
+		}
 		sb.append("(");
 		element.toString(sb);
 		if (separator != null) {
 			sb.append(" separator ");
 			separator.toString(sb);
 		}
-		if (customInitialElement != null) {
-			sb.append(" /first ");
-			customInitialElement.toString(sb);
-		}
 		if (rightRecursive) {
 			sb.append(" /rr");
 		}
-		sb.append(")").append(nonEmpty ? "+" : "*");
+		sb.append(")").append(nonEmpty && customInitialElement == null ? "+" : "*");
+		if (customInitialElement != null) {
+			if (rightRecursive) {
+				sb.append(" ");
+				customInitialElement.toString(sb);
+			}
+			sb.append(")");
+		}
 	}
 }

@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.ParserConflict.Input;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.common.SymbolUtil;
 import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 
 import java.util.*;
@@ -133,11 +134,7 @@ public class ConflictBuilder {
 			for (ConflictData curr = this; curr != null; curr = curr.linked) {
 				result[len++] = curr.termSym;
 			}
-			Arrays.sort(result, new Comparator<Symbol>() {
-				public int compare(Symbol o1, Symbol o2) {
-					return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
-				}
-			});
+			Arrays.sort(result, SymbolUtil.COMPARATOR);
 			return result;
 		}
 

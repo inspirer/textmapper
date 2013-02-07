@@ -17,6 +17,7 @@ package org.textmapper.lapg.lalr;
 
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.common.SymbolUtil;
 
 import java.util.*;
 
@@ -53,11 +54,7 @@ public class SoftConflictBuilder {
 
 		public Terminal[] getSymbols() {
 			Terminal[] result = symbols.toArray(new Terminal[symbols.size()]);
-			Arrays.sort(result, new Comparator<Terminal>() {
-				public int compare(Terminal o1, Terminal o2) {
-					return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
-				}
-			});
+			Arrays.sort(result, SymbolUtil.COMPARATOR);
 			return result;
 		}
 

@@ -64,6 +64,13 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		parent = null;
 	}
 
+	/**
+	 *  rewrite support
+	 */
+	void detach() {
+		this.parent = null;
+	}
+
 	protected abstract boolean replaceChild(LiRhsPart child, LiRhsPart newChild);
 
 	protected final boolean replaceInArray(LiRhsPart[] parts, LiRhsPart old, LiRhsPart new_) {

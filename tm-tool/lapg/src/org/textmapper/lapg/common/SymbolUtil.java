@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.common;
+
+import org.textmapper.lapg.api.Symbol;
+
+import java.util.Comparator;
 
 /**
- * evgeny, 11/16/12
+ * evgeny, 2/6/13
  */
-public interface Terminal extends Symbol {
+public class SymbolUtil {
 
-	boolean isSoft();
-
-	boolean isConstant();
-
-	Symbol getSoftClass();
+	public static final Comparator<Symbol> COMPARATOR = new Comparator<Symbol>() {
+		@Override
+		public int compare(Symbol o1, Symbol o2) {
+			return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
+		}
+	};
 }

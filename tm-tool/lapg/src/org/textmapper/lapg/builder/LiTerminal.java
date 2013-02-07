@@ -60,5 +60,11 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	public boolean isSoft() {
 		return softClass != null;
 	}
+
+	@Override
+	public boolean isConstant() {
+		// TODO fixme, detect constant terminals
+		return getType() == null;
+	}
 }
 
