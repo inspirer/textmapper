@@ -103,12 +103,12 @@ public class TMLexerCompiler {
 		return active;
 	}
 
-	private LexicalRule getClassRule(Map<LexicalRule, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
-		LexicalRule result = null;
+	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
+		LexerRule result = null;
 		AstLexemAttrs attrs = l.getAttrs();
-		int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
-		if (regex.isConstant() && kind != LexicalRule.KIND_CLASS) {
-			for (LexicalRule rule : classMatchers.keySet()) {
+		int kind = attrs == null ? LexerRule.KIND_NONE : attrs.getKind();
+		if (regex.isConstant() && kind != LexerRule.KIND_CLASS) {
+			for (LexerRule rule : classMatchers.keySet()) {
 				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
 				if (!attributes.get(astClassLexeme).canBeClassFor(attributes.get(l))) {
 					continue;
@@ -149,7 +149,7 @@ public class TMLexerCompiler {
 		// Step 2. Process class lexical rules.
 
 		RegexContext context = resolver.createRegexContext();
-		Map<LexicalRule, RegexMatcher> classMatchers = new LinkedHashMap<LexicalRule, RegexMatcher>();
+		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<LexerRule, RegexMatcher>();
 
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (!(clause instanceof AstLexeme)) {
@@ -157,7 +157,7 @@ public class TMLexerCompiler {
 			}
 			AstLexeme lexeme = (AstLexeme) clause;
 			AstLexemAttrs attrs = lexeme.getAttrs();
-			if (attrs == null || attrs.getKind() != LexicalRule.KIND_CLASS) {
+			if (attrs == null || attrs.getKind() != LexerRule.KIND_CLASS) {
 				continue;
 			}
 			if (lexeme.getRegexp() == null) {
@@ -181,12 +181,12 @@ public class TMLexerCompiler {
 				continue;
 			}
 
-			LexicalRule liLexicalRule = builder.addLexicalRule(LexicalRule.KIND_CLASS, classTerm, regex,
+			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
 					attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 					null, lexeme);
-			classMatchers.put(liLexicalRule, LapgCore.createMatcher(liLexicalRule.getRegexp(), context));
-			TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
-			TMDataUtil.putTransition(liLexicalRule, attributes.get(lexeme).getTransitions());
+			classMatchers.put(liLexerRule, LapgCore.createMatcher(liLexerRule.getRegexp(), context));
+			TMDataUtil.putCode(liLexerRule, lexeme.getCode());
+			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
@@ -197,8 +197,8 @@ public class TMLexerCompiler {
 			}
 			AstLexeme lexeme = (AstLexeme) clause;
 			AstLexemAttrs attrs = lexeme.getAttrs();
-			int kind = attrs == null ? LexicalRule.KIND_NONE : attrs.getKind();
-			if (kind == LexicalRule.KIND_CLASS) {
+			int kind = attrs == null ? LexerRule.KIND_NONE : attrs.getKind();
+			if (kind == LexerRule.KIND_CLASS) {
 				continue;
 			}
 
@@ -209,7 +209,7 @@ public class TMLexerCompiler {
 			}
 			Terminal term = (Terminal) s;
 
-			boolean isSoft = (kind == LexicalRule.KIND_SOFT);
+			boolean isSoft = (kind == LexerRule.KIND_SOFT);
 			if (isSoft && nonSoft.contains(term)) {
 				error(lexeme, "redeclaration of non-soft terminal: " + lexeme.getName());
 				continue;
@@ -242,7 +242,7 @@ public class TMLexerCompiler {
 				error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getName()
 						+ "' cannot have a semantic action");
 			}
-			LexicalRule classRule = getClassRule(classMatchers, lexeme, regex);
+			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);
 			if (isSoft) {
 				if (classRule == null) {
 					error(lexeme, "soft lexeme rule `" + name + "' " +
@@ -270,10 +270,10 @@ public class TMLexerCompiler {
 				}
 			}
 
-			LexicalRule liLexicalRule = builder.addLexicalRule(kind, term, regex, attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex, attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
 					classRule, lexeme);
-			TMDataUtil.putCode(liLexicalRule, lexeme.getCode());
-			TMDataUtil.putTransition(liLexicalRule, attributes.get(lexeme).getTransitions());
+			TMDataUtil.putCode(liLexerRule, lexeme.getCode());
+			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 	}
 

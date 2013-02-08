@@ -45,7 +45,7 @@ public class LapgCore {
 	}
 
 	public static LexerData generateLexer(Grammar g, ProcessingStatus status) {
-		return LexicalBuilder.compile(g.getLexerStates(), g.getLexicalRules(), g.getPatterns(), status);
+		return LexicalBuilder.compile(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), status);
 	}
 
 	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) {

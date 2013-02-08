@@ -120,7 +120,7 @@ ${end-}
 
 	createToken: function(lapg_n) {
 		switch (lapg_n.lexem) {
-${foreach lexem in syntax.lexicalRules-}
+${foreach lexem in syntax.lexerRules-}
 ${if lexem.action-}
 			case ${lexem.symbol.index}:
 				${call lexerAction('lapg_n.sym') for lexem-}

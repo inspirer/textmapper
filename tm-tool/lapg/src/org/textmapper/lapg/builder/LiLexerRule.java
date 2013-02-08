@@ -18,7 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.regex.RegexPart;
 
-class LiLexicalRule extends LiUserDataHolder implements LexicalRule, DerivedSourceElement {
+class LiLexerRule extends LiUserDataHolder implements LexerRule, DerivedSourceElement {
 
 	private final int kind;
 	private final int index;
@@ -26,17 +26,17 @@ class LiLexicalRule extends LiUserDataHolder implements LexicalRule, DerivedSour
 	private final RegexPart regexp;
 	private final Iterable<LexerState> states;
 	private final int priority;
-	private final LexicalRule classLexicalRule;
+	private final LexerRule classLexerRule;
 	private final SourceElement origin;
 
-	public LiLexicalRule(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
+	public LiLexerRule(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;
 		this.regexp = regexp;
 		this.states = states;
 		this.priority = priority;
-		this.classLexicalRule = classLexicalRule;
+		this.classLexerRule = classLexerRule;
 		this.origin = origin;
 	}
 
@@ -84,13 +84,13 @@ class LiLexicalRule extends LiUserDataHolder implements LexicalRule, DerivedSour
 	}
 
 	@Override
-	public LexicalRule getClassRule() {
-		return classLexicalRule;
+	public LexerRule getClassRule() {
+		return classLexerRule;
 	}
 
 	@Override
 	public boolean isExcluded() {
-		return classLexicalRule != null;
+		return classLexerRule != null;
 	}
 
 	@Override

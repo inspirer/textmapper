@@ -236,7 +236,7 @@ ${template createToken}
 ${if self->hasLexemActions()-}
 		boolean spaceToken = false;
 		switch (lexemIndex) {
-${foreach rule in syntax.lexicalRules-}
+${foreach rule in syntax.lexerRules-}
 ${if rule.kindAsText == 'class'-}
 			case ${rule.index}:
 				return create${rule->classRuleName()}Token(lapg_n, lexemIndex);
@@ -441,14 +441,14 @@ ${template lexercode-}
 ${end}
 
 ${cached query hasLexemActions() =
-	syntax.lexicalRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
+	syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
 ${cached query hasActions() = self.action || self.transitions || self.kindAsText == 'space' }
 
-${cached query classRules() = syntax.lexicalRules.select(x|x.kindAsText == 'class')}
+${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
 
 ${cached query classHasInstances() = self->classInstances().size() > 0 }
 
-${cached query classInstances() = context.syntax.lexicalRules.select(x|x.classRule && x.classRule == self)}
+${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule && x.classRule == self)}
 
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}

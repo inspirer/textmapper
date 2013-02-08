@@ -15,7 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
-import org.textmapper.lapg.api.LexicalRule;
+import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.UserDataHolder;
 import org.textmapper.tool.parser.ast.AstCode;
@@ -56,11 +56,11 @@ public class TMDataUtil {
 		return (String) element.getUserData(UD_IDENTIFIER);
 	}
 
-	public static void putTransition(LexicalRule rule, TMStateTransitionSwitch transitionSwitch) {
+	public static void putTransition(LexerRule rule, TMStateTransitionSwitch transitionSwitch) {
 		rule.putUserData(UD_TRANSITIONMAP, transitionSwitch);
 	}
 
-	public static TMStateTransitionSwitch getTransition(LexicalRule rule) {
+	public static TMStateTransitionSwitch getTransition(LexerRule rule) {
 		return (TMStateTransitionSwitch) rule.getUserData(UD_TRANSITIONMAP);
 	}
 

@@ -161,10 +161,10 @@ lexem_attrs (AstLexemAttrs) ::=
 ;
 
 lexem_attribute (AstLexemAttrs) ::=
-	  Lsoft												{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexicalRule.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
-	| Lclass											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexicalRule.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
-	| Lspace											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexicalRule.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
-	| Llayout											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexicalRule.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
+	  Lsoft												{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 state_selector ::=

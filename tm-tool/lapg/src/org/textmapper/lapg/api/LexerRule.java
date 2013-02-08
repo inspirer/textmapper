@@ -20,7 +20,7 @@ import org.textmapper.lapg.api.regex.RegexPart;
 /**
  * Lexical rule.
  */
-public interface LexicalRule extends SourceElement, UserDataHolder {
+public interface LexerRule extends SourceElement, UserDataHolder {
 
 	static final int KIND_NONE = 0;
 	static final int KIND_CLASS = 1;
@@ -42,7 +42,7 @@ public interface LexicalRule extends SourceElement, UserDataHolder {
 
 	String getKindAsText();
 
-	LexicalRule getClassRule();
+	LexerRule getClassRule();
 
 	boolean isExcluded();
 }

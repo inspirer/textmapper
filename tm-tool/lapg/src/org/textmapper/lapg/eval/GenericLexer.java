@@ -20,7 +20,7 @@ import java.io.Reader;
 import java.text.MessageFormat;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.LexerData;
-import org.textmapper.lapg.api.LexicalRule;
+import org.textmapper.lapg.api.LexerRule;
 
 public class GenericLexer {
 
@@ -203,15 +203,15 @@ public class GenericLexer {
 	}
 
 	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) throws IOException {
-		int lexemKind = grammar.getLexicalRules()[lexemIndex].getKind();
-		return lexemKind != LexicalRule.KIND_SPACE;
+		int lexemKind = grammar.getLexerRules()[lexemIndex].getKind();
+		return lexemKind != LexerRule.KIND_SPACE;
 	}
 
 	private static int[] getLexemNum(Grammar grammar) {
-		LexicalRule[] lexicalRules = grammar.getLexicalRules();
-		int[] result = new int[lexicalRules.length];
-		for (int i = 0; i < lexicalRules.length; i++) {
-			result[i] = lexicalRules[i].getSymbol().getIndex();
+		LexerRule[] lexerRules = grammar.getLexerRules();
+		int[] result = new int[lexerRules.length];
+		for (int i = 0; i < lexerRules.length; i++) {
+			result[i] = lexerRules[i].getSymbol().getIndex();
 		}
 		return result;
 	}

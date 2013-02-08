@@ -82,13 +82,13 @@ public class InputTest extends LapgTestCase {
 		assertEquals("list", rules[0].getRight()[0].getTarget().getName());
 		assertEquals(1, rules[0].getRight().length);
 
-		LexicalRule[] lexicalRules = g.getGrammar().getLexicalRules();
-		assertEquals(3, lexicalRules.length);
-		assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexicalRules[0].getRegexp().toString());
-		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexicalRules[1]
+		LexerRule[] lexerRules = g.getGrammar().getLexerRules();
+		assertEquals(3, lexerRules.length);
+		assertEquals("@?[a-zA-Z_][A-Za-z_0-9]*", lexerRules[0].getRegexp().toString());
+		assertEquals("([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?", lexerRules[1]
 				.getRegexp().toString());
-		assertEquals("[\\t\\r\\n ]+", lexicalRules[2].getRegexp().toString());
-		assertEquals(" continue; ", TMDataUtil.getCode(lexicalRules[2]).getText());
+		assertEquals("[\\t\\r\\n ]+", lexerRules[2].getRegexp().toString());
+		assertEquals(" continue; ", TMDataUtil.getCode(lexerRules[2]).getText());
 	}
 
 	@Test
@@ -173,7 +173,7 @@ public class InputTest extends LapgTestCase {
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -195,7 +195,7 @@ public class InputTest extends LapgTestCase {
 						"    list_item ::= Licon\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -222,7 +222,7 @@ public class InputTest extends LapgTestCase {
 		assertNotNull(g);
 
 		ts.reset("", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 		ts.assertDone();
 
@@ -251,7 +251,7 @@ public class InputTest extends LapgTestCase {
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
 				"\n", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexicalRules(), g.getGrammar().getPatterns(), ts);
+		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();

@@ -173,7 +173,7 @@ public class LexerGeneratorTest {
 	}
 
 	/* returns token index if s matches regexp */
-	private int nextToken(LexerData lr, String s, LexicalRule[] lexicalRules) {
+	private int nextToken(LexerData lr, String s, LexerRule[] lexerRules) {
 		int state = 0;
 		int index = 0;
 
@@ -191,7 +191,7 @@ public class LexerGeneratorTest {
 		if (state == -2) {
 			return -1;
 		}
-		return lexicalRules[-state - 3].getSymbol().getIndex();
+		return lexerRules[-state - 3].getSymbol().getIndex();
 	}
 
 	private static class TestLexerState implements LexerState {
@@ -215,7 +215,7 @@ public class LexerGeneratorTest {
 		}
 	}
 
-	private static class TestRule implements LexicalRule, TextSourceElement {
+	private static class TestRule implements LexerRule, TextSourceElement {
 
 		private final int index;
 		private final int prio;
@@ -248,7 +248,7 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public LexicalRule getClassRule() {
+		public LexerRule getClassRule() {
 			return null;
 		}
 

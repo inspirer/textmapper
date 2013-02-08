@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ArrayList;
-import org.textmapper.lapg.api.LexicalRule;
+import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.tool.parser.TMLexer.ErrorReporter;
 import org.textmapper.tool.parser.TMLexer.Lexems;
 import org.textmapper.tool.parser.TMTree.TextSource;
@@ -660,16 +660,16 @@ public class TMParser {
 				 lapg_gg.value = ((AstLexemAttrs)lapg_m[lapg_head - 1].value); 
 				break;
 			case 50:  // lexem_attribute ::= Lsoft
-				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_SOFT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexerRule.KIND_SOFT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 51:  // lexem_attribute ::= Lclass
-				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_CLASS, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexerRule.KIND_CLASS, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 52:  // lexem_attribute ::= Lspace
-				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_SPACE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexerRule.KIND_SPACE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 53:  // lexem_attribute ::= Llayout
-				 lapg_gg.value = new AstLexemAttrs(LexicalRule.KIND_LAYOUT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new AstLexemAttrs(LexerRule.KIND_LAYOUT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 54:  // state_selector ::= '[' state_list ']'
 				 lapg_gg.value = new AstStateSelector(((List<AstLexerState>)lapg_m[lapg_head - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 

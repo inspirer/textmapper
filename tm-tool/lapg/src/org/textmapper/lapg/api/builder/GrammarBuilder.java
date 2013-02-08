@@ -38,7 +38,7 @@ public interface GrammarBuilder {
 
 	LexerState addState(String name, SourceElement origin);
 
-	LexicalRule addLexicalRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin);
+	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin);
 
 
 	RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);

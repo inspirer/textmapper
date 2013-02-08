@@ -34,7 +34,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 	private final Set<Symbol> symbolsSet = new HashSet<Symbol>();
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
-	private final List<LiLexicalRule> lexicalRules = new ArrayList<LiLexicalRule>();
+	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
 	private final Set<String> stateNamesSet = new HashSet<String>();
@@ -132,13 +132,13 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public LexicalRule addLexicalRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexicalRule classLexicalRule, SourceElement origin) {
+	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
 		}
 		sealedTerminals.add(sym);
-		if (sym.isSoft() != (kind == LexicalRule.KIND_SOFT)) {
+		if (sym.isSoft() != (kind == LexerRule.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong rule kind, doesn't match symbol kind");
 		}
 		List<LexerState> liStates = new ArrayList<LexerState>();
@@ -151,8 +151,8 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (liStates.isEmpty()) {
 			throw new IllegalArgumentException("no states passed");
 		}
-		LiLexicalRule l = new LiLexicalRule(kind, lexicalRules.size(), sym, regexp, liStates, priority, classLexicalRule, origin);
-		lexicalRules.add(l);
+		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority, classLexerRule, origin);
+		lexerRules.add(l);
 		return l;
 	}
 
@@ -363,7 +363,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 		int grammarSymbols = symbolArr.length;
 
-		LiLexicalRule[] lexicalRulesArr = lexicalRules.toArray(new LiLexicalRule[lexicalRules.size()]);
+		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
@@ -385,7 +385,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 
 		annotateNullables();
 		new LiRewriter(symbolArr).rewriteLists();
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexicalRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}
 
 	public void annotateNullables() {
