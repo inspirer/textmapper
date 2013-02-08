@@ -29,11 +29,17 @@ import java.util.List;
  */
 class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
-	private List<LiRhsPart> rulesList = new ArrayList<LiRhsPart>();
+	private List<LiRhsPart> rulesList;
 	private LiRhsPart[] rules;
 
 	LiRootRhsChoice(Nonterminal left) {
 		super(left, null);
+		rulesList = new ArrayList<LiRhsPart>();
+	}
+
+	private LiRootRhsChoice(LiRhsPart[] rules, Nonterminal left) {
+		super(left, null);
+		this.rules = rules;
 	}
 
 	void addRule(LiRhsPart rule) {
@@ -64,6 +70,21 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 		return replaceInArray(rules, child, newChild);
 	}
 
+	private void toArr() {
+		if (rules == null) {
+			rules = rulesList.toArray(new LiRhsPart[rulesList.size()]);
+			rulesList = null;
+		}
+	}
+
+	private void toList() {
+		if (rulesList == null) {
+			rulesList = new ArrayList<LiRhsPart>(rules.length);
+			rulesList.addAll(Arrays.asList(rules));
+			rules = null;
+		}
+	}
+
 	@Override
 	public boolean structuralEquals(LiRhsPart o) {
 		if (this == o) return true;
@@ -82,19 +103,10 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 		return switch_.caseChoice(this);
 	}
 
-	private void toArr() {
-		if (rules == null) {
-			rules = rulesList.toArray(new LiRhsPart[rulesList.size()]);
-			rulesList = null;
-		}
-	}
-
-	private void toList() {
-		if (rulesList == null) {
-			rulesList = new ArrayList<LiRhsPart>(rules.length);
-			rulesList.addAll(Arrays.asList(rules));
-			rules = null;
-		}
+	@Override
+	public LiRootRhsChoice copy() {
+		toArr();
+		return new LiRootRhsChoice(copyOfArray(rules), getLeft());
 	}
 
 	@Override

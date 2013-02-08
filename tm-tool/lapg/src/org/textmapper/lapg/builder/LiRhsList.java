@@ -145,6 +145,17 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
+	public LiRhsList copy() {
+		return new LiRhsList(
+				element.copy(),
+				separator == null ? null : separator.copy(),
+				nonEmpty,
+				customInitialElement == null ? null : customInitialElement.copy(),
+				rightRecursive,
+				getOrigin());
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		if (customInitialElement != null) {
 			boolean nonEmptyInitial = !(customInitialElement instanceof RhsSequence && ((RhsSequence) customInitialElement).getParts().length == 0);

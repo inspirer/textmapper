@@ -119,6 +119,11 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
+	public LiRhsSequence copy() {
+		return new LiRhsSequence(copyOfArray(parts), getOrigin());
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		sb.append("(");
 		toString(sb, parts, " ");

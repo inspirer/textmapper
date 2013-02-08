@@ -39,7 +39,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 	abstract List<RhsSymbol[]> expand();
 
 	@Override
-	public SourceElement getOrigin() {
+	public final SourceElement getOrigin() {
 		return origin;
 	}
 
@@ -50,6 +50,9 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 			}
 		}
 	}
+
+	@Override
+	public abstract LiRhsPart copy();
 
 	protected void rewrite(RhsPart part) {
 		if (parent == null) {
@@ -62,13 +65,6 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 			throw new IllegalStateException("cannot rewrite: tree is inconsistent");
 		}
 		parent = null;
-	}
-
-	/**
-	 *  rewrite support
-	 */
-	void detach() {
-		this.parent = null;
 	}
 
 	protected abstract boolean replaceChild(LiRhsPart child, LiRhsPart newChild);
@@ -109,6 +105,14 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 			part = part.getParent();
 		}
 		throw new IllegalStateException("getLeft doesn't work on detached parts");
+	}
+
+	protected static LiRhsPart[] copyOfArray(LiRhsPart[] parts) {
+		LiRhsPart[] copies = new LiRhsPart[parts.length];
+		for (int i = 0; i < parts.length; i++) {
+			copies[i] = parts[i].copy();
+		}
+		return copies;
 	}
 
 	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {

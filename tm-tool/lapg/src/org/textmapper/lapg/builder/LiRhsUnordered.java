@@ -78,6 +78,23 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 		return structuralHashCode(parts);
 	}
 
+	@Override
+	public <T> T accept(RhsSwitch<T> switch_) {
+		return switch_.caseUnordered(this);
+	}
+
+	@Override
+	public LiRhsUnordered copy() {
+		return new LiRhsUnordered(copyOfArray(parts), getOrigin());
+	}
+
+	@Override
+	protected void toString(StringBuilder sb) {
+		sb.append("(");
+		toString(sb, parts, " & ");
+		sb.append(")");
+	}
+
 	static boolean permute(int[] a) {
 		int k = a.length - 2;
 		while (k >= 0 && a[k] >= a[k + 1]) {
@@ -99,17 +116,5 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 			a[j] = t;
 		}
 		return true;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseUnordered(this);
-	}
-
-	@Override
-	protected void toString(StringBuilder sb) {
-		sb.append("(");
-		toString(sb, parts, " & ");
-		sb.append(")");
 	}
 }

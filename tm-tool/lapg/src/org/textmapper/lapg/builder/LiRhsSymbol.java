@@ -101,6 +101,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
+	public LiRhsSymbol copy() {
+		return new LiRhsSymbol(target, alias, negLA, getOrigin());
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		// TODO negLA? mapping?
 		if (alias != null) {

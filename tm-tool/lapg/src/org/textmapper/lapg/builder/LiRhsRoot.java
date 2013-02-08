@@ -33,7 +33,7 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 	}
 
 	@Override
-	public Nonterminal getLeft() {
+	public final Nonterminal getLeft() {
 		return left;
 	}
 

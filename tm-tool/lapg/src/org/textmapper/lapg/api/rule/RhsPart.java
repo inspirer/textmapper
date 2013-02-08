@@ -31,4 +31,6 @@ public interface RhsPart extends SourceElement, UserDataHolder {
 	Object structuralNode();
 
 	<T> T accept(RhsSwitch<T> switch_);
+
+	RhsPart copy();
 }

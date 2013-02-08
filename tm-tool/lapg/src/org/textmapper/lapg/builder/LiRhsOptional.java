@@ -85,6 +85,11 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	}
 
 	@Override
+	public LiRhsOptional copy() {
+		return new LiRhsOptional(inner.copy(), getOrigin());
+	}
+
+	@Override
 	protected void toString(StringBuilder sb) {
 		sb.append("(");
 		inner.toString(sb);

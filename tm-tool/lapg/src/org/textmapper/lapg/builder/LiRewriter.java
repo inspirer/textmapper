@@ -127,10 +127,7 @@ public class LiRewriter {
 			} else {
 				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
 				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
-				for (LiRhsPart p : newArr) {
-					p.detach();
-				}
-				elements.add(new LiRhsSequence(newArr, part));
+				elements.add(new LiRhsSequence(LiRhsPart.copyOfArray(newArr), part));
 			}
 		}
 
@@ -201,18 +198,15 @@ public class LiRewriter {
 		if (parts == null || parts.isEmpty()) {
 			return null;
 		}
-		for (LiRhsPart p : parts) {
-			p.detach();
-		}
 
 		final LiRhsPart first = parts.get(0);
 		if (parts.size() == 1) {
-			return first;
+			return first.copy();
 		}
-		return
-			strategy == MergeStrategy.CHOICE
-				? new LiRhsChoice(parts.toArray(new LiRhsPart[parts.size()]), first)
-				: new LiRhsSequence(parts.toArray(new LiRhsPart[parts.size()]), first);
+		final LiRhsPart[] partsCopy = LiRhsPart.copyOfArray(parts.toArray(new LiRhsPart[parts.size()]));
+		return strategy == MergeStrategy.CHOICE
+				? new LiRhsChoice(partsCopy, first)
+				: new LiRhsSequence(partsCopy, first);
 	}
 
 	private static Terminal asConstantTerminal(RhsPart part) {
