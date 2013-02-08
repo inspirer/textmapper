@@ -15,9 +15,14 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.regex.RegexPart;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * evgeny, 11/16/12
@@ -25,6 +30,7 @@ import org.textmapper.lapg.api.Terminal;
 public class LiTerminal extends LiSymbol implements Terminal {
 
 	private Symbol softClass;
+	private List<LexerRule> rules = new ArrayList<LexerRule>();
 
 	public LiTerminal(String name, String type, SourceElement origin) {
 		super(name, type, origin);
@@ -38,6 +44,15 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	@Override
 	public Symbol getSoftClass() {
 		return softClass;
+	}
+
+	@Override
+	public Iterable<LexerRule> getRules() {
+		return rules;
+	}
+
+	void addRule(LexerRule rule) {
+		rules.add(rule);
 	}
 
 	void setSoftClass(Terminal sc) {
@@ -63,8 +78,21 @@ public class LiTerminal extends LiSymbol implements Terminal {
 
 	@Override
 	public boolean isConstant() {
-		// TODO fixme, detect constant terminals
-		return getType() == null;
+		String value = null;
+		for (LexerRule rule : rules) {
+			final RegexPart regex = rule.getRegexp();
+			final String regexValue = regex.getConstantValue();
+			if (regexValue == null) {
+				return false;
+			}
+			if (value == null) {
+				value = regexValue;
+			} else if (!value.equals(regexValue)) {
+				return false;
+			}
+		}
+
+		return value != null && getType() == null;
 	}
 }
 

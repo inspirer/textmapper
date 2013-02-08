@@ -315,6 +315,11 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
+				public Iterable<LexerRule> getRules() {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
 				public String getType() {
 					throw new UnsupportedOperationException();
 				}

@@ -54,10 +54,12 @@ abstract class RegexAstPart implements RegexPart {
 		}
 	}
 
+	@Override
 	public boolean isConstant() {
 		return false;
 	}
 
+	@Override
 	public String getConstantValue() {
 		return null;
 	}
@@ -71,5 +73,6 @@ abstract class RegexAstPart implements RegexPart {
 
 	protected abstract void toString(StringBuilder sb);
 
+	@Override
 	public abstract <T> T accept(RegexSwitch<T> switch_);
 }

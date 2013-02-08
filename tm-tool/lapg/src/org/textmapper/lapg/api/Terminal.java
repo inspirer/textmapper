@@ -25,4 +25,6 @@ public interface Terminal extends Symbol {
 	boolean isConstant();
 
 	Symbol getSoftClass();
+
+	Iterable<LexerRule> getRules();
 }

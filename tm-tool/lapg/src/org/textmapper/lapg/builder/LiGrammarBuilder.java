@@ -153,6 +153,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		}
 		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority, classLexerRule, origin);
 		lexerRules.add(l);
+		((LiTerminal) sym).addRule(l);
 		return l;
 	}
 

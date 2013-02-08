@@ -104,7 +104,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 			}
 			part = part.getParent();
 		}
-		throw new IllegalStateException("getLeft doesn't work on detached parts");
+		return null;
 	}
 
 	protected static LiRhsPart[] copyOfArray(LiRhsPart[] parts) {
