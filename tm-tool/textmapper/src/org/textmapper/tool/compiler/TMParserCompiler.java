@@ -191,7 +191,7 @@ public class TMParserCompiler {
 			for (Rule actionRule : actionRules) {
 				TMDataUtil.putCode(actionRule, astCode);
 			}
-			return builder.symbol(null, codeSym, null, astCode);
+			return builder.symbol(codeSym, null, astCode);
 
 		} else if (part instanceof AstUnorderedRulePart) {
 			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
@@ -235,8 +235,14 @@ public class TMParserCompiler {
 			}
 
 			Symbol optsym = resolve(outer, optionalPart);
-			RhsSymbol symbol = builder.symbol(alias, optsym, nla, optionalPart);
+			if (optsym == null) {
+				return null;
+			}
+			RhsSymbol symbol = builder.symbol(optsym, nla, optionalPart);
 			TMDataUtil.putAnnotations(symbol, annotations);
+			if (alias != null) {
+				return builder.assignment(alias, builder.optional(symbol, refPart), false, refPart);
+			}
 			return builder.optional(symbol, refPart);
 		}
 
@@ -255,9 +261,9 @@ public class TMParserCompiler {
 		if (sym == null) {
 			return null;
 		}
-		RhsSymbol rhsSymbol = builder.symbol(alias, sym, nla, refPart.getReference());
+		RhsSymbol rhsSymbol = builder.symbol(sym, nla, refPart.getReference());
 		TMDataUtil.putAnnotations(rhsSymbol, annotations);
-		return rhsSymbol;
+		return alias == null ? rhsSymbol : builder.assignment(alias, rhsSymbol, false, refPart);
 	}
 
 	private RhsPart convertChoice(Symbol outer, List<AstRule> rules, SourceElement origin) {
@@ -311,7 +317,7 @@ public class TMParserCompiler {
 					continue;
 				}
 				if (s instanceof Terminal) {
-					sep.add(builder.symbol(null, s, null, ref));
+					sep.add(builder.symbol(s, null, ref));
 				} else {
 					error(ref, "separator should be terminal symbol");
 				}
@@ -329,7 +335,7 @@ public class TMParserCompiler {
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = resolve(outer, innerSymRef);
-				inner = builder.symbol(null, innerTarget, null, innerSymRef);
+				inner = builder.symbol(innerTarget, null, innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == AstRuleNestedQuantifier.KIND_OPTIONAL) {
@@ -357,7 +363,7 @@ public class TMParserCompiler {
 
 		List<RhsPart> list = new ArrayList<RhsPart>();
 		// list
-		list.add(builder.symbol(null, listSymbol, null, origin));
+		list.add(builder.symbol(listSymbol, null, origin));
 		// separator
 		if (separator != null) {
 			list.add(separator);
@@ -379,7 +385,7 @@ public class TMParserCompiler {
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
 			Nonterminal symopt = resolver.createDerived(listSymbol, "_opt", origin);
-			builder.addRule(null, symopt, builder.optional(builder.symbol(null, listSymbol, null, origin), origin), null);
+			builder.addRule(null, symopt, builder.optional(builder.symbol(listSymbol, null, origin), origin), null);
 			listSymbol = symopt;
 		}
 

@@ -81,7 +81,7 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	@Override
 	List<RhsSymbol[]> expand() {
 		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
-		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, null, this);
+		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
 		if (nonEmpty) {
 			result.addAll((customInitialElement != null ? customInitialElement : element).expand());
 		} else {

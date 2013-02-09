@@ -208,7 +208,18 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
+	public RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin) {
+		check(inner, true);
+		if (name == null) {
+			throw new NullPointerException("name is null");
+		}
+		LiRhsAssignment result = new LiRhsAssignment(name, (LiRhsPart) inner, isAddition, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsSymbol symbol(Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
 		check(sym);
 		NegativeLookahead nla = null;
 		if (unwanted != null && unwanted.size() > 0) {
@@ -217,7 +228,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 			}
 			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
 		}
-		LiRhsSymbol result = new LiRhsSymbol(sym, alias, nla, origin);
+		LiRhsSymbol result = new LiRhsSymbol(sym, nla, origin);
 		rhsSet.add(result);
 		return result;
 	}

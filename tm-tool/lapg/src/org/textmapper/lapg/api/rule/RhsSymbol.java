@@ -28,8 +28,6 @@ public interface RhsSymbol extends RhsPart {
 
 	NegativeLookahead getNegativeLA();
 
-	String getAlias();
-
 	Symbol getTarget();
 
 	AstField getMapping();

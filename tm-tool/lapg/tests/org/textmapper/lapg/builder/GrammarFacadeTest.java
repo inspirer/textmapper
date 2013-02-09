@@ -44,7 +44,7 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
-		builder.addRule(null, input, builder.symbol(null, id, null, null), null);
+		builder.addRule(null, input, builder.symbol(id, null, null), null);
 
 		Grammar grammar = builder.create();
 
@@ -65,7 +65,6 @@ public class GrammarFacadeTest {
 		assertTrue(symbols[2] == rules[0].getLeft());
 		assertEquals(1, rules[0].getRight().length);
 		assertTrue(symbols[1] == rules[0].getRight()[0].getTarget());
-		assertNull(rules[0].getRight()[0].getAlias());
 		assertNull(rules[0].getRight()[0].getNegativeLA());
 
 		// lexer
@@ -205,7 +204,7 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null, null);
 		builder.addInput(input, true, null);
-		builder.addRule(null, input, builder.symbol(null, id, null, null), id);
+		builder.addRule(null, input, builder.symbol(id, null, null), id);
 
 		assertNotNull(builder.addPrio(Prio.RIGHT, Collections.singleton(id), null));
 

@@ -30,5 +30,7 @@ public abstract class RhsSwitch<T> {
 
 	public abstract T caseUnordered(RhsUnordered p);
 
+	public abstract T caseAssignment(RhsAssignment p);
+
 	public abstract T caseList(RhsList p);
 }

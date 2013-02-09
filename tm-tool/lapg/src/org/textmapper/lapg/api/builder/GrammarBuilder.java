@@ -41,7 +41,9 @@ public interface GrammarBuilder {
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin);
 
 
-	RhsSymbol symbol(String alias, Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+	RhsSymbol symbol(Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+
+	RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin);
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 

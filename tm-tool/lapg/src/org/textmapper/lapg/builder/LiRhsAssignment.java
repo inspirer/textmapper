@@ -15,57 +15,62 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.rule.RhsAssignment;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
-import java.util.Collections;
 import java.util.List;
 
-class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
+/**
+ * evgeny, 2/8/13
+ */
+class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 
-	private final Symbol target;
-	private final NegativeLookahead negLA;
-	private AstField mapping;
+	private final String name;
+	private LiRhsPart inner;
+	private final boolean addition;
 
-	public LiRhsSymbol(Symbol target, NegativeLookahead negLA, SourceElement origin) {
+	LiRhsAssignment(String name, LiRhsPart inner, boolean isAddition, SourceElement origin) {
 		super(origin);
-		this.target = target;
-		this.negLA = negLA;
-		((LiSymbol) target).addUsage(this);
-
+		this.name = name;
+		this.inner = inner;
+		addition = isAddition;
+		register(inner);
 	}
 
 	@Override
-	public NegativeLookahead getNegativeLA() {
-		return negLA;
+	public String getName() {
+		return name;
 	}
 
 	@Override
-	public Symbol getTarget() {
-		return target;
+	public RhsPart getPart() {
+		return inner;
 	}
 
 	@Override
-	public AstField getMapping() {
-		return mapping;
-	}
-
-	void setMapping(AstField mapping) {
-		this.mapping = mapping;
+	public boolean isAddition() {
+		return addition;
 	}
 
 	@Override
 	List<RhsSymbol[]> expand() {
-		return Collections.singletonList(new RhsSymbol[]{this});
+		return inner.expand();
+	}
+
+	@Override
+	public LiRhsPart copy() {
+		return new LiRhsAssignment(name, inner.copy(), addition, getOrigin());
 	}
 
 	@Override
 	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
+		if (inner == child) {
+			inner = newChild;
+			return true;
+		}
 		return false;
 	}
 
@@ -74,31 +79,32 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		LiRhsSymbol that = (LiRhsSymbol) o;
-		if (negLA != null ? !negLA.equals(that.negLA) : that.negLA != null) return false;
-		return target.equals(that.target);
+		LiRhsAssignment that = (LiRhsAssignment) o;
+		if (addition != that.addition) return false;
+		if (!name.equals(that.name)) return false;
+		return inner.structuralEquals(that.inner);
 	}
 
 	@Override
 	public int structuralHashCode() {
-		int result = target.hashCode();
-		result = 31 * result + (negLA != null ? negLA.hashCode() : 0);
+		int result = inner.structuralHashCode();
+		result = 31 * result + name.hashCode();
+		result = 31 * result + (addition ? 1 : 0);
 		return result;
 	}
 
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseSymbol(this);
-	}
-
-	@Override
-	public LiRhsSymbol copy() {
-		return new LiRhsSymbol(target, negLA, getOrigin());
+		return switch_.caseAssignment(this);
 	}
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		// TODO negLA? mapping?
-		sb.append(target.getName());
+		sb.append(name);
+		if (addition) {
+			sb.append("+");
+		}
+		sb.append("=");
+		inner.toString(sb);
 	}
 }

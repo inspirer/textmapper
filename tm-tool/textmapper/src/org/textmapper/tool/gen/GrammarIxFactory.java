@@ -15,7 +15,13 @@
  */
 package org.textmapper.tool.gen;
 
-import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.LexerRule;
+import org.textmapper.lapg.api.Rule;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsAssignment;
+import org.textmapper.lapg.api.rule.RhsOptional;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.templates.api.EvaluationContext;
@@ -238,6 +244,27 @@ public class GrammarIxFactory extends JavaIxFactory {
 			} else {
 				throw new EvaluationException("index object should be string (annotation name)");
 			}
+		}
+
+		@Override
+		public Object getProperty(String propertyName) throws EvaluationException {
+			if ("alias".equals(propertyName)) {
+				// TODO remove hack (parent may become null)
+				// TODO left for compatibility with old logic deriving AST in templates
+				RhsPart parent = sym.getParent();
+				if (parent instanceof RhsOptional) {
+					parent = parent.getParent();
+				}
+				if (parent instanceof RhsAssignment) {
+					RhsAssignment a = (RhsAssignment) parent;
+					if (!a.isAddition()) {
+						return a.getName();
+					}
+				}
+				return null;
+			}
+
+			return super.getProperty(propertyName);
 		}
 	}
 
