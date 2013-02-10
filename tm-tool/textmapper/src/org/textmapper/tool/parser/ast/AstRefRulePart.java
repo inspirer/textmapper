@@ -17,7 +17,7 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstRefRulePart extends AstNode implements AstRulePart {
+public class AstRefRulePart extends AstNode implements TmaRhsPart {
 
 	private final String alias;
 	private final AstRuleSymbolRef ref;

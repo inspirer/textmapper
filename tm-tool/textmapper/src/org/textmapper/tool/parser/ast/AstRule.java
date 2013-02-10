@@ -21,13 +21,13 @@ import java.util.List;
 
 public class AstRule extends AstNode {
 
-	private final List<AstRulePart> list;
+	private final List<TmaRhsPart> list;
 	private final AstRuleAttribute attribute;
 	private final AstAnnotations annotations;
 	private final String ruleAlias;
 	private final AstError error;
 
-	public AstRule(AstRulePrefix prefix, List<AstRulePart> list, AstRuleAttribute attr, TextSource source,
+	public AstRule(AstRulePrefix prefix, List<TmaRhsPart> list, AstRuleAttribute attr, TextSource source,
 				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
@@ -55,7 +55,7 @@ public class AstRule extends AstNode {
 		return error != null;
 	}
 
-	public List<AstRulePart> getList() {
+	public List<TmaRhsPart> getList() {
 		return list;
 	}
 
@@ -83,7 +83,7 @@ public class AstRule extends AstNode {
 			annotations.accept(v);
 		}
 		if (list != null) {
-			for (AstRulePart part : list) {
+			for (TmaRhsPart part : list) {
 				part.accept(v);
 			}
 		}

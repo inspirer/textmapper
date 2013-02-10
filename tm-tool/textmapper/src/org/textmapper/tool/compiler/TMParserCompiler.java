@@ -144,16 +144,16 @@ public class TMParserCompiler {
 
 	private void createRule(Nonterminal left, AstRule right) {
 		List<RhsPart> rhs = new ArrayList<RhsPart>();
-		List<AstRulePart> list = right.getList();
+		List<TmaRhsPart> list = right.getList();
 		AstCode lastAction = null;
 		if (list != null) {
-			AstRulePart last = list.size() > 0 ? list.get(list.size() - 1) : null;
+			TmaRhsPart last = list.size() > 0 ? list.get(list.size() - 1) : null;
 			if (last instanceof AstCode) {
 				lastAction = (AstCode) last;
 				list = list.subList(0, list.size() - 1);
 			}
 
-			for (AstRulePart part : list) {
+			for (TmaRhsPart part : list) {
 				RhsPart rulePart = convertRulePart(left, part);
 				if (rulePart != null) {
 					rhs.add(rulePart);
@@ -183,7 +183,7 @@ public class TMParserCompiler {
 		}
 	}
 
-	private RhsPart convertRulePart(Symbol outer, AstRulePart part) {
+	private RhsPart convertRulePart(Symbol outer, TmaRhsPart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
@@ -193,7 +193,7 @@ public class TMParserCompiler {
 			}
 			return builder.symbol(codeSym, null, astCode);
 
-		} else if (part instanceof AstUnorderedRulePart) {
+		} else if (part instanceof TmaRhsUnordered) {
 			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
 			extractUnorderedParts(part, refParts);
 			if (refParts.size() < 2 || refParts.size() > 5) {
@@ -226,10 +226,10 @@ public class TMParserCompiler {
 			if (alias == null &&
 					refPart.getAnnotations() == null) {
 				if (isGroupPart(optionalPart)) {
-					List<AstRulePart> groupPart = getGroupPart(optionalPart);
+					List<TmaRhsPart> groupPart = getGroupPart(optionalPart);
 					return builder.optional(convertGroup(outer, groupPart, optionalPart), refPart.getReference());
 				} else if (isChoicePart(optionalPart)) {
-					List<AstRule> rules = ((AstRuleNestedNonTerm) optionalPart).getRules();
+					List<AstRule> rules = ((TmaRhsInner) optionalPart).getRules();
 					return builder.optional(convertChoice(outer, rules, optionalPart), refPart.getReference());
 				}
 			}
@@ -248,12 +248,12 @@ public class TMParserCompiler {
 
 		// inline (...)
 		if (isGroupPart(refPart)) {
-			List<AstRulePart> groupPart = getGroupPart(refPart.getReference());
+			List<TmaRhsPart> groupPart = getGroupPart(refPart.getReference());
 			return convertGroup(outer, groupPart, refPart.getReference());
 
 			// inline (...|...|...)
 		} else if (isChoicePart(refPart)) {
-			List<AstRule> rules = ((AstRuleNestedNonTerm) refPart.getReference()).getRules();
+			List<AstRule> rules = ((TmaRhsInner) refPart.getReference()).getRules();
 			return convertChoice(outer, rules, refPart.getReference());
 		}
 
@@ -278,12 +278,12 @@ public class TMParserCompiler {
 		return builder.choice(result, origin);
 	}
 
-	private RhsPart convertGroup(Symbol outer, List<AstRulePart> groupPart, SourceElement origin) {
+	private RhsPart convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<RhsPart>();
 		if (groupPart == null) {
 			return null;
 		}
-		for (AstRulePart innerPart : groupPart) {
+		for (TmaRhsPart innerPart : groupPart) {
 			RhsPart rulePart = convertRulePart(outer, innerPart);
 			if (rulePart != null) {
 				groupResult.add(rulePart);
@@ -293,12 +293,12 @@ public class TMParserCompiler {
 	}
 
 	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
-		if (rulesymref instanceof AstRuleDefaultSymbolRef) {
-			return resolver.resolve(((AstRuleDefaultSymbolRef) rulesymref).getReference());
+		if (rulesymref instanceof TmaRhsSymbol) {
+			return resolver.resolve(((TmaRhsSymbol) rulesymref).getReference());
 
-		} else if (rulesymref instanceof AstRuleNestedNonTerm) {
+		} else if (rulesymref instanceof TmaRhsInner) {
 			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, rulesymref);
-			List<AstRule> rules = ((AstRuleNestedNonTerm) rulesymref).getRules();
+			List<AstRule> rules = ((TmaRhsInner) rulesymref).getRules();
 			for (AstRule right : rules) {
 				if (!right.hasSyntaxError()) {
 					createRule(nested, right);
@@ -306,8 +306,8 @@ public class TMParserCompiler {
 			}
 			return nested;
 
-		} else if (rulesymref instanceof AstRuleNestedListWithSeparator) {
-			AstRuleNestedListWithSeparator listWithSeparator = (AstRuleNestedListWithSeparator) rulesymref;
+		} else if (rulesymref instanceof TmaRhsList) {
+			TmaRhsList listWithSeparator = (TmaRhsList) rulesymref;
 
 			RhsPart inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
@@ -325,24 +325,24 @@ public class TMParserCompiler {
 			RhsPart separator = builder.sequence(sep, listWithSeparator);
 			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, rulesymref);
 
-		} else if (rulesymref instanceof AstRuleNestedQuantifier) {
-			AstRuleNestedQuantifier nestedQuantifier = (AstRuleNestedQuantifier) rulesymref;
+		} else if (rulesymref instanceof TmaRhsQuantifier) {
+			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) rulesymref;
 
 			RhsPart inner;
 			AstRuleSymbolRef innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
-				List<AstRulePart> groupPart = getGroupPart(innerSymRef);
+				List<TmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = resolve(outer, innerSymRef);
 				inner = builder.symbol(innerTarget, null, innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
-			if (quantifier == AstRuleNestedQuantifier.KIND_OPTIONAL) {
+			if (quantifier == TmaRhsQuantifier.KIND_OPTIONAL) {
 				error(rulesymref, "? cannot be a child of another quantifier");
 				return null;
 			}
-			return createList(outer, inner, quantifier == AstRuleNestedQuantifier.KIND_ONEORMORE, null, rulesymref);
+			return createList(outer, inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, rulesymref);
 		}
 
 		return null;
@@ -395,16 +395,16 @@ public class TMParserCompiler {
 
 	private boolean isOptionalPart(AstRefRulePart part) {
 		AstRuleSymbolRef ref = part.getReference();
-		return ref instanceof AstRuleNestedQuantifier &&
-				((AstRuleNestedQuantifier) ref).getQuantifier() == AstRuleNestedQuantifier.KIND_OPTIONAL;
+		return ref instanceof TmaRhsQuantifier &&
+				((TmaRhsQuantifier) ref).getQuantifier() == TmaRhsQuantifier.KIND_OPTIONAL;
 	}
 
 	private AstRuleSymbolRef getOptionalPart(AstRefRulePart part) {
-		return ((AstRuleNestedQuantifier) part.getReference()).getInner();
+		return ((TmaRhsQuantifier) part.getReference()).getInner();
 	}
 
 	private boolean isGroupPart(AstRefRulePart part) {
-		if (!(part.getReference() instanceof AstRuleNestedNonTerm)) {
+		if (!(part.getReference() instanceof TmaRhsInner)) {
 			return false;
 		}
 		return part.getAlias() == null
@@ -414,7 +414,7 @@ public class TMParserCompiler {
 	}
 
 	private boolean isChoicePart(AstRefRulePart part) {
-		if (!(part.getReference() instanceof AstRuleNestedNonTerm)) {
+		if (!(part.getReference() instanceof TmaRhsInner)) {
 			return false;
 		}
 		return part.getAlias() == null
@@ -424,10 +424,10 @@ public class TMParserCompiler {
 	}
 
 	private boolean isGroupPart(AstRuleSymbolRef symbolRef) {
-		if (!(symbolRef instanceof AstRuleNestedNonTerm)) {
+		if (!(symbolRef instanceof TmaRhsInner)) {
 			return false;
 		}
-		List<AstRule> innerRules = ((AstRuleNestedNonTerm) symbolRef).getRules();
+		List<AstRule> innerRules = ((TmaRhsInner) symbolRef).getRules();
 		if (innerRules.size() == 1) {
 			AstRule first = innerRules.get(0);
 			return isSimpleNonEmpty(first);
@@ -436,10 +436,10 @@ public class TMParserCompiler {
 	}
 
 	private boolean isChoicePart(AstRuleSymbolRef symbolRef) {
-		if (!(symbolRef instanceof AstRuleNestedNonTerm)) {
+		if (!(symbolRef instanceof TmaRhsInner)) {
 			return false;
 		}
-		List<AstRule> innerRules = ((AstRuleNestedNonTerm) symbolRef).getRules();
+		List<AstRule> innerRules = ((TmaRhsInner) symbolRef).getRules();
 		if (innerRules.size() < 2) {
 			return false;
 		}
@@ -461,14 +461,14 @@ public class TMParserCompiler {
 				&& !rule.hasSyntaxError();
 	}
 
-	private List<AstRulePart> getGroupPart(AstRuleSymbolRef symbolRef) {
-		return ((AstRuleNestedNonTerm) symbolRef).getRules().get(0).getList();
+	private List<TmaRhsPart> getGroupPart(AstRuleSymbolRef symbolRef) {
+		return ((TmaRhsInner) symbolRef).getRules().get(0).getList();
 	}
 
-	private void extractUnorderedParts(AstRulePart unorderedRulePart, List<AstRefRulePart> result) {
-		if (unorderedRulePart instanceof AstUnorderedRulePart) {
-			extractUnorderedParts(((AstUnorderedRulePart) unorderedRulePart).getLeft(), result);
-			extractUnorderedParts(((AstUnorderedRulePart) unorderedRulePart).getRight(), result);
+	private void extractUnorderedParts(TmaRhsPart unorderedRulePart, List<AstRefRulePart> result) {
+		if (unorderedRulePart instanceof TmaRhsUnordered) {
+			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getLeft(), result);
+			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getRight(), result);
 		} else if (unorderedRulePart instanceof AstRefRulePart) {
 			result.add((AstRefRulePart) unorderedRulePart);
 		} else if (unorderedRulePart instanceof AstCode) {

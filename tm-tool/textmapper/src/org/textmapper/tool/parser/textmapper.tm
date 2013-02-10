@@ -261,46 +261,35 @@ rule_attrs (AstRuleAttribute) ::=
 	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsParts (List<AstRulePart>) ::=
-	  rhsPart											{ $$ = new ArrayList<AstRulePart>(); ${left()}.add($rhsPart); }
+rhsParts (List<TmaRhsPart>) ::=
+	  rhsPart											{ $$ = new ArrayList<TmaRhsPart>(); ${left()}.add($rhsPart); }
 	| list=rhsParts rhsPart 							{ $list.add($rhsPart); }
 	| list=rhsParts syntax_problem						{ $list.add($syntax_problem); }
 ;
 
 %left '&';
 
-rhsPart (AstRulePart) ::=
+# TODO AstRefRulePart -> TmaRhsAssignment
+
+rhsPart (TmaRhsPart) ::=
 	  rhsAnnotations? (ID '=')? rhsPrimary				{ $$ = new AstRefRulePart($ID, $rhsPrimary, $rhsAnnotations, source, ${left().offset}, ${left().endoffset}); }
 	| command
 	| rhsUnordered
 ;
 
 rhsUnordered ::=
-	  left=rhsPart '&' right=rhsPart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
+	  left=rhsPart '&' right=rhsPart					{ $$ = new TmaRhsUnordered($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsPrimary (AstRuleSymbolRef) ::=
-	  rhsSymbol (Las symref)?                           { /* TODO handle as */ }
-	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
-	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '?'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '*'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '+'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
-;
-
-# TODO AstRulePart -> TmaRhsPart
-# TODO AstRefRulePart -> TmaRhsAssignment
-# TODO add TmaRhsCast
-# TODO AstRuleNestedNonTerm -> TmaRhsInner
-# TODO AstRuleDefaultSymbolRef -> TmaRhsSymbol
-# TODO AstRuleNestedListWithSeparator -> TmaRhsList
-# TODO AstRuleNestedQuantifier -> TmaRhsQuantifier
-# TODO AstUnorderedRulePart -> TmaRhsUnordered
-
-
-rhsSymbol (AstRuleSymbolRef) ::=
-	  symref											{ $$ = new AstRuleDefaultSymbolRef($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
+	  symref											{ $$ = new TmaRhsSymbol($symref, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rules ')'										{ $$ = new TmaRhsInner($rules, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '?'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary Las symref								{ $$ = new TmaRhsCast($rhsPrimary, $symref, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsAnnotations (AstRuleAnnotations) ::=

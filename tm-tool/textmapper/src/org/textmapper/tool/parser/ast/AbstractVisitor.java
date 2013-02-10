@@ -121,27 +121,31 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstRuleDefaultSymbolRef n) {
+	public boolean visit(TmaRhsSymbol n) {
 		return true;
 	}
 
-	public boolean visit(AstRuleNestedNonTerm n) {
+	public boolean visit(TmaRhsInner n) {
 		return true;
 	}
 
-	public boolean visit(AstRuleNestedQuantifier n) {
+	public boolean visit(TmaRhsQuantifier n) {
 		return true;
 	}
 
-	public boolean visit(AstUnorderedRulePart n) {
+	public boolean visit(TmaRhsUnordered n) {
 		return true;
 	}
 
-	public boolean visit(AstRuleNestedListWithSeparator n) {
+	public boolean visit(TmaRhsList n) {
 		return true;
 	}
 
 	public boolean visit(AstLexerState n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsCast n) {
 		return true;
 	}
 }

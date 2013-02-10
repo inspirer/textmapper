@@ -17,32 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
-
 /**
  * evgeny, 8/2/12
  */
-public class AstRuleNestedNonTerm extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsSymbol extends AstNode implements AstRuleSymbolRef {
 
-	private final List<AstRule> rules;
+	private final AstReference reference;
 
-	public AstRuleNestedNonTerm(List<AstRule> rules, TextSource source, int offset, int endoffset) {
+	public TmaRhsSymbol(AstReference reference, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.rules = rules;
+		this.reference = reference;
 	}
 
-	public List<AstRule> getRules() {
-		return rules;
+	public AstReference getReference() {
+		return reference;
 	}
 
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (rules != null) {
-			for (AstRule rule : rules) {
-				rule.accept(v);
-			}
+		if (reference != null) {
+			reference.accept(v);
 		}
 	}
 }

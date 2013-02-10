@@ -18,29 +18,25 @@ package org.textmapper.tool.parser.ast;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 /**
- * evgeny, 8/3/12
+ * evgeny, 8/6/12
  */
-public class AstRuleNestedQuantifier extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsUnordered extends AstNode implements TmaRhsPart {
 
-	public static final int KIND_OPTIONAL = 0;
-	public static final int KIND_ZEROORMORE = 1;
-	public static final int KIND_ONEORMORE = 2;
+	private final TmaRhsPart left;
+	private final TmaRhsPart right;
 
-	private final int quantifier;
-	private final AstRuleSymbolRef inner;
-
-	public AstRuleNestedQuantifier(AstRuleSymbolRef inner, int quantifier, TextSource source, int offset, int endoffset) {
+	public TmaRhsUnordered(TmaRhsPart left, TmaRhsPart right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.inner = inner;
-		this.quantifier = quantifier;
+		this.left = left;
+		this.right = right;
 	}
 
-	public int getQuantifier() {
-		return quantifier;
+	public TmaRhsPart getLeft() {
+		return left;
 	}
 
-	public AstRuleSymbolRef getInner() {
-		return inner;
+	public TmaRhsPart getRight() {
+		return right;
 	}
 
 	@Override
@@ -48,8 +44,11 @@ public class AstRuleNestedQuantifier extends AstNode implements AstRuleSymbolRef
 		if (!v.visit(this)) {
 			return;
 		}
-		if (inner != null) {
-			inner.accept(v);
+		if (left != null) {
+			left.accept(v);
+		}
+		if (right != null) {
+			right.accept(v);
 		}
 	}
 }

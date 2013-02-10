@@ -20,31 +20,19 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 import java.util.List;
 
 /**
- * evgeny, 8/7/12
+ * evgeny, 8/2/12
  */
-public class AstRuleNestedListWithSeparator extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsInner extends AstNode implements AstRuleSymbolRef {
 
-	private final List<AstRulePart> ruleParts;
-	private final List<AstReference> separator;
-	private final boolean atLeastOne;
+	private final List<AstRule> rules;
 
-	public AstRuleNestedListWithSeparator(List<AstRulePart> ruleParts, List<AstReference> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
+	public TmaRhsInner(List<AstRule> rules, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.ruleParts = ruleParts;
-		this.separator = separator;
-		this.atLeastOne = atLeastOne;
+		this.rules = rules;
 	}
 
-	public List<AstRulePart> getRuleParts() {
-		return ruleParts;
-	}
-
-	public List<AstReference> getSeparator() {
-		return separator;
-	}
-
-	public boolean isAtLeastOne() {
-		return atLeastOne;
+	public List<AstRule> getRules() {
+		return rules;
 	}
 
 	@Override
@@ -52,14 +40,9 @@ public class AstRuleNestedListWithSeparator extends AstNode implements AstRuleSy
 		if (!v.visit(this)) {
 			return;
 		}
-		if (ruleParts != null) {
-			for (AstRulePart rulePart : ruleParts) {
-				rulePart.accept(v);
-			}
-		}
-		if (separator != null) {
-			for (AstReference ref : separator) {
-				ref.accept(v);
+		if (rules != null) {
+			for (AstRule rule : rules) {
+				rule.accept(v);
 			}
 		}
 	}

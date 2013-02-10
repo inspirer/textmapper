@@ -18,5 +18,5 @@ package org.textmapper.tool.parser.ast;
 /**
  * Gryaznov Evgeny, 8/15/11
  */
-public interface AstRulePart extends IAstNode {
+public interface TmaRhsPart extends IAstNode {
 }

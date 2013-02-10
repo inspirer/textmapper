@@ -17,13 +17,39 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstCode extends AstNode implements TmaRhsPart {
+/**
+ * evgeny, 8/3/12
+ */
+public class TmaRhsQuantifier extends AstNode implements AstRuleSymbolRef {
 
-	public AstCode(TextSource source, int offset, int endoffset) {
+	public static final int KIND_OPTIONAL = 0;
+	public static final int KIND_ZEROORMORE = 1;
+	public static final int KIND_ONEORMORE = 2;
+
+	private final int quantifier;
+	private final AstRuleSymbolRef inner;
+
+	public TmaRhsQuantifier(AstRuleSymbolRef inner, int quantifier, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.inner = inner;
+		this.quantifier = quantifier;
 	}
 
+	public int getQuantifier() {
+		return quantifier;
+	}
+
+	public AstRuleSymbolRef getInner() {
+		return inner;
+	}
+
+	@Override
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (inner != null) {
+			inner.accept(v);
+		}
 	}
 }

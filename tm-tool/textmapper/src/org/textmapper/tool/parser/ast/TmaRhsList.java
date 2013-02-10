@@ -17,26 +17,34 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
+import java.util.List;
+
 /**
- * evgeny, 8/6/12
+ * evgeny, 8/7/12
  */
-public class AstUnorderedRulePart extends AstNode implements AstRulePart {
+public class TmaRhsList extends AstNode implements AstRuleSymbolRef {
 
-	private final AstRulePart left;
-	private final AstRulePart right;
+	private final List<TmaRhsPart> ruleParts;
+	private final List<AstReference> separator;
+	private final boolean atLeastOne;
 
-	public AstUnorderedRulePart(AstRulePart left, AstRulePart right, TextSource source, int offset, int endoffset) {
+	public TmaRhsList(List<TmaRhsPart> ruleParts, List<AstReference> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.left = left;
-		this.right = right;
+		this.ruleParts = ruleParts;
+		this.separator = separator;
+		this.atLeastOne = atLeastOne;
 	}
 
-	public AstRulePart getLeft() {
-		return left;
+	public List<TmaRhsPart> getRuleParts() {
+		return ruleParts;
 	}
 
-	public AstRulePart getRight() {
-		return right;
+	public List<AstReference> getSeparator() {
+		return separator;
+	}
+
+	public boolean isAtLeastOne() {
+		return atLeastOne;
 	}
 
 	@Override
@@ -44,11 +52,15 @@ public class AstUnorderedRulePart extends AstNode implements AstRulePart {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (left != null) {
-			left.accept(v);
+		if (ruleParts != null) {
+			for (TmaRhsPart rulePart : ruleParts) {
+				rulePart.accept(v);
+			}
 		}
-		if (right != null) {
-			right.accept(v);
+		if (separator != null) {
+			for (AstReference ref : separator) {
+				ref.accept(v);
+			}
 		}
 	}
 }

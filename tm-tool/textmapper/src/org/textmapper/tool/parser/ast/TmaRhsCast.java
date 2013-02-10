@@ -18,27 +18,33 @@ package org.textmapper.tool.parser.ast;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 /**
- * evgeny, 8/2/12
+ * evgeny, 2/10/13
  */
-public class AstRuleDefaultSymbolRef extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsCast extends AstNode implements AstRuleSymbolRef {
 
-	private final AstReference reference;
+	private final AstRuleSymbolRef left;
+	private final AstReference right;
 
-	public AstRuleDefaultSymbolRef(AstReference reference, TextSource source, int offset, int endoffset) {
+	public TmaRhsCast(AstRuleSymbolRef left, AstReference right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.reference = reference;
+		this.left = left;
+		this.right = right;
 	}
 
-	public AstReference getReference() {
-		return reference;
+	public AstRuleSymbolRef getLeft() {
+		return left;
 	}
 
+	public AstReference getRight() {
+		return right;
+	}
+
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (reference != null) {
-			reference.accept(v);
-		}
+		left.accept(v);
+		right.accept(v);
 	}
 }
