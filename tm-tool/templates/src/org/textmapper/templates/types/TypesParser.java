@@ -341,7 +341,7 @@ public class TypesParser {
 			case 7:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_optlist '}'
 				lapg_gg.value = new AstTypeDeclaration(
 						((String)lapg_m[lapg_head - 4].value) /* name */,
-						((List<List<String>>)lapg_m[lapg_head - 3].value) /* _extends */,
+						((List<List<String>>)lapg_m[lapg_head - 3].value) /* _super */,
 						((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].value) /* members */,
 						null /* input */, lapg_m[lapg_head - 5].offset, lapg_m[lapg_head].endoffset);
 				break;

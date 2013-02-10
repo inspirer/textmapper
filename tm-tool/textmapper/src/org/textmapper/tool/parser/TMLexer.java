@@ -68,19 +68,23 @@ public class TMLexer {
 		public static final int Lfalse = 30;
 		public static final int Lnew = 31;
 		public static final int Lseparator = 32;
-		public static final int Lprio = 33;
-		public static final int Lshift = 34;
-		public static final int Linput = 35;
-		public static final int Lleft = 36;
-		public static final int Lright = 37;
-		public static final int Lnonassoc = 38;
-		public static final int Lnoeoi = 39;
-		public static final int Lsoft = 40;
-		public static final int Lclass = 41;
-		public static final int Lspace = 42;
-		public static final int Llayout = 43;
-		public static final int Lreduce = 44;
-		public static final int code = 45;
+		public static final int Las = 33;
+		public static final int Lextends = 34;
+		public static final int Linline = 35;
+		public static final int Lprio = 36;
+		public static final int Lshift = 37;
+		public static final int Lreturns = 38;
+		public static final int Linput = 39;
+		public static final int Lleft = 40;
+		public static final int Lright = 41;
+		public static final int Lnonassoc = 42;
+		public static final int Lnoeoi = 43;
+		public static final int Lsoft = 44;
+		public static final int Lclass = 45;
+		public static final int Lspace = 46;
+		public static final int Llayout = 47;
+		public static final int Lreduce = 48;
+		public static final int code = 49;
 	}
 
 	public interface ErrorReporter {
@@ -245,9 +249,9 @@ public class TMLexer {
 		30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 29, 13, 1, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(45,
+	private static final short[] lapg_lexemnum = unpack_short(49,
 		"\2\3\4\5\0\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35" +
-		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55");
+		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61");
 
 	private static final short[] lapg_lexem = unpack_vc_short(1419,
 		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\10\1\11\1\12\1\13\1\14" +
@@ -257,7 +261,7 @@ public class TMLexer {
 		"\1\33\1\uffff\10\ufff6\1\42\30\ufff6\1\ufff7\3\7\1\43\34\7\13\uffee\1\44\25\uffee" +
 		"\16\ufff3\1\45\22\ufff3\41\ufff4\41\uffe7\41\ufff1\41\ufff0\41\uffef\41\uffed\41" +
 		"\uffec\25\uffeb\1\46\13\uffeb\41\uffe4\41\uffe9\41\uffe8\41\uffe6\41\uffe5\41\uffe3" +
-		"\41\uffe2\41\uffd1\7\ufffd\1\47\26\ufffd\2\32\1\ufffd\37\ufffa\1\33\1\ufffa\41\ufffd" +
+		"\41\uffe2\41\uffcd\7\ufffd\1\47\26\ufffd\2\32\1\ufffd\37\ufffa\1\33\1\ufffa\41\ufffd" +
 		"\1\uffff\3\1\1\uffff\34\1\1\uffff\3\3\1\uffff\34\3\41\ufffc\1\uffff\3\4\1\uffff\34" +
 		"\4\41\ufffb\1\ufff9\3\42\1\50\34\42\41\ufff7\14\uffff\1\51\24\uffff\41\ufff2\26\uffff" +
 		"\1\52\21\uffff\1\47\26\uffff\2\32\1\uffff\41\ufff9\41\ufff5\41\uffea");
@@ -377,7 +381,7 @@ public class TMLexer {
 			case 6: // _skip_comment: /#.*(\r?\n)?/
 				 spaceToken = skipComments; 
 				break;
-			case 44: // code: /\{/
+			case 48: // code: /\{/
 				 skipAction(); lapg_n.endoffset = getOffset(); 
 				break;
 		}
@@ -390,18 +394,22 @@ public class TMLexer {
 		subTokensOfID.put("false", 29);
 		subTokensOfID.put("new", 30);
 		subTokensOfID.put("separator", 31);
-		subTokensOfID.put("prio", 32);
-		subTokensOfID.put("shift", 33);
-		subTokensOfID.put("input", 34);
-		subTokensOfID.put("left", 35);
-		subTokensOfID.put("right", 36);
-		subTokensOfID.put("nonassoc", 37);
-		subTokensOfID.put("no-eoi", 38);
-		subTokensOfID.put("soft", 39);
-		subTokensOfID.put("class", 40);
-		subTokensOfID.put("space", 41);
-		subTokensOfID.put("layout", 42);
-		subTokensOfID.put("reduce", 43);
+		subTokensOfID.put("as", 32);
+		subTokensOfID.put("extends", 33);
+		subTokensOfID.put("inline", 34);
+		subTokensOfID.put("prio", 35);
+		subTokensOfID.put("shift", 36);
+		subTokensOfID.put("returns", 37);
+		subTokensOfID.put("input", 38);
+		subTokensOfID.put("left", 39);
+		subTokensOfID.put("right", 40);
+		subTokensOfID.put("nonassoc", 41);
+		subTokensOfID.put("no-eoi", 42);
+		subTokensOfID.put("soft", 43);
+		subTokensOfID.put("class", 44);
+		subTokensOfID.put("space", 45);
+		subTokensOfID.put("layout", 46);
+		subTokensOfID.put("reduce", 47);
 	}
 
 	protected boolean createIDToken(LapgSymbol lapg_n, int lexemIndex) {
@@ -412,17 +420,18 @@ public class TMLexer {
 		}
 		boolean spaceToken = false;
 		switch(lexemIndex) {
-			case 32:	// prio (soft)
-			case 33:	// shift (soft)
-			case 34:	// input (soft)
-			case 35:	// left (soft)
-			case 36:	// right (soft)
-			case 37:	// nonassoc (soft)
-			case 38:	// no-eoi (soft)
-			case 39:	// soft (soft)
-			case 40:	// class (soft)
-			case 41:	// space (soft)
-			case 42:	// layout (soft)
+			case 35:	// prio (soft)
+			case 36:	// shift (soft)
+			case 37:	// returns (soft)
+			case 38:	// input (soft)
+			case 39:	// left (soft)
+			case 40:	// right (soft)
+			case 41:	// nonassoc (soft)
+			case 42:	// no-eoi (soft)
+			case 43:	// soft (soft)
+			case 44:	// class (soft)
+			case 45:	// space (soft)
+			case 46:	// layout (soft)
 			case 0:	// <default>
 				 lapg_n.value = current(); 
 				break;

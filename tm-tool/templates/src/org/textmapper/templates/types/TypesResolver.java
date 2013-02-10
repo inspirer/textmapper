@@ -111,9 +111,9 @@ class TypesResolver {
 			}
 		}
 		final TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features, methods);
-		if (td.getExtends() != null) {
+		if (td.getSuper() != null) {
 			final List<String> superNames = new ArrayList<String>();
-			for (List<String> className : td.getExtends()) {
+			for (List<String> className : td.getSuper()) {
 				String s = getQualifiedName(className);
 				if (s.indexOf('.') == -1) {
 					s = myPackage + "." + s;

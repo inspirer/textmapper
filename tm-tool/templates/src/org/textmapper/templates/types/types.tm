@@ -71,7 +71,7 @@ declarations ::=
 	declarations type_declaration | type_declaration ;
 
 type_declaration ::=
-	Lclass name=identifier extends=extends_clauseopt '{' members=member_declaration* '}'
+	Lclass name=identifier super=extends_clauseopt '{' members=member_declaration* '}'
 ;
 
 extends_clause ::=

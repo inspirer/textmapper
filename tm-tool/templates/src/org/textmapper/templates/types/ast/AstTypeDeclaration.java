@@ -21,21 +21,21 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 public class AstTypeDeclaration extends AstNode {
 
 	private String name;
-	private List<List<String>> _extends;
+	private List<List<String>> _super;
 	private List<IAstMemberDeclaration> members;
 
-	public AstTypeDeclaration(String name, List<List<String>> _extends, List<IAstMemberDeclaration> members, TextSource input, int start, int end) {
+	public AstTypeDeclaration(String name, List<List<String>> _super, List<IAstMemberDeclaration> members, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.name = name;
-		this._extends = _extends;
+		this._super = _super;
 		this.members = members;
 	}
 
 	public String getName() {
 		return name;
 	}
-	public List<List<String>> getExtends() {
-		return _extends;
+	public List<List<String>> getSuper() {
+		return _super;
 	}
 	public List<IAstMemberDeclaration> getMembers() {
 		return members;
@@ -46,7 +46,7 @@ public class AstTypeDeclaration extends AstNode {
 		}
 
 		// TODO for name
-		// TODO for _extends
+		// TODO for _super
 		if (members != null) {
 			for (IAstMemberDeclaration it : members) {
 				it.accept(v);

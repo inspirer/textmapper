@@ -67,10 +67,14 @@ Ltrue:  /true/
 Lfalse: /false/
 Lnew:   /new/
 Lseparator: /separator/
+Las: /as/
+Lextends: /extends/
+Linline: /inline/
 
 Lprio:  /prio/				(soft)
 Lshift: /shift/				(soft)
 
+Lreturns: /returns/			(soft)
 
 Linput: /input/				(soft)
 Lleft:  /left/				(soft)
@@ -100,7 +104,7 @@ input (AstRoot) ::=
 
 options (List<AstOptionPart>) ::=
 	  option											{ $$ = new ArrayList<AstOptionPart>(16); ${left()}.add($option); }
-	| list=options option								{ $list.add($option); } 
+	| list=options option								{ $list.add($option); }
 ;
 
 option (AstOptionPart) ::=
@@ -131,7 +135,7 @@ pattern (AstRegexp) ::=
 	  regexp											{ $$ = new AstRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_parts (List<AstLexerPart>) ::= 
+lexer_parts (List<AstLexerPart>) ::=
 	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); ${left()}.add($lexer_part); }
 	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
 	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
@@ -191,12 +195,18 @@ grammar_parts (List<AstGrammarPart>) ::=
 ;
 
 grammar_part (AstGrammarPart) ::=
-	  non_term
+	  nonterm
 	| directive
 ;
 
-non_term ::=
-	  annotations? identifier typeopt '::=' rules ';'	{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+nonterm ::=
+	  annotations? identifier nonterm_ast? typeopt Linline? '::=' rules ';'
+	  													{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+;
+
+nonterm_ast ::=
+	  Lextends references_cs
+	| Lreturns symref
 ;
 
 priority_kw (String) ::=
@@ -216,9 +226,14 @@ inputref (AstInputRef) ::=
 	symref Lnoeoiopt									{ $$ = new AstInputRef($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-references (List<AstReference>) ::= 
+references (List<AstReference>) ::=
 	  symref											{ $$ = new ArrayList<AstReference>(); ${left()}.add($symref); }
 	| list=references symref							{ $list.add($symref); }
+;
+
+references_cs (List<AstReference>) ::=
+	  symref											{ $$ = new ArrayList<AstReference>(); ${left()}.add($symref); }
+	| list=references_cs ',' symref						{ $list.add($symref); }
 ;
 
 rules (List<AstRule>) ::=
@@ -231,48 +246,64 @@ rule_list (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix? ruleparts? rule_attrsopt				{ $$ = new AstRule($ruleprefix, $ruleparts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	  ruleprefix? rhsParts? rule_attrsopt				{ $$ = new AstRule($ruleprefix, $rhsParts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
 ruleprefix (AstRulePrefix) ::=
 	  annotations ':'									{ $$ = new AstRulePrefix($annotations, null); }
-	| ruleannotations? alias=ID ':'						{ $$ = new AstRulePrefix($ruleannotations, $alias); }
+	| rhsAnnotations? alias=ID (Lextends references_cs)? ':'
+														{ $$ = new AstRulePrefix($rhsAnnotations, $alias); }
 ;
 
-ruleparts (List<AstRulePart>) ::=
-	  rulepart											{ $$ = new ArrayList<AstRulePart>(); ${left()}.add($rulepart); }
-	| list=ruleparts rulepart 							{ $list.add($rulepart); }
-	| list=ruleparts syntax_problem						{ $list.add($syntax_problem); }
+rule_attrs (AstRuleAttribute) ::=
+	'%' Lprio symref									{ $$ = new AstPrioClause($symref, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsParts (List<AstRulePart>) ::=
+	  rhsPart											{ $$ = new ArrayList<AstRulePart>(); ${left()}.add($rhsPart); }
+	| list=rhsParts rhsPart 							{ $list.add($rhsPart); }
+	| list=rhsParts syntax_problem						{ $list.add($syntax_problem); }
 ;
 
 %left '&';
 
-rulepart (AstRulePart) ::=
-	  refrulepart
+rhsPart (AstRulePart) ::=
+	  rhsAnnotations? (ID '=')? rhsPrimary				{ $$ = new AstRefRulePart($ID, $rhsPrimary, $rhsAnnotations, source, ${left().offset}, ${left().endoffset}); }
 	| command
-	| unorderedrulepart
+	| rhsUnordered
 ;
 
-refrulepart ::=
-	  ruleannotations? (ID '=')? rulesymref				{ $$ = new AstRefRulePart($ID, $rulesymref, $ruleannotations, source, ${left().offset}, ${left().endoffset}); }
+rhsUnordered ::=
+	  left=rhsPart '&' right=rhsPart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-unorderedrulepart ::=
-	  left=rulepart '&' right=rulepart					{ $$ = new AstUnorderedRulePart($left, $right, source, ${left().offset}, ${left().endoffset}); }
+rhsPrimary (AstRuleSymbolRef) ::=
+	  rhsSymbol (Las symref)?                           { /* TODO handle as */ }
+	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '?'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '*'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '+'									{ $$ = new AstRuleNestedQuantifier($rhsPrimary, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rulesymref (AstRuleSymbolRef) ::=
+# TODO AstRulePart -> TmaRhsPart
+# TODO AstRefRulePart -> TmaRhsAssignment
+# TODO add TmaRhsCast
+# TODO AstRuleNestedNonTerm -> TmaRhsInner
+# TODO AstRuleDefaultSymbolRef -> TmaRhsSymbol
+# TODO AstRuleNestedListWithSeparator -> TmaRhsList
+# TODO AstRuleNestedQuantifier -> TmaRhsQuantifier
+# TODO AstUnorderedRulePart -> TmaRhsUnordered
+
+
+rhsSymbol (AstRuleSymbolRef) ::=
 	  symref											{ $$ = new AstRuleDefaultSymbolRef($symref, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rules ')'										{ $$ = new AstRuleNestedNonTerm($rules, source, ${left().offset}, ${left().endoffset}); }
-	| '(' ruleparts Lseparator references ')' '+'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, true, source, ${left().offset}, ${left().endoffset}); }
-	| '(' ruleparts Lseparator references ')' '*'		{ $$ = new AstRuleNestedListWithSeparator($ruleparts, $references, false, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '?'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '*'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
-	| rulesymref '+'									{ $$ = new AstRuleNestedQuantifier($rulesymref, AstRuleNestedQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-ruleannotations (AstRuleAnnotations) ::=
+rhsAnnotations (AstRuleAnnotations) ::=
 	  annotation_list									{ $$ = new AstRuleAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
 	| negative_la annotation_list						{ $$ = new AstRuleAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
 	| negative_la										{ $$ = new AstRuleAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
@@ -334,12 +365,6 @@ name (AstName) ::=
 qualified_id (String) ::=
 	  ID
 	| qualified_id '.' ID								{ $$ = $qualified_id + "." + $ID; }
-;
-
-
-rule_attrs (AstRuleAttribute) ::=
-	'%' Lprio symref									{ $$ = new AstPrioClause($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 command (AstCode) ::=
