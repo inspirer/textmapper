@@ -269,21 +269,29 @@ rhsParts (List<TmaRhsPart>) ::=
 
 %left '&';
 
-# TODO AstRefRulePart -> TmaRhsAssignment
-
 rhsPart (TmaRhsPart) ::=
-	  rhsAnnotations? (ID '=')? rhsPrimary				{ $$ = new AstRefRulePart($ID, $rhsPrimary, $rhsAnnotations, source, ${left().offset}, ${left().endoffset}); }
-	| command
+	  rhsAnnotated
 	| rhsUnordered
+	| command
 ;
 
-rhsUnordered ::=
+rhsAnnotated (TmaRhsPart) ::=
+	  rhsAssignment
+	| rhsAnnotations rhsAssignment						{ $$ = new TmaRhsAnnotated($rhsAnnotations, $rhsAssignment, source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsAssignment (TmaRhsPart) ::=
+	  rhsPrimary
+	| identifier '=' rhsPrimary							{ $$ = new TmaRhsAssignment($identifier, $rhsPrimary, source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsUnordered (TmaRhsPart) ::=
 	  left=rhsPart '&' right=rhsPart					{ $$ = new TmaRhsUnordered($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsPrimary (AstRuleSymbolRef) ::=
+rhsPrimary (TmaRhsPart) ::=
 	  symref											{ $$ = new TmaRhsSymbol($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '(' rules ')'										{ $$ = new TmaRhsInner($rules, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '?'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }

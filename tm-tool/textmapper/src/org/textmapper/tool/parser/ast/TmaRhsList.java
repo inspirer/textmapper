@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * evgeny, 8/7/12
  */
-public class TmaRhsList extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsList extends AstNode implements TmaRhsPart {
 
 	private final List<TmaRhsPart> ruleParts;
 	private final List<AstReference> separator;

@@ -17,22 +17,26 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
-
 /**
- * evgeny, 8/2/12
+ * evgeny, 2/10/13
  */
-public class TmaRhsInner extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsAssignment extends AstNode implements TmaRhsPart {
 
-	private final List<AstRule> rules;
+	private final AstIdentifier id;
+	private final TmaRhsPart inner;
 
-	public TmaRhsInner(List<AstRule> rules, TextSource source, int offset, int endoffset) {
+	public TmaRhsAssignment(AstIdentifier id, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.rules = rules;
+		this.id = id;
+		this.inner = inner;
 	}
 
-	public List<AstRule> getRules() {
-		return rules;
+	public AstIdentifier getId() {
+		return id;
+	}
+
+	public TmaRhsPart getInner() {
+		return inner;
 	}
 
 	@Override
@@ -40,10 +44,7 @@ public class TmaRhsInner extends AstNode implements AstRuleSymbolRef {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (rules != null) {
-			for (AstRule rule : rules) {
-				rule.accept(v);
-			}
-		}
+		id.accept(v);
+		inner.accept(v);
 	}
 }

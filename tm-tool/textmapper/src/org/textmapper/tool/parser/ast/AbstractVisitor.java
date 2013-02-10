@@ -69,10 +69,6 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstRefRulePart n) {
-		return true;
-	}
-
 	public boolean visit(AstError n) {
 		return true;
 	}
@@ -125,7 +121,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaRhsInner n) {
+	public boolean visit(TmaRhsNested n) {
 		return true;
 	}
 
@@ -146,6 +142,14 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(TmaRhsCast n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsAssignment n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsAnnotated n) {
 		return true;
 	}
 }

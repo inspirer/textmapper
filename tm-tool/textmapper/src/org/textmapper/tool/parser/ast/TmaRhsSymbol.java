@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/2/12
  */
-public class TmaRhsSymbol extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsSymbol extends AstNode implements TmaRhsPart {
 
 	private final AstReference reference;
 

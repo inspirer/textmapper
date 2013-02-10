@@ -15,8 +15,35 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import org.textmapper.tool.parser.TMTree.TextSource;
+
+import java.util.List;
+
 /**
- * evgeny, 8/3/12
+ * evgeny, 8/2/12
  */
-public interface AstRuleSymbolRef extends IAstNode {
+public class TmaRhsNested extends AstNode implements TmaRhsPart {
+
+	private final List<AstRule> rules;
+
+	public TmaRhsNested(List<AstRule> rules, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.rules = rules;
+	}
+
+	public List<AstRule> getRules() {
+		return rules;
+	}
+
+	@Override
+	public void accept(AbstractVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+		if (rules != null) {
+			for (AstRule rule : rules) {
+				rule.accept(v);
+			}
+		}
+	}
 }

@@ -17,40 +17,34 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstRefRulePart extends AstNode implements TmaRhsPart {
+/**
+ * evgeny, 2/10/13
+ */
+public class TmaRhsAnnotated extends AstNode implements TmaRhsPart {
 
-	private final String alias;
-	private final AstRuleSymbolRef ref;
 	private final AstRuleAnnotations annotations;
+	private final TmaRhsPart inner;
 
-	public AstRefRulePart(String alias, AstRuleSymbolRef ref, AstRuleAnnotations annotations, TextSource source, int offset, int endoffset) {
+	public TmaRhsAnnotated(AstRuleAnnotations annotations, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.alias = alias;
-		this.ref = ref;
 		this.annotations = annotations;
-	}
-
-	public AstRuleSymbolRef getReference() {
-		return ref;
-	}
-
-	public String getAlias() {
-		return alias;
+		this.inner = inner;
 	}
 
 	public AstRuleAnnotations getAnnotations() {
 		return annotations;
 	}
 
+	public TmaRhsPart getInner() {
+		return inner;
+	}
+
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (ref != null) {
-			ref.accept(v);
-		}
-		if (annotations != null) {
-			annotations.accept(v);
-		}
+		annotations.accept(v);
+		inner.accept(v);
 	}
 }

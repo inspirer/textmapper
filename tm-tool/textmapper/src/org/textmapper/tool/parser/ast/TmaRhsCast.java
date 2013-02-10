@@ -20,18 +20,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsCast extends AstNode implements AstRuleSymbolRef {
+public class TmaRhsCast extends AstNode implements TmaRhsPart {
 
-	private final AstRuleSymbolRef left;
+	private final TmaRhsPart left;
 	private final AstReference right;
 
-	public TmaRhsCast(AstRuleSymbolRef left, AstReference right, TextSource source, int offset, int endoffset) {
+	public TmaRhsCast(TmaRhsPart left, AstReference right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}
 
-	public AstRuleSymbolRef getLeft() {
+	public TmaRhsPart getLeft() {
 		return left;
 	}
 

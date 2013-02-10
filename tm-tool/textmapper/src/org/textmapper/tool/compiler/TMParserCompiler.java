@@ -194,14 +194,14 @@ public class TMParserCompiler {
 			return builder.symbol(codeSym, null, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
-			List<AstRefRulePart> refParts = new ArrayList<AstRefRulePart>();
+			List<TmaRhsPart> refParts = new ArrayList<TmaRhsPart>();
 			extractUnorderedParts(part, refParts);
 			if (refParts.size() < 2 || refParts.size() > 5) {
 				error(part, "max 5 elements are allowed for permutation");
 				return null;
 			}
 			List<RhsPart> resolved = new ArrayList<RhsPart>(refParts.size());
-			for (AstRefRulePart refPart : refParts) {
+			for (TmaRhsPart refPart : refParts) {
 				RhsPart rulePart = convertRulePart(outer, refPart);
 				if (rulePart == null) {
 					return null;
@@ -210,27 +210,34 @@ public class TMParserCompiler {
 			}
 			return builder.unordered(resolved, part);
 
-		} else if (!(part instanceof AstRefRulePart)) {
-			error(part, "unknown rule part");
-			return null;
 		}
 
-		AstRefRulePart refPart = (AstRefRulePart) part;
-		String alias = refPart.getAlias();
-		Collection<Terminal> nla = convertLA(refPart.getAnnotations());
-		Map<String, Object> annotations = expressionResolver.convert(refPart.getAnnotations(), "AnnotateReference");
+		Collection<Terminal> nla = null;
+		Map<String, Object> annotations = null;
+		if (part instanceof TmaRhsAnnotated) {
+			final AstRuleAnnotations rhsAnnotations = ((TmaRhsAnnotated) part).getAnnotations();
+			nla = convertLA(rhsAnnotations);
+			annotations = expressionResolver.convert(rhsAnnotations, "AnnotateReference");
+			part = ((TmaRhsAnnotated) part).getInner();
+		}
+
+		String alias = null;
+		if (part instanceof TmaRhsAssignment) {
+			final TmaRhsAssignment assignment = (TmaRhsAssignment) part;
+			alias = assignment.getId().getName();
+			part = assignment.getInner();
+		}
 
 		// inline ...? and (...)?
-		if (isOptionalPart(refPart)) {
-			AstRuleSymbolRef optionalPart = getOptionalPart(refPart);
-			if (alias == null &&
-					refPart.getAnnotations() == null) {
+		if (isOptionalPart(part)) {
+			TmaRhsPart optionalPart = getOptionalPart(part);
+			if (alias == null && nla == null && annotations == null) {
 				if (isGroupPart(optionalPart)) {
 					List<TmaRhsPart> groupPart = getGroupPart(optionalPart);
-					return builder.optional(convertGroup(outer, groupPart, optionalPart), refPart.getReference());
+					return builder.optional(convertGroup(outer, groupPart, optionalPart), part);
 				} else if (isChoicePart(optionalPart)) {
-					List<AstRule> rules = ((TmaRhsInner) optionalPart).getRules();
-					return builder.optional(convertChoice(outer, rules, optionalPart), refPart.getReference());
+					List<AstRule> rules = ((TmaRhsNested) optionalPart).getRules();
+					return builder.optional(convertChoice(outer, rules, optionalPart), part);
 				}
 			}
 
@@ -241,29 +248,29 @@ public class TMParserCompiler {
 			RhsSymbol symbol = builder.symbol(optsym, nla, optionalPart);
 			TMDataUtil.putAnnotations(symbol, annotations);
 			if (alias != null) {
-				return builder.assignment(alias, builder.optional(symbol, refPart), false, refPart);
+				return builder.assignment(alias, builder.optional(symbol, part), false, part);
 			}
-			return builder.optional(symbol, refPart);
+			return builder.optional(symbol, part);
 		}
 
 		// inline (...)
-		if (isGroupPart(refPart)) {
-			List<TmaRhsPart> groupPart = getGroupPart(refPart.getReference());
-			return convertGroup(outer, groupPart, refPart.getReference());
+		if (isGroupPart(part)) {
+			List<TmaRhsPart> groupPart = getGroupPart(part);
+			return convertGroup(outer, groupPart, part);
 
 			// inline (...|...|...)
-		} else if (isChoicePart(refPart)) {
-			List<AstRule> rules = ((TmaRhsInner) refPart.getReference()).getRules();
-			return convertChoice(outer, rules, refPart.getReference());
+		} else if (isChoicePart(part)) {
+			List<AstRule> rules = ((TmaRhsNested) part).getRules();
+			return convertChoice(outer, rules, part);
 		}
 
-		Symbol sym = resolve(outer, refPart.getReference());
+		Symbol sym = resolve(outer, part);
 		if (sym == null) {
 			return null;
 		}
-		RhsSymbol rhsSymbol = builder.symbol(sym, nla, refPart.getReference());
+		RhsSymbol rhsSymbol = builder.symbol(sym, nla, part);
 		TMDataUtil.putAnnotations(rhsSymbol, annotations);
-		return alias == null ? rhsSymbol : builder.assignment(alias, rhsSymbol, false, refPart);
+		return alias == null ? rhsSymbol : builder.assignment(alias, rhsSymbol, false, part);
 	}
 
 	private RhsPart convertChoice(Symbol outer, List<AstRule> rules, SourceElement origin) {
@@ -292,13 +299,13 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(groupResult, origin);
 	}
 
-	private Symbol resolve(Symbol outer, AstRuleSymbolRef rulesymref) {
-		if (rulesymref instanceof TmaRhsSymbol) {
-			return resolver.resolve(((TmaRhsSymbol) rulesymref).getReference());
+	private Symbol resolve(Symbol outer, TmaRhsPart part) {
+		if (part instanceof TmaRhsSymbol) {
+			return resolver.resolve(((TmaRhsSymbol) part).getReference());
 
-		} else if (rulesymref instanceof TmaRhsInner) {
-			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, rulesymref);
-			List<AstRule> rules = ((TmaRhsInner) rulesymref).getRules();
+		} else if (part instanceof TmaRhsNested) {
+			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
+			List<AstRule> rules = ((TmaRhsNested) part).getRules();
 			for (AstRule right : rules) {
 				if (!right.hasSyntaxError()) {
 					createRule(nested, right);
@@ -306,8 +313,8 @@ public class TMParserCompiler {
 			}
 			return nested;
 
-		} else if (rulesymref instanceof TmaRhsList) {
-			TmaRhsList listWithSeparator = (TmaRhsList) rulesymref;
+		} else if (part instanceof TmaRhsList) {
+			TmaRhsList listWithSeparator = (TmaRhsList) part;
 
 			RhsPart inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
@@ -323,13 +330,13 @@ public class TMParserCompiler {
 				}
 			}
 			RhsPart separator = builder.sequence(sep, listWithSeparator);
-			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, rulesymref);
+			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, part);
 
-		} else if (rulesymref instanceof TmaRhsQuantifier) {
-			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) rulesymref;
+		} else if (part instanceof TmaRhsQuantifier) {
+			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) part;
 
 			RhsPart inner;
-			AstRuleSymbolRef innerSymRef = nestedQuantifier.getInner();
+			TmaRhsPart innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
 				List<TmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
@@ -339,16 +346,17 @@ public class TMParserCompiler {
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == TmaRhsQuantifier.KIND_OPTIONAL) {
-				error(rulesymref, "? cannot be a child of another quantifier");
+				error(part, "? cannot be a child of another quantifier");
 				return null;
 			}
-			return createList(outer, inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, rulesymref);
+			return createList(outer, inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, part);
 		}
 
+		error(part, "unknown right-hand side part found");
 		return null;
 	}
 
-	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, AstRuleSymbolRef origin) {
+	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
 		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
 		Nonterminal listSymbol = listsMap.get(descr);
 		if (listSymbol != null) {
@@ -393,41 +401,20 @@ public class TMParserCompiler {
 		return listSymbol;
 	}
 
-	private boolean isOptionalPart(AstRefRulePart part) {
-		AstRuleSymbolRef ref = part.getReference();
-		return ref instanceof TmaRhsQuantifier &&
-				((TmaRhsQuantifier) ref).getQuantifier() == TmaRhsQuantifier.KIND_OPTIONAL;
+	private boolean isOptionalPart(TmaRhsPart part) {
+		return part instanceof TmaRhsQuantifier &&
+				((TmaRhsQuantifier) part).getQuantifier() == TmaRhsQuantifier.KIND_OPTIONAL;
 	}
 
-	private AstRuleSymbolRef getOptionalPart(AstRefRulePart part) {
-		return ((TmaRhsQuantifier) part.getReference()).getInner();
+	private TmaRhsPart getOptionalPart(TmaRhsPart part) {
+		return ((TmaRhsQuantifier) part).getInner();
 	}
 
-	private boolean isGroupPart(AstRefRulePart part) {
-		if (!(part.getReference() instanceof TmaRhsInner)) {
+	private boolean isGroupPart(TmaRhsPart symbolRef) {
+		if (!(symbolRef instanceof TmaRhsNested)) {
 			return false;
 		}
-		return part.getAlias() == null
-				&& part.getAnnotations() == null
-				&& isGroupPart(part.getReference());
-
-	}
-
-	private boolean isChoicePart(AstRefRulePart part) {
-		if (!(part.getReference() instanceof TmaRhsInner)) {
-			return false;
-		}
-		return part.getAlias() == null
-				&& part.getAnnotations() == null
-				&& isChoicePart(part.getReference());
-
-	}
-
-	private boolean isGroupPart(AstRuleSymbolRef symbolRef) {
-		if (!(symbolRef instanceof TmaRhsInner)) {
-			return false;
-		}
-		List<AstRule> innerRules = ((TmaRhsInner) symbolRef).getRules();
+		List<AstRule> innerRules = ((TmaRhsNested) symbolRef).getRules();
 		if (innerRules.size() == 1) {
 			AstRule first = innerRules.get(0);
 			return isSimpleNonEmpty(first);
@@ -435,11 +422,11 @@ public class TMParserCompiler {
 		return false;
 	}
 
-	private boolean isChoicePart(AstRuleSymbolRef symbolRef) {
-		if (!(symbolRef instanceof TmaRhsInner)) {
+	private boolean isChoicePart(TmaRhsPart symbolRef) {
+		if (!(symbolRef instanceof TmaRhsNested)) {
 			return false;
 		}
-		List<AstRule> innerRules = ((TmaRhsInner) symbolRef).getRules();
+		List<AstRule> innerRules = ((TmaRhsNested) symbolRef).getRules();
 		if (innerRules.size() < 2) {
 			return false;
 		}
@@ -461,20 +448,18 @@ public class TMParserCompiler {
 				&& !rule.hasSyntaxError();
 	}
 
-	private List<TmaRhsPart> getGroupPart(AstRuleSymbolRef symbolRef) {
-		return ((TmaRhsInner) symbolRef).getRules().get(0).getList();
+	private List<TmaRhsPart> getGroupPart(TmaRhsPart symbolRef) {
+		return ((TmaRhsNested) symbolRef).getRules().get(0).getList();
 	}
 
-	private void extractUnorderedParts(TmaRhsPart unorderedRulePart, List<AstRefRulePart> result) {
+	private void extractUnorderedParts(TmaRhsPart unorderedRulePart, List<TmaRhsPart> result) {
 		if (unorderedRulePart instanceof TmaRhsUnordered) {
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getLeft(), result);
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getRight(), result);
-		} else if (unorderedRulePart instanceof AstRefRulePart) {
-			result.add((AstRefRulePart) unorderedRulePart);
 		} else if (unorderedRulePart instanceof AstCode) {
 			error(unorderedRulePart, "semantic action cannot be used as a part of unordered group");
 		} else if (!(unorderedRulePart instanceof AstError)) {
-			error(unorderedRulePart, "cannot be used as a part of unordered group");
+			result.add(unorderedRulePart);
 		}
 	}
 
