@@ -89,9 +89,18 @@ public interface LapgTokenTypes {
 	IElementType KW_NEW = new LapgElementType(Lexems.Lnew, "new");
 	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 	IElementType KW_NOEOI = new LapgElementType(Lexems.Lnoeoi, "no-eoi");
+	IElementType KW_AS = new LapgElementType(Lexems.Las, "space");
+	IElementType KW_EXTENDS = new LapgElementType(Lexems.Lextends, "space");
+	IElementType KW_INLINE = new LapgElementType(Lexems.Linline, "space");
+	IElementType KW_RETURNS = new LapgElementType(Lexems.Lreturns, "space");
+
+	// soft keywords without highlighting
 	IElementType KW_SOFT = new LapgElementType(Lexems.Lsoft, "soft");
 	IElementType KW_CLASS = new LapgElementType(Lexems.Lclass, "class");
 	IElementType KW_SPACE = new LapgElementType(Lexems.Lspace, "space");
 
-	TokenSet keywords = TokenSet.create(KW_TRUE, KW_FALSE, KW_SEPARATOR, KW_PRIO, KW_SHIFT, KW_REDUCE, KW_INPUT, KW_LEFT, KW_RIGHT, KW_NEW, KW_NONASSOC, KW_NOEOI);
+	TokenSet keywords = TokenSet.create(
+			KW_TRUE, KW_FALSE, KW_SEPARATOR, KW_PRIO, KW_SHIFT, KW_REDUCE,
+			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NEW, KW_NONASSOC, KW_NOEOI,
+			KW_AS, KW_EXTENDS, KW_INLINE, KW_RETURNS);
 }

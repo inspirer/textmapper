@@ -17,20 +17,14 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * evgeny, 8/11/12
+ * Gryaznov Evgeny, 9/20/12
  */
-public class TmRefRulePart extends TmElement implements TmRulePart {
+public class TmRhsUnordered extends TmElement implements TmRulePart {
 
-	public TmRefRulePart(@NotNull ASTNode node) {
+	public TmRhsUnordered(@NotNull ASTNode node) {
 		super(node);
 	}
-
-	public TmRuleSymRef getSymbolRef() {
-		return PsiTreeUtil.getChildOfType(this, TmRuleSymRef.class);
-	}
-
 }

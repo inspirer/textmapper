@@ -23,13 +23,14 @@ import org.jetbrains.annotations.NotNull;
 /**
  * evgeny, 8/11/12
  */
-public class TmRuleSymRef extends TmElement {
+public class TmRhsAnnotated extends TmElement implements TmRulePart {
 
-	public TmRuleSymRef(@NotNull ASTNode node) {
+	public TmRhsAnnotated(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public TmSymbolReference getReference() {
-		return PsiTreeUtil.getChildOfType(this, TmSymbolReference.class);
+	public TmRhsPrimary getSymbolRef() {
+		return PsiTreeUtil.getChildOfType(this, TmRhsPrimary.class);
 	}
+
 }

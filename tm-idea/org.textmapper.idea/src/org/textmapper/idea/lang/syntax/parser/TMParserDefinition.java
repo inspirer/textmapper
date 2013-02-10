@@ -86,12 +86,12 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmRulePrefix(node);
 			case Tokens.rule_attrs:
 				return new TmRuleAttrs(node);
-			case Tokens.refrulepart:
-				return new TmRefRulePart(node);
-			case Tokens.unorderedrulepart:
-				return new TmUnorderedRulePart(node);
-			case Tokens.rulesymref:
-				return new TmRuleSymRef(node);
+			case Tokens.rhsAnnotated:
+				return new TmRhsAnnotated(node);
+			case Tokens.rhsUnordered:
+				return new TmRhsUnordered(node);
+			case Tokens.rhsPrimary:
+				return new TmRhsPrimary(node);
 			case Tokens.negative_la:
 				return new TmNegativeLA(node);
 			case Tokens.command:
@@ -114,7 +114,7 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmLexem(node);
 			case Tokens.named_pattern:
 				return new TmNamedPattern(node);
-			case Tokens.non_term:
+			case Tokens.nonterm:
 				return new TmNonTerm(node);
 			case Tokens.directive:
 				return new TmDirective(node);

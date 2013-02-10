@@ -223,8 +223,8 @@ public class TMFormattingBlock extends AbstractBlock {
 					return Indent.getNoneIndent();
 				}
 			}
-			if (type == TextmapperElementTypes.REF_RULEPART || type == TextmapperElementTypes.ACTION
-					|| type == TextmapperElementTypes.UNORDERED_RULEPART || type == TextmapperElementTypes.RULEATTRS) {
+			if (type == TextmapperElementTypes.RHS_PART || type == TextmapperElementTypes.ACTION
+					|| type == TextmapperElementTypes.RHS_UNORDERED || type == TextmapperElementTypes.RULEATTRS) {
 				return Indent.getContinuationIndent();
 			}
 
