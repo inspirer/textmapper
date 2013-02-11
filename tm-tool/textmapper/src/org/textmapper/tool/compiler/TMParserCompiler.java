@@ -220,10 +220,9 @@ public class TMParserCompiler {
 			part = ((TmaRhsAnnotated) part).getInner();
 		}
 
-		AstIdentifier alias = null;
+		TmaRhsAssignment assignment = null;
 		if (part instanceof TmaRhsAssignment) {
-			final TmaRhsAssignment assignment = (TmaRhsAssignment) part;
-			alias = assignment.getId();
+			assignment = (TmaRhsAssignment) part;
 			part = assignment.getInner();
 		}
 
@@ -271,8 +270,8 @@ public class TMParserCompiler {
 			result = builder.optional(result, optional);
 		}
 
-		if (alias != null) {
-			result = builder.assignment(alias.getName(), result, false, alias);
+		if (assignment != null) {
+			result = builder.assignment(assignment.getId().getName(), result, assignment.isAddition(), assignment);
 		}
 
 		return result;

@@ -163,6 +163,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return OP_STAR;
 			case Lexems.PLUS:
 				return OP_PLUS;
+			case Lexems.PLUSEQUAL:
+				return OP_PLUSEQ;
 			case Lexems.QUESTIONMARK:
 				return OP_QMARK;
 //			case Lexems.MINUSGREATER:

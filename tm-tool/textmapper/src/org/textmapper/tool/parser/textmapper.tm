@@ -59,6 +59,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '>':	/>/
 '*':	/*/
 '+':	/+/
+'+=':	/+=/
 '?':	/?/
 '&':	/&/
 '@':	/@/
@@ -252,7 +253,7 @@ rule0 (AstRule) ::=
 
 rhsPrefix (TmaRhsPrefix) ::=
 	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, null, null, source, ${left().offset}, ${left().endoffset}); }
-	| rhsAnnotations? alias=identifier (Lextends references_cs)? ':'
+	| rhsAnnotations as annotation_list? alias=identifier (Lextends references_cs)? ':'
 														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, $references_cs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -282,7 +283,8 @@ rhsAnnotated (TmaRhsPart) ::=
 
 rhsAssignment (TmaRhsPart) ::=
 	  rhsOptional
-	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, false, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '+=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, true, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsOptional (TmaRhsPart) ::=

@@ -24,11 +24,13 @@ public class TmaRhsAssignment extends AstNode implements TmaRhsPart {
 
 	private final AstIdentifier id;
 	private final TmaRhsPart inner;
+	private final boolean addition;
 
-	public TmaRhsAssignment(AstIdentifier id, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
+	public TmaRhsAssignment(AstIdentifier id, TmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.id = id;
 		this.inner = inner;
+		this.addition = isAddition;
 	}
 
 	public AstIdentifier getId() {
@@ -37,6 +39,10 @@ public class TmaRhsAssignment extends AstNode implements TmaRhsPart {
 
 	public TmaRhsPart getInner() {
 		return inner;
+	}
+
+	public boolean isAddition() {
+		return addition;
 	}
 
 	@Override
