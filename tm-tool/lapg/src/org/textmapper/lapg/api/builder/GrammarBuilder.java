@@ -45,6 +45,8 @@ public interface GrammarBuilder {
 
 	RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin);
 
+	RhsCast cast(Symbol asSymbol, RhsPart inner, SourceElement origin);
+
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 
 	RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin);

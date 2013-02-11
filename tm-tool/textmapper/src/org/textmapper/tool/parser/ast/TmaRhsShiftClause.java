@@ -15,21 +15,15 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public class AstRulePrefix {
+import org.textmapper.tool.parser.TMTree.TextSource;
 
-	private final AstAnnotations annotations;
-	private final String alias;
+public class TmaRhsShiftClause extends AstNode implements TmaRhsSuffix {
 
-	public AstRulePrefix(AstAnnotations annotations, String alias) {
-		this.annotations = annotations;
-		this.alias = alias;
+	public TmaRhsShiftClause(TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 	}
 
-	public AstAnnotations getAnnotations() {
-		return annotations;
-	}
-
-	public String getAlias() {
-		return alias;
+	public void accept(AbstractVisitor v) {
+		v.visit(this);
 	}
 }

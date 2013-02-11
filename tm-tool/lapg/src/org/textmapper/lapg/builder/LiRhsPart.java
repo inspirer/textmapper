@@ -51,6 +51,10 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		}
 	}
 
+
+	/**
+	 * TODO either get rid of copy, or override equals and hide getParent (copy breaks ==)
+	 */
 	@Override
 	public abstract LiRhsPart copy();
 

@@ -72,6 +72,11 @@ public class RuleUtil {
 			}
 
 			@Override
+			public Object caseCast(RhsCast p) {
+				return p.getPart().accept(this);
+			}
+
+			@Override
 			public Object caseList(RhsList p) {
 				throw new UnsupportedOperationException();
 			}
@@ -172,6 +177,11 @@ public class RuleUtil {
 		}
 
 		@Override
+		public Set<RhsSymbol> caseCast(RhsCast p) {
+			return p.getPart().accept(this);
+		}
+
+		@Override
 		public Set<RhsSymbol> caseSequence(RhsSequence p) {
 			return fromList(p.getParts());
 		}
@@ -248,6 +258,11 @@ public class RuleUtil {
 		@Override
 		public Boolean caseList(RhsList p) {
 			throw new IllegalStateException();
+		}
+
+		@Override
+		public Boolean caseCast(RhsCast p) {
+			return p.getPart().accept(this);
 		}
 	}
 }

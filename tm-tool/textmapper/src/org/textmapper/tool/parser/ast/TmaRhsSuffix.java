@@ -15,15 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class AstShiftClause extends AstNode implements AstRuleAttribute {
-
-	public AstShiftClause(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-	}
-
-	public void accept(AbstractVisitor v) {
-		v.visit(this);
-	}
+public interface TmaRhsSuffix extends IAstNode {
 }

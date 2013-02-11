@@ -33,4 +33,6 @@ public abstract class RhsSwitch<T> {
 	public abstract T caseAssignment(RhsAssignment p);
 
 	public abstract T caseList(RhsList p);
+
+	public abstract T caseCast(RhsCast p);
 }

@@ -219,6 +219,15 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
+	public RhsCast cast(Symbol asSymbol, RhsPart inner, SourceElement origin) {
+		check(inner, true);
+		check(asSymbol);
+		LiRhsCast result = new LiRhsCast(asSymbol, (LiRhsPart) inner, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
 	public RhsSymbol symbol(Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
 		check(sym);
 		NegativeLookahead nla = null;

@@ -82,10 +82,10 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmRule(node);
 			case Tokens.rules:
 				return new TmRuleGroup(node);
-			case Tokens.ruleprefix:
-				return new TmRulePrefix(node);
-			case Tokens.rule_attrs:
-				return new TmRuleAttrs(node);
+			case Tokens.rhsPrefix:
+				return new TmRhsPrefix(node);
+			case Tokens.rhsSuffix:
+				return new TmRhsSuffix(node);
 			case Tokens.rhsAnnotated:
 				return new TmRhsAnnotated(node);
 			case Tokens.rhsUnordered:

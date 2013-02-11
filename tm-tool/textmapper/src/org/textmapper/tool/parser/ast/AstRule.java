@@ -22,32 +22,24 @@ import java.util.List;
 public class AstRule extends AstNode {
 
 	private final List<TmaRhsPart> list;
-	private final AstRuleAttribute attribute;
-	private final AstAnnotations annotations;
-	private final String ruleAlias;
+	private final TmaRhsPrefix prefix;
+	private final TmaRhsSuffix suffix;
 	private final AstError error;
 
-	public AstRule(AstRulePrefix prefix, List<TmaRhsPart> list, AstRuleAttribute attr, TextSource source,
+	public AstRule(TmaRhsPrefix prefix, List<TmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
 				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
-		this.attribute = attr;
-		if (prefix != null) {
-			this.annotations = prefix.getAnnotations();
-			this.ruleAlias = prefix.getAlias();
-		} else {
-			this.annotations = null;
-			this.ruleAlias = null;
-		}
+		this.suffix = attr;
+		this.prefix = prefix;
 		this.error = null;
 	}
 
 	public AstRule(AstError err) {
 		super(err.getInput(), err.getOffset(), err.getEndOffset());
 		this.list = null;
-		this.attribute = null;
-		this.ruleAlias = null;
-		this.annotations = null;
+		this.suffix = null;
+		this.prefix = null;
 		this.error = err;
 	}
 
@@ -59,16 +51,24 @@ public class AstRule extends AstNode {
 		return list;
 	}
 
-	public AstRuleAttribute getAttribute() {
-		return attribute;
+	public TmaRhsPrefix getPrefix() {
+		return prefix;
 	}
 
+	public TmaRhsSuffix getSuffix() {
+		return suffix;
+	}
+
+	@Deprecated
 	public String getAlias() {
-		return ruleAlias;
+		// TODO use getPrefix()
+		return prefix != null && prefix.getName() != null ? prefix.getName().getName() : null;
 	}
 
+	@Deprecated
 	public AstAnnotations getAnnotations() {
-		return annotations;
+		// TODO -use getPrefix()
+		return prefix != null ? prefix.getAnnotations() : null;
 	}
 
 	public void accept(AbstractVisitor v) {
@@ -79,16 +79,16 @@ public class AstRule extends AstNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (prefix != null) {
+			prefix.accept(v);
 		}
 		if (list != null) {
 			for (TmaRhsPart part : list) {
 				part.accept(v);
 			}
 		}
-		if (attribute != null) {
-			attribute.accept(v);
+		if (suffix != null) {
+			suffix.accept(v);
 		}
 	}
 }

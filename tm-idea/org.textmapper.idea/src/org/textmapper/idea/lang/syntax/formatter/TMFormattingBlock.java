@@ -196,7 +196,7 @@ public class TMFormattingBlock extends AbstractBlock {
 				while (treeNext != null && treeNext.getElementType() == TokenType.WHITE_SPACE) {
 					treeNext = treeNext.getTreeNext();
 				}
-				if (treeNext == null || treeNext.getElementType() == TextmapperElementTypes.RULEATTRS) {
+				if (treeNext == null || treeNext.getElementType() == TextmapperElementTypes.RHS_SUFFIX) {
 					childAlignment = lastCodeBlock;
 				}
 			}
@@ -224,7 +224,7 @@ public class TMFormattingBlock extends AbstractBlock {
 				}
 			}
 			if (type == TextmapperElementTypes.RHS_PART || type == TextmapperElementTypes.ACTION
-					|| type == TextmapperElementTypes.RHS_UNORDERED || type == TextmapperElementTypes.RULEATTRS) {
+					|| type == TextmapperElementTypes.RHS_UNORDERED || type == TextmapperElementTypes.RHS_SUFFIX) {
 				return Indent.getContinuationIndent();
 			}
 

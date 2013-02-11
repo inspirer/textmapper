@@ -20,9 +20,9 @@ import org.textmapper.lapg.api.Symbol;
 /**
  * evgeny, 2/3/13
  */
-public interface RhsCast {
+public interface RhsCast extends RhsPart {
 
-	Symbol getResult();
+	Symbol getTarget();
 
 	RhsPart getPart();
 }

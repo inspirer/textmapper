@@ -246,19 +246,19 @@ rule_list (List<AstRule>) ::=
 ;
 
 rule0 (AstRule) ::=
-	  ruleprefix? rhsParts? rule_attrsopt				{ $$ = new AstRule($ruleprefix, $rhsParts, $rule_attrsopt, source, ${left().offset}, ${left().endoffset}); }
+	  rhsPrefix? rhsParts? rhsSuffixopt					{ $$ = new AstRule($rhsPrefix, $rhsParts, $rhsSuffixopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
 ;
 
-ruleprefix (AstRulePrefix) ::=
-	  annotations ':'									{ $$ = new AstRulePrefix($annotations, null); }
-	| rhsAnnotations? alias=ID (Lextends references_cs)? ':'
-														{ $$ = new AstRulePrefix($rhsAnnotations, $alias); }
+rhsPrefix (TmaRhsPrefix) ::=
+	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, null, null, source, ${left().offset}, ${left().endoffset}); }
+	| rhsAnnotations? alias=identifier (Lextends references_cs)? ':'
+														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, $references_cs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rule_attrs (AstRuleAttribute) ::=
-	'%' Lprio symref									{ $$ = new AstPrioClause($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Lshift										{ $$ = new AstShiftClause(source, ${left().offset}, ${left().endoffset}); }
+rhsSuffix (TmaRhsSuffix) ::=
+	'%' Lprio symref									{ $$ = new TmaRhsPrio($symref, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Lshift										{ $$ = new TmaRhsShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsParts (List<TmaRhsPart>) ::=
@@ -281,8 +281,19 @@ rhsAnnotated (TmaRhsPart) ::=
 ;
 
 rhsAssignment (TmaRhsPart) ::=
+	  rhsOptional
+	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsOptional (TmaRhsPart) ::=
+	  rhsCast
+	| rhsCast '?'										{ $$ = new TmaRhsQuantifier($rhsCast, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsCast (TmaRhsPart) ::=
 	  rhsPrimary
-	| identifier '=' rhsPrimary							{ $$ = new TmaRhsAssignment($identifier, $rhsPrimary, source, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary Las symref								{ $$ = new TmaRhsCast($rhsPrimary, $symref, source, ${left().offset}, ${left().endoffset}); }
+
 ;
 
 rhsUnordered (TmaRhsPart) ::=
@@ -294,10 +305,8 @@ rhsPrimary (TmaRhsPart) ::=
 	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '?'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary Las symref								{ $$ = new TmaRhsCast($rhsPrimary, $symref, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsAnnotations (AstRuleAnnotations) ::=

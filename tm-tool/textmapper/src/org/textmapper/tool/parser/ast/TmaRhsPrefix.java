@@ -17,26 +17,44 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstPrioClause extends AstNode implements AstRuleAttribute {
+import java.util.List;
 
-	private AstReference reference;
+public class TmaRhsPrefix extends AstNode {
 
-	public AstPrioClause(AstReference reference, TextSource source, int offset, int endoffset) {
+	private final AstAnnotations annotations;
+	private final AstIdentifier name;
+	private final List<AstReference> extendedNonterms;
+
+	public TmaRhsPrefix(AstAnnotations annotations, AstIdentifier name, List<AstReference> extendedNonterms, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.reference = reference;
+		this.annotations = annotations;
+		this.name = name;
+		this.extendedNonterms = extendedNonterms;
 	}
 
-	public AstReference getReference() {
-		return reference;
+	public AstAnnotations getAnnotations() {
+		return annotations;
 	}
 
+	public AstIdentifier getName() {
+		return name;
+	}
+
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
-		if (reference != null) {
-			reference.accept(v);
+		if (annotations != null) {
+			annotations.accept(v);
+		}
+		if (name != null) {
+			name.accept(v);
+		}
+		if (extendedNonterms != null) {
+			for (AstReference extendedNonterm : extendedNonterms) {
+				extendedNonterm.accept(v);
+			}
 		}
 	}
 }

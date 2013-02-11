@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 
@@ -154,14 +153,14 @@ public class TMParserCompiler {
 			}
 
 			for (TmaRhsPart part : list) {
-				RhsPart rulePart = convertRulePart(left, part);
+				RhsPart rulePart = convertPart(left, part);
 				if (rulePart != null) {
 					rhs.add(rulePart);
 				}
 			}
 		}
-		AstRuleAttribute ruleAttribute = right.getAttribute();
-		AstReference rulePrio = ruleAttribute instanceof AstPrioClause ? ((AstPrioClause) ruleAttribute).getReference()
+		TmaRhsSuffix ruleAttribute = right.getSuffix();
+		AstReference rulePrio = ruleAttribute instanceof TmaRhsPrio ? ((TmaRhsPrio) ruleAttribute).getReference()
 				: null;
 		Terminal prio = null;
 		if (rulePrio != null) {
@@ -183,7 +182,7 @@ public class TMParserCompiler {
 		}
 	}
 
-	private RhsPart convertRulePart(Symbol outer, TmaRhsPart part) {
+	private RhsPart convertPart(Symbol outer, TmaRhsPart part) {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
@@ -202,7 +201,7 @@ public class TMParserCompiler {
 			}
 			List<RhsPart> resolved = new ArrayList<RhsPart>(refParts.size());
 			for (TmaRhsPart refPart : refParts) {
-				RhsPart rulePart = convertRulePart(outer, refPart);
+				RhsPart rulePart = convertPart(outer, refPart);
 				if (rulePart == null) {
 					return null;
 				}
@@ -221,85 +220,66 @@ public class TMParserCompiler {
 			part = ((TmaRhsAnnotated) part).getInner();
 		}
 
-		String alias = null;
+		AstIdentifier alias = null;
 		if (part instanceof TmaRhsAssignment) {
 			final TmaRhsAssignment assignment = (TmaRhsAssignment) part;
-			alias = assignment.getId().getName();
+			alias = assignment.getId();
 			part = assignment.getInner();
 		}
 
-		// inline ...? and (...)?
-		if (isOptionalPart(part)) {
-			TmaRhsPart optionalPart = getOptionalPart(part);
-			if (alias == null && nla == null && annotations == null) {
-				if (isGroupPart(optionalPart)) {
-					List<TmaRhsPart> groupPart = getGroupPart(optionalPart);
-					return builder.optional(convertGroup(outer, groupPart, optionalPart), part);
-				} else if (isChoicePart(optionalPart)) {
-					List<AstRule> rules = ((TmaRhsNested) optionalPart).getRules();
-					return builder.optional(convertChoice(outer, rules, optionalPart), part);
-				}
-			}
-
-			Symbol optsym = resolve(outer, optionalPart);
-			if (optsym == null) {
-				return null;
-			}
-			RhsSymbol symbol = builder.symbol(optsym, nla, optionalPart);
-			TMDataUtil.putAnnotations(symbol, annotations);
-			if (alias != null) {
-				return builder.assignment(alias, builder.optional(symbol, part), false, part);
-			}
-			return builder.optional(symbol, part);
+		TmaRhsQuantifier optional = null;
+		if (part instanceof TmaRhsQuantifier && ((TmaRhsQuantifier) part).isOptional()) {
+			optional = (TmaRhsQuantifier) part;
+			part = optional.getInner();
 		}
+
+		TmaRhsCast cast = null;
+		if (part instanceof TmaRhsCast) {
+			cast = (TmaRhsCast) part;
+			part = cast.getInner();
+		}
+
+		boolean canInline = nla == null && annotations == null;
+		RhsPart result;
 
 		// inline (...)
-		if (isGroupPart(part)) {
+		if (canInline && isGroupPart(part)) {
 			List<TmaRhsPart> groupPart = getGroupPart(part);
-			return convertGroup(outer, groupPart, part);
+			result = convertGroup(outer, groupPart, part);
 
 			// inline (...|...|...)
-		} else if (isChoicePart(part)) {
+		} else if (canInline && isChoicePart(part)) {
 			List<AstRule> rules = ((TmaRhsNested) part).getRules();
-			return convertChoice(outer, rules, part);
-		}
-
-		Symbol sym = resolve(outer, part);
-		if (sym == null) {
-			return null;
-		}
-		RhsSymbol rhsSymbol = builder.symbol(sym, nla, part);
-		TMDataUtil.putAnnotations(rhsSymbol, annotations);
-		return alias == null ? rhsSymbol : builder.assignment(alias, rhsSymbol, false, part);
-	}
-
-	private RhsPart convertChoice(Symbol outer, List<AstRule> rules, SourceElement origin) {
-		Collection<RhsPart> result = new ArrayList<RhsPart>(rules.size());
-		for (AstRule rule : rules) {
-			RhsPart abstractRulePart = convertGroup(outer, rule.getList(), rule);
-			if (abstractRulePart == null) {
+			result = convertChoice(outer, rules, part);
+		} else {
+			Symbol sym = convertPrimary(outer, part);
+			if (sym == null) {
 				return null;
 			}
-			result.add(abstractRulePart);
+			result = builder.symbol(sym, nla, part);
+			TMDataUtil.putAnnotations(result, annotations);
 		}
-		return builder.choice(result, origin);
-	}
 
-	private RhsPart convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
-		List<RhsPart> groupResult = new ArrayList<RhsPart>();
-		if (groupPart == null) {
-			return null;
-		}
-		for (TmaRhsPart innerPart : groupPart) {
-			RhsPart rulePart = convertRulePart(outer, innerPart);
-			if (rulePart != null) {
-				groupResult.add(rulePart);
+		if (cast != null) {
+			final Symbol asSymbol = resolver.resolve(cast.getTarget());
+			if (asSymbol != null) {
+				result = builder.cast(asSymbol, result, cast);
 			}
 		}
-		return groupResult.isEmpty() ? null : builder.sequence(groupResult, origin);
+
+		if (optional != null) {
+			result = builder.optional(result, optional);
+		}
+
+		if (alias != null) {
+			result = builder.assignment(alias.getName(), result, false, alias);
+		}
+
+		return result;
 	}
 
-	private Symbol resolve(Symbol outer, TmaRhsPart part) {
+	private Symbol convertPrimary(Symbol outer, TmaRhsPart part) {
+
 		if (part instanceof TmaRhsSymbol) {
 			return resolver.resolve(((TmaRhsSymbol) part).getReference());
 
@@ -341,7 +321,7 @@ public class TMParserCompiler {
 				List<TmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
-				Symbol innerTarget = resolve(outer, innerSymRef);
+				Symbol innerTarget = convertPrimary(outer, innerSymRef);
 				inner = builder.symbol(innerTarget, null, innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
@@ -352,8 +332,34 @@ public class TMParserCompiler {
 			return createList(outer, inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, part);
 		}
 
-		error(part, "unknown right-hand side part found");
+		error(part, "internal error: unknown right-hand side part found");
 		return null;
+	}
+
+	private RhsPart convertChoice(Symbol outer, List<AstRule> rules, SourceElement origin) {
+		Collection<RhsPart> result = new ArrayList<RhsPart>(rules.size());
+		for (AstRule rule : rules) {
+			RhsPart abstractRulePart = convertGroup(outer, rule.getList(), rule);
+			if (abstractRulePart == null) {
+				return null;
+			}
+			result.add(abstractRulePart);
+		}
+		return builder.choice(result, origin);
+	}
+
+	private RhsPart convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
+		List<RhsPart> groupResult = new ArrayList<RhsPart>();
+		if (groupPart == null) {
+			return null;
+		}
+		for (TmaRhsPart innerPart : groupPart) {
+			RhsPart rulePart = convertPart(outer, innerPart);
+			if (rulePart != null) {
+				groupResult.add(rulePart);
+			}
+		}
+		return groupResult.isEmpty() ? null : builder.sequence(groupResult, origin);
 	}
 
 	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
@@ -401,15 +407,6 @@ public class TMParserCompiler {
 		return listSymbol;
 	}
 
-	private boolean isOptionalPart(TmaRhsPart part) {
-		return part instanceof TmaRhsQuantifier &&
-				((TmaRhsQuantifier) part).getQuantifier() == TmaRhsQuantifier.KIND_OPTIONAL;
-	}
-
-	private TmaRhsPart getOptionalPart(TmaRhsPart part) {
-		return ((TmaRhsQuantifier) part).getInner();
-	}
-
 	private boolean isGroupPart(TmaRhsPart symbolRef) {
 		if (!(symbolRef instanceof TmaRhsNested)) {
 			return false;
@@ -440,9 +437,8 @@ public class TMParserCompiler {
 
 	private boolean isSimpleNonEmpty(AstRule rule) {
 		return rule != null
-				&& rule.getAnnotations() == null
-				&& rule.getAttribute() == null
-				&& rule.getAlias() == null
+				&& rule.getPrefix() == null
+				&& rule.getSuffix() == null
 				&& rule.getList() != null
 				&& !rule.getList().isEmpty()
 				&& !rule.hasSyntaxError();

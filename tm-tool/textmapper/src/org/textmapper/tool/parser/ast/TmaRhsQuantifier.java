@@ -43,6 +43,10 @@ public class TmaRhsQuantifier extends AstNode implements TmaRhsPart {
 		return inner;
 	}
 
+	public boolean isOptional() {
+		return quantifier == KIND_OPTIONAL;
+	}
+
 	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {

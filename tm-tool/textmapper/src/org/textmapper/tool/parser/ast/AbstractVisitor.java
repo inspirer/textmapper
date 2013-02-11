@@ -97,11 +97,11 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstPrioClause n) {
+	public boolean visit(TmaRhsPrio n) {
 		return true;
 	}
 
-	public boolean visit(AstShiftClause n) {
+	public boolean visit(TmaRhsShiftClause n) {
 		return true;
 	}
 
@@ -150,6 +150,10 @@ public class AbstractVisitor {
 	}
 
 	public boolean visit(TmaRhsAnnotated n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsPrefix n) {
 		return true;
 	}
 }

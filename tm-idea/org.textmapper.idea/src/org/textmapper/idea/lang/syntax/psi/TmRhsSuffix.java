@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * evgeny, 8/14/12
  */
-public class TmRulePrefix extends TmElement {
+public class TmRhsSuffix extends TmElement {
 
-	public TmRulePrefix(@NotNull ASTNode node) {
+	public TmRhsSuffix(@NotNull ASTNode node) {
 		super(node);
 	}
 }

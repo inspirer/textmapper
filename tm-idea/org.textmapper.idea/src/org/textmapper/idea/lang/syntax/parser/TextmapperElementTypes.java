@@ -39,8 +39,8 @@ public interface TextmapperElementTypes {
 	public static final IElementType DIRECTIVE = new LapgElementType(Tokens.directive, "directive");
 
 	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
-	public static final IElementType RULEPREFIX = new LapgElementType(Tokens.ruleprefix, "ruleprefix");
-	public static final IElementType RULEATTRS = new LapgElementType(Tokens.rule_attrs, "ruleattrs");
+	public static final IElementType RHS_PREFIX = new LapgElementType(Tokens.rhsPrefix, "rhs prefix");
+	public static final IElementType RHS_SUFFIX = new LapgElementType(Tokens.rhsSuffix, "rhs suffix");
 	public static final IElementType RHS_PART = new LapgElementType(Tokens.rhsAnnotated, "rhs part");
 	public static final IElementType RHS_UNORDERED = new LapgElementType(Tokens.rhsUnordered, "rhs unordered");
 	public static final IElementType RHS_PRIMARY = new LapgElementType(Tokens.rhsPrimary, "rhs primary");
@@ -59,7 +59,7 @@ public interface TextmapperElementTypes {
 			OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, DIRECTIVE,
-			RULE, RULEPREFIX, RULEATTRS, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, NEGATIVE_LA,
+			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, NEGATIVE_LA,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};
 }

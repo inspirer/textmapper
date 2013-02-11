@@ -31,11 +31,11 @@ public class TmaRhsCast extends AstNode implements TmaRhsPart {
 		this.right = right;
 	}
 
-	public TmaRhsPart getLeft() {
+	public TmaRhsPart getInner() {
 		return left;
 	}
 
-	public AstReference getRight() {
+	public AstReference getTarget() {
 		return right;
 	}
 
