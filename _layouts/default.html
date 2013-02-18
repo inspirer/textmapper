@@ -1,64 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<meta charset='utf-8'>
-	<title>{{ page.title }}</title>
-	<link href="/style.css" rel="stylesheet" type="text/css"/>
-	<script type="text/javascript">
-	var _gaq = _gaq || [];
-	_gaq.push(['_setAccount', 'UA-1480373-7']); _gaq.push(['_trackPageview']);
-	(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	})();
-	</script>
+    <meta charset="utf-8">
+    <title>{{ page.title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Textmapper - Lexer and parser generator">
+    <meta name="author" content="Evgeny Gryaznov, egryaznov@gmail.com">
+
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/textmapper.css" rel="stylesheet">
+
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="/img/favicon.png">
 </head>
+
 <body>
-<div class="wrap">
-<div id="header">
-	<div id="logo">
-		<h1><a href="#">lapg</a></h1>
-		<h2>lexer and parser generator</h2>
-	</div>
-	<div id="menu">
-		<ul>
-			<li><a href="/index.html">Home</a></li>
-			<li><a href="/download.html">Download</a></li>
-			<li><a href="/manual/index.html">Help</a></li>
-		</ul>
-	</div>
-</div>
+<a href="https://github.com/inspirer/textmapper"><img style="position: absolute; top: 0; right: 0; border: 0;"
+                                                      src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"
+                                                      alt="Fork me on GitHub"></a>
 
-<div id="page">
-{% if page.sidebar %}
-	<div id="content">
-		{{ content }}
-	</div>
-	<div id="sidebar">
-		<a href="/images/lapg_eclipse.png" target="_blank"
-		   onclick="if(navigator.userAgent.toLowerCase().indexOf('opera') != -1 && window.event.preventDefault) window.event.preventDefault();this.newWindow = window.open('/images/lapg_eclipse.png', 'lapg_eclipse', 'toolbar=0,scrollbars=0,location=0,status=0,menubar=0,width=937,height=590,resizable=0');this.newWindow.focus();this.newWindow.opener=window;return false;"
-				><img src="/images/lapg_eclipse.jpg"/></a>
+<div class="container-narrow">
 
-		<br/>
-		<br/>
+    <div class="masthead">
+        <ul class="nav nav-pills pull-right">
+            <li{% if page.kind == 'home' %} class="active"{% endif %}><a href="index.html">Home</a></li>
+            <li{% if page.kind == 'download' %} class="active"{% endif %}><a href="download.html">Download</a></li>
+            <li{% if page.kind == 'documentation' %} class="active"{% endif %}><a href="documentation.html">Documentation</a></li>
+        </ul>
+        <h3 class="muted">Textmapper</h3>
+    </div>
+{% if page.kind == 'home' %}
+    <hr>
 
-		<a href="/images/lapg_idea.png" target="_blank"
-		   onclick="if(navigator.userAgent.toLowerCase().indexOf('opera') != -1 && window.event.preventDefault) window.event.preventDefault();this.newWindow = window.open('/images/lapg_idea.png', 'lapg_idea', 'toolbar=0,scrollbars=0,location=0,status=0,menubar=0,width=937,height=591,resizable=0');this.newWindow.focus();this.newWindow.opener=window;return false;"
-				><img src="/images/lapg_idea.jpg"/></a>
-	</div>
-{% else %}
-	<div id="widecontent">
-		{{ content }}
-	</div>
+    <div class="jumbotron">
+        <h1>Textmapper is coming soon!</h1>
+
+        <p class="lead">Although it is still a work in progress, you can try a pre-alpha version. Some planned features are missing but it works pretty well. Stay tuned by following me on Twitter or GitHub.</p>
+
+        <a href="https://twitter.com/textmapper" class="twitter-follow-button" data-show-count="false" data-size="large" data-dnt="true">Follow @textmapper</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+    </div>
 {% endif %}
-	<div style="clear: both;">&nbsp;</div>
-</div>
 
-<div class="empty_inner" style="">&#160;</div>
+    <hr>
+
+    <div class="row-fluid">
+        <div class="span12{% if page.kind == 'documentation' %} bs-docs-content{% endif %}">
+{{ content }}
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="footer">
+        <p>&copy; Evgeny Gryaznov 2013</p>
+    </div>
+
 </div>
-<div id="footer">
-	<p id="legal">(c) 2011 textmapper.org, Gryaznov Evgeny</p>
-</div>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="/js/bootstrap.min.js"></script>
 </body>
 </html>

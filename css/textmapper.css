@@ -1,0 +1,54 @@
+code, pre {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+    line-height: 18px;
+    color: #333333;
+}
+
+pre, p {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+p {
+    line-height: 21px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 30px;
+}
+
+h2 {
+    margin-top: 20px;
+}
+
+.bs-docs-content h2 {
+    border-bottom-color: rgb(204, 204, 204);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    font-size: 26px;
+}
+
+body {
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+.container-narrow {
+    margin: 0 auto;
+    max-width: 730px;
+}
+
+.container-narrow > hr {
+    margin: 30px 0;
+}
+
+.jumbotron {
+    margin: 60px 0;
+    text-align: center;
+}
+
+.jumbotron h1 {
+    font-size: 72px;
+    line-height: 1;
+}

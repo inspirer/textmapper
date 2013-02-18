@@ -1,10 +1,12 @@
 ---
 layout: default
-title: Lexer and Parser Generator - Lapg
-sidebar: true
+title: Textmapper &middot; Home
+kind: home
 ---
 
-Lapg is a combined lexer and parser generator.
+Textmapper is a tool for language development. It generates bottom-up parsers with complete infrastructure from a high-level, declarative specification. Textmapper spreads the generative approach onto different aspects of language design and tries to generate as much derived, boilerplate code as possible. With a little effort you get an abstract syntax tree, code formatters, and even full-featured editor plug-ins for major IDEs.
+
+Textmapper takes annotated context-free grammar and outputs a program able to parse the language defined by that grammar. Generated parsers are deterministic and employ LALR(1) parser tables. In grammar handling aspects it is very similar to Bison, with some additional features on top. If you are familiar with Bison, you won't get lost. Textmapper includes quite a sophisticated scanner generator (Unicode-aware, specified using regular expressions, almost flex/JFlex compatible).
 
 Some of the features are:
 
@@ -13,12 +15,10 @@ Some of the features are:
 * multiple input symbols
 * soft keywords
 * smart AST generation
-* Eclipse and IntelliJ IDEA integration plug-ins
-* option to parse without end-of-input marker
-* template language (purely functional)
+* option to parse without an end-of-input marker
 
 License:
 
-* Lapg - Apache 2
+* Textmapper - Apache 2
 * IntelliJ IDEA plug-in - GNU General Public License
 * Eclipse plug-in - Eclipse Public license

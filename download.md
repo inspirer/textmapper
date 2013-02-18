@@ -1,6 +1,7 @@
 ---
 layout: default
-title: Download - Lapg
+title: Textmapper &middot; Download
+kind: download
 ---
 
 Download
