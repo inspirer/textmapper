@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project basedir="." default="all" name="org.textmapper.tool">
+<project basedir=".." default="all" name="org.textmapper.tool">
 	<property name="tm.version" value="0.9.1"/>
 	<property name="tm.qualifier" value="SNAPSHOT"/>
 	<property name="suffix" value="${tm.version}"/>
 
-	<property name="debuglevel" value="source,lines,vars"/>
+	<property name="tm.dir" location="tm-tool"/>
+	<property name="tm.idea.dir" location="tm-idea"/>
+	<property name="tm.eclipse.dir" location="tm-eclipse"/>
+
+	<property name="build.folder" location="build"/>
+	<property name="debug.level" value="source,lines,vars"/>
 	<property name="target" value="1.5"/>
 	<property name="source" value="1.5"/>
 
@@ -12,11 +17,10 @@
 		<format property="tm.build.date" pattern="EEE MMM d HH:mm:ss z yyyy"/>
 	</tstamp>
 
-	<target name="all" depends="clean,test,deploy">
-	</target>
+	<target name="all" depends="clean, test, deploy" />
 
 	<target name="clean">
-		<delete dir="build"/>
+		<delete dir="${build.folder}"/>
 	</target>
 
 	<target name="rev" unless="tm.revision">
@@ -40,145 +44,6 @@
 		<echo message="revision: ${tm.revision}"/>
 	</target>
 
-	<target name="build" depends="rev">
-		<mkdir dir="build/bin"/>
-		<copy includeemptydirs="false" todir="build/bin">
-			<fileset dir="textmapper/src" excludes="**/*.java, **/*.s"/>
-			<fileset dir="lapg/src" excludes="**/*.java, **/*.s"/>
-			<fileset dir="templates/src" excludes="**/*.java, **/*.s"/>
-		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bin" source="${source}" target="${target}"
-			   includeantruntime="true">
-			<src path="textmapper/src"/>
-			<src path="lapg/src"/>
-			<src path="templates/src"/>
-		</javac>
-		<jar destfile="build/textmapper.jar">
-			<fileset dir="build/bin"/>
-			<manifest>
-				<attribute name="Main-Class" value="org.textmapper.tool.Tool"/>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${tm.build.date}"/>
-				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="TextMapper (a tool for language development)"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
-			</manifest>
-			<metainf dir="." includes="*.txt"/>
-		</jar>
-	</target>
-
-	<target name="buildsource" depends="rev">
-		<mkdir dir="build/src"/>
-		<copy includeemptydirs="false" todir="build/src">
-			<fileset dir="textmapper/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-			<fileset dir="lapg/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-			<fileset dir="templates/src" includes="**/*.java, **/*.s, **/*.ltp"/>
-		</copy>
-		<jar destfile="build/textmapper-src.jar">
-			<fileset dir="build/src"/>
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${tm.build.date}"/>
-				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="TextMapper (a tool for language development)"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
-			</manifest>
-			<metainf dir="." includes="*.txt"/>
-		</jar>
-	</target>
-
-	<target name="test" depends="build">
-		<mkdir dir="build/bintests"/>
-		<copy includeemptydirs="false" todir="build/bintests">
-			<fileset dir="textmapper/tests" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="lapg/tests" excludes="**/*.launch, **/*.java"/>
-			<fileset dir="templates/tests" excludes="**/*.launch, **/*.java"/>
-		</copy>
-		<javac debug="true" debuglevel="${debuglevel}" destdir="build/bintests" source="${source}" target="${target}"
-			   includeantruntime="false">
-			<classpath>
-				<pathelement location="build/textmapper.jar"/>
-				<fileset dir="libs" includes="junit*.jar"/>
-			</classpath>
-			<src path="textmapper/tests"/>
-			<src path="lapg/tests"/>
-			<src path="templates/tests"/>
-		</javac>
-		<mkdir dir="build/results"/>
-		<junit haltonfailure="yes" printsummary="true" dir="textmapper">
-			<batchtest fork="yes"
-					todir="build/results">
-				<fileset dir="lapg/tests">
-					<include name="**/*Test.java"/>
-				</fileset>
-				<fileset dir="textmapper/tests">
-					<include name="**/*Test.java"/>
-				</fileset>
-				<fileset dir="templates/tests">
-					<include name="**/*Test.java"/>
-				</fileset>
-			</batchtest>
-			<formatter type="xml"/>
-			<classpath>
-				<pathelement location="build/bintests"/>
-				<pathelement location="build/textmapper.jar"/>
-				<fileset dir="libs" includes="junit*.jar"/>
-			</classpath>
-		</junit>
-	</target>
-
-	<target name="deploy" depends="build,buildsource">
-		<copy file="build/textmapper.jar" tofile="libs/textmapper-${suffix}.jar"/>
-		<copy file="build/textmapper-src.jar" tofile="libs/textmapper-${suffix}-src.jar"/>
-		<copy file="build/textmapper.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}.jar"/>
-		<copy file="build/textmapper-src.jar" tofile="../tm-idea/org.textmapper.idea/lib/textmapper-${suffix}-src.jar"/>
-		<copy file="build/textmapper.jar" tofile="../tm-eclipse/plugins/org.textmapper/textmapper.jar"/>
-		<copy file="build/textmapper-src.jar" tofile="../tm-eclipse/plugins/org.textmapper/textmapper-src.jar"/>
-	</target>
-
-	<!-- TODO Lapg task
-	<target name="syntax">
-		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="libs/textmapper-0.9.1.jar"/>
-		<lapg source="syntax"/>
-	</target> -->
-
-	<target name="syntax">
-		<echo message="Lapg parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/tool/parser"/>
-		<echo message="Action parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="textmapper/src/org/textmapper/tool/parser/action"/>
-		<echo message="Regexp parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="lapg/src/org/textmapper/lapg/regex"/>
-		<echo message="Lapg templates parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/ast"/>
-		<echo message="Types parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/types"/>
-		<echo message="java parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/templates/java"/>
-		<echo message="XML parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true" dir="templates/src/org/textmapper/xml"/>
-		<echo message="Sample1 parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/a"/>
-		<echo message="Sample2 parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/b"/>
-		<echo message="States parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/states"/>
-		<echo message="lexeronly parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
-		<echo message="NLA test parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/nla">
-			<arg value="-e"/>
-		</java>
-		<echo message="unicode test parser"/>
-		<java jar="libs/textmapper-${suffix}.jar" fork="true"
-			  dir="textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
-	</target>
-
 	<target name="loadVars">
 		<property environment="env"/>
 		<fail message="Please, define IDEA_PATH environment variable" unless="env.IDEA_PATH"/>
@@ -190,7 +55,142 @@
 		<echo message="Plugins: ${ideaPlugins}"/>
 	</target>
 
-	<target name="plugin" depends="rev, loadVars">
+	<target name="build" depends="rev">
+		<mkdir dir="${build.folder}/java.out/textmapper"/>
+		<copy includeemptydirs="false" todir="${build.folder}/java.out/textmapper">
+			<fileset dir="${tm.dir}/textmapper/src" excludes="**/*.java, **/*.tm"/>
+			<fileset dir="${tm.dir}/lapg/src" excludes="**/*.java, **/*.tm"/>
+			<fileset dir="${tm.dir}/templates/src" excludes="**/*.java, **/*.tm"/>
+		</copy>
+		<javac debug="true" debuglevel="${debug.level}" destdir="${build.folder}/java.out/textmapper"
+			   source="${source}" target="${target}" includeantruntime="true">
+			<src path="${tm.dir}/textmapper/src"/>
+			<src path="${tm.dir}/lapg/src"/>
+			<src path="${tm.dir}/templates/src"/>
+		</javac>
+		<jar destfile="${build.folder}/textmapper.jar">
+			<fileset dir="${build.folder}/java.out/textmapper"/>
+			<manifest>
+				<attribute name="Main-Class" value="org.textmapper.tool.Tool"/>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper (a tool for language development)"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.dir}" includes="*.txt"/>
+		</jar>
+	</target>
+
+	<target name="source" depends="rev">
+		<mkdir dir="${build.folder}/java.src/textmapper"/>
+		<copy includeemptydirs="false" todir="${build.folder}/java.src/textmapper">
+			<fileset dir="${tm.dir}/textmapper/src" includes="**/*.java, **/*.tm, **/*.ltp"/>
+			<fileset dir="${tm.dir}/lapg/src" includes="**/*.java, **/*.tm, **/*.ltp"/>
+			<fileset dir="${tm.dir}/templates/src" includes="**/*.java, **/*.tm, **/*.ltp"/>
+		</copy>
+		<jar destfile="${build.folder}/textmapper-src.jar">
+			<fileset dir="${build.folder}/java.src/textmapper"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper (a tool for language development)"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.dir}" includes="*.txt"/>
+		</jar>
+	</target>
+
+	<target name="build.tests" depends="build">
+		<mkdir dir="${build.folder}/java.out/textmapper.tests"/>
+		<copy includeemptydirs="false" todir="${build.folder}/java.out/textmapper.tests">
+			<fileset dir="${tm.dir}/textmapper/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="${tm.dir}/lapg/tests" excludes="**/*.launch, **/*.java"/>
+			<fileset dir="${tm.dir}/templates/tests" excludes="**/*.launch, **/*.java"/>
+		</copy>
+		<javac debug="true" debuglevel="${debug.level}" destdir="${build.folder}/java.out/textmapper.tests"
+			   source="${source}" target="${target}" includeantruntime="false">
+			<classpath>
+				<pathelement location="${build.folder}/textmapper.jar"/>
+				<fileset dir="${tm.dir}/libs" includes="junit*.jar"/>
+			</classpath>
+			<src path="${tm.dir}/textmapper/tests"/>
+			<src path="${tm.dir}/lapg/tests"/>
+			<src path="${tm.dir}/templates/tests"/>
+		</javac>
+	</target>
+
+	<target name="test" depends="build.tests">
+		<mkdir dir="${build.folder}/results"/>
+		<junit haltonfailure="yes" printsummary="true" dir="${tm.dir}/textmapper" logfailedtests="true">
+			<batchtest fork="yes" todir="${build.folder}/results">
+				<fileset dir="${tm.dir}/lapg/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
+				<fileset dir="${tm.dir}/textmapper/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
+				<fileset dir="${tm.dir}/templates/tests">
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+			<formatter type="xml"/>
+			<classpath>
+				<pathelement location="${build.folder}/java.out/textmapper.tests"/>
+				<pathelement location="${build.folder}/textmapper.jar"/>
+				<fileset dir="${tm.dir}/libs" includes="junit*.jar"/>
+			</classpath>
+		</junit>
+	</target>
+
+	<target name="deploy" depends="build, source">
+		<copy file="${build.folder}/textmapper.jar"     tofile="${tm.dir}/libs/textmapper-${suffix}.jar"/>
+		<copy file="${build.folder}/textmapper-src.jar" tofile="${tm.dir}/libs/textmapper-${suffix}-src.jar"/>
+		<copy file="${build.folder}/textmapper.jar"     tofile="${tm.idea.dir}/org.textmapper.idea/lib/textmapper-${suffix}.jar"/>
+		<copy file="${build.folder}/textmapper-src.jar" tofile="${tm.idea.dir}/org.textmapper.idea/lib/textmapper-${suffix}-src.jar"/>
+		<copy file="${build.folder}/textmapper.jar"     tofile="${tm.eclipse.dir}/plugins/org.textmapper/textmapper.jar"/>
+		<copy file="${build.folder}/textmapper-src.jar" tofile="${tm.eclipse.dir}/plugins/org.textmapper/textmapper-src.jar"/>
+	</target>
+
+	<!-- TODO Lapg task
+	<target name="syntax">
+		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="${tm.dir}/libs/textmapper-0.9.1.jar"/>
+		<lapg source="syntax"/>
+	</target> -->
+
+	<target name="syntax">
+		<echo message="Lapg parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser"/>
+		<echo message="Action parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser/action"/>
+		<echo message="Regexp parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/lapg/src/org/textmapper/lapg/regex"/>
+		<echo message="Lapg templates parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/templates/ast"/>
+		<echo message="Types parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/templates/types"/>
+		<echo message="java parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/templates/java"/>
+		<echo message="XML parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/xml"/>
+		<echo message="Sample1 parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/a"/>
+		<echo message="Sample2 parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/b"/>
+		<echo message="States parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/states"/>
+		<echo message="lexeronly parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
+		<echo message="NLA test parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/nla">
+			<arg value="-e"/>
+		</java>
+		<echo message="unicode test parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
+	</target>
+
+	<target name="compile-plugin" depends="rev, loadVars">
 		<path id="javac2.classpath">
 			<pathelement location="${ideaPath}/lib/javac2.jar"/>
 			<pathelement location="${ideaPath}/lib/jdom.jar"/>
@@ -200,103 +200,107 @@
 		</path>
 		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
 
-		<!-- prepare -->
-		<delete dir="build/textmapper"/>
-		<copy includeemptydirs="false" todir="build/textmapper">
-			<fileset dir="../tm-idea/org.textmapper.idea" includes="lib/**" excludes="lib/.libraries"/>
-		</copy>
-
 		<!-- tm-common.jar -->
-		<mkdir dir="build/textmapper/common-classes"/>
-		<javac2 destdir="build/textmapper/common-classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
-			<src path="../tm-idea/org.textmapper.idea/common/src"/>
+		<mkdir dir="${build.folder}/java.out/tm-idea-common"/>
+		<javac2 destdir="${build.folder}/java.out/tm-idea-common" source="${source}" target="${target}"
+				includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/common/src"/>
 			<classpath>
-				<fileset dir="build/textmapper/lib" includes="*.jar"/>
+				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 			</classpath>
 		</javac2>
-		<jar destfile="build/textmapper/lib/tm-common.jar">
-			<fileset dir="build/textmapper/common-classes"/>
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${tm.build.date}"/>
-				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA Commons"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
-			</manifest>
-			<metainf dir="../tm-idea" includes="LICENSE.txt"/>
-		</jar>
-		<delete dir="build/textmapper/common-classes"/>
 
 		<!-- jps/tm-jps-plugin.jar -->
-		<mkdir dir="build/textmapper/jps-classes"/>
-		<javac2 destdir="build/textmapper/jps-classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
-			<src path="../tm-idea/org.textmapper.idea/jps-plugin/src"/>
+		<mkdir dir="${build.folder}/java.out/tm-idea-jps"/>
+		<javac2 destdir="${build.folder}/java.out/tm-idea-jps" source="${source}" target="${target}"
+				includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/jps-plugin/src"/>
 			<classpath>
-				<fileset dir="build/textmapper/lib" includes="*.jar"/>
+				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 			</classpath>
 		</javac2>
-		<jar destfile="build/textmapper/lib/jps/tm-jps-plugin.jar">
-			<fileset dir="build/textmapper/jps-classes"/>
-			<manifest>
-				<attribute name="Built-By" value="${user.name}"/>
-				<attribute name="Built-Date" value="${tm.build.date}"/>
-				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA, JPS plug-in"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
-			</manifest>
-			<metainf dir="../tm-idea/org.textmapper.idea/jps-plugin/META-INF"/>
-		</jar>
-		<delete dir="build/textmapper/jps-classes"/>
 
 		<!-- tm-plugin.jar -->
-		<mkdir dir="build/textmapper/classes"/>
-		<copy includeemptydirs="false" todir="build/textmapper/classes">
-			<fileset dir="../tm-idea/org.textmapper.idea" includes="META-INF/plugin.xml"/>
-			<fileset dir="../tm-idea/org.textmapper.idea/resources"/>
+		<mkdir dir="${build.folder}/java.out/tm-idea-plugin"/>
+		<copy includeemptydirs="false" todir="${build.folder}/java.out/tm-idea-plugin">
+			<fileset dir="${tm.idea.dir}/org.textmapper.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="${tm.idea.dir}/org.textmapper.idea/resources"/>
 		</copy>
-		<javac2 destdir="build/textmapper/classes" source="${source}" target="${target}" includeantruntime="false" includejavaruntime="true">
-			<src path="../tm-idea/org.textmapper.idea/src"/>
+		<javac2 destdir="${build.folder}/java.out/tm-idea-plugin" source="${source}" target="${target}"
+				includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/src"/>
 			<classpath>
-				<fileset dir="build/textmapper/lib" includes="*.jar"/>
+				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 			</classpath>
 		</javac2>
-		<jar destfile="build/textmapper/lib/tm-plugin.jar">
-			<fileset dir="build/textmapper/classes"/>
+	</target>
+
+	<target name="plugin" depends="compile-plugin">
+		<copy includeemptydirs="false" todir="${build.folder}/tm-idea">
+			<fileset dir="${tm.idea.dir}/org.textmapper.idea" includes="lib/**" excludes="lib/.libraries"/>
+		</copy>
+
+		<jar destfile="${build.folder}/tm-idea/lib/tm-common.jar">
+			<fileset dir="${build.folder}/java.out/tm-idea-common"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
-				<attribute name="Implementation-Title" value="TextMapper for IntelliJ IDEA"/>
+				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA Commons"/>
 				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
-			<metainf dir="../tm-idea" includes="LICENSE.txt"/>
+			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
 		</jar>
-		<delete dir="build/textmapper/classes"/>
+		<jar destfile="${build.folder}/tm-idea/lib/jps/tm-jps-plugin.jar">
+			<fileset dir="${build.folder}/java.out/tm-idea-jps"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA, JPS plug-in"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.idea.dir}/org.textmapper.idea/jps-plugin/META-INF"/>
+		</jar>
+		<jar destfile="${build.folder}/tm-idea/lib/tm-plugin.jar">
+			<fileset dir="${build.folder}/java.out/tm-idea-plugin"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA"/>
+				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
+		</jar>
 	</target>
 
 	<target name="install-plugin" depends="loadVars, plugin">
 		<property name="pluginPath" value="${ideaPlugins}"/>
-		<delete dir="${pluginPath}/textmapper"/>
+		<delete dir="${pluginPath}/textmapper" quiet="true"/>
+		<echo message="Installing plug-in into ${pluginPath}/textmapper"/>
 		<copy includeemptydirs="false" todir="${pluginPath}/textmapper/">
-			<fileset dir="build/textmapper" includes="lib/**"/>
+			<fileset dir="${build.folder}/tm-idea" includes="lib/**"/>
 		</copy>
 	</target>
 
 	<target name="archive-plugin" depends="plugin">
-		<zip destfile="libs/tm-idea-${suffix}.zip">
-			<zipfileset dir="build" includes="textmapper/**"/>
-			<zipfileset file="../tm-idea/README.txt"/>
+		<zip destfile="${build.folder}/tm-idea-${suffix}.zip">
+			<zipfileset dir="${build.folder}/tm-idea" prefix="textmapper"/>
+			<zipfileset file="${tm.idea.dir}/README.txt"/>
 		</zip>
 	</target>
 
-	<target name="archive-lapg">
-		<zip destfile="libs/textmapper-${suffix}.zip">
-			<zipfileset file="libs/textmapper-${suffix}.jar"/>
-			<zipfileset file="libs/textmapper-${suffix}-src.jar"/>
-			<zipfileset file="libs/textmapper.sh"/>
+	<target name="archive-textmapper">
+		<zip destfile="${build.folder}/textmapper-${suffix}.zip">
+			<zipfileset file="${tm.dir}/libs/textmapper-${suffix}.jar" />
+			<zipfileset file="${tm.dir}/libs/textmapper-${suffix}-src.jar"/>
+			<zipfileset file="${tm.dir}/libs/textmapper.sh" filemode="755"/>
 		</zip>
 	</target>
 </project>
