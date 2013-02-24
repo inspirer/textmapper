@@ -29,6 +29,7 @@ public class LiRewriter {
 
 	/**
 	 * Finds list non-terminals and replaces their definition with RhsList.
+	 * (see rewrite.tm)
 	 */
 	public void rewriteLists() {
 		for (LiSymbol symbol : symbols) {
@@ -41,8 +42,8 @@ public class LiRewriter {
 			ListKind kind = getListKind(def);
 			if (kind != ListKind.NONE) {
 				RhsList list = createList(def, kind == ListKind.RIGHT_RECURSIVE);
-				// debug("Rewriting\n" + def.toString() + "\nwith\n" + list.toString() + "\n");
-				((LiRhsPart) def).rewrite(list);
+				// debug("Rewriting\n" + def.toString() + "\n" + "with\n" + list.toString() + "\n");
+				((LiRhsRoot) def).rewrite(list);
 			}
 		}
 	}
@@ -126,6 +127,7 @@ public class LiRewriter {
 				elements.add((LiRhsPart) ruleSeq[rightRecursive ? 0 : ruleSeq.length - 1]);
 			} else {
 				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
+				//noinspection SuspiciousSystemArraycopy
 				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
 				elements.add(new LiRhsSequence(LiRhsPart.copyOfArray(newArr), part));
 			}

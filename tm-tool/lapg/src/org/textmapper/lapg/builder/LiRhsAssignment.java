@@ -29,7 +29,7 @@ import java.util.List;
 class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 
 	private final String name;
-	private LiRhsPart inner;
+	private final LiRhsPart inner;
 	private final boolean addition;
 
 	LiRhsAssignment(String name, LiRhsPart inner, boolean isAddition, SourceElement origin) {
@@ -63,15 +63,6 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	@Override
 	public LiRhsPart copy() {
 		return new LiRhsAssignment(name, inner.copy(), addition, getOrigin());
-	}
-
-	@Override
-	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
-		if (inner == child) {
-			inner = newChild;
-			return true;
-		}
-		return false;
 	}
 
 	@Override

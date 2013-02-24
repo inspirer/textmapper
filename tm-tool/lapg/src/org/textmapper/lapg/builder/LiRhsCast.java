@@ -29,7 +29,7 @@ import java.util.List;
 class LiRhsCast extends LiRhsPart implements RhsCast {
 
 	private final Symbol asSymbol;
-	private LiRhsPart inner;
+	private final LiRhsPart inner;
 
 	LiRhsCast(Symbol asSymbol, LiRhsPart inner, SourceElement origin) {
 		super(origin);
@@ -55,15 +55,6 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	@Override
 	public LiRhsPart copy() {
 		return new LiRhsCast(asSymbol, inner.copy(), getOrigin());
-	}
-
-	@Override
-	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
-		if (inner == child) {
-			inner = newChild;
-			return true;
-		}
-		return false;
 	}
 
 	@Override

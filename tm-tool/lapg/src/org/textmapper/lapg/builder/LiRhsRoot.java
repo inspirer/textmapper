@@ -46,7 +46,6 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 		return null;
 	}
 
-	@Override
 	protected void rewrite(RhsPart part) {
 		if (!(part instanceof RhsRoot)) {
 			throw new IllegalArgumentException("cannot rewrite with a non-root part");

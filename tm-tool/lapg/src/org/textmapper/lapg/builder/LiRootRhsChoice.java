@@ -64,12 +64,6 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 		return result;
 	}
 
-	@Override
-	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
-		toArr();
-		return replaceInArray(rules, child, newChild);
-	}
-
 	private void toArr() {
 		if (rules == null) {
 			rules = rulesList.toArray(new LiRhsPart[rulesList.size()]);

@@ -57,11 +57,6 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
-	protected boolean replaceChild(LiRhsPart child, LiRhsPart newChild) {
-		return replaceInArray(parts, child, newChild);
-	}
-
-	@Override
 	public boolean structuralEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
