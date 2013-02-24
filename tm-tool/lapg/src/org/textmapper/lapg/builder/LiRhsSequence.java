@@ -34,10 +34,10 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
 	private final LiRhsPart[] parts;
 
-	LiRhsSequence(LiRhsPart[] parts, SourceElement origin) {
+	LiRhsSequence(LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
 		this.parts = parts;
-		register(parts);
+		register(isRewrite, parts);
 	}
 
 	@Override
@@ -111,11 +111,6 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseSequence(this);
-	}
-
-	@Override
-	public LiRhsSequence copy() {
-		return new LiRhsSequence(copyOfArray(parts), getOrigin());
 	}
 
 	@Override

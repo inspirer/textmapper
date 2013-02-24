@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * evgeny, 1/3/13
  */
-public class LiRhsList extends LiRhsRoot implements RhsList {
+class LiRhsList extends LiRhsRoot implements RhsList {
 
 	private final LiRhsPart element;
 	private final LiRhsPart separator;
@@ -32,9 +32,9 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	private final LiRhsPart customInitialElement;
 	private final boolean rightRecursive;
 
-	public LiRhsList(LiRhsPart element, LiRhsPart separator, boolean nonEmpty,
-					 LiRhsPart customInitialElement, boolean rightRecursive,
-					 SourceElement origin) {
+	LiRhsList(LiRhsPart element, LiRhsPart separator, boolean nonEmpty,
+			  LiRhsPart customInitialElement, boolean rightRecursive,
+			  boolean isRewrite, SourceElement origin) {
 		super(null, origin);
 		if (element == null) {
 			throw new NullPointerException();
@@ -50,7 +50,7 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 		this.nonEmpty = nonEmpty;
 		this.customInitialElement = customInitialElement;
 		this.rightRecursive = rightRecursive;
-		register(element, separator, customInitialElement);
+		register(isRewrite, element, separator, customInitialElement);
 	}
 
 	@Override
@@ -125,17 +125,6 @@ public class LiRhsList extends LiRhsRoot implements RhsList {
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseList(this);
-	}
-
-	@Override
-	public LiRhsList copy() {
-		return new LiRhsList(
-				element.copy(),
-				separator == null ? null : separator.copy(),
-				nonEmpty,
-				customInitialElement == null ? null : customInitialElement.copy(),
-				rightRecursive,
-				getOrigin());
 	}
 
 	@Override

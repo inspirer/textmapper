@@ -37,7 +37,7 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 		this.name = name;
 		this.inner = inner;
 		addition = isAddition;
-		register(inner);
+		register(false, inner);
 	}
 
 	@Override
@@ -58,11 +58,6 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	@Override
 	List<RhsSymbol[]> expand() {
 		return inner.expand();
-	}
-
-	@Override
-	public LiRhsPart copy() {
-		return new LiRhsAssignment(name, inner.copy(), addition, getOrigin());
 	}
 
 	@Override

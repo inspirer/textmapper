@@ -34,7 +34,7 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	LiRhsUnordered(LiRhsPart[] parts, SourceElement origin) {
 		super(origin);
 		this.parts = parts;
-		register(parts);
+		register(false, parts);
 	}
 
 	@Override
@@ -76,11 +76,6 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseUnordered(this);
-	}
-
-	@Override
-	public LiRhsUnordered copy() {
-		return new LiRhsUnordered(copyOfArray(parts), getOrigin());
 	}
 
 	@Override

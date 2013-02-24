@@ -20,8 +20,6 @@ import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsAssignment;
-import org.textmapper.lapg.api.rule.RhsOptional;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.templates.api.EvaluationContext;
@@ -176,7 +174,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(String id) throws EvaluationException {
 			ActionSymbol result = null;
-			Set<RhsSymbol> matching = RuleUtil.getSymbols(id, rule.getSource());
+			Set<RhsSymbol> matching = RuleUtil.getSymbolsByName(id, rule.getSource());
 			if (matching == null || matching.isEmpty()) {
 				throw new EvaluationException("symbol `" + id + "' is " + (matching == null ? "undefined" : "ambiguous"));
 			}
@@ -249,17 +247,9 @@ public class GrammarIxFactory extends JavaIxFactory {
 		@Override
 		public Object getProperty(String propertyName) throws EvaluationException {
 			if ("alias".equals(propertyName)) {
-				// TODO remove hack (parent may become null)
-				// TODO left for compatibility with old logic deriving AST in templates
-				RhsPart parent = sym.getParent();
-				if (parent instanceof RhsOptional) {
-					parent = parent.getParent();
-				}
-				if (parent instanceof RhsAssignment) {
-					RhsAssignment a = (RhsAssignment) parent;
-					if (!a.isAddition()) {
-						return a.getName();
-					}
+				final RhsAssignment assignment = RuleUtil.getAssignment(sym);
+				if (assignment != null && !assignment.isAddition()) {
+					return assignment.getName();
 				}
 				return null;
 			}

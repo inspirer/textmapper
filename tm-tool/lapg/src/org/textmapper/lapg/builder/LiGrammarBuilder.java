@@ -250,7 +250,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
-		LiRhsChoice result = new LiRhsChoice(liparts, origin);
+		LiRhsChoice result = new LiRhsChoice(liparts, false, origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -263,7 +263,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
-		LiRhsSequence result = new LiRhsSequence(liparts, origin);
+		LiRhsSequence result = new LiRhsSequence(liparts, false, origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -303,7 +303,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (!nonEmpty && separator != null) {
 			throw new IllegalArgumentException("list with separator should have at least one element");
 		}
-		LiRhsList result = new LiRhsList((LiRhsPart) inner, (LiRhsPart) separator, nonEmpty, null, false, origin);
+		LiRhsList result = new LiRhsList((LiRhsPart) inner, (LiRhsPart) separator, nonEmpty, null, false, false, origin);
 		rhsSet.add(result);
 		return result;
 	}

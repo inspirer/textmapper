@@ -98,12 +98,6 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	}
 
 	@Override
-	public LiRootRhsChoice copy() {
-		toArr();
-		return new LiRootRhsChoice(copyOfArray(rules), getLeft());
-	}
-
-	@Override
 	protected void toString(StringBuilder sb) {
 		toArr();
 		if (rules.length >= 1) {

@@ -53,11 +53,6 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	}
 
 	@Override
-	public LiRhsPart copy() {
-		return new LiRhsCast(asSymbol, inner.copy(), getOrigin());
-	}
-
-	@Override
 	public boolean structuralEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

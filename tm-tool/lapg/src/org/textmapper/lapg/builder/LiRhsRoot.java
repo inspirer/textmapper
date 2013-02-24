@@ -41,17 +41,11 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 		this.left = left;
 	}
 
-	@Override
-	public RhsPart getParent() {
-		return null;
-	}
-
 	protected void rewrite(RhsPart part) {
 		if (!(part instanceof RhsRoot)) {
 			throw new IllegalArgumentException("cannot rewrite with a non-root part");
 		}
 		((LiNonterminal) left).rewriteDefinition(this, part);
-		left = null;
 	}
 
 	@Override

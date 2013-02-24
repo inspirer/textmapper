@@ -15,7 +15,10 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.InputRef;
+import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.SourceElement;
 
 /**
  * Gryaznov Evgeny, 3/16/11

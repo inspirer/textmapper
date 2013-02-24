@@ -43,20 +43,13 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		return origin;
 	}
 
-	protected final void register(LiRhsPart... children) {
+	protected final void register(boolean isRewrite, LiRhsPart... children) {
 		for (LiRhsPart part : children) {
-			if (part != null) {
+			if (part != null && (!isRewrite || part.parent == null)) {
 				part.setParent(this);
 			}
 		}
 	}
-
-
-	/**
-	 * TODO either get rid of copy, or override equals and hide getParent (copy breaks ==)
-	 */
-	@Override
-	public abstract LiRhsPart copy();
 
 	protected void setParent(LiRhsPart parent) {
 		if (this.parent != null && this.parent != parent) {
@@ -70,28 +63,15 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 	public abstract int structuralHashCode();
 
 	@Override
-	public RhsPart getParent() {
-		return parent;
-	}
-
-	@Override
 	public Nonterminal getLeft() {
-		RhsPart part = getParent();
+		RhsPart part = parent;
 		while (part != null) {
 			if (part instanceof RhsRoot) {
 				return part.getLeft();
 			}
-			part = part.getParent();
+			part = ((LiRhsPart) part).parent;
 		}
 		return null;
-	}
-
-	protected static LiRhsPart[] copyOfArray(LiRhsPart[] parts) {
-		LiRhsPart[] copies = new LiRhsPart[parts.length];
-		for (int i = 0; i < parts.length; i++) {
-			copies[i] = parts[i].copy();
-		}
-		return copies;
 	}
 
 	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {

@@ -87,7 +87,7 @@ public class RuleUtil {
 	/**
 	 * @return null if undefined, empty set if ambiguous
 	 */
-	public static Set<RhsSymbol> getSymbols(final String name, RhsPart p) {
+	public static Set<RhsSymbol> getSymbolsByName(final String name, RhsPart p) {
 		boolean aliasesOnly = p.accept(new AnySwitchBase() {
 			@Override
 			public Boolean caseAssignment(RhsAssignment p1) {
@@ -211,6 +211,9 @@ public class RuleUtil {
 		if (part instanceof RhsOptional) {
 			part = ((RhsOptional) part).getPart();
 		}
+		if (part instanceof RhsCast) {
+			part = ((RhsCast) part).getPart();
+		}
 		return part instanceof RhsSymbol && !p.isAddition() ? (RhsSymbol) part : null;
 	}
 
@@ -264,5 +267,70 @@ public class RuleUtil {
 		public Boolean caseCast(RhsCast p) {
 			return p.getPart().accept(this);
 		}
+	}
+
+	/**
+	 * used by old logic deriving AST in templates
+	 * TODO remove
+	 */
+	@Deprecated
+	public static RhsAssignment getAssignment(final RhsSymbol symbol) {
+		assert symbol.getLeft() != null;
+		return symbol.getLeft().getDefinition().accept(new RhsSwitch<RhsAssignment>() {
+
+			public RhsAssignment caseFirst(RhsPart... parts) {
+				for (RhsPart p : parts) {
+					final RhsAssignment result = p != null ? p.accept(this) : null;
+					if (result != null) {
+						return result;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			public RhsAssignment caseChoice(RhsChoice p) {
+				return caseFirst(p.getParts());
+			}
+
+			@Override
+			public RhsAssignment caseOptional(RhsOptional p) {
+				return p.getPart().accept(this);
+			}
+
+			@Override
+			public RhsAssignment caseSequence(RhsSequence p) {
+				return caseFirst(p.getParts());
+			}
+
+			@Override
+			public RhsAssignment caseSymbol(RhsSymbol p) {
+				return null;
+			}
+
+			@Override
+			public RhsAssignment caseUnordered(RhsUnordered p) {
+				return caseFirst(p.getParts());
+			}
+
+			@Override
+			public RhsAssignment caseAssignment(RhsAssignment p) {
+				RhsSymbol assignmentSymbol = getAssignmentSymbol(p);
+				if (assignmentSymbol == symbol) {
+					return p;
+				}
+				return null;
+			}
+
+			@Override
+			public RhsAssignment caseList(RhsList p) {
+				return caseFirst(p.getElement(), p.getCustomInitialElement());
+			}
+
+			@Override
+			public RhsAssignment caseCast(RhsCast p) {
+				return p.getPart().accept(this);
+			}
+		});
 	}
 }

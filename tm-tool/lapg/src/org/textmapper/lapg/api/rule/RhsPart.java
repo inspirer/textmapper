@@ -26,11 +26,7 @@ public interface RhsPart extends SourceElement, UserDataHolder {
 
 	Nonterminal getLeft();
 
-	RhsPart getParent();
-
 	Object structuralNode();
 
 	<T> T accept(RhsSwitch<T> switch_);
-
-	RhsPart copy();
 }

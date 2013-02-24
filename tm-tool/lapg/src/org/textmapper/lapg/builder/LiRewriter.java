@@ -129,7 +129,7 @@ public class LiRewriter {
 				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
 				//noinspection SuspiciousSystemArraycopy
 				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
-				elements.add(new LiRhsSequence(LiRhsPart.copyOfArray(newArr), part));
+				elements.add(new LiRhsSequence(newArr, true, part));
 			}
 		}
 
@@ -148,7 +148,7 @@ public class LiRewriter {
 			emptyRule = null;
 		}
 
-		return new LiRhsList(element, merge(separator, MergeStrategy.SEQUENCE), emptyRule == null, customInitialElement, rightRecursive, def);
+		return new LiRhsList(element, merge(separator, MergeStrategy.SEQUENCE), emptyRule == null, customInitialElement, rightRecursive, true, def);
 	}
 
 	private static List<LiRhsSymbol> getCommonSeparator(Collection<LiRhsSequence> listRules, boolean rightRecursive) {
@@ -203,12 +203,12 @@ public class LiRewriter {
 
 		final LiRhsPart first = parts.get(0);
 		if (parts.size() == 1) {
-			return first.copy();
+			return first;
 		}
-		final LiRhsPart[] partsCopy = LiRhsPart.copyOfArray(parts.toArray(new LiRhsPart[parts.size()]));
+		final LiRhsPart[] partsArray = parts.toArray(new LiRhsPart[parts.size()]);
 		return strategy == MergeStrategy.CHOICE
-				? new LiRhsChoice(partsCopy, first)
-				: new LiRhsSequence(partsCopy, first);
+				? new LiRhsChoice(partsArray, true, first)
+				: new LiRhsSequence(partsArray, true, first);
 	}
 
 	private static Terminal asConstantTerminal(RhsPart part) {

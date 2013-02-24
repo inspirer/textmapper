@@ -87,11 +87,6 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
-	public LiRhsSymbol copy() {
-		return new LiRhsSymbol(target, negLA, getOrigin());
-	}
-
-	@Override
 	protected void toString(StringBuilder sb) {
 		// TODO negLA? mapping?
 		sb.append(target.getName());

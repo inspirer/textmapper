@@ -34,7 +34,7 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	public LiRhsOptional(LiRhsPart inner, SourceElement origin) {
 		super(origin);
 		this.inner = inner;
-		register(inner);
+		register(false, inner);
 	}
 
 	@Override
@@ -73,11 +73,6 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseOptional(this);
-	}
-
-	@Override
-	public LiRhsOptional copy() {
-		return new LiRhsOptional(inner.copy(), getOrigin());
 	}
 
 	@Override

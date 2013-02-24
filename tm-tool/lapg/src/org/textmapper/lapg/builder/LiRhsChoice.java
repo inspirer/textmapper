@@ -31,10 +31,10 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 
 	private final LiRhsPart[] parts;
 
-	LiRhsChoice(LiRhsPart[] parts, SourceElement origin) {
+	LiRhsChoice(LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
 		this.parts = parts;
-		register(parts);
+		register(isRewrite, parts);
 	}
 
 	@Override
@@ -67,11 +67,6 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseChoice(this);
-	}
-
-	@Override
-	public LiRhsChoice copy() {
-		return new LiRhsChoice(copyOfArray(parts), getOrigin());
 	}
 
 	@Override

@@ -15,9 +15,9 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.NamedPattern;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.regex.RegexPart;
 
 /**

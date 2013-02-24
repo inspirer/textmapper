@@ -15,7 +15,10 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.DerivedSourceElement;
+import org.textmapper.lapg.api.Prio;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Terminal;
 
 class LiPrio implements Prio, DerivedSourceElement {
 
