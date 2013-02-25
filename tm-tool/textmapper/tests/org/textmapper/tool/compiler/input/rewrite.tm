@@ -104,11 +104,17 @@ ElemSep6rr ::=
 	| Elem '{' '}' ElemSep6rr
 ;
 
-#EStar1 ::=
-#	| Elem
-#	| (Elem |  )  EStar1
-#;
+# TODO: fix; actual = ((EStar1$1 /rr)* (Elem | ()))
+EStar1 ::=
+	| Elem
+	| (Elem |  )  EStar1
+;
 
+# TODO: fix; actual = (((Elem)? /rr)* (Elem | ()))
+EStar2 ::=
+	| Elem
+	| Elem? EStar2
+;
 
 
 #ElemPlus5rr_ ::=

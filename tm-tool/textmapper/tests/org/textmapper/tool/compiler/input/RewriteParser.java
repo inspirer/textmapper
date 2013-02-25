@@ -28,8 +28,8 @@ public class RewriteParser {
 	private static final short[] lapg_lalr = RewriteLexer.unpack_short(4,
 		"\0\0\uffff\ufffe");
 
-	private static final short[] lapg_sym_goto = RewriteLexer.unpack_short(26,
-		"\0\1\1\1\1\1\1\1\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2");
+	private static final short[] lapg_sym_goto = RewriteLexer.unpack_short(29,
+		"\0\1\1\1\1\1\1\1\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2\2");
 
 	private static final short[] lapg_sym_from = RewriteLexer.unpack_short(2,
 		"\1\0");
@@ -37,13 +37,13 @@ public class RewriteParser {
 	private static final short[] lapg_sym_to = RewriteLexer.unpack_short(2,
 		"\2\1");
 
-	private static final short[] lapg_rlen = RewriteLexer.unpack_short(42,
+	private static final short[] lapg_rlen = RewriteLexer.unpack_short(51,
 		"\0\1\1\1\1\1\2\1\2\1\3\1\3\1\4\1\4\4\4\1\1\1\4\4\4\0\1\2\0\2\2\0\2\0\2\0\1\2\1\4" +
-		"\0\4");
+		"\0\4\0\1\1\0\2\0\1\2\1");
 
-	private static final short[] lapg_rlex = RewriteLexer.unpack_short(42,
+	private static final short[] lapg_rlex = RewriteLexer.unpack_short(51,
 		"\7\10\10\11\12\13\13\14\14\15\15\16\16\17\17\20\20\20\20\21\21\21\21\21\21\22\22" +
-		"\22\23\23\23\24\24\25\25\26\26\26\27\27\30\30");
+		"\22\23\23\23\24\24\25\25\26\26\26\27\27\30\30\31\31\33\33\31\32\32\32\32");
 
 	protected static final String[] lapg_syms = new String[] {
 		"eoi",
@@ -71,6 +71,9 @@ public class RewriteParser {
 		"ElemStar4rr",
 		"ElemPlus5rr",
 		"ElemSep6rr",
+		"EStar1",
+		"EStar2",
+		"EStar1$1",
 	};
 
 	public interface Tokens extends Lexems {
@@ -93,6 +96,9 @@ public class RewriteParser {
 		public static final int ElemStar4rr = 22;
 		public static final int ElemPlus5rr = 23;
 		public static final int ElemSep6rr = 24;
+		public static final int EStar1 = 25;
+		public static final int EStar2 = 26;
+		public static final int EStar1DOLLAR1 = 27;
 	}
 
 	protected final int lapg_next(int state) {
