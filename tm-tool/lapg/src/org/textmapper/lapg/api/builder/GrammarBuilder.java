@@ -16,8 +16,10 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
 import org.textmapper.lapg.api.ast.AstModel;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 
@@ -69,7 +71,9 @@ public interface GrammarBuilder {
 
 	void link(AstModel ast);
 
-	void map(RhsSymbol symbol, AstField field);
+	void map(Symbol symbol, AstType type);
+
+	void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition);
 
 	Grammar create();
 }

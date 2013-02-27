@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.rule.RhsMapping;
 import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -30,7 +30,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	private final Symbol target;
 	private final NegativeLookahead negLA;
-	private AstField mapping;
+	private LiRhsMapping mapping;
 
 	public LiRhsSymbol(Symbol target, NegativeLookahead negLA, SourceElement origin) {
 		super(origin);
@@ -51,11 +51,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
-	public AstField getMapping() {
+	public RhsMapping getMapping() {
 		return mapping;
 	}
 
-	void setMapping(AstField mapping) {
+	void setMapping(LiRhsMapping mapping) {
 		this.mapping = mapping;
 	}
 

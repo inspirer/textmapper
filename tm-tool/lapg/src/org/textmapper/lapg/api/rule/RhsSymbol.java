@@ -17,7 +17,6 @@ package org.textmapper.lapg.api.rule;
 
 import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.ast.AstField;
 
 /**
  * evgeny, 11/24/12
@@ -30,5 +29,5 @@ public interface RhsSymbol extends RhsPart {
 
 	Symbol getTarget();
 
-	AstField getMapping();
+	RhsMapping getMapping();
 }

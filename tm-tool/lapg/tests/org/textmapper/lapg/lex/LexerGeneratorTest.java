@@ -18,6 +18,7 @@ package org.textmapper.lapg.lex;
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -297,6 +298,11 @@ public class LexerGeneratorTest {
 				@Override
 				public Iterable<RhsSymbol> getUsages() {
 					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public AstType getMapping() {
+					return null;
 				}
 
 				@Override

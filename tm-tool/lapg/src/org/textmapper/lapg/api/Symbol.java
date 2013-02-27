@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.api;
 
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 public interface Symbol extends SourceElement, UserDataHolder {
@@ -31,4 +32,6 @@ public interface Symbol extends SourceElement, UserDataHolder {
 	boolean isTerm();
 
 	Iterable<RhsSymbol> getUsages();
+
+	AstType getMapping();
 }

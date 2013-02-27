@@ -16,9 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.ast.AstClass;
-import org.textmapper.lapg.api.ast.AstField;
-import org.textmapper.lapg.api.ast.AstModel;
+import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
@@ -358,10 +356,37 @@ class LiGrammarBuilder implements GrammarBuilder {
 	}
 
 	@Override
-	public void map(RhsSymbol symbol, AstField field) {
+	public void map(Symbol symbol, AstType type) {
+		check(symbol);
+		// TODO check(type);
+		((LiSymbol) symbol).setMapping(type);
+	}
+
+	@Override
+	public void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition) {
 		check(symbol, false);
 		check(field);
-		((LiRhsSymbol) symbol).setMapping(field);
+		final AstType nontermType = symbol.getLeft().getMapping();
+		if (nontermType == null) {
+			throw new IllegalArgumentException("cannot map symbol, map nonterminal first");
+		}
+		if (field != null && nontermType != field.getContainingClass()) {
+			throw new IllegalArgumentException("field should be from the nonterminal class");
+		}
+		AstType type = field != null ? field.getType() : nontermType;
+		if (isAddition) {
+			if (!(type instanceof AstList)) {
+				throw new IllegalArgumentException("addition is applicable only to list types");
+			}
+			type = ((AstList) type).getInner();
+		}
+		if (value != null && type != value.getContainingEnum()) {
+			throw new IllegalArgumentException(
+					"enumeration value should match " + (field != null
+							? "the field type"
+							: "the nonterminal type"));
+		}
+		((LiRhsSymbol) symbol).setMapping(new LiRhsMapping(field, value, isAddition));
 	}
 
 	@Override
