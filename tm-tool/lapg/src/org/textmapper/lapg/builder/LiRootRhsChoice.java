@@ -37,11 +37,6 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 		rulesList = new ArrayList<LiRhsPart>();
 	}
 
-	private LiRootRhsChoice(LiRhsPart[] rules, Nonterminal left) {
-		super(left, null);
-		this.rules = rules;
-	}
-
 	void addRule(LiRhsPart rule) {
 		toList();
 		rulesList.add(rule);

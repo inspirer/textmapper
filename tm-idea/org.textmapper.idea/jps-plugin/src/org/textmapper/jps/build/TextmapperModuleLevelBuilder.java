@@ -30,6 +30,8 @@ import org.jetbrains.jps.incremental.messages.BuildMessage.Kind;
 import org.jetbrains.jps.incremental.messages.CompilerMessage;
 import org.jetbrains.jps.incremental.messages.CustomBuilderMessage;
 import org.jetbrains.jps.incremental.messages.ProgressMessage;
+import org.jetbrains.jps.model.java.JpsJavaExtensionService;
+import org.jetbrains.jps.model.java.compiler.JpsJavaCompilerConfiguration;
 import org.textmapper.idea.compiler.*;
 import org.textmapper.jps.model.JpsTmExtensionService;
 import org.textmapper.jps.model.JpsTmModuleExtension;
@@ -152,12 +154,13 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 
 	private static List<Pair<TmCompilerTask, ModuleBuildTarget>> collectChangedFiles(CompileContext context,
 																					 DirtyFilesHolder<JavaSourceRootDescriptor, ModuleBuildTarget> dirtyFilesHolder) throws IOException {
-		final ResourcePatterns patterns = ResourcePatterns.KEY.get(context);
-		assert patterns != null;
+		final JpsJavaCompilerConfiguration configuration = JpsJavaExtensionService.getInstance().getCompilerConfiguration(context.getProjectDescriptor().getProject());
+		assert configuration != null;
+
 		final List<Pair<TmCompilerTask, ModuleBuildTarget>> toCompile = new ArrayList<Pair<TmCompilerTask, ModuleBuildTarget>>();
 		dirtyFilesHolder.processDirtyFiles(new FileProcessor<JavaSourceRootDescriptor, ModuleBuildTarget>() {
 			public boolean apply(ModuleBuildTarget target, File file, JavaSourceRootDescriptor sourceRoot) throws IOException {
-				if (TM_SOURCES_FILTER.accept(file) && !patterns.isResourceFile(file, sourceRoot.root)) {
+				if (TM_SOURCES_FILTER.accept(file) && !configuration.isResourceFile(file, sourceRoot.root)) {
 					JpsTmModuleExtension ext = JpsTmExtensionService.getInstance().getExtension(target.getModule());
 					if (ext != null) {
 						File outputDir = file.getParentFile();
