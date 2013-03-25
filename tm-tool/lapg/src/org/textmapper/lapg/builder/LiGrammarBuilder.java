@@ -16,7 +16,6 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
@@ -26,11 +25,10 @@ import java.util.*;
 /**
  * evgeny, 14.12.11
  */
-class LiGrammarBuilder implements GrammarBuilder {
+class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();
 
-	private final Set<Symbol> symbolsSet = new HashSet<Symbol>();
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
@@ -41,13 +39,12 @@ class LiGrammarBuilder implements GrammarBuilder {
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
 	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
-	private final Set<AstField> knownFields = new HashSet<AstField>();
-	private AstModel astModel;
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
 
 	public LiGrammarBuilder() {
+		super(null);
 		eoi = addTerminal(Symbol.EOI, null, null);
 	}
 
@@ -306,6 +303,7 @@ class LiGrammarBuilder implements GrammarBuilder {
 		return result;
 	}
 
+	@Override
 	void check(RhsPart part, boolean asChild) {
 		if (part == null) {
 			throw new NullPointerException();
@@ -316,77 +314,6 @@ class LiGrammarBuilder implements GrammarBuilder {
 		if (asChild && part instanceof RhsRoot) {
 			throw new IllegalArgumentException("right-hand side element cannot be nested");
 		}
-	}
-
-
-	void check(AstField field) {
-		if (field == null) {
-			throw new NullPointerException();
-		}
-		if (!knownFields.contains(field)) {
-			throw new IllegalArgumentException("unknown ast field passed");
-		}
-	}
-
-	void check(Symbol sym) {
-		if (sym == null) {
-			throw new NullPointerException();
-		}
-		if (!symbolsSet.contains(sym)) {
-			throw new IllegalArgumentException("unknown symbol passed");
-		}
-	}
-
-	@Override
-	public void link(AstModel ast) {
-		if (astModel != null) {
-			throw new IllegalStateException("cannot re-link ast model");
-		}
-		astModel = ast;
-		for (AstClass cl : astModel.getClasses()) {
-			link(cl);
-		}
-	}
-
-	private void link(AstClass cl) {
-		Collections.addAll(knownFields, cl.getFields());
-		for (AstClass inner : cl.getInner()) {
-			link(inner);
-		}
-	}
-
-	@Override
-	public void map(Symbol symbol, AstType type) {
-		check(symbol);
-		// TODO check(type);
-		((LiSymbol) symbol).setMapping(type);
-	}
-
-	@Override
-	public void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition) {
-		check(symbol, false);
-		check(field);
-		final AstType nontermType = symbol.getLeft().getMapping();
-		if (nontermType == null) {
-			throw new IllegalArgumentException("cannot map symbol, map nonterminal first");
-		}
-		if (field != null && nontermType != field.getContainingClass()) {
-			throw new IllegalArgumentException("field should be from the nonterminal class");
-		}
-		AstType type = field != null ? field.getType() : nontermType;
-		if (isAddition) {
-			if (!(type instanceof AstList)) {
-				throw new IllegalArgumentException("addition is applicable only to list types");
-			}
-			type = ((AstList) type).getInner();
-		}
-		if (value != null && type != value.getContainingEnum()) {
-			throw new IllegalArgumentException(
-					"enumeration value should match " + (field != null
-							? "the field type"
-							: "the nonterminal type"));
-		}
-		((LiRhsSymbol) symbol).setMapping(new LiRhsMapping(field, value, isAddition));
 	}
 
 	@Override

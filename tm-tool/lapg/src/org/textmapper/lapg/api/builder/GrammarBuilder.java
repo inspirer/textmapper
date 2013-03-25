@@ -16,16 +16,12 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.ast.AstEnumMember;
-import org.textmapper.lapg.api.ast.AstField;
-import org.textmapper.lapg.api.ast.AstModel;
-import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 
 import java.util.Collection;
 
-public interface GrammarBuilder {
+public interface GrammarBuilder extends GrammarMapper {
 
 	Terminal addTerminal(String name, String type, SourceElement origin);
 
@@ -68,12 +64,6 @@ public interface GrammarBuilder {
 
 	Prio addPrio(int prio, Collection<Terminal> symbols, SourceElement origin);
 
-
-	void link(AstModel ast);
-
-	void map(Symbol symbol, AstType type);
-
-	void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition);
 
 	Grammar create();
 }

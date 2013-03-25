@@ -20,12 +20,6 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public interface IAstNode extends TextSourceElement {
 
-	int getLine();
-
-	int getOffset();
-
-	int getEndOffset();
-
 	TextSource getInput();
 
 	void accept(AbstractVisitor v);

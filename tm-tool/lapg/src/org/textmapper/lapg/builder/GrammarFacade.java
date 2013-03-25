@@ -15,13 +15,19 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.builder.GrammarMapper;
 
 public class GrammarFacade {
 
 	public static GrammarBuilder createBuilder() {
 		return new LiGrammarBuilder();
+	}
+
+	public static GrammarMapper createMapper(Grammar grammar) {
+		return new LiGrammarMapper(grammar);
 	}
 
 	public static AstBuilder createAstBuilder() {

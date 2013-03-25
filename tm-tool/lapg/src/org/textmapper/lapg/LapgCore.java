@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.LexerData;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexMatcher;
 import org.textmapper.lapg.api.regex.RegexParseException;
@@ -38,6 +39,10 @@ public class LapgCore {
 
 	public static GrammarBuilder createBuilder() {
 		return GrammarFacade.createBuilder();
+	}
+
+	public static GrammarMapper createMapper(Grammar g) {
+		return GrammarFacade.createMapper(g);
 	}
 
 	public static ParserData generateParser(Grammar g, ProcessingStatus status) {
