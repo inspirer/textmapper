@@ -28,14 +28,12 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 
 	private int index;
 	private final String name;
-	private final String type;
 	private final SourceElement origin;
 	private final List<RhsSymbol> usages = new ArrayList<RhsSymbol>();
 	private AstType mapping;
 
-	protected LiSymbol(String name, String type, SourceElement origin) {
+	protected LiSymbol(String name, SourceElement origin) {
 		this.name = name;
-		this.type = type;
 		this.origin = origin;
 	}
 
@@ -49,22 +47,17 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	@Override
-	public AstType getMapping() {
+	public AstType getType() {
 		return mapping;
 	}
 
-	void setMapping(AstType mapping) {
+	void setType(AstType mapping) {
 		this.mapping = mapping;
 	}
 
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public String getType() {
-		return type;
 	}
 
 	@Override

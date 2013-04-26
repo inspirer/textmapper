@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.LexerData;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
+import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.regex.RegexContext;
@@ -43,6 +44,10 @@ public class LapgCore {
 
 	public static GrammarMapper createMapper(Grammar g) {
 		return GrammarFacade.createMapper(g);
+	}
+
+	public static AstBuilder createAstBuilder() {
+		return GrammarFacade.createAstBuilder();
 	}
 
 	public static ParserData generateParser(Grammar g, ProcessingStatus status) {

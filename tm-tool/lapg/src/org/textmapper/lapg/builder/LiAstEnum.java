@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.AstEnum;
 import org.textmapper.lapg.api.ast.AstEnumMember;
+import org.textmapper.lapg.api.ast.AstType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,5 +52,15 @@ class LiAstEnum extends LiUserDataHolder implements AstEnum, DerivedSourceElemen
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public boolean isSubtypeOf(AstType another) {
+		return this == another;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

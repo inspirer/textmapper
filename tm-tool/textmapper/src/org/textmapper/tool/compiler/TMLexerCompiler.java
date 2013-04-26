@@ -17,6 +17,8 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstRawType;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexMatcher;
@@ -252,7 +254,7 @@ public class TMLexerCompiler {
 				Terminal softClass = classRule.getSymbol();
 
 				String type = lexeme.getType();
-				String classtype = softClass.getType();
+				String classtype = getSymbolType(softClass);
 				if (type != null && !type.equals(classtype)) {
 					error(lexeme, "soft terminal `" + name + "' overrides base type: expected `"
 							+ (classtype == null ? "<no type>" : classtype) + "', found `" + type + "'");
@@ -275,6 +277,11 @@ public class TMLexerCompiler {
 			TMDataUtil.putCode(liLexerRule, lexeme.getCode());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
+	}
+
+	private static String getSymbolType(Symbol s) {
+		final AstType type = s.getType();
+		return type instanceof AstRawType ? ((AstRawType) type).getRawType() : null;
 	}
 
 	private static class RuleAttributes {

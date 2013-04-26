@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 
 import java.util.ArrayList;
@@ -32,8 +33,9 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	private Symbol softClass;
 	private List<LexerRule> rules = new ArrayList<LexerRule>();
 
-	public LiTerminal(String name, String type, SourceElement origin) {
-		super(name, type, origin);
+	public LiTerminal(String name, AstType type, SourceElement origin) {
+		super(name, origin);
+		setType(type);
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	}
 
 	@Override
-	public String getType() {
+	public AstType getType() {
 		if (softClass != null) {
 			return softClass.getType();
 		}

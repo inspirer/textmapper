@@ -301,7 +301,7 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public AstType getMapping() {
+				public AstType getType() {
 					return null;
 				}
 
@@ -322,11 +322,6 @@ public class LexerGeneratorTest {
 
 				@Override
 				public Iterable<LexerRule> getRules() {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public String getType() {
 					throw new UnsupportedOperationException();
 				}
 

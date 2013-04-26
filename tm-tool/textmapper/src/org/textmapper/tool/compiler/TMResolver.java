@@ -18,11 +18,15 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.LexerState;
 import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.ast.AstType;
+import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
@@ -40,6 +44,7 @@ public class TMResolver {
 
 	private final TMTree<AstRoot> tree;
 	private final GrammarBuilder builder;
+	private final AstBuilder rawTypesBuilder;
 
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
@@ -48,6 +53,7 @@ public class TMResolver {
 	public TMResolver(TMTree<AstRoot> tree, GrammarBuilder builder) {
 		this.tree = tree;
 		this.builder = builder;
+		this.rawTypesBuilder = GrammarFacade.createAstBuilder();
 	}
 
 	public TMTree<AstRoot> getTree() {
@@ -115,7 +121,7 @@ public class TMResolver {
 		for (AstLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof AstLexeme) {
 				AstLexeme lexeme = (AstLexeme) clause;
-				create(lexeme.getName(), lexeme.getType(), true);
+				create(lexeme.getName(), convertRawType(lexeme.getType(), lexeme), true);
 
 			} else if (clause instanceof AstNamedPattern) {
 				AstNamedPattern astpattern = (AstNamedPattern) clause;
@@ -137,16 +143,20 @@ public class TMResolver {
 		}
 	}
 
+	private AstType convertRawType(String type, SourceElement origin) {
+		return type == null ? null : rawTypesBuilder.rawType(type, origin);
+	}
+
 	private void collectNonterminals() {
 		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof AstNonTerm) {
 				AstNonTerm nonterm = (AstNonTerm) clause;
-				create(nonterm.getName(), nonterm.getType(), false);
+				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);
 			}
 		}
 	}
 
-	private Symbol create(AstIdentifier id, String type, boolean isTerm) {
+	private Symbol create(AstIdentifier id, AstType type, boolean isTerm) {
 		String name = id.getName();
 		if (symbolsMap.containsKey(name)) {
 			Symbol sym = symbolsMap.get(name);
@@ -159,7 +169,10 @@ public class TMResolver {
 			}
 			return sym;
 		} else {
-			Symbol sym = isTerm ? builder.addTerminal(name, type, id) : builder.addNonterminal(name, type, id);
+			Symbol sym = isTerm ? builder.addTerminal(name, type, id) : builder.addNonterminal(name, id);
+			if (type != null && !isTerm) {
+				builder.map((Nonterminal) sym, type);
+			}
 			symbolsMap.put(name, sym);
 			return sym;
 		}
@@ -175,7 +188,7 @@ public class TMResolver {
 		}
 		String name = base_ + index;
 
-		Symbol sym = builder.addNonterminal(name, null, source);
+		Symbol sym = builder.addNonterminal(name, source);
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;
@@ -188,7 +201,7 @@ public class TMResolver {
 			index++;
 		}
 		String name = index == 0 ? base_ : base_ + index;
-		Nonterminal sym = builder.addNonterminal(name, null, source);
+		Nonterminal sym = builder.addNonterminal(name, source);
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;

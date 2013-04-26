@@ -17,9 +17,10 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.ast.AstRawType;
 import org.textmapper.lapg.api.ast.AstType;
 
-class LiRawAstType implements AstType, DerivedSourceElement {
+class LiRawAstType implements AstRawType, DerivedSourceElement {
 
 	private final String type;
 	private final SourceElement origin;
@@ -29,11 +30,37 @@ class LiRawAstType implements AstType, DerivedSourceElement {
 		this.origin = origin;
 	}
 
+	@Override
 	public String getRawType() {
 		return type;
 	}
 
+	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public boolean isSubtypeOf(AstType another) {
+		return equals(another);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiRawAstType that = (LiRawAstType) o;
+		return type.equals(that.type);
+	}
+
+	@Override
+	public int hashCode() {
+		return type.hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return type;
 	}
 }

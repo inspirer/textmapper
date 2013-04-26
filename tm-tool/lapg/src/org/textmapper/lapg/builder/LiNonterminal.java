@@ -32,8 +32,8 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	private boolean isNullable;
 	private final List<Rule> rules = new ArrayList<Rule>();
 
-	public LiNonterminal(String name, String type, SourceElement origin) {
-		super(name, type, origin);
+	public LiNonterminal(String name, SourceElement origin) {
+		super(name, origin);
 	}
 
 	@Override

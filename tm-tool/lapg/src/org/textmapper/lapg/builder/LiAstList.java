@@ -46,4 +46,30 @@ class LiAstList implements AstList, DerivedSourceElement {
 	public SourceElement getOrigin() {
 		return origin;
 	}
+
+	@Override
+	public boolean isSubtypeOf(AstType another) {
+		return equals(another);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		LiAstList liAstList = (LiAstList) o;
+		return nonEmpty == liAstList.nonEmpty && innerType.equals(liAstList.innerType);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = innerType.hashCode();
+		result = 31 * result + (nonEmpty ? 1 : 0);
+		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "list<" + innerType.toString() + ">";
+	}
 }

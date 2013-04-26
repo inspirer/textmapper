@@ -16,6 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
@@ -48,7 +50,6 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 	}
 
-
 	final void check(Symbol sym) {
 		if (sym == null) {
 			throw new NullPointerException();
@@ -59,18 +60,38 @@ class LiGrammarMapper implements GrammarMapper {
 	}
 
 	@Override
-	public void map(Symbol symbol, AstType type) {
+	public void map(Nonterminal symbol, AstType type) {
 		check(symbol);
-		if (symbol.getMapping() != null) {
+		if (symbol.getType() != null) {
 			throw new IllegalArgumentException("cannot re-map symbol");
 		}
-		((LiSymbol) symbol).setMapping(type);
+		((LiSymbol) symbol).setType(type);
+	}
+
+	@Override
+	public void map(Rule rule, AstType type) {
+		if (rule == null) {
+			throw new NullPointerException();
+		}
+		final Nonterminal left = rule.getLeft();
+		check(left);
+		final AstType leftType = left.getType();
+		if (leftType == null) {
+			throw new IllegalArgumentException("map nonterminal first");
+		}
+		if (!type.isSubtypeOf(leftType)) {
+			throw new IllegalArgumentException("rule type should be a subtype of its non-terminal");
+		}
+		if (rule.getMapping() != null) {
+			throw new IllegalArgumentException("cannot re-map rule");
+		}
+		((LiRule) rule).setMapping(type);
 	}
 
 	@Override
 	public void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition) {
 		check(symbol, false);
-		final AstType nontermType = symbol.getLeft().getMapping();
+		final AstType nontermType = symbol.getLeft().getType();
 		if (nontermType == null) {
 			throw new IllegalArgumentException("cannot map symbol, map nonterminal first");
 		}

@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
@@ -49,13 +50,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Terminal addTerminal(String name, String type, SourceElement origin) {
+	public Terminal addTerminal(String name, AstType type, SourceElement origin) {
 		return addSymbol(new LiTerminal(name, type, origin));
 	}
 
 	@Override
-	public Nonterminal addNonterminal(String name, String type, SourceElement origin) {
-		return addSymbol(new LiNonterminal(name, type, origin));
+	public Nonterminal addNonterminal(String name, SourceElement origin) {
+		return addSymbol(new LiNonterminal(name, origin));
 	}
 
 	@Override

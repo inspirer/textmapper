@@ -31,8 +31,6 @@ class LiAstBuilder implements AstBuilder {
 	private final Set<String> usedGlobals = new HashSet<String>();
 
 	LiAstBuilder() {
-		mine.add(AstType.BOOL);
-		mine.add(AstType.STRING);
 	}
 
 	private void check(AstType type) {
@@ -58,16 +56,12 @@ class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public AstType rawType(String type, SourceElement origin) {
-		final LiRawAstType result = new LiRawAstType(type, origin);
-		mine.add(result);
-		return result;
+		return new LiRawAstType(type, origin);
 	}
 
 	@Override
 	public AstList list(AstType inner, boolean nonEmpty, SourceElement origin) {
-		final LiAstList result = new LiAstList(inner, nonEmpty, origin);
-		mine.add(result);
-		return result;
+		return new LiAstList(inner, nonEmpty, origin);
 	}
 
 	@Override

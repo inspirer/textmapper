@@ -27,11 +27,9 @@ public interface Symbol extends SourceElement, UserDataHolder {
 
 	String getName();
 
-	String getType();
+	AstType getType();
 
 	boolean isTerm();
 
 	Iterable<RhsSymbol> getUsages();
-
-	AstType getMapping();
 }

@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class GrammarFacadeTest {
 		Terminal id = builder.addTerminal("id", null, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
-		Nonterminal input = builder.addNonterminal("input", null, null);
+		Nonterminal input = builder.addNonterminal("input", null);
 		builder.addInput(input, true, null);
 		builder.addRule(null, input, builder.symbol(id, null, null), null);
 
@@ -104,7 +105,7 @@ public class GrammarFacadeTest {
 
 		LexerState initial = builder.addState("initial", null);
 
-		Terminal id = builder.addTerminal("id", "string", null);
+		Terminal id = builder.addTerminal("id", raw("string"), null);
 		LexerRule idLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, id, LapgCore.parse("id", "[a-z]+"), Collections.singleton(initial), 0, null, null);
 		Terminal kw = builder.addTerminal("kw", null, null);
 		builder.makeSoft(kw, id);
@@ -202,7 +203,7 @@ public class GrammarFacadeTest {
 		Terminal id = builder.addTerminal("id", null, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "[a-z][a-z0-9]+"), Collections.singleton(initial), 0, null, null);
 
-		Nonterminal input = builder.addNonterminal("input", null, null);
+		Nonterminal input = builder.addNonterminal("input", null);
 		builder.addInput(input, true, null);
 		builder.addRule(null, input, builder.symbol(id, null, null), id);
 
@@ -229,7 +230,7 @@ public class GrammarFacadeTest {
 		LexerState initial = builder.addState("initial", null);
 
 		builder.addPattern("pattern", LapgCore.parse("pattern", "[a-z]+"), null);
-		Terminal id = builder.addTerminal("id", "string", null);
+		Terminal id = builder.addTerminal("id", raw("string"), null);
 		builder.addLexerRule(LexerRule.KIND_NONE, id, LapgCore.parse("id", "{pattern}"), Collections.singleton(initial), 0, null, null);
 		Grammar grammar = builder.create();
 
@@ -247,5 +248,9 @@ public class GrammarFacadeTest {
 			assertEquals(expectedIterator.next(), actualIterator.next());
 		}
 		assertEquals(expectedIterator.hasNext(), actualIterator.hasNext());
+	}
+
+	private static AstType raw(String type) {
+		return GrammarFacade.createAstBuilder().rawType(type, null);
 	}
 }

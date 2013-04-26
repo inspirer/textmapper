@@ -15,28 +15,7 @@
  */
 package org.textmapper.lapg.api.ast;
 
-public interface AstType {
+public interface AstRawType extends AstType {
 
-	public static final AstType STRING = new PrimitiveType("string");
-	public static final AstType BOOL = new PrimitiveType("boolean");
-
-	boolean isSubtypeOf(AstType another);
-
-	static final class PrimitiveType implements AstType {
-		private final String name;
-
-		public PrimitiveType(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public boolean isSubtypeOf(AstType another) {
-			return another == this;
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
-	}
+	String getRawType();
 }

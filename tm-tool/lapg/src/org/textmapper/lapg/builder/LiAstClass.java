@@ -19,9 +19,9 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.AstClass;
 import org.textmapper.lapg.api.ast.AstField;
+import org.textmapper.lapg.api.ast.AstType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElement {
 
@@ -78,5 +78,35 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	@Override
 	public SourceElement getOrigin() {
 		return origin;
+	}
+
+	@Override
+	public boolean isSubtypeOf(AstType another) {
+		if (!(another instanceof AstClass)) return false;
+		AstClass cl = (AstClass) another;
+		if (this == cl) return true;
+
+		LinkedList<AstClass> queue = new LinkedList<AstClass>();
+		Set<AstClass> seen = new HashSet<AstClass>();
+		queue.addAll(Arrays.asList(getSuper()));
+		seen.addAll(queue);
+		seen.add(this);
+		AstClass next;
+		while ((next = queue.poll()) != null) {
+			if (cl == next) {
+				return true;
+			}
+			for (AstClass s : next.getSuper()) {
+				if (seen.add(s)) {
+					queue.add(s);
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return name;
 	}
 }

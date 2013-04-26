@@ -65,7 +65,7 @@ public class TMCompiler {
 		generateUniqueIds(g);
 
 		// TODO only when options.genast = true
-		new TMMapper(g).mapAST();
+		new TMMapper(g).deriveAST();
 
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
 	}

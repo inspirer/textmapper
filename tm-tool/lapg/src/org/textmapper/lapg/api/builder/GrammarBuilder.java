@@ -16,6 +16,7 @@
 package org.textmapper.lapg.api.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 
@@ -23,11 +24,11 @@ import java.util.Collection;
 
 public interface GrammarBuilder extends GrammarMapper {
 
-	Terminal addTerminal(String name, String type, SourceElement origin);
+	Terminal addTerminal(String name, AstType type, SourceElement origin);
 
 	void makeSoft(Terminal terminal, Terminal softClass);
 
-	Nonterminal addNonterminal(String name, String type, SourceElement origin);
+	Nonterminal addNonterminal(String name, SourceElement origin);
 
 	Terminal getEoi();
 

@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.junit.Test;
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 
 import java.util.Collections;
@@ -29,14 +30,14 @@ public class GrammarFacadeErrTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testErrorNullName() {
-		GrammarFacade.createBuilder().addTerminal(null, "string", null);
+		GrammarFacade.createBuilder().addTerminal(null, null, null);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testErrorDuplicateName() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addTerminal("sym", "string", null);
-		builder.addTerminal("sym", "string", null);
+		builder.addTerminal("sym", null, null);
+		builder.addTerminal("sym", null, null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -48,7 +49,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testWrongState() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal("sym", "string", null);
+		Terminal symbol = builder.addTerminal("sym", null, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.singletonList(GrammarFacade.createBuilder().addState("initial", null)), 0, null, null);
 	}
@@ -56,7 +57,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testNoStates() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal("sym", "string", null);
+		Terminal symbol = builder.addTerminal("sym", null, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, symbol, LapgCore.parse("id", "a"),
 				Collections.<LexerState>emptyList(), 0, null, null);
 	}
@@ -75,7 +76,7 @@ public class GrammarFacadeErrTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorCrossBuilderSymbols() throws Exception {
-		Terminal symbolFromAnotherBuilder = GrammarFacade.createBuilder().addTerminal("sym", "string", null);
+		Terminal symbolFromAnotherBuilder = GrammarFacade.createBuilder().addTerminal("sym", null, null);
 		GrammarFacade.createBuilder().addLexerRule(
 				LexerRule.KIND_NONE, symbolFromAnotherBuilder, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
@@ -83,14 +84,14 @@ public class GrammarFacadeErrTest {
 	@Test(expected = NullPointerException.class)
 	public void testErrorNoRegexp() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal term = builder.addTerminal("sym", "string", null);
+		Terminal term = builder.addTerminal("sym", null, null);
 		builder.addLexerRule(LexerRule.KIND_NONE, term, null, Collections.<LexerState>emptyList(), 0, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorSoftVsNonSoft() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal classterm = builder.addTerminal("id", "string", null);
+		Terminal classterm = builder.addTerminal("id", raw("string"), null);
 		Terminal softterm = builder.addTerminal("keyword", null, null);
 		builder.makeSoft(softterm, classterm);
 		builder.addLexerRule(LexerRule.KIND_NONE, softterm, LapgCore.parse("id", "a"), null, 0, null, null);
@@ -99,7 +100,7 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorSoftVsNonSoft2() throws Exception {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal term = builder.addTerminal("s", "s", null);
+		Terminal term = builder.addTerminal("s", raw("s"), null);
 		builder.addLexerRule(LexerRule.KIND_SOFT, term, LapgCore.parse("id", "a"), null, 0, null, null);
 	}
 
@@ -111,14 +112,14 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testErrorClassOfItself() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal symbol = builder.addTerminal("sym", "string", null);
+		Terminal symbol = builder.addTerminal("sym", raw("string"), null);
 		builder.makeSoft(symbol, symbol);
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testMakeSoftTwice() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal cl = builder.addTerminal("sym", "string", null);
+		Terminal cl = builder.addTerminal("sym", raw("string"), null);
 		Terminal symbol = builder.addTerminal("ssym", null, null);
 		builder.makeSoft(symbol, cl);
 		builder.makeSoft(symbol, cl);
@@ -127,8 +128,8 @@ public class GrammarFacadeErrTest {
 	@Test(expected = IllegalStateException.class)
 	public void testMakeSoftBadTypes() {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		Terminal cl = builder.addTerminal("sym", "string", null);
-		Terminal symbol = builder.addTerminal("ssym", "int", null);
+		Terminal cl = builder.addTerminal("sym", raw("string"), null);
+		Terminal symbol = builder.addTerminal("ssym", raw("int"), null);
 		builder.makeSoft(symbol, cl);
 	}
 
@@ -171,5 +172,9 @@ public class GrammarFacadeErrTest {
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addPattern("a", LapgCore.parse("a", "a"), null);
 		builder.addPattern("a", LapgCore.parse("b", "b"), null);
+	}
+
+	private static AstType raw(String type) {
+		return GrammarFacade.createAstBuilder().rawType(type, null);
 	}
 }

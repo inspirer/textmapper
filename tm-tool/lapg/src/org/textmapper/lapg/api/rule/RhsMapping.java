@@ -11,9 +11,12 @@ public interface RhsMapping {
 	AstField getField();
 
 	/**
-	 *  Only for fields with AstEnum type.
+	 * Only for fields with AstEnum type.
 	 */
 	AstEnumMember getValue();
 
+	/**
+	 * Only for fields with AstList type.
+	 */
 	boolean isAddition();
 }
