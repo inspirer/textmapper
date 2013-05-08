@@ -27,6 +27,7 @@ import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.builder.GrammarFacade;
+import org.textmapper.tool.common.ObjectUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
@@ -162,7 +163,7 @@ public class TMResolver {
 			Symbol sym = symbolsMap.get(name);
 			if (sym.isTerm() != isTerm) {
 				error(id, "redeclaration of " + (sym.isTerm() ? "terminal" : "non-terminal") + ": " + name);
-			} else if (!(UniqueNameHelper.safeEquals(sym.getType(), type))) {
+			} else if (!(ObjectUtil.safeEquals(sym.getType(), type))) {
 				error(id,
 						"redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of "
 								+ (sym.getType() == null ? "<empty>" : sym.getType()));

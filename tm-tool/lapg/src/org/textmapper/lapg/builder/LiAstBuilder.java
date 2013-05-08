@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
+import org.textmapper.lapg.common.FormatUtil;
 
 import java.util.*;
 
@@ -120,5 +121,23 @@ class LiAstBuilder implements AstBuilder {
 				classes.toArray(new AstClass[classes.size()]),
 				enums.toArray(new AstEnum[enums.size()]),
 				origin);
+	}
+
+	@Override
+	public String uniqueName(AstType type, String baseName, boolean isMember) {
+		assert FormatUtil.isIdentifier(baseName);
+
+		String name = FormatUtil.toCamelCase(baseName, !isMember);
+		Set<String> usedIdentifiers = type == null ? usedGlobals : usedNames.get(type);
+		if (usedIdentifiers == null) {
+			return name;
+		}
+
+		String result = name;
+		int i = 2;
+		while (usedIdentifiers.contains(result)) {
+			result = name + i++;
+		}
+		return result;
 	}
 }

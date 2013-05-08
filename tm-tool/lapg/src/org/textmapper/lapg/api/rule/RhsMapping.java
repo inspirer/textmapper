@@ -1,6 +1,5 @@
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
 
 /**
@@ -11,9 +10,10 @@ public interface RhsMapping {
 	AstField getField();
 
 	/**
-	 * Only for fields with AstEnum type.
+	 * Only for fields with AstEnum or primitive type.
+	 * Can be instanceof AstEnumMember, Integer, Boolean or String.
 	 */
-	AstEnumMember getValue();
+	Object getValue();
 
 	/**
 	 * Only for fields with AstList type.

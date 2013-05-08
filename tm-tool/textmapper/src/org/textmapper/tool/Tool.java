@@ -16,8 +16,8 @@
 package org.textmapper.tool;
 
 import org.textmapper.lapg.common.AbstractProcessingStatus;
-import org.textmapper.tool.common.FileBasedStrategy;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.tool.common.FileBasedStrategy;
 import org.textmapper.tool.common.GeneratedFile;
 import org.textmapper.tool.gen.LapgGenerator;
 import org.textmapper.tool.gen.LapgOptions;
@@ -26,7 +26,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 import java.io.*;
 
 /**
- * Main console entry point for Lapg engine.
+ * Main console entry point for Textmapper engine.
  */
 public class Tool {
 

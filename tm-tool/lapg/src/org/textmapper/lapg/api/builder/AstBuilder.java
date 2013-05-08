@@ -35,4 +35,6 @@ public interface AstBuilder {
 	void addExtends(AstClass cl, AstClass baseClass);
 
 	AstModel create(SourceElement origin);
+
+	String uniqueName(AstType context, String baseName, boolean isMember);
 }

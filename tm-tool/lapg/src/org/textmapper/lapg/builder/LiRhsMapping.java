@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
 import org.textmapper.lapg.api.rule.RhsMapping;
 
@@ -25,10 +24,10 @@ import org.textmapper.lapg.api.rule.RhsMapping;
 public class LiRhsMapping implements RhsMapping {
 
 	private final AstField field;
-	private final AstEnumMember value;
+	private final Object value;
 	private final boolean isAddition;
 
-	public LiRhsMapping(AstField field, AstEnumMember value, boolean addition) {
+	public LiRhsMapping(AstField field, Object value, boolean addition) {
 		this.field = field;
 		this.value = value;
 		isAddition = addition;
@@ -40,7 +39,7 @@ public class LiRhsMapping implements RhsMapping {
 	}
 
 	@Override
-	public AstEnumMember getValue() {
+	public Object getValue() {
 		return value;
 	}
 

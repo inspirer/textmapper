@@ -13,31 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.ast;
+package org.textmapper.tool.common;
 
-public interface AstType {
+public class ObjectUtil {
 
-	public static final AstType STRING = new PrimitiveType("string");
-	public static final AstType BOOL = new PrimitiveType("boolean");
-	public static final AstType INT = new PrimitiveType("int");
-
-	boolean isSubtypeOf(AstType another);
-
-	static final class PrimitiveType implements AstType {
-		private final String name;
-
-		public PrimitiveType(String name) {
-			this.name = name;
-		}
-
-		@Override
-		public boolean isSubtypeOf(AstType another) {
-			return another == this;
-		}
-
-		@Override
-		public String toString() {
-			return name;
-		}
+	public static boolean safeEquals(Object o1, Object o2) {
+		return o1 == null || o2 == null ? o1 == o2 : o1.equals(o2);
 	}
 }

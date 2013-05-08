@@ -89,7 +89,7 @@ class LiGrammarMapper implements GrammarMapper {
 	}
 
 	@Override
-	public void map(RhsSymbol symbol, AstField field, AstEnumMember value, boolean isAddition) {
+	public void map(RhsSymbol symbol, AstField field, Object value, boolean isAddition) {
 		check(symbol, false);
 		final AstType nontermType = symbol.getLeft().getType();
 		if (nontermType == null) {
@@ -105,11 +105,24 @@ class LiGrammarMapper implements GrammarMapper {
 			}
 			type = ((AstList) type).getInner();
 		}
-		if (value != null && type != value.getContainingEnum()) {
+		if (value != null && !(value instanceof AstEnumMember) && !(value instanceof Boolean)
+				&& !(value instanceof Integer) && !(value instanceof String)) {
+			throw new IllegalArgumentException("value must be AstEnumMember, Integer, Boolean or String");
+		}
+
+		if (value instanceof AstEnumMember && type != ((AstEnumMember) value).getContainingEnum()) {
 			throw new IllegalArgumentException(
 					"enumeration value should match " + (field != null
 							? "the field type"
 							: "the nonterminal type"));
+
+		} else if (value instanceof Boolean && type != AstType.BOOL
+				|| value instanceof String && type != AstType.STRING
+				|| value instanceof Integer && type != AstType.INT) {
+			throw new IllegalArgumentException(
+					"value should match " + (field != null
+							? "the field type"
+							: "the nonterminal type") + ", " + type + " is expected");
 		}
 		((LiRhsSymbol) symbol).setMapping(new LiRhsMapping(field, value, isAddition));
 	}

@@ -185,6 +185,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			check(prio);
 		}
 
+		rhs.putUserData(RhsPart.RULE_ALIAS, alias);
 		LiRhsPart right = (LiRhsPart) rhs;
 		List<RhsSymbol[]> expanded = right.expand();
 		List<Rule> result = new ArrayList<Rule>(expanded.size());

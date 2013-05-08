@@ -80,7 +80,7 @@ public class TMCompiler {
 		}
 		for (int i = 0; i < g.getSymbols().length; i++) {
 			Symbol sym = g.getSymbols()[i];
-			TMDataUtil.putId(sym, helper.generateId(sym.getName(), i));
+			TMDataUtil.putId(sym, helper.generateSymbolId(sym.getName(), i));
 		}
 	}
 
