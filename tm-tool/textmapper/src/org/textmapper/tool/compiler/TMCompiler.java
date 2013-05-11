@@ -19,6 +19,7 @@ import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.templates.api.types.IClass;
@@ -63,10 +64,6 @@ public class TMCompiler {
 
 		Grammar g = builder.create();
 		generateUniqueIds(g);
-
-		// TODO only when options.genast = true
-		new TMMapper(g).deriveAST();
-
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
 	}
 

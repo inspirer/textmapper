@@ -15,8 +15,10 @@
  */
 package org.textmapper.tool.compiler;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.*;
 
 /**
@@ -66,6 +68,16 @@ public class RhsUtil {
 		return null;
 	}
 
+	public static AstType getCastType(RhsPart part) {
+		part = unwrapEx(part, true, false, true);
+		return part instanceof RhsCast ? ((RhsCast) part).getTarget().getType() : null;
+	}
+
+	public static RhsAssignment getAssignment(RhsPart part) {
+		part = unwrapEx(part, true, true, false);
+		return part instanceof RhsAssignment ? (RhsAssignment) part : null;
+	}
+
 	public static boolean isConstant(RhsPart part) {
 		part = unwrapEx(part, false, false, true);
 		return part instanceof RhsSymbol && isConstant((RhsSymbol) part);
@@ -80,5 +92,39 @@ public class RhsUtil {
 		return p instanceof RhsSequence && ((RhsSequence) p).getParts().length == 0
 				|| p instanceof RhsChoice && ((RhsChoice) p).getParts().length == 0
 				|| p instanceof RhsUnordered && ((RhsUnordered) p).getParts().length == 0;
+	}
+
+	public static RhsChoice asChoice(final RhsPart... parts) {
+		return new RhsChoice() {
+			@Override
+			public RhsPart[] getParts() {
+				return parts;
+			}
+
+			@Override
+			public Nonterminal getLeft() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public Object structuralNode() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public <T> T accept(RhsSwitch<T> switch_) {
+				return switch_.caseChoice(this);
+			}
+
+			@Override
+			public Object getUserData(String key) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void putUserData(String key, Object value) {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 }

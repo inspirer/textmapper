@@ -15,22 +15,18 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.AstClass;
 import org.textmapper.lapg.api.ast.AstEnum;
 import org.textmapper.lapg.api.ast.AstModel;
 
-class LiAstModel implements AstModel, DerivedSourceElement {
+class LiAstModel implements AstModel {
 
 	private final AstClass[] classes;
 	private final AstEnum[] enums;
-	private final SourceElement origin;
 
-	LiAstModel(AstClass[] classes, AstEnum[] enums, SourceElement origin) {
+	LiAstModel(AstClass[] classes, AstEnum[] enums) {
 		this.classes = classes;
 		this.enums = enums;
-		this.origin = origin;
 	}
 
 	@Override
@@ -41,10 +37,5 @@ class LiAstModel implements AstModel, DerivedSourceElement {
 	@Override
 	public AstEnum[] getEnums() {
 		return enums;
-	}
-
-	@Override
-	public SourceElement getOrigin() {
-		return origin;
 	}
 }

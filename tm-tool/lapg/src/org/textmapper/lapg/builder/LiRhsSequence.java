@@ -43,7 +43,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	@Override
 	public String getName() {
 		// TODO
-		return null;
+		return (String) getUserData(RULE_ALIAS);
 	}
 
 	@Override

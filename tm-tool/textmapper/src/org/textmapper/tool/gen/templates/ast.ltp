@@ -234,7 +234,7 @@ ${query getListItem(sym) = self->getListItems(sym).first()}
 
 
 ${cached query getType(sym) =
- 	sym.type ? new AstUserType(text => sym.type) :
+ 	sym.type is LiRawAstType ? new AstUserType(text => sym.type) :
  	sym.isTerm() ? new AstBool() :
  	self->isOptional(sym) ? self->getOptionalType(sym) :
  	self->isList(sym) ? new AstList(target => self->getListItemType(sym)) :

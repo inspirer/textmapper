@@ -78,4 +78,9 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	void addUsage(RhsSymbol usage) {
 		usages.add(usage);
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

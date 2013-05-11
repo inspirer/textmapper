@@ -20,8 +20,7 @@ import org.textmapper.lapg.api.LexerData;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.tool.compiler.TMGrammar;
-import org.textmapper.tool.parser.TMTree.TextSource;
+import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.TemplatesStatus;
 import org.textmapper.templates.api.types.IClass;
@@ -37,6 +36,9 @@ import org.textmapper.templates.storage.Resource;
 import org.textmapper.templates.storage.ResourceRegistry;
 import org.textmapper.templates.types.TiInstance;
 import org.textmapper.templates.types.TypesRegistry;
+import org.textmapper.tool.compiler.TMGrammar;
+import org.textmapper.tool.compiler.TMMapper;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -67,6 +69,9 @@ public final class LapgGenerator {
 			if (s == null || s.hasErrors()) {
 				return false;
 			}
+
+			// TODO only when options.genast = true
+			AstModel astModel = new TMMapper(s.getGrammar(), status).deriveAST();
 
 			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, templatesStatus);
 			if (!checkOptions(s, registry)) {
@@ -99,7 +104,7 @@ public final class LapgGenerator {
 
 			// Generate text
 			start = System.currentTimeMillis();
-			EvaluationContext context = createEvaluationContext(types, s, genOptions, l, r);
+			EvaluationContext context = createEvaluationContext(types, s, astModel, genOptions, l, r);
 			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context), registry);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
@@ -159,11 +164,12 @@ public final class LapgGenerator {
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, Map<String, Object> genOptions, LexerData l, ParserData r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, AstModel astModel, Map<String, Object> genOptions, LexerData l, ParserData r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
 		map.put("parser", r);
+		map.put("ast", astModel);
 
 		String templPackage = getTemplatePackage(s);
 		IClass optsClass = types.getClass(templPackage + ".Options", null);

@@ -116,16 +116,15 @@ class LiAstBuilder implements AstBuilder {
 	}
 
 	@Override
-	public AstModel create(SourceElement origin) {
+	public AstModel create() {
 		return new LiAstModel(
 				classes.toArray(new AstClass[classes.size()]),
-				enums.toArray(new AstEnum[enums.size()]),
-				origin);
+				enums.toArray(new AstEnum[enums.size()]));
 	}
 
 	@Override
 	public String uniqueName(AstType type, String baseName, boolean isMember) {
-		assert FormatUtil.isIdentifier(baseName);
+		assert FormatUtil.isIdentifier(baseName) : baseName;
 
 		String name = FormatUtil.toCamelCase(baseName, !isMember);
 		Set<String> usedIdentifiers = type == null ? usedGlobals : usedNames.get(type);
