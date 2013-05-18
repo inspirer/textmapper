@@ -178,29 +178,31 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhs, Terminal prio) {
+	public Collection<Rule> addRule(Nonterminal left, RhsPart rhs, Terminal prio) {
 		check(left);
 		check(rhs, false);
 		if (prio != null) {
 			check(prio);
 		}
 
-		rhs.putUserData(RhsPart.RULE_ALIAS, alias);
 		LiRhsPart right = (LiRhsPart) rhs;
-		List<RhsSymbol[]> expanded = right.expand();
-		List<Rule> result = new ArrayList<Rule>(expanded.size());
-		for (RhsSymbol[] r : expanded) {
-			LiRule rule = new LiRule(rules.size(), alias, left, r, prio, rhs);
-			rules.add(rule);
-			result.add(rule);
-		}
-
 		final LiNonterminal liLeft = (LiNonterminal) left;
 		if (right instanceof LiRhsRoot) {
 			liLeft.setDefinition((LiRhsRoot) right);
 		} else {
 			liLeft.addRule(right);
 		}
+
+		List<Rule> result = new ArrayList<Rule>();
+		for (RhsPart r : ((LiRhsRoot) liLeft.getDefinition()).preprocess(right)) {
+			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
+			for (RhsSymbol[] arr : expanded) {
+				LiRule rule = new LiRule(rules.size(), left, arr, prio, r);
+				rules.add(rule);
+				result.add(rule);
+			}
+		}
+
 		return result;
 	}
 
@@ -253,21 +255,21 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin) {
+	public RhsSequence sequence(String name, Collection<RhsPart> parts, SourceElement origin) {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
 			check(p, true);
 			liparts[index++] = (LiRhsPart) p;
 		}
-		LiRhsSequence result = new LiRhsSequence(liparts, false, origin);
+		LiRhsSequence result = new LiRhsSequence(name, liparts, false, origin);
 		rhsSet.add(result);
 		return result;
 	}
 
 	@Override
 	public RhsSequence empty(SourceElement origin) {
-		return sequence(Collections.<RhsPart>emptyList(), origin);
+		return sequence(null, Collections.<RhsPart>emptyList(), origin);
 	}
 
 	@Override

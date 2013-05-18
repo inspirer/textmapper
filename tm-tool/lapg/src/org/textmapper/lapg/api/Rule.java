@@ -23,8 +23,6 @@ public interface Rule extends SourceElement, UserDataHolder {
 
 	int getIndex();
 
-	String getAlias();
-
 	Nonterminal getLeft();
 
 	RhsSymbol[] getRight();

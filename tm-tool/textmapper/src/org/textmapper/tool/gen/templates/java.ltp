@@ -350,11 +350,11 @@ ${for i in [parser.nterms, parser.nsyms-1]-}
 		public static final int ${parser.symbols[i].id->escapeJavaReserved()} = ${i};
 ${end-}
 	}
-${if syntax.rules.exists(x|x.getAlias())}
+${if syntax.rules.exists(x|x.getSource() is org.textmapper.lapg.api.rule.RhsSequence && x.getSource().name)}
 	public interface Rules {
 ${foreach rule in syntax.rules-}
-${if rule.getAlias()-}
-		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getAlias(), '__rules__')} = ${rule.getIndex()};  // ${rule}
+${if rule.getSource() is org.textmapper.lapg.api.rule.RhsSequence && rule.getSource().name-}
+		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.source.name, '__rules__')} = ${rule.getIndex()};  // ${rule}
 ${end-}
 ${end-}
 	}

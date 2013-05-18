@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -80,22 +81,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 
 	@Override
 	List<RhsSymbol[]> expand() {
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
-		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
-		if (nonEmpty) {
-			result.addAll((customInitialElement != null ? customInitialElement : element).expand());
-		} else {
-			result.add(new RhsSymbol[0]);
-		}
-		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
-		listRule.add(rightRecursive ? element : selfRef);
-		if (separator != null) {
-			listRule.add(separator);
-		}
-		listRule.add(rightRecursive ? selfRef : element);
-
-		result.addAll(LiRhsSequence.expandList(listRule.toArray(new LiRhsPart[listRule.size()])));
-		return result;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -174,5 +160,29 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			}
 			sb.append(")").append(nonEmpty ? "+" : "*");
 		}
+	}
+
+	@Override
+	protected Iterable<RhsPart> preprocess(RhsPart def) {
+		if (def != this) {
+			throw new IllegalArgumentException();
+		}
+
+		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
+		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
+		listRule.add(rightRecursive ? element : selfRef);
+		if (separator != null) {
+			listRule.add(separator);
+		}
+		listRule.add(rightRecursive ? selfRef : element);
+		RhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, def);
+
+		RhsPart rule2;
+		if (nonEmpty) {
+			rule2 = customInitialElement != null ? customInitialElement : element;
+		} else {
+			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, def);
+		}
+		return Arrays.asList(rule1, rule2);
 	}
 }

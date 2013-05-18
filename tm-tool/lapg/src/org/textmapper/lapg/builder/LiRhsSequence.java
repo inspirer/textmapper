@@ -32,18 +32,19 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
 	private static final List<RhsSymbol[]> ONE = Collections.singletonList(RhsSymbol.EMPTY_LIST);
 
+	private final String name;
 	private final LiRhsPart[] parts;
 
-	LiRhsSequence(LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
+	LiRhsSequence(String name, LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
+		this.name = name;
 		this.parts = parts;
 		register(isRewrite, parts);
 	}
 
 	@Override
 	public String getName() {
-		// TODO
-		return (String) getUserData(RULE_ALIAS);
+		return name;
 	}
 
 	@Override

@@ -218,7 +218,7 @@ public class TMResolver {
 					Nonterminal symopt = (Nonterminal) create(
 							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), false);
-					builder.addRule(null, symopt, builder.optional(builder.symbol(sym, null, id), id), null);
+					builder.addRule(symopt, builder.optional(builder.symbol(sym, null, id), id), null);
 					return symopt;
 				}
 			}

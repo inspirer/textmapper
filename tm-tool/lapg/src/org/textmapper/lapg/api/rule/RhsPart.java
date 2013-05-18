@@ -24,8 +24,6 @@ import org.textmapper.lapg.api.UserDataHolder;
  */
 public interface RhsPart extends SourceElement, UserDataHolder {
 
-	public static final String RULE_ALIAS = "ruleAlias";
-
 	Nonterminal getLeft();
 
 	Object structuralNode();

@@ -208,7 +208,7 @@ public class TMMapper {
 	private void mapInterfaces() {
 		List<RhsSymbol> passSymbols = new ArrayList<RhsSymbol>();
 		Set<Nonterminal> extList = new LinkedHashSet<Nonterminal>();
-		List<RhsPart> customRuleList = new ArrayList<RhsPart>();
+		List<RhsSequence> customRuleList = new ArrayList<RhsSequence>();
 
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
@@ -237,12 +237,12 @@ public class TMMapper {
 						continue;
 					}
 				}
-				final String ruleAlias = (String) part.getUserData(RhsPart.RULE_ALIAS);
+				final String ruleAlias = part instanceof RhsSequence ? ((RhsSequence) part).getName() : null;
 				if (ruleAlias == null) {
 					isInterface = false;
 					break;
 				}
-				customRuleList.add(part);
+				customRuleList.add((RhsSequence) part);
 			}
 			if (isInterface) {
 				AstClass interfaceClass = builder.addClass(getNonterminalTypeName(n), null, n);
@@ -254,8 +254,8 @@ public class TMMapper {
 					mapper.map(sym, null, null, false);
 				}
 				Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
-				for (RhsPart rulePart : customRuleList) {
-					String ruleAlias = (String) rulePart.getUserData(RhsPart.RULE_ALIAS);
+				for (RhsSequence rulePart : customRuleList) {
+					String ruleAlias = rulePart.getName();
 					AstClass ruleClass = aliasToClass.get(ruleAlias);
 					if (ruleClass == null) {
 						ruleClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_" + ruleAlias, false), null, n);

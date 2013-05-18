@@ -48,7 +48,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 
-	RhsSequence sequence(Collection<RhsPart> parts, SourceElement origin);
+	RhsSequence sequence(String name, Collection<RhsPart> parts, SourceElement origin);
 
 	RhsSequence empty(SourceElement origin);
 
@@ -58,7 +58,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsList list(RhsPart inner, RhsPart separator, boolean nonEmpty, SourceElement origin);
 
-	Collection<Rule> addRule(String alias, Nonterminal left, RhsPart rhSide, Terminal prio);
+	Collection<Rule> addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 
 
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);

@@ -17,7 +17,6 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.rule.RhsOptional;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
@@ -174,7 +173,7 @@ public class TMParserCompiler {
 
 		// TODO store %shift attribute
 		// TODO check right.getAnnotations().getNegativeLA() == null
-		Collection<Rule> result = builder.addRule(right.getAlias(), left, builder.sequence(rhs, right), prio);
+		Collection<Rule> result = builder.addRule(left, builder.sequence(right.getAlias(), rhs, right), prio);
 		Map<String, Object> annotations = expressionResolver.convert(right.getAnnotations(), "AnnotateRule");
 		for (Rule r : result) {
 			TMDataUtil.putAnnotations(r, annotations);
@@ -186,7 +185,7 @@ public class TMParserCompiler {
 		if (part instanceof AstCode) {
 			AstCode astCode = (AstCode) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
-			Collection<Rule> actionRules = builder.addRule(null, codeSym, builder.empty(astCode), null);
+			Collection<Rule> actionRules = builder.addRule(codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
 				TMDataUtil.putCode(actionRule, astCode);
 			}
@@ -308,7 +307,7 @@ public class TMParserCompiler {
 					error(ref, "separator should be terminal symbol");
 				}
 			}
-			RhsPart separator = builder.sequence(sep, listWithSeparator);
+			RhsPart separator = builder.sequence(null, sep, listWithSeparator);
 			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, part);
 
 		} else if (part instanceof TmaRhsQuantifier) {
@@ -358,7 +357,7 @@ public class TMParserCompiler {
 				groupResult.add(rulePart);
 			}
 		}
-		return groupResult.isEmpty() ? null : builder.sequence(groupResult, origin);
+		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
 	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
@@ -373,33 +372,14 @@ public class TMParserCompiler {
 				? resolver.createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
 				: (Nonterminal) resolver.createNestedNonTerm(outer, origin);
 
-
-		List<RhsPart> list = new ArrayList<RhsPart>();
-		// list
-		list.add(builder.symbol(listSymbol, null, origin));
-		// separator
-		if (separator != null) {
-			list.add(separator);
-		}
-		List<RhsPart> rhs = new ArrayList<RhsPart>();
-		if (atLeastOne || separator != null) {
-			// list ::= (list <separator>)? inner
-			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
-			rhs.add(optional);
-			rhs.add(inner);
-		} else {
-			// list ::= (list inner)?
-			list.add(inner);
-			RhsOptional optional = builder.optional(builder.sequence(list, origin), origin);
-			rhs.add(optional);
-		}
-		builder.addRule(null, listSymbol, builder.sequence(rhs, origin), null);
+		// list rule
+		builder.addRule(listSymbol, builder.list(inner, separator, (separator != null && !atLeastOne) || atLeastOne, origin), null);
 
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			Nonterminal symopt = resolver.createDerived(listSymbol, "_opt", origin);
-			builder.addRule(null, symopt, builder.optional(builder.symbol(listSymbol, null, origin), origin), null);
-			listSymbol = symopt;
+			Nonterminal opt = resolver.createDerived(listSymbol, "_opt", origin);
+			builder.addRule(opt, builder.optional(builder.symbol(listSymbol, null, origin), origin), null);
+			listSymbol = opt;
 		}
 
 		listsMap.put(descr, listSymbol);

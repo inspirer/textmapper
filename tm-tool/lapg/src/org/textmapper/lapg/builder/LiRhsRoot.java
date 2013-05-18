@@ -20,6 +20,8 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsRoot;
 
+import java.util.Collections;
+
 /**
  * evgeny, 2/4/13
  */
@@ -51,5 +53,13 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 	@Override
 	protected void setParent(LiRhsPart parent) {
 		throw new IllegalStateException("root element cannot be nested");
+	}
+
+	/**
+	 * Pre-processing may split complex rules (like lists) into several intermediate rules,
+	 * which become sources of the grammar rules.
+	 */
+	protected Iterable<RhsPart> preprocess(RhsPart def) {
+		return Collections.singleton(def);
 	}
 }

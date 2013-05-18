@@ -267,7 +267,7 @@ ${query codeForList for ast.AstListRule =
 }
 
 ${query codeToPassData for ast.AstPassDataRule =
-	index = data ? rule.getRight().indexOf(data) : -1,
+	index = data ? rule.sourceSymbols().indexOf(data) : -1,
 	index > 0
 		? '$$ = $' + index + ';\n'
 		: null

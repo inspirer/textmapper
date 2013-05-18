@@ -129,7 +129,7 @@ public class LiRewriter {
 				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
 				//noinspection SuspiciousSystemArraycopy
 				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
-				elements.add(new LiRhsSequence(newArr, true, part));
+				elements.add(new LiRhsSequence(null, newArr, true, part));
 			}
 		}
 
@@ -208,7 +208,7 @@ public class LiRewriter {
 		final LiRhsPart[] partsArray = parts.toArray(new LiRhsPart[parts.size()]);
 		return strategy == MergeStrategy.CHOICE
 				? new LiRhsChoice(partsArray, true, first)
-				: new LiRhsSequence(partsArray, true, first);
+				: new LiRhsSequence(null, partsArray, true, first);
 	}
 
 	private static Terminal asConstantTerminal(RhsPart part) {

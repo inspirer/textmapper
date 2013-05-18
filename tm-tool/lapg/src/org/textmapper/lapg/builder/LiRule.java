@@ -23,31 +23,24 @@ import org.textmapper.lapg.api.rule.RhsSymbol;
 class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 
 	private final int index;
-	private final String alias;
 	private final Nonterminal left;
 	private final RhsSymbol[] right;
 	private final Symbol priority;
 	private final RhsPart definition;
 	private AstType mapping;
 
-	public LiRule(int index, String alias, Nonterminal left, RhsSymbol[] right, Symbol priority, RhsPart definition) {
+	public LiRule(int index, Nonterminal left, RhsSymbol[] right, Symbol priority, RhsPart definition) {
 		this.index = index;
 		this.left = left;
 		this.right = right;
 		this.priority = priority;
 		this.definition = definition;
-		this.alias = alias;
 		((LiNonterminal) left).addRule(this);
 	}
 
 	@Override
 	public int getIndex() {
 		return index;
-	}
-
-	@Override
-	public String getAlias() {
-		return alias;
 	}
 
 	@Override
@@ -105,10 +98,6 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 			sb.append(priority.getName());
 		}
 		return sb.toString();
-	}
-
-	public String getTitle() {
-		return "Rule `" + toString() + "`";
 	}
 
 	@Override
