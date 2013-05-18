@@ -4,7 +4,12 @@ class Context {
 	common.Grammar syntax[1];
 	common.Lexer lex[1];
 	common.Parser parser[1];
+	common.AST ast[0..1];
 	Options opts[1];
+}
+
+# TODO
+class AST {
 }
 
 class Grammar {

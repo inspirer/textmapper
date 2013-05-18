@@ -5,7 +5,7 @@ ${call astVisitor-}
 ${foreach cl in self->ast.astModel().elements-}
 ${self->('ast_' + cl.kind)(cl)} 
 ${end-}
-${if opts.genastdef-}
+${if opts.genastdef && self.ast-}
 ${file opts.prefix+'Ast.last'}${call ast_text.unit}${end-}
 ${end-}
 ${end}

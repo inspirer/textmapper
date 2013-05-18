@@ -1,0 +1,25 @@
+${template unit-}
+
+// Ast
+
+${foreach cl in ast.classes-}
+${self->ast_class(cl)}
+${end-}
+${end}
+
+${template baseClasses(cl)-}
+${if cl.super.length > 0-}
+ : ${foreach impl in cl.super separator ', '}${impl.name}${end-}
+${end-}
+${end}
+
+${template ast_class(cl)-}
+class ${cl.name}${call baseClasses(cl)} {
+${foreach prop in cl.fields-}
+	${prop.type} ${prop.name};
+${end-}
+${foreach cl in cl.inner-}
+${util.shiftRight(self->ast_class(cl), 4)}
+${end-}
+}
+${end}

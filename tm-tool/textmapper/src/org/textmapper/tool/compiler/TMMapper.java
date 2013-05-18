@@ -401,13 +401,15 @@ public class TMMapper {
 			AstType type = RhsUtil.getCastType(part);
 			if (type == null) {
 				type = ref.getTarget().getType();
-				if (type == null) {
+				if (type == null && assignment != null) {
 					type = AstType.BOOL;
 				}
 			}
 
-			context.addMapping(assignment != null ? assignment.getName() : null, type, ref,
-					assignment != null && assignment.isAddition(), part);
+			if (type != null) {
+				context.addMapping(assignment != null ? assignment.getName() : null, type, ref,
+						assignment != null && assignment.isAddition(), part);
+			}
 		} else {
 			throw new IllegalArgumentException();
 		}

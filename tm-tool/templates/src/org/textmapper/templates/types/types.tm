@@ -19,6 +19,7 @@ prefix = "Types"
 package = "org.textmapper.templates.types"
 gentree = true
 genast = true
+genastdef = true
 astprefix = "Ast"
 positions = "line,offset"
 endpositions = "offset"

@@ -22,6 +22,7 @@ maxtoken = 2048
 breaks = true
 genast = true
 gentree = true
+genastdef = true
 positions = "line,column,offset"
 endpositions = "line,column,offset"
 genCleanup = false

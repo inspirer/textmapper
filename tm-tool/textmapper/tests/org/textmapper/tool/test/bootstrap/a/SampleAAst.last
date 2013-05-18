@@ -1,0 +1,11 @@
+
+// Ast
+
+class Classdef {
+	String identifier;
+	list<ClassdeflistElement> classdeflistopt;
+}
+
+class ClassdeflistElement {
+}
+

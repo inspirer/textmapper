@@ -1,0 +1,86 @@
+
+// Ast
+
+class MemberDeclaration {
+}
+
+class Expression {
+}
+
+class TypeDeclaration {
+	String name;
+	list<list<String>> super;
+	list<MemberDeclaration> members;
+}
+
+class FeatureDeclaration : MemberDeclaration {
+	TypeEx typeEx;
+	String name;
+	list<Constraint> modifiersopt;
+	Expression defaultvalopt;
+}
+
+class MethodDeclaration : MemberDeclaration {
+	TypeEx returnType;
+	String name;
+	list<TypeEx> parametersopt;
+}
+
+class Constraint {
+	StringConstraint stringConstraint;
+	list<Multiplicity> multiplicityList;
+}
+
+class StringConstraint {
+	boolean kind;
+	list<String> strings;
+	boolean kind2;
+	list<String> strings2;
+	String identifier;
+}
+
+class String {
+	String identifier;
+	String scon;
+}
+
+class Multiplicity {
+	Integer lo;
+	Integer lo2;
+	boolean hasNoUpperBound;
+	Integer lo3;
+	Integer hi;
+}
+
+class TypeEx {
+	Type type;
+	Type type2;
+	list<Multiplicity> multiplicityList;
+}
+
+class Type {
+	boolean kind;
+	boolean kind2;
+	boolean kind3;
+	list<String> name;
+	list<String> name2;
+	boolean isReference;
+	boolean isClosure;
+	list<TypeEx> parametersopt;
+}
+
+class LiteralExpression : Expression {
+	String scon;
+	Integer icon;
+	Boolean bcon;
+}
+
+class StructuralExpression : Expression {
+	list<String> name;
+	list<StructuralExpressionDOLLAR1Element> mapEntries;
+	list<Expression> expressionListopt;
+}
+
+class StructuralExpressionDOLLAR1Element {
+}
+
