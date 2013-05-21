@@ -17,7 +17,5 @@ package org.textmapper.lapg.api.ast;
 
 public interface AstModel {
 
-	AstClass[] getClasses();
-
-	AstEnum[] getEnums();
+	AstClassifier[] getClassifiers();
 }

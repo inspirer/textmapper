@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.builder;
+package org.textmapper.lapg.api.ast;
 
-import org.textmapper.lapg.api.ast.AstClassifier;
-import org.textmapper.lapg.api.ast.AstModel;
+/**
+ * evgeny, 5/18/13
+ */
+public interface AstClassifier {
 
-class LiAstModel implements AstModel {
-
-	private final AstClassifier[] classifiers;
-
-	LiAstModel(AstClassifier[] classifiers) {
-		this.classifiers = classifiers;
-	}
-
-	@Override
-	public AstClassifier[] getClassifiers() {
-		return classifiers;
-	}
+	String getName();
 }

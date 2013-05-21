@@ -24,11 +24,10 @@ import java.util.*;
 
 class LiAstBuilder implements AstBuilder {
 
-	private final List<LiAstClass> classes = new ArrayList<LiAstClass>();
-	private final List<LiAstEnum> enums = new ArrayList<LiAstEnum>();
+	private final List<AstClassifier> classifiers = new ArrayList<AstClassifier>();
 	private final Set<AstType> mine = new HashSet<AstType>();
 
-	private final Map<AstType, Set<String>> usedNames = new HashMap<AstType, Set<String>>();
+	private final Map<AstClassifier, Set<String>> usedNames = new HashMap<AstClassifier, Set<String>>();
 	private final Set<String> usedGlobals = new HashSet<String>();
 
 	LiAstBuilder() {
@@ -43,7 +42,7 @@ class LiAstBuilder implements AstBuilder {
 		}
 	}
 
-	private void checkName(AstType type, String childName) {
+	private void checkName(AstClassifier type, String childName) {
 		Set<String> taken = type == null ? usedGlobals : usedNames.get(type);
 		if (taken == null) {
 			taken = new HashSet<String>();
@@ -84,7 +83,7 @@ class LiAstBuilder implements AstBuilder {
 		if (container != null) {
 			((LiAstClass) container).addInner(result);
 		} else {
-			classes.add(result);
+			classifiers.add(result);
 		}
 		mine.add(result);
 		return result;
@@ -98,10 +97,14 @@ class LiAstBuilder implements AstBuilder {
 	}
 
 	@Override
-	public AstEnum addEnum(String name, SourceElement origin) {
-		checkName(null, name);
+	public AstEnum addEnum(String name, AstClass container, SourceElement origin) {
+		checkName(container, name);
 		LiAstEnum result = new LiAstEnum(name, origin);
-		enums.add(result);
+		if (container != null) {
+			((LiAstClass) container).addInner(result);
+		} else {
+			classifiers.add(result);
+		}
 		mine.add(result);
 		return result;
 	}
@@ -117,13 +120,11 @@ class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public AstModel create() {
-		return new LiAstModel(
-				classes.toArray(new AstClass[classes.size()]),
-				enums.toArray(new AstEnum[enums.size()]));
+		return new LiAstModel(classifiers.toArray(new AstClassifier[classifiers.size()]));
 	}
 
 	@Override
-	public String uniqueName(AstType type, String baseName, boolean isMember) {
+	public String uniqueName(AstClassifier type, String baseName, boolean isMember) {
 		assert FormatUtil.isIdentifier(baseName) : baseName;
 
 		String name = FormatUtil.toCamelCase(baseName, !isMember);

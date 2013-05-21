@@ -18,9 +18,7 @@ package org.textmapper.lapg.api.ast;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.UserDataHolder;
 
-public interface AstClass extends AstType, UserDataHolder, SourceElement {
-
-	String getName();
+public interface AstClass extends AstClassifier, AstType, UserDataHolder, SourceElement {
 
 	AstClass[] getSuper();
 
@@ -28,5 +26,5 @@ public interface AstClass extends AstType, UserDataHolder, SourceElement {
 
 	AstClass getContainingClass();
 
-	AstClass[] getInner();
+	AstClassifier[] getInner();
 }

@@ -2,8 +2,12 @@ ${template unit-}
 
 // Ast
 
-${foreach cl in ast.classes-}
+${foreach cl in ast.classifiers-}
+${if cl is LiAstEnum-}
+${self->ast_enum(cl)}
+${else-}
 ${self->ast_class(cl)}
+${end-}
 ${end-}
 ${end}
 
@@ -11,6 +15,11 @@ ${template baseClasses(cl)-}
 ${if cl.super.length > 0-}
  : ${foreach impl in cl.super separator ', '}${impl.name}${end-}
 ${end-}
+${end}
+
+${template ast_enum(en)-}
+enum ${en.name} {
+}
 ${end}
 
 ${template ast_class(cl)-}

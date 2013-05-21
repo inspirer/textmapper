@@ -1,6 +1,9 @@
 
 // Ast
 
+enum MapSeparator {
+}
+
 class MemberDeclaration {
 }
 

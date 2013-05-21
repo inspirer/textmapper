@@ -18,6 +18,7 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.ast.AstClass;
+import org.textmapper.lapg.api.ast.AstClassifier;
 import org.textmapper.lapg.api.ast.AstField;
 import org.textmapper.lapg.api.ast.AstType;
 
@@ -29,7 +30,7 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	private final AstClass container;
 	private final SourceElement origin;
 	private final List<AstField> fields = new ArrayList<AstField>();
-	private final List<AstClass> inner = new ArrayList<AstClass>();
+	private final List<AstClassifier> inner = new ArrayList<AstClassifier>();
 	private final List<AstClass> superClasses = new ArrayList<AstClass>();
 
 	public LiAstClass(String name, AstClass container, SourceElement origin) {
@@ -67,11 +68,11 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	}
 
 	@Override
-	public AstClass[] getInner() {
-		return inner.toArray(new AstClass[inner.size()]);
+	public AstClassifier[] getInner() {
+		return inner.toArray(new AstClassifier[inner.size()]);
 	}
 
-	void addInner(AstClass cl) {
+	void addInner(AstClassifier cl) {
 		inner.add(cl);
 	}
 

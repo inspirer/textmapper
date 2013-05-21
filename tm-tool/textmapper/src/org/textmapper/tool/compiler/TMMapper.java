@@ -99,7 +99,7 @@ public class TMMapper {
 					}
 				}
 				if (isEnum) {
-					AstEnum astEnum = builder.addEnum(getNonterminalTypeName(n), n);
+					AstEnum astEnum = builder.addEnum(getNonterminalTypeName(n), null, n);
 					mapNonterm(n, astEnum);
 					for (RhsPart part : alt.getParts()) {
 						RhsPart p = RhsUtil.unwrap(part);

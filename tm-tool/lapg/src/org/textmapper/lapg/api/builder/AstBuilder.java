@@ -28,7 +28,7 @@ public interface AstBuilder {
 
 	AstClass addClass(String name, AstClass container, SourceElement origin);
 
-	AstEnum addEnum(String name, SourceElement origin);
+	AstEnum addEnum(String name, AstClass container, SourceElement origin);
 
 	AstEnumMember addMember(String name, AstEnum container, SourceElement origin);
 
@@ -36,5 +36,5 @@ public interface AstBuilder {
 
 	AstModel create();
 
-	String uniqueName(AstType context, String baseName, boolean isMember);
+	String uniqueName(AstClassifier context, String baseName, boolean isMember);
 }
