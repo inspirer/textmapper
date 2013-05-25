@@ -89,4 +89,27 @@ public class FormatUtil {
 		}
 		return new String(string, 0, len);
 	}
+
+	public static String toUpperWithUnderscores(String s) {
+		StringBuilder sb = new StringBuilder();
+		boolean newWord = true;
+		boolean lastIsLower = false;
+		for (char c : s.toCharArray()) {
+			if (c == '_') {
+				newWord = true;
+				lastIsLower = false;
+			} else {
+				if (newWord || lastIsLower && Character.isUpperCase(c)) {
+					final int len = sb.length();
+					if (len > 0 && sb.charAt(len - 1) != '_') {
+						sb.append('_');
+					}
+					newWord = false;
+				}
+				sb.append(Character.toUpperCase(c));
+				lastIsLower = Character.isLowerCase(c);
+			}
+		}
+		return sb.toString();
+	}
 }

@@ -127,7 +127,9 @@ class LiAstBuilder implements AstBuilder {
 	public String uniqueName(AstClassifier type, String baseName, boolean isMember) {
 		assert FormatUtil.isIdentifier(baseName) : baseName;
 
-		String name = FormatUtil.toCamelCase(baseName, !isMember);
+		String name = type instanceof AstEnum
+				? FormatUtil.toUpperWithUnderscores(baseName)
+				: FormatUtil.toCamelCase(baseName, !isMember);
 		Set<String> usedIdentifiers = type == null ? usedGlobals : usedNames.get(type);
 		if (usedIdentifiers == null) {
 			return name;

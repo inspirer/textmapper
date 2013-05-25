@@ -14,6 +14,8 @@ import java.util.*;
  */
 public class TMMapper {
 
+	private static final MarkerType BOOL_OR_ENUM = new MarkerType();
+
 	private final ProcessingStatus status;
 	private final Grammar grammar;
 	private final GrammarMapper mapper;
@@ -362,9 +364,38 @@ public class TMMapper {
 			traverseFields(def, context);
 
 			for (FieldDescriptor fd : context.result) {
-				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true), fd.type, fd.nullable, cl, fd.firstMapping.origin);
+				AstType type = fd.type;
+				Map<Symbol, AstEnumMember> members = new LinkedHashMap<Symbol, AstEnumMember>();
+				if (type == BOOL_OR_ENUM) {
+					for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
+						Symbol target = m.sym.getTarget();
+						members.put(target, null);
+					}
+					if (members.size() > 1) {
+						AstEnum enum_ = builder.addEnum(builder.uniqueName(cl, fd.baseName + "_kind", false), cl, fd.firstMapping.origin);
+						final Symbol[] enumMembers = members.keySet().toArray(new Symbol[members.size()]);
+						for (Symbol enumMember : enumMembers) {
+							final AstEnumMember astEnumMember = builder.addMember(builder.uniqueName(enum_, TMDataUtil.getId(enumMember), true), enum_, null /* TODO ??? */);
+							members.put(enumMember, astEnumMember);
+						}
+						type = enum_;
+					} else {
+						type = AstType.BOOL;
+					}
+				}
+
+				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true), type, fd.nullable, cl, fd.firstMapping.origin);
 				for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
-					mapper.map(m.sym, field, null, m.addition);
+					Object value = null;
+					if (fd.type == BOOL_OR_ENUM) {
+						if (type == AstType.BOOL) {
+							value = Boolean.TRUE;
+						} else {
+							value = members.get(m.sym.getTarget());
+						}
+					}
+
+					mapper.map(m.sym, field, value, m.addition);
 				}
 			}
 		}
@@ -402,7 +433,7 @@ public class TMMapper {
 			if (type == null) {
 				type = ref.getTarget().getType();
 				if (type == null && assignment != null) {
-					type = AstType.BOOL;
+					type = BOOL_OR_ENUM;
 				}
 			}
 
@@ -479,8 +510,9 @@ public class TMMapper {
 		private List<FieldDescriptor> result = new ArrayList<FieldDescriptor>();
 		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId, Collection<FieldDescriptor>>();
 
+		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin) {
-			FieldId id = new FieldId(alias, isAddition, sym, type);
+			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fields = fieldsMap.get(id);
 			if (fields == null) {
 				fields = new ArrayList<FieldDescriptor>();
@@ -506,7 +538,7 @@ public class TMMapper {
 
 		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin) {
-			FieldId id = new FieldId(alias, isAddition, sym, type);
+			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fds = localMap.get(id);
 			if (used == null) {
 				used = new HashSet<FieldDescriptor>();
@@ -567,14 +599,14 @@ public class TMMapper {
 	}
 
 	private static class FieldId {
-		private final RhsSymbol sym;
+		private final Symbol sym;
 		private final AstType type;
 		private final boolean addList;
 		private final String alias;
 
-		private FieldId(String alias, boolean isAddition, RhsSymbol ref, AstType type) {
+		private FieldId(String alias, boolean isAddition, Symbol ref, AstType type) {
 			this.alias = alias;
-			this.sym = ref;
+			this.sym = alias != null ? null : ref;
 			if (!isAddition && type instanceof AstList) {
 				this.addList = true;
 				this.type = ((AstList) type).getInner();
@@ -608,4 +640,20 @@ public class TMMapper {
 			return result;
 		}
 	}
+
+	private static final class MarkerType implements AstType {
+		public MarkerType() {
+		}
+
+		@Override
+		public boolean isSubtypeOf(AstType another) {
+			return another == this;
+		}
+
+		@Override
+		public String toString() {
+			return "marker type";
+		}
+	}
+
 }

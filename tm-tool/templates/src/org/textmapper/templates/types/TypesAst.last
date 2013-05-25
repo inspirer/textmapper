@@ -2,6 +2,9 @@
 // Ast
 
 enum MapSeparator {
+	COLON,
+	EQUAL,
+	EQUALGREATER
 }
 
 class MemberDeclaration {
@@ -35,11 +38,13 @@ class Constraint {
 }
 
 class StringConstraint {
-	boolean kind;
+	KindKind kind;
 	list<String> strings;
-	boolean kind2;
-	list<String> strings2;
 	String identifier;
+	enum KindKind {
+		LCHOICE,
+		LSET
+	}
 }
 
 class String {
@@ -49,27 +54,26 @@ class String {
 
 class Multiplicity {
 	Integer lo;
-	Integer lo2;
 	boolean hasNoUpperBound;
-	Integer lo3;
 	Integer hi;
 }
 
 class TypeEx {
 	Type type;
-	Type type2;
 	list<Multiplicity> multiplicityList;
 }
 
 class Type {
-	boolean kind;
-	boolean kind2;
-	boolean kind3;
+	KindKind kind;
 	list<String> name;
-	list<String> name2;
 	boolean isReference;
 	boolean isClosure;
 	list<TypeEx> parametersopt;
+	enum KindKind {
+		LBOOL,
+		LSTRING,
+		LINT
+	}
 }
 
 class LiteralExpression : Expression {

@@ -3,22 +3,28 @@ ${template unit-}
 // Ast
 
 ${foreach cl in ast.classifiers-}
-${if cl is LiAstEnum-}
-${self->ast_enum(cl)}
-${else-}
-${self->ast_class(cl)}
+${self->ast_classifier(cl)}
 ${end-}
+${end}
+
+
+${template ast_classifier(cl)-}
+${if cl is LiAstEnum-}
+${self->ast_enum(cl)-}
+${else-}
+${self->ast_class(cl)-}
 ${end-}
 ${end}
 
 ${template baseClasses(cl)-}
-${if cl.super.length > 0-}
+${if cl.super && cl.super.length > 0-}
  : ${foreach impl in cl.super separator ', '}${impl.name}${end-}
 ${end-}
 ${end}
 
 ${template ast_enum(en)-}
 enum ${en.name} {
+	${foreach member in en.members separator ',\n\t'}${member.name}${end}
 }
 ${end}
 
@@ -28,7 +34,7 @@ ${foreach prop in cl.fields-}
 	${prop.type} ${prop.name};
 ${end-}
 ${foreach cl in cl.inner-}
-${util.shiftRight(self->ast_class(cl), 4)}
+${util.shiftRight(self->ast_classifier(cl), 1)-}
 ${end-}
 }
 ${end}
