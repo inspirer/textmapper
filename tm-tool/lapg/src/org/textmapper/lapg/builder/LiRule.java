@@ -16,7 +16,6 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -27,7 +26,6 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	private final RhsSymbol[] right;
 	private final Symbol priority;
 	private final RhsPart definition;
-	private AstType mapping;
 
 	public LiRule(int index, Nonterminal left, RhsSymbol[] right, Symbol priority, RhsPart definition) {
 		this.index = index;
@@ -56,15 +54,6 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	@Override
 	public RhsPart getSource() {
 		return definition;
-	}
-
-	@Override
-	public AstType getMapping() {
-		return mapping;
-	}
-
-	void setMapping(AstType mapping) {
-		this.mapping = mapping;
 	}
 
 	@Override

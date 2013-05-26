@@ -16,10 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSwitch;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.ast.AstType;
+import org.textmapper.lapg.api.rule.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +32,8 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
 	private final String name;
 	private final LiRhsPart[] parts;
+	private AstType type;
+	private RhsMapping mapping;
 
 	LiRhsSequence(String name, LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
@@ -50,6 +50,21 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	@Override
 	public RhsPart[] getParts() {
 		return parts;
+	}
+
+	@Override
+	public AstType getType() {
+		return type;
+	}
+
+	@Override
+	public RhsMapping getMapping() {
+		return mapping;
+	}
+
+	void map(AstType type, RhsMapping mapping) {
+		this.type = type;
+		this.mapping = mapping;
 	}
 
 	@Override

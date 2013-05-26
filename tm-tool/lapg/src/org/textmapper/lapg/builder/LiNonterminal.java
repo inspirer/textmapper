@@ -71,6 +71,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	void rewriteDefinition(RhsPart old, RhsPart new_) {
 		if (old == definition) {
 			definition = new_;
+			((LiRhsRoot)new_).setLeft(this);
 		}
 	}
 

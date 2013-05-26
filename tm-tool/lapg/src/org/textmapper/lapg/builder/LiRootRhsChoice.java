@@ -40,9 +40,8 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	void addRule(LiRhsPart rule) {
 		toList();
 		rulesList.add(rule);
-		rule.setParent(this);
+		register(false, rule);
 	}
-
 
 	@Override
 	public LiRhsPart[] getParts() {

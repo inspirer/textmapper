@@ -17,14 +17,15 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
 import org.textmapper.lapg.api.ast.AstList;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarMapper;
+import org.textmapper.lapg.api.rule.RhsMapping;
 import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Arrays;
@@ -69,42 +70,79 @@ class LiGrammarMapper implements GrammarMapper {
 	}
 
 	@Override
-	public void map(Rule rule, AstType type) {
-		if (rule == null) {
-			throw new NullPointerException();
-		}
-		final Nonterminal left = rule.getLeft();
-		check(left);
-		final AstType leftType = left.getType();
-		if (leftType == null) {
-			throw new IllegalArgumentException("map nonterminal first");
-		}
-		if (!type.isSubtypeOf(leftType)) {
-			throw new IllegalArgumentException("rule type should be a subtype of its non-terminal");
-		}
-		if (rule.getMapping() != null) {
-			throw new IllegalArgumentException("cannot re-map rule");
-		}
-		((LiRule) rule).setMapping(type);
-	}
+	public void map(RhsSequence seq, AstField field, AstType subType, boolean isAddition) {
+		check(seq, false);
 
-	@Override
-	public void map(RhsSymbol symbol, AstField field, Object value, boolean isAddition) {
-		check(symbol, false);
-		final AstType nontermType = symbol.getLeft().getType();
-		if (nontermType == null) {
-			throw new IllegalArgumentException("cannot map symbol, map nonterminal first");
+		final AstType contextType = getEnclosingType(seq);
+		if (contextType == null) {
+			throw new IllegalArgumentException("cannot map sequence, map its nonterminal first");
 		}
-		if (field != null && nontermType != field.getContainingClass()) {
-			throw new IllegalArgumentException("field should be from the nonterminal class");
+
+		if (field != null && contextType != field.getContainingClass()) {
+			throw new IllegalArgumentException("field must belong to the context class (" + contextType.toString() + ")");
 		}
-		AstType type = field != null ? field.getType() : nontermType;
+
+		AstType type = field != null ? field.getType() : contextType;
 		if (isAddition) {
 			if (!(type instanceof AstList)) {
 				throw new IllegalArgumentException("addition is applicable only to list types");
 			}
 			type = ((AstList) type).getInner();
 		}
+
+		if (subType != null && !subType.isSubtypeOf(type)) {
+			throw new IllegalArgumentException("sequence type should be a subtype of its context type (" + type.toString() + ")");
+		}
+		if (seq.getMapping() != null || seq.getType() != null) {
+			throw new IllegalArgumentException("cannot re-map sequences");
+		}
+		((LiRhsSequence) seq).map(subType, new LiRhsMapping(field, null, isAddition));
+	}
+
+
+	private AstType getEnclosingType(RhsPart part) {
+		RhsSequence context = part.getContext();
+		while (context != null) {
+			AstType type = context.getType();
+			if (type != null) {
+				return type;
+			}
+
+			RhsMapping mapping = context.getMapping();
+			if (mapping == null) {
+				// seal sequence
+				((LiRhsSequence) context).map(null, LiRhsMapping.EMPTY_MAPPING);
+			} else if (mapping.getField() != null) {
+				return mapping.getField().getType();
+			}
+
+			context = context.getContext();
+		}
+
+		return part.getLeft().getType();
+	}
+
+	@Override
+	public void map(RhsSymbol symbol, AstField field, Object value, boolean isAddition) {
+		check(symbol, false);
+
+		final AstType contextType = getEnclosingType(symbol);
+		if (contextType == null) {
+			throw new IllegalArgumentException("cannot map symbol, map its nonterminal first");
+		}
+
+		if (field != null && contextType != field.getContainingClass()) {
+			throw new IllegalArgumentException("field must belong to the context class (" + contextType.toString() + ")");
+		}
+
+		AstType type = field != null ? field.getType() : contextType;
+		if (isAddition) {
+			if (!(type instanceof AstList)) {
+				throw new IllegalArgumentException("addition is applicable only to list types");
+			}
+			type = ((AstList) type).getInner();
+		}
+
 		if (value != null && !(value instanceof AstEnumMember) && !(value instanceof Boolean)
 				&& !(value instanceof Integer) && !(value instanceof String)) {
 			throw new IllegalArgumentException("value must be AstEnumMember, Integer, Boolean or String");
@@ -123,6 +161,9 @@ class LiGrammarMapper implements GrammarMapper {
 					"value should match " + (field != null
 							? "the field type"
 							: "the nonterminal type") + ", " + type + " is expected");
+		}
+		if (symbol.getMapping() != null) {
+			throw new IllegalArgumentException("cannot re-map symbols");
 		}
 		((LiRhsSymbol) symbol).setMapping(new LiRhsMapping(field, value, isAddition));
 	}

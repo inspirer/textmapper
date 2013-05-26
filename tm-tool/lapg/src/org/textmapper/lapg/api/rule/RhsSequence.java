@@ -15,6 +15,8 @@
  */
 package org.textmapper.lapg.api.rule;
 
+import org.textmapper.lapg.api.ast.AstType;
+
 /**
  * evgeny, 11/24/12
  */
@@ -23,4 +25,8 @@ public interface RhsSequence extends RhsPart {
 	String getName();
 
 	RhsPart[] getParts();
+
+	AstType getType();
+
+	RhsMapping getMapping();
 }

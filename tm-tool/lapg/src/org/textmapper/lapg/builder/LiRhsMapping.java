@@ -23,6 +23,8 @@ import org.textmapper.lapg.api.rule.RhsMapping;
  */
 public class LiRhsMapping implements RhsMapping {
 
+	public static final RhsMapping EMPTY_MAPPING = new LiRhsMapping(null, null, false);
+
 	private final AstField field;
 	private final Object value;
 	private final boolean isAddition;

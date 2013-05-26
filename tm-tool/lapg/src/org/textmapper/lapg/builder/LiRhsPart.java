@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsRoot;
+import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.List;
@@ -45,14 +46,14 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 
 	protected final void register(boolean isRewrite, LiRhsPart... children) {
 		for (LiRhsPart part : children) {
-			if (part != null && (!isRewrite || part.parent == null)) {
-				part.setParent(this);
-			}
+			if (part == null) continue;
+
+			part.setParent(this, isRewrite);
 		}
 	}
 
-	protected void setParent(LiRhsPart parent) {
-		if (this.parent != null && this.parent != parent) {
+	protected void setParent(LiRhsPart parent, boolean force) {
+		if (!force && this.parent != null && this.parent != parent) {
 			throw new IllegalStateException("passed right-hand side entity is already used somewhere else");
 		}
 		this.parent = parent;
@@ -68,6 +69,18 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		while (part != null) {
 			if (part instanceof RhsRoot) {
 				return part.getLeft();
+			}
+			part = ((LiRhsPart) part).parent;
+		}
+		return null;
+	}
+
+	@Override
+	public RhsSequence getContext() {
+		RhsPart part = parent;
+		while (part != null) {
+			if (part instanceof RhsSequence) {
+				return (RhsSequence) part;
 			}
 			part = ((LiRhsPart) part).parent;
 		}

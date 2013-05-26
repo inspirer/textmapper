@@ -265,11 +265,7 @@ public class TMMapper {
 						aliasToClass.put(ruleAlias, ruleClass);
 					}
 					mapClass(ruleClass, rulePart);
-					for (Rule rule : n.getRules()) {
-						if (rule.getSource() == rulePart) {
-							mapper.map(rule, ruleClass);
-						}
-					}
+					mapper.map(rulePart, null, ruleClass, false);
 				}
 				i.remove();
 			}
@@ -332,7 +328,7 @@ public class TMMapper {
 
 			if (elementType == null) {
 				AstClass elementClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_element", false), null, n);
-				//mapClass(elementClass, list.getElement(), list.getCustomInitialElement());
+//				mapClass(elementClass, list.getElement(), list.getCustomInitialElement());
 				elementType = elementClass;
 			}
 			mapNonterm(n, builder.list(elementType, list.isNonEmpty(), n));

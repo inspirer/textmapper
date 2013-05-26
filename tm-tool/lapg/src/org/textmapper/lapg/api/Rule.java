@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -30,6 +29,4 @@ public interface Rule extends SourceElement, UserDataHolder {
 	RhsPart getSource();
 
 	int getPriority();
-
-	AstType getMapping();
 }

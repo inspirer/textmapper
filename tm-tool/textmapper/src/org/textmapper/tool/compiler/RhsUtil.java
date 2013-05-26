@@ -107,6 +107,11 @@ public class RhsUtil {
 			}
 
 			@Override
+			public RhsSequence getContext() {
+				return null;
+			}
+
+			@Override
 			public Object structuralNode() {
 				throw new UnsupportedOperationException();
 			}

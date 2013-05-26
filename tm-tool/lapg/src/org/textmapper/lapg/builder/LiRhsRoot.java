@@ -51,7 +51,7 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 	}
 
 	@Override
-	protected void setParent(LiRhsPart parent) {
+	protected void setParent(LiRhsPart parent, boolean force) {
 		throw new IllegalStateException("root element cannot be nested");
 	}
 

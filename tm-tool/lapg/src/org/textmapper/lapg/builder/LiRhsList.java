@@ -175,14 +175,15 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			listRule.add(separator);
 		}
 		listRule.add(rightRecursive ? selfRef : element);
-		RhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, def);
+		LiRhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, def);
 
-		RhsPart rule2;
+		LiRhsPart rule2;
 		if (nonEmpty) {
 			rule2 = customInitialElement != null ? customInitialElement : element;
 		} else {
 			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, def);
 		}
-		return Arrays.asList(rule1, rule2);
+		register(true, rule1, rule2, customInitialElement, element, separator);
+		return Arrays.<RhsPart>asList(rule1, rule2);
 	}
 }
