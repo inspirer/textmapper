@@ -5,9 +5,9 @@ package org.textmapper.lapg.api.rule;
  */
 public interface RhsList extends RhsRoot {
 
-	RhsPart getElement();
+	RhsSequence getElement();
 
-	RhsPart getCustomInitialElement();
+	RhsSequence getCustomInitialElement();
 
 	RhsPart getSeparator();
 

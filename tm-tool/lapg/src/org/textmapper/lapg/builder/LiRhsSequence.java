@@ -131,8 +131,12 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append("(");
-		toString(sb, parts, " ");
-		sb.append(")");
+		if (parts.length == 1) {
+			parts[0].toString(sb);
+		} else {
+			sb.append("(");
+			toString(sb, parts, " ");
+			sb.append(")");
+		}
 	}
 }

@@ -18,6 +18,8 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 
@@ -294,7 +296,7 @@ public class TMParserCompiler {
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
 
-			RhsPart inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
+			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
 			for (AstReference ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolver.resolve(ref);
@@ -313,14 +315,15 @@ public class TMParserCompiler {
 		} else if (part instanceof TmaRhsQuantifier) {
 			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) part;
 
-			RhsPart inner;
+			RhsSequence inner;
 			TmaRhsPart innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
 				List<TmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = convertPrimary(outer, innerSymRef);
-				inner = builder.symbol(innerTarget, null, innerSymRef);
+				final RhsSymbol symref = builder.symbol(innerTarget, null, innerSymRef);
+				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == TmaRhsQuantifier.KIND_OPTIONAL) {
@@ -346,7 +349,7 @@ public class TMParserCompiler {
 		return builder.choice(result, origin);
 	}
 
-	private RhsPart convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
+	private RhsSequence convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<RhsPart>();
 		if (groupPart == null) {
 			return null;
@@ -360,7 +363,7 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
-	private Symbol createList(Symbol outer, RhsPart inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
+	private Symbol createList(Symbol outer, RhsSequence inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
 		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
 		Nonterminal listSymbol = listsMap.get(descr);
 		if (listSymbol != null) {

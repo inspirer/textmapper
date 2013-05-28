@@ -15,7 +15,7 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 public interface Rule extends SourceElement, UserDataHolder {
@@ -26,7 +26,7 @@ public interface Rule extends SourceElement, UserDataHolder {
 
 	RhsSymbol[] getRight();
 
-	RhsPart getSource();
+	RhsSequence getSource();
 
 	int getPriority();
 }

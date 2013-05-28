@@ -27,14 +27,14 @@ import java.util.List;
  */
 class LiRhsList extends LiRhsRoot implements RhsList {
 
-	private final LiRhsPart element;
+	private final LiRhsSequence element;
 	private final LiRhsPart separator;
 	private final boolean nonEmpty;
-	private final LiRhsPart customInitialElement;
+	private final LiRhsSequence customInitialElement;
 	private final boolean rightRecursive;
 
-	LiRhsList(LiRhsPart element, LiRhsPart separator, boolean nonEmpty,
-			  LiRhsPart customInitialElement, boolean rightRecursive,
+	LiRhsList(LiRhsSequence element, LiRhsPart separator, boolean nonEmpty,
+			  LiRhsSequence customInitialElement, boolean rightRecursive,
 			  boolean isRewrite, SourceElement origin) {
 		super(null, origin);
 		if (element == null) {
@@ -55,7 +55,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	public RhsPart getElement() {
+	public RhsSequence getElement() {
 		return element;
 	}
 
@@ -75,7 +75,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	public LiRhsPart getCustomInitialElement() {
+	public RhsSequence getCustomInitialElement() {
 		return customInitialElement;
 	}
 
@@ -116,7 +116,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	@Override
 	protected void toString(StringBuilder sb) {
 		if (customInitialElement != null) {
-			boolean nonEmptyInitial = !(customInitialElement instanceof RhsSequence && ((RhsSequence) customInitialElement).getParts().length == 0);
+			boolean nonEmptyInitial = customInitialElement.getParts().length != 0;
 			if (nonEmptyInitial) {
 				sb.append("(");
 			}
@@ -163,7 +163,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	protected Iterable<RhsPart> preprocess(RhsPart def) {
+	protected Iterable<RhsSequence> preprocess(RhsPart def) {
 		if (def != this) {
 			throw new IllegalArgumentException();
 		}
@@ -177,13 +177,13 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		listRule.add(rightRecursive ? selfRef : element);
 		LiRhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, def);
 
-		LiRhsPart rule2;
+		LiRhsSequence rule2;
 		if (nonEmpty) {
 			rule2 = customInitialElement != null ? customInitialElement : element;
 		} else {
 			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, def);
 		}
 		register(true, rule1, rule2, customInitialElement, element, separator);
-		return Arrays.<RhsPart>asList(rule1, rule2);
+		return Arrays.<RhsSequence>asList(rule1, rule2);
 	}
 }

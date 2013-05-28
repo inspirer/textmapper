@@ -194,7 +194,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 
 		List<Rule> result = new ArrayList<Rule>();
-		for (RhsPart r : ((LiRhsRoot) liLeft.getDefinition()).preprocess(right)) {
+		for (RhsSequence r : ((LiRhsRoot) liLeft.getDefinition()).preprocess(right)) {
 			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
 			for (RhsSymbol[] arr : expanded) {
 				LiRule rule = new LiRule(rules.size(), left, arr, prio, r);
@@ -294,7 +294,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsList list(RhsPart inner, RhsPart separator, boolean nonEmpty, SourceElement origin) {
+	public RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin) {
 		check(inner, true);
 		if (separator != null) {
 			check(separator, true);
@@ -302,7 +302,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (!nonEmpty && separator != null) {
 			throw new IllegalArgumentException("list with separator should have at least one element");
 		}
-		LiRhsList result = new LiRhsList((LiRhsPart) inner, (LiRhsPart) separator, nonEmpty, null, false, false, origin);
+		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator, nonEmpty, null, false, false, origin);
 		rhsSet.add(result);
 		return result;
 	}

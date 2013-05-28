@@ -56,7 +56,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsOptional optional(RhsPart inner, SourceElement origin);
 
-	RhsList list(RhsPart inner, RhsPart separator, boolean nonEmpty, SourceElement origin);
+	RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin);
 
 	Collection<Rule> addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 

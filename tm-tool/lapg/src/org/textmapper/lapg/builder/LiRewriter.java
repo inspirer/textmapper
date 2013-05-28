@@ -133,15 +133,15 @@ public class LiRewriter {
 			}
 		}
 
-		LiRhsPart element = merge(elements, MergeStrategy.CHOICE);
-		LiRhsPart customInitialElement = merge(initialElements, MergeStrategy.CHOICE);
+		LiRhsSequence element = asSequence(merge(elements, MergeStrategy.CHOICE));
+		LiRhsSequence customInitialElement = asSequence(merge(initialElements, MergeStrategy.CHOICE));
 		if (customInitialElement != null && element.structuralEquals(customInitialElement)) {
 			customInitialElement = null;
 		}
 
 		if (emptyRule != null && (customInitialElement != null || separator != null)) {
 			initialElements.add(emptyRule);
-			customInitialElement = merge(initialElements, MergeStrategy.CHOICE);
+			customInitialElement = asSequence(merge(initialElements, MergeStrategy.CHOICE));
 			if (element.structuralEquals(customInitialElement)) {
 				customInitialElement = null;
 			}
@@ -209,6 +209,13 @@ public class LiRewriter {
 		return strategy == MergeStrategy.CHOICE
 				? new LiRhsChoice(partsArray, true, first)
 				: new LiRhsSequence(null, partsArray, true, first);
+	}
+
+	private static LiRhsSequence asSequence(LiRhsPart part) {
+		if (part instanceof RhsSequence) {
+			return (LiRhsSequence) part;
+		}
+		return new LiRhsSequence(null, new LiRhsPart[]{part}, true, part);
 	}
 
 	private static Terminal asConstantTerminal(RhsPart part) {
