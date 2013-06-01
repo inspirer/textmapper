@@ -7,5 +7,6 @@ class Classdef {
 }
 
 class ClassdeflistElement {
+	Classdef classdef;
 }
 

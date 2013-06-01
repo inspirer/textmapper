@@ -314,24 +314,37 @@ public class TMMapper {
 	private void mapLists() {
 		for (Symbol symbol : grammar.getSymbols()) {
 			if (!(symbol instanceof Nonterminal) || symbol.getType() != null) continue;
-			Nonterminal n = (Nonterminal) symbol;
+			final Nonterminal n = (Nonterminal) symbol;
 			if (!(n.getDefinition() instanceof RhsList)) continue;
-			RhsList list = (RhsList) n.getDefinition();
+			final RhsList list = (RhsList) n.getDefinition();
 
-			AstType elementType = getRhsType(list.getElement());
-			if (elementType != null && list.getCustomInitialElement() != null) {
-				AstType initialElemType = getRhsType(list.getCustomInitialElement());
-				elementType = initialElemType != null ? getJoinType(null, elementType, initialElemType) : null;
-			}
+			final RhsSymbolHandle elementHandle = getSingleSymbol(list.getElement());
+			final RhsSymbolHandle initialElemHandle = list.getCustomInitialElement() != null ? getSingleSymbol(list.getCustomInitialElement()) : null;
 
-			// TODO map RhsSymbols....
+			boolean requiresClass = elementHandle == null || list.getCustomInitialElement() != null && initialElemHandle == null
+					|| initialElemHandle != null && initialElemHandle.getSymbol() != elementHandle.getSymbol();
 
-			if (elementType == null) {
+			if (!requiresClass) {
+				final Symbol listElement = elementHandle.getSymbol();
+				whenMapped(listElement, new Runnable() {
+					@Override
+					public void run() {
+						mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
+						mapper.map(elementHandle.symbol, null, null, true);
+						if (initialElemHandle != null) {
+							mapper.map(initialElemHandle.symbol, null, null, true);
+						}
+					}
+				});
+			} else {
 				AstClass elementClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_element", false), null, n);
-//				mapClass(elementClass, list.getElement(), list.getCustomInitialElement());
-				elementType = elementClass;
+				mapNonterm(n, builder.list(elementClass, list.isNonEmpty(), n));
+				mapper.map(list.getElement(), null, elementClass, true);
+				if (list.getCustomInitialElement() != null) {
+					mapper.map(list.getCustomInitialElement(), null, elementClass, true);
+				}
+				mapClass(elementClass, list.getElement(), list.getCustomInitialElement());
 			}
-			mapNonterm(n, builder.list(elementType, list.isNonEmpty(), n));
 		}
 	}
 
@@ -446,13 +459,25 @@ public class TMMapper {
 		status.report(ProcessingStatus.KIND_ERROR, message, element);
 	}
 
-	private static AstType getRhsType(RhsPart part) {
-		part = withoutConstants(RhsUtil.unwrap(part));
-		if (part instanceof RhsCast) {
-			return ((RhsCast) part).getTarget().getType();
-		}
-		if (part instanceof RhsSymbol) {
-			return ((RhsSymbol) part).getTarget().getType();
+
+	private static RhsSymbolHandle getSingleSymbol(RhsPart part) {
+		part = RhsUtil.unwrap(part);
+		RhsCast cast = null;
+		boolean optional = false;
+		while (part != null) {
+			if (part instanceof RhsSequence) {
+				part = RhsUtil.unwrap(withoutConstants(part));
+			} else if (part instanceof RhsOptional) {
+				part = RhsUtil.unwrap(((RhsOptional) part).getPart());
+				optional = true;
+			} else if (part instanceof RhsCast) {
+				cast = (RhsCast) part;
+				part = RhsUtil.unwrap(cast.getPart());
+			} else if (part instanceof RhsSymbol) {
+				return new RhsSymbolHandle((RhsSymbol) part, cast, optional);
+			} else {
+				part = null;
+			}
 		}
 		return null;
 	}
@@ -652,4 +677,20 @@ public class TMMapper {
 		}
 	}
 
+	private static final class RhsSymbolHandle {
+
+		private final RhsSymbol symbol;
+		private final RhsCast cast;
+		private final boolean isOptional;
+
+		private RhsSymbolHandle(RhsSymbol symbol, RhsCast cast, boolean optional) {
+			this.symbol = symbol;
+			this.cast = cast;
+			this.isOptional = optional;
+		}
+
+		public Symbol getSymbol() {
+			return cast != null ? cast.getTarget() : symbol.getTarget();
+		}
+	}
 }

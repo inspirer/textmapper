@@ -89,5 +89,8 @@ class StructuralExpression : Expression {
 }
 
 class StructuralExpressionDOLLAR1Element {
+	String identifier;
+	MapSeparator mapSeparator;
+	Expression expression;
 }
 
