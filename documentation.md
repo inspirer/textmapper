@@ -138,7 +138,7 @@ Soft keywords don't contribute to a reserved keywords set, allowing them to be u
 
 The main restriction of soft terminals is that you cannot use them in the same context as their respective class terminals. This will result in an ambiguity as to whether the soft terminal should be interpreted as itself or its class terminal. In addition to LR shift/reduce and reduce/reduce conflicts, soft terminals can introduce two more types of conflicts: _soft shift/reduce_ and _soft reduce/reduce_.
 
-	# sample about conflicts
+	# example of conflicts
 
 ## Lexer states
 
@@ -290,7 +290,7 @@ Notes
 
 ## Parser
 
-A parser component, given a stream of tokens, tries to build a parse tree, or reports a syntax error in case of failure. The parser specification consists of EBNF-like production rules, which are used to rewrite the input to the start nonterminal symbol (in a bottom-up manner). There should be at least one grammar rule defining the start symbol (the root of the parse tree), which by convention is called **_input_**.
+A parser component, given a stream of tokens, tries to build a parse tree, or reports a syntax error in case of failure. The parser specification consists of EBNF-like production rules, which are used to rewrite input to nonterminal start symbols (in a bottom-up manner). There should be at least one grammar rule defining a start symbol (the root of the parse tree), which by convention is called **_input_**.
 
 	# the minimum grammar: input is empty
 	input ::= ;
@@ -305,10 +305,122 @@ The **_%input_** directive allows you to override the start symbol, or even intr
 	start ::= ID '=' expr ;
 	expr ::= IntegerConstant ;
 
-To use an optional symbol (meaning the symbol or an empty string is accepted), the **opt** suffix can be added to the reference. Defining a symbol ending in `opt' is forbidden.
+To use an optional symbol (meaning either that symbol or an empty string is accepted), the **opt** suffix can be added to the symbol reference. Defining a symbol ending in `opt' is forbidden.
 
 	# a new rule is implicitly added: IDopt ::= ID | ;
 	input ::= IDopt ;
+
+As in lexer rules, the type of the associated value can be specified right after the symbol name.
+
+	# associated value is an AST class
+	IfStatement (AstIfStatement) ::= if '(' expr ')' statement ;
+
+## Rule syntax extensions
+
+Textmapper supports extended syntax for production rules. It includes grouping, lists, unordered sequences, alternations and options. These extensions are substituted before the table generation step to form a context-free grammar. As a part of this process, rules containing any kind of internal alternation are replaced with several context-free rules having the same derivation.
+
+Parentheses are used for grouping in the usual manner. A question mark after a symbol reference or a group means that reference or group is optional. The following rule is expanded into 4 rules, where all combinations are expressed individually.
+
+	javaImport ::= import static? qualifiedID ('.' '*')? ';' ;
+
+	# is reduced to
+	javaImport ::=
+		 import qualifiedID ';'
+		| import qualifiedID '.' '*' ';'
+		| import static qualifiedID ';'
+		| import static qualifiedID '.' '*' ';' ;
+
+The difference between using the **opt** suffix and a question mark operator is that the latter does not introduce a new nonterminal. This may result in slightly more generated code, but helps to prevent LR conflicts.
+
+In-group alternation is a way to avoid repetitions.
+
+	# accepts "block ID code" and "block ID semicolon"
+	element ::= block ID (code | semicolon) ;
+
+Unordered sequences accept their elements in any order but each element must appear exactly once (unless it is optional). Such sequences are formed by joining the elements with an ampersand ('&') operator. Parentheses can be used to override precedence or to improve readability.
+
+	# accepts all permutations of A, B and C as well as an empty string
+	ABC ::= (A & B & C)? ;
+
+	# accepts: int i, const int i, int volatile i, etc.
+	Var ::= Type & Modifiers? ID ;
+	Modifiers ::= const | volatile ;
+
+Lists can be introduced on the right-hand side of a rule without the need for a separate nonterminal. An element which may appear multiple times should be followed by a quantifier. This can be either a plus (one or more elements are accepted) or a star (in this case, an empty string is accepted as well). There is a special syntax for lists with a separator. The sequence of separator tokens follows the list element, prefixed with the ```separator``` keyword. A quantifier should then be applied to the whole block enclosed in parentheses.
+
+	# one or more methods
+	input ::= method+ ;
+
+	# comma separated list of zero or more parameters
+	methodHeader ::= ID leftParen (parameter separator comma)* rightParen ;
+
+As with **opt** versus ```?```, there are two ways to express lists accepting an empty string. The star quantifier handles an empty production in the created list nonterminal, while the ```+?``` operator inlines it on the caller side. Inlining is more verbose, but less likely to cause LR conflicts.
+
+## Semantic Actions
+
+Semantic actions are code in the target language, which is executed when the parser reaches that point in the grammar. Most actions are declared at the end of the rule, where they can be used to compute the resulting associated value for the left-hand nonterminal. ```$$``` stands for the resulting variable.
+
+	# simple action
+	One (Integer) ::= '1'   { $$ = 1; } ;
+
+To refer to the values of the right-hand side symbols, use a dollar sign followed by the position or the name of the symbol. Symbols are numbered from left to right starting with 0, so the leftmost one can be referred to as ```$0```. If a symbol is not matched, its associated value will be null (nil, NULL, 0, etc., depending on the target language and type).
+
+	# for "a - b": $0 = "a", $2 = null,  $4 = "b"
+	input ::= id ('+' id | '-' id)? { /* action */ } ;
+
+An associated value for the symbol can be used only if its type is declared. In the previous example ```$1``` and ```$3``` are undefined and their usages are reported as compile-time errors.
+
+When the same symbol is used twice on the right-hand side of a rule, it cannot be referred to by its own name due to ambiguity (reported as an error). In this case we can provide an alias for it: ```alias=symbol```.
+
+	expr (int) ::=
+	    left=expr '+' right=expr  { $$ = $left + $right; }
+	  | ID '(' argumentsopt ')'   { $$ = call($ID, $argumentsopt); }
+	;
+
+It is possible to declare actions in the middle of a rule. Only symbols to the left of the action are available for referring to (as the rest of the rule has not been parsed by then). Each such mid-rule action introduces a new auxiliary nonterminal in the grammar (which triggers its execution), so it may cause LR conflicts.
+
+	# actions conflict: lalr(1) is not enough to decide which action to execute
+	expr ::=
+	    expr { fieldAccess($expr); } '.' 'ID'
+	  | expr { methodAccess($expr); } '.' 'ID' '(' arguments ')'
+	;
+
+Although mid-rule actions have associated nonterminals, they don't have associated values (the use of ```$$``` is forbidden). This keeps the syntax clean, while for scenarios where associated data is needed one can still extract an action into a separate nonterminal.
+
+Due to syntax extensions, it may not be completely clear if the action is a mid-rule action (and so requires an additional nonterminal). If no symbol can appear after the action, it is considered as a rule action. If there are multiple rule actions, they are executed left to right when the rule is reduced.
+
+	# runs aParsed() when "read a" is reduced
+	input ::= read (a { aParsed(); } | b | c) ;
+
+	# the following two actions are executed one after another
+	# when "minus expr" is matched
+	input ::= (minus { handleMinus(); })? expr { handleExpr(); }
+
+Semantic actions are processed using the Textmapper templates engine, which uses a dollar sign as the start symbol of all template constructs. All dollar signs in the target language must be escaped. Here is a brief explanation of the most used constructs:
+
+	${expr}     evaluates expression and prints out the result
+	$name	       shortcut for ${name} (or ${this.name})
+	$0, $1..    shortcuts for ${this[index]}
+	$$          shortcut for ${this.'$'}
+	${'$'}      the best way to print a single dollar sign
+
+
+
+## Symbol Locations
+
+The generated lexer and parser can track the locations of the parsed elements in the source text. When this feature is turned on, each symbol gets an associated location, which can be accessed in actions using a special syntax. By default, Textmapper tracks only the starting line and offset of each token, which is enough for verbose error reporting for most applications. The following two options control the available location attributes.
+
+	# turns on everything
+	positions = "line,column,offset"
+	endpositions = "line,column,offset"
+
+Location attributes of terminal symbols are filled out by the lexer. A nonterminal inherits its starting and ending locations from the first and last symbols on the right-hand side of the matched rule. If the rule is empty, then both locations are set to the starting position of the next token in the stream.
+
+	# store line and offsets in the AST class
+	assignment ::=
+	    ID '=' expr
+	          { $$ = new Assignment($ID, $expr, ${ID.line} ${ID.offset}, ${expr.endoffset}); }
+	;
 
 ## ....
 

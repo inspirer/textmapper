@@ -4,21 +4,22 @@ title: Textmapper &middot; Home
 kind: home
 ---
 
-Textmapper is a tool for language development. It generates bottom-up parsers with complete infrastructure from a high-level, declarative specification. Textmapper spreads the generative approach onto different aspects of language design and tries to generate as much derived, boilerplate code as possible. With a little effort you get an abstract syntax tree, code formatters, and even full-featured editor plug-ins for major IDEs.
+### Introduction
 
-Textmapper takes annotated context-free grammar and outputs a program able to parse the language defined by that grammar. Generated parsers are deterministic and employ LALR(1) parser tables. In grammar handling aspects it is very similar to Bison, with some additional features on top. If you are familiar with Bison, you won't get lost. Textmapper includes quite a sophisticated scanner generator (Unicode-aware, specified using regular expressions, almost flex/JFlex compatible).
+Textmapper is a tool for language development. It takes a formal language specification (a grammar) and generates code to parse that language - a lexer/parser and a set of AST classes. Textmapper supports EBNF-like production rules and can map a grammar to an AST, or even derive an AST automatically from the grammar. This means you can get code transforming a sequence of characters into an AST without any additional coding work. Textmapper also provides back-transformation of AST into text, and by annotating the rules, you can get it perfectly formatted. Textmapper has a sophisticated scanner generator built-in.
 
-Some of the features are:
+Textmapper supports multiple target languages. By avoiding code in the grammar, Textmapper gives you exactly the same parsing functionality in different languages as well as clean and concise grammars. By default, the generated parser code has no runtime dependencies and contains all required algorithms.
 
-* lalr(1), error recovery, operator precedence
-* unicode support
-* multiple input symbols
-* soft keywords
-* smart AST generation
-* option to parse without an end-of-input marker
+### Motivation
 
-License:
+The idea behind Textmapper was to come up with an easy-to-use, declarative tool for bottom-up parsing algorithms (like LALR, IELR or GLR), leveraging their power to the full. It is similar to what ANTLR is for LL languages. Textmapper was created with the belief that the bottom-up approach works better than top-down approaches in most cases, and the only reason people still tend to use the latter is the lack of proper tools. Textmapper is going to fill this gap.
 
-* Textmapper - Apache 2
-* IntelliJ IDEA plug-in - GNU General Public License
-* Eclipse plug-in - Eclipse Public license
+### Tooling
+
+Textmapper comes as a separate command-line tool, with integration plugins for Eclipse and IntelliJ IDEA.
+
+### License
+
+TextMapper tool is distributed under the [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0).
+
+Plug-ins for Eclipse and IntelliJ IDEA are made available under the Eclipse Public License and the General Public License (version 3 or above), respectively.
