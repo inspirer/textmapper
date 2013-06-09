@@ -16,7 +16,7 @@
 package org.textmapper.lapg.api.rule;
 
 /**
- * evgeny, 11/24/12
+ * Unordered sequence of elements.
  */
 public interface RhsUnordered extends RhsPart {
 

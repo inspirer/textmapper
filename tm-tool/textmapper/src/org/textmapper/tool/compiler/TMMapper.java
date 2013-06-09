@@ -6,6 +6,7 @@ import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
 
@@ -232,9 +233,7 @@ public class TMMapper {
 					final Symbol target = unwrapDecorators(((RhsSymbol) master).getTarget());
 					if (supportsExtending(target)) {
 						isInterface = true;
-						if (master != r) {
-							passSymbols.add((RhsSymbol) master);
-						}
+						passSymbols.add((RhsSymbol) master);
 						extList.add((Nonterminal) target);
 						continue;
 					}

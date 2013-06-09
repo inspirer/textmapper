@@ -18,7 +18,7 @@ package org.textmapper.lapg.api.rule;
 import org.textmapper.lapg.api.ast.AstType;
 
 /**
- * evgeny, 11/24/12
+ * Ordered sequence of elements.
  */
 public interface RhsSequence extends RhsPart {
 
@@ -26,7 +26,11 @@ public interface RhsSequence extends RhsPart {
 
 	RhsPart[] getParts();
 
-	AstType getType();
-
 	RhsMapping getMapping();
+
+	/**
+	 * Overrides the type of the mapped field.
+	 * Should be a subtype of getMapping().getField().getType();
+	 */
+	AstType getType();
 }

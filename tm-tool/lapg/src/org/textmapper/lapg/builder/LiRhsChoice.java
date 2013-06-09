@@ -52,11 +52,11 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRhsChoice that = (LiRhsChoice) o;
-		return structuralEquals(parts, that.parts);
+		return structurallyEquals(parts, that.parts);
 	}
 
 	@Override

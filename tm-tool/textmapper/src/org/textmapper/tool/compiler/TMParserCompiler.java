@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 

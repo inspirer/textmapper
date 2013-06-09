@@ -41,7 +41,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			throw new NullPointerException();
 		}
 		if (separator != null && !nonEmpty) {
-			throw new IllegalArgumentException("list with separator should have at least one element");
+			throw new IllegalArgumentException("lists with separator should have at least one element");
 		}
 		if (customInitialElement != null && !nonEmpty) {
 			throw new IllegalArgumentException("custom initial element is allowed only in non-empty lists");
@@ -85,17 +85,17 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRhsList that = (LiRhsList) o;
 
-		if (separator != null ? !separator.structuralEquals(that.separator) : that.separator != null) return false;
-		if (customInitialElement != null ? !customInitialElement.structuralEquals(that.customInitialElement) : that.customInitialElement != null)
+		if (separator != null ? !separator.structurallyEquals(that.separator) : that.separator != null) return false;
+		if (customInitialElement != null ? !customInitialElement.structurallyEquals(that.customInitialElement) : that.customInitialElement != null)
 			return false;
 		if (nonEmpty != that.nonEmpty) return false;
 		if (rightRecursive != that.rightRecursive) return false;
-		return element.structuralEquals(that.element);
+		return element.structurallyEquals(that.element);
 	}
 
 	@Override

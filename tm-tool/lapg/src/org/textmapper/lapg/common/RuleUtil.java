@@ -15,73 +15,17 @@
  */
 package org.textmapper.lapg.common;
 
-import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
 
 /**
- * evgeny, 12/31/12
+ * TODO remove
  */
 public class RuleUtil {
 
 	private RuleUtil() {
-	}
-
-	public static RhsSymbol[] getAllSymbols(RhsPart p) {
-		final List<RhsSymbol> result = new ArrayList<RhsSymbol>();
-		p.accept(new RhsSwitch<Object>() {
-			@Override
-			public Object caseChoice(RhsChoice p) {
-				for (RhsPart part : p.getParts()) {
-					part.accept(this);
-				}
-				return null;
-			}
-
-			@Override
-			public Object caseOptional(RhsOptional p) {
-				return p.getPart().accept(this);
-			}
-
-			@Override
-			public Object caseSequence(RhsSequence p) {
-				for (RhsPart part : p.getParts()) {
-					part.accept(this);
-				}
-				return null;
-			}
-
-			@Override
-			public Object caseSymbol(RhsSymbol p) {
-				result.add(p);
-				return null;
-			}
-
-			@Override
-			public Object caseUnordered(RhsUnordered p) {
-				for (RhsPart part : p.getParts()) {
-					part.accept(this);
-				}
-				return null;
-			}
-
-			@Override
-			public Object caseAssignment(RhsAssignment p) {
-				return p.getPart().accept(this);
-			}
-
-			@Override
-			public Object caseCast(RhsCast p) {
-				return p.getPart().accept(this);
-			}
-
-			@Override
-			public Object caseList(RhsList p) {
-				throw new UnsupportedOperationException();
-			}
-		});
-		return result.toArray(new RhsSymbol[result.size()]);
 	}
 
 	/**
@@ -197,24 +141,9 @@ public class RuleUtil {
 		}
 	}
 
-	public static boolean containsRef(RhsPart part, final Symbol ref) {
-		return part.accept(new AnySwitchBase() {
-			@Override
-			public Boolean caseSymbol(RhsSymbol p) {
-				return p.getTarget() == ref;
-			}
-		});
-	}
-
 	private static RhsSymbol getAssignmentSymbol(RhsAssignment p) {
-		RhsPart part = p.getPart();
-		if (part instanceof RhsOptional) {
-			part = ((RhsOptional) part).getPart();
-		}
-		if (part instanceof RhsCast) {
-			part = ((RhsCast) part).getPart();
-		}
-		return part instanceof RhsSymbol && !p.isAddition() ? (RhsSymbol) part : null;
+		final RhsPart part = RhsUtil.unwrapEx(p, true, true, true);
+		return part instanceof RhsSymbol ? (RhsSymbol) part : null;
 	}
 
 

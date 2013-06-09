@@ -59,7 +59,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		this.parent = parent;
 	}
 
-	public abstract boolean structuralEquals(LiRhsPart o);
+	public abstract boolean structurallyEquals(LiRhsPart o);
 
 	public abstract int structuralHashCode();
 
@@ -87,7 +87,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		return null;
 	}
 
-	protected static boolean structuralEquals(LiRhsPart[] left, LiRhsPart[] right) {
+	protected static boolean structurallyEquals(LiRhsPart[] left, LiRhsPart[] right) {
 		if (left == right) {
 			return true;
 		}
@@ -103,7 +103,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		for (int i = 0; i < length; i++) {
 			LiRhsPart l = left[i];
 			LiRhsPart r = right[i];
-			if (l == null ? r != null : !l.structuralEquals(r))
+			if (l == null ? r != null : !l.structurallyEquals(r))
 				return false;
 		}
 
@@ -159,7 +159,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			StructuralObject that = (StructuralObject) o;
-			return part.structuralEquals(that.part);
+			return part.structurallyEquals(that.part);
 		}
 
 		@Override

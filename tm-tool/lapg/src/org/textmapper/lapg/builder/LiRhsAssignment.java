@@ -61,14 +61,14 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiRhsAssignment that = (LiRhsAssignment) o;
 		if (addition != that.addition) return false;
 		if (!name.equals(that.name)) return false;
-		return inner.structuralEquals(that.inner);
+		return inner.structurallyEquals(that.inner);
 	}
 
 	@Override

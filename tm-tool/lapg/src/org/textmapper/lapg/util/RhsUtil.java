@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.tool.compiler;
+package org.textmapper.lapg.util;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * evgeny, 12/7/12
@@ -92,6 +96,59 @@ public class RhsUtil {
 		return p instanceof RhsSequence && ((RhsSequence) p).getParts().length == 0
 				|| p instanceof RhsChoice && ((RhsChoice) p).getParts().length == 0
 				|| p instanceof RhsUnordered && ((RhsUnordered) p).getParts().length == 0;
+	}
+
+	public static Iterable<RhsPart> getChildren(RhsPart part) {
+		if (part instanceof RhsSequence) {
+			return Arrays.asList(((RhsSequence) part).getParts());
+		} else if (part instanceof RhsOptional) {
+			return Arrays.asList(((RhsOptional) part).getPart());
+		} else if (part instanceof RhsCast) {
+			return Arrays.asList(((RhsCast) part).getPart());
+		} else if (part instanceof RhsAssignment) {
+			return Arrays.asList(((RhsAssignment) part).getPart());
+		} else if (part instanceof RhsChoice) {
+			return Arrays.asList(((RhsChoice) part).getParts());
+		} else if (part instanceof RhsUnordered) {
+			return Arrays.asList(((RhsUnordered) part).getParts());
+		}
+		return null;
+	}
+
+	public static boolean containsRef(RhsPart part, final Symbol ref) {
+		part = unwrapEx(part, true, true, true);
+		if (part instanceof RhsSymbol) {
+			return ref == ((RhsSymbol) part).getTarget();
+		}
+		final Iterable<RhsPart> children = getChildren(part);
+		if (children == null) return false;
+
+		for (RhsPart child : children) {
+			if (containsRef(child, ref)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static RhsSymbol[] getRhsSymbols(RhsPart p) {
+		final List<RhsSymbol> result = new ArrayList<RhsSymbol>();
+		collectRhsSymbols(p, result);
+		return result.toArray(new RhsSymbol[result.size()]);
+	}
+
+	private static void collectRhsSymbols(RhsPart part, List<RhsSymbol> result) {
+		part = unwrapEx(part, true, true, true);
+		if (part instanceof RhsSymbol) {
+			result.add((RhsSymbol) part);
+			return;
+		}
+		final Iterable<RhsPart> children = getChildren(part);
+		if (children == null) return;
+
+		for (RhsPart child : children) {
+			collectRhsSymbols(child, result);
+		}
 	}
 
 	public static RhsChoice asChoice(final RhsPart... parts) {

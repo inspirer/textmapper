@@ -65,7 +65,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 

@@ -3,17 +3,14 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.*;
-import org.textmapper.lapg.common.RuleUtil;
+import org.textmapper.lapg.util.RhsUtil;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * evgeny, 2/1/13
  */
-public class LiRewriter {
+public class ListsRewriter {
 
 	private enum ListKind {
 		NONE,
@@ -23,7 +20,7 @@ public class LiRewriter {
 
 	private LiSymbol[] symbols;
 
-	public LiRewriter(LiSymbol[] symbols) {
+	public ListsRewriter(LiSymbol[] symbols) {
 		this.symbols = symbols;
 	}
 
@@ -31,7 +28,7 @@ public class LiRewriter {
 	 * Finds list non-terminals and replaces their definition with RhsList.
 	 * (see rewrite.tm)
 	 */
-	public void rewriteLists() {
+	public void rewrite() {
 		for (LiSymbol symbol : symbols) {
 			if (!(symbol instanceof Nonterminal)) continue;
 
@@ -41,6 +38,9 @@ public class LiRewriter {
 			RhsChoice def = (RhsChoice) nonterm.getDefinition();
 			ListKind kind = getListKind(def);
 			if (kind != ListKind.NONE) {
+
+				// TODO respect RhsMapping ?
+
 				RhsList list = createList(def, kind == ListKind.RIGHT_RECURSIVE);
 				// debug("Rewriting\n" + def.toString() + "\n" + "with\n" + list.toString() + "\n");
 				((LiRhsRoot) def).rewrite(list);
@@ -55,7 +55,7 @@ public class LiRewriter {
 		final Nonterminal list = def.getLeft();
 		for (RhsPart rule : def.getParts()) {
 			if (!(rule instanceof RhsSequence)) {
-				if (!RuleUtil.containsRef(rule, list)) {
+				if (!RhsUtil.containsRef(rule, list)) {
 					continue;
 				}
 
@@ -74,7 +74,7 @@ public class LiRewriter {
 					} else {
 						return ListKind.NONE;
 					}
-				} else if (RuleUtil.containsRef(s, list)) {
+				} else if (RhsUtil.containsRef(s, list)) {
 					return ListKind.NONE;
 				}
 			}
@@ -107,48 +107,76 @@ public class LiRewriter {
 					emptyRule = (LiRhsPart) rule;
 					continue;
 				}
-				if (ruleSeq.length == 1) {
-					// unwrap sequence
-					initialElements.add((LiRhsPart) ruleSeq[0]);
-					continue;
-				}
 			}
-			initialElements.add((LiRhsPart) rule);
+			initialElements.add((LiRhsPart) RhsUtil.unwrap(rule));
 		}
 
 		assert !listRules.isEmpty();
 		List<LiRhsSymbol> separator = getCommonSeparator(listRules, rightRecursive);
 
-		List<LiRhsPart> elements = new ArrayList<LiRhsPart>();
 		int skipParts = 1 + (separator != null ? separator.size() : 0);
-		for (LiRhsSequence part : listRules) {
-			RhsPart[] ruleSeq = part.getParts();
-			if (ruleSeq.length == skipParts + 1) {
-				elements.add((LiRhsPart) ruleSeq[rightRecursive ? 0 : ruleSeq.length - 1]);
-			} else {
-				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
-				//noinspection SuspiciousSystemArraycopy
-				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
-				elements.add(new LiRhsSequence(null, newArr, true, part));
-			}
-		}
+		List<LiRhsPart> elements = extractListElements(listRules, skipParts, rightRecursive);
 
-		LiRhsSequence element = asSequence(merge(elements, MergeStrategy.CHOICE));
+		final LiRhsSequence element = asSequence(merge(elements, MergeStrategy.CHOICE));
 		LiRhsSequence customInitialElement = asSequence(merge(initialElements, MergeStrategy.CHOICE));
-		if (customInitialElement != null && element.structuralEquals(customInitialElement)) {
+		LiRhsSequence rewritten = null;
+		if (customInitialElement != null && element.structurallyEquals(customInitialElement)) {
+			rewritten = customInitialElement;
 			customInitialElement = null;
 		}
 
+		// Note: lists with separator should have at least one element
 		if (emptyRule != null && (customInitialElement != null || separator != null)) {
+			rewritten = null;
 			initialElements.add(emptyRule);
 			customInitialElement = asSequence(merge(initialElements, MergeStrategy.CHOICE));
-			if (element.structuralEquals(customInitialElement)) {
+			if (element.structurallyEquals(customInitialElement)) {
+				rewritten = customInitialElement;
 				customInitialElement = null;
 			}
 			emptyRule = null;
 		}
 
-		return new LiRhsList(element, merge(separator, MergeStrategy.SEQUENCE), emptyRule == null, customInitialElement, rightRecursive, true, def);
+		if (rewritten != null) {
+			registerRewrite(rewritten, element);
+		}
+
+		return new LiRhsList(element, merge(separator, MergeStrategy.SEQUENCE), emptyRule == null,
+				customInitialElement, rightRecursive, true, def);
+	}
+
+	private static void registerRewrite(RhsSymbol from, RhsSymbol to) {
+		assert from.getUserData(RhsSymbol.UD_REWRITTEN) == null;
+		from.putUserData(RhsSymbol.UD_REWRITTEN, to);
+	}
+
+	private static void registerRewrite(RhsPart from, RhsPart to) {
+		final RhsSymbol[] fromArr = RhsUtil.getRhsSymbols(from);
+		final RhsSymbol[] toArr = RhsUtil.getRhsSymbols(to);
+		assert fromArr.length == toArr.length;
+
+		for (int i = 0; i < fromArr.length; i++) {
+			assert ((LiRhsPart) fromArr[i]).structurallyEquals((LiRhsPart) toArr[i]);
+			registerRewrite(fromArr[i], toArr[i]);
+		}
+	}
+
+	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules, int skipParts, boolean rightRecursive) {
+		List<LiRhsPart> result = new ArrayList<LiRhsPart>();
+
+		for (LiRhsSequence part : listRules) {
+			RhsPart[] ruleSeq = part.getParts();
+			if (ruleSeq.length == skipParts + 1) {
+				result.add((LiRhsPart) ruleSeq[rightRecursive ? 0 : ruleSeq.length - 1]);
+			} else {
+				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
+				//noinspection SuspiciousSystemArraycopy
+				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
+				result.add(new LiRhsSequence(null, newArr, true, part));
+			}
+		}
+
+		return result;
 	}
 
 	private static List<LiRhsSymbol> getCommonSeparator(Collection<LiRhsSequence> listRules, boolean rightRecursive) {
@@ -163,24 +191,32 @@ public class LiRewriter {
 
 		for (int i = 0; i < maxLen; i++) {
 			Terminal sep = null;
-			RhsPart first = null;
+			RhsSymbol first = null;
+			LinkedList<RhsSymbol> rewriteCandidates = new LinkedList<RhsSymbol>();
+
 			for (LiRhsSequence rule : listRules) {
 				RhsPart[] parts = rule.getParts();
 				RhsPart part = parts[rightRecursive ? parts.length - 2 - i : 1 + i];
 				Terminal curr = asConstantTerminal(part);
-				if (first == null) {
-					first = part;
-					sep = curr;
-				}
-				if (curr == null || sep != curr) {
+				if (curr == null || sep != null && sep != curr) {
 					sep = null;
 					break;
 				}
+				if (first == null) {
+					first = (RhsSymbol) part;
+					sep = curr;
+				} else {
+					rewriteCandidates.add((RhsSymbol) part);
+				}
 			}
-			if (sep != null) {
-				result.add((LiRhsSymbol) first);
-			} else {
+
+			if (sep == null) {
 				break;
+			}
+
+			result.add((LiRhsSymbol) first);
+			for (RhsSymbol c : rewriteCandidates) {
+				registerRewrite(c, first);
 			}
 		}
 

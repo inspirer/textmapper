@@ -74,11 +74,11 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRootRhsChoice that = (LiRootRhsChoice) o;
-		return structuralEquals(getParts(), that.getParts());
+		return structurallyEquals(getParts(), that.getParts());
 	}
 
 	@Override

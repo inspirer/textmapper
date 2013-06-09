@@ -58,11 +58,11 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRhsOptional that = (LiRhsOptional) o;
-		return inner.structuralEquals(that.inner);
+		return inner.structurallyEquals(that.inner);
 	}
 
 	@Override

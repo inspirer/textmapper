@@ -73,11 +73,11 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRhsSequence that = (LiRhsSequence) o;
-		return structuralEquals(parts, that.parts);
+		return structurallyEquals(parts, that.parts);
 	}
 
 	@Override

@@ -35,6 +35,7 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 		super(origin);
 		this.asSymbol = asSymbol;
 		this.inner = inner;
+		register(false, inner);
 	}
 
 	@Override
@@ -53,13 +54,13 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiRhsCast that = (LiRhsCast) o;
 		if (!asSymbol.equals(that.asSymbol)) return false;
-		return inner.structuralEquals(that.inner);
+		return inner.structurallyEquals(that.inner);
 	}
 
 	@Override

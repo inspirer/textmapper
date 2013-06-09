@@ -60,11 +60,11 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	}
 
 	@Override
-	public boolean structuralEquals(LiRhsPart o) {
+	public boolean structurallyEquals(LiRhsPart o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		LiRhsUnordered that = (LiRhsUnordered) o;
-		return structuralEquals(parts, that.parts);
+		return structurallyEquals(parts, that.parts);
 
 	}
 

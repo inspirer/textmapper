@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsAssignment;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
+import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
@@ -139,7 +140,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		private void loadSourceSymbols() {
 			if (sourceSymbols == null) {
-				sourceSymbols = RuleUtil.getAllSymbols(rule.getSource());
+				sourceSymbols = RhsUtil.getRhsSymbols(rule.getSource());
 			}
 		}
 
