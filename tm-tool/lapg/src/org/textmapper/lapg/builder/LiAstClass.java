@@ -27,14 +27,16 @@ import java.util.*;
 class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElement {
 
 	private final String name;
+	private final boolean isInterface;
 	private final AstClass container;
 	private final SourceElement origin;
 	private final List<AstField> fields = new ArrayList<AstField>();
 	private final List<AstClassifier> inner = new ArrayList<AstClassifier>();
 	private final List<AstClass> superClasses = new ArrayList<AstClass>();
 
-	public LiAstClass(String name, AstClass container, SourceElement origin) {
+	public LiAstClass(String name, boolean isInterface, AstClass container, SourceElement origin) {
 		this.name = name;
+		this.isInterface = isInterface;
 		this.container = container;
 		this.origin = origin;
 	}
@@ -50,11 +52,19 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	}
 
 	@Override
+	public boolean isInterface() {
+		return isInterface;
+	}
+
+	@Override
 	public AstClass[] getSuper() {
 		return superClasses.toArray(new AstClass[superClasses.size()]);
 	}
 
 	void addSuper(AstClass cl) {
+		if(isInterface && !(cl.isInterface())) {
+			throw new IllegalArgumentException("interfaces cannot extend classes");
+		}
 		superClasses.add(cl);
 	}
 

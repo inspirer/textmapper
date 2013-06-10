@@ -79,7 +79,23 @@ class LiAstBuilder implements AstBuilder {
 			check(container);
 		}
 		checkName(container, name);
-		LiAstClass result = new LiAstClass(name, container, origin);
+		LiAstClass result = new LiAstClass(name, false, container, origin);
+		if (container != null) {
+			((LiAstClass) container).addInner(result);
+		} else {
+			classifiers.add(result);
+		}
+		mine.add(result);
+		return result;
+	}
+
+	@Override
+	public AstClass addInterface(String name, AstClass container, SourceElement origin) {
+		if (container != null) {
+			check(container);
+		}
+		checkName(container, name);
+		LiAstClass result = new LiAstClass(name, true, container, origin);
 		if (container != null) {
 			((LiAstClass) container).addInner(result);
 		} else {
@@ -99,7 +115,7 @@ class LiAstBuilder implements AstBuilder {
 	@Override
 	public AstEnum addEnum(String name, AstClass container, SourceElement origin) {
 		checkName(container, name);
-		LiAstEnum result = new LiAstEnum(name, origin);
+		LiAstEnum result = new LiAstEnum(name, container, origin);
 		if (container != null) {
 			((LiAstClass) container).addInner(result);
 		} else {

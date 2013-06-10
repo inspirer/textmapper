@@ -65,6 +65,7 @@ Lchoice:	 /choice/
 
 # Grammar
 
+@_class
 input ::=
 	declarations ;
 

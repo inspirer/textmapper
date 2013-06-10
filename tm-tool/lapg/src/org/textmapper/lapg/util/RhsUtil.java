@@ -98,6 +98,17 @@ public class RhsUtil {
 				|| p instanceof RhsUnordered && ((RhsUnordered) p).getParts().length == 0;
 	}
 
+	public static boolean hasMapping(RhsSequence seq) {
+		RhsMapping mapping = seq.getMapping();
+		if (mapping == null) return false;
+
+		if (mapping.getField() == null && mapping.getValue() == null && !mapping.isAddition() && seq.getType() == null) {
+			// identity mapping => ignore
+			return false;
+		}
+		return true;
+	}
+
 	public static Iterable<RhsPart> getChildren(RhsPart part) {
 		if (part instanceof RhsSequence) {
 			return Arrays.asList(((RhsSequence) part).getParts());

@@ -66,6 +66,7 @@ _skipSoftKW: /xyzzz/	(soft)
 
 %input classdef_NoEoi no-eoi;
 
+@_interface
 classdef_NoEoi ::=
 	classdef ;
 

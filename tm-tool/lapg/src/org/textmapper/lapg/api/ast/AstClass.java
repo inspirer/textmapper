@@ -20,11 +20,11 @@ import org.textmapper.lapg.api.UserDataHolder;
 
 public interface AstClass extends AstClassifier, AstType, UserDataHolder, SourceElement {
 
+	boolean isInterface();
+
 	AstClass[] getSuper();
 
 	AstField[] getFields();
-
-	AstClass getContainingClass();
 
 	AstClassifier[] getInner();
 }

@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.ast.AstClass;
 import org.textmapper.lapg.api.ast.AstEnum;
 import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstType;
@@ -28,16 +29,23 @@ class LiAstEnum extends LiUserDataHolder implements AstEnum, DerivedSourceElemen
 
 	private final String name;
 	private final List<LiAstEnumMember> memberList = new ArrayList<LiAstEnumMember>();
+	private final AstClass container;
 	private final SourceElement origin;
 
-	public LiAstEnum(String name, SourceElement origin) {
+	public LiAstEnum(String name, AstClass container, SourceElement origin) {
 		this.name = name;
+		this.container = container;
 		this.origin = origin;
 	}
 
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public AstClass getContainingClass() {
+		return container;
 	}
 
 	@Override

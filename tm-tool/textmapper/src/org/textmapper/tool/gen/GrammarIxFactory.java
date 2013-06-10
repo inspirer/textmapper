@@ -20,6 +20,8 @@ import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsAssignment;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.RuleUtil;
 import org.textmapper.lapg.util.RhsUtil;
@@ -135,6 +137,12 @@ public class GrammarIxFactory extends JavaIxFactory {
 							evaluationStrategy, rootContext, templatePackage);
 				}
 			}
+			if (args != null && args.length == 1) {
+				if ("mappedSymbols".equals(methodName)) {
+					// TODO move to RhsSequenceIxObject
+					return getMappedSymbols((RhsSequence) args[0]);
+				}
+			}
 			return super.callMethod(methodName, args);
 		}
 
@@ -143,6 +151,38 @@ public class GrammarIxFactory extends JavaIxFactory {
 				sourceSymbols = RhsUtil.getRhsSymbols(rule.getSource());
 			}
 		}
+
+		private RhsPart[] getMappedSymbols(RhsSequence seq) {
+			List<RhsPart> result = new ArrayList<RhsPart>();
+			for (RhsPart p : seq.getParts()) {
+				collectMappedSymbols(p, result);
+			}
+			return result.toArray(new RhsPart[result.size()]);
+		}
+
+		private void collectMappedSymbols(RhsPart part, List<RhsPart> r) {
+			if (part instanceof RhsSymbol) {
+				RhsSymbol sym = (RhsSymbol) part;
+				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
+				if ((rewrittenTo != null ? rewrittenTo : sym).getMapping() != null) {
+					r.add(part);
+					return;
+				}
+			}
+
+			if (part instanceof RhsSequence && RhsUtil.hasMapping((RhsSequence) part)) {
+				r.add(part);
+				return;
+			}
+
+			Iterable<RhsPart> children = RhsUtil.getChildren(part);
+			if (children == null) return;
+
+			for (RhsPart c : children) {
+				collectMappedSymbols(c, r);
+			}
+		}
+
 
 		@Override
 		public Object getByIndex(Object index) throws EvaluationException {
@@ -253,6 +293,10 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return assignment.getName();
 				}
 				return null;
+			}
+			if ("mapping".equals(propertyName)) {
+				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
+				return (rewrittenTo != null ? rewrittenTo : sym).getMapping();
 			}
 
 			return super.getProperty(propertyName);

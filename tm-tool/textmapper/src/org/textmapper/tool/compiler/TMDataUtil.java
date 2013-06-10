@@ -18,6 +18,7 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.UserDataHolder;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.AstCode;
 
 import java.util.Map;
@@ -64,5 +65,7 @@ public class TMDataUtil {
 		return (TMStateTransitionSwitch) rule.getUserData(UD_TRANSITIONMAP);
 	}
 
-
+	public static RhsSymbol getRewrittenTo(RhsSymbol source) {
+		return (RhsSymbol) source.getUserData(RhsSymbol.UD_REWRITTEN);
+	}
 }

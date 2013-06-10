@@ -2,56 +2,60 @@ ${template unit-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
 ${call astVisitor-}
-${foreach cl in self->ast.astModel().elements-}
-${self->('ast_' + cl.kind)(cl)} 
+${foreach cl in ast.classifiers-}
+${self->ast_classifier(cl)}
 ${end-}
 ${if opts.genastdef && self.ast-}
 ${file opts.prefix+'Ast.last'}${call ast_text.unit}${end-}
 ${end-}
 ${end}
 
+${template ast_classifier(cl)-}
+${file self->astPath() + cl->className() + '.java'-}
+${call java.header-}
+package ${self->astPackage()};
 
-${cached query interfaceName() =
-	util.uniqueId('I' + context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+${self->('ast_'+cl->kind())(cl)-}
+${end-}
+${end}
+
+${query kind() =
+	self is LiAstEnum ? 'enum' : self.isInterface() ? 'interface' : 'class' }
 
 ${cached query className() =
-	util.uniqueId(context.opts.astprefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__')}
+	prefix = (self is LiAstClass && self.isInterface() ? 'I' : '') + context.opts.astprefix,
+	util.uniqueId(prefix + util.toCamelCase(self.name, true)->java.escapeJavaReserved(), '__classes__#' + (self.containingClass ? self.containingClass->classInnerName() : '/'))}
 
-${cached query enumLiteralName(enumname) =
-	util.uniqueId((alias ? alias : target.id).toUpperCase()->java.escapeJavaReserved(), '__classes__'+enumname)}
+${cached query classInnerName() =
+	(self.containingClass ? self.containingClass->classInnerName() + '.' : '' ) + self->className()}
 
-${cached query enumpropertyName(prop) =
-	util.uniqueId(self.target.id.toUpperCase()->java.escapeJavaReserved(), '__prop__' + prop.container.name)}
+${cached query enumMemberName() =
+	util.uniqueId(self.name.toUpperCase()->java.escapeJavaReserved(), '__classes__#' + self.containingEnum->classInnerName())}
 
 ${cached query propertyName() =
-	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__' + self.container.name)}
+	util.uniqueId(util.toCamelCase(self.name, false)->java.escapeJavaReserved(), '__prop__#' + self.containingClass->classInnerName())}
 
-${query propertyType() =
-	self.kind == 'enumproperty'
-		? 'int' :
-	self.kind == 'flagproperty'
-		? 'boolean' :
+${query type() =
+	context->convertType(self.type)}
+
+${query fieldType() =
+	type is PrimitiveType ? (value = type.toString(), value == 'string' ? 'String' : value) :
 	context->convertType(self.type)
 }
 
-${query getType(q) =
-	self->convertType(q is ast.AstType ? q : context->ast.getType(q))}
-
 ${query convertType(asttype) =
-	asttype is ast.AstList ? 'java.util.@List<' + self->convertType(asttype.target) + '>' :
-	asttype is ast.AstBool ? 'Boolean' :
-	asttype is ast.AstObject ? 'Object' :
-	asttype is ast.AstUserType ? asttype.text :
-	self->astPackage() + '.@' + (
-		asttype.kind == 'interface'
-			? asttype->interfaceName()
-			: asttype->className()
-	)}
-
+	asttype is LiAstList ? 'java.util.@List<' + self->convertType(asttype.inner) + '>' :
+	asttype is PrimitiveType ? (
+		val = asttype.toString(),
+		val == 'boolean' ? 'Boolean':
+		val == 'int' ? 'Integer' : 'String') :
+	asttype is LiRawAstType ? asttype.rawType :
+	self->astPackage() + '.@' + asttype->classInnerName()
+}
 
 ${template implementedInterfaces(cl, prefix)-}
-${if cl.implements.length > 0-}
- ${prefix} ${foreach impl in cl.implements separator ', '}${impl->interfaceName()}${end-}
+${if cl.super.length > 0-}
+ ${prefix} ${foreach impl in cl.super separator ', '}${impl->classInnerName()}${end-}
 ${else if prefix == 'extends'-}
  extends I${opts.astprefix}Node${end-}
 ${end}
@@ -61,43 +65,28 @@ ${end}
 
 
 ${template ast_interface(cl)-}
-${file self->astPath() + cl->interfaceName() + '.java'-}
-${call java.header-}
-package ${self->astPackage()};
-
-public interface ${cl->interfaceName()}${call implementedInterfaces(cl,'extends')} {
+public interface ${cl->className()}${call implementedInterfaces(cl,'extends')} {
 }
-${end-}
 ${end}
 
 
 
 ${template ast_class(cl)-}
-${file self->astPath() + cl->className() + '.java'-}
-${call java.header-}
-package ${self->astPackage()};
-
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
 
-${foreach prop in cl.properties.select(x|x.kind=='enumproperty')-}
-${foreach enumliteral in prop.refs-}
-	public static final int ${enumliteral->enumpropertyName(prop)} = ${index+1};
+${foreach prop in cl.fields-}
+	private ${prop->fieldType()} ${prop->propertyName()};
 ${end-}
 
-${end-}
-${foreach prop in cl.properties-}
-	private ${prop->propertyType()} ${prop->propertyName()};
-${end-}
-
-	public ${cl->className()}(${foreach prop in cl.properties}${prop->propertyType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
+	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
 		super(input, start, end);
-${foreach prop in cl.properties-}
+${foreach prop in cl.fields-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
 	}
 
-${foreach prop in cl.properties-}
-	public ${prop->propertyType()} get${util.toCamelCase(prop->propertyName(), true)}() {
+${foreach prop in cl.fields-}
+	public ${prop->fieldType()} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
 ${end-}
@@ -107,14 +96,14 @@ ${if true-}
 			return;
 		}
 
-${foreach prop in cl.properties.select(p|p.kind == 'property')-}
-${if prop.type is ast.AstList && prop.type.target is ast.AstInterface -}
+${foreach prop in cl.fields-}
+${if prop.type is LiAstList && prop.type.inner is LiAstClass -}
 		if (${prop->propertyName()} != null) {
-			for (${self->convertType(prop.type.target)} it : ${prop->propertyName()}) {
+			for (${self->convertType(prop.type.inner)} it : ${prop->propertyName()}) {
 				it.accept(v);
 			}
 		}
-${else if prop.type is ast.AstInterface -}
+${else if prop.type is LiAstClass -}
 		if (${prop->propertyName()} != null) {
 			${prop->propertyName()}.accept(v);
 		}
@@ -124,23 +113,21 @@ ${end-}
 ${end-}
 	}
 ${end-}
-}
+${foreach inner in cl.inner-}
+
+${util.shiftRight(self->('ast_'+inner->kind())(inner),1)-}
 ${end-}
+}
 ${end}
 
 
 
 ${template ast_enum(cl)-}
-${file self->astPath() + cl->className() + '.java'-}
-${call java.header-}
-package ${self->astPackage()};
-
 public enum ${cl->className()} {
-${foreach const in cl.literals-}
-	${const->enumLiteralName(cl->className())},
+${foreach const in cl.members-}
+	${const->enumMemberName()},
 ${end-}
 }
-${end-}
 ${end}
 
 
@@ -166,8 +153,8 @@ ${call java.header-}
 package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Visitor {
-${foreach cl in self->ast.astModel().classes}
-	protected boolean visit(${cl->className()} n) {
+${foreach cl in self.ast.classifiers.select(x|x is LiAstClass && !x.isInterface())}
+	protected boolean visit(${cl->classInnerName()} n) {
 		return true;
 	}
 ${end-}
@@ -215,79 +202,65 @@ public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 ${end-}
 ${end}
 
+${cached query astcode(rule) =
+	def = rule.getLeft().definition,
+	def is LiRhsList ? rule->codeForList(def) :
+	rule->codeForClass()
+}
 
-${query propValue(prop) for ast.AstRule =
-	pind = prop.indexInRule(rule),
-	prop.kind == 'enumproperty' ? ( pind >= 0
-			? self->astPackage() + '.@' + ruleclass->className() + '.' + rule.getRight()[pind]->enumpropertyName(prop)
-			: 0
-		) :
-	prop.kind == 'flagproperty' ? ( pind >= 0
-			? 'true'
-			: 'false'
-		) :
-	pind >= 0
-		? '$'+ pind + ' /* ' + prop->propertyName() + ' */'
-		: 'null /* ' + prop->propertyName() + ' */' }
+${query codeForList(list) =
+    recursive = self.getRight().select(rs|rs.target == list.getLeft()).length != 0,
+    prefix = recursive ? (list.isRightRecursive() ? '$$ = $'+(self.getRight().size()-1)+';\n' : '') : '$$ = new java.util.@ArrayList();\n',
+	expr = self->asExpression(self.getSource(), self.getLeft().type.inner, true),
+    expr == 'null' ? prefix :
+    prefix + '${' + (recursive?'self['+(list.isRightRecursive() ? self.getRight().size()-1 : 0)+']' : 'left()')
+    		+'}.add(' + expr + ');\n'
+}
 
+${query codeForClass() =
+	expr = self->asExpression(self.getSource(), self.getLeft().type, false),
+	expr == '$0' ? null :
+    '$$ = ' + expr + ';\n'
+}
 
-${template createObject for ast.AstRule-}
-new ${self->astPackage()}.@${ruleclass->className()}(
-${foreach prop in ruleclass.properties -}
-		${self->propValue(prop)},
+${query isThisMapping(addOnly) = !mapping.field && mapping.isAddition() == addOnly}
+
+${query asExpression(seq,contextType,addOnly) =
+	mapped = self.mappedSymbols(seq),
+	mapped.length == 1 && mapped.first() is LiRhsSymbol && mapped.first()->isThisMapping(addOnly) ? self->simpleMapping(mapped.first()) :
+	mapped.length == 1 && mapped.first() is LiRhsSequence && mapped.first()->isThisMapping(addOnly) ? self->asExpression(mapped.first(), contextType, addOnly) :
+	seq.parts.length == 0 ? 'null' :
+	(type = seq.type ? seq.type : contextType,
+
+	!(type is LiAstClass) ? '/* ERR: unknown type ' + type + ' */' :
+	'new ' + self->astPackage() + '.@' + type->classInnerName() + self->ctorArguments(type, mapped))
+}
+
+${query simpleMapping(rhsSym) =
+	value = rhsSym.mapping.value,
+	value ? (
+        value is LiAstEnumMember ? self->astPackage() + '.@' + value.containingEnum->classInnerName() + '.' + value->enumMemberName() :
+		value
+	) :
+	(
+		index = self.sourceSymbols().indexOf(rhsSym),
+		index < 0 ? 'null/*ERR: no index*/' : '$' + index
+	)
+}
+
+${template ctorArguments(cl, mapped)-}
+(
+${foreach field in cl.fields-}
+		${self->fieldValue(field, mapped.select(t|t.mapping.field && t.mapping.field == field))} /* ${field->propertyName()} */,
 ${end-}
-		${call astSource()}, ${if rule.getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
+		${call astSource()}, ${if getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
 )${end}
 
-
-${template codeForEnum for ast.AstEnumRule -}
-${'$$'} = ${self->astPackage()}.@${ruleclass->className()}.${literal->enumLiteralName(ruleclass->className())};
-${end}
-
-
-${query codeForClass for ast.AstRule =
-	'$$ = ' + self->createObject() + ';\n' }
-
-
-${query codeForList for ast.AstListRule =
-	newexpr =
-		ruleclass ? self->createObject() :
-		listitem ? (
-			index = rule.sourceSymbols().indexOf(listitem),
-			index >= 0
-				? '$' + index
-				: null
-		) : null,
-	listkind == 'empty'  ? '$$ = new java.util.@ArrayList();\n' :
-	!newexpr ? null :
-	listkind == 'left'	 ? '$0.add(' + newexpr + ');\n' :
-	listkind == 'right'	 ? '$'+(rule.getRight().size()-1)+'.add(0, ' + newexpr + ');\n' :
-	listkind == 'normal' ? '$$ = new java.util.@ArrayList();\n${left()}.add(' + newexpr + ');\n' :
-	null
-}
-
-${query codeToPassData for ast.AstPassDataRule =
-	index = data ? rule.sourceSymbols().indexOf(data) : -1,
-	index > 0
-		? '$$ = $' + index + ';\n'
-		: null
-}
-
-${query codeForOptional for ast.AstOptionalRule =
-	requiresTrue
-		? '$$ = Boolean.TRUE;\n'
-		: null
-}
-
-${cached query astcode(rule) =
-	astRule = rule->ast.astRule(),
-	!astRule ? null :
-	astRule.kind == 'enum' ? astRule->codeForEnum() :
-	astRule.kind == 'optional' ? astRule->codeForOptional() :
- 	astRule.kind == 'list' ? astRule->codeForList() :
-	astRule.kind == 'class' ? astRule->codeForClass() :
-	astRule.kind == 'pass' ? astRule->codeToPassData() :
-	null
+${query fieldValue(field, mapped) for ast.AstRule =
+	mapped.length == 1 && mapped.first() is LiRhsSymbol && !mapped.first().mapping.isAddition() ? self->simpleMapping(mapped.first()) :
+	mapped.length > 0
+		? '('+mapped.length+') /* ERR: TODO */'
+		: (field.type is PrimitiveType ? (field.type.toString() == 'int' ? '0' : 'false') : 'null')
 }
 
 ${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '.' + context.opts.astsubpackage : '')}

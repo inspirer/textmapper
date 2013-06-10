@@ -21,4 +21,6 @@ package org.textmapper.lapg.api.ast;
 public interface AstClassifier {
 
 	String getName();
+
+	AstClass getContainingClass();
 }

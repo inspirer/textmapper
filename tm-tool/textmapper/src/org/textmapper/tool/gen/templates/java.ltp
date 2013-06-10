@@ -436,7 +436,7 @@ ${cached query hasEoiInputs() = syntax.input.exists(x|x.hasEoi()) }
 
 ${cached query lazyNext() = self->hasNoEoiInputs() }
 
-${cached query type() = context.opts.genast ? context->java_ast.getType(self) : self.type is LiRawAstType ? self.type : null }
+${cached query type() = context.opts.genast ? self->java_ast.type() : self.type is LiRawAstType ? self.type : null }
 
 
 ${query escapeJavaReserved() =

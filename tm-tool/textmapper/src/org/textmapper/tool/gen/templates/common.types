@@ -118,3 +118,8 @@ class List {
 class Options {
 	string lang[identifier] = "";
 }
+
+class AnnotateSymbol {
+	bool _class;
+	bool _interface;
+}

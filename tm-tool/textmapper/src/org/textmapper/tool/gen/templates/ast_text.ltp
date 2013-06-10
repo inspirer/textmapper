@@ -29,7 +29,7 @@ enum ${en.name} {
 ${end}
 
 ${template ast_class(cl)-}
-class ${cl.name}${call baseClasses(cl)} {
+${cl.isInterface() ?'interface':'class'} ${cl.name}${call baseClasses(cl)} {
 ${foreach prop in cl.fields-}
 	${prop.type} ${prop.name};
 ${end-}

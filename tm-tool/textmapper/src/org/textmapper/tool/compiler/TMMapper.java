@@ -138,6 +138,10 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
+			if (hasProperty(n, "_class") || hasProperty(n, "_interface")) {
+				continue;
+			}
+
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			Iterable<RhsPart> rules = definition instanceof RhsChoice
 					? Arrays.asList(((RhsChoice) definition).getParts())
@@ -216,6 +220,10 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
+			if (hasProperty(n, "_class")) {
+				continue;
+			}
+
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			Iterable<RhsPart> rules = definition instanceof RhsChoice
 					? Arrays.asList(((RhsChoice) definition).getParts())
@@ -246,7 +254,7 @@ public class TMMapper {
 				customRuleList.add((RhsSequence) part);
 			}
 			if (isInterface) {
-				AstClass interfaceClass = builder.addClass(getNonterminalTypeName(n), null, n);
+				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n), null, n);
 				mapNonterm(n, interfaceClass);
 				for (Nonterminal nonterminal : extList) {
 					addExtends(nonterminal, interfaceClass);
@@ -336,7 +344,7 @@ public class TMMapper {
 					}
 				});
 			} else {
-				AstClass elementClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_element", false), null, n);
+				AstClass elementClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_item", false), null, n);
 				mapNonterm(n, builder.list(elementClass, list.isNonEmpty(), n));
 				mapper.map(list.getElement(), null, elementClass, true);
 				if (list.getCustomInitialElement() != null) {
@@ -369,7 +377,8 @@ public class TMMapper {
 					? rhsParts.get(0)
 					: RhsUtil.asChoice(rhsParts.toArray(new RhsPart[rhsParts.size()]));
 			DefaultMappingContext context = new DefaultMappingContext();
-			traverseFields(def, context);
+			traverseFields(def, context, true);
+			traverseFields(def, context, false);
 
 			for (FieldDescriptor fd : context.result) {
 				AstType type = fd.type;
@@ -409,21 +418,21 @@ public class TMMapper {
 		}
 	}
 
-	private void traverseFields(RhsPart part, MappingContext context) {
+	private void traverseFields(RhsPart part, MappingContext context, boolean withAlias) {
 		if (part instanceof RhsOptional) {
-			traverseFields(((RhsOptional) part).getPart(), context);
+			traverseFields(((RhsOptional) part).getPart(), context, withAlias);
 
 		} else if (part instanceof RhsUnordered || part instanceof RhsSequence) {
 			RhsPart[] parts = part instanceof RhsUnordered ? ((RhsUnordered) part).getParts() : ((RhsSequence) part).getParts();
 			for (RhsPart p : parts) {
-				traverseFields(p, context);
+				traverseFields(p, context, withAlias);
 			}
 
 		} else if (part instanceof RhsChoice) {
 			ChoiceMappingContext choiceContext = new ChoiceMappingContext(context);
 			RhsPart[] parts = ((RhsChoice) part).getParts();
 			for (RhsPart p : parts) {
-				traverseFields(p, choiceContext);
+				traverseFields(p, choiceContext, withAlias);
 				choiceContext.reset();
 			}
 
@@ -433,6 +442,10 @@ public class TMMapper {
 			RhsPart unwrapped = RhsUtil.unwrapEx(part, true, true, true);
 			if (!(unwrapped instanceof RhsSymbol)) {
 				error(part, (part instanceof RhsAssignment ? "assignment" : "cast") + " is not expected here");
+				return;
+			}
+
+			if (withAlias && assignment == null || !withAlias && assignment != null) {
 				return;
 			}
 

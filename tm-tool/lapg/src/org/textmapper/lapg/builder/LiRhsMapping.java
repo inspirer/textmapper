@@ -21,7 +21,7 @@ import org.textmapper.lapg.api.rule.RhsMapping;
 /**
  * evgeny, 2/25/13
  */
-public class LiRhsMapping implements RhsMapping {
+class LiRhsMapping implements RhsMapping {
 
 	public static final RhsMapping EMPTY_MAPPING = new LiRhsMapping(null, null, false);
 
