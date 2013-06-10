@@ -404,21 +404,21 @@ public class TypesParser {
 				break;
 			case 29:  // string_constraint ::= Lset ':' strings
 				lapg_gg.value = new AstStringConstraint(
-						AstStringConstraint.LSET,
+						AstStringConstraint.AstKindKind.LSET /* kind */,
 						((List<Ast_String>)lapg_m[lapg_head].value) /* strings */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 30:  // string_constraint ::= Lchoice ':' strings
 				lapg_gg.value = new AstStringConstraint(
-						AstStringConstraint.LCHOICE,
+						AstStringConstraint.AstKindKind.LCHOICE /* kind */,
 						((List<Ast_String>)lapg_m[lapg_head].value) /* strings */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 31:  // string_constraint ::= identifier
 				lapg_gg.value = new AstStringConstraint(
-						0,
+						null /* kind */,
 						null /* strings */,
 						((String)lapg_m[lapg_head].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
@@ -445,21 +445,21 @@ public class TypesParser {
 			case 36:  // multiplicity ::= icon
 				lapg_gg.value = new AstMultiplicity(
 						((Integer)lapg_m[lapg_head].value) /* lo */,
-						false,
+						false /* hasNoUpperBound */,
 						null /* hi */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 37:  // multiplicity ::= icon '..' '*'
 				lapg_gg.value = new AstMultiplicity(
 						((Integer)lapg_m[lapg_head - 2].value) /* lo */,
-						true,
+						true /* hasNoUpperBound */,
 						null /* hi */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 38:  // multiplicity ::= icon '..' icon
 				lapg_gg.value = new AstMultiplicity(
 						((Integer)lapg_m[lapg_head - 2].value) /* lo */,
-						false,
+						false /* hasNoUpperBound */,
 						((Integer)lapg_m[lapg_head].value) /* hi */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
@@ -477,54 +477,54 @@ public class TypesParser {
 				break;
 			case 41:  // type ::= Lint
 				lapg_gg.value = new AstType(
-						AstType.LINT,
-						false,
-						false,
+						AstType.AstKindKind.LINT /* kind */,
+						false /* isReference */,
+						false /* isClosure */,
 						null /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 42:  // type ::= Lstring
 				lapg_gg.value = new AstType(
-						AstType.LSTRING,
-						false,
-						false,
+						AstType.AstKindKind.LSTRING /* kind */,
+						false /* isReference */,
+						false /* isClosure */,
 						null /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 43:  // type ::= Lbool
 				lapg_gg.value = new AstType(
-						AstType.LBOOL,
-						false,
-						false,
+						AstType.AstKindKind.LBOOL /* kind */,
+						false /* isReference */,
+						false /* isClosure */,
 						null /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 44:  // type ::= name
 				lapg_gg.value = new AstType(
-						0,
-						false,
-						false,
+						null /* kind */,
+						false /* isReference */,
+						false /* isClosure */,
 						((List<String>)lapg_m[lapg_head].value) /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 45:  // type ::= name '*'
 				lapg_gg.value = new AstType(
-						0,
-						true,
-						false,
+						null /* kind */,
+						true /* isReference */,
+						false /* isClosure */,
 						((List<String>)lapg_m[lapg_head - 1].value) /* name */,
 						null /* parametersopt */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 46:  // type ::= '{' parametersopt '=>' '}'
 				lapg_gg.value = new AstType(
-						0,
-						false,
-						true,
+						null /* kind */,
+						false /* isReference */,
+						true /* isClosure */,
 						null /* name */,
 						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parametersopt */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);

@@ -20,17 +20,13 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstType extends AstNode {
 
-	public static final int LINT = 1;
-	public static final int LSTRING = 2;
-	public static final int LBOOL = 3;
-
-	private int kind;
+	private AstType.AstKindKind kind;
 	private boolean isReference;
 	private boolean isClosure;
 	private List<String> name;
 	private List<AstTypeEx> parametersopt;
 
-	public AstType(int kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parametersopt, TextSource input, int start, int end) {
+	public AstType(AstType.AstKindKind kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parametersopt, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.isReference = isReference;
@@ -39,7 +35,7 @@ public class AstType extends AstNode {
 		this.parametersopt = parametersopt;
 	}
 
-	public int getKind() {
+	public AstType.AstKindKind getKind() {
 		return kind;
 	}
 	public boolean getIsReference() {
@@ -59,11 +55,20 @@ public class AstType extends AstNode {
 			return;
 		}
 
+		// TODO for kind
+		// TODO for isReference
+		// TODO for isClosure
 		// TODO for name
 		if (parametersopt != null) {
 			for (AstTypeEx it : parametersopt) {
 				it.accept(v);
 			}
 		}
+	}
+
+	public enum AstKindKind {
+		LBOOL,
+		LSTRING,
+		LINT,
 	}
 }

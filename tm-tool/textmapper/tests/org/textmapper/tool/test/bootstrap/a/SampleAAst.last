@@ -1,12 +1,15 @@
 
 // Ast
 
-class Classdef {
-	String identifier;
-	list<ClassdeflistElement> classdeflistopt;
+interface ClassdefNoEoi {
 }
 
-class ClassdeflistElement {
+class Classdef : ClassdefNoEoi {
+	String identifier;
+	list<ClassdeflistItem> classdeflistopt;
+}
+
+class ClassdeflistItem {
 	Classdef classdef;
 }
 

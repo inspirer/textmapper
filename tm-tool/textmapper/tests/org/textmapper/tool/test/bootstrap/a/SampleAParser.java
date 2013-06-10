@@ -23,6 +23,7 @@ import org.textmapper.tool.test.bootstrap.a.SampleALexer.ErrorReporter;
 import org.textmapper.tool.test.bootstrap.a.SampleALexer.LapgSymbol;
 import org.textmapper.tool.test.bootstrap.a.SampleALexer.Lexems;
 import org.textmapper.tool.test.bootstrap.a.ast.AstClassdef;
+import org.textmapper.tool.test.bootstrap.a.ast.AstClassdeflistItem;
 import org.textmapper.tool.test.bootstrap.a.ast.IAstClassdefNoEoi;
 
 public class SampleAParser {
@@ -249,15 +250,25 @@ public class SampleAParser {
 			case 3:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						((String)lapg_m[lapg_head - 3].value) /* identifier */,
-						((List<AstClassdef>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdeflist ::= classdef
 				lapg_gg.value = new ArrayList();
-				((List<AstClassdef>)lapg_gg.value).add(((AstClassdef)lapg_m[lapg_head].value));
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
+						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 5:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdef>)lapg_m[lapg_head - 1].value).add(((AstClassdef)lapg_m[lapg_head].value));
+				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value).add(new AstClassdeflistItem(
+						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
+						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset));
+				break;
+			case 6:  // classdeflist ::= error
+				lapg_gg.value = new ArrayList();
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+						null /* classdef */,
+						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 		}
 	}

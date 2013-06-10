@@ -21,11 +21,13 @@ public class AstClassdeflistItem extends AstNode {
 
 	private AstClassdef classdef;
 	private String identifier;
+	private String Lextends;
 
-	public AstClassdeflistItem(AstClassdef classdef, String identifier, TextSource input, int start, int end) {
+	public AstClassdeflistItem(AstClassdef classdef, String identifier, String Lextends, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.classdef = classdef;
 		this.identifier = identifier;
+		this.Lextends = Lextends;
 	}
 
 	public AstClassdef getClassdef() {
@@ -33,6 +35,9 @@ public class AstClassdeflistItem extends AstNode {
 	}
 	public String getIdentifier() {
 		return identifier;
+	}
+	public String getLextends() {
+		return Lextends;
 	}
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
@@ -43,5 +48,6 @@ public class AstClassdeflistItem extends AstNode {
 			classdef.accept(v);
 		}
 		// TODO for identifier
+		// TODO for Lextends
 	}
 }

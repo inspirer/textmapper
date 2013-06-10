@@ -17,7 +17,11 @@ package org.textmapper.templates.types.ast;
 
 public abstract class AstVisitor {
 
-	protected boolean visit(AstConstraint n) {
+	protected boolean visit(AstInput n) {
+		return true;
+	}
+
+	protected boolean visit(AstTypeDeclaration n) {
 		return true;
 	}
 
@@ -25,19 +29,15 @@ public abstract class AstVisitor {
 		return true;
 	}
 
-	protected boolean visit(AstInput n) {
-		return true;
-	}
-
-	protected boolean visit(AstLiteralExpression n) {
-		return true;
-	}
-
 	protected boolean visit(AstMethodDeclaration n) {
 		return true;
 	}
 
-	protected boolean visit(AstMultiplicity n) {
+	protected boolean visit(AstConstraint n) {
+		return true;
+	}
+
+	protected boolean visit(AstStringConstraint n) {
 		return true;
 	}
 
@@ -45,7 +45,19 @@ public abstract class AstVisitor {
 		return true;
 	}
 
-	protected boolean visit(AstStringConstraint n) {
+	protected boolean visit(AstMultiplicity n) {
+		return true;
+	}
+
+	protected boolean visit(AstTypeEx n) {
+		return true;
+	}
+
+	protected boolean visit(AstType n) {
+		return true;
+	}
+
+	protected boolean visit(AstLiteralExpression n) {
 		return true;
 	}
 
@@ -54,18 +66,6 @@ public abstract class AstVisitor {
 	}
 
 	protected boolean visit(AstStructuralExpressionDOLLAR1Item n) {
-		return true;
-	}
-
-	protected boolean visit(AstType n) {
-		return true;
-	}
-
-	protected boolean visit(AstTypeDeclaration n) {
-		return true;
-	}
-
-	protected boolean visit(AstTypeEx n) {
 		return true;
 	}
 }

@@ -23,6 +23,7 @@ import org.textmapper.tool.test.bootstrap.a.SampleALexer.ErrorReporter;
 import org.textmapper.tool.test.bootstrap.a.SampleAParser.ParseException;
 import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 import org.textmapper.tool.test.bootstrap.a.ast.AstClassdef;
+import org.textmapper.tool.test.bootstrap.a.ast.AstClassdeflistItem;
 import org.textmapper.tool.test.bootstrap.a.ast.IAstClassdefNoEoi;
 
 import java.io.IOException;
@@ -65,8 +66,8 @@ public class SampleAParseContext {
 		GenericNode[] children = new GenericNode[def.getClassdeflistopt() != null ? def.getClassdeflistopt().size() : 0];
 		if (def.getClassdeflistopt() != null) {
 			int i = 0;
-			for (AstClassdef c : def.getClassdeflistopt()) {
-				children[i++] = convert(source, c);
+			for (AstClassdeflistItem c : def.getClassdeflistopt()) {
+				children[i++] = convert(source, c.getClassdef());
 			}
 		}
 		return new GenericNode(source, def.getOffset(), def.getEndOffset(), children);

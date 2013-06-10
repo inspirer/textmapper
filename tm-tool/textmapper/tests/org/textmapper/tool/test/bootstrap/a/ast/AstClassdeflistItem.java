@@ -15,13 +15,27 @@
  */
 package org.textmapper.tool.test.bootstrap.a.ast;
 
-public abstract class AstVisitor {
+import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
-	protected boolean visit(AstClassdef n) {
-		return true;
+public class AstClassdeflistItem extends AstNode {
+
+	private AstClassdef classdef;
+
+	public AstClassdeflistItem(AstClassdef classdef, TextSource input, int start, int end) {
+		super(input, start, end);
+		this.classdef = classdef;
 	}
 
-	protected boolean visit(AstClassdeflistItem n) {
-		return true;
+	public AstClassdef getClassdef() {
+		return classdef;
+	}
+	public void accept(AstVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (classdef != null) {
+			classdef.accept(v);
+		}
 	}
 }

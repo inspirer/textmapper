@@ -20,21 +20,18 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstStringConstraint extends AstNode {
 
-	public static final int LSET = 1;
-	public static final int LCHOICE = 2;
-
-	private int kind;
+	private AstStringConstraint.AstKindKind kind;
 	private List<Ast_String> strings;
 	private String identifier;
 
-	public AstStringConstraint(int kind, List<Ast_String> strings, String identifier, TextSource input, int start, int end) {
+	public AstStringConstraint(AstStringConstraint.AstKindKind kind, List<Ast_String> strings, String identifier, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.strings = strings;
 		this.identifier = identifier;
 	}
 
-	public int getKind() {
+	public AstStringConstraint.AstKindKind getKind() {
 		return kind;
 	}
 	public List<Ast_String> getStrings() {
@@ -48,11 +45,17 @@ public class AstStringConstraint extends AstNode {
 			return;
 		}
 
+		// TODO for kind
 		if (strings != null) {
 			for (Ast_String it : strings) {
 				it.accept(v);
 			}
 		}
 		// TODO for identifier
+	}
+
+	public enum AstKindKind {
+		LCHOICE,
+		LSET,
 	}
 }

@@ -7,10 +7,14 @@ enum MapSeparator {
 	EQUALGREATER
 }
 
-class MemberDeclaration {
+interface MemberDeclaration {
 }
 
-class Expression {
+interface Expression {
+}
+
+class Input {
+	list<TypeDeclaration> declarations;
 }
 
 class TypeDeclaration {
@@ -20,8 +24,8 @@ class TypeDeclaration {
 }
 
 class FeatureDeclaration : MemberDeclaration {
-	TypeEx typeEx;
 	String name;
+	TypeEx typeEx;
 	list<Constraint> modifiersopt;
 	Expression defaultvalopt;
 }
@@ -65,9 +69,9 @@ class TypeEx {
 
 class Type {
 	KindKind kind;
-	list<String> name;
 	boolean isReference;
 	boolean isClosure;
+	list<String> name;
 	list<TypeEx> parametersopt;
 	enum KindKind {
 		LBOOL,
@@ -83,12 +87,12 @@ class LiteralExpression : Expression {
 }
 
 class StructuralExpression : Expression {
+	list<StructuralExpressionDOLLAR1Item> mapEntries;
 	list<String> name;
-	list<StructuralExpressionDOLLAR1Element> mapEntries;
 	list<Expression> expressionListopt;
 }
 
-class StructuralExpressionDOLLAR1Element {
+class StructuralExpressionDOLLAR1Item {
 	String identifier;
 	MapSeparator mapSeparator;
 	Expression expression;

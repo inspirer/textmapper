@@ -45,6 +45,7 @@ public class AstMultiplicity extends AstNode {
 		}
 
 		// TODO for lo
+		// TODO for hasNoUpperBound
 		// TODO for hi
 	}
 }

@@ -200,7 +200,7 @@ class TypesResolver {
 					stringConstraints.add(c.getStringConstraint());
 				}
 			}
-			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != AstType.LSTRING) {
+			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != AstType.AstKindKind.LSTRING) {
 				myStatus.report(TemplatesStatus.KIND_ERROR,
 						"only string type can have constraints (feature `" + fd.getName() + "`)",
 						new LocatedNodeAdapter(fd));
@@ -282,7 +282,7 @@ class TypesResolver {
 	}
 
 	private void convertType(final TypeHandler handler, final AstType type, List<AstStringConstraint> constraints, boolean async) {
-		if (type.getKind() == 0) {
+		if (type.getKind() == null) {
 			// reference or closure
 			if(type.getIsClosure()) {
 				final List<AstTypeEx> params = type.getParametersopt();
@@ -343,9 +343,9 @@ class TypesResolver {
 		} else {
 			// datatype
 			DataTypeKind kind = DataTypeKind.STRING;
-			if (type.getKind() == AstType.LINT) {
+			if (type.getKind() == AstType.AstKindKind.LINT) {
 				kind = DataTypeKind.INT;
-			} else if (type.getKind() == AstType.LBOOL) {
+			} else if (type.getKind() == AstType.AstKindKind.LBOOL) {
 				kind = DataTypeKind.BOOL;
 			}
 
@@ -363,12 +363,12 @@ class TypesResolver {
 	}
 
 	private Constraint convertConstraint(AstStringConstraint c) {
-		if (c.getKind() != 0) {
+		if (c.getKind() != null) {
 			List<String> strings = new ArrayList<String>();
 			for (Ast_String s : c.getStrings()) {
 				strings.add(s.getIdentifier() != null ? s.getIdentifier() : s.getScon());
 			}
-			return new TiDataType.TiConstraint(c.getKind() == AstStringConstraint.LCHOICE ? ConstraintKind.CHOICE
+			return new TiDataType.TiConstraint(c.getKind() == AstStringConstraint.AstKindKind.LCHOICE ? ConstraintKind.CHOICE
 					: ConstraintKind.SET, strings);
 		}
 		String constraintId = c.getIdentifier();
