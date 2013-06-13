@@ -354,7 +354,7 @@ ${if syntax.rules.exists(x|x.getSource() is org.textmapper.lapg.api.rule.RhsSequ
 	public interface Rules {
 ${foreach rule in syntax.rules-}
 ${if rule.getSource() is org.textmapper.lapg.api.rule.RhsSequence && rule.getSource().name-}
-		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.source.name, '__rules__')} = ${rule.getIndex()};  // ${rule}
+		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getSource().name, '__rules__')} = ${rule.getIndex()};  // ${rule}
 ${end-}
 ${end-}
 	}

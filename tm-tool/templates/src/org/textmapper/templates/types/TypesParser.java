@@ -326,14 +326,14 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 1:  // declarations ::= declarations type_declaration
-				((List<AstTypeDeclaration>)lapg_m[lapg_head - 1].value).add(((AstTypeDeclaration)lapg_m[lapg_head].value));
+				((List<AstTypeDeclaration>)lapg_gg.value).add(((AstTypeDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 2:  // declarations ::= type_declaration
 				lapg_gg.value = new ArrayList();
 				((List<AstTypeDeclaration>)lapg_gg.value).add(((AstTypeDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 5:  // member_declaration_optlist ::= member_declaration_optlist member_declaration
-				((List<IAstMemberDeclaration>)lapg_m[lapg_head - 1].value).add(((IAstMemberDeclaration)lapg_m[lapg_head].value));
+				((List<IAstMemberDeclaration>)lapg_gg.value).add(((IAstMemberDeclaration)lapg_m[lapg_head].value));
 				break;
 			case 6:  // member_declaration_optlist ::=
 				lapg_gg.value = new ArrayList();
@@ -352,15 +352,15 @@ public class TypesParser {
 				lapg_gg.value = new AstFeatureDeclaration(
 						((String)lapg_m[lapg_head - 3].value) /* name */,
 						((AstTypeEx)lapg_m[lapg_head - 4].value) /* typeEx */,
-						((List<AstConstraint>)lapg_m[lapg_head - 2].value) /* modifiersopt */,
-						((IAstExpression)lapg_m[lapg_head - 1].value) /* defaultvalopt */,
+						((List<AstConstraint>)lapg_m[lapg_head - 2].value) /* modifiers */,
+						((IAstExpression)lapg_m[lapg_head - 1].value) /* defaultval */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 18:  // method_declaration ::= type_ex identifier '(' parametersopt ')' ';'
 				lapg_gg.value = new AstMethodDeclaration(
 						((AstTypeEx)lapg_m[lapg_head - 5].value) /* returnType */,
 						((String)lapg_m[lapg_head - 4].value) /* name */,
-						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parametersopt */,
+						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parameters */,
 						null /* input */, lapg_m[lapg_head - 5].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 19:  // parameters ::= type_ex
@@ -368,13 +368,13 @@ public class TypesParser {
 				((List<AstTypeEx>)lapg_gg.value).add(((AstTypeEx)lapg_m[lapg_head].value));
 				break;
 			case 20:  // parameters ::= parameters ',' type_ex
-				((List<AstTypeEx>)lapg_m[lapg_head - 2].value).add(((AstTypeEx)lapg_m[lapg_head].value));
+				((List<AstTypeEx>)lapg_gg.value).add(((AstTypeEx)lapg_m[lapg_head].value));
 				break;
 			case 21:  // defaultval ::= '=' expression
 				lapg_gg.value = ((IAstExpression)lapg_m[lapg_head].value);
 				break;
 			case 22:  // constraint_list ::= constraint_list ';' constraint
-				((List<AstConstraint>)lapg_m[lapg_head - 2].value).add(((AstConstraint)lapg_m[lapg_head].value));
+				((List<AstConstraint>)lapg_gg.value).add(((AstConstraint)lapg_m[lapg_head].value));
 				break;
 			case 23:  // constraint_list ::= constraint
 				lapg_gg.value = new ArrayList();
@@ -390,7 +390,7 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 26:  // multiplicity_list ::= multiplicity_list ',' multiplicity
-				((List<AstMultiplicity>)lapg_m[lapg_head - 2].value).add(((AstMultiplicity)lapg_m[lapg_head].value));
+				((List<AstMultiplicity>)lapg_gg.value).add(((AstMultiplicity)lapg_m[lapg_head].value));
 				break;
 			case 27:  // multiplicity_list ::= multiplicity
 				lapg_gg.value = new ArrayList();
@@ -424,7 +424,7 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 32:  // strings ::= strings ',' string
-				((List<Ast_String>)lapg_m[lapg_head - 2].value).add(((Ast_String)lapg_m[lapg_head].value));
+				((List<Ast_String>)lapg_gg.value).add(((Ast_String)lapg_m[lapg_head].value));
 				break;
 			case 33:  // strings ::= string
 				lapg_gg.value = new ArrayList();
@@ -481,7 +481,7 @@ public class TypesParser {
 						false /* isReference */,
 						false /* isClosure */,
 						null /* name */,
-						null /* parametersopt */,
+						null /* parameters */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 42:  // type ::= Lstring
@@ -490,7 +490,7 @@ public class TypesParser {
 						false /* isReference */,
 						false /* isClosure */,
 						null /* name */,
-						null /* parametersopt */,
+						null /* parameters */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 43:  // type ::= Lbool
@@ -499,7 +499,7 @@ public class TypesParser {
 						false /* isReference */,
 						false /* isClosure */,
 						null /* name */,
-						null /* parametersopt */,
+						null /* parameters */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 44:  // type ::= name
@@ -508,7 +508,7 @@ public class TypesParser {
 						false /* isReference */,
 						false /* isClosure */,
 						((List<String>)lapg_m[lapg_head].value) /* name */,
-						null /* parametersopt */,
+						null /* parameters */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 45:  // type ::= name '*'
@@ -517,7 +517,7 @@ public class TypesParser {
 						true /* isReference */,
 						false /* isClosure */,
 						((List<String>)lapg_m[lapg_head - 1].value) /* name */,
-						null /* parametersopt */,
+						null /* parameters */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 46:  // type ::= '{' parametersopt '=>' '}'
@@ -526,7 +526,7 @@ public class TypesParser {
 						false /* isReference */,
 						true /* isClosure */,
 						null /* name */,
-						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parametersopt */,
+						((List<AstTypeEx>)lapg_m[lapg_head - 2].value) /* parameters */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 49:  // literal_expression ::= scon
@@ -551,7 +551,7 @@ public class TypesParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 52:  // structural_expression$1 ::= structural_expression$1 ',' identifier map_separator expression
-				((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 4].value).add(new AstStructuralExpressionDOLLAR1Item(
+				((List<AstStructuralExpressionDOLLAR1Item>)lapg_gg.value).add(new AstStructuralExpressionDOLLAR1Item(
 						((String)lapg_m[lapg_head - 2].value) /* identifier */,
 						((AstMapSeparator)lapg_m[lapg_head - 1].value) /* mapSeparator */,
 						((IAstExpression)lapg_m[lapg_head].value) /* expression */,
@@ -569,14 +569,14 @@ public class TypesParser {
 				lapg_gg.value = new AstStructuralExpression(
 						((List<AstStructuralExpressionDOLLAR1Item>)lapg_m[lapg_head - 1].value) /* mapEntries */,
 						((List<String>)lapg_m[lapg_head - 3].value) /* name */,
-						null /* expressionListopt */,
+						null /* expressionList */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 59:  // structural_expression ::= '[' expression_listopt ']'
 				lapg_gg.value = new AstStructuralExpression(
 						null /* mapEntries */,
 						null /* name */,
-						((List<IAstExpression>)lapg_m[lapg_head - 1].value) /* expressionListopt */,
+						((List<IAstExpression>)lapg_m[lapg_head - 1].value) /* expressionList */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 60:  // expression_list ::= expression
@@ -584,7 +584,7 @@ public class TypesParser {
 				((List<IAstExpression>)lapg_gg.value).add(((IAstExpression)lapg_m[lapg_head].value));
 				break;
 			case 61:  // expression_list ::= expression_list ',' expression
-				((List<IAstExpression>)lapg_m[lapg_head - 2].value).add(((IAstExpression)lapg_m[lapg_head].value));
+				((List<IAstExpression>)lapg_gg.value).add(((IAstExpression)lapg_m[lapg_head].value));
 				break;
 			case 62:  // map_separator ::= ':'
 				lapg_gg.value = AstMapSeparator.COLON;
@@ -600,14 +600,14 @@ public class TypesParser {
 				((List<String>)lapg_gg.value).add(((String)lapg_m[lapg_head].value));
 				break;
 			case 66:  // name ::= name '.' identifier
-				((List<String>)lapg_m[lapg_head - 2].value).add(((String)lapg_m[lapg_head].value));
+				((List<String>)lapg_gg.value).add(((String)lapg_m[lapg_head].value));
 				break;
 			case 67:  // name_list ::= name
 				lapg_gg.value = new ArrayList();
 				((List<List<String>>)lapg_gg.value).add(((List<String>)lapg_m[lapg_head].value));
 				break;
 			case 68:  // name_list ::= name_list ',' name
-				((List<List<String>>)lapg_m[lapg_head - 2].value).add(((List<String>)lapg_m[lapg_head].value));
+				((List<List<String>>)lapg_gg.value).add(((List<String>)lapg_m[lapg_head].value));
 				break;
 		}
 	}

@@ -250,7 +250,7 @@ public class SampleAParser {
 			case 3:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						((String)lapg_m[lapg_head - 3].value) /* identifier */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflist */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdeflist ::= classdef
@@ -260,7 +260,7 @@ public class SampleAParser {
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 5:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset));
 				break;

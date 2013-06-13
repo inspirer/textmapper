@@ -22,13 +22,13 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 
 	private List<AstStructuralExpressionDOLLAR1Item> mapEntries;
 	private List<String> name;
-	private List<IAstExpression> expressionListopt;
+	private List<IAstExpression> expressionList;
 
-	public AstStructuralExpression(List<AstStructuralExpressionDOLLAR1Item> mapEntries, List<String> name, List<IAstExpression> expressionListopt, TextSource input, int start, int end) {
+	public AstStructuralExpression(List<AstStructuralExpressionDOLLAR1Item> mapEntries, List<String> name, List<IAstExpression> expressionList, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.mapEntries = mapEntries;
 		this.name = name;
-		this.expressionListopt = expressionListopt;
+		this.expressionList = expressionList;
 	}
 
 	public List<AstStructuralExpressionDOLLAR1Item> getMapEntries() {
@@ -37,8 +37,8 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 	public List<String> getName() {
 		return name;
 	}
-	public List<IAstExpression> getExpressionListopt() {
-		return expressionListopt;
+	public List<IAstExpression> getExpressionList() {
+		return expressionList;
 	}
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
@@ -50,9 +50,8 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 				it.accept(v);
 			}
 		}
-		// TODO for name
-		if (expressionListopt != null) {
-			for (IAstExpression it : expressionListopt) {
+		if (expressionList != null) {
+			for (IAstExpression it : expressionList) {
 				it.accept(v);
 			}
 		}

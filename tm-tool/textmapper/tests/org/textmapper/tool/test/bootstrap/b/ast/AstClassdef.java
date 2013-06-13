@@ -21,31 +21,31 @@ import org.textmapper.tool.test.bootstrap.b.SampleBTree.TextSource;
 public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 
 	private boolean tc;
-	private String te;
+	private boolean te;
 	private String ID;
-	private List<AstClassdeflistItem> classdeflistopt;
+	private List<AstClassdeflistItem> classdeflist;
 	private String identifier;
 
-	public AstClassdef(boolean tc, String te, String ID, List<AstClassdeflistItem> classdeflistopt, String identifier, TextSource input, int start, int end) {
+	public AstClassdef(boolean tc, boolean te, String ID, List<AstClassdeflistItem> classdeflist, String identifier, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.tc = tc;
 		this.te = te;
 		this.ID = ID;
-		this.classdeflistopt = classdeflistopt;
+		this.classdeflist = classdeflist;
 		this.identifier = identifier;
 	}
 
 	public boolean getTc() {
 		return tc;
 	}
-	public String getTe() {
+	public boolean getTe() {
 		return te;
 	}
 	public String getID() {
 		return ID;
 	}
-	public List<AstClassdeflistItem> getClassdeflistopt() {
-		return classdeflistopt;
+	public List<AstClassdeflistItem> getClassdeflist() {
+		return classdeflist;
 	}
 	public String getIdentifier() {
 		return identifier;
@@ -55,14 +55,10 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 			return;
 		}
 
-		// TODO for tc
-		// TODO for te
-		// TODO for ID
-		if (classdeflistopt != null) {
-			for (AstClassdeflistItem it : classdeflistopt) {
+		if (classdeflist != null) {
+			for (AstClassdeflistItem it : classdeflist) {
 				it.accept(v);
 			}
 		}
-		// TODO for identifier
 	}
 }

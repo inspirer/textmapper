@@ -13,31 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.templates.types.ast;
+package org.textmapper.tool.compiler;
 
-import org.textmapper.templates.types.TypesTree.TextSource;
+import org.textmapper.lapg.api.ast.AstType;
 
-public class Ast_String extends AstNode {
+/**
+ * evgeny, 6/14/13
+ */
+public class VoidType implements AstType {
 
-	private String identifier;
-	private String scon;
+	public static final VoidType INSTANCE = new VoidType();
 
-	public Ast_String(String identifier, String scon, TextSource input, int start, int end) {
-		super(input, start, end);
-		this.identifier = identifier;
-		this.scon = scon;
+	private VoidType() {
 	}
 
-	public String getIdentifier() {
-		return identifier;
+	@Override
+	public boolean isSubtypeOf(AstType another) {
+		return another instanceof VoidType;
 	}
-	public String getScon() {
-		return scon;
-	}
-	public void accept(AstVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
 
+	@Override
+	public String toString() {
+		return "void";
 	}
 }

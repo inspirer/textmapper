@@ -26,14 +26,14 @@ class TypeDeclaration {
 class FeatureDeclaration : MemberDeclaration {
 	String name;
 	TypeEx typeEx;
-	list<Constraint> modifiersopt;
-	Expression defaultvalopt;
+	list<Constraint> modifiers;
+	Expression defaultval;
 }
 
 class MethodDeclaration : MemberDeclaration {
 	TypeEx returnType;
 	String name;
-	list<TypeEx> parametersopt;
+	list<TypeEx> parameters;
 }
 
 class Constraint {
@@ -72,7 +72,7 @@ class Type {
 	boolean isReference;
 	boolean isClosure;
 	list<String> name;
-	list<TypeEx> parametersopt;
+	list<TypeEx> parameters;
 	enum KindKind {
 		LBOOL,
 		LSTRING,
@@ -89,7 +89,7 @@ class LiteralExpression : Expression {
 class StructuralExpression : Expression {
 	list<StructuralExpressionDOLLAR1Item> mapEntries;
 	list<String> name;
-	list<Expression> expressionListopt;
+	list<Expression> expressionList;
 }
 
 class StructuralExpressionDOLLAR1Item {

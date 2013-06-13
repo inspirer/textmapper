@@ -122,4 +122,5 @@ class Options {
 class AnnotateSymbol {
 	bool _class;
 	bool _interface;
+	bool noast;
 }

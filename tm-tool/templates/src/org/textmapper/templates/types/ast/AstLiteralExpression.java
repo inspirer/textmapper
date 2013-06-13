@@ -44,8 +44,5 @@ public class AstLiteralExpression extends AstNode implements IAstExpression {
 			return;
 		}
 
-		// TODO for scon
-		// TODO for icon
-		// TODO for bcon
 	}
 }

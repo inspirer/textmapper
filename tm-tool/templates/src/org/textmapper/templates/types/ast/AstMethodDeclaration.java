@@ -22,13 +22,13 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 
 	private AstTypeEx returnType;
 	private String name;
-	private List<AstTypeEx> parametersopt;
+	private List<AstTypeEx> parameters;
 
-	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parametersopt, TextSource input, int start, int end) {
+	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parameters, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.returnType = returnType;
 		this.name = name;
-		this.parametersopt = parametersopt;
+		this.parameters = parameters;
 	}
 
 	public AstTypeEx getReturnType() {
@@ -37,8 +37,8 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 	public String getName() {
 		return name;
 	}
-	public List<AstTypeEx> getParametersopt() {
-		return parametersopt;
+	public List<AstTypeEx> getParameters() {
+		return parameters;
 	}
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
@@ -48,9 +48,8 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 		if (returnType != null) {
 			returnType.accept(v);
 		}
-		// TODO for name
-		if (parametersopt != null) {
-			for (AstTypeEx it : parametersopt) {
+		if (parameters != null) {
+			for (AstTypeEx it : parameters) {
 				it.accept(v);
 			}
 		}

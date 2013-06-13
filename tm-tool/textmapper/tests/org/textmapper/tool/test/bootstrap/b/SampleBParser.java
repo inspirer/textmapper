@@ -257,18 +257,18 @@ public class SampleBParser {
 			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						true /* tc */,
-						null /* te */,
+						false /* te */,
 						((String)lapg_m[lapg_head - 3].value) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflist */,
 						null /* identifier */,
 						null /* input */, lapg_m[lapg_head - 4].offset, lapg_m[lapg_head].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						true /* tc */,
-						((String)lapg_m[lapg_head - 4].value) /* te */,
+						true /* te */,
 						((String)lapg_m[lapg_head - 5].value) /* ID */,
-						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflistopt */,
+						((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value) /* classdeflist */,
 						((String)lapg_m[lapg_head - 3].value) /* identifier */,
 						null /* input */, lapg_m[lapg_head - 6].offset, lapg_m[lapg_head].endoffset);
 				break;
@@ -277,14 +277,12 @@ public class SampleBParser {
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
 						null /* identifier */,
-						null /* Lextends */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 7:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdeflistItem>)lapg_m[lapg_head - 1].value).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						((AstClassdef)lapg_m[lapg_head].value) /* classdef */,
 						null /* identifier */,
-						null /* Lextends */,
 						null /* input */, lapg_m[lapg_head - 1].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 8:  // classdeflist ::= identifier '(' ')'
@@ -292,17 +290,15 @@ public class SampleBParser {
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)lapg_m[lapg_head - 2].value) /* identifier */,
-						null /* Lextends */,
 						null /* input */, lapg_m[lapg_head - 2].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 9:  // classdeflist ::= identifier '(' Lextends ')'
 				 String s = /* should be string */ ((String)lapg_m[lapg_head - 1].value); 
 				break;
 			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
-				((List<AstClassdeflistItem>)lapg_m[lapg_head - 3].value).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)lapg_m[lapg_head - 2].value) /* identifier */,
-						null /* Lextends */,
 						null /* input */, lapg_m[lapg_head - 3].offset, lapg_m[lapg_head].endoffset));
 				break;
 			case 11:  // classdeflist ::= error
@@ -310,7 +306,6 @@ public class SampleBParser {
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						null /* identifier */,
-						null /* Lextends */,
 						null /* input */, lapg_m[lapg_head].offset, lapg_m[lapg_head].endoffset));
 				break;
 		}

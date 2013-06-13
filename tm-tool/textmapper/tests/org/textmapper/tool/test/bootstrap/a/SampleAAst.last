@@ -6,7 +6,7 @@ interface ClassdefNoEoi {
 
 class Classdef : ClassdefNoEoi {
 	String identifier;
-	list<ClassdeflistItem> classdeflistopt;
+	list<ClassdeflistItem> classdeflist;
 }
 
 class ClassdeflistItem {

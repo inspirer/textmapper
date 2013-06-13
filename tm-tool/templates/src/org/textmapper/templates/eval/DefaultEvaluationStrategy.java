@@ -44,6 +44,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		factory.setStrategy(this);
 	}
 
+	@Override
 	public String toString(Object o, ExpressionNode referer) throws EvaluationException {
 		if (o instanceof Collection<?> || o instanceof Object[]) {
 			String message = "Evaluation of `" + referer.toString() + "` results in collection, cannot convert to String";
@@ -54,6 +55,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		return o.toString();
 	}
 
+	@Override
 	public Object evaluate(ExpressionNode expr, EvaluationContext context, boolean permitNull) throws EvaluationException {
 		try {
 			Object result = expr.evaluate(context, this);
@@ -75,6 +77,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
+	@Override
 	public String getTitle(Object object) {
 		if (object == null) {
 			return "<unknown>";
@@ -85,18 +88,22 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		return object.getClass().getCanonicalName();
 	}
 
+	@Override
 	public IxObject asObject(Object o) {
 		return navigationFactory.asObject(o);
 	}
 
+	@Override
 	public IxOperand asOperand(Object o) {
 		return navigationFactory.asOperand(o);
 	}
 
+	@Override
 	public IxAdaptable asAdaptable(Object o) {
 		return navigationFactory.asAdaptable(o);
 	}
 
+	@Override
 	public void setStrategy(IEvaluationStrategy strategy) {
 	}
 
@@ -109,10 +116,12 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
+	@Override
 	public IBundleEntity loadEntity(String qualifiedName, int kind, SourceElement referer) {
 		return registry.loadEntity(qualifiedName, kind, referer);
 	}
 
+	@Override
 	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement referer) {
 		if (t == null) {
 			return "";
@@ -125,27 +134,33 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 		}
 	}
 
+	@Override
 	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments) throws EvaluationException {
 		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
 	}
 
+	@Override
 	public String eval(final Resource resource, EvaluationContext context) {
 		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents().toCharArray(), resource.getInitialLine());
 		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(source, "syntax");
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			DefaultEvaluationStrategy.this.report(KIND_ERROR, problem.getMessage(), new SourceElement() {
+				@Override
 				public String getResourceName() {
 					return resource.getUri().toString();
 				}
 
+				@Override
 				public int getOffset() {
 					return resource.getInitialOffset() + problem.getOffset();
 				}
 
+				@Override
 				public int getEndOffset() {
 					return resource.getInitialOffset() + problem.getEndOffset();
 				}
 
+				@Override
 				public int getLine() {
 					return tree.getSource().lineForOffset(problem.getOffset());
 				}
@@ -165,18 +180,22 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 
+	@Override
 	public void report(int kind, String message, SourceElement... anchors) {
 		templatesFacade.report(kind, message, anchors);
 	}
 
+	@Override
 	public final void createStream(String name, String contents) {
 		templatesFacade.createStream(name, contents);
 	}
 
+	@Override
 	public ITypesRegistry getTypesRegistry() {
 		return registry.getTypesRegistry();
 	}
 
+	@Override
 	public IEvaluationCache getCache() {
 		if (myCache == null) {
 			myCache = new DefaultEvaluationCache();

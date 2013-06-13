@@ -37,6 +37,7 @@ public class TMMapper {
 	public AstModel deriveAST() {
 		collectUnmapped();
 
+		mapVoid();
 		mapEnums();
 		mapDecorators();
 		mapInterfaces();
@@ -44,12 +45,23 @@ public class TMMapper {
 		mapLists();
 		mapFields();
 
+		assert unmapped.isEmpty();
 		assert typeListeners.isEmpty();
 		for (Runnable pp : postProcessors) {
 			pp.run();
 		}
 
 		return builder.create();
+	}
+
+	private void mapVoid() {
+		Iterator<Nonterminal> i = unmapped.iterator();
+		while (i.hasNext()) {
+			Nonterminal n = i.next();
+			if (!hasProperty(n, "noast")) continue;
+			mapper.map(n, VoidType.INSTANCE);
+			i.remove();
+		}
 	}
 
 	private void mapNonterm(Nonterminal n, AstType type) {
@@ -82,7 +94,6 @@ public class TMMapper {
 		unmapped = new LinkedList<Nonterminal>();
 		for (Symbol sym : grammar.getSymbols()) {
 			if (!(sym instanceof Nonterminal) || sym.getType() != null) continue;
-			if (((Nonterminal) sym).getDefinition() instanceof RhsList) continue;
 			unmapped.add((Nonterminal) sym);
 		}
 	}
@@ -91,18 +102,19 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
+			if (n.getDefinition() instanceof RhsList) continue;
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			if (definition instanceof RhsChoice) {
 				RhsChoice alt = (RhsChoice) n.getDefinition();
 				boolean isEnum = true;
 				for (RhsPart part : alt.getParts()) {
-					if (!(RhsUtil.isConstant(part))) {
+					if (!(isConstantOrVoid(part))) {
 						isEnum = false;
 						break;
 					}
 				}
 				if (isEnum) {
-					AstEnum astEnum = builder.addEnum(getNonterminalTypeName(n), null, n);
+					AstEnum astEnum = builder.addEnum(getNonterminalTypeName(n, null), null, n);
 					mapNonterm(n, astEnum);
 					for (RhsPart part : alt.getParts()) {
 						RhsPart p = RhsUtil.unwrap(part);
@@ -121,7 +133,7 @@ public class TMMapper {
 					i.remove();
 				}
 
-			} else if (RhsUtil.isConstant(definition)) {
+			} else if (isConstantOrVoid(definition)) {
 				mapNonterm(n, AstType.BOOL);
 				RhsSymbol term = (RhsSymbol) RhsUtil.unwrapEx(definition, false, false, true);
 				mapper.map(term, null, Boolean.TRUE, false);
@@ -130,14 +142,19 @@ public class TMMapper {
 		}
 	}
 
-	private String getNonterminalTypeName(Nonterminal n) {
-		return builder.uniqueName(null, TMDataUtil.getId(n), false);
+	private String getNonterminalTypeName(Nonterminal n, String suffix) {
+		String id = TMDataUtil.getId(n);
+		if (suffix != null) {
+			id = id + "_" + suffix;
+		}
+		return builder.uniqueName(null, id, false);
 	}
 
 	private void mapDecorators() {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
+			if (n.getDefinition() instanceof RhsList) continue;
 			if (hasProperty(n, "_class") || hasProperty(n, "_interface")) {
 				continue;
 			}
@@ -191,7 +208,7 @@ public class TMMapper {
 			RhsPart varPart = null;
 			for (RhsPart p_ : ((RhsSequence) part).getParts()) {
 				RhsPart p = RhsUtil.unwrap(p_);
-				if (p instanceof RhsSymbol && RhsUtil.isConstant((RhsSymbol) p)) continue;
+				if (p instanceof RhsSymbol && isConstantOrVoid(p)) continue;
 				if (varPart != null) return null;
 				varPart = p;
 			}
@@ -200,6 +217,16 @@ public class TMMapper {
 			return null;
 		}
 		return part;
+	}
+
+	private static boolean isConstantOrVoid(RhsPart part) {
+		part = RhsUtil.unwrapEx(part, false, false, true);
+		if (part instanceof RhsSymbol) {
+			final RhsSymbol sym = (RhsSymbol) part;
+			return RhsUtil.isConstant(sym) ||
+					sym.getTarget() instanceof Nonterminal && sym.getTarget().getType() instanceof VoidType;
+		}
+		return false;
 	}
 
 	private void addExtends(final Nonterminal n, final AstClass baseClass) {
@@ -220,7 +247,7 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (hasProperty(n, "_class")) {
+			if (n.getDefinition() instanceof RhsList || hasProperty(n, "_class")) {
 				continue;
 			}
 
@@ -254,7 +281,7 @@ public class TMMapper {
 				customRuleList.add((RhsSequence) part);
 			}
 			if (isInterface) {
-				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n), null, n);
+				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n, null), null, n);
 				mapNonterm(n, interfaceClass);
 				for (Nonterminal nonterminal : extList) {
 					addExtends(nonterminal, interfaceClass);
@@ -267,7 +294,7 @@ public class TMMapper {
 					String ruleAlias = rulePart.getName();
 					AstClass ruleClass = aliasToClass.get(ruleAlias);
 					if (ruleClass == null) {
-						ruleClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_" + ruleAlias, false), null, n);
+						ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
 						builder.addExtends(ruleClass, interfaceClass);
 						aliasToClass.put(ruleAlias, ruleClass);
 					}
@@ -307,21 +334,24 @@ public class TMMapper {
 	}
 
 	private void mapClasses() {
-		for (Nonterminal n : unmapped) {
+		Iterator<Nonterminal> i = unmapped.iterator();
+		while (i.hasNext()) {
+			Nonterminal n = i.next();
+			if (n.getDefinition() instanceof RhsList) continue;
 			// TODO handle baseRule
 			//final Symbol baseRule = getExtends(n);
 
-			AstClass cl = builder.addClass(getNonterminalTypeName(n), null, n);
+			AstClass cl = builder.addClass(getNonterminalTypeName(n, null), null, n);
 			mapNonterm(n, cl);
 			mapClass(cl, RhsUtil.unwrap(n.getDefinition()));
+			i.remove();
 		}
-		unmapped.clear();
 	}
 
 	private void mapLists() {
-		for (Symbol symbol : grammar.getSymbols()) {
-			if (!(symbol instanceof Nonterminal) || symbol.getType() != null) continue;
-			final Nonterminal n = (Nonterminal) symbol;
+		Iterator<Nonterminal> i = unmapped.iterator();
+		while (i.hasNext()) {
+			final Nonterminal n = i.next();
 			if (!(n.getDefinition() instanceof RhsList)) continue;
 			final RhsList list = (RhsList) n.getDefinition();
 
@@ -344,7 +374,7 @@ public class TMMapper {
 					}
 				});
 			} else {
-				AstClass elementClass = builder.addClass(builder.uniqueName(null, TMDataUtil.getId(n) + "_item", false), null, n);
+				AstClass elementClass = builder.addClass(getNonterminalTypeName(n, "item"), null, n);
 				mapNonterm(n, builder.list(elementClass, list.isNonEmpty(), n));
 				mapper.map(list.getElement(), null, elementClass, true);
 				if (list.getCustomInitialElement() != null) {
@@ -352,6 +382,7 @@ public class TMMapper {
 				}
 				mapClass(elementClass, list.getElement(), list.getCustomInitialElement());
 			}
+			i.remove();
 		}
 	}
 
@@ -452,7 +483,9 @@ public class TMMapper {
 			RhsSymbol ref = (RhsSymbol) unwrapped;
 			AstType type = RhsUtil.getCastType(part);
 			if (type == null) {
-				type = ref.getTarget().getType();
+				if (!isConstantOrVoid(ref)) {
+					type = ref.getTarget().getType();
+				}
 				if (type == null && assignment != null) {
 					type = BOOL_OR_ENUM;
 				}
@@ -521,6 +554,11 @@ public class TMMapper {
 		return o1 instanceof Boolean ? (Boolean) o1 : false;
 	}
 
+	private static String getFieldBaseName(RhsSymbol sym) {
+		final String id = TMDataUtil.getId(sym.getTarget());
+		return id.endsWith("opt") && id.length() > 3 ? id.substring(0, id.length() - 3) : id;
+	}
+
 //	private static Symbol getExtends(Symbol s) {
 //		final Map<String, Object> annotations = TMDataUtil.getAnnotations(s);
 //		if (annotations == null) {
@@ -551,7 +589,7 @@ public class TMMapper {
 				fields = new ArrayList<FieldDescriptor>();
 				fieldsMap.put(id, fields);
 			}
-			FieldDescriptor fd = new FieldDescriptor(alias != null ? alias : TMDataUtil.getId(sym.getTarget()), type);
+			FieldDescriptor fd = new FieldDescriptor(alias != null ? alias : getFieldBaseName(sym), type);
 			fd.addMapping(new FieldMapping(sym, isAddition, origin));
 			result.add(fd);
 			fields.add(fd);

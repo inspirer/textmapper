@@ -44,8 +44,6 @@ public class AstStructuralExpressionDOLLAR1Item extends AstNode {
 			return;
 		}
 
-		// TODO for identifier
-		// TODO for mapSeparator
 		if (expression != null) {
 			expression.accept(v);
 		}

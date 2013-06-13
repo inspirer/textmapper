@@ -151,7 +151,7 @@ class TypesResolver {
 				return memberDeclaration.getName();
 			}
 		}, memberDeclaration.getReturnType(), true);
-		List<AstTypeEx> parametersopt = memberDeclaration.getParametersopt();
+		List<AstTypeEx> parametersopt = memberDeclaration.getParameters();
 		final IType[] params = parametersopt == null || parametersopt.size() == 0 ? null : new IType[parametersopt.size()];
 		if(params == null) {
 			return result;
@@ -183,8 +183,8 @@ class TypesResolver {
 					"feature cannot have multiplicity in type (feature `" + fd.getName() + "`)",
 					new LocatedNodeAdapter(fd.getTypeEx()));
 		}
-		if (fd.getModifiersopt() != null) {
-			for (AstConstraint c : fd.getModifiersopt()) {
+		if (fd.getModifiers() != null) {
+			for (AstConstraint c : fd.getModifiers()) {
 				if (c.getMultiplicityList() != null) {
 					if (multiplicities != null) {
 						myStatus.report(TemplatesStatus.KIND_ERROR,
@@ -219,7 +219,7 @@ class TypesResolver {
 				return feature.getName();
 			}
 		}, fd.getTypeEx().getType(), stringConstraints, true);
-		convertDefautVal(feature, fd.getDefaultvalopt());
+		convertDefautVal(feature, fd.getDefaultval());
 		return feature;
 	}
 
@@ -254,8 +254,8 @@ class TypesResolver {
 	private void scanRequiredClasses(IAstExpression expression) {
 		if (expression instanceof AstStructuralExpression) {
 			AstStructuralExpression expr = (AstStructuralExpression) expression;
-			if (expr.getExpressionListopt() != null) {
-				for (IAstExpression inner : expr.getExpressionListopt()) {
+			if (expr.getExpressionList() != null) {
+				for (IAstExpression inner : expr.getExpressionList()) {
 					scanRequiredClasses(inner);
 				}
 			}
@@ -285,7 +285,7 @@ class TypesResolver {
 		if (type.getKind() == null) {
 			// reference or closure
 			if(type.getIsClosure()) {
-				final List<AstTypeEx> params = type.getParametersopt();
+				final List<AstTypeEx> params = type.getParameters();
 				if(params == null) {
 					handler.typeResolved(new TiClosureType());
 					return;
@@ -442,7 +442,7 @@ class TypesResolver {
 						}
 						return convertNew(expr, qualifiedName, props, type);
 					} else {
-						return convertArray(expr, expr.getExpressionListopt(), type);
+						return convertArray(expr, expr.getExpressionList(), type);
 					}
 				}
 				return null;

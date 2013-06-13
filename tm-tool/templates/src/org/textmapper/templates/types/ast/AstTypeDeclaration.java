@@ -45,8 +45,6 @@ public class AstTypeDeclaration extends AstNode {
 			return;
 		}
 
-		// TODO for name
-		// TODO for _super
 		if (members != null) {
 			for (IAstMemberDeclaration it : members) {
 				it.accept(v);

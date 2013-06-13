@@ -94,7 +94,7 @@ public class LiTerminal extends LiSymbol implements Terminal {
 			}
 		}
 
-		return value != null && getType() == null;
+		return value != null && (isSoft() || getType() == null);
 	}
 }
 

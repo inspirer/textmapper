@@ -63,10 +63,10 @@ public class SampleAParseContext {
 
 	public GenericNode convert(org.textmapper.lapg.eval.GenericParseContext.TextSource source, IAstClassdefNoEoi cd) {
 		AstClassdef def = (AstClassdef) cd;
-		GenericNode[] children = new GenericNode[def.getClassdeflistopt() != null ? def.getClassdeflistopt().size() : 0];
-		if (def.getClassdeflistopt() != null) {
+		GenericNode[] children = new GenericNode[def.getClassdeflist() != null ? def.getClassdeflist().size() : 0];
+		if (def.getClassdeflist() != null) {
 			int i = 0;
-			for (AstClassdeflistItem c : def.getClassdeflistopt()) {
+			for (AstClassdeflistItem c : def.getClassdeflist()) {
 				children[i++] = convert(source, c.getClassdef());
 			}
 		}

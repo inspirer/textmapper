@@ -10,6 +10,7 @@ ${file opts.prefix+'Ast.last'}${call ast_text.unit}${end-}
 ${end-}
 ${end}
 
+
 ${template ast_classifier(cl)-}
 ${file self->astPath() + cl->className() + '.java'-}
 ${call java.header-}
@@ -18,6 +19,7 @@ package ${self->astPackage()};
 ${self->('ast_'+cl->kind())(cl)-}
 ${end-}
 ${end}
+
 
 ${query kind() =
 	self is LiAstEnum ? 'enum' : self.isInterface() ? 'interface' : 'class' }
@@ -50,6 +52,7 @@ ${query convertType(asttype) =
 		val == 'boolean' ? 'Boolean':
 		val == 'int' ? 'Integer' : 'String') :
 	asttype is LiRawAstType ? asttype.rawType :
+	asttype is VoidType ? null :
 	self->astPackage() + '.@' + asttype->classInnerName()
 }
 
@@ -96,7 +99,7 @@ ${if true-}
 			return;
 		}
 
-${foreach prop in cl.fields-}
+${foreach prop in cl.fields.select(f|f.type->acceptsVisitor())-}
 ${if prop.type is LiAstList && prop.type.inner is LiAstClass -}
 		if (${prop->propertyName()} != null) {
 			for (${self->convertType(prop.type.inner)} it : ${prop->propertyName()}) {
@@ -121,6 +124,7 @@ ${end-}
 ${end}
 
 
+${query acceptsVisitor() = self is LiAstClass || self is LiAstList && self.inner->acceptsVisitor()}
 
 ${template ast_enum(cl)-}
 public enum ${cl->className()} {
@@ -203,8 +207,10 @@ ${end-}
 ${end}
 
 ${cached query astcode(rule) =
+	nontermType = rule.getLeft().type,
 	def = rule.getLeft().definition,
-	def is LiRhsList ? rule->codeForList(def) :
+	nontermType is VoidType || nontermType is LiRawAstType ? null :
+	def is LiRhsList && nontermType is LiAstList ? rule->codeForList(def) :
 	rule->codeForClass()
 }
 
@@ -213,8 +219,7 @@ ${query codeForList(list) =
     prefix = recursive ? (list.isRightRecursive() ? '$$ = $'+(self.getRight().size()-1)+';\n' : '') : '$$ = new java.util.@ArrayList();\n',
 	expr = self->asExpression(self.getSource(), self.getLeft().type.inner, true),
     expr == 'null' ? prefix :
-    prefix + '${' + (recursive?'self['+(list.isRightRecursive() ? self.getRight().size()-1 : 0)+']' : 'left()')
-    		+'}.add(' + expr + ');\n'
+    prefix + '${left()}.add(' + expr + ');\n'
 }
 
 ${query codeForClass() =

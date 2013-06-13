@@ -24,15 +24,15 @@ public class AstType extends AstNode {
 	private boolean isReference;
 	private boolean isClosure;
 	private List<String> name;
-	private List<AstTypeEx> parametersopt;
+	private List<AstTypeEx> parameters;
 
-	public AstType(AstType.AstKindKind kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parametersopt, TextSource input, int start, int end) {
+	public AstType(AstType.AstKindKind kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parameters, TextSource input, int start, int end) {
 		super(input, start, end);
 		this.kind = kind;
 		this.isReference = isReference;
 		this.isClosure = isClosure;
 		this.name = name;
-		this.parametersopt = parametersopt;
+		this.parameters = parameters;
 	}
 
 	public AstType.AstKindKind getKind() {
@@ -47,20 +47,16 @@ public class AstType extends AstNode {
 	public List<String> getName() {
 		return name;
 	}
-	public List<AstTypeEx> getParametersopt() {
-		return parametersopt;
+	public List<AstTypeEx> getParameters() {
+		return parameters;
 	}
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
 
-		// TODO for kind
-		// TODO for isReference
-		// TODO for isClosure
-		// TODO for name
-		if (parametersopt != null) {
-			for (AstTypeEx it : parametersopt) {
+		if (parameters != null) {
+			for (AstTypeEx it : parameters) {
 				it.accept(v);
 			}
 		}

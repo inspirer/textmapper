@@ -45,13 +45,11 @@ public class AstStringConstraint extends AstNode {
 			return;
 		}
 
-		// TODO for kind
 		if (strings != null) {
 			for (Ast_String it : strings) {
 				it.accept(v);
 			}
 		}
-		// TODO for identifier
 	}
 
 	public enum AstKindKind {
