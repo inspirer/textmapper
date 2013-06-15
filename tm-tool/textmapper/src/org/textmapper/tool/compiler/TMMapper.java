@@ -67,10 +67,26 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (!hasProperty(n, "noast")) continue;
-			mapper.map(n, VoidType.INSTANCE);
-			i.remove();
+			if (isVoid(n)) {
+				mapper.map(n, VoidType.INSTANCE);
+				i.remove();
+			}
 		}
+	}
+
+	public static boolean isVoid(Nonterminal n) {
+		if (hasProperty(n, "noast")) return true;
+		if (hasProperty(n, "_class")) return false;
+		RhsPart def = RhsUtil.unwrap(n.getDefinition());
+		if (def instanceof RhsSymbol) {
+			Symbol sym = ((RhsSymbol) def).getTarget();
+			if (sym instanceof Terminal) {
+				return ((Terminal) sym).isConstant();
+			}
+			// TODO infinite recursion?
+			return isVoid((Nonterminal) sym);
+		}
+		return false;
 	}
 
 	private void mapNonterm(Nonterminal n, AstType type) {
@@ -111,7 +127,7 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (n.getDefinition() instanceof RhsList) continue;
+			if (hasProperty(n, "_class") || n.getDefinition() instanceof RhsList) continue;
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			if (definition instanceof RhsChoice) {
 				RhsChoice alt = (RhsChoice) n.getDefinition();
@@ -140,12 +156,14 @@ public class TMMapper {
 						mapper.map(term, null, member, false);
 					}
 					i.remove();
+					continue;
 				}
+			}
 
-			} else if (isConstantOrVoid(definition)) {
+			RhsPart single = RhsUtil.unwrapEx(definition, true, false, false);
+			if (single instanceof RhsSymbol && isConstantOrVoid(single)) {
 				mapNonterm(n, AstType.BOOL);
-				RhsSymbol term = (RhsSymbol) RhsUtil.unwrapEx(definition, false, false, true);
-				mapper.map(term, null, Boolean.TRUE, false);
+				mapper.map((RhsSymbol) single, null, Boolean.TRUE, false);
 				i.remove();
 			}
 		}
@@ -189,7 +207,7 @@ public class TMMapper {
 				final RhsPart master = withoutConstants(r);
 				if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
 					final Symbol target = ((RhsSymbol) master).getTarget();
-					if (target instanceof Terminal && target.getType() == null) {
+					if (target instanceof Terminal && (target.getType() == null || ((Terminal) target).isSoft())) {
 						// cannot map a terminal without a type, ignoring decorator
 						continue;
 					}

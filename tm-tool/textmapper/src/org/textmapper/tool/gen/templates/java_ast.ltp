@@ -225,6 +225,7 @@ ${query codeForList(list) =
 ${query codeForClass() =
 	expr = self->asExpression(self.getSource(), self.getLeft().type, false),
 	expr == '$0' ? null :
+	expr == 'null' && self.getRight().size() == 0 ? null :
     '$$ = ' + expr + ';\n'
 }
 
@@ -234,9 +235,10 @@ ${query asExpression(seq,contextType,addOnly) =
 	mapped = self.mappedSymbols(seq),
 	mapped.length == 1 && mapped.first() is LiRhsSymbol && mapped.first()->isThisMapping(addOnly) ? self->simpleMapping(mapped.first()) :
 	mapped.length == 1 && mapped.first() is LiRhsSequence && mapped.first()->isThisMapping(addOnly) ? self->asExpression(mapped.first(), contextType, addOnly) :
-	seq.parts.length == 0 ? 'null' :
 	(type = seq.type ? seq.type : contextType,
 
+	mapped.length == 0 && type is PrimitiveType ? (type.toString() == 'boolean' ? 'false' : type.toString() == 'int' ? '0' : 'null') :
+	!self.isMatched(seq) ? 'null' :
 	!(type is LiAstClass) ? '/* ERR: unknown type ' + type + ' */' :
 	'new ' + self->astPackage() + '.@' + type->classInnerName() + self->ctorArguments(type, mapped))
 }

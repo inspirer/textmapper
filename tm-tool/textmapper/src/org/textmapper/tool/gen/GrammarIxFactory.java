@@ -139,11 +139,23 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if (args != null && args.length == 1) {
 				if ("mappedSymbols".equals(methodName)) {
-					// TODO move to RhsSequenceIxObject
-					return getMappedSymbols((RhsSequence) args[0]);
+					return getMappedSymbols((RhsSequence) args[0], new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
+				}
+				if ("isMatched".equals(methodName)) {
+					return isMatched(((RhsSequence) args[0]), new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
 				}
 			}
 			return super.callMethod(methodName, args);
+		}
+
+		private boolean isMatched(RhsPart part, Set<RhsSymbol> active) {
+			for (RhsSymbol o : RhsUtil.getRhsSymbols(part)) {
+				if (active.contains(o)) {
+					return true;
+				}
+			}
+			return false;
+
 		}
 
 		private void loadSourceSymbols() {
@@ -152,26 +164,30 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 		}
 
-		private RhsPart[] getMappedSymbols(RhsSequence seq) {
+		private RhsPart[] getMappedSymbols(RhsSequence seq, Set<RhsSymbol> active) {
 			List<RhsPart> result = new ArrayList<RhsPart>();
 			for (RhsPart p : seq.getParts()) {
-				collectMappedSymbols(p, result);
+				collectMappedSymbols(p, result, active);
 			}
 			return result.toArray(new RhsPart[result.size()]);
 		}
 
-		private void collectMappedSymbols(RhsPart part, List<RhsPart> r) {
+		private void collectMappedSymbols(RhsPart part, List<RhsPart> r, Set<RhsSymbol> active) {
 			if (part instanceof RhsSymbol) {
 				RhsSymbol sym = (RhsSymbol) part;
 				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
 				if ((rewrittenTo != null ? rewrittenTo : sym).getMapping() != null) {
-					r.add(part);
+					if (active.contains(part)) {
+						r.add(part);
+					}
 					return;
 				}
 			}
 
 			if (part instanceof RhsSequence && RhsUtil.hasMapping((RhsSequence) part)) {
-				r.add(part);
+				if (isMatched(part, active)) {
+					r.add(part);
+				}
 				return;
 			}
 
@@ -179,7 +195,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if (children == null) return;
 
 			for (RhsPart c : children) {
-				collectMappedSymbols(c, r);
+				collectMappedSymbols(c, r, active);
 			}
 		}
 
