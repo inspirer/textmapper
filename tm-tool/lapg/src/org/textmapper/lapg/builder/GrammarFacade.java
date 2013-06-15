@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
@@ -32,5 +33,9 @@ public class GrammarFacade {
 
 	public static AstBuilder createAstBuilder() {
 		return new LiAstBuilder();
+	}
+
+	public static boolean rewriteAsList(Nonterminal n) {
+		return new ListsRewriter((LiSymbol) n).rewrite();
 	}
 }

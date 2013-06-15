@@ -18,6 +18,7 @@ package org.textmapper.tool.compiler;
 import org.junit.Test;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.common.AbstractProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.templates.storage.ClassResourceLoader;
@@ -45,6 +46,11 @@ public class RewriteTest {
 	public void testRewriteTm() throws Exception {
 		String contents = loadContent("tests/org/textmapper/tool/compiler/input/rewrite.tm");
 		TMGrammar grammar = asGrammar(contents);
+		for (Symbol s : grammar.getGrammar().getSymbols()) {
+			if (s instanceof Nonterminal) {
+				GrammarFacade.rewriteAsList((Nonterminal) s);
+			}
+		}
 		Map<String, String> tests = loadTests(contents);
 
 		for (Entry<String, String> entry : tests.entrySet()) {

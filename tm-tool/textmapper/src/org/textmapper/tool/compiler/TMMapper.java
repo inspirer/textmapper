@@ -6,6 +6,7 @@ import org.textmapper.lapg.api.ast.*;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
@@ -36,6 +37,7 @@ public class TMMapper {
 
 	public AstModel deriveAST() {
 		collectUnmapped();
+		rewriteLists();
 
 		mapVoid();
 		mapEnums();
@@ -52,6 +54,13 @@ public class TMMapper {
 		}
 
 		return builder.create();
+	}
+
+	private void rewriteLists() {
+		for (Nonterminal n : unmapped) {
+			if (hasProperty(n, "_class")) continue;
+			GrammarFacade.rewriteAsList(n);
+		}
 	}
 
 	private void mapVoid() {

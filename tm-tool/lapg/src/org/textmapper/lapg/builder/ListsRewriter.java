@@ -18,34 +18,36 @@ public class ListsRewriter {
 		RIGHT_RECURSIVE,
 	}
 
-	private LiSymbol[] symbols;
+	private LiSymbol symbol;
 
-	public ListsRewriter(LiSymbol[] symbols) {
-		this.symbols = symbols;
+	public ListsRewriter(LiSymbol symbol) {
+		this.symbol = symbol;
 	}
 
 	/**
-	 * Finds list non-terminals and replaces their definition with RhsList.
+	 * Replaces the definition of a list nonterminal with RhsList.
 	 * (see rewrite.tm)
 	 */
-	public void rewrite() {
-		for (LiSymbol symbol : symbols) {
-			if (!(symbol instanceof Nonterminal)) continue;
+	public boolean rewrite() {
+		if (!(symbol instanceof Nonterminal)) return false;
 
-			Nonterminal nonterm = (Nonterminal) symbol;
-			if (!(nonterm.getDefinition() instanceof RhsChoice)) continue;
+		Nonterminal nonterm = (Nonterminal) symbol;
+		if (!(nonterm.getDefinition() instanceof RhsChoice)) return false;
 
-			RhsChoice def = (RhsChoice) nonterm.getDefinition();
-			ListKind kind = getListKind(def);
-			if (kind != ListKind.NONE) {
+		// TODO check if any parts of the current definition are mapped
 
-				// TODO respect RhsMapping ?
+		RhsChoice def = (RhsChoice) nonterm.getDefinition();
+		ListKind kind = getListKind(def);
+		if (kind != ListKind.NONE) {
 
-				RhsList list = createList(def, kind == ListKind.RIGHT_RECURSIVE);
-				// debug("Rewriting\n" + def.toString() + "\n" + "with\n" + list.toString() + "\n");
-				((LiRhsRoot) def).rewrite(list);
-			}
+			// TODO respect RhsMapping ?
+
+			RhsList list = createList(def, kind == ListKind.RIGHT_RECURSIVE);
+			// debug("Rewriting\n" + def.toString() + "\n" + "with\n" + list.toString() + "\n");
+			((LiRhsRoot) def).rewrite(list);
+			return true;
 		}
+		return false;
 	}
 
 	private static ListKind getListKind(RhsChoice def) {

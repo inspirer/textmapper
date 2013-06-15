@@ -361,7 +361,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
 		annotateNullables();
-		new ListsRewriter(symbolArr).rewrite();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}
 
