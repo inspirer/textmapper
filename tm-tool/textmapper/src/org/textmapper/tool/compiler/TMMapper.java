@@ -329,6 +329,8 @@ public class TMMapper {
 					mapper.map(rulePart, null, ruleClass, false);
 				}
 				i.remove();
+			} else if (hasProperty(n, "_interface")) {
+				status.report(ProcessingStatus.KIND_ERROR, "@_interface was ignored", n);
 			}
 		}
 	}

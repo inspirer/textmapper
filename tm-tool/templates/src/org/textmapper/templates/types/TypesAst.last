@@ -1,27 +1,38 @@
 
 // Ast
 
-enum MapSeparator {
-	COLON,
-	EQUAL,
-	EQUALGREATER
-}
-
-interface MemberDeclaration {
-}
-
-interface Expression {
-}
-
 class Input {
 	list<TypeDeclaration> declarations;
 }
+
+input  : Input ::=
+	{declarations}
+;
+
+declarations  : list<TypeDeclaration>
+	(this+=type_declaration)+ ;
 
 class TypeDeclaration {
 	String name;
 	list<list<String>> super;
 	list<MemberDeclaration> members;
 }
+
+type_declaration  : TypeDeclaration ::=
+	Lclass name=identifier super=extends_clauseopt '{' members=member_declaration_optlist '}'
+;
+
+extends_clause  : list<list<String>> ::=
+	Lextends this=name_list
+;
+
+interface MemberDeclaration {
+}
+
+member_declaration  : MemberDeclaration ::=
+	this=feature_declaration
+  | this=method_declaration
+;
 
 class FeatureDeclaration : MemberDeclaration {
 	String name;
@@ -30,16 +41,44 @@ class FeatureDeclaration : MemberDeclaration {
 	Expression defaultval;
 }
 
+feature_declaration  : FeatureDeclaration ::=
+	typeEx=type_ex name=identifier modifiers=modifiersopt defaultval=defaultvalopt ';'
+;
+
 class MethodDeclaration : MemberDeclaration {
 	TypeEx returnType;
 	String name;
 	list<TypeEx> parameters;
 }
 
+method_declaration  : MethodDeclaration ::=
+	returnType=type_ex name=identifier '(' parameters=parametersopt ')' ';'
+;
+
+parameters  : list<TypeEx>
+	(this+=type_ex
+		separator ',')+ ;
+
+interface Expression {
+}
+
+defaultval  : Expression ::=
+	'=' this=expression
+;
+
+modifiers  : list<Constraint> ::=
+	'[' this=constraint_list ']'
+;
+
 class Constraint {
 	StringConstraint stringConstraint;
 	list<Multiplicity> multiplicityList;
 }
+
+constraint  : Constraint ::=
+	stringConstraint=string_constraint
+  | multiplicityList=multiplicity_list
+;
 
 class StringConstraint {
 	KindKind kind;
@@ -51,10 +90,25 @@ class StringConstraint {
 	}
 }
 
+string_constraint  : StringConstraint ::=
+	kind=[KindKind.LSET]Lset ':' {strings}
+  | kind=[KindKind.LCHOICE]Lchoice ':' {strings}
+  | {identifier}
+;
+
+strings  : list<String>
+	(this+=string
+		separator ',')+ ;
+
 class String {
 	String identifier;
 	String scon;
 }
+
+string  : String ::=
+	{identifier}
+  | {scon}
+;
 
 class Multiplicity {
 	Integer lo;
@@ -62,10 +116,21 @@ class Multiplicity {
 	Integer hi;
 }
 
+multiplicity  : Multiplicity ::=
+	lo=icon
+  | lo=icon '..' hasNoUpperBound=[true]'*'
+  | lo=icon '..' hi=icon
+;
+
 class TypeEx {
 	Type type;
 	list<Multiplicity> multiplicityList;
 }
+
+type_ex  : TypeEx ::=
+	{type}
+  | {type} '[' multiplicityList=multiplicity_list ']'
+;
 
 class Type {
 	KindKind kind;
@@ -80,11 +145,31 @@ class Type {
 	}
 }
 
+type  : Type ::=
+	kind=[KindKind.LINT]Lint
+  | kind=[KindKind.LSTRING]Lstring
+  | kind=[KindKind.LBOOL]Lbool
+  | {name}
+  | {name} isReference=[true]'*'
+  | isClosure=[true]'{' parameters=parametersopt '=>' '}'
+;
+
+expression  : Expression ::=
+	this=structural_expression
+  | this=literal_expression
+;
+
 class LiteralExpression : Expression {
 	String scon;
 	Integer icon;
 	Boolean bcon;
 }
+
+literal_expression  : LiteralExpression ::=
+	{scon}
+  | {icon}
+  | {bcon}
+;
 
 class StructuralExpression : Expression {
 	list<StructuralExpressionDOLLAR1Item> mapEntries;
@@ -92,9 +177,77 @@ class StructuralExpression : Expression {
 	list<Expression> expressionList;
 }
 
+structural_expression  : StructuralExpression ::=
+	{name} '(' mapEntries=structural_expression$1_opt ')'
+  | '[' expressionList=expression_listopt ']'
+;
+
+expression_list  : list<Expression>
+	(this+=expression
+		separator ',')+ ;
+
+enum MapSeparator {
+	COLON,
+	EQUAL,
+	EQUALGREATER
+}
+
+map_separator  : MapSeparator ::=
+	this=[MapSeparator.COLON]':'
+  | this=[MapSeparator.EQUAL]'='
+  | this=[MapSeparator.EQUALGREATER]'=>'
+;
+
+name  : list<String>
+	(this+=identifier
+		separator '.')+ ;
+
+name_list  : list<list<String>>
+	(this+=name
+		separator ',')+ ;
+
+extends_clauseopt  : list<list<String>> ::=
+	this=extends_clause?
+;
+
+member_declaration_optlist  : list<MemberDeclaration>
+	(this+=member_declaration)* ;
+
+modifiersopt  : list<Constraint> ::=
+	this=modifiers?
+;
+
+defaultvalopt  : Expression ::=
+	this=defaultval?
+;
+
+parametersopt  : list<TypeEx> ::=
+	this=parameters?
+;
+
+constraint_list  : list<Constraint>
+	(this+=constraint
+		separator ';')+ ;
+
+multiplicity_list  : list<Multiplicity>
+	(this+=multiplicity
+		separator ',')+ ;
+
 class StructuralExpressionDOLLAR1Item {
 	String identifier;
 	MapSeparator mapSeparator;
 	Expression expression;
 }
+
+structural_expression$1  : list<StructuralExpressionDOLLAR1Item>
+	(this+=new.StructuralExpressionDOLLAR1Item({identifier} mapSeparator=map_separator {expression})
+		separator ',')+ ;
+
+structural_expression$1_opt  : list<StructuralExpressionDOLLAR1Item> ::=
+	this=structural_expression$1?
+;
+
+expression_listopt  : list<Expression> ::=
+	this=expression_list?
+;
 
