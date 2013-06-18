@@ -53,3 +53,14 @@ body {
     line-height: 1;
     padding-bottom: 10px;
 }
+
+table.table td, table.table th {
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+}
+
+table > tbody td {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace !important;
+    line-height: 18px  !important;
+    color: #333333 !important;
+}

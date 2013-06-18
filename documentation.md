@@ -119,13 +119,13 @@ A soft terminal symbol behaves like its class terminal symbol in the contexts wh
 	INT (Integer): /[0-9]+/  (class) { .. parsing lexeme value... }
 
 	# ZERO inherits Integer type & semantic action
-	ZERO:  /0/    (soft)
+	ZERO:       /0/ (soft)
 
 	# error: Type should match
-	ONE (Long):	  /1/  (soft)
+	ONE (Long): /1/ (soft)
 
 	# replacing the action
-	TWO:   /2/     (soft)   { $$ = 2; }
+	TWO:        /2/ (soft)     { $$ = 2; }
 
 Soft keywords don't contribute to a reserved keywords set, allowing them to be used as plain identifiers.
 
@@ -399,11 +399,28 @@ Due to syntax extensions, it may not be completely clear if the action is a mid-
 Semantic actions are processed using the Textmapper templates engine, which uses a dollar sign as the start symbol of all template constructs. All dollar signs in the target language must be escaped. Here is a brief explanation of the most used constructs:
 
 	${expr}     evaluates expression and prints out the result
-	$name       shortcut for ${name} (or ${this.name})
-	$0, $1..    shortcuts for ${this[index]}
-	$$          shortcut for ${this.'$'}
+	$name       shortcut for ${name} (or ${self.name})
+	$0, $1..    shortcuts for ${self[index]}
+	$$          shortcut for ${self.'$'}
 	${'$'}      the best way to print a single dollar sign
+	${self}     a string representation of the rule, like 'expr ::= minus expr'
 
+Expressions in rule actions are evaluated in the context of the current rule. In addition to property and index access to the right-hand side values, a rule object also provides the following operations:
+
+	${left()}   refers to the LHS nonterminal
+	${first()}  refers to the first symbol on the RHS (only for non-empty rules)
+	${last()}   refers to the last symbol on the RHS (only for non-empty rules)
+
+Although ```${left()}``` and ```$$``` denote the same entity, their output differs for strictly-typed target languages:
+
+```$$```: Must be used for writing data to the associated value of the current rule. This value is usually stored in a variable of the most general type (e.g. Object in Java). If the data is read through the ```$$``` shortcut, the value is returned "as is" with no type casting.
+
+```${left()}```: Should be used for reading typed data; it returns an associated value cast to the rule's nonterminal type. It cannot be used to modify values.
+
+	# example in java:  ${left()} is equivalent to ((List<Method>)$$)
+	methods (List<Method>) ::=
+	    method      { $$ = new ArrayList<Method>(); ${left()}.add($method); }
+	    | methods method .... ;
 
 
 ## Symbol Locations
@@ -421,6 +438,34 @@ Location attributes of terminal symbols are filled out by the lexer. A nontermin
 	    ID '=' expr
 	          { $$ = new Assignment($ID, $expr, ${ID.line} ${ID.offset}, ${expr.endoffset}); }
 	;
+
+## Parser Algorithm
+
+The generated parser is a [shift-reduce parser](http://en.wikipedia.org/wiki/Shift-reduce_parser). It builds a parse tree from the leaves upwards by scanning the input left-to-right. The processed part of the input is stored as a set of partially parsed trees in a stack. Initially the stack (called the parsing stack) is empty and in the end it contains the only parse tree for the whole input (if parsing succeeded). The stack is also used to maintain the associated attributes for each symbol (like values and locations). The parser proceeds step-by-step by applying one of two simple actions:
+
+**Shift** takes the next token from the input stream and pushes it onto the parsing stack.
+
+**Reduce** takes a rule index as an argument and expects that the top N symbols of the stack form the right-hand side of the rule. These N symbols are then replaced with the rule's left-hand nonterminal. The reduction process also includes computing the associated attributes for this nonterminal (e.g. executing semantic actions).
+
+The following example shows the parsing steps for the variable declaration construct, which is common to many languages.
+
+{:.table .table-bordered}
+| stack                   | input stream  | action |
+|-
+| \<empty\>               | int i = 5 + 3;| Shift |
+| int                     | i = 5 + 3;    | Reduce (type ::= int) |
+| type                    | i = 5 + 3;    | Shift |
+| type ID(i)              | = 5 + 3;      | Shift (2 times) |
+| type ID = 5             | + 3;          | Reduce (expr ::= integer_const) |
+| type ID = expr          | + 3;          | Shift (2 times) |
+| type ID = expr + 3      | ;             | Reduce (expr ::= integer_const) |
+| type ID = expr + expr   | ;             | Reduce (expr ::= expr '+' expr) |
+| type ID = expr          | ;             | Shift |
+| type ID = expr ;        |               | Reduce (var_decl ::= type ID '=' expr ';') |
+| var_decl                |               | Reduce (input ::= var_decl) |
+| input                   |               | \<success\> |
+
+The decision on which action to execute is made at each step, depending on the stack content and the following items in the input stream (so-called lookahead tokens). Textmapper uses LR parsing techniques to come to this decision quickly. First, instead of analyzing the whole stack each time, an aggregated value describing the stack content is used. This value is called a parser state. The state is effectively maintained for every symbol on the stack using a special table in the generated code.
 
 ## ....
 
