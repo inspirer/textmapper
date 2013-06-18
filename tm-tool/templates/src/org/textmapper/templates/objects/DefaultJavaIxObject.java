@@ -17,7 +17,6 @@ package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -31,10 +30,12 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		this.wrapped = wrapped;
 	}
 
+	@Override
 	public Object castTo(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("cannot cast");
 	}
 
+	@Override
 	public String asString() throws EvaluationException {
 		if (wrapped instanceof Collection<?> || wrapped instanceof Object[]) {
 			throw new EvaluationException("evaluation results in collection, cannot convert to String");
@@ -42,6 +43,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		return wrapped.toString();
 	}
 
+	@Override
 	public boolean asBoolean() {
 		if (wrapped instanceof Boolean) {
 			return (Boolean) wrapped;
@@ -51,6 +53,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		return wrapped != null;
 	}
 
+	@Override
 	public Iterator asSequence() {
 		if (wrapped instanceof Iterable<?>) {
 			return ((Iterable<?>) wrapped).iterator();
@@ -61,15 +64,9 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		return null;
 	}
 
+	@Override
 	public Object getProperty(String id) throws EvaluationException {
 		try {
-			try {
-				Field f = wrapped.getClass().getField(id);
-				return f.get(wrapped);
-			} catch (NoSuchFieldException ex) {
-				/* ignore, try method */
-			}
-
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 			Method meth = wrapped.getClass().getMethod(getAccessor);
 			meth.setAccessible(true);
@@ -87,6 +84,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		}
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public Object callMethod(String methodName, Object... args) throws EvaluationException {
 		try {
@@ -141,14 +139,17 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 		return null;
 	}
 
+	@Override
 	public Object getByIndex(Object index) throws EvaluationException {
 		throw new EvaluationException("do not know how to apply index");
 	}
 
+	@Override
 	public boolean is(String pattern) throws EvaluationException {
 		return JavaIsInstanceUtil.isInstance(getObject(), pattern);
 	}
 
+	@Override
 	public Object getObject() {
 		return wrapped;
 	}
