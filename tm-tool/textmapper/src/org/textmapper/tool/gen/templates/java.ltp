@@ -76,125 +76,125 @@ ${end-}
 		return -1;
 	}
 
-	protected int lapg_head;
-	protected ${self->symbolClassName()}[] lapg_m;
-	protected ${self->symbolClassName()} lapg_n;
-	protected ${opts.prefix}Lexer lapg_lexer;
+	protected int tmHead;
+	protected ${self->symbolClassName()}[] tmStack;
+	protected ${self->symbolClassName()} tmNext;
+	protected ${opts.prefix}Lexer tmLexer;
 
 	${self->mainParseVisibility()} ${self->mainParseReturnType()} parse(${opts.prefix}Lexer lexer${if self->needInitialState()
 		}, int initialState${end}${if self->needFinalState()}, int finalState${end
 		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
-		lapg_lexer = lexer;
-		lapg_m = new ${self->symbolClassName()}[${opts.stack}];
-		lapg_head = 0;
+		tmLexer = lexer;
+		tmStack = new ${self->symbolClassName()}[${opts.stack}];
+		tmHead = 0;
 ${if self->hasRecovering()}		int lapg_symbols_ok = 4;
 ${end-}
 
-		lapg_m[0] = new ${self->symbolClassName()}();
-		lapg_m[0].state = ${self->needInitialState() ? 'initialState' : 0};
-		lapg_n = lapg_lexer.next();
+		tmStack[0] = new ${self->symbolClassName()}();
+		tmStack[0].state = ${self->needInitialState() ? 'initialState' : 0};
+		tmNext = tmLexer.next();
 
-		while (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
-			int lapg_i = tmAction(lapg_m[lapg_head].state, ${if self->lazyNext()}lapg_n == null ? ${call package}.${opts.prefix}Lexer.@Lexems.Unavailable_ : ${end}lapg_n.symbol);
+		while (tmStack[tmHead].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
+			int action = tmAction(tmStack[tmHead].state, ${if self->lazyNext()}tmNext == null ? ${call package}.${opts.prefix}Lexer.@Lexems.Unavailable_ : ${end}tmNext.symbol);
 ${if self->lazyNext()-}
-			if (lapg_i <= -3 && lapg_n == null) {
-				lapg_n = lapg_lexer.next();
-				lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
+			if (action <= -3 && tmNext == null) {
+				tmNext = tmLexer.next();
+				action = tmAction(tmStack[tmHead].state, tmNext.symbol);
 			}
 ${end-}
 
-			if (lapg_i >= 0) {
-				reduce(lapg_i);
-			} else if (lapg_i == -1) {
+			if (action >= 0) {
+				reduce(action);
+			} else if (action == -1) {
 				shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}noEoi${end});
 ${if self->hasRecovering()}				lapg_symbols_ok++;
 ${end-}
 			}
 
-			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
+			if (action == -2 || tmStack[tmHead].state == -1) {
 ${if self->hasRecovering()-}
 ${call dynamicRecoveringCheck-}
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(${self->err_location('lapg_n', 'lapg_lexer').trim()}
+						reporter.error(${self->err_location('tmNext', 'tmLexer').trim()}
 								java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
-								lapg_lexer.getTokenLine(), lapg_n.column)${else}", lapg_lexer.getTokenLine())${end});
+								tmLexer.getTokenLine(), tmNext.column)${else}", tmLexer.getTokenLine())${end});
 					}
 					if (lapg_symbols_ok <= 1) {
-						lapg_n = lapg_lexer.next();
+						tmNext = tmLexer.next();
 					}
 					lapg_symbols_ok = 0;
 					continue;
 				}
-				if (lapg_head < 0) {
-					lapg_head = 0;
-					lapg_m[0] = new ${self->symbolClassName()}();
-					lapg_m[0].state = ${self->needInitialState() ? 'initialState' : 0};
+				if (tmHead < 0) {
+					tmHead = 0;
+					tmStack[0] = new ${self->symbolClassName()}();
+					tmStack[0].state = ${self->needInitialState() ? 'initialState' : 0};
 				}
 ${end-}
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
+		if (tmStack[tmHead].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
 ${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${(self->lazyNext() ? self->err_location_safe('lapg_n', 'lapg_lexer') : self->err_location('lapg_n', 'lapg_lexer')).trim()}
+${end}			reporter.error(${(self->lazyNext() ? self->err_location_safe('tmNext', 'tmLexer') : self->err_location('tmNext', 'tmLexer')).trim()}
 						java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
-								lapg_lexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column${end}));
+								tmLexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column${end}));
 ${if self->hasRecovering()-}
 			}
 ${end-}
 			throw new ParseException();
 		}
 		return ${if !self->needInitialState() && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
-			}lapg_m[${
+			}tmStack[${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
-					? 'noEoi ? lapg_head : lapg_head - 1' :
+					? 'noEoi ? tmHead : tmHead - 1' :
 				self->hasNoEoiInputs()
-				 	? 'lapg_head'
-				 	: 'lapg_head - 1'
+				 	? 'tmHead'
+				 	: 'tmHead - 1'
 			}].value;
 	}
 ${if self->hasRecovering()}
 	protected boolean restore() ${if self->lazyNext()}throws java.io.@IOException ${end}{
 ${if self->lazyNext()-}
-		if (lapg_n == null) {
-			lapg_n = lapg_lexer.next();
+		if (tmNext == null) {
+			tmNext = tmLexer.next();
 		}
 ${end-}
-		if (lapg_n.symbol == 0) {
+		if (tmNext.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && tmGoto(lapg_m[lapg_head].state, ${self->errorLexem()}) == -1) {
-			dispose(lapg_m[lapg_head]);
-			lapg_m[lapg_head] = null;
-			lapg_head--;
+		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, ${self->errorLexem()}) == -1) {
+			dispose(tmStack[tmHead]);
+			tmStack[tmHead] = null;
+			tmHead--;
 		}
-		if (lapg_head >= 0) {
-			lapg_m[++lapg_head] = new ${self->symbolClassName()}();
-			lapg_m[lapg_head].symbol = ${self->errorLexem()};
-			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, ${self->errorLexem()});
+		if (tmHead >= 0) {
+			tmStack[++tmHead] = new ${self->symbolClassName()}();
+			tmStack[tmHead].symbol = ${self->errorLexem()};
+			tmStack[tmHead].value = null;
+			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorLexem()});
 ${if opts.positions.contains('line')-}
-			lapg_m[lapg_head].line = lapg_n.line;
+			tmStack[tmHead].line = tmNext.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-			lapg_m[lapg_head].column = lapg_n.column;
+			tmStack[tmHead].column = tmNext.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-			lapg_m[lapg_head].offset = lapg_n.offset;
+			tmStack[tmHead].offset = tmNext.offset;
 ${end-}
 ${if opts.endpositions.contains('line')-}
-			lapg_m[lapg_head].endline = lapg_n.endline;
+			tmStack[tmHead].endline = tmNext.endline;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-			lapg_m[lapg_head].endcolumn = lapg_n.endcolumn;
+			tmStack[tmHead].endcolumn = tmNext.endcolumn;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
+			tmStack[tmHead].endoffset = tmNext.endoffset;
 ${end-}
 			return true;
 		}
@@ -204,60 +204,60 @@ ${end-}
 
 	protected void shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}boolean lazy${end}) throws java.io.@IOException {
 ${if self->lazyNext()-}
-		if (lapg_n == null) {
-			lapg_n = lapg_lexer.next();
+		if (tmNext == null) {
+			tmNext = tmLexer.next();
 		}
 ${end-}
-		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		tmStack[++tmHead] = tmNext;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 ${call debugShift-}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
-			lapg_n = ${
+		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
+			tmNext = ${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
-					? 'lazy ? null : lapg_lexer.next()' :
+					? 'lazy ? null : tmLexer.next()' :
 				self->hasNoEoiInputs()
 				 	? 'null'
-				 	: 'lapg_lexer.next()'
+				 	: 'tmLexer.next()'
 			};
 		}
 	}
 
 	protected void reduce(int rule) {
 		${self->symbolClassName()} lapg_gg = new ${self->symbolClassName()}();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
 		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 ${call debugReduce-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
-		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
+		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
 ${if opts.positions.contains('line')-}
-		lapg_gg.line = ${if self->lazyNext()}startsym == null ? lapg_lexer.getLine() : ${end}startsym.line;
+		lapg_gg.line = ${if self->lazyNext()}startsym == null ? tmLexer.getLine() : ${end}startsym.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-		lapg_gg.column = ${if self->lazyNext()}startsym == null ? lapg_lexer.getColumn() : ${end}startsym.column;
+		lapg_gg.column = ${if self->lazyNext()}startsym == null ? tmLexer.getColumn() : ${end}startsym.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-		lapg_gg.offset = ${if self->lazyNext()}startsym == null ? lapg_lexer.getOffset() : ${end}startsym.offset;
+		lapg_gg.offset = ${if self->lazyNext()}startsym == null ? tmLexer.getOffset() : ${end}startsym.offset;
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		lapg_gg.endline = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endline : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getLine() : ${end}lapg_n.line;
+		lapg_gg.endline = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endline : ${if self->lazyNext()}tmNext == null ? tmLexer.getLine() : ${end}tmNext.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endcolumn : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getColumn() : ${end}lapg_n.column;
+		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endcolumn : ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head].endoffset : ${if self->lazyNext()}lapg_n == null ? lapg_lexer.getOffset() : ${end}lapg_n.offset;
+		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : ${if self->lazyNext()}tmNext == null ? tmLexer.getOffset() : ${end}tmNext.offset;
 ${end-}
 		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
 ${if opts.genCleanup-}
-			cleanup(lapg_m[lapg_head]);
+			cleanup(tmStack[tmHead]);
 ${end-}
-			lapg_m[lapg_head--] = null;
+			tmStack[tmHead--] = null;
 		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = lapg_gg;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
 	}
 
 ${call applyRule-}
@@ -321,7 +321,7 @@ ${end}
 
 ${template debugShift-}
 		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
 		}
 ${end}
 
@@ -386,7 +386,7 @@ ${end}
 ${query symText(property) =
 	self.rightOffset == -1
 	? (property == 'value' ? 'null' : '-1')
-	: (self.isLeft ? 'lapg_gg' : 'lapg_m[lapg_head' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
+	: (self.isLeft ? 'lapg_gg' : 'tmStack[tmHead' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
 	  + '.' + property }
 
 ${template symAccess(property)-}

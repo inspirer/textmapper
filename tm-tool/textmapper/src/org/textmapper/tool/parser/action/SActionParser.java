@@ -118,78 +118,78 @@ public class SActionParser {
 		return -1;
 	}
 
-	protected int lapg_head;
-	protected LapgSymbol[] lapg_m;
-	protected LapgSymbol lapg_n;
-	protected SActionLexer lapg_lexer;
+	protected int tmHead;
+	protected LapgSymbol[] tmStack;
+	protected LapgSymbol tmNext;
+	protected SActionLexer tmLexer;
 
 	public Object parse(SActionLexer lexer) throws IOException, ParseException {
 
-		lapg_lexer = lexer;
-		lapg_m = new LapgSymbol[1024];
-		lapg_head = 0;
+		tmLexer = lexer;
+		tmStack = new LapgSymbol[1024];
+		tmHead = 0;
 
-		lapg_m[0] = new LapgSymbol();
-		lapg_m[0].state = 0;
-		lapg_n = lapg_lexer.next();
+		tmStack[0] = new LapgSymbol();
+		tmStack[0].state = 0;
+		tmNext = tmLexer.next();
 
-		while (lapg_m[lapg_head].state != 10) {
-			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n == null ? Lexems.Unavailable_ : lapg_n.symbol);
-			if (lapg_i <= -3 && lapg_n == null) {
-				lapg_n = lapg_lexer.next();
-				lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
+		while (tmStack[tmHead].state != 10) {
+			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Lexems.Unavailable_ : tmNext.symbol);
+			if (action <= -3 && tmNext == null) {
+				tmNext = tmLexer.next();
+				action = tmAction(tmStack[tmHead].state, tmNext.symbol);
 			}
 
-			if (lapg_i >= 0) {
-				reduce(lapg_i);
-			} else if (lapg_i == -1) {
+			if (action >= 0) {
+				reduce(action);
+			} else if (action == -1) {
 				shift();
 			}
 
-			if (lapg_i == -2 || lapg_m[lapg_head].state == -1) {
+			if (action == -2 || tmStack[tmHead].state == -1) {
 				break;
 			}
 		}
 
-		if (lapg_m[lapg_head].state != 10) {
-			reporter.error(lapg_n == null ? lapg_lexer.getOffset() : lapg_n.offset, lapg_n == null ? lapg_lexer.getLine() : lapg_lexer.getTokenLine(),
+		if (tmStack[tmHead].state != 10) {
+			reporter.error(tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getLine() : tmLexer.getTokenLine(),
 						MessageFormat.format("syntax error before line {0}",
-								lapg_lexer.getTokenLine()));
+								tmLexer.getTokenLine()));
 			throw new ParseException();
 		}
-		return lapg_m[lapg_head].value;
+		return tmStack[tmHead].value;
 	}
 
 	protected void shift() throws IOException {
-		if (lapg_n == null) {
-			lapg_n = lapg_lexer.next();
+		if (tmNext == null) {
+			tmNext = tmLexer.next();
 		}
-		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		tmStack[++tmHead] = tmNext;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
 		}
-		if (lapg_m[lapg_head].state != -1 && lapg_n.symbol != 0) {
-			lapg_n = null;
+		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
+			tmNext = null;
 		}
 	}
 
 	protected void reduce(int rule) {
 		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]].value : null;
+		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
 		lapg_gg.symbol = lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? lapg_m[lapg_head + 1 - lapg_rlen[rule]] : lapg_n;
-		lapg_gg.offset = startsym == null ? lapg_lexer.getOffset() : startsym.offset;
+		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
+		lapg_gg.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
 		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {
-			lapg_m[lapg_head--] = null;
+			tmStack[tmHead--] = null;
 		}
-		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = lapg_gg;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

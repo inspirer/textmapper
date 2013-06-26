@@ -58,7 +58,7 @@ ${end}
 
 ${template debugShift-}
 		if (debugSyntax) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[lapg_n.symbol].getName(), lapg_lexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.current()));
 		}
 ${end}
 
@@ -77,7 +77,7 @@ ${end}
 ${template applyRule-}
 	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
 		if (ruleLength == 1) {
-			Object right = lapg_m[lapg_head].value;
+			Object right = tmStack[tmHead].value;
 			if (right instanceof org.textmapper.lapg.eval.@GenericNode) {
 				lapg_gg.value = right;
 			} else {
@@ -86,8 +86,8 @@ ${template applyRule-}
 		} else if (ruleLength > 1) {
 			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textmapper.lapg.eval.@GenericNode>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
-				if (lapg_m[lapg_head - i].value instanceof org.textmapper.lapg.eval.@GenericNode) {
-					children.add((org.textmapper.lapg.eval.@GenericNode) lapg_m[lapg_head - i].value);
+				if (tmStack[tmHead - i].value instanceof org.textmapper.lapg.eval.@GenericNode) {
+					children.add((org.textmapper.lapg.eval.@GenericNode) tmStack[tmHead - i].value);
 				}
 			}
 			lapg_gg.value = new org.textmapper.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new org.textmapper.lapg.eval.@GenericNode[children.size()]));

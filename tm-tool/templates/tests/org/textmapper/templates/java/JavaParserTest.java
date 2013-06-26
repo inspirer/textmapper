@@ -472,16 +472,16 @@ public class JavaParserTest {
         JavaParser p = new JavaParser(reporter) {
             @Override
             protected void reduce(int rule) {
-                int before = lapg_head;
+                int before = tmHead;
                 super.reduce(rule);
-                int rulelen = lapg_head - before + 1;
-                JavaLexer.LapgSymbol r = lapg_m[lapg_head];
+                int rulelen = tmHead - before + 1;
+                JavaLexer.LapgSymbol r = tmStack[tmHead];
                 recorder.add(lapg_syms[r.symbol], text.substring(r.offset, r.endoffset), r.offset, r.endoffset, rulelen == 1);
             }
 
             @Override
             protected void shift() throws IOException {
-                recorder.add(lapg_syms[lapg_n.symbol], text.substring(lapg_n.offset, lapg_n.endoffset), lapg_n.offset, lapg_n.endoffset, false);
+                recorder.add(lapg_syms[tmNext.symbol], text.substring(tmNext.offset, tmNext.endoffset), tmNext.offset, tmNext.endoffset, false);
                 super.shift();
             }
         };

@@ -171,18 +171,18 @@ public class LtplParser implements PsiParser {
 
 		@Override
 		protected void shift() throws IOException {
-			Marker marker = lapg_n.symbol != Tokens.eoi ? mark() : null;
+			Marker marker = tmNext.symbol != Tokens.eoi ? mark() : null;
 			super.shift();
-			lapg_m[lapg_head].value = marker;
+			tmStack[tmHead].value = marker;
 		}
 
 		@Override
 		protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
 			for (int i = 0; i < rulelen - 1; i++) {
-				drop(lapg_m[lapg_head - i]);
+				drop(tmStack[tmHead - i]);
 			}
 			if (rulelen > 0) {
-				lapg_m[lapg_head - (rulelen - 1)].value = null;
+				tmStack[tmHead - (rulelen - 1)].value = null;
 			}
 
 			Marker m = (Marker) lapg_gg.value;
@@ -208,7 +208,7 @@ public class LtplParser implements PsiParser {
 			boolean restored = super.restore();
 			if (restored) {
 				/* restored after syntax error - mark the location */
-				lapg_m[lapg_head].value = mark();
+				tmStack[tmHead].value = mark();
 			}
 			return restored;
 		}
