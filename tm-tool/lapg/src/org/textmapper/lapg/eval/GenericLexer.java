@@ -33,6 +33,10 @@ public class GenericLexer {
 		public int endoffset;
 	}
 
+	public interface Lexems {
+		public static final int Unavailable_ = -1;
+	}
+
 	public interface ErrorReporter {
 		void error(int start, int end, int line, String s);
 	}

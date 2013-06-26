@@ -36,7 +36,10 @@ ${end}
 ${template statesInterface-}
 ${end}
 
-${template lexemsInterface-}
+${template lexemsInterface}
+	public interface Lexems {
+		public static final int Unavailable_ = -1;
+	}
 ${end}
 
 ${template unpackRoutines}

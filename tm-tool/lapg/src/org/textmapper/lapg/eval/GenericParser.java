@@ -22,6 +22,7 @@ import java.util.List;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.eval.GenericLexer.ErrorReporter;
+import org.textmapper.lapg.eval.GenericLexer.Lexems;
 import org.textmapper.lapg.eval.GenericLexer.ParseSymbol;
 import org.textmapper.lapg.eval.GenericParseContext.TextSource;
 
@@ -39,8 +40,8 @@ public class GenericParser {
 	protected TextSource source;
 	protected final Grammar grammar;
 
-	private final int[] lapg_action;
-	private final short[] lapg_lalr;
+	private final int[] tmAction;
+	private final short[] tmLalr;
 	private final short[] lapg_sym_goto;
 	private final short[] lapg_sym_from;
 	private final short[] lapg_sym_to;
@@ -52,8 +53,8 @@ public class GenericParser {
 	public GenericParser(ErrorReporter reporter, ParserData tables, Grammar grammar, boolean debugSyntax) {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		this.lapg_action = tables.getAction();
-		this.lapg_lalr = tables.getLalr();
+		this.tmAction = tables.getAction();
+		this.tmLalr = tables.getLalr();
 		this.lapg_sym_goto = tables.getSymGoto();
 		this.lapg_sym_to = tables.getSymTo();
 		this.lapg_sym_from = tables.getSymFrom();
@@ -62,23 +63,29 @@ public class GenericParser {
 		this.debugSyntax = debugSyntax;
 	}
 
-	protected final int lapg_next(int state) throws IOException {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected final int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			if (lapg_n == null) {
-				lapg_n = lapg_lexer.next();
+		if (tmAction[state] < -2) {
+			if (symbol == Lexems.Unavailable_) {
+				return -3 - state;
 			}
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected final int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -113,7 +120,11 @@ public class GenericParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n == null ? Lexems.Unavailable_ : lapg_n.symbol);
+			if (lapg_i <= -3 && lapg_n == null) {
+				lapg_n = lapg_lexer.next();
+				lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
+			}
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -164,7 +175,7 @@ public class GenericParser {
 		if (lapg_n.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, grammar.getError().getIndex()) == -1) {
+		while (lapg_head >= 0 && tmGoto(lapg_m[lapg_head].state, grammar.getError().getIndex()) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
@@ -173,7 +184,7 @@ public class GenericParser {
 			lapg_m[++lapg_head] = new ParseSymbol();
 			lapg_m[lapg_head].symbol = grammar.getError().getIndex();
 			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, grammar.getError().getIndex());
+			lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, grammar.getError().getIndex());
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
@@ -187,7 +198,7 @@ public class GenericParser {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (debugSyntax) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[lapg_n.symbol].getName(), lapg_lexer.current()));
 		}
@@ -214,7 +225,7 @@ public class GenericParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	protected void applyRule(ParseSymbol lapg_gg, int rule, int ruleLength) {

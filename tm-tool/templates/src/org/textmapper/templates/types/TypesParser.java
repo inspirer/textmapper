@@ -55,7 +55,7 @@ public class TypesParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int[] lapg_action = TypesLexer.unpack_int(108,
+	private static final int[] tmAction = TypesLexer.unpack_int(108,
 		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\3\0\uffff\uffff" +
 		"\101\0\ufff1\uffff\uffe9\uffff\uffe3\uffff\uffff\uffff\uffff\uffff\uffff\uffff\102" +
 		"\0\uffd5\uffff\uffcd\uffff\7\0\51\0\53\0\52\0\5\0\11\0\12\0\uffff\uffff\uffbf\uffff" +
@@ -69,7 +69,7 @@ public class TypesParser {
 		"\uffff\uffff\40\0\75\0\76\0\77\0\100\0\uffff\uffff\uffff\uffff\70\0\65\0\uffff\uffff" +
 		"\uffff\uffff\64\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = TypesLexer.unpack_short(194,
+	private static final short[] tmLalr = TypesLexer.unpack_short(194,
 		"\24\uffff\0\0\uffff\ufffe\25\uffff\16\4\uffff\ufffe\7\uffff\12\103\16\103\uffff\ufffe" +
 		"\12\uffff\16\10\uffff\ufffe\1\6\16\6\17\6\26\6\27\6\30\6\uffff\ufffe\7\uffff\12\104" +
 		"\16\104\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\15\21\uffff\ufffe" +
@@ -217,20 +217,26 @@ public class TypesParser {
 		public static final int expression_listopt = 60;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -264,7 +270,7 @@ public class TypesParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 107) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -288,7 +294,7 @@ public class TypesParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -314,7 +320,7 @@ public class TypesParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

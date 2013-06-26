@@ -157,7 +157,7 @@ public class TemplatesParser {
 			reporter.error(offset, endoffset, line, "template name should be simple identifier");
 		}
 	}
-	private static final int[] lapg_action = TemplatesLexer.unpack_int(275,
+	private static final int[] tmAction = TemplatesLexer.unpack_int(275,
 		"\ufffd\uffff\uffff\uffff\7\0\ufff5\uffff\uffed\uffff\3\0\5\0\6\0\uffff\uffff\2\0" +
 		"\46\0\45\0\43\0\44\0\uffff\uffff\uffe5\uffff\35\0\42\0\40\0\41\0\uffff\uffff\21\0" +
 		"\uffff\uffff\12\0\uffff\uffff\4\0\uffff\uffff\11\0\uffff\uffff\uffd7\uffff\122\0" +
@@ -192,7 +192,7 @@ public class TemplatesParser {
 		"\uffff\132\0\uffff\uffff\135\0\73\0\112\0\uffff\uffff\uffff\uffff\100\0\133\0\uffff" +
 		"\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = TemplatesLexer.unpack_short(1414,
+	private static final short[] tmLalr = TemplatesLexer.unpack_short(1414,
 		"\1\uffff\5\uffff\0\1\uffff\ufffe\13\uffff\37\uffff\34\13\uffff\ufffe\1\uffff\5\uffff" +
 		"\0\0\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\0\214\uffff\ufffe\57\uffff" +
 		"\66\uffff\30\120\36\120\44\120\45\120\46\120\47\120\50\120\51\120\52\120\55\120\56" +
@@ -636,20 +636,26 @@ public class TemplatesParser {
 		public static final int map_entriesopt = 123;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -684,7 +690,7 @@ public class TemplatesParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -729,7 +735,7 @@ public class TemplatesParser {
 		if (lapg_n.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 65) == -1) {
+		while (lapg_head >= 0 && tmGoto(lapg_m[lapg_head].state, 65) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
@@ -738,7 +744,7 @@ public class TemplatesParser {
 			lapg_m[++lapg_head] = new LapgSymbol();
 			lapg_m[lapg_head].symbol = 65;
 			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 65);
+			lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, 65);
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
@@ -749,7 +755,7 @@ public class TemplatesParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -776,7 +782,7 @@ public class TemplatesParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -22,7 +22,7 @@ public class JavaParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int[] lapg_action = JavaLexer.unpack_int(986,
+	private static final int[] tmAction = JavaLexer.unpack_int(986,
 		"\ufffd\uffff\uffff\uffff\uffd5\uffff\uffa5\uffff\uffff\uffff\uffff\uffff\141\0\142" +
 		"\0\uffff\uffff\143\0\uffff\uffff\137\0\136\0\135\0\140\0\147\0\144\0\145\0\146\0" +
 		"\30\0\uffff\uffff\uff6b\uffff\3\0\5\0\24\0\26\0\25\0\27\0\uff45\uffff\133\0\150\0" +
@@ -143,7 +143,7 @@ public class JavaParser {
 		"\0\uffff\uffff\u01de\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\ufffe\uffff\ufffe\uffff\ufffe\uffff\ufffe\uffff\ufffe\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = JavaLexer.unpack_short(8746,
+	private static final short[] tmLalr = JavaLexer.unpack_short(8746,
 		"\5\uffff\26\uffff\35\uffff\42\uffff\44\uffff\45\uffff\46\uffff\47\uffff\52\uffff" +
 		"\53\uffff\56\uffff\62\uffff\65\uffff\103\uffff\154\uffff\0\15\15\32\24\32\40\32\uffff" +
 		"\ufffe\5\uffff\26\uffff\42\uffff\45\uffff\46\uffff\47\uffff\52\uffff\53\uffff\56" +
@@ -2148,20 +2148,26 @@ public class JavaParser {
 		public static final int MemberValue_list = 280;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -2195,7 +2201,7 @@ public class JavaParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -2219,7 +2225,7 @@ public class JavaParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -2245,7 +2251,7 @@ public class JavaParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

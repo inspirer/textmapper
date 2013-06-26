@@ -42,11 +42,11 @@ public class SampleAParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int[] lapg_action = SampleALexer.unpack_int(15,
+	private static final int[] tmAction = SampleALexer.unpack_int(15,
 		"\uffff\uffff\uffff\uffff\uffff\uffff\0\0\uffff\uffff\ufffd\uffff\6\0\4\0\ufff5\uffff" +
 		"\uffff\uffff\5\0\3\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = SampleALexer.unpack_short(14,
+	private static final short[] tmLalr = SampleALexer.unpack_short(14,
 		"\3\uffff\6\uffff\5\2\uffff\ufffe\3\uffff\5\1\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleALexer.unpack_short(12,
@@ -86,23 +86,29 @@ public class SampleAParser {
 		public static final int classdeflistopt = 10;
 	}
 
-	protected final int lapg_next(int state) throws IOException {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			if (lapg_n == null) {
-				lapg_n = lapg_lexer.next();
+		if (tmAction[state] < -2) {
+			if (symbol == Lexems.Unavailable_) {
+				return -3 - state;
 			}
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -137,7 +143,11 @@ public class SampleAParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n == null ? Lexems.Unavailable_ : lapg_n.symbol);
+			if (lapg_i <= -3 && lapg_n == null) {
+				lapg_n = lapg_lexer.next();
+				lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
+			}
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -186,7 +196,7 @@ public class SampleAParser {
 		if (lapg_n.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 6) == -1) {
+		while (lapg_head >= 0 && tmGoto(lapg_m[lapg_head].state, 6) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
@@ -195,7 +205,7 @@ public class SampleAParser {
 			lapg_m[++lapg_head] = new LapgSymbol();
 			lapg_m[lapg_head].symbol = 6;
 			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 6);
+			lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, 6);
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].column = lapg_n.column;
 			lapg_m[lapg_head].offset = lapg_n.offset;
@@ -212,7 +222,7 @@ public class SampleAParser {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -241,7 +251,7 @@ public class SampleAParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

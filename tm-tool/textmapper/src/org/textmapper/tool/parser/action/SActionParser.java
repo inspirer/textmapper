@@ -37,11 +37,11 @@ public class SActionParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = false;
-	private static final int[] lapg_action = SActionLexer.unpack_int(11,
+	private static final int[] tmAction = SActionLexer.unpack_int(11,
 		"\uffff\uffff\ufffd\uffff\ufff7\uffff\ufff1\uffff\4\0\uffff\uffff\uffff\uffff\3\0" +
 		"\2\0\5\0\ufffe\uffff");
 
-	private static final short[] lapg_lalr = SActionLexer.unpack_short(18,
+	private static final short[] tmLalr = SActionLexer.unpack_short(18,
 		"\1\uffff\3\1\uffff\ufffe\1\uffff\3\1\uffff\ufffe\1\uffff\3\0\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SActionLexer.unpack_short(9,
@@ -78,23 +78,29 @@ public class SActionParser {
 		public static final int command_tokensopt = 7;
 	}
 
-	protected final int lapg_next(int state) throws IOException {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			if (lapg_n == null) {
-				lapg_n = lapg_lexer.next();
+		if (tmAction[state] < -2) {
+			if (symbol == Lexems.Unavailable_) {
+				return -3 - state;
 			}
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -128,7 +134,11 @@ public class SActionParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 10) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n == null ? Lexems.Unavailable_ : lapg_n.symbol);
+			if (lapg_i <= -3 && lapg_n == null) {
+				lapg_n = lapg_lexer.next();
+				lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
+			}
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -155,7 +165,7 @@ public class SActionParser {
 			lapg_n = lapg_lexer.next();
 		}
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -179,7 +189,7 @@ public class SActionParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

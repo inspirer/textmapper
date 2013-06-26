@@ -37,7 +37,7 @@ public class NlaTestParser {
 	}
 
 	private static final boolean DEBUG_SYNTAX = true;
-	private static final int[] lapg_action = NlaTestLexer.unpack_int(82,
+	private static final int[] tmAction = NlaTestLexer.unpack_int(82,
 		"\uffff\uffff\ufffd\uffff\13\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\14\0\uffff\uffff\uffff\uffff\uffff\uffff\uffdf\uffff\2\0\3\0\7\0\uffc3\uffff" +
 		"\24\0\25\0\23\0\uffff\uffff\37\0\uffa7\uffff\46\0\50\0\uffff\uffff\uffff\uffff\uff91" +
@@ -48,7 +48,7 @@ public class NlaTestParser {
 		"\uffff\uff19\uffff\uff03\uffff\ufeed\uffff\uffff\uffff\51\0\uffff\uffff\17\0\27\0" +
 		"\30\0\22\0\ufed7\uffff\uffff\uffff\53\0\uffff\uffff\45\0\21\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = NlaTestLexer.unpack_short(316,
+	private static final short[] tmLalr = NlaTestLexer.unpack_short(316,
 		"\4\uffff\12\uffff\5\11\6\11\7\11\10\11\11\11\13\11\16\11\17\11\20\11\21\11\23\11" +
 		"\25\11\uffff\ufffe\1\uffff\27\uffff\2\uffff\7\uffff\10\uffff\12\uffff\14\uffff\22" +
 		"\uffff\26\uffff\30\uffff\31\uffff\32\uffff\0\0\uffff\ufffe\16\uffff\21\uffff\25\uffff" +
@@ -182,20 +182,26 @@ public class NlaTestParser {
 		public static final int expression_listopt = 44;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -229,7 +235,7 @@ public class NlaTestParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 81) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -253,7 +259,7 @@ public class NlaTestParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -279,7 +285,7 @@ public class NlaTestParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

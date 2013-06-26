@@ -34,6 +34,7 @@ public class SampleALexer {
 	}
 
 	public interface Lexems {
+		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int identifier = 1;
 		public static final int _skip = 2;

@@ -44,13 +44,13 @@ public class RegexDefParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	CharacterSetImpl.Builder setbuilder = new CharacterSetImpl.Builder();
-	private static final int[] lapg_action = RegexDefLexer.unpack_int(37,
+	private static final int[] tmAction = RegexDefLexer.unpack_int(37,
 		"\ufffd\uffff\11\0\12\0\13\0\14\0\uffe7\uffff\uffff\uffff\uffff\uffff\20\0\uffff\uffff" +
 		"\32\0\uffd1\uffff\uffb1\uffff\2\0\uffff\uffff\21\0\22\0\23\0\24\0\25\0\uffff\uffff" +
 		"\uffff\uffff\uff99\uffff\5\0\6\0\7\0\10\0\33\0\15\0\16\0\uff81\uffff\26\0\17\0\3" +
 		"\0\30\0\31\0\ufffe\uffff");
 
-	private static final short[] lapg_lalr = RegexDefLexer.unpack_short(136,
+	private static final short[] tmLalr = RegexDefLexer.unpack_short(136,
 		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\1\15\1\uffff" +
 		"\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\15\1\16" +
 		"\1\uffff\ufffe\5\uffff\6\uffff\7\uffff\10\uffff\0\4\1\4\2\4\3\4\4\4\14\4\15\4\16" +
@@ -123,20 +123,26 @@ public class RegexDefParser {
 		public static final int partsopt = 28;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -170,7 +176,7 @@ public class RegexDefParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 36) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -194,7 +200,7 @@ public class RegexDefParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -219,7 +225,7 @@ public class RegexDefParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

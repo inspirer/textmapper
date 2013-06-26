@@ -52,13 +52,13 @@ public class XmlParser {
 		if (!node.getTagName().equals(endTag))
 			reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);
 	}
-	private static final int[] lapg_action = XmlLexer.unpack_int(31,
+	private static final int[] tmAction = XmlLexer.unpack_int(31,
 		"\uffff\uffff\6\0\uffff\uffff\ufffd\uffff\2\0\uffff\uffff\5\0\ufff5\uffff\uffeb\uffff" +
 		"\1\0\uffff\uffff\uffff\uffff\3\0\uffff\uffff\uffff\uffff\uffe3\uffff\17\0\uffff\uffff" +
 		"\uffff\uffff\4\0\10\0\uffff\uffff\16\0\13\0\uffff\uffff\uffff\uffff\20\0\14\0\15" +
 		"\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] lapg_lalr = XmlLexer.unpack_short(34,
+	private static final short[] tmLalr = XmlLexer.unpack_short(34,
 		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\12\11" +
 		"\12\uffff\ufffe\4\uffff\6\11\11\11\uffff\ufffe");
 
@@ -117,20 +117,26 @@ public class XmlParser {
 		public static final int attributesopt = 20;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -164,7 +170,7 @@ public class XmlParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != 30) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -188,7 +194,7 @@ public class XmlParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -214,7 +220,7 @@ public class XmlParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")

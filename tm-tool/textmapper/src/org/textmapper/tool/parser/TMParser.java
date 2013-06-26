@@ -44,7 +44,7 @@ public class TMParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	private static final int[] lapg_action = TMLexer.unpack_int(271,
+	private static final int[] tmAction = TMLexer.unpack_int(271,
 		"\uffff\uffff\uffff\uffff\243\0\ufffd\uffff\uffff\uffff\uffff\uffff\4\0\ufff5\uffff" +
 		"\uffef\uffff\35\0\41\0\42\0\40\0\7\0\11\0\214\0\215\0\uffc9\uffff\216\0\217\0\uffff" +
 		"\uffff\220\0\227\0\uffff\uffff\10\0\uff9d\uffff\uffff\uffff\67\0\5\0\uff95\uffff" +
@@ -76,7 +76,7 @@ public class TMParser {
 		"\0\233\0\61\0\uffff\uffff\144\0\101\0\175\0\174\0\uffff\uffff\uffff\uffff\ufffe\uffff" +
 		"\ufffe\uffff");
 
-	private static final short[] lapg_lalr = TMLexer.unpack_short(1784,
+	private static final short[] tmLalr = TMLexer.unpack_short(1784,
 		"\13\uffff\20\10\23\10\uffff\ufffe\23\uffff\20\45\uffff\ufffe\1\uffff\2\uffff\60\uffff" +
 		"\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51\uffff\50\uffff\47\uffff" +
 		"\46\uffff\45\uffff\10\uffff\21\uffff\35\uffff\0\1\uffff\ufffe\1\uffff\2\uffff\60" +
@@ -535,20 +535,26 @@ public class TMParser {
 		public static final int expression_listopt = 118;
 	}
 
-	protected final int lapg_next(int state) {
+	/**
+	 * -3-n   Lookahead (state id)
+	 * -2     Error
+	 * -1     Shift
+	 * 0..n   Reduce (rule index)
+	 */
+	protected static int tmAction(int state, int symbol) {
 		int p;
-		if (lapg_action[state] < -2) {
-			for (p = -lapg_action[state] - 3; lapg_lalr[p] >= 0; p += 2) {
-				if (lapg_lalr[p] == lapg_n.symbol) {
+		if (tmAction[state] < -2) {
+			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
+				if (tmLalr[p] == symbol) {
 					break;
 				}
 			}
-			return lapg_lalr[p + 1];
+			return tmLalr[p + 1];
 		}
-		return lapg_action[state];
+		return tmAction[state];
 	}
 
-	protected final int lapg_state_sym(int state, int symbol) {
+	protected static int tmGoto(int state, int symbol) {
 		int min = lapg_sym_goto[symbol], max = lapg_sym_goto[symbol + 1] - 1;
 		int i, e;
 
@@ -583,7 +589,7 @@ public class TMParser {
 		lapg_n = lapg_lexer.next();
 
 		while (lapg_m[lapg_head].state != finalState) {
-			int lapg_i = lapg_next(lapg_m[lapg_head].state);
+			int lapg_i = tmAction(lapg_m[lapg_head].state, lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				reduce(lapg_i);
@@ -628,7 +634,7 @@ public class TMParser {
 		if (lapg_n.symbol == 0) {
 			return false;
 		}
-		while (lapg_head >= 0 && lapg_state_sym(lapg_m[lapg_head].state, 1) == -1) {
+		while (lapg_head >= 0 && tmGoto(lapg_m[lapg_head].state, 1) == -1) {
 			dispose(lapg_m[lapg_head]);
 			lapg_m[lapg_head] = null;
 			lapg_head--;
@@ -637,7 +643,7 @@ public class TMParser {
 			lapg_m[++lapg_head] = new LapgSymbol();
 			lapg_m[lapg_head].symbol = 1;
 			lapg_m[lapg_head].value = null;
-			lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, 1);
+			lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, 1);
 			lapg_m[lapg_head].line = lapg_n.line;
 			lapg_m[lapg_head].offset = lapg_n.offset;
 			lapg_m[lapg_head].endoffset = lapg_n.endoffset;
@@ -648,7 +654,7 @@ public class TMParser {
 
 	protected void shift() throws IOException {
 		lapg_m[++lapg_head] = lapg_n;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_n.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_n.symbol);
 		if (DEBUG_SYNTAX) {
 			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[lapg_n.symbol], lapg_lexer.current()));
 		}
@@ -675,7 +681,7 @@ public class TMParser {
 			lapg_m[lapg_head--] = null;
 		}
 		lapg_m[++lapg_head] = lapg_gg;
-		lapg_m[lapg_head].state = lapg_state_sym(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
+		lapg_m[lapg_head].state = tmGoto(lapg_m[lapg_head - 1].state, lapg_gg.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
