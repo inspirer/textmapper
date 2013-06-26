@@ -22,14 +22,14 @@ import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.TMTree.TextSource;
-import org.textmapper.tool.parser.ast.AstExpression;
-import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.TmaExpression;
+import org.textmapper.tool.parser.ast.TmaRoot;
 import org.textmapper.templates.types.TypesRegistry;
 
 public class SyntaxUtil {
 
 	public static TMGrammar parseSyntax(TextSource input, ProcessingStatus status, TypesRegistry types) {
-		TMTree<AstRoot> tree = TMTree.parseInput(input);
+		TMTree<TmaRoot> tree = TMTree.parseInput(input);
 		TMGrammar result = null;
 		if (!tree.hasErrors()) {
 			result = new TMCompiler(tree, types).resolve();
@@ -43,8 +43,8 @@ public class SyntaxUtil {
 		return result;
 	}
 
-	public static AstExpression parseExpression(String input, TypesRegistry registry) {
-		TMTree<AstExpression> tree = TMTree.parseExpression(new TextSource("", input.toCharArray(), 1));
+	public static TmaExpression parseExpression(String input, TypesRegistry registry) {
+		TMTree<TmaExpression> tree = TMTree.parseExpression(new TextSource("", input.toCharArray(), 1));
 		if (!tree.hasErrors()) {
 			return tree.getRoot();
 		}

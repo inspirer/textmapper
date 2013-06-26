@@ -54,7 +54,7 @@ public class TMTree<T> {
 	}
 
 
-	public static TMTree<AstRoot> parseInput(TextSource source) {
+	public static TMTree<TmaRoot> parseInput(TextSource source) {
 		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -68,21 +68,21 @@ public class TMTree<T> {
 
 			TMParser parser = new TMParser(reporter);
 			parser.source = source;
-			AstRoot result = parser.parseInput(lexer);
+			TmaRoot result = parser.parseInput(lexer);
 			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
 
-			return new TMTree<AstRoot>(source, result, list);
+			return new TMTree<TmaRoot>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new TMTree<AstRoot>(source, null, list);
+		return new TMTree<TmaRoot>(source, null, list);
 	}
 
-	public static TMTree<AstExpression> parseExpression(TextSource source) {
+	public static TMTree<TmaExpression> parseExpression(TextSource source) {
 		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -96,15 +96,15 @@ public class TMTree<T> {
 
 			TMParser parser = new TMParser(reporter);
 			parser.source = source;
-			AstExpression result = parser.parseExpression(lexer);
+			TmaExpression result = parser.parseExpression(lexer);
 
-			return new TMTree<AstExpression>(source, result, list);
+			return new TMTree<TmaExpression>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new TMTree<AstExpression>(source, null, list);
+		return new TMTree<TmaExpression>(source, null, list);
 	}
 
 

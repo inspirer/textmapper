@@ -17,17 +17,17 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstName extends AstNode {
+public class TmaLiteralExpression extends TmaNode implements TmaExpression {
 
-	private final String name;
+	private final Object literal;
 
-	public AstName(String name, TextSource source, int offset, int endoffset) {
+	public TmaLiteralExpression(Object literal, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
+		this.literal = literal;
 	}
 
-	public String getName() {
-		return name;
+	public Object getLiteral() {
+		return literal;
 	}
 
 	public void accept(AbstractVisitor v) {

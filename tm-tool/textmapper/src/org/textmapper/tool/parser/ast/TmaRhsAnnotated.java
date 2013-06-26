@@ -20,18 +20,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsAnnotated extends AstNode implements TmaRhsPart {
+public class TmaRhsAnnotated extends TmaNode implements TmaRhsPart {
 
-	private final AstRuleAnnotations annotations;
+	private final TmaRuleAnnotations annotations;
 	private final TmaRhsPart inner;
 
-	public TmaRhsAnnotated(AstRuleAnnotations annotations, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
+	public TmaRhsAnnotated(TmaRuleAnnotations annotations, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 		this.inner = inner;
 	}
 
-	public AstRuleAnnotations getAnnotations() {
+	public TmaRuleAnnotations getAnnotations() {
 		return annotations;
 	}
 

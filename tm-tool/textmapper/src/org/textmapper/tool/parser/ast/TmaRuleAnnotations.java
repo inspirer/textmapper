@@ -17,13 +17,35 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstCode extends AstNode implements TmaRhsPart {
+import java.util.List;
 
-	public AstCode(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+/**
+ * Gryaznov Evgeny, 8/15/11
+ */
+public class TmaRuleAnnotations extends TmaAnnotations {
+
+	private final TmaNegativeLA negativeLA;
+
+	public TmaRuleAnnotations(TmaNegativeLA negativeLA, List<TmaNamedEntry> annotations, TextSource source, int offset, int endoffset) {
+		super(annotations, source, offset, endoffset);
+		this.negativeLA = negativeLA;
+	}
+
+	public TmaNegativeLA getNegativeLA() {
+		return negativeLA;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (negativeLA != null) {
+			negativeLA.accept(v);
+		}
+		if (getAnnotations() != null) {
+			for (TmaNamedEntry n : getAnnotations()) {
+				n.accept(v);
+			}
+		}
 	}
 }

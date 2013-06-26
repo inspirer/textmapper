@@ -19,35 +19,26 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstInstance extends AstNode implements AstExpression {
+public class TmaStateSelector extends TmaNode implements TmaLexerPart {
 
-	private final AstName className;
-	private final List<AstNamedEntry> mapEntries;
+	private final List<TmaLexerState> states;
 
-	public AstInstance(AstName className, List<AstNamedEntry> mapEntries, TextSource source, int offset, int endoffset) {
+	public TmaStateSelector(List<TmaLexerState> states, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.className = className;
-		this.mapEntries = mapEntries;
+		this.states = states;
 	}
 
-	public AstName getClassName() {
-		return className;
-	}
-
-	public List<AstNamedEntry> getEntries() {
-		return mapEntries;
+	public List<TmaLexerState> getStates() {
+		return states;
 	}
 
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (className != null) {
-			className.accept(v);
-		}
-		if (mapEntries != null) {
-			for (AstNamedEntry n : mapEntries) {
-				n.accept(v);
+		if (states != null) {
+			for (TmaLexerState state : states) {
+				state.accept(v);
 			}
 		}
 	}

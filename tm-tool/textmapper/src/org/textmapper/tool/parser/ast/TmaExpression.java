@@ -15,5 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public interface AstGrammarPart extends IAstNode {
+public interface TmaExpression extends ITmaNode {
 }

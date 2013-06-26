@@ -20,20 +20,20 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsAssignment extends AstNode implements TmaRhsPart {
+public class TmaRhsAssignment extends TmaNode implements TmaRhsPart {
 
-	private final AstIdentifier id;
+	private final TmaIdentifier id;
 	private final TmaRhsPart inner;
 	private final boolean addition;
 
-	public TmaRhsAssignment(AstIdentifier id, TmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
+	public TmaRhsAssignment(TmaIdentifier id, TmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.id = id;
 		this.inner = inner;
 		this.addition = isAddition;
 	}
 
-	public AstIdentifier getId() {
+	public TmaIdentifier getId() {
 		return id;
 	}
 

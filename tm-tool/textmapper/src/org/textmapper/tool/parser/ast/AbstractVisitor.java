@@ -17,83 +17,83 @@ package org.textmapper.tool.parser.ast;
 
 public class AbstractVisitor {
 
-	public boolean visit(AstCode n) {
+	public boolean visit(TmaCode n) {
 		return true;
 	}
 
-	public boolean visit(AstDirective n) {
+	public boolean visit(TmaDirective n) {
 		return true;
 	}
 
-	public boolean visit(AstInputDirective n) {
+	public boolean visit(TmaInputDirective n) {
 		return true;
 	}
 
-	public boolean visit(AstStateSelector n) {
+	public boolean visit(TmaStateSelector n) {
 		return true;
 	}
 
-	public boolean visit(AstIdentifier n) {
+	public boolean visit(TmaIdentifier n) {
 		return true;
 	}
 
-	public boolean visit(AstNamedPattern n) {
+	public boolean visit(TmaNamedPattern n) {
 		return true;
 	}
 
-	public boolean visit(AstLexeme n) {
+	public boolean visit(TmaLexeme n) {
 		return true;
 	}
 
-	public boolean visit(AstNonTerm n) {
+	public boolean visit(TmaNonTerm n) {
 		return true;
 	}
 
-	public boolean visit(AstOption n) {
+	public boolean visit(TmaOption n) {
 		return true;
 	}
 
-	public boolean visit(AstReference astSymbol) {
+	public boolean visit(TmaReference astSymbol) {
 		return true;
 	}
 
-	public boolean visit(AstRegexp n) {
+	public boolean visit(TmaRegexp n) {
 		return true;
 	}
 
-	public boolean visit(AstRoot n) {
+	public boolean visit(TmaRoot n) {
 		return true;
 	}
 
-	public boolean visit(AstRule n) {
+	public boolean visit(TmaRule0 n) {
 		return true;
 	}
 
-	public boolean visit(AstError n) {
+	public boolean visit(TmaError n) {
 		return true;
 	}
 
-	public boolean visit(AstAnnotations n) {
+	public boolean visit(TmaAnnotations n) {
 		return true;
 	}
 
-	public boolean visit(AstArray n) {
+	public boolean visit(TmaArray n) {
 		return true;
 	}
 
-	public boolean visit(AstInstance n) {
+	public boolean visit(TmaInstance n) {
 		return true;
 	}
 
-	public boolean visit(AstNamedEntry n) {
+	public boolean visit(TmaNamedEntry n) {
 		return true;
 	}
 
-	public boolean visit(AstLiteralExpression n) {
+	public boolean visit(TmaLiteralExpression n) {
 		return true;
 	}
 
-	public boolean visit(AstName n) {
+	public boolean visit(TmaName n) {
 		return true;
 	}
 
@@ -105,15 +105,15 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstLexemAttrs n) {
+	public boolean visit(TmaLexemAttrs n) {
 		return true;
 	}
 
-	public boolean visit(AstInputRef n) {
+	public boolean visit(TmaInputRef n) {
 		return true;
 	}
 
-	public boolean visit(AstNegativeLA n) {
+	public boolean visit(TmaNegativeLA n) {
 		return true;
 	}
 
@@ -137,7 +137,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(AstLexerState n) {
+	public boolean visit(TmaLexerState n) {
 		return true;
 	}
 

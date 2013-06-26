@@ -19,7 +19,6 @@ import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TextSourceElement;
-import org.textmapper.lapg.api.ast.AstModel;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.templates.api.types.IClass;
@@ -33,10 +32,10 @@ import java.util.Map;
 
 public class TMCompiler {
 
-	private final TMTree<AstRoot> tree;
+	private final TMTree<TmaRoot> tree;
 	private final TypesRegistry types;
 
-	public TMCompiler(TMTree<AstRoot> tree, TypesRegistry types) {
+	public TMCompiler(TMTree<TmaRoot> tree, TypesRegistry types) {
 		this.tree = tree;
 		this.types = types;
 	}
@@ -85,7 +84,7 @@ public class TMCompiler {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
 		if (offset < text.length && offset != -1) {
-			return new AstNode(tree.getSource(), offset, text.length) {
+			return new TmaNode(tree.getSource(), offset, text.length) {
 				@Override
 				public void accept(AbstractVisitor v) {
 				}
@@ -96,11 +95,11 @@ public class TMCompiler {
 
 	private String getTypesPackage() {
 		if (tree.getRoot().getOptions() != null) {
-			for (AstOptionPart option : tree.getRoot().getOptions()) {
-				if (option instanceof AstOption && ((AstOption) option).getKey().equals("lang")) {
-					AstExpression expression = ((AstOption) option).getValue();
-					if (expression instanceof AstLiteralExpression) {
-						return ((AstLiteralExpression) expression).getLiteral().toString();
+			for (TmaOptionPart option : tree.getRoot().getOptions()) {
+				if (option instanceof TmaOption && ((TmaOption) option).getKey().equals("lang")) {
+					TmaExpression expression = ((TmaOption) option).getValue();
+					if (expression instanceof TmaLiteralExpression) {
+						return ((TmaLiteralExpression) expression).getLiteral().toString();
 					}
 				}
 			}
@@ -131,16 +130,16 @@ public class TMCompiler {
 		if (tree.getRoot().getOptions() == null) {
 			return options;
 		}
-		for (AstOptionPart option : tree.getRoot().getOptions()) {
-			if (option instanceof AstOption) {
-				String key = ((AstOption) option).getKey();
+		for (TmaOptionPart option : tree.getRoot().getOptions()) {
+			if (option instanceof TmaOption) {
+				String key = ((TmaOption) option).getKey();
 				IFeature feature = optionsClass.getFeature(key);
 				if (feature == null) {
 					resolver.error(option, "unknown option `" + key + "`");
 					continue;
 				}
 
-				AstExpression value = ((AstOption) option).getValue();
+				TmaExpression value = ((TmaOption) option).getValue();
 				options.put(key, expressionResolver.convertExpression(value, feature.getType()));
 			}
 		}

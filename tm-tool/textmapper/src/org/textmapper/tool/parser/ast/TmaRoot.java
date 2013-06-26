@@ -19,14 +19,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstRoot extends AstNode {
+public class TmaRoot extends TmaNode {
 
-	private final List<AstOptionPart> options;
-	private final List<AstLexerPart> lexer;
-	private final List<AstGrammarPart> grammar;
+	private final List<TmaOptionPart> options;
+	private final List<TmaLexerPart> lexer;
+	private final List<TmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public AstRoot(List<AstOptionPart> options, List<AstLexerPart> lexer, List<AstGrammarPart> grammar, TextSource source,
+	public TmaRoot(List<TmaOptionPart> options, List<TmaLexerPart> lexer, List<TmaGrammarPart> grammar, TextSource source,
 				   int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;
@@ -34,15 +34,15 @@ public class AstRoot extends AstNode {
 		this.grammar = grammar;
 	}
 
-	public List<AstOptionPart> getOptions() {
+	public List<TmaOptionPart> getOptions() {
 		return options;
 	}
 
-	public List<AstLexerPart> getLexer() {
+	public List<TmaLexerPart> getLexer() {
 		return lexer;
 	}
 
-	public List<AstGrammarPart> getGrammar() {
+	public List<TmaGrammarPart> getGrammar() {
 		return grammar;
 	}
 
@@ -59,17 +59,17 @@ public class AstRoot extends AstNode {
 			return;
 		}
 		if (options != null) {
-			for (AstOptionPart o : options) {
+			for (TmaOptionPart o : options) {
 				o.accept(v);
 			}
 		}
 		if (lexer != null) {
-			for (AstLexerPart l : lexer) {
+			for (TmaLexerPart l : lexer) {
 				l.accept(v);
 			}
 		}
 		if (grammar != null) {
-			for (AstGrammarPart g : grammar) {
+			for (TmaGrammarPart g : grammar) {
 				g.accept(v);
 			}
 		}

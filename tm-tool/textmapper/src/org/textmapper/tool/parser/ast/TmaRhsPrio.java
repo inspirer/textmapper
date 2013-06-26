@@ -17,16 +17,16 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrio extends AstNode implements TmaRhsSuffix {
+public class TmaRhsPrio extends TmaNode implements TmaRhsSuffix {
 
-	private AstReference reference;
+	private TmaReference reference;
 
-	public TmaRhsPrio(AstReference reference, TextSource source, int offset, int endoffset) {
+	public TmaRhsPrio(TmaReference reference, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.reference = reference;
 	}
 
-	public AstReference getReference() {
+	public TmaReference getReference() {
 		return reference;
 	}
 

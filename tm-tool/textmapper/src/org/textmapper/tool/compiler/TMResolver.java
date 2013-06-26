@@ -43,7 +43,7 @@ public class TMResolver {
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 	public static final String INITIAL_STATE = "initial"; //$NON-NLS-1$
 
-	private final TMTree<AstRoot> tree;
+	private final TMTree<TmaRoot> tree;
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
@@ -51,13 +51,13 @@ public class TMResolver {
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
-	public TMResolver(TMTree<AstRoot> tree, GrammarBuilder builder) {
+	public TMResolver(TMTree<TmaRoot> tree, GrammarBuilder builder) {
 		this.tree = tree;
 		this.builder = builder;
 		this.rawTypesBuilder = GrammarFacade.createAstBuilder();
 	}
 
-	public TMTree<AstRoot> getTree() {
+	public TMTree<TmaRoot> getTree() {
 		return tree;
 	}
 
@@ -89,11 +89,11 @@ public class TMResolver {
 	}
 
 	private void collectLexerStates() {
-		AstIdentifier initialOrigin = null;
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstStateSelector) {
-				for (AstLexerState state : ((AstStateSelector) clause).getStates()) {
-					if (state.getName().getName().equals(INITIAL_STATE)) {
+		TmaIdentifier initialOrigin = null;
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof TmaStateSelector) {
+				for (TmaLexerState state : ((TmaStateSelector) clause).getStates()) {
+					if (state.getName().getID().equals(INITIAL_STATE)) {
 						initialOrigin = state.getName();
 						break;
 					}
@@ -105,11 +105,11 @@ public class TMResolver {
 		}
 
 		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstStateSelector) {
-				AstStateSelector selector = (AstStateSelector) clause;
-				for (AstLexerState state : selector.getStates()) {
-					String name = state.getName().getName();
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof TmaStateSelector) {
+				TmaStateSelector selector = (TmaStateSelector) clause;
+				for (TmaLexerState state : selector.getStates()) {
+					String name = state.getName().getID();
 					if (!statesMap.containsKey(name)) {
 						statesMap.put(name, builder.addState(name, state.getName()));
 					}
@@ -119,13 +119,13 @@ public class TMResolver {
 	}
 
 	private void collectLexerSymbols() {
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstLexeme) {
-				AstLexeme lexeme = (AstLexeme) clause;
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof TmaLexeme) {
+				TmaLexeme lexeme = (TmaLexeme) clause;
 				create(lexeme.getName(), convertRawType(lexeme.getType(), lexeme), true);
 
-			} else if (clause instanceof AstNamedPattern) {
-				AstNamedPattern astpattern = (AstNamedPattern) clause;
+			} else if (clause instanceof TmaNamedPattern) {
+				TmaNamedPattern astpattern = (TmaNamedPattern) clause;
 				String name = astpattern.getName();
 				RegexPart regex;
 				try {
@@ -149,16 +149,16 @@ public class TMResolver {
 	}
 
 	private void collectNonterminals() {
-		for (AstGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof AstNonTerm) {
-				AstNonTerm nonterm = (AstNonTerm) clause;
+		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof TmaNonTerm) {
+				TmaNonTerm nonterm = (TmaNonTerm) clause;
 				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);
 			}
 		}
 	}
 
-	private Symbol create(AstIdentifier id, AstType type, boolean isTerm) {
-		String name = id.getName();
+	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
+		String name = id.getID();
 		if (symbolsMap.containsKey(name)) {
 			Symbol sym = symbolsMap.get(name);
 			if (sym.isTerm() != isTerm) {
@@ -181,7 +181,7 @@ public class TMResolver {
 
 	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
 
-	Symbol createNestedNonTerm(Symbol outer, IAstNode source) {
+	Symbol createNestedNonTerm(Symbol outer, ITmaNode source) {
 		final String base_ = outer.getName() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 		while (symbolsMap.containsKey(base_ + index)) {
@@ -195,7 +195,7 @@ public class TMResolver {
 		return sym;
 	}
 
-	Nonterminal createDerived(Symbol element, String suffix, IAstNode source) {
+	Nonterminal createDerived(Symbol element, String suffix, ITmaNode source) {
 		final String base_ = element.getName() + suffix;
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
 		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
@@ -208,7 +208,7 @@ public class TMResolver {
 		return sym;
 	}
 
-	Symbol resolve(AstReference id) {
+	Symbol resolve(TmaReference id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);
 		if (sym == null) {
@@ -216,7 +216,7 @@ public class TMResolver {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
 					Nonterminal symopt = (Nonterminal) create(
-							new AstIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
+							new TmaIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), false);
 					builder.addRule(symopt, builder.optional(builder.symbol(sym, null, id), id), null);
 					return symopt;
@@ -227,7 +227,7 @@ public class TMResolver {
 		return sym;
 	}
 
-	void error(IAstNode n, String message) {
+	void error(ITmaNode n, String message) {
 		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
 	}
 

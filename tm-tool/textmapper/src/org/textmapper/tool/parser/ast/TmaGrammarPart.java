@@ -15,33 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class AstOption extends AstNode implements AstOptionPart {
-
-	private final String key;
-	private final AstExpression value;
-
-	public AstOption(String key, AstExpression value, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.key = key;
-		this.value = value;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public AstExpression getValue() {
-		return value;
-	}
-
-	public void accept(AbstractVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (value != null) {
-			value.accept(v);
-		}
-	}
+public interface TmaGrammarPart extends ITmaNode {
 }

@@ -47,7 +47,7 @@ public class TMExpressionResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	Map<String, Object> convert(AstAnnotations astAnnotations, String kind) {
+	Map<String, Object> convert(TmaAnnotations astAnnotations, String kind) {
 		if (astAnnotations == null || astAnnotations.getAnnotations() == null) {
 			return null;
 		}
@@ -59,9 +59,9 @@ public class TMExpressionResolver {
 			return null;
 		}
 
-		List<AstNamedEntry> list = astAnnotations.getAnnotations();
+		List<TmaNamedEntry> list = astAnnotations.getAnnotations();
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (AstNamedEntry entry : list) {
+		for (TmaNamedEntry entry : list) {
 			if (entry.hasSyntaxError()) {
 				continue;
 			}
@@ -74,7 +74,7 @@ public class TMExpressionResolver {
 
 			IType expected = feature.getType();
 
-			AstExpression expr = entry.getExpression();
+			TmaExpression expr = entry.getExpression();
 			if (expr == null) {
 				if (!TypesUtil.isBooleanType(expected)) {
 					error(entry, "expected value of type `" + expected.toString() + "` instead of boolean");
@@ -89,37 +89,37 @@ public class TMExpressionResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	Object convertExpression(AstExpression expression, IType type) {
-		return new TiExpressionBuilder<AstExpression>() {
+	Object convertExpression(TmaExpression expression, IType type) {
+		return new TiExpressionBuilder<TmaExpression>() {
 			@Override
 			public IClass resolveType(String className) {
 				return types.getClass(className, null);
 			}
 
 			@Override
-			public Object resolve(AstExpression expression, IType type) {
-				if (expression instanceof AstInstance) {
-					List<AstNamedEntry> list = ((AstInstance) expression).getEntries();
-					Map<String, AstExpression> props = new HashMap<String, AstExpression>();
+			public Object resolve(TmaExpression expression, IType type) {
+				if (expression instanceof TmaInstance) {
+					List<TmaNamedEntry> list = ((TmaInstance) expression).getEntries();
+					Map<String, TmaExpression> props = new HashMap<String, TmaExpression>();
 					if (list != null) {
-						for (AstNamedEntry entry : list) {
+						for (TmaNamedEntry entry : list) {
 							if (entry.hasSyntaxError()) {
 								continue;
 							}
 							props.put(entry.getName(), entry.getExpression());
 						}
 					}
-					String name = ((AstInstance) expression).getClassName().getName();
+					String name = ((TmaInstance) expression).getClassName().getName();
 					if (name.indexOf('.') < 0) {
 						name = myTypesPackage + "." + name;
 					}
 					return convertNew(expression, name, props, type);
 				}
-				if (expression instanceof AstArray) {
-					List<AstExpression> list = ((AstArray) expression).getExpressions();
+				if (expression instanceof TmaArray) {
+					List<TmaExpression> list = ((TmaArray) expression).getExpressions();
 					return convertArray(expression, list, type);
 				}
-				if (expression instanceof AstReference) {
+				if (expression instanceof TmaReference) {
 					IClass symbolClass = types.getClass("common.Symbol", null);
 					if (symbolClass == null) {
 						report(expression, "cannot load class `common.Symbol`");
@@ -130,23 +130,23 @@ public class TMExpressionResolver {
 								+ "`");
 						return null;
 					}
-					return resolver.resolve((AstReference) expression);
+					return resolver.resolve((TmaReference) expression);
 				}
-				if (expression instanceof AstLiteralExpression) {
-					Object literal = ((AstLiteralExpression) expression).getLiteral();
+				if (expression instanceof TmaLiteralExpression) {
+					Object literal = ((TmaLiteralExpression) expression).getLiteral();
 					return convertLiteral(expression, literal, type);
 				}
 				return null;
 			}
 
 			@Override
-			public void report(AstExpression expression, String message) {
+			public void report(TmaExpression expression, String message) {
 				error(expression, message);
 			}
 		}.resolve(expression, type);
 	}
 
-	private void error(IAstNode n, String message) {
+	private void error(ITmaNode n, String message) {
 		resolver.error(n, message);
 	}
 }

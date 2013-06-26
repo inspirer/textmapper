@@ -99,26 +99,26 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 
 %input input, expression;
 
-input (AstRoot) ::=
-	  options? lexer_parts grammar_partsopt              {  $$ = new AstRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+input (TmaRoot) ::=
+	  options? lexer_parts grammar_partsopt              {  $$ = new TmaRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-options (List<AstOptionPart>) ::=
-	  option											{ $$ = new ArrayList<AstOptionPart>(16); ${left()}.add($option); }
+options (List<TmaOptionPart>) ::=
+	  option											{ $$ = new ArrayList<TmaOptionPart>(16); ${left()}.add($option); }
 	| list=options option								{ $list.add($option); }
 ;
 
-option (AstOptionPart) ::=
-	  ID '=' expression 								{ $$ = new AstOption($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+option (TmaOptionPart) ::=
+	  ID '=' expression 								{ $$ = new TmaOption($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 
-identifier (AstIdentifier) ::=
-	  ID												{ $$ = new AstIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
+identifier (TmaIdentifier) ::=
+	  ID												{ $$ = new TmaIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-symref (AstReference) ::=
-	  ID												{ $$ = new AstReference($ID, AstReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
+symref (TmaReference) ::=
+	  ID												{ $$ = new TmaReference($ID, TmaReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
@@ -132,77 +132,77 @@ type_part_list ::=
 type_part ::=
 	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')' ;
 
-pattern (AstRegexp) ::=
-	  regexp											{ $$ = new AstRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
+pattern (TmaRegexp) ::=
+	  regexp											{ $$ = new TmaRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_parts (List<AstLexerPart>) ::=
-	  lexer_part 										{ $$ = new ArrayList<AstLexerPart>(64); ${left()}.add($lexer_part); }
+lexer_parts (List<TmaLexerPart>) ::=
+	  lexer_part 										{ $$ = new ArrayList<TmaLexerPart>(64); ${left()}.add($lexer_part); }
 	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
 	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
-lexer_part (AstLexerPart) ::=
+lexer_part (TmaLexerPart) ::=
 	  state_selector
 	| named_pattern
 	| lexeme
 ;
 
 named_pattern ::=
-	  ID '=' pattern									{ $$ = new AstNamedPattern($ID, $pattern, source, ${left().offset}, ${left().endoffset}); }
+	  ID '=' pattern									{ $$ = new TmaNamedPattern($ID, $pattern, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexeme ::=
 	  identifier typeopt ':' (pattern lexem_transitionopt iconopt lexem_attrsopt commandopt)?
-                                                    	{ $$ = new AstLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
+                                                    	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexem_transition (AstReference) ::=
+lexem_transition (TmaReference) ::=
 	  '=>' stateref										{ $$ = $1; }
 ;
 
-lexem_attrs (AstLexemAttrs) ::=
+lexem_attrs (TmaLexemAttrs) ::=
 	  '(' lexem_attribute ')'							{ $$ = $1; }
 ;
 
-lexem_attribute (AstLexemAttrs) ::=
-	  Lsoft												{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
-	| Lclass											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
-	| Lspace											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
-	| Llayout											{ $$ = new AstLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
+lexem_attribute (TmaLexemAttrs) ::=
+	  Lsoft												{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 state_selector ::=
-	  '[' state_list ']'								{ $$ = new AstStateSelector($state_list, source, ${left().offset}, ${left().endoffset}); }
+	  '[' state_list ']'								{ $$ = new TmaStateSelector($state_list, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-state_list (List<AstLexerState>) ::=
+state_list (List<TmaLexerState>) ::=
 	  lexer_state										{ $$ = new ArrayList<Integer>(4); ${left()}.add($lexer_state); }
 	| list=state_list ',' lexer_state					{ $list.add($lexer_state); }
 ;
 
-stateref (AstReference) ::=
-	  ID                                                { $$ = new AstReference($ID, AstReference.STATE, source, ${left().offset}, ${left().endoffset}); }
+stateref (TmaReference) ::=
+	  ID                                                { $$ = new TmaReference($ID, TmaReference.STATE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_state (AstLexerState) ::=
-	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new AstLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
+lexer_state (TmaLexerState) ::=
+	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new TmaLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-grammar_parts (List<AstGrammarPart>) ::=
-	  grammar_part 										{ $$ = new ArrayList<AstGrammarPart>(64); ${left()}.add($grammar_part); }
+grammar_parts (List<TmaGrammarPart>) ::=
+	  grammar_part 										{ $$ = new ArrayList<TmaGrammarPart>(64); ${left()}.add($grammar_part); }
 	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
 	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
-grammar_part (AstGrammarPart) ::=
+grammar_part (TmaGrammarPart) ::=
 	  nonterm
 	| directive
 ;
 
 nonterm ::=
 	  annotations? identifier nonterm_ast? typeopt Linline? '::=' rules ';'
-	  													{ $$ = new AstNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+	  													{ $$ = new TmaNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 nonterm_ast ::=
@@ -214,41 +214,41 @@ priority_kw (String) ::=
 	Lleft | Lright | Lnonassoc ;
 
 directive ::=
-	  '%' priority_kw references ';'					{ $$ = new AstDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Linput inputs ';'								{ $$ = new AstInputDirective($inputs, source, ${left().offset}, ${left().endoffset}); }
+	  '%' priority_kw references ';'					{ $$ = new TmaDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Linput inputs ';'								{ $$ = new TmaInputDirective($inputs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-inputs (List<AstInputRef>) ::=
-	  inputref											{ $$ = new ArrayList<AstInputRef>(); ${left()}.add($inputref); }
+inputs (List<TmaInputRef>) ::=
+	  inputref											{ $$ = new ArrayList<TmaInputRef>(); ${left()}.add($inputref); }
 	| list=inputs ',' inputref               			{ $list.add($inputref); }
 ;
 
-inputref (AstInputRef) ::=
-	symref Lnoeoiopt									{ $$ = new AstInputRef($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
+inputref (TmaInputRef) ::=
+	symref Lnoeoiopt									{ $$ = new TmaInputRef($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-references (List<AstReference>) ::=
-	  symref											{ $$ = new ArrayList<AstReference>(); ${left()}.add($symref); }
+references (List<TmaReference>) ::=
+	  symref											{ $$ = new ArrayList<TmaReference>(); ${left()}.add($symref); }
 	| list=references symref							{ $list.add($symref); }
 ;
 
-references_cs (List<AstReference>) ::=
-	  symref											{ $$ = new ArrayList<AstReference>(); ${left()}.add($symref); }
+references_cs (List<TmaReference>) ::=
+	  symref											{ $$ = new ArrayList<TmaReference>(); ${left()}.add($symref); }
 	| list=references_cs ',' symref						{ $list.add($symref); }
 ;
 
-rules (List<AstRule>) ::=
+rules (List<TmaRule0>) ::=
  	rule_list
 ;
 
-rule_list (List<AstRule>) ::=
-	  rule0												{ $$ = new ArrayList<AstRule>(); ${left()}.add($rule0); }
+rule_list (List<TmaRule0>) ::=
+	  rule0												{ $$ = new ArrayList<TmaRule0>(); ${left()}.add($rule0); }
 	| list=rule_list '|' rule0							{ $list.add($rule0); }
 ;
 
-rule0 (AstRule) ::=
-	  rhsPrefix? rhsParts? rhsSuffixopt					{ $$ = new AstRule($rhsPrefix, $rhsParts, $rhsSuffixopt, source, ${left().offset}, ${left().endoffset}); }
-	| syntax_problem									{ $$ = new AstRule($syntax_problem); }
+rule0 (TmaRule0) ::=
+	  rhsPrefix? rhsParts? rhsSuffixopt					{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $rhsSuffixopt, source, ${left().offset}, ${left().endoffset}); }
+	| syntax_problem									{ $$ = new TmaRule0($syntax_problem); }
 ;
 
 rhsPrefix (TmaRhsPrefix) ::=
@@ -311,63 +311,63 @@ rhsPrimary (TmaRhsPart) ::=
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsAnnotations (AstRuleAnnotations) ::=
-	  annotation_list									{ $$ = new AstRuleAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la annotation_list						{ $$ = new AstRuleAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la										{ $$ = new AstRuleAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
+rhsAnnotations (TmaRuleAnnotations) ::=
+	  annotation_list									{ $$ = new TmaRuleAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la annotation_list						{ $$ = new TmaRuleAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la										{ $$ = new TmaRuleAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotations (AstAnnotations) ::=
-	annotation_list										{ $$ = new AstAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
+annotations (TmaAnnotations) ::=
+	annotation_list										{ $$ = new TmaAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotation_list (java.util.@List<AstNamedEntry>) ::=
-	  annotation										{ $$ = new java.util.@ArrayList<AstNamedEntry>(); ${left()}.add($annotation); }
+annotation_list (java.util.@List<TmaNamedEntry>) ::=
+	  annotation										{ $$ = new java.util.@ArrayList<TmaNamedEntry>(); ${left()}.add($annotation); }
 	| annotation_list annotation						{ $annotation_list.add($annotation); }
 ;
 
-annotation (AstNamedEntry) ::=
-	  '@' ID ('=' expression)?                          { $$ = new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| '@' syntax_problem                                { $$ = new AstNamedEntry($syntax_problem); }
+annotation (TmaNamedEntry) ::=
+	  '@' ID ('=' expression)?                          { $$ = new TmaNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' syntax_problem                                { $$ = new TmaNamedEntry($syntax_problem); }
 ;
 
-negative_la (AstNegativeLA) ::=
-	'(?!' negative_la_clause ')'						{ $$ = new AstNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
+negative_la (TmaNegativeLA) ::=
+	'(?!' negative_la_clause ')'						{ $$ = new TmaNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-negative_la_clause (java.util.@List<AstReference>) ::=
-	  symref											{ $$ = new java.util.@ArrayList<AstReference>(); ${left()}.add($symref); }
+negative_la_clause (java.util.@List<TmaReference>) ::=
+	  symref											{ $$ = new java.util.@ArrayList<TmaReference>(); ${left()}.add($symref); }
 	| negative_la_clause '|' symref						{ $negative_la_clause.add($symref); }
 ;
 
 ##### EXPRESSIONS
 
-expression (AstExpression) ::=
-	  scon                                              { $$ = new AstLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
-	| icon                                              { $$ = new AstLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
-	| Ltrue                                             { $$ = new AstLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
-	| Lfalse                                            { $$ = new AstLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
+expression (TmaExpression) ::=
+	  scon                                              { $$ = new TmaLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
+	| icon                                              { $$ = new TmaLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
+	| Ltrue                                             { $$ = new TmaLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
+	| Lfalse                                            { $$ = new TmaLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 	| symref
-	| Lnew name '(' map_entriesopt ')'					{ $$ = new AstInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
-	| '[' expression_listopt ']'						{ $$ = new AstArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
+	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
+	| '[' expression_listopt ']'						{ $$ = new TmaArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 
-expression_list (List<AstExpression>) ::=
+expression_list (List<TmaExpression>) ::=
 	expression											{ $$ = new ArrayList(); ${left()}.add($expression); }
 	| expression_list ',' expression					{ $expression_list.add($expression); }
 ;
 
-map_entries (java.util.@List<AstNamedEntry>) ::=
-	  ID map_separator expression						{ $$ = new java.util.@ArrayList<AstNamedEntry>(); ${left()}.add(new AstNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' ID map_separator expression		{ $map_entries.add(new AstNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
+map_entries (java.util.@List<TmaNamedEntry>) ::=
+	  ID map_separator expression						{ $$ = new java.util.@ArrayList<TmaNamedEntry>(); ${left()}.add(new TmaNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' ID map_separator expression		{ $map_entries.add(new TmaNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
 ;
 
 map_separator ::=
 	':' | '=' | '=>' ;
 
-name (AstName) ::=
-	qualified_id 										{ $$ = new AstName($qualified_id, source, ${left().offset}, ${left().endoffset}); }
+name (TmaName) ::=
+	qualified_id 										{ $$ = new TmaName($qualified_id, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 qualified_id (String) ::=
@@ -375,12 +375,12 @@ qualified_id (String) ::=
 	| qualified_id '.' ID								{ $$ = $qualified_id + "." + $ID; }
 ;
 
-command (AstCode) ::=
-	code												{ $$ = new AstCode(source, ${first().offset}+1, ${last().endoffset}-1); }
+command (TmaCode) ::=
+	code												{ $$ = new TmaCode(source, ${first().offset}+1, ${last().endoffset}-1); }
 ;
 
-syntax_problem (AstError) ::=
-	error												{ $$ = new AstError(source, ${left().offset}, ${left().endoffset}); }
+syntax_problem (TmaError) ::=
+	error												{ $$ = new TmaError(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 ##################################################################################

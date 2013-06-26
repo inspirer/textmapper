@@ -15,5 +15,36 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public interface AstLexerPart extends IAstNode {
+import org.textmapper.tool.parser.TMTree.TextSource;
+
+/**
+ * Gryaznov Evgeny, 6/23/11
+ */
+public class TmaNamedPattern extends TmaNode implements TmaLexerPart {
+
+	private String name;
+	private TmaRegexp regexp;
+
+	public TmaNamedPattern(String name, TmaRegexp regexp, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.name = name;
+		this.regexp = regexp;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public TmaRegexp getRegexp() {
+		return regexp;
+	}
+
+	public void accept(AbstractVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+		if (regexp != null) {
+			regexp.accept(v);
+		}
+	}
 }

@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/6/12
  */
-public class TmaRhsUnordered extends AstNode implements TmaRhsPart {
+public class TmaRhsUnordered extends TmaNode implements TmaRhsPart {
 
 	private final TmaRhsPart left;
 	private final TmaRhsPart right;

@@ -17,10 +17,17 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstError extends AstNode implements AstLexerPart, AstGrammarPart, AstOptionPart, AstExpression, TmaRhsPart {
+public class TmaIdentifier extends TmaNode {
 
-	public AstError(TextSource source, int offset, int endoffset) {
+	private final String name;
+
+	public TmaIdentifier(String name, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.name = name;
+	}
+
+	public String getID() {
+		return name;
 	}
 
 	public void accept(AbstractVisitor v) {

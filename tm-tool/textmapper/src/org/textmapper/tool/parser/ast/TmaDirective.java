@@ -19,52 +19,32 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstNonTerm extends AstNode implements AstGrammarPart {
+public class TmaDirective extends TmaNode implements TmaGrammarPart {
 
-	private final AstIdentifier name;
-	private final String type;
-	private final List<AstRule> rules;
-	private final AstAnnotations annotations;
+	private final String key;
+	private final List<TmaReference> symbols;
 
-	public AstNonTerm(AstIdentifier name, String type, List<AstRule> rules,
-					  AstAnnotations annotations, TextSource source, int offset,
-					  int endoffset) {
+	public TmaDirective(String key, List<TmaReference> symbols, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.type = type;
-		this.rules = rules;
-		this.annotations = annotations;
+		this.key = key;
+		this.symbols = symbols;
 	}
 
-	public AstIdentifier getName() {
-		return name;
+	public String getKey() {
+		return key;
 	}
 
-	public String getType() {
-		return type;
-	}
-
-	public List<AstRule> getRules() {
-		return rules;
-	}
-
-	public AstAnnotations getAnnotations() {
-		return annotations;
+	public List<TmaReference> getSymbols() {
+		return symbols;
 	}
 
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (annotations != null) {
-			annotations.accept(v);
-		}
-		if (name != null) {
-			name.accept(v);
-		}
-		if (rules != null) {
-			for (AstRule r : rules) {
-				r.accept(v);
+		if (symbols != null) {
+			for (TmaReference id : symbols) {
+				id.accept(v);
 			}
 		}
 	}

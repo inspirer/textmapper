@@ -17,20 +17,34 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstLiteralExpression extends AstNode implements AstExpression {
+/**
+ * Gryaznov Evgeny, 6/17/11
+ */
+public class TmaInputRef extends TmaNode {
 
-	private final Object literal;
+	private final TmaReference reference;
+	private final boolean nonEoi;
 
-	public AstLiteralExpression(Object literal, TextSource source, int offset, int endoffset) {
+	public TmaInputRef(TmaReference reference, boolean nonEoi, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.literal = literal;
+		this.reference = reference;
+		this.nonEoi = nonEoi;
 	}
 
-	public Object getLiteral() {
-		return literal;
+	public TmaReference getReference() {
+		return reference;
+	}
+
+	public boolean isNonEoi() {
+		return nonEoi;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (reference != null) {
+			reference.accept(v);
+		}
 	}
 }

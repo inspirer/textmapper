@@ -19,33 +19,28 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public class AstRuleAnnotations extends AstAnnotations {
+public class TmaArray extends TmaNode implements TmaExpression {
 
-	private final AstNegativeLA negativeLA;
+	private final List<TmaExpression> expressions;
 
-	public AstRuleAnnotations(AstNegativeLA negativeLA, List<AstNamedEntry> annotations, TextSource source, int offset, int endoffset) {
-		super(annotations, source, offset, endoffset);
-		this.negativeLA = negativeLA;
+	public TmaArray(List<TmaExpression> expressions, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.expressions = expressions;
 	}
 
-	public AstNegativeLA getNegativeLA() {
-		return negativeLA;
+	public List<TmaExpression> getExpressions() {
+		return expressions;
 	}
 
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (negativeLA != null) {
-			negativeLA.accept(v);
-		}
-		if (getAnnotations() != null) {
-			for (AstNamedEntry n : getAnnotations()) {
+		if (expressions != null) {
+			for (TmaExpression n : expressions) {
 				n.accept(v);
 			}
 		}
 	}
+
 }

@@ -19,16 +19,37 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstAnnotations extends AstNode {
+/** -> TmaNonterm **/
+public class TmaNonTerm extends TmaNode implements TmaGrammarPart {
 
-	private final List<AstNamedEntry> annotations;
+	private final TmaIdentifier name;
+	private final String type;
+	private final List<TmaRule0> rules;
+	private final TmaAnnotations annotations;
 
-	public AstAnnotations(List<AstNamedEntry> annotations, TextSource source, int offset, int endoffset) {
+	public TmaNonTerm(TmaIdentifier name, String type, List<TmaRule0> rules,
+					  TmaAnnotations annotations, TextSource source, int offset,
+					  int endoffset) {
 		super(source, offset, endoffset);
+		this.name = name;
+		this.type = type;
+		this.rules = rules;
 		this.annotations = annotations;
 	}
 
-	public List<AstNamedEntry> getAnnotations() {
+	public TmaIdentifier getName() {
+		return name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public List<TmaRule0> getRules() {
+		return rules;
+	}
+
+	public TmaAnnotations getAnnotations() {
 		return annotations;
 	}
 
@@ -37,8 +58,14 @@ public class AstAnnotations extends AstNode {
 			return;
 		}
 		if (annotations != null) {
-			for (AstNamedEntry n : annotations) {
-				n.accept(v);
+			annotations.accept(v);
+		}
+		if (name != null) {
+			name.accept(v);
+		}
+		if (rules != null) {
+			for (TmaRule0 r : rules) {
+				r.accept(v);
 			}
 		}
 	}

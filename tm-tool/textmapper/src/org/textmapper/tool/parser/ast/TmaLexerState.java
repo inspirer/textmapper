@@ -17,35 +17,38 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+/**
+ * Gryaznov Evgeny, 9/9/12
+ */
+public class TmaLexerState extends TmaNode {
 
-public class AstDirective extends AstNode implements AstGrammarPart {
+	private TmaIdentifier name;
+	private TmaReference defaultTransition;
 
-	private final String key;
-	private final List<AstReference> symbols;
-
-	public AstDirective(String key, List<AstReference> symbols, TextSource source, int offset, int endoffset) {
+	public TmaLexerState(TmaIdentifier name, TmaReference defaultTransition, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.key = key;
-		this.symbols = symbols;
+		this.name = name;
+		this.defaultTransition = defaultTransition;
 	}
 
-	public String getKey() {
-		return key;
+	public TmaIdentifier getName() {
+		return name;
 	}
 
-	public List<AstReference> getSymbols() {
-		return symbols;
+	public TmaReference getDefaultTransition() {
+		return defaultTransition;
 	}
 
+	@Override
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (symbols != null) {
-			for (AstReference id : symbols) {
-				id.accept(v);
-			}
+		if (name != null) {
+			name.accept(v);
+		}
+		if (defaultTransition != null) {
+			defaultTransition.accept(v);
 		}
 	}
 }

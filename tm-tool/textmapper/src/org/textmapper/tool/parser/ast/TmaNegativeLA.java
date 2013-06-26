@@ -17,34 +17,32 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
+import java.util.List;
+
 /**
- * Gryaznov Evgeny, 6/23/11
+ * Gryaznov Evgeny, 8/15/11
  */
-public class AstNamedPattern extends AstNode implements AstLexerPart {
+public class TmaNegativeLA extends TmaNode {
 
-	private String name;
-	private AstRegexp regexp;
+	private final List<TmaReference> unwantedSymbols;
 
-	public AstNamedPattern(String name, AstRegexp regexp, TextSource source, int offset, int endoffset) {
+	public TmaNegativeLA(List<TmaReference> unwantedSymbols, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.regexp = regexp;
+		this.unwantedSymbols = unwantedSymbols;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public AstRegexp getRegexp() {
-		return regexp;
+	public List<TmaReference> getUnwantedSymbols() {
+		return unwantedSymbols;
 	}
 
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (regexp != null) {
-			regexp.accept(v);
+		if (unwantedSymbols != null) {
+			for (TmaReference unwantedSymbol : unwantedSymbols) {
+				unwantedSymbol.accept(v);
+			}
 		}
 	}
 }

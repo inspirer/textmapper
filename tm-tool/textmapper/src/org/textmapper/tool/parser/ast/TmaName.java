@@ -17,49 +17,20 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstNamedEntry extends AstNode {
+public class TmaName extends TmaNode {
 
 	private final String name;
-	private final AstExpression expression;
 
-	private final AstError error;
-
-	public AstNamedEntry(String name, AstExpression expression, TextSource source, int offset, int endoffset) {
+	public TmaName(String name, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
-		this.expression = expression;
-		this.error = null;
-	}
-
-	public AstNamedEntry(AstError error) {
-		super(error.getInput(), error.getOffset(), error.getEndOffset());
-		this.name = null;
-		this.expression = null;
-		this.error = error;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public AstExpression getExpression() {
-		return expression;
-	}
-
-	public boolean hasSyntaxError() {
-		return error != null;
-	}
-
 	public void accept(AbstractVisitor v) {
-		if (error != null) {
-			v.visit(error);
-			return;
-		}
-		if (!v.visit(this)) {
-			return;
-		}
-		if (expression != null) {
-			expression.accept(v);
-		}
+		v.visit(this);
 	}
 }

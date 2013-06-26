@@ -17,17 +17,20 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstIdentifier extends AstNode {
+/**
+ * Gryaznov Evgeny, 4/3/11
+ */
+public class TmaLexemAttrs extends TmaNode {
 
-	private final String name;
+	private final int kind;
 
-	public AstIdentifier(String name, TextSource source, int offset, int endoffset) {
+	public TmaLexemAttrs(int kind, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
+		this.kind = kind;
 	}
 
-	public String getName() {
-		return name;
+	public int getKind() {
+		return kind;
 	}
 
 	public void accept(AbstractVisitor v) {

@@ -305,6 +305,7 @@ public class TMMapper {
 					isInterface = false;
 					break;
 				}
+				isInterface = true;
 				customRuleList.add((RhsSequence) part);
 			}
 			if (isInterface) {

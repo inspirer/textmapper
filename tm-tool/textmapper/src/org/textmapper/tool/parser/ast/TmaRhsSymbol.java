@@ -20,16 +20,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/2/12
  */
-public class TmaRhsSymbol extends AstNode implements TmaRhsPart {
+public class TmaRhsSymbol extends TmaNode implements TmaRhsPart {
 
-	private final AstReference reference;
+	private final TmaReference reference;
 
-	public TmaRhsSymbol(AstReference reference, TextSource source, int offset, int endoffset) {
+	public TmaRhsSymbol(TmaReference reference, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.reference = reference;
 	}
 
-	public AstReference getReference() {
+	public TmaReference getReference() {
 		return reference;
 	}
 

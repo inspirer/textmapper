@@ -17,32 +17,49 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+public class TmaNamedEntry extends TmaNode {
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public class AstNegativeLA extends AstNode {
+	private final String name;
+	private final TmaExpression expression;
 
-	private final List<AstReference> unwantedSymbols;
+	private final TmaError error;
 
-	public AstNegativeLA(List<AstReference> unwantedSymbols, TextSource source, int offset, int endoffset) {
+	public TmaNamedEntry(String name, TmaExpression expression, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.unwantedSymbols = unwantedSymbols;
+		this.name = name;
+		this.expression = expression;
+		this.error = null;
 	}
 
-	public List<AstReference> getUnwantedSymbols() {
-		return unwantedSymbols;
+	public TmaNamedEntry(TmaError error) {
+		super(error.getInput(), error.getOffset(), error.getEndOffset());
+		this.name = null;
+		this.expression = null;
+		this.error = error;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public TmaExpression getExpression() {
+		return expression;
+	}
+
+	public boolean hasSyntaxError() {
+		return error != null;
 	}
 
 	public void accept(AbstractVisitor v) {
+		if (error != null) {
+			v.visit(error);
+			return;
+		}
 		if (!v.visit(this)) {
 			return;
 		}
-		if (unwantedSymbols != null) {
-			for (AstReference unwantedSymbol : unwantedSymbols) {
-				unwantedSymbol.accept(v);
-			}
+		if (expression != null) {
+			expression.accept(v);
 		}
 	}
 }

@@ -19,24 +19,24 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaRhsPrefix extends AstNode {
+public class TmaRhsPrefix extends TmaNode {
 
-	private final AstAnnotations annotations;
-	private final AstIdentifier name;
-	private final List<AstReference> extendedNonterms;
+	private final TmaAnnotations annotations;
+	private final TmaIdentifier name;
+	private final List<TmaReference> extendedNonterms;
 
-	public TmaRhsPrefix(AstAnnotations annotations, AstIdentifier name, List<AstReference> extendedNonterms, TextSource source, int offset, int endoffset) {
+	public TmaRhsPrefix(TmaAnnotations annotations, TmaIdentifier name, List<TmaReference> extendedNonterms, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 		this.name = name;
 		this.extendedNonterms = extendedNonterms;
 	}
 
-	public AstAnnotations getAnnotations() {
+	public TmaAnnotations getAnnotations() {
 		return annotations;
 	}
 
-	public AstIdentifier getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -52,7 +52,7 @@ public class TmaRhsPrefix extends AstNode {
 			name.accept(v);
 		}
 		if (extendedNonterms != null) {
-			for (AstReference extendedNonterm : extendedNonterms) {
+			for (TmaReference extendedNonterm : extendedNonterms) {
 				extendedNonterm.accept(v);
 			}
 		}

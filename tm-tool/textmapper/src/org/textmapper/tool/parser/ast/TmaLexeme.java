@@ -17,18 +17,18 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstLexeme extends AstNode implements AstLexerPart {
+public class TmaLexeme extends TmaNode implements TmaLexerPart {
 
-	private final AstIdentifier name;
+	private final TmaIdentifier name;
 	private final String type;
-	private final AstRegexp regexp;
-	private final AstReference transition;
-	private final AstLexemAttrs attrs;
+	private final TmaRegexp regexp;
+	private final TmaReference transition;
+	private final TmaLexemAttrs attrs;
 	private final int priority;
-	private final AstCode code;
+	private final TmaCode code;
 
-	public AstLexeme(AstIdentifier name, String type, AstRegexp regexp, AstReference transition,
-					 Integer priority, AstLexemAttrs attrs, AstCode code, TextSource source, int offset,
+	public TmaLexeme(TmaIdentifier name, String type, TmaRegexp regexp, TmaReference transition,
+					 Integer priority, TmaLexemAttrs attrs, TmaCode code, TextSource source, int offset,
 					 int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
@@ -40,7 +40,7 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		this.code = code;
 	}
 
-	public AstIdentifier getName() {
+	public TmaIdentifier getName() {
 		return name;
 	}
 
@@ -48,11 +48,11 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		return type;
 	}
 
-	public AstRegexp getRegexp() {
+	public TmaRegexp getRegexp() {
 		return regexp;
 	}
 
-	public AstReference getTransition() {
+	public TmaReference getTransition() {
 		return transition;
 	}
 
@@ -60,11 +60,11 @@ public class AstLexeme extends AstNode implements AstLexerPart {
 		return priority;
 	}
 
-	public AstLexemAttrs getAttrs() {
+	public TmaLexemAttrs getAttrs() {
 		return attrs;
 	}
 
-	public AstCode getCode() {
+	public TmaCode getCode() {
 		return code;
 	}
 

@@ -19,28 +19,27 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstArray extends AstNode implements AstExpression {
+public class TmaAnnotations extends TmaNode {
 
-	private final List<AstExpression> expressions;
+	private final List<TmaNamedEntry> annotations;
 
-	public AstArray(List<AstExpression> expressions, TextSource source, int offset, int endoffset) {
+	public TmaAnnotations(List<TmaNamedEntry> annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.expressions = expressions;
+		this.annotations = annotations;
 	}
 
-	public List<AstExpression> getExpressions() {
-		return expressions;
+	public List<TmaNamedEntry> getAnnotations() {
+		return annotations;
 	}
 
 	public void accept(AbstractVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (expressions != null) {
-			for (AstExpression n : expressions) {
+		if (annotations != null) {
+			for (TmaNamedEntry n : annotations) {
 				n.accept(v);
 			}
 		}
 	}
-
 }

@@ -15,25 +15,12 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import org.textmapper.lapg.api.TextSourceElement;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 4/3/11
- */
-public class AstLexemAttrs extends AstNode {
+public interface ITmaNode extends TextSourceElement {
 
-	private final int kind;
+	TextSource getInput();
 
-	public AstLexemAttrs(int kind, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.kind = kind;
-	}
-
-	public int getKind() {
-		return kind;
-	}
-
-	public void accept(AbstractVisitor v) {
-		v.visit(this);
-	}
+	void accept(AbstractVisitor v);
 }

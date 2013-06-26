@@ -17,34 +17,20 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 6/17/11
- */
-public class AstInputRef extends AstNode {
+public class TmaRegexp extends TmaNode {
 
-	private final AstReference reference;
-	private final boolean nonEoi;
+	private final String regexp;
 
-	public AstInputRef(AstReference reference, boolean nonEoi, TextSource source, int offset, int endoffset) {
+	public TmaRegexp(String regexp, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.reference = reference;
-		this.nonEoi = nonEoi;
+		this.regexp = regexp;
 	}
 
-	public AstReference getReference() {
-		return reference;
-	}
-
-	public boolean isNonEoi() {
-		return nonEoi;
+	public String getRegexp() {
+		return regexp;
 	}
 
 	public void accept(AbstractVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (reference != null) {
-			reference.accept(v);
-		}
+		v.visit(this);
 	}
 }

@@ -19,15 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class AstRule extends AstNode {
+public class TmaRule0 extends TmaNode {
 
 	private final List<TmaRhsPart> list;
 	private final TmaRhsPrefix prefix;
 	private final TmaRhsSuffix suffix;
-	private final AstError error;
+	private final TmaError error;
 
-	public AstRule(TmaRhsPrefix prefix, List<TmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
-				   int offset, int endoffset) {
+	public TmaRule0(TmaRhsPrefix prefix, List<TmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
+					int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
 		this.suffix = attr;
@@ -35,7 +35,7 @@ public class AstRule extends AstNode {
 		this.error = null;
 	}
 
-	public AstRule(AstError err) {
+	public TmaRule0(TmaError err) {
 		super(err.getInput(), err.getOffset(), err.getEndOffset());
 		this.list = null;
 		this.suffix = null;
@@ -62,11 +62,11 @@ public class AstRule extends AstNode {
 	@Deprecated
 	public String getAlias() {
 		// TODO use getPrefix()
-		return prefix != null && prefix.getName() != null ? prefix.getName().getName() : null;
+		return prefix != null && prefix.getName() != null ? prefix.getName().getID() : null;
 	}
 
 	@Deprecated
-	public AstAnnotations getAnnotations() {
+	public TmaAnnotations getAnnotations() {
 		// TODO -use getPrefix()
 		return prefix != null ? prefix.getAnnotations() : null;
 	}

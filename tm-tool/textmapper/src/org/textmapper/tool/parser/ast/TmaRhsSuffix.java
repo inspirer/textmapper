@@ -15,5 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public interface TmaRhsSuffix extends IAstNode {
+public interface TmaRhsSuffix extends ITmaNode {
 }

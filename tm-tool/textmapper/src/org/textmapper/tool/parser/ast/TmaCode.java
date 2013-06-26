@@ -17,26 +17,10 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstReference extends AstNode implements AstExpression {
+public class TmaCode extends TmaNode implements TmaRhsPart {
 
-	public static final String DEFAULT = "symbol";
-	public static final String STATE = "state";
-
-	private final String name;
-	private final String scope;
-
-	public AstReference(String name, String scope, TextSource source, int offset, int endoffset) {
+	public TmaCode(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.scope = scope;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getScope() {
-		return scope;
 	}
 
 	public void accept(AbstractVisitor v) {

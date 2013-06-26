@@ -22,13 +22,13 @@ import java.util.List;
 /**
  * evgeny, 8/7/12
  */
-public class TmaRhsList extends AstNode implements TmaRhsPart {
+public class TmaRhsList extends TmaNode implements TmaRhsPart {
 
 	private final List<TmaRhsPart> ruleParts;
-	private final List<AstReference> separator;
+	private final List<TmaReference> separator;
 	private final boolean atLeastOne;
 
-	public TmaRhsList(List<TmaRhsPart> ruleParts, List<AstReference> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
+	public TmaRhsList(List<TmaRhsPart> ruleParts, List<TmaReference> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.ruleParts = ruleParts;
 		this.separator = separator;
@@ -39,7 +39,7 @@ public class TmaRhsList extends AstNode implements TmaRhsPart {
 		return ruleParts;
 	}
 
-	public List<AstReference> getSeparator() {
+	public List<TmaReference> getSeparator() {
 		return separator;
 	}
 
@@ -58,7 +58,7 @@ public class TmaRhsList extends AstNode implements TmaRhsPart {
 			}
 		}
 		if (separator != null) {
-			for (AstReference ref : separator) {
+			for (TmaReference ref : separator) {
 				ref.accept(v);
 			}
 		}

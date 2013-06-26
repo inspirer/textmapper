@@ -22,16 +22,16 @@ import java.util.List;
 /**
  * evgeny, 8/2/12
  */
-public class TmaRhsNested extends AstNode implements TmaRhsPart {
+public class TmaRhsNested extends TmaNode implements TmaRhsPart {
 
-	private final List<AstRule> rules;
+	private final List<TmaRule0> rules;
 
-	public TmaRhsNested(List<AstRule> rules, TextSource source, int offset, int endoffset) {
+	public TmaRhsNested(List<TmaRule0> rules, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.rules = rules;
 	}
 
-	public List<AstRule> getRules() {
+	public List<TmaRule0> getRules() {
 		return rules;
 	}
 
@@ -41,7 +41,7 @@ public class TmaRhsNested extends AstNode implements TmaRhsPart {
 			return;
 		}
 		if (rules != null) {
-			for (AstRule rule : rules) {
+			for (TmaRule0 rule : rules) {
 				rule.accept(v);
 			}
 		}

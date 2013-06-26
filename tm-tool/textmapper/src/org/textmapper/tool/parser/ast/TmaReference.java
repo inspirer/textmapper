@@ -17,38 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 9/9/12
- */
-public class AstLexerState extends AstNode {
+public class TmaReference extends TmaNode implements TmaExpression {
 
-	private AstIdentifier name;
-	private AstReference defaultTransition;
+	public static final String DEFAULT = "symbol";
+	public static final String STATE = "state";
 
-	public AstLexerState(AstIdentifier name, AstReference defaultTransition, TextSource source, int offset, int endoffset) {
+	private final String name;
+	private final String scope;
+
+	public TmaReference(String name, String scope, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
-		this.defaultTransition = defaultTransition;
+		this.scope = scope;
 	}
 
-	public AstIdentifier getName() {
+	public String getName() {
 		return name;
 	}
 
-	public AstReference getDefaultTransition() {
-		return defaultTransition;
+	public String getScope() {
+		return scope;
 	}
 
-	@Override
 	public void accept(AbstractVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (name != null) {
-			name.accept(v);
-		}
-		if (defaultTransition != null) {
-			defaultTransition.accept(v);
-		}
+		v.visit(this);
 	}
 }

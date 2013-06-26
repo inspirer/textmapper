@@ -34,11 +34,11 @@ import java.util.*;
  */
 public class TMLexerCompiler {
 
-	private final TMTree<AstRoot> tree;
+	private final TMTree<TmaRoot> tree;
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 
-	private final Map<AstLexeme, RuleAttributes> attributes = new HashMap<AstLexeme, RuleAttributes>();
+	private final Map<TmaLexeme, RuleAttributes> attributes = new HashMap<TmaLexeme, RuleAttributes>();
 
 	public TMLexerCompiler(TMResolver resolver) {
 		this.resolver = resolver;
@@ -46,22 +46,22 @@ public class TMLexerCompiler {
 		this.builder = resolver.getBuilder();
 	}
 
-	private void error(IAstNode n, String message) {
+	private void error(ITmaNode n, String message) {
 		resolver.error(n, message);
 	}
 
-	private List<LexerState> convertApplicableStates(AstStateSelector selector) {
+	private List<LexerState> convertApplicableStates(TmaStateSelector selector) {
 		List<LexerState> result = new ArrayList<LexerState>();
-		for (AstLexerState state : selector.getStates()) {
-			LexerState applicable = resolver.getState(state.getName().getName());
+		for (TmaLexerState state : selector.getStates()) {
+			LexerState applicable = resolver.getState(state.getName().getID());
 			result.add(applicable);
 		}
 		return result;
 	}
 
-	private TMStateTransitionSwitch convertTransitions(AstStateSelector selector) {
+	private TMStateTransitionSwitch convertTransitions(TmaStateSelector selector) {
 		boolean noDefault = false;
-		for (AstLexerState state : selector.getStates()) {
+		for (TmaLexerState state : selector.getStates()) {
 			if (state.getDefaultTransition() == null) {
 				noDefault = true;
 			}
@@ -69,7 +69,7 @@ public class TMLexerCompiler {
 
 		LexerState defaultTransition = null;
 		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<LexerState, LexerState>();
-		for (AstLexerState state : selector.getStates()) {
+		for (TmaLexerState state : selector.getStates()) {
 			if (state.getDefaultTransition() == null) {
 				continue;
 			}
@@ -83,7 +83,7 @@ public class TMLexerCompiler {
 			if (defaultTransition == null && !(noDefault)) {
 				defaultTransition = target;
 			} else if (defaultTransition != target) {
-				LexerState source = resolver.getState(state.getName().getName());
+				LexerState source = resolver.getState(state.getName().getID());
 				stateSwitch.put(source, target);
 			}
 		}
@@ -91,8 +91,8 @@ public class TMLexerCompiler {
 				: new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
 	}
 
-	private TMStateTransitionSwitch getTransition(AstLexeme lexeme, TMStateTransitionSwitch active) {
-		AstReference transition = lexeme.getTransition();
+	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme, TMStateTransitionSwitch active) {
+		TmaReference transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
 			LexerState target = resolver.getState(targetName);
@@ -105,13 +105,13 @@ public class TMLexerCompiler {
 		return active;
 	}
 
-	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, AstLexeme l, RegexPart regex) {
+	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, TmaLexeme l, RegexPart regex) {
 		LexerRule result = null;
-		AstLexemAttrs attrs = l.getAttrs();
+		TmaLexemAttrs attrs = l.getAttrs();
 		int kind = attrs == null ? LexerRule.KIND_NONE : attrs.getKind();
 		if (regex.isConstant() && kind != LexerRule.KIND_CLASS) {
 			for (LexerRule rule : classMatchers.keySet()) {
-				AstLexeme astClassLexeme = (AstLexeme) ((DerivedSourceElement) rule).getOrigin();
+				TmaLexeme astClassLexeme = (TmaLexeme) ((DerivedSourceElement) rule).getOrigin();
 				if (!attributes.get(astClassLexeme).canBeClassFor(attributes.get(l))) {
 					continue;
 				}
@@ -138,13 +138,13 @@ public class TMLexerCompiler {
 		TMStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(resolver.getState(TMResolver.INITIAL_STATE));
 
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (clause instanceof AstLexeme) {
-				AstLexeme lexeme = (AstLexeme) clause;
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (clause instanceof TmaLexeme) {
+				TmaLexeme lexeme = (TmaLexeme) clause;
 				attributes.put(lexeme, new RuleAttributes(getTransition(lexeme, activeTransitions), activeStates));
-			} else if (clause instanceof AstStateSelector) {
-				activeStates = convertApplicableStates((AstStateSelector) clause);
-				activeTransitions = convertTransitions((AstStateSelector) clause);
+			} else if (clause instanceof TmaStateSelector) {
+				activeStates = convertApplicableStates((TmaStateSelector) clause);
+				activeTransitions = convertTransitions((TmaStateSelector) clause);
 			}
 		}
 
@@ -153,12 +153,12 @@ public class TMLexerCompiler {
 		RegexContext context = resolver.createRegexContext();
 		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<LexerRule, RegexMatcher>();
 
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (!(clause instanceof AstLexeme)) {
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (!(clause instanceof TmaLexeme)) {
 				continue;
 			}
-			AstLexeme lexeme = (AstLexeme) clause;
-			AstLexemAttrs attrs = lexeme.getAttrs();
+			TmaLexeme lexeme = (TmaLexeme) clause;
+			TmaLexemAttrs attrs = lexeme.getAttrs();
 			if (attrs == null || attrs.getKind() != LexerRule.KIND_CLASS) {
 				continue;
 			}
@@ -167,7 +167,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 
-			Symbol s = resolver.getSymbol(lexeme.getName().getName());
+			Symbol s = resolver.getSymbol(lexeme.getName().getID());
 			if (!(s instanceof Terminal)) {
 				// not a terminal? already reported, ignore
 				continue;
@@ -193,18 +193,18 @@ public class TMLexerCompiler {
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
 
-		for (AstLexerPart clause : tree.getRoot().getLexer()) {
-			if (!(clause instanceof AstLexeme)) {
+		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+			if (!(clause instanceof TmaLexeme)) {
 				continue;
 			}
-			AstLexeme lexeme = (AstLexeme) clause;
-			AstLexemAttrs attrs = lexeme.getAttrs();
+			TmaLexeme lexeme = (TmaLexeme) clause;
+			TmaLexemAttrs attrs = lexeme.getAttrs();
 			int kind = attrs == null ? LexerRule.KIND_NONE : attrs.getKind();
 			if (kind == LexerRule.KIND_CLASS) {
 				continue;
 			}
 
-			Symbol s = resolver.getSymbol(lexeme.getName().getName());
+			Symbol s = resolver.getSymbol(lexeme.getName().getID());
 			if (!(s instanceof Terminal)) {
 				// not a terminal? already reported, ignore
 				continue;
@@ -225,12 +225,12 @@ public class TMLexerCompiler {
 
 			if (lexeme.getRegexp() == null) {
 				if (isSoft) {
-					error(lexeme, "soft lexeme rule `" + lexeme.getName().getName() + "' should have a regular expression");
+					error(lexeme, "soft lexeme rule `" + lexeme.getName().getID() + "' should have a regular expression");
 				}
 				continue;
 			}
 
-			String name = lexeme.getName().getName();
+			String name = lexeme.getName().getID();
 			RegexPart regex;
 			try {
 				regex = LapgCore.parse(name, lexeme.getRegexp().getRegexp());
@@ -241,7 +241,7 @@ public class TMLexerCompiler {
 
 			if (isSoft && lexeme.getCode() != null) {
 				// TODO really?
-				error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getName()
+				error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getID()
 						+ "' cannot have a semantic action");
 			}
 			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);

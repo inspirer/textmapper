@@ -15,12 +15,33 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.lapg.api.TextSourceElement;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public interface IAstNode extends TextSourceElement {
+import java.util.List;
 
-	TextSource getInput();
+/**
+ * Gryaznov Evgeny, 6/17/11
+ */
+public class TmaInputDirective extends TmaNode implements TmaGrammarPart {
+	private final List<TmaInputRef> inputRefs;
 
-	void accept(AbstractVisitor v);
+	public TmaInputDirective(List<TmaInputRef> inputRefs, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.inputRefs = inputRefs;
+	}
+
+	public List<TmaInputRef> getInputRefs() {
+		return inputRefs;
+	}
+
+	public void accept(AbstractVisitor v) {
+		if (!v.visit(this)) {
+			return;
+		}
+		if (inputRefs != null) {
+			for (TmaInputRef ref : inputRefs) {
+				ref.accept(v);
+			}
+		}
+	}
 }

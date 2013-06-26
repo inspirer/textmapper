@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/3/12
  */
-public class TmaRhsQuantifier extends AstNode implements TmaRhsPart {
+public class TmaRhsQuantifier extends TmaNode implements TmaRhsPart {
 
 	public static final int KIND_OPTIONAL = 0;
 	public static final int KIND_ZEROORMORE = 1;

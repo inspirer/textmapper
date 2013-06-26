@@ -17,12 +17,12 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public abstract class AstNode implements IAstNode {
+public abstract class TmaNode implements ITmaNode {
 
 	private final TextSource source;
 	private final int offset, endoffset;
 
-	public AstNode(TextSource source, int offset, int endoffset) {
+	public TmaNode(TextSource source, int offset, int endoffset) {
 		this.source = source;
 		this.offset = offset;
 		this.endoffset = endoffset;
