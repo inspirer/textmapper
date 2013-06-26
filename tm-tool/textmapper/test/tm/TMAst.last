@@ -1,0 +1,549 @@
+
+// Ast
+
+class Input {
+	list<Option> optionList;
+	list<LexerPartsItem> lexerParts;
+	list<GrammarPartsItem> grammarParts;
+}
+
+input  : Input ::=
+	optionList=option_list? lexerParts=lexer_parts grammarParts=grammar_partsopt
+;
+
+class Option {
+	String ID;
+	Expression expression;
+	SyntaxProblem syntaxProblem;
+}
+
+option  : Option ::=
+	{ID} '=' {expression}
+  | syntaxProblem=syntax_problem
+;
+
+class Identifier {
+	String ID;
+}
+
+identifier  : Identifier ::=
+	{ID}
+;
+
+class Symref : Expression {
+	String ID;
+}
+
+symref  : Symref ::=
+	{ID}
+;
+
+type (String) ::=
+	'(' scon ')'
+  | '(' type_part_list ')'
+;
+
+type_part_list  : void
+	(type_part)+ ;
+
+type_part  : void ::=
+	'<'
+  | '>'
+  | '['
+  | ']'
+  | ID
+  | '*'
+  | '.'
+  | ','
+  | '?'
+  | '@'
+  | '&'
+  | '(' type_part_list? ')'
+;
+
+pattern (String) ::=
+	this=regexp
+;
+
+class LexerPartsItem {
+	LexerPart lexerPart;
+	SyntaxProblem syntaxProblem;
+}
+
+lexer_parts  : list<LexerPartsItem>
+	this+=new.LexerPartsItem(lexerPart=lexer_part)
+		(this+=new.LexerPartsItem((lexerPart=lexer_part | syntaxProblem=syntax_problem)))* ;
+
+interface LexerPart {
+}
+
+lexer_part  : LexerPart ::=
+	this=state_selector
+  | this=named_pattern
+  | this=lexeme
+;
+
+class NamedPattern : LexerPart {
+	String ID;
+	String pattern;
+}
+
+named_pattern  : NamedPattern ::=
+	{ID} '=' {pattern}
+;
+
+class Lexeme : LexerPart {
+	Integer priority;
+	Identifier identifier;
+	String type;
+	String pattern;
+	Stateref lexemTransition;
+	LexemAttrs lexemAttrs;
+	Command command;
+}
+
+lexeme  : Lexeme ::=
+	{identifier} type=typeopt ':' ({pattern} lexemTransition=lexem_transitionopt priority=iconopt lexemAttrs=lexem_attrsopt command=commandopt)?
+;
+
+class Stateref {
+	String ID;
+}
+
+lexem_transition  : Stateref ::=
+	'=>' this=stateref
+;
+
+class LexemAttrs {
+	LexemAttribute lexemAttribute;
+}
+
+lexem_attrs  : LexemAttrs ::=
+	'(' lexemAttribute=lexem_attribute ')'
+;
+
+enum LexemAttribute {
+	LSOFT,
+	LCLASS,
+	LSPACE,
+	LLAYOUT
+}
+
+lexem_attribute  : LexemAttribute ::=
+	this=[LexemAttribute.LSOFT]Lsoft
+  | this=[LexemAttribute.LCLASS]Lclass
+  | this=[LexemAttribute.LSPACE]Lspace
+  | this=[LexemAttribute.LLAYOUT]Llayout
+;
+
+class StateSelector : LexerPart {
+	list<LexerState> states;
+}
+
+state_selector  : StateSelector ::=
+	'[' states=lexer_state_list ']'
+;
+
+stateref  : Stateref ::=
+	{ID}
+;
+
+class LexerState {
+	Stateref defaultTransition;
+	Identifier identifier;
+}
+
+lexer_state  : LexerState ::=
+	{identifier} ('=>' defaultTransition=stateref)?
+;
+
+class GrammarPartsItem {
+	GrammarPart grammarPart;
+	SyntaxProblem syntaxProblem;
+}
+
+grammar_parts  : list<GrammarPartsItem>
+	this+=new.GrammarPartsItem(grammarPart=grammar_part)
+		(this+=new.GrammarPartsItem((grammarPart=grammar_part | syntaxProblem=syntax_problem)))* ;
+
+interface GrammarPart {
+}
+
+grammar_part  : GrammarPart ::=
+	this=nonterm
+  | this=directive
+;
+
+class Nonterm : GrammarPart {
+	list<Annotation> annotations;
+	Identifier identifier;
+	NontermAst nontermAst;
+	String type;
+	list<Rule0> rules;
+}
+
+nonterm  : Nonterm ::=
+	{annotations}? {identifier} nontermAst=nonterm_ast? type=typeopt Linline? '::=' {rules} ';'
+;
+
+class NontermAst {
+	list<Symref> referencesCs;
+	Symref symref;
+}
+
+nonterm_ast  : NontermAst ::=
+	Lextends referencesCs=references_cs
+  | Lreturns {symref}
+;
+
+enum PriorityKw {
+	LLEFT,
+	LRIGHT,
+	LNONASSOC
+}
+
+priority_kw  : PriorityKw ::=
+	this=[PriorityKw.LLEFT]Lleft
+  | this=[PriorityKw.LRIGHT]Lright
+  | this=[PriorityKw.LNONASSOC]Lnonassoc
+;
+
+interface Directive : GrammarPart {
+}
+
+class DirectivePrio : Directive {
+	PriorityKw priorityKw;
+	list<Symref> references;
+}
+
+class DirectiveInput : Directive {
+	list<Inputref> inputrefList;
+}
+
+directive  : Directive ::=
+	this=new.DirectivePrio: '%' priorityKw=priority_kw {references} ';'
+  | this=new.DirectiveInput: '%' Linput inputrefList=inputref_list ';'
+;
+
+class Inputref {
+	boolean noeoi;
+	Symref symref;
+}
+
+inputref  : Inputref ::=
+	{symref} noeoi=[true]Lnoeoi?
+;
+
+references  : list<Symref>
+	(this+=symref)+ ;
+
+references_cs  : list<Symref>
+	(this+=symref
+		separator ',')+ ;
+
+rules  : list<Rule0> ::=
+	this=rule0_list
+;
+
+class Rule0 {
+	RhsPrefix rhsPrefix;
+	list<RhsPartsItem> rhsParts;
+	RhsSuffix rhsSuffix;
+	SyntaxProblem syntaxProblem;
+}
+
+rule0  : Rule0 ::=
+	{rhsPrefix}? {rhsParts}? rhsSuffix=rhsSuffixopt
+  | syntaxProblem=syntax_problem
+;
+
+class RhsPrefix {
+	list<Annotation> annotations;
+	Identifier alias;
+	list<Symref> extends;
+}
+
+rhsPrefix  : RhsPrefix ::=
+	{annotations} ':'
+  | annotations=rhsAnnotations? alias=identifier (Lextends extends=references_cs)? ':'
+;
+
+class RhsSuffix {
+	KindKind kind;
+	Symref symref;
+	enum KindKind {
+		LSHIFT,
+		LPRIO
+	}
+}
+
+rhsSuffix  : RhsSuffix ::=
+	'%' kind=[KindKind.LPRIO]Lprio {symref}
+  | '%' kind=[KindKind.LSHIFT]Lshift
+;
+
+class RhsPartsItem {
+	RhsPart rhsPart;
+	SyntaxProblem syntaxProblem;
+}
+
+rhsParts  : list<RhsPartsItem>
+	this+=new.RhsPartsItem({rhsPart})
+		(this+=new.RhsPartsItem(({rhsPart} | syntaxProblem=syntax_problem)))* ;
+
+interface RhsPart {
+}
+
+rhsPart  : RhsPart ::=
+	this=rhsAnnotated
+  | this=rhsUnordered
+  | this=command
+;
+
+interface RhsAnnotated : RhsPart {
+}
+
+class RhsAnnotatedImpl : RhsAnnotated {
+	RhsAnnotations rhsAnnotations;
+	RhsAssignment rhsAssignment;
+}
+
+rhsAnnotated  : RhsAnnotated ::=
+	this=rhsAssignment
+  | this=new.RhsAnnotatedImpl: {rhsAnnotations} {rhsAssignment}
+;
+
+interface RhsAssignment : RhsAnnotated {
+}
+
+class RhsAssignmentImpl : RhsAssignment {
+	boolean addition;
+	Identifier identifier;
+	RhsOptional rhsOptional;
+}
+
+rhsAssignment  : RhsAssignment ::=
+	this=rhsOptional
+  | this=new.RhsAssignmentImpl: {identifier} '=' {rhsOptional}
+  | this=new.RhsAssignmentImpl: {identifier} addition=[true]'+=' {rhsOptional}
+;
+
+interface RhsOptional : RhsAssignment {
+}
+
+class RhsOptionalImpl : RhsOptional {
+	RhsCast rhsCast;
+}
+
+rhsOptional  : RhsOptional ::=
+	this=rhsCast
+  | this=new.RhsOptionalImpl: {rhsCast} '?'
+;
+
+interface RhsCast : RhsOptional {
+}
+
+class RhsCastImpl : RhsCast {
+	RhsPrimary rhsPrimary;
+	Symref symref;
+}
+
+rhsCast  : RhsCast ::=
+	this=rhsPrimary
+  | this=new.RhsCastImpl: {rhsPrimary} Las {symref}
+;
+
+class RhsUnordered : RhsPart {
+	RhsPart left;
+	RhsPart right;
+}
+
+rhsUnordered  : RhsUnordered ::=
+	left=rhsPart '&' right=rhsPart
+;
+
+class RhsPrimary : RhsCast {
+	Symref symref;
+	list<Rule0> rules;
+	list<RhsPartsItem> rhsParts;
+	list<Symref> references;
+	RhsPrimary rhsPrimary;
+}
+
+rhsPrimary  : RhsPrimary ::=
+	{symref}
+  | '(' {rules} ')'
+  | '(' {rhsParts} Lseparator {references} ')' '+'
+  | '(' {rhsParts} Lseparator {references} ')' '*'
+  | {rhsPrimary} '*'
+  | {rhsPrimary} '+'
+;
+
+class RhsAnnotations {
+	list<Annotation> annotationList;
+	NegativeLa negativeLa;
+}
+
+rhsAnnotations  : RhsAnnotations ::=
+	annotationList=annotation_list
+  | negativeLa=negative_la annotationList=annotation_list
+  | negativeLa=negative_la
+;
+
+annotations  : list<Annotation> ::=
+	this=annotation_list
+;
+
+annotation_list  : list<Annotation>
+	(this+=annotation)+ ;
+
+class Annotation {
+	String ID;
+	Expression expression;
+	SyntaxProblem syntaxProblem;
+}
+
+annotation  : Annotation ::=
+	'@' {ID} ('=' {expression})?
+  | '@' syntaxProblem=syntax_problem
+;
+
+class NegativeLa {
+	list<Symref> unwantedSymbols;
+}
+
+negative_la  : NegativeLa ::=
+	'(?!' unwantedSymbols=symref_list ')'
+;
+
+interface Expression {
+}
+
+class ExpressionLiteral : Expression {
+	String sval;
+	Integer ival;
+	boolean isTrue;
+	boolean isFalse;
+}
+
+class ExpressionInstance : Expression {
+	Name name;
+	list<MapEntriesItem> mapEntries;
+}
+
+class ExpressionArray : Expression {
+	list<Expression> expressionList;
+}
+
+expression  : Expression ::=
+	this=new.ExpressionLiteral: sval=scon
+  | this=new.ExpressionLiteral: ival=icon
+  | this=new.ExpressionLiteral: isTrue=[true]Ltrue
+  | this=new.ExpressionLiteral: isFalse=[true]Lfalse
+  | this=symref
+  | this=new.ExpressionInstance: Lnew {name} '(' mapEntries=map_entriesopt ')'
+  | this=new.ExpressionArray: '[' expressionList=expression_list_opt ']'
+  | this=syntax_problem
+;
+
+class MapEntriesItem {
+	String ID;
+	Expression expression;
+}
+
+map_entries  : list<MapEntriesItem>
+	(this+=new.MapEntriesItem({ID} map_separator {expression})
+		separator ',')+ ;
+
+map_separator  : void ::=
+	':'
+  | '='
+  | '=>'
+;
+
+class Name {
+	String qualifiedId;
+}
+
+name  : Name ::=
+	qualifiedId=qualified_id
+;
+
+qualified_id (String) ::=
+	ID
+  | qualified_id '.' ID
+;
+
+class Command : RhsPart {
+}
+
+command  : Command ::=
+	code
+;
+
+class SyntaxProblem : Expression {
+}
+
+syntax_problem  : SyntaxProblem ::=
+	error
+;
+
+option_list  : list<Option>
+	(this+=option)+ ;
+
+grammar_partsopt  : list<GrammarPartsItem> ::=
+	this=grammar_parts?
+;
+
+typeopt (String) ::=
+	type?
+;
+
+lexem_transitionopt  : Stateref ::=
+	this=lexem_transition?
+;
+
+iconopt (Integer) ::=
+	icon?
+;
+
+lexem_attrsopt  : LexemAttrs ::=
+	this=lexem_attrs?
+;
+
+commandopt  : Command ::=
+	this=command?
+;
+
+lexer_state_list  : list<LexerState>
+	(this+=lexer_state
+		separator ',')+ ;
+
+inputref_list  : list<Inputref>
+	(this+=inputref
+		separator ',')+ ;
+
+rule0_list  : list<Rule0>
+	(this+=rule0
+		separator '|')+ ;
+
+rhsSuffixopt  : RhsSuffix ::=
+	this=rhsSuffix?
+;
+
+symref_list  : list<Symref>
+	(this+=symref
+		separator '|')+ ;
+
+map_entriesopt  : list<MapEntriesItem> ::=
+	this=map_entries?
+;
+
+expression_list  : list<Expression>
+	(this+=expression
+		separator ',')+ ;
+
+expression_list_opt  : list<Expression> ::=
+	this=expression_list?
+;
+
