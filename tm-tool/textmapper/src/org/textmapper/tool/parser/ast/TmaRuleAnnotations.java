@@ -24,14 +24,14 @@ import java.util.List;
  */
 public class TmaRuleAnnotations extends TmaAnnotations {
 
-	private final TmaNegativeLA negativeLA;
+	private final TmaNegativeLa negativeLA;
 
-	public TmaRuleAnnotations(TmaNegativeLA negativeLA, List<TmaNamedEntry> annotations, TextSource source, int offset, int endoffset) {
+	public TmaRuleAnnotations(TmaNegativeLa negativeLA, List<TmaMapEntriesItem> annotations, TextSource source, int offset, int endoffset) {
 		super(annotations, source, offset, endoffset);
 		this.negativeLA = negativeLA;
 	}
 
-	public TmaNegativeLA getNegativeLA() {
+	public TmaNegativeLa getNegativeLA() {
 		return negativeLA;
 	}
 
@@ -43,7 +43,7 @@ public class TmaRuleAnnotations extends TmaAnnotations {
 			negativeLA.accept(v);
 		}
 		if (getAnnotations() != null) {
-			for (TmaNamedEntry n : getAnnotations()) {
+			for (TmaMapEntriesItem n : getAnnotations()) {
 				n.accept(v);
 			}
 		}

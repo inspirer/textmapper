@@ -99,8 +99,8 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 
 %input input, expression;
 
-input (TmaRoot) ::=
-	  options? lexer_parts grammar_partsopt              {  $$ = new TmaRoot($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+input (TmaInput) ::=
+	  options? lexer_parts grammar_partsopt              {  $$ = new TmaInput($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 options (List<TmaOptionPart>) ::=
@@ -117,8 +117,8 @@ identifier (TmaIdentifier) ::=
 	  ID												{ $$ = new TmaIdentifier($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-symref (TmaReference) ::=
-	  ID												{ $$ = new TmaReference($ID, TmaReference.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
+symref (TmaSymref) ::=
+	  ID												{ $$ = new TmaSymref($ID, TmaSymref.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
@@ -157,7 +157,7 @@ lexeme ::=
                                                     	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexem_transition (TmaReference) ::=
+lexem_transition (TmaSymref) ::=
 	  '=>' stateref										{ $$ = $1; }
 ;
 
@@ -181,8 +181,8 @@ state_list (List<TmaLexerState>) ::=
 	| list=state_list ',' lexer_state					{ $list.add($lexer_state); }
 ;
 
-stateref (TmaReference) ::=
-	  ID                                                { $$ = new TmaReference($ID, TmaReference.STATE, source, ${left().offset}, ${left().endoffset}); }
+stateref (TmaSymref) ::=
+	  ID                                                { $$ = new TmaSymref($ID, TmaSymref.STATE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_state (TmaLexerState) ::=
@@ -202,7 +202,7 @@ grammar_part (TmaGrammarPart) ::=
 
 nonterm ::=
 	  annotations? identifier nonterm_ast? typeopt Linline? '::=' rules ';'
-	  													{ $$ = new TmaNonTerm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+	  													{ $$ = new TmaNonterm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 nonterm_ast ::=
@@ -214,26 +214,26 @@ priority_kw (String) ::=
 	Lleft | Lright | Lnonassoc ;
 
 directive ::=
-	  '%' priority_kw references ';'					{ $$ = new TmaDirective($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Linput inputs ';'								{ $$ = new TmaInputDirective($inputs, source, ${left().offset}, ${left().endoffset}); }
+	  '%' priority_kw references ';'					{ $$ = new TmaDirectivePrio($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-inputs (List<TmaInputRef>) ::=
-	  inputref											{ $$ = new ArrayList<TmaInputRef>(); ${left()}.add($inputref); }
+inputs (List<TmaInputref>) ::=
+	  inputref											{ $$ = new ArrayList<TmaInputref>(); ${left()}.add($inputref); }
 	| list=inputs ',' inputref               			{ $list.add($inputref); }
 ;
 
-inputref (TmaInputRef) ::=
-	symref Lnoeoiopt									{ $$ = new TmaInputRef($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
+inputref (TmaInputref) ::=
+	symref Lnoeoiopt									{ $$ = new TmaInputref($symref, $Lnoeoiopt != null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-references (List<TmaReference>) ::=
-	  symref											{ $$ = new ArrayList<TmaReference>(); ${left()}.add($symref); }
+references (List<TmaSymref>) ::=
+	  symref											{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref); }
 	| list=references symref							{ $list.add($symref); }
 ;
 
-references_cs (List<TmaReference>) ::=
-	  symref											{ $$ = new ArrayList<TmaReference>(); ${left()}.add($symref); }
+references_cs (List<TmaSymref>) ::=
+	  symref											{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref); }
 	| list=references_cs ',' symref						{ $list.add($symref); }
 ;
 
@@ -321,35 +321,35 @@ annotations (TmaAnnotations) ::=
 	annotation_list										{ $$ = new TmaAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotation_list (java.util.@List<TmaNamedEntry>) ::=
-	  annotation										{ $$ = new java.util.@ArrayList<TmaNamedEntry>(); ${left()}.add($annotation); }
+annotation_list (java.util.@List<TmaMapEntriesItem>) ::=
+	  annotation										{ $$ = new java.util.@ArrayList<TmaMapEntriesItem>(); ${left()}.add($annotation); }
 	| annotation_list annotation						{ $annotation_list.add($annotation); }
 ;
 
-annotation (TmaNamedEntry) ::=
-	  '@' ID ('=' expression)?                          { $$ = new TmaNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| '@' syntax_problem                                { $$ = new TmaNamedEntry($syntax_problem); }
+annotation (TmaMapEntriesItem) ::=
+	  '@' ID ('=' expression)?                          { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' syntax_problem                                { $$ = new TmaMapEntriesItem($syntax_problem); }
 ;
 
-negative_la (TmaNegativeLA) ::=
-	'(?!' negative_la_clause ')'						{ $$ = new TmaNegativeLA($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
+negative_la (TmaNegativeLa) ::=
+	'(?!' negative_la_clause ')'						{ $$ = new TmaNegativeLa($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-negative_la_clause (java.util.@List<TmaReference>) ::=
-	  symref											{ $$ = new java.util.@ArrayList<TmaReference>(); ${left()}.add($symref); }
+negative_la_clause (java.util.@List<TmaSymref>) ::=
+	  symref											{ $$ = new java.util.@ArrayList<TmaSymref>(); ${left()}.add($symref); }
 	| negative_la_clause '|' symref						{ $negative_la_clause.add($symref); }
 ;
 
 ##### EXPRESSIONS
 
 expression (TmaExpression) ::=
-	  scon                                              { $$ = new TmaLiteralExpression($scon, source, ${left().offset}, ${left().endoffset}); }
-	| icon                                              { $$ = new TmaLiteralExpression($icon, source, ${left().offset}, ${left().endoffset}); }
-	| Ltrue                                             { $$ = new TmaLiteralExpression(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
-	| Lfalse                                            { $$ = new TmaLiteralExpression(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
+	  scon                                              { $$ = new TmaExpressionLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
+	| icon                                              { $$ = new TmaExpressionLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
+	| Ltrue                                             { $$ = new TmaExpressionLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
+	| Lfalse                                            { $$ = new TmaExpressionLiteral(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 	| symref
-	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
-	| '[' expression_listopt ']'						{ $$ = new TmaArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
+	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaExpressionInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
+	| '[' expression_listopt ']'						{ $$ = new TmaExpressionArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 
@@ -358,9 +358,9 @@ expression_list (List<TmaExpression>) ::=
 	| expression_list ',' expression					{ $expression_list.add($expression); }
 ;
 
-map_entries (java.util.@List<TmaNamedEntry>) ::=
-	  ID map_separator expression						{ $$ = new java.util.@ArrayList<TmaNamedEntry>(); ${left()}.add(new TmaNamedEntry($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' ID map_separator expression		{ $map_entries.add(new TmaNamedEntry($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
+map_entries (java.util.@List<TmaMapEntriesItem>) ::=
+	  ID map_separator expression						{ $$ = new java.util.@ArrayList<TmaMapEntriesItem>(); ${left()}.add(new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset})); }
+	| map_entries ',' ID map_separator expression		{ $map_entries.add(new TmaMapEntriesItem($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
 ;
 
 map_separator ::=
@@ -375,12 +375,12 @@ qualified_id (String) ::=
 	| qualified_id '.' ID								{ $$ = $qualified_id + "." + $ID; }
 ;
 
-command (TmaCode) ::=
-	code												{ $$ = new TmaCode(source, ${first().offset}+1, ${last().endoffset}-1); }
+command (TmaCommand) ::=
+	code												{ $$ = new TmaCommand(source, ${first().offset}+1, ${last().endoffset}-1); }
 ;
 
-syntax_problem (TmaError) ::=
-	error												{ $$ = new TmaError(source, ${left().offset}, ${left().endoffset}); }
+syntax_problem (TmaSyntaxProblem) ::=
+	error												{ $$ = new TmaSyntaxProblem(source, ${left().offset}, ${left().endoffset}); }
 ;
 
 ##################################################################################

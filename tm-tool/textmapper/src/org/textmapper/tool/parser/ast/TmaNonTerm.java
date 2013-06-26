@@ -20,14 +20,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 import java.util.List;
 
 /** -> TmaNonterm **/
-public class TmaNonTerm extends TmaNode implements TmaGrammarPart {
+public class TmaNonterm extends TmaNode implements TmaGrammarPart {
 
 	private final TmaIdentifier name;
 	private final String type;
 	private final List<TmaRule0> rules;
 	private final TmaAnnotations annotations;
 
-	public TmaNonTerm(TmaIdentifier name, String type, List<TmaRule0> rules,
+	public TmaNonterm(TmaIdentifier name, String type, List<TmaRule0> rules,
 					  TmaAnnotations annotations, TextSource source, int offset,
 					  int endoffset) {
 		super(source, offset, endoffset);

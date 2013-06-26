@@ -17,15 +17,15 @@ package org.textmapper.tool.parser.ast;
 
 public class AbstractVisitor {
 
-	public boolean visit(TmaCode n) {
+	public boolean visit(TmaCommand n) {
 		return true;
 	}
 
-	public boolean visit(TmaDirective n) {
+	public boolean visit(TmaDirectivePrio n) {
 		return true;
 	}
 
-	public boolean visit(TmaInputDirective n) {
+	public boolean visit(TmaDirectiveInput n) {
 		return true;
 	}
 
@@ -45,7 +45,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaNonTerm n) {
+	public boolean visit(TmaNonterm n) {
 		return true;
 	}
 
@@ -53,7 +53,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaReference astSymbol) {
+	public boolean visit(TmaSymref astSymbol) {
 		return true;
 	}
 
@@ -61,7 +61,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaRoot n) {
+	public boolean visit(TmaInput n) {
 		return true;
 	}
 
@@ -69,7 +69,7 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaError n) {
+	public boolean visit(TmaSyntaxProblem n) {
 		return true;
 	}
 
@@ -77,19 +77,19 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaArray n) {
+	public boolean visit(TmaExpressionArray n) {
 		return true;
 	}
 
-	public boolean visit(TmaInstance n) {
+	public boolean visit(TmaExpressionInstance n) {
 		return true;
 	}
 
-	public boolean visit(TmaNamedEntry n) {
+	public boolean visit(TmaMapEntriesItem n) {
 		return true;
 	}
 
-	public boolean visit(TmaLiteralExpression n) {
+	public boolean visit(TmaExpressionLiteral n) {
 		return true;
 	}
 
@@ -109,11 +109,11 @@ public class AbstractVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaInputRef n) {
+	public boolean visit(TmaInputref n) {
 		return true;
 	}
 
-	public boolean visit(TmaNegativeLA n) {
+	public boolean visit(TmaNegativeLa n) {
 		return true;
 	}
 

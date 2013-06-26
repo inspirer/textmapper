@@ -24,7 +24,7 @@ public class TmaRule0 extends TmaNode {
 	private final List<TmaRhsPart> list;
 	private final TmaRhsPrefix prefix;
 	private final TmaRhsSuffix suffix;
-	private final TmaError error;
+	private final TmaSyntaxProblem error;
 
 	public TmaRule0(TmaRhsPrefix prefix, List<TmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
 					int offset, int endoffset) {
@@ -35,7 +35,7 @@ public class TmaRule0 extends TmaNode {
 		this.error = null;
 	}
 
-	public TmaRule0(TmaError err) {
+	public TmaRule0(TmaSyntaxProblem err) {
 		super(err.getInput(), err.getOffset(), err.getEndOffset());
 		this.list = null;
 		this.suffix = null;

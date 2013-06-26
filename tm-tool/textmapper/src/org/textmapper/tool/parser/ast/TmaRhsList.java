@@ -25,10 +25,10 @@ import java.util.List;
 public class TmaRhsList extends TmaNode implements TmaRhsPart {
 
 	private final List<TmaRhsPart> ruleParts;
-	private final List<TmaReference> separator;
+	private final List<TmaSymref> separator;
 	private final boolean atLeastOne;
 
-	public TmaRhsList(List<TmaRhsPart> ruleParts, List<TmaReference> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
+	public TmaRhsList(List<TmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.ruleParts = ruleParts;
 		this.separator = separator;
@@ -39,7 +39,7 @@ public class TmaRhsList extends TmaNode implements TmaRhsPart {
 		return ruleParts;
 	}
 
-	public List<TmaReference> getSeparator() {
+	public List<TmaSymref> getSeparator() {
 		return separator;
 	}
 
@@ -58,7 +58,7 @@ public class TmaRhsList extends TmaNode implements TmaRhsPart {
 			}
 		}
 		if (separator != null) {
-			for (TmaReference ref : separator) {
+			for (TmaSymref ref : separator) {
 				ref.accept(v);
 			}
 		}

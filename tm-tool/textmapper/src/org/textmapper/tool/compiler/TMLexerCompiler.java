@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class TMLexerCompiler {
 
-	private final TMTree<TmaRoot> tree;
+	private final TMTree<TmaInput> tree;
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 
@@ -92,7 +92,7 @@ public class TMLexerCompiler {
 	}
 
 	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme, TMStateTransitionSwitch active) {
-		TmaReference transition = lexeme.getTransition();
+		TmaSymref transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
 			LexerState target = resolver.getState(targetName);

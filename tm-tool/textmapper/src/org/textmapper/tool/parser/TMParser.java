@@ -688,10 +688,10 @@ public class TMParser {
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
 			case 2:  // input ::= options lexer_parts grammar_partsopt
-				  lapg_gg.value = new TmaRoot(((List<TmaOptionPart>)tmStack[tmHead - 2].value), ((List<TmaLexerPart>)tmStack[tmHead - 1].value), ((List<TmaGrammarPart>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				  lapg_gg.value = new TmaInput(((List<TmaOptionPart>)tmStack[tmHead - 2].value), ((List<TmaLexerPart>)tmStack[tmHead - 1].value), ((List<TmaGrammarPart>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 3:  // input ::= lexer_parts grammar_partsopt
-				  lapg_gg.value = new TmaRoot(((List<TmaOptionPart>)null), ((List<TmaLexerPart>)tmStack[tmHead - 1].value), ((List<TmaGrammarPart>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				  lapg_gg.value = new TmaInput(((List<TmaOptionPart>)null), ((List<TmaLexerPart>)tmStack[tmHead - 1].value), ((List<TmaGrammarPart>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 4:  // options ::= option
 				 lapg_gg.value = new ArrayList<TmaOptionPart>(16); ((List<TmaOptionPart>)lapg_gg.value).add(((TmaOptionPart)tmStack[tmHead].value)); 
@@ -706,7 +706,7 @@ public class TMParser {
 				 lapg_gg.value = new TmaIdentifier(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 9:  // symref ::= ID
-				 lapg_gg.value = new TmaReference(((String)tmStack[tmHead].value), TmaReference.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaSymref(((String)tmStack[tmHead].value), TmaSymref.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // type ::= '(' scon ')'
 				 lapg_gg.value = ((String)tmStack[tmHead - 1].value); 
@@ -724,19 +724,19 @@ public class TMParser {
 				 ((List<TmaLexerPart>)tmStack[tmHead - 1].value).add(((TmaLexerPart)tmStack[tmHead].value)); 
 				break;
 			case 31:  // lexer_parts ::= lexer_parts syntax_problem
-				 ((List<TmaLexerPart>)tmStack[tmHead - 1].value).add(((TmaError)tmStack[tmHead].value)); 
+				 ((List<TmaLexerPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 35:  // named_pattern ::= ID '=' pattern
 				 lapg_gg.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaRegexp)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 46:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
-				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaRegexp)tmStack[tmHead - 4].value), ((TmaReference)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCode)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaRegexp)tmStack[tmHead - 4].value), ((TmaSymref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 47:  // lexeme ::= identifier typeopt ':'
-				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaRegexp)null), ((TmaReference)null), ((Integer)null), ((TmaLexemAttrs)null), ((TmaCode)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaRegexp)null), ((TmaSymref)null), ((Integer)null), ((TmaLexemAttrs)null), ((TmaCommand)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 48:  // lexem_transition ::= '=>' stateref
-				 lapg_gg.value = ((TmaReference)tmStack[tmHead].value); 
+				 lapg_gg.value = ((TmaSymref)tmStack[tmHead].value); 
 				break;
 			case 49:  // lexem_attrs ::= '(' lexem_attribute ')'
 				 lapg_gg.value = ((TmaLexemAttrs)tmStack[tmHead - 1].value); 
@@ -763,13 +763,13 @@ public class TMParser {
 				 ((List<TmaLexerState>)tmStack[tmHead - 2].value).add(((TmaLexerState)tmStack[tmHead].value)); 
 				break;
 			case 57:  // stateref ::= ID
-				 lapg_gg.value = new TmaReference(((String)tmStack[tmHead].value), TmaReference.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaSymref(((String)tmStack[tmHead].value), TmaSymref.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 58:  // lexer_state ::= identifier '=>' stateref
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaReference)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 59:  // lexer_state ::= identifier
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaReference)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaSymref)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 60:  // grammar_parts ::= grammar_part
 				 lapg_gg.value = new ArrayList<TmaGrammarPart>(64); ((List<TmaGrammarPart>)lapg_gg.value).add(((TmaGrammarPart)tmStack[tmHead].value)); 
@@ -778,58 +778,58 @@ public class TMParser {
 				 ((List<TmaGrammarPart>)tmStack[tmHead - 1].value).add(((TmaGrammarPart)tmStack[tmHead].value)); 
 				break;
 			case 62:  // grammar_parts ::= grammar_parts syntax_problem
-				 ((List<TmaGrammarPart>)tmStack[tmHead - 1].value).add(((TmaError)tmStack[tmHead].value)); 
+				 ((List<TmaGrammarPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 65:  // nonterm ::= annotations identifier nonterm_ast typeopt Linline '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 6].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 7].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 6].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 7].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 66:  // nonterm ::= annotations identifier nonterm_ast typeopt '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 6].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 6].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 67:  // nonterm ::= annotations identifier typeopt Linline '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 6].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 6].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 68:  // nonterm ::= annotations identifier typeopt '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 4].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 5].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 4].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)tmStack[tmHead - 5].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 69:  // nonterm ::= identifier nonterm_ast typeopt Linline '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 6].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 6].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 70:  // nonterm ::= identifier nonterm_ast typeopt '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 71:  // nonterm ::= identifier typeopt Linline '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 4].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 72:  // nonterm ::= identifier typeopt '::=' rules ';'
-				 lapg_gg.value = new TmaNonTerm(((TmaIdentifier)tmStack[tmHead - 4].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNonterm(((TmaIdentifier)tmStack[tmHead - 4].value), ((String)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), ((TmaAnnotations)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 78:  // directive ::= '%' priority_kw references ';'
-				 lapg_gg.value = new TmaDirective(((String)tmStack[tmHead - 2].value), ((List<TmaReference>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaDirectivePrio(((String)tmStack[tmHead - 2].value), ((List<TmaSymref>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 79:  // directive ::= '%' Linput inputs ';'
-				 lapg_gg.value = new TmaInputDirective(((List<TmaInputRef>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaDirectiveInput(((List<TmaInputref>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 80:  // inputs ::= inputref
-				 lapg_gg.value = new ArrayList<TmaInputRef>(); ((List<TmaInputRef>)lapg_gg.value).add(((TmaInputRef)tmStack[tmHead].value)); 
+				 lapg_gg.value = new ArrayList<TmaInputref>(); ((List<TmaInputref>)lapg_gg.value).add(((TmaInputref)tmStack[tmHead].value)); 
 				break;
 			case 81:  // inputs ::= inputs ',' inputref
-				 ((List<TmaInputRef>)tmStack[tmHead - 2].value).add(((TmaInputRef)tmStack[tmHead].value)); 
+				 ((List<TmaInputref>)tmStack[tmHead - 2].value).add(((TmaInputref)tmStack[tmHead].value)); 
 				break;
 			case 84:  // inputref ::= symref Lnoeoiopt
-				 lapg_gg.value = new TmaInputRef(((TmaReference)tmStack[tmHead - 1].value), ((String)tmStack[tmHead].value) != null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaInputref(((TmaSymref)tmStack[tmHead - 1].value), ((String)tmStack[tmHead].value) != null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 85:  // references ::= symref
-				 lapg_gg.value = new ArrayList<TmaReference>(); ((List<TmaReference>)lapg_gg.value).add(((TmaReference)tmStack[tmHead].value)); 
+				 lapg_gg.value = new ArrayList<TmaSymref>(); ((List<TmaSymref>)lapg_gg.value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 86:  // references ::= references symref
-				 ((List<TmaReference>)tmStack[tmHead - 1].value).add(((TmaReference)tmStack[tmHead].value)); 
+				 ((List<TmaSymref>)tmStack[tmHead - 1].value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 87:  // references_cs ::= symref
-				 lapg_gg.value = new ArrayList<TmaReference>(); ((List<TmaReference>)lapg_gg.value).add(((TmaReference)tmStack[tmHead].value)); 
+				 lapg_gg.value = new ArrayList<TmaSymref>(); ((List<TmaSymref>)lapg_gg.value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 88:  // references_cs ::= references_cs ',' symref
-				 ((List<TmaReference>)tmStack[tmHead - 2].value).add(((TmaReference)tmStack[tmHead].value)); 
+				 ((List<TmaSymref>)tmStack[tmHead - 2].value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 90:  // rule_list ::= rule0
 				 lapg_gg.value = new ArrayList<TmaRule0>(); ((List<TmaRule0>)lapg_gg.value).add(((TmaRule0)tmStack[tmHead].value)); 
@@ -850,25 +850,25 @@ public class TMParser {
 				 lapg_gg.value = new TmaRule0(((TmaRhsPrefix)null), ((List<TmaRhsPart>)null), ((TmaRhsSuffix)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 98:  // rule0 ::= syntax_problem
-				 lapg_gg.value = new TmaRule0(((TmaError)tmStack[tmHead].value)); 
+				 lapg_gg.value = new TmaRule0(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 99:  // rhsPrefix ::= annotations ':'
 				 lapg_gg.value = new TmaRhsPrefix(((TmaAnnotations)tmStack[tmHead - 1].value), null, null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 100:  // rhsPrefix ::= rhsAnnotations identifier Lextends references_cs ':'
-				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)tmStack[tmHead - 4].value), ((TmaIdentifier)tmStack[tmHead - 3].value), ((List<TmaReference>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)tmStack[tmHead - 4].value), ((TmaIdentifier)tmStack[tmHead - 3].value), ((List<TmaSymref>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 101:  // rhsPrefix ::= rhsAnnotations identifier ':'
-				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)tmStack[tmHead - 2].value), ((TmaIdentifier)tmStack[tmHead - 1].value), ((List<TmaReference>)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)tmStack[tmHead - 2].value), ((TmaIdentifier)tmStack[tmHead - 1].value), ((List<TmaSymref>)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 102:  // rhsPrefix ::= identifier Lextends references_cs ':'
-				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)null), ((TmaIdentifier)tmStack[tmHead - 3].value), ((List<TmaReference>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)null), ((TmaIdentifier)tmStack[tmHead - 3].value), ((List<TmaSymref>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 103:  // rhsPrefix ::= identifier ':'
-				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)null), ((TmaIdentifier)tmStack[tmHead - 1].value), ((List<TmaReference>)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsPrefix(((TmaRuleAnnotations)null), ((TmaIdentifier)tmStack[tmHead - 1].value), ((List<TmaSymref>)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 104:  // rhsSuffix ::= '%' Lprio symref
-				 lapg_gg.value = new TmaRhsPrio(((TmaReference)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsPrio(((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 105:  // rhsSuffix ::= '%' Lshift
 				 lapg_gg.value = new TmaRhsShiftClause(source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -880,7 +880,7 @@ public class TMParser {
 				 ((List<TmaRhsPart>)tmStack[tmHead - 1].value).add(((TmaRhsPart)tmStack[tmHead].value)); 
 				break;
 			case 108:  // rhsParts ::= rhsParts syntax_problem
-				 ((List<TmaRhsPart>)tmStack[tmHead - 1].value).add(((TmaError)tmStack[tmHead].value)); 
+				 ((List<TmaRhsPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 113:  // rhsAnnotated ::= rhsAnnotations rhsAssignment
 				 lapg_gg.value = new TmaRhsAnnotated(((TmaRuleAnnotations)tmStack[tmHead - 1].value), ((TmaRhsPart)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -895,22 +895,22 @@ public class TMParser {
 				 lapg_gg.value = new TmaRhsQuantifier(((TmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_OPTIONAL, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 120:  // rhsCast ::= rhsPrimary Las symref
-				 lapg_gg.value = new TmaRhsCast(((TmaRhsPart)tmStack[tmHead - 2].value), ((TmaReference)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsCast(((TmaRhsPart)tmStack[tmHead - 2].value), ((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 121:  // rhsUnordered ::= rhsPart '&' rhsPart
 				 lapg_gg.value = new TmaRhsUnordered(((TmaRhsPart)tmStack[tmHead - 2].value), ((TmaRhsPart)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 122:  // rhsPrimary ::= symref
-				 lapg_gg.value = new TmaRhsSymbol(((TmaReference)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsSymbol(((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 123:  // rhsPrimary ::= '(' rules ')'
 				 lapg_gg.value = new TmaRhsNested(((List<TmaRule0>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 124:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
-				 lapg_gg.value = new TmaRhsList(((List<TmaRhsPart>)tmStack[tmHead - 4].value), ((List<TmaReference>)tmStack[tmHead - 2].value), true, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsList(((List<TmaRhsPart>)tmStack[tmHead - 4].value), ((List<TmaSymref>)tmStack[tmHead - 2].value), true, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 125:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
-				 lapg_gg.value = new TmaRhsList(((List<TmaRhsPart>)tmStack[tmHead - 4].value), ((List<TmaReference>)tmStack[tmHead - 2].value), false, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRhsList(((List<TmaRhsPart>)tmStack[tmHead - 4].value), ((List<TmaSymref>)tmStack[tmHead - 2].value), false, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 126:  // rhsPrimary ::= rhsPrimary '*'
 				 lapg_gg.value = new TmaRhsQuantifier(((TmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_ZEROORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -919,58 +919,58 @@ public class TMParser {
 				 lapg_gg.value = new TmaRhsQuantifier(((TmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_ONEORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 128:  // rhsAnnotations ::= annotation_list
-				 lapg_gg.value = new TmaRuleAnnotations(null, ((List<TmaNamedEntry>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRuleAnnotations(null, ((List<TmaMapEntriesItem>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 129:  // rhsAnnotations ::= negative_la annotation_list
-				 lapg_gg.value = new TmaRuleAnnotations(((TmaNegativeLA)tmStack[tmHead - 1].value), ((List<TmaNamedEntry>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRuleAnnotations(((TmaNegativeLa)tmStack[tmHead - 1].value), ((List<TmaMapEntriesItem>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 130:  // rhsAnnotations ::= negative_la
-				 lapg_gg.value = new TmaRuleAnnotations(((TmaNegativeLA)tmStack[tmHead].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaRuleAnnotations(((TmaNegativeLa)tmStack[tmHead].value), null, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 131:  // annotations ::= annotation_list
-				 lapg_gg.value = new TmaAnnotations(((List<TmaNamedEntry>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaAnnotations(((List<TmaMapEntriesItem>)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 132:  // annotation_list ::= annotation
-				 lapg_gg.value = new ArrayList<TmaNamedEntry>(); ((List<TmaNamedEntry>)lapg_gg.value).add(((TmaNamedEntry)tmStack[tmHead].value)); 
+				 lapg_gg.value = new ArrayList<TmaMapEntriesItem>(); ((List<TmaMapEntriesItem>)lapg_gg.value).add(((TmaMapEntriesItem)tmStack[tmHead].value)); 
 				break;
 			case 133:  // annotation_list ::= annotation_list annotation
-				 ((List<TmaNamedEntry>)tmStack[tmHead - 1].value).add(((TmaNamedEntry)tmStack[tmHead].value)); 
+				 ((List<TmaMapEntriesItem>)tmStack[tmHead - 1].value).add(((TmaMapEntriesItem)tmStack[tmHead].value)); 
 				break;
 			case 134:  // annotation ::= '@' ID '=' expression
-				 lapg_gg.value = new TmaNamedEntry(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaMapEntriesItem(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 135:  // annotation ::= '@' ID
-				 lapg_gg.value = new TmaNamedEntry(((String)tmStack[tmHead].value), ((TmaExpression)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaMapEntriesItem(((String)tmStack[tmHead].value), ((TmaExpression)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 136:  // annotation ::= '@' syntax_problem
-				 lapg_gg.value = new TmaNamedEntry(((TmaError)tmStack[tmHead].value)); 
+				 lapg_gg.value = new TmaMapEntriesItem(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 137:  // negative_la ::= '(?!' negative_la_clause ')'
-				 lapg_gg.value = new TmaNegativeLA(((List<TmaReference>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNegativeLa(((List<TmaSymref>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 138:  // negative_la_clause ::= symref
-				 lapg_gg.value = new ArrayList<TmaReference>(); ((List<TmaReference>)lapg_gg.value).add(((TmaReference)tmStack[tmHead].value)); 
+				 lapg_gg.value = new ArrayList<TmaSymref>(); ((List<TmaSymref>)lapg_gg.value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 139:  // negative_la_clause ::= negative_la_clause '|' symref
-				 ((List<TmaReference>)tmStack[tmHead - 2].value).add(((TmaReference)tmStack[tmHead].value)); 
+				 ((List<TmaSymref>)tmStack[tmHead - 2].value).add(((TmaSymref)tmStack[tmHead].value)); 
 				break;
 			case 140:  // expression ::= scon
-				 lapg_gg.value = new TmaLiteralExpression(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionLiteral(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 141:  // expression ::= icon
-				 lapg_gg.value = new TmaLiteralExpression(((Integer)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionLiteral(((Integer)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 142:  // expression ::= Ltrue
-				 lapg_gg.value = new TmaLiteralExpression(Boolean.TRUE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionLiteral(Boolean.TRUE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 143:  // expression ::= Lfalse
-				 lapg_gg.value = new TmaLiteralExpression(Boolean.FALSE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionLiteral(Boolean.FALSE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 147:  // expression ::= Lnew name '(' map_entriesopt ')'
-				 lapg_gg.value = new TmaInstance(((TmaName)tmStack[tmHead - 3].value), ((List<TmaNamedEntry>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionInstance(((TmaName)tmStack[tmHead - 3].value), ((List<TmaMapEntriesItem>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 150:  // expression ::= '[' expression_listopt ']'
-				 lapg_gg.value = new TmaArray(((List<TmaExpression>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaExpressionArray(((List<TmaExpression>)tmStack[tmHead - 1].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 152:  // expression_list ::= expression
 				 lapg_gg.value = new ArrayList(); ((List<TmaExpression>)lapg_gg.value).add(((TmaExpression)tmStack[tmHead].value)); 
@@ -979,10 +979,10 @@ public class TMParser {
 				 ((List<TmaExpression>)tmStack[tmHead - 2].value).add(((TmaExpression)tmStack[tmHead].value)); 
 				break;
 			case 154:  // map_entries ::= ID map_separator expression
-				 lapg_gg.value = new ArrayList<TmaNamedEntry>(); ((List<TmaNamedEntry>)lapg_gg.value).add(new TmaNamedEntry(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset)); 
+				 lapg_gg.value = new ArrayList<TmaMapEntriesItem>(); ((List<TmaMapEntriesItem>)lapg_gg.value).add(new TmaMapEntriesItem(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset)); 
 				break;
 			case 155:  // map_entries ::= map_entries ',' ID map_separator expression
-				 ((List<TmaNamedEntry>)tmStack[tmHead - 4].value).add(new TmaNamedEntry(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, tmStack[tmHead - 2].offset, lapg_gg.endoffset)); 
+				 ((List<TmaMapEntriesItem>)tmStack[tmHead - 4].value).add(new TmaMapEntriesItem(((String)tmStack[tmHead - 2].value), ((TmaExpression)tmStack[tmHead].value), source, tmStack[tmHead - 2].offset, lapg_gg.endoffset)); 
 				break;
 			case 159:  // name ::= qualified_id
 				 lapg_gg.value = new TmaName(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -991,10 +991,10 @@ public class TMParser {
 				 lapg_gg.value = ((String)tmStack[tmHead - 2].value) + "." + ((String)tmStack[tmHead].value); 
 				break;
 			case 162:  // command ::= code
-				 lapg_gg.value = new TmaCode(source, tmStack[tmHead].offset+1, tmStack[tmHead].endoffset-1); 
+				 lapg_gg.value = new TmaCommand(source, tmStack[tmHead].offset+1, tmStack[tmHead].endoffset-1); 
 				break;
 			case 163:  // syntax_problem ::= error
-				 lapg_gg.value = new TmaError(source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaSyntaxProblem(source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 		}
 	}
@@ -1011,8 +1011,8 @@ public class TMParser {
 	protected void cleanup(LapgSymbol value) {
 	}
 
-	public TmaRoot parseInput(TMLexer lexer) throws IOException, ParseException {
-		return (TmaRoot) parse(lexer, 0, 269);
+	public TmaInput parseInput(TMLexer lexer) throws IOException, ParseException {
+		return (TmaInput) parse(lexer, 0, 269);
 	}
 
 	public TmaExpression parseExpression(TMLexer lexer) throws IOException, ParseException {

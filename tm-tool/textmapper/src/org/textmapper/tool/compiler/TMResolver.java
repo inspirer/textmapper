@@ -43,7 +43,7 @@ public class TMResolver {
 	public static final String RESOLVER_SOURCE = "problem.resolver"; //$NON-NLS-1$
 	public static final String INITIAL_STATE = "initial"; //$NON-NLS-1$
 
-	private final TMTree<TmaRoot> tree;
+	private final TMTree<TmaInput> tree;
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
@@ -51,13 +51,13 @@ public class TMResolver {
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
-	public TMResolver(TMTree<TmaRoot> tree, GrammarBuilder builder) {
+	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
 		this.tree = tree;
 		this.builder = builder;
 		this.rawTypesBuilder = GrammarFacade.createAstBuilder();
 	}
 
-	public TMTree<TmaRoot> getTree() {
+	public TMTree<TmaInput> getTree() {
 		return tree;
 	}
 
@@ -150,8 +150,8 @@ public class TMResolver {
 
 	private void collectNonterminals() {
 		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof TmaNonTerm) {
-				TmaNonTerm nonterm = (TmaNonTerm) clause;
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
 				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);
 			}
 		}
@@ -208,7 +208,7 @@ public class TMResolver {
 		return sym;
 	}
 
-	Symbol resolve(TmaReference id) {
+	Symbol resolve(TmaSymref id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);
 		if (sym == null) {

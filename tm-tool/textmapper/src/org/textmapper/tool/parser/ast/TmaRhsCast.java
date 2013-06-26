@@ -23,9 +23,9 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaRhsCast extends TmaNode implements TmaRhsPart {
 
 	private final TmaRhsPart left;
-	private final TmaReference right;
+	private final TmaSymref right;
 
-	public TmaRhsCast(TmaRhsPart left, TmaReference right, TextSource source, int offset, int endoffset) {
+	public TmaRhsCast(TmaRhsPart left, TmaSymref right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.left = left;
 		this.right = right;
@@ -35,7 +35,7 @@ public class TmaRhsCast extends TmaNode implements TmaRhsPart {
 		return left;
 	}
 
-	public TmaReference getTarget() {
+	public TmaSymref getTarget() {
 		return right;
 	}
 

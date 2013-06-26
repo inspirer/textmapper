@@ -19,14 +19,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsPrio extends TmaNode implements TmaRhsSuffix {
 
-	private TmaReference reference;
+	private TmaSymref reference;
 
-	public TmaRhsPrio(TmaReference reference, TextSource source, int offset, int endoffset) {
+	public TmaRhsPrio(TmaSymref reference, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.reference = reference;
 	}
 
-	public TmaReference getReference() {
+	public TmaSymref getReference() {
 		return reference;
 	}
 

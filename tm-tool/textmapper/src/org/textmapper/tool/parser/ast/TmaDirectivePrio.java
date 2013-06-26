@@ -17,49 +17,35 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaNamedEntry extends TmaNode {
+import java.util.List;
 
-	private final String name;
-	private final TmaExpression expression;
+public class TmaDirectivePrio extends TmaNode implements TmaGrammarPart {
 
-	private final TmaError error;
+	private final String key;
+	private final List<TmaSymref> symbols;
 
-	public TmaNamedEntry(String name, TmaExpression expression, TextSource source, int offset, int endoffset) {
+	public TmaDirectivePrio(String key, List<TmaSymref> symbols, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.expression = expression;
-		this.error = null;
+		this.key = key;
+		this.symbols = symbols;
 	}
 
-	public TmaNamedEntry(TmaError error) {
-		super(error.getInput(), error.getOffset(), error.getEndOffset());
-		this.name = null;
-		this.expression = null;
-		this.error = error;
+	public String getKey() {
+		return key;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public TmaExpression getExpression() {
-		return expression;
-	}
-
-	public boolean hasSyntaxError() {
-		return error != null;
+	public List<TmaSymref> getSymbols() {
+		return symbols;
 	}
 
 	public void accept(AbstractVisitor v) {
-		if (error != null) {
-			v.visit(error);
-			return;
-		}
 		if (!v.visit(this)) {
 			return;
 		}
-		if (expression != null) {
-			expression.accept(v);
+		if (symbols != null) {
+			for (TmaSymref id : symbols) {
+				id.accept(v);
+			}
 		}
 	}
 }

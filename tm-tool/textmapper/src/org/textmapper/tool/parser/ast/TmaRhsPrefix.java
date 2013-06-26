@@ -23,9 +23,9 @@ public class TmaRhsPrefix extends TmaNode {
 
 	private final TmaAnnotations annotations;
 	private final TmaIdentifier name;
-	private final List<TmaReference> extendedNonterms;
+	private final List<TmaSymref> extendedNonterms;
 
-	public TmaRhsPrefix(TmaAnnotations annotations, TmaIdentifier name, List<TmaReference> extendedNonterms, TextSource source, int offset, int endoffset) {
+	public TmaRhsPrefix(TmaAnnotations annotations, TmaIdentifier name, List<TmaSymref> extendedNonterms, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 		this.name = name;
@@ -52,7 +52,7 @@ public class TmaRhsPrefix extends TmaNode {
 			name.accept(v);
 		}
 		if (extendedNonterms != null) {
-			for (TmaReference extendedNonterm : extendedNonterms) {
+			for (TmaSymref extendedNonterm : extendedNonterms) {
 				extendedNonterm.accept(v);
 			}
 		}

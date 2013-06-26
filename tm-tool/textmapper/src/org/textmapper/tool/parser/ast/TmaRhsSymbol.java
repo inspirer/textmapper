@@ -22,14 +22,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
  */
 public class TmaRhsSymbol extends TmaNode implements TmaRhsPart {
 
-	private final TmaReference reference;
+	private final TmaSymref reference;
 
-	public TmaRhsSymbol(TmaReference reference, TextSource source, int offset, int endoffset) {
+	public TmaRhsSymbol(TmaSymref reference, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.reference = reference;
 	}
 
-	public TmaReference getReference() {
+	public TmaSymref getReference() {
 		return reference;
 	}
 

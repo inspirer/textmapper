@@ -33,7 +33,7 @@ public class TMParserCompiler {
 
 	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
 
-	private final TMTree<TmaRoot> tree;
+	private final TMTree<TmaInput> tree;
 	private final TMResolver resolver;
 	private TMExpressionResolver expressionResolver;
 	private final GrammarBuilder builder;
@@ -66,8 +66,8 @@ public class TMParserCompiler {
 
 	private void collectRules() {
 		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof TmaNonTerm) {
-				TmaNonTerm nonterm = (TmaNonTerm) clause;
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
 				if (left == null || !(left instanceof Nonterminal)) {
 					continue; /* error is already reported */
@@ -83,8 +83,8 @@ public class TMParserCompiler {
 
 	private void collectDirectives() {
 		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof TmaDirective) {
-				TmaDirective directive = (TmaDirective) clause;
+			if (clause instanceof TmaDirectivePrio) {
+				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
 				String key = directive.getKey();
 				List<Terminal> val = resolveTerminals(directive.getSymbols());
 				int prio;
@@ -99,9 +99,9 @@ public class TMParserCompiler {
 					continue;
 				}
 				builder.addPrio(prio, val, directive);
-			} else if (clause instanceof TmaInputDirective) {
-				List<TmaInputRef> refs = ((TmaInputDirective) clause).getInputRefs();
-				for (TmaInputRef inputRef : refs) {
+			} else if (clause instanceof TmaDirectiveInput) {
+				List<TmaInputref> refs = ((TmaDirectiveInput) clause).getInputRefs();
+				for (TmaInputref inputRef : refs) {
 					Symbol sym = resolver.resolve(inputRef.getReference());
 					boolean hasEoi = !inputRef.isNonEoi();
 					if (sym instanceof Nonterminal) {
@@ -136,8 +136,8 @@ public class TMParserCompiler {
 
 	private void collectAnnotations() {
 		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
-			if (clause instanceof TmaNonTerm) {
-				TmaNonTerm nonterm = (TmaNonTerm) clause;
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
 				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(), "AnnotateSymbol"));
 			}
 		}
@@ -146,11 +146,11 @@ public class TMParserCompiler {
 	private void createRule(Nonterminal left, TmaRule0 right) {
 		List<RhsPart> rhs = new ArrayList<RhsPart>();
 		List<TmaRhsPart> list = right.getList();
-		TmaCode lastAction = null;
+		TmaCommand lastAction = null;
 		if (list != null) {
 			TmaRhsPart last = list.size() > 0 ? list.get(list.size() - 1) : null;
-			if (last instanceof TmaCode) {
-				lastAction = (TmaCode) last;
+			if (last instanceof TmaCommand) {
+				lastAction = (TmaCommand) last;
 				list = list.subList(0, list.size() - 1);
 			}
 
@@ -162,7 +162,7 @@ public class TMParserCompiler {
 			}
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
-		TmaReference rulePrio = ruleAttribute instanceof TmaRhsPrio ? ((TmaRhsPrio) ruleAttribute).getReference()
+		TmaSymref rulePrio = ruleAttribute instanceof TmaRhsPrio ? ((TmaRhsPrio) ruleAttribute).getReference()
 				: null;
 		Terminal prio = null;
 		if (rulePrio != null) {
@@ -185,8 +185,8 @@ public class TMParserCompiler {
 	}
 
 	private RhsPart convertPart(Symbol outer, TmaRhsPart part) {
-		if (part instanceof TmaCode) {
-			TmaCode astCode = (TmaCode) part;
+		if (part instanceof TmaCommand) {
+			TmaCommand astCode = (TmaCommand) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
 			Collection<Rule> actionRules = builder.addRule(codeSym, builder.empty(astCode), null);
 			for (Rule actionRule : actionRules) {
@@ -299,7 +299,7 @@ public class TMParserCompiler {
 
 			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
-			for (TmaReference ref : listWithSeparator.getSeparator()) {
+			for (TmaSymref ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolver.resolve(ref);
 				if (s == null) {
 					continue;
@@ -435,9 +435,9 @@ public class TMParserCompiler {
 		if (unorderedRulePart instanceof TmaRhsUnordered) {
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getLeft(), result);
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getRight(), result);
-		} else if (unorderedRulePart instanceof TmaCode) {
+		} else if (unorderedRulePart instanceof TmaCommand) {
 			error(unorderedRulePart, "semantic action cannot be used as a part of unordered group");
-		} else if (!(unorderedRulePart instanceof TmaError)) {
+		} else if (!(unorderedRulePart instanceof TmaSyntaxProblem)) {
 			result.add(unorderedRulePart);
 		}
 	}
@@ -447,7 +447,7 @@ public class TMParserCompiler {
 			return null;
 		}
 
-		List<TmaReference> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
+		List<TmaSymref> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
 		List<Terminal> resolved = resolveTerminals(unwantedSymbols);
 		if (resolved.size() == 0) {
 			return null;
@@ -456,9 +456,9 @@ public class TMParserCompiler {
 		return resolved;
 	}
 
-	private List<Terminal> resolveTerminals(List<TmaReference> input) {
+	private List<Terminal> resolveTerminals(List<TmaSymref> input) {
 		List<Terminal> result = new ArrayList<Terminal>(input.size());
-		for (TmaReference id : input) {
+		for (TmaSymref id : input) {
 			Symbol sym = resolver.resolve(id);
 			if (sym instanceof Terminal) {
 				result.add((Terminal) sym);

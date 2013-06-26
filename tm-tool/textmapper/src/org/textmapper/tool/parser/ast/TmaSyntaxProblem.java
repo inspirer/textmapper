@@ -17,17 +17,10 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaLiteralExpression extends TmaNode implements TmaExpression {
+public class TmaSyntaxProblem extends TmaNode implements TmaLexerPart, TmaGrammarPart, TmaOptionPart, TmaExpression, TmaRhsPart {
 
-	private final Object literal;
-
-	public TmaLiteralExpression(Object literal, TextSource source, int offset, int endoffset) {
+	public TmaSyntaxProblem(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.literal = literal;
-	}
-
-	public Object getLiteral() {
-		return literal;
 	}
 
 	public void accept(AbstractVisitor v) {

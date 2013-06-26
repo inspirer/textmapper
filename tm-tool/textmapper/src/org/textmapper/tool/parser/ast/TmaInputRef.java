@@ -20,18 +20,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * Gryaznov Evgeny, 6/17/11
  */
-public class TmaInputRef extends TmaNode {
+public class TmaInputref extends TmaNode {
 
-	private final TmaReference reference;
+	private final TmaSymref reference;
 	private final boolean nonEoi;
 
-	public TmaInputRef(TmaReference reference, boolean nonEoi, TextSource source, int offset, int endoffset) {
+	public TmaInputref(TmaSymref reference, boolean nonEoi, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.reference = reference;
 		this.nonEoi = nonEoi;
 	}
 
-	public TmaReference getReference() {
+	public TmaSymref getReference() {
 		return reference;
 	}
 

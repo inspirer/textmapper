@@ -59,9 +59,9 @@ public class TMExpressionResolver {
 			return null;
 		}
 
-		List<TmaNamedEntry> list = astAnnotations.getAnnotations();
+		List<TmaMapEntriesItem> list = astAnnotations.getAnnotations();
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (TmaNamedEntry entry : list) {
+		for (TmaMapEntriesItem entry : list) {
 			if (entry.hasSyntaxError()) {
 				continue;
 			}
@@ -98,28 +98,28 @@ public class TMExpressionResolver {
 
 			@Override
 			public Object resolve(TmaExpression expression, IType type) {
-				if (expression instanceof TmaInstance) {
-					List<TmaNamedEntry> list = ((TmaInstance) expression).getEntries();
+				if (expression instanceof TmaExpressionInstance) {
+					List<TmaMapEntriesItem> list = ((TmaExpressionInstance) expression).getEntries();
 					Map<String, TmaExpression> props = new HashMap<String, TmaExpression>();
 					if (list != null) {
-						for (TmaNamedEntry entry : list) {
+						for (TmaMapEntriesItem entry : list) {
 							if (entry.hasSyntaxError()) {
 								continue;
 							}
 							props.put(entry.getName(), entry.getExpression());
 						}
 					}
-					String name = ((TmaInstance) expression).getClassName().getName();
+					String name = ((TmaExpressionInstance) expression).getClassName().getName();
 					if (name.indexOf('.') < 0) {
 						name = myTypesPackage + "." + name;
 					}
 					return convertNew(expression, name, props, type);
 				}
-				if (expression instanceof TmaArray) {
-					List<TmaExpression> list = ((TmaArray) expression).getExpressions();
+				if (expression instanceof TmaExpressionArray) {
+					List<TmaExpression> list = ((TmaExpressionArray) expression).getExpressions();
 					return convertArray(expression, list, type);
 				}
-				if (expression instanceof TmaReference) {
+				if (expression instanceof TmaSymref) {
 					IClass symbolClass = types.getClass("common.Symbol", null);
 					if (symbolClass == null) {
 						report(expression, "cannot load class `common.Symbol`");
@@ -130,10 +130,10 @@ public class TMExpressionResolver {
 								+ "`");
 						return null;
 					}
-					return resolver.resolve((TmaReference) expression);
+					return resolver.resolve((TmaSymref) expression);
 				}
-				if (expression instanceof TmaLiteralExpression) {
-					Object literal = ((TmaLiteralExpression) expression).getLiteral();
+				if (expression instanceof TmaExpressionLiteral) {
+					Object literal = ((TmaExpressionLiteral) expression).getLiteral();
 					return convertLiteral(expression, literal, type);
 				}
 				return null;

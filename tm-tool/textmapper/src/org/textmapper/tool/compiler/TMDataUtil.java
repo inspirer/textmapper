@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.UserDataHolder;
 import org.textmapper.lapg.api.rule.RhsSymbol;
-import org.textmapper.tool.parser.ast.TmaCode;
+import org.textmapper.tool.parser.ast.TmaCommand;
 
 import java.util.Map;
 
@@ -41,12 +41,12 @@ public class TMDataUtil {
 		return (Map<String, Object>) element.getUserData(UD_ANNOTATIONS);
 	}
 
-	public static void putCode(UserDataHolder element, TmaCode code) {
+	public static void putCode(UserDataHolder element, TmaCommand code) {
 		element.putUserData(UD_CODE, code);
 	}
 
-	public static TmaCode getCode(UserDataHolder element) {
-		return (TmaCode) element.getUserData(UD_CODE);
+	public static TmaCommand getCode(UserDataHolder element) {
+		return (TmaCommand) element.getUserData(UD_CODE);
 	}
 
 	public static void putId(Symbol element, String identifier) {

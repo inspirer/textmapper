@@ -22,15 +22,15 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 6/17/11
  */
-public class TmaInputDirective extends TmaNode implements TmaGrammarPart {
-	private final List<TmaInputRef> inputRefs;
+public class TmaDirectiveInput extends TmaNode implements TmaGrammarPart {
+	private final List<TmaInputref> inputRefs;
 
-	public TmaInputDirective(List<TmaInputRef> inputRefs, TextSource source, int offset, int endoffset) {
+	public TmaDirectiveInput(List<TmaInputref> inputRefs, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.inputRefs = inputRefs;
 	}
 
-	public List<TmaInputRef> getInputRefs() {
+	public List<TmaInputref> getInputRefs() {
 		return inputRefs;
 	}
 
@@ -39,7 +39,7 @@ public class TmaInputDirective extends TmaNode implements TmaGrammarPart {
 			return;
 		}
 		if (inputRefs != null) {
-			for (TmaInputRef ref : inputRefs) {
+			for (TmaInputref ref : inputRefs) {
 				ref.accept(v);
 			}
 		}

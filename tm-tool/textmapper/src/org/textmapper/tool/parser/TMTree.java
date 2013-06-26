@@ -54,7 +54,7 @@ public class TMTree<T> {
 	}
 
 
-	public static TMTree<TmaRoot> parseInput(TextSource source) {
+	public static TMTree<TmaInput> parseInput(TextSource source) {
 		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
 			public void error(int start, int end, int line, String s) {
@@ -68,18 +68,18 @@ public class TMTree<T> {
 
 			TMParser parser = new TMParser(reporter);
 			parser.source = source;
-			TmaRoot result = parser.parseInput(lexer);
+			TmaInput result = parser.parseInput(lexer);
 			if (result != null) {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
 
-			return new TMTree<TmaRoot>(source, result, list);
+			return new TMTree<TmaInput>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
 		}
-		return new TMTree<TmaRoot>(source, null, list);
+		return new TMTree<TmaInput>(source, null, list);
 	}
 
 	public static TMTree<TmaExpression> parseExpression(TextSource source) {

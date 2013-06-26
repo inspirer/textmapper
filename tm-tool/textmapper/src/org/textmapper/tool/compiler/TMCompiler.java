@@ -32,10 +32,10 @@ import java.util.Map;
 
 public class TMCompiler {
 
-	private final TMTree<TmaRoot> tree;
+	private final TMTree<TmaInput> tree;
 	private final TypesRegistry types;
 
-	public TMCompiler(TMTree<TmaRoot> tree, TypesRegistry types) {
+	public TMCompiler(TMTree<TmaInput> tree, TypesRegistry types) {
 		this.tree = tree;
 		this.types = types;
 	}
@@ -98,8 +98,8 @@ public class TMCompiler {
 			for (TmaOptionPart option : tree.getRoot().getOptions()) {
 				if (option instanceof TmaOption && ((TmaOption) option).getKey().equals("lang")) {
 					TmaExpression expression = ((TmaOption) option).getValue();
-					if (expression instanceof TmaLiteralExpression) {
-						return ((TmaLiteralExpression) expression).getLiteral().toString();
+					if (expression instanceof TmaExpressionLiteral) {
+						return ((TmaExpressionLiteral) expression).getLiteral().toString();
 					}
 				}
 			}

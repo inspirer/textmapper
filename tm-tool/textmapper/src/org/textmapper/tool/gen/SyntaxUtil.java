@@ -23,13 +23,13 @@ import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.parser.ast.TmaExpression;
-import org.textmapper.tool.parser.ast.TmaRoot;
+import org.textmapper.tool.parser.ast.TmaInput;
 import org.textmapper.templates.types.TypesRegistry;
 
 public class SyntaxUtil {
 
 	public static TMGrammar parseSyntax(TextSource input, ProcessingStatus status, TypesRegistry types) {
-		TMTree<TmaRoot> tree = TMTree.parseInput(input);
+		TMTree<TmaInput> tree = TMTree.parseInput(input);
 		TMGrammar result = null;
 		if (!tree.hasErrors()) {
 			result = new TMCompiler(tree, types).resolve();

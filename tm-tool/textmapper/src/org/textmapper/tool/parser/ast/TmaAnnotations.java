@@ -21,14 +21,14 @@ import java.util.List;
 
 public class TmaAnnotations extends TmaNode {
 
-	private final List<TmaNamedEntry> annotations;
+	private final List<TmaMapEntriesItem> annotations;
 
-	public TmaAnnotations(List<TmaNamedEntry> annotations, TextSource source, int offset, int endoffset) {
+	public TmaAnnotations(List<TmaMapEntriesItem> annotations, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 	}
 
-	public List<TmaNamedEntry> getAnnotations() {
+	public List<TmaMapEntriesItem> getAnnotations() {
 		return annotations;
 	}
 
@@ -37,7 +37,7 @@ public class TmaAnnotations extends TmaNode {
 			return;
 		}
 		if (annotations != null) {
-			for (TmaNamedEntry n : annotations) {
+			for (TmaMapEntriesItem n : annotations) {
 				n.accept(v);
 			}
 		}

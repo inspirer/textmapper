@@ -17,13 +17,30 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaError extends TmaNode implements TmaLexerPart, TmaGrammarPart, TmaOptionPart, TmaExpression, TmaRhsPart {
+import java.util.List;
 
-	public TmaError(TextSource source, int offset, int endoffset) {
+public class TmaExpressionArray extends TmaNode implements TmaExpression {
+
+	private final List<TmaExpression> expressions;
+
+	public TmaExpressionArray(List<TmaExpression> expressions, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.expressions = expressions;
+	}
+
+	public List<TmaExpression> getExpressions() {
+		return expressions;
 	}
 
 	public void accept(AbstractVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (expressions != null) {
+			for (TmaExpression n : expressions) {
+				n.accept(v);
+			}
+		}
 	}
+
 }

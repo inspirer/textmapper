@@ -22,16 +22,16 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 8/15/11
  */
-public class TmaNegativeLA extends TmaNode {
+public class TmaNegativeLa extends TmaNode {
 
-	private final List<TmaReference> unwantedSymbols;
+	private final List<TmaSymref> unwantedSymbols;
 
-	public TmaNegativeLA(List<TmaReference> unwantedSymbols, TextSource source, int offset, int endoffset) {
+	public TmaNegativeLa(List<TmaSymref> unwantedSymbols, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.unwantedSymbols = unwantedSymbols;
 	}
 
-	public List<TmaReference> getUnwantedSymbols() {
+	public List<TmaSymref> getUnwantedSymbols() {
 		return unwantedSymbols;
 	}
 
@@ -40,7 +40,7 @@ public class TmaNegativeLA extends TmaNode {
 			return;
 		}
 		if (unwantedSymbols != null) {
-			for (TmaReference unwantedSymbol : unwantedSymbols) {
+			for (TmaSymref unwantedSymbol : unwantedSymbols) {
 				unwantedSymbol.accept(v);
 			}
 		}

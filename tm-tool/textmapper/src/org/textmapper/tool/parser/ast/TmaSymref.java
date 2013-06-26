@@ -17,30 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+public class TmaSymref extends TmaNode implements TmaExpression {
 
-public class TmaArray extends TmaNode implements TmaExpression {
+	public static final String DEFAULT = "symbol";
+	public static final String STATE = "state";
 
-	private final List<TmaExpression> expressions;
+	private final String name;
+	private final String scope;
 
-	public TmaArray(List<TmaExpression> expressions, TextSource source, int offset, int endoffset) {
+	public TmaSymref(String name, String scope, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.expressions = expressions;
+		this.name = name;
+		this.scope = scope;
 	}
 
-	public List<TmaExpression> getExpressions() {
-		return expressions;
+	public String getName() {
+		return name;
+	}
+
+	public String getScope() {
+		return scope;
 	}
 
 	public void accept(AbstractVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (expressions != null) {
-			for (TmaExpression n : expressions) {
-				n.accept(v);
-			}
-		}
+		v.visit(this);
 	}
-
 }

@@ -19,15 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaRoot extends TmaNode {
+public class TmaInput extends TmaNode {
 
 	private final List<TmaOptionPart> options;
 	private final List<TmaLexerPart> lexer;
 	private final List<TmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaRoot(List<TmaOptionPart> options, List<TmaLexerPart> lexer, List<TmaGrammarPart> grammar, TextSource source,
-				   int offset, int endoffset) {
+	public TmaInput(List<TmaOptionPart> options, List<TmaLexerPart> lexer, List<TmaGrammarPart> grammar, TextSource source,
+					int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;
 		this.lexer = lexer;
