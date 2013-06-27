@@ -107,6 +107,12 @@ class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public void addExtends(AstClass cl, AstClass baseClass) {
+		if (cl == baseClass) {
+			return;
+		}
+		if (baseClass.isSubtypeOf(cl)) {
+			throw new IllegalArgumentException("cannot add extends relation as it breaks the inheritance tree");
+		}
 		check(cl);
 		check(baseClass);
 		((LiAstClass) cl).addSuper(baseClass);

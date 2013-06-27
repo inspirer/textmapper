@@ -156,4 +156,12 @@ public class AbstractVisitor {
 	public boolean visit(TmaRhsPrefix n) {
 		return true;
 	}
+
+	public boolean visit(TmaNontermTypeAST n) {
+		return true;
+	}
+
+	public boolean visit(TmaNontermTypeRaw n) {
+		return true;
+	}
 }

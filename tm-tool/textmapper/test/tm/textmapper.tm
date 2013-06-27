@@ -198,8 +198,9 @@ nonterm_ast ::=
 priority_kw ::=
 	Lleft | Lright | Lnonassoc ;
 
+@_interface
 directive ::=
-	  prio: '%' priority_kw references ';'
+	  '%' priority_kw references ';'
 	| input: '%' Linput (inputref separator ',')+ ';'
 ;
 
@@ -248,41 +249,38 @@ rhsPart ::=
 	| command
 ;
 
-# TODO get rid of interfaces
-rhsAnnotated ::=
+rhsAnnotated returns rhsPart ::=
 	  rhsAssignment
-	| impl: rhsAnnotations rhsAssignment
+	| rhsAnnotations rhsAssignment
 ;
 
-rhsAssignment ::=
+rhsAssignment returns rhsPart ::=
 	  rhsOptional
-	| impl: identifier '=' rhsOptional
-	| impl: identifier addition='+=' rhsOptional
+	| identifier '=' rhsOptional
+	| identifier addition='+=' rhsOptional
 ;
 
-rhsOptional ::=
+rhsOptional returns rhsPart ::=
 	  rhsCast
-	| impl: rhsCast '?'
+	| rhsCast '?'
 ;
 
-rhsCast ::=
+rhsCast returns rhsPart ::=
 	  rhsPrimary
-	| impl: rhsPrimary Las symref
+	| rhsPrimary Las symref
 ;
 
-rhsUnordered ::=
+rhsUnordered returns rhsPart ::=
 	  left=rhsPart '&' right=rhsPart
 ;
 
-# TODO +/-, separator, etc.
-@_class
-rhsPrimary ::=
-	  symref
-	| '(' rules ')'
-	| '(' rhsParts Lseparator references ')' '+'
-	| '(' rhsParts Lseparator references ')' '*'
-	| rhsPrimary '*'
-	| rhsPrimary '+'
+rhsPrimary returns rhsPart ::=
+	  symbol: symref
+	| group: '(' rules ')'
+	| list: '(' rhsParts Lseparator references ')' quantifier='+'
+	| list: '(' rhsParts Lseparator references ')' quantifier='*'
+	| list: rhsPrimary quantifier='*'
+	| list: rhsPrimary quantifier='+'
 ;
 
 rhsAnnotations ::=

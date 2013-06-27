@@ -49,17 +49,54 @@ public class TMParserCompiler {
 
 	public void compile() {
 		collectAnnotations();
+		collectAstTypes();
 		collectRules();
 		collectDirectives();
 
 		if (!hasInputs) {
 			Symbol input = resolver.getSymbol("input");
 			if (input == null) {
-				error(tree.getRoot(), "no input non-terminal");
+				error(tree.getRoot(), "no input nonterminal");
 			} else if (!(input instanceof Nonterminal)) {
-				error(tree.getRoot(), "input should be non-terminal");
+				error(tree.getRoot(), "input must be a nonterminal");
 			} else {
 				builder.addInput((Nonterminal) input, true, input);
+			}
+		}
+	}
+
+	private void collectAstTypes() {
+		Set<String> withType = new HashSet<String>();
+		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
+				if (nonterm.getType() != null) {
+					withType.add(nonterm.getName().getID());
+				}
+			}
+		}
+
+		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
+				Symbol left = resolver.getSymbol(nonterm.getName().getID());
+				if (left == null || !(left instanceof Nonterminal)) {
+					continue; /* error is already reported */
+				}
+				if (nonterm.getType() instanceof TmaNontermTypeAST) {
+					final TmaNontermTypeAST astType = (TmaNontermTypeAST) nonterm.getType();
+					final String name = astType.getReference().getName();
+					Symbol type = resolver.getSymbol(name);
+					if (type == null) {
+						error(astType, name + " cannot be resolved");
+					} else if (!(type instanceof Nonterminal)) {
+						error(astType, "ast type must be a nonterminal");
+					} else if (withType.contains(name)) {
+						error(astType, "nonterminal without a type is expected (instead of `" + name + "')");
+					} else {
+						TMDataUtil.putCustomType((Nonterminal) left, (Nonterminal) type);
+					}
+				}
 			}
 		}
 	}
@@ -108,7 +145,7 @@ public class TMParserCompiler {
 						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
 						hasInputs = true;
 					} else if (sym != null) {
-						error(inputRef, "input should be non-terminal");
+						error(inputRef, "input must be a nonterminal");
 					}
 				}
 			}

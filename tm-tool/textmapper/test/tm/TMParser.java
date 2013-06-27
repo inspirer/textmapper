@@ -523,13 +523,13 @@ public class TMParser {
 	}
 
 	public interface Rules {
-		public static final int directive_prio = 77;  // directive ::= '%' priority_kw references ';'
 		public static final int directive_input = 80;  // directive ::= '%' Linput inputref_list ';'
-		public static final int rhsAnnotated_impl = 111;  // rhsAnnotated ::= rhsAnnotations rhsAssignment
-		public static final int rhsAssignment_impl = 113;  // rhsAssignment ::= identifier '=' rhsOptional
-		public static final int rhsAssignment_impl2 = 114;  // rhsAssignment ::= identifier '+=' rhsOptional
-		public static final int rhsOptional_impl = 116;  // rhsOptional ::= rhsCast '?'
-		public static final int rhsCast_impl = 118;  // rhsCast ::= rhsPrimary Las symref
+		public static final int rhsPrimary_symbol = 120;  // rhsPrimary ::= symref
+		public static final int rhsPrimary_group = 121;  // rhsPrimary ::= '(' rules ')'
+		public static final int rhsPrimary_list = 122;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+		public static final int rhsPrimary_list2 = 123;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+		public static final int rhsPrimary_list3 = 124;  // rhsPrimary ::= rhsPrimary '*'
+		public static final int rhsPrimary_list4 = 125;  // rhsPrimary ::= rhsPrimary '+'
 		public static final int expression_literal = 138;  // expression ::= scon
 		public static final int expression_literal2 = 139;  // expression ::= icon
 		public static final int expression_literal3 = 140;  // expression ::= Ltrue
@@ -950,7 +950,7 @@ public class TMParser {
 				lapg_gg.value = TmaPriorityKw.LNONASSOC;
 				break;
 			case 77:  // directive ::= '%' priority_kw references ';'
-				lapg_gg.value = new TmaDirectivePrio(
+				lapg_gg.value = new TmaDirectiveImpl(
 						((TmaPriorityKw)tmStack[tmHead - 2].value) /* priorityKw */,
 						((List<TmaSymref>)tmStack[tmHead - 1].value) /* references */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
@@ -1107,33 +1107,33 @@ public class TMParser {
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset));
 				break;
 			case 111:  // rhsAnnotated ::= rhsAnnotations rhsAssignment
-				lapg_gg.value = new TmaRhsAnnotatedImpl(
+				lapg_gg.value = new TmaRhsAnnotated(
 						((TmaRhsAnnotations)tmStack[tmHead - 1].value) /* rhsAnnotations */,
-						((ITmaRhsAssignment)tmStack[tmHead].value) /* rhsAssignment */,
+						((ITmaRhsPart)tmStack[tmHead].value) /* rhsAssignment */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 113:  // rhsAssignment ::= identifier '=' rhsOptional
-				lapg_gg.value = new TmaRhsAssignmentImpl(
+				lapg_gg.value = new TmaRhsAssignment(
 						false /* addition */,
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* identifier */,
-						((ITmaRhsOptional)tmStack[tmHead].value) /* rhsOptional */,
+						((ITmaRhsPart)tmStack[tmHead].value) /* rhsOptional */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 114:  // rhsAssignment ::= identifier '+=' rhsOptional
-				lapg_gg.value = new TmaRhsAssignmentImpl(
+				lapg_gg.value = new TmaRhsAssignment(
 						true /* addition */,
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* identifier */,
-						((ITmaRhsOptional)tmStack[tmHead].value) /* rhsOptional */,
+						((ITmaRhsPart)tmStack[tmHead].value) /* rhsOptional */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 116:  // rhsOptional ::= rhsCast '?'
-				lapg_gg.value = new TmaRhsOptionalImpl(
-						((ITmaRhsCast)tmStack[tmHead - 1].value) /* rhsCast */,
+				lapg_gg.value = new TmaRhsOptional(
+						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsCast */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 118:  // rhsCast ::= rhsPrimary Las symref
-				lapg_gg.value = new TmaRhsCastImpl(
-						((TmaRhsPrimary)tmStack[tmHead - 2].value) /* rhsPrimary */,
+				lapg_gg.value = new TmaRhsCast(
+						((ITmaRhsPart)tmStack[tmHead - 2].value) /* rhsPrimary */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1144,57 +1144,45 @@ public class TMParser {
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 120:  // rhsPrimary ::= symref
-				lapg_gg.value = new TmaRhsPrimary(
+				lapg_gg.value = new TmaRhsPrimarySymbol(
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
-						null /* rules */,
-						null /* rhsParts */,
-						null /* references */,
-						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 121:  // rhsPrimary ::= '(' rules ')'
-				lapg_gg.value = new TmaRhsPrimary(
-						null /* symref */,
+				lapg_gg.value = new TmaRhsPrimaryGroup(
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
-						null /* rhsParts */,
-						null /* references */,
-						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 122:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
-				lapg_gg.value = new TmaRhsPrimary(
-						null /* symref */,
-						null /* rules */,
+				lapg_gg.value = new TmaRhsPrimaryList(
+						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
 						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 123:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
-				lapg_gg.value = new TmaRhsPrimary(
-						null /* symref */,
-						null /* rules */,
+				lapg_gg.value = new TmaRhsPrimaryList(
+						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
 						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 124:  // rhsPrimary ::= rhsPrimary '*'
-				lapg_gg.value = new TmaRhsPrimary(
-						null /* symref */,
-						null /* rules */,
+				lapg_gg.value = new TmaRhsPrimaryList(
+						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						null /* rhsParts */,
 						null /* references */,
-						((TmaRhsPrimary)tmStack[tmHead - 1].value) /* rhsPrimary */,
+						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 125:  // rhsPrimary ::= rhsPrimary '+'
-				lapg_gg.value = new TmaRhsPrimary(
-						null /* symref */,
-						null /* rules */,
+				lapg_gg.value = new TmaRhsPrimaryList(
+						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						null /* rhsParts */,
 						null /* references */,
-						((TmaRhsPrimary)tmStack[tmHead - 1].value) /* rhsPrimary */,
+						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 126:  // rhsAnnotations ::= annotation_list

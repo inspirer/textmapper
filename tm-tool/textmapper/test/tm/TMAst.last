@@ -211,7 +211,7 @@ priority_kw  : PriorityKw ::=
 interface Directive : GrammarPart {
 }
 
-class DirectivePrio : Directive {
+class DirectiveImpl : Directive {
 	PriorityKw priorityKw;
 	list<Symref> references;
 }
@@ -221,7 +221,7 @@ class DirectiveInput : Directive {
 }
 
 directive  : Directive ::=
-	this=new.DirectivePrio: '%' priorityKw=priority_kw {references} ';'
+	this=new.DirectiveImpl: '%' priorityKw=priority_kw {references} ';'
   | this=new.DirectiveInput: '%' Linput inputrefList=inputref_list ';'
 ;
 
@@ -300,57 +300,45 @@ rhsPart  : RhsPart ::=
   | this=command
 ;
 
-interface RhsAnnotated : RhsPart {
-}
-
-class RhsAnnotatedImpl : RhsAnnotated {
+class RhsAnnotated : RhsPart {
 	RhsAnnotations rhsAnnotations;
-	RhsAssignment rhsAssignment;
+	RhsPart rhsAssignment;
 }
 
-rhsAnnotated  : RhsAnnotated ::=
+rhsAnnotated  : RhsPart ::=
 	this=rhsAssignment
-  | this=new.RhsAnnotatedImpl: {rhsAnnotations} {rhsAssignment}
+  | this=new.RhsAnnotated: {rhsAnnotations} {rhsAssignment}
 ;
 
-interface RhsAssignment : RhsAnnotated {
-}
-
-class RhsAssignmentImpl : RhsAssignment {
+class RhsAssignment : RhsPart {
 	boolean addition;
 	Identifier identifier;
-	RhsOptional rhsOptional;
+	RhsPart rhsOptional;
 }
 
-rhsAssignment  : RhsAssignment ::=
+rhsAssignment  : RhsPart ::=
 	this=rhsOptional
-  | this=new.RhsAssignmentImpl: {identifier} '=' {rhsOptional}
-  | this=new.RhsAssignmentImpl: {identifier} addition=[true]'+=' {rhsOptional}
+  | this=new.RhsAssignment: {identifier} '=' {rhsOptional}
+  | this=new.RhsAssignment: {identifier} addition=[true]'+=' {rhsOptional}
 ;
 
-interface RhsOptional : RhsAssignment {
+class RhsOptional : RhsPart {
+	RhsPart rhsCast;
 }
 
-class RhsOptionalImpl : RhsOptional {
-	RhsCast rhsCast;
-}
-
-rhsOptional  : RhsOptional ::=
+rhsOptional  : RhsPart ::=
 	this=rhsCast
-  | this=new.RhsOptionalImpl: {rhsCast} '?'
+  | this=new.RhsOptional: {rhsCast} '?'
 ;
 
-interface RhsCast : RhsOptional {
-}
-
-class RhsCastImpl : RhsCast {
-	RhsPrimary rhsPrimary;
+class RhsCast : RhsPart {
+	RhsPart rhsPrimary;
 	Symref symref;
 }
 
-rhsCast  : RhsCast ::=
+rhsCast  : RhsPart ::=
 	this=rhsPrimary
-  | this=new.RhsCastImpl: {rhsPrimary} Las {symref}
+  | this=new.RhsCast: {rhsPrimary} Las {symref}
 ;
 
 class RhsUnordered : RhsPart {
@@ -358,25 +346,36 @@ class RhsUnordered : RhsPart {
 	RhsPart right;
 }
 
-rhsUnordered  : RhsUnordered ::=
-	left=rhsPart '&' right=rhsPart
+rhsUnordered  : RhsPart ::=
+	this=new.RhsUnordered: left=rhsPart '&' right=rhsPart
 ;
 
-class RhsPrimary : RhsCast {
+class RhsPrimarySymbol : RhsPart {
 	Symref symref;
-	list<Rule0> rules;
-	list<RhsPartsItem> rhsParts;
-	list<Symref> references;
-	RhsPrimary rhsPrimary;
 }
 
-rhsPrimary  : RhsPrimary ::=
-	{symref}
-  | '(' {rules} ')'
-  | '(' {rhsParts} Lseparator {references} ')' '+'
-  | '(' {rhsParts} Lseparator {references} ')' '*'
-  | {rhsPrimary} '*'
-  | {rhsPrimary} '+'
+class RhsPrimaryGroup : RhsPart {
+	list<Rule0> rules;
+}
+
+class RhsPrimaryList : RhsPart {
+	QuantifierKind quantifier;
+	list<RhsPartsItem> rhsParts;
+	list<Symref> references;
+	RhsPart rhsPrimary;
+	enum QuantifierKind {
+		PLUS,
+		MULT
+	}
+}
+
+rhsPrimary  : RhsPart ::=
+	this=new.RhsPrimarySymbol: {symref}
+  | this=new.RhsPrimaryGroup: '(' {rules} ')'
+  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier=[QuantifierKind.PLUS]'+'
+  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier=[QuantifierKind.MULT]'*'
+  | this=new.RhsPrimaryList: {rhsPrimary} quantifier=[QuantifierKind.MULT]'*'
+  | this=new.RhsPrimaryList: {rhsPrimary} quantifier=[QuantifierKind.PLUS]'+'
 ;
 
 class RhsAnnotations {

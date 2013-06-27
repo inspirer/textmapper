@@ -26,12 +26,14 @@ import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.tool.common.ObjectUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -145,7 +147,15 @@ public class TMResolver {
 	}
 
 	private AstType convertRawType(String type, SourceElement origin) {
-		return type == null ? null : rawTypesBuilder.rawType(type, origin);
+		return type != null
+				? rawTypesBuilder.rawType(type, origin)
+				: null;
+	}
+
+	private AstType convertRawType(TmaNontermType type, SourceElement origin) {
+		return type instanceof TmaNontermTypeRaw
+				? rawTypesBuilder.rawType(((TmaNontermTypeRaw) type).getTypeText(), origin)
+				: null;
 	}
 
 	private void collectNonterminals() {
@@ -218,7 +228,8 @@ public class TMResolver {
 					Nonterminal symopt = (Nonterminal) create(
 							new TmaIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
 							sym.getType(), false);
-					builder.addRule(symopt, builder.optional(builder.symbol(sym, null, id), id), null);
+					builder.addRule(symopt, builder.sequence(null,
+							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, null, id), id)), id), null);
 					return symopt;
 				}
 			}

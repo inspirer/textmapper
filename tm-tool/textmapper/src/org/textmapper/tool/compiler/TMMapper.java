@@ -10,6 +10,7 @@ import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * evgeny, 1/29/13
@@ -44,6 +45,7 @@ public class TMMapper {
 		mapDecorators();
 		mapInterfaces();
 		mapClasses();
+		mapCustomTypeClasses();
 		mapLists();
 		mapFields();
 
@@ -58,7 +60,7 @@ public class TMMapper {
 
 	private void rewriteLists() {
 		for (Nonterminal n : unmapped) {
-			if (hasProperty(n, "_class")) continue;
+			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null) continue;
 			GrammarFacade.rewriteAsList(n);
 		}
 	}
@@ -127,7 +129,7 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (hasProperty(n, "_class") || n.getDefinition() instanceof RhsList) continue;
+			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null || n.getDefinition() instanceof RhsList) continue;
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			if (definition instanceof RhsChoice) {
 				RhsChoice alt = (RhsChoice) n.getDefinition();
@@ -182,7 +184,7 @@ public class TMMapper {
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList) continue;
-			if (hasProperty(n, "_class") || hasProperty(n, "_interface")) {
+			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null || hasProperty(n, "_interface")) {
 				continue;
 			}
 
@@ -261,7 +263,11 @@ public class TMMapper {
 			@Override
 			public void run() {
 				AstClass cl = (AstClass) n.getType();
-				builder.addExtends(cl, baseClass);
+				try {
+					builder.addExtends(cl, baseClass);
+				} catch (IllegalArgumentException ex) {
+					error(n, n.getName() + ": " + cl.getName() + " cannot extends " + baseClass.getName() + " (introduces a cycle in the inheritance hierarchy)");
+				}
 			}
 		});
 	}
@@ -274,11 +280,11 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (n.getDefinition() instanceof RhsList || hasProperty(n, "_class")) {
+			if (n.getDefinition() instanceof RhsList || TMDataUtil.getCustomType(n) != null || hasProperty(n, "_class")) {
 				continue;
 			}
 
-			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
+			RhsPart definition = n.getDefinition();
 			Iterable<RhsPart> rules = definition instanceof RhsChoice
 					? Arrays.asList(((RhsChoice) definition).getParts())
 					: Collections.singleton(definition);
@@ -287,28 +293,34 @@ public class TMMapper {
 			customRuleList.clear();
 			passSymbols.clear();
 
-			boolean isInterface = false;
+			boolean hasNamedRules = false;
+			boolean isInterface = true;
 			for (RhsPart part : rules) {
 				RhsPart r = RhsUtil.unwrap(part);
 				final RhsPart master = withoutConstants(r);
 				if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
 					final Symbol target = unwrapDecorators(((RhsSymbol) master).getTarget());
 					if (supportsExtending(target)) {
-						isInterface = true;
 						passSymbols.add((RhsSymbol) master);
 						extList.add((Nonterminal) target);
 						continue;
 					}
 				}
-				final String ruleAlias = part instanceof RhsSequence ? ((RhsSequence) part).getName() : null;
-				if (ruleAlias == null) {
+
+				if (!(part instanceof RhsSequence)) {
+					error(part, "internal error: every rule must start with a sequence");
+					continue;
+				}
+
+				final String ruleAlias = ((RhsSequence) part).getName();
+				if (ruleAlias == null && !hasProperty(n, "_interface")) {
 					isInterface = false;
 					break;
 				}
-				isInterface = true;
+				hasNamedRules |= (ruleAlias != null);
 				customRuleList.add((RhsSequence) part);
 			}
-			if (isInterface) {
+			if (isInterface && (!passSymbols.isEmpty() || hasProperty(n, "_interface") && hasNamedRules)) {
 				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n, null), null, n);
 				mapNonterm(n, interfaceClass);
 				for (Nonterminal nonterminal : extList) {
@@ -322,7 +334,7 @@ public class TMMapper {
 					String ruleAlias = rulePart.getName();
 					AstClass ruleClass = aliasToClass.get(ruleAlias);
 					if (ruleClass == null) {
-						ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
+						ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias == null ? "Impl" : ruleAlias), null, n);
 						builder.addExtends(ruleClass, interfaceClass);
 						aliasToClass.put(ruleAlias, ruleClass);
 					}
@@ -367,14 +379,82 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (n.getDefinition() instanceof RhsList) continue;
-			// TODO handle baseRule
-			//final Symbol baseRule = getExtends(n);
-
+			if (n.getDefinition() instanceof RhsList || TMDataUtil.getCustomType(n) != null) continue;
 			AstClass cl = builder.addClass(getNonterminalTypeName(n, null), null, n);
 			mapNonterm(n, cl);
 			mapClass(cl, RhsUtil.unwrap(n.getDefinition()));
 			i.remove();
+		}
+	}
+
+	private void mapCustomTypeClasses() {
+		Iterator<Nonterminal> i = unmapped.iterator();
+		Map<Nonterminal, AstClass> customTypes = new LinkedHashMap<Nonterminal, AstClass>();
+		while (i.hasNext()) {
+			final Nonterminal n = i.next();
+			if (n.getDefinition() instanceof RhsList) continue;
+			final Nonterminal customType = TMDataUtil.getCustomType(n);
+			assert customType != null;
+			if (decorators.containsKey(customType)) {
+				i.remove();
+				error(n, "custom type cannot refer a decorator nonterminal");
+				mapNonterm(n, builder.addClass(getNonterminalTypeName(n, null), null, n));
+				continue;
+			}
+			final AstType mappedType = customType.getType();
+			if (!(mappedType instanceof AstClass)) {
+				i.remove();
+				error(n, "type for `" + n.getName() + "' is not a classifier");
+				mapNonterm(n, builder.addClass(getNonterminalTypeName(n, null), null, n));
+				continue;
+			}
+			final AstClass cl = (AstClass) mappedType;
+			i.remove();
+			mapNonterm(n, cl);
+			customTypes.put(n, cl);
+		}
+		for (Entry<Nonterminal, AstClass> e : customTypes.entrySet()) {
+			mapCustomTypeNonterm(e.getKey(), e.getValue());
+		}
+	}
+
+	private void mapCustomTypeNonterm(Nonterminal n, AstClass cl) {
+		if (!cl.isInterface()) {
+			mapClass(cl, RhsUtil.unwrap(n.getDefinition()));
+			return;
+		}
+
+		RhsPart definition = n.getDefinition();
+		Iterable<RhsPart> rules = definition instanceof RhsChoice
+				? Arrays.asList(((RhsChoice) definition).getParts())
+				: Collections.singleton(definition);
+
+		Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
+		for (RhsPart part : rules) {
+			RhsPart r = RhsUtil.unwrap(part);
+			final RhsPart master = withoutConstants(r);
+			if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
+				final Symbol target = unwrapDecorators(((RhsSymbol) master).getTarget());
+				if (target.getType() != null && target.getType().isSubtypeOf(cl)) {
+					mapper.map((RhsSymbol) master, null, null, false);
+					continue;
+				}
+			}
+			if (!(part instanceof RhsSequence)) {
+				error(part, "internal error: every rule must start with a sequence");
+				continue;
+			}
+
+			final String ruleAlias = ((RhsSequence) part).getName();
+			AstClass ruleClass = aliasToClass.get(ruleAlias);
+			if (ruleClass == null) {
+				ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
+				builder.addExtends(ruleClass, cl);
+				aliasToClass.put(ruleAlias, ruleClass);
+			}
+			mapClass(ruleClass, part);
+			mapper.map((RhsSequence) part, null, ruleClass, false);
+
 		}
 	}
 
@@ -588,19 +668,6 @@ public class TMMapper {
 		final String id = TMDataUtil.getId(sym.getTarget());
 		return id.endsWith("opt") && id.length() > 3 ? id.substring(0, id.length() - 3) : id;
 	}
-
-//	private static Symbol getExtends(Symbol s) {
-//		final Map<String, Object> annotations = TMDataUtil.getAnnotations(s);
-//		if (annotations == null) {
-//			return null;
-//		}
-//		final Object o1 = annotations.get("extends");
-//		return o1 instanceof Symbol ? (Symbol) o1 : null;
-//	}
-
-//	private static void mark(Rule rule, String templateName) {
-//		rule.putUserData("codeTemplate", templateName);
-//	}
 
 	private interface MappingContext {
 		FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin);

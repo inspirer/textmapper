@@ -201,13 +201,14 @@ grammar_part (TmaGrammarPart) ::=
 ;
 
 nonterm ::=
-	  annotations? identifier nonterm_ast? typeopt Linline? '::=' rules ';'
-	  													{ $$ = new TmaNonterm($identifier, $typeopt, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
+	  annotations? identifier nonterm_type? Linline? '::=' rules ';'
+	  													{ $$ = new TmaNonterm($identifier, $nonterm_type, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-nonterm_ast ::=
-	  Lextends references_cs
-	| Lreturns symref
+nonterm_type (TmaNontermType) ::=
+	  Lextends references_cs							{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| Lreturns symref									{ $$ = new TmaNontermTypeAST($symref, source, ${left().offset}, ${left().endoffset}); }
+	| type												{ $$ = new TmaNontermTypeRaw($type, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 priority_kw (String) ::=

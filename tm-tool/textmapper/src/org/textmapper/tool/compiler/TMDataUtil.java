@@ -16,6 +16,7 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.LexerRule;
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.UserDataHolder;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -32,6 +33,7 @@ public class TMDataUtil {
 	private static final String UD_ANNOTATIONS = "annotations";
 	private static final String UD_IDENTIFIER = "id";
 	private static final String UD_TRANSITIONMAP = "transitionMap";
+	private static final String UD_CUSTOM_TYPE = "customType";
 
 	public static void putAnnotations(UserDataHolder element, Map<String, Object> annotations) {
 		element.putUserData(UD_ANNOTATIONS, annotations);
@@ -55,6 +57,14 @@ public class TMDataUtil {
 
 	public static String getId(Symbol element) {
 		return (String) element.getUserData(UD_IDENTIFIER);
+	}
+
+	public static void putCustomType(Nonterminal element, Nonterminal type) {
+		element.putUserData(UD_CUSTOM_TYPE, type);
+	}
+
+	public static Nonterminal getCustomType(Nonterminal element) {
+		return (Nonterminal) element.getUserData(UD_CUSTOM_TYPE);
 	}
 
 	public static void putTransition(LexerRule rule, TMStateTransitionSwitch transitionSwitch) {
