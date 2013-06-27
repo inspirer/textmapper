@@ -14,15 +14,15 @@ import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.AbstractVisitor;
-import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.TmaInput;
 
 public class LapgSourceStructure implements ISourceStructure {
 
 	private final IFile file;    // can be null
-	private final TMTree<AstRoot> ast;
+	private final TMTree<TmaInput> ast;
 	private final Grammar grammar;
 
-	public LapgSourceStructure(Grammar grammar, TMTree<AstRoot> ast, IFile file) {
+	public LapgSourceStructure(Grammar grammar, TMTree<TmaInput> ast, IFile file) {
 		this.grammar = grammar;
 		this.ast = ast;
 		this.file = file;
@@ -32,7 +32,7 @@ public class LapgSourceStructure implements ISourceStructure {
 		return file;
 	}
 
-	public TMTree<AstRoot> getAst() {
+	public TMTree<TmaInput> getAst() {
 		return ast;
 	}
 

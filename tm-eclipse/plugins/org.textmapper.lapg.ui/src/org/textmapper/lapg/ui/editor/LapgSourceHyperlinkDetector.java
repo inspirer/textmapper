@@ -23,11 +23,10 @@ import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 import org.textmapper.tool.parser.TMTree;
-import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.AbstractVisitor;
-import org.textmapper.tool.parser.ast.AstReference;
-import org.textmapper.tool.parser.ast.AstRoot;
-import org.textmapper.tool.parser.ast.IAstNode;
+import org.textmapper.tool.parser.ast.ITmaNode;
+import org.textmapper.tool.parser.ast.TmaInput;
+import org.textmapper.tool.parser.ast.TmaSymref;
 
 public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 
@@ -54,40 +53,40 @@ public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 			return null;
 		}
 
-		TMTree<AstRoot> ast = model.getAst();
+		TMTree<TmaInput> ast = model.getAst();
 		if (ast == null || ast.getRoot() == null) {
 			return null;
 		}
 
 		ReferenceFinder finder = new ReferenceFinder(offset);
 		ast.getRoot().accept(finder);
-		IAstNode ref = finder.getResult();
+		ITmaNode ref = finder.getResult();
 		if (ref == null) {
 			return null;
 		}
 
 		Region refregion = new Region(ref.getOffset(), ref.getEndOffset() - ref.getOffset());
-		return new IHyperlink[] { new LapgReferenceHyperlink((LapgSourceEditor) textEditor, refregion, model, ref) };
+		return new IHyperlink[]{new LapgReferenceHyperlink((LapgSourceEditor) textEditor, refregion, model, ref)};
 	}
 
 	private static class ReferenceFinder extends AbstractVisitor {
 
 		private final int offset;
-		private IAstNode result;
+		private ITmaNode result;
 
 		public ReferenceFinder(int offset) {
 			this.offset = offset;
 		}
 
 		@Override
-		public boolean visit(AstReference ref) {
+		public boolean visit(TmaSymref ref) {
 			if (ref.getOffset() <= offset && ref.getEndOffset() >= offset) {
 				result = ref;
 			}
 			return true;
 		}
 
-		public IAstNode getResult() {
+		public ITmaNode getResult() {
 			return result;
 		}
 	}

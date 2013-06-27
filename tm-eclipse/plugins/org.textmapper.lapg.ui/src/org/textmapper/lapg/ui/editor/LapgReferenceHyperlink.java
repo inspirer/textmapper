@@ -19,23 +19,23 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
-import org.textmapper.tool.parser.ast.AstGrammarPart;
-import org.textmapper.tool.parser.ast.AstIdentifier;
-import org.textmapper.tool.parser.ast.AstLexeme;
-import org.textmapper.tool.parser.ast.AstLexerPart;
-import org.textmapper.tool.parser.ast.AstNonTerm;
-import org.textmapper.tool.parser.ast.AstReference;
-import org.textmapper.tool.parser.ast.AstRoot;
-import org.textmapper.tool.parser.ast.IAstNode;
+import org.textmapper.tool.parser.ast.TmaGrammarPart;
+import org.textmapper.tool.parser.ast.TmaIdentifier;
+import org.textmapper.tool.parser.ast.TmaLexeme;
+import org.textmapper.tool.parser.ast.TmaLexerPart;
+import org.textmapper.tool.parser.ast.TmaNonterm;
+import org.textmapper.tool.parser.ast.TmaSymref;
+import org.textmapper.tool.parser.ast.TmaInput;
+import org.textmapper.tool.parser.ast.ITmaNode;
 
 public class LapgReferenceHyperlink implements IHyperlink {
 
 	private final IRegion fHyperlinkRegion;
 	private final LapgSourceStructure fModel;
-	private final IAstNode fReference;
+	private final ITmaNode fReference;
 	private final LapgSourceEditor fEditor;
 
-	public LapgReferenceHyperlink(LapgSourceEditor editor, IRegion hyperlinkRegion, LapgSourceStructure model, IAstNode reference) {
+	public LapgReferenceHyperlink(LapgSourceEditor editor, IRegion hyperlinkRegion, LapgSourceStructure model, ITmaNode reference) {
 		fEditor = editor;
 		fHyperlinkRegion = hyperlinkRegion;
 		fModel = model;
@@ -69,11 +69,11 @@ public class LapgReferenceHyperlink implements IHyperlink {
 				return;
 			}
 			
-			AstReference ref = (AstReference) fReference;
+			TmaSymref ref = (TmaSymref) fReference;
 			String symbolName = ref.getName();
 
-			AstRoot root = fModel.getAst().getRoot();
-			IAstNode resolved = searchInRoot(root, symbolName);
+			TmaInput root = fModel.getAst().getRoot();
+			ITmaNode resolved = searchInRoot(root, symbolName);
 			if (resolved == null) {
 				return;
 			}
@@ -92,14 +92,14 @@ public class LapgReferenceHyperlink implements IHyperlink {
 		}
 	}
 
-	private void openLocal(IWorkbenchPage activePage, LapgSourceStructure model, IAstNode resolved)
+	private void openLocal(IWorkbenchPage activePage, LapgSourceStructure model, ITmaNode resolved)
 			throws PartInitException {
 
-		AstIdentifier identifier = null;
-		if(resolved instanceof AstNonTerm) {
-			identifier = ((AstNonTerm) resolved).getName();
-		} else if(resolved instanceof AstLexeme) {
-			identifier = ((AstLexeme) resolved).getName();
+		TmaIdentifier identifier = null;
+		if(resolved instanceof TmaNonterm) {
+			identifier = ((TmaNonterm) resolved).getName();
+		} else if(resolved instanceof TmaLexeme) {
+			identifier = ((TmaLexeme) resolved).getName();
 		}
 
 		int start = resolved.getOffset();
@@ -109,17 +109,17 @@ public class LapgReferenceHyperlink implements IHyperlink {
 				resolved.getEndOffset());				
 	}
 
-	private IAstNode searchInRoot(AstRoot root, String symbolName) {
-		for(AstGrammarPart p : root.getGrammar()) {
-			if(p instanceof AstNonTerm) {
-				if(((AstNonTerm)p).getName().getName().equals(symbolName)) {
+	private ITmaNode searchInRoot(TmaInput root, String symbolName) {
+		for(TmaGrammarPart p : root.getGrammar()) {
+			if(p instanceof TmaNonterm) {
+				if(((TmaNonterm)p).getName().getID().equals(symbolName)) {
 					return p;
 				}
 			}			
 		}
-		for(AstLexerPart p : root.getLexer()) {
-			if(p instanceof AstLexeme) {
-				if(((AstLexeme)p).getName().getName().equals(symbolName)) {
+		for(TmaLexerPart p : root.getLexer()) {
+			if(p instanceof TmaLexeme) {
+				if(((TmaLexeme)p).getName().getID().equals(symbolName)) {
 					return p;
 				}
 			}			

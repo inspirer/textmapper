@@ -5,10 +5,10 @@ import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textmapper.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 import org.textmapper.tool.parser.ast.AbstractVisitor;
-import org.textmapper.tool.parser.ast.AstError;
-import org.textmapper.tool.parser.ast.AstIdentifier;
-import org.textmapper.tool.parser.ast.AstNode;
-import org.textmapper.tool.parser.ast.AstReference;
+import org.textmapper.tool.parser.ast.TmaSyntaxProblem;
+import org.textmapper.tool.parser.ast.TmaIdentifier;
+import org.textmapper.tool.parser.ast.TmaNode;
+import org.textmapper.tool.parser.ast.TmaSymref;
 
 public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanticHighlighter {
 
@@ -24,7 +24,7 @@ public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanti
 	}
 
 	@Override
-	public boolean visit(AstError node) {
+	public boolean visit(TmaSyntaxProblem node) {
 		int start = node.getOffset();
 		int end = node.getEndOffset();
 		fCollector.retainPositions(start, end - start);
@@ -32,16 +32,16 @@ public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanti
 	}
 
 	@Override
-	public boolean visit(AstIdentifier n) {
+	public boolean visit(TmaIdentifier n) {
 		return visitToken(n, INDEX_CLASSID);
 	}
 
 	@Override
-	public boolean visit(AstReference n) {
+	public boolean visit(TmaSymref n) {
 		return visitToken(n, INDEX_REFERENCE);
 	}
 	
-	public boolean visitToken(AstNode node, int highlighting) {
+	public boolean visitToken(TmaNode node, int highlighting) {
 		int offset = node.getOffset();
 		int length = node.getEndOffset() - offset;
 		if (offset > -1 && length > 0) {

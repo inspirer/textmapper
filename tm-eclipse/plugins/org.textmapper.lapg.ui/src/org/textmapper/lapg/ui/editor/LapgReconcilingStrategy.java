@@ -50,7 +50,7 @@ import org.textmapper.tool.gen.LapgOptions;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.TMTree.TextSource;
-import org.textmapper.tool.parser.ast.AstRoot;
+import org.textmapper.tool.parser.ast.TmaInput;
 
 public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
@@ -98,7 +98,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		String content = doc.get();
 
 		TextSource input = new TextSource(mainResource.getName(), content.toCharArray(), 1);
-		TMTree<AstRoot> ast = TMTree.parseInput(input);
+		TMTree<TmaInput> ast = TMTree.parseInput(input);
 		sources.add(TMTree.PARSER_SOURCE);
 
 		List<TMProblem> problems = ast.getErrors();
