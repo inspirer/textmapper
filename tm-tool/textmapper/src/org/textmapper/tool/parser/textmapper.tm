@@ -118,7 +118,7 @@ identifier (TmaIdentifier) ::=
 ;
 
 symref (TmaSymref) ::=
-	  ID												{ $$ = new TmaSymref($ID, TmaSymref.DEFAULT, source, ${left().offset}, ${left().endoffset}); }
+	  ID												{ $$ = new TmaSymref($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
@@ -157,7 +157,7 @@ lexeme ::=
                                                     	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexem_transition (TmaSymref) ::=
+lexem_transition (TmaStateref) ::=
 	  '=>' stateref										{ $$ = $1; }
 ;
 
@@ -181,8 +181,8 @@ state_list (List<TmaLexerState>) ::=
 	| list=state_list ',' lexer_state					{ $list.add($lexer_state); }
 ;
 
-stateref (TmaSymref) ::=
-	  ID                                                { $$ = new TmaSymref($ID, TmaSymref.STATE, source, ${left().offset}, ${left().endoffset}); }
+stateref (TmaStateref) ::=
+	  ID                                                { $$ = new TmaStateref($ID, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_state (TmaLexerState) ::=

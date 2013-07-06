@@ -701,7 +701,7 @@ public class TMParser {
 				 lapg_gg.value = new TmaIdentifier(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 9:  // symref ::= ID
-				 lapg_gg.value = new TmaSymref(((String)tmStack[tmHead].value), TmaSymref.DEFAULT, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaSymref(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 10:  // type ::= '(' scon ')'
 				 lapg_gg.value = ((String)tmStack[tmHead - 1].value); 
@@ -725,13 +725,13 @@ public class TMParser {
 				 lapg_gg.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaRegexp)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 46:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
-				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaRegexp)tmStack[tmHead - 4].value), ((TmaSymref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaRegexp)tmStack[tmHead - 4].value), ((TmaStateref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 47:  // lexeme ::= identifier typeopt ':'
-				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaRegexp)null), ((TmaSymref)null), ((Integer)null), ((TmaLexemAttrs)null), ((TmaCommand)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaRegexp)null), ((TmaStateref)null), ((Integer)null), ((TmaLexemAttrs)null), ((TmaCommand)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 48:  // lexem_transition ::= '=>' stateref
-				 lapg_gg.value = ((TmaSymref)tmStack[tmHead].value); 
+				 lapg_gg.value = ((TmaStateref)tmStack[tmHead].value); 
 				break;
 			case 49:  // lexem_attrs ::= '(' lexem_attribute ')'
 				 lapg_gg.value = ((TmaLexemAttrs)tmStack[tmHead - 1].value); 
@@ -758,13 +758,13 @@ public class TMParser {
 				 ((List<TmaLexerState>)tmStack[tmHead - 2].value).add(((TmaLexerState)tmStack[tmHead].value)); 
 				break;
 			case 57:  // stateref ::= ID
-				 lapg_gg.value = new TmaSymref(((String)tmStack[tmHead].value), TmaSymref.STATE, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaStateref(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 58:  // lexer_state ::= identifier '=>' stateref
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaStateref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 59:  // lexer_state ::= identifier
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaSymref)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaStateref)null), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 60:  // grammar_parts ::= grammar_part
 				 lapg_gg.value = new ArrayList<TmaGrammarPart>(64); ((List<TmaGrammarPart>)lapg_gg.value).add(((TmaGrammarPart)tmStack[tmHead].value)); 

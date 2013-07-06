@@ -92,7 +92,7 @@ public class TMLexerCompiler {
 	}
 
 	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme, TMStateTransitionSwitch active) {
-		TmaSymref transition = lexeme.getTransition();
+		TmaStateref transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
 			LexerState target = resolver.getState(targetName);

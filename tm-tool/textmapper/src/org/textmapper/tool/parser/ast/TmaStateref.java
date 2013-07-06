@@ -13,33 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.templates.types.ast;
+package org.textmapper.tool.parser.ast;
 
-import org.textmapper.templates.types.TypesTree.TextSource;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class AstMultiplicity extends AstNode {
+/**
+ * Gryaznov Evgeny, 7/6/13
+ */
+public class TmaStateref extends TmaNode implements TmaExpression {
 
-	private Integer lo;
-	private boolean hasNoUpperBound;
-	private Integer hi;
+	private final String name;
 
-	public AstMultiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource input, int start, int end) {
-		super(input, start, end);
-		this.lo = lo;
-		this.hasNoUpperBound = hasNoUpperBound;
-		this.hi = hi;
+	public TmaStateref(String name, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.name = name;
 	}
 
-	public Integer getLo() {
-		return lo;
+	public String getName() {
+		return name;
 	}
-	public boolean getHasNoUpperBound() {
-		return hasNoUpperBound;
-	}
-	public Integer getHi() {
-		return hi;
-	}
-	public void accept(AstVisitor v) {
+
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }
+

@@ -23,72 +23,77 @@ import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 import org.textmapper.tool.parser.TMTree;
-import org.textmapper.tool.parser.ast.TmaVisitor;
-import org.textmapper.tool.parser.ast.ITmaNode;
-import org.textmapper.tool.parser.ast.TmaInput;
-import org.textmapper.tool.parser.ast.TmaSymref;
+import org.textmapper.tool.parser.ast.*;
 
 public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 
-	public LapgSourceHyperlinkDetector(StructuredTextEditor context) {
-		setContext(context);
-	}
+    public LapgSourceHyperlinkDetector(StructuredTextEditor context) {
+        setContext(context);
+    }
 
-	public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-		ITextEditor textEditor = (ITextEditor) getAdapter(ITextEditor.class);
-		if (region == null || !(textEditor instanceof LapgSourceEditor)) {
-			return null;
-		}
+    public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
+        ITextEditor textEditor = (ITextEditor) getAdapter(ITextEditor.class);
+        if (region == null || !(textEditor instanceof LapgSourceEditor)) {
+            return null;
+        }
 
-		int offset = region.getOffset();
+        int offset = region.getOffset();
 
-		IDocumentProvider documentProvider = textEditor.getDocumentProvider();
-		if (!(documentProvider instanceof IStructuredDocumentProvider)) {
-			return null;
-		}
+        IDocumentProvider documentProvider = textEditor.getDocumentProvider();
+        if (!(documentProvider instanceof IStructuredDocumentProvider)) {
+            return null;
+        }
 
-		LapgSourceStructure model = (LapgSourceStructure) ((IStructuredDocumentProvider) documentProvider)
-				.getStructure();
-		if (model == null) {
-			return null;
-		}
+        LapgSourceStructure model = (LapgSourceStructure) ((IStructuredDocumentProvider) documentProvider)
+                .getStructure();
+        if (model == null) {
+            return null;
+        }
 
-		TMTree<TmaInput> ast = model.getAst();
-		if (ast == null || ast.getRoot() == null) {
-			return null;
-		}
+        TMTree<TmaInput> ast = model.getAst();
+        if (ast == null || ast.getRoot() == null) {
+            return null;
+        }
 
-		ReferenceFinder finder = new ReferenceFinder(offset);
-		ast.getRoot().accept(finder);
-		ITmaNode ref = finder.getResult();
-		if (ref == null) {
-			return null;
-		}
+        ReferenceFinder finder = new ReferenceFinder(offset);
+        ast.getRoot().accept(finder);
+        ITmaNode ref = finder.getResult();
+        if (ref == null) {
+            return null;
+        }
 
-		Region refregion = new Region(ref.getOffset(), ref.getEndOffset() - ref.getOffset());
-		return new IHyperlink[]{new LapgReferenceHyperlink((LapgSourceEditor) textEditor, refregion, model, ref)};
-	}
+        Region refregion = new Region(ref.getOffset(), ref.getEndOffset() - ref.getOffset());
+        return new IHyperlink[]{new LapgReferenceHyperlink((LapgSourceEditor) textEditor, refregion, model, ref)};
+    }
 
-	private static class ReferenceFinder extends TmaVisitor {
+    private static class ReferenceFinder extends TmaVisitor {
 
-		private final int offset;
-		private ITmaNode result;
+        private final int offset;
+        private ITmaNode result;
 
-		public ReferenceFinder(int offset) {
-			this.offset = offset;
-		}
+        public ReferenceFinder(int offset) {
+            this.offset = offset;
+        }
 
-		@Override
-		public boolean visit(TmaSymref ref) {
-			if (ref.getOffset() <= offset && ref.getEndOffset() >= offset) {
-				result = ref;
-			}
-			return true;
-		}
+        @Override
+        public boolean visit(TmaSymref ref) {
+            if (ref.getOffset() <= offset && ref.getEndOffset() >= offset) {
+                result = ref;
+            }
+            return true;
+        }
 
-		public ITmaNode getResult() {
-			return result;
-		}
-	}
+        @Override
+        public boolean visit(TmaStateref ref) {
+            if (ref.getOffset() <= offset && ref.getEndOffset() >= offset) {
+                result = ref;
+            }
+            return true;
+        }
+
+        public ITmaNode getResult() {
+            return result;
+        }
+    }
 
 }

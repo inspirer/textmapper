@@ -164,4 +164,8 @@ public class TmaVisitor {
 	public boolean visit(TmaNontermTypeRaw n) {
 		return true;
 	}
+
+	public boolean visit(TmaStateref n) {
+		return true;
+	}
 }

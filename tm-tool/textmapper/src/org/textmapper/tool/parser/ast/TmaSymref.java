@@ -19,24 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaSymref extends TmaNode implements TmaExpression {
 
-	public static final String DEFAULT = "symbol";
-	public static final String STATE = "state";
-
 	private final String name;
-	private final String scope;
 
-	public TmaSymref(String name, String scope, TextSource source, int offset, int endoffset) {
+	public TmaSymref(String name, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
-		this.scope = scope;
 	}
 
 	public String getName() {
 		return name;
-	}
-
-	public String getScope() {
-		return scope;
 	}
 
 	public void accept(TmaVisitor v) {
