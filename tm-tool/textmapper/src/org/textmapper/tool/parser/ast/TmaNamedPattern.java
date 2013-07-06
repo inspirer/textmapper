@@ -39,7 +39,7 @@ public class TmaNamedPattern extends TmaNode implements TmaLexerPart {
 		return regexp;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

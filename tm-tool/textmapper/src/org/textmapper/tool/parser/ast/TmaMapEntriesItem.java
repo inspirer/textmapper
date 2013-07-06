@@ -50,7 +50,7 @@ public class TmaMapEntriesItem extends TmaNode {
 		return error != null;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (error != null) {
 			v.visit(error);
 			return;

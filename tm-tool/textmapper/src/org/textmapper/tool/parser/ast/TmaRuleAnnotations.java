@@ -35,7 +35,7 @@ public class TmaRuleAnnotations extends TmaAnnotations {
 		return negativeLA;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

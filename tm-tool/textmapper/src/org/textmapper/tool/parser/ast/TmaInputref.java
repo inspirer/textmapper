@@ -39,7 +39,7 @@ public class TmaInputref extends TmaNode {
 		return nonEoi;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

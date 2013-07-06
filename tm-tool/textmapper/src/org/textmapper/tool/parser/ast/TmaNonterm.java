@@ -52,7 +52,7 @@ public class TmaNonterm extends TmaNode implements TmaGrammarPart {
 		return annotations;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

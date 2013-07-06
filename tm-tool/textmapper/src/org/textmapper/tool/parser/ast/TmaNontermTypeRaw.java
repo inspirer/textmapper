@@ -34,7 +34,7 @@ public class TmaNontermTypeRaw extends TmaNode implements TmaNontermType {
 	}
 
 	@Override
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

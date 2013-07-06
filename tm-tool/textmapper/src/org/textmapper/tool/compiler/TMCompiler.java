@@ -86,7 +86,7 @@ public class TMCompiler {
 		if (offset < text.length && offset != -1) {
 			return new TmaNode(tree.getSource(), offset, text.length) {
 				@Override
-				public void accept(AbstractVisitor v) {
+				public void accept(TmaVisitor v) {
 				}
 			};
 		}

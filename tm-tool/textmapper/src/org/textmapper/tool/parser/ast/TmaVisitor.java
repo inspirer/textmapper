@@ -15,7 +15,7 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public class AbstractVisitor {
+public class TmaVisitor {
 
 	public boolean visit(TmaCommand n) {
 		return true;

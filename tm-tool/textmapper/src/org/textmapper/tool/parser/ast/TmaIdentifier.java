@@ -30,7 +30,7 @@ public class TmaIdentifier extends TmaNode {
 		return name;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

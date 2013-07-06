@@ -34,7 +34,7 @@ public class TmaNontermTypeAST extends TmaNode implements TmaNontermType {
 	}
 
 	@Override
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

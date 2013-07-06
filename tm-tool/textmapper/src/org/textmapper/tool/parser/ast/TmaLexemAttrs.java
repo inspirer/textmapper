@@ -33,7 +33,7 @@ public class TmaLexemAttrs extends TmaNode {
 		return kind;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

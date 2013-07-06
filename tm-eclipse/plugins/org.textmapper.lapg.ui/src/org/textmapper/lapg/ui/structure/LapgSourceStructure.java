@@ -13,7 +13,7 @@ import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
-import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.TmaVisitor;
 import org.textmapper.tool.parser.ast.TmaInput;
 
 public class LapgSourceStructure implements ISourceStructure {
@@ -66,6 +66,6 @@ public class LapgSourceStructure implements ISourceStructure {
 	}
 
 	public void accept(ISemanticHighlighter fHighlighter) {
-		getAst().getRoot().accept((AbstractVisitor) fHighlighter);
+		getAst().getRoot().accept((TmaVisitor) fHighlighter);
 	}
 }

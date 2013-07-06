@@ -71,7 +71,7 @@ public class TmaRule0 extends TmaNode {
 		return prefix != null ? prefix.getAnnotations() : null;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (error != null) {
 			v.visit(error);
 			return;

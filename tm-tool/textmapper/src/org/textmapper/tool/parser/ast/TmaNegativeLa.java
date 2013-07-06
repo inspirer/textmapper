@@ -35,7 +35,7 @@ public class TmaNegativeLa extends TmaNode {
 		return unwantedSymbols;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

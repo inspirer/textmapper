@@ -22,5 +22,5 @@ public interface ITmaNode extends TextSourceElement {
 
 	TextSource getInput();
 
-	void accept(AbstractVisitor v);
+	void accept(TmaVisitor v);
 }

@@ -38,7 +38,7 @@ public class TmaDirectivePrio extends TmaNode implements TmaGrammarPart {
 		return symbols;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

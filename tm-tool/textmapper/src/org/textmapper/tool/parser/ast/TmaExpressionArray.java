@@ -32,7 +32,7 @@ public class TmaExpressionArray extends TmaNode implements TmaExpression {
 		return expressions;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

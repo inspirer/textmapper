@@ -40,7 +40,7 @@ public class TmaLexerState extends TmaNode {
 	}
 
 	@Override
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

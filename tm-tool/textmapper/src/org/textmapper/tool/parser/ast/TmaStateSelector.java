@@ -32,7 +32,7 @@ public class TmaStateSelector extends TmaNode implements TmaLexerPart {
 		return states;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

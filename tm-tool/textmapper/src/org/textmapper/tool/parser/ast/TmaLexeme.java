@@ -69,7 +69,7 @@ public class TmaLexeme extends TmaNode implements TmaLexerPart {
 	}
 
 	@Override
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

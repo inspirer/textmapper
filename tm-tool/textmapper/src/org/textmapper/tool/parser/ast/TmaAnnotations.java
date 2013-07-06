@@ -32,7 +32,7 @@ public class TmaAnnotations extends TmaNode {
 		return annotations;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

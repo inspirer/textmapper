@@ -23,7 +23,7 @@ public class TmaSyntaxProblem extends TmaNode implements TmaLexerPart, TmaGramma
 		super(source, offset, endoffset);
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

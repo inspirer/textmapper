@@ -54,7 +54,7 @@ public class TmaInput extends TmaNode {
 		this.templatesStart = templatesStart;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

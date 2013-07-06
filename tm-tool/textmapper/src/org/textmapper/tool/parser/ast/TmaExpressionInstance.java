@@ -38,7 +38,7 @@ public class TmaExpressionInstance extends TmaNode implements TmaExpression {
 		return mapEntries;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

@@ -30,7 +30,7 @@ public class TmaExpressionLiteral extends TmaNode implements TmaExpression {
 		return literal;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

@@ -36,7 +36,7 @@ public class TmaOption extends TmaNode implements TmaOptionPart {
 		return value;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

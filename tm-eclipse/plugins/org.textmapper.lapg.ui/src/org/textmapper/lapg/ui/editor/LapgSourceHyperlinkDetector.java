@@ -23,7 +23,7 @@ import org.textmapper.lapg.common.ui.editor.IStructuredDocumentProvider;
 import org.textmapper.lapg.common.ui.editor.StructuredTextEditor;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
 import org.textmapper.tool.parser.TMTree;
-import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.TmaVisitor;
 import org.textmapper.tool.parser.ast.ITmaNode;
 import org.textmapper.tool.parser.ast.TmaInput;
 import org.textmapper.tool.parser.ast.TmaSymref;
@@ -69,7 +69,7 @@ public class LapgSourceHyperlinkDetector extends AbstractHyperlinkDetector {
 		return new IHyperlink[]{new LapgReferenceHyperlink((LapgSourceEditor) textEditor, refregion, model, ref)};
 	}
 
-	private static class ReferenceFinder extends AbstractVisitor {
+	private static class ReferenceFinder extends TmaVisitor {
 
 		private final int offset;
 		private ITmaNode result;

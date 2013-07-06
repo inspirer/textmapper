@@ -30,7 +30,7 @@ public class TmaRhsPrio extends TmaNode implements TmaRhsSuffix {
 		return reference;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

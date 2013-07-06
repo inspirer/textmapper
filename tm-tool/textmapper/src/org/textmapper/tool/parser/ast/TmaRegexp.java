@@ -30,7 +30,7 @@ public class TmaRegexp extends TmaNode {
 		return regexp;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }

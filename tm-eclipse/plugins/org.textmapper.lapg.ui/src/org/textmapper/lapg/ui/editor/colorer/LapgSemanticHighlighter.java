@@ -4,13 +4,13 @@ import org.textmapper.lapg.common.ui.editor.ISourceStructure;
 import org.textmapper.lapg.common.ui.editor.colorer.ISemanticHighlighter;
 import org.textmapper.lapg.common.ui.editor.colorer.SemanticHighlightingReconciler.PositionCollector;
 import org.textmapper.lapg.ui.structure.LapgSourceStructure;
-import org.textmapper.tool.parser.ast.AbstractVisitor;
+import org.textmapper.tool.parser.ast.TmaVisitor;
 import org.textmapper.tool.parser.ast.TmaSyntaxProblem;
 import org.textmapper.tool.parser.ast.TmaIdentifier;
 import org.textmapper.tool.parser.ast.TmaNode;
 import org.textmapper.tool.parser.ast.TmaSymref;
 
-public class LapgSemanticHighlighter extends AbstractVisitor implements ISemanticHighlighter {
+public class LapgSemanticHighlighter extends TmaVisitor implements ISemanticHighlighter {
 
 	protected static final int INDEX_CLASSID = 0;
 	protected static final int INDEX_REFERENCE = 1;

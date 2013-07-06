@@ -48,7 +48,7 @@ public class TmaRhsQuantifier extends TmaNode implements TmaRhsPart {
 	}
 
 	@Override
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}

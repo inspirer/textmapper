@@ -39,7 +39,7 @@ public class TmaSymref extends TmaNode implements TmaExpression {
 		return scope;
 	}
 
-	public void accept(AbstractVisitor v) {
+	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}
 }
