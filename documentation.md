@@ -441,7 +441,7 @@ Location attributes of terminal symbols are filled out by the lexer. A nontermin
 
 ## Parser Algorithm
 
-The generated parser is a [shift-reduce parser](http://en.wikipedia.org/wiki/Shift-reduce_parser). It builds a parse tree from the leaves upwards by scanning the input left-to-right. The processed part of the input is stored as a set of partially parsed trees in a stack. Initially the stack (called the parsing stack) is empty and in the end it contains the only parse tree for the whole input (if parsing succeeded). The stack is also used to maintain the associated attributes for each symbol (like values and locations). The parser proceeds step-by-step by applying one of two simple actions:
+The generated parser is a [shift-reduce parser](http://en.wikipedia.org/wiki/Shift-reduce_parser). It builds a parse tree from the leaves upwards by scanning the input left-to-right. The processed part of the input is stored as a set of partially parsed trees in a stack. Initially the stack (called the parsing stack) is empty, and in the end it contains the only parse tree for the whole input (if parsing succeeded). The stack is also used to maintain the associated attributes for each symbol (like values and locations). The parser proceeds step-by-step by applying one of two simple actions:
 
 **Shift** takes the next token from the input stream and pushes it onto the parsing stack.
 
@@ -465,9 +465,78 @@ The following example shows the parsing steps for the variable declaration const
 | var_decl                |               | Reduce (input ::= var_decl) |
 | input                   |               | \<success\> |
 
-The decision on which action to execute is made at each step, depending on the stack content and the following items in the input stream (so-called lookahead tokens). Textmapper uses LR parsing techniques to come to this decision quickly. First, instead of analyzing the whole stack each time, an aggregated value describing the stack content is used. This value is called a parser state. The state is effectively maintained for every symbol on the stack using a special table in the generated code.
+The decision on which action to execute is made at each step, depending on the stack content and the following items in the input stream (so-called lookahead tokens). Textmapper uses LR parsing techniques to come to this decision quickly.
+
+Instead of analyzing the whole stack each time, an aggregated value describing the stack content is used. This value is called a parser state. The parser state is effectively maintained for every element of the stack using a special table in the generated code (called the *goto* table). When a terminal or nonterminal symbol is pushed onto the stack the new state is calculated as ```goto[s, newSymbol]``` where **s** is the previous state on top of the stack.
+
+In each state there may be one or more actions that lead to a successful parse. If there are many, we have to examine lookahead tokens to disambiguate. The generated parser scans them one by one until the ambiguity is resolved. Then it applies the only remaining valid action, or reports a syntax error. The pre-computed *action* table is used by the parser to look up the next action for the current state and the next input terminal. In addition to *Shift* and *Reduce*, the action table may contain two more types of actions:
+
+**Error** reports a syntax error. It may also try to recover if this feature is on.
+
+**Lookahead** means that one more token is needed to disambiguate. It takes a new lookahead state as an argument. Lookahead states extend a set of parser states, and can be used as keys in the *action* table (but not in the *goto* table). When the parser encounters this action, it fetches the next lookahead token. It then continues the lookup for the new state and the new token until no more Lookahead actions are returned.
+
+There is no *Success* action, instead the parser continues until it reaches the success state.
+
+## Grammar Ambiguities
+
+While building the *action* table, Textmapper reports all unresolved ambiguities as compile-time errors. Most of these errors originate in the grammar design and can be fixed by changing the derivation and precedence rules. If a grammar was successfully compiled, the generated parser is deterministic and produces one unique parse tree for each input.
+
+Two types of conflicts can be encountered:
+
+**Shift/Reduce** appears when both shifting the next token and reducing a rule may lead to a successfull parse. One of the classic examples is the [Dangling Else](http://en.wikipedia.org/wiki/Dangling_else) problem.
+
+**Reduce/Reduce** means there are two rules which can be reduced in this state.
+
+These conflicts also appear when the chosen LR algorithm variation is not strong enough for the grammar. The number of lookahead symbols may be low, or the states were merged too aggressively (in order to save space). There is usually a way to rewrite parts of the grammar to make it compatible with the restrictions imposed by the algorithm.
+
+Each error contains an example of the parsing stack content, conflicting rules, and lookahead tokens:
+
+	input: statementList if '(' Expression ')' Statement
+	shift/reduce conflict (next: else)
+    	IfStatement ::= if '(' Expression ')' Statement
+
+We can resolve this conflict manually by marking the appropriate rule with a %shift modifier, which takes a comma-separated list of terminal symbols for which *Shift* is the preferred solution. Excess modifiers (i.e. for non-conflicting rules or terminals) are reported as errors.
+
+	IfStatement ::=
+	    kw_if '(' Expression ')' Statement %shift else
+	  | kw_if '(' Expression ')' Statement else Statement
+	;
+
+The rule modifier should be used with care, as it may silently resolve more conflicts than you expect. A good practice is to limit its usages to well-studied cases only.
+
+## Operator Precedence
+
+Mathematical expressions appear in many languages and every language defines its own order in which parts of an expression are evaluated. For example, without parentheses, multiplication is usually done before addition. From the parsing point of view, it does make sense to have an AST that reflects the chosen operator precedence, i.e. operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal.
+
+For operators of the same precedence, the order of execution remains unclear. For example, ```a+b+c``` can be interpreted either as ```(a+b)+c```, or ```a+(b+c)```. We may resolve it by defining an operator as left-associative (operations are grouped left-to-right), right-associative, or non-associative. Non-associative operators produce a syntax error when applied to a term of the same precedence (e.g. a range operator is non-associative ```1..100```).
+
+The following grammar snippet produces a bunch of **Shift/Reduce** conflicts. Obviously, without precedences and associativities, there are multiple ways to parse any complex expression.
+
+	expr ::= 
+	     IntegerConstant
+	   | expr '+' expr
+	   | expr '*' expr
+	;
+	   
+We can rewrite it so that operator priorities and associativities are encoded in the grammar. The rewritten grammar would look like this:
+
+	expr ::=
+	    plus_expr ;
+	
+	plus_expr ::=
+	    mult_expr | plus_expr '+' mult_expr ;
+	    
+	mult_expr ::=
+		IntegerConstant | mult_expr '*' IntegerConstant ; 
+
+It is heavy, verbose, and requires many excess reductions (every single constant passes its way through all nonterminals).
+....
+
+	input: MethodHeader '{' expr '+' expr
+	shift/reduce conflict (next: '+', '*')
+	    expr ::= expr '+' expr
+
 
 ## ....
 
 ... to be continued
-
