@@ -66,8 +66,7 @@ ${query rhsMapping(defaultText) =
 	self.field && self.field.name == defaultText && !self.isAddition() && !self.value ? '{' + defaultText + '}' :
 	(self.field ? self.field.name  : 'this') +
 	(self.isAddition() ? '+=' : '=') +
-	(self.value ? '[' + (self.value is LiAstEnumMember ? value.containingEnum.name + '.' + value.name : value) + ']' : '') +
-	defaultText
+	(self.value ? defaultText + ' as ' + (self.value is LiAstEnumMember ? value.containingEnum.name + '.' + value.name : value) : defaultText)
 }
 
 ${query paren(condition) = condition ? '(' + self + ')' : self}

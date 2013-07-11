@@ -91,8 +91,8 @@ class StringConstraint {
 }
 
 string_constraint  : StringConstraint ::=
-	kind=[KindKind.LSET]Lset ':' {strings}
-  | kind=[KindKind.LCHOICE]Lchoice ':' {strings}
+	kind=Lset as KindKind.LSET ':' {strings}
+  | kind=Lchoice as KindKind.LCHOICE ':' {strings}
   | {identifier}
 ;
 
@@ -118,7 +118,7 @@ class Multiplicity {
 
 multiplicity  : Multiplicity ::=
 	lo=icon
-  | lo=icon '..' hasNoUpperBound=[true]'*'
+  | lo=icon '..' hasNoUpperBound='*' as true
   | lo=icon '..' hi=icon
 ;
 
@@ -146,12 +146,12 @@ class Type {
 }
 
 type  : Type ::=
-	kind=[KindKind.LINT]Lint
-  | kind=[KindKind.LSTRING]Lstring
-  | kind=[KindKind.LBOOL]Lbool
+	kind=Lint as KindKind.LINT
+  | kind=Lstring as KindKind.LSTRING
+  | kind=Lbool as KindKind.LBOOL
   | {name}
-  | {name} isReference=[true]'*'
-  | isClosure=[true]'{' parameters=parametersopt '=>' '}'
+  | {name} isReference='*' as true
+  | isClosure='{' as true parameters=parametersopt '=>' '}'
 ;
 
 expression  : Expression ::=
@@ -193,9 +193,9 @@ enum MapSeparator {
 }
 
 map_separator  : MapSeparator ::=
-	this=[MapSeparator.COLON]':'
-  | this=[MapSeparator.EQUAL]'='
-  | this=[MapSeparator.EQUALGREATER]'=>'
+	this=':' as MapSeparator.COLON
+  | this='=' as MapSeparator.EQUAL
+  | this='=>' as MapSeparator.EQUALGREATER
 ;
 
 name  : list<String>

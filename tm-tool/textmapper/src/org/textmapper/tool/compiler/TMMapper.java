@@ -60,7 +60,7 @@ public class TMMapper {
 
 	private void rewriteLists() {
 		for (Nonterminal n : unmapped) {
-			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null) continue;
+			if (hasProperty(n, "_interface") || hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null) continue;
 			GrammarFacade.rewriteAsList(n);
 		}
 	}
