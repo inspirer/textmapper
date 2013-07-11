@@ -20,9 +20,9 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaOption extends TmaNode implements TmaOptionPart {
 
 	private final String key;
-	private final TmaExpression value;
+	private final ITmaExpression value;
 
-	public TmaOption(String key, TmaExpression value, TextSource source, int offset, int endoffset) {
+	public TmaOption(String key, ITmaExpression value, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.key = key;
 		this.value = value;
@@ -32,7 +32,7 @@ public class TmaOption extends TmaNode implements TmaOptionPart {
 		return key;
 	}
 
-	public TmaExpression getValue() {
+	public ITmaExpression getValue() {
 		return value;
 	}
 

@@ -97,7 +97,7 @@ public class TMCompiler {
 		if (tree.getRoot().getOptions() != null) {
 			for (TmaOptionPart option : tree.getRoot().getOptions()) {
 				if (option instanceof TmaOption && ((TmaOption) option).getKey().equals("lang")) {
-					TmaExpression expression = ((TmaOption) option).getValue();
+					ITmaExpression expression = ((TmaOption) option).getValue();
 					if (expression instanceof TmaExpressionLiteral) {
 						return ((TmaExpressionLiteral) expression).getLiteral().toString();
 					}
@@ -139,7 +139,7 @@ public class TMCompiler {
 					continue;
 				}
 
-				TmaExpression value = ((TmaOption) option).getValue();
+				ITmaExpression value = ((TmaOption) option).getValue();
 				options.put(key, expressionResolver.convertExpression(value, feature.getType()));
 			}
 		}

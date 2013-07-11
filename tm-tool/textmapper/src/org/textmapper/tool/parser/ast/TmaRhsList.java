@@ -22,20 +22,20 @@ import java.util.List;
 /**
  * evgeny, 8/7/12
  */
-public class TmaRhsList extends TmaNode implements TmaRhsPart {
+public class TmaRhsList extends TmaNode implements ITmaRhsPart {
 
-	private final List<TmaRhsPart> ruleParts;
+	private final List<ITmaRhsPart> ruleParts;
 	private final List<TmaSymref> separator;
 	private final boolean atLeastOne;
 
-	public TmaRhsList(List<TmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
+	public TmaRhsList(List<ITmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.ruleParts = ruleParts;
 		this.separator = separator;
 		this.atLeastOne = atLeastOne;
 	}
 
-	public List<TmaRhsPart> getRuleParts() {
+	public List<ITmaRhsPart> getRuleParts() {
 		return ruleParts;
 	}
 
@@ -53,7 +53,7 @@ public class TmaRhsList extends TmaNode implements TmaRhsPart {
 			return;
 		}
 		if (ruleParts != null) {
-			for (TmaRhsPart rulePart : ruleParts) {
+			for (ITmaRhsPart rulePart : ruleParts) {
 				rulePart.accept(v);
 			}
 		}

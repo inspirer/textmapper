@@ -20,12 +20,12 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsAnnotated extends TmaNode implements TmaRhsPart {
+public class TmaRhsAnnotated extends TmaNode implements ITmaRhsPart {
 
 	private final TmaRuleAnnotations annotations;
-	private final TmaRhsPart inner;
+	private final ITmaRhsPart inner;
 
-	public TmaRhsAnnotated(TmaRuleAnnotations annotations, TmaRhsPart inner, TextSource source, int offset, int endoffset) {
+	public TmaRhsAnnotated(TmaRuleAnnotations annotations, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 		this.inner = inner;
@@ -35,7 +35,7 @@ public class TmaRhsAnnotated extends TmaNode implements TmaRhsPart {
 		return annotations;
 	}
 
-	public TmaRhsPart getInner() {
+	public ITmaRhsPart getInner() {
 		return inner;
 	}
 

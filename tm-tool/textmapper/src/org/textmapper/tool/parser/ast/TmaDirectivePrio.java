@@ -19,7 +19,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaDirectivePrio extends TmaNode implements TmaGrammarPart {
+public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 
 	private final String key;
 	private final List<TmaSymref> symbols;

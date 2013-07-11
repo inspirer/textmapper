@@ -17,7 +17,7 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaExpressionLiteral extends TmaNode implements TmaExpression {
+public class TmaExpressionLiteral extends TmaNode implements ITmaExpression {
 
 	private final Object literal;
 

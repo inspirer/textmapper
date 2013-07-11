@@ -67,7 +67,7 @@ public class TMParserCompiler {
 
 	private void collectAstTypes() {
 		Set<String> withType = new HashSet<String>();
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				if (nonterm.getType() != null) {
@@ -76,7 +76,7 @@ public class TMParserCompiler {
 			}
 		}
 
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
@@ -102,7 +102,7 @@ public class TMParserCompiler {
 	}
 
 	private void collectRules() {
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
@@ -119,7 +119,7 @@ public class TMParserCompiler {
 	}
 
 	private void collectDirectives() {
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
 				String key = directive.getKey();
@@ -172,7 +172,7 @@ public class TMParserCompiler {
 	}
 
 	private void collectAnnotations() {
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(), "AnnotateSymbol"));
@@ -182,16 +182,16 @@ public class TMParserCompiler {
 
 	private void createRule(Nonterminal left, TmaRule0 right) {
 		List<RhsPart> rhs = new ArrayList<RhsPart>();
-		List<TmaRhsPart> list = right.getList();
+		List<ITmaRhsPart> list = right.getList();
 		TmaCommand lastAction = null;
 		if (list != null) {
-			TmaRhsPart last = list.size() > 0 ? list.get(list.size() - 1) : null;
+			ITmaRhsPart last = list.size() > 0 ? list.get(list.size() - 1) : null;
 			if (last instanceof TmaCommand) {
 				lastAction = (TmaCommand) last;
 				list = list.subList(0, list.size() - 1);
 			}
 
-			for (TmaRhsPart part : list) {
+			for (ITmaRhsPart part : list) {
 				RhsPart rulePart = convertPart(left, part);
 				if (rulePart != null) {
 					rhs.add(rulePart);
@@ -221,7 +221,7 @@ public class TMParserCompiler {
 		}
 	}
 
-	private RhsPart convertPart(Symbol outer, TmaRhsPart part) {
+	private RhsPart convertPart(Symbol outer, ITmaRhsPart part) {
 		if (part instanceof TmaCommand) {
 			TmaCommand astCode = (TmaCommand) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
@@ -232,14 +232,14 @@ public class TMParserCompiler {
 			return builder.symbol(codeSym, null, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
-			List<TmaRhsPart> refParts = new ArrayList<TmaRhsPart>();
+			List<ITmaRhsPart> refParts = new ArrayList<ITmaRhsPart>();
 			extractUnorderedParts(part, refParts);
 			if (refParts.size() < 2 || refParts.size() > 5) {
 				error(part, "max 5 elements are allowed for permutation");
 				return null;
 			}
 			List<RhsPart> resolved = new ArrayList<RhsPart>(refParts.size());
-			for (TmaRhsPart refPart : refParts) {
+			for (ITmaRhsPart refPart : refParts) {
 				RhsPart rulePart = convertPart(outer, refPart);
 				if (rulePart == null) {
 					return null;
@@ -282,7 +282,7 @@ public class TMParserCompiler {
 
 		// inline (...)
 		if (canInline && isGroupPart(part)) {
-			List<TmaRhsPart> groupPart = getGroupPart(part);
+			List<ITmaRhsPart> groupPart = getGroupPart(part);
 			result = convertGroup(outer, groupPart, part);
 
 			// inline (...|...|...)
@@ -316,7 +316,7 @@ public class TMParserCompiler {
 		return result;
 	}
 
-	private Symbol convertPrimary(Symbol outer, TmaRhsPart part) {
+	private Symbol convertPrimary(Symbol outer, ITmaRhsPart part) {
 
 		if (part instanceof TmaRhsSymbol) {
 			return resolver.resolve(((TmaRhsSymbol) part).getReference());
@@ -354,9 +354,9 @@ public class TMParserCompiler {
 			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) part;
 
 			RhsSequence inner;
-			TmaRhsPart innerSymRef = nestedQuantifier.getInner();
+			ITmaRhsPart innerSymRef = nestedQuantifier.getInner();
 			if (isGroupPart(innerSymRef)) {
-				List<TmaRhsPart> groupPart = getGroupPart(innerSymRef);
+				List<ITmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = convertPrimary(outer, innerSymRef);
@@ -387,12 +387,12 @@ public class TMParserCompiler {
 		return builder.choice(result, origin);
 	}
 
-	private RhsSequence convertGroup(Symbol outer, List<TmaRhsPart> groupPart, SourceElement origin) {
+	private RhsSequence convertGroup(Symbol outer, List<ITmaRhsPart> groupPart, SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<RhsPart>();
 		if (groupPart == null) {
 			return null;
 		}
-		for (TmaRhsPart innerPart : groupPart) {
+		for (ITmaRhsPart innerPart : groupPart) {
 			RhsPart rulePart = convertPart(outer, innerPart);
 			if (rulePart != null) {
 				groupResult.add(rulePart);
@@ -401,7 +401,7 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
-	private Symbol createList(Symbol outer, RhsSequence inner, boolean atLeastOne, RhsPart separator, TmaRhsPart origin) {
+	private Symbol createList(Symbol outer, RhsSequence inner, boolean atLeastOne, RhsPart separator, ITmaRhsPart origin) {
 		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
 		Nonterminal listSymbol = listsMap.get(descr);
 		if (listSymbol != null) {
@@ -427,7 +427,7 @@ public class TMParserCompiler {
 		return listSymbol;
 	}
 
-	private boolean isGroupPart(TmaRhsPart symbolRef) {
+	private boolean isGroupPart(ITmaRhsPart symbolRef) {
 		if (!(symbolRef instanceof TmaRhsNested)) {
 			return false;
 		}
@@ -439,7 +439,7 @@ public class TMParserCompiler {
 		return false;
 	}
 
-	private boolean isChoicePart(TmaRhsPart symbolRef) {
+	private boolean isChoicePart(ITmaRhsPart symbolRef) {
 		if (!(symbolRef instanceof TmaRhsNested)) {
 			return false;
 		}
@@ -464,11 +464,11 @@ public class TMParserCompiler {
 				&& !rule.hasSyntaxError();
 	}
 
-	private List<TmaRhsPart> getGroupPart(TmaRhsPart symbolRef) {
+	private List<ITmaRhsPart> getGroupPart(ITmaRhsPart symbolRef) {
 		return ((TmaRhsNested) symbolRef).getRules().get(0).getList();
 	}
 
-	private void extractUnorderedParts(TmaRhsPart unorderedRulePart, List<TmaRhsPart> result) {
+	private void extractUnorderedParts(ITmaRhsPart unorderedRulePart, List<ITmaRhsPart> result) {
 		if (unorderedRulePart instanceof TmaRhsUnordered) {
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getLeft(), result);
 			extractUnorderedParts(((TmaRhsUnordered) unorderedRulePart).getRight(), result);

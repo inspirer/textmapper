@@ -19,7 +19,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaNonterm extends TmaNode implements TmaGrammarPart {
+public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 
 	private final TmaIdentifier name;
 	private final TmaNontermType type;

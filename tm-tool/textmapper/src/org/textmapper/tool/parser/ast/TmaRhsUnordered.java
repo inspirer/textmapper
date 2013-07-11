@@ -20,22 +20,22 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/6/12
  */
-public class TmaRhsUnordered extends TmaNode implements TmaRhsPart {
+public class TmaRhsUnordered extends TmaNode implements ITmaRhsPart {
 
-	private final TmaRhsPart left;
-	private final TmaRhsPart right;
+	private final ITmaRhsPart left;
+	private final ITmaRhsPart right;
 
-	public TmaRhsUnordered(TmaRhsPart left, TmaRhsPart right, TextSource source, int offset, int endoffset) {
+	public TmaRhsUnordered(ITmaRhsPart left, ITmaRhsPart right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}
 
-	public TmaRhsPart getLeft() {
+	public ITmaRhsPart getLeft() {
 		return left;
 	}
 
-	public TmaRhsPart getRight() {
+	public ITmaRhsPart getRight() {
 		return right;
 	}
 

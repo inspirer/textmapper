@@ -20,12 +20,12 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * Gryaznov Evgeny, 6/23/11
  */
-public class TmaNamedPattern extends TmaNode implements TmaLexerPart {
+public class TmaNamedPattern extends TmaNode implements ITmaLexerPart {
 
 	private String name;
-	private TmaRegexp regexp;
+	private TmaPattern regexp;
 
-	public TmaNamedPattern(String name, TmaRegexp regexp, TextSource source, int offset, int endoffset) {
+	public TmaNamedPattern(String name, TmaPattern regexp, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.regexp = regexp;
@@ -35,7 +35,7 @@ public class TmaNamedPattern extends TmaNode implements TmaLexerPart {
 		return name;
 	}
 
-	public TmaRegexp getRegexp() {
+	public TmaPattern getRegexp() {
 		return regexp;
 	}
 

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * evgeny, 8/2/12
  */
-public class TmaRhsNested extends TmaNode implements TmaRhsPart {
+public class TmaRhsNested extends TmaNode implements ITmaRhsPart {
 
 	private final List<TmaRule0> rules;
 

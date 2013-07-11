@@ -20,18 +20,18 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsCast extends TmaNode implements TmaRhsPart {
+public class TmaRhsCast extends TmaNode implements ITmaRhsPart {
 
-	private final TmaRhsPart left;
+	private final ITmaRhsPart left;
 	private final TmaSymref right;
 
-	public TmaRhsCast(TmaRhsPart left, TmaSymref right, TextSource source, int offset, int endoffset) {
+	public TmaRhsCast(ITmaRhsPart left, TmaSymref right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}
 
-	public TmaRhsPart getInner() {
+	public ITmaRhsPart getInner() {
 		return left;
 	}
 

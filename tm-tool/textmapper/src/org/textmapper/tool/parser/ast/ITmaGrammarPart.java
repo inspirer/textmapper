@@ -15,22 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class TmaRegexp extends TmaNode {
-
-	private final String regexp;
-
-	public TmaRegexp(String regexp, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.regexp = regexp;
-	}
-
-	public String getRegexp() {
-		return regexp;
-	}
-
-	public void accept(TmaVisitor v) {
-		v.visit(this);
-	}
+public interface ITmaGrammarPart extends ITmaNode {
 }

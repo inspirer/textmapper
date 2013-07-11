@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaExpressionArray extends TmaNode implements TmaExpression {
+public class TmaExpressionArray extends TmaNode implements ITmaExpression {
 
-	private final List<TmaExpression> expressions;
+	private final List<ITmaExpression> expressions;
 
-	public TmaExpressionArray(List<TmaExpression> expressions, TextSource source, int offset, int endoffset) {
+	public TmaExpressionArray(List<ITmaExpression> expressions, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.expressions = expressions;
 	}
 
-	public List<TmaExpression> getExpressions() {
+	public List<ITmaExpression> getExpressions() {
 		return expressions;
 	}
 
@@ -37,7 +37,7 @@ public class TmaExpressionArray extends TmaNode implements TmaExpression {
 			return;
 		}
 		if (expressions != null) {
-			for (TmaExpression n : expressions) {
+			for (ITmaExpression n : expressions) {
 				n.accept(v);
 			}
 		}

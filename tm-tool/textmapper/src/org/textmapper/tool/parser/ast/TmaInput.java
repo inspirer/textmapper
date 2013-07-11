@@ -22,11 +22,11 @@ import java.util.List;
 public class TmaInput extends TmaNode {
 
 	private final List<TmaOptionPart> options;
-	private final List<TmaLexerPart> lexer;
-	private final List<TmaGrammarPart> grammar;
+	private final List<ITmaLexerPart> lexer;
+	private final List<ITmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaInput(List<TmaOptionPart> options, List<TmaLexerPart> lexer, List<TmaGrammarPart> grammar, TextSource source,
+	public TmaInput(List<TmaOptionPart> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
 					int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.options = options;
@@ -38,11 +38,11 @@ public class TmaInput extends TmaNode {
 		return options;
 	}
 
-	public List<TmaLexerPart> getLexer() {
+	public List<ITmaLexerPart> getLexer() {
 		return lexer;
 	}
 
-	public List<TmaGrammarPart> getGrammar() {
+	public List<ITmaGrammarPart> getGrammar() {
 		return grammar;
 	}
 
@@ -64,12 +64,12 @@ public class TmaInput extends TmaNode {
 			}
 		}
 		if (lexer != null) {
-			for (TmaLexerPart l : lexer) {
+			for (ITmaLexerPart l : lexer) {
 				l.accept(v);
 			}
 		}
 		if (grammar != null) {
-			for (TmaGrammarPart g : grammar) {
+			for (ITmaGrammarPart g : grammar) {
 				g.accept(v);
 			}
 		}

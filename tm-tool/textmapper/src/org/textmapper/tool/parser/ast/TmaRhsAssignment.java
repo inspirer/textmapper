@@ -20,13 +20,13 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 2/10/13
  */
-public class TmaRhsAssignment extends TmaNode implements TmaRhsPart {
+public class TmaRhsAssignment extends TmaNode implements ITmaRhsPart {
 
 	private final TmaIdentifier id;
-	private final TmaRhsPart inner;
+	private final ITmaRhsPart inner;
 	private final boolean addition;
 
-	public TmaRhsAssignment(TmaIdentifier id, TmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
+	public TmaRhsAssignment(TmaIdentifier id, ITmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.id = id;
 		this.inner = inner;
@@ -37,7 +37,7 @@ public class TmaRhsAssignment extends TmaNode implements TmaRhsPart {
 		return id;
 	}
 
-	public TmaRhsPart getInner() {
+	public ITmaRhsPart getInner() {
 		return inner;
 	}
 

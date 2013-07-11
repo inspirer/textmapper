@@ -20,11 +20,11 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaMapEntriesItem extends TmaNode {
 
 	private final String name;
-	private final TmaExpression expression;
+	private final ITmaExpression expression;
 
 	private final TmaSyntaxProblem error;
 
-	public TmaMapEntriesItem(String name, TmaExpression expression, TextSource source, int offset, int endoffset) {
+	public TmaMapEntriesItem(String name, ITmaExpression expression, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
 		this.expression = expression;
@@ -42,7 +42,7 @@ public class TmaMapEntriesItem extends TmaNode {
 		return name;
 	}
 
-	public TmaExpression getExpression() {
+	public ITmaExpression getExpression() {
 		return expression;
 	}
 

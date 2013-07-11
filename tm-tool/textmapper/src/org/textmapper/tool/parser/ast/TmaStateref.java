@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * Gryaznov Evgeny, 7/6/13
  */
-public class TmaStateref extends TmaNode implements TmaExpression {
+public class TmaStateref extends TmaNode implements ITmaExpression {
 
 	private final String name;
 

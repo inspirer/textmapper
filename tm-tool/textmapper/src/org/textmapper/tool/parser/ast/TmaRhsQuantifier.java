@@ -20,16 +20,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 8/3/12
  */
-public class TmaRhsQuantifier extends TmaNode implements TmaRhsPart {
+public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 
 	public static final int KIND_OPTIONAL = 0;
 	public static final int KIND_ZEROORMORE = 1;
 	public static final int KIND_ONEORMORE = 2;
 
 	private final int quantifier;
-	private final TmaRhsPart inner;
+	private final ITmaRhsPart inner;
 
-	public TmaRhsQuantifier(TmaRhsPart inner, int quantifier, TextSource source, int offset, int endoffset) {
+	public TmaRhsQuantifier(ITmaRhsPart inner, int quantifier, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.inner = inner;
 		this.quantifier = quantifier;
@@ -39,7 +39,7 @@ public class TmaRhsQuantifier extends TmaNode implements TmaRhsPart {
 		return quantifier;
 	}
 
-	public TmaRhsPart getInner() {
+	public ITmaRhsPart getInner() {
 		return inner;
 	}
 

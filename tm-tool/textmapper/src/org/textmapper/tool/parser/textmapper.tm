@@ -132,17 +132,17 @@ type_part_list ::=
 type_part ::=
 	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')' ;
 
-pattern (TmaRegexp) ::=
-	  regexp											{ $$ = new TmaRegexp($regexp, source, ${left().offset}, ${left().endoffset}); }
+pattern (TmaPattern) ::=
+	  regexp											{ $$ = new TmaPattern($regexp, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_parts (List<TmaLexerPart>) ::=
-	  lexer_part 										{ $$ = new ArrayList<TmaLexerPart>(64); ${left()}.add($lexer_part); }
+lexer_parts (List<ITmaLexerPart>) ::=
+	  lexer_part 										{ $$ = new ArrayList<ITmaLexerPart>(64); ${left()}.add($lexer_part); }
 	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
 	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
-lexer_part (TmaLexerPart) ::=
+lexer_part (ITmaLexerPart) ::=
 	  state_selector
 	| named_pattern
 	| lexeme
@@ -189,13 +189,13 @@ lexer_state (TmaLexerState) ::=
 	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new TmaLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-grammar_parts (List<TmaGrammarPart>) ::=
-	  grammar_part 										{ $$ = new ArrayList<TmaGrammarPart>(64); ${left()}.add($grammar_part); }
+grammar_parts (List<ITmaGrammarPart>) ::=
+	  grammar_part 										{ $$ = new ArrayList<ITmaGrammarPart>(64); ${left()}.add($grammar_part); }
 	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
 	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
-grammar_part (TmaGrammarPart) ::=
+grammar_part (ITmaGrammarPart) ::=
 	  nonterm
 	| directive
 ;
@@ -263,47 +263,47 @@ rhsSuffix (TmaRhsSuffix) ::=
 	| '%' Lshift										{ $$ = new TmaRhsShiftClause(source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsParts (List<TmaRhsPart>) ::=
-	  rhsPart											{ $$ = new ArrayList<TmaRhsPart>(); ${left()}.add($rhsPart); }
+rhsParts (List<ITmaRhsPart>) ::=
+	  rhsPart											{ $$ = new ArrayList<ITmaRhsPart>(); ${left()}.add($rhsPart); }
 	| list=rhsParts rhsPart 							{ $list.add($rhsPart); }
 	| list=rhsParts syntax_problem						{ $list.add($syntax_problem); }
 ;
 
 %left '&';
 
-rhsPart (TmaRhsPart) ::=
+rhsPart (ITmaRhsPart) ::=
 	  rhsAnnotated
 	| rhsUnordered
 	| command
 ;
 
-rhsAnnotated (TmaRhsPart) ::=
+rhsAnnotated (ITmaRhsPart) ::=
 	  rhsAssignment
 	| rhsAnnotations rhsAssignment						{ $$ = new TmaRhsAnnotated($rhsAnnotations, $rhsAssignment, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsAssignment (TmaRhsPart) ::=
+rhsAssignment (ITmaRhsPart) ::=
 	  rhsOptional
 	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, false, source, ${left().offset}, ${left().endoffset}); }
 	| identifier '+=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, true, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsOptional (TmaRhsPart) ::=
+rhsOptional (ITmaRhsPart) ::=
 	  rhsCast
 	| rhsCast '?'										{ $$ = new TmaRhsQuantifier($rhsCast, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsCast (TmaRhsPart) ::=
+rhsCast (ITmaRhsPart) ::=
 	  rhsPrimary
 	| rhsPrimary Las symref								{ $$ = new TmaRhsCast($rhsPrimary, $symref, source, ${left().offset}, ${left().endoffset}); }
 
 ;
 
-rhsUnordered (TmaRhsPart) ::=
+rhsUnordered (ITmaRhsPart) ::=
 	  left=rhsPart '&' right=rhsPart					{ $$ = new TmaRhsUnordered($left, $right, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsPrimary (TmaRhsPart) ::=
+rhsPrimary (ITmaRhsPart) ::=
 	  symref											{ $$ = new TmaRhsSymbol($symref, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
@@ -343,7 +343,7 @@ negative_la_clause (java.util.@List<TmaSymref>) ::=
 
 ##### EXPRESSIONS
 
-expression (TmaExpression) ::=
+expression (ITmaExpression) ::=
 	  scon                                              { $$ = new TmaExpressionLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
 	| icon                                              { $$ = new TmaExpressionLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
 	| Ltrue                                             { $$ = new TmaExpressionLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
@@ -354,7 +354,7 @@ expression (TmaExpression) ::=
 	| syntax_problem
 ;
 
-expression_list (List<TmaExpression>) ::=
+expression_list (List<ITmaExpression>) ::=
 	expression											{ $$ = new ArrayList(); ${left()}.add($expression); }
 	| expression_list ',' expression					{ $expression_list.add($expression); }
 ;

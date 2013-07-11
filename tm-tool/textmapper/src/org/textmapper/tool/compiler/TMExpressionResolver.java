@@ -74,7 +74,7 @@ public class TMExpressionResolver {
 
 			IType expected = feature.getType();
 
-			TmaExpression expr = entry.getExpression();
+			ITmaExpression expr = entry.getExpression();
 			if (expr == null) {
 				if (!TypesUtil.isBooleanType(expected)) {
 					error(entry, "expected value of type `" + expected.toString() + "` instead of boolean");
@@ -89,18 +89,18 @@ public class TMExpressionResolver {
 	}
 
 	@SuppressWarnings("unchecked")
-	Object convertExpression(TmaExpression expression, IType type) {
-		return new TiExpressionBuilder<TmaExpression>() {
+	Object convertExpression(ITmaExpression expression, IType type) {
+		return new TiExpressionBuilder<ITmaExpression>() {
 			@Override
 			public IClass resolveType(String className) {
 				return types.getClass(className, null);
 			}
 
 			@Override
-			public Object resolve(TmaExpression expression, IType type) {
+			public Object resolve(ITmaExpression expression, IType type) {
 				if (expression instanceof TmaExpressionInstance) {
 					List<TmaMapEntriesItem> list = ((TmaExpressionInstance) expression).getEntries();
-					Map<String, TmaExpression> props = new HashMap<String, TmaExpression>();
+					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
 					if (list != null) {
 						for (TmaMapEntriesItem entry : list) {
 							if (entry.hasSyntaxError()) {
@@ -116,7 +116,7 @@ public class TMExpressionResolver {
 					return convertNew(expression, name, props, type);
 				}
 				if (expression instanceof TmaExpressionArray) {
-					List<TmaExpression> list = ((TmaExpressionArray) expression).getExpressions();
+					List<ITmaExpression> list = ((TmaExpressionArray) expression).getExpressions();
 					return convertArray(expression, list, type);
 				}
 				if (expression instanceof TmaSymref) {
@@ -140,7 +140,7 @@ public class TMExpressionResolver {
 			}
 
 			@Override
-			public void report(TmaExpression expression, String message) {
+			public void report(ITmaExpression expression, String message) {
 				error(expression, message);
 			}
 		}.resolve(expression, type);

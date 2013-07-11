@@ -15,8 +15,22 @@
  */
 package org.textmapper.tool.parser.ast;
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public interface TmaRhsPart extends ITmaNode {
+import org.textmapper.tool.parser.TMTree.TextSource;
+
+public class TmaPattern extends TmaNode {
+
+	private final String regexp;
+
+	public TmaPattern(String regexp, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.regexp = regexp;
+	}
+
+	public String getRegexp() {
+		return regexp;
+	}
+
+	public void accept(TmaVisitor v) {
+		v.visit(this);
+	}
 }

@@ -22,7 +22,7 @@ import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.TMTree.TextSource;
-import org.textmapper.tool.parser.ast.TmaExpression;
+import org.textmapper.tool.parser.ast.ITmaExpression;
 import org.textmapper.tool.parser.ast.TmaInput;
 import org.textmapper.templates.types.TypesRegistry;
 
@@ -43,8 +43,8 @@ public class SyntaxUtil {
 		return result;
 	}
 
-	public static TmaExpression parseExpression(String input, TypesRegistry registry) {
-		TMTree<TmaExpression> tree = TMTree.parseExpression(new TextSource("", input.toCharArray(), 1));
+	public static ITmaExpression parseExpression(String input, TypesRegistry registry) {
+		TMTree<ITmaExpression> tree = TMTree.parseExpression(new TextSource("", input.toCharArray(), 1));
 		if (!tree.hasErrors()) {
 			return tree.getRoot();
 		}

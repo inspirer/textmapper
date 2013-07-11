@@ -19,7 +19,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaExpressionInstance extends TmaNode implements TmaExpression {
+public class TmaExpressionInstance extends TmaNode implements ITmaExpression {
 
 	private final TmaName className;
 	private final List<TmaMapEntriesItem> mapEntries;

@@ -21,12 +21,12 @@ import java.util.List;
 
 public class TmaRule0 extends TmaNode {
 
-	private final List<TmaRhsPart> list;
+	private final List<ITmaRhsPart> list;
 	private final TmaRhsPrefix prefix;
 	private final TmaRhsSuffix suffix;
 	private final TmaSyntaxProblem error;
 
-	public TmaRule0(TmaRhsPrefix prefix, List<TmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
+	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
 					int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.list = list;
@@ -47,7 +47,7 @@ public class TmaRule0 extends TmaNode {
 		return error != null;
 	}
 
-	public List<TmaRhsPart> getList() {
+	public List<ITmaRhsPart> getList() {
 		return list;
 	}
 
@@ -83,7 +83,7 @@ public class TmaRule0 extends TmaNode {
 			prefix.accept(v);
 		}
 		if (list != null) {
-			for (TmaRhsPart part : list) {
+			for (ITmaRhsPart part : list) {
 				part.accept(v);
 			}
 		}

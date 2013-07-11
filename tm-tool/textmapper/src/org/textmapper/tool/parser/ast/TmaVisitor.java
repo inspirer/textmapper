@@ -57,7 +57,7 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaRegexp n) {
+	public boolean visit(TmaPattern n) {
 		return true;
 	}
 

@@ -92,7 +92,7 @@ public class TMResolver {
 
 	private void collectLexerStates() {
 		TmaIdentifier initialOrigin = null;
-		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaStateSelector) {
 				for (TmaLexerState state : ((TmaStateSelector) clause).getStates()) {
 					if (state.getName().getID().equals(INITIAL_STATE)) {
@@ -107,7 +107,7 @@ public class TMResolver {
 		}
 
 		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
-		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaStateSelector) {
 				TmaStateSelector selector = (TmaStateSelector) clause;
 				for (TmaLexerState state : selector.getStates()) {
@@ -121,7 +121,7 @@ public class TMResolver {
 	}
 
 	private void collectLexerSymbols() {
-		for (TmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
 				create(lexeme.getName(), convertRawType(lexeme.getType(), lexeme), true);
@@ -159,7 +159,7 @@ public class TMResolver {
 	}
 
 	private void collectNonterminals() {
-		for (TmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);

@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 6/17/11
  */
-public class TmaDirectiveInput extends TmaNode implements TmaGrammarPart {
+public class TmaDirectiveInput extends TmaNode implements ITmaGrammarPart {
 	private final List<TmaInputref> inputRefs;
 
 	public TmaDirectiveInput(List<TmaInputref> inputRefs, TextSource source, int offset, int endoffset) {

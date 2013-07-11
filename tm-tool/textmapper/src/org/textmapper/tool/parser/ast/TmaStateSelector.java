@@ -19,7 +19,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.util.List;
 
-public class TmaStateSelector extends TmaNode implements TmaLexerPart {
+public class TmaStateSelector extends TmaNode implements ITmaLexerPart {
 
 	private final List<TmaLexerState> states;
 

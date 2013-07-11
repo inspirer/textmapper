@@ -17,17 +17,17 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaLexeme extends TmaNode implements TmaLexerPart {
+public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 
 	private final TmaIdentifier name;
 	private final String type;
-	private final TmaRegexp regexp;
+	private final TmaPattern regexp;
 	private final TmaStateref transition;
 	private final TmaLexemAttrs attrs;
 	private final int priority;
 	private final TmaCommand code;
 
-	public TmaLexeme(TmaIdentifier name, String type, TmaRegexp regexp, TmaStateref transition,
+	public TmaLexeme(TmaIdentifier name, String type, TmaPattern regexp, TmaStateref transition,
 					 Integer priority, TmaLexemAttrs attrs, TmaCommand code, TextSource source, int offset,
 					 int endoffset) {
 		super(source, offset, endoffset);
@@ -48,7 +48,7 @@ public class TmaLexeme extends TmaNode implements TmaLexerPart {
 		return type;
 	}
 
-	public TmaRegexp getRegexp() {
+	public TmaPattern getRegexp() {
 		return regexp;
 	}
 
