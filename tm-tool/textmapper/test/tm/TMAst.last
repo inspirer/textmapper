@@ -2,13 +2,34 @@
 // Ast
 
 class Input {
-	list<Option> optionList;
+	String name;
+	String target;
+	ParsingAlghoritm parsingAlghoritm;
+	list<Import> importOptlist;
+	list<Option> optionOptlist;
 	list<LexerPartsItem> lexerParts;
 	list<GrammarPartsItem> grammarParts;
 }
 
 input  : Input ::=
-	optionList=option_list? lexerParts=lexer_parts grammarParts=grammar_partsopt
+	Llanguage name=ID '(' target=ID ')' parsingAlghoritm=parsing_alghoritmopt ';' importOptlist=import_optlist optionOptlist=option_optlist '::' Llexer lexerParts=lexer_parts ('::' Lparser grammarParts=grammar_parts)?
+;
+
+class ParsingAlghoritm {
+	Integer la;
+}
+
+parsing_alghoritm  : ParsingAlghoritm ::=
+	Llalr '(' la=icon ')'
+;
+
+class Import {
+	String alias;
+	String file;
+}
+
+import  : Import ::=
+	Limport alias=ID? file=scon ';'
 ;
 
 class Option {
@@ -61,8 +82,12 @@ type_part  : void ::=
   | '(' type_part_list? ')'
 ;
 
-pattern (String) ::=
-	this=regexp
+class Pattern {
+	String regexp;
+}
+
+pattern  : Pattern ::=
+	{regexp}
 ;
 
 class LexerPartsItem {
@@ -84,26 +109,26 @@ lexer_part  : LexerPart ::=
 ;
 
 class NamedPattern : LexerPart {
-	String ID;
-	String pattern;
+	String name;
+	Pattern pattern;
 }
 
 named_pattern  : NamedPattern ::=
-	{ID} '=' {pattern}
+	name=ID '=' {pattern}
 ;
 
 class Lexeme : LexerPart {
+	Identifier name;
 	Integer priority;
-	Identifier identifier;
 	String type;
-	String pattern;
+	Pattern pattern;
 	Stateref lexemTransition;
 	LexemAttrs lexemAttrs;
 	Command command;
 }
 
 lexeme  : Lexeme ::=
-	{identifier} type=typeopt ':' ({pattern} lexemTransition=lexem_transitionopt priority=iconopt lexemAttrs=lexem_attrsopt command=commandopt)?
+	name=identifier type=typeopt ':' ({pattern} lexemTransition=lexem_transitionopt priority=iconopt lexemAttrs=lexem_attrsopt command=commandopt)?
 ;
 
 class Stateref {
@@ -130,10 +155,10 @@ enum LexemAttribute {
 }
 
 lexem_attribute  : LexemAttribute ::=
-	this=[LexemAttribute.LSOFT]Lsoft
-  | this=[LexemAttribute.LCLASS]Lclass
-  | this=[LexemAttribute.LSPACE]Lspace
-  | this=[LexemAttribute.LLAYOUT]Llayout
+	this=Lsoft as LexemAttribute.LSOFT
+  | this=Lclass as LexemAttribute.LCLASS
+  | this=Lspace as LexemAttribute.LSPACE
+  | this=Llayout as LexemAttribute.LLAYOUT
 ;
 
 class StateSelector : LexerPart {
@@ -149,12 +174,12 @@ stateref  : Stateref ::=
 ;
 
 class LexerState {
+	Identifier name;
 	Stateref defaultTransition;
-	Identifier identifier;
 }
 
 lexer_state  : LexerState ::=
-	{identifier} ('=>' defaultTransition=stateref)?
+	name=identifier ('=>' defaultTransition=stateref)?
 ;
 
 class GrammarPartsItem {
@@ -175,25 +200,27 @@ grammar_part  : GrammarPart ::=
 ;
 
 class Nonterm : GrammarPart {
-	list<Annotation> annotations;
-	Identifier identifier;
-	NontermAst nontermAst;
-	String type;
+	Identifier name;
+	NontermType type;
+	Annotations annotations;
 	list<Rule0> rules;
 }
 
 nonterm  : Nonterm ::=
-	{annotations}? {identifier} nontermAst=nonterm_ast? type=typeopt Linline? '::=' {rules} ';'
+	{annotations}? name=identifier type=nonterm_type? '::=' {rules} ';'
 ;
 
-class NontermAst {
-	list<Symref> referencesCs;
+class NontermType {
+	Identifier name;
 	Symref symref;
+	String type;
 }
 
-nonterm_ast  : NontermAst ::=
-	Lextends referencesCs=references_cs
-  | Lreturns {symref}
+nonterm_type  : NontermType ::=
+	Lreturns {symref}
+  | Linline? Lclass name=identifieropt
+  | Linterface name=identifieropt
+  | {type}
 ;
 
 enum PriorityKw {
@@ -203,9 +230,9 @@ enum PriorityKw {
 }
 
 priority_kw  : PriorityKw ::=
-	this=[PriorityKw.LLEFT]Lleft
-  | this=[PriorityKw.LRIGHT]Lright
-  | this=[PriorityKw.LNONASSOC]Lnonassoc
+	this=Lleft as PriorityKw.LLEFT
+  | this=Lright as PriorityKw.LRIGHT
+  | this=Lnonassoc as PriorityKw.LNONASSOC
 ;
 
 interface Directive : GrammarPart {
@@ -231,7 +258,7 @@ class Inputref {
 }
 
 inputref  : Inputref ::=
-	{symref} noeoi=[true]Lnoeoi?
+	{symref} noeoi=Lnoeoi as true?
 ;
 
 references  : list<Symref>
@@ -258,14 +285,13 @@ rule0  : Rule0 ::=
 ;
 
 class RhsPrefix {
-	list<Annotation> annotations;
+	Annotations annotations;
 	Identifier alias;
-	list<Symref> extends;
 }
 
 rhsPrefix  : RhsPrefix ::=
-	{annotations} ':'
-  | annotations=rhsAnnotations? alias=identifier (Lextends extends=references_cs)? ':'
+	'[' {annotations} ']'
+  | '[' {annotations}? alias=identifier ']'
 ;
 
 class RhsSuffix {
@@ -278,8 +304,8 @@ class RhsSuffix {
 }
 
 rhsSuffix  : RhsSuffix ::=
-	'%' kind=[KindKind.LPRIO]Lprio {symref}
-  | '%' kind=[KindKind.LSHIFT]Lshift
+	'%' kind=Lprio as KindKind.LPRIO {symref}
+  | '%' kind=Lshift as KindKind.LSHIFT
 ;
 
 class RhsPartsItem {
@@ -311,15 +337,14 @@ rhsAnnotated  : RhsPart ::=
 ;
 
 class RhsAssignment : RhsPart {
+	Identifier id;
 	boolean addition;
-	Identifier identifier;
-	RhsPart rhsOptional;
+	RhsPart inner;
 }
 
 rhsAssignment  : RhsPart ::=
 	this=rhsOptional
-  | this=new.RhsAssignment: {identifier} '=' {rhsOptional}
-  | this=new.RhsAssignment: {identifier} addition=[true]'+=' {rhsOptional}
+  | this=new.RhsAssignment: id=identifier ('=' | addition='+=' as true) inner=rhsOptional
 ;
 
 class RhsOptional : RhsPart {
@@ -332,13 +357,15 @@ rhsOptional  : RhsPart ::=
 ;
 
 class RhsCast : RhsPart {
-	RhsPart rhsPrimary;
+	RhsPart rhsClass;
 	Symref symref;
+	Literal literal;
 }
 
 rhsCast  : RhsPart ::=
-	this=rhsPrimary
-  | this=new.RhsCast: {rhsPrimary} Las {symref}
+	this=rhsClass
+  | this=new.RhsCast: {rhsClass} Las {symref}
+  | this=new.RhsCast: {rhsClass} Las {literal}
 ;
 
 class RhsUnordered : RhsPart {
@@ -348,6 +375,16 @@ class RhsUnordered : RhsPart {
 
 rhsUnordered  : RhsPart ::=
 	this=new.RhsUnordered: left=rhsPart '&' right=rhsPart
+;
+
+class RhsClass : RhsPart {
+	Identifier identifier;
+	RhsPart rhsPrimary;
+}
+
+rhsClass  : RhsPart ::=
+	this=rhsPrimary
+  | this=new.RhsClass: {identifier} ':' {rhsPrimary}
 ;
 
 class RhsPrimarySymbol : RhsPart {
@@ -372,10 +409,10 @@ class RhsPrimaryList : RhsPart {
 rhsPrimary  : RhsPart ::=
 	this=new.RhsPrimarySymbol: {symref}
   | this=new.RhsPrimaryGroup: '(' {rules} ')'
-  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier=[QuantifierKind.PLUS]'+'
-  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier=[QuantifierKind.MULT]'*'
-  | this=new.RhsPrimaryList: {rhsPrimary} quantifier=[QuantifierKind.MULT]'*'
-  | this=new.RhsPrimaryList: {rhsPrimary} quantifier=[QuantifierKind.PLUS]'+'
+  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier='+' as QuantifierKind.PLUS
+  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
+  | this=new.RhsPrimaryList: {rhsPrimary} quantifier='*' as QuantifierKind.MULT
+  | this=new.RhsPrimaryList: {rhsPrimary} quantifier='+' as QuantifierKind.PLUS
 ;
 
 class RhsAnnotations {
@@ -389,21 +426,22 @@ rhsAnnotations  : RhsAnnotations ::=
   | negativeLa=negative_la
 ;
 
-annotations  : list<Annotation> ::=
-	this=annotation_list
+class Annotations {
+	list<Annotation> annotations;
+}
+
+annotations  : Annotations ::=
+	annotations=annotation_list
 ;
 
-annotation_list  : list<Annotation>
-	(this+=annotation)+ ;
-
 class Annotation {
-	String ID;
-	Expression expression;
+	list<Expression> arguments;
+	String qualifiedId;
 	SyntaxProblem syntaxProblem;
 }
 
 annotation  : Annotation ::=
-	'@' {ID} ('=' {expression})?
+	'@' qualifiedId=qualified_id ('{' arguments=expression_list '}')?
   | '@' syntaxProblem=syntax_problem
 ;
 
@@ -418,31 +456,35 @@ negative_la  : NegativeLa ::=
 interface Expression {
 }
 
-class ExpressionLiteral : Expression {
-	String sval;
-	Integer ival;
-	boolean isTrue;
-	boolean isFalse;
-}
-
 class ExpressionInstance : Expression {
 	Name name;
 	list<MapEntriesItem> mapEntries;
 }
 
 class ExpressionArray : Expression {
-	list<Expression> expressionList;
+	list<Expression> expressionList1;
 }
 
 expression  : Expression ::=
-	this=new.ExpressionLiteral: sval=scon
-  | this=new.ExpressionLiteral: ival=icon
-  | this=new.ExpressionLiteral: isTrue=[true]Ltrue
-  | this=new.ExpressionLiteral: isFalse=[true]Lfalse
+	this=literal
   | this=symref
   | this=new.ExpressionInstance: Lnew {name} '(' mapEntries=map_entriesopt ')'
-  | this=new.ExpressionArray: '[' expressionList=expression_list_opt ']'
+  | this=new.ExpressionArray: '[' expressionList1=expression_list1_opt ']'
   | this=syntax_problem
+;
+
+class Literal : Expression {
+	String sval;
+	Integer ival;
+	boolean isTrue;
+	boolean isFalse;
+}
+
+literal  : Literal ::=
+	sval=scon
+  | ival=icon
+  | isTrue=Ltrue as true
+  | isFalse=Lfalse as true
 ;
 
 class MapEntriesItem {
@@ -487,12 +529,15 @@ syntax_problem  : SyntaxProblem ::=
 	error
 ;
 
-option_list  : list<Option>
-	(this+=option)+ ;
-
-grammar_partsopt  : list<GrammarPartsItem> ::=
-	this=grammar_parts?
+parsing_alghoritmopt  : ParsingAlghoritm ::=
+	this=parsing_alghoritm?
 ;
+
+import_optlist  : list<Import>
+	(this+=import)* ;
+
+option_optlist  : list<Option>
+	(this+=option)* ;
 
 typeopt (String) ::=
 	type?
@@ -518,6 +563,10 @@ lexer_state_list  : list<LexerState>
 	(this+=lexer_state
 		separator ',')+ ;
 
+identifieropt  : Identifier ::=
+	this=identifier?
+;
+
 inputref_list  : list<Inputref>
 	(this+=inputref
 		separator ',')+ ;
@@ -530,6 +579,13 @@ rhsSuffixopt  : RhsSuffix ::=
 	this=rhsSuffix?
 ;
 
+annotation_list  : list<Annotation>
+	(this+=annotation)+ ;
+
+expression_list  : list<Expression>
+	(this+=expression
+		separator ',')+ ;
+
 symref_list  : list<Symref>
 	(this+=symref
 		separator '|')+ ;
@@ -538,11 +594,11 @@ map_entriesopt  : list<MapEntriesItem> ::=
 	this=map_entries?
 ;
 
-expression_list  : list<Expression>
+expression_list1  : list<Expression>
 	(this+=expression
 		separator ',')+ ;
 
-expression_list_opt  : list<Expression> ::=
-	this=expression_list?
+expression_list1_opt  : list<Expression> ::=
+	this=expression_list1?
 ;
 

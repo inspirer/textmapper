@@ -28,12 +28,9 @@ genCopyright = true
 genast = true
 genastdef = true
 
-# Vocabulary
+# :: lexer
 
-error:
-
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
-			{ $symbol = current(); }
+[initial, afterAt => initial, afterAtID => initial]
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $symbol = token.toString().substring(1, token.length()-1); }
 scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
@@ -45,6 +42,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 
 '%':	/%/
 '::=':  /::=/
+'::':   /::/
 '|':    /\|/
 '=':	/=/
 '=>':	/=>/
@@ -58,6 +56,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '(?!':	/\(\?!/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
+'}':	/\}/
 '<':	/</
 '>':	/>/
 '*':	/*/
@@ -65,15 +64,21 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+=':	/+=/
 '?':	/?/
 '&':	/&/
-'@':	/@/
+'@':    /@/ => afterAt
+
+error:
+
+[initial, afterAt => afterAtID, afterAtID => initial]
+
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $symbol = current(); }
 
 Ltrue:  /true/
 Lfalse: /false/
 Lnew:   /new/
 Lseparator: /separator/
 Las: /as/
-Lextends: /extends/
-Linline: /inline/
+Limport: /import/
+Linline: /inline/			(soft)
 
 Lprio:  /prio/				(soft)
 Lshift: /shift/				(soft)
@@ -89,22 +94,45 @@ Lnoeoi: /no-eoi/			(soft)
 
 Lsoft: /soft/				(soft)
 Lclass: /class/				(soft)
+Linterface: /interface/		(soft)
 Lspace: /space/				(soft)
 Llayout: /layout/			(soft)
+Llanguage: /language/       (soft)
+Llalr: /lalr/				(soft)
+
+Llexer: /lexer/				(soft)
+Lparser: /parser/			(soft)
 
 # reserved
 
 Lreduce: /reduce/
 
-code:	/\{/							{ skipAction(); lapg_n.endoffset = getOffset(); }
+[initial, afterAt => initial]
 
-# Grammar
+code:    /\{/                            { skipAction(); lapg_n.endoffset = getOffset(); }
+
+[afterAtID => initial]
+'{':	/\{/
+
+
+# :: parser
 
 %input input, expression;
 
 input ::=
-	  option+? lexer_parts grammar_partsopt
+	  Llanguage name=ID '(' target=ID ')' parsing_alghoritmopt ';'
+			import*
+			option*
+			'::' Llexer
+			lexer_parts
+			('::' Lparser grammar_parts)?
 ;
+
+parsing_alghoritm ::=
+	  Llalr '(' la=icon ')' ;
+
+import ::=
+	  Limport alias=ID? file=scon ';' ;
 
 option ::=
 	  ID '=' expression
@@ -132,6 +160,7 @@ type_part_list ::=
 type_part ::=
 	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
 
+@_class
 pattern ::=
 	  regexp
 ;
@@ -149,10 +178,10 @@ lexer_part ::=
 ;
 
 named_pattern ::=
-	  ID '=' pattern ;
+	  name=ID '=' pattern ;
 
 lexeme ::=
-	  identifier typeopt ':'
+	  name=identifier typeopt ':'
 			(pattern lexem_transitionopt priority=iconopt lexem_attrsopt commandopt)? ;
 
 lexem_transition ::=
@@ -176,7 +205,7 @@ stateref ::=
 	  ID ;
 
 lexer_state ::=
-	  identifier ('=>' defaultTransition=stateref)?	;
+	  name=identifier ('=>' defaultTransition=stateref)?	;
 
 grammar_parts ::=
 	  grammar_part
@@ -188,11 +217,13 @@ grammar_part ::=
 	  nonterm | directive ;
 
 nonterm ::=
-	  annotations? identifier nonterm_ast? typeopt Linline? '::=' rules ';' ;
+	  annotations? name=identifier type=nonterm_type? '::=' rules ';' ;
 
-nonterm_ast ::=
-	  Lextends references_cs
-	| Lreturns symref
+nonterm_type ::=
+	  Lreturns symref
+	| Linline? Lclass name=identifieropt
+	| Linterface name=identifieropt
+	| type
 ;
 
 priority_kw ::=
@@ -226,12 +257,12 @@ rule0 ::=
 ;
 
 rhsPrefix ::=
-	  annotations=annotations ':'
-	| annotations=rhsAnnotations as annotation_list? alias=identifier (Lextends _extends=references_cs)? ':'
+	  '[' annotations=annotations ']'
+	| '[' annotations=annotations? alias=identifier ']'
 ;
 
 rhsSuffix ::=
-	'%' kind=Lprio symref
+	  '%' kind=Lprio symref
 	| '%' kind=Lshift
 ;
 
@@ -256,8 +287,7 @@ rhsAnnotated returns rhsPart ::=
 
 rhsAssignment returns rhsPart ::=
 	  rhsOptional
-	| identifier '=' rhsOptional
-	| identifier addition='+=' rhsOptional
+	| id=identifier ('=' | addition='+=') inner=rhsOptional
 ;
 
 rhsOptional returns rhsPart ::=
@@ -266,13 +296,20 @@ rhsOptional returns rhsPart ::=
 ;
 
 rhsCast returns rhsPart ::=
-	  rhsPrimary
-	| rhsPrimary Las symref
+	  rhsClass
+	| rhsClass Las symref
+	| rhsClass Las literal
 ;
 
 rhsUnordered returns rhsPart ::=
 	  left=rhsPart '&' right=rhsPart
 ;
+
+rhsClass returns rhsPart ::=
+	  rhsPrimary
+	| identifier ':' rhsPrimary
+;
+
 
 rhsPrimary returns rhsPart ::=
 	  symbol: symref
@@ -284,22 +321,18 @@ rhsPrimary returns rhsPart ::=
 ;
 
 rhsAnnotations ::=
-	  annotation_list
-	| negative_la annotation_list
+	  annotation+
+	| negative_la annotation+
 	| negative_la
 ;
 
-annotations ::=
-	annotation_list
-;
 
-annotation_list ::=
-	  annotation
-	| annotation_list annotation
-;
+@_class
+annotations ::=
+	annotations=annotation+ ;
 
 annotation ::=
-	  '@' ID ('=' expression)?
+	  '@' qualified_id ('{' arguments=(expression separator ',')+ '}')?
 	| '@' syntax_problem
 ;
 
@@ -310,14 +343,19 @@ negative_la ::=
 ##### EXPRESSIONS
 
 expression ::=
-	  literal: sval=scon
-	| literal: ival=icon
-	| literal: isTrue=Ltrue       # TODO val=Ltrue/Boolean.TRUE?/
-	| literal: isFalse=Lfalse	   # TODO val=Lfalse/Boolean.FALSE?/
+	  literal
 	| symref
 	| instance: Lnew name '(' map_entriesopt ')'
 	| array: '[' (expression separator ',')* ']'
 	| syntax_problem
+;
+
+literal ::=
+	  literal: sval=scon
+	| literal: ival=icon
+	| literal: isTrue=Ltrue          # TODO val=Ltrue/Boolean.TRUE?/
+    | literal: isFalse=Lfalse        # TODO val=Lfalse/Boolean.FALSE?/
+
 ;
 
 map_entries ::=
