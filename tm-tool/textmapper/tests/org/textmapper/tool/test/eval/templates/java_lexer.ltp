@@ -1,34 +1,36 @@
 
 ${template lexerCtor-}
 	private final org.textmapper.lapg.api.@Grammar grammar;
-	private final int[] lapg_char2no;
-	private final int[] lapg_lexemnum;
-	private final int[] lapg_lexem;
-	private final int lapg_nchars;
+	private final int[] tmCharClass;
+	private final int[] tmRuleSymbol;
+	private final int[] tmGoto;
+	private final int[] tmStateMap;
+	private final int tmCharsCount;
 
 	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		lapg_lexemnum = getLexemNum(grammar);
-		lapg_char2no = lexerData.getChar2no();
-		lapg_lexem = lexerData.getChange();
-		lapg_nchars = lexerData.getNchars();
+		tmRuleSymbol = getLexemNum(grammar);
+		tmCharClass = lexerData.getChar2no();
+		tmGoto = lexerData.getChange();
+		tmCharsCount = lexerData.getNchars();
+		tmStateMap = lexerData.getGroupset();
 		reset(${if opts.lexerInput != 'custom'}stream${end});
 	}
 ${end}
 
 ${template mapCharacter-}
 	private int mapCharacter(int chr) {
-		if (chr >= 0 && chr < lapg_char2no.length) {
-			return lapg_char2no[chr];
+		if (chr >= 0 && chr < tmCharClass.length) {
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
 ${end}
 
 ${template createToken}
-	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
-		int lexemKind = grammar.getLexerRules()[lexemIndex].getKind();
+	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
+		int lexemKind = grammar.getLexerRules()[ruleIndex].getKind();
 		return lexemKind != org.textmapper.lapg.api.@LexerRule.KIND_SPACE;
 	}
 ${end}
@@ -60,4 +62,6 @@ ${cached query hasLexemActions() = false}
 
 ${cached query classLexems() = []}
 
-${query numOfChars = 'lapg_nchars'}
+${query numOfChars = 'tmCharsCount'}
+
+${query tmStateMapExists() = true}

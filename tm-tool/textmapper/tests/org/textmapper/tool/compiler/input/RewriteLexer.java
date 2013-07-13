@@ -109,7 +109,7 @@ public class RewriteLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1, 5, 1,
@@ -120,10 +120,10 @@ public class RewriteLexer {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(6,
+	private static final short[] tmRuleSymbol = unpack_short(6,
 		"\1\2\3\4\5\6");
 
-	private static final short[] lapg_lexem = unpack_vc_short(56,
+	private static final short[] tmGoto = unpack_vc_short(56,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\10\ufffd\10\ufffc\10\ufffb\10\ufffa\10\ufff9" +
 		"\10\ufff8");
 
@@ -147,7 +147,7 @@ public class RewriteLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -167,7 +167,7 @@ public class RewriteLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 8 + mapCharacter(chr)];
+				state = tmGoto[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -209,7 +209,7 @@ public class RewriteLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -217,7 +217,7 @@ public class RewriteLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		return true;
 	}
 

@@ -59,18 +59,20 @@ public class GenericLexer {
 	private int currOffset = 0;
 
 	private final Grammar grammar;
-	private final int[] lapg_char2no;
-	private final int[] lapg_lexemnum;
-	private final int[] lapg_lexem;
-	private final int lapg_nchars;
+	private final int[] tmCharClass;
+	private final int[] tmRuleSymbol;
+	private final int[] tmGoto;
+	private final int[] tmStateMap;
+	private final int tmCharsCount;
 
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerData lexerData, Grammar grammar) throws IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		lapg_lexemnum = getLexemNum(grammar);
-		lapg_char2no = lexerData.getChar2no();
-		lapg_lexem = lexerData.getChange();
-		lapg_nchars = lexerData.getNchars();
+		tmRuleSymbol = getLexemNum(grammar);
+		tmCharClass = lexerData.getChar2no();
+		tmGoto = lexerData.getChange();
+		tmCharsCount = lexerData.getNchars();
+		tmStateMap = lexerData.getGroupset();
 		reset(stream);
 	}
 
@@ -133,8 +135,8 @@ public class GenericLexer {
 	}
 
 	private int mapCharacter(int chr) {
-		if (chr >= 0 && chr < lapg_char2no.length) {
-			return lapg_char2no[chr];
+		if (chr >= 0 && chr < tmCharClass.length) {
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -153,8 +155,8 @@ public class GenericLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * lapg_nchars + mapCharacter(chr)];
+			for (state = tmStateMap[this.state]; state >= 0; ) {
+				state = tmGoto[state * tmCharsCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -198,7 +200,7 @@ public class GenericLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -206,8 +208,8 @@ public class GenericLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(ParseSymbol lapg_n, int lexemIndex) throws IOException {
-		int lexemKind = grammar.getLexerRules()[lexemIndex].getKind();
+	protected boolean createToken(ParseSymbol lapg_n, int ruleIndex) throws IOException {
+		int lexemKind = grammar.getLexerRules()[ruleIndex].getKind();
 		return lexemKind != LexerRule.KIND_SPACE;
 	}
 
