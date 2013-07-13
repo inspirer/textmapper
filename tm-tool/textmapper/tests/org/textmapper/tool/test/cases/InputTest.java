@@ -131,14 +131,14 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testClassLexems() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,22: regex matches two classes `identifier' and `identifierX', using first\n" +
-						"syntax_lexems,25: soft lexeme rule `L0choice' doesn't match any class rule\n" +
-						"syntax_lexems,28: soft lexeme rule `int' should have a constant regexp\n" +
-						"syntax_lexems,36: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
-						"syntax_lexems,39: redeclaration of soft terminal: ssss\n" +
-						"syntax_lexems,42: soft lexeme rule `wact' cannot have a semantic action\n" +
-						"syntax_lexems,45: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
-						"syntax_lexems,52: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
+				"syntax_lexems,24: regex matches two classes `identifier' and `identifierX', using first\n" +
+						"syntax_lexems,27: soft lexeme rule `L0choice' doesn't match any class rule\n" +
+						"syntax_lexems,30: soft lexeme rule `int' should have a constant regexp\n" +
+						"syntax_lexems,38: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
+						"syntax_lexems,41: redeclaration of soft terminal: ssss\n" +
+						"syntax_lexems,44: soft lexeme rule `wact' cannot have a semantic action\n" +
+						"syntax_lexems,47: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
+						"syntax_lexems,54: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexems", FileUtil.getFileContents(openStream("syntax_lexems", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
@@ -148,8 +148,8 @@ public class InputTest extends LapgTestCase {
 	@Test
 	public void testNamedPatterns() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_patterns,7: unfinished regexp\n" +
-						"syntax_patterns,16: redeclaration of named pattern `WORD', ignored\n"
+				"syntax_patterns,9: unfinished regexp\n" +
+						"syntax_patterns,18: redeclaration of named pattern `WORD', ignored\n"
 		);
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_patterns", FileUtil.getFileContents(openStream("syntax_patterns", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
@@ -162,12 +162,12 @@ public class InputTest extends LapgTestCase {
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("input", FileUtil.getFileContents(openStream("syntax_cs", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), ts, createDefaultTypesRegistry());
 		assertNotNull(g);
 
-		ts.reset("input,3: symbol `error` is useless\n" + "input,44: symbol `Lfixed` is useless\n"
-				+ "input,76: symbol `Lstackalloc` is useless\n"
-				+ "input,149: symbol `comment` is useless\n" + "input,155: symbol `'/*'` is useless\n"
-				+ "input,157: symbol `anysym1` is useless\n" + "input,159: symbol `'*/'` is useless\n",
+		ts.reset("input,4: symbol `error` is useless\n" + "input,45: symbol `Lfixed` is useless\n"
+				+ "input,77: symbol `Lstackalloc` is useless\n"
+				+ "input,150: symbol `comment` is useless\n" + "input,156: symbol `'/*'` is useless\n"
+				+ "input,158: symbol `anysym1` is useless\n" + "input,160: symbol `'*/'` is useless\n",
 
-				"input,481: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
+				"input,482: input: using_directivesopt attributesopt modifiersopt Lclass ID class_baseopt '{' attributesopt modifiersopt operator_declarator '{' Lif '(' expression ')' embedded_statement\n"
 						+ "shift/reduce conflict (next: Lelse)\n"
 						+ "    embedded_statement ::= Lif '(' expression ')' embedded_statement\n"
 						+ "\n"
@@ -189,7 +189,7 @@ public class InputTest extends LapgTestCase {
 
 		ts.reset(
 				"",
-				"syntax_conflict1,17: input: Licon\n" +
+				"syntax_conflict1,20: input: Licon\n" +
 						"reduce/reduce conflict (next: fix1, fix2, fix3)\n" +
 						"    input1 ::= Licon\n" +
 						"    list_item ::= Licon\n" +

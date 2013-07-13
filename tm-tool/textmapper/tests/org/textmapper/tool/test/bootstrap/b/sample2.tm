@@ -26,6 +26,7 @@ endpositions = "offset"
 genCleanup = false
 genCopyright = true
 
+:: lexer
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
 												{ $symbol = current(); }
@@ -62,7 +63,7 @@ eleven:   /11/				          { $symbol = 11; }
 _skipSoftKW: /xyzzz/	(soft)
 
 
-# grammar
+:: parser
 
 %input classdef_NoEoi no-eoi;
 

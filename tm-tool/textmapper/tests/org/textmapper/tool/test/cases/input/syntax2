@@ -1,9 +1,11 @@
+:: lexer
 
 a:      /a/
 b:		/ab/
 '(':	/w/
 ')':	/p/
 
+:: parser
 
 input ::=
 	list ;

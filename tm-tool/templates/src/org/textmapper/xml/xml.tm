@@ -24,7 +24,7 @@ positions = "line,offset"
 endpositions = "offset"
 genCopyright = true
 
-# Vocabulary
+:: lexer
 
 [initial]
 
@@ -47,7 +47,7 @@ ccon(String):	/'[^\n']*'/							{ $symbol = token.toString().substring(1, token.
 
 _skip:      /[\t\r\n ]+/  (space)
 
-# Grammar
+:: parser
 
 input (XmlNode) ::=
 	xml_tags										{ $$ = new XmlNode("<root>", null, 1); ${left()}.setData($xml_tags); }

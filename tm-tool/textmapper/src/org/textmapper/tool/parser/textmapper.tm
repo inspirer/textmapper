@@ -25,12 +25,9 @@ endpositions = "offset"
 genCleanup = true
 genCopyright = true
 
-# Vocabulary
+:: lexer
 
-error:
-
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
-			{ $symbol = current(); }
+[initial, afterAt => initial, afterAtID => initial]
 
 regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $symbol = token.toString().substring(1, token.length()-1); }
 scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
@@ -42,6 +39,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 
 '%':	/%/
 '::=':  /::=/
+'::':   /::/
 '|':    /\|/
 '=':	/=/
 '=>':	/=>/
@@ -55,6 +53,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '(?!':	/\(\?!/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
+'}':	/\}/
 '<':	/</
 '>':	/>/
 '*':	/*/
@@ -62,15 +61,22 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+=':	/+=/
 '?':	/?/
 '&':	/&/
-'@':	/@/
+'@':    /@/ => afterAt
+
+error:
+
+[initial, afterAt => afterAtID, afterAtID => initial]
+
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
+			{ $symbol = current(); }
 
 Ltrue:  /true/
 Lfalse: /false/
 Lnew:   /new/
 Lseparator: /separator/
 Las: /as/
-Lextends: /extends/
-Linline: /inline/
+Limport: /import/
+Linline: /inline/			(soft)
 
 Lprio:  /prio/				(soft)
 Lshift: /shift/				(soft)
@@ -86,21 +92,36 @@ Lnoeoi: /no-eoi/			(soft)
 
 Lsoft: /soft/				(soft)
 Lclass: /class/				(soft)
+Linterface: /interface/		(soft)
 Lspace: /space/				(soft)
 Llayout: /layout/			(soft)
+Llanguage: /language/       (soft)
+Llalr: /lalr/				(soft)
+
+Llexer: /lexer/				(soft)
+Lparser: /parser/			(soft)
 
 # reserved
 
 Lreduce: /reduce/
 
+[initial, afterAt => initial]
+
 code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 
-# Grammar
+[afterAtID => initial]
+'{':	/\{/
+
+
+:: parser
 
 %input input, expression;
 
 input (TmaInput) ::=
-	  options? lexer_parts grammar_partsopt              {  $$ = new TmaInput($options, $lexer_parts, $grammar_partsopt, source, ${left().offset}, ${left().endoffset}); }
+	  options?
+			'::' Llexer
+			lexer_parts
+			('::' Lparser grammar_parts)?              {  $$ = new TmaInput($options, $lexer_parts, $grammar_parts, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 options (List<TmaOptionPart>) ::=
@@ -201,14 +222,15 @@ grammar_part (ITmaGrammarPart) ::=
 ;
 
 nonterm ::=
-	  annotations? identifier nonterm_type? Linline? '::=' rules ';'
+	  annotations? identifier nonterm_type? '::=' rules ';'
 	  													{ $$ = new TmaNonterm($identifier, $nonterm_type, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 nonterm_type (TmaNontermType) ::=
-	  Lextends references_cs							{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
-	| Lreturns symref									{ $$ = new TmaNontermTypeAST($symref, source, ${left().offset}, ${left().endoffset}); }
-	| type												{ $$ = new TmaNontermTypeRaw($type, source, ${left().offset}, ${left().endoffset}); }
+	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().offset}, ${left().endoffset}); }
+	| Linline? Lclass name=identifieropt				{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| Linterface name=identifieropt						{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| type                                              { $$ = new TmaNontermTypeRaw($type, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 priority_kw (String) ::=
@@ -253,9 +275,9 @@ rule0 (TmaRule0) ::=
 ;
 
 rhsPrefix (TmaRhsPrefix) ::=
-	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, null, null, source, ${left().offset}, ${left().endoffset}); }
-	| rhsAnnotations as annotation_list? alias=identifier (Lextends references_cs)? ':'
-														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, $references_cs, source, ${left().offset}, ${left().endoffset}); }
+	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, null, source, ${left().offset}, ${left().endoffset}); }
+	| rhsAnnotations as annotation_list? alias=identifier ':'
+														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=
@@ -328,7 +350,7 @@ annotation_list (java.util.@List<TmaMapEntriesItem>) ::=
 ;
 
 annotation (TmaMapEntriesItem) ::=
-	  '@' ID ('=' expression)?                          { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	  '@' ID ('{' expression '}')?                          { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| '@' syntax_problem                                { $$ = new TmaMapEntriesItem($syntax_problem); }
 ;
 

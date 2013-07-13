@@ -25,7 +25,7 @@ positions = "line,offset"
 endpositions = "offset"
 genCopyright = true
 
-# Vocabulary
+:: lexer
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1   (class)
 			{ $symbol = current(); }
@@ -63,7 +63,7 @@ Lset:		 /set/
 Lchoice:	 /choice/
 
 
-# Grammar
+:: parser
 
 @_class
 input ::=

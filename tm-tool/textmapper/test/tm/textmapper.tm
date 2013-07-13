@@ -28,7 +28,7 @@ genCopyright = true
 genast = true
 genastdef = true
 
-# :: lexer
+:: lexer
 
 [initial, afterAt => initial, afterAtID => initial]
 
@@ -115,7 +115,7 @@ code:    /\{/                            { skipAction(); lapg_n.endoffset = getO
 '{':	/\{/
 
 
-# :: parser
+:: parser
 
 %input input, expression;
 

@@ -24,7 +24,7 @@ endpositions = "offset"
 genCopyright = true
 genCleanup = true
 
-# Vocabulary
+:: lexer
 
 [initial]
 
@@ -104,7 +104,7 @@ _skip:      /[\t\r\n ]+/	(space)
 
 error:
 
-# Grammar
+:: parser
 
 input (List<org.textmapper.templates.bundle.@IBundleEntity>) ::=
 	definitionsopt

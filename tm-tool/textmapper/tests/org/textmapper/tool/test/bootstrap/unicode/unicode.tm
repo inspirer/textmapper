@@ -19,6 +19,8 @@ prefix = "UnicodeTest"
 package = "org.textmapper.tool.test.bootstrap.unicode"
 genCopyright = true
 
+:: lexer
+
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $symbol = current(); }
 icon(Integer):  /-?[0-9]+/                     { $symbol = Integer.parseInt(current()); }
 
@@ -26,5 +28,3 @@ icon(Integer):  /-?[0-9]+/                     { $symbol = Integer.parseInt(curr
 schar = /[\w\p{Ll}]/
 string(String): /"({schar})+"/			   { $symbol = current(); }
 _skip:          /[\n\t\r ]+/       (space)
-
-# grammar

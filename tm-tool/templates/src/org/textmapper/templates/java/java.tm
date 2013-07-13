@@ -8,6 +8,8 @@ package = "org.textmapper.templates.java"
 positions = "line,offset"
 endpositions = "offset"
 
+:: lexer
+
 # 3.5. Input Elements and Tokens
 
 eoi: /\x1a/
@@ -194,6 +196,8 @@ NullLiteral: /null/
 '>>=': />>=/
 '>>>=': />>>=/
 '@': /@/
+
+:: parser
 
 %input CompilationUnit, MethodBody, GenericMethodDeclaration, ClassBodyDeclaration, Expression, Statement;
 

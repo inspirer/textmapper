@@ -23,6 +23,7 @@ positions = "offset"
 endpositions = "offset"
 genCopyright = true
 
+:: lexer
 
 # 0 - default
 # 1 - after character/group - enables qualifiers
@@ -87,7 +88,7 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 '-':  /-/
 char(Character):  /[\(\|\)]/					{ $symbol = current().charAt(0); }
 
-# grammar
+:: parser
 
 %input pattern;
 

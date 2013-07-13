@@ -2,6 +2,7 @@ lang = "java"
 prefix = "Rewrite"
 package = "org.textmapper.tool.compiler.input"
 
+:: lexer
 
 '{':	/\\/
 '}':	/\}/
@@ -9,6 +10,8 @@ package = "org.textmapper.tool.compiler.input"
 '.':	/\./
 'a':	/a/
 'b':	/b/
+
+:: parser
 
 input ::= ;
 

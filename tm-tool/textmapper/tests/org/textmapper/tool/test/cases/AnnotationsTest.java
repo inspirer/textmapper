@@ -91,8 +91,8 @@ public class AnnotationsTest extends LapgTestCase {
 
 	@Test
 	public void testBadAnnotations() {
-		TestStatus notifier = new TestStatus("", "syntax1errannotated,23: notexistingsym cannot be resolved\n"
-				+ "syntax1errannotated,29: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
+		TestStatus notifier = new TestStatus("", "syntax1errannotated,27: notexistingsym cannot be resolved\n"
+				+ "syntax1errannotated,33: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
 		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);

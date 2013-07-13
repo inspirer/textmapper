@@ -20,6 +20,8 @@ package = "org.textmapper.tool.test.bootstrap.lexeronly"
 lexerInput = "char"
 genCopyright = true
 
+:: lexer
+
 '{':	/\{/
 
 _skip:	/'([^\n\\']|\\.)*'/

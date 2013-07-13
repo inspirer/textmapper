@@ -5,7 +5,7 @@ positions = "line,offset"
 package	   = "com.mypackage"
 breaks     = false
 
-# Vocabulary
+:: lexer
 
 Lid(String):  /[a-zA-Z_][a-zA-Z_0-9]*/ -1	{ $lexem = new String(token,0,len); break; }
 Lint:		  /[0-9]+/
@@ -21,7 +21,7 @@ Lbbb:	 	 /bbb/
 
 error:
 
-# Grammar
+:: parser
 
 input ::=
 	statements ;

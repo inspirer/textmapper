@@ -4,6 +4,8 @@ lang = "java"
 prefix = "States"
 package = "org.textmapper.tool.test.bootstrap.states"
 
+:: lexer
+
 [initial]
 
 x: /a/ => a

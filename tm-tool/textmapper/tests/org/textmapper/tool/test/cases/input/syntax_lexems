@@ -1,6 +1,8 @@
 lang = "java"
 prefix = "Lexems"
 
+:: lexer
+
 lowercase = /[a-z]/
 
 icon: /[0-7]+/       (class)
@@ -54,6 +56,8 @@ comma(Character): /,/   (soft)
 # ok
 colon_or_semicolon: /;/   (soft)
 colon_or_semicolon: /:/   (soft)
+
+:: parser
 
 input ::=
 	identifier ;

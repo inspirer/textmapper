@@ -5,7 +5,7 @@ prefix = "JsTest"
 positions = "line,column,offset"
 endpositions = "line,column,offset"
 
-# Vocabulary
+:: lexer
 
 Lid:        /[a-zA-Z_][a-zA-Z_0-9]*/	{ $symbol = this.token; break; }
 _skip:      /\/\/.*/
@@ -13,7 +13,7 @@ _skip:      /[\t\r\n ]+/    { return false; }
 
 error:
 
-# Grammar
+:: parser
 
 input ::= Lid ;
 

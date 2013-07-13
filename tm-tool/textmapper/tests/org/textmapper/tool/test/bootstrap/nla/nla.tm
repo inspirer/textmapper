@@ -23,6 +23,8 @@ positions = "line,offset"
 endpositions = "offset"
 genCopyright = true
 
+:: lexer
+
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)   { $symbol = current(); }
 icon(Integer):  /-?[0-9]+/                     { $symbol = Integer.parseInt(current()); }
 _skip:          /[\n\t\r ]+/             (space)
@@ -52,7 +54,7 @@ Lreset: /reset/
 Lnop: /nop/
 Lexotic: /exotic/
 
-# grammar
+:: parser
 
 input ::=
 	statements ;

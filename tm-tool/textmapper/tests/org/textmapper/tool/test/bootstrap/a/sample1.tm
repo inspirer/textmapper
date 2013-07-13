@@ -28,6 +28,8 @@ endpositions = "line,column,offset"
 genCleanup = false
 genCopyright = true
 
+:: lexer
+
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $symbol = current(); }
 _skip:          /[\n\t\r ]+/ (space)
 
@@ -37,8 +39,7 @@ Lclass: /class/
 
 error:
 
-# grammar
-
+:: parser
 
 %input classdef_NoEoi no-eoi, classdef ;
 

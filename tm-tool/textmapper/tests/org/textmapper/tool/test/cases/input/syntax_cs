@@ -1,3 +1,4 @@
+:: lexer
 
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1
 error:
@@ -160,7 +161,7 @@ anysym1: /*/
 
 # Attributes
 
-#[]
+:: parser
 
 # Main rule
 

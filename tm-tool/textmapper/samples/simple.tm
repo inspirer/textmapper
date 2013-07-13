@@ -4,7 +4,7 @@
 
 lang = "java"
 
-# Whitespaces
+:: lexer
 
 whitespace: /[\r\n\t\f\x20]|\r\n/	(space)
 end_of_line_comment: /\/\/[^\r\n]*/ (space)
@@ -34,7 +34,7 @@ get: /get/		(soft)
 '}': /\}/
 '=': /=/
 
-# grammar
+:: parser
 
 %input ClassDeclaration;
 

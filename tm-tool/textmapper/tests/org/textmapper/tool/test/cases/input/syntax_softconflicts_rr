@@ -1,6 +1,8 @@
 lang = "java"
 prefix = "Lexems"
 
+:: lexer
+
 identifier(String): /[a-zA-Z_][A-Za-z_0-9]*/    (class)
 _skip:      /[\t\r\n ]+/    							{ return false; }
 
@@ -10,6 +12,8 @@ Ltype:	 	 /type/              (soft)
 
 '(': /\(/
 ')': /\)/
+
+:: parser
 
 input ::=
 	classdef ;

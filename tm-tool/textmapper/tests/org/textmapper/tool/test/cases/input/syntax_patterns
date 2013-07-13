@@ -1,6 +1,8 @@
 lang = "java"
 prefix = "Lexems"
 
+:: lexer
+
 icon: /[0-7]+/       (class)
 
 # error
@@ -16,6 +18,8 @@ WORD = /[a-zA-Z]+/
 WORD = /[a-z]+/
 
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/   -2    (class)
+
+:: parser
 
 input ::=
 	identifier ;

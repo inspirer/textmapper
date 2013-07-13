@@ -22,6 +22,7 @@ endpositions = ""
 lexerInput = "custom"
 genCopyright = true
 
+:: lexer
 
 '{':	/\{/
 
@@ -31,7 +32,7 @@ _skip:	/[^'"{}]+/		(space)
 
 '}':	/\}/
 
-
+:: parser
 
 %input javaaction no-eoi;
 

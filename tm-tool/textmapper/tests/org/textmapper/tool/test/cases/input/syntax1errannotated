@@ -1,10 +1,14 @@
 lang = "testanno"
 
+:: lexer
+
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1
 Licon:      /([1-9][0-9]*|0[0-7]*|0[xX][0-9a-fA-F]+)([uU](l|L|ll|LL)?|(l|L|ll|LL)[uU]?)?/
 _skip:      /[\t\r\n ]+/    { continue; }
 aaaa: /aaaa/
 bbbb: /bbbb/
+
+:: parser
 
 input ::=
 	list ;
@@ -14,18 +18,18 @@ list ::=
 	| list list_item
 ;
 
-@weight=5 @name="wwo"
+@weight{5} @name{"wwo"}
 list_item ::=
-	@name="rule1": @ids=[4,2,3] identifier
-	| @name="rule2": Licon
+	@name{"rule1"}: @ids{[4,2,3]} identifier
+	| @name{"rule2"}: Licon
 ;
 
-@name="aaa" @ref=notexistingsym
+@name{"aaa"} @ref{notexistingsym}
 tempanno ::=
 	aaaa
 ;
 
-@name="bbb"
+@name{"bbb"}
 tempanno ::=
 	bbbb
 ;
