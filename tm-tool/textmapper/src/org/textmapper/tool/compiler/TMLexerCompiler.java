@@ -240,7 +240,7 @@ public class TMLexerCompiler {
 			}
 
 			if (isSoft && lexeme.getCode() != null) {
-				// TODO really?
+				// TODO Note: soft lexeme is able to override the code
 				error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getID()
 						+ "' cannot have a semantic action");
 			}
@@ -270,6 +270,8 @@ public class TMLexerCompiler {
 					builder.makeSoft(term, softClass);
 					softToClass.put(term, softClass);
 				}
+
+				// TODO check applicable states
 			}
 
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex, attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),

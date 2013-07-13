@@ -477,7 +477,7 @@ public class LexicalBuilder {
 			current = current.next;
 		}
 
-		// first group (only) succeeds on EOI
+		// first group (only) succeeds on EOI (TODO handle eoi in other groups)
 		first.action[0] = -2;
 
 		return errors == 0;

@@ -136,7 +136,7 @@ public class SampleBLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 12, 12, 1, 1, 12, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		12, 1, 1, 1, 1, 1, 1, 1, 6, 7, 1, 1, 1, 1, 1, 1,
@@ -147,10 +147,10 @@ public class SampleBLexer {
 		8, 8, 8, 8, 8, 8, 8, 8, 3, 8, 8, 4, 1, 5, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(15,
+	private static final short[] tmRuleSymbol = unpack_short(15,
 		"\1\14\15\16\2\3\4\5\6\7\10\11\12\17\20");
 
-	private static final short[] lapg_lexem = unpack_vc_short(169,
+	private static final short[] tmGoto = unpack_vc_short(169,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\2\1\7\1\10\2\uffff\1\11\1\12\7" +
 		"\uffff\1\11\1\uffff\2\ufffd\2\2\4\ufffd\4\2\1\ufffd\15\ufff6\15\ufff5\15\ufff4\15" +
 		"\ufff3\2\uffff\1\13\6\uffff\1\13\1\uffff\1\13\1\uffff\14\ufff9\1\10\2\ufffb\1\11" +
@@ -177,7 +177,7 @@ public class SampleBLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -197,7 +197,7 @@ public class SampleBLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 13 + mapCharacter(chr)];
+				state = tmGoto[state * 13 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -241,7 +241,7 @@ public class SampleBLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -249,17 +249,17 @@ public class SampleBLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, lexemIndex);
+				return createIdentifierToken(lapg_n, ruleIndex);
 			case 1:
-				return createNumericToken(lapg_n, lexemIndex);
+				return createNumericToken(lapg_n, ruleIndex);
 			case 2:
-				return createOctalToken(lapg_n, lexemIndex);
+				return createOctalToken(lapg_n, ruleIndex);
 			case 3:
-				return createDecimalToken(lapg_n, lexemIndex);
+				return createDecimalToken(lapg_n, ruleIndex);
 			case 4: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
@@ -276,14 +276,14 @@ public class SampleBLexer {
 		subTokensOfIdentifier.put("xyzzz", 14);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createIdentifierToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfIdentifier.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 5:	// class
 				 lapg_n.value = "class"; 
 				break;
@@ -302,13 +302,13 @@ public class SampleBLexer {
 		return !(spaceToken);
 	}
 
-	protected boolean createNumericToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createNumericToken(LapgSymbol lapg_n, int ruleIndex) {
 		return true;
 	}
 
-	protected boolean createOctalToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createOctalToken(LapgSymbol lapg_n, int ruleIndex) {
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 2:	// <default>
 				 lapg_n.value = Integer.parseInt(current(), 8); 
 				break;
@@ -321,14 +321,14 @@ public class SampleBLexer {
 		subTokensOfDecimal.put("11", 13);
 	}
 
-	protected boolean createDecimalToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createDecimalToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfDecimal.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 13:	// 11
 				 lapg_n.value = 11; 
 				break;

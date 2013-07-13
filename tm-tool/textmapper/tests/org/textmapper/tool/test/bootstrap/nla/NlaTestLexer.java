@@ -147,7 +147,7 @@ public class NlaTestLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 22, 22, 1, 1, 22, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		22, 16, 1, 1, 1, 1, 1, 1, 8, 9, 6, 5, 14, 2, 15, 7,
@@ -158,10 +158,10 @@ public class NlaTestLexer {
 		20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 10, 1, 11, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(26,
+	private static final short[] tmRuleSymbol = unpack_short(26,
 		"\1\2\3\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32");
 
-	private static final short[] lapg_lexem = unpack_vc_short(506,
+	private static final short[] tmGoto = unpack_vc_short(506,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1" +
 		"\17\1\20\1\21\1\uffff\1\22\1\23\1\24\23\ufff7\1\25\1\ufff7\1\23\1\ufff7\27\ufffa" +
 		"\27\ufff9\27\ufff8\27\ufff6\27\ufff5\27\ufff4\27\ufff3\27\ufff2\27\ufff1\27\ufff0" +
@@ -188,7 +188,7 @@ public class NlaTestLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -208,7 +208,7 @@ public class NlaTestLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 23 + mapCharacter(chr)];
+				state = tmGoto[state * 23 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -252,7 +252,7 @@ public class NlaTestLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -260,11 +260,11 @@ public class NlaTestLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, lexemIndex);
+				return createIdentifierToken(lapg_n, ruleIndex);
 			case 1: // icon: /\-?[0-9]+/
 				 lapg_n.value = Integer.parseInt(current()); 
 				break;
@@ -284,14 +284,14 @@ public class NlaTestLexer {
 		subTokensOfIdentifier.put("exotic", 25);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createIdentifierToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfIdentifier.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 22:	// invoke (soft)
 			case 0:	// <default>
 				 lapg_n.value = current(); 

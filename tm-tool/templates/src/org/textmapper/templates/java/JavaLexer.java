@@ -214,7 +214,7 @@ public class JavaLexer {
 		return token.toString();
 	}
 
-	private static final char[] lapg_char2no = unpack_vc_char(262144,
+	private static final char[] tmCharClass = unpack_vc_char(262144,
 		"\1\0\10\1\1\50\1\6\1\1\1\50\1\5\14\1\1\4\5\1\1\50\1\31\1\15\1\1\1\44\1\42\1\35\1" +
 		"\14\1\16\1\17\1\10\1\37\1\25\1\40\1\13\1\7\1\11\1\55\2\64\4\53\2\45\1\34\1\24\1\30" +
 		"\1\26\1\27\1\33\1\43\1\46\1\54\1\46\1\57\1\56\1\57\5\44\1\51\3\44\1\60\7\44\1\52" +
@@ -305,14 +305,14 @@ public class JavaLexer {
 		return res;
 	}
 
-	private static final short[] lapg_lexemnum = unpack_short(116,
+	private static final short[] tmRuleSymbol = unpack_short(116,
 		"\4\0\1\2\3\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35" +
 		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\67" +
 		"\67\67\70\70\70\70\71\71\72\73\74\75\76\77\100\101\102\103\104\105\106\107\110\111" +
 		"\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135" +
 		"\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154");
 
-	private static final short[] lapg_lexem = unpack_vc_short(6996,
+	private static final short[] tmGoto = unpack_vc_short(6996,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\2\1\11\1\12\1\13\1\14\1\15\1" +
 		"\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1\34\1\35\1" +
 		"\36\1\37\1\40\1\41\1\2\1\42\1\2\1\uffff\1\5\2\2\1\42\1\2\1\42\6\2\1\42\3\uffff\1" +
@@ -406,7 +406,7 @@ public class JavaLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 262144) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -426,7 +426,7 @@ public class JavaLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 53 + mapCharacter(chr)];
+				state = tmGoto[state * 53 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -470,7 +470,7 @@ public class JavaLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -478,11 +478,11 @@ public class JavaLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, lexemIndex);
+				return createIdentifierToken(lapg_n, ruleIndex);
 			case 2: // WhiteSpace: /[\r\n\t\f ]|\r\n/
 				spaceToken = true;
 				break;
@@ -553,11 +553,11 @@ public class JavaLexer {
 		subTokensOfIdentifier.put("null", 67);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createIdentifierToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfIdentifier.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		return true;
 	}

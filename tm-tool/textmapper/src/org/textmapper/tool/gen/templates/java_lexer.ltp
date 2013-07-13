@@ -133,8 +133,8 @@ ${if opts.lexerInput == 'buffered'-}
 			tokenStart = l - 1;
 ${end-}
 
-			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * ${self->numOfChars()} + mapCharacter(chr)];
+			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
+				state = tmGoto[state * ${self->numOfChars()} + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 ${if opts.endpositions.contains('offset')-}
 					lapg_n.endoffset = currOffset;
@@ -193,7 +193,7 @@ ${if opts.lexerInput == 'buffered'-}
 			}
 
 ${end-}
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -224,7 +224,7 @@ ${end}
 ${template mapCharacter}
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -232,14 +232,14 @@ ${end}
 
 
 ${template createToken}
-	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int lexemIndex) throws java.io.@IOException {
+	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
 ${if self->hasLexemActions()-}
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 ${foreach rule in syntax.lexerRules-}
 ${if rule.kindAsText == 'class'-}
 			case ${rule.index}:
-				return create${rule->classRuleName()}Token(lapg_n, lexemIndex);
+				return create${rule->classRuleName()}Token(lapg_n, ruleIndex);
 ${else if rule->hasActions() && !rule.classRule-}
 			case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
 ${call lexerAction('lapg_n.value') for rule-}
@@ -263,17 +263,17 @@ ${end-}
 	}
 ${end-}
 
-	protected boolean create${classRule->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int lexemIndex) {
+	protected boolean create${classRule->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int ruleIndex) {
 ${if classRule->classHasInstances()-}
 		Integer replacement = subTokensOf${classRule->classRuleName()}.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 ${end-}
 ${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActions()-}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 ${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
 			case ${instance.index}:	// ${instance.regexp.constantValue}
 ${call lexerAction('lapg_n.value') for instance-}
@@ -367,18 +367,24 @@ ${end}
 
 ${template lexerTables-}
 ${if lex.char2no.size() > 128-}
-	private static final char[] lapg_char2no = ${lex.char2no->java_pack.packCountValue(true)};
+	private static final char[] tmCharClass = ${lex.char2no->java_pack.packCountValue(true)};
 
 ${call java_pack.unpackCountValue(true)-}
 ${else-}
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		${util.format(lex.char2no, 16, 2)}
 	};
 ${end-}
 
-	private static final short[] lapg_lexemnum = ${syntax.lexemSymbols->java_pack.packShort()};
+${if self->tmStateMapExists()-}
+	private static final short tmStateMap[] = {
+		${util.format(lex.groupset, 16, 2)}
+	};
 
-	private static final short[] lapg_lexem = ${lex.change->java_pack.packCountValue(false)};
+${end-}
+	private static final short[] tmRuleSymbol = ${syntax.lexemSymbols->java_pack.packShort()};
+
+	private static final short[] tmGoto = ${lex.change->java_pack.packCountValue(false)};
 
 ${call java_pack.unpackCountValue(false)-}
 ${end}
@@ -444,7 +450,7 @@ ${end}
 ${cached query hasLexemActions() =
 	syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
-${cached query hasActions() = self.action || self.transitions || self.kindAsText == 'space' }
+${cached query hasActions() = self.action || self.transitions && self.kindAsText != 'soft' || self.kindAsText == 'space' }
 
 ${cached query classRules() = syntax.lexerRules.select(x|x.kindAsText == 'class')}
 
@@ -453,3 +459,5 @@ ${cached query classHasInstances() = self->classInstances().size() > 0 }
 ${cached query classInstances() = context.syntax.lexerRules.select(x|x.classRule && x.classRule == self)}
 
 ${cached query classRuleName() = util.uniqueId(util.toFirstUpper(self.symbol.id), '__classrule__')}
+
+${cached query tmStateMapExists() = lex.groupset.length > 1}

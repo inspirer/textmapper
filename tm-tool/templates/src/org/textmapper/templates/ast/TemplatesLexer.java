@@ -221,7 +221,7 @@ public class TemplatesLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 36, 30, 1, 1, 36, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		36, 14, 31, 3, 2, 13, 22, 6, 18, 19, 12, 11, 21, 10, 20, 5,
@@ -232,12 +232,16 @@ public class TemplatesLexer {
 		28, 28, 32, 28, 32, 28, 32, 28, 8, 28, 28, 4, 15, 9, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(64,
+	private static final short tmStateMap[] = {
+		0, 1
+	};
+
+	private static final short[] tmRuleSymbol = unpack_short(64,
 		"\7\1\2\3\4\5\6\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34\35" +
 		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70" +
 		"\71\72\73\74\75\76\77\100");
 
-	private static final short[] lapg_lexem = unpack_vc_short(1887,
+	private static final short[] tmGoto = unpack_vc_short(1887,
 		"\1\ufffe\1\2\1\3\42\2\4\uffff\1\4\1\5\1\6\1\uffff\1\7\1\10\1\11\1\12\1\13\1\14\1" +
 		"\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\7\1\33\1\34" +
 		"\1\uffff\3\7\1\33\1\34\1\ufffc\1\2\1\ufffc\42\2\2\uffff\1\35\1\uffff\1\36\1\37\2" +
@@ -275,7 +279,7 @@ public class TemplatesLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -294,8 +298,8 @@ public class TemplatesLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 37 + mapCharacter(chr)];
+			for (state = tmStateMap[this.state]; state >= 0; ) {
+				state = tmGoto[state * 37 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -339,7 +343,7 @@ public class TemplatesLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -347,11 +351,11 @@ public class TemplatesLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, lexemIndex);
+				return createIdentifierToken(lapg_n, ruleIndex);
 			case 3: // escid: /$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/
 				 lapg_n.value = token.toString().substring(1, token.length()); 
 				break;
@@ -413,14 +417,14 @@ public class TemplatesLexer {
 		subTokensOfIdentifier.put("assert", 33);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createIdentifierToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfIdentifier.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 0:	// <default>
 				 lapg_n.value = current(); 
 				break;

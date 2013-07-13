@@ -112,7 +112,7 @@ public class StatesLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -123,10 +123,14 @@ public class StatesLexer {
 		1, 1, 1, 1, 9, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(16,
+	private static final short tmStateMap[] = {
+		0, 1, 2, 3, 4
+	};
+
+	private static final short[] tmRuleSymbol = unpack_short(16,
 		"\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1");
 
-	private static final short[] lapg_lexem = unpack_vc_short(420,
+	private static final short[] tmGoto = unpack_vc_short(420,
 		"\1\ufffe\1\uffff\1\5\16\uffff\1\6\1\7\1\10\1\11\1\12\5\uffff\1\13\2\uffff\1\14\1" +
 		"\uffff\1\15\1\16\1\11\1\12\5\uffff\1\13\2\uffff\1\17\1\20\1\uffff\1\21\1\11\1\12" +
 		"\5\uffff\1\13\2\uffff\1\22\1\23\1\24\2\uffff\1\12\6\uffff\16\ufffd\16\ufffc\16\ufffb" +
@@ -154,7 +158,7 @@ public class StatesLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -173,8 +177,8 @@ public class StatesLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 14 + mapCharacter(chr)];
+			for (state = tmStateMap[this.state]; state >= 0; ) {
+				state = tmGoto[state * 14 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -216,7 +220,7 @@ public class StatesLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -224,9 +228,9 @@ public class StatesLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0: // x: /a/
 				state = States.a;
 				break;

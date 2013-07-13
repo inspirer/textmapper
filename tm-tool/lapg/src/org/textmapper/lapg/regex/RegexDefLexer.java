@@ -155,7 +155,7 @@ public class RegexDefLexer {
 		return token.toString();
 	}
 
-	private static final short lapg_char2no[] = {
+	private static final short tmCharClass[] = {
 		0, 1, 1, 1, 1, 1, 1, 1, 1, 30, 30, 1, 1, 30, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 19, 1, 20, 22, 14, 15, 17, 18, 13, 29,
@@ -166,11 +166,15 @@ public class RegexDefLexer {
 		12, 27, 9, 39, 10, 36, 11, 37, 33, 27, 27, 2, 21, 3, 1, 1
 	};
 
-	private static final short[] lapg_lexemnum = unpack_short(35,
+	private static final short tmStateMap[] = {
+		0, 1, 2
+	};
+
+	private static final short[] tmRuleSymbol = unpack_short(35,
 		"\22\1\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24\25" +
 		"\1");
 
-	private static final short[] lapg_lexem = unpack_vc_short(2400,
+	private static final short[] tmGoto = unpack_vc_short(2400,
 		"\1\ufffe\1\3\1\4\1\3\1\5\10\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
 		"\uffff\2\3\1\uffff\12\3\1\uffff\1\3\1\15\1\3\1\5\10\3\1\6\1\16\1\17\1\20\1\3\1\10" +
 		"\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1\uffff\2\3\1\uffff\12\3\1\uffff\3\3\1\5\10\3\1" +
@@ -213,7 +217,7 @@ public class RegexDefLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 128) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -232,8 +236,8 @@ public class RegexDefLexer {
 			token.setLength(0);
 			tokenStart = l - 1;
 
-			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 40 + mapCharacter(chr)];
+			for (state = tmStateMap[this.state]; state >= 0; ) {
+				state = tmGoto[state * 40 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
@@ -277,7 +281,7 @@ public class RegexDefLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -285,11 +289,11 @@ public class RegexDefLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0:
-				return createExpandToken(lapg_n, lexemIndex);
+				return createExpandToken(lapg_n, ruleIndex);
 			case 1: // char: /[^()\[\]\.|\\\/*?+\-]/
 				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
@@ -395,14 +399,14 @@ public class RegexDefLexer {
 		subTokensOfExpand.put("{eoi}", 31);
 	}
 
-	protected boolean createExpandToken(LapgSymbol lapg_n, int lexemIndex) {
+	protected boolean createExpandToken(LapgSymbol lapg_n, int ruleIndex) {
 		Integer replacement = subTokensOfExpand.get(current());
 		if (replacement != null) {
-			lexemIndex = replacement;
-			lapg_n.symbol = lapg_lexemnum[lexemIndex];
+			ruleIndex = replacement;
+			lapg_n.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
-		switch(lexemIndex) {
+		switch(ruleIndex) {
 			case 31:	// {eoi}
 				 state = 0; 
 				break;

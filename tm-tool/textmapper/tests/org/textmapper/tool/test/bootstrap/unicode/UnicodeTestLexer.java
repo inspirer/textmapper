@@ -122,7 +122,7 @@ public class UnicodeTestLexer {
 		return token.toString();
 	}
 
-	private static final char[] lapg_char2no = unpack_vc_char(131072,
+	private static final char[] tmCharClass = unpack_vc_char(131072,
 		"\1\0\10\1\2\7\2\1\1\7\22\1\1\7\1\1\1\3\12\1\1\2\2\1\12\5\7\1\32\4\4\1\1\4\1\1\32" +
 		"\4\72\1\1\6\51\1\30\6\1\1\10\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1" +
 		"\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1\1\1\6\1" +
@@ -206,10 +206,10 @@ public class UnicodeTestLexer {
 		return res;
 	}
 
-	private static final short[] lapg_lexemnum = unpack_short(4,
+	private static final short[] tmRuleSymbol = unpack_short(4,
 		"\1\2\3\4");
 
-	private static final short[] lapg_lexem = unpack_vc_short(64,
+	private static final short[] tmGoto = unpack_vc_short(64,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\uffff\1\5\5\uffff\1\4\6\uffff\3\6\1\uffff\4\ufffd" +
 		"\2\3\2\ufffd\5\ufffc\1\4\2\ufffc\7\ufffa\1\5\3\uffff\1\7\3\6\1\uffff\10\ufffb");
 
@@ -233,7 +233,7 @@ public class UnicodeTestLexer {
 
 	private static int mapCharacter(int chr) {
 		if (chr >= 0 && chr < 131072) {
-			return lapg_char2no[chr];
+			return tmCharClass[chr];
 		}
 		return 1;
 	}
@@ -253,7 +253,7 @@ public class UnicodeTestLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = lapg_lexem[state * 8 + mapCharacter(chr)];
+				state = tmGoto[state * 8 + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -295,7 +295,7 @@ public class UnicodeTestLexer {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
-			lapg_n.symbol = lapg_lexemnum[-state - 3];
+			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
@@ -303,9 +303,9 @@ public class UnicodeTestLexer {
 		return lapg_n;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
+	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
-		switch (lexemIndex) {
+		switch (ruleIndex) {
 			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
 				 lapg_n.value = current(); 
 				break;
