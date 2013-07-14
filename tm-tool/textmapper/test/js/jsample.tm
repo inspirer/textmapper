@@ -1,5 +1,7 @@
 #   Simple javascript grammar
 
+language jsample(java);
+
 lang = "js"
 prefix = "JsTest"
 positions = "line,column,offset"

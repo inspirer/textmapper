@@ -1,5 +1,7 @@
 # lapg syntax file
 
+language states(java);
+
 lang = "java"
 prefix = "States"
 package = "org.textmapper.tool.test.bootstrap.states"

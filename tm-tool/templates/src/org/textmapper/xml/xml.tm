@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language xml(java);
+
 lang = "java" 
 prefix = "Xml"
 package = "org.textmapper.xml"

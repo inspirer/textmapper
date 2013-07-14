@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language noparser(java);
+
 lang = "java"
 prefix = "Noparser"
 package = "org.textmapper.tool.test.bootstrap.lexeronly"

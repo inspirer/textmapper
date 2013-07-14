@@ -1,6 +1,6 @@
 # TextMapper syntax overview
 
-# Target language
+language simple(java);
 
 lang = "java"
 

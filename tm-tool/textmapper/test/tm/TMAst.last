@@ -4,7 +4,7 @@
 class Input {
 	String name;
 	String target;
-	ParsingAlghoritm parsingAlghoritm;
+	ParsingAlgorithm parsingAlgorithm;
 	list<Import> importOptlist;
 	list<Option> optionOptlist;
 	list<LexerPartsItem> lexerParts;
@@ -12,14 +12,14 @@ class Input {
 }
 
 input  : Input ::=
-	Llanguage name=ID '(' target=ID ')' parsingAlghoritm=parsing_alghoritmopt ';' importOptlist=import_optlist optionOptlist=option_optlist '::' Llexer lexerParts=lexer_parts ('::' Lparser grammarParts=grammar_parts)?
+	Llanguage name=ID '(' target=ID ')' parsingAlgorithm=parsing_algorithmopt ';' importOptlist=import__optlist optionOptlist=option_optlist '::' Llexer lexerParts=lexer_parts ('::' Lparser grammarParts=grammar_parts)?
 ;
 
-class ParsingAlghoritm {
+class ParsingAlgorithm {
 	Integer la;
 }
 
-parsing_alghoritm  : ParsingAlghoritm ::=
+parsing_algorithm  : ParsingAlgorithm ::=
 	Llalr '(' la=icon ')'
 ;
 
@@ -28,7 +28,7 @@ class Import {
 	String file;
 }
 
-import  : Import ::=
+import_  : Import ::=
 	Limport alias=ID? file=scon ';'
 ;
 
@@ -529,12 +529,12 @@ syntax_problem  : SyntaxProblem ::=
 	error
 ;
 
-parsing_alghoritmopt  : ParsingAlghoritm ::=
-	this=parsing_alghoritm?
+parsing_algorithmopt  : ParsingAlgorithm ::=
+	this=parsing_algorithm?
 ;
 
-import_optlist  : list<Import>
-	(this+=import)* ;
+import__optlist  : list<Import>
+	(this+=import_)* ;
 
 option_optlist  : list<Option>
 	(this+=option)* ;

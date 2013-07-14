@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language types(java);
+
 lang = "java" 
 prefix = "Types"
 package = "org.textmapper.templates.types"

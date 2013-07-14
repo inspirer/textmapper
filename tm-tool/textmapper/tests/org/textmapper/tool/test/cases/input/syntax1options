@@ -1,3 +1,5 @@
+language syntax1options(testanno);
+
 lang = "testanno"
 
 container =
@@ -31,6 +33,6 @@ list ::=
 
 @weight{5} @name{"wwo"} @noast
 list_item ::=
-	@name{"rule1"}: @ids{[4,2,3]} identifier
-	| @name{"rule2"}: Licon
+	[@name{"rule1"}] @ids{[4,2,3]} identifier
+	| [@name{"rule2"}] Licon
 ;

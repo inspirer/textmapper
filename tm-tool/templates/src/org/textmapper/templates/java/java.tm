@@ -1,6 +1,8 @@
 # The Java� Language Specification
 # Java SE 7 Edition
 
+language java(java);
+
 #lang = "last"
 lang = "java"
 prefix = "Java"

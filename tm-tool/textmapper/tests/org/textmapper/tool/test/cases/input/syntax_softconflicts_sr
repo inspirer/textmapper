@@ -1,3 +1,5 @@
+language syntax_softconflicts_sr(java);
+
 lang = "java"
 prefix = "Lexems"
 

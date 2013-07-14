@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language textmapper(java);
+
 lang = "java"
 prefix = "TM"
 package = "org.textmapper.tool.parser"
@@ -118,11 +120,20 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 %input input, expression;
 
 input (TmaInput) ::=
-	  options?
+	  Llanguage name=ID '(' target=ID ')' parsing_algorithmopt ';'
+			import_*
+			options?
 			'::' Llexer
 			lexer_parts
 			('::' Lparser grammar_parts)?              {  $$ = new TmaInput($options, $lexer_parts, $grammar_parts, source, ${left().offset}, ${left().endoffset}); }
 ;
+
+parsing_algorithm ::=
+	  Llalr '(' la=icon ')' ;
+
+import_ ::=
+	  Limport alias=ID? file=scon ';' ;
+
 
 options (List<TmaOptionPart>) ::=
 	  option											{ $$ = new ArrayList<TmaOptionPart>(16); ${left()}.add($option); }
@@ -275,8 +286,8 @@ rule0 (TmaRule0) ::=
 ;
 
 rhsPrefix (TmaRhsPrefix) ::=
-	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, null, source, ${left().offset}, ${left().endoffset}); }
-	| rhsAnnotations as annotation_list? alias=identifier ':'
+	  '[' annotations ']'								{ $$ = new TmaRhsPrefix($annotations, null, source, ${left().offset}, ${left().endoffset}); }
+	| '[' rhsAnnotations as annotation_list? alias=identifier ']'
 														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, source, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -316,13 +327,18 @@ rhsOptional (ITmaRhsPart) ::=
 ;
 
 rhsCast (ITmaRhsPart) ::=
-	  rhsPrimary
-	| rhsPrimary Las symref								{ $$ = new TmaRhsCast($rhsPrimary, $symref, source, ${left().offset}, ${left().endoffset}); }
-
+	  rhsClass
+	| rhsClass Las symref								{ $$ = new TmaRhsCast($rhsClass, $symref, source, ${left().offset}, ${left().endoffset}); }
+	| rhsClass Las literal								{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
 ;
 
 rhsUnordered (ITmaRhsPart) ::=
 	  left=rhsPart '&' right=rhsPart					{ $$ = new TmaRhsUnordered($left, $right, source, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsClass (ITmaRhsPart) ::=
+	  rhsPrimary
+	| identifier ':' rhsPrimary							{ $$ = $2; reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
 ;
 
 rhsPrimary (ITmaRhsPart) ::=
@@ -366,14 +382,18 @@ negative_la_clause (java.util.@List<TmaSymref>) ::=
 ##### EXPRESSIONS
 
 expression (ITmaExpression) ::=
-	  scon                                              { $$ = new TmaExpressionLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
-	| icon                                              { $$ = new TmaExpressionLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
-	| Ltrue                                             { $$ = new TmaExpressionLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
-	| Lfalse                                            { $$ = new TmaExpressionLiteral(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
+	  literal
 	| symref
 	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaExpressionInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
 	| '[' expression_listopt ']'						{ $$ = new TmaExpressionArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
+;
+
+literal (TmaExpressionLiteral) ::=
+	  scon                                              { $$ = new TmaExpressionLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
+	| icon                                              { $$ = new TmaExpressionLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
+	| Ltrue                                             { $$ = new TmaExpressionLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
+	| Lfalse                                            { $$ = new TmaExpressionLiteral(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 expression_list (List<ITmaExpression>) ::=

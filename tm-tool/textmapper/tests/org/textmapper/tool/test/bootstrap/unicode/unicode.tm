@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language unicode(java);
+
 lang = "java"
 prefix = "UnicodeTest"
 package = "org.textmapper.tool.test.bootstrap.unicode"

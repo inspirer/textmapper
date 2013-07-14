@@ -1,4 +1,4 @@
-# lapg syntax file
+language syntaxmultiinput(java);
 
 lang = "java"
 prefix = "AA"

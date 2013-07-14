@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language textmapper(java);
+
 lang = "java"
 prefix = "TM"
 package = "org.textmapper.tool.parser"
@@ -120,18 +122,18 @@ code:    /\{/                            { skipAction(); lapg_n.endoffset = getO
 %input input, expression;
 
 input ::=
-	  Llanguage name=ID '(' target=ID ')' parsing_alghoritmopt ';'
-			import*
+	  Llanguage name=ID '(' target=ID ')' parsing_algorithmopt ';'
+			import_*
 			option*
 			'::' Llexer
 			lexer_parts
 			('::' Lparser grammar_parts)?
 ;
 
-parsing_alghoritm ::=
+parsing_algorithm ::=
 	  Llalr '(' la=icon ')' ;
 
-import ::=
+import_ ::=
 	  Limport alias=ID? file=scon ';' ;
 
 option ::=
@@ -232,7 +234,7 @@ priority_kw ::=
 @_interface
 directive ::=
 	  '%' priority_kw references ';'
-	| input: '%' Linput (inputref separator ',')+ ';'
+	| [input] '%' Linput (inputref separator ',')+ ';'
 ;
 
 inputref ::=
@@ -312,12 +314,12 @@ rhsClass returns rhsPart ::=
 
 
 rhsPrimary returns rhsPart ::=
-	  symbol: symref
-	| group: '(' rules ')'
-	| list: '(' rhsParts Lseparator references ')' quantifier='+'
-	| list: '(' rhsParts Lseparator references ')' quantifier='*'
-	| list: rhsPrimary quantifier='*'
-	| list: rhsPrimary quantifier='+'
+	  [symbol] symref
+	| [group] '(' rules ')'
+	| [list] '(' rhsParts Lseparator references ')' quantifier='+'
+	| [list] '(' rhsParts Lseparator references ')' quantifier='*'
+	| [list] rhsPrimary quantifier='*'
+	| [list] rhsPrimary quantifier='+'
 ;
 
 rhsAnnotations ::=
@@ -345,16 +347,16 @@ negative_la ::=
 expression ::=
 	  literal
 	| symref
-	| instance: Lnew name '(' map_entriesopt ')'
-	| array: '[' (expression separator ',')* ']'
+	| [instance] Lnew name '(' map_entriesopt ')'
+	| [array] '[' (expression separator ',')* ']'
 	| syntax_problem
 ;
 
 literal ::=
-	  literal: sval=scon
-	| literal: ival=icon
-	| literal: isTrue=Ltrue          # TODO val=Ltrue/Boolean.TRUE?/
-    | literal: isFalse=Lfalse        # TODO val=Lfalse/Boolean.FALSE?/
+	  [literal] sval=scon
+	| [literal] ival=icon
+	| [literal] isTrue=Ltrue          # TODO val=Ltrue/Boolean.TRUE?/
+    | [literal] isFalse=Lfalse        # TODO val=Lfalse/Boolean.FALSE?/
 
 ;
 

@@ -1,3 +1,5 @@
+language syntax2(java);
+
 :: lexer
 
 a:      /a/

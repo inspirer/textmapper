@@ -1,4 +1,4 @@
-#   Automatically generated grammar
+language syntax_conflict2resolved(java);
 
 lang       = "java"
 positions = "line,offset"

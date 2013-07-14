@@ -436,8 +436,8 @@ public class TMParser {
 		"code",
 		"'{'",
 		"input",
-		"parsing_alghoritm",
-		"import",
+		"parsing_algorithm",
+		"import_",
 		"option",
 		"identifier",
 		"symref",
@@ -489,8 +489,8 @@ public class TMParser {
 		"qualified_id",
 		"command",
 		"syntax_problem",
-		"parsing_alghoritmopt",
-		"import_optlist",
+		"parsing_algorithmopt",
+		"import__optlist",
 		"option_optlist",
 		"typeopt",
 		"lexem_transitionopt",
@@ -513,8 +513,8 @@ public class TMParser {
 	public interface Tokens extends Lexems {
 		// non-terminals
 		public static final int input = 59;
-		public static final int parsing_alghoritm = 60;
-		public static final int _import = 61;
+		public static final int parsing_algorithm = 60;
+		public static final int import_ = 61;
 		public static final int option = 62;
 		public static final int identifier = 63;
 		public static final int symref = 64;
@@ -566,8 +566,8 @@ public class TMParser {
 		public static final int qualified_id = 110;
 		public static final int command = 111;
 		public static final int syntax_problem = 112;
-		public static final int parsing_alghoritmopt = 113;
-		public static final int import_optlist = 114;
+		public static final int parsing_algorithmopt = 113;
+		public static final int import__optlist = 114;
 		public static final int option_optlist = 115;
 		public static final int typeopt = 116;
 		public static final int lexem_transitionopt = 117;
@@ -755,10 +755,10 @@ public class TMParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
 		switch (rule) {
-			case 2:  // import_optlist ::= import_optlist import
+			case 2:  // import__optlist ::= import__optlist import_
 				((List<TmaImport>)lapg_gg.value).add(((TmaImport)tmStack[tmHead].value));
 				break;
-			case 3:  // import_optlist ::=
+			case 3:  // import__optlist ::=
 				lapg_gg.value = new ArrayList();
 				break;
 			case 4:  // option_optlist ::= option_optlist option
@@ -767,40 +767,40 @@ public class TMParser {
 			case 5:  // option_optlist ::=
 				lapg_gg.value = new ArrayList();
 				break;
-			case 6:  // input ::= Llanguage ID '(' ID ')' parsing_alghoritmopt ';' import_optlist option_optlist '::' Llexer lexer_parts '::' Lparser grammar_parts
+			case 6:  // input ::= Llanguage ID '(' ID ')' parsing_algorithmopt ';' import__optlist option_optlist '::' Llexer lexer_parts '::' Lparser grammar_parts
 				lapg_gg.value = new TmaInput(
 						((String)tmStack[tmHead - 13].value) /* name */,
 						((String)tmStack[tmHead - 11].value) /* target */,
-						((TmaParsingAlghoritm)tmStack[tmHead - 9].value) /* parsingAlghoritm */,
+						((TmaParsingAlgorithm)tmStack[tmHead - 9].value) /* parsingAlgorithm */,
 						((List<TmaImport>)tmStack[tmHead - 7].value) /* importOptlist */,
 						((List<TmaOption>)tmStack[tmHead - 6].value) /* optionOptlist */,
 						((List<TmaLexerPartsItem>)tmStack[tmHead - 3].value) /* lexerParts */,
 						((List<TmaGrammarPartsItem>)tmStack[tmHead].value) /* grammarParts */,
 						null /* input */, tmStack[tmHead - 14].offset, tmStack[tmHead].endoffset);
 				break;
-			case 7:  // input ::= Llanguage ID '(' ID ')' parsing_alghoritmopt ';' import_optlist option_optlist '::' Llexer lexer_parts
+			case 7:  // input ::= Llanguage ID '(' ID ')' parsing_algorithmopt ';' import__optlist option_optlist '::' Llexer lexer_parts
 				lapg_gg.value = new TmaInput(
 						((String)tmStack[tmHead - 10].value) /* name */,
 						((String)tmStack[tmHead - 8].value) /* target */,
-						((TmaParsingAlghoritm)tmStack[tmHead - 6].value) /* parsingAlghoritm */,
+						((TmaParsingAlgorithm)tmStack[tmHead - 6].value) /* parsingAlgorithm */,
 						((List<TmaImport>)tmStack[tmHead - 4].value) /* importOptlist */,
 						((List<TmaOption>)tmStack[tmHead - 3].value) /* optionOptlist */,
 						((List<TmaLexerPartsItem>)tmStack[tmHead].value) /* lexerParts */,
 						null /* grammarParts */,
 						null /* input */, tmStack[tmHead - 11].offset, tmStack[tmHead].endoffset);
 				break;
-			case 8:  // parsing_alghoritm ::= Llalr '(' icon ')'
-				lapg_gg.value = new TmaParsingAlghoritm(
+			case 8:  // parsing_algorithm ::= Llalr '(' icon ')'
+				lapg_gg.value = new TmaParsingAlgorithm(
 						((Integer)tmStack[tmHead - 1].value) /* la */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 9:  // import ::= Limport ID scon ';'
+			case 9:  // import_ ::= Limport ID scon ';'
 				lapg_gg.value = new TmaImport(
 						((String)tmStack[tmHead - 2].value) /* alias */,
 						((String)tmStack[tmHead - 1].value) /* file */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 10:  // import ::= Limport scon ';'
+			case 10:  // import_ ::= Limport scon ';'
 				lapg_gg.value = new TmaImport(
 						null /* alias */,
 						((String)tmStack[tmHead - 1].value) /* file */,

@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language templates(java);
+
 lang = "java" 
 prefix = "Templates"
 package = "org.textmapper.templates.ast"

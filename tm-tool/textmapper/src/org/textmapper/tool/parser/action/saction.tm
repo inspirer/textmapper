@@ -14,6 +14,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+language saction(java);
+
 lang = "java"
 prefix = "SAction"
 package = "org.textmapper.tool.parser.action"

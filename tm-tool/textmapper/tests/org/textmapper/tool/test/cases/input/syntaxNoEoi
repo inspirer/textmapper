@@ -1,4 +1,4 @@
-# lapg syntax file
+language syntaxNoEoi(java);
 
 lang = "java"
 prefix = "AA"
