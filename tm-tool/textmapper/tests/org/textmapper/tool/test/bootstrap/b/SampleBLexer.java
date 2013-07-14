@@ -150,6 +150,8 @@ public class SampleBLexer {
 	private static final short[] tmRuleSymbol = unpack_short(15,
 		"\1\14\15\16\2\3\4\5\6\7\10\11\12\17\20");
 
+	private static final int tmClassesCount = 13;
+
 	private static final short[] tmGoto = unpack_vc_short(169,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\2\1\7\1\2\1\7\1\10\2\uffff\1\11\1\12\7" +
 		"\uffff\1\11\1\uffff\2\ufffd\2\2\4\ufffd\4\2\1\ufffd\15\ufff6\15\ufff5\15\ufff4\15" +
@@ -197,7 +199,7 @@ public class SampleBLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 13 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

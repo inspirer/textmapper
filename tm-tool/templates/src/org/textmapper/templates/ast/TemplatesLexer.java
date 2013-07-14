@@ -241,6 +241,8 @@ public class TemplatesLexer {
 		"\36\37\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70" +
 		"\71\72\73\74\75\76\77\100");
 
+	private static final int tmClassesCount = 37;
+
 	private static final short[] tmGoto = unpack_vc_short(1887,
 		"\1\ufffe\1\2\1\3\42\2\4\uffff\1\4\1\5\1\6\1\uffff\1\7\1\10\1\11\1\12\1\13\1\14\1" +
 		"\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\7\1\33\1\34" +
@@ -299,7 +301,7 @@ public class TemplatesLexer {
 			tokenStart = l - 1;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
-				state = tmGoto[state * 37 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

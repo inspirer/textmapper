@@ -174,6 +174,8 @@ public class RegexDefLexer {
 		"\22\1\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24\25" +
 		"\1");
 
+	private static final int tmClassesCount = 40;
+
 	private static final short[] tmGoto = unpack_vc_short(2400,
 		"\1\ufffe\1\3\1\4\1\3\1\5\10\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
 		"\uffff\2\3\1\uffff\12\3\1\uffff\1\3\1\15\1\3\1\5\10\3\1\6\1\16\1\17\1\20\1\3\1\10" +
@@ -237,7 +239,7 @@ public class RegexDefLexer {
 			tokenStart = l - 1;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
-				state = tmGoto[state * 40 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

@@ -153,6 +153,8 @@ public class SampleALexer {
 	private static final short[] tmRuleSymbol = unpack_short(5,
 		"\1\2\3\4\5");
 
+	private static final int tmClassesCount = 11;
+
 	private static final short[] tmGoto = unpack_vc_short(110,
 		"\1\ufffe\1\uffff\1\1\3\2\1\3\1\4\1\2\1\uffff\1\5\2\ufffd\1\2\1\6\2\2\2\ufffd\2\2" +
 		"\3\ufffd\4\2\2\ufffd\2\2\1\ufffd\13\ufffa\13\ufff9\12\ufffc\1\5\2\ufffd\2\2\1\7\1" +
@@ -200,7 +202,7 @@ public class SampleALexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 11 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.endline = currLine;

@@ -161,6 +161,8 @@ public class NlaTestLexer {
 	private static final short[] tmRuleSymbol = unpack_short(26,
 		"\1\2\3\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32");
 
+	private static final int tmClassesCount = 23;
+
 	private static final short[] tmGoto = unpack_vc_short(506,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\1\15\1\16\1" +
 		"\17\1\20\1\21\1\uffff\1\22\1\23\1\24\23\ufff7\1\25\1\ufff7\1\23\1\ufff7\27\ufffa" +
@@ -208,7 +210,7 @@ public class NlaTestLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 23 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

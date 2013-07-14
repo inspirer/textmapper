@@ -63,7 +63,7 @@ public class GenericLexer {
 	private final int[] tmRuleSymbol;
 	private final int[] tmGoto;
 	private final int[] tmStateMap;
-	private final int tmCharsCount;
+	private final int tmClassesCount;
 
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerData lexerData, Grammar grammar) throws IOException {
 		this.reporter = reporter;
@@ -71,7 +71,7 @@ public class GenericLexer {
 		tmRuleSymbol = getLexemNum(grammar);
 		tmCharClass = lexerData.getChar2no();
 		tmGoto = lexerData.getChange();
-		tmCharsCount = lexerData.getNchars();
+		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
 		reset(stream);
 	}
@@ -156,7 +156,7 @@ public class GenericLexer {
 			tokenStart = l - 1;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
-				state = tmGoto[state * tmCharsCount + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

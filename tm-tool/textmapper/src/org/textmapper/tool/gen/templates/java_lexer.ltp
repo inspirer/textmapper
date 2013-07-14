@@ -134,7 +134,7 @@ ${if opts.lexerInput == 'buffered'-}
 ${end-}
 
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
-				state = tmGoto[state * ${self->numOfChars()} + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 ${if opts.endpositions.contains('offset')-}
 					lapg_n.endoffset = currOffset;
@@ -211,8 +211,6 @@ ${template unpackRoutines}
 ${call java_pack.unpackInt}
 ${call java_pack.unpackShort-}
 ${end}
-
-${query numOfChars = lex.nchars}
 
 ${template lexerCtor-}
 	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
@@ -383,6 +381,8 @@ ${if self->tmStateMapExists()-}
 
 ${end-}
 	private static final short[] tmRuleSymbol = ${syntax.lexemSymbols->java_pack.packShort()};
+
+	private static final int tmClassesCount = ${lex.nchars};
 
 	private static final short[] tmGoto = ${lex.change->java_pack.packCountValue(false)};
 

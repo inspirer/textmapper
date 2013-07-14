@@ -350,7 +350,7 @@ annotation_list (java.util.@List<TmaMapEntriesItem>) ::=
 ;
 
 annotation (TmaMapEntriesItem) ::=
-	  '@' ID ('{' expression '}')?                          { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	  '@' ID ('{' expression '}')?                      { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| '@' syntax_problem                                { $$ = new TmaMapEntriesItem($syntax_problem); }
 ;
 

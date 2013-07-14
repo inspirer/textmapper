@@ -123,6 +123,8 @@ public class RewriteLexer {
 	private static final short[] tmRuleSymbol = unpack_short(6,
 		"\1\2\3\4\5\6");
 
+	private static final int tmClassesCount = 8;
+
 	private static final short[] tmGoto = unpack_vc_short(56,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\10\ufffd\10\ufffc\10\ufffb\10\ufffa\10\ufff9" +
 		"\10\ufff8");
@@ -167,7 +169,7 @@ public class RewriteLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 8 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;

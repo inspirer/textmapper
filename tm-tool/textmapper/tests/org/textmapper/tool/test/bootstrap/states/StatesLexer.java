@@ -130,6 +130,8 @@ public class StatesLexer {
 	private static final short[] tmRuleSymbol = unpack_short(16,
 		"\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1");
 
+	private static final int tmClassesCount = 14;
+
 	private static final short[] tmGoto = unpack_vc_short(420,
 		"\1\ufffe\1\uffff\1\5\16\uffff\1\6\1\7\1\10\1\11\1\12\5\uffff\1\13\2\uffff\1\14\1" +
 		"\uffff\1\15\1\16\1\11\1\12\5\uffff\1\13\2\uffff\1\17\1\20\1\uffff\1\21\1\11\1\12" +
@@ -178,7 +180,7 @@ public class StatesLexer {
 			tokenStart = l - 1;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
-				state = tmGoto[state * 14 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;

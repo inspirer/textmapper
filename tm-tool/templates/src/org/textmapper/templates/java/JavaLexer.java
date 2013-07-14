@@ -312,6 +312,8 @@ public class JavaLexer {
 		"\112\113\114\115\116\117\120\121\122\123\124\125\126\127\130\131\132\133\134\135" +
 		"\136\137\140\141\142\143\144\145\146\147\150\151\152\153\154");
 
+	private static final int tmClassesCount = 53;
+
 	private static final short[] tmGoto = unpack_vc_short(6996,
 		"\1\ufffe\1\uffff\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10\1\2\1\11\1\12\1\13\1\14\1\15\1" +
 		"\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1\34\1\35\1" +
@@ -426,7 +428,7 @@ public class JavaLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 53 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

@@ -189,6 +189,8 @@ public class TypesLexer {
 	private static final short[] tmRuleSymbol = unpack_short(27,
 		"\1\2\3\4\5\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32");
 
+	private static final int tmClassesCount = 32;
+
 	private static final short[] tmGoto = unpack_vc_short(1088,
 		"\1\ufffe\1\uffff\1\1\1\uffff\1\2\1\3\1\4\1\5\3\6\1\7\3\6\1\10\1\11\1\12\1\13\1\14" +
 		"\1\15\1\16\1\uffff\1\17\1\20\1\21\1\22\1\23\1\24\1\6\1\25\1\2\1\uffff\1\1\1\26\1" +
@@ -242,7 +244,7 @@ public class TypesLexer {
 			tokenStart = l - 1;
 
 			for (state = this.state; state >= 0; ) {
-				state = tmGoto[state * 32 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;

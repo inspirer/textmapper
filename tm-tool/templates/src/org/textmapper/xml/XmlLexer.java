@@ -152,6 +152,8 @@ public class XmlLexer {
 	private static final short[] tmRuleSymbol = unpack_short(11,
 		"\1\2\3\4\5\5\6\7\10\11\12");
 
+	private static final int tmClassesCount = 15;
+
 	private static final short[] tmGoto = unpack_vc_short(300,
 		"\1\ufffe\1\2\1\3\14\2\5\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\uffff\2\13\1\ufffd" +
 		"\1\2\1\ufffd\14\2\3\ufffc\1\14\13\ufffc\17\ufff7\1\uffff\5\5\1\15\6\5\1\uffff\1\5" +
@@ -199,7 +201,7 @@ public class XmlLexer {
 			tokenStart = l - 1;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
-				state = tmGoto[state * 15 + mapCharacter(chr)];
+				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == 0) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
