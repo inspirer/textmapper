@@ -75,6 +75,11 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 			SyntaxHighlighterColors.PARENTHS.getDefaultAttributes()
 	);
 
+	static final TextAttributesKey BRACES = TextAttributesKey.createTextAttributesKey(
+			"LAPG.BRACES",
+			SyntaxHighlighterColors.BRACES.getDefaultAttributes()
+	);
+
 	static final TextAttributesKey QUANTIFIER = TextAttributesKey.createTextAttributesKey(
 			"LAPG.QUANTIFIER",
 			SyntaxHighlighterColors.KEYWORD.getDefaultAttributes()
@@ -158,6 +163,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, LapgTokenTypes.quantifiers, QUANTIFIER);
 		fillMap(attributes, BRACKETS, LapgTokenTypes.OP_LBRACKET, LapgTokenTypes.OP_RBRACKET);
 		fillMap(attributes, PARENTHS, LapgTokenTypes.OP_LPAREN, LapgTokenTypes.OP_RPAREN);
+		fillMap(attributes, BRACES, LapgTokenTypes.OP_LCURLY, LapgTokenTypes.OP_RCURLY);
 
 		// punctuation
 		fillMap(attributes, SyntaxHighlighterColors.DOT, LapgTokenTypes.OP_DOT);

@@ -41,11 +41,13 @@ public interface LapgTokenTypes {
 	IElementType TOKEN_ACTION = new LapgTemplatesElementType(Lexems.code, true, "action");
 	IElementType TEMPLATES = new LapgTemplatesElementType(Lexems.eoi, false, "templates");
 
-	// [] ()
+	// [] () {}
 	IElementType OP_LBRACKET = new LapgElementType(Lexems.LSQUARE, "[");
 	IElementType OP_RBRACKET = new LapgElementType(Lexems.RSQUARE, "]");
 	IElementType OP_LPAREN = new LapgElementType(Lexems.LPAREN, "(");
 	IElementType OP_RPAREN = new LapgElementType(Lexems.RPAREN, ")");
+	IElementType OP_LCURLY = new LapgElementType(Lexems.LCURLY, "{");
+	IElementType OP_RCURLY = new LapgElementType(Lexems.RCURLY, "}");
 
 	// punctuation
 	IElementType OP_SEMICOLON = new LapgElementType(Lexems.SEMICOLON, ";");
@@ -59,6 +61,7 @@ public interface LapgTokenTypes {
 	IElementType OP_EQ = new LapgElementType(Lexems.EQUAL, "=");
 	IElementType OP_EQGT = new LapgElementType(Lexems.EQUALGREATER, "=>");
 	IElementType OP_COLON = new LapgElementType(Lexems.COLON, ":");
+	IElementType OP_COLONCOLON = new LapgElementType(Lexems.COLONCOLON, "::");
 	IElementType OP_LT = new LapgElementType(Lexems.LESS, "<");
 	IElementType OP_GT = new LapgElementType(Lexems.GREATER, ">");
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
@@ -71,7 +74,7 @@ public interface LapgTokenTypes {
 	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
-			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
+			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON, OP_COLONCOLON,
 			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
 
@@ -90,10 +93,15 @@ public interface LapgTokenTypes {
 	IElementType KW_NEW = new LapgElementType(Lexems.Lnew, "new");
 	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 	IElementType KW_NOEOI = new LapgElementType(Lexems.Lnoeoi, "no-eoi");
-	IElementType KW_AS = new LapgElementType(Lexems.Las, "space");
-	IElementType KW_EXTENDS = new LapgElementType(Lexems.Lextends, "space");
-	IElementType KW_INLINE = new LapgElementType(Lexems.Linline, "space");
-	IElementType KW_RETURNS = new LapgElementType(Lexems.Lreturns, "space");
+	IElementType KW_AS = new LapgElementType(Lexems.Las, "as");
+	IElementType KW_IMPORT = new LapgElementType(Lexems.Limport, "import");
+	IElementType KW_INLINE = new LapgElementType(Lexems.Linline, "inline");
+	IElementType KW_RETURNS = new LapgElementType(Lexems.Lreturns, "returns");
+	IElementType KW_INTERFACE = new LapgElementType(Lexems.Linterface, "interface");
+	IElementType KW_LANGUAGE = new LapgElementType(Lexems.Llanguage, "language");
+	IElementType KW_LALR = new LapgElementType(Lexems.Llalr, "lalr");
+	IElementType KW_LEXER = new LapgElementType(Lexems.Llexer, "lexer");
+	IElementType KW_PARSER = new LapgElementType(Lexems.Lparser, "parser");
 
 	// soft keywords without highlighting
 	IElementType KW_SOFT = new LapgElementType(Lexems.Lsoft, "soft");
@@ -103,5 +111,6 @@ public interface LapgTokenTypes {
 	TokenSet keywords = TokenSet.create(
 			KW_TRUE, KW_FALSE, KW_SEPARATOR, KW_PRIO, KW_SHIFT, KW_REDUCE,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NEW, KW_NONASSOC, KW_NOEOI,
-			KW_AS, KW_EXTENDS, KW_INLINE, KW_RETURNS);
+			KW_AS, KW_IMPORT, KW_INLINE, KW_RETURNS, KW_INTERFACE, KW_LANGUAGE,
+			KW_LALR, KW_LEXER, KW_PARSER);
 }

@@ -147,6 +147,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return OP_COMMA;
 			case Lexems.COLON:
 				return OP_COLON;
+			case Lexems.COLONCOLON:
+				return OP_COLONCOLON;
 			case Lexems.LSQUARE:
 				return OP_LBRACKET;
 			case Lexems.RSQUARE:
@@ -155,6 +157,10 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return OP_LPAREN;
 			case Lexems.RPAREN:
 				return OP_RPAREN;
+			case Lexems.LCURLY:
+				return OP_LCURLY;
+			case Lexems.RCURLY:
+				return OP_RCURLY;
 			case Lexems.LESS:
 				return OP_LT;
 			case Lexems.GREATER:
@@ -203,12 +209,22 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return KW_NOEOI;
 			case Lexems.Las:
 				return KW_AS;
-			case Lexems.Lextends:
-				return KW_EXTENDS;
+			case Lexems.Limport:
+				return KW_IMPORT;
 			case Lexems.Linline:
 				return KW_INLINE;
 			case Lexems.Lreturns:
 				return KW_RETURNS;
+			case Lexems.Linterface:
+				return KW_INTERFACE;
+			case Lexems.Llanguage:
+				return KW_LANGUAGE;
+			case Lexems.Llalr:
+				return KW_LALR;
+			case Lexems.Llexer:
+				return KW_LEXER;
+			case Lexems.Lparser:
+				return KW_PARSER;
 
 			// soft keywords without highlighting
 			case Lexems.Lsoft:
