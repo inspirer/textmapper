@@ -1,6 +1,5 @@
 language rewrite(java);
 
-lang = "java"
 prefix = "Rewrite"
 package = "org.textmapper.tool.compiler.input"
 

@@ -16,7 +16,6 @@
 
 language textmapper(java);
 
-lang = "java"
 prefix = "TM"
 package = "org.textmapper.tool.parser"
 maxtoken = 2048
@@ -120,19 +119,36 @@ code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
 %input input, expression;
 
 input (TmaInput) ::=
-	  Llanguage name=ID '(' target=ID ')' parsing_algorithmopt ';'
-			import_*
-			options?
-			'::' Llexer
-			lexer_parts
-			('::' Lparser grammar_parts)?              {  $$ = new TmaInput($options, $lexer_parts, $grammar_parts, source, ${left().offset}, ${left().endoffset}); }
+	  header importsopt options? lexer_section parser_section?
+	  													{ $$ = new TmaInput($header, $importsopt, $options, $lexer_section, $parser_section, source, ${left().offset}, ${left().endoffset}); }
 ;
 
+header (TmaHeader) ::=
+	  Llanguage name=ID ('(' target=ID ')')? parsing_algorithmopt ';'
+														{ $$ = new TmaHeader($name, $target, source, ${left().offset}, ${left().endoffset}); }
+;
+
+lexer_section (List<ITmaLexerPart>) ::=
+	  '::' Llexer lexer_parts							{ $$ = $2; }
+;
+
+parser_section (List<ITmaGrammarPart>) ::=
+	  '::' Lparser grammar_parts						{ $$ = $2; }
+;
+
+# ignored
 parsing_algorithm ::=
 	  Llalr '(' la=icon ')' ;
 
-import_ ::=
-	  Limport alias=ID? file=scon ';' ;
+imports (List<TmaImport>) ::=
+	  import_											{ $$ = new ArrayList<TmaImport>(16); ${left()}.add($import_); }
+	| list=imports import_								{ $list.add($import_); }
+;
+
+
+import_ (TmaImport) ::=
+	  Limport alias=ID? file=scon ';'					{ $$ = new TmaImport($alias, $file, source, ${left().offset}, ${left().endoffset}); }
+;
 
 
 options (List<TmaOptionPart>) ::=

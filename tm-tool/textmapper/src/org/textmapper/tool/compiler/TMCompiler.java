@@ -94,17 +94,10 @@ public class TMCompiler {
 	}
 
 	private String getTypesPackage() {
-		if (tree.getRoot().getOptions() != null) {
-			for (TmaOptionPart option : tree.getRoot().getOptions()) {
-				if (option instanceof TmaOption && ((TmaOption) option).getKey().equals("lang")) {
-					ITmaExpression expression = ((TmaOption) option).getValue();
-					if (expression instanceof TmaExpressionLiteral) {
-						return ((TmaExpressionLiteral) expression).getLiteral().toString();
-					}
-				}
-			}
+		final String targetLanguage = tree.getRoot().getHeader().getTargetLanguage();
+		if (targetLanguage != null) {
+			return targetLanguage;
 		}
-
 		return "common";
 	}
 

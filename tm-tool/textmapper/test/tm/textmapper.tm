@@ -16,7 +16,6 @@
 
 language textmapper(java);
 
-lang = "java"
 prefix = "TM"
 package = "org.textmapper.tool.parser"
 astprefix = "Tma"

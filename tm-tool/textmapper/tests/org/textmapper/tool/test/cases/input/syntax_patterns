@@ -1,6 +1,5 @@
 language syntax_patterns(java);
 
-lang = "java"
 prefix = "Lexems"
 
 :: lexer

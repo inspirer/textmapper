@@ -1,7 +1,5 @@
 language syntax1annotated(testanno);
 
-lang = "testanno"
-
 :: lexer
 
 identifier: /@?[a-zA-Z_][A-Za-z_0-9]*/ -1

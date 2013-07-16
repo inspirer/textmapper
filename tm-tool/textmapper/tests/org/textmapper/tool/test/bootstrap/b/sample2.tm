@@ -16,7 +16,6 @@
 
 language sample2(java);
 
-lang = "java"
 prefix = "SampleB"
 package = "org.textmapper.tool.test.bootstrap.b"
 maxtoken = 2048

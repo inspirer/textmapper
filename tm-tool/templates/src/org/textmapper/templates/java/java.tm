@@ -3,8 +3,6 @@
 
 language java(java);
 
-#lang = "last"
-lang = "java"
 prefix = "Java"
 package = "org.textmapper.templates.java"
 positions = "line,offset"

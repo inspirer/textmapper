@@ -1,6 +1,5 @@
 language syntaxmultiinput(java);
 
-lang = "java"
 prefix = "AA"
 
 :: lexer

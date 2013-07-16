@@ -16,7 +16,6 @@
 
 language noparser(java);
 
-lang = "java"
 prefix = "Noparser"
 package = "org.textmapper.tool.test.bootstrap.lexeronly"
 lexerInput = "char"

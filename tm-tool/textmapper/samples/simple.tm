@@ -2,8 +2,6 @@
 
 language simple(java);
 
-lang = "java"
-
 :: lexer
 
 whitespace: /[\r\n\t\f\x20]|\r\n/	(space)

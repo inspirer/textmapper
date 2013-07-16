@@ -16,7 +16,6 @@
 
 language regex(java);
 
-lang = "java"
 prefix = "RegexDef"
 package = "org.textmapper.lapg.regex"
 breaks = true

@@ -16,7 +16,6 @@
 
 language nla(java);
 
-lang = "java"
 prefix = "NlaTest"
 package = "org.textmapper.tool.test.bootstrap.nla"
 breaks = true

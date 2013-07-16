@@ -1,6 +1,5 @@
 language syntaxNoEoi(java);
 
-lang = "java"
 prefix = "AA"
 
 :: lexer

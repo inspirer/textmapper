@@ -16,7 +16,6 @@
 
 language saction(java);
 
-lang = "java"
 prefix = "SAction"
 package = "org.textmapper.tool.parser.action"
 positions = "offset"

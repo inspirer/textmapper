@@ -16,7 +16,6 @@
 
 language unicode(java);
 
-lang = "java"
 prefix = "UnicodeTest"
 package = "org.textmapper.tool.test.bootstrap.unicode"
 genCopyright = true

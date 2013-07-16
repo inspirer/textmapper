@@ -21,17 +21,29 @@ import java.util.List;
 
 public class TmaInput extends TmaNode {
 
+	private final TmaHeader header;
+	private final List<TmaImport> imports;
 	private final List<TmaOptionPart> options;
 	private final List<ITmaLexerPart> lexer;
 	private final List<ITmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaInput(List<TmaOptionPart> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
+	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOptionPart> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
 					int offset, int endoffset) {
 		super(source, offset, endoffset);
+		this.header = header;
+		this.imports = imports;
 		this.options = options;
 		this.lexer = lexer;
 		this.grammar = grammar;
+	}
+
+	public TmaHeader getHeader() {
+		return header;
+	}
+
+	public List<TmaImport> getImports() {
+		return imports;
 	}
 
 	public List<TmaOptionPart> getOptions() {
@@ -54,9 +66,16 @@ public class TmaInput extends TmaNode {
 		this.templatesStart = templatesStart;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		header.accept(v);
+		if (imports != null) {
+			for (TmaImport i : imports) {
+				i.accept(v);
+			}
 		}
 		if (options != null) {
 			for (TmaOptionPart o : options) {
