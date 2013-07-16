@@ -35,7 +35,8 @@ public interface TextmapperElementTypes {
 	public static final IElementType LEXEM_ATTRS = new LapgElementType(Tokens.lexem_attrs, "lexem attrs");
 	public static final IElementType LEXER_STATE = new LapgElementType(Tokens.lexer_state, "lexer state");
 
-	public static final IElementType NONTERM = new LapgElementType(Tokens.nonterm, "non-terminal");
+	public static final IElementType NONTERM = new LapgElementType(Tokens.nonterm, "nonterminal");
+	public static final IElementType NONTERM_TYPE = new LapgElementType(Tokens.nonterm_type, "nonterminal type");
 	public static final IElementType DIRECTIVE = new LapgElementType(Tokens.directive, "directive");
 
 	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
@@ -58,7 +59,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType[] allElements = {
 			OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
-			NONTERM, DIRECTIVE,
+			NONTERM, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, NEGATIVE_LA,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};

@@ -52,7 +52,7 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 	@NotNull
 	@Override
 	public String getType(@NotNull PsiElement psiElement) {
-		if (psiElement instanceof TmNonTerm) {
+		if (psiElement instanceof TmNonterm) {
 			return "nonterm";
 		}
 		if (psiElement instanceof TmLexem) {

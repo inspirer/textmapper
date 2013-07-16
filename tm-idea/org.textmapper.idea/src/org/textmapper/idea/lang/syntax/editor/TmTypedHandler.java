@@ -27,7 +27,7 @@ import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.util.text.CharArrayUtil;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
-import org.textmapper.idea.lang.syntax.psi.TmNonTerm;
+import org.textmapper.idea.lang.syntax.psi.TmNonterm;
 
 /**
  * Gryaznov Evgeny, 9/21/12
@@ -50,7 +50,7 @@ public class TmTypedHandler extends TypedHandlerDelegate {
 		int offset = editor.getCaretModel().getOffset();
 		PsiDocumentManager.getInstance(project).commitDocument(editor.getDocument());
 		PsiElement currElement = file.findElementAt(offset - 1);
-		if (currElement == null || !(currElement.getParent() instanceof TmNonTerm)) {
+		if (currElement == null || !(currElement.getParent() instanceof TmNonterm)) {
 			return false;
 		}
 		Document document = editor.getDocument();

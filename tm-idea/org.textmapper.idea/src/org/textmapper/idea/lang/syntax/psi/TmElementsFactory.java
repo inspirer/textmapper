@@ -36,7 +36,7 @@ public class TmElementsFactory {
 		@NonNls String text = "token: / /\n" + name + " ::= token ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
-		List<TmNonTerm> s = grammar.getNonTerms();
+		List<TmNonterm> s = grammar.getNonterms();
 		if (s == null || s.size() != 1 || s.get(0).getNameIdentifier() == null) {
 			throw new IncorrectOperationException();
 		}
@@ -47,7 +47,7 @@ public class TmElementsFactory {
 		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
-		List<TmNonTerm> s = grammar.getNonTerms();
+		List<TmNonterm> s = grammar.getNonterms();
 		if (s == null || s.size() != 1) {
 			throw new IncorrectOperationException();
 		}

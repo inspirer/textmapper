@@ -115,7 +115,9 @@ public class TMParserDefinition implements ParserDefinition {
 			case Tokens.named_pattern:
 				return new TmNamedPattern(node);
 			case Tokens.nonterm:
-				return new TmNonTerm(node);
+				return new TmNonterm(node);
+			case Tokens.nonterm_type:
+				return new TmNontermType(node);
 			case Tokens.directive:
 				return new TmDirective(node);
 		}

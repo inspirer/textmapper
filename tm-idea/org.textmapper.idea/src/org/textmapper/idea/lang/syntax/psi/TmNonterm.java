@@ -23,14 +23,14 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class TmNonTerm extends TmNamedElement {
+public class TmNonterm extends TmNamedElement {
 
-	public TmNonTerm(@NotNull ASTNode node) {
+	public TmNonterm(@NotNull ASTNode node) {
 		super(node);
 	}
 
-	public TmType getType() {
-		return PsiTreeUtil.getChildOfType(this, TmType.class);
+	public TmNontermType getNontermType() {
+		return PsiTreeUtil.getChildOfType(this, TmNontermType.class);
 	}
 
 	public TmRuleGroup getRuleGroup() {

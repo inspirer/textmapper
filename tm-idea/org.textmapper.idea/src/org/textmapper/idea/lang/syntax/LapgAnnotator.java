@@ -16,15 +16,23 @@
  */
 package org.textmapper.idea.lang.syntax;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.psi.TmLexem;
-import org.textmapper.idea.lang.syntax.psi.TmStateReference;
-import org.textmapper.idea.lang.syntax.psi.TmSymbolReference;
+import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
+import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TmToken;
+import org.textmapper.idea.lang.syntax.psi.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Gryaznov Evgeny, 1/30/11
@@ -49,5 +57,25 @@ public class LapgAnnotator implements Annotator {
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}
 		}
+		if (element instanceof TmDirective || element instanceof TmRhsSuffix || element instanceof TmNontermType) {
+			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
+				if (isSoft(((LapgElementType) token.getTokenType()).getSymbol())) {
+					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);
+					infoAnnotation.setTextAttributes(DefaultLanguageHighlighterColors.KEYWORD);
+				}
+			}
+		}
+	}
+
+	private static Set<Integer> softKeywords = new HashSet<Integer>();
+
+	static {
+		for (IElementType softKeyword : LapgTokenTypes.softKeywords.getTypes()) {
+			softKeywords.add(((LapgElementType) softKeyword).getSymbol());
+		}
+	}
+
+	private static boolean isSoft(int symbol) {
+		return softKeywords.contains(symbol);
 	}
 }

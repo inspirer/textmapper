@@ -83,18 +83,20 @@ public interface LapgTokenTypes {
 	// keywords
 	IElementType KW_TRUE = new LapgElementType(Lexems.Ltrue, "true");
 	IElementType KW_FALSE = new LapgElementType(Lexems.Lfalse, "false");
+	IElementType KW_NEW = new LapgElementType(Lexems.Lnew, "new");
 	IElementType KW_SEPARATOR = new LapgElementType(Lexems.Lseparator, "separator");
+	IElementType KW_AS = new LapgElementType(Lexems.Las, "as");
+	IElementType KW_IMPORT = new LapgElementType(Lexems.Limport, "import");
+
+	// soft keywords
 	IElementType KW_PRIO = new LapgElementType(Lexems.Lprio, "prio");
 	IElementType KW_SHIFT = new LapgElementType(Lexems.Lshift, "shift");
 	IElementType KW_REDUCE = new LapgElementType(Lexems.Lreduce, "reduce");
 	IElementType KW_INPUT = new LapgElementType(Lexems.Linput, "input");
 	IElementType KW_LEFT = new LapgElementType(Lexems.Lleft, "left");
 	IElementType KW_RIGHT = new LapgElementType(Lexems.Lright, "right");
-	IElementType KW_NEW = new LapgElementType(Lexems.Lnew, "new");
 	IElementType KW_NONASSOC = new LapgElementType(Lexems.Lnonassoc, "nonassoc");
 	IElementType KW_NOEOI = new LapgElementType(Lexems.Lnoeoi, "no-eoi");
-	IElementType KW_AS = new LapgElementType(Lexems.Las, "as");
-	IElementType KW_IMPORT = new LapgElementType(Lexems.Limport, "import");
 	IElementType KW_INLINE = new LapgElementType(Lexems.Linline, "inline");
 	IElementType KW_RETURNS = new LapgElementType(Lexems.Lreturns, "returns");
 	IElementType KW_INTERFACE = new LapgElementType(Lexems.Linterface, "interface");
@@ -102,15 +104,16 @@ public interface LapgTokenTypes {
 	IElementType KW_LALR = new LapgElementType(Lexems.Llalr, "lalr");
 	IElementType KW_LEXER = new LapgElementType(Lexems.Llexer, "lexer");
 	IElementType KW_PARSER = new LapgElementType(Lexems.Lparser, "parser");
-
-	// soft keywords without highlighting
 	IElementType KW_SOFT = new LapgElementType(Lexems.Lsoft, "soft");
 	IElementType KW_CLASS = new LapgElementType(Lexems.Lclass, "class");
 	IElementType KW_SPACE = new LapgElementType(Lexems.Lspace, "space");
 
 	TokenSet keywords = TokenSet.create(
-			KW_TRUE, KW_FALSE, KW_SEPARATOR, KW_PRIO, KW_SHIFT, KW_REDUCE,
-			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NEW, KW_NONASSOC, KW_NOEOI,
-			KW_AS, KW_IMPORT, KW_INLINE, KW_RETURNS, KW_INTERFACE, KW_LANGUAGE,
-			KW_LALR, KW_LEXER, KW_PARSER);
+			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT);
+
+	TokenSet softKeywords = TokenSet.create(
+			KW_PRIO, KW_SHIFT, KW_REDUCE,
+			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC, KW_NOEOI,
+			KW_INLINE, KW_RETURNS, KW_INTERFACE, KW_LANGUAGE,
+			KW_LALR, KW_LEXER, KW_PARSER, KW_SOFT, KW_CLASS, KW_SPACE);
 }

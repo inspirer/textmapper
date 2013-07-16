@@ -96,7 +96,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 			return "file";
 		} else if (myElement instanceof TmLexem) {
 			return myElement.getName();
-		} else if (myElement instanceof TmNonTerm) {
+		} else if (myElement instanceof TmNonterm) {
 			return myElement.getName();
 		}
 		return "unknown";
@@ -108,7 +108,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 			final TMPsiFile tmFile = (TMPsiFile) myElement;
 			TmGrammar grammar = tmFile.getGrammar();
 			if (grammar != null) {
-				return wrapDeclarations(grammar.getNonTerms());
+				return wrapDeclarations(grammar.getNonterms());
 			}
 		}
 		return new TreeElement[0];  //To change body of implemented methods use File | Settings | File Templates.

@@ -20,16 +20,20 @@
 	<category>Custom Languages</category>
 	<version>0.9.1</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
-	<idea-version since-build="123.4"/>
+
+	<!-- 12.1.4 -->
+	<idea-version since-build="129.713"/>
 
 	<description><![CDATA[
 	<html>
-		<h3>Lapg support for IntelliJ 11</h3>
+		<h3>Textmapper support for IntelliJ 12.1+</h3>
 		<br>
 		<b>Features:</b><br>
 		<ul>
 		<li>Syntax highlighting</li>
 		<li>Navigation (go to declaration)</li>
+		<li>Find usages</li>
+		<li>Grammar compiler</li>
 		</ul>
 	</html>
 	]]></description>
@@ -49,7 +53,7 @@
 	<actions>
 		<action id="org.textmapper.idea.actions.NewLapgGrammar"
 				class="org.textmapper.idea.actions.NewLapgGrammar"
-				text="TextMapper syntax file" description="Creates new TextMapper syntax file">
+				text="Textmapper grammar" description="Creates new Textmapper grammar">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>
 	</actions>

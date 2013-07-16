@@ -24,7 +24,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
 import org.textmapper.idea.lang.syntax.lexer.TmToken;
-import org.textmapper.idea.lang.syntax.psi.TmNonTerm;
+import org.textmapper.idea.lang.syntax.psi.TmNonterm;
 import org.textmapper.idea.lang.syntax.psi.TmRule;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 
 		PsiElement parent = e.getParent();
 
-		if (!(parent instanceof TmNonTerm)) {
+		if (!(parent instanceof TmNonterm)) {
 			return result;
 		}
 

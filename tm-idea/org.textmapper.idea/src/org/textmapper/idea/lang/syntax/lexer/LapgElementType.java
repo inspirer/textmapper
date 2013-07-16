@@ -34,6 +34,6 @@ public class LapgElementType extends IElementType {
 
 	@Override
 	public String toString() {
-		return "[lapg]" + super.toString();
+		return "[tm] " + super.toString();
 	}
 }

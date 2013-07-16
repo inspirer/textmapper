@@ -66,12 +66,12 @@ public class LapgColorsPage implements ColorSettingsPage {
 	private static final Map<String, TextAttributesKey> ourTagToDescriptorMap = new HashMap<String, TextAttributesKey>();
 
 	static {
-		ourTagToDescriptorMap.put("lexemRef", LapgSyntaxHighlighter.LEXEM_REFERENCE);
+		ourTagToDescriptorMap.put("lexemeRef", LapgSyntaxHighlighter.LEXEM_REFERENCE);
 	}
 
 	@NotNull
 	public String getDisplayName() {
-		return "Lapg";
+		return "Textmapper";
 	}
 
 	public Icon getIcon() {
@@ -102,6 +102,8 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"gentree = true\n" +
 				"maxtoken = 2048\n" +
 				"\n" +
+				":: lexer\n" +
+				"\n" +
 				"[0]\n" +
 				"idStart = /[a-zA-Z_]/\n" +
 				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (class)\n" +
@@ -115,21 +117,23 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"complex: /\\p{Lu}-a{1,8}-[^a-z] \\y . forwardSlash:\\/ /\n" +
 				"skip: /[\\t\\r\\n ]+/ (space)\n" +
 				"\n" +
-				"# Grammar\n" +
+				":: parser\n" +
 				"\n" +
 				"%input root;\n" +
-				"%left <lexemRef>'+'</lexemRef>;\n" +
-				"%left <lexemRef>'*'</lexemRef>;\n" +
+				"%left <lexemeRef>'+'</lexemeRef>;\n" +
+				"%left <lexemeRef>'*'</lexemeRef>;\n" +
 				"\n" +
 				"root (ParsedRoot) ::=\n" +
-				"      <lexemRef>kw_eval</lexemRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
+				"      <lexemeRef>kw_eval</lexemeRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
 				";\n" +
 				"\n" +
+				"# expression rule\n" +
+				"\n" +
 				"expr ::=\n" +
-				"      <lexemRef>identifier</lexemRef>\n" +
-				"    | expr <lexemRef>'+'</lexemRef> expr\n" +
-				"    | expr <lexemRef>'*'</lexemRef> expr\n" +
-				"    | <lexemRef>identifier</lexemRef> <lexemRef>'('</lexemRef> (expr separator <lexemRef>','</lexemRef>)* <lexemRef>')'</lexemRef>\n" +
+				"      <lexemeRef>identifier</lexemeRef>\n" +
+				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
+				"    | expr <lexemeRef>'*'</lexemeRef> expr\n" +
+				"    | <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr separator <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +
 				"\n" +

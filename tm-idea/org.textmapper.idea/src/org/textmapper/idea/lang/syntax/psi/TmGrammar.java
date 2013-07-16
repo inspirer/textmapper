@@ -43,8 +43,8 @@ public class TmGrammar extends TmElement {
 		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexem.class);
 	}
 
-	public List<TmNonTerm> getNonTerms() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonTerm.class);
+	public List<TmNonterm> getNonterms() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmNonterm.class);
 	}
 
 	public List<TmLexerStateSelector> getStateSelectors() {
