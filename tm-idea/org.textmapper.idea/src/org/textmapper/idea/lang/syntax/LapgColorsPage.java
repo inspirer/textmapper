@@ -45,6 +45,9 @@ public class LapgColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Parenthesis", LapgSyntaxHighlighter.PARENTHS),
 			new AttributesDescriptor("Lexem reference", LapgSyntaxHighlighter.LEXEM_REFERENCE),
 			new AttributesDescriptor("Line comment", LapgSyntaxHighlighter.LINE_COMMENT),
+			new AttributesDescriptor("Annotations", LapgSyntaxHighlighter.ANNOTATION),
+			new AttributesDescriptor("Sections", LapgSyntaxHighlighter.SECTION),
+			new AttributesDescriptor("Rule metadata", LapgSyntaxHighlighter.RHS_PREFIX),
 
 			new AttributesDescriptor("RegExp Delimiters", LapgSyntaxHighlighter.RE_DELIMITERS),
 			new AttributesDescriptor("RegExp Text", LapgSyntaxHighlighter.RE_TEXT),
@@ -67,6 +70,10 @@ public class LapgColorsPage implements ColorSettingsPage {
 
 	static {
 		ourTagToDescriptorMap.put("lexemeRef", LapgSyntaxHighlighter.LEXEM_REFERENCE);
+		ourTagToDescriptorMap.put("annotation", LapgSyntaxHighlighter.ANNOTATION);
+		ourTagToDescriptorMap.put("rhsPrefix", LapgSyntaxHighlighter.RHS_PREFIX);
+		ourTagToDescriptorMap.put("sect", LapgSyntaxHighlighter.SECTION);
+		ourTagToDescriptorMap.put("kw", LapgSyntaxHighlighter.KEYWORD);
 	}
 
 	@NotNull
@@ -97,14 +104,15 @@ public class LapgColorsPage implements ColorSettingsPage {
 
 	@NotNull
 	public String getDemoText() {
-		return "lang = \"java\"\n" +
+		return "<kw>language</kw> demo(java);\n" +
+				"\n" +
 				"prefix = \"Test\"\n" +
-				"gentree = true\n" +
+				"gentree = <kw>true</kw>\n" +
 				"maxtoken = 2048\n" +
 				"\n" +
-				":: lexer\n" +
+				"<sect>:: lexer</sect>\n" +
 				"\n" +
-				"[0]\n" +
+				"[initial]\n" +
 				"idStart = /[a-zA-Z_]/\n" +
 				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (class)\n" +
 				"                 { $lexem = current(); break; }\n" +
@@ -117,7 +125,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"complex: /\\p{Lu}-a{1,8}-[^a-z] \\y . forwardSlash:\\/ /\n" +
 				"skip: /[\\t\\r\\n ]+/ (space)\n" +
 				"\n" +
-				":: parser\n" +
+				"<sect>:: parser</sect>\n" +
 				"\n" +
 				"%input root;\n" +
 				"%left <lexemeRef>'+'</lexemeRef>;\n" +
@@ -129,11 +137,12 @@ public class LapgColorsPage implements ColorSettingsPage {
 				"\n" +
 				"# expression rule\n" +
 				"\n" +
+				"<annotation>@noast</annotation>{<kw>true</kw>}\n" +
 				"expr ::=\n" +
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
-				"    | expr <lexemeRef>'*'</lexemeRef> expr\n" +
-				"    | <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr separator <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
+				"    | <rhsPrefix>[multiply]</rhsPrefix> expr <lexemeRef>'*'</lexemeRef> expr\n" +
+				"    | <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +
 				"\n" +

@@ -44,6 +44,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	public RegexLexerAdapter() {
 	}
 
+	@Override
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
@@ -68,37 +69,45 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		current = null;
 	}
 
+	@Override
 	public int getState() {
+		locateToken();
 		if (fTokenOffset == fRegexpStartOffset) {
 			return 0;
 		}
 		return fState;
 	}
 
+	@Override
 	public IElementType getTokenType() {
 		locateToken();
 		return current;
 	}
 
+	@Override
 	public int getTokenStart() {
 		locateToken();
 		return fTokenOffset;
 	}
 
+	@Override
 	public int getTokenEnd() {
 		locateToken();
 		return fTokenOffset + fTokenLength;
 	}
 
+	@Override
 	public void advance() {
 		locateToken();
 		current = null;
 	}
 
+	@Override
 	public CharSequence getBufferSequence() {
 		return myText;
 	}
 
+	@Override
 	public int getBufferEnd() {
 		return fDocumentLength;
 	}
@@ -200,6 +209,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	private static class IdeaRegexDefLexer extends RegexDefLexer {
 		public IdeaRegexDefLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
+				@Override
 				public void error(int start, int end, int line, String s) {
 				}
 			});

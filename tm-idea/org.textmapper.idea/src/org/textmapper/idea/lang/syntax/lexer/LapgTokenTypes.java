@@ -53,6 +53,7 @@ public interface LapgTokenTypes {
 	IElementType OP_SEMICOLON = new LapgElementType(Lexems.SEMICOLON, ";");
 	IElementType OP_DOT = new LapgElementType(Lexems.DOT, ".");
 	IElementType OP_COMMA = new LapgElementType(Lexems.COMMA, ",");
+	IElementType OP_COLONCOLON = new LapgElementType(Lexems.COLONCOLON, "::");
 
 	// operators
 	IElementType OP_PERCENT = new LapgElementType(Lexems.PERCENT, "%");
@@ -61,7 +62,6 @@ public interface LapgTokenTypes {
 	IElementType OP_EQ = new LapgElementType(Lexems.EQUAL, "=");
 	IElementType OP_EQGT = new LapgElementType(Lexems.EQUALGREATER, "=>");
 	IElementType OP_COLON = new LapgElementType(Lexems.COLON, ":");
-	IElementType OP_COLONCOLON = new LapgElementType(Lexems.COLONCOLON, "::");
 	IElementType OP_LT = new LapgElementType(Lexems.LESS, "<");
 	IElementType OP_GT = new LapgElementType(Lexems.GREATER, ">");
 	IElementType OP_STAR = new LapgElementType(Lexems.MULT, "*");
@@ -74,7 +74,7 @@ public interface LapgTokenTypes {
 	IElementType OP_AT = new LapgElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
-			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON, OP_COLONCOLON,
+			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
 			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
 

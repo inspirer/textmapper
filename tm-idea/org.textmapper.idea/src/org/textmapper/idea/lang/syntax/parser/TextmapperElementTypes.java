@@ -24,9 +24,10 @@ import org.textmapper.tool.parser.TMParser.Tokens;
 
 public interface TextmapperElementTypes {
 	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE);
-
 	public static final IElementType GRAMMAR = new LapgElementType(Tokens.input, "grammar");
 
+	public static final IElementType HEADER = new LapgElementType(Tokens.header, "header");
+	public static final IElementType IMPORT = new LapgElementType(Tokens.import_, "import");
 	public static final IElementType OPTION = new LapgElementType(Tokens.option, "option");
 
 	public static final IElementType LEXEM = new LapgElementType(Tokens.lexeme, "lexem");
@@ -57,7 +58,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType QUALIFIED_ID = new LapgElementType(Tokens.qualified_id, "qualified identifier");
 
 	public static final IElementType[] allElements = {
-			OPTION,
+			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, NEGATIVE_LA,

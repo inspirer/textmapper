@@ -35,11 +35,13 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	private int fDocumentLength;
 	private int fTokenOffset;
 	private int fTokenLength;
+	private int fState;
 	private IElementType current;
 
 	public LapgLexerAdapter() {
 	}
 
+	@Override
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
@@ -56,39 +58,49 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 		lexer.setOffset(startOffset);
 		fTokenOffset = startOffset;
+		lexer.setState(initialState);
+		fState = initialState;
 		fTokenLength = 0;
 		lexem = null;
 		current = null;
 	}
 
+	@Override
 	public int getState() {
-		return 0;
+		locateToken();
+		return fState;
 	}
 
+	@Override
 	public IElementType getTokenType() {
 		locateToken();
 		return current;
 	}
 
+	@Override
 	public int getTokenStart() {
 		locateToken();
 		return fTokenOffset;
 	}
 
+	@Override
 	public int getTokenEnd() {
 		locateToken();
 		return fTokenOffset + fTokenLength;
 	}
 
+	@Override
 	public void advance() {
 		locateToken();
 		current = null;
 	}
 
+	@Override
 	public CharSequence getBufferSequence() {
 		return myText;
 	}
 
+	@Override
 	public int getBufferEnd() {
 		return fDocumentLength;
 	}
@@ -102,6 +114,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
 		if (lexem == null) {
+			fState = lexer.getState();
 			readNext();
 		}
 		if (fTokenOffset < lexem.offset) {
@@ -257,6 +270,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	private static class IdeaLapgLexer extends TMLexer {
 		public IdeaLapgLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
+				@Override
 				public void error(int start, int end, int line, String s) {
 				}
 			});

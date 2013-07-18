@@ -68,6 +68,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 	}
 
 	public int getState() {
+		locateToken();
 		return fState;
 	}
 

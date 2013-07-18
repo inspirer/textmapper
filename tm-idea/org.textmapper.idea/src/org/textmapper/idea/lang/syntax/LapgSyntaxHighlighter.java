@@ -38,69 +38,78 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 	private LtplSyntaxHighlighter fTemplatesHighlighter = new LtplSyntaxHighlighter();
 
 	static final TextAttributesKey KEYWORD =
-			TextAttributesKey.createTextAttributesKey("LAPG.KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
+			TextAttributesKey.createTextAttributesKey("TM.KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
 
 	static final TextAttributesKey STRING =
-			TextAttributesKey.createTextAttributesKey("LAPG.STRING", DefaultLanguageHighlighterColors.STRING);
+			TextAttributesKey.createTextAttributesKey("TM.STRING", DefaultLanguageHighlighterColors.STRING);
 
 	static final TextAttributesKey NUMBER =
-			TextAttributesKey.createTextAttributesKey("LAPG.NUMBER", DefaultLanguageHighlighterColors.NUMBER);
+			TextAttributesKey.createTextAttributesKey("TM.NUMBER", DefaultLanguageHighlighterColors.NUMBER);
 
 	static final TextAttributesKey IDENTIFIER =
-			TextAttributesKey.createTextAttributesKey("LAPG.IDENTIFIER", HighlighterColors.TEXT);
+			TextAttributesKey.createTextAttributesKey("TM.IDENTIFIER", HighlighterColors.TEXT);
 
 	static final TextAttributesKey OPERATOR =
-			TextAttributesKey.createTextAttributesKey("LAPG.OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
+			TextAttributesKey.createTextAttributesKey("TM.OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN);
 
 	static final TextAttributesKey BRACKETS =
-			TextAttributesKey.createTextAttributesKey("LAPG.BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
+			TextAttributesKey.createTextAttributesKey("TM.BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
 
 	static final TextAttributesKey PARENTHS =
-			TextAttributesKey.createTextAttributesKey("LAPG.PARENTHS", DefaultLanguageHighlighterColors.PARENTHESES);
+			TextAttributesKey.createTextAttributesKey("TM.PARENTHS", DefaultLanguageHighlighterColors.PARENTHESES);
 
 	static final TextAttributesKey BRACES =
-			TextAttributesKey.createTextAttributesKey("LAPG.BRACES", DefaultLanguageHighlighterColors.BRACES);
+			TextAttributesKey.createTextAttributesKey("TM.BRACES", DefaultLanguageHighlighterColors.BRACES);
 
 	static final TextAttributesKey QUANTIFIER =
-			TextAttributesKey.createTextAttributesKey("LAPG.QUANTIFIER", DefaultLanguageHighlighterColors.KEYWORD);
+			TextAttributesKey.createTextAttributesKey("TM.QUANTIFIER", DefaultLanguageHighlighterColors.KEYWORD);
 
 	static final TextAttributesKey LEXEM_REFERENCE =
-			TextAttributesKey.createTextAttributesKey("LAPG.LEXEM_REFERENCE", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.LEXEM_REFERENCE", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
 
 	static final TextAttributesKey LINE_COMMENT =
-			TextAttributesKey.createTextAttributesKey("LAPG.LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+			TextAttributesKey.createTextAttributesKey("TM.LINE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
+
+	static final TextAttributesKey ANNOTATION =
+			TextAttributesKey.createTextAttributesKey("TM.ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
+
+	static final TextAttributesKey SECTION =
+			TextAttributesKey.createTextAttributesKey("TM.SECTION", DefaultLanguageHighlighterColors.DOC_COMMENT_MARKUP);
+
+	static final TextAttributesKey RHS_PREFIX =
+			TextAttributesKey.createTextAttributesKey("TM.RHS_PREFIX", DefaultLanguageHighlighterColors.NUMBER);
 
 	// Regexp
 
 	static final TextAttributesKey RE_DELIMITERS =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_DELIMITERS", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
+			TextAttributesKey.createTextAttributesKey("TM.RE_DELIMITERS", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
 
 	static final TextAttributesKey RE_TEXT =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_TEXT", HighlighterColors.TEXT);
+			TextAttributesKey.createTextAttributesKey("TM.RE_TEXT", HighlighterColors.TEXT);
 
 	static final TextAttributesKey RE_ESCAPED =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_ESCAPED", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
+			TextAttributesKey.createTextAttributesKey("TM.RE_ESCAPED", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE);
 
 	static final TextAttributesKey RE_CHAR_CLASS =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_CHAR_CLASS", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.RE_CHAR_CLASS", CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES);
 
 	static final TextAttributesKey RE_DOT =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_DOT", DefaultLanguageHighlighterColors.KEYWORD);
+			TextAttributesKey.createTextAttributesKey("TM.RE_DOT", DefaultLanguageHighlighterColors.KEYWORD);
 
 	static final TextAttributesKey RE_QUANTIFIER =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_QUANTIFIER", DefaultLanguageHighlighterColors.KEYWORD);
+			TextAttributesKey.createTextAttributesKey("TM.RE_QUANTIFIER", DefaultLanguageHighlighterColors.KEYWORD);
 
 	static final TextAttributesKey RE_BRACKETS =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
+			TextAttributesKey.createTextAttributesKey("TM.RE_BRACKETS", DefaultLanguageHighlighterColors.BRACKETS);
 
 	static final TextAttributesKey RE_PARENTHS =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_PARENTHS", DefaultLanguageHighlighterColors.PARENTHESES);
+			TextAttributesKey.createTextAttributesKey("TM.RE_PARENTHS", DefaultLanguageHighlighterColors.PARENTHESES);
 
 	static final TextAttributesKey RE_EXPAND =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_EXPAND", CodeInsightColors.STATIC_FIELD_ATTRIBUTES);
+			TextAttributesKey.createTextAttributesKey("TM.RE_EXPAND", CodeInsightColors.STATIC_FIELD_ATTRIBUTES);
 
 	static final TextAttributesKey RE_BAD_CHAR =
-			TextAttributesKey.createTextAttributesKey("LAPG.RE_BAD_CHAR", HighlighterColors.BAD_CHARACTER);
+			TextAttributesKey.createTextAttributesKey("TM.RE_BAD_CHAR", HighlighterColors.BAD_CHARACTER);
 
 	private static final Map<IElementType, TextAttributesKey> attributes;
 
@@ -125,6 +134,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, LapgTokenTypes.OP_DOT);
 		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, LapgTokenTypes.OP_COMMA);
 		fillMap(attributes, DefaultLanguageHighlighterColors.SEMICOLON, LapgTokenTypes.OP_SEMICOLON);
+		fillMap(attributes, SECTION, LapgTokenTypes.OP_COLONCOLON);
 
 		// regexp
 		fillMap(attributes, RE_DELIMITERS, RegexTokenTypes.RE_DELIMITERS);

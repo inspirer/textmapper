@@ -23,6 +23,7 @@ import com.intellij.lang.annotation.Annotator;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
@@ -57,11 +58,39 @@ public class LapgAnnotator implements Annotator {
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}
 		}
-		if (element instanceof TmDirective || element instanceof TmRhsSuffix || element instanceof TmNontermType) {
+		if (element instanceof TmAnnotation) {
+			for (PsiElement el = element.getFirstChild(); el instanceof TmToken || el instanceof PsiWhiteSpace; el = el.getNextSibling()) {
+				if (el instanceof PsiWhiteSpace) continue;
+				IElementType type = ((TmToken) el).getTokenType();
+				if (!(type == LapgTokenTypes.OP_AT || type == LapgTokenTypes.ID)) break;
+				Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
+				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.ANNOTATION);
+			}
+		}
+		if (element instanceof TmDirective
+				|| element instanceof TmRhsSuffix
+				|| element instanceof TmNontermType
+				|| element instanceof TmHeader
+				|| element instanceof TmLexemAttrs) {
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
 				if (isSoft(((LapgElementType) token.getTokenType()).getSymbol())) {
 					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);
 					infoAnnotation.setTextAttributes(DefaultLanguageHighlighterColors.KEYWORD);
+				}
+			}
+		}
+		if (element instanceof TmRhsPrefix) {
+			for (PsiElement el = element.getFirstChild(); el != null; el = el.getNextSibling()) {
+				if (el instanceof PsiWhiteSpace) continue;
+				if (el instanceof TmToken) {
+					IElementType type = ((TmToken) el).getTokenType();
+					if (type == LapgTokenTypes.OP_LBRACKET || type == LapgTokenTypes.OP_RBRACKET) {
+						Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
+						infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.RHS_PREFIX);
+					}
+				} else if (el instanceof TmIdentifier) {
+					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
+					infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.RHS_PREFIX);
 				}
 			}
 		}

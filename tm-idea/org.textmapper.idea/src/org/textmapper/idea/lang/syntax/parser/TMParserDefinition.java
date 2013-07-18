@@ -70,6 +70,10 @@ public class TMParserDefinition implements ParserDefinition {
 		switch (((LapgElementType) type).getSymbol()) {
 			case Tokens.input:
 				return new TmGrammar(node);
+			case Tokens.header:
+				return new TmHeader(node);
+			case Tokens.import_:
+				return new TmImport(node);
 			case Tokens.option:
 				return new TmOption(node);
 			case Tokens.lexem_attrs:
