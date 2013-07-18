@@ -124,7 +124,7 @@ input (TmaInput) ::=
 ;
 
 header (TmaHeader) ::=
-	  Llanguage name=ID ('(' target=ID ')')? parsing_algorithmopt ';'
+	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';'
 														{ $$ = new TmaHeader($name, $target, source, ${left().offset}, ${left().endoffset}); }
 ;
 

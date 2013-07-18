@@ -21,10 +21,10 @@ public class TmaHeader extends TmaNode {
 	private final String name;
 	private final String targetLanguage;
 
-	public TmaHeader(String name, String targetLanguage, TextSource source, int offset, int endoffset) {
+	public TmaHeader(TmaName name, TmaName targetLanguage, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
-		this.targetLanguage = targetLanguage;
+		this.name = name.getName();
+		this.targetLanguage = targetLanguage.getName();
 	}
 
 	public String getName() {
