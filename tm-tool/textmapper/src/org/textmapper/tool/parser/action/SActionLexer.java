@@ -174,6 +174,7 @@ public abstract class SActionLexer {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
 					reporter.error(lapg_n.offset, this.getTokenLine(), "Unexpected end of input reached");
+					lapg_n.offset = currOffset;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {

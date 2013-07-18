@@ -185,6 +185,7 @@ public class StatesLexer {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
 					reporter.error(lapg_n.offset, lapg_n.line, "Unexpected end of input reached");
+					lapg_n.offset = currOffset;
 					tokenStart = -1;
 					return lapg_n;
 				}
