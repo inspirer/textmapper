@@ -16,6 +16,7 @@
  */
 package org.textmapper.idea.compiler;
 
+import org.jetbrains.annotations.Nullable;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.templates.storage.FileBasedResourceLoader;
@@ -40,12 +41,14 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 	private static final Pattern FILENAME = Pattern.compile("([\\w-]+/)*[\\w-]+(\\.\\w+)?");
 
 	private final File file;
+	private final String fileContent;
 	private LapgOptions options;
 	private final ProcessingStatus status;
 	private Map<String, String> myGeneratedContent;
 
-	public LapgSyntaxBuilder(File file, LapgOptions options, ProcessingStatus status) {
+	public LapgSyntaxBuilder(File file, @Nullable String fileContent, LapgOptions options, ProcessingStatus status) {
 		this.file = file;
+		this.fileContent = fileContent;
 		this.options = options;
 		this.status = status;
 	}
@@ -54,16 +57,27 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 		return myGeneratedContent;
 	}
 
-	public boolean generate() {
-		String contents;
+	private String getContents() {
+		String contents = fileContent;
+		if (contents != null) {
+			return contents;
+		}
 		try {
 			contents = FileUtil.getFileContents(new FileInputStream(file), FileUtil.DEFAULT_ENCODING);
 		} catch (FileNotFoundException ex) {
 			status.report(ProcessingStatus.KIND_ERROR, "file not found " + file.getName());
-			return false;
+			return null;
 		}
 		if (contents == null) {
 			status.report(ProcessingStatus.KIND_ERROR, "cannot read " + file.getName());
+			return null;
+		}
+		return contents;
+	}
+
+	public boolean generate() {
+		String contents = getContents();
+		if (contents == null) {
 			return false;
 		}
 
@@ -107,7 +121,7 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 	}
 
 	/**
-	 *   returns false if content is unchanged
+	 * returns false if content is unchanged
 	 */
 	static boolean writeFile(File file, String content) throws IOException {
 		File pf = file.getParentFile();

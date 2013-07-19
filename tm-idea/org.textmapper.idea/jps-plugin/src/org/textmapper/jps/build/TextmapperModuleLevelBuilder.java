@@ -166,7 +166,7 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 						File outputDir = file.getParentFile();
 						if (outputDir.isDirectory()) {
 							toCompile.add(new Pair<TmCompilerTask, ModuleBuildTarget>(
-									new TmCompilerTask(file, outputDir, ext.isVerbose(), ext.isExcludeDefaultTemplates(), ext.getCustomTemplatesFolder()),
+									new TmCompilerTask(file, null, outputDir, ext.isVerbose(), ext.isExcludeDefaultTemplates(), ext.getCustomTemplatesFolder()),
 									target));
 						}
 					}

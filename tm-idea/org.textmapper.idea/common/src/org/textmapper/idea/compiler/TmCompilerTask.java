@@ -16,6 +16,8 @@
  */
 package org.textmapper.idea.compiler;
 
+import org.textmapper.tool.gen.LapgOptions;
+
 import java.io.File;
 
 /**
@@ -24,13 +26,15 @@ import java.io.File;
 public class TmCompilerTask {
 
 	private final File file;
+	private final String fileContent;
 	private final File outputDir;
 	private final boolean verbose;
 	private final boolean excludeDefaultTemplates;
 	private final String templatesFolder;
 
-	public TmCompilerTask(File file, File outputDir, boolean verbose, boolean excludeDefaultTemplates, String templatesFolder) {
+	public TmCompilerTask(File file, String fileContent, File outputDir, boolean verbose, boolean excludeDefaultTemplates, String templatesFolder) {
 		this.file = file;
+		this.fileContent = fileContent;
 		this.outputDir = outputDir;
 		this.verbose = verbose;
 		this.excludeDefaultTemplates = excludeDefaultTemplates;
@@ -39,6 +43,10 @@ public class TmCompilerTask {
 
 	public File getFile() {
 		return file;
+	}
+
+	public String getFileContent() {
+		return fileContent;
 	}
 
 	public File getOutputDir() {
@@ -55,5 +63,16 @@ public class TmCompilerTask {
 
 	public String getTemplatesFolder() {
 		return templatesFolder;
+	}
+
+	public void fillOptions(LapgOptions options) {
+		options.setUseDefaultTemplates(!isExcludeDefaultTemplates());
+		if (isVerbose()) {
+			options.setDebug(LapgOptions.DEBUG_AMBIG);
+		}
+		String customTemplatesFolder = getTemplatesFolder();
+		if (customTemplatesFolder != null && customTemplatesFolder.trim().length() > 0) {
+			options.getIncludeFolders().add(customTemplatesFolder);
+		}
 	}
 }

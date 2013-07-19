@@ -107,6 +107,9 @@
 		<annotator
 				language="Lapg Syntax"
 				implementationClass="org.textmapper.idea.lang.syntax.LapgAnnotator"/>
+		<externalAnnotator
+				language="Lapg Syntax"
+				implementationClass="org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator"/>
 		<defaultLiveTemplatesProvider
 				implementation="org.textmapper.idea.templates.LapgDefaultLiveTemplatesProvider"/>
 		<lang.commenter

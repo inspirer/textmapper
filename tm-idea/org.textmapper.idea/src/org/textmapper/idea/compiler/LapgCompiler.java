@@ -119,6 +119,7 @@ public class LapgCompiler implements TranslatingCompiler {
 		boolean success = TmCompilerUtil.compileFile(
 				new TmCompilerTask(
 						VfsUtil.virtualToIoFile(sourceFile),
+						null,
 						VfsUtil.virtualToIoFile(outputDir),
 						options.verbose, options.excludeDefaultTemplates, options.templatesFolder),
 				new TmCompilerContext() {

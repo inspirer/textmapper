@@ -35,6 +35,14 @@ public class TmGrammar extends TmElement {
 		return PsiTreeUtil.getChildrenOfType(this, TmNamedElement.class);
 	}
 
+	public TmHeader getHeader() {
+		return PsiTreeUtil.getChildOfType(this, TmHeader.class);
+	}
+
+	public List<TmImport> getImports() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmImport.class);
+	}
+
 	public List<TmOption> getOptions() {
 		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmOption.class);
 	}
