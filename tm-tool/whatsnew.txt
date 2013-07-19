@@ -1,3 +1,13 @@
+0.9.2
+------
+
+[+] ability to derive an AST from the grammar
+
+IDEA plugin:
+
+[+] better highlighting
+[+] check the grammar on the fly
+
 0.9.1
 ------
 

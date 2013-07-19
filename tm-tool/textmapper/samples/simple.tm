@@ -1,4 +1,4 @@
-# TextMapper syntax overview
+# Textmapper syntax overview
 
 language simple(java);
 

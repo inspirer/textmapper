@@ -18,11 +18,17 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.textmapper</groupId>
-	<artifactId>lapg-master</artifactId>
+	<artifactId>tm-master</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.1-SNAPSHOT</version>
-	<name>TextMapper Master</name>
+	<version>0.9.2-SNAPSHOT</version>
+	<name>Textmapper Master</name>
 	<url>http://textmapper.org</url>
+
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>7</version>
+	</parent>
 
 	<licenses>
 		<license>
@@ -31,6 +37,18 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
+	<developers>
+		<developer>
+			<id>inspirer</id>
+			<name>Evgeny Gryaznov</name>
+			<url>http://inspirer.name</url>
+			<email>me@inspirer.name</email>
+			<timezone>GMT+1</timezone>
+			<roles>
+			</roles>
+		</developer>
+	</developers>
 
 	<modules>
 		<module>templates</module>
@@ -44,23 +62,10 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:git://github.com/inspirer/lapg.git</connection>
-		<developerConnection>scm:git:https://github.com/inspirer/lapg.git</developerConnection>
-		<url>https://github.com/inspirer/lapg</url>
+		<connection>scm:git:git@github.com:inspirer/textmapper.git</connection>
+		<developerConnection>scm:git:git@github.com:inspirer/textmapper.git</developerConnection>
+		<url>https://github.com/inspirer/textmapper</url>
 	</scm>
-
-	<distributionManagement>
-		<repository>
-			<id>textmapper-repo</id>
-			<name>TextMapper repository</name>
-			<url>scp://mibew.org/home/inspirer/mvn.textmapper.org/htdocs/release</url>
-		</repository>
-		<snapshotRepository>
-			<id>textmapper-snapshot</id>
-			<name>TextMapper repository</name>
-			<url>scp://mibew.org/home/inspirer/mvn.textmapper.org/htdocs/snapshot</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
@@ -143,7 +148,7 @@
 
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.1</version>
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
@@ -163,7 +168,7 @@
 					<autoVersionSubmodules>true</autoVersionSubmodules>
 					<releaseProfiles>release</releaseProfiles>
 					<localCheckout>true</localCheckout>
-					<scmCommentPrefix>[release] </scmCommentPrefix>
+					<scmCommentPrefix>[release]</scmCommentPrefix>
 					<releaseProfiles>release</releaseProfiles>
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 					<!-- we are releasing from a branch, skip this -->
@@ -192,13 +197,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ssh</artifactId>
-				<version>2.2</version>
-			</extension>
-		</extensions>
 	</build>
 </project>

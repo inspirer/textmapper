@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir=".." default="all" name="org.textmapper.tool">
-	<property name="tm.version" value="0.9.1"/>
+	<property name="tm.version" value="0.9.2"/>
 	<property name="tm.qualifier" value="SNAPSHOT"/>
 	<property name="suffix" value="${tm.version}"/>
 
@@ -155,7 +155,7 @@
 
 	<!-- TODO Lapg task
 	<target name="syntax">
-		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="${tm.dir}/libs/textmapper-0.9.1.jar"/>
+		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="${tm.dir}/libs/textmapper-0.9.2.jar"/>
 		<lapg source="syntax"/>
 	</target> -->
 

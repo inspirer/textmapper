@@ -20,13 +20,13 @@
 	<groupId>org.textmapper</groupId>
 	<artifactId>textmapper</artifactId>
 	<packaging>jar</packaging>
-	<name>TextMapper</name>
-	<version>0.9.1-SNAPSHOT</version>
+	<name>Textmapper</name>
+	<version>0.9.2-SNAPSHOT</version>
 	<url>http://textmapper.org</url>
 	<parent>
 		<groupId>org.textmapper</groupId>
-		<artifactId>lapg-master</artifactId>
-		<version>0.9.1-SNAPSHOT</version>
+		<artifactId>tm-master</artifactId>
+		<version>0.9.2-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
@@ -38,20 +38,20 @@
 		<dependency>
 			<groupId>org.textmapper</groupId>
 			<artifactId>lapg</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
+			<version>0.9.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.textmapper</groupId>
 			<artifactId>lapg</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
+			<version>0.9.2-SNAPSHOT</version>
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.textmapper</groupId>
 			<artifactId>templates</artifactId>
-			<version>0.9.1-SNAPSHOT</version>
+			<version>0.9.2-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
