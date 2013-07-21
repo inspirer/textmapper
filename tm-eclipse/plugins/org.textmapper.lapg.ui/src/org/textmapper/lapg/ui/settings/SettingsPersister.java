@@ -10,19 +10,19 @@ import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.textmapper.lapg.ui.settings.SettingsTree.TextSource;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMOptions;
 
 public class SettingsPersister {
 
-	public static Map<IPath, LapgOptions> load(String content) {
+	public static Map<IPath, TMOptions> load(String content) {
 		SettingsTree<AstInput> tree = SettingsTree.parse(new TextSource(".lapg", content.toCharArray(), 1));
 		if (tree.getRoot() == null) {
 			return Collections.emptyMap();
 		}
-		Map<IPath, LapgOptions> result = new LinkedHashMap<IPath, LapgOptions>();
+		Map<IPath, TMOptions> result = new LinkedHashMap<IPath, TMOptions>();
 		for (AstSettings s : tree.getRoot().getSettingsList()) {
 			IPath p = new Path(s.getScon());
-			LapgOptions opts = new LapgOptions();
+			TMOptions opts = new TMOptions();
 			for (AstOption o : s.getOptionsList()) {
 				if (o.getIsVardef()) {
 					opts.getAdditionalOptions().put(o.getIdentifier(), o.getScon());
@@ -49,7 +49,7 @@ public class SettingsPersister {
 		return result;
 	}
 
-	public static String serialize(Map<IPath, LapgOptions> settings) {
+	public static String serialize(Map<IPath, TMOptions> settings) {
 		StringBuilder sb = new StringBuilder();
 		List<IPath> paths = new ArrayList<IPath>(settings.keySet());
 		Collections.sort(paths, new Comparator<IPath>() {
@@ -61,14 +61,14 @@ public class SettingsPersister {
 			sb.append("[");
 			sb.append(p.toString());
 			sb.append("]\n");
-			LapgOptions opts = settings.get(p);
+			TMOptions opts = settings.get(p);
 			serialize(opts, sb);
 			sb.append("\n");
 		}
 		return sb.toString();
 	}
 
-	private static void serialize(LapgOptions opts, StringBuilder sb) {
+	private static void serialize(TMOptions opts, StringBuilder sb) {
 		if (!opts.isUseDefaultTemplates()) {
 			sb.append("no-default-templates\n");
 		}

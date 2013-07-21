@@ -47,19 +47,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public final class LapgGenerator {
+public final class TMGenerator {
 
-	private final LapgOptions options;
+	private final TMOptions options;
 	private final ProcessingStatus status;
 	private final ProcessingStrategy strategy;
 
-	public LapgGenerator(LapgOptions options, ProcessingStatus status, ProcessingStrategy strategy) {
+	public TMGenerator(TMOptions options, ProcessingStatus status, ProcessingStrategy strategy) {
 		this.options = options;
 		this.status = status;
 		this.strategy = strategy;
 	}
 
-	public boolean compileGrammar(TextSource input) {
+	public boolean compileGrammar(TextSource input, boolean checkOnly) {
 		try {
 			TemplatesStatusAdapter templatesStatus = new TemplatesStatusAdapter(status);
 			ResourceRegistry resources = createResourceRegistry();
@@ -100,6 +100,8 @@ public final class LapgGenerator {
 				return false;
 			}
 
+			if (checkOnly) return true;
+
 			long generationTime = System.currentTimeMillis() - start;
 
 			// Generate text
@@ -124,12 +126,12 @@ public final class LapgGenerator {
 			return result;
 		}
 
-		result = (String) g.getOptions().get("lang");
+		result = g.getTargetLanguage();
 		if (result != null) {
 			return result;
 		}
 
-		return "java";
+		return "common";
 	}
 
 	private boolean checkOptions(TMGrammar s, TemplatesRegistry registry) {

@@ -35,7 +35,7 @@ import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.lapg.ui.LapgUIActivator.LapgSettingsListener;
 import org.textmapper.lapg.ui.editor.colorer.LapgHighlightingManager;
 import org.textmapper.lapg.ui.editor.colorer.LapgSemanticHighlighter;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMOptions;
 
 public class LapgSourceEditor extends StructuredTextEditor implements IReconcilingListener, LapgSettingsListener {
 
@@ -103,7 +103,7 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 		super.dispose();
 	}
 	
-	public LapgOptions getOptions() {
+	public TMOptions getOptions() {
 		IFile file = getResource();
 		if(file == null || !file.exists()) {
 			return null;
@@ -114,7 +114,7 @@ public class LapgSourceEditor extends StructuredTextEditor implements IReconcili
 			return null;
 		}
 		
-		Map<IPath, LapgOptions> settings = LapgUIActivator.getDefault().getProjectSettings(p).getSettings();
+		Map<IPath, TMOptions> settings = LapgUIActivator.getDefault().getProjectSettings(p).getSettings();
 		if(settings != null) {
 			IPath ourPath = file.getProjectRelativePath();
 			return settings.get(ourPath);

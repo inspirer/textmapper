@@ -46,7 +46,7 @@ import org.textmapper.tool.Tool;
 import org.textmapper.tool.compiler.TMCompiler;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMResolver;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.TMTree.TextSource;
@@ -63,7 +63,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		super(editor);
 	}
 
-	private ResourceRegistry createResourceRegistry(LapgOptions options, IProject project, List<TMProblem> problems) {
+	private ResourceRegistry createResourceRegistry(TMOptions options, IProject project, List<TMProblem> problems) {
 		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
 		if (options != null && options.getIncludeFolders() != null) {
 			for (String path : options.getIncludeFolders()) {
@@ -104,7 +104,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		List<TMProblem> problems = ast.getErrors();
 		Grammar grammar = null;
 		if (problems.size() == 0) {
-			LapgOptions options = editor.getOptions();
+			TMOptions options = editor.getOptions();
 
 			TemplatesStatus templatesStatus = new TemplatesStatus() {
 				public void report(int kind, String message,

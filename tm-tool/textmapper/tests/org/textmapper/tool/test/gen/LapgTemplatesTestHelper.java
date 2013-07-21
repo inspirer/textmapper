@@ -15,7 +15,7 @@
  */
 package org.textmapper.tool.test.gen;
 
-import org.textmapper.tool.gen.LapgGenerator;
+import org.textmapper.tool.gen.TMGenerator;
 import org.textmapper.tool.gen.TemplateStaticMethods;
 import org.textmapper.tool.test.CheckingFileBasedStrategy;
 import org.textmapper.templates.api.EvaluationContext;
@@ -103,7 +103,7 @@ public class LapgTemplatesTestHelper {
 				loaders.add(resourceLoader);
 			}
 		}
-		loaders.add(new ClassResourceLoader(LapgGenerator.class.getClassLoader(), "org/textmapper/tool/gen/templates", "utf8"));
+		loaders.add(new ClassResourceLoader(TMGenerator.class.getClassLoader(), "org/textmapper/tool/gen/templates", "utf8"));
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 

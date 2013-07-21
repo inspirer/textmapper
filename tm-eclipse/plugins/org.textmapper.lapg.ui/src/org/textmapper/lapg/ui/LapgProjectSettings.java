@@ -16,14 +16,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.textmapper.lapg.ui.settings.SettingsPersister;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMOptions;
 
 public class LapgProjectSettings {
 
 	public static final IPath SETTINGS_FILE = new Path(".textmapper");
 
 	private final IFile myFile;
-	private volatile Map<IPath, LapgOptions> mySettings;
+	private volatile Map<IPath, TMOptions> mySettings;
 
 	public LapgProjectSettings(IProject project) {
 		myFile = project.getFile(SETTINGS_FILE);
@@ -35,7 +35,7 @@ public class LapgProjectSettings {
 	
 	public IProject[] getReferencedProjects() {
 		Collection<IProject> usedProjects = new LinkedHashSet<IProject>();
-		for(LapgOptions opts : getSettings().values()) {
+		for(TMOptions opts : getSettings().values()) {
 			List<String> folders = opts.getIncludeFolders();
 			if(folders == null) {
 				continue;
@@ -56,8 +56,8 @@ public class LapgProjectSettings {
 		return usedProjects.isEmpty() ? null : usedProjects.toArray(new IProject[usedProjects.size()]);
 	}
 
-	public Map<IPath, LapgOptions> getSettings() {
-		Map<IPath, LapgOptions> result = mySettings;
+	public Map<IPath, TMOptions> getSettings() {
+		Map<IPath, TMOptions> result = mySettings;
 		if(result == null) {
 			result = readSettings();
 			mySettings = result;
@@ -69,7 +69,7 @@ public class LapgProjectSettings {
 		mySettings = null;
 	}
 	
-	private Map<IPath, LapgOptions> readSettings() {
+	private Map<IPath, TMOptions> readSettings() {
 		if (!myFile.exists()) {
 			return Collections.emptyMap();
 		}

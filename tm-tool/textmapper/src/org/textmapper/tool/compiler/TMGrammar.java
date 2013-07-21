@@ -26,14 +26,16 @@ public class TMGrammar {
 	private final boolean hasErrors;
 	private final Map<String, Object> options;
 	private final String copyrightHeader;
+	private final String targetLanguage;
 
 	public TMGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-					 String copyrightHeader) {
+					 String copyrightHeader, String targetLanguage) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;
 		this.options = options;
 		this.copyrightHeader = copyrightHeader;
+		this.targetLanguage = targetLanguage;
 	}
 
 	public Grammar getGrammar() {
@@ -54,6 +56,10 @@ public class TMGrammar {
 
 	public String getCopyrightHeader() {
 		return copyrightHeader;
+	}
+
+	public String getTargetLanguage() {
+		return targetLanguage;
 	}
 
 	public Object getAnnotation(SourceElement element, String name) {

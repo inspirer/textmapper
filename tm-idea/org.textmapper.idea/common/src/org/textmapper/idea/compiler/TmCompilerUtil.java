@@ -19,8 +19,8 @@ package org.textmapper.idea.compiler;
 import org.jetbrains.annotations.NonNls;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.tool.common.FileBasedStrategy;
-import org.textmapper.tool.gen.LapgGenerator;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMGenerator;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.io.File;
@@ -40,7 +40,7 @@ public class TmCompilerUtil {
 		context.reportProgress("Processing " + task.getFile().getName());
 
 		TmProcessingStatus status = context.createProcessingStatus();
-		LapgOptions options = new LapgOptions();
+		TMOptions options = new TMOptions();
 		task.fillOptions(options);
 		LapgSyntaxBuilder builder = new LapgSyntaxBuilder(task.getFile(), task.getFileContent(), options, status);
 		boolean success = builder.generate() && !status.hasErrors();
@@ -67,16 +67,15 @@ public class TmCompilerUtil {
 	}
 
 	public static void validateFile(TmCompilerTask task, TmProcessingStatus status) {
-		LapgOptions options = new LapgOptions();
+		TMOptions options = new TMOptions();
 		task.fillOptions(options);
 		TextSource input = new TextSource(task.getFile().getPath(), task.getFileContent().toCharArray(), 1);
-		new LapgGenerator(options, status, new FileBasedStrategy(null) {
+		new TMGenerator(options, status, new FileBasedStrategy(null) {
 			@Override
 			public void createFile(String name, String contents, ProcessingStatus status) {
-				// ignore
-				// TODO throw new UnsupportedOperationException();
+				throw new UnsupportedOperationException();
 			}
-		}).compileGrammar(input);
+		}).compileGrammar(input, true);
 	}
 
 }

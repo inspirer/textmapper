@@ -16,7 +16,7 @@
  */
 package org.textmapper.idea.compiler;
 
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMOptions;
 
 import java.io.File;
 
@@ -65,10 +65,10 @@ public class TmCompilerTask {
 		return templatesFolder;
 	}
 
-	public void fillOptions(LapgOptions options) {
+	public void fillOptions(TMOptions options) {
 		options.setUseDefaultTemplates(!isExcludeDefaultTemplates());
 		if (isVerbose()) {
-			options.setDebug(LapgOptions.DEBUG_AMBIG);
+			options.setDebug(TMOptions.DEBUG_AMBIG);
 		}
 		String customTemplatesFolder = getTemplatesFolder();
 		if (customTemplatesFolder != null && customTemplatesFolder.trim().length() > 0) {

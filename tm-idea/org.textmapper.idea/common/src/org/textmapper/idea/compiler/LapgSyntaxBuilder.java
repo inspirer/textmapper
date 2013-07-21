@@ -22,8 +22,8 @@ import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.templates.storage.FileBasedResourceLoader;
 import org.textmapper.templates.storage.IResourceLoader;
 import org.textmapper.tool.common.GeneratedFile;
-import org.textmapper.tool.gen.LapgGenerator;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMGenerator;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.gen.ProcessingStrategy;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
@@ -42,11 +42,11 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 
 	private final File file;
 	private final String fileContent;
-	private LapgOptions options;
+	private TMOptions options;
 	private final ProcessingStatus status;
 	private Map<String, String> myGeneratedContent;
 
-	public LapgSyntaxBuilder(File file, @Nullable String fileContent, LapgOptions options, ProcessingStatus status) {
+	public LapgSyntaxBuilder(File file, @Nullable String fileContent, TMOptions options, ProcessingStatus status) {
 		this.file = file;
 		this.fileContent = fileContent;
 		this.options = options;
@@ -83,7 +83,7 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 
 		myGeneratedContent = new HashMap<String, String>();
 		TextSource input = new TextSource(file.getPath(), contents.toCharArray(), 1);
-		return new LapgGenerator(options, status, this).compileGrammar(input);
+		return new TMGenerator(options, status, this).compileGrammar(input, false);
 	}
 
 	public void createFile(String name, String contents, ProcessingStatus status) {

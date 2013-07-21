@@ -48,7 +48,9 @@ public class TMCompiler {
 		GrammarBuilder builder = LapgCore.createBuilder();
 		TMResolver resolver = new TMResolver(tree, builder);
 		resolver.collectSymbols();
-		TMExpressionResolver expressionResolver = new TMExpressionResolver(resolver, types, getTypesPackage());
+
+		String targetLanguage = getTargetLanguage();
+		TMExpressionResolver expressionResolver = new TMExpressionResolver(resolver, types, targetLanguage);
 
 		Map<String, Object> options = getOptions(resolver, expressionResolver);
 
@@ -63,7 +65,7 @@ public class TMCompiler {
 
 		Grammar g = builder.create();
 		generateUniqueIds(g);
-		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader);
+		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader, targetLanguage);
 	}
 
 	private void generateUniqueIds(Grammar g) {
@@ -93,7 +95,7 @@ public class TMCompiler {
 		return null;
 	}
 
-	private String getTypesPackage() {
+	private String getTargetLanguage() {
 		final String targetLanguage = tree.getRoot().getHeader().getTargetLanguage();
 		if (targetLanguage != null) {
 			return targetLanguage;

@@ -38,8 +38,8 @@ import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.lapg.ui.WorkspaceResourceLoader;
 import org.textmapper.templates.storage.IResourceLoader;
 import org.textmapper.tool.common.GeneratedFile;
-import org.textmapper.tool.gen.LapgGenerator;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMGenerator;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.gen.ProcessingStrategy;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
@@ -85,7 +85,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 		monitor.done();
 	}
 
-	private void buildSyntax(IPath p, LapgOptions lapgOptions, IProgressMonitor monitor) {
+	private void buildSyntax(IPath p, TMOptions TMOptions, IProgressMonitor monitor) {
 		monitor.beginTask("Building " + p.lastSegment(), 12);
 		IFile file = getProject().getFile(p);
 		if (file == null || !file.exists()) {
@@ -97,11 +97,11 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 			monitor.worked(1);
 			TextSource source = new TextSource(file.getName(), content.toCharArray(), 1);
 			BuilderStrategy strategy = new BuilderStrategy(file);
-			BuilderStatus status = new BuilderStatus(file, lapgOptions);
+			BuilderStatus status = new BuilderStatus(file, TMOptions);
 
 			deleteMarkers(file);
 			monitor.worked(1);
-			boolean result = new LapgGenerator(lapgOptions, status, strategy).compileGrammar(source);
+			boolean result = new TMGenerator(TMOptions, status, strategy).compileGrammar(source, false);
 			monitor.worked(9);
 
 			if (result) {
@@ -136,7 +136,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 		}
 
 		Collection<IPath> changedFiles = new ArrayList<IPath>();
-		for (Entry<IPath, LapgOptions> entry : settings.getSettings().entrySet()) {
+		for (Entry<IPath, TMOptions> entry : settings.getSettings().entrySet()) {
 			IPath p = entry.getKey();
 			IResourceDelta fileDelta = delta.findMember(p);
 			if (fileDelta != null && FileUtil.affectsFile(fileDelta)) {
@@ -248,9 +248,9 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 	private class BuilderStatus implements ProcessingStatus {
 
 		private final IFile myFile;
-		private final LapgOptions options;
+		private final TMOptions options;
 
-		public BuilderStatus(IFile file, LapgOptions options) {
+		public BuilderStatus(IFile file, TMOptions options) {
 			myFile = file;
 			this.options = options;
 		}

@@ -19,8 +19,8 @@ import org.textmapper.lapg.common.AbstractProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
 import org.textmapper.tool.common.FileBasedStrategy;
 import org.textmapper.tool.common.GeneratedFile;
-import org.textmapper.tool.gen.LapgGenerator;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMGenerator;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.io.*;
@@ -39,7 +39,7 @@ public class Tool {
 					"       textmapper [-h|-v]\n" +
 					"\n" +
 					"Options:\n" +
-					LapgOptions.HELP_OPTIONS +
+					TMOptions.HELP_OPTIONS +
 					"\n" +
 					"Operations:\n" +
 					"  -h,  --help                    display this help\n" +
@@ -65,7 +65,7 @@ public class Tool {
 			}
 		}
 
-		LapgOptions options = LapgOptions.parseArguments(args, System.err);
+		TMOptions options = TMOptions.parseArguments(args, System.err);
 		if (options == null) {
 			System.err.println("Try 'textmapper --help' for more information.");
 			System.exit(1);
@@ -119,7 +119,7 @@ public class Tool {
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 			FileBasedStrategy strategy = new FileBasedStrategy(null);
 
-			success = new LapgGenerator(options, status, strategy).compileGrammar(input);
+			success = new TMGenerator(options, status, strategy).compileGrammar(input, false);
 		} finally {
 			status.dispose();
 		}
@@ -142,7 +142,7 @@ public class Tool {
 		private PrintStream debug, warn;
 
 		public ConsoleStatus(int debuglev) {
-			super(debuglev >= LapgOptions.DEBUG_TABLES, debuglev >= LapgOptions.DEBUG_AMBIG);
+			super(debuglev >= TMOptions.DEBUG_TABLES, debuglev >= TMOptions.DEBUG_AMBIG);
 			debug = null;
 			warn = null;
 		}

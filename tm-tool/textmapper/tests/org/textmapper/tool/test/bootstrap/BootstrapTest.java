@@ -22,8 +22,8 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.TextSourceElement;
 import org.textmapper.lapg.common.AbstractProcessingStatus;
 import org.textmapper.lapg.common.FileUtil;
-import org.textmapper.tool.gen.LapgGenerator;
-import org.textmapper.tool.gen.LapgOptions;
+import org.textmapper.tool.gen.TMGenerator;
+import org.textmapper.tool.gen.TMOptions;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.test.CheckingErrorStream;
 import org.textmapper.tool.test.CheckingFileBasedStrategy;
@@ -130,7 +130,7 @@ public class BootstrapTest {
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles,
 						   int expectedResolvedConflicts) {
 		try {
-			LapgOptions options = LapgOptions.parseArguments(args, new PrintStream(new CheckingErrorStream("")));
+			TMOptions options = TMOptions.parseArguments(args, new PrintStream(new CheckingErrorStream("")));
 			assertNotNull("cannot parse options", options);
 
 			options.setInput(syntaxFile);
@@ -147,9 +147,9 @@ public class BootstrapTest {
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
 			BootstrapTestStatus status = new BootstrapTestStatus(expectedResolvedConflicts,
-					options.getDebug() >= LapgOptions.DEBUG_TABLES, options.getDebug() >= LapgOptions.DEBUG_AMBIG);
+					options.getDebug() >= TMOptions.DEBUG_TABLES, options.getDebug() >= TMOptions.DEBUG_AMBIG);
 
-			boolean success = new LapgGenerator(options, status, strategy).compileGrammar(input);
+			boolean success = new TMGenerator(options, status, strategy).compileGrammar(input, false);
 			assertTrue(success);
 
 			if (status.isDebugMode()) {

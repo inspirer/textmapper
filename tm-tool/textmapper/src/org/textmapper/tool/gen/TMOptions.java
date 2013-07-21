@@ -19,9 +19,9 @@ import java.io.PrintStream;
 import java.util.*;
 
 /**
- * Represents generator options.
+ * Represents Textmapper options.
  */
-public class LapgOptions {
+public class TMOptions {
 
 	public static final int DEBUG_AMBIG = 1;
 	public static final int DEBUG_TABLES = 2;
@@ -37,7 +37,7 @@ public class LapgOptions {
 
 	private boolean useDefaultTemplates;
 
-	public LapgOptions() {
+	public TMOptions() {
 		this.debug = 0;
 		this.input = null;
 		this.outputFolder = null;
@@ -133,8 +133,8 @@ public class LapgOptions {
 		return res;
 	}
 
-	public static LapgOptions parseArguments(String[] args, PrintStream errorStream) {
-		LapgOptions opts = new LapgOptions();
+	public static TMOptions parseArguments(String[] args, PrintStream errorStream) {
+		TMOptions opts = new TMOptions();
 		Map<String, Integer> optionsHash = buildOptionsHash();
 		Set<Integer> usedOptions = new HashSet<Integer>();
 
@@ -183,13 +183,13 @@ public class LapgOptions {
 		return opts;
 	}
 
-	private static void setOption(LapgOptions opts, int optionId, String value) {
+	private static void setOption(TMOptions opts, int optionId, String value) {
 		switch (optionId) {
 			case OPT_DEBUG:
-				opts.setDebug(LapgOptions.DEBUG_AMBIG);
+				opts.setDebug(TMOptions.DEBUG_AMBIG);
 				break;
 			case OPT_EXT_DEBUG:
-				opts.setDebug(LapgOptions.DEBUG_TABLES);
+				opts.setDebug(TMOptions.DEBUG_TABLES);
 				break;
 			case OPT_NO_DEF:
 				opts.setUseDefaultTemplates(false);
