@@ -230,6 +230,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 				return KW_RETURNS;
 			case Lexems.Linterface:
 				return KW_INTERFACE;
+			case Lexems.Lvoid:
+				return KW_VOID;
 			case Lexems.Llanguage:
 				return KW_LANGUAGE;
 			case Lexems.Llalr:

@@ -344,7 +344,7 @@ public class TMMapper {
 				}
 				i.remove();
 			} else if (hasInterfaceHint(n)) {
-				status.report(ProcessingStatus.KIND_ERROR, "@_interface was ignored", n);
+				status.report(ProcessingStatus.KIND_ERROR, "interface hint was ignored", n);
 			}
 		}
 	}

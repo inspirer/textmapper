@@ -100,6 +100,7 @@ public interface LapgTokenTypes {
 	IElementType KW_INLINE = new LapgElementType(Lexems.Linline, "inline");
 	IElementType KW_RETURNS = new LapgElementType(Lexems.Lreturns, "returns");
 	IElementType KW_INTERFACE = new LapgElementType(Lexems.Linterface, "interface");
+	IElementType KW_VOID = new LapgElementType(Lexems.Lvoid, "void");
 	IElementType KW_LANGUAGE = new LapgElementType(Lexems.Llanguage, "language");
 	IElementType KW_LALR = new LapgElementType(Lexems.Llalr, "lalr");
 	IElementType KW_LEXER = new LapgElementType(Lexems.Llexer, "lexer");
@@ -114,6 +115,6 @@ public interface LapgTokenTypes {
 	TokenSet softKeywords = TokenSet.create(
 			KW_PRIO, KW_SHIFT, KW_REDUCE,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC, KW_NOEOI,
-			KW_INLINE, KW_RETURNS, KW_INTERFACE, KW_LANGUAGE,
+			KW_INLINE, KW_RETURNS, KW_INTERFACE, KW_VOID, KW_LANGUAGE,
 			KW_LALR, KW_LEXER, KW_PARSER, KW_SOFT, KW_CLASS, KW_SPACE);
 }

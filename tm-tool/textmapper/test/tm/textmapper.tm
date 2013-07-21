@@ -141,12 +141,10 @@ option ::=
 	| syntax_problem
 ;
 
-@_class
-identifier ::=
+identifier class ::=
 	  ID ;
 
-@_class
-symref ::=
+symref class ::=
 	  ID ;
 
 type (String) ::=
@@ -154,16 +152,13 @@ type (String) ::=
 	| '(' type_part_list ')'			{ $$ = source.getText(${first().offset}+1, ${last().endoffset}-1); }
 ;
 
-@noast
-type_part_list ::=
+type_part_list void ::=
 	  type_part_list type_part | type_part ;
 
-@noast
-type_part ::=
+type_part void ::=
 	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
 
-@_class
-pattern ::=
+pattern class ::=
 	  regexp
 ;
 
@@ -202,8 +197,7 @@ lexem_attribute ::=
 state_selector ::=
 	  '[' states=(lexer_state separator ',')+ ']' ;
 
-@_class
-stateref ::=
+stateref class ::=
 	  ID ;
 
 lexer_state ::=
@@ -232,8 +226,7 @@ nonterm_type ::=
 priority_kw ::=
 	Lleft | Lright | Lnonassoc ;
 
-@_interface
-directive ::=
+directive interface ::=
 	  '%' priority_kw references ';'
 	| [input] '%' Linput (inputref separator ',')+ ';'
 ;
@@ -330,8 +323,7 @@ rhsAnnotations ::=
 ;
 
 
-@_class
-annotations ::=
+annotations class ::=
 	annotations=annotation+ ;
 
 annotation ::=
@@ -366,12 +358,10 @@ map_entries ::=
 	| map_entries ',' ID map_separator expression
 ;
 
-@noast
-map_separator ::=
+map_separator void ::=
 	':' | '=' | '=>' ;
 
-@_class
-name ::=
+name class ::=
 	qualified_id ;
 
 qualified_id (String) ::=
@@ -379,8 +369,7 @@ qualified_id (String) ::=
 	| qualified_id '.' ID				{ $$ = $qualified_id + "." + $ID; }
 ;
 
-@_class
-command ::=
+command class ::=
 	code ;
 
 syntax_problem ::=

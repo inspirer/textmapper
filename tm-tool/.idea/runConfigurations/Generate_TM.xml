@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Generate Java AST" type="Application" factoryName="Application">
+  <configuration default="false" name="Generate TM" type="Application" factoryName="Application">
     <extension name="coverage" enabled="false" merge="false" runner="idea" />
     <option name="MAIN_CLASS_NAME" value="org.textmapper.tool.Tool" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="-x -i ../../src/org/textmapper/tool/gen/templates" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/textmapper/test/java" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/textmapper/test/tm" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
     <option name="ENABLE_SWING_INSPECTOR" value="false" />
@@ -16,6 +16,9 @@
       <option name="DEBUG_PORT" value="65396" />
       <option name="TRANSPORT" value="0" />
       <option name="LOCAL" value="true" />
+    </RunnerSettings>
+    <RunnerSettings RunnerId="Profile ">
+      <option name="myExternalizedOptions" value="&#10;additional-options2=onexit\=snapshot&#10;" />
     </RunnerSettings>
     <RunnerSettings RunnerId="Run" />
     <ConfigurationWrapper RunnerId="Debug" />

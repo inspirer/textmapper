@@ -220,6 +220,7 @@ nonterm_type  : NontermType ::=
 	Lreturns {symref}
   | Linline? Lclass name=identifieropt
   | Linterface name=identifieropt
+  | Lvoid
   | {type}
 ;
 

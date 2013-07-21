@@ -67,8 +67,7 @@ Lchoice:	 /choice/
 
 :: parser
 
-@_class
-input ::=
+input class ::=
 	declarations ;
 
 declarations ::=

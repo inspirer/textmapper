@@ -43,8 +43,7 @@ error:
 
 %input classdef_NoEoi no-eoi, classdef ;
 
-@_interface
-classdef_NoEoi ::=
+classdef_NoEoi interface ::=
 	classdef ;
 
 classdef ::=
