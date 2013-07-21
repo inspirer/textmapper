@@ -6,15 +6,15 @@
     <artifactId>master</artifactId>
     <version>0.9.2-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Lapg eclipse</name>
-    <description>Master project for Lapg Tooling build</description>
+    <name>Textmapper for eclipse</name>
+    <description>Master project for Textmapper Tooling build</description>
 
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
 
     <properties>
-        <tycho-version>0.15.0</tycho-version>
+        <tycho-version>0.18.0</tycho-version>
     </properties>
 
     <licenses>
@@ -85,15 +85,15 @@
 
     <profiles>
         <profile>
-            <id>juno</id>
+            <id>kepler</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <repositories>
                 <repository>
-                    <id>juno</id>
+                    <id>kepler</id>
                     <layout>p2</layout>
-                    <url>http://download.eclipse.org/releases/juno/</url>
+                    <url>http://download.eclipse.org/releases/kepler/</url>
                 </repository>
             </repositories>
         </profile>
