@@ -92,15 +92,16 @@ public class TMLexer {
 		public static final int Lsoft = 47;
 		public static final int Lclass = 48;
 		public static final int Linterface = 49;
-		public static final int Lspace = 50;
-		public static final int Llayout = 51;
-		public static final int Llanguage = 52;
-		public static final int Llalr = 53;
-		public static final int Llexer = 54;
-		public static final int Lparser = 55;
-		public static final int Lreduce = 56;
-		public static final int code = 57;
-		public static final int LCURLY = 58;
+		public static final int Lvoid = 50;
+		public static final int Lspace = 51;
+		public static final int Llayout = 52;
+		public static final int Llanguage = 53;
+		public static final int Llalr = 54;
+		public static final int Llexer = 55;
+		public static final int Lparser = 56;
+		public static final int Lreduce = 57;
+		public static final int code = 58;
+		public static final int LCURLY = 59;
 	}
 
 	public interface ErrorReporter {
@@ -269,10 +270,10 @@ public class TMLexer {
 		0, 0, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(58,
+	private static final short[] tmRuleSymbol = unpack_short(59,
 		"\37\1\2\3\0\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34" +
 		"\35\40\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70\71" +
-		"\72");
+		"\72\73");
 
 	private static final int tmClassesCount = 34;
 
@@ -286,8 +287,8 @@ public class TMLexer {
 		"\uffff\1\35\1\uffff\10\ufff6\1\45\31\ufff6\1\ufff7\3\10\1\46\35\10\13\uffed\1\47" +
 		"\26\uffed\16\ufff2\1\50\23\ufff2\42\ufff3\42\uffe5\42\ufff0\42\uffef\42\uffee\42" +
 		"\uffec\42\uffeb\25\uffea\1\51\14\uffea\42\uffe1\42\uffe8\42\uffe7\42\uffe6\42\uffe4" +
-		"\14\uffe3\1\52\25\uffe3\42\uffe0\42\uffdf\42\uffc5\7\ufffd\1\53\27\ufffd\2\34\1\ufffd" +
-		"\40\ufffa\1\35\1\ufffa\42\uffc4\42\ufffd\1\uffff\3\2\1\uffff\35\2\1\uffff\3\4\1\uffff" +
+		"\14\uffe3\1\52\25\uffe3\42\uffe0\42\uffdf\42\uffc4\7\ufffd\1\53\27\ufffd\2\34\1\ufffd" +
+		"\40\ufffa\1\35\1\ufffa\42\uffc3\42\ufffd\1\uffff\3\2\1\uffff\35\2\1\uffff\3\4\1\uffff" +
 		"\35\4\42\ufffc\1\uffff\3\5\1\uffff\35\5\42\ufffb\1\ufff9\3\45\1\54\35\45\42\ufff7" +
 		"\14\ufff4\1\55\25\ufff4\42\ufff1\26\uffff\1\56\13\uffff\42\uffe2\7\uffff\1\53\27" +
 		"\uffff\2\34\1\uffff\42\ufff9\42\ufff5\42\uffe9");
@@ -689,7 +690,7 @@ public class TMLexer {
 			case 30: // '@': /@/
 				state = States.afterAt;
 				break;
-			case 56: // code: /\{/
+			case 57: // code: /\{/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -697,7 +698,7 @@ public class TMLexer {
 				}
 				 skipAction(); lapg_n.endoffset = getOffset(); 
 				break;
-			case 57: // '{': /\{/
+			case 58: // '{': /\{/
 				state = States.initial;
 				break;
 		}
@@ -724,13 +725,14 @@ public class TMLexer {
 		subTokensOfID.put("soft", 46);
 		subTokensOfID.put("class", 47);
 		subTokensOfID.put("interface", 48);
-		subTokensOfID.put("space", 49);
-		subTokensOfID.put("layout", 50);
-		subTokensOfID.put("language", 51);
-		subTokensOfID.put("lalr", 52);
-		subTokensOfID.put("lexer", 53);
-		subTokensOfID.put("parser", 54);
-		subTokensOfID.put("reduce", 55);
+		subTokensOfID.put("void", 49);
+		subTokensOfID.put("space", 50);
+		subTokensOfID.put("layout", 51);
+		subTokensOfID.put("language", 52);
+		subTokensOfID.put("lalr", 53);
+		subTokensOfID.put("lexer", 54);
+		subTokensOfID.put("parser", 55);
+		subTokensOfID.put("reduce", 56);
 	}
 
 	protected boolean createIDToken(LapgSymbol lapg_n, int ruleIndex) {
@@ -801,7 +803,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 55:	// reduce
+			case 56:	// reduce
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -823,12 +825,13 @@ public class TMLexer {
 			case 46:	// soft (soft)
 			case 47:	// class (soft)
 			case 48:	// interface (soft)
-			case 49:	// space (soft)
-			case 50:	// layout (soft)
-			case 51:	// language (soft)
-			case 52:	// lalr (soft)
-			case 53:	// lexer (soft)
-			case 54:	// parser (soft)
+			case 49:	// void (soft)
+			case 50:	// space (soft)
+			case 51:	// layout (soft)
+			case 52:	// language (soft)
+			case 53:	// lalr (soft)
+			case 54:	// lexer (soft)
+			case 55:	// parser (soft)
 			case 0:	// <default>
 				switch(state) {
 					case States.afterAt:

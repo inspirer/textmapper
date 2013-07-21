@@ -161,6 +161,10 @@ public class TmaVisitor {
 		return true;
 	}
 
+	public boolean visit(TmaNontermTypeHint n) {
+		return true;
+	}
+
 	public boolean visit(TmaNontermTypeRaw n) {
 		return true;
 	}

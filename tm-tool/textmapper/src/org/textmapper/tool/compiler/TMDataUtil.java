@@ -34,6 +34,7 @@ public class TMDataUtil {
 	private static final String UD_IDENTIFIER = "id";
 	private static final String UD_TRANSITIONMAP = "transitionMap";
 	private static final String UD_CUSTOM_TYPE = "customType";
+	private static final String UD_TYPE_HINT = "typeHint";
 
 	public static void putAnnotations(UserDataHolder element, Map<String, Object> annotations) {
 		element.putUserData(UD_ANNOTATIONS, annotations);
@@ -65,6 +66,14 @@ public class TMDataUtil {
 
 	public static Nonterminal getCustomType(Nonterminal element) {
 		return (Nonterminal) element.getUserData(UD_CUSTOM_TYPE);
+	}
+
+	public static void putTypeHint(Nonterminal element, TMTypeHint hint) {
+		element.putUserData(UD_TYPE_HINT, hint);
+	}
+
+	public static TMTypeHint getTypeHint(Nonterminal element) {
+		return (TMTypeHint) element.getUserData(UD_TYPE_HINT);
 	}
 
 	public static void putTransition(LexerRule rule, TMStateTransitionSwitch transitionSwitch) {

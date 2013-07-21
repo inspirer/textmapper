@@ -96,6 +96,7 @@ Lnoeoi: /no-eoi/			(soft)
 Lsoft: /soft/				(soft)
 Lclass: /class/				(soft)
 Linterface: /interface/		(soft)
+Lvoid: /void/				(soft)
 Lspace: /space/				(soft)
 Llayout: /layout/			(soft)
 Llanguage: /language/       (soft)
@@ -224,6 +225,7 @@ nonterm_type ::=
 	  Lreturns symref
 	| Linline? Lclass name=identifieropt
 	| Linterface name=identifieropt
+	| Lvoid
 	| type
 ;
 

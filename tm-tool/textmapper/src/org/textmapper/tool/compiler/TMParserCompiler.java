@@ -23,6 +23,7 @@ import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
+import org.textmapper.tool.parser.ast.TmaNontermTypeHint.Kind;
 
 import java.util.*;
 
@@ -96,6 +97,15 @@ public class TMParserCompiler {
 					} else {
 						TMDataUtil.putCustomType((Nonterminal) left, (Nonterminal) type);
 					}
+				} else if (nonterm.getType() instanceof TmaNontermTypeHint) {
+					TmaNontermTypeHint hint = (TmaNontermTypeHint) nonterm.getType();
+					if (hint.getKind() == Kind.INLINE_CLASS) {
+						error(hint, "inline classes are not supported yet");
+						continue;
+					}
+					TMTypeHint.Kind kind = hint.getKind() == Kind.VOID ? TMTypeHint.Kind.VOID :
+							hint.getKind() == Kind.CLASS ? TMTypeHint.Kind.CLASS : TMTypeHint.Kind.INTERFACE;
+					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind, hint.getName() == null ? null : hint.getName().getID()));
 				}
 			}
 		}

@@ -94,6 +94,7 @@ Lnoeoi: /no-eoi/			(soft)
 Lsoft: /soft/				(soft)
 Lclass: /class/				(soft)
 Linterface: /interface/		(soft)
+Lvoid: /void/				(soft)
 Lspace: /space/				(soft)
 Llayout: /layout/			(soft)
 Llanguage: /language/       (soft)
@@ -255,8 +256,9 @@ nonterm ::=
 
 nonterm_type (TmaNontermType) ::=
 	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().offset}, ${left().endoffset}); }
-	| Linline? Lclass name=identifieropt				{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
-	| Linterface name=identifieropt						{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| Linline? Lclass name=identifieropt				{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.${if self.Linline.rightOffset>=0}INLINE_CLASS${else}CLASS${end}, $name, source, ${left().offset}, ${left().endoffset}); }
+	| Linterface name=identifieropt						{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.INTERFACE, $name, source, ${left().offset}, ${left().endoffset}); }
+	| Lvoid												{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.VOID, null, source, ${left().offset}, ${left().endoffset}); }
 	| type                                              { $$ = new TmaNontermTypeRaw($type, source, ${left().offset}, ${left().endoffset}); }
 ;
 

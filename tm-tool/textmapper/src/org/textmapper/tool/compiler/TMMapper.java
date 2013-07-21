@@ -8,6 +8,7 @@ import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.util.RhsUtil;
+import org.textmapper.tool.compiler.TMTypeHint.Kind;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -60,7 +61,7 @@ public class TMMapper {
 
 	private void rewriteLists() {
 		for (Nonterminal n : unmapped) {
-			if (hasProperty(n, "_interface") || hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null) continue;
+			if (hasInterfaceHint(n) || hasClassHint(n) || TMDataUtil.getCustomType(n) != null) continue;
 			GrammarFacade.rewriteAsList(n);
 		}
 	}
@@ -77,8 +78,8 @@ public class TMMapper {
 	}
 
 	public static boolean isVoid(Nonterminal n) {
-		if (hasProperty(n, "noast")) return true;
-		if (hasProperty(n, "_class")) return false;
+		if (hasVoidHint(n)) return true;
+		if (hasClassHint(n)) return false;
 		RhsPart def = RhsUtil.unwrap(n.getDefinition());
 		if (def instanceof RhsSymbol) {
 			Symbol sym = ((RhsSymbol) def).getTarget();
@@ -129,7 +130,7 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null || n.getDefinition() instanceof RhsList) continue;
+			if (hasClassHint(n) || TMDataUtil.getCustomType(n) != null || n.getDefinition() instanceof RhsList) continue;
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			if (definition instanceof RhsChoice) {
 				RhsChoice alt = (RhsChoice) n.getDefinition();
@@ -184,7 +185,7 @@ public class TMMapper {
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList) continue;
-			if (hasProperty(n, "_class") || TMDataUtil.getCustomType(n) != null || hasProperty(n, "_interface")) {
+			if (hasClassHint(n) || TMDataUtil.getCustomType(n) != null || hasInterfaceHint(n)) {
 				continue;
 			}
 
@@ -280,7 +281,7 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (n.getDefinition() instanceof RhsList || TMDataUtil.getCustomType(n) != null || hasProperty(n, "_class")) {
+			if (n.getDefinition() instanceof RhsList || TMDataUtil.getCustomType(n) != null || hasClassHint(n)) {
 				continue;
 			}
 
@@ -313,14 +314,14 @@ public class TMMapper {
 				}
 
 				final String ruleAlias = ((RhsSequence) part).getName();
-				if (ruleAlias == null && !hasProperty(n, "_interface")) {
+				if (ruleAlias == null && !hasInterfaceHint(n)) {
 					isInterface = false;
 					break;
 				}
 				hasNamedRules |= (ruleAlias != null);
 				customRuleList.add((RhsSequence) part);
 			}
-			if (isInterface && (!passSymbols.isEmpty() || hasProperty(n, "_interface") && hasNamedRules)) {
+			if (isInterface && (!passSymbols.isEmpty() || hasInterfaceHint(n) && hasNamedRules)) {
 				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n, null), null, n);
 				mapNonterm(n, interfaceClass);
 				for (Nonterminal nonterminal : extList) {
@@ -342,7 +343,7 @@ public class TMMapper {
 					mapper.map(rulePart, null, ruleClass, false);
 				}
 				i.remove();
-			} else if (hasProperty(n, "_interface")) {
+			} else if (hasInterfaceHint(n)) {
 				status.report(ProcessingStatus.KIND_ERROR, "@_interface was ignored", n);
 			}
 		}
@@ -662,6 +663,21 @@ public class TMMapper {
 		}
 		final Object o1 = annotations.get(name);
 		return o1 instanceof Boolean ? (Boolean) o1 : false;
+	}
+
+	private static boolean hasClassHint(Nonterminal n) {
+		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		return typeHint != null && typeHint.getKind() == Kind.CLASS || hasProperty(n, "_class");
+	}
+
+	private static boolean hasInterfaceHint(Nonterminal n) {
+		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		return typeHint != null && typeHint.getKind() == Kind.INTERFACE || hasProperty(n, "_interface");
+	}
+
+	private static boolean hasVoidHint(Nonterminal n) {
+		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		return typeHint != null && typeHint.getKind() == Kind.VOID || hasProperty(n, "noast");
 	}
 
 	private static String getFieldBaseName(RhsSymbol sym) {
