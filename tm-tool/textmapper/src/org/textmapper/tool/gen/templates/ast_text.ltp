@@ -37,7 +37,7 @@ ${query rhsClasses() =
 }
 
 
-${query isSequenceWOMapping() = !self.mapping || !self.mapping.value && !self.mapping.field && !self.type && !self.mapping.isAddition()}
+${query isSequenceWOMapping() = !self.mapping || !self.mapping->hasValue() && !self.mapping.field && !self.type && !self.mapping.isAddition()}
 
 ${query rhsPart(prio) =
 	self is LiRhsSequence && !self->isSequenceWOMapping()
@@ -62,11 +62,13 @@ ${query rhsPart(prio) =
 	'/* ERROR */'
 }
 
+${query hasValue() = self.value || self.value is Boolean || self.value is String}
+
 ${query rhsMapping(defaultText) =
-	self.field && self.field.name == defaultText && !self.isAddition() && !self.value ? '{' + defaultText + '}' :
+	self.field && self.field.name == defaultText && !self.isAddition() && !self->hasValue() ? '{' + defaultText + '}' :
 	(self.field ? self.field.name  : 'this') +
 	(self.isAddition() ? '+=' : '=') +
-	(self.value ? defaultText + ' as ' + (self.value is LiAstEnumMember ? value.containingEnum.name + '.' + value.name : value) : defaultText)
+	(self->hasValue() ? defaultText + ' as ' + (self.value is LiAstEnumMember ? value.containingEnum.name + '.' + value.name : value) : defaultText)
 }
 
 ${query paren(condition) = condition ? '(' + self + ')' : self}

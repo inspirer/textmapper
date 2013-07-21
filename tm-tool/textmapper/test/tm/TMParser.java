@@ -1374,32 +1374,28 @@ public class TMParser {
 				lapg_gg.value = new TmaLiteral(
 						((String)tmStack[tmHead].value) /* sval */,
 						null /* ival */,
-						false /* isTrue */,
-						false /* isFalse */,
+						false /* val */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 160:  // literal ::= icon
 				lapg_gg.value = new TmaLiteral(
 						null /* sval */,
 						((Integer)tmStack[tmHead].value) /* ival */,
-						false /* isTrue */,
-						false /* isFalse */,
+						false /* val */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 161:  // literal ::= Ltrue
 				lapg_gg.value = new TmaLiteral(
 						null /* sval */,
 						null /* ival */,
-						true /* isTrue */,
-						false /* isFalse */,
+						true /* val */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 162:  // literal ::= Lfalse
 				lapg_gg.value = new TmaLiteral(
 						null /* sval */,
 						null /* ival */,
-						false /* isTrue */,
-						true /* isFalse */,
+						false /* val */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 163:  // map_entries ::= ID map_separator expression

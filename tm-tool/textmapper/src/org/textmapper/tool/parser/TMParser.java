@@ -1021,7 +1021,7 @@ public class TMParser {
 				 lapg_gg.value = new TmaRhsCast(((ITmaRhsPart)tmStack[tmHead - 2].value), ((TmaSymref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 134:  // rhsCast ::= rhsClass Las literal
-				 reporter.error(lapg_gg.offset, lapg_gg.endoffset, lapg_gg.line, "unsupported, TODO"); 
+				 lapg_gg.value = new TmaRhsAsLiteral(((ITmaRhsPart)tmStack[tmHead - 2].value), ((TmaExpressionLiteral)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 135:  // rhsUnordered ::= rhsPart '&' rhsPart
 				 lapg_gg.value = new TmaRhsUnordered(((ITmaRhsPart)tmStack[tmHead - 2].value), ((ITmaRhsPart)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 

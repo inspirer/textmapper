@@ -545,7 +545,7 @@ public class TMMapper {
 
 				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true), type, fd.nullable, cl, fd.firstMapping.origin);
 				for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
-					Object value = null;
+					Object value = TMDataUtil.getLiteral(m.sym);
 					if (fd.type == BOOL_OR_ENUM) {
 						if (type == AstType.BOOL) {
 							value = Boolean.TRUE;
@@ -593,6 +593,13 @@ public class TMMapper {
 
 			RhsSymbol ref = (RhsSymbol) unwrapped;
 			AstType type = RhsUtil.getCastType(part);
+			if (type == null) {
+				final Object literal = TMDataUtil.getLiteral(ref);
+				if (literal != null) {
+					type = literal instanceof String ? AstType.STRING :
+							literal instanceof Integer ? AstType.INT : AstType.BOOL;
+				}
+			}
 			if (type == null) {
 				if (!isConstantOrVoid(ref)) {
 					type = ref.getTarget().getType();

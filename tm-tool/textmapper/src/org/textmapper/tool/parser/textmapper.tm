@@ -347,7 +347,7 @@ rhsOptional (ITmaRhsPart) ::=
 rhsCast (ITmaRhsPart) ::=
 	  rhsClass
 	| rhsClass Las symref								{ $$ = new TmaRhsCast($rhsClass, $symref, source, ${left().offset}, ${left().endoffset}); }
-	| rhsClass Las literal								{ reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| rhsClass Las literal								{ $$ = new TmaRhsAsLiteral($rhsClass, $literal, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsUnordered (ITmaRhsPart) ::=

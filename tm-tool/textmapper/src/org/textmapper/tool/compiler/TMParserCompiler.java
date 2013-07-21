@@ -282,9 +282,13 @@ public class TMParserCompiler {
 		}
 
 		TmaRhsCast cast = null;
+		TmaRhsAsLiteral literalCast = null;
 		if (part instanceof TmaRhsCast) {
 			cast = (TmaRhsCast) part;
 			part = cast.getInner();
+		} else if (part instanceof TmaRhsAsLiteral) {
+			literalCast = (TmaRhsAsLiteral) part;
+			part = literalCast.getInner();
 		}
 
 		boolean canInline = nla == null && annotations == null;
@@ -312,6 +316,12 @@ public class TMParserCompiler {
 			final Symbol asSymbol = resolver.resolve(cast.getTarget());
 			if (asSymbol != null) {
 				result = builder.cast(asSymbol, result, cast);
+			}
+		} else if (literalCast != null) {
+			if (result instanceof RhsSymbol) {
+				TMDataUtil.putLiteral((RhsSymbol) result, literalCast.getLiteral().getLiteral());
+			} else {
+				error(literalCast, "cannot apply `as literal' to a group");
 			}
 		}
 

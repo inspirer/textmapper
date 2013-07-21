@@ -348,8 +348,8 @@ expression ::=
 literal ::=
 	  [literal] sval=scon
 	| [literal] ival=icon
-	| [literal] isTrue=Ltrue          # TODO val=Ltrue/Boolean.TRUE?/
-    | [literal] isFalse=Lfalse        # TODO val=Lfalse/Boolean.FALSE?/
+	| [literal] val=Ltrue as true
+    | [literal] val=Lfalse as false
 
 ;
 

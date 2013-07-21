@@ -249,7 +249,7 @@ ${query asExpression(seq,contextType,addOnly) =
 
 ${query simpleMapping(rhsSym) =
 	value = rhsSym.mapping.value,
-	value ? (
+	value || value is Boolean || value is String ? (
         value is LiAstEnumMember ? self->astPackage() + '.@' + value.containingEnum->classInnerName() + '.' + value->enumMemberName() :
 		value
 	) :

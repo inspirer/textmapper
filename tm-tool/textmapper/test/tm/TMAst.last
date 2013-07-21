@@ -477,15 +477,14 @@ expression  : Expression ::=
 class Literal : Expression {
 	String sval;
 	Integer ival;
-	boolean isTrue;
-	boolean isFalse;
+	boolean val;
 }
 
 literal  : Literal ::=
 	sval=scon
   | ival=icon
-  | isTrue=Ltrue as true
-  | isFalse=Lfalse as true
+  | val=Ltrue as true
+  | val=Lfalse as false
 ;
 
 class MapEntriesItem {

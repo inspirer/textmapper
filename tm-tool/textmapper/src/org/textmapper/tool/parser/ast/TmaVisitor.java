@@ -180,4 +180,8 @@ public class TmaVisitor {
 	public boolean visit(TmaHeader n) {
 		return true;
 	}
+
+	public boolean visit(TmaRhsAsLiteral n) {
+		return true;
+	}
 }

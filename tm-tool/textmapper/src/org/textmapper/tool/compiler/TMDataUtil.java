@@ -35,6 +35,7 @@ public class TMDataUtil {
 	private static final String UD_TRANSITIONMAP = "transitionMap";
 	private static final String UD_CUSTOM_TYPE = "customType";
 	private static final String UD_TYPE_HINT = "typeHint";
+	private static final String UD_LITERAL = "literal";
 
 	public static void putAnnotations(UserDataHolder element, Map<String, Object> annotations) {
 		element.putUserData(UD_ANNOTATIONS, annotations);
@@ -86,5 +87,14 @@ public class TMDataUtil {
 
 	public static RhsSymbol getRewrittenTo(RhsSymbol source) {
 		return (RhsSymbol) source.getUserData(RhsSymbol.UD_REWRITTEN);
+	}
+
+	public static void putLiteral(RhsSymbol rhsSym, Object literal) {
+		assert literal instanceof String || literal instanceof Boolean || literal instanceof Integer;
+		rhsSym.putUserData(UD_LITERAL, literal);
+	}
+
+	public static Object getLiteral(RhsSymbol rhsSym) {
+		return rhsSym.getUserData(UD_LITERAL);
 	}
 }
