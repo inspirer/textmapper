@@ -16,23 +16,24 @@
 package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.SourceElement;
 
 public interface IxObject {
 
 	/*
 	 * Returns value of <propertyName> property of <obj>.
 	 */
-	public Object getProperty(String propertyName) throws EvaluationException;
+	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException;
 
 	/*
 	 * Returns a result of <obj>.methodName(args) call.
 	 */
-	public Object callMethod(String methodName, Object... args) throws EvaluationException;
+	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException;
 
 	/*
 	 * Returns indexed value.
 	 */
-	public Object getByIndex(Object index) throws EvaluationException;
+	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException;
 
 	/*
 	 * "is" expression

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Context for one template invocation. Contains variables and `this' reference.
+ * Template invocation context. Contains variables and `this' reference.
  */
 public class EvaluationContext {
 
@@ -34,6 +34,7 @@ public class EvaluationContext {
 
 	private Map<String, Object> vars;
 	private final Object thisObject;
+	private final SourceElement caller;
 	private final EvaluationContext parent;
 	private final IBundleEntity current;
 
@@ -41,12 +42,13 @@ public class EvaluationContext {
 		this(thisObject, null, null);
 	}
 
-	public EvaluationContext(Object thisObject, EvaluationContext parent) {
-		this(thisObject, parent, parent != null ? parent.getCurrent() : null);
+	public EvaluationContext(Object thisObject, SourceElement caller, EvaluationContext parent) {
+		this(thisObject, caller, parent, parent != null ? parent.getCurrent() : null);
 	}
 
-	public EvaluationContext(Object thisObject, EvaluationContext parent, IBundleEntity current) {
+	public EvaluationContext(Object thisObject, SourceElement caller, EvaluationContext parent, IBundleEntity current) {
 		this.thisObject = thisObject;
+		this.caller = caller;
 		this.parent = parent;
 		this.current = current;
 	}
@@ -67,6 +69,10 @@ public class EvaluationContext {
 
 	public Object getThisObject() {
 		return thisObject;
+	}
+
+	public SourceElement getCaller() {
+		return caller;
 	}
 
 	public IBundleEntity getCurrent() {

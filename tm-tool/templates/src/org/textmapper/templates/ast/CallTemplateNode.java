@@ -15,11 +15,11 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.List;
-
 import org.textmapper.templates.api.*;
-import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.bundle.IBundleEntity;
+
+import java.util.List;
 
 public class CallTemplateNode extends ExpressionNode {
 
@@ -48,7 +48,7 @@ public class CallTemplateNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), context) : context;
+		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), this, context) : context;
 		String tid = getTemplateId(context, templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false));
 
 		Object[] args = null;
@@ -71,13 +71,13 @@ public class CallTemplateNode extends ExpressionNode {
 				}
 			}
 		}
-		if(!isBase) {
+		if (!isBase) {
 			t = env.loadEntity(tid, IBundleEntity.KIND_ANY, this);
 		}
-		if(t instanceof ITemplate) {
-			return env.evaluate((ITemplate)t, callContext, args, this);
-		} else if(t instanceof IQuery) {
-			return env.evaluate((IQuery)t, callContext, args);
+		if (t instanceof ITemplate) {
+			return env.evaluate((ITemplate) t, callContext, args, this);
+		} else if (t instanceof IQuery) {
+			return env.evaluate((IQuery) t, callContext, args, this);
 		} else {
 			return "";
 		}
@@ -86,7 +86,7 @@ public class CallTemplateNode extends ExpressionNode {
 	@Override
 	public void toString(StringBuilder sb) {
 		if (!isStatement) {
-			if(selectExpr != null) {
+			if (selectExpr != null) {
 				selectExpr.toString(sb);
 			} else {
 				sb.append("self");
@@ -123,7 +123,7 @@ public class CallTemplateNode extends ExpressionNode {
 				}
 				sb.append(")");
 			}
-			if(selectExpr != null) {
+			if (selectExpr != null) {
 				sb.append(" for ");
 				selectExpr.toString(sb);
 			}

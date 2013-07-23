@@ -16,6 +16,7 @@
 package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
 import org.textmapper.templates.api.types.IType;
@@ -29,9 +30,9 @@ public class JavaIxObjectWithType extends DefaultJavaIxObject {
 		this.type = type;
 	}
 
-	public Object getProperty(String propertyName) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		if(type == null) {
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 
 		IFeature feature = type.getFeature(propertyName);
@@ -39,7 +40,7 @@ public class JavaIxObjectWithType extends DefaultJavaIxObject {
 			throw new EvaluationException("Property `" + propertyName + "` is absent in class " + type.getQualifiedName());
 		}
 
-		Object result = super.getProperty(propertyName);
+		Object result = super.getProperty(caller, propertyName);
 		if (result == null || result instanceof IxWrapper) {
 			return result;
 		}

@@ -17,6 +17,7 @@ package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.SourceElement;
 
 import java.util.*;
 
@@ -114,7 +115,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return collection.isEmpty() ? null : collection.iterator().next();
@@ -167,11 +168,11 @@ public class JavaIxFactory implements IxFactory {
 					return collection;
 				}
 			}
-			return super.callMethod(methodName, args);
+			return super.callMethod(caller, methodName, args);
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if (propertyName.equals("length")) {
 				return collection.size();
 			}
@@ -209,7 +210,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				if (i < 0 || i >= collection.size()) {
@@ -263,17 +264,17 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
-			return new DefaultJavaIxObject(map).callMethod(methodName, args);
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
+			return new DefaultJavaIxObject(map).callMethod(caller, methodName, args);
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			return map.get(index);
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			return map.get(propertyName);
 		}
 
@@ -305,11 +306,11 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if(propertyName.equals("length")) {
 				return array.length;
 			}
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 
 		@Override
@@ -323,7 +324,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				if (i < 0 || i >= array.length) {
@@ -336,7 +337,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return array.length == 0 ? null : array[0];
@@ -368,7 +369,7 @@ public class JavaIxFactory implements IxFactory {
 					return -1;
 				}
 			}
-			return super.callMethod(methodName, args);
+			return super.callMethod(caller, methodName, args);
 		}
 
 		@Override
@@ -389,11 +390,11 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if(propertyName.equals("length")) {
 				return array.length;
 			}
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 
 		@Override
@@ -407,7 +408,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				if (i < 0 || i >= array.length) {
@@ -420,7 +421,7 @@ public class JavaIxFactory implements IxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
 				if (methodName.equals("first")) {
 					return array.length == 0 ? null : array[0];
@@ -452,7 +453,7 @@ public class JavaIxFactory implements IxFactory {
 					return -1;
 				}
 			}
-			return super.callMethod(methodName, args);
+			return super.callMethod(caller, methodName, args);
 		}
 
 		@Override

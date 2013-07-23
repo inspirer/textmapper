@@ -16,6 +16,7 @@
 package org.textmapper.xml;
 
 import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.JavaIxFactory;
@@ -42,7 +43,7 @@ public class XmlIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object key) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object key) throws EvaluationException {
 			if (!(key instanceof String)) {
 				return null;
 			}
@@ -68,7 +69,7 @@ public class XmlIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String property) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String property) throws EvaluationException {
 			if (property.equals("tagName")) {
 				return node.getTagName();
 			}
@@ -82,7 +83,7 @@ public class XmlIxFactory extends JavaIxFactory {
 				return node.getAttributes();
 			}
 
-			return getByIndex(property);
+			return getByIndex(caller, property);
 		}
 	}
 }

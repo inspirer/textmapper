@@ -15,10 +15,7 @@
  */
 package org.textmapper.templates.types;
 
-import org.textmapper.templates.api.EvaluationContext;
-import org.textmapper.templates.api.EvaluationException;
-import org.textmapper.templates.api.IEvaluationCache;
-import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.*;
 import org.textmapper.templates.api.types.IClosureType;
 import org.textmapper.templates.api.types.IType;
 import org.textmapper.templates.ast.ExpressionNode;
@@ -51,7 +48,7 @@ public class TiClosure extends DefaultIxObject {
 	}
 
 	@Override
-	public Object callMethod(String methodName, Object... args) throws EvaluationException {
+	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 		if ("invoke".equals(methodName)) {
 			int paramCount = getParametersCount(), argsCount = args != null ? args.length : 0;
 
@@ -68,7 +65,7 @@ public class TiClosure extends DefaultIxObject {
 				}
 			}
 
-			EvaluationContext context = new EvaluationContext(boundContext.getThisObject(), boundContext);
+			EvaluationContext context = new EvaluationContext(boundContext.getThisObject(), caller, boundContext);
 			for (int i = 0; i < paramCount; i++) {
 				context.setVariable(parameters[i].getName(), args[i]);
 			}
@@ -78,13 +75,13 @@ public class TiClosure extends DefaultIxObject {
 			}
 			return result;
 		}
-		return super.callMethod(methodName, args);
+		return super.callMethod(caller, methodName, args);
 	}
 
 	@Override
-	public Object getProperty(String propertyName) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		if (parameters == null && "value".equals(propertyName)) {
-			return callMethod("invoke");
+			return callMethod(caller, "invoke");
 		}
 		throw new EvaluationException("property `" + propertyName + "` is absent in `" + getType() + "`: o");
 	}

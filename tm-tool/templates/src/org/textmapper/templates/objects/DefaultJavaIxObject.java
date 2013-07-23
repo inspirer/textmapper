@@ -16,6 +16,7 @@
 package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.SourceElement;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -65,7 +66,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 	}
 
 	@Override
-	public Object getProperty(String id) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String id) throws EvaluationException {
 		try {
 			String getAccessor = "get" + Character.toUpperCase(id.charAt(0)) + id.substring(1);
 			Method meth = wrapped.getClass().getMethod(getAccessor);
@@ -86,7 +87,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Object callMethod(String methodName, Object... args) throws EvaluationException {
+	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 		try {
 			Class[] argClasses = null;
 			if (args != null) {
@@ -140,7 +141,7 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 	}
 
 	@Override
-	public Object getByIndex(Object index) throws EvaluationException {
+	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 		throw new EvaluationException("do not know how to apply index");
 	}
 

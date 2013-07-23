@@ -17,6 +17,7 @@ package org.textmapper.templates.types;
 
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.INamedEntity;
+import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.api.types.IClass;
 import org.textmapper.templates.api.types.IFeature;
 import org.textmapper.templates.api.types.IMethod;
@@ -43,7 +44,7 @@ public class TiInstance extends DefaultIxObject implements INamedEntity {
 		return myClass.isSubtypeOf(qualifiedName);
 	}
 
-	public Object getProperty(String propertyName) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		IFeature feature = myClass.getFeature(propertyName);
 		if (feature == null) {
 			throw new EvaluationException("Property `" + propertyName + "` is absent in class " + myClass.getQualifiedName());
@@ -52,17 +53,17 @@ public class TiInstance extends DefaultIxObject implements INamedEntity {
 		Object result = myValues.get(propertyName);
 		if (result instanceof TiClosure) {
 			TiClosure closure = (TiClosure) result;
-			if(closure.getParametersCount() == 1) {
-				return closure.callMethod("invoke", this);
+			if (closure.getParametersCount() == 1) {
+				return closure.callMethod(caller, "invoke", this);
 			} else {
-				return closure.getProperty("value");
+				return closure.getProperty(caller, "value");
 			}
 		}
 		return result;
 	}
 
 	@Override
-	public Object callMethod(String methodName, Object... args) throws EvaluationException {
+	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 		IMethod method = myClass.getMethod(methodName);
 		if (method == null) {
 			throw new EvaluationException("Method `" + methodName + "` is not declared in class " + myClass.getQualifiedName());
@@ -76,10 +77,10 @@ public class TiInstance extends DefaultIxObject implements INamedEntity {
 			Object[] args2 = new Object[args.length + 1];
 			args2[0] = this;
 			System.arraycopy(args, 0, args2, 1, args.length);
-			return closure.callMethod("invoke", args2);
+			return closure.callMethod(caller, "invoke", args2);
 		}
 
-		return super.callMethod(methodName, args);
+		return super.callMethod(caller, methodName, args);
 	}
 
 	@Override

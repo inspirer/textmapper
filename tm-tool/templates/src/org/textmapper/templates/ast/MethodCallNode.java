@@ -52,7 +52,7 @@ public class MethodCallNode extends ExpressionNode {
 				args[i] = env.evaluate(arguments[i], context, false);
 			}
 		}
-		return env.asObject(object).callMethod(methodName, args);
+		return env.asObject(object).callMethod(this, methodName, args);
 	}
 
 	@Override

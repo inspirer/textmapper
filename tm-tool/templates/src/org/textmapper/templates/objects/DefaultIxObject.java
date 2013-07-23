@@ -16,6 +16,7 @@
 package org.textmapper.templates.objects;
 
 import org.textmapper.templates.api.EvaluationException;
+import org.textmapper.templates.api.SourceElement;
 
 import java.util.Iterator;
 
@@ -33,15 +34,15 @@ public abstract class DefaultIxObject implements IxObject, IxAdaptable {
 		return true;
 	}
 
-	public Object getProperty(String propertyName) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		throw new EvaluationException("property `" + propertyName + "` is absent in `" + getType() + "`");
 	}
 
-	public Object callMethod(String methodName, Object... args) throws EvaluationException {
+	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 		throw new EvaluationException("method `" + methodName + "` is absent in `" + getType() + "`");
 	}
 
-	public Object getByIndex(Object index) throws EvaluationException {
+	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 		throw new EvaluationException("index operator is not supported for `" + getType() + "`");
 	}
 

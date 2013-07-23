@@ -17,11 +17,8 @@ package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.templates.api.*;
 import org.textmapper.tool.compiler.TMGrammar;
-import org.textmapper.templates.api.EvaluationContext;
-import org.textmapper.templates.api.EvaluationException;
-import org.textmapper.templates.api.IEvaluationStrategy;
-import org.textmapper.templates.api.ITemplate;
 import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.objects.DefaultIxObject;
 
@@ -34,10 +31,12 @@ public class ActionSymbol extends DefaultIxObject {
 	private final IEvaluationStrategy evaluationStrategy;
 	private final EvaluationContext context;
 	private final String templatePackage;
+	private final SourceElement caller;
 	private final TMGrammar grammar;
 
 	public ActionSymbol(TMGrammar grammar, Symbol symbol, RhsSymbol ref, boolean isLeft, int rightOffset,
-						IEvaluationStrategy strategy, EvaluationContext context, String templatePackage) {
+						IEvaluationStrategy strategy, EvaluationContext context, String templatePackage,
+						SourceElement caller) {
 		this.grammar = grammar;
 		this.symbol = symbol;
 		this.ref = ref;
@@ -46,21 +45,22 @@ public class ActionSymbol extends DefaultIxObject {
 		evaluationStrategy = strategy;
 		this.context = context;
 		this.templatePackage = templatePackage;
+		this.caller = caller;
 	}
 
 	@Override
 	public String toString() {
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);
-		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, context), new Object[]{"value"}, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, caller, context), new Object[]{"value"}, null);
 	}
 
 	@Override
-	public Object getByIndex(Object index) throws EvaluationException {
+	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 		if (index instanceof String && ref != null) {
 			return grammar.getAnnotation(ref, (String) index);
 		}
-		return super.getByIndex(index);
+		return super.getByIndex(caller, index);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class ActionSymbol extends DefaultIxObject {
 	}
 
 	@Override
-	public Object getProperty(String id) throws EvaluationException {
+	public Object getProperty(SourceElement caller, String id) throws EvaluationException {
 		if (id.equals("symbol")) {
 			return symbol;
 		}
@@ -86,6 +86,6 @@ public class ActionSymbol extends DefaultIxObject {
 		}
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);
-		return evaluationStrategy.evaluate(templ, new EvaluationContext(this), new Object[]{id}, null);
+		return evaluationStrategy.evaluate(templ, new EvaluationContext(this, caller, context), new Object[]{id}, null);
 	}
 }

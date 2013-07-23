@@ -69,7 +69,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 			Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
 			while(it.hasNext()) {
 				Object curr = it.next();
-				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 				innerContext.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
 				Object val = env.evaluate(foreachExpr, innerContext, instruction == COLLECT || instruction == COLLECTUNIQUE || instruction == SELECT);
 				if(instruction != COLLECT && instruction != COLLECTUNIQUE) {
@@ -99,7 +99,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 			Map<Object,Integer> keyToIndex = new HashMap<Object, Integer>();
 			while(it.hasNext()) {
 				Object curr = it.next();
-				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 				innerContext.setVariable(varName, curr);
 				Object val = env.evaluate(foreachExpr, innerContext, false);
 				Integer index = keyToIndex.get(val);
@@ -124,7 +124,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 			final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
 			while(it.hasNext()) {
 				Object curr = it.next();
-				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 				innerContext.setVariable(varName, curr);
 				Object val = env.evaluate(foreachExpr, innerContext, false);
 				Comparable<Object> comparableVal = objectAsComparable(val);
@@ -151,7 +151,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 		} else {
 			while(it.hasNext()) {
 				Object curr = it.next();
-				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 				innerContext.setVariable(varName, curr);
 				Object val = env.evaluate(foreachExpr, innerContext, true);
 				boolean b = env.asAdaptable(val).asBoolean();

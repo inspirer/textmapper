@@ -50,7 +50,7 @@ public class ForeachNode extends CompoundNode {
 					int toInt = (Integer)to;
 					int delta = toInt >= (Integer)select ? 1 : -1;
 					for( int i = (Integer)select; (delta > 0 ? i <= toInt : i >= toInt); i += delta ) {
-						EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+						EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 						innerContext.setVariable(var, i);
 						if(separator != null && lastSeparator < sb.length()) {
 							sb.append(separator);
@@ -65,7 +65,7 @@ public class ForeachNode extends CompoundNode {
 				}
 			} else if( select instanceof Iterable<?> ) {
 				for( Object o : (Iterable<?>)select ) {
-					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 					innerContext.setVariable(var, o);
 					innerContext.setVariable(INDEX, index++);
 					if(separator != null && lastSeparator < sb.length()) {
@@ -78,7 +78,7 @@ public class ForeachNode extends CompoundNode {
 				}
 			} else if(select instanceof Object[]) {
 				for( Object o : (Object[])select ) {
-					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+					EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 					innerContext.setVariable(var, o);
 					innerContext.setVariable(INDEX, index++);
 					if(separator != null && lastSeparator < sb.length()) {

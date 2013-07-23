@@ -122,21 +122,21 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 	}
 
 	@Override
-	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement referer) {
+	public String evaluate(ITemplate t, EvaluationContext context, Object[] arguments, SourceElement caller) {
 		if (t == null) {
 			return "";
 		}
 		try {
-			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
+			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, caller, context, t), this, arguments);
 		} catch (EvaluationException ex) {
-			report(KIND_ERROR, ex.getMessage(), referer != null ? referer : t);
+			report(KIND_ERROR, ex.getMessage(), caller != null ? caller : t);
 			return "";
 		}
 	}
 
 	@Override
-	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments) throws EvaluationException {
-		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, context, t), this, arguments);
+	public Object evaluate(IQuery t, EvaluationContext context, Object[] arguments, SourceElement caller) throws EvaluationException {
+		return t.invoke(new EvaluationContext(context != null ? context.getThisObject() : null, caller, context, t), this, arguments);
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			return "";
 		}
 		try {
-			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, context), this, null);
+			return t.apply(new EvaluationContext(context != null ? context.getThisObject() : null, null, context), this, null);
 		} catch (EvaluationException ex) {
 			report(KIND_ERROR, ex.getMessage(), t);
 			return "";

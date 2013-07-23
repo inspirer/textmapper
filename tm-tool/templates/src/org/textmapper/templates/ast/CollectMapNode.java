@@ -51,7 +51,7 @@ public class CollectMapNode extends ExpressionNode {
 		Map<Object, Object> result = new HashMap<Object, Object>();
 		while (it.hasNext()) {
 			Object curr = it.next();
-			EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), context);
+			EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
 			innerContext.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
 			Object key_ = env.evaluate(key, innerContext, false);
 			Object value_ = env.evaluate(value, innerContext, false);

@@ -28,6 +28,7 @@ import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
+import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.objects.DefaultJavaIxObject;
 import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.IxWrapper;
@@ -93,14 +94,14 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if ("action".equals(propertyName)) {
 				return TMDataUtil.getCode(lexerRule);
 			}
 			if ("transitions".equals(propertyName)) {
 				return TMDataUtil.getTransition(lexerRule);
 			}
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 	}
 
@@ -115,13 +116,14 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null || args.length == 0) {
 				if ("getAction".equals(methodName)) {
 					return TMDataUtil.getCode(rule);
 				}
 				if ("left".equals(methodName)) {
-					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext, templatePackage);
+					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext,
+							templatePackage, caller);
 				}
 				if ("sourceSymbols".equals(methodName)) {
 					loadSourceSymbols();
@@ -134,7 +136,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					}
 					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
 					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, array.length - 1 - i,
-							evaluationStrategy, rootContext, templatePackage);
+							evaluationStrategy, rootContext, templatePackage, caller);
 				}
 			}
 			if (args != null && args.length == 1) {
@@ -145,7 +147,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return isMatched(((RhsSequence) args[0]), new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
 				}
 			}
-			return super.callMethod(methodName, args);
+			return super.callMethod(caller, methodName, args);
 		}
 
 		private boolean isMatched(RhsPart part, Set<RhsSymbol> active) {
@@ -201,7 +203,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof Integer) {
 				int i = (Integer) index;
 				loadSourceSymbols();
@@ -219,7 +221,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					}
 				}
 				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset,
-						evaluationStrategy, rootContext, templatePackage);
+						evaluationStrategy, rootContext, templatePackage, caller);
 			} else if (index instanceof String) {
 				return grammar.getAnnotation(rule, (String) index);
 			} else {
@@ -229,7 +231,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String id) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
 			ActionSymbol result = null;
 			Set<RhsSymbol> matching = RuleUtil.getSymbolsByName(id, rule.getSource());
 			if (matching == null || matching.isEmpty()) {
@@ -244,7 +246,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 				assert result == null : "internal error in RuleUtil.getSymbols()";
 				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i,
-						evaluationStrategy, rootContext, templatePackage);
+						evaluationStrategy, rootContext, templatePackage, caller);
 			}
 
 			if (result != null) {
@@ -252,7 +254,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 
 			final RhsSymbol first = matching.iterator().next();
-			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, evaluationStrategy, rootContext, templatePackage);
+			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, evaluationStrategy,
+					rootContext, templatePackage, caller);
 		}
 	}
 
@@ -266,7 +269,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof String) {
 				return grammar.getAnnotation(sym, (String) index);
 			} else {
@@ -275,11 +278,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if ("id".equals(propertyName)) {
 				return TMDataUtil.getId(sym);
 			}
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 	}
 
@@ -293,7 +296,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof String) {
 				return grammar.getAnnotation(sym, (String) index);
 			} else {
@@ -302,7 +305,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if ("alias".equals(propertyName)) {
 				final RhsAssignment assignment = RuleUtil.getAssignment(sym);
 				if (assignment != null && !assignment.isAddition()) {
@@ -315,7 +318,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				return (rewrittenTo != null ? rewrittenTo : sym).getMapping();
 			}
 
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 	}
 
@@ -329,11 +332,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String id) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
 			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id) || "copyrightHeader".equals(id)) {
-				return super.getProperty(id);
+				return super.getProperty(caller, id);
 			} else {
-				return grammarIxObject.getProperty(id);
+				return grammarIxObject.getProperty(caller, id);
 			}
 		}
 	}
@@ -350,7 +353,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object getProperty(String propertyName) throws EvaluationException {
+		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 			if ("rules".equals(propertyName)) {
 				GrammarRules gr = rules.get(grammar);
 				if (gr == null) {
@@ -367,7 +370,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				return result;
 			}
-			return super.getProperty(propertyName);
+			return super.getProperty(caller, propertyName);
 		}
 	}
 
@@ -446,26 +449,26 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		@Override
-		public Object callMethod(String methodName, Object... args) throws EvaluationException {
+		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args.length == 1 && "with".equals(methodName) && args[0] instanceof Symbol) {
 				List<Rule> list = getRulesContainingSymbol().get(args[0]);
 				return list != null ? list : Collections.emptyList();
 			}
-			return asObject(myRules).callMethod(methodName, args);
+			return asObject(myRules).callMethod(caller, methodName, args);
 		}
 
 		@Override
-		public Object getByIndex(Object index) throws EvaluationException {
+		public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 			if (index instanceof Symbol) {
 				List<Rule> list = getRulesBySymbol().get(index);
 				return list != null ? list : Collections.emptyList();
 			}
-			return asObject(myRules).getByIndex(index);
+			return asObject(myRules).getByIndex(caller, index);
 		}
 
 		@Override
-		public Object getProperty(String id) throws EvaluationException {
-			return asObject(myRules).getProperty(id);
+		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
+			return asObject(myRules).getProperty(caller, id);
 		}
 
 		@Override
