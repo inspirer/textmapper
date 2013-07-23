@@ -18,14 +18,17 @@ package org.textmapper.templates.eval;
 
 import org.textmapper.templates.api.*;
 import org.textmapper.templates.api.types.ITypesRegistry;
+import org.textmapper.templates.ast.ExpressionNode;
+import org.textmapper.templates.ast.TemplateNode;
 import org.textmapper.templates.ast.TemplatesTree;
 import org.textmapper.templates.ast.TemplatesTree.TemplatesProblem;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
-import org.textmapper.templates.ast.ExpressionNode;
-import org.textmapper.templates.ast.TemplateNode;
 import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.bundle.TemplatesRegistry;
-import org.textmapper.templates.objects.*;
+import org.textmapper.templates.objects.IxAdaptable;
+import org.textmapper.templates.objects.IxFactory;
+import org.textmapper.templates.objects.IxObject;
+import org.textmapper.templates.objects.IxOperand;
 import org.textmapper.templates.storage.Resource;
 
 import java.util.Collection;
@@ -63,6 +66,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 				String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": null";
 				EvaluationException ex = new HandledEvaluationException(message);
 				report(KIND_ERROR, message, expr);
+//				context.printStackTrace(expr, System.err);
 				throw ex;
 			}
 			return result;
@@ -73,6 +77,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 			String message = "Evaluation of `" + expr.toString() + "` failed for " + getTitle(context.getThisObject()) + ": " + cause.getMessage();
 			EvaluationException ex = new HandledEvaluationException(message);
 			report(KIND_ERROR, message, expr);
+//			context.printStackTrace(expr, System.err);
 			throw ex;
 		}
 	}

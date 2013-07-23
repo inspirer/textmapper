@@ -17,6 +17,9 @@ package org.textmapper.templates.api;
 
 import org.textmapper.templates.bundle.IBundleEntity;
 
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,4 +81,106 @@ public class EvaluationContext {
 	public IBundleEntity getCurrent() {
 		return current;
 	}
+
+	public void printStackTrace(SourceElement element, PrintStream s) {
+		if (element != null) {
+			s.println("at " + getShortResourceName(element.getResourceName()) + "," + element.getLine());
+		}
+		s.println("\t\tthis = " + getPresentableValue(getThisObject()));
+		if (vars != null) {
+			String[] list = vars.keySet().toArray(new String[vars.size()]);
+			Arrays.sort(list);
+			for (String v : list) {
+				s.println("\t\t" + v + " = " + getPresentableValue(vars.get(v)));
+			}
+		}
+		if (parent != null) {
+			parent.printStackTrace(caller, s);
+		} else {
+			s.println();
+		}
+	}
+
+	static String getPresentableValue(Object o) {
+		if (o == null) {
+			return null;
+		}
+		if (o instanceof Integer || o instanceof Boolean) {
+			return o.toString();
+		}
+		if (o instanceof String) {
+			return "\"" + escape((String) o) + "\"";
+		}
+		if (o instanceof Collection) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("[");
+			for (Object i : (Collection) o) {
+				if (sb.length() > 1) {
+					sb.append(",");
+				}
+				String val = getPresentableValue(i);
+				if (sb.length() + val.length() < 80) {
+					sb.append(val);
+				} else {
+					sb.append("...");
+					break;
+				}
+			}
+			sb.append("]");
+		}
+
+		return "[class]" + o.getClass().getSimpleName();
+	}
+
+	static String getShortResourceName(String longName) {
+		int slash = Math.max(longName.lastIndexOf('/'), longName.lastIndexOf('\\'));
+		if (slash >= 0 && slash < longName.length() - 1) {
+			return longName.substring(slash + 1);
+		}
+		return longName;
+	}
+
+	static String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : s.toCharArray()) {
+			switch (c) {
+				case '"':
+				case '\'':
+				case '\\':
+					sb.append('\\');
+					sb.append(c);
+					continue;
+				case '\f':
+					sb.append("\\f");
+					continue;
+				case '\n':
+					sb.append("\\n");
+					continue;
+				case '\r':
+					sb.append("\\r");
+					continue;
+				case '\t':
+					sb.append("\\t");
+					continue;
+			}
+			if (c >= 0x20 && c < 0x80) {
+				sb.append(c);
+				continue;
+			}
+			appendEscaped(sb, c);
+		}
+		return sb.toString();
+	}
+
+	static void appendEscaped(StringBuilder sb, char c) {
+		String sym = Integer.toString(c, 16);
+		boolean isShort = sym.length() <= 2;
+		sb.append(isShort ? "\\x" : "\\u");
+		int len = isShort ? 2 : 4;
+		if (sym.length() < len) {
+			sb.append("0000".substring(sym.length() + (4 - len)));
+		}
+		sb.append(sym);
+	}
+
 }

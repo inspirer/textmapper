@@ -31,7 +31,7 @@ public abstract class Node implements SourceElement {
 		this.endoffset = endoffset;
 	}
 
-	protected abstract void emit( StringBuilder sb, EvaluationContext context, IEvaluationStrategy env);
+	protected abstract void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env);
 
 	public String getLocation() {
 		return source.getLocation(offset);
