@@ -12,15 +12,7 @@
  */
 package org.textmapper.lapg.ui.wizard;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-
-import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -33,6 +25,10 @@ import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 import org.textmapper.lapg.ui.LapgUIActivator;
 import org.textmapper.lapg.ui.build.IncrementalLapgBuilder;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+
 public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 
 	private final class NewSyntaxFileCreationPage extends WizardNewFileCreationPage {
@@ -43,22 +39,25 @@ public class CreateSyntaxFileWizard extends BasicNewFileResourceWizard {
 		@Override
 		protected InputStream getInitialContents() {
 			String defaultContent =
-				"# lapg syntax file\n" +
-				"\n" +
-				"lang = \"java\"\n" +
-				"prefix = \"Lang\"\n" +
-				"package = \"org.example.mylang.parser\"\n" +
-				"\n" +
-				"identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $lexem = current(); break; }\n" +
-				"icon(Integer):  /-?[0-9]+/                     { $lexem = Integer.parseInt(current()); break; }\n" +
-				"_skip:          /[\\n\\t\\r ]+/                   { return false; }\n" +
-				"\n" +
-				"# grammar\n" +
-				"\n" +
-				"input ::=\n" +
-				"\tidentifier ;\n" +
-				"\n" +
-				"%%\n";
+					"# lapg syntax file\n" +
+					"\n" +
+					"language syntax(java);\n" +
+					"\n" +
+					"prefix = \"Lang\"\n" +
+					"package = \"org.example.mylang.parser\"\n" +
+					"\n" +
+					":: lexer\n" +
+					"\n" +
+					"identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $lexem = current(); break; }\n" +
+					"icon(Integer):  /-?[0-9]+/                     { $lexem = Integer.parseInt(current()); break; }\n" +
+					"_skip: /[\\n\\t\\r ]+/ (space)\n" +
+					"\n" +
+					":: parser\n" +
+					"\n" +
+					"input ::=\n" +
+					"\tidentifier ;\n" +
+					"\n" +
+					"%%\n";
 
 			try {
 				return new ByteArrayInputStream(defaultContent.getBytes("ISO-8859-1"));
