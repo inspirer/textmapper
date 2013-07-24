@@ -14,13 +14,12 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.textmapper</groupId>
 	<artifactId>tm-master</artifactId>
 	<packaging>pom</packaging>
-	<version>0.9.2-SNAPSHOT</version>
+	<version>0.9.2</version>
 	<name>Textmapper Master</name>
 	<url>http://textmapper.org</url>
 
@@ -65,7 +64,8 @@
 		<connection>scm:git:git@github.com:inspirer/textmapper.git</connection>
 		<developerConnection>scm:git:git@github.com:inspirer/textmapper.git</developerConnection>
 		<url>https://github.com/inspirer/textmapper</url>
-	</scm>
+	  <tag>v0.9.2</tag>
+  </scm>
 
 	<dependencyManagement>
 		<dependencies>
@@ -155,7 +155,7 @@
 					<showWarnings>true</showWarnings>
 					<compilerArgument>-Xlint:-serial</compilerArgument>
 					<compilerArguments>
-						<Xlint/>
+						<Xlint />
 					</compilerArguments>
 				</configuration>
 			</plugin>
