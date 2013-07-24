@@ -26,7 +26,7 @@ TraditionalComment: /\/\*([^*]|\*+[^\/*])*\*+\// (space)
 
 # 3.8 Identifiers
 
-Identifier: /{JavaLetter}{JavaLetterOrDigit}*/  (class)
+Identifier(String): /{JavaLetter}{JavaLetterOrDigit}*/  (class)
 
 JavaLetter = /[a-zA-Z_$\p{L}\p{Nl}]|{UnicodeEscape}/
 JavaLetterOrDigit = /[a-zA-Z0-9_$\p{L}\p{Nl}\p{Nd}]|{UnicodeEscape}/

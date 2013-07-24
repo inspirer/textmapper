@@ -61,6 +61,9 @@ class LiAstBuilder implements AstBuilder {
 
 	@Override
 	public AstList list(AstType inner, boolean nonEmpty, SourceElement origin) {
+		if (inner == null) {
+			throw new NullPointerException();
+		}
 		return new LiAstList(inner, nonEmpty, origin);
 	}
 

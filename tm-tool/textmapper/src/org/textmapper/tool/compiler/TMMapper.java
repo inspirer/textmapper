@@ -474,16 +474,20 @@ public class TMMapper {
 
 			if (!requiresClass) {
 				final Symbol listElement = elementHandle.getSymbol();
-				whenMapped(listElement, new Runnable() {
-					@Override
-					public void run() {
-						mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
-						mapper.map(elementHandle.symbol, null, null, true);
-						if (initialElemHandle != null) {
-							mapper.map(initialElemHandle.symbol, null, null, true);
+				if (listElement instanceof Terminal && listElement.getType() == null) {
+					error(listElement, "terminal symbol must have a type");
+				} else {
+					whenMapped(listElement, new Runnable() {
+						@Override
+						public void run() {
+							mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
+							mapper.map(elementHandle.symbol, null, null, true);
+							if (initialElemHandle != null) {
+								mapper.map(initialElemHandle.symbol, null, null, true);
+							}
 						}
-					}
-				});
+					});
+				}
 			} else {
 				AstClass elementClass = builder.addClass(getNonterminalTypeName(n, "item"), null, n);
 				mapNonterm(n, builder.list(elementClass, list.isNonEmpty(), n));

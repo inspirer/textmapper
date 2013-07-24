@@ -1,4 +1,4 @@
-language ${name}(java);
+language ${NAME}(java);
 
 prefix = "${NAME}"
 #if (${PACKAGE_NAME} != "")package = "${PACKAGE_NAME}"
