@@ -7,6 +7,8 @@ prefix = "Java"
 package = "org.textmapper.templates.java"
 positions = "line,offset"
 endpositions = "offset"
+#genast = true
+#genastdef = true
 
 :: lexer
 
@@ -249,16 +251,16 @@ Type ::=
 	| ReferenceType
 ;
 
-PrimitiveType ::=
-	  kw_byte
-	| kw_short
-	| kw_int
-	| kw_long
-	| kw_char
-	| kw_float
-	| kw_double
-	| kw_boolean
-	| kw_void
+PrimitiveType class ::=
+	  kind=kw_byte
+	| kind=kw_short
+	| kind=kw_int
+	| kind=kw_long
+	| kind=kw_char
+	| kind=kw_float
+	| kind=kw_double
+	| kind=kw_boolean
+	| kind=kw_void
 ;
 
 ReferenceType ::=
@@ -296,18 +298,18 @@ Modifiers ::=
 	| Modifiers Modifier
 ;
 
-Modifier ::=
-	  kw_public
-	| kw_protected
-	| kw_private
-	| kw_static
-	| kw_abstract
-	| kw_final
-	| kw_native
-	| kw_synchronized
-	| kw_transient
-	| kw_volatile
-	| kw_strictfp
+Modifier interface ::=
+	  kind=kw_public
+	| kind=kw_protected
+	| kind=kw_private
+	| kind=kw_static
+	| kind=kw_abstract
+	| kind=kw_final
+	| kind=kw_native
+	| kind=kw_synchronized
+	| kind=kw_transient
+	| kind=kw_volatile
+	| kind=kw_strictfp
 	| Annotation
 ;
 
