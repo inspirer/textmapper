@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class LapgLanguage extends Language {
 
-	public static final String ID = "Lapg Syntax";
+	public static final String ID = "Textmapper";
 
 	public LapgLanguage() {
 		super(ID);

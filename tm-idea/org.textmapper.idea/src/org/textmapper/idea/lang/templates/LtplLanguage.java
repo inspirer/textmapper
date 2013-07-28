@@ -23,7 +23,7 @@ import com.intellij.lang.Language;
  */
 public class LtplLanguage extends Language {
 
-	public static final String ID = "Lapg Templates";
+	public static final String ID = "Textmapper Templates";
 
 	LtplLanguage() {
 		super(ID);

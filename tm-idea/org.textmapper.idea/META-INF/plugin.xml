@@ -16,7 +16,7 @@
   -->
 <idea-plugin version="2">
 	<id>org.textmapper.idea</id>
-	<name>Lapg support</name>
+	<name>Textmapper</name>
 	<category>Custom Languages</category>
 	<version>0.9.2</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
@@ -66,28 +66,28 @@
 		<fileTemplateGroup implementation="org.textmapper.idea.actions.LapgTemplatesFactory"/>
 
 		<syntaxHighlighter
-				key="Lapg Syntax"
+				key="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.LapgSyntaxHighlighter"/>
 		<lang.parserDefinition
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.parser.TMParserDefinition"/>
 		<lang.foldingBuilder
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.editor.LapgFoldingBuilder"/>
 		<lang.psiStructureViewFactory
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.structureView.TMStructureViewFactory"/>
 		<lang.findUsagesProvider
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.findUsages.TMFindUsagesProvider"/>
 		<lang.namesValidator
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.refactoring.TMNamesValidator"/>
 		<lang.formatter
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.formatter.TMFormattingModelBuilder"/>
 		<lang.ast.factory
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.lexer.TmASTFactory"/>
 		<referencesSearch
 				implementation="org.textmapper.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
@@ -105,22 +105,22 @@
 				implementation="org.textmapper.idea.lang.syntax.refactoring.RenameTMLexerStateProcessor"/>
 		<colorSettingsPage implementation="org.textmapper.idea.lang.syntax.LapgColorsPage"/>
 		<annotator
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.LapgAnnotator"/>
 		<externalAnnotator
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator"/>
 		<defaultLiveTemplatesProvider
 				implementation="org.textmapper.idea.templates.LapgDefaultLiveTemplatesProvider"/>
 		<lang.commenter
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.editor.LapgCommenter"/>
 		<!-- Lapg templates -->
 		<syntaxHighlighter
-				key="Lapg Templates"
+				key="Textmapper Templates"
 				factoryClass="org.textmapper.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
 		<lang.parserDefinition
-				language="Lapg Templates"
+				language="Textmapper Templates"
 				implementationClass="org.textmapper.idea.lang.templates.parser.LtplParserDefinition"/>
 	</extensions>
 </idea-plugin>
