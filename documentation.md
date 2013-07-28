@@ -506,7 +506,7 @@ The rule modifier should be used with care, as it may silently resolve more conf
 
 ## Operator Precedence
 
-Mathematical expressions appear in many languages and every language defines its own order in which parts of an expression are evaluated. For example, without parentheses, multiplication is usually done before addition. From the parsing point of view, it does make sense to have an AST that reflects the chosen operator precedence, i.e. operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal.
+Mathematical expressions appear in many languages, and every language defines its own order in which parts of an expression are evaluated. For example, without parentheses, multiplication is usually done before addition. From the parsing point of view, it does make sense to have an AST that reflects the chosen operator precedence, i.e. operators with higher precedence are reduced first, and remain closer to the leaves in the AST. This allows us to evaluate an expression using a simple recursive tree traversal.
 
 For operators of the same precedence, the order of execution remains unclear. For example, ```a+b+c``` can be interpreted either as ```(a+b)+c```, or ```a+(b+c)```. We may resolve it by defining an operator as left-associative (operations are grouped left-to-right), right-associative, or non-associative. Non-associative operators produce a syntax error when applied to a term of the same precedence (e.g. a range operator is non-associative ```1..100```).
 
@@ -529,13 +529,62 @@ We can rewrite it so that operator priorities and associativities are encoded in
 	mult_expr ::=
 		IntegerConstant | mult_expr '*' IntegerConstant ; 
 
-It is heavy, verbose, and requires many excess reductions (every single constant passes its way through all nonterminals).
-....
+It is heavy, verbose, and requires many excess reductions (every single constant passes its way through all nonterminals). Instead, we can add precedence rules to solve all the ambiguities and stick to the original version. Note that operators are represented by terminal symbols.
+
+	%left '+', '-';
+	%left '*', '/', '%';
+	
+Operators on the first line have the lowest precedence. Each subsequent line introduces a new, slightly higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc).
+
+Textmapper uses precedences to resolve shift/reduce conflicts. First, it assigns a precedence to a rule which can be reduced. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overriden using a ```%prec <terminal>``` rule modifier. If precedences are defined for both the rule and the lookahead token, Textmapper can compare them and perform:
+
+* **Shift** if the lookahead token has higher precedence than the rule, or they have equal precedence with right associativity
+* **Reduce** if the lookahead token has lower precedence than the rule, or they have equal precedence with left associativity
+* **Error** if the lookahead token and the rule are of the same precedence and are non-associative
+
+For example, the following conflict will be resolved as *Shift* for the ```'*'``` lookahead token and as *Reduce* for ```'+'``` (which is left-associative).
 
 	input: MethodHeader '{' expr '+' expr
 	shift/reduce conflict (next: '+', '*')
 	    expr ::= expr '+' expr
 
+The unary minus requires a separate operator terminal as it has higher precedence than the usual minus operator. This means we must specify this custom precedence in a rule modifier.
+
+	:: lexer
+	unaryMinus:
+	
+	:: parser
+	%left '+', '-';
+	%left '*';
+	%left unaryMinus;
+
+	expr ::= 
+	     IntegerConstant
+	   | expr '+' expr
+	   | expr '-' expr
+	   | expr '*' expr
+	   | '-' expr %prec unaryMinus
+	;
+	
+Without the *unaryMinus* precedence, ```-1-1``` can be parsed in two ways: either as ```-(1-1)```, or as ```(-1)-1```.
+
+## Error Recovery
+
+By default, the generated parser stops when it encounters the first syntax error. This may not be desirable in some scenarios such as parsing a user-typed text in an editor, where most of the time the syntactic structure is broken (often locally). Introducing a token with the predefined name ```error``` turns on the recovery mechanism. The *error* terminal represents a part of the stream which cannot be successfully parsed.
+
+	# Note: error token cannot have an associated regular expression
+	error:
+
+This terminal can then be used in production rules to specify the contexts where an error is expected and can be properly handled.
+
+	statement ::=
+	    expr_statement ';'
+	  | error ';'		# if something is broken here, it is broken up to the next semicolon
+	;
+
+When the generated parser encounters a syntax error, it starts discarding the parsing context from the stack until it finds a state in which the *error* terminal is accepted. This means that even if an error occured in an expression, the stack is unwound up to the statement context in which the appropriate recovery rule is defined. The parser then creates a new error token, pushes it onto the stack, and continues parsing.
+
+It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time.
 
 ## ....
 
