@@ -593,6 +593,7 @@ In most grammars, authors use semantic actions to build an intermediate represen
 Creating a set of AST classes in the target language and keeping them up-to-date with the grammar requires a lot of effort from the language architect. Textmapper can generate AST classes as well as required semantic actions automatically. This means hand-written actions can be avoided, which makes the grammar clean and portable to other target languages.
 
 Any specific AST class (or interface) can be either:
+
 * derived automatically from one or more production rules
 * declared in the grammar and associated with some nonterminals (or rules)
 * declared in the target language and imported into the grammar
