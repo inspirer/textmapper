@@ -586,6 +586,24 @@ When the generated parser encounters a syntax error, it starts discarding the pa
 
 It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time.
 
+## Abstract Syntax Trees
+
+In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this respresentation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform an input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. for providing an autocompletion in an IDE).
+
+Creating a set of AST classes in the target language and keeping them up-to-date with the grammar requires a lot of effort from the language architect. Textmapper can generate AST classes as well as required semantic actions automatically. This means hand-written actions can be avoided, which makes the grammar clean and portable to other target languages.
+
+Any specific AST class (or interface) can be either:
+* derived automatically from one or more production rules
+* declared in the grammar and associated with some nonterminals (or rules)
+* declared in the target language and imported into the grammar
+* declared in the target language and handled manually
+
+Textmapper is designed in such a way that all these approaches can be mixed in the same grammar. Nonterminals and rules that are explicitly mapped to AST classes are excluded from the "deriving" mechanism. Semantic actions are generated only for those rules where they are needed to build an AST.
+
+AST generation can be turned on in the language header by adding a *"with ast"* suffix.
+
+	language sql (in java) with ast;
+
 ## ....
 
 ... to be continued
