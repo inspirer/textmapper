@@ -483,7 +483,7 @@ While building the *action* table, Textmapper reports all unresolved ambiguities
 
 Two types of conflicts can be encountered:
 
-**Shift/Reduce** appears when both shifting the next token and reducing a rule may lead to a successfull parse. One of the classic examples is the [Dangling Else](http://en.wikipedia.org/wiki/Dangling_else) problem.
+**Shift/Reduce** appears when both shifting the next token and reducing a rule may lead to a successful parse. One of the classic examples is the [Dangling Else](http://en.wikipedia.org/wiki/Dangling_else) problem.
 
 **Reduce/Reduce** means there are two rules which can be reduced in this state.
 
@@ -536,7 +536,7 @@ It is heavy, verbose, and requires many excess reductions (every single constant
 	
 Operators on the first line have the lowest precedence. Each subsequent line introduces a new, slightly higher precedence level. On the same level, operators are interchangeable and have the same associativity (left, right, or nonassoc).
 
-Textmapper uses precedences to resolve shift/reduce conflicts. First, it assigns a precedence to a rule which can be reduced. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overriden using a ```%prec <terminal>``` rule modifier. If precedences are defined for both the rule and the lookahead token, Textmapper can compare them and perform:
+Textmapper uses precedences to resolve shift/reduce conflicts. First, it assigns a precedence to a rule which can be reduced. By default, it takes the precedence of the last terminal on the right-hand side of the rule. This can be overridden using a ```%prec <terminal>``` rule modifier. If precedences are defined for both the rule and the lookahead token, Textmapper can compare them and perform:
 
 * **Shift** if the lookahead token has higher precedence than the rule, or they have equal precedence with right associativity
 * **Reduce** if the lookahead token has lower precedence than the rule, or they have equal precedence with left associativity
@@ -582,13 +582,13 @@ This terminal can then be used in production rules to specify the contexts where
 	  | error ';'		# if something is broken here, it is broken up to the next semicolon
 	;
 
-When the generated parser encounters a syntax error, it starts discarding the parsing context from the stack until it finds a state in which the *error* terminal is accepted. This means that even if an error occured in an expression, the stack is unwound up to the statement context in which the appropriate recovery rule is defined. The parser then creates a new error token, pushes it onto the stack, and continues parsing.
+When the generated parser encounters a syntax error, it starts discarding the parsing context from the stack until it finds a state in which the *error* terminal is accepted. This means that even if an error occurred in an expression, the stack is unwound up to the statement context in which the appropriate recovery rule is defined. The parser then creates a new error token, pushes it onto the stack, and continues parsing.
 
 It may happen that the next few tokens in the stream contribute to the error, so the parser remains in the recovery mode until three consecutive input tokens have been successfully shifted. No new syntax errors are reported during this time.
 
 ## Abstract Syntax Trees
 
-In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this respresentation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform an input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. for providing an autocompletion in an IDE).
+In most grammars, authors use semantic actions to build an intermediate representation of the input, moving most or all of the semantic processing out of the parser. Usually, this representation is a compact version of the parse tree and is called an Abstract Syntax Tree (AST). The generated parser then becomes a simple component which is able to transform an input text into an AST. This approach pays off when you need to reuse the parser in different environments (e.g. for providing an autocompletion in an IDE).
 
 Creating a set of AST classes in the target language and keeping them up-to-date with the grammar requires a lot of effort from the language architect. Textmapper can generate AST classes as well as required semantic actions automatically. This means hand-written actions can be avoided, which makes the grammar clean and portable to other target languages.
 
