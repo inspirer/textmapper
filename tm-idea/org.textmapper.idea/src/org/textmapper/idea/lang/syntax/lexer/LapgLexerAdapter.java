@@ -253,7 +253,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		/* default, eoi */
 		lexem = currentLexem;
 		assert lexem.symbol == Lexems.eoi;
-		if (lexem.endoffset < fDocumentLength) {
+		if (lexem.offset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
 			lexem.offset = lexem.endoffset = fDocumentLength;
 			return TEMPLATES;
