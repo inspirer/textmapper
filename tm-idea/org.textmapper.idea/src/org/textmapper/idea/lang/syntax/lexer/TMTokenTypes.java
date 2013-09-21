@@ -104,7 +104,9 @@ public interface TMTokenTypes {
 	IElementType KW_LANGUAGE = new TMElementType(Lexems.Llanguage, "language");
 	IElementType KW_LALR = new TMElementType(Lexems.Llalr, "lalr");
 	IElementType KW_LEXER = new TMElementType(Lexems.Llexer, "lexer");
+	IElementType KW_LEXER_ACC = new TMElementType(Lexems.Llexer, "lexer");
 	IElementType KW_PARSER = new TMElementType(Lexems.Lparser, "parser");
+	IElementType KW_PARSER_ACC = new TMElementType(Lexems.Lparser, "parser");
 	IElementType KW_SOFT = new TMElementType(Lexems.Lsoft, "soft");
 	IElementType KW_CLASS = new TMElementType(Lexems.Lclass, "class");
 	IElementType KW_SPACE = new TMElementType(Lexems.Lspace, "space");

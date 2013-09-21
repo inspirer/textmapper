@@ -74,7 +74,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 			TextAttributesKey.createTextAttributesKey("TM.ANNOTATION", DefaultLanguageHighlighterColors.METADATA);
 
 	static final TextAttributesKey SECTION =
-			TextAttributesKey.createTextAttributesKey("TM.SECTION", DefaultLanguageHighlighterColors.DOC_COMMENT_MARKUP);
+			TextAttributesKey.createTextAttributesKey("TM.SECTION", DefaultLanguageHighlighterColors.STRING);
 
 	static final TextAttributesKey RHS_PREFIX =
 			TextAttributesKey.createTextAttributesKey("TM.RHS_PREFIX", DefaultLanguageHighlighterColors.NUMBER);
@@ -134,7 +134,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, TMTokenTypes.OP_DOT);
 		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, TMTokenTypes.OP_COMMA);
 		fillMap(attributes, DefaultLanguageHighlighterColors.SEMICOLON, TMTokenTypes.OP_SEMICOLON);
-		fillMap(attributes, SECTION, TMTokenTypes.OP_COLONCOLON);
+		fillMap(attributes, SECTION, TMTokenTypes.OP_COLONCOLON, TMTokenTypes.KW_LEXER_ACC, TMTokenTypes.KW_PARSER_ACC);
 
 		// regexp
 		fillMap(attributes, RE_DELIMITERS, RegexTokenTypes.RE_DELIMITERS);
