@@ -18,31 +18,31 @@ package org.textmapper.idea.lang.syntax;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import org.textmapper.idea.LapgIcons;
+import org.textmapper.idea.TMIcons;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class LapgFileType extends LanguageFileType {
+public class TMFileType extends LanguageFileType {
 
-	public static final LapgFileType LAPG_FILE_TYPE = new LapgFileType();
-	public static final Language LAPG_LANGUAGE = LAPG_FILE_TYPE.getLanguage();
+	public static final TMFileType TM_FILE_TYPE = new TMFileType();
+	public static final Language TM_LANGUAGE = TM_FILE_TYPE.getLanguage();
 
 	public static final String DEFAULT_EXTENSION = "tm";
 
-    private LapgFileType() {
-        super(new LapgLanguage());
+    private TMFileType() {
+        super(new TextmapperLanguage());
     }
 
 
     @NotNull
     public String getName() {
-        return LapgLanguage.ID;
+        return TextmapperLanguage.ID;
     }
 
     @NotNull
     public String getDescription() {
-        return "TextMapper syntax";
+        return "Textmapper source";
     }
 
     @NotNull
@@ -51,6 +51,6 @@ public class LapgFileType extends LanguageFileType {
     }
 
     public Icon getIcon() {
-        return LapgIcons.LAPG_ICON;
+        return TMIcons.TM_ICON;
     }
 }

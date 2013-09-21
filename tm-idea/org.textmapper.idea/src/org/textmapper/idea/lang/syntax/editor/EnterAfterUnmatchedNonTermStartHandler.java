@@ -32,7 +32,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.text.CharArrayUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 
 /**
  * Gryaznov Evgeny, 9/21/12
@@ -72,10 +72,10 @@ public class EnterAfterUnmatchedNonTermStartHandler extends EnterHandlerDelegate
 
 		for (; !iterator.atEnd(); iterator.advance()) {
 			IElementType tokenType = iterator.getTokenType();
-			if (tokenType == LapgTokenTypes.OP_CCEQ || tokenType == LapgTokenTypes.OP_PERCENT) {
+			if (tokenType == TMTokenTypes.OP_CCEQ || tokenType == TMTokenTypes.OP_PERCENT) {
 				return true;
 			}
-			if (tokenType == LapgTokenTypes.OP_SEMICOLON) {
+			if (tokenType == TMTokenTypes.OP_SEMICOLON) {
 				return false;
 			}
 		}

@@ -36,8 +36,8 @@ import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.compiler.TmCompilerTask;
 import org.textmapper.idea.compiler.TmCompilerUtil;
 import org.textmapper.idea.compiler.TmProcessingStatus;
-import org.textmapper.idea.facet.LapgFacet;
-import org.textmapper.idea.facet.LapgFacetType;
+import org.textmapper.idea.facet.TMFacet;
+import org.textmapper.idea.facet.TMFacetType;
 import org.textmapper.idea.facet.TmConfigurationBean;
 import org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator.TMExtInput;
 import org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator.TMMessage;
@@ -69,7 +69,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 		if (module == null) {
 			return null;
 		}
-		LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
+		TMFacet facet = FacetManager.getInstance(module).getFacetByType(TMFacetType.ID);
 		if (facet == null) {
 			return null;
 		}

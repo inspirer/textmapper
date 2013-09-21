@@ -22,7 +22,7 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.util.text.LineTokenizer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.lexer.TmToken;
 import org.textmapper.idea.lang.syntax.psi.TmNonterm;
 import org.textmapper.idea.lang.syntax.psi.TmRule;
@@ -38,7 +38,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 	@Override
 	public boolean canSelect(PsiElement e) {
 		return e instanceof TmRule ||
-				e instanceof TmToken && ((TmToken) e).getTokenType() == LapgTokenTypes.OP_OR;
+				e instanceof TmToken && ((TmToken) e).getTokenType() == TMTokenTypes.OP_OR;
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 
 			if (sibling instanceof TmToken) {
 				TmToken token = (TmToken) sibling;
-				if (token.getNode().getElementType() == LapgTokenTypes.OP_CCEQ) {
+				if (token.getNode().getElementType() == TMTokenTypes.OP_CCEQ) {
 					break;
 				}
 			}
@@ -84,7 +84,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 
 			if (sibling instanceof TmToken) {
 				TmToken token = (TmToken) sibling;
-				if (token.getTokenType() == LapgTokenTypes.OP_SEMICOLON) {
+				if (token.getTokenType() == TMTokenTypes.OP_SEMICOLON) {
 					break;
 				}
 			}

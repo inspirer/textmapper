@@ -24,7 +24,7 @@ import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,11 +36,11 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class LapgCompilerProjectComponent implements ProjectComponent {
+public class TMCompilerProjectComponent implements ProjectComponent {
 
 	private Project project;
 
-	public LapgCompilerProjectComponent(Project project) {
+	public TMCompilerProjectComponent(Project project) {
 		this.project = project;
 	}
 
@@ -48,14 +48,14 @@ public class LapgCompilerProjectComponent implements ProjectComponent {
 		CompilerManager compilerManager = CompilerManager.getInstance(project);
 		project.getMessageBus().connect().subscribe(CustomBuilderMessageHandler.TOPIC, new RefreshJavaCompilationStatusListener());
 
-		compilerManager.addCompilableFileType(LapgFileType.LAPG_FILE_TYPE);
+		compilerManager.addCompilableFileType(TMFileType.TM_FILE_TYPE);
 
-		for (LapgCompiler compiler : compilerManager.getCompilers(LapgCompiler.class)) {
+		for (TMCompiler compiler : compilerManager.getCompilers(TMCompiler.class)) {
 			compilerManager.removeCompiler(compiler);
 		}
-		HashSet<FileType> inputSet = new HashSet<FileType>(Arrays.asList(LapgFileType.LAPG_FILE_TYPE));
+		HashSet<FileType> inputSet = new HashSet<FileType>(Arrays.asList(TMFileType.TM_FILE_TYPE));
 		HashSet<FileType> outputSet = new HashSet<FileType>(Arrays.asList(StdFileTypes.JAVA));
-		compilerManager.addTranslatingCompiler(new LapgCompiler(project), inputSet, outputSet);
+		compilerManager.addTranslatingCompiler(new TMCompiler(project), inputSet, outputSet);
 	}
 
 	public void projectClosed() {

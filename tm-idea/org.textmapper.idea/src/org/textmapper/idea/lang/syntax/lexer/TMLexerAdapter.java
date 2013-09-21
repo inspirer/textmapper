@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
+public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 	private CharSequence myText;
 	private TMLexer lexer;
@@ -38,7 +38,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	private int fState;
 	private IElementType current;
 
-	public LapgLexerAdapter() {
+	public TMLexerAdapter() {
 	}
 
 	@Override

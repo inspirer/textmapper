@@ -27,18 +27,18 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.LapgBundle;
-import org.textmapper.idea.LapgIcons;
-import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.TMIcons;
+import org.textmapper.idea.TextmapperBundle;
+import org.textmapper.idea.lang.syntax.TMFileType;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class NewLapgGrammar extends CreateElementActionBase {
+public class NewTMGrammar extends CreateElementActionBase {
 
-	public NewLapgGrammar() {
-		super(LapgBundle.message("newfile.action.text"), LapgBundle.message("newfile.action.description"), LapgIcons.LAPG_ICON);
+	public NewTMGrammar() {
+		super(TextmapperBundle.message("newfile.action.text"), TextmapperBundle.message("newfile.action.description"), TMIcons.TM_ICON);
 	}
 
 	@NotNull
@@ -50,16 +50,16 @@ public class NewLapgGrammar extends CreateElementActionBase {
 				return StringUtil.isJavaIdentifier(inputString);
 			}
 		};
-		Messages.showInputDialog(project, LapgBundle.message("newfile.dlg.text"), LapgBundle.message("newfile.dlg.title"), Messages.getQuestionIcon(), "", validator);
+		Messages.showInputDialog(project, TextmapperBundle.message("newfile.dlg.text"), TextmapperBundle.message("newfile.dlg.title"), Messages.getQuestionIcon(), "", validator);
 		return validator.getCreatedElements();
 	}
 
 	public static void checkCreateFile(@NotNull PsiDirectory directory, String name) throws IncorrectOperationException {
 		if (!StringUtil.isJavaIdentifier(name)) {
-			throw new IncorrectOperationException(LapgBundle.message("error.should.be.identifier", name));
+			throw new IncorrectOperationException(TextmapperBundle.message("error.should.be.identifier", name));
 		}
 
-		String fileName	 = name + "." + LapgFileType.DEFAULT_EXTENSION;
+		String fileName	 = name + "." + TMFileType.DEFAULT_EXTENSION;
 		directory.checkCreateFile(fileName);
 	}
 
@@ -67,10 +67,10 @@ public class NewLapgGrammar extends CreateElementActionBase {
 	@Override
 	protected PsiElement[] create(String newName, PsiDirectory directory) throws Exception {
 		checkCreateFile(directory, newName);
-		PsiFile file = LapgTemplatesFactory.createFromTemplate(directory, newName, newName + "." + LapgFileType.DEFAULT_EXTENSION, LapgTemplatesFactory.GRAMMAR_FILE);
+		PsiFile file = TMTemplatesFactory.createFromTemplate(directory, newName, newName + "." + TMFileType.DEFAULT_EXTENSION, TMTemplatesFactory.GRAMMAR_FILE);
 		PsiElement lastChild = file.getLastChild();
 		final Project project = directory.getProject();
-		if (lastChild != null && lastChild.getNode() != null && lastChild.getNode().getElementType() != LapgTokenTypes.WHITESPACE) {
+		if (lastChild != null && lastChild.getNode() != null && lastChild.getNode().getElementType() != TMTokenTypes.WHITESPACE) {
 			file.add(createWhiteSpace(project));
 		}
 		file.add(createWhiteSpace(project));
@@ -85,16 +85,16 @@ public class NewLapgGrammar extends CreateElementActionBase {
 
 	@Override
 	protected String getCommandName() {
-		return LapgBundle.message("newfile.command");
+		return TextmapperBundle.message("newfile.command");
 	}
 
 	@Override
 	protected String getActionName(PsiDirectory directory, String newName) {
-		return LapgBundle.message("newfile.action.text");
+		return TextmapperBundle.message("newfile.action.text");
 	}
 
 	private static PsiElement createWhiteSpace(Project project) {
-		PsiFile dummyFile = PsiFileFactory.getInstance(project).createFileFromText("dummy." + LapgFileType.DEFAULT_EXTENSION, "\n");
+		PsiFile dummyFile = PsiFileFactory.getInstance(project).createFileFromText("dummy." + TMFileType.DEFAULT_EXTENSION, "\n");
 		return dummyFile.getFirstChild();
 	}
 }

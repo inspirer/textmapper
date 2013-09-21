@@ -38,11 +38,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.util.Chunk;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.LapgBundle;
-import org.textmapper.idea.facet.LapgFacet;
-import org.textmapper.idea.facet.LapgFacetType;
+import org.textmapper.idea.TextmapperBundle;
+import org.textmapper.idea.facet.TMFacet;
+import org.textmapper.idea.facet.TMFacetType;
 import org.textmapper.idea.facet.TmConfigurationBean;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.ParserConflict;
@@ -56,19 +56,19 @@ import java.util.Map.Entry;
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class LapgCompiler implements TranslatingCompiler {
+public class TMCompiler implements TranslatingCompiler {
 
 	private static final FileTypeManager FILE_TYPE_MANAGER = FileTypeManager.getInstance();
 
 	private final Project project;
 
-	public LapgCompiler(Project project) {
+	public TMCompiler(Project project) {
 		this.project = project;
 	}
 
 	@NotNull
 	public String getDescription() {
-		return LapgBundle.message("compiler.description");
+		return TextmapperBundle.message("compiler.description");
 	}
 
 	public boolean isCompilableFile(final VirtualFile file, CompileContext context) {
@@ -79,7 +79,7 @@ public class LapgCompiler implements TranslatingCompiler {
 			}
 		});
 
-		return fileType.equals(LapgFileType.LAPG_FILE_TYPE) && psi instanceof TMPsiFile;
+		return fileType.equals(TMFileType.TM_FILE_TYPE) && psi instanceof TMPsiFile;
 	}
 
 
@@ -92,7 +92,7 @@ public class LapgCompiler implements TranslatingCompiler {
 	}
 
 	public void compileModule(CompileContext context, Module module, Collection<VirtualFile> files, OutputSink sink) {
-		LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
+		TMFacet facet = FacetManager.getInstance(module).getFacetByType(TMFacetType.ID);
 		if (facet == null) {
 			return;
 		}
@@ -155,19 +155,19 @@ public class LapgCompiler implements TranslatingCompiler {
 	}
 
 	public boolean validateConfiguration(CompileScope compileScope) {
-		VirtualFile[] files = compileScope.getFiles(LapgFileType.LAPG_FILE_TYPE, true);
+		VirtualFile[] files = compileScope.getFiles(TMFileType.TM_FILE_TYPE, true);
 		if (files.length == 0) return true;
 
 		final Module[] modules = compileScope.getAffectedModules();
 		for (final Module module : modules) {
-			LapgFacet facet = FacetManager.getInstance(module).getFacetByType(LapgFacetType.ID);
+			TMFacet facet = FacetManager.getInstance(module).getFacetByType(TMFacetType.ID);
 			if (facet != null) {
 				TmConfigurationBean configuration = facet.getConfiguration().getState();
 				boolean hasTemplatesFolder = configuration.templatesFolder.trim().length() > 0;
 
 				if (configuration.excludeDefaultTemplates && !hasTemplatesFolder) {
-					Messages.showErrorDialog(module.getProject(), LapgBundle.message("compiler.facetproblem.no_templates", module.getName()),
-							LapgBundle.message("compiler.facetproblem.title"));
+					Messages.showErrorDialog(module.getProject(), TextmapperBundle.message("compiler.facetproblem.no_templates", module.getName()),
+							TextmapperBundle.message("compiler.facetproblem.title"));
 
 					ModulesConfigurator.showFacetSettingsDialog(facet, "Lapg");
 					return false;

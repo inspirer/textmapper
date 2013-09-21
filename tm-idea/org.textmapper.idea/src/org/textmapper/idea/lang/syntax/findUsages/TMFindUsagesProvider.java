@@ -23,8 +23,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiNamedElement;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgLexerAdapter;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMLexerAdapter;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.psi.*;
 
 /**
@@ -33,10 +33,10 @@ import org.textmapper.idea.lang.syntax.psi.*;
 public class TMFindUsagesProvider implements FindUsagesProvider {
 	@Override
 	public WordsScanner getWordsScanner() {
-		return new DefaultWordsScanner(new LapgLexerAdapter(),
-				TokenSet.create(LapgTokenTypes.ID),
-				LapgTokenTypes.comments,
-				TokenSet.create(LapgTokenTypes.STRING));
+		return new DefaultWordsScanner(new TMLexerAdapter(),
+				TokenSet.create(TMTokenTypes.ID),
+				TMTokenTypes.comments,
+				TokenSet.create(TMTokenTypes.STRING));
 	}
 
 	@Override

@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea;
+package org.textmapper.idea.editor;
 
-import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.project.ProjectManagerAdapter;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.lang.Commenter;
 
-public class LapgLoader implements ApplicationComponent {
-
-	public LapgLoader() {
+/**
+ * Gryaznov Evgeny, 1/31/11
+ */
+public class TMCommenter implements Commenter {
+	public String getLineCommentPrefix() {
+		return "#";
 	}
 
-	public void initComponent() {
-		ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
-			public void projectOpened(final Project project) {
-			}
-		});
+	public String getBlockCommentPrefix() {
+		return null;
 	}
 
-	public void disposeComponent() {
+	public String getBlockCommentSuffix() {
+		return null;
 	}
 
-	@NotNull
-	public String getComponentName() {
-		return "lapg.support.loader";
+	public String getCommentedBlockCommentPrefix() {
+		return null;
+	}
+
+	public String getCommentedBlockCommentSuffix() {
+		return null;
 	}
 }

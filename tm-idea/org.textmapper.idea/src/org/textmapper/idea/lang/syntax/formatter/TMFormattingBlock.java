@@ -25,8 +25,8 @@ import com.intellij.psi.formatter.common.AbstractBlock;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.TMFileType;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.parser.TextmapperElementTypes;
 
 import java.util.ArrayList;
@@ -143,7 +143,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@Override
 		protected Block buildChild(@NotNull ASTNode child, ASTNode prev, Alignment childAlignment) {
 			if (child.getElementType() == TextmapperElementTypes.RULE) {
-				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == LapgTokenTypes.OP_CCEQ);
+				return new RuleBlock(child, null, settings, spacingBuilder, lastCodeBlock, prev == null || prev.getElementType() == TMTokenTypes.OP_CCEQ);
 			}
 			return super.buildChild(child, prev, childAlignment);
 		}
@@ -153,8 +153,8 @@ public class TMFormattingBlock extends AbstractBlock {
 		public ChildAttributes getChildAttributes(int newChildIndex) {
 			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.TYPE, TextmapperElementTypes.IDENTIFIER})) {
 				return new ChildAttributes(Indent.getNoneIndent(), null);
-			} else if (isAfter(newChildIndex, new IElementType[]{LapgTokenTypes.OP_CCEQ})) {
-				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(LapgFileType.LAPG_FILE_TYPE) + 2, false, true), null);
+			} else if (isAfter(newChildIndex, new IElementType[]{TMTokenTypes.OP_CCEQ})) {
+				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(TMFileType.TM_FILE_TYPE) + 2, false, true), null);
 			} else {
 				if (getSubBlocks().size() == newChildIndex) {
 					return new ChildAttributes(Indent.getNoneIndent(), null);
@@ -167,7 +167,7 @@ public class TMFormattingBlock extends AbstractBlock {
 		@Override
 		protected Indent createChildIndent(@NotNull ASTNode child, ASTNode prev) {
 			IElementType type = child.getElementType();
-			if (type == LapgTokenTypes.OP_OR || type == TextmapperElementTypes.RULE) {
+			if (type == TMTokenTypes.OP_OR || type == TextmapperElementTypes.RULE) {
 				return Indent.getNormalIndent();
 			}
 

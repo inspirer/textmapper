@@ -27,11 +27,11 @@ import java.util.ResourceBundle;
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class LapgBundle {
+public class TextmapperBundle {
 	private static Reference<ResourceBundle> ourBundle;
 
 	@NonNls
-	private static final String BUNDLE = "org.textmapper.idea.LapgBundle";
+	private static final String BUNDLE = "org.textmapper.idea.TextmapperBundle";
 
 	public static String message(@PropertyKey(resourceBundle = BUNDLE) String key, Object... params) {
 		return CommonBundle.message(getBundle(), key, params);

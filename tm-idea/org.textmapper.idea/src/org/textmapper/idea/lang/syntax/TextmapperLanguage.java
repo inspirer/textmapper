@@ -22,11 +22,11 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import org.jetbrains.annotations.NotNull;
 
-public class LapgLanguage extends Language {
+public class TextmapperLanguage extends Language {
 
 	public static final String ID = "Textmapper";
 
-	public LapgLanguage() {
+	public TextmapperLanguage() {
 		super(ID);
 
 		SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new LapgHighlighterFactory());
@@ -35,7 +35,7 @@ public class LapgLanguage extends Language {
 	private static class LapgHighlighterFactory extends SingleLazyInstanceSyntaxHighlighterFactory {
 		@NotNull
 		protected SyntaxHighlighter createHighlighter() {
-			return new LapgSyntaxHighlighter();
+			return new TMSyntaxHighlighter();
 		}
 	}
 }

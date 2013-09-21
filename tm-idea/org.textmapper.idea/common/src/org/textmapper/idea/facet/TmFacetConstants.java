@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NonNls;
 public class TmFacetConstants {
 
 	@NonNls
-	public static final String TM_FACET_ID = "Lapg";
+	public static final String TM_FACET_ID = "Textmapper";
 	@NonNls
-	public static final String TM_FACET_NAME = "Lapg";
+	public static final String TM_FACET_NAME = "Textmapper";
 }

@@ -16,14 +16,16 @@
  */
 package org.textmapper.idea;
 
-import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.fileTypes.FileTypeConsumer;
+import com.intellij.openapi.fileTypes.FileTypeFactory;
+import org.jetbrains.annotations.NotNull;
+import org.textmapper.idea.lang.syntax.TMFileType;
+import org.textmapper.idea.lang.templates.LtplFileType;
 
-import javax.swing.*;
-
-/**
- * Gryaznov Evgeny, 3/13/11
- */
-public interface LapgIcons {
-	final Icon LAPG_ICON = IconLoader.findIcon("/icons/syntax.png");
-	final Icon LAPG_TEMPLATES_ICON = IconLoader.findIcon("/icons/ltp.png");
+public class TMFileTypesFactory extends FileTypeFactory {
+	@Override
+	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
+		consumer.consume(TMFileType.TM_FILE_TYPE, TMFileType.DEFAULT_EXTENSION);
+		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
+	}
 }

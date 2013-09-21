@@ -42,7 +42,7 @@ public class TmCompilerUtil {
 		TmProcessingStatus status = context.createProcessingStatus();
 		TMOptions options = new TMOptions();
 		task.fillOptions(options);
-		LapgSyntaxBuilder builder = new LapgSyntaxBuilder(task.getFile(), task.getFileContent(), options, status);
+		TMSyntaxBuilder builder = new TMSyntaxBuilder(task.getFile(), task.getFileContent(), options, status);
 		boolean success = builder.generate() && !status.hasErrors();
 
 		if (success) {
@@ -53,7 +53,7 @@ public class TmCompilerUtil {
 
 				for (Entry<String, String> entry : generatedContent.entrySet()) {
 					final File destFile = new File(outPath, entry.getKey());
-					boolean changed = LapgSyntaxBuilder.writeFile(destFile, entry.getValue());
+					boolean changed = TMSyntaxBuilder.writeFile(destFile, entry.getValue());
 					context.fileCreated(destFile, !changed);
 				}
 

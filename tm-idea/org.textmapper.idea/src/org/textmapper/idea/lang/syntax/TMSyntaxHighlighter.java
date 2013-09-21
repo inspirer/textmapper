@@ -25,15 +25,15 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.regex.lexer.RegexTokenTypes;
-import org.textmapper.idea.lang.syntax.lexer.LapgHighlightingLexer;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMHighlightingLexer;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.templates.LtplFileType;
 import org.textmapper.idea.lang.templates.LtplSyntaxHighlighter;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
+public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 
 	private LtplSyntaxHighlighter fTemplatesHighlighter = new LtplSyntaxHighlighter();
 
@@ -116,25 +116,25 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 	static {
 		attributes = new HashMap<IElementType, TextAttributesKey>();
 
-		fillMap(attributes, LapgTokenTypes.keywords, KEYWORD);
-		fillMap(attributes, LapgTokenTypes.softKeywords, IDENTIFIER);
-		fillMap(attributes, STRING, LapgTokenTypes.STRING);
-		fillMap(attributes, NUMBER, LapgTokenTypes.ICON);
-		fillMap(attributes, IDENTIFIER, LapgTokenTypes.ID);
-		fillMap(attributes, LINE_COMMENT, LapgTokenTypes.COMMENT);
+		fillMap(attributes, TMTokenTypes.keywords, KEYWORD);
+		fillMap(attributes, TMTokenTypes.softKeywords, IDENTIFIER);
+		fillMap(attributes, STRING, TMTokenTypes.STRING);
+		fillMap(attributes, NUMBER, TMTokenTypes.ICON);
+		fillMap(attributes, IDENTIFIER, TMTokenTypes.ID);
+		fillMap(attributes, LINE_COMMENT, TMTokenTypes.COMMENT);
 
 		// [] () and operators
-		fillMap(attributes, LapgTokenTypes.operators, OPERATOR);
-		fillMap(attributes, LapgTokenTypes.quantifiers, QUANTIFIER);
-		fillMap(attributes, BRACKETS, LapgTokenTypes.OP_LBRACKET, LapgTokenTypes.OP_RBRACKET);
-		fillMap(attributes, PARENTHS, LapgTokenTypes.OP_LPAREN, LapgTokenTypes.OP_RPAREN);
-		fillMap(attributes, BRACES, LapgTokenTypes.OP_LCURLY, LapgTokenTypes.OP_RCURLY);
+		fillMap(attributes, TMTokenTypes.operators, OPERATOR);
+		fillMap(attributes, TMTokenTypes.quantifiers, QUANTIFIER);
+		fillMap(attributes, BRACKETS, TMTokenTypes.OP_LBRACKET, TMTokenTypes.OP_RBRACKET);
+		fillMap(attributes, PARENTHS, TMTokenTypes.OP_LPAREN, TMTokenTypes.OP_RPAREN);
+		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
 
 		// punctuation
-		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, LapgTokenTypes.OP_DOT);
-		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, LapgTokenTypes.OP_COMMA);
-		fillMap(attributes, DefaultLanguageHighlighterColors.SEMICOLON, LapgTokenTypes.OP_SEMICOLON);
-		fillMap(attributes, SECTION, LapgTokenTypes.OP_COLONCOLON);
+		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, TMTokenTypes.OP_DOT);
+		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, TMTokenTypes.OP_COMMA);
+		fillMap(attributes, DefaultLanguageHighlighterColors.SEMICOLON, TMTokenTypes.OP_SEMICOLON);
+		fillMap(attributes, SECTION, TMTokenTypes.OP_COLONCOLON);
 
 		// regexp
 		fillMap(attributes, RE_DELIMITERS, RegexTokenTypes.RE_DELIMITERS);
@@ -154,7 +154,7 @@ public class LapgSyntaxHighlighter extends SyntaxHighlighterBase {
 
 	@NotNull
 	public Lexer getHighlightingLexer() {
-		return new LapgHighlightingLexer();
+		return new TMHighlightingLexer();
 	}
 
 	@NotNull

@@ -28,29 +28,29 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.textmapper.idea.LapgBundle;
-import org.textmapper.idea.LapgIcons;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.TMIcons;
+import org.textmapper.idea.TextmapperBundle;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
 import javax.swing.*;
 import java.util.Collection;
 
-public class LapgFacetType extends FacetType<LapgFacet, LapgFacetConfiguration> {
+public class TMFacetType extends FacetType<TMFacet, TMFacetConfiguration> {
 
-	public static final FacetTypeId<LapgFacet> ID = new FacetTypeId<LapgFacet>("lapg");
+	public static final FacetTypeId<TMFacet> ID = new FacetTypeId<TMFacet>("textmapper");
 
-	public LapgFacetType() {
+	public TMFacetType() {
 		super(ID, TmFacetConstants.TM_FACET_ID, TmFacetConstants.TM_FACET_NAME);
 	}
 
 	@Override
-	public LapgFacetConfiguration createDefaultConfiguration() {
-		return new LapgFacetConfiguration();
+	public TMFacetConfiguration createDefaultConfiguration() {
+		return new TMFacetConfiguration();
 	}
 
 	@Override
-	public LapgFacet createFacet(@NotNull Module module, String name, @NotNull LapgFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
-		return new LapgFacet(this, module, name, configuration, underlyingFacet);
+	public TMFacet createFacet(@NotNull Module module, String name, @NotNull TMFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
+		return new TMFacet(this, module, name, configuration, underlyingFacet);
 	}
 
 	@Override
@@ -60,19 +60,19 @@ public class LapgFacetType extends FacetType<LapgFacet, LapgFacetConfiguration> 
 
 	@Override
 	public Icon getIcon() {
-		return LapgIcons.LAPG_ICON;
+		return TMIcons.TM_ICON;
 	}
 
 	@Override
-	public void registerDetectors(final FacetDetectorRegistry<LapgFacetConfiguration> registry) {
-		FacetDetector<VirtualFile, LapgFacetConfiguration> detector = new LapgFacetDetector();
+	public void registerDetectors(final FacetDetectorRegistry<TMFacetConfiguration> registry) {
+		FacetDetector<VirtualFile, TMFacetConfiguration> detector = new TMFacetDetector();
 		final boolean[] detected = new boolean[] { false };
 
 		VirtualFileFilter filter = new VirtualFileFilter() {
 			public boolean accept(VirtualFile file) {
 				if(detected[0]) return true;
 				detected[0] = true;
-				if(LapgFileType.DEFAULT_EXTENSION.equals(file.getExtension())) {
+				if(TMFileType.DEFAULT_EXTENSION.equals(file.getExtension())) {
 					registry.customizeDetectedFacetPresentation(new LapgFacetPresentation());
 					return true;
 				}
@@ -80,17 +80,17 @@ public class LapgFacetType extends FacetType<LapgFacet, LapgFacetConfiguration> 
 			}
 		};
 
-		registry.registerUniversalDetector(LapgFileType.LAPG_FILE_TYPE, filter, detector);
+		registry.registerUniversalDetector(TMFileType.TM_FILE_TYPE, filter, detector);
 	}
 
-	private class LapgFacetDetector extends FacetDetector<VirtualFile, LapgFacetConfiguration> {
+	private class TMFacetDetector extends FacetDetector<VirtualFile, TMFacetConfiguration> {
 
-		private LapgFacetDetector() {
-			super("lapg");
+		private TMFacetDetector() {
+			super("textmapper");
 		}
 
 		@Override
-		public LapgFacetConfiguration detectFacet(VirtualFile source, Collection<LapgFacetConfiguration> existentFacetConfigurations) {
+		public TMFacetConfiguration detectFacet(VirtualFile source, Collection<TMFacetConfiguration> existentFacetConfigurations) {
 			if (!existentFacetConfigurations.isEmpty()) {
 			  return existentFacetConfigurations.iterator().next();
 			}
@@ -101,7 +101,7 @@ public class LapgFacetType extends FacetType<LapgFacet, LapgFacetConfiguration> 
 	private static class LapgFacetPresentation extends DetectedFacetPresentation {
 		@Override
 		public String getAutodetectionPopupText(@NotNull Module module, @NotNull FacetType facetType, @NotNull String facetName, @NotNull VirtualFile[] files) {
-			return LapgBundle.message("facet.detected");
+			return TextmapperBundle.message("facet.detected");
 		}
 	}
 }
