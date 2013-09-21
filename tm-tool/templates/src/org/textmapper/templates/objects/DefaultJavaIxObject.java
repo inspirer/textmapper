@@ -127,10 +127,11 @@ public class DefaultJavaIxObject implements IxAdaptable, IxObject, IxWrapper {
 				}
 				boolean good = true;
 				for (int i = 0; i < paramTypes.length; i++) {
-					if (!paramTypes[i].isAssignableFrom(argClasses[i])) {
-						good = false;
-						break;
-					}
+					if (paramTypes[i].isAssignableFrom(argClasses[i])) continue;
+					if (paramTypes[i].isPrimitive() && paramTypes[i].getName().equals("int")
+							&& argClasses[i].getName().equals("java.lang.Integer")) continue;
+					good = false;
+					break;
 				}
 				if (good) {
 					return m;
