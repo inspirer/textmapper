@@ -18,7 +18,7 @@
 	<id>org.textmapper.idea</id>
 	<name>Lapg support</name>
 	<category>Custom Languages</category>
-	<version>0.9.2</version>
+	<version>0.9.3</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 
 	<!-- 12.1.4 -->
@@ -59,7 +59,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.2.jar"/>
+		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.3.jar"/>
 		<facetType implementation="org.textmapper.idea.facet.LapgFacetType"/>
 		<frameworkSupport implementation="org.textmapper.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
 		<fileTypeFactory implementation="org.textmapper.idea.LapgFileTypeFactory"/>

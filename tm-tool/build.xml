@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir=".." default="all" name="org.textmapper.tool">
-	<property name="tm.version" value="0.9.2"/>
-	<property name="tm.qualifier" value="SNAPSHOT"/>
+	<property name="tm.version" value="0.9.3"/>
+	<property name="tm.qualifier" value="-SNAPSHOT"/>
 	<property name="suffix" value="${tm.version}"/>
 
 	<property name="tm.dir" location="tm-tool"/>
@@ -76,7 +76,7 @@
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Textmapper (a tool for language development)"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="${tm.dir}" includes="*.txt"/>
 		</jar>
@@ -96,7 +96,7 @@
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Textmapper (a tool for language development)"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="${tm.dir}" includes="*.txt"/>
 		</jar>
@@ -155,7 +155,7 @@
 
 	<!-- TODO Lapg task
 	<target name="syntax">
-		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="${tm.dir}/libs/textmapper-0.9.2.jar"/>
+		<taskdef name="lapg" classname="org.textmapper.lapg.ant.Lapg" classpath="${tm.dir}/libs/textmapper-${tm.version}.jar"/>
 		<lapg source="syntax"/>
 	</target> -->
 
@@ -254,7 +254,7 @@
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA Commons"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
 		</jar>
@@ -265,7 +265,7 @@
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA, JPS plug-in"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="${tm.idea.dir}/org.textmapper.idea/jps-plugin/META-INF"/>
 		</jar>
@@ -276,7 +276,7 @@
 				<attribute name="Built-Date" value="${tm.build.date}"/>
 				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
 				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA"/>
-				<attribute name="Implementation-Version" value="${tm.version}-${tm.qualifier}, ${tm.revision}"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
 			</manifest>
 			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
 		</jar>
