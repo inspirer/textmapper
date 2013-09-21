@@ -23,7 +23,7 @@ import com.intellij.psi.search.LocalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
 public class TmElement extends ASTWrapperPsiElement {
 
@@ -37,7 +37,7 @@ public class TmElement extends ASTWrapperPsiElement {
 	@NotNull
 	@Override
 	public Language getLanguage() {
-		return LapgFileType.LAPG_LANGUAGE;
+		return TMFileType.TM_LANGUAGE;
 	}
 
 	@NotNull
@@ -48,6 +48,6 @@ public class TmElement extends ASTWrapperPsiElement {
 
 	@Override
 	public String toString() {
-		return "lapg psi: " + type;
+		return "tm psi: " + type;
 	}
 }

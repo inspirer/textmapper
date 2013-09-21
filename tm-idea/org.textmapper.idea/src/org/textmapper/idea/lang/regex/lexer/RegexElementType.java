@@ -18,7 +18,7 @@ package org.textmapper.idea.lang.regex.lexer;
 
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
 /**
  * evgeny, 3/4/12
@@ -27,7 +27,7 @@ public class RegexElementType extends IElementType {
 	private final int symbol;
 
 	public RegexElementType(int symbol, @NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
+		super(debugName, TMFileType.TM_LANGUAGE);
 		this.symbol = symbol;
 	}
 
@@ -37,7 +37,7 @@ public class RegexElementType extends IElementType {
 
 	@Override
 	public String toString() {
-		return "[lapg regex]" + super.toString();
+		return "[tm regex]" + super.toString();
 	}
 }
 

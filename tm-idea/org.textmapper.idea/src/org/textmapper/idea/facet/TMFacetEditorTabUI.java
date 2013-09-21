@@ -22,7 +22,7 @@ import com.intellij.openapi.ui.TextFieldWithBrowseButton;
 
 import javax.swing.*;
 
-public class LapgFacetEditorTabUI {
+public class TMFacetEditorTabUI {
 
 	private JCheckBox noDefaultTemplatesCheckBox;
 	private JCheckBox verboseOutputCheckBox;
@@ -36,7 +36,7 @@ public class LapgFacetEditorTabUI {
 		TEMPLATES_CHOOSER_DESCRIPTOR.setDescription("Choose the directory with custom Textmapper templates");
 	}
 
-	public LapgFacetEditorTabUI() {
+	public TMFacetEditorTabUI() {
 		templatesFolder.addBrowseFolderListener(null, null, null, TEMPLATES_CHOOSER_DESCRIPTOR);
 	}
 

@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
+public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
+
+	public static final int STATE_AFTER_COLONCOLON = 1000;
 
 	private CharSequence myText;
 	private TMLexer lexer;
@@ -38,7 +40,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	private int fState;
 	private IElementType current;
 
-	public LapgLexerAdapter() {
+	public TMLexerAdapter() {
 	}
 
 	@Override
@@ -237,9 +239,9 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 			case Lexems.Llalr:
 				return KW_LALR;
 			case Lexems.Llexer:
-				return KW_LEXER;
+				return fState == STATE_AFTER_COLONCOLON ? KW_LEXER_ACC : KW_LEXER;
 			case Lexems.Lparser:
-				return KW_PARSER;
+				return fState == STATE_AFTER_COLONCOLON ? KW_PARSER_ACC : KW_PARSER;
 
 			// soft keywords without highlighting
 			case Lexems.Lsoft:
@@ -253,7 +255,7 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		/* default, eoi */
 		lexem = currentLexem;
 		assert lexem.symbol == Lexems.eoi;
-		if (lexem.endoffset < fDocumentLength) {
+		if (lexem.offset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
 			lexem.offset = lexem.endoffset = fDocumentLength;
 			return TEMPLATES;
@@ -270,6 +272,8 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 	}
 
 	private static class IdeaLapgLexer extends TMLexer {
+		private boolean fAfterColonColon = false;
+
 		public IdeaLapgLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				@Override
@@ -279,9 +283,35 @@ public class LapgLexerAdapter extends LexerBase implements LapgTokenTypes {
 		}
 
 		@Override
+		public void setState(int state) {
+			fAfterColonColon = (state == STATE_AFTER_COLONCOLON);
+			super.setState(fAfterColonColon ? States.initial : state);
+		}
+
+		@Override
+		public int getState() {
+			return fAfterColonColon ? STATE_AFTER_COLONCOLON : super.getState();
+		}
+
+		@Override
+		public void reset(Reader stream) throws IOException {
+			fAfterColonColon = false;
+			super.reset(stream);
+		}
+
+		@Override
 		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 			super.createToken(lapg_n, lexemIndex);
 			return true;
+		}
+
+		@Override
+		public LapgSymbol next() throws IOException {
+			LapgSymbol next = super.next();
+			if (next.symbol != Lexems._skip && next.symbol != Lexems._skip_comment) {
+				fAfterColonColon = (next.symbol == Lexems.COLONCOLON && super.getState() == States.initial);
+			}
+			return next;
 		}
 	}
 }

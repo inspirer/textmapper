@@ -24,7 +24,7 @@ import com.intellij.openapi.options.colors.ColorSettingsPage;
 import com.intellij.util.containers.HashMap;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.LapgIcons;
+import org.textmapper.idea.TMIcons;
 
 import javax.swing.*;
 import java.util.Map;
@@ -32,48 +32,48 @@ import java.util.Map;
 /**
  * Gryaznov Evgeny, 4/8/12
  */
-public class LapgColorsPage implements ColorSettingsPage {
+public class TMColorsPage implements ColorSettingsPage {
 
 	private static final AttributesDescriptor[] ATTRS = new AttributesDescriptor[]{
-			new AttributesDescriptor("Keyword", LapgSyntaxHighlighter.KEYWORD),
-			new AttributesDescriptor("String", LapgSyntaxHighlighter.STRING),
-			new AttributesDescriptor("Number", LapgSyntaxHighlighter.NUMBER),
-			new AttributesDescriptor("Identifier", LapgSyntaxHighlighter.IDENTIFIER),
-			new AttributesDescriptor("Operator sign", LapgSyntaxHighlighter.OPERATOR),
-			new AttributesDescriptor("Quantifier", LapgSyntaxHighlighter.QUANTIFIER),
-			new AttributesDescriptor("Brackets", LapgSyntaxHighlighter.BRACKETS),
-			new AttributesDescriptor("Parenthesis", LapgSyntaxHighlighter.PARENTHS),
-			new AttributesDescriptor("Lexem reference", LapgSyntaxHighlighter.LEXEM_REFERENCE),
-			new AttributesDescriptor("Line comment", LapgSyntaxHighlighter.LINE_COMMENT),
-			new AttributesDescriptor("Annotations", LapgSyntaxHighlighter.ANNOTATION),
-			new AttributesDescriptor("Sections", LapgSyntaxHighlighter.SECTION),
-			new AttributesDescriptor("Rule metadata", LapgSyntaxHighlighter.RHS_PREFIX),
+			new AttributesDescriptor("Keyword", TMSyntaxHighlighter.KEYWORD),
+			new AttributesDescriptor("String", TMSyntaxHighlighter.STRING),
+			new AttributesDescriptor("Number", TMSyntaxHighlighter.NUMBER),
+			new AttributesDescriptor("Identifier", TMSyntaxHighlighter.IDENTIFIER),
+			new AttributesDescriptor("Operator sign", TMSyntaxHighlighter.OPERATOR),
+			new AttributesDescriptor("Quantifier", TMSyntaxHighlighter.QUANTIFIER),
+			new AttributesDescriptor("Brackets", TMSyntaxHighlighter.BRACKETS),
+			new AttributesDescriptor("Parenthesis", TMSyntaxHighlighter.PARENTHS),
+			new AttributesDescriptor("Lexem reference", TMSyntaxHighlighter.LEXEM_REFERENCE),
+			new AttributesDescriptor("Line comment", TMSyntaxHighlighter.LINE_COMMENT),
+			new AttributesDescriptor("Annotations", TMSyntaxHighlighter.ANNOTATION),
+			new AttributesDescriptor("Sections", TMSyntaxHighlighter.SECTION),
+			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RHS_PREFIX),
 
-			new AttributesDescriptor("RegExp Delimiters", LapgSyntaxHighlighter.RE_DELIMITERS),
-			new AttributesDescriptor("RegExp Text", LapgSyntaxHighlighter.RE_TEXT),
-			new AttributesDescriptor("RegExp Escaped character", LapgSyntaxHighlighter.RE_ESCAPED),
-			new AttributesDescriptor("RegExp Character class", LapgSyntaxHighlighter.RE_CHAR_CLASS),
-			new AttributesDescriptor("RegExp Dot (any character)", LapgSyntaxHighlighter.RE_DOT),
-			new AttributesDescriptor("RegExp Quantifier", LapgSyntaxHighlighter.RE_QUANTIFIER),
-//			new AttributesDescriptor("RegExp Invalid escape sequence", LapgSyntaxHighlighter.RE_INVALID),
-//			new AttributesDescriptor("RegExp Redundant escape sequence", LapgSyntaxHighlighter.RE_REDUNDANT),
-			new AttributesDescriptor("RegExp Brackets", LapgSyntaxHighlighter.RE_BRACKETS),
-			new AttributesDescriptor("RegExp Parentheses", LapgSyntaxHighlighter.RE_PARENTHS),
-			new AttributesDescriptor("RegExp Expand", LapgSyntaxHighlighter.RE_EXPAND),
-//			new AttributesDescriptor("RegExp Comma", LapgSyntaxHighlighter.RE_COMMA),
-			new AttributesDescriptor("RegExp Bad character", LapgSyntaxHighlighter.RE_BAD_CHAR),
-//			new AttributesDescriptor("RegExp Quote character", LapgSyntaxHighlighter.QUOTE_CHARACTER),
+			new AttributesDescriptor("RegExp Delimiters", TMSyntaxHighlighter.RE_DELIMITERS),
+			new AttributesDescriptor("RegExp Text", TMSyntaxHighlighter.RE_TEXT),
+			new AttributesDescriptor("RegExp Escaped character", TMSyntaxHighlighter.RE_ESCAPED),
+			new AttributesDescriptor("RegExp Character class", TMSyntaxHighlighter.RE_CHAR_CLASS),
+			new AttributesDescriptor("RegExp Dot (any character)", TMSyntaxHighlighter.RE_DOT),
+			new AttributesDescriptor("RegExp Quantifier", TMSyntaxHighlighter.RE_QUANTIFIER),
+//			new AttributesDescriptor("RegExp Invalid escape sequence", TMSyntaxHighlighter.RE_INVALID),
+//			new AttributesDescriptor("RegExp Redundant escape sequence", TMSyntaxHighlighter.RE_REDUNDANT),
+			new AttributesDescriptor("RegExp Brackets", TMSyntaxHighlighter.RE_BRACKETS),
+			new AttributesDescriptor("RegExp Parentheses", TMSyntaxHighlighter.RE_PARENTHS),
+			new AttributesDescriptor("RegExp Expand", TMSyntaxHighlighter.RE_EXPAND),
+//			new AttributesDescriptor("RegExp Comma", TMSyntaxHighlighter.RE_COMMA),
+			new AttributesDescriptor("RegExp Bad character", TMSyntaxHighlighter.RE_BAD_CHAR),
+//			new AttributesDescriptor("RegExp Quote character", TMSyntaxHighlighter.QUOTE_CHARACTER),
 	};
 
 	@NonNls
 	private static final Map<String, TextAttributesKey> ourTagToDescriptorMap = new HashMap<String, TextAttributesKey>();
 
 	static {
-		ourTagToDescriptorMap.put("lexemeRef", LapgSyntaxHighlighter.LEXEM_REFERENCE);
-		ourTagToDescriptorMap.put("annotation", LapgSyntaxHighlighter.ANNOTATION);
-		ourTagToDescriptorMap.put("rhsPrefix", LapgSyntaxHighlighter.RHS_PREFIX);
-		ourTagToDescriptorMap.put("sect", LapgSyntaxHighlighter.SECTION);
-		ourTagToDescriptorMap.put("kw", LapgSyntaxHighlighter.KEYWORD);
+		ourTagToDescriptorMap.put("lexemeRef", TMSyntaxHighlighter.LEXEM_REFERENCE);
+		ourTagToDescriptorMap.put("annotation", TMSyntaxHighlighter.ANNOTATION);
+		ourTagToDescriptorMap.put("rhsPrefix", TMSyntaxHighlighter.RHS_PREFIX);
+		ourTagToDescriptorMap.put("sect", TMSyntaxHighlighter.SECTION);
+		ourTagToDescriptorMap.put("kw", TMSyntaxHighlighter.KEYWORD);
 	}
 
 	@NotNull
@@ -82,7 +82,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 	}
 
 	public Icon getIcon() {
-		return LapgIcons.LAPG_ICON;
+		return TMIcons.TM_ICON;
 	}
 
 	@NotNull
@@ -97,7 +97,7 @@ public class LapgColorsPage implements ColorSettingsPage {
 
 	@NotNull
 	public SyntaxHighlighter getHighlighter() {
-		final SyntaxHighlighter highlighter = SyntaxHighlighter.PROVIDER.create(LapgFileType.LAPG_FILE_TYPE, null, null);
+		final SyntaxHighlighter highlighter = SyntaxHighlighter.PROVIDER.create(TMFileType.TM_FILE_TYPE, null, null);
 		assert highlighter != null;
 		return highlighter;
 	}

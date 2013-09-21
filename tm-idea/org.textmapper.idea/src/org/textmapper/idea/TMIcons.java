@@ -14,31 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea.editor;
+package org.textmapper.idea;
 
-import com.intellij.lang.Commenter;
+import com.intellij.openapi.util.IconLoader;
+
+import javax.swing.*;
 
 /**
- * Gryaznov Evgeny, 1/31/11
+ * Gryaznov Evgeny, 3/13/11
  */
-public class LapgCommenter implements Commenter {
-	public String getLineCommentPrefix() {
-		return "#";
-	}
-
-	public String getBlockCommentPrefix() {
-		return null;
-	}
-
-	public String getBlockCommentSuffix() {
-		return null;
-	}
-
-	public String getCommentedBlockCommentPrefix() {
-		return null;
-	}
-
-	public String getCommentedBlockCommentSuffix() {
-		return null;
-	}
+public interface TMIcons {
+	final Icon TM_ICON = IconLoader.findIcon("/icons/syntax.png");
+	final Icon TM_TEMPLATES_ICON = IconLoader.findIcon("/icons/ltp.png");
 }

@@ -22,25 +22,28 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
-import org.textmapper.idea.LapgBundle;
-import org.textmapper.idea.LapgIcons;
+import org.textmapper.idea.TMIcons;
+import org.textmapper.idea.TextmapperBundle;
+import org.textmapper.templates.eval.DefaultStaticMethods;
 
 import java.util.Properties;
 
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class LapgTemplatesFactory implements FileTemplateGroupDescriptorFactory {
+public class TMTemplatesFactory implements FileTemplateGroupDescriptorFactory {
 
 	@NonNls
 	public static final String GRAMMAR_FILE = "LapgGrammar.s";
 	@NonNls
 	static final String NAME_TEMPLATE_PROPERTY = "NAME";
+	@NonNls
+	static final String NAME_CAP_TEMPLATE_PROPERTY = "NAME_CAP";
 
 	public FileTemplateGroupDescriptor getFileTemplatesDescriptor() {
-		final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor(LapgBundle.message("template.file.title"),
-				LapgIcons.LAPG_ICON);
-		group.addTemplate(new FileTemplateDescriptor(GRAMMAR_FILE, LapgIcons.LAPG_ICON));
+		final FileTemplateGroupDescriptor group = new FileTemplateGroupDescriptor(TextmapperBundle.message("template.file.title"),
+				TMIcons.TM_ICON);
+		group.addTemplate(new FileTemplateDescriptor(GRAMMAR_FILE, TMIcons.TM_ICON));
 		return group;
 	}
 
@@ -50,6 +53,8 @@ public class LapgTemplatesFactory implements FileTemplateGroupDescriptorFactory 
 		Properties properties = new Properties(FileTemplateManager.getInstance().getDefaultProperties());
 		JavaTemplateUtil.setPackageNameAttribute(properties, directory);
 		properties.setProperty(NAME_TEMPLATE_PROPERTY, name);
+		properties.setProperty("DOLLAR", "$");
+		properties.setProperty(NAME_CAP_TEMPLATE_PROPERTY, new DefaultStaticMethods().toFirstUpper(name));
 		for (int i = 0; i < parameters.length; i += 2) {
 			properties.setProperty(parameters[i], parameters[i + 1]);
 		}

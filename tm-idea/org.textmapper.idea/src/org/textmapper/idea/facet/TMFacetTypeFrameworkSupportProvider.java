@@ -14,23 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea.templates;
+package org.textmapper.idea.facet;
 
-import com.intellij.codeInsight.template.impl.DefaultLiveTemplatesProvider;
-import org.jetbrains.annotations.NonNls;
+import com.intellij.facet.Facet;
+import com.intellij.facet.FacetTypeRegistry;
+import com.intellij.facet.ui.FacetBasedFrameworkSupportProvider;
+import com.intellij.ide.util.frameworkSupport.FrameworkVersion;
+import com.intellij.openapi.roots.ModifiableRootModel;
 
-public class LapgDefaultLiveTemplatesProvider implements DefaultLiveTemplatesProvider {
-	private static final
-	@NonNls
-	String[] DEFAULT_TEMPLATES = new String[]{
-			"/liveTemplates/lapg",
-	};
+public class TMFacetTypeFrameworkSupportProvider extends FacetBasedFrameworkSupportProvider {
 
-	public String[] getDefaultLiveTemplateFiles() {
-		return DEFAULT_TEMPLATES;
+	protected TMFacetTypeFrameworkSupportProvider() {
+		super(FacetTypeRegistry.getInstance().findFacetType(TMFacetType.ID));
 	}
 
-	public String[] getHiddenLiveTemplateFiles() {
-		return null;
+	@Override
+	protected void setupConfiguration(Facet facet, ModifiableRootModel rootModel, FrameworkVersion version) {
+		// do nothing
 	}
 }

@@ -29,7 +29,7 @@ public class TmASTFactory extends DefaultASTFactoryImpl {
 	@Override
 	@NotNull
 	public LeafElement createLeaf(final IElementType type, final CharSequence text) {
-		if (LapgTokenTypes.comments.contains(type)) {
+		if (TMTokenTypes.comments.contains(type)) {
 			return createComment(type, text);
 		}
 

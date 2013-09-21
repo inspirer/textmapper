@@ -24,16 +24,16 @@ import org.textmapper.idea.lang.templates.lexer.LtplLexerAdapter;
 /**
  * evgeny, 3/4/12
  */
-public class LapgHighlightingLexer extends LayeredLexer {
+public class TMHighlightingLexer extends LayeredLexer {
 
-	public LapgHighlightingLexer() {
-		super(new LapgLexerAdapter());
+	public TMHighlightingLexer() {
+		super(new TMLexerAdapter());
 		registerSelfStoppingLayer(new LtplLexerAdapter(),
-				new IElementType[]{LapgTokenTypes.TEMPLATES}, IElementType.EMPTY_ARRAY);
+				new IElementType[]{TMTokenTypes.TEMPLATES}, IElementType.EMPTY_ARRAY);
 		registerSelfStoppingLayer(new LtplLexerAdapter(),
-				new IElementType[]{LapgTokenTypes.TOKEN_ACTION}, IElementType.EMPTY_ARRAY);
+				new IElementType[]{TMTokenTypes.TOKEN_ACTION}, IElementType.EMPTY_ARRAY);
 		registerSelfStoppingLayer(new RegexLexerAdapter(),
-				new IElementType[]{LapgTokenTypes.REGEXP}, IElementType.EMPTY_ARRAY);
+				new IElementType[]{TMTokenTypes.REGEXP}, IElementType.EMPTY_ARRAY);
 
 	}
 }

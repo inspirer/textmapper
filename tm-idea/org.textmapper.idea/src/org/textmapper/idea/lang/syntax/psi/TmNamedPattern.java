@@ -22,7 +22,7 @@ import com.intellij.psi.PsiNamedElement;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 
 /**
  * evgeny, 8/14/12
@@ -34,7 +34,7 @@ public class TmNamedPattern extends TmElement implements PsiNamedElement {
 	}
 
 	public ASTNode getIdentifier() {
-		return getNode().findChildByType(LapgTokenTypes.ID);
+		return getNode().findChildByType(TMTokenTypes.ID);
 	}
 
 	public String getName() {

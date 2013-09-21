@@ -16,7 +16,7 @@
   -->
 <idea-plugin version="2">
 	<id>org.textmapper.idea</id>
-	<name>Lapg support</name>
+	<name>Textmapper</name>
 	<category>Custom Languages</category>
 	<version>0.9.3</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
@@ -30,29 +30,29 @@
 		<br>
 		<b>Features:</b><br>
 		<ul>
-		<li>Syntax highlighting</li>
+		<li>Customizable syntax highlighting</li>
 		<li>Navigation (go to declaration)</li>
-		<li>Find usages</li>
-		<li>Grammar compiler</li>
+		<li>Find usages, Rename, File structure</li>
+		<li>On-the-fly validation, compiler</li>
 		</ul>
 	</html>
 	]]></description>
 
 	<application-components>
 		<component>
-			<implementation-class>org.textmapper.idea.LapgLoader</implementation-class>
+			<implementation-class>org.textmapper.idea.TMLoader</implementation-class>
 		</component>
 	</application-components>
 
 	<project-components>
 		<component>
-			<implementation-class>org.textmapper.idea.compiler.LapgCompilerProjectComponent</implementation-class>
+			<implementation-class>org.textmapper.idea.compiler.TMCompilerProjectComponent</implementation-class>
 		</component>
 	</project-components>
 
 	<actions>
-		<action id="org.textmapper.idea.actions.NewLapgGrammar"
-				class="org.textmapper.idea.actions.NewLapgGrammar"
+		<action id="org.textmapper.idea.actions.NewTMGrammar"
+				class="org.textmapper.idea.actions.NewTMGrammar"
 				text="Textmapper grammar" description="Creates new Textmapper grammar">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>
@@ -60,34 +60,34 @@
 
 	<extensions defaultExtensionNs="com.intellij">
 		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.3.jar"/>
-		<facetType implementation="org.textmapper.idea.facet.LapgFacetType"/>
-		<frameworkSupport implementation="org.textmapper.idea.facet.LapgFacetTypeFrameworkSupportProvider"/>
-		<fileTypeFactory implementation="org.textmapper.idea.LapgFileTypeFactory"/>
-		<fileTemplateGroup implementation="org.textmapper.idea.actions.LapgTemplatesFactory"/>
+		<facetType implementation="org.textmapper.idea.facet.TMFacetType"/>
+		<frameworkSupport implementation="org.textmapper.idea.facet.TMFacetTypeFrameworkSupportProvider"/>
+		<fileTypeFactory implementation="org.textmapper.idea.TMFileTypesFactory"/>
+		<fileTemplateGroup implementation="org.textmapper.idea.actions.TMTemplatesFactory"/>
 
 		<syntaxHighlighter
-				key="Lapg Syntax"
-				implementationClass="org.textmapper.idea.lang.syntax.LapgSyntaxHighlighter"/>
+				key="Textmapper"
+				implementationClass="org.textmapper.idea.lang.syntax.TMSyntaxHighlighter"/>
 		<lang.parserDefinition
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.parser.TMParserDefinition"/>
 		<lang.foldingBuilder
-				language="Lapg Syntax"
-				implementationClass="org.textmapper.idea.editor.LapgFoldingBuilder"/>
+				language="Textmapper"
+				implementationClass="org.textmapper.idea.editor.TMFoldingBuilder"/>
 		<lang.psiStructureViewFactory
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.structureView.TMStructureViewFactory"/>
 		<lang.findUsagesProvider
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.findUsages.TMFindUsagesProvider"/>
 		<lang.namesValidator
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.refactoring.TMNamesValidator"/>
 		<lang.formatter
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.formatter.TMFormattingModelBuilder"/>
 		<lang.ast.factory
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.lexer.TmASTFactory"/>
 		<referencesSearch
 				implementation="org.textmapper.idea.lang.syntax.findUsages.TMOptReferencesSearcher"/>
@@ -103,24 +103,24 @@
 			implementation="org.textmapper.idea.lang.syntax.editor.EnterAfterUnmatchedNonTermStartHandler"/>
 		<renamePsiElementProcessor
 				implementation="org.textmapper.idea.lang.syntax.refactoring.RenameTMLexerStateProcessor"/>
-		<colorSettingsPage implementation="org.textmapper.idea.lang.syntax.LapgColorsPage"/>
+		<colorSettingsPage implementation="org.textmapper.idea.lang.syntax.TMColorsPage"/>
 		<annotator
-				language="Lapg Syntax"
-				implementationClass="org.textmapper.idea.lang.syntax.LapgAnnotator"/>
+				language="Textmapper"
+				implementationClass="org.textmapper.idea.lang.syntax.TMAnnotator"/>
 		<externalAnnotator
-				language="Lapg Syntax"
+				language="Textmapper"
 				implementationClass="org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator"/>
 		<defaultLiveTemplatesProvider
-				implementation="org.textmapper.idea.templates.LapgDefaultLiveTemplatesProvider"/>
+				implementation="org.textmapper.idea.templates.TMDefaultLiveTemplatesProvider"/>
 		<lang.commenter
-				language="Lapg Syntax"
-				implementationClass="org.textmapper.idea.editor.LapgCommenter"/>
-		<!-- Lapg templates -->
+				language="Textmapper"
+				implementationClass="org.textmapper.idea.editor.TMCommenter"/>
+		<!-- Textmapper templates -->
 		<syntaxHighlighter
-				key="Lapg Templates"
+				key="Textmapper Templates"
 				factoryClass="org.textmapper.idea.lang.templates.LtplSyntaxHighlighterProvider"/>
 		<lang.parserDefinition
-				language="Lapg Templates"
+				language="Textmapper Templates"
 				implementationClass="org.textmapper.idea.lang.templates.parser.LtplParserDefinition"/>
 	</extensions>
 </idea-plugin>

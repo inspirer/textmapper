@@ -14,18 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea;
+package org.textmapper.idea.lang.syntax.lexer;
 
-import com.intellij.openapi.fileTypes.FileTypeConsumer;
-import com.intellij.openapi.fileTypes.FileTypeFactory;
+import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.templates.LtplFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
-public class LapgFileTypeFactory extends FileTypeFactory {
+public class TMElementType extends IElementType {
+	private final int symbol;
+
+	public TMElementType(int symbol, @NotNull String debugName) {
+		super(debugName, TMFileType.TM_LANGUAGE);
+		this.symbol = symbol;
+	}
+
+	public int getSymbol() {
+		return symbol;
+	}
+
 	@Override
-	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(LapgFileType.LAPG_FILE_TYPE, LapgFileType.DEFAULT_EXTENSION);
-		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
+	public String toString() {
+		return "[tm] " + super.toString();
 	}
 }

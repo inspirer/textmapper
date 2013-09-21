@@ -14,26 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea.lang.syntax.lexer;
+package org.textmapper.idea.templates;
 
-import com.intellij.psi.tree.IElementType;
-import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import com.intellij.codeInsight.template.impl.DefaultLiveTemplatesProvider;
+import org.jetbrains.annotations.NonNls;
 
-public class LapgElementType extends IElementType {
-	private final int symbol;
+public class TMDefaultLiveTemplatesProvider implements DefaultLiveTemplatesProvider {
+	private static final
+	@NonNls
+	String[] DEFAULT_TEMPLATES = new String[]{
+			"/liveTemplates/textmapper",
+	};
 
-	public LapgElementType(int symbol, @NotNull String debugName) {
-		super(debugName, LapgFileType.LAPG_LANGUAGE);
-		this.symbol = symbol;
+	public String[] getDefaultLiveTemplateFiles() {
+		return DEFAULT_TEMPLATES;
 	}
 
-	public int getSymbol() {
-		return symbol;
-	}
-
-	@Override
-	public String toString() {
-		return "[tm] " + super.toString();
+	public String[] getHiddenLiveTemplateFiles() {
+		return null;
 	}
 }

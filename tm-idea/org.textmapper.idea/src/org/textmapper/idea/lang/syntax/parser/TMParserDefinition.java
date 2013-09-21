@@ -28,9 +28,9 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
-import org.textmapper.idea.lang.syntax.lexer.LapgLexerAdapter;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMElementType;
+import org.textmapper.idea.lang.syntax.lexer.TMLexerAdapter;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.psi.*;
 import org.textmapper.tool.parser.TMParser.Tokens;
 
@@ -38,7 +38,7 @@ public class TMParserDefinition implements ParserDefinition {
 
 	@NotNull
 	public Lexer createLexer(Project project) {
-		return new LapgLexerAdapter();
+		return new TMLexerAdapter();
 	}
 
 	public PsiParser createParser(Project project) {
@@ -51,23 +51,23 @@ public class TMParserDefinition implements ParserDefinition {
 
 	@NotNull
 	public TokenSet getWhitespaceTokens() {
-		return LapgTokenTypes.whitespaces;
+		return TMTokenTypes.whitespaces;
 	}
 
 	@NotNull
 	public TokenSet getCommentTokens() {
-		return LapgTokenTypes.comments;
+		return TMTokenTypes.comments;
 	}
 
 	@NotNull
 	public TokenSet getStringLiteralElements() {
-		return LapgTokenTypes.strings;
+		return TMTokenTypes.strings;
 	}
 
 	@NotNull
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
-		switch (((LapgElementType) type).getSymbol()) {
+		switch (((TMElementType) type).getSymbol()) {
 			case Tokens.input:
 				return new TmGrammar(node);
 			case Tokens.header:

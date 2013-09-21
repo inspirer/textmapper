@@ -14,16 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/.
  */
-package org.textmapper.idea.facet;
+package org.textmapper.idea;
 
-import com.intellij.facet.Facet;
-import com.intellij.facet.FacetType;
-import com.intellij.openapi.module.Module;
+import com.intellij.openapi.components.ApplicationComponent;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.project.ProjectManagerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class LapgFacet extends Facet<LapgFacetConfiguration> {
+public class TMLoader implements ApplicationComponent {
 
-	public LapgFacet(@NotNull FacetType facetType, @NotNull Module module, @NotNull String name, @NotNull LapgFacetConfiguration configuration, Facet underlyingFacet) {
-		super(facetType, module, name, configuration, underlyingFacet);
+	public TMLoader() {
+	}
+
+	public void initComponent() {
+		ProjectManager.getInstance().addProjectManagerListener(new ProjectManagerAdapter() {
+			public void projectOpened(final Project project) {
+			}
+		});
+	}
+
+	public void disposeComponent() {
+	}
+
+	@NotNull
+	public String getComponentName() {
+		return "textmapper loader";
 	}
 }

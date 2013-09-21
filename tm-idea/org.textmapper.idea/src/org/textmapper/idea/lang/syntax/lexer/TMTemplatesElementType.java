@@ -28,12 +28,12 @@ import org.textmapper.idea.lang.templates.parser.LtplParser;
 /**
  * evgeny, 3/4/12
  */
-public class LapgTemplatesElementType extends ILazyParseableElementType {
+public class TMTemplatesElementType extends ILazyParseableElementType {
 
 	private int symbol;
 	private boolean contentOnly;
 
-	public LapgTemplatesElementType(int symbol, boolean contentOnly, @NotNull String debugName) {
+	public TMTemplatesElementType(int symbol, boolean contentOnly, @NotNull String debugName) {
 		super(debugName, LtplFileType.LTPL_LANGUAGE);
 		this.symbol = symbol;
 		this.contentOnly = contentOnly;
@@ -63,6 +63,6 @@ public class LapgTemplatesElementType extends ILazyParseableElementType {
 
 	@Override
 	public String toString() {
-		return "[lapg]" + super.toString();
+		return "[tm]" + super.toString();
 	}
 }

@@ -160,7 +160,7 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 		final List<Pair<TmCompilerTask, ModuleBuildTarget>> toCompile = new ArrayList<Pair<TmCompilerTask, ModuleBuildTarget>>();
 		dirtyFilesHolder.processDirtyFiles(new FileProcessor<JavaSourceRootDescriptor, ModuleBuildTarget>() {
 			public boolean apply(ModuleBuildTarget target, File file, JavaSourceRootDescriptor sourceRoot) throws IOException {
-				if (TM_SOURCES_FILTER.accept(file) && !configuration.isResourceFile(file, sourceRoot.root)) {
+				if (TM_SOURCES_FILTER.accept(file) /* TODO && !configuration.isResourceFile(file, sourceRoot.root) */) {
 					JpsTmModuleExtension ext = JpsTmExtensionService.getInstance().getExtension(target.getModule());
 					if (ext != null) {
 						File outputDir = file.getParentFile();

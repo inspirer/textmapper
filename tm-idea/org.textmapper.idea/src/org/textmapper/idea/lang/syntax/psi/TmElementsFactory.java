@@ -22,7 +22,7 @@ import com.intellij.psi.PsiFileFactory;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 
 import java.util.List;
@@ -103,9 +103,9 @@ public class TmElementsFactory {
 	}
 
 	private static TMPsiFile createDummyFile(Project p, String text) {
-		String ext = LapgFileType.DEFAULT_EXTENSION;
+		String ext = TMFileType.DEFAULT_EXTENSION;
 		@NonNls String fileName = "_Dummy_." + ext;
-		FileType type = LapgFileType.LAPG_FILE_TYPE;
+		FileType type = TMFileType.TM_FILE_TYPE;
 
 		return (TMPsiFile) PsiFileFactory.getInstance(p).createFileFromText(fileName, type, text);
 	}

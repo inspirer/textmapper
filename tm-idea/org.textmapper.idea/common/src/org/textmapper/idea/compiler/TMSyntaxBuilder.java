@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 /**
  * Gryaznov Evgeny, 3/13/11
  */
-public class LapgSyntaxBuilder implements ProcessingStrategy {
+public class TMSyntaxBuilder implements ProcessingStrategy {
 
 	private static final Pattern FILENAME = Pattern.compile("([\\w-]+/)*[\\w-]+(\\.\\w+)?");
 
@@ -46,7 +46,7 @@ public class LapgSyntaxBuilder implements ProcessingStrategy {
 	private final ProcessingStatus status;
 	private Map<String, String> myGeneratedContent;
 
-	public LapgSyntaxBuilder(File file, @Nullable String fileContent, TMOptions options, ProcessingStatus status) {
+	public TMSyntaxBuilder(File file, @Nullable String fileContent, TMOptions options, ProcessingStatus status) {
 		this.file = file;
 		this.fileContent = fileContent;
 		this.options = options;

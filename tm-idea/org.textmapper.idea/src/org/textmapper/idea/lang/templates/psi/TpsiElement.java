@@ -51,6 +51,6 @@ public class TpsiElement extends ASTWrapperPsiElement {
 
 	@Override
 	public String toString() {
-		return "lapg templates psi: " + type;
+		return "textmapper templates psi: " + type;
 	}
 }

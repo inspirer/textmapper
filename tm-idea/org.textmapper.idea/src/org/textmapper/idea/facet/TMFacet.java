@@ -17,19 +17,13 @@
 package org.textmapper.idea.facet;
 
 import com.intellij.facet.Facet;
-import com.intellij.facet.FacetTypeRegistry;
-import com.intellij.facet.ui.FacetBasedFrameworkSupportProvider;
-import com.intellij.ide.util.frameworkSupport.FrameworkVersion;
-import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.facet.FacetType;
+import com.intellij.openapi.module.Module;
+import org.jetbrains.annotations.NotNull;
 
-public class LapgFacetTypeFrameworkSupportProvider extends FacetBasedFrameworkSupportProvider {
+public class TMFacet extends Facet<TMFacetConfiguration> {
 
-	protected LapgFacetTypeFrameworkSupportProvider() {
-		super(FacetTypeRegistry.getInstance().findFacetType(LapgFacetType.ID));
-	}
-
-	@Override
-	protected void setupConfiguration(Facet facet, ModifiableRootModel rootModel, FrameworkVersion version) {
-		// do nothing
+	public TMFacet(@NotNull FacetType facetType, @NotNull Module module, @NotNull String name, @NotNull TMFacetConfiguration configuration, Facet underlyingFacet) {
+		super(facetType, module, name, configuration, underlyingFacet);
 	}
 }

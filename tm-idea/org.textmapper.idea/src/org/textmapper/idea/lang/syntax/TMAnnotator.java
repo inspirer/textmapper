@@ -27,8 +27,8 @@ import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMElementType;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.lexer.TmToken;
 import org.textmapper.idea.lang.syntax.psi.*;
 
@@ -38,14 +38,14 @@ import java.util.Set;
 /**
  * Gryaznov Evgeny, 1/30/11
  */
-public class LapgAnnotator implements Annotator {
+public class TMAnnotator implements Annotator {
 	public void annotate(@NotNull PsiElement element, @NotNull AnnotationHolder holder) {
 		if (element instanceof TmSymbolReference) {
 			TmSymbolReference ref = (TmSymbolReference) element;
 			PsiElement target = ref.resolve();
 			if (target instanceof TmLexem) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
-				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.LEXEM_REFERENCE);
+				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.LEXEM_REFERENCE);
 			} else if (target == null) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
@@ -62,9 +62,9 @@ public class LapgAnnotator implements Annotator {
 			for (PsiElement el = element.getFirstChild(); el instanceof TmToken || el instanceof PsiWhiteSpace; el = el.getNextSibling()) {
 				if (el instanceof PsiWhiteSpace) continue;
 				IElementType type = ((TmToken) el).getTokenType();
-				if (!(type == LapgTokenTypes.OP_AT || type == LapgTokenTypes.ID)) break;
+				if (!(type == TMTokenTypes.OP_AT || type == TMTokenTypes.ID)) break;
 				Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-				infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.ANNOTATION);
+				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.ANNOTATION);
 			}
 		}
 		if (element instanceof TmDirective
@@ -73,7 +73,7 @@ public class LapgAnnotator implements Annotator {
 				|| element instanceof TmHeader
 				|| element instanceof TmLexemAttrs) {
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
-				if (isSoft(((LapgElementType) token.getTokenType()).getSymbol())) {
+				if (isSoft(((TMElementType) token.getTokenType()).getSymbol())) {
 					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);
 					infoAnnotation.setTextAttributes(DefaultLanguageHighlighterColors.KEYWORD);
 				}
@@ -84,13 +84,13 @@ public class LapgAnnotator implements Annotator {
 				if (el instanceof PsiWhiteSpace) continue;
 				if (el instanceof TmToken) {
 					IElementType type = ((TmToken) el).getTokenType();
-					if (type == LapgTokenTypes.OP_LBRACKET || type == LapgTokenTypes.OP_RBRACKET) {
+					if (type == TMTokenTypes.OP_LBRACKET || type == TMTokenTypes.OP_RBRACKET) {
 						Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-						infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.RHS_PREFIX);
+						infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RHS_PREFIX);
 					}
 				} else if (el instanceof TmIdentifier) {
 					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-					infoAnnotation.setTextAttributes(LapgSyntaxHighlighter.RHS_PREFIX);
+					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RHS_PREFIX);
 				}
 			}
 		}
@@ -99,8 +99,8 @@ public class LapgAnnotator implements Annotator {
 	private static Set<Integer> softKeywords = new HashSet<Integer>();
 
 	static {
-		for (IElementType softKeyword : LapgTokenTypes.softKeywords.getTypes()) {
-			softKeywords.add(((LapgElementType) softKeyword).getSymbol());
+		for (IElementType softKeyword : TMTokenTypes.softKeywords.getTypes()) {
+			softKeywords.add(((TMElementType) softKeyword).getSymbol());
 		}
 	}
 

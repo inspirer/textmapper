@@ -17,40 +17,25 @@
 package org.textmapper.idea.lang.syntax;
 
 import com.intellij.lang.Language;
-import com.intellij.openapi.fileTypes.LanguageFileType;
-import org.textmapper.idea.LapgIcons;
+import com.intellij.openapi.fileTypes.SingleLazyInstanceSyntaxHighlighterFactory;
+import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+public class TextmapperLanguage extends Language {
 
-public class LapgFileType extends LanguageFileType {
+	public static final String ID = "Textmapper";
 
-	public static final LapgFileType LAPG_FILE_TYPE = new LapgFileType();
-	public static final Language LAPG_LANGUAGE = LAPG_FILE_TYPE.getLanguage();
+	public TextmapperLanguage() {
+		super(ID);
 
-	public static final String DEFAULT_EXTENSION = "tm";
+		SyntaxHighlighterFactory.LANGUAGE_FACTORY.addExplicitExtension(this, new LapgHighlighterFactory());
+	}
 
-    private LapgFileType() {
-        super(new LapgLanguage());
-    }
-
-
-    @NotNull
-    public String getName() {
-        return LapgLanguage.ID;
-    }
-
-    @NotNull
-    public String getDescription() {
-        return "TextMapper syntax";
-    }
-
-    @NotNull
-    public String getDefaultExtension() {
-        return DEFAULT_EXTENSION;
-    }
-
-    public Icon getIcon() {
-        return LapgIcons.LAPG_ICON;
-    }
+	private static class LapgHighlighterFactory extends SingleLazyInstanceSyntaxHighlighterFactory {
+		@NotNull
+		protected SyntaxHighlighter createHighlighter() {
+			return new TMSyntaxHighlighter();
+		}
+	}
 }

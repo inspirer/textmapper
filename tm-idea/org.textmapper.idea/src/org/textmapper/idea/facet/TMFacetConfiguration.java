@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nls;
 
 import javax.swing.*;
 
-public class LapgFacetConfiguration implements FacetConfiguration, PersistentStateComponent<TmConfigurationBean> {
+public class TMFacetConfiguration implements FacetConfiguration, PersistentStateComponent<TmConfigurationBean> {
 
 	private TmConfigurationBean tmConfigurationBean = new TmConfigurationBean();
 
@@ -58,16 +58,16 @@ public class LapgFacetConfiguration implements FacetConfiguration, PersistentSta
 
 	public class LapgFacetEditorTab extends FacetEditorTab {
 
-		private LapgFacetEditorTabUI form;
+		private TMFacetEditorTabUI form;
 
 		@Nls
 		public String getDisplayName() {
-			return "Lapg";
+			return "Textmapper";
 		}
 
 		public JComponent createComponent() {
 			if(form == null) {
-				form = new LapgFacetEditorTabUI();
+				form = new TMFacetEditorTabUI();
 			}
 			return form.getRootComponent();
 		}

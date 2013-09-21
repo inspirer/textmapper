@@ -23,7 +23,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgTokenTypes;
+import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class LapgFoldingBuilder implements FoldingBuilder {
+public class TMFoldingBuilder implements FoldingBuilder {
 
 	@NotNull
 	public FoldingDescriptor[] buildFoldRegions(@NotNull ASTNode node, @NotNull Document document) {
@@ -61,7 +61,7 @@ public class LapgFoldingBuilder implements FoldingBuilder {
 			return null;
 		}
 
-		if(type == LapgTokenTypes.TEMPLATES) {
+		if(type == TMTokenTypes.TEMPLATES) {
 			return "%% {...}";
 		}
 
@@ -73,7 +73,7 @@ public class LapgFoldingBuilder implements FoldingBuilder {
 	}
 
 	private static boolean isFoldable(IElementType type) {
-		return type == LapgTokenTypes.TOKEN_ACTION
-				|| type == LapgTokenTypes.TEMPLATES;
+		return type == TMTokenTypes.TOKEN_ACTION
+				|| type == TMTokenTypes.TEMPLATES;
 	}
 }

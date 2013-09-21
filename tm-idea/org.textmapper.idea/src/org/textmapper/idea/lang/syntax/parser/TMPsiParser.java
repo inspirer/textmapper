@@ -23,8 +23,8 @@ import com.intellij.lang.PsiParser;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
-import org.textmapper.idea.lang.syntax.lexer.LapgTemplatesElementType;
+import org.textmapper.idea.lang.syntax.lexer.TMElementType;
+import org.textmapper.idea.lang.syntax.lexer.TMTemplatesElementType;
 import org.textmapper.tool.parser.TMLexer;
 import org.textmapper.tool.parser.TMLexer.ErrorReporter;
 import org.textmapper.tool.parser.TMLexer.LapgSymbol;
@@ -45,7 +45,7 @@ public class TMPsiParser implements PsiParser {
 	private static Map<Integer, IElementType> initTypes() {
 		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
 		for (IElementType t : TextmapperElementTypes.allElements) {
-			int symbol = ((LapgElementType) t).getSymbol();
+			int symbol = ((TMElementType) t).getSymbol();
 			if (symbol >= 0) {
 				result.put(symbol, t);
 			}
@@ -214,11 +214,11 @@ public class TMPsiParser implements PsiParser {
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
 				next.symbol = Lexems.eoi;
-			} else if (myBuilder.getTokenType() instanceof LapgTemplatesElementType) {
-				LapgTemplatesElementType tokenType = (LapgTemplatesElementType) myBuilder.getTokenType();
+			} else if (myBuilder.getTokenType() instanceof TMTemplatesElementType) {
+				TMTemplatesElementType tokenType = (TMTemplatesElementType) myBuilder.getTokenType();
 				next.symbol = tokenType.getSymbol();
 			} else {
-				LapgElementType tokenType = (LapgElementType) myBuilder.getTokenType();
+				TMElementType tokenType = (TMElementType) myBuilder.getTokenType();
 				next.symbol = tokenType.getSymbol();
 				if (next.symbol == Tokens.command) {
 					// temp hack

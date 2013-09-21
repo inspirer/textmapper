@@ -19,7 +19,7 @@ package org.textmapper.idea.lang.templates;
 import com.intellij.lang.Language;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.LapgIcons;
+import org.textmapper.idea.TMIcons;
 
 import javax.swing.*;
 
@@ -53,6 +53,6 @@ public class LtplFileType extends LanguageFileType {
 	}
 
 	public Icon getIcon() {
-		return LapgIcons.LAPG_TEMPLATES_ICON;
+		return TMIcons.TM_TEMPLATES_ICON;
 	}
 }

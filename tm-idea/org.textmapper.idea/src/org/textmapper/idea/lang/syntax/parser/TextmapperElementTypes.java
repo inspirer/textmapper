@@ -18,44 +18,44 @@ package org.textmapper.idea.lang.syntax.parser;
 
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
-import org.textmapper.idea.lang.syntax.LapgFileType;
-import org.textmapper.idea.lang.syntax.lexer.LapgElementType;
+import org.textmapper.idea.lang.syntax.TMFileType;
+import org.textmapper.idea.lang.syntax.lexer.TMElementType;
 import org.textmapper.tool.parser.TMParser.Tokens;
 
 public interface TextmapperElementTypes {
-	final IFileElementType FILE = new IFileElementType(LapgFileType.LAPG_LANGUAGE);
-	public static final IElementType GRAMMAR = new LapgElementType(Tokens.input, "grammar");
+	final IFileElementType FILE = new IFileElementType(TMFileType.TM_LANGUAGE);
+	public static final IElementType GRAMMAR = new TMElementType(Tokens.input, "grammar");
 
-	public static final IElementType HEADER = new LapgElementType(Tokens.header, "header");
-	public static final IElementType IMPORT = new LapgElementType(Tokens.import_, "import");
-	public static final IElementType OPTION = new LapgElementType(Tokens.option, "option");
+	public static final IElementType HEADER = new TMElementType(Tokens.header, "header");
+	public static final IElementType IMPORT = new TMElementType(Tokens.import_, "import");
+	public static final IElementType OPTION = new TMElementType(Tokens.option, "option");
 
-	public static final IElementType LEXEM = new LapgElementType(Tokens.lexeme, "lexem");
-	public static final IElementType NAMED_PATTERN = new LapgElementType(Tokens.named_pattern, "pattern");
-	public static final IElementType STATE_SELECTOR = new LapgElementType(Tokens.state_selector, "lexer state selector");
-	public static final IElementType LEXEM_ATTRS = new LapgElementType(Tokens.lexem_attrs, "lexem attrs");
-	public static final IElementType LEXER_STATE = new LapgElementType(Tokens.lexer_state, "lexer state");
+	public static final IElementType LEXEM = new TMElementType(Tokens.lexeme, "lexem");
+	public static final IElementType NAMED_PATTERN = new TMElementType(Tokens.named_pattern, "pattern");
+	public static final IElementType STATE_SELECTOR = new TMElementType(Tokens.state_selector, "lexer state selector");
+	public static final IElementType LEXEM_ATTRS = new TMElementType(Tokens.lexem_attrs, "lexem attrs");
+	public static final IElementType LEXER_STATE = new TMElementType(Tokens.lexer_state, "lexer state");
 
-	public static final IElementType NONTERM = new LapgElementType(Tokens.nonterm, "nonterminal");
-	public static final IElementType NONTERM_TYPE = new LapgElementType(Tokens.nonterm_type, "nonterminal type");
-	public static final IElementType DIRECTIVE = new LapgElementType(Tokens.directive, "directive");
+	public static final IElementType NONTERM = new TMElementType(Tokens.nonterm, "nonterminal");
+	public static final IElementType NONTERM_TYPE = new TMElementType(Tokens.nonterm_type, "nonterminal type");
+	public static final IElementType DIRECTIVE = new TMElementType(Tokens.directive, "directive");
 
-	public static final IElementType RULE = new LapgElementType(Tokens.rule0, "rule");
-	public static final IElementType RHS_PREFIX = new LapgElementType(Tokens.rhsPrefix, "rhs prefix");
-	public static final IElementType RHS_SUFFIX = new LapgElementType(Tokens.rhsSuffix, "rhs suffix");
-	public static final IElementType RHS_PART = new LapgElementType(Tokens.rhsAnnotated, "rhs part");
-	public static final IElementType RHS_UNORDERED = new LapgElementType(Tokens.rhsUnordered, "rhs unordered");
-	public static final IElementType RHS_PRIMARY = new LapgElementType(Tokens.rhsPrimary, "rhs primary");
-	public static final IElementType NEGATIVE_LA = new LapgElementType(Tokens.negative_la, "negative_la");
+	public static final IElementType RULE = new TMElementType(Tokens.rule0, "rule");
+	public static final IElementType RHS_PREFIX = new TMElementType(Tokens.rhsPrefix, "rhs prefix");
+	public static final IElementType RHS_SUFFIX = new TMElementType(Tokens.rhsSuffix, "rhs suffix");
+	public static final IElementType RHS_PART = new TMElementType(Tokens.rhsAnnotated, "rhs part");
+	public static final IElementType RHS_UNORDERED = new TMElementType(Tokens.rhsUnordered, "rhs unordered");
+	public static final IElementType RHS_PRIMARY = new TMElementType(Tokens.rhsPrimary, "rhs primary");
+	public static final IElementType NEGATIVE_LA = new TMElementType(Tokens.negative_la, "negative_la");
 
-	public static final IElementType ACTION = new LapgElementType(Tokens.command, "action");
-	public static final IElementType TYPE = new LapgElementType(Tokens.type, "type");
-	public static final IElementType ANNOTATION = new LapgElementType(Tokens.annotation, "annotation");
-	public static final IElementType EXPRESSION = new LapgElementType(Tokens.expression, "expression");
-	public static final IElementType SYMREF = new LapgElementType(Tokens.symref, "symbol reference");
-	public static final IElementType STATEREF = new LapgElementType(Tokens.stateref, "state reference");
-	public static final IElementType IDENTIFIER = new LapgElementType(Tokens.identifier, "symbol");
-	public static final IElementType QUALIFIED_ID = new LapgElementType(Tokens.qualified_id, "qualified identifier");
+	public static final IElementType ACTION = new TMElementType(Tokens.command, "action");
+	public static final IElementType TYPE = new TMElementType(Tokens.type, "type");
+	public static final IElementType ANNOTATION = new TMElementType(Tokens.annotation, "annotation");
+	public static final IElementType EXPRESSION = new TMElementType(Tokens.expression, "expression");
+	public static final IElementType SYMREF = new TMElementType(Tokens.symref, "symbol reference");
+	public static final IElementType STATEREF = new TMElementType(Tokens.stateref, "state reference");
+	public static final IElementType IDENTIFIER = new TMElementType(Tokens.identifier, "symbol");
+	public static final IElementType QUALIFIED_ID = new TMElementType(Tokens.qualified_id, "qualified identifier");
 
 	public static final IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,

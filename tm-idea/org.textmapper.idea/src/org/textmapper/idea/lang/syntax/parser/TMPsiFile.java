@@ -22,7 +22,7 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.impl.source.PsiFileImpl;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
-import org.textmapper.idea.lang.syntax.LapgFileType;
+import org.textmapper.idea.lang.syntax.TMFileType;
 import org.textmapper.idea.lang.syntax.psi.TmGrammar;
 
 public class TMPsiFile extends PsiFileImpl {
@@ -32,7 +32,7 @@ public class TMPsiFile extends PsiFileImpl {
 
 	@NotNull
 	public FileType getFileType() {
-		return LapgFileType.LAPG_FILE_TYPE;
+		return TMFileType.TM_FILE_TYPE;
 	}
 
 	public void accept(@NotNull PsiElementVisitor visitor) {
