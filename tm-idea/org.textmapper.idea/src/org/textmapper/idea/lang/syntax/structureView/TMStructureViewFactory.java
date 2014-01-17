@@ -20,8 +20,10 @@ import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.ide.structureView.StructureViewModel;
 import com.intellij.ide.structureView.TreeBasedStructureViewBuilder;
 import com.intellij.lang.PsiStructureViewFactory;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
 
 /**
@@ -37,7 +39,7 @@ public class TMStructureViewFactory implements PsiStructureViewFactory {
 			return new TreeBasedStructureViewBuilder() {
 				@NotNull
 				@Override
-				public StructureViewModel createStructureViewModel() {
+				public StructureViewModel createStructureViewModel(@Nullable Editor editor) {
 					return new TMStructureViewModel(file);
 				}
 			};

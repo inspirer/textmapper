@@ -32,7 +32,7 @@ public class TMPsiFile extends PsiFileImpl {
 
 	@NotNull
 	public FileType getFileType() {
-		return TMFileType.TM_FILE_TYPE;
+		return TMFileType.INSTANCE;
 	}
 
 	public void accept(@NotNull PsiElementVisitor visitor) {

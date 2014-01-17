@@ -105,7 +105,7 @@ public class TmElementsFactory {
 	private static TMPsiFile createDummyFile(Project p, String text) {
 		String ext = TMFileType.DEFAULT_EXTENSION;
 		@NonNls String fileName = "_Dummy_." + ext;
-		FileType type = TMFileType.TM_FILE_TYPE;
+		FileType type = TMFileType.INSTANCE;
 
 		return (TMPsiFile) PsiFileFactory.getInstance(p).createFileFromText(fileName, type, text);
 	}

@@ -18,7 +18,7 @@
 	<id>org.textmapper.idea</id>
 	<name>Textmapper</name>
 	<category>Custom Languages</category>
-	<version>0.9.2</version>
+	<version>0.9.2.2</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 
 	<!-- 12.1.4 -->
@@ -61,6 +61,7 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.2.jar"/>
 		<facetType implementation="org.textmapper.idea.facet.TMFacetType"/>
+		<framework.detector implementation="org.textmapper.idea.facet.TMFacetType$TMFacetDetector" />
 		<frameworkSupport implementation="org.textmapper.idea.facet.TMFacetTypeFrameworkSupportProvider"/>
 		<fileTypeFactory implementation="org.textmapper.idea.TMFileTypesFactory"/>
 		<fileTemplateGroup implementation="org.textmapper.idea.actions.TMTemplatesFactory"/>

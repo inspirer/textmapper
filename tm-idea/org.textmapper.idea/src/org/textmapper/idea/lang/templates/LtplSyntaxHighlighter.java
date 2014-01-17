@@ -17,8 +17,8 @@
 package org.textmapper.idea.lang.templates;
 
 import com.intellij.lexer.Lexer;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
-import com.intellij.openapi.editor.SyntaxHighlighterColors;
 import com.intellij.openapi.editor.colors.CodeInsightColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
@@ -40,24 +40,24 @@ public class LtplSyntaxHighlighter extends SyntaxHighlighterBase implements Ltpl
 	static {
 		attributes = new HashMap<IElementType, TextAttributesKey>();
 
-		fillMap(attributes, SyntaxHighlighterColors.STRING, CCON);
-		fillMap(attributes, SyntaxHighlighterColors.NUMBER, ICON);
+		fillMap(attributes, DefaultLanguageHighlighterColors.STRING, CCON);
+		fillMap(attributes, DefaultLanguageHighlighterColors.NUMBER, ICON);
 		fillMap(attributes, HighlighterColors.TEXT, IDENTIFIER);
 		fillMap(attributes, CodeInsightColors.INSTANCE_FIELD_ATTRIBUTES, ESCID, ESCINT);
-		fillMap(attributes, SyntaxHighlighterColors.JAVA_BLOCK_COMMENT, ANY);
+		fillMap(attributes, DefaultLanguageHighlighterColors.BLOCK_COMMENT, ANY);
 
 		// [] ()
-		fillMap(attributes, SyntaxHighlighterColors.BRACKETS, OP_LSQUARE, OP_RSQUARE);
-		fillMap(attributes, SyntaxHighlighterColors.PARENTHS, OP_LPAREN, OP_RPAREN);
-		fillMap(attributes, SyntaxHighlighterColors.BRACES, OP_LCURLY, OP_RCURLY);
+		fillMap(attributes, DefaultLanguageHighlighterColors.BRACKETS, OP_LSQUARE, OP_RSQUARE);
+		fillMap(attributes, DefaultLanguageHighlighterColors.PARENTHESES, OP_LPAREN, OP_RPAREN);
+		fillMap(attributes, DefaultLanguageHighlighterColors.BRACES, OP_LCURLY, OP_RCURLY);
 
 		// punctuation
-		fillMap(attributes, SyntaxHighlighterColors.DOT, OP_DOT);
-		fillMap(attributes, SyntaxHighlighterColors.COMMA, OP_COMMA);
+		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, OP_DOT);
+		fillMap(attributes, DefaultLanguageHighlighterColors.COMMA, OP_COMMA);
 
 		// operators/keywords
-		fillMap(attributes, operators, SyntaxHighlighterColors.OPERATION_SIGN);
-		fillMap(attributes, keywords, SyntaxHighlighterColors.KEYWORD);
+		fillMap(attributes, operators, DefaultLanguageHighlighterColors.OPERATION_SIGN);
+		fillMap(attributes, keywords, DefaultLanguageHighlighterColors.KEYWORD);
 	}
 
 	@NotNull

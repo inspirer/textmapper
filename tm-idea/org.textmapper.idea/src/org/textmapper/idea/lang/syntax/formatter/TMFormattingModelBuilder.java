@@ -23,6 +23,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.idea.lang.syntax.TMFileType;
 
 import static org.textmapper.idea.lang.syntax.lexer.TMTokenTypes.*;
 import static org.textmapper.idea.lang.syntax.parser.TextmapperElementTypes.*;
@@ -43,7 +44,7 @@ public class TMFormattingModelBuilder implements FormattingModelBuilder {
 	}
 
 	private static SpacingBuilder createSpacingBuilder(CodeStyleSettings settings) {
-		return new SpacingBuilder(settings)
+		return new SpacingBuilder(settings, TMFileType.TM_LANGUAGE)
 				.between(COMMENT, OPTION).blankLines(1)
 
 				.between(OPTION, OPTION).lineBreakInCode()

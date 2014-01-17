@@ -18,6 +18,7 @@ package org.textmapper.idea.lang.syntax;
 
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighter;
+import com.intellij.openapi.fileTypes.SyntaxHighlighterFactory;
 import com.intellij.openapi.options.colors.AttributesDescriptor;
 import com.intellij.openapi.options.colors.ColorDescriptor;
 import com.intellij.openapi.options.colors.ColorSettingsPage;
@@ -97,7 +98,7 @@ public class TMColorsPage implements ColorSettingsPage {
 
 	@NotNull
 	public SyntaxHighlighter getHighlighter() {
-		final SyntaxHighlighter highlighter = SyntaxHighlighter.PROVIDER.create(TMFileType.TM_FILE_TYPE, null, null);
+		final SyntaxHighlighter highlighter = SyntaxHighlighterFactory.getSyntaxHighlighter(TMFileType.INSTANCE, null, null);
 		assert highlighter != null;
 		return highlighter;
 	}

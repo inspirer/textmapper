@@ -56,7 +56,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 
 	@Override
 	@Nullable
-	public final TMExtInput collectionInformation(@NotNull com.intellij.psi.PsiFile file) {
+	public final TMExtInput collectInformation(@NotNull com.intellij.psi.PsiFile file) {
 		if (file.getContext() != null || !(file instanceof TMPsiFile)) {
 			return null;
 		}

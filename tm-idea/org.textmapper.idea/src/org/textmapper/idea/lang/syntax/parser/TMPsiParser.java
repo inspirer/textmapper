@@ -96,6 +96,7 @@ public class TMPsiParser implements PsiParser {
 
 		public TMParserEx(PsiBuilder builder) {
 			super(new ErrorReporter() {
+				@Override
 				public void error(int start, int end, int line, String s) {
 					// ignore, errors are reported as syntax_problem productions
 				}
@@ -117,7 +118,8 @@ public class TMPsiParser implements PsiParser {
 		}
 
 		private void free(Marker m, boolean drop) {
-			assert m == markers.pop();
+			Marker top = markers.pop();
+			assert m == top;
 			if (drop) {
 				m.drop();
 			}
@@ -140,14 +142,21 @@ public class TMPsiParser implements PsiParser {
 
 		@Override
 		protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
-			for (int i = 0; i < rulelen - 1; i++) {
-				drop(tmStack[tmHead - i]);
+			LapgSymbol leftmost = null;
+			for (int i = 0; i < rulelen; i++) {
+				if (tmStack[tmHead - i].value == null) continue;
+				if (leftmost != null) {
+					drop(leftmost);
+				}
+				leftmost = tmStack[tmHead - i];
 			}
-			if (rulelen > 0) {
-				tmStack[tmHead - (rulelen - 1)].value = null;
+			PsiBuilder.Marker m = null;
+			if (leftmost != null) {
+				m = (PsiBuilder.Marker) leftmost.value;
+				leftmost.value = null;
 			}
+			lapg_gg.value = m;
 
-			Marker m = (Marker) lapg_gg.value;
 			if (m != null) {
 				IElementType elementType = reduceType(lapg_gg.symbol);
 				if (elementType != null) {

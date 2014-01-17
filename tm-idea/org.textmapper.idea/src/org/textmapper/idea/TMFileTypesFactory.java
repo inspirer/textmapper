@@ -25,7 +25,7 @@ import org.textmapper.idea.lang.templates.LtplFileType;
 public class TMFileTypesFactory extends FileTypeFactory {
 	@Override
 	public void createFileTypes(@NotNull FileTypeConsumer consumer) {
-		consumer.consume(TMFileType.TM_FILE_TYPE, TMFileType.DEFAULT_EXTENSION);
+		consumer.consume(TMFileType.INSTANCE, TMFileType.DEFAULT_EXTENSION);
 		consumer.consume(LtplFileType.LTPL_FILE_TYPE, LtplFileType.DEFAULT_EXTENSION);
 	}
 }

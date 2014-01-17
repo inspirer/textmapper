@@ -154,7 +154,7 @@ public class TMFormattingBlock extends AbstractBlock {
 			if (isAfter(newChildIndex, new IElementType[]{TextmapperElementTypes.TYPE, TextmapperElementTypes.IDENTIFIER})) {
 				return new ChildAttributes(Indent.getNoneIndent(), null);
 			} else if (isAfter(newChildIndex, new IElementType[]{TMTokenTypes.OP_CCEQ})) {
-				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(TMFileType.TM_FILE_TYPE) + 2, false, true), null);
+				return new ChildAttributes(Indent.getIndent(Type.SPACES, settings.getIndentSize(TMFileType.INSTANCE) + 2, false, true), null);
 			} else {
 				if (getSubBlocks().size() == newChildIndex) {
 					return new ChildAttributes(Indent.getNoneIndent(), null);
