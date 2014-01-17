@@ -79,7 +79,7 @@ public class TMCompiler implements TranslatingCompiler {
 			}
 		});
 
-		return fileType.equals(TMFileType.TM_FILE_TYPE) && psi instanceof TMPsiFile;
+		return fileType.equals(TMFileType.INSTANCE) && psi instanceof TMPsiFile;
 	}
 
 
@@ -155,7 +155,7 @@ public class TMCompiler implements TranslatingCompiler {
 	}
 
 	public boolean validateConfiguration(CompileScope compileScope) {
-		VirtualFile[] files = compileScope.getFiles(TMFileType.TM_FILE_TYPE, true);
+		VirtualFile[] files = compileScope.getFiles(TMFileType.INSTANCE, true);
 		if (files.length == 0) return true;
 
 		final Module[] modules = compileScope.getAffectedModules();

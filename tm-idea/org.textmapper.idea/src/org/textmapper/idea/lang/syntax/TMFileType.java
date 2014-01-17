@@ -25,8 +25,8 @@ import javax.swing.*;
 
 public class TMFileType extends LanguageFileType {
 
-	public static final TMFileType TM_FILE_TYPE = new TMFileType();
-	public static final Language TM_LANGUAGE = TM_FILE_TYPE.getLanguage();
+	public static final TMFileType INSTANCE = new TMFileType();
+	public static final Language TM_LANGUAGE = INSTANCE.getLanguage();
 
 	public static final String DEFAULT_EXTENSION = "tm";
 

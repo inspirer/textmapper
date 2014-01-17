@@ -24,6 +24,7 @@ import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.textmapper.idea.TMIcons;
 import org.textmapper.idea.TextmapperBundle;
+import org.textmapper.idea.lang.syntax.TMFileType;
 import org.textmapper.templates.eval.DefaultStaticMethods;
 
 import java.util.Properties;
@@ -66,7 +67,7 @@ public class TMTemplatesFactory implements FileTemplateGroupDescriptorFactory {
 		}
 
 		final PsiFileFactory factory = PsiFileFactory.getInstance(directory.getProject());
-		final PsiFile file = factory.createFileFromText(fileName, text);
+		final PsiFile file = factory.createFileFromText(fileName, TMFileType.INSTANCE, text);
 		return (PsiFile) directory.add(file);
 	}
 

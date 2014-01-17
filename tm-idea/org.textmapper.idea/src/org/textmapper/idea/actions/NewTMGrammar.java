@@ -94,7 +94,7 @@ public class NewTMGrammar extends CreateElementActionBase {
 	}
 
 	private static PsiElement createWhiteSpace(Project project) {
-		PsiFile dummyFile = PsiFileFactory.getInstance(project).createFileFromText("dummy." + TMFileType.DEFAULT_EXTENSION, "\n");
+		PsiFile dummyFile = PsiFileFactory.getInstance(project).createFileFromText("dummy." + TMFileType.DEFAULT_EXTENSION, TMFileType.INSTANCE, "\n");
 		return dummyFile.getFirstChild();
 	}
 }

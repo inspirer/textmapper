@@ -48,12 +48,12 @@ public class TMCompilerProjectComponent implements ProjectComponent {
 		CompilerManager compilerManager = CompilerManager.getInstance(project);
 		project.getMessageBus().connect().subscribe(CustomBuilderMessageHandler.TOPIC, new RefreshJavaCompilationStatusListener());
 
-		compilerManager.addCompilableFileType(TMFileType.TM_FILE_TYPE);
+		compilerManager.addCompilableFileType(TMFileType.INSTANCE);
 
 		for (TMCompiler compiler : compilerManager.getCompilers(TMCompiler.class)) {
 			compilerManager.removeCompiler(compiler);
 		}
-		HashSet<FileType> inputSet = new HashSet<FileType>(Arrays.asList(TMFileType.TM_FILE_TYPE));
+		HashSet<FileType> inputSet = new HashSet<FileType>(Arrays.asList(TMFileType.INSTANCE));
 		HashSet<FileType> outputSet = new HashSet<FileType>(Arrays.asList(StdFileTypes.JAVA));
 		compilerManager.addTranslatingCompiler(new TMCompiler(project), inputSet, outputSet);
 	}

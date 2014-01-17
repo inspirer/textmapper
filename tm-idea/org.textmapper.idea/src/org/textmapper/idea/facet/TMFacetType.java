@@ -19,25 +19,27 @@ package org.textmapper.idea.facet;
 import com.intellij.facet.Facet;
 import com.intellij.facet.FacetType;
 import com.intellij.facet.FacetTypeId;
-import com.intellij.facet.autodetecting.DetectedFacetPresentation;
-import com.intellij.facet.autodetecting.FacetDetector;
-import com.intellij.facet.autodetecting.FacetDetectorRegistry;
+import com.intellij.framework.detection.FacetBasedFrameworkDetector;
+import com.intellij.framework.detection.FileContentPattern;
+import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleType;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileFilter;
+import com.intellij.patterns.ElementPattern;
+import com.intellij.util.indexing.FileContent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.TMIcons;
-import org.textmapper.idea.TextmapperBundle;
 import org.textmapper.idea.lang.syntax.TMFileType;
 
 import javax.swing.*;
-import java.util.Collection;
 
 public class TMFacetType extends FacetType<TMFacet, TMFacetConfiguration> {
 
 	public static final FacetTypeId<TMFacet> ID = new FacetTypeId<TMFacet>("textmapper");
+
+	public static TMFacetType getInstance() {
+		return findInstance(TMFacetType.class);
+	}
 
 	public TMFacetType() {
 		super(ID, TmFacetConstants.TM_FACET_ID, TmFacetConstants.TM_FACET_NAME);
@@ -63,45 +65,27 @@ public class TMFacetType extends FacetType<TMFacet, TMFacetConfiguration> {
 		return TMIcons.TM_ICON;
 	}
 
-	@Override
-	public void registerDetectors(final FacetDetectorRegistry<TMFacetConfiguration> registry) {
-		FacetDetector<VirtualFile, TMFacetConfiguration> detector = new TMFacetDetector();
-		final boolean[] detected = new boolean[] { false };
-
-		VirtualFileFilter filter = new VirtualFileFilter() {
-			public boolean accept(VirtualFile file) {
-				if(detected[0]) return true;
-				detected[0] = true;
-				if(TMFileType.DEFAULT_EXTENSION.equals(file.getExtension())) {
-					registry.customizeDetectedFacetPresentation(new LapgFacetPresentation());
-					return true;
-				}
-				return false;
-			}
-		};
-
-		registry.registerUniversalDetector(TMFileType.TM_FILE_TYPE, filter, detector);
-	}
-
-	private class TMFacetDetector extends FacetDetector<VirtualFile, TMFacetConfiguration> {
+	public static class TMFacetDetector extends FacetBasedFrameworkDetector<TMFacet, TMFacetConfiguration> {
 
 		private TMFacetDetector() {
 			super("textmapper");
 		}
 
 		@Override
-		public TMFacetConfiguration detectFacet(VirtualFile source, Collection<TMFacetConfiguration> existentFacetConfigurations) {
-			if (!existentFacetConfigurations.isEmpty()) {
-			  return existentFacetConfigurations.iterator().next();
-			}
-			return createDefaultConfiguration();
+		public FacetType<TMFacet, TMFacetConfiguration> getFacetType() {
+			return TMFacetType.getInstance();
 		}
-	}
 
-	private static class LapgFacetPresentation extends DetectedFacetPresentation {
+		@NotNull
 		@Override
-		public String getAutodetectionPopupText(@NotNull Module module, @NotNull FacetType facetType, @NotNull String facetName, @NotNull VirtualFile[] files) {
-			return TextmapperBundle.message("facet.detected");
+		public FileType getFileType() {
+			return TMFileType.INSTANCE;
+		}
+
+		@NotNull
+		@Override
+		public ElementPattern<FileContent> createSuitableFilePattern() {
+			return FileContentPattern.fileContent();
 		}
 	}
 }
