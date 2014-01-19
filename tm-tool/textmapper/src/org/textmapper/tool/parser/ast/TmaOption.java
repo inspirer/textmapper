@@ -17,15 +17,24 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaOption extends TmaNode implements TmaOptionPart {
+public class TmaOption extends TmaNode {
 
 	private final String key;
 	private final ITmaExpression value;
+	private final TmaSyntaxProblem error;
 
 	public TmaOption(String key, ITmaExpression value, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.key = key;
 		this.value = value;
+		this.error = null;
+	}
+
+	public TmaOption(TmaSyntaxProblem error, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.key = null;
+		this.value = null;
+		this.error = error;
 	}
 
 	public String getKey() {
@@ -36,12 +45,19 @@ public class TmaOption extends TmaNode implements TmaOptionPart {
 		return value;
 	}
 
+	public TmaSyntaxProblem getSyntaxProblem() {
+		return error;
+	}
+
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
 		if (value != null) {
 			value.accept(v);
+		}
+		if (error != null) {
+			error.accept(v);
 		}
 	}
 }

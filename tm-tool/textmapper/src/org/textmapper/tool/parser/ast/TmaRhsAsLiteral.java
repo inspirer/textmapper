@@ -23,9 +23,9 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaRhsAsLiteral extends TmaNode implements ITmaRhsPart {
 
 	private final ITmaRhsPart inner;
-	private final TmaExpressionLiteral literal;
+	private final TmaLiteral literal;
 
-	public TmaRhsAsLiteral(ITmaRhsPart inner, TmaExpressionLiteral literal, TextSource source, int offset, int endoffset) {
+	public TmaRhsAsLiteral(ITmaRhsPart inner, TmaLiteral literal, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.inner = inner;
 		this.literal = literal;
@@ -35,7 +35,7 @@ public class TmaRhsAsLiteral extends TmaNode implements ITmaRhsPart {
 		return inner;
 	}
 
-	public TmaExpressionLiteral getLiteral() {
+	public TmaLiteral getLiteral() {
 		return literal;
 	}
 

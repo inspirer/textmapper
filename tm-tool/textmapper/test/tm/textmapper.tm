@@ -122,13 +122,16 @@ code:    /\{/                            { skipAction(); lapg_n.endoffset = getO
 %input input, expression;
 
 input ::=
-	  Llanguage name=ID '(' target=ID ')' parsing_algorithmopt ';'
-			import_*
-			option*
-			'::' Llexer
-			lexer_parts
-			('::' Lparser grammar_parts)?
-;
+	  header import_* option* lexer_section parser_section? ;
+
+header ::=
+	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';' ;
+
+lexer_section ::=
+	  '::' Llexer lexer_parts ;
+
+parser_section ::=
+	  '::' Lparser grammar_parts ;
 
 parsing_algorithm ::=
 	  Llalr '(' la=icon ')' ;
@@ -145,7 +148,7 @@ identifier class ::=
 	  ID ;
 
 symref class ::=
-	  ID ;
+	  name=ID ;
 
 type (String) ::=
 	  '(' scon ')'						{ $$ = $scon; }
@@ -198,7 +201,7 @@ state_selector ::=
 	  '[' states=(lexer_state separator ',')+ ']' ;
 
 stateref class ::=
-	  ID ;
+	  name=ID ;
 
 lexer_state ::=
 	  name=identifier ('=>' defaultTransition=stateref)?	;
@@ -215,19 +218,19 @@ grammar_part ::=
 nonterm ::=
 	  annotations? name=identifier type=nonterm_type? '::=' rules ';' ;
 
-nonterm_type ::=
-	  Lreturns symref
-	| Linline? Lclass name=identifieropt
-	| Linterface name=identifieropt
-	| Lvoid
-	| type
+nonterm_type interface ::=
+	  [AST] Lreturns symref
+	| [hint] isInline=Linline? kind=Lclass name=identifieropt
+	| [hint] kind=Linterface name=identifieropt
+	| [hint] kind=Lvoid
+	| [raw] type
 ;
 
 priority_kw ::=
 	Lleft | Lright | Lnonassoc ;
 
-directive interface ::=
-	  '%' priority_kw references ';'
+directive returns grammar_part ::=
+	  [prio] '%' priority_kw references ';'
 	| [input] '%' Linput (inputref separator ',')+ ';'
 ;
 
@@ -327,7 +330,7 @@ annotations class ::=
 	annotations=annotation+ ;
 
 annotation ::=
-	  '@' qualified_id ('{' arguments=(expression separator ',')+ '}')?
+	  '@' ID ('{' expression '}')?
 	| '@' syntax_problem
 ;
 

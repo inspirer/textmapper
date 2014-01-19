@@ -257,7 +257,6 @@ public class TMParserCompiler {
 				resolved.add(rulePart);
 			}
 			return builder.unordered(resolved, part);
-
 		}
 
 		Collection<Terminal> nla = null;
@@ -289,6 +288,12 @@ public class TMParserCompiler {
 		} else if (part instanceof TmaRhsAsLiteral) {
 			literalCast = (TmaRhsAsLiteral) part;
 			part = literalCast.getInner();
+		}
+
+		TmaRhsClass cl = null;
+		if (part instanceof TmaRhsClass) {
+			cl = (TmaRhsClass) part;
+			part = cl.getInner();
 		}
 
 		boolean canInline = nla == null && annotations == null;
@@ -323,6 +328,11 @@ public class TMParserCompiler {
 			} else {
 				error(literalCast, "cannot apply `as literal' to a group");
 			}
+		}
+
+		if (cl != null) {
+			// TODO apply class name to `result'
+			error(cl, "internal error: classes are not supported yet");
 		}
 
 		if (optional != null) {

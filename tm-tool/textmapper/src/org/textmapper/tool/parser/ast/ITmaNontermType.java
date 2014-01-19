@@ -15,5 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public interface TmaOptionPart extends ITmaNode {
+/**
+ * evgeny, 6/27/13
+ */
+public interface ITmaNontermType extends ITmaNode {
 }

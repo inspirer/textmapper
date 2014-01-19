@@ -89,7 +89,7 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaExpressionLiteral n) {
+	public boolean visit(TmaLiteral n) {
 		return true;
 	}
 
@@ -183,5 +183,13 @@ public class TmaVisitor {
 
 	public boolean visit(TmaRhsAsLiteral n) {
 		return true;
+	}
+
+	public boolean visit(TmaAnnotation n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsClass n) {
+		return false;
 	}
 }

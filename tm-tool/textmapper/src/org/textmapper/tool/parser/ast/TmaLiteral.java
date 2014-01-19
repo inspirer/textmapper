@@ -15,8 +15,22 @@
  */
 package org.textmapper.tool.parser.ast;
 
-/**
- * evgeny, 6/27/13
- */
-public interface TmaNontermType extends ITmaNode {
+import org.textmapper.tool.parser.TMTree.TextSource;
+
+public class TmaLiteral extends TmaNode implements ITmaExpression {
+
+	private final Object literal;
+
+	public TmaLiteral(Object literal, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.literal = literal;
+	}
+
+	public Object getLiteral() {
+		return literal;
+	}
+
+	public void accept(TmaVisitor v) {
+		v.visit(this);
+	}
 }

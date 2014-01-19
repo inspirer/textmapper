@@ -152,7 +152,7 @@ public class TMResolver {
 				: null;
 	}
 
-	private AstType convertRawType(TmaNontermType type, SourceElement origin) {
+	private AstType convertRawType(ITmaNontermType type, SourceElement origin) {
 		return type instanceof TmaNontermTypeRaw
 				? rawTypesBuilder.rawType(((TmaNontermTypeRaw) type).getTypeText(), origin)
 				: null;

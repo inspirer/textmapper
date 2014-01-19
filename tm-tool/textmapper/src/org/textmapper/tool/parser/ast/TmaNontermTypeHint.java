@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 7/21/13
  */
-public class TmaNontermTypeHint extends TmaNode implements TmaNontermType {
+public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 
 	private final Kind kind;
 	private final TmaIdentifier name;

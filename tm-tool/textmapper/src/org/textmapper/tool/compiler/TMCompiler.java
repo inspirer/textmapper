@@ -125,18 +125,20 @@ public class TMCompiler {
 		if (tree.getRoot().getOptions() == null) {
 			return options;
 		}
-		for (TmaOptionPart option : tree.getRoot().getOptions()) {
-			if (option instanceof TmaOption) {
-				String key = ((TmaOption) option).getKey();
-				IFeature feature = optionsClass.getFeature(key);
-				if (feature == null) {
-					resolver.error(option, "unknown option `" + key + "`");
-					continue;
-				}
-
-				ITmaExpression value = ((TmaOption) option).getValue();
-				options.put(key, expressionResolver.convertExpression(value, feature.getType()));
+		for (TmaOption option : tree.getRoot().getOptions()) {
+			if (option.getSyntaxProblem() != null) {
+				continue;
 			}
+
+			String key = option.getKey();
+			IFeature feature = optionsClass.getFeature(key);
+			if (feature == null) {
+				resolver.error(option, "unknown option `" + key + "`");
+				continue;
+			}
+
+			ITmaExpression value = option.getValue();
+			options.put(key, expressionResolver.convertExpression(value, feature.getType()));
 		}
 		return options;
 	}

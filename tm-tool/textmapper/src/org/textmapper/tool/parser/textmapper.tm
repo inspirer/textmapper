@@ -152,14 +152,14 @@ import_ (TmaImport) ::=
 ;
 
 
-options (List<TmaOptionPart>) ::=
-	  option											{ $$ = new ArrayList<TmaOptionPart>(16); ${left()}.add($option); }
+options (List<TmaOption>) ::=
+	  option											{ $$ = new ArrayList<TmaOption>(16); ${left()}.add($option); }
 	| list=options option								{ $list.add($option); }
 ;
 
-option (TmaOptionPart) ::=
+option (TmaOption) ::=
 	  ID '=' expression 								{ $$ = new TmaOption($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| syntax_problem
+	| syntax_problem									{ $$ = new TmaOption($syntax_problem, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 identifier (TmaIdentifier) ::=
@@ -254,7 +254,7 @@ nonterm ::=
 	  													{ $$ = new TmaNonterm($identifier, $nonterm_type, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-nonterm_type (TmaNontermType) ::=
+nonterm_type (ITmaNontermType) ::=
 	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().offset}, ${left().endoffset}); }
 	| Linline? Lclass name=identifieropt				{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.${if self.Linline.rightOffset>=0}INLINE_CLASS${else}CLASS${end}, $name, source, ${left().offset}, ${left().endoffset}); }
 	| Linterface name=identifieropt						{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.INTERFACE, $name, source, ${left().offset}, ${left().endoffset}); }
@@ -356,7 +356,7 @@ rhsUnordered (ITmaRhsPart) ::=
 
 rhsClass (ITmaRhsPart) ::=
 	  rhsPrimary
-	| identifier ':' rhsPrimary							{ $$ = $2; reporter.error(${context->java.err_location('lapg_gg', 'tmLexer') }"unsupported, TODO"); }
+	| identifier ':' rhsPrimary							{ $$ = new TmaRhsClass($identifier, $rhsPrimary, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsPrimary (ITmaRhsPart) ::=
@@ -378,14 +378,14 @@ annotations (TmaAnnotations) ::=
 	annotation_list										{ $$ = new TmaAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-annotation_list (java.util.@List<TmaMapEntriesItem>) ::=
-	  annotation										{ $$ = new java.util.@ArrayList<TmaMapEntriesItem>(); ${left()}.add($annotation); }
+annotation_list (java.util.@List<TmaAnnotation>) ::=
+	  annotation										{ $$ = new java.util.@ArrayList<TmaAnnotation>(); ${left()}.add($annotation); }
 	| annotation_list annotation						{ $annotation_list.add($annotation); }
 ;
 
-annotation (TmaMapEntriesItem) ::=
-	  '@' ID ('{' expression '}')?                      { $$ = new TmaMapEntriesItem($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
-	| '@' syntax_problem                                { $$ = new TmaMapEntriesItem($syntax_problem); }
+annotation (TmaAnnotation) ::=
+	  '@' ID ('{' expression '}')?                      { $$ = new TmaAnnotation($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
+	| '@' syntax_problem                                { $$ = new TmaAnnotation($syntax_problem, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 negative_la (TmaNegativeLa) ::=
@@ -407,11 +407,11 @@ expression (ITmaExpression) ::=
 	| syntax_problem
 ;
 
-literal (TmaExpressionLiteral) ::=
-	  scon                                              { $$ = new TmaExpressionLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
-	| icon                                              { $$ = new TmaExpressionLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
-	| Ltrue                                             { $$ = new TmaExpressionLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
-	| Lfalse                                            { $$ = new TmaExpressionLiteral(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
+literal (TmaLiteral) ::=
+	  scon                                              { $$ = new TmaLiteral($scon, source, ${left().offset}, ${left().endoffset}); }
+	| icon                                              { $$ = new TmaLiteral($icon, source, ${left().offset}, ${left().endoffset}); }
+	| Ltrue                                             { $$ = new TmaLiteral(Boolean.TRUE, source, ${left().offset}, ${left().endoffset}); }
+	| Lfalse                                            { $$ = new TmaLiteral(Boolean.FALSE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 expression_list (List<ITmaExpression>) ::=

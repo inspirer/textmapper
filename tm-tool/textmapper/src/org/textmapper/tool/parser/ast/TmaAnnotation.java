@@ -17,35 +17,42 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+public class TmaAnnotation extends TmaNode {
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public class TmaRuleAnnotations extends TmaAnnotations {
+	private String name;
+	private ITmaExpression expression;
+	private TmaSyntaxProblem syntaxProblem;
 
-	private final TmaNegativeLa negativeLA;
-
-	public TmaRuleAnnotations(TmaNegativeLa negativeLA, List<TmaAnnotation> annotations, TextSource source, int offset, int endoffset) {
-		super(annotations, source, offset, endoffset);
-		this.negativeLA = negativeLA;
+	public TmaAnnotation(String name, ITmaExpression expression, TextSource input, int start, int end) {
+		super(input, start, end);
+		this.name = name;
+		this.expression = expression;
 	}
 
-	public TmaNegativeLa getNegativeLA() {
-		return negativeLA;
+	public TmaAnnotation(TmaSyntaxProblem syntaxProblem, TextSource input, int start, int end) {
+		super(input, start, end);
+		this.syntaxProblem = syntaxProblem;
 	}
 
+	public String getName() {
+		return name;
+	}
+	public ITmaExpression getExpression() {
+		return expression;
+	}
+	public TmaSyntaxProblem getSyntaxProblem() {
+		return syntaxProblem;
+	}
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (negativeLA != null) {
-			negativeLA.accept(v);
+
+		if (expression != null) {
+			expression.accept(v);
 		}
-		if (getAnnotations() != null) {
-			for (TmaAnnotation n : getAnnotations()) {
-				n.accept(v);
-			}
+		if (syntaxProblem != null) {
+			syntaxProblem.accept(v);
 		}
 	}
 }

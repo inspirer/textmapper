@@ -59,10 +59,10 @@ public class TMExpressionResolver {
 			return null;
 		}
 
-		List<TmaMapEntriesItem> list = astAnnotations.getAnnotations();
+		List<TmaAnnotation> list = astAnnotations.getAnnotations();
 		Map<String, Object> result = new HashMap<String, Object>();
-		for (TmaMapEntriesItem entry : list) {
-			if (entry.hasSyntaxError()) {
+		for (TmaAnnotation entry : list) {
+			if (entry.getSyntaxProblem() != null) {
 				continue;
 			}
 			String name = entry.getName();
@@ -132,8 +132,8 @@ public class TMExpressionResolver {
 					}
 					return resolver.resolve((TmaSymref) expression);
 				}
-				if (expression instanceof TmaExpressionLiteral) {
-					Object literal = ((TmaExpressionLiteral) expression).getLiteral();
+				if (expression instanceof TmaLiteral) {
+					Object literal = ((TmaLiteral) expression).getLiteral();
 					return convertLiteral(expression, literal, type);
 				}
 				return null;

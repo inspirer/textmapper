@@ -22,11 +22,11 @@ import java.util.List;
 public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 
 	private final TmaIdentifier name;
-	private final TmaNontermType type;
+	private final ITmaNontermType type;
 	private final List<TmaRule0> rules;
 	private final TmaAnnotations annotations;
 
-	public TmaNonterm(TmaIdentifier name, TmaNontermType type, List<TmaRule0> rules,
+	public TmaNonterm(TmaIdentifier name, ITmaNontermType type, List<TmaRule0> rules,
 					  TmaAnnotations annotations, TextSource source, int offset,
 					  int endoffset) {
 		super(source, offset, endoffset);
@@ -40,7 +40,7 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		return name;
 	}
 
-	public TmaNontermType getType() {
+	public ITmaNontermType getType() {
 		return type;
 	}
 

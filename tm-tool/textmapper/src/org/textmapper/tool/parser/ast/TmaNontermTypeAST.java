@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 /**
  * evgeny, 6/27/13
  */
-public class TmaNontermTypeAST extends TmaNode implements TmaNontermType {
+public class TmaNontermTypeAST extends TmaNode implements ITmaNontermType {
 
 	private final TmaSymref reference;
 

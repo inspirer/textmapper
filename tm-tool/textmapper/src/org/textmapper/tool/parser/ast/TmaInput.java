@@ -23,12 +23,12 @@ public class TmaInput extends TmaNode {
 
 	private final TmaHeader header;
 	private final List<TmaImport> imports;
-	private final List<TmaOptionPart> options;
+	private final List<TmaOption> options;
 	private final List<ITmaLexerPart> lexer;
 	private final List<ITmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOptionPart> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
+	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
 					int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.header = header;
@@ -46,7 +46,7 @@ public class TmaInput extends TmaNode {
 		return imports;
 	}
 
-	public List<TmaOptionPart> getOptions() {
+	public List<TmaOption> getOptions() {
 		return options;
 	}
 
@@ -78,7 +78,7 @@ public class TmaInput extends TmaNode {
 			}
 		}
 		if (options != null) {
-			for (TmaOptionPart o : options) {
+			for (TmaOption o : options) {
 				o.accept(v);
 			}
 		}

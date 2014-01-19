@@ -17,20 +17,35 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaExpressionLiteral extends TmaNode implements ITmaExpression {
+public class TmaRhsClass extends TmaNode implements ITmaRhsPart {
 
-	private final Object literal;
+	private TmaIdentifier identifier;
+	private ITmaRhsPart rhsPrimary;
 
-	public TmaExpressionLiteral(Object literal, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.literal = literal;
+	public TmaRhsClass(TmaIdentifier identifier, ITmaRhsPart rhsPrimary, TextSource input, int start, int end) {
+		super(input, start, end);
+		this.identifier = identifier;
+		this.rhsPrimary = rhsPrimary;
 	}
 
-	public Object getLiteral() {
-		return literal;
+	public TmaIdentifier getIdentifier() {
+		return identifier;
+	}
+
+	public ITmaRhsPart getInner() {
+		return rhsPrimary;
 	}
 
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+
+		if (identifier != null) {
+			identifier.accept(v);
+		}
+		if (rhsPrimary != null) {
+			rhsPrimary.accept(v);
+		}
 	}
 }

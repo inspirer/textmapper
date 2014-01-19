@@ -2,17 +2,41 @@
 // Ast
 
 class Input {
-	String name;
-	String target;
-	ParsingAlgorithm parsingAlgorithm;
+	Header header;
 	list<Import> importOptlist;
 	list<Option> optionOptlist;
-	list<LexerPartsItem> lexerParts;
-	list<GrammarPartsItem> grammarParts;
+	LexerSection lexerSection;
+	ParserSection parserSection;
 }
 
 input  : Input ::=
-	Llanguage name=ID '(' target=ID ')' parsingAlgorithm=parsing_algorithmopt ';' importOptlist=import__optlist optionOptlist=option_optlist '::' Llexer lexerParts=lexer_parts ('::' Lparser grammarParts=grammar_parts)?
+	{header} importOptlist=import__optlist optionOptlist=option_optlist lexerSection=lexer_section parserSection=parser_section?
+;
+
+class Header {
+	Name target;
+	Name name;
+	ParsingAlgorithm parsingAlgorithm;
+}
+
+header  : Header ::=
+	Llanguage {name} ('(' target=name ')')? parsingAlgorithm=parsing_algorithmopt ';'
+;
+
+class LexerSection {
+	list<LexerPartsItem> lexerParts;
+}
+
+lexer_section  : LexerSection ::=
+	'::' Llexer lexerParts=lexer_parts
+;
+
+class ParserSection {
+	list<GrammarPartsItem> grammarParts;
+}
+
+parser_section  : ParserSection ::=
+	'::' Lparser grammarParts=grammar_parts
 ;
 
 class ParsingAlgorithm {
@@ -52,11 +76,11 @@ identifier  : Identifier ::=
 ;
 
 class Symref : Expression {
-	String ID;
+	String name;
 }
 
 symref  : Symref ::=
-	{ID}
+	name=ID
 ;
 
 type (String) ::=
@@ -132,7 +156,7 @@ lexeme  : Lexeme ::=
 ;
 
 class Stateref {
-	String ID;
+	String name;
 }
 
 lexem_transition  : Stateref ::=
@@ -170,7 +194,7 @@ state_selector  : StateSelector ::=
 ;
 
 stateref  : Stateref ::=
-	{ID}
+	name=ID
 ;
 
 class LexerState {
@@ -210,18 +234,34 @@ nonterm  : Nonterm ::=
 	{annotations}? name=identifier type=nonterm_type? '::=' {rules} ';'
 ;
 
-class NontermType {
-	Identifier name;
+interface NontermType {
+}
+
+class NontermTypeAST : NontermType {
 	Symref symref;
+}
+
+class NontermTypeHint : NontermType {
+	boolean isInline;
+	KindKind kind;
+	Identifier name;
+	enum KindKind {
+		LVOID,
+		LINTERFACE,
+		LCLASS
+	}
+}
+
+class NontermTypeRaw : NontermType {
 	String type;
 }
 
 nonterm_type  : NontermType ::=
-	Lreturns {symref}
-  | Linline? Lclass name=identifieropt
-  | Linterface name=identifieropt
-  | Lvoid
-  | {type}
+	this=new.NontermTypeAST: Lreturns {symref}
+  | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt
+  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt
+  | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
+  | this=new.NontermTypeRaw: {type}
 ;
 
 enum PriorityKw {
@@ -236,20 +276,17 @@ priority_kw  : PriorityKw ::=
   | this=Lnonassoc as PriorityKw.LNONASSOC
 ;
 
-interface Directive : GrammarPart {
-}
-
-class DirectiveImpl : Directive {
+class DirectivePrio : GrammarPart {
 	PriorityKw priorityKw;
 	list<Symref> references;
 }
 
-class DirectiveInput : Directive {
+class DirectiveInput : GrammarPart {
 	list<Inputref> inputrefList;
 }
 
-directive  : Directive ::=
-	this=new.DirectiveImpl: '%' priorityKw=priority_kw {references} ';'
+directive  : GrammarPart ::=
+	this=new.DirectivePrio: '%' priorityKw=priority_kw {references} ';'
   | this=new.DirectiveInput: '%' Linput inputrefList=inputref_list ';'
 ;
 
@@ -436,13 +473,13 @@ annotations  : Annotations ::=
 ;
 
 class Annotation {
-	list<Expression> arguments;
-	String qualifiedId;
+	String ID;
+	Expression expression;
 	SyntaxProblem syntaxProblem;
 }
 
 annotation  : Annotation ::=
-	'@' qualifiedId=qualified_id ('{' arguments=expression_list '}')?
+	'@' {ID} ('{' {expression} '}')?
   | '@' syntaxProblem=syntax_problem
 ;
 
@@ -463,14 +500,14 @@ class ExpressionInstance : Expression {
 }
 
 class ExpressionArray : Expression {
-	list<Expression> expressionList1;
+	list<Expression> expressionList;
 }
 
 expression  : Expression ::=
 	this=literal
   | this=symref
   | this=new.ExpressionInstance: Lnew {name} '(' mapEntries=map_entriesopt ')'
-  | this=new.ExpressionArray: '[' expressionList1=expression_list1_opt ']'
+  | this=new.ExpressionArray: '[' expressionList=expression_list_opt ']'
   | this=syntax_problem
 ;
 
@@ -529,15 +566,15 @@ syntax_problem  : SyntaxProblem ::=
 	error
 ;
 
-parsing_algorithmopt  : ParsingAlgorithm ::=
-	this=parsing_algorithm?
-;
-
 import__optlist  : list<Import>
 	(this+=import_)* ;
 
 option_optlist  : list<Option>
 	(this+=option)* ;
+
+parsing_algorithmopt  : ParsingAlgorithm ::=
+	this=parsing_algorithm?
+;
 
 typeopt (String) ::=
 	type?
@@ -582,10 +619,6 @@ rhsSuffixopt  : RhsSuffix ::=
 annotation_list  : list<Annotation>
 	(this+=annotation)+ ;
 
-expression_list  : list<Expression>
-	(this+=expression
-		separator ',')+ ;
-
 symref_list  : list<Symref>
 	(this+=symref
 		separator '|')+ ;
@@ -594,11 +627,11 @@ map_entriesopt  : list<MapEntriesItem> ::=
 	this=map_entries?
 ;
 
-expression_list1  : list<Expression>
+expression_list  : list<Expression>
 	(this+=expression
 		separator ',')+ ;
 
-expression_list1_opt  : list<Expression> ::=
-	this=expression_list1?
+expression_list_opt  : list<Expression> ::=
+	this=expression_list?
 ;
 

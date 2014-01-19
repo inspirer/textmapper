@@ -15,8 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
 public interface ITmaRhsPart extends ITmaNode {
 }
