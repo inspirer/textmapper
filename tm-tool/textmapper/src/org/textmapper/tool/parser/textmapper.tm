@@ -339,8 +339,8 @@ rhsAnnotated (ITmaRhsPart) ::=
 
 rhsAssignment (ITmaRhsPart) ::=
 	  rhsOptional
-	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, false, source, ${left().offset}, ${left().endoffset}); }
-	| identifier '+=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, $rhsOptional, true, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, false, $rhsOptional, source, ${left().offset}, ${left().endoffset}); }
+	| identifier '+=' rhsOptional						{ $$ = new TmaRhsAssignment($identifier, true, $rhsOptional, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsOptional (ITmaRhsPart) ::=

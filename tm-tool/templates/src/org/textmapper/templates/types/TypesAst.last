@@ -35,8 +35,8 @@ member_declaration  : MemberDeclaration ::=
 ;
 
 class FeatureDeclaration : MemberDeclaration {
-	String name;
 	TypeEx typeEx;
+	String name;
 	list<Constraint> modifiers;
 	Expression defaultval;
 }
@@ -85,8 +85,8 @@ class StringConstraint {
 	list<String> strings;
 	String identifier;
 	enum KindKind {
-		LCHOICE,
-		LSET
+		LSET,
+		LCHOICE
 	}
 }
 
@@ -134,14 +134,14 @@ type_ex  : TypeEx ::=
 
 class Type {
 	KindKind kind;
+	list<String> name;
 	boolean isReference;
 	boolean isClosure;
-	list<String> name;
 	list<TypeEx> parameters;
 	enum KindKind {
+		LINT,
 		LBOOL,
-		LSTRING,
-		LINT
+		LSTRING
 	}
 }
 
@@ -172,8 +172,8 @@ literal_expression  : LiteralExpression ::=
 ;
 
 class StructuralExpression : Expression {
-	list<StructuralExpressionDOLLAR1Item> mapEntries;
 	list<String> name;
+	list<StructuralExpressionDOLLAR1Item> mapEntries;
 	list<Expression> expressionList;
 }
 

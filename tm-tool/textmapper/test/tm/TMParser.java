@@ -814,15 +814,15 @@ public class TMParser {
 				break;
 			case 8:  // header ::= Llanguage name '(' name ')' parsing_algorithmopt ';'
 				lapg_gg.value = new TmaHeader(
-						((TmaName)tmStack[tmHead - 3].value) /* target */,
 						((TmaName)tmStack[tmHead - 5].value) /* name */,
+						((TmaName)tmStack[tmHead - 3].value) /* target */,
 						((TmaParsingAlgorithm)tmStack[tmHead - 1].value) /* parsingAlgorithm */,
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
 			case 9:  // header ::= Llanguage name parsing_algorithmopt ';'
 				lapg_gg.value = new TmaHeader(
-						null /* target */,
 						((TmaName)tmStack[tmHead - 2].value) /* name */,
+						null /* target */,
 						((TmaParsingAlgorithm)tmStack[tmHead - 1].value) /* parsingAlgorithm */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
@@ -916,10 +916,10 @@ public class TMParser {
 			case 54:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
 				lapg_gg.value = new TmaLexeme(
 						((TmaIdentifier)tmStack[tmHead - 7].value) /* name */,
-						((Integer)tmStack[tmHead - 2].value) /* priority */,
 						((String)tmStack[tmHead - 6].value) /* type */,
 						((TmaPattern)tmStack[tmHead - 4].value) /* pattern */,
 						((TmaStateref)tmStack[tmHead - 3].value) /* lexemTransition */,
+						((Integer)tmStack[tmHead - 2].value) /* priority */,
 						((TmaLexemAttrs)tmStack[tmHead - 1].value) /* lexemAttrs */,
 						((TmaCommand)tmStack[tmHead].value) /* command */,
 						null /* input */, tmStack[tmHead - 7].offset, tmStack[tmHead].endoffset);
@@ -927,10 +927,10 @@ public class TMParser {
 			case 55:  // lexeme ::= identifier typeopt ':'
 				lapg_gg.value = new TmaLexeme(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
-						null /* priority */,
 						((String)tmStack[tmHead - 1].value) /* type */,
 						null /* pattern */,
 						null /* lexemTransition */,
+						null /* priority */,
 						null /* lexemAttrs */,
 						null /* command */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
@@ -1005,33 +1005,33 @@ public class TMParser {
 				break;
 			case 73:  // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
 				lapg_gg.value = new TmaNonterm(
+						((TmaAnnotations)tmStack[tmHead - 5].value) /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
 						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
-						((TmaAnnotations)tmStack[tmHead - 5].value) /* annotations */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 74:  // nonterm ::= annotations identifier '::=' rules ';'
 				lapg_gg.value = new TmaNonterm(
+						((TmaAnnotations)tmStack[tmHead - 4].value) /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 3].value) /* name */,
 						null /* type */,
-						((TmaAnnotations)tmStack[tmHead - 4].value) /* annotations */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 75:  // nonterm ::= identifier nonterm_type '::=' rules ';'
 				lapg_gg.value = new TmaNonterm(
+						null /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
 						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
-						null /* annotations */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 76:  // nonterm ::= identifier '::=' rules ';'
 				lapg_gg.value = new TmaNonterm(
+						null /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 3].value) /* name */,
 						null /* type */,
-						null /* annotations */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1084,8 +1084,8 @@ public class TMParser {
 				break;
 			case 88:  // directive ::= '%' assoc references ';'
 				lapg_gg.value = new TmaDirectivePrio(
-						((List<TmaSymref>)tmStack[tmHead - 1].value) /* symbols */,
 						((TmaAssoc)tmStack[tmHead - 2].value) /* assoc */,
+						((List<TmaSymref>)tmStack[tmHead - 1].value) /* symbols */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 89:  // inputref_list ::= inputref_list ',' inputref
@@ -1102,14 +1102,14 @@ public class TMParser {
 				break;
 			case 92:  // inputref ::= symref Lnoeoi
 				lapg_gg.value = new TmaInputref(
-						true /* noeoi */,
 						((TmaSymref)tmStack[tmHead - 1].value) /* symref */,
+						true /* noeoi */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 93:  // inputref ::= symref
 				lapg_gg.value = new TmaInputref(
-						false /* noeoi */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
+						false /* noeoi */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 94:  // references ::= symref
@@ -1270,7 +1270,7 @@ public class TMParser {
 			case 131:  // rhsClass ::= identifier ':' rhsPrimary
 				lapg_gg.value = new TmaRhsClass(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* identifier */,
-						((ITmaRhsPart)tmStack[tmHead].value) /* rhsPrimary */,
+						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 132:  // rhsPrimary ::= symref
@@ -1285,33 +1285,33 @@ public class TMParser {
 				break;
 			case 134:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
 				lapg_gg.value = new TmaRhsPrimaryList(
-						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
+						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 135:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
 				lapg_gg.value = new TmaRhsPrimaryList(
-						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
+						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						null /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 136:  // rhsPrimary ::= rhsPrimary '*'
 				lapg_gg.value = new TmaRhsPrimaryList(
-						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						null /* rhsParts */,
 						null /* references */,
+						TmaRhsPrimaryList.TmaQuantifierKind.MULT /* quantifier */,
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 137:  // rhsPrimary ::= rhsPrimary '+'
 				lapg_gg.value = new TmaRhsPrimaryList(
-						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						null /* rhsParts */,
 						null /* references */,
+						TmaRhsPrimaryList.TmaQuantifierKind.PLUS /* quantifier */,
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsPrimary */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;

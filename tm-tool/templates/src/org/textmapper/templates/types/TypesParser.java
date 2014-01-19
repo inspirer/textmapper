@@ -356,8 +356,8 @@ public class TypesParser {
 				break;
 			case 15:  // feature_declaration ::= type_ex identifier modifiersopt defaultvalopt ';'
 				lapg_gg.value = new AstFeatureDeclaration(
-						((String)tmStack[tmHead - 3].value) /* name */,
 						((AstTypeEx)tmStack[tmHead - 4].value) /* typeEx */,
+						((String)tmStack[tmHead - 3].value) /* name */,
 						((List<AstConstraint>)tmStack[tmHead - 2].value) /* modifiers */,
 						((IAstExpression)tmStack[tmHead - 1].value) /* defaultval */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
@@ -484,54 +484,54 @@ public class TypesParser {
 			case 41:  // type ::= Lint
 				lapg_gg.value = new AstType(
 						AstType.AstKindKind.LINT /* kind */,
+						null /* name */,
 						false /* isReference */,
 						false /* isClosure */,
-						null /* name */,
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 42:  // type ::= Lstring
 				lapg_gg.value = new AstType(
 						AstType.AstKindKind.LSTRING /* kind */,
+						null /* name */,
 						false /* isReference */,
 						false /* isClosure */,
-						null /* name */,
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 43:  // type ::= Lbool
 				lapg_gg.value = new AstType(
 						AstType.AstKindKind.LBOOL /* kind */,
+						null /* name */,
 						false /* isReference */,
 						false /* isClosure */,
-						null /* name */,
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 44:  // type ::= name
 				lapg_gg.value = new AstType(
 						null /* kind */,
+						((List<String>)tmStack[tmHead].value) /* name */,
 						false /* isReference */,
 						false /* isClosure */,
-						((List<String>)tmStack[tmHead].value) /* name */,
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 45:  // type ::= name '*'
 				lapg_gg.value = new AstType(
 						null /* kind */,
+						((List<String>)tmStack[tmHead - 1].value) /* name */,
 						true /* isReference */,
 						false /* isClosure */,
-						((List<String>)tmStack[tmHead - 1].value) /* name */,
 						null /* parameters */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 46:  // type ::= '{' parametersopt '=>' '}'
 				lapg_gg.value = new AstType(
 						null /* kind */,
+						null /* name */,
 						false /* isReference */,
 						true /* isClosure */,
-						null /* name */,
 						((List<AstTypeEx>)tmStack[tmHead - 2].value) /* parameters */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
@@ -573,15 +573,15 @@ public class TypesParser {
 				break;
 			case 56:  // structural_expression ::= name '(' structural_expression$1_opt ')'
 				lapg_gg.value = new AstStructuralExpression(
-						((List<AstStructuralExpressionDOLLAR1Item>)tmStack[tmHead - 1].value) /* mapEntries */,
 						((List<String>)tmStack[tmHead - 3].value) /* name */,
+						((List<AstStructuralExpressionDOLLAR1Item>)tmStack[tmHead - 1].value) /* mapEntries */,
 						null /* expressionList */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 59:  // structural_expression ::= '[' expression_listopt ']'
 				lapg_gg.value = new AstStructuralExpression(
-						null /* mapEntries */,
 						null /* name */,
+						null /* mapEntries */,
 						((List<IAstExpression>)tmStack[tmHead - 1].value) /* expressionList */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;

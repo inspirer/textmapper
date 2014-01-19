@@ -340,7 +340,7 @@ public class TMParserCompiler {
 		}
 
 		if (assignment != null) {
-			result = builder.assignment(assignment.getId().getID(), result, assignment.isAddition(), assignment);
+			result = builder.assignment(assignment.getId().getID(), result, assignment.getAddition(), assignment);
 		}
 
 		return result;

@@ -55,7 +55,7 @@ public class AstStringConstraint extends AstNode {
 	}
 
 	public enum AstKindKind {
-		LCHOICE,
 		LSET,
+		LCHOICE,
 	}
 }

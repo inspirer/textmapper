@@ -306,9 +306,8 @@ rhsUnordered returns rhsPart ::=
 
 rhsClass returns rhsPart ::=
 	  rhsPrimary
-	| identifier ':' rhsPrimary
+	| identifier ':' inner=rhsPrimary
 ;
-
 
 rhsPrimary returns rhsPart ::=
 	  [symbol] symref

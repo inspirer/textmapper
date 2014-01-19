@@ -19,13 +19,13 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsClass extends TmaNode implements ITmaRhsPart {
 
-	private TmaIdentifier identifier;
-	private ITmaRhsPart rhsPrimary;
+	private final TmaIdentifier identifier;
+	private final ITmaRhsPart inner;
 
-	public TmaRhsClass(TmaIdentifier identifier, ITmaRhsPart rhsPrimary, TextSource input, int start, int end) {
-		super(input, start, end);
+	public TmaRhsClass(TmaIdentifier identifier, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.identifier = identifier;
-		this.rhsPrimary = rhsPrimary;
+		this.inner = inner;
 	}
 
 	public TmaIdentifier getIdentifier() {
@@ -33,19 +33,18 @@ public class TmaRhsClass extends TmaNode implements ITmaRhsPart {
 	}
 
 	public ITmaRhsPart getInner() {
-		return rhsPrimary;
+		return inner;
 	}
 
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (identifier != null) {
 			identifier.accept(v);
 		}
-		if (rhsPrimary != null) {
-			rhsPrimary.accept(v);
+		if (inner != null) {
+			inner.accept(v);
 		}
 	}
 }

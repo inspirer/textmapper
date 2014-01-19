@@ -130,7 +130,9 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			Nonterminal n = i.next();
-			if (hasClassHint(n) || TMDataUtil.getCustomType(n) != null || n.getDefinition() instanceof RhsList) continue;
+			if (hasClassHint(n) || TMDataUtil.getCustomType(n) != null || n.getDefinition() instanceof RhsList) {
+				continue;
+			}
 			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
 			if (definition instanceof RhsChoice) {
 				RhsChoice alt = (RhsChoice) n.getDefinition();
@@ -155,7 +157,8 @@ public class TMMapper {
 						if (memberName == null) {
 							memberName = TMDataUtil.getId(term.getTarget());
 						}
-						AstEnumMember member = builder.addMember(builder.uniqueName(astEnum, memberName, true), astEnum, part);
+						AstEnumMember member = builder.addMember(builder.uniqueName(astEnum, memberName, true),
+								astEnum, part);
 						mapper.map(term, null, member, false);
 					}
 					i.remove();
@@ -267,7 +270,8 @@ public class TMMapper {
 				try {
 					builder.addExtends(cl, baseClass);
 				} catch (IllegalArgumentException ex) {
-					error(n, n.getName() + ": " + cl.getName() + " cannot extends " + baseClass.getName() + " (introduces a cycle in the inheritance hierarchy)");
+					error(n, n.getName() + ": " + cl.getName() + " cannot extends " + baseClass.getName() +
+							" (introduces a cycle in the inheritance hierarchy)");
 				}
 			}
 		});
@@ -467,9 +471,11 @@ public class TMMapper {
 			final RhsList list = (RhsList) n.getDefinition();
 
 			final RhsSymbolHandle elementHandle = getSingleSymbol(list.getElement());
-			final RhsSymbolHandle initialElemHandle = list.getCustomInitialElement() != null ? getSingleSymbol(list.getCustomInitialElement()) : null;
+			final RhsSymbolHandle initialElemHandle =
+					list.getCustomInitialElement() != null ? getSingleSymbol(list.getCustomInitialElement()) : null;
 
-			boolean requiresClass = elementHandle == null || list.getCustomInitialElement() != null && initialElemHandle == null
+			boolean requiresClass = elementHandle == null
+					|| list.getCustomInitialElement() != null && initialElemHandle == null
 					|| initialElemHandle != null && initialElemHandle.getSymbol() != elementHandle.getSymbol();
 
 			if (!requiresClass) {
@@ -523,9 +529,10 @@ public class TMMapper {
 					? rhsParts.get(0)
 					: RhsUtil.asChoice(rhsParts.toArray(new RhsPart[rhsParts.size()]));
 			DefaultMappingContext context = new DefaultMappingContext();
-			traverseFields(def, context, true);
-			traverseFields(def, context, false);
+			traverseFields(def, context, new int[]{0}, true);
+			traverseFields(def, context, new int[]{0}, false);
 
+			Collections.sort(context.result);
 			for (FieldDescriptor fd : context.result) {
 				AstType type = fd.type;
 				Map<Symbol, AstEnumMember> members = new LinkedHashMap<Symbol, AstEnumMember>();
@@ -535,10 +542,13 @@ public class TMMapper {
 						members.put(target, null);
 					}
 					if (members.size() > 1) {
-						AstEnum enum_ = builder.addEnum(builder.uniqueName(cl, fd.baseName + "_kind", false), cl, fd.firstMapping.origin);
+						AstEnum enum_ = builder.addEnum(builder.uniqueName(cl, fd.baseName + "_kind", false), cl,
+								fd.firstMapping.origin);
 						final Symbol[] enumMembers = members.keySet().toArray(new Symbol[members.size()]);
 						for (Symbol enumMember : enumMembers) {
-							final AstEnumMember astEnumMember = builder.addMember(builder.uniqueName(enum_, TMDataUtil.getId(enumMember), true), enum_, null /* TODO ??? */);
+							final AstEnumMember astEnumMember = builder.addMember(
+									builder.uniqueName(enum_, TMDataUtil.getId(enumMember), true),
+									enum_, null /* TODO ??? */);
 							members.put(enumMember, astEnumMember);
 						}
 						type = enum_;
@@ -547,7 +557,8 @@ public class TMMapper {
 					}
 				}
 
-				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true), type, fd.nullable, cl, fd.firstMapping.origin);
+				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true),
+						type, fd.nullable, cl, fd.firstMapping.origin);
 				for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
 					Object value = TMDataUtil.getLiteral(m.sym);
 					if (fd.type == BOOL_OR_ENUM) {
@@ -564,21 +575,23 @@ public class TMMapper {
 		}
 	}
 
-	private void traverseFields(RhsPart part, MappingContext context, boolean withAlias) {
+	private void traverseFields(RhsPart part, MappingContext context, int[] index, boolean withAlias) {
 		if (part instanceof RhsOptional) {
-			traverseFields(((RhsOptional) part).getPart(), context, withAlias);
+			traverseFields(((RhsOptional) part).getPart(), context, index, withAlias);
 
 		} else if (part instanceof RhsUnordered || part instanceof RhsSequence) {
-			RhsPart[] parts = part instanceof RhsUnordered ? ((RhsUnordered) part).getParts() : ((RhsSequence) part).getParts();
+			RhsPart[] parts = part instanceof RhsUnordered
+					? ((RhsUnordered) part).getParts()
+					: ((RhsSequence) part).getParts();
 			for (RhsPart p : parts) {
-				traverseFields(p, context, withAlias);
+				traverseFields(p, context, index, withAlias);
 			}
 
 		} else if (part instanceof RhsChoice) {
 			ChoiceMappingContext choiceContext = new ChoiceMappingContext(context);
 			RhsPart[] parts = ((RhsChoice) part).getParts();
 			for (RhsPart p : parts) {
-				traverseFields(p, choiceContext, withAlias);
+				traverseFields(p, choiceContext, index, withAlias);
 				choiceContext.reset();
 			}
 
@@ -591,6 +604,7 @@ public class TMMapper {
 				return;
 			}
 
+			index[0]++;
 			if (withAlias && assignment == null || !withAlias && assignment != null) {
 				return;
 			}
@@ -615,7 +629,7 @@ public class TMMapper {
 
 			if (type != null) {
 				context.addMapping(assignment != null ? assignment.getName() : null, type, ref,
-						assignment != null && assignment.isAddition(), part);
+						index[0], assignment != null && assignment.isAddition(), part);
 			}
 		} else {
 			throw new IllegalArgumentException();
@@ -697,7 +711,8 @@ public class TMMapper {
 	}
 
 	private interface MappingContext {
-		FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin);
+		FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
+								   boolean isAddition, SourceElement origin);
 	}
 
 	private static class DefaultMappingContext implements MappingContext {
@@ -706,7 +721,8 @@ public class TMMapper {
 		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId, Collection<FieldDescriptor>>();
 
 		@Override
-		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin) {
+		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
+										  boolean isAddition, SourceElement origin) {
 			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fields = fieldsMap.get(id);
 			if (fields == null) {
@@ -714,7 +730,7 @@ public class TMMapper {
 				fieldsMap.put(id, fields);
 			}
 			FieldDescriptor fd = new FieldDescriptor(alias != null ? alias : getFieldBaseName(sym), type);
-			fd.addMapping(new FieldMapping(sym, isAddition, origin));
+			fd.addMapping(new FieldMapping(sym, symIndex, isAddition, origin));
 			result.add(fd);
 			fields.add(fd);
 			return fd;
@@ -732,7 +748,8 @@ public class TMMapper {
 		}
 
 		@Override
-		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, boolean isAddition, SourceElement origin) {
+		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
+										  boolean isAddition, SourceElement origin) {
 			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fds = localMap.get(id);
 			if (used == null) {
@@ -742,7 +759,7 @@ public class TMMapper {
 				for (FieldDescriptor fd : fds) {
 					if (used.add(fd)) {
 						// reusing field from a previous alternative
-						fd.addMapping(new FieldMapping(sym, isAddition, origin));
+						fd.addMapping(new FieldMapping(sym, symIndex, isAddition, origin));
 						return fd;
 					}
 				}
@@ -751,7 +768,7 @@ public class TMMapper {
 				localMap.put(id, fds);
 			}
 
-			FieldDescriptor fd = parent.addMapping(alias, type, sym, isAddition, origin);
+			FieldDescriptor fd = parent.addMapping(alias, type, sym, symIndex, isAddition, origin);
 			fds.add(fd);
 			used.add(fd);
 			return fd;
@@ -763,7 +780,7 @@ public class TMMapper {
 		}
 	}
 
-	private static class FieldDescriptor {
+	private static class FieldDescriptor implements Comparable {
 		private final AstType type;
 		private final String baseName;
 		private FieldMapping firstMapping;
@@ -775,20 +792,31 @@ public class TMMapper {
 		}
 
 		private void addMapping(FieldMapping mapping) {
-			mapping.next = firstMapping;
-			firstMapping = mapping;
+			if (firstMapping == null) {
+				firstMapping = mapping;
+				return;
+			}
+			mapping.next = firstMapping.next;
+			firstMapping.next = mapping;
+		}
+
+		@Override
+		public int compareTo(Object o) {
+			return new Integer(firstMapping.symbolIndex).compareTo(((FieldDescriptor) o).firstMapping.symbolIndex);
 		}
 	}
 
 	private static class FieldMapping {
 		private final RhsSymbol sym;
+		private final int symbolIndex;
 		private final boolean addition;
 		private final SourceElement origin;
 		private FieldMapping next;
 
-		private FieldMapping(RhsSymbol sym, boolean isAddition, SourceElement origin) {
+		private FieldMapping(RhsSymbol sym, int symbolIndex, boolean isAddition, SourceElement origin) {
 			this.sym = sym;
-			addition = isAddition;
+			this.symbolIndex = symbolIndex;
+			this.addition = isAddition;
 			this.origin = origin;
 		}
 	}

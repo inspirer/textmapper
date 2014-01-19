@@ -267,18 +267,18 @@ public class SampleBParser {
 			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						true /* tc */,
-						false /* te */,
 						((String)tmStack[tmHead - 3].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
+						false /* te */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
 				lapg_gg.value = new AstClassdef(
 						true /* tc */,
-						true /* te */,
 						((String)tmStack[tmHead - 5].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
+						true /* te */,
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;

@@ -17,9 +17,6 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 2/10/13
- */
 public class TmaRhsCast extends TmaNode implements ITmaRhsPart {
 
 	private final ITmaRhsPart left;

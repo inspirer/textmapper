@@ -20,25 +20,25 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstFeatureDeclaration extends AstNode implements IAstMemberDeclaration {
 
-	private final String name;
 	private final AstTypeEx typeEx;
+	private final String name;
 	private final List<AstConstraint> modifiers;
 	private final IAstExpression defaultval;
 
-	public AstFeatureDeclaration(String name, AstTypeEx typeEx, List<AstConstraint> modifiers, IAstExpression defaultval, TextSource source, int offset, int endoffset) {
+	public AstFeatureDeclaration(AstTypeEx typeEx, String name, List<AstConstraint> modifiers, IAstExpression defaultval, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name;
 		this.typeEx = typeEx;
+		this.name = name;
 		this.modifiers = modifiers;
 		this.defaultval = defaultval;
 	}
 
-	public String getName() {
-		return name;
-	}
-
 	public AstTypeEx getTypeEx() {
 		return typeEx;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public List<AstConstraint> getModifiers() {

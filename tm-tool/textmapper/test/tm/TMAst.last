@@ -14,8 +14,8 @@ input  : Input ::=
 ;
 
 class Header {
-	Name target;
 	Name name;
+	Name target;
 	ParsingAlgorithm parsingAlgorithm;
 }
 
@@ -143,10 +143,10 @@ named_pattern  : NamedPattern ::=
 
 class Lexeme : LexerPart {
 	Identifier name;
-	Integer priority;
 	String type;
 	Pattern pattern;
 	Stateref lexemTransition;
+	Integer priority;
 	LexemAttrs lexemAttrs;
 	Command command;
 }
@@ -224,9 +224,9 @@ grammar_part  : GrammarPart ::=
 ;
 
 class Nonterm : GrammarPart {
+	Annotations annotations;
 	Identifier name;
 	NontermType type;
-	Annotations annotations;
 	list<Rule0> rules;
 }
 
@@ -246,9 +246,9 @@ class NontermTypeHint : NontermType {
 	KindKind kind;
 	Identifier name;
 	enum KindKind {
+		LCLASS,
 		LVOID,
-		LINTERFACE,
-		LCLASS
+		LINTERFACE
 	}
 }
 
@@ -277,8 +277,8 @@ assoc  : Assoc ::=
 ;
 
 class DirectivePrio : GrammarPart {
-	list<Symref> symbols;
 	Assoc assoc;
+	list<Symref> symbols;
 }
 
 class DirectiveInput : GrammarPart {
@@ -291,8 +291,8 @@ directive  : GrammarPart ::=
 ;
 
 class Inputref {
-	boolean noeoi;
 	Symref symref;
+	boolean noeoi;
 }
 
 inputref  : Inputref ::=
@@ -336,8 +336,8 @@ class RhsSuffix {
 	KindKind kind;
 	Symref symref;
 	enum KindKind {
-		LSHIFT,
-		LPRIO
+		LPRIO,
+		LSHIFT
 	}
 }
 
@@ -417,12 +417,12 @@ rhsUnordered  : RhsPart ::=
 
 class RhsClass : RhsPart {
 	Identifier identifier;
-	RhsPart rhsPrimary;
+	RhsPart inner;
 }
 
 rhsClass  : RhsPart ::=
 	this=rhsPrimary
-  | this=new.RhsClass: {identifier} ':' {rhsPrimary}
+  | this=new.RhsClass: {identifier} ':' inner=rhsPrimary
 ;
 
 class RhsPrimarySymbol : RhsPart {
@@ -434,9 +434,9 @@ class RhsPrimaryGroup : RhsPart {
 }
 
 class RhsPrimaryList : RhsPart {
-	QuantifierKind quantifier;
 	list<RhsPartsItem> rhsParts;
 	list<Symref> references;
+	QuantifierKind quantifier;
 	RhsPart rhsPrimary;
 	enum QuantifierKind {
 		PLUS,

@@ -17,40 +17,40 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 2/10/13
- */
 public class TmaRhsAssignment extends TmaNode implements ITmaRhsPart {
 
 	private final TmaIdentifier id;
-	private final ITmaRhsPart inner;
 	private final boolean addition;
+	private final ITmaRhsPart inner;
 
-	public TmaRhsAssignment(TmaIdentifier id, ITmaRhsPart inner, boolean isAddition, TextSource source, int offset, int endoffset) {
+	public TmaRhsAssignment(TmaIdentifier id, boolean addition, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.id = id;
+		this.addition = addition;
 		this.inner = inner;
-		this.addition = isAddition;
 	}
 
 	public TmaIdentifier getId() {
 		return id;
 	}
 
+	public boolean getAddition() {
+		return addition;
+	}
+
 	public ITmaRhsPart getInner() {
 		return inner;
 	}
 
-	public boolean isAddition() {
-		return addition;
-	}
-
-	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		id.accept(v);
-		inner.accept(v);
+		if (id != null) {
+			id.accept(v);
+		}
+		if (inner != null) {
+			inner.accept(v);
+		}
 	}
 }
