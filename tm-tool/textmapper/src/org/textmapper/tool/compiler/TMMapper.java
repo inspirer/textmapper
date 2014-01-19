@@ -486,6 +486,10 @@ public class TMMapper {
 					whenMapped(listElement, new Runnable() {
 						@Override
 						public void run() {
+							if (listElement.getType() instanceof VoidType) {
+								mapper.map(n, VoidType.INSTANCE);
+								return;
+							}
 							mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
 							mapper.map(elementHandle.symbol, null, null, true);
 							if (initialElemHandle != null) {
