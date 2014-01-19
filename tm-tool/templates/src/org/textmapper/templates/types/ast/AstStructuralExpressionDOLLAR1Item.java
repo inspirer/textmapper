@@ -19,12 +19,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstStructuralExpressionDOLLAR1Item extends AstNode {
 
-	private String identifier;
-	private AstMapSeparator mapSeparator;
-	private IAstExpression expression;
+	private final String identifier;
+	private final AstMapSeparator mapSeparator;
+	private final IAstExpression expression;
 
-	public AstStructuralExpressionDOLLAR1Item(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstStructuralExpressionDOLLAR1Item(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.identifier = identifier;
 		this.mapSeparator = mapSeparator;
 		this.expression = expression;
@@ -33,17 +33,19 @@ public class AstStructuralExpressionDOLLAR1Item extends AstNode {
 	public String getIdentifier() {
 		return identifier;
 	}
+
 	public AstMapSeparator getMapSeparator() {
 		return mapSeparator;
 	}
+
 	public IAstExpression getExpression() {
 		return expression;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (expression != null) {
 			expression.accept(v);
 		}

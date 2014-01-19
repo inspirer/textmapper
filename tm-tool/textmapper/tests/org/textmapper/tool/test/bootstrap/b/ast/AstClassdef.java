@@ -20,14 +20,14 @@ import org.textmapper.tool.test.bootstrap.b.SampleBTree.TextSource;
 
 public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 
-	private boolean tc;
-	private boolean te;
-	private String ID;
-	private List<AstClassdeflistItem> classdeflist;
-	private String identifier;
+	private final boolean tc;
+	private final boolean te;
+	private final String ID;
+	private final List<AstClassdeflistItem> classdeflist;
+	private final String identifier;
 
-	public AstClassdef(boolean tc, boolean te, String ID, List<AstClassdeflistItem> classdeflist, String identifier, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstClassdef(boolean tc, boolean te, String ID, List<AstClassdeflistItem> classdeflist, String identifier, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.tc = tc;
 		this.te = te;
 		this.ID = ID;
@@ -38,23 +38,27 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 	public boolean getTc() {
 		return tc;
 	}
+
 	public boolean getTe() {
 		return te;
 	}
+
 	public String getID() {
 		return ID;
 	}
+
 	public List<AstClassdeflistItem> getClassdeflist() {
 		return classdeflist;
 	}
+
 	public String getIdentifier() {
 		return identifier;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (classdeflist != null) {
 			for (AstClassdeflistItem it : classdeflist) {
 				it.accept(v);

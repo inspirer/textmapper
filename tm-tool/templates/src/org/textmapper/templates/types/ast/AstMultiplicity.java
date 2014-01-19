@@ -19,12 +19,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstMultiplicity extends AstNode {
 
-	private Integer lo;
-	private boolean hasNoUpperBound;
-	private Integer hi;
+	private final Integer lo;
+	private final boolean hasNoUpperBound;
+	private final Integer hi;
 
-	public AstMultiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstMultiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.lo = lo;
 		this.hasNoUpperBound = hasNoUpperBound;
 		this.hi = hi;
@@ -33,12 +33,15 @@ public class AstMultiplicity extends AstNode {
 	public Integer getLo() {
 		return lo;
 	}
+
 	public boolean getHasNoUpperBound() {
 		return hasNoUpperBound;
 	}
+
 	public Integer getHi() {
 		return hi;
 	}
+
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

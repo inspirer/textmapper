@@ -20,12 +20,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstStringConstraint extends AstNode {
 
-	private AstStringConstraint.AstKindKind kind;
-	private List<Ast_String> strings;
-	private String identifier;
+	private final AstStringConstraint.AstKindKind kind;
+	private final List<Ast_String> strings;
+	private final String identifier;
 
-	public AstStringConstraint(AstStringConstraint.AstKindKind kind, List<Ast_String> strings, String identifier, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstStringConstraint(AstStringConstraint.AstKindKind kind, List<Ast_String> strings, String identifier, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.kind = kind;
 		this.strings = strings;
 		this.identifier = identifier;
@@ -34,17 +34,19 @@ public class AstStringConstraint extends AstNode {
 	public AstStringConstraint.AstKindKind getKind() {
 		return kind;
 	}
+
 	public List<Ast_String> getStrings() {
 		return strings;
 	}
+
 	public String getIdentifier() {
 		return identifier;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (strings != null) {
 			for (Ast_String it : strings) {
 				it.accept(v);

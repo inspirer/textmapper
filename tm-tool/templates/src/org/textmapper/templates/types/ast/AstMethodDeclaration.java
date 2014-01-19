@@ -20,12 +20,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstMethodDeclaration extends AstNode implements IAstMemberDeclaration {
 
-	private AstTypeEx returnType;
-	private String name;
-	private List<AstTypeEx> parameters;
+	private final AstTypeEx returnType;
+	private final String name;
+	private final List<AstTypeEx> parameters;
 
-	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parameters, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parameters, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.returnType = returnType;
 		this.name = name;
 		this.parameters = parameters;
@@ -34,17 +34,19 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 	public AstTypeEx getReturnType() {
 		return returnType;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public List<AstTypeEx> getParameters() {
 		return parameters;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (returnType != null) {
 			returnType.accept(v);
 		}

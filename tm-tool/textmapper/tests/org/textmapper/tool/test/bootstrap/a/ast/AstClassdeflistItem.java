@@ -19,21 +19,21 @@ import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
 public class AstClassdeflistItem extends AstNode {
 
-	private AstClassdef classdef;
+	private final AstClassdef classdef;
 
-	public AstClassdeflistItem(AstClassdef classdef, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstClassdeflistItem(AstClassdef classdef, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.classdef = classdef;
 	}
 
 	public AstClassdef getClassdef() {
 		return classdef;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (classdef != null) {
 			classdef.accept(v);
 		}

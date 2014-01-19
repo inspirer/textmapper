@@ -77,12 +77,13 @@ ${end}
 ${template ast_class(cl)-}
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
 
+${if cl.fields-}
 ${foreach prop in cl.fields-}
-	private ${prop->fieldType()} ${prop->propertyName()};
+	private final ${prop->fieldType()} ${prop->propertyName()};
+${end}
 ${end-}
-
-	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
-		super(input, start, end);
+	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 ${foreach prop in cl.fields-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
@@ -92,6 +93,7 @@ ${foreach prop in cl.fields-}
 	public ${prop->fieldType()} get${util.toCamelCase(prop->propertyName(), true)}() {
 		return ${prop->propertyName()};
 	}
+
 ${end-}
 ${if true-}
 	public void accept(${opts.astprefix}Visitor v) {
@@ -101,7 +103,6 @@ ${else-}
 		if (!v.visit(this)) {
 			return;
 		}
-
 ${foreach prop in cl.fields.select(f|f.type->acceptsVisitor())-}
 ${if prop.type is LiAstList && prop.type.inner is LiAstClass -}
 		if (${prop->propertyName()} != null) {

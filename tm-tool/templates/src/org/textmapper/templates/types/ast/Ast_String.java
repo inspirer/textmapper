@@ -19,11 +19,11 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class Ast_String extends AstNode {
 
-	private String identifier;
-	private String scon;
+	private final String identifier;
+	private final String scon;
 
-	public Ast_String(String identifier, String scon, TextSource input, int start, int end) {
-		super(input, start, end);
+	public Ast_String(String identifier, String scon, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.identifier = identifier;
 		this.scon = scon;
 	}
@@ -31,9 +31,11 @@ public class Ast_String extends AstNode {
 	public String getIdentifier() {
 		return identifier;
 	}
+
 	public String getScon() {
 		return scon;
 	}
+
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

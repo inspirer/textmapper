@@ -19,12 +19,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstLiteralExpression extends AstNode implements IAstExpression {
 
-	private String scon;
-	private Integer icon;
-	private Boolean bcon;
+	private final String scon;
+	private final Integer icon;
+	private final Boolean bcon;
 
-	public AstLiteralExpression(String scon, Integer icon, Boolean bcon, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstLiteralExpression(String scon, Integer icon, Boolean bcon, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.scon = scon;
 		this.icon = icon;
 		this.bcon = bcon;
@@ -33,12 +33,15 @@ public class AstLiteralExpression extends AstNode implements IAstExpression {
 	public String getScon() {
 		return scon;
 	}
+
 	public Integer getIcon() {
 		return icon;
 	}
+
 	public Boolean getBcon() {
 		return bcon;
 	}
+
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

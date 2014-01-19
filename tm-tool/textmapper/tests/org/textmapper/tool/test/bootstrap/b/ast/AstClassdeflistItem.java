@@ -19,11 +19,11 @@ import org.textmapper.tool.test.bootstrap.b.SampleBTree.TextSource;
 
 public class AstClassdeflistItem extends AstNode {
 
-	private AstClassdef classdef;
-	private String identifier;
+	private final AstClassdef classdef;
+	private final String identifier;
 
-	public AstClassdeflistItem(AstClassdef classdef, String identifier, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstClassdeflistItem(AstClassdef classdef, String identifier, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.classdef = classdef;
 		this.identifier = identifier;
 	}
@@ -31,14 +31,15 @@ public class AstClassdeflistItem extends AstNode {
 	public AstClassdef getClassdef() {
 		return classdef;
 	}
+
 	public String getIdentifier() {
 		return identifier;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (classdef != null) {
 			classdef.accept(v);
 		}

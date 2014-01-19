@@ -20,14 +20,14 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstType extends AstNode {
 
-	private AstType.AstKindKind kind;
-	private boolean isReference;
-	private boolean isClosure;
-	private List<String> name;
-	private List<AstTypeEx> parameters;
+	private final AstType.AstKindKind kind;
+	private final boolean isReference;
+	private final boolean isClosure;
+	private final List<String> name;
+	private final List<AstTypeEx> parameters;
 
-	public AstType(AstType.AstKindKind kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parameters, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstType(AstType.AstKindKind kind, boolean isReference, boolean isClosure, List<String> name, List<AstTypeEx> parameters, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.kind = kind;
 		this.isReference = isReference;
 		this.isClosure = isClosure;
@@ -38,23 +38,27 @@ public class AstType extends AstNode {
 	public AstType.AstKindKind getKind() {
 		return kind;
 	}
+
 	public boolean getIsReference() {
 		return isReference;
 	}
+
 	public boolean getIsClosure() {
 		return isClosure;
 	}
+
 	public List<String> getName() {
 		return name;
 	}
+
 	public List<AstTypeEx> getParameters() {
 		return parameters;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (parameters != null) {
 			for (AstTypeEx it : parameters) {
 				it.accept(v);

@@ -20,21 +20,21 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstInput extends AstNode {
 
-	private List<AstTypeDeclaration> declarations;
+	private final List<AstTypeDeclaration> declarations;
 
-	public AstInput(List<AstTypeDeclaration> declarations, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstInput(List<AstTypeDeclaration> declarations, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.declarations = declarations;
 	}
 
 	public List<AstTypeDeclaration> getDeclarations() {
 		return declarations;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (declarations != null) {
 			for (AstTypeDeclaration it : declarations) {
 				it.accept(v);

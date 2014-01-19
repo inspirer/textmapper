@@ -20,11 +20,11 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstTypeEx extends AstNode {
 
-	private AstType type;
-	private List<AstMultiplicity> multiplicityList;
+	private final AstType type;
+	private final List<AstMultiplicity> multiplicityList;
 
-	public AstTypeEx(AstType type, List<AstMultiplicity> multiplicityList, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstTypeEx(AstType type, List<AstMultiplicity> multiplicityList, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.type = type;
 		this.multiplicityList = multiplicityList;
 	}
@@ -32,14 +32,15 @@ public class AstTypeEx extends AstNode {
 	public AstType getType() {
 		return type;
 	}
+
 	public List<AstMultiplicity> getMultiplicityList() {
 		return multiplicityList;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (type != null) {
 			type.accept(v);
 		}

@@ -20,12 +20,12 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public class AstTypeDeclaration extends AstNode {
 
-	private String name;
-	private List<List<String>> _super;
-	private List<IAstMemberDeclaration> members;
+	private final String name;
+	private final List<List<String>> _super;
+	private final List<IAstMemberDeclaration> members;
 
-	public AstTypeDeclaration(String name, List<List<String>> _super, List<IAstMemberDeclaration> members, TextSource input, int start, int end) {
-		super(input, start, end);
+	public AstTypeDeclaration(String name, List<List<String>> _super, List<IAstMemberDeclaration> members, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
 		this.name = name;
 		this._super = _super;
 		this.members = members;
@@ -34,17 +34,19 @@ public class AstTypeDeclaration extends AstNode {
 	public String getName() {
 		return name;
 	}
+
 	public List<List<String>> getSuper() {
 		return _super;
 	}
+
 	public List<IAstMemberDeclaration> getMembers() {
 		return members;
 	}
+
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (members != null) {
 			for (IAstMemberDeclaration it : members) {
 				it.accept(v);
