@@ -15,28 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class TmaRhsPrio extends TmaNode implements TmaRhsSuffix {
-
-	private TmaSymref reference;
-
-	public TmaRhsPrio(TmaSymref reference, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.reference = reference;
-	}
-
-	public TmaSymref getReference() {
-		return reference;
-	}
-
-	public void accept(TmaVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-
-		if (reference != null) {
-			reference.accept(v);
-		}
-	}
+public enum TmaAssoc {
+	LLEFT,
+	LRIGHT,
+	LNONASSOC,
 }

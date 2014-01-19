@@ -37,17 +37,19 @@ public class TmaAnnotation extends TmaNode {
 	public String getName() {
 		return name;
 	}
+
 	public ITmaExpression getExpression() {
 		return expression;
 	}
+
 	public TmaSyntaxProblem getSyntaxProblem() {
 		return syntaxProblem;
 	}
+
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-
 		if (expression != null) {
 			expression.accept(v);
 		}

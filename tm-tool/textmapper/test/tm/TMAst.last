@@ -264,30 +264,30 @@ nonterm_type  : NontermType ::=
   | this=new.NontermTypeRaw: {type}
 ;
 
-enum PriorityKw {
+enum Assoc {
 	LLEFT,
 	LRIGHT,
 	LNONASSOC
 }
 
-priority_kw  : PriorityKw ::=
-	this=Lleft as PriorityKw.LLEFT
-  | this=Lright as PriorityKw.LRIGHT
-  | this=Lnonassoc as PriorityKw.LNONASSOC
+assoc  : Assoc ::=
+	this=Lleft as Assoc.LLEFT
+  | this=Lright as Assoc.LRIGHT
+  | this=Lnonassoc as Assoc.LNONASSOC
 ;
 
 class DirectivePrio : GrammarPart {
-	PriorityKw priorityKw;
-	list<Symref> references;
+	list<Symref> symbols;
+	Assoc assoc;
 }
 
 class DirectiveInput : GrammarPart {
-	list<Inputref> inputrefList;
+	list<Inputref> inputRefs;
 }
 
 directive  : GrammarPart ::=
-	this=new.DirectivePrio: '%' priorityKw=priority_kw {references} ';'
-  | this=new.DirectiveInput: '%' Linput inputrefList=inputref_list ';'
+	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
+  | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list ';'
 ;
 
 class Inputref {
@@ -343,7 +343,7 @@ class RhsSuffix {
 
 rhsSuffix  : RhsSuffix ::=
 	'%' kind=Lprio as KindKind.LPRIO {symref}
-  | '%' kind=Lshift as KindKind.LSHIFT
+  | '%' kind=Lshift as KindKind.LSHIFT {symref}
 ;
 
 class RhsPartsItem {
@@ -473,13 +473,13 @@ annotations  : Annotations ::=
 ;
 
 class Annotation {
-	String ID;
+	String name;
 	Expression expression;
 	SyntaxProblem syntaxProblem;
 }
 
 annotation  : Annotation ::=
-	'@' {ID} ('{' {expression} '}')?
+	'@' name=ID ('{' {expression} '}')?
   | '@' syntaxProblem=syntax_problem
 ;
 
@@ -495,19 +495,19 @@ interface Expression {
 }
 
 class ExpressionInstance : Expression {
-	Name name;
+	Name className;
 	list<MapEntriesItem> mapEntries;
 }
 
 class ExpressionArray : Expression {
-	list<Expression> expressionList;
+	list<Expression> content;
 }
 
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.ExpressionInstance: Lnew {name} '(' mapEntries=map_entriesopt ')'
-  | this=new.ExpressionArray: '[' expressionList=expression_list_opt ']'
+  | this=new.ExpressionInstance: Lnew className=name '(' mapEntries=map_entriesopt ')'
+  | this=new.ExpressionArray: '[' content=expression_list_opt ']'
   | this=syntax_problem
 ;
 

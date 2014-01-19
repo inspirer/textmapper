@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaExpressionInstance extends TmaNode implements ITmaExpression {
 
@@ -34,7 +33,7 @@ public class TmaExpressionInstance extends TmaNode implements ITmaExpression {
 		return className;
 	}
 
-	public List<TmaMapEntriesItem> getEntries() {
+	public List<TmaMapEntriesItem> getMapEntries() {
 		return mapEntries;
 	}
 
@@ -46,8 +45,8 @@ public class TmaExpressionInstance extends TmaNode implements ITmaExpression {
 			className.accept(v);
 		}
 		if (mapEntries != null) {
-			for (TmaMapEntriesItem n : mapEntries) {
-				n.accept(v);
+			for (TmaMapEntriesItem it : mapEntries) {
+				it.accept(v);
 			}
 		}
 	}

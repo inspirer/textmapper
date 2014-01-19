@@ -226,12 +226,12 @@ nonterm_type interface ::=
 	| [raw] type
 ;
 
-priority_kw ::=
+assoc ::=
 	Lleft | Lright | Lnonassoc ;
 
 directive returns grammar_part ::=
-	  [prio] '%' priority_kw references ';'
-	| [input] '%' Linput (inputref separator ',')+ ';'
+	  [prio] '%' assoc symbols=references ';'
+	| [input] '%' Linput inputRefs=(inputref separator ',')+ ';'
 ;
 
 inputref ::=
@@ -262,7 +262,7 @@ rhsPrefix ::=
 
 rhsSuffix ::=
 	  '%' kind=Lprio symref
-	| '%' kind=Lshift
+	| '%' kind=Lshift symref
 ;
 
 rhsParts ::=
@@ -330,7 +330,7 @@ annotations class ::=
 	annotations=annotation+ ;
 
 annotation ::=
-	  '@' ID ('{' expression '}')?
+	  '@' name=ID ('{' expression '}')?
 	| '@' syntax_problem
 ;
 
@@ -343,8 +343,8 @@ negative_la ::=
 expression ::=
 	  literal
 	| symref
-	| [instance] Lnew name '(' map_entriesopt ')'
-	| [array] '[' (expression separator ',')* ']'
+	| [instance] Lnew className=name '(' map_entriesopt ')'
+	| [array] '[' content=(expression separator ',')* ']'
 	| syntax_problem
 ;
 

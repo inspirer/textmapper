@@ -99,7 +99,7 @@ public class TMExpressionResolver {
 			@Override
 			public Object resolve(ITmaExpression expression, IType type) {
 				if (expression instanceof TmaExpressionInstance) {
-					List<TmaMapEntriesItem> list = ((TmaExpressionInstance) expression).getEntries();
+					List<TmaMapEntriesItem> list = ((TmaExpressionInstance) expression).getMapEntries();
 					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
 					if (list != null) {
 						for (TmaMapEntriesItem entry : list) {
@@ -116,7 +116,7 @@ public class TMExpressionResolver {
 					return convertNew(expression, name, props, type);
 				}
 				if (expression instanceof TmaExpressionArray) {
-					List<ITmaExpression> list = ((TmaExpressionArray) expression).getExpressions();
+					List<ITmaExpression> list = ((TmaExpressionArray) expression).getContent();
 					return convertArray(expression, list, type);
 				}
 				if (expression instanceof TmaSymref) {

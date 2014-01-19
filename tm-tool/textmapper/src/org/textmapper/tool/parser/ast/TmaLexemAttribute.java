@@ -15,15 +15,9 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class TmaRhsShiftClause extends TmaNode implements TmaRhsSuffix {
-
-	public TmaRhsShiftClause(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-	}
-
-	public void accept(TmaVisitor v) {
-		v.visit(this);
-	}
+public enum TmaLexemAttribute {
+	LSOFT,
+	LCLASS,
+	LSPACE,
+	LLAYOUT,
 }

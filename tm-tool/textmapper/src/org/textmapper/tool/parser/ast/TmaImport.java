@@ -18,6 +18,7 @@ package org.textmapper.tool.parser.ast;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaImport extends TmaNode {
+
 	private final String alias;
 	private final String file;
 
@@ -35,7 +36,6 @@ public class TmaImport extends TmaNode {
 		return file;
 	}
 
-	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

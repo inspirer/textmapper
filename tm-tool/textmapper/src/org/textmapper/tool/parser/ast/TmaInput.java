@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaInput extends TmaNode {
 

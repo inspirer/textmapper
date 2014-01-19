@@ -97,11 +97,7 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaRhsPrio n) {
-		return true;
-	}
-
-	public boolean visit(TmaRhsShiftClause n) {
+	public boolean visit(TmaRhsSuffix n) {
 		return true;
 	}
 
@@ -190,6 +186,10 @@ public class TmaVisitor {
 	}
 
 	public boolean visit(TmaRhsClass n) {
-		return false;
+		return true;
+	}
+
+	public boolean visit(TmaParsingAlgorithm n) {
+		return true;
 	}
 }

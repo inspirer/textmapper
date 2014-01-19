@@ -24,6 +24,7 @@ import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 import org.textmapper.tool.parser.ast.TmaNontermTypeHint.Kind;
+import org.textmapper.tool.parser.ast.TmaRhsSuffix.TmaKindKind;
 
 import java.util.*;
 
@@ -132,14 +133,14 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
-				String key = directive.getKey();
+				TmaAssoc key = directive.getAssoc();
 				List<Terminal> val = resolveTerminals(directive.getSymbols());
 				int prio;
-				if (key.equals("left")) {
+				if (key == TmaAssoc.LLEFT) {
 					prio = Prio.LEFT;
-				} else if (key.equals("right")) {
+				} else if (key == TmaAssoc.LRIGHT) {
 					prio = Prio.RIGHT;
-				} else if (key.equals("nonassoc")) {
+				} else if (key == TmaAssoc.LNONASSOC) {
 					prio = Prio.NONASSOC;
 				} else {
 					error(directive, "unknown directive identifier used: `" + key + "`");
@@ -209,8 +210,7 @@ public class TMParserCompiler {
 			}
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
-		TmaSymref rulePrio = ruleAttribute instanceof TmaRhsPrio ? ((TmaRhsPrio) ruleAttribute).getReference()
-				: null;
+		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaKindKind.LPRIO ? ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {
 			Symbol prioSym = resolver.resolve(rulePrio);

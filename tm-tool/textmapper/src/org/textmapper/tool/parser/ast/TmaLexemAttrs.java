@@ -17,19 +17,16 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 4/3/11
- */
 public class TmaLexemAttrs extends TmaNode {
 
-	private final int kind;
+	private final TmaLexemAttribute kind;
 
-	public TmaLexemAttrs(int kind, TextSource source, int offset, int endoffset) {
+	public TmaLexemAttrs(TmaLexemAttribute kind, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.kind = kind;
 	}
 
-	public int getKind() {
+	public TmaLexemAttribute getKind() {
 		return kind;
 	}
 

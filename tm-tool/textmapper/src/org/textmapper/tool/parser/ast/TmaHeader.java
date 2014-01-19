@@ -18,25 +18,42 @@ package org.textmapper.tool.parser.ast;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaHeader extends TmaNode {
-	private final String name;
-	private final String targetLanguage;
 
-	public TmaHeader(TmaName name, TmaName targetLanguage, TextSource source, int offset, int endoffset) {
+	private final TmaName target;
+	private final TmaName name;
+	private final TmaParsingAlgorithm parsingAlgorithm;
+
+	public TmaHeader(TmaName target, TmaName name, TmaParsingAlgorithm parsingAlgorithm, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.name = name.getName();
-		this.targetLanguage = targetLanguage.getName();
+		this.target = target;
+		this.name = name;
+		this.parsingAlgorithm = parsingAlgorithm;
 	}
 
-	public String getName() {
+	public TmaName getTarget() {
+		return target;
+	}
+
+	public TmaName getName() {
 		return name;
 	}
 
-	public String getTargetLanguage() {
-		return targetLanguage;
+	public TmaParsingAlgorithm getParsingAlgorithm() {
+		return parsingAlgorithm;
 	}
 
-	@Override
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (target != null) {
+			target.accept(v);
+		}
+		if (name != null) {
+			name.accept(v);
+		}
+		if (parsingAlgorithm != null) {
+			parsingAlgorithm.accept(v);
+		}
 	}
 }

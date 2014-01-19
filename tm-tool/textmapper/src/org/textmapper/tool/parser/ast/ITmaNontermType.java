@@ -15,8 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-/**
- * evgeny, 6/27/13
- */
 public interface ITmaNontermType extends ITmaNode {
 }

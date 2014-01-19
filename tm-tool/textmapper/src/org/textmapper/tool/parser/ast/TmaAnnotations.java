@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaAnnotations extends TmaNode {
 
@@ -37,8 +36,8 @@ public class TmaAnnotations extends TmaNode {
 			return;
 		}
 		if (annotations != null) {
-			for (TmaAnnotation n : annotations) {
-				n.accept(v);
+			for (TmaAnnotation it : annotations) {
+				it.accept(v);
 			}
 		}
 	}

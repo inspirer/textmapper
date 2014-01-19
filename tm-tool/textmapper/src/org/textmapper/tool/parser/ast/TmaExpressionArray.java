@@ -15,32 +15,30 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaExpressionArray extends TmaNode implements ITmaExpression {
 
-	private final List<ITmaExpression> expressions;
+	private final List<ITmaExpression> content;
 
-	public TmaExpressionArray(List<ITmaExpression> expressions, TextSource source, int offset, int endoffset) {
+	public TmaExpressionArray(List<ITmaExpression> content, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.expressions = expressions;
+		this.content = content;
 	}
 
-	public List<ITmaExpression> getExpressions() {
-		return expressions;
+	public List<ITmaExpression> getContent() {
+		return content;
 	}
 
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (expressions != null) {
-			for (ITmaExpression n : expressions) {
-				n.accept(v);
+		if (content != null) {
+			for (ITmaExpression it : content) {
+				it.accept(v);
 			}
 		}
 	}
-
 }

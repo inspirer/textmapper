@@ -15,27 +15,26 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 
-	private final String key;
 	private final List<TmaSymref> symbols;
+	private final TmaAssoc assoc;
 
-	public TmaDirectivePrio(String key, List<TmaSymref> symbols, TextSource source, int offset, int endoffset) {
+	public TmaDirectivePrio(List<TmaSymref> symbols, TmaAssoc assoc, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.key = key;
 		this.symbols = symbols;
-	}
-
-	public String getKey() {
-		return key;
+		this.assoc = assoc;
 	}
 
 	public List<TmaSymref> getSymbols() {
 		return symbols;
+	}
+
+	public TmaAssoc getAssoc() {
+		return assoc;
 	}
 
 	public void accept(TmaVisitor v) {
@@ -43,8 +42,8 @@ public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 			return;
 		}
 		if (symbols != null) {
-			for (TmaSymref id : symbols) {
-				id.accept(v);
+			for (TmaSymref it : symbols) {
+				it.accept(v);
 			}
 		}
 	}

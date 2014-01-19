@@ -126,7 +126,7 @@ input (TmaInput) ::=
 
 header (TmaHeader) ::=
 	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';'
-														{ $$ = new TmaHeader($name, $target, source, ${left().offset}, ${left().endoffset}); }
+														{ $$ = new TmaHeader($target, $name, $parsing_algorithmopt,  source, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexer_section (List<ITmaLexerPart>) ::=
@@ -138,8 +138,9 @@ parser_section (List<ITmaGrammarPart>) ::=
 ;
 
 # ignored
-parsing_algorithm ::=
-	  Llalr '(' la=icon ')' ;
+parsing_algorithm (TmaParsingAlgorithm) ::=
+	  Llalr '(' la=icon ')'								{ $$ = new TmaParsingAlgorithm($la, source, ${left().offset}, ${left().endoffset}); }
+;
 
 imports (List<TmaImport>) ::=
 	  import_											{ $$ = new ArrayList<TmaImport>(16); ${left()}.add($import_); }
@@ -215,10 +216,10 @@ lexem_attrs (TmaLexemAttrs) ::=
 ;
 
 lexem_attribute (TmaLexemAttrs) ::=
-	  Lsoft												{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SOFT, source, ${left().offset}, ${left().endoffset}); }
-	| Lclass											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_CLASS, source, ${left().offset}, ${left().endoffset}); }
-	| Lspace											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_SPACE, source, ${left().offset}, ${left().endoffset}); }
-	| Llayout											{ $$ = new TmaLexemAttrs(org.textmapper.lapg.api.@LexerRule.KIND_LAYOUT, source, ${left().offset}, ${left().endoffset}); }
+	  Lsoft												{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LSOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LCLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LSPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LLAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 state_selector ::=
@@ -262,11 +263,14 @@ nonterm_type (ITmaNontermType) ::=
 	| type                                              { $$ = new TmaNontermTypeRaw($type, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-priority_kw (String) ::=
-	Lleft | Lright | Lnonassoc ;
+assoc (TmaAssoc) ::=
+	  Lleft												{ $$ = TmaAssoc.LLEFT; }
+	| Lright											{ $$ = TmaAssoc.LRIGHT; }
+	| Lnonassoc											{ $$ = TmaAssoc.LNONASSOC; }
+;
 
 directive ::=
-	  '%' priority_kw references ';'					{ $$ = new TmaDirectivePrio($priority_kw, $references, source, ${left().offset}, ${left().endoffset}); }
+	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($references, $assoc, source, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -310,8 +314,8 @@ rhsPrefix (TmaRhsPrefix) ::=
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=
-	'%' Lprio symref									{ $$ = new TmaRhsPrio($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '%' Lshift										{ $$ = new TmaRhsShiftClause(source, ${left().offset}, ${left().endoffset}); }
+	  '%' Lprio symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LPRIO, $symref, source, ${left().offset}, ${left().endoffset}); }
+	| '%' Lshift symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LSHIFT, $symref, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsParts (List<ITmaRhsPart>) ::=

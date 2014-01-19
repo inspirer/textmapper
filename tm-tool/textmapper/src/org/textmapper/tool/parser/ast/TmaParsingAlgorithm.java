@@ -17,36 +17,19 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsSuffix extends TmaNode {
+public class TmaParsingAlgorithm extends TmaNode {
 
-	private final TmaRhsSuffix.TmaKindKind kind;
-	private final TmaSymref symref;
+	private Integer la;
 
-	public TmaRhsSuffix(TmaRhsSuffix.TmaKindKind kind, TmaSymref symref, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.kind = kind;
-		this.symref = symref;
+	public TmaParsingAlgorithm(Integer la, TextSource input, int start, int end) {
+		super(input, start, end);
+		this.la = la;
 	}
 
-	public TmaRhsSuffix.TmaKindKind getKind() {
-		return kind;
+	public Integer getLa() {
+		return la;
 	}
-
-	public TmaSymref getSymref() {
-		return symref;
-	}
-
 	public void accept(TmaVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (symref != null) {
-			symref.accept(v);
-		}
-	}
-
-	public enum TmaKindKind {
-		LSHIFT,
-		LPRIO,
+		v.visit(this);
 	}
 }

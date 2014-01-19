@@ -17,9 +17,6 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 9/9/12
- */
 public class TmaLexerState extends TmaNode {
 
 	private TmaIdentifier name;

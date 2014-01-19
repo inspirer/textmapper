@@ -96,9 +96,9 @@ public class TMCompiler {
 	}
 
 	private String getTargetLanguage() {
-		final String targetLanguage = tree.getRoot().getHeader().getTargetLanguage();
+		final TmaName targetLanguage = tree.getRoot().getHeader().getTarget();
 		if (targetLanguage != null) {
-			return targetLanguage;
+			return targetLanguage.getName();
 		}
 		return "common";
 	}
