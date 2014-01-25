@@ -262,7 +262,7 @@ public class TMParserCompiler {
 		Collection<Terminal> nla = null;
 		Map<String, Object> annotations = null;
 		if (part instanceof TmaRhsAnnotated) {
-			final TmaRuleAnnotations rhsAnnotations = ((TmaRhsAnnotated) part).getAnnotations();
+			final TmaRhsAnnotations rhsAnnotations = ((TmaRhsAnnotated) part).getAnnotations();
 			nla = convertLA(rhsAnnotations);
 			annotations = expressionResolver.convert(rhsAnnotations, "AnnotateReference");
 			part = ((TmaRhsAnnotated) part).getInner();
@@ -509,7 +509,7 @@ public class TMParserCompiler {
 		}
 	}
 
-	private Collection<Terminal> convertLA(TmaRuleAnnotations astAnnotations) {
+	private Collection<Terminal> convertLA(TmaRhsAnnotations astAnnotations) {
 		if (astAnnotations == null || astAnnotations.getNegativeLA() == null) {
 			return null;
 		}

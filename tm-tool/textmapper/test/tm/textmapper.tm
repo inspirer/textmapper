@@ -219,19 +219,19 @@ nonterm ::=
 	  annotations? name=identifier type=nonterm_type? '::=' rules ';' ;
 
 nonterm_type interface ::=
-	  [AST] Lreturns symref
-	| [hint] isInline=Linline? kind=Lclass name=identifieropt
-	| [hint] kind=Linterface name=identifieropt
-	| [hint] kind=Lvoid
-	| [raw] type
+	  [nontermTypeAST] Lreturns symref
+	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt
+	| [nontermTypeHint] kind=Linterface name=identifieropt
+	| [nontermTypeHint] kind=Lvoid
+	| [nontermTypeRaw] type
 ;
 
 assoc ::=
 	Lleft | Lright | Lnonassoc ;
 
 directive returns grammar_part ::=
-	  [prio] '%' assoc symbols=references ';'
-	| [input] '%' Linput inputRefs=(inputref separator ',')+ ';'
+	  [directivePrio] '%' assoc symbols=references ';'
+	| [directiveInput] '%' Linput inputRefs=(inputref separator ',')+ ';'
 ;
 
 inputref ::=
@@ -291,13 +291,13 @@ rhsAssignment returns rhsPart ::=
 
 rhsOptional returns rhsPart ::=
 	  rhsCast
-	| rhsCast '?'
+	| [rhsQuantifier] inner=rhsCast quantifier='?'
 ;
 
 rhsCast returns rhsPart ::=
 	  rhsClass
 	| rhsClass Las symref
-	| rhsClass Las literal
+	| [rhsAsLiteral] rhsClass Las literal
 ;
 
 rhsUnordered returns rhsPart ::=
@@ -310,12 +310,12 @@ rhsClass returns rhsPart ::=
 ;
 
 rhsPrimary returns rhsPart ::=
-	  [symbol] symref
-	| [group] '(' rules ')'
-	| [list] '(' rhsParts Lseparator references ')' quantifier='+'
-	| [list] '(' rhsParts Lseparator references ')' quantifier='*'
-	| [list] rhsPrimary quantifier='*'
-	| [list] rhsPrimary quantifier='+'
+	  [rhsSymbol] symref
+	| [rhsNested] '(' rules ')'
+	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='+'
+	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='*'
+	| [rhsQuantifier] inner=rhsPrimary quantifier='*'
+	| [rhsQuantifier] inner=rhsPrimary quantifier='+'
 ;
 
 rhsAnnotations ::=

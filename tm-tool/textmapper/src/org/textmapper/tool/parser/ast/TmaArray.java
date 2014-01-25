@@ -18,11 +18,11 @@ package org.textmapper.tool.parser.ast;
 import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaExpressionArray extends TmaNode implements ITmaExpression {
+public class TmaArray extends TmaNode implements ITmaExpression {
 
 	private final List<ITmaExpression> content;
 
-	public TmaExpressionArray(List<ITmaExpression> content, TextSource source, int offset, int endoffset) {
+	public TmaArray(List<ITmaExpression> content, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.content = content;
 	}

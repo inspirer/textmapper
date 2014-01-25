@@ -15,36 +15,38 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+public class TmaInstance extends TmaNode implements ITmaExpression {
 
-/**
- * Gryaznov Evgeny, 8/15/11
- */
-public class TmaRuleAnnotations extends TmaAnnotations {
+	private final TmaName className;
+	private final List<TmaMapEntriesItem> mapEntries;
 
-	private final TmaNegativeLa negativeLA;
-
-	public TmaRuleAnnotations(TmaNegativeLa negativeLA, List<TmaAnnotation> annotations, TextSource source, int offset, int endoffset) {
-		super(annotations, source, offset, endoffset);
-		this.negativeLA = negativeLA;
+	public TmaInstance(TmaName className, List<TmaMapEntriesItem> mapEntries, TextSource source, int offset, int endoffset) {
+		super(source, offset, endoffset);
+		this.className = className;
+		this.mapEntries = mapEntries;
 	}
 
-	public TmaNegativeLa getNegativeLA() {
-		return negativeLA;
+	public TmaName getClassName() {
+		return className;
+	}
+
+	public List<TmaMapEntriesItem> getMapEntries() {
+		return mapEntries;
 	}
 
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (negativeLA != null) {
-			negativeLA.accept(v);
+		if (className != null) {
+			className.accept(v);
 		}
-		if (getAnnotations() != null) {
-			for (TmaAnnotation n : getAnnotations()) {
-				n.accept(v);
+		if (mapEntries != null) {
+			for (TmaMapEntriesItem it : mapEntries) {
+				it.accept(v);
 			}
 		}
 	}

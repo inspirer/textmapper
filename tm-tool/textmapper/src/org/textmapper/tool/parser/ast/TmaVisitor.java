@@ -77,11 +77,11 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaExpressionArray n) {
+	public boolean visit(TmaArray n) {
 		return true;
 	}
 
-	public boolean visit(TmaExpressionInstance n) {
+	public boolean visit(TmaInstance n) {
 		return true;
 	}
 
@@ -190,6 +190,10 @@ public class TmaVisitor {
 	}
 
 	public boolean visit(TmaParsingAlgorithm n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsAnnotations n) {
 		return true;
 	}
 }

@@ -385,25 +385,35 @@ rhsAssignment  : RhsPart ::=
   | this=new.RhsAssignment: id=identifier ('=' | addition='+=' as true) inner=rhsOptional
 ;
 
-class RhsOptional : RhsPart {
-	RhsPart rhsCast;
+class RhsQuantifier : RhsPart {
+	RhsPart inner;
+	QuantifierKind quantifier;
+	enum QuantifierKind {
+		QUESTIONMARK,
+		PLUS,
+		MULT
+	}
 }
 
 rhsOptional  : RhsPart ::=
 	this=rhsCast
-  | this=new.RhsOptional: {rhsCast} '?'
+  | this=new.RhsQuantifier: inner=rhsCast quantifier='?' as QuantifierKind.QUESTIONMARK
 ;
 
 class RhsCast : RhsPart {
 	RhsPart rhsClass;
 	Symref symref;
+}
+
+class RhsAsLiteral : RhsPart {
+	RhsPart rhsClass;
 	Literal literal;
 }
 
 rhsCast  : RhsPart ::=
 	this=rhsClass
   | this=new.RhsCast: {rhsClass} Las {symref}
-  | this=new.RhsCast: {rhsClass} Las {literal}
+  | this=new.RhsAsLiteral: {rhsClass} Las {literal}
 ;
 
 class RhsUnordered : RhsPart {
@@ -425,19 +435,18 @@ rhsClass  : RhsPart ::=
   | this=new.RhsClass: {identifier} ':' inner=rhsPrimary
 ;
 
-class RhsPrimarySymbol : RhsPart {
+class RhsSymbol : RhsPart {
 	Symref symref;
 }
 
-class RhsPrimaryGroup : RhsPart {
+class RhsNested : RhsPart {
 	list<Rule0> rules;
 }
 
-class RhsPrimaryList : RhsPart {
+class RhsList : RhsPart {
 	list<RhsPartsItem> rhsParts;
 	list<Symref> references;
 	QuantifierKind quantifier;
-	RhsPart rhsPrimary;
 	enum QuantifierKind {
 		PLUS,
 		MULT
@@ -445,12 +454,12 @@ class RhsPrimaryList : RhsPart {
 }
 
 rhsPrimary  : RhsPart ::=
-	this=new.RhsPrimarySymbol: {symref}
-  | this=new.RhsPrimaryGroup: '(' {rules} ')'
-  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier='+' as QuantifierKind.PLUS
-  | this=new.RhsPrimaryList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
-  | this=new.RhsPrimaryList: {rhsPrimary} quantifier='*' as QuantifierKind.MULT
-  | this=new.RhsPrimaryList: {rhsPrimary} quantifier='+' as QuantifierKind.PLUS
+	this=new.RhsSymbol: {symref}
+  | this=new.RhsNested: '(' {rules} ')'
+  | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='+' as QuantifierKind.PLUS
+  | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
+  | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
+  | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
 ;
 
 class RhsAnnotations {
@@ -494,20 +503,20 @@ negative_la  : NegativeLa ::=
 interface Expression {
 }
 
-class ExpressionInstance : Expression {
+class Instance : Expression {
 	Name className;
 	list<MapEntriesItem> mapEntries;
 }
 
-class ExpressionArray : Expression {
+class Array : Expression {
 	list<Expression> content;
 }
 
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.ExpressionInstance: Lnew className=name '(' mapEntries=map_entriesopt ')'
-  | this=new.ExpressionArray: '[' content=expression_list_opt ']'
+  | this=new.Instance: Lnew className=name '(' mapEntries=map_entriesopt ')'
+  | this=new.Array: '[' content=expression_list_opt ']'
   | this=syntax_problem
 ;
 

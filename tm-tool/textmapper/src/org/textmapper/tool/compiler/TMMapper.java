@@ -28,6 +28,7 @@ public class TMMapper {
 	private final Map<Symbol, List<Runnable>> typeListeners = new HashMap<Symbol, List<Runnable>>();
 	private final Queue<Runnable> postProcessors = new LinkedList<Runnable>();
 	private final Map<AstClass, List<RhsPart>> classContent = new LinkedHashMap<AstClass, List<RhsPart>>();
+	private final Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
 	private List<Nonterminal> unmapped;
 
 	public TMMapper(Grammar grammar, ProcessingStatus status) {
@@ -175,10 +176,18 @@ public class TMMapper {
 		}
 	}
 
+	private String getAliasId(Nonterminal n, String ruleAlias) {
+		if (ruleAlias != null && !ruleAlias.startsWith("_")) {
+			return ruleAlias;
+		}
+		String id = TMDataUtil.getId(n);
+		return id + "#" + (ruleAlias == null ? "" : ruleAlias);
+	}
+
 	private String getNonterminalTypeName(Nonterminal n, String suffix) {
 		String id = TMDataUtil.getId(n);
 		if (suffix != null) {
-			id = id + "_" + suffix;
+			id = suffix.startsWith("_") ? id + suffix : suffix;
 		}
 		return builder.uniqueName(null, id, false);
 	}
@@ -334,14 +343,14 @@ public class TMMapper {
 				for (RhsSymbol sym : passSymbols) {
 					mapper.map(sym, null, null, false);
 				}
-				Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
 				for (RhsSequence rulePart : customRuleList) {
-					String ruleAlias = rulePart.getName();
-					AstClass ruleClass = aliasToClass.get(ruleAlias);
+					String ruleAlias = rulePart.getName() == null ? "_Impl" : rulePart.getName();
+					String aliasId = getAliasId(n, ruleAlias);
+					AstClass ruleClass = aliasToClass.get(aliasId);
 					if (ruleClass == null) {
-						ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias == null ? "Impl" : ruleAlias), null, n);
+						ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
 						builder.addExtends(ruleClass, interfaceClass);
-						aliasToClass.put(ruleAlias, ruleClass);
+						aliasToClass.put(aliasId, ruleClass);
 					}
 					mapClass(ruleClass, rulePart);
 					mapper.map(rulePart, null, ruleClass, false);
@@ -434,7 +443,6 @@ public class TMMapper {
 				? Arrays.asList(((RhsChoice) definition).getParts())
 				: Collections.singleton(definition);
 
-		Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
 		for (RhsPart part : rules) {
 			RhsPart r = RhsUtil.unwrap(part);
 			final RhsPart master = withoutConstants(r);
@@ -451,11 +459,12 @@ public class TMMapper {
 			}
 
 			final String ruleAlias = ((RhsSequence) part).getName();
-			AstClass ruleClass = aliasToClass.get(ruleAlias);
+			final String aliasId = getAliasId(n, ruleAlias);
+			AstClass ruleClass = aliasToClass.get(aliasId);
 			if (ruleClass == null) {
 				ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
 				builder.addExtends(ruleClass, cl);
-				aliasToClass.put(ruleAlias, ruleClass);
+				aliasToClass.put(aliasId, ruleClass);
 			}
 			mapClass(ruleClass, part);
 			mapper.map((RhsSequence) part, null, ruleClass, false);
@@ -499,7 +508,7 @@ public class TMMapper {
 					});
 				}
 			} else {
-				AstClass elementClass = builder.addClass(getNonterminalTypeName(n, "item"), null, n);
+				AstClass elementClass = builder.addClass(getNonterminalTypeName(n, "_item"), null, n);
 				mapNonterm(n, builder.list(elementClass, list.isNonEmpty(), n));
 				mapper.map(list.getElement(), null, elementClass, true);
 				if (list.getCustomInitialElement() != null) {

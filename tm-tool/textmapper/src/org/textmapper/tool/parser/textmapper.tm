@@ -309,8 +309,7 @@ rule0 (TmaRule0) ::=
 
 rhsPrefix (TmaRhsPrefix) ::=
 	  '[' annotations ']'								{ $$ = new TmaRhsPrefix($annotations, null, source, ${left().offset}, ${left().endoffset}); }
-	| '[' rhsAnnotations as annotation_list? alias=identifier ']'
-														{ $$ = new TmaRhsPrefix($rhsAnnotations, $alias, source, ${left().offset}, ${left().endoffset}); }
+	| '[' annotations? alias=identifier ']'				{ $$ = new TmaRhsPrefix($annotations, $alias, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=
@@ -372,10 +371,10 @@ rhsPrimary (ITmaRhsPart) ::=
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsAnnotations (TmaRuleAnnotations) ::=
-	  annotation_list									{ $$ = new TmaRuleAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la annotation_list						{ $$ = new TmaRuleAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la										{ $$ = new TmaRuleAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
+rhsAnnotations (TmaRhsAnnotations) ::=
+	  annotation_list									{ $$ = new TmaRhsAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la annotation_list						{ $$ = new TmaRhsAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
+	| negative_la										{ $$ = new TmaRhsAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 annotations (TmaAnnotations) ::=
@@ -406,8 +405,8 @@ negative_la_clause (java.util.@List<TmaSymref>) ::=
 expression (ITmaExpression) ::=
 	  literal
 	| symref
-	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaExpressionInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
-	| '[' expression_listopt ']'						{ $$ = new TmaExpressionArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
+	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaInstance($name, $map_entriesopt, source, ${left().offset}, ${left().endoffset}); }
+	| '[' expression_listopt ']'						{ $$ = new TmaArray($expression_listopt, source, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
 ;
 

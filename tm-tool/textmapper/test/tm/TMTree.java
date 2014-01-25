@@ -57,8 +57,8 @@ public class TMTree<T> {
 	public static TMTree<TmaInput> parseInput(TextSource source) {
 		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new TMProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int line, int offset, int endoffset) {
+				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
 			}
 		};
 
@@ -77,7 +77,7 @@ public class TMTree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TMProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
 		return new TMTree<TmaInput>(source, null, list);
 	}
@@ -85,8 +85,8 @@ public class TMTree<T> {
 	public static TMTree<ITmaExpression> parseExpression(TextSource source) {
 		final List<TMProblem> list = new ArrayList<TMProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new TMProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int line, int offset, int endoffset) {
+				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
 			}
 		};
 
@@ -102,7 +102,7 @@ public class TMTree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new TMProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new TMProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
 		return new TMTree<ITmaExpression>(source, null, list);
 	}
@@ -118,12 +118,14 @@ public class TMTree<T> {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
+		private final int line;
 		private final int offset;
 		private final int endoffset;
 
-		public TMProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public TMProblem(int kind, String message, int line, int offset, int endoffset, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
+			this.line = line;
 			this.offset = offset;
 			this.endoffset = endoffset;
 		}
@@ -132,11 +134,15 @@ public class TMTree<T> {
 			return kind;
 		}
 
+		public int getLine() {
+			return line;
+		}
+
 		public int getOffset() {
 			return offset;
 		}
 
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return endoffset;
 		}
 

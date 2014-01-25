@@ -105,7 +105,7 @@ public class TMLexer {
 	}
 
 	public interface ErrorReporter {
-		void error(int start, int end, int line, String s);
+		void error(String message, int line, int offset, int endoffset);
 	}
 
 	public static final int TOKEN_SIZE = 2048;
@@ -338,7 +338,7 @@ public class TMLexer {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
-					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 					lapg_n.offset = currOffset;
 					tokenStart = -1;
 					return lapg_n;
@@ -362,7 +362,7 @@ public class TMLexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 				lapg_n.symbol = -1;
 				continue;
 			}

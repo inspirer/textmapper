@@ -51,15 +51,25 @@ public class TMExpressionResolver {
 		if (astAnnotations == null || astAnnotations.getAnnotations() == null) {
 			return null;
 		}
+		return convert(astAnnotations.getAnnotations(), astAnnotations, kind);
+	}
 
+	@SuppressWarnings("unchecked")
+	Map<String, Object> convert(TmaRhsAnnotations astAnnotations, String kind) {
+		if (astAnnotations == null || astAnnotations.getAnnotations() == null) {
+			return null;
+		}
+		return convert(astAnnotations.getAnnotations(), astAnnotations, kind);
+	}
+
+	private Map<String, Object> convert(List<TmaAnnotation> list, TmaNode anchor, String kind) {
 		// Load class
 		IClass annoClass = types.getClass(myTypesPackage + "." + kind, null);
 		if (annoClass == null) {
-			error(astAnnotations, "cannot load class `" + myTypesPackage + "." + kind + "`");
+			error(anchor, "cannot load class `" + myTypesPackage + "." + kind + "`");
 			return null;
 		}
 
-		List<TmaAnnotation> list = astAnnotations.getAnnotations();
 		Map<String, Object> result = new HashMap<String, Object>();
 		for (TmaAnnotation entry : list) {
 			if (entry.getSyntaxProblem() != null) {
@@ -98,8 +108,8 @@ public class TMExpressionResolver {
 
 			@Override
 			public Object resolve(ITmaExpression expression, IType type) {
-				if (expression instanceof TmaExpressionInstance) {
-					List<TmaMapEntriesItem> list = ((TmaExpressionInstance) expression).getMapEntries();
+				if (expression instanceof TmaInstance) {
+					List<TmaMapEntriesItem> list = ((TmaInstance) expression).getMapEntries();
 					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
 					if (list != null) {
 						for (TmaMapEntriesItem entry : list) {
@@ -109,14 +119,14 @@ public class TMExpressionResolver {
 							props.put(entry.getName(), entry.getExpression());
 						}
 					}
-					String name = ((TmaExpressionInstance) expression).getClassName().getName();
+					String name = ((TmaInstance) expression).getClassName().getName();
 					if (name.indexOf('.') < 0) {
 						name = myTypesPackage + "." + name;
 					}
 					return convertNew(expression, name, props, type);
 				}
-				if (expression instanceof TmaExpressionArray) {
-					List<ITmaExpression> list = ((TmaExpressionArray) expression).getContent();
+				if (expression instanceof TmaArray) {
+					List<ITmaExpression> list = ((TmaArray) expression).getContent();
 					return convertArray(expression, list, type);
 				}
 				if (expression instanceof TmaSymref) {
