@@ -23,8 +23,8 @@ public class AstConstraint extends AstNode {
 	private final AstStringConstraint stringConstraint;
 	private final List<AstMultiplicity> multiplicityList;
 
-	public AstConstraint(AstStringConstraint stringConstraint, List<AstMultiplicity> multiplicityList, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstConstraint(AstStringConstraint stringConstraint, List<AstMultiplicity> multiplicityList, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.stringConstraint = stringConstraint;
 		this.multiplicityList = multiplicityList;
 	}

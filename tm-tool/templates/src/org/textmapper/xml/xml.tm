@@ -122,6 +122,6 @@ private XmlData getData(int start, int end) {
 
 private void checkTag(XmlNode node, String endTag, int offset, int endoffset, int line) {
 	if (!node.getTagName().equals(endTag))
-		reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);
+		reporter.error("Tag " + node.getTagName() + " is closed with " + endTag, line, offset, endoffset);
 }
 ${end}

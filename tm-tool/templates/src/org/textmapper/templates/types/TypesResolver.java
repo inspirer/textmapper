@@ -70,7 +70,7 @@ class TypesResolver {
 					}
 
 					public int getEndOffset() {
-						return s.getEndOffset();
+						return s.getEndoffset();
 					}
 
 					public int getLine() {
@@ -476,7 +476,7 @@ class TypesResolver {
 		}
 
 		public int getEndOffset() {
-			return node.getEndOffset();
+			return node.getEndoffset();
 		}
 
 		public int getLine() {

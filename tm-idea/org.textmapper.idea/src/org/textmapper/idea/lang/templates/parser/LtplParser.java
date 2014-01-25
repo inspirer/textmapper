@@ -135,7 +135,7 @@ public class LtplParser implements PsiParser {
 		public LtplParserEx(PsiBuilder builder) {
 			super(new ErrorReporter() {
 				@Override
-				public void error(int start, int end, int line, String s) {
+				public void error(String message, int line, int offset, int endoffset) {
 					// ignore, errors are reported as syntax_problem productions
 				}
 			});

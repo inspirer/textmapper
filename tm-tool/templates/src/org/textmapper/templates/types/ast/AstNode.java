@@ -19,30 +19,36 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 
 public abstract class AstNode implements IAstNode {
 	
-	protected TextSource fInput;
-	protected int fStart;
-	protected int fEnd;
+	protected TextSource source;
+	protected int line;
+	protected int offset;
+	protected int endoffset;
 
-	public AstNode(TextSource input, int start, int end) {
-		this.fStart = start;
-		this.fEnd = end;
-		this.fInput = input;
+	public AstNode(TextSource source, int line, int offset, int endoffset) {
+		this.source = source;
+		this.line = line;
+		this.offset = offset;
+		this.endoffset = endoffset;
+	}
+
+	public int getLine() {
+		return this.line;
 	}
 
 	public int getOffset() {
-		return fStart;
+		return this.offset;
 	}
 
-	public int getEndOffset() {
-		return fEnd;
+	public int getEndoffset() {
+		return this.endoffset;
 	}
 
-	public TextSource getInput() {
-		return fInput;
+	public TextSource getSource() {
+		return source;
 	}
 
 	public String toString() {
-		return fInput == null ? "" : fInput.getText(fStart, fEnd);
+		return source == null ? "" : source.getText(offset, endoffset);
 	}
 
 	//public abstract void accept(Visitor v);

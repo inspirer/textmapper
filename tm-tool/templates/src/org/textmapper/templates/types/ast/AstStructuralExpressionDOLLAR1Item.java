@@ -23,8 +23,8 @@ public class AstStructuralExpressionDOLLAR1Item extends AstNode {
 	private final AstMapSeparator mapSeparator;
 	private final IAstExpression expression;
 
-	public AstStructuralExpressionDOLLAR1Item(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstStructuralExpressionDOLLAR1Item(String identifier, AstMapSeparator mapSeparator, IAstExpression expression, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.identifier = identifier;
 		this.mapSeparator = mapSeparator;
 		this.expression = expression;

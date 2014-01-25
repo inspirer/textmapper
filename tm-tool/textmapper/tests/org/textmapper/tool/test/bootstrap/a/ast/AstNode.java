@@ -19,30 +19,54 @@ import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
 public abstract class AstNode implements IAstNode {
 	
-	protected TextSource fInput;
-	protected int fStart;
-	protected int fEnd;
+	protected TextSource source;
+	protected int line;
+	protected int offset;
+	protected int column;
+	protected int endline;
+	protected int endoffset;
+	protected int endcolumn;
 
-	public AstNode(TextSource input, int start, int end) {
-		this.fStart = start;
-		this.fEnd = end;
-		this.fInput = input;
+	public AstNode(TextSource source, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+		this.source = source;
+		this.line = line;
+		this.offset = offset;
+		this.column = column;
+		this.endline = endline;
+		this.endoffset = endoffset;
+		this.endcolumn = endcolumn;
+	}
+
+	public int getLine() {
+		return this.line;
 	}
 
 	public int getOffset() {
-		return fStart;
+		return this.offset;
 	}
 
-	public int getEndOffset() {
-		return fEnd;
+	public int getColumn() {
+		return this.column;
 	}
 
-	public TextSource getInput() {
-		return fInput;
+	public int getEndline() {
+		return this.endline;
+	}
+
+	public int getEndoffset() {
+		return this.endoffset;
+	}
+
+	public int getEndcolumn() {
+		return this.endcolumn;
+	}
+
+	public TextSource getSource() {
+		return source;
 	}
 
 	public String toString() {
-		return fInput == null ? "" : fInput.getText(fStart, fEnd);
+		return source == null ? "" : source.getText(offset, endoffset);
 	}
 
 	//public abstract void accept(Visitor v);

@@ -38,7 +38,7 @@ public class NoparserLexer {
 	}
 
 	public interface ErrorReporter {
-		void error(int start, int line, String s);
+		void error(String message, int line, int offset);
 	}
 
 	public static final int TOKEN_SIZE = 2048;
@@ -181,7 +181,7 @@ public class NoparserLexer {
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
-					reporter.error(lapg_n.offset, lapg_n.line, "Unexpected end of input reached");
+					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset);
 					lapg_n.offset = currOffset;
 					return lapg_n;
 				}
@@ -200,7 +200,7 @@ public class NoparserLexer {
 			}
 
 			if (state == -1) {
-				reporter.error(lapg_n.offset, lapg_n.line, MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset);
 				lapg_n.symbol = -1;
 				continue;
 			}

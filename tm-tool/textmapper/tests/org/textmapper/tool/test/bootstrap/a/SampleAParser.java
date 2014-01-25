@@ -159,9 +159,8 @@ public class SampleAParser {
 			if (action == -2 || tmStack[tmHead].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-								MessageFormat.format("syntax error before line {0}, column {1}",
-								tmLexer.getTokenLine(), tmNext.column));
+						reporter.error(MessageFormat.format("syntax error before line {0}, column {1}",
+								tmLexer.getTokenLine(), tmNext.column), tmNext.line, tmNext.offset, tmNext.column, tmNext.endline, tmNext.endoffset, tmNext.endcolumn);
 					}
 					if (lapg_symbols_ok <= 1) {
 						tmNext = tmLexer.next();
@@ -180,9 +179,8 @@ public class SampleAParser {
 
 		if (tmStack[tmHead].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset, tmNext == null ? tmLexer.getLine() : tmNext.line,
-						MessageFormat.format("syntax error before line {0}, column {1}",
-								tmLexer.getTokenLine(), tmNext == null ? tmLexer.getColumn() : tmNext.column));
+				reporter.error(MessageFormat.format("syntax error before line {0}, column {1}",
+								tmLexer.getTokenLine(), tmNext == null ? tmLexer.getColumn() : tmNext.column), tmNext == null ? tmLexer.getLine() : tmNext.line, tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getColumn() : tmNext.column, tmNext == null ? tmLexer.getLine() : tmNext.endline, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset, tmNext == null ? tmLexer.getColumn() : tmNext.endcolumn);
 			}
 			throw new ParseException();
 		}
@@ -207,11 +205,11 @@ public class SampleAParser {
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, 6);
 			tmStack[tmHead].line = tmNext.line;
-			tmStack[tmHead].column = tmNext.column;
 			tmStack[tmHead].offset = tmNext.offset;
+			tmStack[tmHead].column = tmNext.column;
 			tmStack[tmHead].endline = tmNext.endline;
-			tmStack[tmHead].endcolumn = tmNext.endcolumn;
 			tmStack[tmHead].endoffset = tmNext.endoffset;
+			tmStack[tmHead].endcolumn = tmNext.endcolumn;
 			return true;
 		}
 		return false;
@@ -261,24 +259,24 @@ public class SampleAParser {
 				lapg_gg.value = new AstClassdef(
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
-						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
+						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead - 4].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn);
 				break;
 			case 4:  // classdeflist ::= classdef
 				lapg_gg.value = new ArrayList();
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
-						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
 			case 5:  // classdeflist ::= classdeflist classdef
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
-						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset));
+						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead - 1].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
 			case 6:  // classdeflist ::= error
 				lapg_gg.value = new ArrayList();
 				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
 						null /* classdef */,
-						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
 		}
 	}

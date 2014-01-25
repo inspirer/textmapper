@@ -45,7 +45,7 @@ public class SampleALexer {
 	}
 
 	public interface ErrorReporter {
-		void error(int start, int end, int line, String s);
+		void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn);
 	}
 
 	public static final int TOKEN_SIZE = 2048;
@@ -209,7 +209,7 @@ public class SampleALexer {
 					lapg_n.endcolumn = currColumn;
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
-					reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, "Unexpected end of input reached");
+					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset, lapg_n.column, lapg_n.endline, lapg_n.endoffset, lapg_n.endcolumn);
 					lapg_n.offset = currOffset;
 					tokenStart = -1;
 					return lapg_n;
@@ -237,7 +237,7 @@ public class SampleALexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(lapg_n.offset, lapg_n.endoffset, lapg_n.line, MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.column, lapg_n.endline, lapg_n.endoffset, lapg_n.endcolumn);
 				lapg_n.symbol = -1;
 				continue;
 			}

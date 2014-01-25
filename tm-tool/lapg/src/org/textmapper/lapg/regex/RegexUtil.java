@@ -87,13 +87,16 @@ class RegexUtil {
 		if (last instanceof RegexAstChar && isRangeChar(((RegexAstChar) last).getChar())) {
 			if (isRangeChar(right.getChar())) {
 				charset.remove(charset.size() - 1);
-				charset.add(new RegexAstRange(((RegexAstChar) last).getChar(), right.getChar(), right.getInput(), last.getOffset(), right.getEndOffset()));
+				charset.add(new RegexAstRange(((RegexAstChar) last).getChar(), right.getChar(),
+						right.getInput(), last.getOffset(), right.getEndOffset()));
 				return;
 			} else {
-				reporter.error(right.getOffset(), right.getEndOffset(), right.getInput().lineForOffset(right.getOffset()), "invalid range in character class (after dash): `" + right.toString() + "', escape `-'");
+				reporter.error("invalid range in character class (after dash): `" + right.toString() + "', escape `-'",
+						right.getOffset(), right.getEndOffset());
 			}
 		} else {
-			reporter.error(last.getOffset(), right.getEndOffset(), right.getInput().lineForOffset(last.getOffset()), "invalid range in character class (before dash): `" + last.toString() + "', escape `-'");
+			reporter.error("invalid range in character class (before dash): `" + last.toString() + "', escape `-'",
+					last.getOffset(), right.getEndOffset());
 		}
 
 		charset.add(new RegexAstChar('-', right.getInput(), right.getOffset() - 1, right.getOffset()));
@@ -249,16 +252,16 @@ class RegexUtil {
 			return new RegexAstQuantifier(sym, min, max, sym.getInput(), sym.getOffset(), quantifierEnd);
 		}
 
-		reporter.error(quantifierStart, quantifierEnd, source.lineForOffset(quantifierStart),
-				"quantifier range is expected instead of `" + innerText + "'");
+		reporter.error("quantifier range is expected instead of `" + innerText + "'",
+				quantifierStart, quantifierEnd);
 		return sym;
 	}
 
 	static void checkExpand(RegexAstExpand expand, ErrorReporter reporter) {
 		String innerText = expand.getInput().getText(expand.getOffset() + 1, expand.getEndOffset() - 1);
 		if (!IDENTIFIER.matcher(innerText).matches()) {
-			reporter.error(expand.getOffset(), expand.getEndOffset(), expand.getInput().lineForOffset(expand.getOffset()),
-					"an expansion identifier is expected instead of `" + innerText + "'");
+			reporter.error("an expansion identifier is expected instead of `" + innerText + "'",
+					expand.getOffset(), expand.getEndOffset());
 		}
 	}
 
@@ -289,7 +292,7 @@ class RegexUtil {
 		if (res != null) {
 			return res;
 		}
-		reporter.error(offset, endoffset, 1, "unsupported character class: " + cl);
+		reporter.error("unsupported character class: " + cl, offset, endoffset);
 		return new CharacterSetImpl();
 	}
 }

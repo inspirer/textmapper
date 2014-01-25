@@ -147,7 +147,7 @@ ${if opts.endpositions.contains('column')-}
 ${end-}
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
-					reporter.error(${call java.err_location('lapg_n', 'this') }"Unexpected end of input reached");
+					reporter.error("Unexpected end of input reached"${call java.err_location('lapg_n', 'this') });
 ${if opts.positions.contains('offset')-}
 					lapg_n.offset = currOffset;
 ${end-}
@@ -176,7 +176,7 @@ ${if opts.lexerInput == 'buffered'-}
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
 ${end-}
-				reporter.error(${call java.err_location('lapg_n', 'this') }java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current())${call java.err_location('lapg_n', 'this') });
 				lapg_n.symbol = -1;
 				continue;
 			}
@@ -443,7 +443,7 @@ ${cached query stateId() = self.name->java.escapeJavaReserved()}
 
 ${template errorReporter}
 	public interface ErrorReporter {
-		void error(${call java.err_parameters()}String s);
+		void error(String message${self->java.location(', int ', '', '')});
 	}
 ${end}
 

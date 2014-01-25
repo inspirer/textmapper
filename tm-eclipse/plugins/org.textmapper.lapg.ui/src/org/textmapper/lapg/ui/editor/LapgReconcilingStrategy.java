@@ -71,7 +71,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 				if (resourceLoader != null) {
 					loaders.add(resourceLoader);
 				} else {
-					problems.add(new TMProblem(TMTree.KIND_ERROR, 0, 0, "cannot find template folder: " + path, null));
+					problems.add(new TMProblem(TMTree.KIND_ERROR, "cannot find template folder: " + path, 0, 0, 0, null));
 				}
 			}
 		}
@@ -145,9 +145,9 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 
 		Map<Annotation, Position> annotationsToAdd = new HashMap<Annotation, Position>();
 		for (TMProblem problem : compilationResult) {
-			if (problem != null && problem.getOffset() >= 0 && problem.getOffset() <= problem.getEndOffset()) {
+			if (problem != null && problem.getOffset() >= 0 && problem.getOffset() <= problem.getEndoffset()) {
 				annotationsToAdd.put(createProblemAnnotation(problem), new Position(problem.getOffset(), problem
-						.getEndOffset() - problem.getOffset()));
+						.getEndoffset() - problem.getOffset()));
 			}
 		}
 

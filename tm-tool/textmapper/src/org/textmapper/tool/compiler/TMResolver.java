@@ -239,14 +239,14 @@ public class TMResolver {
 	}
 
 	void error(ITmaNode n, String message) {
-		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getOffset(), n.getEndOffset(), message));
+		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndOffset(), message));
 	}
 
 	private static class LapgResolverProblem extends TMProblem {
 		private static final long serialVersionUID = 3810706800688899470L;
 
-		public LapgResolverProblem(int kind, int offset, int endoffset, String message) {
-			super(kind, offset, endoffset, message, null);
+		public LapgResolverProblem(int kind, int line, int offset, int endoffset, String message) {
+			super(kind, message, line, offset, endoffset, null);
 		}
 
 		@Override

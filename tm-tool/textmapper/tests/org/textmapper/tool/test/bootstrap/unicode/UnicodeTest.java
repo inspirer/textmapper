@@ -65,8 +65,8 @@ public class UnicodeTest {
 		try {
 			lexer = new UnicodeTestLexer(new StringReader(text), new ErrorReporter() {
 				@Override
-				public void error(int start, int line, String s) {
-					fail("unexpected failure: " + start + ": " + s);
+				public void error(String message, int line, int offset) {
+					fail("unexpected failure: " + line + ": " + message);
 				}
 			});
 			LapgSymbol next;

@@ -57,8 +57,8 @@ public class SampleBTree<T> {
 	public static SampleBTree<IAstClassdefNoEoi> parse(TextSource source) {
 		final List<SampleBProblem> list = new ArrayList<SampleBProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new SampleBProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int offset, int endoffset) {
+				list.add(new SampleBProblem(KIND_ERROR, message, offset, endoffset, null));
 			}
 		};
 
@@ -73,7 +73,7 @@ public class SampleBTree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new SampleBProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new SampleBProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, ex));
 		}
 		return new SampleBTree<IAstClassdefNoEoi>(source, null, list);
 	}
@@ -92,7 +92,7 @@ public class SampleBTree<T> {
 		private final int offset;
 		private final int endoffset;
 
-		public SampleBProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public SampleBProblem(int kind, String message, int offset, int endoffset, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;
@@ -107,7 +107,7 @@ public class SampleBTree<T> {
 			return offset;
 		}
 
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return endoffset;
 		}
 

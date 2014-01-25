@@ -35,7 +35,7 @@ public class TMTextUtil {
 		final boolean[] hasErrors = new boolean[]{false};
 		ErrorReporter reporter = new ErrorReporter() {
 			@Override
-			public void error(int start, int end, int line, String s) {
+			public void error(String s, int line, int offset, int endoffset) {
 				hasErrors[0] = true;
 			}
 		};

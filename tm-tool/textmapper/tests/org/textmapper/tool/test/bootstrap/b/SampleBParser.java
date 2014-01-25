@@ -175,8 +175,7 @@ public class SampleBParser {
 			if (action == -2 || tmStack[tmHead].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(tmNext.offset, tmNext.endoffset, tmLexer.getTokenLine(),
-								MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()));
+						reporter.error(MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()), tmNext.offset, tmNext.endoffset);
 					}
 					if (lapg_symbols_ok <= 1) {
 						tmNext = tmLexer.next();
@@ -195,9 +194,8 @@ public class SampleBParser {
 
 		if (tmStack[tmHead].state != 25) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset, tmNext == null ? tmLexer.getLine() : tmLexer.getTokenLine(),
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+				reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset);
 			}
 			throw new ParseException();
 		}

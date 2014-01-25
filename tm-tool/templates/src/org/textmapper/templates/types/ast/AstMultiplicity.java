@@ -23,8 +23,8 @@ public class AstMultiplicity extends AstNode {
 	private final boolean hasNoUpperBound;
 	private final Integer hi;
 
-	public AstMultiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstMultiplicity(Integer lo, boolean hasNoUpperBound, Integer hi, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.lo = lo;
 		this.hasNoUpperBound = hasNoUpperBound;
 		this.hi = hi;

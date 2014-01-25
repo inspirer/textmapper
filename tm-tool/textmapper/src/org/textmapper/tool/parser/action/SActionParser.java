@@ -152,9 +152,8 @@ public class SActionParser {
 		}
 
 		if (tmStack[tmHead].state != 10) {
-			reporter.error(tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getLine() : tmLexer.getTokenLine(),
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+			reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext == null ? tmLexer.getLine() : tmNext.line, tmNext == null ? tmLexer.getOffset() : tmNext.offset);
 			throw new ParseException();
 		}
 		return tmStack[tmHead].value;
@@ -183,6 +182,7 @@ public class SActionParser {
 			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
 		}
 		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
+		lapg_gg.line = startsym == null ? tmLexer.getLine() : startsym.line;
 		lapg_gg.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
 		applyRule(lapg_gg, rule, lapg_rlen[rule]);
 		for (int e = lapg_rlen[rule]; e > 0; e--) {

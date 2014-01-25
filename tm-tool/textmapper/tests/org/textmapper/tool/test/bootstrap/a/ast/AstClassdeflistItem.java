@@ -21,8 +21,8 @@ public class AstClassdeflistItem extends AstNode {
 
 	private final AstClassdef classdef;
 
-	public AstClassdeflistItem(AstClassdef classdef, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstClassdeflistItem(AstClassdef classdef, TextSource source, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+		super(source, line, offset, column, endline, endoffset, endcolumn);
 		this.classdef = classdef;
 	}
 

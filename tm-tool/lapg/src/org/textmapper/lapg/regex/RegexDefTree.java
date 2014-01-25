@@ -56,8 +56,8 @@ public class RegexDefTree<T> {
 	public static RegexDefTree<RegexAstPart> parse(TextSource source) {
 		final List<RegexDefProblem> list = new ArrayList<RegexDefProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new RegexDefProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int offset, int endoffset) {
+				list.add(new RegexDefProblem(KIND_ERROR, message, offset, endoffset, null));
 			}
 		};
 
@@ -73,7 +73,7 @@ public class RegexDefTree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new RegexDefProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new RegexDefProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, ex));
 		}
 		return new RegexDefTree<RegexAstPart>(source, null, list);
 	}
@@ -92,7 +92,7 @@ public class RegexDefTree<T> {
 		private final int offset;
 		private final int endoffset;
 
-		public RegexDefProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public RegexDefProblem(int kind, String message, int offset, int endoffset, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
 			this.offset = offset;
@@ -107,7 +107,7 @@ public class RegexDefTree<T> {
 			return offset;
 		}
 
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return endoffset;
 		}
 

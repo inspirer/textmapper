@@ -22,8 +22,8 @@ public class Ast_String extends AstNode {
 	private final String identifier;
 	private final String scon;
 
-	public Ast_String(String identifier, String scon, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public Ast_String(String identifier, String scon, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.identifier = identifier;
 		this.scon = scon;
 	}

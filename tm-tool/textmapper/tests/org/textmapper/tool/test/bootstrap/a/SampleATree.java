@@ -58,8 +58,8 @@ public class SampleATree<T> {
 	public static SampleATree<IAstClassdefNoEoi> parseClassdef_NoEoi(TextSource source) {
 		final List<SampleAProblem> list = new ArrayList<SampleAProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new SampleAProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
 			}
 		};
 
@@ -74,7 +74,7 @@ public class SampleATree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new SampleAProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new SampleAProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, 0, 0, 0, ex));
 		}
 		return new SampleATree<IAstClassdefNoEoi>(source, null, list);
 	}
@@ -82,8 +82,8 @@ public class SampleATree<T> {
 	public static SampleATree<AstClassdef> parseClassdef(TextSource source) {
 		final List<SampleAProblem> list = new ArrayList<SampleAProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new SampleAProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
 			}
 		};
 
@@ -98,7 +98,7 @@ public class SampleATree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new SampleAProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new SampleAProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, 0, 0, 0, ex));
 		}
 		return new SampleATree<AstClassdef>(source, null, list);
 	}
@@ -114,26 +114,50 @@ public class SampleATree<T> {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
+		private final int line;
 		private final int offset;
+		private final int column;
+		private final int endline;
 		private final int endoffset;
+		private final int endcolumn;
 
-		public SampleAProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public SampleAProblem(int kind, String message, int line, int offset, int column, int endline, int endoffset, int endcolumn, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
+			this.line = line;
 			this.offset = offset;
+			this.column = column;
+			this.endline = endline;
 			this.endoffset = endoffset;
+			this.endcolumn = endcolumn;
 		}
 
 		public int getKind() {
 			return kind;
 		}
 
+		public int getLine() {
+			return line;
+		}
+
 		public int getOffset() {
 			return offset;
 		}
 
-		public int getEndOffset() {
+		public int getColumn() {
+			return column;
+		}
+
+		public int getEndline() {
+			return endline;
+		}
+
+		public int getEndoffset() {
 			return endoffset;
+		}
+
+		public int getEndcolumn() {
+			return endcolumn;
 		}
 
 		public String getSource() {

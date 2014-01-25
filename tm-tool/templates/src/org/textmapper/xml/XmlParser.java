@@ -50,7 +50,7 @@ public class XmlParser {
 
 	private void checkTag(XmlNode node, String endTag, int offset, int endoffset, int line) {
 		if (!node.getTagName().equals(endTag))
-			reporter.error(offset, endoffset, line, "Tag " + node.getTagName() + " is closed with " + endTag);
+			reporter.error("Tag " + node.getTagName() + " is closed with " + endTag, line, offset, endoffset);
 	}
 	private static final int[] tmAction = XmlLexer.unpack_int(31,
 		"\uffff\uffff\6\0\uffff\uffff\ufffd\uffff\2\0\uffff\uffff\5\0\ufff5\uffff\uffeb\uffff" +
@@ -184,9 +184,8 @@ public class XmlParser {
 		}
 
 		if (tmStack[tmHead].state != 30) {
-			reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+			reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 			throw new ParseException();
 		}
 		return (XmlNode)tmStack[tmHead - 1].value;

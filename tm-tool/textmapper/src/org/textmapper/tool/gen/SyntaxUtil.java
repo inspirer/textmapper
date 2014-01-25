@@ -72,7 +72,7 @@ public class SyntaxUtil {
 
 		@Override
 		public int getEndOffset() {
-			return problem.getEndOffset();
+			return problem.getEndoffset();
 		}
 
 		@Override
@@ -82,7 +82,7 @@ public class SyntaxUtil {
 
 		@Override
 		public String getText() {
-			return source.getText(problem.getOffset(), problem.getEndOffset());
+			return source.getText(problem.getOffset(), problem.getEndoffset());
 		}
 
 		@Override

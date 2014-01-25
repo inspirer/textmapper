@@ -26,8 +26,8 @@ public class AstType extends AstNode {
 	private final boolean isClosure;
 	private final List<AstTypeEx> parameters;
 
-	public AstType(AstType.AstKindKind kind, List<String> name, boolean isReference, boolean isClosure, List<AstTypeEx> parameters, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstType(AstType.AstKindKind kind, List<String> name, boolean isReference, boolean isClosure, List<AstTypeEx> parameters, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.kind = kind;
 		this.name = name;
 		this.isReference = isReference;

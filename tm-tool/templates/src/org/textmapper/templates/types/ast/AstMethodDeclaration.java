@@ -24,8 +24,8 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 	private final String name;
 	private final List<AstTypeEx> parameters;
 
-	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parameters, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstMethodDeclaration(AstTypeEx returnType, String name, List<AstTypeEx> parameters, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.returnType = returnType;
 		this.name = name;
 		this.parameters = parameters;

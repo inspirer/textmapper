@@ -22,8 +22,8 @@ public class AstInput extends AstNode {
 
 	private final List<AstTypeDeclaration> declarations;
 
-	public AstInput(List<AstTypeDeclaration> declarations, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstInput(List<AstTypeDeclaration> declarations, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.declarations = declarations;
 	}
 

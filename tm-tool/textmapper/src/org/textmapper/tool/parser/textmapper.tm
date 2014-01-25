@@ -475,8 +475,9 @@ public void setSkipComments(boolean skip) {
 private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
 	org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter() {
-		public void error(int start, int line, String s) {
-			reporter.error(start, start + 1, line, s);
+		@Override
+		public void error(String message, int line, int offset) {
+			reporter.error(message, line, offset, offset + 1);
 		}
 	};
 	org.textmapper.tool.parser.action.@SActionLexer l = new org.textmapper.tool.parser.action.@SActionLexer(innerreporter) {
@@ -493,7 +494,7 @@ private boolean skipAction() throws java.io.@IOException {
 	try {
 		p.parse(l);
 	} catch (org.textmapper.tool.parser.action.@SActionParser.ParseException e) {
-		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+		reporter.error("syntax error in action", getLine(), getOffset(), getOffset() + 1);
 		return false;
 	}
 	return true;

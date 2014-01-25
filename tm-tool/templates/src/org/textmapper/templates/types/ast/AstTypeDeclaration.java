@@ -24,8 +24,8 @@ public class AstTypeDeclaration extends AstNode {
 	private final List<List<String>> _super;
 	private final List<IAstMemberDeclaration> members;
 
-	public AstTypeDeclaration(String name, List<List<String>> _super, List<IAstMemberDeclaration> members, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstTypeDeclaration(String name, List<List<String>> _super, List<IAstMemberDeclaration> members, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 		this._super = _super;
 		this.members = members;

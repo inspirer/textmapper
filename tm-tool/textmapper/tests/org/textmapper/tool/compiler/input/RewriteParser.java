@@ -168,9 +168,8 @@ public class RewriteParser {
 		}
 
 		if (tmStack[tmHead].state != 2) {
-			reporter.error(tmNext.offset, tmNext.line,
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+			reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.line, tmNext.offset);
 			throw new ParseException();
 		}
 		return tmStack[tmHead - 1].value;

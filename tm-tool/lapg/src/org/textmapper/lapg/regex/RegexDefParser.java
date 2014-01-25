@@ -190,9 +190,8 @@ public class RegexDefParser {
 		}
 
 		if (tmStack[tmHead].state != 36) {
-			reporter.error(tmNext.offset, tmNext.endoffset, tmLexer.getTokenLine(),
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+			reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.offset, tmNext.endoffset);
 			throw new ParseException();
 		}
 		return (RegexAstPart)tmStack[tmHead - 1].value;

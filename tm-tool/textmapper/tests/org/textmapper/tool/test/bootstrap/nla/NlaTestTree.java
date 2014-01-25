@@ -56,8 +56,8 @@ public class NlaTestTree<T> {
 	public static NlaTestTree<Object> parse(TextSource source) {
 		final List<NlaTestProblem> list = new ArrayList<NlaTestProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new NlaTestProblem(KIND_ERROR, start, end, s, null));
+			public void error(String message, int line, int offset, int endoffset) {
+				list.add(new NlaTestProblem(KIND_ERROR, message, line, offset, endoffset, null));
 			}
 		};
 
@@ -72,7 +72,7 @@ public class NlaTestTree<T> {
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
-			list.add(new NlaTestProblem(KIND_FATAL, 0, 0, "I/O problem: " + ex.getMessage(), ex));
+			list.add(new NlaTestProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
 		return new NlaTestTree<Object>(source, null, list);
 	}
@@ -88,12 +88,14 @@ public class NlaTestTree<T> {
 		private static final long serialVersionUID = 1L;
 
 		private final int kind;
+		private final int line;
 		private final int offset;
 		private final int endoffset;
 
-		public NlaTestProblem(int kind, int offset, int endoffset, String message, Throwable cause) {
+		public NlaTestProblem(int kind, String message, int line, int offset, int endoffset, Throwable cause) {
 			super(message, cause);
 			this.kind = kind;
+			this.line = line;
 			this.offset = offset;
 			this.endoffset = endoffset;
 		}
@@ -102,11 +104,15 @@ public class NlaTestTree<T> {
 			return kind;
 		}
 
+		public int getLine() {
+			return line;
+		}
+
 		public int getOffset() {
 			return offset;
 		}
 
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return endoffset;
 		}
 

@@ -273,7 +273,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		public IdeaLtplLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				@Override
-				public void error(int start, int end, int line, String s) {
+				public void error(String message, int line, int offset, int endoffset) {
 				}
 			});
 		}

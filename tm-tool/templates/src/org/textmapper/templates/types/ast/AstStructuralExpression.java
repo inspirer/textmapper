@@ -24,8 +24,8 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 	private final List<AstStructuralExpressionDOLLAR1Item> mapEntries;
 	private final List<IAstExpression> expressionList;
 
-	public AstStructuralExpression(List<String> name, List<AstStructuralExpressionDOLLAR1Item> mapEntries, List<IAstExpression> expressionList, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstStructuralExpression(List<String> name, List<AstStructuralExpressionDOLLAR1Item> mapEntries, List<IAstExpression> expressionList, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 		this.mapEntries = mapEntries;
 		this.expressionList = expressionList;

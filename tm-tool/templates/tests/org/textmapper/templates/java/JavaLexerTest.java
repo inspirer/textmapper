@@ -236,8 +236,9 @@ public class JavaLexerTest {
 
     private JavaLexer.ErrorReporter testReporter() {
         return new JavaLexer.ErrorReporter() {
-            public void error(int start, int end, int line, String s) {
-                fail(line + ": " + s);
+            @Override
+			public void error(String message, int line, int offset, int endoffset) {
+                fail(line + ": " + message);
             }
         };
     }

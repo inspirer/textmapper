@@ -52,14 +52,14 @@ public class TemplatesParser {
 
 	private int rawText(int start, final int end) {
 		char[] buff = source.getContents();
-		if( killEnds == start ) {
-			while( start < end && (buff[start] == '\t' || buff[start] == ' ') )
+		if (killEnds == start) {
+			while (start < end && (buff[start] == '\t' || buff[start] == ' '))
 				start++;
 
-			if( start < end && buff[start] == '\r' )
+			if (start < end && buff[start] == '\r')
 				start++;
 
-			if( start < end && buff[start] == '\n' )
+			if (start < end && buff[start] == '\n')
 				start++;
 		}
 		return start;
@@ -67,24 +67,24 @@ public class TemplatesParser {
 
 	private void checkIsSpace(int start, int end, int line) {
 		String val = source.getText(rawText(start,end),end).trim();
-		if( val.length() > 0 )
-			reporter.error(start, end, line, "Unknown text ignored: `"+val+"`");
+		if (val.length() > 0)
+			reporter.error("Unknown text ignored: `" + val + "`", line, start, end);
 	}
 
 	private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int endoffset, int line) {
-		if (elseNode == null ) {
+		if (elseNode == null) {
 			return;
 		}
 		if (node instanceof IfNode) {
 			((IfNode)node).applyElse(elseNode);
 		} else {
-			reporter.error(offset, endoffset, line, "Unknown else node, instructions skipped");
+			reporter.error("Unknown else node, instructions skipped", line, offset, endoffset);
 		}
 	}
 
 	private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, TextSource source, int offset, int endoffset, int line) {
-		if(!instruction.equals("collect")) {
-			reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
+		if (!instruction.equals("collect")) {
+			reporter.error("unknown collection processing instruction: " + instruction, line, offset, endoffset);
 			return new ErrorNode(source, offset, endoffset);
 		}
 		return new CollectMapNode(context, varName, key, value, source, offset, endoffset);
@@ -129,8 +129,8 @@ public class TemplatesParser {
 			}
 			break;
 		}
-		if(kind == 0) {
-			reporter.error(offset, endoffset, line, "unknown collection processing instruction: " + instruction);
+		if (kind == 0) {
+			reporter.error("unknown collection processing instruction: " + instruction, line, offset, endoffset);
 			return new ErrorNode(source, offset, endoffset);
 		}
 		return new CollectionProcessorNode(context, kind, varName, foreachExpr, source, offset, endoffset);
@@ -138,7 +138,7 @@ public class TemplatesParser {
 
 	private Node createEscapedId(String escid, int offset, int endoffset) {
 		int sharp = escid.indexOf('#');
-		if( sharp >= 0 ) {
+		if (sharp >= 0) {
 			Integer index = new Integer(escid.substring(sharp+1));
 			escid = escid.substring(0, sharp);
 			return new IndexNode(new SelectNode(null,escid,source,offset,endoffset), new LiteralNode(index,source,offset,endoffset),source,offset,endoffset);
@@ -153,8 +153,8 @@ public class TemplatesParser {
 	}
 
 	private void checkFqn(String templateName, int offset, int endoffset, int line) {
-		if( templateName.indexOf('.') >= 0 && templatePackage != null) {
-			reporter.error(offset, endoffset, line, "template name should be simple identifier");
+		if (templateName.indexOf('.') >= 0 && templatePackage != null) {
+			reporter.error("template name should be simple identifier", line, offset, endoffset);
 		}
 	}
 	private static final int[] tmAction = TemplatesLexer.unpack_int(275,
@@ -702,8 +702,7 @@ public class TemplatesParser {
 			if (action == -2 || tmStack[tmHead].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-								MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()));
+						reporter.error(MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 					}
 					if (lapg_symbols_ok <= 1) {
 						tmNext = tmLexer.next();
@@ -722,9 +721,8 @@ public class TemplatesParser {
 
 		if (tmStack[tmHead].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+				reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 			}
 			throw new ParseException();
 		}

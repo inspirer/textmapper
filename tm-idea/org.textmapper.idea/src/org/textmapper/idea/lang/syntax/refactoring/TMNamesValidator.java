@@ -51,7 +51,7 @@ public class TMNamesValidator implements NamesValidator {
 		public ValidatingLexer(String name) throws java.io.IOException {
 			super(new StringReader(name), new ErrorReporter() {
 				@Override
-				public void error(int start, int end, int line, String s) {
+				public void error(String message, int line, int offset, int endoffset) {
 					throw new IllegalArgumentException();
 				}
 			});

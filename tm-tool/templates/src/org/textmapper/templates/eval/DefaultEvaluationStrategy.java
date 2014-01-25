@@ -162,7 +162,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 				@Override
 				public int getEndOffset() {
-					return resource.getInitialOffset() + problem.getEndOffset();
+					return resource.getInitialOffset() + problem.getEndoffset();
 				}
 
 				@Override

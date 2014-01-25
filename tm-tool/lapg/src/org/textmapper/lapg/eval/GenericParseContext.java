@@ -50,8 +50,9 @@ public class GenericParseContext {
 	public Result parse(TextSource source, int inputIndex) {
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(KIND_ERROR, start, end, s, null));
+			@Override
+			public void error(String s, int line, int offset, int endoffset) {
+				list.add(new ParseProblem(KIND_ERROR, offset, endoffset, s, null));
 			}
 		};
 

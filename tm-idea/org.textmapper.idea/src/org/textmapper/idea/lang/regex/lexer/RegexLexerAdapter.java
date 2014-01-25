@@ -210,7 +210,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		public IdeaRegexDefLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
 				@Override
-				public void error(int start, int end, int line, String s) {
+				public void error(String message, int offset, int endoffset) {
 				}
 			});
 		}

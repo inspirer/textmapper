@@ -696,8 +696,7 @@ public class TMParser {
 			if (action == -2 || tmStack[tmHead].state == -1) {
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-								MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()));
+						reporter.error(MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 					}
 					if (lapg_symbols_ok <= 1) {
 						tmNext = tmLexer.next();
@@ -716,9 +715,8 @@ public class TMParser {
 
 		if (tmStack[tmHead].state != finalState) {
 			if (lapg_symbols_ok >= 4) {
-				reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+				reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 			}
 			throw new ParseException();
 		}

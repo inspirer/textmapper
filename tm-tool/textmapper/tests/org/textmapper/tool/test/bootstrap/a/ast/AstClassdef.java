@@ -23,8 +23,8 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 	private final String identifier;
 	private final List<AstClassdeflistItem> classdeflist;
 
-	public AstClassdef(String identifier, List<AstClassdeflistItem> classdeflist, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstClassdef(String identifier, List<AstClassdeflistItem> classdeflist, TextSource source, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+		super(source, line, offset, column, endline, endoffset, endcolumn);
 		this.identifier = identifier;
 		this.classdeflist = classdeflist;
 	}

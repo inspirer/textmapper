@@ -237,7 +237,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 	}
 
 	private void createMarker(IFile file, TMProblem p, TextSource source) {
-		createMarker(file, p.getOffset(), p.getEndOffset(), source.lineForOffset(p.getOffset()),
+		createMarker(file, p.getOffset(), p.getEndoffset(), source.lineForOffset(p.getOffset()),
 				p.getKind() == TMTree.KIND_WARN, p.getMessage());
 	}
 

@@ -18,8 +18,9 @@ package org.textmapper.templates.types.ast;
 import org.textmapper.templates.types.TypesTree.TextSource;
 
 public interface IAstNode {
-	int getOffset();
-	int getEndOffset();
-	TextSource getInput();
+	public int getLine();
+	public int getOffset();
+	public int getEndoffset();
+	TextSource getSource();
 	void accept(AstVisitor v);
 }

@@ -82,8 +82,8 @@ ${foreach prop in cl.fields-}
 	private final ${prop->fieldType()} ${prop->propertyName()};
 ${end}
 ${end-}
-	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source${self->java.location(', int ', '', '')}) {
+		super(source${self->java.location(', ', '', '')});
 ${foreach prop in cl.fields-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
@@ -147,9 +147,10 @@ ${call java.header-}
 package ${self->astPackage()};
 
 public interface I${opts.astprefix}Node {
-	int getOffset();
-	int getEndOffset();
-	${call java.package}.${opts.prefix}Tree.@TextSource getInput();
+${foreach l in self->java.locationList()-}
+	public int get${util.toFirstUpper(l)}();
+${end-}
+	${call java.package}.${opts.prefix}Tree.@TextSource getSource();
 	void accept(${opts.astprefix}Visitor v);
 }
 ${end-}
@@ -179,32 +180,28 @@ package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 	
-	protected ${call java.package}.${opts.prefix}Tree.@TextSource fInput;
-	protected int fStart;
-	protected int fEnd;
+	protected ${call java.package}.${opts.prefix}Tree.@TextSource source;
+${self->java.location('\tprotected int ', ';\n', '')-}
 
-	public ${opts.astprefix}Node(${call java.package}.${opts.prefix}Tree.@TextSource input, int start, int end) {
-		this.fStart = start;
-		this.fEnd = end;
-		this.fInput = input;
+	public ${opts.astprefix}Node(${call java.package}.${opts.prefix}Tree.@TextSource source${self->java.location(', int ', '', '')}) {
+		this.source = source;
+${foreach l in self->java.locationList()-}
+		this.${l} = ${l};
+${end-}
 	}
-
-	public int getOffset() {
-		return fStart;
+${foreach l in self->java.locationList()}
+	public int get${util.toFirstUpper(l)}() {
+		return this.${l};
 	}
-
-	public int getEndOffset() {
-		return fEnd;
+${end}
+	public ${call java.package}.${opts.prefix}Tree.@TextSource getSource() {
+		return source;
 	}
-
-	public ${call java.package}.${opts.prefix}Tree.@TextSource getInput() {
-		return fInput;
-	}
-
+${if self->java.hasOffsets()}
 	public String toString() {
-		return fInput == null ? "" : fInput.getText(fStart, fEnd);
+		return source == null ? "" : source.getText(offset, endoffset);
 	}
-
+${end}
 	//public abstract void accept(Visitor v);
 }
 
@@ -265,7 +262,8 @@ ${template ctorArguments(cl, mapped)-}
 ${foreach field in cl.fields-}
 		${self->fieldValue(field, mapped.select(t|t.mapping.field && t.mapping.field == field))} /* ${field->propertyName()} */,
 ${end-}
-		${call astSource()}, ${if getRight().length == 0}${'$'}{left().offset}, ${'$'}{left().endoffset}${else}${'$'}{first().offset}, ${'$'}{last().endoffset}${end-}
+		${call astSource()}${foreach l in self->java.locationList()-}
+, ${'$'}{${if getRight().length == 0}left()${else if l.startsWith('end')}last()${else}first()${end}.${l}}${end-}
 )${end}
 
 ${query fieldValue(field, mapped) for ast.AstRule =

@@ -25,8 +25,8 @@ public class AstFeatureDeclaration extends AstNode implements IAstMemberDeclarat
 	private final List<AstConstraint> modifiers;
 	private final IAstExpression defaultval;
 
-	public AstFeatureDeclaration(AstTypeEx typeEx, String name, List<AstConstraint> modifiers, IAstExpression defaultval, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstFeatureDeclaration(AstTypeEx typeEx, String name, List<AstConstraint> modifiers, IAstExpression defaultval, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.typeEx = typeEx;
 		this.name = name;
 		this.modifiers = modifiers;

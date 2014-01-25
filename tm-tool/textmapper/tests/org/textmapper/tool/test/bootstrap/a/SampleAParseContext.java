@@ -40,8 +40,9 @@ public class SampleAParseContext {
 		org.textmapper.lapg.eval.GenericParseContext.TextSource source2 = new org.textmapper.lapg.eval.GenericParseContext.TextSource(source.getFile(), source.getContents(), 1);
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
-			public void error(int start, int end, int line, String s) {
-				list.add(new ParseProblem(GenericParseContext.KIND_ERROR, start, end, s, null));
+			@Override
+			public void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+				list.add(new ParseProblem(GenericParseContext.KIND_ERROR, offset, endoffset, message, null));
 			}
 		};
 
@@ -70,6 +71,6 @@ public class SampleAParseContext {
 				children[i++] = convert(source, c.getClassdef());
 			}
 		}
-		return new GenericNode(source, def.getOffset(), def.getEndOffset(), children);
+		return new GenericNode(source, def.getOffset(), def.getEndoffset(), children);
 	}
 }

@@ -58,7 +58,7 @@ public class TemplatesBundle {
 				}
 
 				public int getEndOffset() {
-					return problem.getEndOffset();
+					return problem.getEndoffset();
 				}
 
 				public int getLine() {

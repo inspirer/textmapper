@@ -24,8 +24,8 @@ public class AstStringConstraint extends AstNode {
 	private final List<Ast_String> strings;
 	private final String identifier;
 
-	public AstStringConstraint(AstStringConstraint.AstKindKind kind, List<Ast_String> strings, String identifier, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstStringConstraint(AstStringConstraint.AstKindKind kind, List<Ast_String> strings, String identifier, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.kind = kind;
 		this.strings = strings;
 		this.identifier = identifier;

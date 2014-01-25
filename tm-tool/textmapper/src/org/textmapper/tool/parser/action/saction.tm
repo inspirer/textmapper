@@ -18,7 +18,7 @@ language saction(java);
 
 prefix = "SAction"
 package = "org.textmapper.tool.parser.action"
-positions = "offset"
+positions = "offset, line"
 endpositions = ""
 lexerInput = "custom"
 genCopyright = true

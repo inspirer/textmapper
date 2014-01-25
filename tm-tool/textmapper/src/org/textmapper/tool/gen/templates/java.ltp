@@ -117,9 +117,8 @@ ${if self->hasRecovering()-}
 ${call dynamicRecoveringCheck-}
 				if (restore()) {
 					if (lapg_symbols_ok >= 4) {
-						reporter.error(${self->err_location('tmNext', 'tmLexer').trim()}
-								java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
-								tmLexer.getTokenLine(), tmNext.column)${else}", tmLexer.getTokenLine())${end});
+						reporter.error(java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
+								tmLexer.getTokenLine(), tmNext.column)${else}", tmLexer.getTokenLine())${end}${self->err_location('tmNext', 'tmLexer').trim()});
 					}
 					if (lapg_symbols_ok <= 1) {
 						tmNext = tmLexer.next();
@@ -141,9 +140,9 @@ ${end-}
 ${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
-${end}			reporter.error(${(self->lazyNext() ? self->err_location_safe('tmNext', 'tmLexer') : self->err_location('tmNext', 'tmLexer')).trim()}
-						java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
-								tmLexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column${end}));
+${end}			reporter.error(java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
+								tmLexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column${end
+								})${(self->lazyNext() ? self->err_location_safe('tmNext', 'tmLexer') : self->err_location('tmNext', 'tmLexer')).trim()});
 ${if self->hasRecovering()-}
 			}
 ${end-}
@@ -178,23 +177,8 @@ ${end-}
 			tmStack[tmHead].symbol = ${self->errorLexem()};
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorLexem()});
-${if opts.positions.contains('line')-}
-			tmStack[tmHead].line = tmNext.line;
-${end-}
-${if opts.positions.contains('column')-}
-			tmStack[tmHead].column = tmNext.column;
-${end-}
-${if opts.positions.contains('offset')-}
-			tmStack[tmHead].offset = tmNext.offset;
-${end-}
-${if opts.endpositions.contains('line')-}
-			tmStack[tmHead].endline = tmNext.endline;
-${end-}
-${if opts.endpositions.contains('column')-}
-			tmStack[tmHead].endcolumn = tmNext.endcolumn;
-${end-}
-${if opts.endpositions.contains('offset')-}
-			tmStack[tmHead].endoffset = tmNext.endoffset;
+${foreach l in self->locationList()-}
+			tmStack[tmHead].${l} = tmNext.${l};
 ${end-}
 			return true;
 		}
@@ -398,21 +382,6 @@ ${self->symText(property)-}
 ${end-}
 ${end}
 
-${template err_location(symvar,lexervar)-}
-${if opts.positions.contains('offset')}${symvar}.offset, ${end-}
-${if opts.endpositions.contains('offset')}${symvar}.endoffset, ${end-}
-${if opts.positions.contains('line')}${symvar}.line${else}${lexervar}.getTokenLine()${end}, ${end}
-
-${template err_location_safe(symvar,lexervar)-}
-${if opts.positions.contains('offset')}${symvar} == null ? ${lexervar}.getOffset() : ${symvar}.offset, ${end-}
-${if opts.endpositions.contains('offset')}${symvar} == null ? ${lexervar}.getOffset() : ${symvar}.endoffset, ${end-}
-${symvar} == null ? ${lexervar}.getLine() : ${if opts.positions.contains('line')}${symvar}.line${else}${lexervar}.getTokenLine()${end}, ${end}
-
-${template err_parameters()-}
-${if opts.positions.contains('offset')}int start, ${end-}
-${if opts.endpositions.contains('offset')}int end, ${end-}
-int line, ${end}
-
 ${template imports-}
 ${end}
 
@@ -454,7 +423,7 @@ ${cached query type() = context.opts.genast ? self->java_ast.type() : self.type 
 ${query escapeJavaReserved() =
 	[
 		'String', 'Integer', 'Long', 'Boolean', 'LinkedHashMap', 'HashMap', 'Map',
-		'List', 'ArrayList', 'LinkedList', 'TextSource',
+		'List', 'ArrayList', 'LinkedList', 'TextSource', 'Node',
 
 		'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char', 'class', 'continue', 'const',
 		'default', 'do', 'double', 'else', 'enum', 'extends', 'false', 'final', 'finally', 'float', 'for',
@@ -478,3 +447,25 @@ ${end}
 ${query symbolClassName() = 'LapgSymbol'}
 
 ${query methAccess() = 'protected static'}
+
+${query hasOffsets() = context.opts.endpositions.contains('offset') && context.opts.positions.contains('offset')}
+
+${query err_location(symvar,lexervar) = self->location(', ' + symvar + '.', '', '')}
+
+${template err_location_safe(symvar,lexervar)-}
+${foreach l in self->locationList()-}
+, ${symvar} == null ? ${lexervar}.get${util.toFirstUpper(l.startsWith('end') ? l.substring(3) : l)}() : ${symvar}.${l}${end-}
+${end}
+
+${cached query locationList() =
+		['line', 'offset', 'column', 'endline', 'endoffset', 'endcolumn'].
+                       select(it | (it.startsWith('end')
+                       		? context.opts.endpositions.contains(it.substring(3))
+                       		: context.opts.positions.contains(it)))}
+
+${cached query location(prefix, suffix, sep) =
+		self->locationList().collect(it | prefix + it + suffix)->join(sep) }
+
+${template join(sep)-}
+${foreach a in self separator sep}${a}${end-}
+${end}

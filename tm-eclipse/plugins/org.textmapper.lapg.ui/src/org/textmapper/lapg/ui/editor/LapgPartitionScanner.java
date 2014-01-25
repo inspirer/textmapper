@@ -102,7 +102,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 	private static class SkippingTMLexer extends TMLexer {
 		public SkippingTMLexer(Reader stream) throws IOException {
 			super(stream, new ErrorReporter() {
-				public void error(int start, int end, int line, String s) {
+				public void error(String message, int line, int offset, int endoffset) {
 				}
 			});
 		}

@@ -249,9 +249,8 @@ public class NlaTestParser {
 		}
 
 		if (tmStack[tmHead].state != 81) {
-			reporter.error(tmNext.offset, tmNext.endoffset, tmNext.line,
-						MessageFormat.format("syntax error before line {0}",
-								tmLexer.getTokenLine()));
+			reporter.error(MessageFormat.format("syntax error before line {0}",
+								tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 			throw new ParseException();
 		}
 		return tmStack[tmHead - 1].value;

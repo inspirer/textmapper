@@ -23,8 +23,8 @@ public class AstLiteralExpression extends AstNode implements IAstExpression {
 	private final Integer icon;
 	private final Boolean bcon;
 
-	public AstLiteralExpression(String scon, Integer icon, Boolean bcon, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public AstLiteralExpression(String scon, Integer icon, Boolean bcon, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.scon = scon;
 		this.icon = icon;
 		this.bcon = bcon;

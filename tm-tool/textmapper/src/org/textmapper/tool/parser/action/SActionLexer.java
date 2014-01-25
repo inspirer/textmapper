@@ -25,6 +25,7 @@ public abstract class SActionLexer {
 		public Object value;
 		public int symbol;
 		public int state;
+		public int line;
 		public int offset;
 	}
 
@@ -37,7 +38,7 @@ public abstract class SActionLexer {
 	}
 
 	public interface ErrorReporter {
-		void error(int start, int line, String s);
+		void error(String message, int line, int offset);
 	}
 
 	public static final int TOKEN_SIZE = 2048;
@@ -161,7 +162,7 @@ public abstract class SActionLexer {
 
 		do {
 			lapg_n.offset = currOffset;
-			tokenLine = currLine;
+			tokenLine = lapg_n.line = currLine;
 			if (token.length() > TOKEN_SIZE) {
 				token.setLength(TOKEN_SIZE);
 				token.trimToSize();
@@ -173,7 +174,7 @@ public abstract class SActionLexer {
 				if (state == -1 && chr == 0) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
-					reporter.error(lapg_n.offset, this.getTokenLine(), "Unexpected end of input reached");
+					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset);
 					lapg_n.offset = currOffset;
 					return lapg_n;
 				}
@@ -188,7 +189,7 @@ public abstract class SActionLexer {
 			}
 
 			if (state == -1) {
-				reporter.error(lapg_n.offset, this.getTokenLine(), MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()));
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset);
 				lapg_n.symbol = -1;
 				continue;
 			}
