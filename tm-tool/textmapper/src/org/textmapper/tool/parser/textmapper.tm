@@ -21,6 +21,7 @@ package = "org.textmapper.tool.parser"
 maxtoken = 2048
 breaks = true
 gentree = true
+genast = true
 positions = "line,offset"
 endpositions = "offset"
 genCleanup = true
@@ -46,6 +47,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '=>':	/=>/
 ';':    /;/
 '.':    /\./
+'..':    /\.\./
 ',':	/,/
 ':':    /:/
 '[':    /\[/
@@ -62,6 +64,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+=':	/+=/
 '?':	/?/
 '&':	/&/
+'$':	/$/
 '@':    /@/ => afterAt
 
 error:
@@ -176,11 +179,11 @@ type (String) ::=
 	| '(' type_part_list ')'							{ $$ = source.getText(${first().offset}+1, ${last().endoffset}-1); }
 ;
 
-type_part_list ::=
+type_part_list void ::=
 	  type_part_list type_part | type_part ;
 
-type_part ::=
-	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_listopt ')' ;
+type_part void ::=
+	  '<' | '>' | '[' | ']' | ID | '*' | '.' | ',' | '?' | '@' | '&' | '(' type_part_list? ')' ;
 
 pattern (TmaPattern) ::=
 	  regexp											{ $$ = new TmaPattern($regexp, source, ${left().offset}, ${left().endoffset}); }
@@ -198,11 +201,11 @@ lexer_part (ITmaLexerPart) ::=
 	| lexeme
 ;
 
-named_pattern ::=
+named_pattern (TmaNamedPattern) ::=
 	  ID '=' pattern									{ $$ = new TmaNamedPattern($ID, $pattern, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexeme ::=
+lexeme (TmaLexeme) ::=
 	  identifier typeopt ':' (pattern lexem_transitionopt iconopt lexem_attrsopt commandopt)?
                                                     	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -222,7 +225,7 @@ lexem_attribute (TmaLexemAttrs) ::=
 	| Llayout											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LLAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-state_selector ::=
+state_selector (TmaStateSelector) ::=
 	  '[' state_list ']'								{ $$ = new TmaStateSelector($state_list, source, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -250,7 +253,7 @@ grammar_part (ITmaGrammarPart) ::=
 	| directive
 ;
 
-nonterm ::=
+nonterm (TmaNonterm) ::=
 	  annotations? identifier nonterm_type? '::=' rules ';'
 	  													{ $$ = new TmaNonterm($identifier, $nonterm_type, $rules, $annotations, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -269,7 +272,7 @@ assoc (TmaAssoc) ::=
 	| Lnonassoc											{ $$ = TmaAssoc.LNONASSOC; }
 ;
 
-directive ::=
+directive (ITmaGrammarPart) ::=
 	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($references, $assoc, source, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -364,11 +367,17 @@ rhsClass (ITmaRhsPart) ::=
 
 rhsPrimary (ITmaRhsPart) ::=
 	  symref											{ $$ = new TmaRhsSymbol($symref, source, ${left().offset}, ${left().endoffset}); }
-	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().offset}, ${left().endoffset}); }
+	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ZEROORMORE, source, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().offset}, ${left().endoffset}); }
+	| '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
+														{ $$ = new TmaRhsIgnored($rules, $brackets, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+rhsBracketsPair (TmaRhsBracketsPair) ::=
+	  lhs=symref '..' rhs=symref						{ $$ = new TmaRhsBracketsPair($lhs, $rhs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsAnnotations (TmaRhsAnnotations) ::=
@@ -391,6 +400,7 @@ annotation (TmaAnnotation) ::=
 	| '@' syntax_problem                                { $$ = new TmaAnnotation($syntax_problem, source, ${left().offset}, ${left().endoffset}); }
 ;
 
+# TODO deprecate
 negative_la (TmaNegativeLa) ::=
 	'(?!' negative_la_clause ')'						{ $$ = new TmaNegativeLa($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -427,7 +437,7 @@ map_entries (java.util.@List<TmaMapEntriesItem>) ::=
 	| map_entries ',' ID map_separator expression		{ $map_entries.add(new TmaMapEntriesItem($ID, $expression, source, ${ID.offset}, ${left().endoffset})); }
 ;
 
-map_separator ::=
+map_separator void ::=
 	':' | '=' | '=>' ;
 
 name (TmaName) ::=

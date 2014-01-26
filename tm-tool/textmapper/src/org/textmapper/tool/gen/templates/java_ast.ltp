@@ -1,7 +1,9 @@
 ${template unit-}
+${if ast.classifiers.select(it|it->kind() != 'enum').size() > 0-}
 ${call astBaseInterface-}
 ${call astBaseClass-}
 ${call astVisitor-}
+${end-}
 ${foreach cl in ast.classifiers-}
 ${self->ast_classifier(cl)}
 ${end-}

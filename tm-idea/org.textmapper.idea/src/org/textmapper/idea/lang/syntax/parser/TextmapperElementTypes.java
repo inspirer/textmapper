@@ -46,6 +46,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType RHS_PART = new TMElementType(Tokens.rhsAnnotated, "rhs part");
 	public static final IElementType RHS_UNORDERED = new TMElementType(Tokens.rhsUnordered, "rhs unordered");
 	public static final IElementType RHS_PRIMARY = new TMElementType(Tokens.rhsPrimary, "rhs primary");
+	public static final IElementType RHS_BRACKETS_PAIR = new TMElementType(Tokens.rhsBracketsPair, "brackets pair");
 	public static final IElementType NEGATIVE_LA = new TMElementType(Tokens.negative_la, "negative_la");
 
 	public static final IElementType ACTION = new TMElementType(Tokens.command, "action");
@@ -61,7 +62,7 @@ public interface TextmapperElementTypes {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, NONTERM_TYPE, DIRECTIVE,
-			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, NEGATIVE_LA,
+			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_BRACKETS_PAIR, NEGATIVE_LA,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};
 }

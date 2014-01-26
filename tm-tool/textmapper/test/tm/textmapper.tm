@@ -49,6 +49,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '=>':	/=>/
 ';':    /;/
 '.':    /\./
+'..':   /\.\./
 ',':	/,/
 ':':    /:/
 '[':    /\[/
@@ -65,6 +66,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+=':	/+=/
 '?':	/?/
 '&':	/&/
+'$':	/$/
 '@':    /@/ => afterAt
 
 error:
@@ -316,6 +318,11 @@ rhsPrimary returns rhsPart ::=
 	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='*'
 	| [rhsQuantifier] inner=rhsPrimary quantifier='*'
 	| [rhsQuantifier] inner=rhsPrimary quantifier='+'
+	| [rhsIgnored] '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
+;
+
+rhsBracketsPair ::=
+	  lhs=symref '..' rhs=symref
 ;
 
 rhsAnnotations ::=

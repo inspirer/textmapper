@@ -196,4 +196,12 @@ public class TmaVisitor {
 	public boolean visit(TmaRhsAnnotations n) {
 		return true;
 	}
+
+	public boolean visit(TmaRhsIgnored n) {
+		return true;
+	}
+
+	public boolean visit(TmaRhsBracketsPair n) {
+		return true;
+	}
 }

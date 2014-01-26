@@ -146,6 +146,10 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			// operators
 			case Lexems.PERCENT:
 				return OP_PERCENT;
+			case Lexems.DOLLAR:
+				return OP_DOLLAR;
+			case Lexems.DOTDOT:
+				return OP_DOTDOT;
 			case Lexems.COLONCOLONEQUAL:
 				return OP_CCEQ;
 			case Lexems.OR:

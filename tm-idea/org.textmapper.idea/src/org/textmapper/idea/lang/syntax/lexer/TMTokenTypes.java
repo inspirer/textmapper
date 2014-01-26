@@ -57,6 +57,8 @@ public interface TMTokenTypes {
 
 	// operators
 	IElementType OP_PERCENT = new TMElementType(Lexems.PERCENT, "%");
+	IElementType OP_DOLLAR = new TMElementType(Lexems.DOLLAR, "$");
+	IElementType OP_DOTDOT = new TMElementType(Lexems.DOTDOT, "..");
 	IElementType OP_CCEQ = new TMElementType(Lexems.COLONCOLONEQUAL, "::=");
 	IElementType OP_OR = new TMElementType(Lexems.OR, "|");
 	IElementType OP_EQ = new TMElementType(Lexems.EQUAL, "=");
@@ -74,7 +76,7 @@ public interface TMTokenTypes {
 	IElementType OP_AT = new TMElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
-			OP_PERCENT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
+			OP_PERCENT, OP_DOLLAR, OP_DOTDOT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
 			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
 	);
 

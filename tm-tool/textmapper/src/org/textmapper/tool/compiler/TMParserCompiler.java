@@ -361,6 +361,11 @@ public class TMParserCompiler {
 			}
 			return nested;
 
+		} else if (part instanceof TmaRhsIgnored) {
+			error(part, "$( ) is not supported, yet");
+			// TODO
+			return null;
+
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
 
@@ -390,6 +395,9 @@ public class TMParserCompiler {
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
 				Symbol innerTarget = convertPrimary(outer, innerSymRef);
+				if (innerTarget == null) {
+					return null;
+				}
 				final RhsSymbol symref = builder.symbol(innerTarget, null, innerSymRef);
 				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
 			}

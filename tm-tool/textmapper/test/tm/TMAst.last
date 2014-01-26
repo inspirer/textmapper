@@ -453,6 +453,11 @@ class RhsList : RhsPart {
 	}
 }
 
+class RhsIgnored : RhsPart {
+	list<Rule0> rules;
+	list<RhsBracketsPair> brackets;
+}
+
 rhsPrimary  : RhsPart ::=
 	this=new.RhsSymbol: {symref}
   | this=new.RhsNested: '(' {rules} ')'
@@ -460,6 +465,16 @@ rhsPrimary  : RhsPart ::=
   | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
+  | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list)? ')'
+;
+
+class RhsBracketsPair {
+	Symref lhs;
+	Symref rhs;
+}
+
+rhsBracketsPair  : RhsBracketsPair ::=
+	lhs=symref '..' rhs=symref
 ;
 
 class RhsAnnotations {
@@ -624,6 +639,10 @@ rule0_list  : list<Rule0>
 rhsSuffixopt  : RhsSuffix ::=
 	this=rhsSuffix?
 ;
+
+rhsBracketsPair_list  : list<RhsBracketsPair>
+	(this+=rhsBracketsPair
+		separator ',')+ ;
 
 annotation_list  : list<Annotation>
 	(this+=annotation)+ ;

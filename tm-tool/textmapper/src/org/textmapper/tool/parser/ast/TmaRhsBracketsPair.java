@@ -17,19 +17,23 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.util.List;
+public class TmaRhsBracketsPair extends TmaNode {
 
-public class TmaRhsNested extends TmaNode implements ITmaRhsPart {
+	private final TmaSymref lhs;
+	private final TmaSymref rhs;
 
-	private final List<TmaRule0> rules;
-
-	public TmaRhsNested(List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsBracketsPair(TmaSymref lhs, TmaSymref rhs, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.rules = rules;
+		this.lhs = lhs;
+		this.rhs = rhs;
 	}
 
-	public List<TmaRule0> getRules() {
-		return rules;
+	public TmaSymref getLhs() {
+		return lhs;
+	}
+
+	public TmaSymref getRhs() {
+		return rhs;
 	}
 
 	@Override
@@ -37,10 +41,12 @@ public class TmaRhsNested extends TmaNode implements ITmaRhsPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (rules != null) {
-			for (TmaRule0 rule : rules) {
-				rule.accept(v);
-			}
+		if (lhs != null) {
+			lhs.accept(v);
+		}
+		if (rhs != null) {
+			rhs.accept(v);
 		}
 	}
 }
+
