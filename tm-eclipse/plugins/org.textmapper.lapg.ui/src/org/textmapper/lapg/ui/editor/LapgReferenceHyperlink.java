@@ -23,111 +23,111 @@ import org.textmapper.tool.parser.ast.*;
 
 public class LapgReferenceHyperlink implements IHyperlink {
 
-    private final IRegion fHyperlinkRegion;
-    private final LapgSourceStructure fModel;
-    private final ITmaNode fReference;
-    private final LapgSourceEditor fEditor;
+	private final IRegion fHyperlinkRegion;
+	private final LapgSourceStructure fModel;
+	private final ITmaNode fReference;
+	private final LapgSourceEditor fEditor;
 
-    public LapgReferenceHyperlink(LapgSourceEditor editor, IRegion hyperlinkRegion, LapgSourceStructure model, ITmaNode reference) {
-        fEditor = editor;
-        fHyperlinkRegion = hyperlinkRegion;
-        fModel = model;
-        fReference = reference;
-    }
+	public LapgReferenceHyperlink(LapgSourceEditor editor, IRegion hyperlinkRegion, LapgSourceStructure model, ITmaNode reference) {
+		fEditor = editor;
+		fHyperlinkRegion = hyperlinkRegion;
+		fModel = model;
+		fReference = reference;
+	}
 
-    public IRegion getHyperlinkRegion() {
-        return fHyperlinkRegion;
-    }
+	public IRegion getHyperlinkRegion() {
+		return fHyperlinkRegion;
+	}
 
-    public String getHyperlinkText() {
-        return null;
-    }
+	public String getHyperlinkText() {
+		return null;
+	}
 
-    public String getTypeLabel() {
-        return null;
-    }
+	public String getTypeLabel() {
+		return null;
+	}
 
-    private String getName() {
-        if (fReference instanceof TmaSymref) {
-            return ((TmaSymref) fReference).getName();
-        } else if (fReference instanceof TmaStateref) {
-            return ((TmaStateref) fReference).getName();
-        }
-        throw new IllegalStateException();
-    }
+	private String getName() {
+		if (fReference instanceof TmaSymref) {
+			return ((TmaSymref) fReference).getName();
+		} else if (fReference instanceof TmaStateref) {
+			return ((TmaStateref) fReference).getName();
+		}
+		throw new IllegalStateException();
+	}
 
-    public void open() {
-        if (fModel == null) {
-            return;
-        }
+	public void open() {
+		if (fModel == null) {
+			return;
+		}
 
-        try {
-            IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-            if (activeWorkbenchWindow == null) {
-                return;
-            }
-            IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
-            if (activePage == null) {
-                return;
-            }
+		try {
+			IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+			if (activeWorkbenchWindow == null) {
+				return;
+			}
+			IWorkbenchPage activePage = activeWorkbenchWindow.getActivePage();
+			if (activePage == null) {
+				return;
+			}
 
-            String symbolName = getName();
+			String symbolName = getName();
 
-            TmaInput root = fModel.getAst().getRoot();
-            ITmaNode resolved = searchInRoot(root, symbolName);
-            if (resolved == null) {
-                return;
-            }
+			TmaInput root = fModel.getAst().getRoot();
+			ITmaNode resolved = searchInRoot(root, symbolName);
+			if (resolved == null) {
+				return;
+			}
 
-            if (resolved.getInput() == fModel.getAst().getSource()) {
-                openLocal(activePage, fModel, resolved);
-            } else {
-                // TODO
+			if (resolved.getSource() == fModel.getAst().getSource()) {
+				openLocal(activePage, fModel, resolved);
+			} else {
+				// TODO
 //				activePage.getNavigationHistory().markLocation(activePage.getActiveEditor());
 //				if (open(activePage, fModel, resolved)) {
 //					activePage.getNavigationHistory().markLocation(activePage.getActiveEditor());
 //				}
-            }
-        } catch (PartInitException e) {
-            // ignored
-        }
-    }
+			}
+		} catch (PartInitException e) {
+			// ignored
+		}
+	}
 
-    private void openLocal(IWorkbenchPage activePage, LapgSourceStructure model, ITmaNode resolved)
-            throws PartInitException {
+	private void openLocal(IWorkbenchPage activePage, LapgSourceStructure model, ITmaNode resolved)
+			throws PartInitException {
 
-        TmaIdentifier identifier = null;
-        if (resolved instanceof TmaNonterm) {
-            identifier = ((TmaNonterm) resolved).getName();
-        } else if (resolved instanceof TmaLexeme) {
-            identifier = ((TmaLexeme) resolved).getName();
-        }
+		TmaIdentifier identifier = null;
+		if (resolved instanceof TmaNonterm) {
+			identifier = ((TmaNonterm) resolved).getName();
+		} else if (resolved instanceof TmaLexeme) {
+			identifier = ((TmaLexeme) resolved).getName();
+		}
 
-        int start = resolved.getOffset();
-        fEditor.reveal(start,
-                identifier != null ? identifier.getOffset() : start,
-                identifier != null ? identifier.getEndOffset() : start,
-                resolved.getEndOffset());
-    }
+		int start = resolved.getOffset();
+		fEditor.reveal(start,
+				identifier != null ? identifier.getOffset() : start,
+				identifier != null ? identifier.getEndoffset() : start,
+				resolved.getEndoffset());
+	}
 
-    private ITmaNode searchInRoot(TmaInput root, String symbolName) {
-        for (ITmaGrammarPart p : root.getGrammar()) {
-            if (p instanceof TmaNonterm) {
-                if (((TmaNonterm) p).getName().getID().equals(symbolName)) {
-                    return p;
-                }
-            }
-        }
-        for (ITmaLexerPart p : root.getLexer()) {
-            if (p instanceof TmaLexeme) {
-                if (((TmaLexeme) p).getName().getID().equals(symbolName)) {
-                    return p;
-                }
-            }
-        }
-        if (symbolName.endsWith("opt")) {
-            return searchInRoot(root, symbolName.substring(0, symbolName.length() - 3));
-        }
-        return null;
-    }
+	private ITmaNode searchInRoot(TmaInput root, String symbolName) {
+		for (ITmaGrammarPart p : root.getGrammar()) {
+			if (p instanceof TmaNonterm) {
+				if (((TmaNonterm) p).getName().getID().equals(symbolName)) {
+					return p;
+				}
+			}
+		}
+		for (ITmaLexerPart p : root.getLexer()) {
+			if (p instanceof TmaLexeme) {
+				if (((TmaLexeme) p).getName().getID().equals(symbolName)) {
+					return p;
+				}
+			}
+		}
+		if (symbolName.endsWith("opt")) {
+			return searchInRoot(root, symbolName.substring(0, symbolName.length() - 3));
+		}
+		return null;
+	}
 }

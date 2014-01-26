@@ -48,10 +48,10 @@ public class LapgSourceStructure implements ISourceStructure {
 		List<IStatus> errors = new ArrayList<IStatus>(ast.getErrors().size());
 		for (TMProblem p : ast.getErrors()) {
 			switch (p.getKind()) {
-			case TMTree.KIND_FATAL:
-			case TMTree.KIND_ERROR:
-				errors.add(new Status(IStatus.ERROR, LapgUIActivator.PLUGIN_ID, 0, p.getMessage(), null));
-				break;
+				case TMTree.KIND_FATAL:
+				case TMTree.KIND_ERROR:
+					errors.add(new Status(IStatus.ERROR, LapgUIActivator.PLUGIN_ID, 0, p.getMessage(), null));
+					break;
 			}
 		}
 		if (errors.size() > 0) {

@@ -242,7 +242,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 	}
 
 	private void createMarker(IFile file, TextSourceElement element, boolean isWarning, String message) {
-		createMarker(file, element.getOffset(), element.getEndOffset(), element.getLine(), isWarning, message);
+		createMarker(file, element.getOffset(), element.getEndoffset(), element.getLine(), isWarning, message);
 	}
 
 	private class BuilderStatus implements ProcessingStatus {

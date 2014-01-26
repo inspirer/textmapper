@@ -1,6 +1,6 @@
 /**
  * This file is part of Lapg.UI project.
- * 
+ *
  * Copyright (c) 2010 Evgeny Gryaznov
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -35,7 +35,7 @@ public class LapgColorsPreferencePage extends PreferencePage implements IWorkben
 	public LapgColorsPreferencePage() {
 		setDescription();
 		setPreferenceStore();
-		fOverlayStore = new OverlayPreferenceStore(getPreferenceStore(), new OverlayPreferenceStore.OverlayKey[] {});
+		fOverlayStore = new OverlayPreferenceStore(getPreferenceStore(), new OverlayPreferenceStore.OverlayKey[]{});
 		fConfigurationBlock = createConfigurationBlock(fOverlayStore);
 	}
 
@@ -56,7 +56,7 @@ public class LapgColorsPreferencePage extends PreferencePage implements IWorkben
 		return new DefaultColoringConfigurationBlock(overlayPreferenceStore) {
 			@Override
 			protected LapgHighlightingManager createHighlightingManager(OverlayPreferenceStore store,
-					DefaultColorManager colorManager) {
+																		DefaultColorManager colorManager) {
 				return new LapgHighlightingManager(store, colorManager);
 			}
 		};
@@ -86,7 +86,7 @@ public class LapgColorsPreferencePage extends PreferencePage implements IWorkben
 	public boolean performOk() {
 		fOverlayStore.propagate();
 		try {
-			new InstanceScope().getNode(LapgUIActivator.PLUGIN_ID).flush();
+			InstanceScope.INSTANCE.getNode(LapgUIActivator.PLUGIN_ID).flush();
 		} catch (BackingStoreException e) {
 		}
 		return true;
