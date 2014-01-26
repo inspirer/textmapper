@@ -20,7 +20,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public interface ITmaNode extends TextSourceElement {
 
-	TextSource getInput();
+	TextSource getSource();
 
 	void accept(TmaVisitor v);
 }

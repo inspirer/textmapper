@@ -36,7 +36,7 @@ public class TmaRule0 extends TmaNode {
 	}
 
 	public TmaRule0(TmaSyntaxProblem err) {
-		super(err.getInput(), err.getOffset(), err.getEndOffset());
+		super(err.getSource(), err.getOffset(), err.getEndoffset());
 		this.list = null;
 		this.suffix = null;
 		this.prefix = null;

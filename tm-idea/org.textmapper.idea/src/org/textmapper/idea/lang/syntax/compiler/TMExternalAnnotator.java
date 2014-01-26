@@ -259,7 +259,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 			}
 			if (anchor instanceof TextSourceElement) {
 				int start = ((TextSourceElement) anchor).getOffset();
-				int len = ((TextSourceElement) anchor).getEndOffset() - start;
+				int len = ((TextSourceElement) anchor).getEndoffset() - start;
 				String text = ((TextSourceElement) anchor).getText();
 				assert len == text.length();
 				while (len > 1 && isWhitespace(text.charAt(len - 1))) {

@@ -17,34 +17,31 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 6/23/11
- */
 public class TmaNamedPattern extends TmaNode implements ITmaLexerPart {
 
-	private String name;
-	private TmaPattern regexp;
+	private final String name;
+	private final TmaPattern pattern;
 
-	public TmaNamedPattern(String name, TmaPattern regexp, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaNamedPattern(String name, TmaPattern pattern, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
-		this.regexp = regexp;
+		this.pattern = pattern;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public TmaPattern getRegexp() {
-		return regexp;
+	public TmaPattern getPattern() {
+		return pattern;
 	}
 
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (regexp != null) {
-			regexp.accept(v);
+		if (pattern != null) {
+			pattern.accept(v);
 		}
 	}
 }

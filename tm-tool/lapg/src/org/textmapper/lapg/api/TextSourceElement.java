@@ -21,7 +21,7 @@ public interface TextSourceElement extends SourceElement {
 
 	int getOffset();
 
-	int getEndOffset();
+	int getEndoffset();
 
 	int getLine();
 

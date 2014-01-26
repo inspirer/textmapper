@@ -131,9 +131,9 @@ public class TMResolver {
 				String name = astpattern.getName();
 				RegexPart regex;
 				try {
-					regex = LapgCore.parse(name, astpattern.getRegexp().getRegexp());
+					regex = LapgCore.parse(name, astpattern.getPattern().getRegexp());
 				} catch (RegexParseException e) {
-					error(astpattern.getRegexp(), e.getMessage());
+					error(astpattern.getPattern(), e.getMessage());
 					continue;
 				}
 				if (namedPatternsMap.get(name) != null) {
@@ -226,7 +226,7 @@ public class TMResolver {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
 					Nonterminal symopt = (Nonterminal) create(
-							new TmaIdentifier(id.getName(), id.getInput(), id.getOffset(), id.getEndOffset()),
+							new TmaIdentifier(id.getName(), id.getSource(), id.getOffset(), id.getEndoffset()),
 							sym.getType(), false);
 					builder.addRule(symopt, builder.sequence(null,
 							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, null, id), id)), id), null);
@@ -239,7 +239,7 @@ public class TMResolver {
 	}
 
 	void error(ITmaNode n, String message) {
-		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndOffset(), message));
+		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
 	}
 
 	private static class LapgResolverProblem extends TMProblem {

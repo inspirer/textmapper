@@ -19,11 +19,11 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaLexerState extends TmaNode {
 
-	private TmaIdentifier name;
-	private TmaStateref defaultTransition;
+	private final TmaIdentifier name;
+	private final TmaStateref defaultTransition;
 
-	public TmaLexerState(TmaIdentifier name, TmaStateref defaultTransition, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaLexerState(TmaIdentifier name, TmaStateref defaultTransition, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 		this.defaultTransition = defaultTransition;
 	}
@@ -36,7 +36,6 @@ public class TmaLexerState extends TmaNode {
 		return defaultTransition;
 	}
 
-	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

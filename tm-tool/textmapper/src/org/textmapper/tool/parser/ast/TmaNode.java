@@ -19,11 +19,19 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public abstract class TmaNode implements ITmaNode {
 
-	private final TextSource source;
-	private final int offset, endoffset;
+	protected TextSource source;
+	protected int line;
+	protected int offset;
+	protected int endoffset;
 
+	@Deprecated
 	public TmaNode(TextSource source, int offset, int endoffset) {
+		this(source, 0, offset, endoffset);
+	}
+
+	public TmaNode(TextSource source, int line, int offset, int endoffset) {
 		this.source = source;
+		this.line = line;
 		this.offset = offset;
 		this.endoffset = endoffset;
 	}
@@ -33,18 +41,18 @@ public abstract class TmaNode implements ITmaNode {
 	}
 
 	public int getLine() {
-		return source.lineForOffset(offset);
+		return this.line == 0 ? source.lineForOffset(offset) : this.line;
 	}
 
 	public int getOffset() {
-		return offset;
+		return this.offset;
 	}
 
-	public int getEndOffset() {
-		return endoffset;
+	public int getEndoffset() {
+		return this.endoffset;
 	}
 
-	public TextSource getInput() {
+	public TextSource getSource() {
 		return source;
 	}
 

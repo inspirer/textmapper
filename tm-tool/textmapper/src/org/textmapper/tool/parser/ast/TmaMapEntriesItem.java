@@ -32,7 +32,7 @@ public class TmaMapEntriesItem extends TmaNode {
 	}
 
 	public TmaMapEntriesItem(TmaSyntaxProblem error) {
-		super(error.getInput(), error.getOffset(), error.getEndOffset());
+		super(error.getSource(), error.getLine(), error.getOffset(), error.getEndoffset());
 		this.name = null;
 		this.expression = null;
 		this.error = error;

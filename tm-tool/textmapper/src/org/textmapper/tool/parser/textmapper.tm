@@ -199,7 +199,7 @@ lexer_part (ITmaLexerPart) ::=
 ;
 
 named_pattern ::=
-	  ID '=' pattern									{ $$ = new TmaNamedPattern($ID, $pattern, source, ${left().offset}, ${left().endoffset}); }
+	  ID '=' pattern									{ $$ = new TmaNamedPattern($ID, $pattern, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 lexeme ::=
@@ -236,7 +236,7 @@ stateref (TmaStateref) ::=
 ;
 
 lexer_state (TmaLexerState) ::=
-	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new TmaLexerState($identifier, $defaultTransition, source, ${left().offset}, ${left().endoffset}); }
+	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new TmaLexerState($identifier, $defaultTransition, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 grammar_parts (List<ITmaGrammarPart>) ::=
@@ -431,7 +431,7 @@ map_separator ::=
 	':' | '=' | '=>' ;
 
 name (TmaName) ::=
-	qualified_id 										{ $$ = new TmaName($qualified_id, source, ${left().offset}, ${left().endoffset}); }
+	qualified_id 										{ $$ = new TmaName($qualified_id, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 qualified_id (String) ::=

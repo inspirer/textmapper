@@ -380,7 +380,7 @@ public class LexerGeneratorTest {
 		}
 
 		@Override
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return 0;
 		}
 

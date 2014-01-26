@@ -119,7 +119,7 @@ public class TMExpressionResolver {
 							props.put(entry.getName(), entry.getExpression());
 						}
 					}
-					String name = ((TmaInstance) expression).getClassName().getName();
+					String name = ((TmaInstance) expression).getClassName().getQualifiedId();
 					if (name.indexOf('.') < 0) {
 						name = myTypesPackage + "." + name;
 					}

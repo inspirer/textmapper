@@ -71,7 +71,7 @@ public class SyntaxUtil {
 		}
 
 		@Override
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return problem.getEndoffset();
 		}
 

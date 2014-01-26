@@ -203,7 +203,7 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 				TextSourceElement textElement = (TextSourceElement) anchor;
 				compileContext.processMessage(new CompilerMessage(TmCompilerUtil.BUILDER_ID, toIdeaKind(kind),
 						message, textElement.getResourceName(),
-						textElement.getOffset(), textElement.getEndOffset(), textElement.getOffset(),
+						textElement.getOffset(), textElement.getEndoffset(), textElement.getOffset(),
 						textElement.getLine(), 1 /* TODO */));
 			} else {
 				compileContext.processMessage(new CompilerMessage(TmCompilerUtil.BUILDER_ID, toIdeaKind(kind),

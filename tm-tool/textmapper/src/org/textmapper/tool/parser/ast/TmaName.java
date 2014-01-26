@@ -19,15 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaName extends TmaNode {
 
-	private final String name;
+	private final String qualifiedId;
 
-	public TmaName(String name, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.name = name;
+	public TmaName(String qualifiedId, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
+		this.qualifiedId = qualifiedId;
 	}
 
-	public String getName() {
-		return name;
+	public String getQualifiedId() {
+		return qualifiedId;
 	}
 
 	public void accept(TmaVisitor v) {

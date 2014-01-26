@@ -59,7 +59,7 @@ public final class TemplatesStatusAdapter implements TemplatesStatus {
 			return myWrapped.getOffset();
 		}
 
-		public int getEndOffset() {
+		public int getEndoffset() {
 			return myWrapped.getEndOffset();
 		}
 

@@ -851,7 +851,7 @@ public class TMParser {
 				 ((List<ITmaLexerPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
 				break;
 			case 48:  // named_pattern ::= ID '=' pattern
-				 lapg_gg.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaPattern)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaPattern)tmStack[tmHead].value), source, lapg_gg.line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 59:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
 				 lapg_gg.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaPattern)tmStack[tmHead - 4].value), ((TmaStateref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
@@ -890,10 +890,10 @@ public class TMParser {
 				 lapg_gg.value = new TmaStateref(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 71:  // lexer_state ::= identifier '=>' stateref
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaStateref)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead - 2].value), ((TmaStateref)tmStack[tmHead].value), source, lapg_gg.line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 72:  // lexer_state ::= identifier
-				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaStateref)null), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaStateref)null), source, lapg_gg.line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 73:  // grammar_parts ::= grammar_part
 				 lapg_gg.value = new ArrayList<ITmaGrammarPart>(64); ((List<ITmaGrammarPart>)lapg_gg.value).add(((ITmaGrammarPart)tmStack[tmHead].value)); 
@@ -1124,7 +1124,7 @@ public class TMParser {
 				 ((List<TmaMapEntriesItem>)tmStack[tmHead - 4].value).add(new TmaMapEntriesItem(((String)tmStack[tmHead - 2].value), ((ITmaExpression)tmStack[tmHead].value), source, tmStack[tmHead - 2].offset, lapg_gg.endoffset)); 
 				break;
 			case 176:  // name ::= qualified_id
-				 lapg_gg.value = new TmaName(((String)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 lapg_gg.value = new TmaName(((String)tmStack[tmHead].value), source, lapg_gg.line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 178:  // qualified_id ::= qualified_id '.' ID
 				 lapg_gg.value = ((String)tmStack[tmHead - 2].value) + "." + ((String)tmStack[tmHead].value); 
