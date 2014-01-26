@@ -52,9 +52,14 @@ public class TMMapper {
 		mapFields();
 
 		assert unmapped.isEmpty();
-		assert typeListeners.isEmpty();
-		for (Runnable pp : postProcessors) {
-			pp.run();
+		if (!typeListeners.isEmpty()) {
+			for (Symbol s : typeListeners.keySet()) {
+				error(s, "cannot compute AST type (detected a cycle in type dependencies)");
+			}
+		} else {
+			for (Runnable pp : postProcessors) {
+				pp.run();
+			}
 		}
 
 		return builder.create();
