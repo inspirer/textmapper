@@ -84,8 +84,8 @@ ${foreach prop in cl.fields-}
 	private final ${prop->fieldType()} ${prop->propertyName()};
 ${end}
 ${end-}
-	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source${self->java.location(', int ', '', '')}) {
-		super(source${self->java.location(', ', '', '')});
+	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source${self->util.location(', int ', '', '')}) {
+		super(source${self->util.location(', ', '', '')});
 ${foreach prop in cl.fields-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
@@ -149,7 +149,7 @@ ${call java.header-}
 package ${self->astPackage()};
 
 public interface I${opts.astprefix}Node {
-${foreach l in self->java.locationList()-}
+${foreach l in self->util.locationList()-}
 	public int get${util.toFirstUpper(l)}();
 ${end-}
 	${call java.package}.${opts.prefix}Tree.@TextSource getSource();
@@ -183,15 +183,15 @@ package ${self->astPackage()};
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
 	
 	protected ${call java.package}.${opts.prefix}Tree.@TextSource source;
-${self->java.location('\tprotected int ', ';\n', '')-}
+${self->util.location('\tprotected int ', ';\n', '')-}
 
-	public ${opts.astprefix}Node(${call java.package}.${opts.prefix}Tree.@TextSource source${self->java.location(', int ', '', '')}) {
+	public ${opts.astprefix}Node(${call java.package}.${opts.prefix}Tree.@TextSource source${self->util.location(', int ', '', '')}) {
 		this.source = source;
-${foreach l in self->java.locationList()-}
+${foreach l in self->util.locationList()-}
 		this.${l} = ${l};
 ${end-}
 	}
-${foreach l in self->java.locationList()}
+${foreach l in self->util.locationList()}
 	public int get${util.toFirstUpper(l)}() {
 		return this.${l};
 	}
@@ -199,7 +199,7 @@ ${end}
 	public ${call java.package}.${opts.prefix}Tree.@TextSource getSource() {
 		return source;
 	}
-${if self->java.hasOffsets()}
+${if self->util.hasOffsets()}
 	public String toString() {
 		return source == null ? "" : source.getText(offset, endoffset);
 	}
@@ -264,7 +264,7 @@ ${template ctorArguments(cl, mapped)-}
 ${foreach field in cl.fields-}
 		${self->fieldValue(field, mapped.select(t|t.mapping.field && t.mapping.field == field))} /* ${field->propertyName()} */,
 ${end-}
-		${call astSource()}${foreach l in self->java.locationList()-}
+		${call astSource()}${foreach l in self->util.locationList()-}
 , ${'$'}{${if getRight().length == 0}left()${else if l.startsWith('end')}last()${else}first()${end}.${l}}${end-}
 )${end}
 

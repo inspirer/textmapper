@@ -108,8 +108,6 @@ ${cached query errorLexem() = 'grammar.getError().getIndex()'}
 ${query mainParseVisibility() = 'public'}
 
 ${cached query needActionsTable = true}
-${cached query needInitialState = true}
-${cached query needFinalState = true}
 ${cached query hasNoEoiInputs = true}
 ${cached query hasEoiInputs = true}
 ${query methAccess() = 'protected final'}

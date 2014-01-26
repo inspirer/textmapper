@@ -126,6 +126,11 @@ public class BootstrapTest {
 				new String[]{"UnicodeTestLexer.java"}, 0);
 	}
 
+	@Test
+	public void testJsLexer1() {
+		bootstrap("../tests/javascript/lexer", "lexer1.tm", new String[0],
+				new String[]{"lexer1.js"}, 0);
+	}
 
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles,
 						   int expectedResolvedConflicts) {

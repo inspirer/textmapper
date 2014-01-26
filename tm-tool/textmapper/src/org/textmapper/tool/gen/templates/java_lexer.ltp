@@ -443,7 +443,7 @@ ${cached query stateId() = self.name->java.escapeJavaReserved()}
 
 ${template errorReporter}
 	public interface ErrorReporter {
-		void error(String message${self->java.location(', int ', '', '')});
+		void error(String message${self->util.location(', int ', '', '')});
 	}
 ${end}
 

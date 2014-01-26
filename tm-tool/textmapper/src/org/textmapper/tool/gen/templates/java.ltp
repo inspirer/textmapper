@@ -81,8 +81,8 @@ ${end-}
 	protected ${self->symbolClassName()} tmNext;
 	protected ${opts.prefix}Lexer tmLexer;
 
-	${self->mainParseVisibility()} ${self->mainParseReturnType()} parse(${opts.prefix}Lexer lexer${if self->needInitialState()
-		}, int initialState${end}${if self->needFinalState()}, int finalState${end
+	${self->mainParseVisibility()} ${self->mainParseReturnType()} parse(${opts.prefix}Lexer lexer${if self->util.needInitialState()
+		}, int initialState${end}${if self->util.needFinalState()}, int finalState${end
 		}${if self->hasNoEoiInputs() && self->hasEoiInputs()}, boolean noEoi${end}) throws java.io.@IOException, ParseException {
 
 		tmLexer = lexer;
@@ -92,10 +92,10 @@ ${if self->hasRecovering()}		int lapg_symbols_ok = 4;
 ${end-}
 
 		tmStack[0] = new ${self->symbolClassName()}();
-		tmStack[0].state = ${self->needInitialState() ? 'initialState' : 0};
+		tmStack[0].state = ${self->util.needInitialState() ? 'initialState' : 0};
 		tmNext = tmLexer.next();
 
-		while (tmStack[tmHead].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
+		while (tmStack[tmHead].state != ${self->util.needFinalState() ? 'finalState' : parser.statesCount-1}) {
 			int action = tmAction(tmStack[tmHead].state, ${if self->lazyNext()}tmNext == null ? ${call package}.${opts.prefix}Lexer.@Lexems.Unavailable_ : ${end}tmNext.symbol);
 ${if self->lazyNext()-}
 			if (action <= -3 && tmNext == null) {
@@ -129,14 +129,14 @@ ${call dynamicRecoveringCheck-}
 				if (tmHead < 0) {
 					tmHead = 0;
 					tmStack[0] = new ${self->symbolClassName()}();
-					tmStack[0].state = ${self->needInitialState() ? 'initialState' : 0};
+					tmStack[0].state = ${self->util.needInitialState() ? 'initialState' : 0};
 				}
 ${end-}
 				break;
 			}
 		}
 
-		if (tmStack[tmHead].state != ${self->needFinalState() ? 'finalState' : parser.statesCount-1}) {
+		if (tmStack[tmHead].state != ${self->util.needFinalState() ? 'finalState' : parser.statesCount-1}) {
 ${if self->hasRecovering()-}
 			if (lapg_symbols_ok >= 4) {
 	${else-}
@@ -148,7 +148,7 @@ ${if self->hasRecovering()-}
 ${end-}
 			throw new ParseException();
 		}
-		return ${if !self->needInitialState() && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
+		return ${if !self->util.needInitialState() && syntax.input.first().target->type()}(${syntax.input.first().target->type()})${end
 			}tmStack[${
 				self->hasNoEoiInputs() && self->hasEoiInputs()
 					? 'noEoi ? tmHead : tmHead - 1' :
@@ -177,7 +177,7 @@ ${end-}
 			tmStack[tmHead].symbol = ${self->errorLexem()};
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorLexem()});
-${foreach l in self->locationList()-}
+${foreach l in self->util.locationList()-}
 			tmStack[tmHead].${l} = tmNext.${l};
 ${end-}
 			return true;
@@ -259,7 +259,7 @@ ${if opts.genCleanup}
 	protected void cleanup(${self->symbolClassName()} value) {
 	}
 ${end-}
-${if self->needFinalState()-}
+${if self->util.needFinalState()-}
 ${call customParseRoutines-}
 ${end-}
 }
@@ -297,7 +297,7 @@ ${end}
 ${template customParseRoutines-}
 ${foreach inp in syntax.input}
 	public ${if inp.target->type()}${inp.target->type()}${else}Object${end} parse${util.toFirstUpper(inp.target.id)}(${opts.prefix}Lexer lexer) throws java.io.@IOException, ParseException {
-		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if self->needInitialState()}, ${index}${end}, ${parser.finalStates[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
+		return ${if inp.target->type()}(${inp.target->type()}) ${end}parse(lexer${if self->util.needInitialState()}, ${index}${end}, ${parser.finalStates[index]}${if self->hasNoEoiInputs() && self->hasEoiInputs()
 				}, ${inp.hasEoi() ? 'false' : 'true'}${end});
 	}
 ${end-}
@@ -406,11 +406,8 @@ ${cached query errorLexem() = syntax.error.index}
 ${template dynamicRecoveringCheck-}
 ${end}
 
-${query mainParseVisibility() = self->needFinalState() ? 'private' : 'public'}
-${query mainParseReturnType() = !self->needFinalState() && syntax.input.first().target->type() ? syntax.input.first().target->type() : 'Object'}
-
-${cached query needInitialState() = syntax.input.length > 1}
-${cached query needFinalState() = self->needInitialState() || !syntax.input[0].hasEoi() && parser.finalStates[0] != parser.statesCount - 1 }
+${query mainParseVisibility() = self->util.needFinalState() ? 'private' : 'public'}
+${query mainParseReturnType() = !self->util.needFinalState() && syntax.input.first().target->type() ? syntax.input.first().target->type() : 'Object'}
 
 ${cached query hasNoEoiInputs() = syntax.input.exists(x|!x.hasEoi()) }
 ${cached query hasEoiInputs() = syntax.input.exists(x|x.hasEoi()) }
@@ -448,24 +445,9 @@ ${query symbolClassName() = 'LapgSymbol'}
 
 ${query methAccess() = 'protected static'}
 
-${query hasOffsets() = context.opts.endpositions.contains('offset') && context.opts.positions.contains('offset')}
-
-${query err_location(symvar,lexervar) = self->location(', ' + symvar + '.', '', '')}
+${query err_location(symvar,lexervar) = self->util.location(', ' + symvar + '.', '', '')}
 
 ${template err_location_safe(symvar,lexervar)-}
-${foreach l in self->locationList()-}
+${foreach l in self->util.locationList()-}
 , ${symvar} == null ? ${lexervar}.get${util.toFirstUpper(l.startsWith('end') ? l.substring(3) : l)}() : ${symvar}.${l}${end-}
-${end}
-
-${cached query locationList() =
-		['line', 'offset', 'column', 'endline', 'endoffset', 'endcolumn'].
-                       select(it | (it.startsWith('end')
-                       		? context.opts.endpositions.contains(it.substring(3))
-                       		: context.opts.positions.contains(it)))}
-
-${cached query location(prefix, suffix, sep) =
-		self->locationList().collect(it | prefix + it + suffix)->join(sep) }
-
-${template join(sep)-}
-${foreach a in self separator sep}${a}${end-}
 ${end}
