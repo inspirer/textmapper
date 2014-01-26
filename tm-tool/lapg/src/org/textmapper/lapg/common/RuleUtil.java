@@ -126,6 +126,18 @@ public class RuleUtil {
 		}
 
 		@Override
+		public Set<RhsSymbol> caseSet(RhsSet p) {
+			// cannot contain named elements
+			return null;
+		}
+
+		@Override
+		public Set<RhsSymbol> caseIgnored(RhsIgnored p) {
+			// cannot contain named elements
+			return null;
+		}
+
+		@Override
 		public Set<RhsSymbol> caseSequence(RhsSequence p) {
 			return fromList(p.getParts());
 		}
@@ -196,6 +208,16 @@ public class RuleUtil {
 		public Boolean caseCast(RhsCast p) {
 			return p.getPart().accept(this);
 		}
+
+		@Override
+		public Boolean caseSet(RhsSet p) {
+			return caseAny(p.getParts());
+		}
+
+		@Override
+		public Boolean caseIgnored(RhsIgnored p) {
+			return p.getInner().accept(this);
+		}
 	}
 
 	/**
@@ -259,6 +281,16 @@ public class RuleUtil {
 			@Override
 			public RhsAssignment caseCast(RhsCast p) {
 				return p.getPart().accept(this);
+			}
+
+			@Override
+			public RhsAssignment caseSet(RhsSet p) {
+				return null;
+			}
+
+			@Override
+			public RhsAssignment caseIgnored(RhsIgnored p) {
+				return null;
 			}
 		});
 	}

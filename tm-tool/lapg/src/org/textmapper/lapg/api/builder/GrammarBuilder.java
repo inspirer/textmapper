@@ -58,6 +58,12 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin);
 
+	RhsIgnored.ParenthesisPair parenthesisPair(Terminal opening, Terminal closing);
+
+	RhsIgnored ignored(RhsPart inner, Collection<RhsIgnored.ParenthesisPair> parentheses, SourceElement origin);
+
+	RhsSet set(RhsSet.Kind kind, Collection<Symbol> symbols, Collection<RhsSet> parts, SourceElement origin);
+
 	Collection<Rule> addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 
 

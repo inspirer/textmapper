@@ -70,4 +70,9 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 		}
 		return Collections.singleton(result);
 	}
+
+	@Override
+	public String getProvisionalName() {
+		throw new UnsupportedOperationException();
+	}
 }

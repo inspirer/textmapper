@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2013 Evgeny Gryaznov
+ * Copyright 2002-2014 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,18 @@
  */
 package org.textmapper.lapg.api.rule;
 
-/**
- * evgeny, 12/30/12
- */
-public abstract class RhsSwitch<T> {
+import org.textmapper.lapg.api.Terminal;
 
-	public abstract T caseChoice(RhsChoice p);
+public interface RhsIgnored extends RhsRoot {
 
-	public abstract T caseOptional(RhsOptional p);
+	RhsPart getInner();
 
-	public abstract T caseSequence(RhsSequence p);
+	ParenthesisPair[] getParentheses();
 
-	public abstract T caseSymbol(RhsSymbol p);
+	public interface ParenthesisPair {
 
-	public abstract T caseUnordered(RhsUnordered p);
+		Terminal getOpening();
 
-	public abstract T caseAssignment(RhsAssignment p);
-
-	public abstract T caseList(RhsList p);
-
-	public abstract T caseCast(RhsCast p);
-
-	public abstract T caseSet(RhsSet p);
-
-	public abstract T caseIgnored(RhsIgnored p);
+		Terminal getClosing();
+	}
 }

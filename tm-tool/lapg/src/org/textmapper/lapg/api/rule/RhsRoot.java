@@ -15,8 +15,7 @@
  */
 package org.textmapper.lapg.api.rule;
 
-/**
- * evgeny, 2/4/13
- */
 public interface RhsRoot extends RhsPart {
+
+	String getProvisionalName();
 }

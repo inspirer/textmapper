@@ -20,6 +20,8 @@ import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
+import org.textmapper.lapg.api.rule.RhsSet.Kind;
 
 import java.util.*;
 
@@ -305,6 +307,21 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator, nonEmpty, null, false, false, origin);
 		rhsSet.add(result);
 		return result;
+	}
+
+	@Override
+	public ParenthesisPair parenthesisPair(Terminal opening, Terminal closing) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public RhsIgnored ignored(RhsPart inner, Collection<ParenthesisPair> parentheses, SourceElement origin) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public RhsSet set(Kind kind, Collection<Symbol> symbols, Collection<RhsSet> parts, SourceElement origin) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
