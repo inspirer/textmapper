@@ -96,8 +96,6 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmRhsUnordered(node);
 			case Tokens.rhsPrimary:
 				return new TmRhsPrimary(node);
-			case Tokens.negative_la:
-				return new TmNegativeLA(node);
 			case Tokens.command:
 				return new TmAction(node);
 			case Tokens.type:

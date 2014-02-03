@@ -109,10 +109,6 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaNegativeLa n) {
-		return true;
-	}
-
 	public boolean visit(TmaRhsSymbol n) {
 		return true;
 	}
@@ -190,10 +186,6 @@ public class TmaVisitor {
 	}
 
 	public boolean visit(TmaParsingAlgorithm n) {
-		return true;
-	}
-
-	public boolean visit(TmaRhsAnnotations n) {
 		return true;
 	}
 

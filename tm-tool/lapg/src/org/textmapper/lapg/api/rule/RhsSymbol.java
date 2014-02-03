@@ -15,7 +15,6 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.Symbol;
 
 /**
@@ -25,8 +24,6 @@ public interface RhsSymbol extends RhsPart {
 
 	public static final RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
 	public static final String UD_REWRITTEN = "rewrittenTo";
-
-	NegativeLookahead getNegativeLA();
 
 	Symbol getTarget();
 

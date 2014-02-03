@@ -71,13 +71,12 @@ public interface TMTokenTypes {
 	IElementType OP_PLUSEQ = new TMElementType(Lexems.PLUSEQUAL, "+=");
 	IElementType OP_QMARK = new TMElementType(Lexems.QUESTIONMARK, "?");
 	//TODO IElementType OP_ARROW = new TMElementType(Lexems.MINUSGREATER, "->");
-	IElementType OP_LPAREN_QMARK_EXCL = new TMElementType(Lexems.LPARENQUESTIONMARKEXCLAMATION, "(?!");
 	IElementType OP_AND = new TMElementType(Lexems.AMPERSAND, "&");
 	IElementType OP_AT = new TMElementType(Lexems.ATSIGN, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_DOLLAR, OP_DOTDOT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_LPAREN_QMARK_EXCL, OP_AND, OP_AT
+			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_AND, OP_AT
 	);
 
 	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);

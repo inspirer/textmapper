@@ -1,3 +1,0 @@
-nop;
-exotic aaa->invoke();
-exotic {-> 4; }->invoke();

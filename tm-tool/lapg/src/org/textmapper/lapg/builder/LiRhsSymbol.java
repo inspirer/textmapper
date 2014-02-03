@@ -16,7 +16,6 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
-import org.textmapper.lapg.api.NegativeLookahead;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsMapping;
@@ -29,20 +28,13 @@ import java.util.List;
 class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	private final Symbol target;
-	private final NegativeLookahead negLA;
 	private LiRhsMapping mapping;
 
-	public LiRhsSymbol(Symbol target, NegativeLookahead negLA, SourceElement origin) {
+	public LiRhsSymbol(Symbol target, SourceElement origin) {
 		super(origin);
 		this.target = target;
-		this.negLA = negLA;
 		((LiSymbol) target).addUsage(this);
 
-	}
-
-	@Override
-	public NegativeLookahead getNegativeLA() {
-		return negLA;
 	}
 
 	@Override
@@ -70,15 +62,12 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiRhsSymbol that = (LiRhsSymbol) o;
-		if (negLA != null ? !negLA.equals(that.negLA) : that.negLA != null) return false;
 		return target.equals(that.target);
 	}
 
 	@Override
 	public int structuralHashCode() {
-		int result = target.hashCode();
-		result = 31 * result + (negLA != null ? negLA.hashCode() : 0);
-		return result;
+		return target.hashCode();
 	}
 
 	@Override
@@ -88,7 +77,6 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		// TODO negLA? mapping?
 		sb.append(target.getName());
 	}
 }

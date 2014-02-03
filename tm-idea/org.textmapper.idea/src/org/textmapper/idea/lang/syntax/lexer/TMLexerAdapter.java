@@ -194,8 +194,6 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_QMARK;
 //			case Lexems.MINUSGREATER:
 //				return OP_ARROW;
-			case Lexems.LPARENQUESTIONMARKEXCLAMATION:
-				return OP_LPAREN_QMARK_EXCL;
 			case Lexems.AMPERSAND:
 				return OP_AND;
 			case Lexems.ATSIGN:

@@ -55,7 +55,6 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '[':    /\[/
 ']':    /\]/
 '(':	/\(/
-'(?!':	/\(\?!/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
 '}':	/\}/
@@ -283,7 +282,7 @@ rhsPart ::=
 
 rhsAnnotated returns rhsPart ::=
 	  rhsAssignment
-	| rhsAnnotations rhsAssignment
+	| annotations rhsAssignment
 ;
 
 rhsAssignment returns rhsPart ::=
@@ -325,13 +324,6 @@ rhsBracketsPair ::=
 	  lhs=symref '..' rhs=symref
 ;
 
-rhsAnnotations ::=
-	  annotation+
-	| negative_la annotation+
-	| negative_la
-;
-
-
 annotations class ::=
 	annotations=annotation+ ;
 
@@ -339,10 +331,6 @@ annotation ::=
 	  '@' name=ID ('{' expression '}')?
 	| '@' syntax_problem
 ;
-
-negative_la ::=
-	'(?!' unwantedSymbols=(symref separator '|')+ ')' ;
-
 
 ##### EXPRESSIONS
 

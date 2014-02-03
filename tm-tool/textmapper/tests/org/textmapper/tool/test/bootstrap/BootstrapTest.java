@@ -115,12 +115,6 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testNLA() {
-		bootstrap("tests/org/textmapper/tool/test/bootstrap/nla", "nla.tm", new String[]{"-e"},
-				new String[]{"NlaTestLexer.java", "NlaTestParser.java", "NlaTestTree.java", "errors", "tables"}, 6);
-	}
-
-	@Test
 	public void testUnicodeS() {
 		bootstrap("tests/org/textmapper/tool/test/bootstrap/unicode", "unicode.tm", new String[0],
 				new String[]{"UnicodeTestLexer.java"}, 0);

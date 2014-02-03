@@ -168,7 +168,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			throw new IllegalArgumentException();
 		}
 
-		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
+		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), this);
 		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
 		listRule.add(rightRecursive ? element : selfRef);
 		if (separator != null) {

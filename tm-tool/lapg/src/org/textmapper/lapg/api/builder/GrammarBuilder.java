@@ -40,7 +40,7 @@ public interface GrammarBuilder extends GrammarMapper {
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin);
 
 
-	RhsSymbol symbol(Symbol sym, Collection<Terminal> unwanted, SourceElement origin);
+	RhsSymbol symbol(Symbol sym, SourceElement origin);
 
 	RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin);
 

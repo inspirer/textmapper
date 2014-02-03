@@ -184,12 +184,10 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/states"/>
 		<echo message="lexeronly parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
-		<echo message="NLA test parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/nla">
-			<arg value="-e"/>
-		</java>
 		<echo message="unicode test parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
+		<echo message="js lexer"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/tests/javascript/lexer"/>
 	</target>
 
 	<target name="compile-plugin" depends="rev, loadVars">

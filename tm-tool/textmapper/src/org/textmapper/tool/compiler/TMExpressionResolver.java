@@ -54,14 +54,6 @@ public class TMExpressionResolver {
 		return convert(astAnnotations.getAnnotations(), astAnnotations, kind);
 	}
 
-	@SuppressWarnings("unchecked")
-	Map<String, Object> convert(TmaRhsAnnotations astAnnotations, String kind) {
-		if (astAnnotations == null || astAnnotations.getAnnotations() == null) {
-			return null;
-		}
-		return convert(astAnnotations.getAnnotations(), astAnnotations, kind);
-	}
-
 	private Map<String, Object> convert(List<TmaAnnotation> list, TmaNode anchor, String kind) {
 		// Load class
 		IClass annoClass = types.getClass(myTypesPackage + "." + kind, null);

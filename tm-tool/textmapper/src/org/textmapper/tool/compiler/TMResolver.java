@@ -229,7 +229,7 @@ public class TMResolver {
 							new TmaIdentifier(id.getName(), id.getSource(), id.getOffset(), id.getEndoffset()),
 							sym.getType(), false);
 					builder.addRule(symopt, builder.sequence(null,
-							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, null, id), id)), id), null);
+							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, id), id)), id), null);
 					return symopt;
 				}
 			}

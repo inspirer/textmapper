@@ -239,7 +239,7 @@ public class TMParserCompiler {
 			for (Rule actionRule : actionRules) {
 				TMDataUtil.putCode(actionRule, astCode);
 			}
-			return builder.symbol(codeSym, null, astCode);
+			return builder.symbol(codeSym, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
 			List<ITmaRhsPart> refParts = new ArrayList<ITmaRhsPart>();
@@ -259,11 +259,9 @@ public class TMParserCompiler {
 			return builder.unordered(resolved, part);
 		}
 
-		Collection<Terminal> nla = null;
 		Map<String, Object> annotations = null;
 		if (part instanceof TmaRhsAnnotated) {
-			final TmaRhsAnnotations rhsAnnotations = ((TmaRhsAnnotated) part).getAnnotations();
-			nla = convertLA(rhsAnnotations);
+			final TmaAnnotations rhsAnnotations = ((TmaRhsAnnotated) part).getAnnotations();
 			annotations = expressionResolver.convert(rhsAnnotations, "AnnotateReference");
 			part = ((TmaRhsAnnotated) part).getInner();
 		}
@@ -296,7 +294,7 @@ public class TMParserCompiler {
 			part = cl.getInner();
 		}
 
-		boolean canInline = nla == null && annotations == null;
+		boolean canInline = annotations == null;
 		RhsPart result;
 
 		// inline (...)
@@ -313,7 +311,7 @@ public class TMParserCompiler {
 			if (sym == null) {
 				return null;
 			}
-			result = builder.symbol(sym, nla, part);
+			result = builder.symbol(sym, part);
 			TMDataUtil.putAnnotations(result, annotations);
 		}
 
@@ -377,7 +375,7 @@ public class TMParserCompiler {
 					continue;
 				}
 				if (s instanceof Terminal) {
-					sep.add(builder.symbol(s, null, ref));
+					sep.add(builder.symbol(s, ref));
 				} else {
 					error(ref, "separator should be terminal symbol");
 				}
@@ -398,7 +396,7 @@ public class TMParserCompiler {
 				if (innerTarget == null) {
 					return null;
 				}
-				final RhsSymbol symref = builder.symbol(innerTarget, null, innerSymRef);
+				final RhsSymbol symref = builder.symbol(innerTarget, innerSymRef);
 				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
@@ -457,7 +455,7 @@ public class TMParserCompiler {
 		if (separator != null && !atLeastOne) {
 			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
 			Nonterminal opt = resolver.createDerived(listSymbol, "_opt", origin);
-			builder.addRule(opt, builder.optional(builder.symbol(listSymbol, null, origin), origin), null);
+			builder.addRule(opt, builder.optional(builder.symbol(listSymbol, origin), origin), null);
 			listSymbol = opt;
 		}
 
@@ -515,20 +513,6 @@ public class TMParserCompiler {
 		} else if (!(unorderedRulePart instanceof TmaSyntaxProblem)) {
 			result.add(unorderedRulePart);
 		}
-	}
-
-	private Collection<Terminal> convertLA(TmaRhsAnnotations astAnnotations) {
-		if (astAnnotations == null || astAnnotations.getNegativeLA() == null) {
-			return null;
-		}
-
-		List<TmaSymref> unwantedSymbols = astAnnotations.getNegativeLA().getUnwantedSymbols();
-		List<Terminal> resolved = resolveTerminals(unwantedSymbols);
-		if (resolved.size() == 0) {
-			return null;
-		}
-
-		return resolved;
 	}
 
 	private List<Terminal> resolveTerminals(List<TmaSymref> input) {

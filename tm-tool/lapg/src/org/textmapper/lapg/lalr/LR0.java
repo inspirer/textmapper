@@ -36,7 +36,6 @@ class LR0 extends ContextFree {
 	private int nvars;
 	private int varset, ruleset;
 	private int[] ruleforvar /* nvars: set of rules (closure) */;
-	private int[] nla_vars /* set of vars with nla in rules */;
 
 	private short[] toreduce, closure /* [situations] */;
 	private int closureend /* size of closure */;
@@ -48,9 +47,6 @@ class LR0 extends ContextFree {
 	private State current, last;
 	private State[] next_to_final;
 	private SoftConflictBuilder softconflicts;
-	private int[] var_nla;		/* nvars -> -2 = not processed; -1 = no la restrictions; index in nla otherwise */
-	private int[] var_used;	 /* set of vars */
-	private int[] var_templist;
 
 	// result
 	protected int nstates, termset;
@@ -200,145 +196,6 @@ class LR0 extends ContextFree {
 				}
 			}
 		}
-
-		// rebuild ruleforvar if lookahead is required
-		if (nla_rules == null) return;
-		nla_vars = new int[varset];
-		Arrays.fill(nla_vars, 0);
-
-		var_nla = new int[nvars];
-		var_used = new int[varset];
-		var_templist = new int[nvars];
-		for (i = 0; i < nvars; i++) {
-			boolean hasNLA = false;
-			for (int rule : nla_rules) {
-				assert sit_nla[rindex[rule]] >= 0;
-				if ((ruleforvar[ruleset * i + rule / BITS] & (1 << (rule % BITS))) != 0) {
-					hasNLA = true;
-					break;
-				}
-			}
-			if (!hasNLA) continue;
-			nla_vars[i / BITS] |= 1 << (i % BITS);
-
-			Arrays.fill(ruleforvar, ruleset * i, ruleset * (i + 1), 0);
-			nla_closure(i, -1);
-			nla_apply(ruleforvar, ruleset * i);
-		}
-	}
-
-	/**
-	 * Converts restrictions (var_nla & var_used) to set of rules. Adds the result into array at offset.
-	 *
-	 * @param array	  array, containing set of rules ([ruleset])
-	 * @param startIndex offset in the array where the set starts
-	 */
-	public void nla_apply(int[] array, int startIndex) {
-		for (int var = 0; var < nvars; var++) {
-			int inherited_nla = var_nla[var];
-			if (inherited_nla == -2) {
-				continue;
-			}
-			for (int ruleIndex : derives[var]) {
-				int e = rright[rindex[ruleIndex]];
-				boolean add;
-				if (e < 0) {
-					add = true;
-				} else if (e < nterms) {
-					int composite_nla = nla == null ? -1 : nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
-					add = composite_nla == -1 || !nla.contains(composite_nla, e);
-				} else {
-					add = (var_used[(e - nterms) / BITS] & (1 << ((e - nterms) % BITS))) != 0;
-				}
-				if (add) {
-					array[startIndex + ruleIndex / BITS] |= (1 << (ruleIndex % BITS));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Build looakahead restrictions (var_nla) and derived vars set (var_used).
-	 *
-	 * @param startVar	  start non-terminal: 0..nvars-1
-	 * @param inherited_nla index in nla; inherited negative lookahead
-	 */
-	public void nla_closure(int startVar, int inherited_nla) {
-		Arrays.fill(var_nla, -2);
-		Arrays.fill(var_used, 0);
-		nla_prepare(startVar, inherited_nla);
-
-		int head = -1;
-
-		for (int var = 0; var < nvars; var++) {
-			if (var_nla[var] > -2) {
-				var_templist[var] = head;
-				head = var;
-			}
-		}
-
-		while (true) {
-			boolean oneMore = false;
-			for (int var = head; var != -1; var = var_templist[var]) {
-				assert var_nla[var] > -2;
-				if ((var_used[var / BITS] & (1 << (var % BITS))) != 0) {
-					continue;
-				}
-				inherited_nla = var_nla[var];
-
-				boolean isUsed = false;
-				for (int ruleIndex : derives[var]) {
-					int e = rright[rindex[ruleIndex]];
-					if (e < 0) {
-						isUsed = true;
-						break;
-					}
-					if (e < nterms) {
-						int composite_nla = nla == null ? -1 : nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
-						if (composite_nla == -1 || !nla.contains(composite_nla, e)) {
-							isUsed = true;
-							break;
-						}
-					} else {
-						int firstVar = e - nterms;
-						if ((var_used[firstVar / BITS] & (1 << (firstVar % BITS))) != 0) {
-							isUsed = true;
-							break;
-						}
-					}
-				}
-				if (isUsed) {
-					oneMore = true;
-					var_used[var / BITS] |= (1 << (var % BITS));
-				}
-			}
-			if (!oneMore) {
-				break;
-			}
-		}
-	}
-
-	/**
-	 * Calculates lookahead restrictions for all derived non-terminals (in var_nla).
-	 * Pre-condition: var_nla should be filled with -2.
-	 *
-	 * @param startVar	  start non-terminal: 0..nvars-1
-	 * @param inherited_nla index in nla; inherited negative lookahead
-	 */
-	private void nla_prepare(int startVar, int inherited_nla) {
-		int existing = var_nla[startVar];
-		if (existing > -2 && (nla == null || nla.isSubset(existing, inherited_nla))) {
-			return;
-		}
-		var_nla[startVar] = existing == -2 ? inherited_nla : nla == null ? -1 : nla.intersectSet(existing, inherited_nla);
-
-		for (int ruleIndex : derives[startVar]) {
-			int e = rright[rindex[ruleIndex]];
-			if (e >= nterms) {
-				int composite_nla = nla == null ? -1 : nla.mergeSets(sit_nla[rindex[ruleIndex]], inherited_nla);
-				nla_prepare(e - nterms, composite_nla);
-			}
-		}
 	}
 
 	private void initializeLR0() {
@@ -358,14 +215,9 @@ class LR0 extends ContextFree {
 
 	private void build_closure(State state, short[] prev) {
 		int e, i;
-		boolean need_closure = false;
 
 		if (state.number < inputs.length) {
-			int inputVar = inputs[state.number] - nterms;
-			int from = inputVar * ruleset;
-			if (nla_vars != null && (nla_vars[inputVar / BITS] & (1 << (inputVar % BITS))) != 0) {
-				need_closure = true;
-			}
+			int from = (inputs[state.number] - nterms) * ruleset;
 			for (i = 0; i < ruleset; i++) {
 				closurebit[i] = ruleforvar[from++];
 			}
@@ -376,25 +228,12 @@ class LR0 extends ContextFree {
 			for (i = 0; prev[i] >= 0; i++) {
 				e = rright[prev[i]];
 				if (e >= nterms) {
-					if (sit_nla == null || sit_nla[prev[i]] == -1) {
-						int from = (e - nterms) * ruleset;
-						if (nla_vars != null && (nla_vars[(e - nterms) / BITS] & (1 << ((e - nterms) % BITS))) != 0) {
-							need_closure = true;
-						}
-						for (int x = 0; x < ruleset; x++) {
-							closurebit[x] |= ruleforvar[from++];
-						}
-					} else {
-						nla_closure(e - nterms, sit_nla[prev[i]]);
-						nla_apply(closurebit, 0);
-						need_closure = true;
+					int from = (e - nterms) * ruleset;
+					for (int x = 0; x < ruleset; x++) {
+						closurebit[x] |= ruleforvar[from++];
 					}
 				}
 			}
-		}
-
-		if (need_closure) {
-			state.closure = Arrays.copyOf(closurebit, ruleset);
 		}
 
 		int rule = 0, prev_index = 0;
@@ -542,13 +381,13 @@ class LR0 extends ContextFree {
 					conflict = softconflicts.addConflict(current.number);
 					conflict.addSymbol((Terminal)sym[classTerm]);
 					core = symbase[classTerm];
-					for (int i = 0; i < symbasesize[classTerm]; i++) {
+					for(int i = 0; i < symbasesize[classTerm]; i++) {
 						conflict.addRule(wrules[ruleIndex(core[i])]);
 					}
 				}
 				conflict.addSymbol((Terminal) sym[soft]);
 				core = symbase[soft];
-				for (int i = 0; i < symbasesize[soft]; i++) {
+				for(int i = 0; i < symbasesize[soft]; i++) {
 					conflict.addRule(wrules[ruleIndex(core[i])]);
 				}
 			}
@@ -650,50 +489,6 @@ class LR0 extends ContextFree {
 				print_situation(closure[i]);
 			}
 		}
-
-		if (var_nla == null) {
-			var_nla = new int[nvars];
-			var_used = new int[varset];
-			var_templist = new int[nvars];
-		}
-		status.debug("\nRules for var:\n\n");
-
-		for (int var = 0; var < nvars; var++) {
-			status.debug(sym[nterms + var].getName() + " ::\n");
-			int[] a = new int[ruleset];
-			nla_closure(var, -1);
-			nla_apply(a, 0);
-			if (nla_vars != null && (nla_vars[(var) / BITS] & (1 << ((var) % BITS))) != 0) {
-				status.debug("\tconstraints =");
-				for (int derivedVar = 0; derivedVar < nvars; derivedVar++) {
-					if ((var_used[derivedVar / BITS] & (1 << (derivedVar % BITS))) != 0) {
-						status.debug(" ");
-						if (var_nla[derivedVar] >= 0) {
-							status.debug("(?!");
-							for (int i : nla.sets[var_nla[derivedVar]]) {
-								if (i != nla.sets[var_nla[derivedVar]][0]) {
-									status.debug(", ");
-								}
-								status.debug(sym[i].getName());
-							}
-							status.debug(")");
-						}
-						status.debug(sym[derivedVar + nterms].getName());
-					}
-				}
-				status.debug("\n");
-			}
-			for (int ruleIndex = 0; ruleIndex < rules; ruleIndex++) {
-				if ((a[ruleIndex / BITS] & (1 << (ruleIndex % BITS))) != 0) {
-					status.debug("\t");
-					status.debug(sym[rleft[ruleIndex]].getName() + " ::=");
-					for (int i = rindex[ruleIndex]; rright[i] >= 0; i++) {
-						status.debug(" " + sym[rright[i]].getName());
-					}
-					status.debug("\n");
-				}
-			}
-		}
 	}
 
 	protected final Symbol[] getInput(int s) {
@@ -729,6 +524,5 @@ class LR0 extends ContextFree {
 		boolean LR0;
 		short[] elems;
 		boolean softConflicts;
-		int[] closure; /* ruleset: outgoing rules */
 	}
 }

@@ -19,16 +19,16 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsAnnotated extends TmaNode implements ITmaRhsPart {
 
-	private final TmaRhsAnnotations annotations;
+	private final TmaAnnotations annotations;
 	private final ITmaRhsPart inner;
 
-	public TmaRhsAnnotated(TmaRhsAnnotations annotations, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
+	public TmaRhsAnnotated(TmaAnnotations annotations, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.annotations = annotations;
 		this.inner = inner;
 	}
 
-	public TmaRhsAnnotations getAnnotations() {
+	public TmaAnnotations getAnnotations() {
 		return annotations;
 	}
 

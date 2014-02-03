@@ -229,16 +229,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSymbol symbol(Symbol sym, Collection<Terminal> unwanted, SourceElement origin) {
+	public RhsSymbol symbol(Symbol sym, SourceElement origin) {
 		check(sym);
-		NegativeLookahead nla = null;
-		if (unwanted != null && unwanted.size() > 0) {
-			for (Terminal u : unwanted) {
-				check(u);
-			}
-			nla = new LiNegativeLookahead(unwanted.toArray(new Terminal[unwanted.size()]));
-		}
-		LiRhsSymbol result = new LiRhsSymbol(sym, nla, origin);
+		LiRhsSymbol result = new LiRhsSymbol(sym, origin);
 		rhsSet.add(result);
 		return result;
 	}

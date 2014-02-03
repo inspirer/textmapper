@@ -53,7 +53,6 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '[':    /\[/
 ']':    /\]/
 '(':	/\(/
-'(?!':	/\(\?!/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
 '}':	/\}/
@@ -336,7 +335,7 @@ rhsPart (ITmaRhsPart) ::=
 
 rhsAnnotated (ITmaRhsPart) ::=
 	  rhsAssignment
-	| rhsAnnotations rhsAssignment						{ $$ = new TmaRhsAnnotated($rhsAnnotations, $rhsAssignment, source, ${left().offset}, ${left().endoffset}); }
+	| annotations rhsAssignment							{ $$ = new TmaRhsAnnotated($annotations, $rhsAssignment, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsAssignment (ITmaRhsPart) ::=
@@ -380,12 +379,6 @@ rhsBracketsPair (TmaRhsBracketsPair) ::=
 	  lhs=symref '..' rhs=symref						{ $$ = new TmaRhsBracketsPair($lhs, $rhs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
-rhsAnnotations (TmaRhsAnnotations) ::=
-	  annotation_list									{ $$ = new TmaRhsAnnotations(null, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la annotation_list						{ $$ = new TmaRhsAnnotations($negative_la, $annotation_list, source, ${left().offset}, ${left().endoffset}); }
-	| negative_la										{ $$ = new TmaRhsAnnotations($negative_la, null, source, ${left().offset}, ${left().endoffset}); }
-;
-
 annotations (TmaAnnotations) ::=
 	annotation_list										{ $$ = new TmaAnnotations($annotation_list, source, ${left().offset}, ${left().endoffset}); }
 ;
@@ -398,16 +391,6 @@ annotation_list (java.util.@List<TmaAnnotation>) ::=
 annotation (TmaAnnotation) ::=
 	  '@' ID ('{' expression '}')?                      { $$ = new TmaAnnotation($ID, $expression, source, ${left().offset}, ${left().endoffset}); }
 	| '@' syntax_problem                                { $$ = new TmaAnnotation($syntax_problem, source, ${left().offset}, ${left().endoffset}); }
-;
-
-# TODO deprecate
-negative_la (TmaNegativeLa) ::=
-	'(?!' negative_la_clause ')'						{ $$ = new TmaNegativeLa($negative_la_clause, source, ${left().offset}, ${left().endoffset}); }
-;
-
-negative_la_clause (java.util.@List<TmaSymref>) ::=
-	  symref											{ $$ = new java.util.@ArrayList<TmaSymref>(); ${left()}.add($symref); }
-	| negative_la_clause '|' symref						{ $negative_la_clause.add($symref); }
 ;
 
 ##### EXPRESSIONS

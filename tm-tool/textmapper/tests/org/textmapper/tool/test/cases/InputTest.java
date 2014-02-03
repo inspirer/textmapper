@@ -113,9 +113,6 @@ public class InputTest extends LapgTestCase {
 		assertEquals(13, g.getGrammar().getRules().length);
 		assertEquals("  ${for a in b}..!..$$  ", TMDataUtil.getCode(g.getGrammar().getRules()[7]).getText());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
-		assertNotNull(g.getGrammar().getRules()[9].getRight()[0].getNegativeLA());
-		assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet().length);
-		assertEquals(1, g.getGrammar().getRules()[9].getRight()[0].getNegativeLA().getUnwantedSet()[0].getIndex());
 	}
 
 	@Test
