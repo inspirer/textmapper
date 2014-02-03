@@ -306,13 +306,6 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
-			if ("alias".equals(propertyName)) {
-				final RhsAssignment assignment = RuleUtil.getAssignment(sym);
-				if (assignment != null && !assignment.isAddition()) {
-					return assignment.getName();
-				}
-				return null;
-			}
 			if ("mapping".equals(propertyName)) {
 				RhsSymbol rewrittenTo = TMDataUtil.getRewrittenTo(sym);
 				return (rewrittenTo != null ? rewrittenTo : sym).getMapping();
