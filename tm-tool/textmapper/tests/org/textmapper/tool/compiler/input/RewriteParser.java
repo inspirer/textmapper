@@ -98,7 +98,7 @@ public class RewriteParser {
 		public static final int ElemSep6rr = 24;
 		public static final int EStar1 = 25;
 		public static final int EStar2 = 26;
-		public static final int EStar1DOLLAR1 = 27;
+		public static final int EStar1Dollar1 = 27;
 	}
 
 	/**

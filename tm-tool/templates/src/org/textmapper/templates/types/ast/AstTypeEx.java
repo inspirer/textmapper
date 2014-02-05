@@ -21,20 +21,20 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 public class AstTypeEx extends AstNode {
 
 	private final AstType type;
-	private final List<AstMultiplicity> multiplicityList;
+	private final List<AstMultiplicity> multiplicityListCommaSeparated;
 
-	public AstTypeEx(AstType type, List<AstMultiplicity> multiplicityList, TextSource source, int line, int offset, int endoffset) {
+	public AstTypeEx(AstType type, List<AstMultiplicity> multiplicityListCommaSeparated, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.type = type;
-		this.multiplicityList = multiplicityList;
+		this.multiplicityListCommaSeparated = multiplicityListCommaSeparated;
 	}
 
 	public AstType getType() {
 		return type;
 	}
 
-	public List<AstMultiplicity> getMultiplicityList() {
-		return multiplicityList;
+	public List<AstMultiplicity> getMultiplicityListCommaSeparated() {
+		return multiplicityListCommaSeparated;
 	}
 
 	public void accept(AstVisitor v) {
@@ -44,8 +44,8 @@ public class AstTypeEx extends AstNode {
 		if (type != null) {
 			type.accept(v);
 		}
-		if (multiplicityList != null) {
-			for (AstMultiplicity it : multiplicityList) {
+		if (multiplicityListCommaSeparated != null) {
+			for (AstMultiplicity it : multiplicityListCommaSeparated) {
 				it.accept(v);
 			}
 		}

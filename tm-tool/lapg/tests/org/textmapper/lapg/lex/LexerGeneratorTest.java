@@ -316,6 +316,11 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
+				public String getConstantValue() {
+					return null;
+				}
+
+				@Override
 				public Symbol getSoftClass() {
 					throw new UnsupportedOperationException();
 				}

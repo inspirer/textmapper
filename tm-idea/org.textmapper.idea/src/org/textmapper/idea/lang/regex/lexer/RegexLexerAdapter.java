@@ -151,35 +151,35 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 			case Lexems.charclass:
 				return RE_CHARCLASS;
 
-			case Lexems.DOT:
+			case Lexems.Dot:
 				return RE_DOT;
-			case Lexems.MULT:
+			case Lexems.Mult:
 				return RE_MULT;
-			case Lexems.PLUS:
+			case Lexems.Plus:
 				return RE_PLUS;
-			case Lexems.QUESTIONMARK:
+			case Lexems.Questionmark:
 				return RE_QUESTIONMARK;
 			case Lexems.quantifier:
 				return RE_QUANTFIER;
 
-			case Lexems.LPAREN:
+			case Lexems.Lparen:
 				return RE_LPAREN;
-			case Lexems.LPARENQUESTIONMARK:
+			case Lexems.LparenQuestionmark:
 				return RE_LPARENQMARK;
-			case Lexems.OR:
+			case Lexems.Or:
 				return RE_OR;
-			case Lexems.RPAREN:
+			case Lexems.Rparen:
 				return RE_RPAREN;
 			case Lexems.expand:
 				return RE_EXPAND;
 
-			case Lexems.LSQUARE:
+			case Lexems.Lsquare:
 				return RE_LSQUARE;
-			case Lexems.LSQUAREXOR:
+			case Lexems.LsquareXor:
 				return RE_LSQUAREXOR;
-			case Lexems.MINUS:
+			case Lexems.Minus:
 				return RE_MINUS;
-			case Lexems.RSQUARE:
+			case Lexems.Rsquare:
 				return RE_RSQUARE;
 
 			case Lexems.kw_eoi:

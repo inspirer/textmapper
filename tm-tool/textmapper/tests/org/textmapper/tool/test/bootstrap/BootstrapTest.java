@@ -60,7 +60,7 @@ public class BootstrapTest {
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
-				"ast/AstStructuralExpressionDOLLAR1Item.java", "ast/AstMultiplicity.java", "ast/AstTypeEx.java",
+				"ast/AstListOfIdentifierAnd2ElementsCommaSeparatedItem.java", "ast/AstMultiplicity.java", "ast/AstTypeEx.java",
 				"ast/AstMethodDeclaration.java"}, 0);
 	}
 

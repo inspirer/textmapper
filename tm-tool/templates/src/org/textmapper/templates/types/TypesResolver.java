@@ -178,20 +178,20 @@ class TypesResolver {
 		// constraints
 		List<AstStringConstraint> stringConstraints = null;
 		List<IMultiplicity> multiplicities = null;
-		if (fd.getTypeEx().getMultiplicityList() != null) {
+		if (fd.getTypeEx().getMultiplicityListCommaSeparated() != null) {
 			myStatus.report(TemplatesStatus.KIND_ERROR,
 					"feature cannot have multiplicity in type (feature `" + fd.getName() + "`)",
 					new LocatedNodeAdapter(fd.getTypeEx()));
 		}
 		if (fd.getModifiers() != null) {
 			for (AstConstraint c : fd.getModifiers()) {
-				if (c.getMultiplicityList() != null) {
+				if (c.getMultiplicityListCommaSeparated() != null) {
 					if (multiplicities != null) {
 						myStatus.report(TemplatesStatus.KIND_ERROR,
 								"several multiplicity constraints found (feature `" + fd.getName() + "`)",
 								new LocatedNodeAdapter(fd));
 					} else {
-						multiplicities = convertMultiplicities(c.getMultiplicityList());
+						multiplicities = convertMultiplicities(c.getMultiplicityListCommaSeparated());
 					}
 				} else if (c.getStringConstraint() != null) {
 					if (stringConstraints == null) {
@@ -260,7 +260,7 @@ class TypesResolver {
 				}
 			}
 			if (expr.getMapEntries() != null) {
-				for (AstStructuralExpressionDOLLAR1Item item : expr.getMapEntries()) {
+				for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem item : expr.getMapEntries()) {
 					scanRequiredClasses(item.getExpression());
 				}
 			}
@@ -436,7 +436,7 @@ class TypesResolver {
 						Map<String, IAstExpression> props = null;
 						if (expr.getMapEntries() != null) {
 							props = new HashMap<String, IAstExpression>();
-							for (AstStructuralExpressionDOLLAR1Item i : expr.getMapEntries()) {
+							for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem i : expr.getMapEntries()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}
 						}

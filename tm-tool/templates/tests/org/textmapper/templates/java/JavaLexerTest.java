@@ -155,29 +155,29 @@ public class JavaLexerTest {
     @Test
     public void testSeparators() {
         assertJava(" (    )    {    }    [    ]    ;    ,    . ",
-                Lexems.LPAREN, Lexems.RPAREN, Lexems.LCURLY, Lexems.RCURLY, Lexems.LSQUARE, Lexems.RSQUARE,
-                Lexems.SEMICOLON, Lexems.COMMA, Lexems.DOT);
+                Lexems.Lparen, Lexems.Rparen, Lexems.Lcurly, Lexems.Rcurly, Lexems.Lsquare, Lexems.Rsquare,
+                Lexems.Semicolon, Lexems.Comma, Lexems.Dot);
     }
 
     @Test
     public void testOperators() {
         assertJava("=   >   <   !   ~   ?   :",
-                Lexems.EQUAL, Lexems.GREATER, Lexems.LESS, Lexems.EXCLAMATION, Lexems.TILDE,
-                Lexems.QUESTIONMARK, Lexems.COLON);
+                Lexems.Equal, Lexems.Greater, Lexems.Less, Lexems.Exclamation, Lexems.Tilde,
+                Lexems.Questionmark, Lexems.Colon);
 
         assertJava("==  <=  >=  !=  &&  ||  ++  --",
-                Lexems.EQUALEQUAL, Lexems.LESSEQUAL, Lexems.GREATEREQUAL, Lexems.EXCLAMATIONEQUAL,
-                Lexems.AMPERSANDAMPERSAND, Lexems.OROR, Lexems.PLUSPLUS, Lexems.MINUSMINUS);
+                Lexems.EqualEqual, Lexems.LessEqual, Lexems.GreaterEqual, Lexems.ExclamationEqual,
+                Lexems.AmpersandAmpersand, Lexems.OrOr, Lexems.PlusPlus, Lexems.MinusMinus);
 
         assertJava("+   -   *   /   &   |   ^   %   <<   >>   >>>	@",
-                Lexems.PLUS, Lexems.MINUS, Lexems.MULT, Lexems.SLASH,
-                Lexems.AMPERSAND, Lexems.OR, Lexems.XOR, Lexems.PERCENT,
-                Lexems.LESSLESS, Lexems.GREATERGREATER, Lexems.GREATERGREATERGREATER, Lexems.ATSIGN);
+                Lexems.Plus, Lexems.Minus, Lexems.Mult, Lexems.Slash,
+                Lexems.Ampersand, Lexems.Or, Lexems.Xor, Lexems.Percent,
+                Lexems.LessLess, Lexems.GreaterGreater, Lexems.GreaterGreaterGreater, Lexems.Atsign);
 
         assertJava("+=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=",
-                Lexems.PLUSEQUAL, Lexems.MINUSEQUAL, Lexems.MULTEQUAL, Lexems.SLASHEQUAL,
-                Lexems.AMPERSANDEQUAL, Lexems.OREQUAL, Lexems.XOREQUAL, Lexems.PERCENTEQUAL,
-                Lexems.LESSLESSEQUAL, Lexems.GREATERGREATEREQUAL, Lexems.GREATERGREATERGREATEREQUAL);
+                Lexems.PlusEqual, Lexems.MinusEqual, Lexems.MultEqual, Lexems.SlashEqual,
+                Lexems.AmpersandEqual, Lexems.OrEqual, Lexems.XorEqual, Lexems.PercentEqual,
+                Lexems.LessLessEqual, Lexems.GreaterGreaterEqual, Lexems.GreaterGreaterGreaterEqual);
     }
 
     private void assertJava(String text, int... lexems) {

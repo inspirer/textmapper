@@ -17,10 +17,10 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.rule.RhsList;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
-import org.textmapper.lapg.util.RhsUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 import org.textmapper.tool.parser.ast.TmaNontermTypeHint.Kind;
@@ -32,8 +32,6 @@ import java.util.*;
  * evgeny, 1/29/13
  */
 public class TMParserCompiler {
-
-	private final Map<ListDescriptor, Nonterminal> listsMap = new HashMap<ListDescriptor, Nonterminal>();
 
 	private final TMTree<TmaInput> tree;
 	private final TMResolver resolver;
@@ -307,11 +305,10 @@ public class TMParserCompiler {
 			List<TmaRule0> rules = ((TmaRhsNested) part).getRules();
 			result = convertChoice(outer, rules, part);
 		} else {
-			Symbol sym = convertPrimary(outer, part);
-			if (sym == null) {
+			result = convertPrimary(outer, part);
+			if (result == null) {
 				return null;
 			}
-			result = builder.symbol(sym, part);
 			TMDataUtil.putAnnotations(result, annotations);
 		}
 
@@ -344,10 +341,14 @@ public class TMParserCompiler {
 		return result;
 	}
 
-	private Symbol convertPrimary(Symbol outer, ITmaRhsPart part) {
+	private RhsSymbol convertPrimary(Symbol outer, ITmaRhsPart part) {
 
 		if (part instanceof TmaRhsSymbol) {
-			return resolver.resolve(((TmaRhsSymbol) part).getReference());
+			Symbol resolved = resolver.resolve(((TmaRhsSymbol) part).getReference());
+			if (resolved == null) {
+				return null;
+			}
+			return builder.symbol(resolved, part);
 
 		} else if (part instanceof TmaRhsNested) {
 			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
@@ -357,7 +358,7 @@ public class TMParserCompiler {
 					createRule(nested, right);
 				}
 			}
-			return nested;
+			return builder.symbol(nested, part);
 
 		} else if (part instanceof TmaRhsIgnored) {
 			error(part, "$( ) is not supported, yet");
@@ -381,7 +382,7 @@ public class TMParserCompiler {
 				}
 			}
 			RhsPart separator = builder.sequence(null, sep, listWithSeparator);
-			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, part);
+			return createList(inner, listWithSeparator.isAtLeastOne(), separator, part);
 
 		} else if (part instanceof TmaRhsQuantifier) {
 			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) part;
@@ -392,11 +393,10 @@ public class TMParserCompiler {
 				List<ITmaRhsPart> groupPart = getGroupPart(innerSymRef);
 				inner = convertGroup(outer, groupPart, innerSymRef);
 			} else {
-				Symbol innerTarget = convertPrimary(outer, innerSymRef);
-				if (innerTarget == null) {
+				RhsSymbol symref = convertPrimary(outer, innerSymRef);
+				if (symref == null) {
 					return null;
 				}
-				final RhsSymbol symref = builder.symbol(innerTarget, innerSymRef);
 				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
 			}
 			int quantifier = nestedQuantifier.getQuantifier();
@@ -404,7 +404,7 @@ public class TMParserCompiler {
 				error(part, "? cannot be a child of another quantifier");
 				return null;
 			}
-			return createList(outer, inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, part);
+			return createList(inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, part);
 		}
 
 		error(part, "internal error: unknown right-hand side part found");
@@ -437,30 +437,17 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
-	private Symbol createList(Symbol outer, RhsSequence inner, boolean atLeastOne, RhsPart separator, ITmaRhsPart origin) {
-		ListDescriptor descr = new ListDescriptor(inner, separator, atLeastOne);
-		Nonterminal listSymbol = listsMap.get(descr);
-		if (listSymbol != null) {
-			return listSymbol;
+	private RhsSymbol createList(RhsSequence inner, boolean nonEmpty, RhsPart separator, ITmaRhsPart origin) {
+		RhsList list = builder.list(inner, separator, (separator != null && !nonEmpty) || nonEmpty, origin);
+		String listName = list.getProvisionalName();
+		Nonterminal result = builder.addShared(list, listName);
+
+		if (separator != null && !nonEmpty) {
+			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
+			result = builder.addShared(builder.optional(builder.symbol(result, origin), origin), listName + "_opt");
 		}
+		return builder.symbol(result, origin);
 
-		Symbol representative = RhsUtil.getRepresentative(inner);
-		listSymbol = representative != null
-				? resolver.createDerived(representative, atLeastOne || separator != null ? "_list" : "_optlist", origin) /* TODO type? */
-				: (Nonterminal) resolver.createNestedNonTerm(outer, origin);
-
-		// list rule
-		builder.addRule(listSymbol, builder.list(inner, separator, (separator != null && !atLeastOne) || atLeastOne, origin), null);
-
-		if (separator != null && !atLeastOne) {
-			// (a separator ',')*   => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			Nonterminal opt = resolver.createDerived(listSymbol, "_opt", origin);
-			builder.addRule(opt, builder.optional(builder.symbol(listSymbol, origin), origin), null);
-			listSymbol = opt;
-		}
-
-		listsMap.put(descr, listSymbol);
-		return listSymbol;
 	}
 
 	private boolean isGroupPart(ITmaRhsPart symbolRef) {
@@ -530,39 +517,5 @@ public class TMParserCompiler {
 
 	private void error(ITmaNode n, String message) {
 		resolver.error(n, message);
-	}
-
-	private static class ListDescriptor {
-		private final Object inner;
-		private final Object separator;
-		private final boolean atLeastOne;
-
-		private ListDescriptor(RhsPart inner, RhsPart separator, boolean atLeastOne) {
-			this.inner = inner.structuralNode();
-			this.separator = separator == null ? null : separator.structuralNode();
-			this.atLeastOne = atLeastOne;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			ListDescriptor that = (ListDescriptor) o;
-
-			if (atLeastOne != that.atLeastOne) return false;
-			if (!inner.equals(that.inner)) return false;
-			if (separator != null ? !separator.equals(that.separator) : that.separator != null) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = inner.hashCode();
-			result = 31 * result + (separator != null ? separator.hashCode() : 0);
-			result = 31 * result + (atLeastOne ? 1 : 0);
-			return result;
-		}
 	}
 }

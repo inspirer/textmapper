@@ -131,9 +131,9 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return ESCID;
 			case Lexems.escint:
 				return ESCINT;
-			case Lexems.DOLLARLCURLY:
+			case Lexems.DollarLcurly:
 				return OP_DOLLARLCURLY;
-			case Lexems.DOLLARSLASH:
+			case Lexems.DollarSlash:
 				return OP_DOLLARSLASH;
 			case Lexems.icon:
 				return ICON;
@@ -193,63 +193,63 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 				return KW_ASSERT;
 
 			// operators
-			case Lexems.LCURLY:
+			case Lexems.Lcurly:
 				return OP_LCURLY;
-			case Lexems.RCURLY:
+			case Lexems.Rcurly:
 				return OP_RCURLY;
-			case Lexems.MINUSRCURLY:
+			case Lexems.MinusRcurly:
 				return OP_MINUSRCURLY;
-			case Lexems.PLUS:
+			case Lexems.Plus:
 				return OP_PLUS;
-			case Lexems.MINUS:
+			case Lexems.Minus:
 				return OP_MINUS;
-			case Lexems.MULT:
+			case Lexems.Mult:
 				return OP_MULT;
-			case Lexems.SLASH:
+			case Lexems.Slash:
 				return OP_SLASH;
-			case Lexems.PERCENT:
+			case Lexems.Percent:
 				return OP_PERCENT;
-			case Lexems.EXCLAMATION:
+			case Lexems.Exclamation:
 				return OP_EXCLAMATION;
-			case Lexems.OR:
+			case Lexems.Or:
 				return OP_OR;
-			case Lexems.LSQUARE:
+			case Lexems.Lsquare:
 				return OP_LSQUARE;
-			case Lexems.RSQUARE:
+			case Lexems.Rsquare:
 				return OP_RSQUARE;
-			case Lexems.LPAREN:
+			case Lexems.Lparen:
 				return OP_LPAREN;
-			case Lexems.RPAREN:
+			case Lexems.Rparen:
 				return OP_RPAREN;
-			case Lexems.DOT:
+			case Lexems.Dot:
 				return OP_DOT;
-			case Lexems.COMMA:
+			case Lexems.Comma:
 				return OP_COMMA;
-			case Lexems.AMPERSANDAMPERSAND:
+			case Lexems.AmpersandAmpersand:
 				return OP_AMPERSANDAMPERSAND;
-			case Lexems.OROR:
+			case Lexems.OrOr:
 				return OP_OROR;
-			case Lexems.EQUALEQUAL:
+			case Lexems.EqualEqual:
 				return OP_EQUALEQUAL;
-			case Lexems.EQUAL:
+			case Lexems.Equal:
 				return OP_EQUAL;
-			case Lexems.EXCLAMATIONEQUAL:
+			case Lexems.ExclamationEqual:
 				return OP_EXCLAMATIONEQUAL;
-			case Lexems.MINUSGREATER:
+			case Lexems.MinusGreater:
 				return OP_MINUSGREATER;
-			case Lexems.EQUALGREATER:
+			case Lexems.EqualGreater:
 				return OP_EQUALGREATER;
-			case Lexems.LESSEQUAL:
+			case Lexems.LessEqual:
 				return OP_LESSEQUAL;
-			case Lexems.GREATEREQUAL:
+			case Lexems.GreaterEqual:
 				return OP_GREATEREQUAL;
-			case Lexems.LESS:
+			case Lexems.Less:
 				return OP_LESS;
-			case Lexems.GREATER:
+			case Lexems.Greater:
 				return OP_GREATER;
-			case Lexems.COLON:
+			case Lexems.Colon:
 				return OP_COLON;
-			case Lexems.QUESTIONMARK:
+			case Lexems.Questionmark:
 				return OP_QUESTIONMARK;
 			case Lexems._skip:
 				return WHITESPACE;

@@ -44,7 +44,6 @@ class UniqueNameHelper {
 		return result;
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private static String toIdentifier(String original, int uniqueID) {
 		String s = original;
 
@@ -63,73 +62,6 @@ class UniqueNameHelper {
 		}
 
 		// convert
-		StringBuilder res = new StringBuilder();
-		for (int i = 0; i < s.length(); i++) {
-			int c = s.charAt(i);
-			if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9' && res.length() > 0) {
-				res.append((char) c);
-			} else {
-				String name = charName.get((char) c);
-				if (name == null) {
-					name = "N" + FormatUtil.asHex(c, 2);
-				}
-				res.append(name);
-			}
-		}
-
-		return res.toString();
-	}
-
-	private static Map<Character, String> charName = buildCharactersMap();
-
-	private static Map<Character, String> buildCharactersMap() {
-		Map<Character, String> map = new HashMap<Character, String>();
-		map.put('\t', "TAB");
-		map.put('\n', "LF");
-		map.put('\r', "CR");
-
-		// 0x20
-		map.put(' ', "SPACE");
-		map.put('!', "EXCLAMATION");
-		map.put('"', "QUOTE");
-		map.put('#', "SHARP");
-		map.put('$', "DOLLAR");
-		map.put('%', "PERCENT");
-		map.put('&', "AMPERSAND");
-		map.put('\'', "APOSTROPHE");
-		map.put('(', "LPAREN");
-		map.put(')', "RPAREN");
-		map.put('*', "MULT");
-		map.put('+', "PLUS");
-		map.put(',', "COMMA");
-		map.put('-', "MINUS");
-		map.put('.', "DOT");
-		map.put('/', "SLASH");
-
-		// 0x3A
-		map.put(':', "COLON");
-		map.put(';', "SEMICOLON");
-		map.put('<', "LESS");
-		map.put('=', "EQUAL");
-		map.put('>', "GREATER");
-		map.put('?', "QUESTIONMARK");
-		map.put('@', "ATSIGN");
-
-		// 0x5B
-		map.put('[', "LSQUARE");
-		map.put('\\', "BACKSLASH");
-		map.put(']', "RSQUARE");
-		map.put('^', "XOR");
-
-		// 0x60
-		map.put('`', "GRAVEACCENT");
-
-		// 0x7B
-		map.put('{', "LCURLY");
-		map.put('|', "OR");
-		map.put('}', "RCURLY");
-		map.put('~', "TILDE");
-
-		return map;
+		return FormatUtil.toIdentifier(s);
 	}
 }

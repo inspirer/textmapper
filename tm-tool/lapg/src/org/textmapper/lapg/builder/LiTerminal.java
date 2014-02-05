@@ -79,22 +79,27 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	}
 
 	@Override
-	public boolean isConstant() {
+	public String getConstantValue() {
 		String value = null;
 		for (LexerRule rule : rules) {
 			final RegexPart regex = rule.getRegexp();
 			final String regexValue = regex.getConstantValue();
 			if (regexValue == null) {
-				return false;
+				return null;
 			}
 			if (value == null) {
 				value = regexValue;
 			} else if (!value.equals(regexValue)) {
-				return false;
+				return null;
 			}
 		}
 
-		return value != null && (isSoft() || getType() == null);
+		return (isSoft() || getType() == null) ? value : null;
+	}
+
+	@Override
+	public boolean isConstant() {
+		return getConstantValue() != null;
 	}
 }
 

@@ -65,7 +65,7 @@ public abstract class AstVisitor {
 		return true;
 	}
 
-	protected boolean visit(AstStructuralExpressionDOLLAR1Item n) {
+	protected boolean visit(AstListOfIdentifierAnd2ElementsCommaSeparatedItem n) {
 		return true;
 	}
 }

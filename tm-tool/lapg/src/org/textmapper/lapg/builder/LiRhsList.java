@@ -16,7 +16,11 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.common.FormatUtil;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -185,5 +189,39 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		}
 		register(true, rule1, rule2, customInitialElement, element, separator);
 		return Arrays.<RhsSequence>asList(rule1, rule2);
+	}
+
+	@Override
+	public String getProvisionalName() {
+		StringBuilder sb = new StringBuilder();
+		Symbol representative = RhsUtil.getRepresentative(element);
+		if (representative != null) {
+			sb.append(representative.getName());
+			sb.append(nonEmpty || separator != null ? "_list" : "_optlist");
+		} else {
+			RhsSymbol[] rhsSymbols = RhsUtil.getRhsSymbols(element);
+			sb.append("list_of_");
+			if (rhsSymbols.length > 0) {
+				sb.append(rhsSymbols[0].getTarget().getName());
+				if (rhsSymbols.length > 1) {
+					sb.append("_and_").append(rhsSymbols.length - 1).append("_elements");
+				}
+			} else {
+				sb.append("unknown");
+			}
+		}
+		if (separator != null) {
+			Symbol separatorTerminal = RhsUtil.getRepresentative(separator);
+			if (separatorTerminal.isTerm() && ((Terminal) separatorTerminal).isConstant()) {
+				String val = ((Terminal) separatorTerminal).getConstantValue();
+				sb.append("_").append(FormatUtil.toIdentifier(val)).append("_separated");
+			} else {
+				sb.append("_withsep");
+			}
+		}
+		if (rightRecursive) {
+			sb.append("_rr");
+		}
+		return sb.toString();
 	}
 }

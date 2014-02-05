@@ -27,7 +27,7 @@ import java.util.List;
 abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourceElement {
 
 	private int index;
-	private final String name;
+	private String name;
 	private final SourceElement origin;
 	private final List<RhsSymbol> usages = new ArrayList<RhsSymbol>();
 	private AstType mapping;
@@ -58,6 +58,13 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	void setName(String value) {
+		if (name != null) {
+			throw new IllegalStateException();
+		}
+		name = value;
 	}
 
 	@Override

@@ -39,8 +39,8 @@ public class SampleALexer {
 		public static final int identifier = 1;
 		public static final int _skip = 2;
 		public static final int Lclass = 3;
-		public static final int LCURLY = 4;
-		public static final int RCURLY = 5;
+		public static final int Lcurly = 4;
+		public static final int Rcurly = 5;
 		public static final int error = 6;
 	}
 

@@ -144,59 +144,59 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return REGEXP;
 
 			// operators
-			case Lexems.PERCENT:
+			case Lexems.Percent:
 				return OP_PERCENT;
-			case Lexems.DOLLAR:
+			case Lexems.Dollar:
 				return OP_DOLLAR;
-			case Lexems.DOTDOT:
+			case Lexems.DotDot:
 				return OP_DOTDOT;
-			case Lexems.COLONCOLONEQUAL:
+			case Lexems.ColonColonEqual:
 				return OP_CCEQ;
-			case Lexems.OR:
+			case Lexems.Or:
 				return OP_OR;
-			case Lexems.EQUAL:
+			case Lexems.Equal:
 				return OP_EQ;
-			case Lexems.EQUALGREATER:
+			case Lexems.EqualGreater:
 				return OP_EQGT;
-			case Lexems.SEMICOLON:
+			case Lexems.Semicolon:
 				return OP_SEMICOLON;
-			case Lexems.DOT:
+			case Lexems.Dot:
 				return OP_DOT;
-			case Lexems.COMMA:
+			case Lexems.Comma:
 				return OP_COMMA;
-			case Lexems.COLON:
+			case Lexems.Colon:
 				return OP_COLON;
-			case Lexems.COLONCOLON:
+			case Lexems.ColonColon:
 				return OP_COLONCOLON;
-			case Lexems.LSQUARE:
+			case Lexems.Lsquare:
 				return OP_LBRACKET;
-			case Lexems.RSQUARE:
+			case Lexems.Rsquare:
 				return OP_RBRACKET;
-			case Lexems.LPAREN:
+			case Lexems.Lparen:
 				return OP_LPAREN;
-			case Lexems.RPAREN:
+			case Lexems.Rparen:
 				return OP_RPAREN;
-			case Lexems.LCURLY:
+			case Lexems.Lcurly:
 				return OP_LCURLY;
-			case Lexems.RCURLY:
+			case Lexems.Rcurly:
 				return OP_RCURLY;
-			case Lexems.LESS:
+			case Lexems.Less:
 				return OP_LT;
-			case Lexems.GREATER:
+			case Lexems.Greater:
 				return OP_GT;
-			case Lexems.MULT:
+			case Lexems.Mult:
 				return OP_STAR;
-			case Lexems.PLUS:
+			case Lexems.Plus:
 				return OP_PLUS;
-			case Lexems.PLUSEQUAL:
+			case Lexems.PlusEqual:
 				return OP_PLUSEQ;
-			case Lexems.QUESTIONMARK:
+			case Lexems.Questionmark:
 				return OP_QMARK;
 //			case Lexems.MINUSGREATER:
 //				return OP_ARROW;
-			case Lexems.AMPERSAND:
+			case Lexems.Ampersand:
 				return OP_AND;
-			case Lexems.ATSIGN:
+			case Lexems.Atsign:
 				return OP_AT;
 
 			// keywords
@@ -311,7 +311,7 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		public LapgSymbol next() throws IOException {
 			LapgSymbol next = super.next();
 			if (next.symbol != Lexems._skip && next.symbol != Lexems._skip_comment) {
-				fAfterColonColon = (next.symbol == Lexems.COLONCOLON && super.getState() == States.initial);
+				fAfterColonColon = (next.symbol == Lexems.ColonColon && super.getState() == States.initial);
 			}
 			return next;
 		}

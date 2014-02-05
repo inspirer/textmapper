@@ -25,13 +25,13 @@ import org.textmapper.templates.types.TypesLexer.Lexems;
 import org.textmapper.templates.types.ast.AstConstraint;
 import org.textmapper.templates.types.ast.AstFeatureDeclaration;
 import org.textmapper.templates.types.ast.AstInput;
+import org.textmapper.templates.types.ast.AstListOfIdentifierAnd2ElementsCommaSeparatedItem;
 import org.textmapper.templates.types.ast.AstLiteralExpression;
 import org.textmapper.templates.types.ast.AstMapSeparator;
 import org.textmapper.templates.types.ast.AstMethodDeclaration;
 import org.textmapper.templates.types.ast.AstMultiplicity;
 import org.textmapper.templates.types.ast.AstStringConstraint;
 import org.textmapper.templates.types.ast.AstStructuralExpression;
-import org.textmapper.templates.types.ast.AstStructuralExpressionDOLLAR1Item;
 import org.textmapper.templates.types.ast.AstType;
 import org.textmapper.templates.types.ast.AstTypeDeclaration;
 import org.textmapper.templates.types.ast.AstTypeEx;
@@ -172,10 +172,10 @@ public class TypesParser {
 		"modifiersopt",
 		"defaultvalopt",
 		"parametersopt",
-		"constraint_list",
-		"multiplicity_list",
-		"structural_expression$1",
-		"structural_expression$1_opt",
+		"constraint_list_Semicolon_separated",
+		"multiplicity_list_Comma_separated",
+		"list_of_identifier_and_2_elements_Comma_separated",
+		"list_of_identifier_and_2_elements_Comma_separated_opt",
 		"expression_listopt",
 	};
 
@@ -210,10 +210,10 @@ public class TypesParser {
 		public static final int modifiersopt = 53;
 		public static final int defaultvalopt = 54;
 		public static final int parametersopt = 55;
-		public static final int constraint_list = 56;
-		public static final int multiplicity_list = 57;
-		public static final int structural_expressionDOLLAR1 = 58;
-		public static final int structural_expressionDOLLAR1_opt = 59;
+		public static final int constraint_list_Semicolon_separated = 56;
+		public static final int multiplicity_list_Comma_separated = 57;
+		public static final int list_of_identifier_and_2_elements_Comma_separated = 58;
+		public static final int list_of_identifier_and_2_elements_Comma_separated_opt = 59;
 		public static final int expression_listopt = 60;
 	}
 
@@ -378,33 +378,33 @@ public class TypesParser {
 			case 21:  // defaultval ::= '=' expression
 				lapg_gg.value = ((IAstExpression)tmStack[tmHead].value);
 				break;
-			case 22:  // constraint_list ::= constraint_list ';' constraint
+			case 22:  // constraint_list_Semicolon_separated ::= constraint_list_Semicolon_separated ';' constraint
 				((List<AstConstraint>)lapg_gg.value).add(((AstConstraint)tmStack[tmHead].value));
 				break;
-			case 23:  // constraint_list ::= constraint
+			case 23:  // constraint_list_Semicolon_separated ::= constraint
 				lapg_gg.value = new ArrayList();
 				((List<AstConstraint>)lapg_gg.value).add(((AstConstraint)tmStack[tmHead].value));
 				break;
-			case 24:  // modifiers ::= '[' constraint_list ']'
+			case 24:  // modifiers ::= '[' constraint_list_Semicolon_separated ']'
 				lapg_gg.value = ((List<AstConstraint>)tmStack[tmHead - 1].value);
 				break;
 			case 25:  // constraint ::= string_constraint
 				lapg_gg.value = new AstConstraint(
 						((AstStringConstraint)tmStack[tmHead].value) /* stringConstraint */,
-						null /* multiplicityList */,
+						null /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 26:  // multiplicity_list ::= multiplicity_list ',' multiplicity
+			case 26:  // multiplicity_list_Comma_separated ::= multiplicity_list_Comma_separated ',' multiplicity
 				((List<AstMultiplicity>)lapg_gg.value).add(((AstMultiplicity)tmStack[tmHead].value));
 				break;
-			case 27:  // multiplicity_list ::= multiplicity
+			case 27:  // multiplicity_list_Comma_separated ::= multiplicity
 				lapg_gg.value = new ArrayList();
 				((List<AstMultiplicity>)lapg_gg.value).add(((AstMultiplicity)tmStack[tmHead].value));
 				break;
-			case 28:  // constraint ::= multiplicity_list
+			case 28:  // constraint ::= multiplicity_list_Comma_separated
 				lapg_gg.value = new AstConstraint(
 						null /* stringConstraint */,
-						((List<AstMultiplicity>)tmStack[tmHead].value) /* multiplicityList */,
+						((List<AstMultiplicity>)tmStack[tmHead].value) /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 29:  // string_constraint ::= Lset ':' strings
@@ -471,13 +471,13 @@ public class TypesParser {
 			case 39:  // type_ex ::= type
 				lapg_gg.value = new AstTypeEx(
 						((AstType)tmStack[tmHead].value) /* type */,
-						null /* multiplicityList */,
+						null /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 40:  // type_ex ::= type '[' multiplicity_list ']'
+			case 40:  // type_ex ::= type '[' multiplicity_list_Comma_separated ']'
 				lapg_gg.value = new AstTypeEx(
 						((AstType)tmStack[tmHead - 3].value) /* type */,
-						((List<AstMultiplicity>)tmStack[tmHead - 1].value) /* multiplicityList */,
+						((List<AstMultiplicity>)tmStack[tmHead - 1].value) /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 41:  // type ::= Lint
@@ -555,25 +555,25 @@ public class TypesParser {
 						((Boolean)tmStack[tmHead].value) /* bcon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 52:  // structural_expression$1 ::= structural_expression$1 ',' identifier map_separator expression
-				((List<AstStructuralExpressionDOLLAR1Item>)lapg_gg.value).add(new AstStructuralExpressionDOLLAR1Item(
+			case 52:  // list_of_identifier_and_2_elements_Comma_separated ::= list_of_identifier_and_2_elements_Comma_separated ',' identifier map_separator expression
+				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)lapg_gg.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
 				break;
-			case 53:  // structural_expression$1 ::= identifier map_separator expression
+			case 53:  // list_of_identifier_and_2_elements_Comma_separated ::= identifier map_separator expression
 				lapg_gg.value = new ArrayList();
-				((List<AstStructuralExpressionDOLLAR1Item>)lapg_gg.value).add(new AstStructuralExpressionDOLLAR1Item(
+				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)lapg_gg.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 56:  // structural_expression ::= name '(' structural_expression$1_opt ')'
+			case 56:  // structural_expression ::= name '(' list_of_identifier_and_2_elements_Comma_separated_opt ')'
 				lapg_gg.value = new AstStructuralExpression(
 						((List<String>)tmStack[tmHead - 3].value) /* name */,
-						((List<AstStructuralExpressionDOLLAR1Item>)tmStack[tmHead - 1].value) /* mapEntries */,
+						((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,
 						null /* expressionList */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
@@ -598,7 +598,7 @@ public class TypesParser {
 				lapg_gg.value = AstMapSeparator.EQUAL;
 				break;
 			case 64:  // map_separator ::= '=>'
-				lapg_gg.value = AstMapSeparator.EQUALGREATER;
+				lapg_gg.value = AstMapSeparator.EQUAL_GREATER;
 				break;
 			case 65:  // name ::= identifier
 				lapg_gg.value = new ArrayList();

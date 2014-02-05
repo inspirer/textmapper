@@ -32,9 +32,9 @@ public class NoparserLexer {
 	public interface Lexems {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
-		public static final int LCURLY = 1;
+		public static final int Lcurly = 1;
 		public static final int _skip = 2;
-		public static final int RCURLY = 3;
+		public static final int Rcurly = 3;
 	}
 
 	public interface ErrorReporter {

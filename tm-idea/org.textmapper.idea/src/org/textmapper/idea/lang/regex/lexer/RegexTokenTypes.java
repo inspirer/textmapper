@@ -30,22 +30,22 @@ public interface RegexTokenTypes {
 	IElementType RE_ESCAPED = new RegexElementType(Lexems.escaped, "\\escaped");
 	IElementType RE_CHARCLASS = new RegexElementType(Lexems.charclass, "charclass");
 
-	IElementType RE_DOT = new RegexElementType(Lexems.DOT, ".");
-	IElementType RE_MULT = new RegexElementType(Lexems.MULT, "*");
-	IElementType RE_PLUS = new RegexElementType(Lexems.PLUS, "+");
-	IElementType RE_QUESTIONMARK = new RegexElementType(Lexems.QUESTIONMARK, "?");
+	IElementType RE_DOT = new RegexElementType(Lexems.Dot, ".");
+	IElementType RE_MULT = new RegexElementType(Lexems.Mult, "*");
+	IElementType RE_PLUS = new RegexElementType(Lexems.Plus, "+");
+	IElementType RE_QUESTIONMARK = new RegexElementType(Lexems.Questionmark, "?");
 	IElementType RE_QUANTFIER = new RegexElementType(Lexems.quantifier, "{n,m}");
 
-	IElementType RE_LPAREN = new RegexElementType(Lexems.LPAREN, "(");
-	IElementType RE_LPARENQMARK = new RegexElementType(Lexems.LPARENQUESTIONMARK, "(?");
-	IElementType RE_OR = new RegexElementType(Lexems.OR, "|");
-	IElementType RE_RPAREN = new RegexElementType(Lexems.RPAREN, ")");
+	IElementType RE_LPAREN = new RegexElementType(Lexems.Lparen, "(");
+	IElementType RE_LPARENQMARK = new RegexElementType(Lexems.LparenQuestionmark, "(?");
+	IElementType RE_OR = new RegexElementType(Lexems.Or, "|");
+	IElementType RE_RPAREN = new RegexElementType(Lexems.Rparen, ")");
 	IElementType RE_EXPAND = new RegexElementType(Lexems.expand, "{expand}");
 
-	IElementType RE_LSQUARE = new RegexElementType(Lexems.LSQUARE, "[");
-	IElementType RE_LSQUAREXOR = new RegexElementType(Lexems.LSQUAREXOR, "[^");
-	IElementType RE_MINUS = new RegexElementType(Lexems.MINUS, "-");
-	IElementType RE_RSQUARE = new RegexElementType(Lexems.RSQUARE, "]");
+	IElementType RE_LSQUARE = new RegexElementType(Lexems.Lsquare, "[");
+	IElementType RE_LSQUAREXOR = new RegexElementType(Lexems.LsquareXor, "[^");
+	IElementType RE_MINUS = new RegexElementType(Lexems.Minus, "-");
+	IElementType RE_RSQUARE = new RegexElementType(Lexems.Rsquare, "]");
 
 	IElementType RE_SETDIFF = new RegexElementType(Lexems.op_minus, "{-}");
 	IElementType RE_SETUNION = new RegexElementType(Lexems.op_union, "{+}");

@@ -21,10 +21,10 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 public class AstStructuralExpression extends AstNode implements IAstExpression {
 
 	private final List<String> name;
-	private final List<AstStructuralExpressionDOLLAR1Item> mapEntries;
+	private final List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem> mapEntries;
 	private final List<IAstExpression> expressionList;
 
-	public AstStructuralExpression(List<String> name, List<AstStructuralExpressionDOLLAR1Item> mapEntries, List<IAstExpression> expressionList, TextSource source, int line, int offset, int endoffset) {
+	public AstStructuralExpression(List<String> name, List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem> mapEntries, List<IAstExpression> expressionList, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.mapEntries = mapEntries;
@@ -35,7 +35,7 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 		return name;
 	}
 
-	public List<AstStructuralExpressionDOLLAR1Item> getMapEntries() {
+	public List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem> getMapEntries() {
 		return mapEntries;
 	}
 
@@ -48,7 +48,7 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 			return;
 		}
 		if (mapEntries != null) {
-			for (AstStructuralExpressionDOLLAR1Item it : mapEntries) {
+			for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem it : mapEntries) {
 				it.accept(v);
 			}
 		}

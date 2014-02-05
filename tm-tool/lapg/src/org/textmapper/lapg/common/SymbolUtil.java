@@ -24,6 +24,9 @@ import java.util.Comparator;
  */
 public class SymbolUtil {
 
+	private SymbolUtil() {
+	}
+
 	public static final Comparator<Symbol> COMPARATOR = new Comparator<Symbol>() {
 		@Override
 		public int compare(Symbol o1, Symbol o2) {

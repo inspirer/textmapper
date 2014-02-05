@@ -205,19 +205,6 @@ public class TMResolver {
 		return sym;
 	}
 
-	Nonterminal createDerived(Symbol element, String suffix, ITmaNode source) {
-		final String base_ = element.getName() + suffix;
-		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 0;
-		while (symbolsMap.containsKey(index == 0 ? base_ : base_ + index)) {
-			index++;
-		}
-		String name = index == 0 ? base_ : base_ + index;
-		Nonterminal sym = builder.addNonterminal(name, source);
-		symbolsMap.put(name, sym);
-		lastIndex.put(base_, index + 1);
-		return sym;
-	}
-
 	Symbol resolve(TmaSymref id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);

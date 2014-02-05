@@ -17,10 +17,10 @@ public class RewriteLexer {
 	public interface Lexems {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
-		public static final int LCURLY = 1;
-		public static final int RCURLY = 2;
-		public static final int COMMA = 3;
-		public static final int DOT = 4;
+		public static final int Lcurly = 1;
+		public static final int Rcurly = 2;
+		public static final int Comma = 3;
+		public static final int Dot = 4;
 		public static final int char_a = 5;
 		public static final int char_b = 6;
 	}

@@ -24,6 +24,7 @@ import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
 import org.textmapper.lapg.api.rule.RhsSet.Kind;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * evgeny, 14.12.11
@@ -42,6 +43,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
 	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
+	private final Map<Object, Nonterminal> instantiations = new HashMap<Object, Nonterminal>();
+	private final Map<Nonterminal, String> anonymousNames = new LinkedHashMap<Nonterminal, String>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
@@ -53,12 +56,19 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Terminal addTerminal(String name, AstType type, SourceElement origin) {
-		return addSymbol(new LiTerminal(name, type, origin));
+		return addSymbol(new LiTerminal(name, type, origin), false);
 	}
 
 	@Override
 	public Nonterminal addNonterminal(String name, SourceElement origin) {
-		return addSymbol(new LiNonterminal(name, origin));
+		return addSymbol(new LiNonterminal(name, origin), false);
+	}
+
+	@Override
+	public Nonterminal addAnonymous(String contextName, SourceElement origin) {
+		LiNonterminal nonterm = addSymbol(new LiNonterminal(null, origin), true);
+		anonymousNames.put(nonterm, contextName);
+		return nonterm;
 	}
 
 	@Override
@@ -84,17 +94,19 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		((LiTerminal) terminal).setSoftClass(softClass);
 	}
 
-	private <T extends LiSymbol> T addSymbol(T sym) {
-		String name = sym.getName();
-		if (name == null) {
-			throw new NullPointerException();
-		}
-		if (symbolsMap.containsKey(name)) {
-			throw new IllegalStateException("symbol `" + name + "' already exists");
+	private <T extends LiSymbol> T addSymbol(T sym, boolean anonymous) {
+		if (!anonymous) {
+			String name = sym.getName();
+			if (name == null) {
+				throw new NullPointerException();
+			}
+			if (symbolsMap.containsKey(name)) {
+				throw new IllegalStateException("symbol `" + name + "' already exists");
+			}
+			symbolsMap.put(name, sym);
 		}
 		symbols.add(sym);
 		symbolsSet.add(sym);
-		symbolsMap.put(name, sym);
 		return sym;
 	}
 
@@ -318,6 +330,25 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
+	public Nonterminal addShared(RhsPart part, String contextName) {
+		check(part, false);
+		if (contextName == null) {
+			throw new NullPointerException("contextName");
+		}
+		Object id = part.structuralNode();
+		Nonterminal symbol = instantiations.get(id);
+		if (symbol == null) {
+			symbol = addAnonymous(contextName, ((LiRhsPart) part).getOrigin());
+			addRule(symbol, part, null);
+			instantiations.put(id, symbol);
+		} else {
+			// mark as used
+			rhsSet.remove(part);
+		}
+		return symbol;
+	}
+
+	@Override
 	void check(RhsPart part, boolean asChild) {
 		if (part == null) {
 			throw new NullPointerException();
@@ -370,11 +401,26 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
+		assignNames();
 		annotateNullables();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
 	}
 
-	public void annotateNullables() {
+	private void assignNames() {
+		Map<String, Integer> lastIndex = new HashMap<String, Integer>();
+		for (Entry<Nonterminal, String> e : anonymousNames.entrySet()) {
+			String baseName = e.getValue();
+			int index = lastIndex.containsKey(baseName) ? lastIndex.get(baseName) : 0;
+			String name = index == 0 ? baseName : baseName + index;
+			while (symbolsMap.containsKey(name)) {
+				name = baseName + (++index);
+			}
+			lastIndex.put(baseName, index + 1);
+			((LiNonterminal) e.getKey()).setName(name);
+		}
+	}
+
+	private void annotateNullables() {
 		// a set of non-empty rules without terminals on the right side
 		Set<Rule> candidates = new HashSet<Rule>();
 		for (Rule r : rules) {

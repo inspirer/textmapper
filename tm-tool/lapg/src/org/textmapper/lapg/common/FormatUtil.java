@@ -15,7 +15,13 @@
  */
 package org.textmapper.lapg.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class FormatUtil {
+
+	private FormatUtil() {
+	}
 
 	public static void appendEscaped(StringBuilder sb, char c) {
 		String sym = Integer.toString(c, 16);
@@ -71,6 +77,20 @@ public class FormatUtil {
 		return true;
 	}
 
+	public static String toIdentifier(String s) {
+		StringBuilder res = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			int c = s.charAt(i);
+			if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9' && res.length() > 0) {
+				res.append((char) c);
+			} else {
+				res.append(getCharacterName((char) c));
+			}
+		}
+
+		return res.toString();
+	}
+
 	public static String toCamelCase(String s, Boolean firstUpper) {
 		char[] string = s.toCharArray();
 		int len = 0;
@@ -111,5 +131,68 @@ public class FormatUtil {
 			}
 		}
 		return sb.toString();
+	}
+
+	public static String getCharacterName(char c) {
+		String name = charName.get(c);
+		if (name == null) {
+			name = "x" + asHex(c, 2);
+		} else {
+			name = toCamelCase(name, true);
+		}
+		return name;
+	}
+
+	private static Map<Character, String> charName = buildCharactersMap();
+
+	private static Map<Character, String> buildCharactersMap() {
+		Map<Character, String> map = new HashMap<Character, String>();
+		map.put('\t', "tab");
+		map.put('\n', "lf");
+		map.put('\r', "cr");
+
+		// 0x20
+		map.put(' ', "space");
+		map.put('!', "exclamation");
+		map.put('"', "quote");
+		map.put('#', "sharp");
+		map.put('$', "dollar");
+		map.put('%', "percent");
+		map.put('&', "ampersand");
+		map.put('\'', "apostrophe");
+		map.put('(', "lparen");
+		map.put(')', "rparen");
+		map.put('*', "mult");
+		map.put('+', "plus");
+		map.put(',', "comma");
+		map.put('-', "minus");
+		map.put('.', "dot");
+		map.put('/', "slash");
+
+		// 0x3A
+		map.put(':', "colon");
+		map.put(';', "semicolon");
+		map.put('<', "less");
+		map.put('=', "equal");
+		map.put('>', "greater");
+		map.put('?', "questionmark");
+		map.put('@', "atsign");
+
+		// 0x5B
+		map.put('[', "lsquare");
+		map.put('\\', "backslash");
+		map.put(']', "rsquare");
+		map.put('^', "xor");
+
+		// 0x60
+		map.put('`', "graveaccent");
+
+		// 0x7B
+		map.put('{', "lcurly");
+		map.put('|', "or");
+		map.put('}', "rcurly");
+		map.put('~', "tilde");
+
+		return map;
 	}
 }

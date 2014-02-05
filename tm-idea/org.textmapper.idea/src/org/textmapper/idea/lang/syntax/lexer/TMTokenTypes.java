@@ -42,37 +42,37 @@ public interface TMTokenTypes {
 	IElementType TEMPLATES = new TMTemplatesElementType(Lexems.eoi, false, "templates");
 
 	// [] () {}
-	IElementType OP_LBRACKET = new TMElementType(Lexems.LSQUARE, "[");
-	IElementType OP_RBRACKET = new TMElementType(Lexems.RSQUARE, "]");
-	IElementType OP_LPAREN = new TMElementType(Lexems.LPAREN, "(");
-	IElementType OP_RPAREN = new TMElementType(Lexems.RPAREN, ")");
-	IElementType OP_LCURLY = new TMElementType(Lexems.LCURLY, "{");
-	IElementType OP_RCURLY = new TMElementType(Lexems.RCURLY, "}");
+	IElementType OP_LBRACKET = new TMElementType(Lexems.Lsquare, "[");
+	IElementType OP_RBRACKET = new TMElementType(Lexems.Rsquare, "]");
+	IElementType OP_LPAREN = new TMElementType(Lexems.Lparen, "(");
+	IElementType OP_RPAREN = new TMElementType(Lexems.Rparen, ")");
+	IElementType OP_LCURLY = new TMElementType(Lexems.Lcurly, "{");
+	IElementType OP_RCURLY = new TMElementType(Lexems.Rcurly, "}");
 
 	// punctuation
-	IElementType OP_SEMICOLON = new TMElementType(Lexems.SEMICOLON, ";");
-	IElementType OP_DOT = new TMElementType(Lexems.DOT, ".");
-	IElementType OP_COMMA = new TMElementType(Lexems.COMMA, ",");
-	IElementType OP_COLONCOLON = new TMElementType(Lexems.COLONCOLON, "::");
+	IElementType OP_SEMICOLON = new TMElementType(Lexems.Semicolon, ";");
+	IElementType OP_DOT = new TMElementType(Lexems.Dot, ".");
+	IElementType OP_COMMA = new TMElementType(Lexems.Comma, ",");
+	IElementType OP_COLONCOLON = new TMElementType(Lexems.ColonColon, "::");
 
 	// operators
-	IElementType OP_PERCENT = new TMElementType(Lexems.PERCENT, "%");
-	IElementType OP_DOLLAR = new TMElementType(Lexems.DOLLAR, "$");
-	IElementType OP_DOTDOT = new TMElementType(Lexems.DOTDOT, "..");
-	IElementType OP_CCEQ = new TMElementType(Lexems.COLONCOLONEQUAL, "::=");
-	IElementType OP_OR = new TMElementType(Lexems.OR, "|");
-	IElementType OP_EQ = new TMElementType(Lexems.EQUAL, "=");
-	IElementType OP_EQGT = new TMElementType(Lexems.EQUALGREATER, "=>");
-	IElementType OP_COLON = new TMElementType(Lexems.COLON, ":");
-	IElementType OP_LT = new TMElementType(Lexems.LESS, "<");
-	IElementType OP_GT = new TMElementType(Lexems.GREATER, ">");
-	IElementType OP_STAR = new TMElementType(Lexems.MULT, "*");
-	IElementType OP_PLUS = new TMElementType(Lexems.PLUS, "+");
-	IElementType OP_PLUSEQ = new TMElementType(Lexems.PLUSEQUAL, "+=");
-	IElementType OP_QMARK = new TMElementType(Lexems.QUESTIONMARK, "?");
+	IElementType OP_PERCENT = new TMElementType(Lexems.Percent, "%");
+	IElementType OP_DOLLAR = new TMElementType(Lexems.Dollar, "$");
+	IElementType OP_DOTDOT = new TMElementType(Lexems.DotDot, "..");
+	IElementType OP_CCEQ = new TMElementType(Lexems.ColonColonEqual, "::=");
+	IElementType OP_OR = new TMElementType(Lexems.Or, "|");
+	IElementType OP_EQ = new TMElementType(Lexems.Equal, "=");
+	IElementType OP_EQGT = new TMElementType(Lexems.EqualGreater, "=>");
+	IElementType OP_COLON = new TMElementType(Lexems.Colon, ":");
+	IElementType OP_LT = new TMElementType(Lexems.Less, "<");
+	IElementType OP_GT = new TMElementType(Lexems.Greater, ">");
+	IElementType OP_STAR = new TMElementType(Lexems.Mult, "*");
+	IElementType OP_PLUS = new TMElementType(Lexems.Plus, "+");
+	IElementType OP_PLUSEQ = new TMElementType(Lexems.PlusEqual, "+=");
+	IElementType OP_QMARK = new TMElementType(Lexems.Questionmark, "?");
 	//TODO IElementType OP_ARROW = new TMElementType(Lexems.MINUSGREATER, "->");
-	IElementType OP_AND = new TMElementType(Lexems.AMPERSAND, "&");
-	IElementType OP_AT = new TMElementType(Lexems.ATSIGN, "@");
+	IElementType OP_AND = new TMElementType(Lexems.Ampersand, "&");
+	IElementType OP_AT = new TMElementType(Lexems.Atsign, "@");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_DOLLAR, OP_DOTDOT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,

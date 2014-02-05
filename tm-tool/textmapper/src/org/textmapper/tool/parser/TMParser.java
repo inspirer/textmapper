@@ -535,7 +535,7 @@ public class TMParser {
 		"identifieropt",
 		"Lnoeoiopt",
 		"rhsSuffixopt",
-		"rhsBracketsPair_list",
+		"rhsBracketsPair_list_Comma_separated",
 		"map_entriesopt",
 		"expression_listopt",
 	};
@@ -615,7 +615,7 @@ public class TMParser {
 		public static final int identifieropt = 131;
 		public static final int Lnoeoiopt = 132;
 		public static final int rhsSuffixopt = 133;
-		public static final int rhsBracketsPair_list = 134;
+		public static final int rhsBracketsPair_list_Comma_separated = 134;
 		public static final int map_entriesopt = 135;
 		public static final int expression_listopt = 136;
 	}
@@ -1052,14 +1052,14 @@ public class TMParser {
 			case 142:  // rhsPrimary ::= rhsPrimary '+'
 				 lapg_gg.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_ONEORMORE, source, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
-			case 143:  // rhsBracketsPair_list ::= rhsBracketsPair_list ',' rhsBracketsPair
+			case 143:  // rhsBracketsPair_list_Comma_separated ::= rhsBracketsPair_list_Comma_separated ',' rhsBracketsPair
 				((List<TmaRhsBracketsPair>)lapg_gg.value).add(((TmaRhsBracketsPair)tmStack[tmHead].value));
 				break;
-			case 144:  // rhsBracketsPair_list ::= rhsBracketsPair
+			case 144:  // rhsBracketsPair_list_Comma_separated ::= rhsBracketsPair
 				lapg_gg.value = new ArrayList();
 				((List<TmaRhsBracketsPair>)lapg_gg.value).add(((TmaRhsBracketsPair)tmStack[tmHead].value));
 				break;
-			case 145:  // rhsPrimary ::= '$' '(' rules ';' rhsBracketsPair_list ')'
+			case 145:  // rhsPrimary ::= '$' '(' rules ';' rhsBracketsPair_list_Comma_separated ')'
 				 lapg_gg.value = new TmaRhsIgnored(((List<TmaRule0>)tmStack[tmHead - 3].value), ((List<TmaRhsBracketsPair>)tmStack[tmHead - 1].value), source, lapg_gg.line, lapg_gg.offset, lapg_gg.endoffset); 
 				break;
 			case 146:  // rhsPrimary ::= '$' '(' rules ')'

@@ -67,17 +67,17 @@ defaultval  : Expression ::=
 ;
 
 modifiers  : list<Constraint> ::=
-	'[' this=constraint_list ']'
+	'[' this=constraint_list_Semicolon_separated ']'
 ;
 
 class Constraint {
 	StringConstraint stringConstraint;
-	list<Multiplicity> multiplicityList;
+	list<Multiplicity> multiplicityListCommaSeparated;
 }
 
 constraint  : Constraint ::=
 	stringConstraint=string_constraint
-  | multiplicityList=multiplicity_list
+  | multiplicityListCommaSeparated=multiplicity_list_Comma_separated
 ;
 
 class StringConstraint {
@@ -124,12 +124,12 @@ multiplicity  : Multiplicity ::=
 
 class TypeEx {
 	Type type;
-	list<Multiplicity> multiplicityList;
+	list<Multiplicity> multiplicityListCommaSeparated;
 }
 
 type_ex  : TypeEx ::=
 	{type}
-  | {type} '[' multiplicityList=multiplicity_list ']'
+  | {type} '[' multiplicityListCommaSeparated=multiplicity_list_Comma_separated ']'
 ;
 
 class Type {
@@ -173,12 +173,12 @@ literal_expression  : LiteralExpression ::=
 
 class StructuralExpression : Expression {
 	list<String> name;
-	list<StructuralExpressionDOLLAR1Item> mapEntries;
+	list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> mapEntries;
 	list<Expression> expressionList;
 }
 
 structural_expression  : StructuralExpression ::=
-	{name} '(' mapEntries=structural_expression$1_opt ')'
+	{name} '(' mapEntries=list_of_identifier_and_2_elements_Comma_separated_opt ')'
   | '[' expressionList=expression_listopt ']'
 ;
 
@@ -189,13 +189,13 @@ expression_list  : list<Expression>
 enum MapSeparator {
 	COLON,
 	EQUAL,
-	EQUALGREATER
+	EQUAL_GREATER
 }
 
 map_separator  : MapSeparator ::=
 	this=':' as MapSeparator.COLON
   | this='=' as MapSeparator.EQUAL
-  | this='=>' as MapSeparator.EQUALGREATER
+  | this='=>' as MapSeparator.EQUAL_GREATER
 ;
 
 name  : list<String>
@@ -225,26 +225,26 @@ parametersopt  : list<TypeEx> ::=
 	this=parameters?
 ;
 
-constraint_list  : list<Constraint>
+constraint_list_Semicolon_separated  : list<Constraint>
 	(this+=constraint
 		separator ';')+ ;
 
-multiplicity_list  : list<Multiplicity>
+multiplicity_list_Comma_separated  : list<Multiplicity>
 	(this+=multiplicity
 		separator ',')+ ;
 
-class StructuralExpressionDOLLAR1Item {
+class ListOfIdentifierAnd2ElementsCommaSeparatedItem {
 	String identifier;
 	MapSeparator mapSeparator;
 	Expression expression;
 }
 
-structural_expression$1  : list<StructuralExpressionDOLLAR1Item>
-	(this+=new.StructuralExpressionDOLLAR1Item({identifier} mapSeparator=map_separator {expression})
+list_of_identifier_and_2_elements_Comma_separated  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem>
+	(this+=new.ListOfIdentifierAnd2ElementsCommaSeparatedItem({identifier} mapSeparator=map_separator {expression})
 		separator ',')+ ;
 
-structural_expression$1_opt  : list<StructuralExpressionDOLLAR1Item> ::=
-	this=structural_expression$1?
+list_of_identifier_and_2_elements_Comma_separated_opt  : list<ListOfIdentifierAnd2ElementsCommaSeparatedItem> ::=
+	this=list_of_identifier_and_2_elements_Comma_separated?
 ;
 
 expression_listopt  : list<Expression> ::=

@@ -39,14 +39,14 @@ public class XmlLexer {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int any = 1;
-		public static final int LESS = 2;
+		public static final int Less = 2;
 		public static final int _skipcomment = 3;
 		public static final int identifier = 4;
 		public static final int ccon = 5;
-		public static final int GREATER = 6;
-		public static final int EQUAL = 7;
-		public static final int COLON = 8;
-		public static final int SLASH = 9;
+		public static final int Greater = 6;
+		public static final int Equal = 7;
+		public static final int Colon = 8;
+		public static final int Slash = 9;
 		public static final int _skip = 10;
 	}
 

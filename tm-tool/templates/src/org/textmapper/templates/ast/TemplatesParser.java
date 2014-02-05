@@ -588,7 +588,7 @@ public class TemplatesParser {
 		public static final int context_type = 75;
 		public static final int template_end = 76;
 		public static final int instructions = 77;
-		public static final int LSQUAREMINUSRSQUARERCURLY = 78;
+		public static final int LsquareMinusRsquareRcurly = 78;
 		public static final int instruction = 79;
 		public static final int simple_instruction = 80;
 		public static final int sentence = 81;

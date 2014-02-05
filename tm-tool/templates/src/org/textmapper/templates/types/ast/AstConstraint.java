@@ -21,20 +21,20 @@ import org.textmapper.templates.types.TypesTree.TextSource;
 public class AstConstraint extends AstNode {
 
 	private final AstStringConstraint stringConstraint;
-	private final List<AstMultiplicity> multiplicityList;
+	private final List<AstMultiplicity> multiplicityListCommaSeparated;
 
-	public AstConstraint(AstStringConstraint stringConstraint, List<AstMultiplicity> multiplicityList, TextSource source, int line, int offset, int endoffset) {
+	public AstConstraint(AstStringConstraint stringConstraint, List<AstMultiplicity> multiplicityListCommaSeparated, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.stringConstraint = stringConstraint;
-		this.multiplicityList = multiplicityList;
+		this.multiplicityListCommaSeparated = multiplicityListCommaSeparated;
 	}
 
 	public AstStringConstraint getStringConstraint() {
 		return stringConstraint;
 	}
 
-	public List<AstMultiplicity> getMultiplicityList() {
-		return multiplicityList;
+	public List<AstMultiplicity> getMultiplicityListCommaSeparated() {
+		return multiplicityListCommaSeparated;
 	}
 
 	public void accept(AstVisitor v) {
@@ -44,8 +44,8 @@ public class AstConstraint extends AstNode {
 		if (stringConstraint != null) {
 			stringConstraint.accept(v);
 		}
-		if (multiplicityList != null) {
-			for (AstMultiplicity it : multiplicityList) {
+		if (multiplicityListCommaSeparated != null) {
+			for (AstMultiplicity it : multiplicityListCommaSeparated) {
 				it.accept(v);
 			}
 		}

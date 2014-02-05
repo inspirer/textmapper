@@ -429,7 +429,7 @@ public class JavaParserTest {
                 "                          CastExpression\n" +
                 "                            '('\n" +
                 "                            'A'\n" +
-                "                            Dims$1\n" +
+                "                            list_of_'['_and_1_elements\n" +
                 "                              '[' ']'\n" +
                 "                            ')'\n" +
                 "                            ParenthesizedExpression\n" +

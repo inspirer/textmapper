@@ -38,10 +38,10 @@ public class SampleBLexer {
 		public static final int _skip = 2;
 		public static final int Lclass = 3;
 		public static final int Lextends = 4;
-		public static final int LCURLY = 5;
-		public static final int RCURLY = 6;
-		public static final int LPAREN = 7;
-		public static final int RPAREN = 8;
+		public static final int Lcurly = 5;
+		public static final int Rcurly = 6;
+		public static final int Lparen = 7;
+		public static final int Rparen = 8;
 		public static final int Linterface = 9;
 		public static final int Lenum = 10;
 		public static final int error = 11;

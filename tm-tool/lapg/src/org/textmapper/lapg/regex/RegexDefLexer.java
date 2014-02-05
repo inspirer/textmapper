@@ -43,24 +43,24 @@ public class RegexDefLexer {
 		public static final int _char = 1;
 		public static final int escaped = 2;
 		public static final int charclass = 3;
-		public static final int DOT = 4;
-		public static final int MULT = 5;
-		public static final int PLUS = 6;
-		public static final int QUESTIONMARK = 7;
+		public static final int Dot = 4;
+		public static final int Mult = 5;
+		public static final int Plus = 6;
+		public static final int Questionmark = 7;
 		public static final int quantifier = 8;
 		public static final int op_minus = 9;
 		public static final int op_union = 10;
 		public static final int op_intersect = 11;
-		public static final int LPAREN = 12;
-		public static final int OR = 13;
-		public static final int RPAREN = 14;
-		public static final int LPARENQUESTIONMARK = 15;
-		public static final int LSQUARE = 16;
-		public static final int LSQUAREXOR = 17;
+		public static final int Lparen = 12;
+		public static final int Or = 13;
+		public static final int Rparen = 14;
+		public static final int LparenQuestionmark = 15;
+		public static final int Lsquare = 16;
+		public static final int LsquareXor = 17;
 		public static final int expand = 18;
 		public static final int kw_eoi = 19;
-		public static final int RSQUARE = 20;
-		public static final int MINUS = 21;
+		public static final int Rsquare = 20;
+		public static final int Minus = 21;
 	}
 
 	public interface ErrorReporter {

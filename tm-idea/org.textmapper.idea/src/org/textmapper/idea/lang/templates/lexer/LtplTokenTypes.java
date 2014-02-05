@@ -43,42 +43,42 @@ public interface LtplTokenTypes {
 	TokenSet strings = TokenSet.create(CCON);
 
 	// [] ()
-	IElementType OP_LSQUARE = new LtplElementType(Lexems.LSQUARE, "[");
-	IElementType OP_RSQUARE = new LtplElementType(Lexems.RSQUARE, "]");
-	IElementType OP_LPAREN = new LtplElementType(Lexems.LPAREN, "(");
-	IElementType OP_RPAREN = new LtplElementType(Lexems.RPAREN, ")");
-	IElementType OP_LCURLY = new LtplElementType(Lexems.LCURLY, "{");
-	IElementType OP_RCURLY = new LtplElementType(Lexems.RCURLY, "}");
+	IElementType OP_LSQUARE = new LtplElementType(Lexems.Lsquare, "[");
+	IElementType OP_RSQUARE = new LtplElementType(Lexems.Rsquare, "]");
+	IElementType OP_LPAREN = new LtplElementType(Lexems.Lparen, "(");
+	IElementType OP_RPAREN = new LtplElementType(Lexems.Rparen, ")");
+	IElementType OP_LCURLY = new LtplElementType(Lexems.Lcurly, "{");
+	IElementType OP_RCURLY = new LtplElementType(Lexems.Rcurly, "}");
 
 	// punctuation
-	IElementType OP_DOT = new LtplElementType(Lexems.DOT, ".");
-	IElementType OP_COMMA = new LtplElementType(Lexems.COMMA, ",");
+	IElementType OP_DOT = new LtplElementType(Lexems.Dot, ".");
+	IElementType OP_COMMA = new LtplElementType(Lexems.Comma, ",");
 
 	// operators
 	IElementType OP_ESCDOLLAR = new LtplElementType(Lexems.escdollar, "$$");
-	IElementType OP_DOLLARLCURLY = new LtplElementType(Lexems.DOLLARLCURLY, "${");
-	IElementType OP_MINUSRCURLY = new LtplElementType(Lexems.MINUSRCURLY, "-}");
-	IElementType OP_DOLLARSLASH = new LtplElementType(Lexems.DOLLARSLASH, "$/");
-	IElementType OP_PLUS = new LtplElementType(Lexems.PLUS, "+");
-	IElementType OP_MINUS = new LtplElementType(Lexems.MINUS, "-");
-	IElementType OP_MULT = new LtplElementType(Lexems.MULT, "*");
-	IElementType OP_SLASH = new LtplElementType(Lexems.SLASH, "/");
-	IElementType OP_PERCENT = new LtplElementType(Lexems.PERCENT, "%");
-	IElementType OP_EXCLAMATION = new LtplElementType(Lexems.EXCLAMATION, "!");
-	IElementType OP_OR = new LtplElementType(Lexems.OR, "|");
-	IElementType OP_AMPERSANDAMPERSAND = new LtplElementType(Lexems.AMPERSANDAMPERSAND, "&&");
-	IElementType OP_OROR = new LtplElementType(Lexems.OROR, "||");
-	IElementType OP_EQUALEQUAL = new LtplElementType(Lexems.EQUALEQUAL, "==");
-	IElementType OP_EQUAL = new LtplElementType(Lexems.EQUAL, "=");
-	IElementType OP_EXCLAMATIONEQUAL = new LtplElementType(Lexems.EXCLAMATIONEQUAL, "!=");
-	IElementType OP_MINUSGREATER = new LtplElementType(Lexems.MINUSGREATER, "->");
-	IElementType OP_EQUALGREATER = new LtplElementType(Lexems.EQUALGREATER, "=>");
-	IElementType OP_LESSEQUAL = new LtplElementType(Lexems.LESSEQUAL, "<=");
-	IElementType OP_GREATEREQUAL = new LtplElementType(Lexems.GREATEREQUAL, ">=");
-	IElementType OP_LESS = new LtplElementType(Lexems.LESS, "<");
-	IElementType OP_GREATER = new LtplElementType(Lexems.GREATER, ">");
-	IElementType OP_COLON = new LtplElementType(Lexems.COLON, ":");
-	IElementType OP_QUESTIONMARK = new LtplElementType(Lexems.QUESTIONMARK, "?");
+	IElementType OP_DOLLARLCURLY = new LtplElementType(Lexems.DollarLcurly, "${");
+	IElementType OP_MINUSRCURLY = new LtplElementType(Lexems.MinusRcurly, "-}");
+	IElementType OP_DOLLARSLASH = new LtplElementType(Lexems.DollarSlash, "$/");
+	IElementType OP_PLUS = new LtplElementType(Lexems.Plus, "+");
+	IElementType OP_MINUS = new LtplElementType(Lexems.Minus, "-");
+	IElementType OP_MULT = new LtplElementType(Lexems.Mult, "*");
+	IElementType OP_SLASH = new LtplElementType(Lexems.Slash, "/");
+	IElementType OP_PERCENT = new LtplElementType(Lexems.Percent, "%");
+	IElementType OP_EXCLAMATION = new LtplElementType(Lexems.Exclamation, "!");
+	IElementType OP_OR = new LtplElementType(Lexems.Or, "|");
+	IElementType OP_AMPERSANDAMPERSAND = new LtplElementType(Lexems.AmpersandAmpersand, "&&");
+	IElementType OP_OROR = new LtplElementType(Lexems.OrOr, "||");
+	IElementType OP_EQUALEQUAL = new LtplElementType(Lexems.EqualEqual, "==");
+	IElementType OP_EQUAL = new LtplElementType(Lexems.Equal, "=");
+	IElementType OP_EXCLAMATIONEQUAL = new LtplElementType(Lexems.ExclamationEqual, "!=");
+	IElementType OP_MINUSGREATER = new LtplElementType(Lexems.MinusGreater, "->");
+	IElementType OP_EQUALGREATER = new LtplElementType(Lexems.EqualGreater, "=>");
+	IElementType OP_LESSEQUAL = new LtplElementType(Lexems.LessEqual, "<=");
+	IElementType OP_GREATEREQUAL = new LtplElementType(Lexems.GreaterEqual, ">=");
+	IElementType OP_LESS = new LtplElementType(Lexems.Less, "<");
+	IElementType OP_GREATER = new LtplElementType(Lexems.Greater, ">");
+	IElementType OP_COLON = new LtplElementType(Lexems.Colon, ":");
+	IElementType OP_QUESTIONMARK = new LtplElementType(Lexems.Questionmark, "?");
 
 	TokenSet operators = TokenSet.create(
 			OP_DOLLARLCURLY, OP_DOLLARSLASH, OP_MINUSRCURLY, OP_PLUS, OP_MINUS, OP_MULT,
