@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
@@ -95,7 +96,8 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		LiRhsList that = (LiRhsList) o;
 
 		if (separator != null ? !separator.structurallyEquals(that.separator) : that.separator != null) return false;
-		if (customInitialElement != null ? !customInitialElement.structurallyEquals(that.customInitialElement) : that.customInitialElement != null)
+		if (customInitialElement != null ? !customInitialElement.structurallyEquals(that.customInitialElement) :
+				that.customInitialElement != null)
 			return false;
 		if (nonEmpty != that.nonEmpty) return false;
 		if (rightRecursive != that.rightRecursive) return false;
@@ -191,18 +193,27 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		return Arrays.<RhsSequence>asList(rule1, rule2);
 	}
 
+	private static String getSymbolName(Symbol s) {
+		String name = s.getName();
+		if (name != null) {
+			return name;
+		}
+		// for anonymous nonterminals we can get an approximate name from nameHint user data.
+		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
+	}
+
 	@Override
 	public String getProvisionalName() {
 		StringBuilder sb = new StringBuilder();
 		Symbol representative = RhsUtil.getRepresentative(element);
 		if (representative != null) {
-			sb.append(representative.getName());
+			sb.append(getSymbolName(representative));
 			sb.append(nonEmpty || separator != null ? "_list" : "_optlist");
 		} else {
 			RhsSymbol[] rhsSymbols = RhsUtil.getRhsSymbols(element);
 			sb.append("list_of_");
 			if (rhsSymbols.length > 0) {
-				sb.append(rhsSymbols[0].getTarget().getName());
+				sb.append(getSymbolName(rhsSymbols[0].getTarget()));
 				if (rhsSymbols.length > 1) {
 					sb.append("_and_").append(rhsSymbols.length - 1).append("_elements");
 				}

@@ -65,9 +65,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Nonterminal addAnonymous(String contextName, SourceElement origin) {
+	public Nonterminal addAnonymous(String nameHint, SourceElement origin) {
 		LiNonterminal nonterm = addSymbol(new LiNonterminal(null, origin), true);
-		anonymousNames.put(nonterm, contextName);
+		anonymousNames.put(nonterm, nameHint);
+		nonterm.putUserData(Nonterminal.UD_NAME_HINT, nameHint);
 		return nonterm;
 	}
 
@@ -330,15 +331,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Nonterminal addShared(RhsPart part, String contextName) {
+	public Nonterminal addShared(RhsPart part, String nameHint) {
 		check(part, false);
-		if (contextName == null) {
-			throw new NullPointerException("contextName");
+		if (nameHint == null) {
+			throw new NullPointerException("nameHint");
 		}
 		Object id = part.structuralNode();
 		Nonterminal symbol = instantiations.get(id);
 		if (symbol == null) {
-			symbol = addAnonymous(contextName, ((LiRhsPart) part).getOrigin());
+			symbol = addAnonymous(nameHint, ((LiRhsPart) part).getOrigin());
 			addRule(symbol, part, null);
 			instantiations.put(id, symbol);
 		} else {

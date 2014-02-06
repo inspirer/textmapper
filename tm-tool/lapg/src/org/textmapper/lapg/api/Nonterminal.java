@@ -15,14 +15,19 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsRoot;
 
 /**
  * evgeny, 10/27/12
  */
 public interface Nonterminal extends Symbol {
 
-	RhsPart getDefinition();
+	/**
+	 * User data key for name hints for anonymous nonterminals.
+	 */
+	static final String UD_NAME_HINT = "nameHint";
+
+	RhsRoot getDefinition();
 
 	Iterable<Rule> getRules();
 

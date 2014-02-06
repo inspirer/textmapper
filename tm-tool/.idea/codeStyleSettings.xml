@@ -18,7 +18,7 @@
           </value>
         </option>
         <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
-        <option name="RIGHT_MARGIN" value="140" />
+        <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
@@ -28,6 +28,7 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="JAVA">
+          <option name="WRAP_LONG_LINES" value="true" />
           <indentOptions>
             <option name="USE_TAB_CHARACTER" value="true" />
           </indentOptions>
