@@ -101,7 +101,7 @@ public class RewriteTest {
 			LoadStatus status = new LoadStatus();
 
 			TemplatesStatusAdapter templatesStatus = new TemplatesStatusAdapter(status);
-			ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/gen/templates", "utf8"));
+			ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/templates", "utf8"));
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);
 
 			TMGrammar s = SyntaxUtil.parseSyntax(input, status, types);

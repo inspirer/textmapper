@@ -58,9 +58,7 @@
 	<target name="build" depends="rev">
 		<mkdir dir="${build.folder}/java.out/textmapper"/>
 		<copy includeemptydirs="false" todir="${build.folder}/java.out/textmapper">
-			<fileset dir="${tm.dir}/textmapper/src" excludes="**/*.java, **/*.tm"/>
-			<fileset dir="${tm.dir}/lapg/src" excludes="**/*.java, **/*.tm"/>
-			<fileset dir="${tm.dir}/templates/src" excludes="**/*.java, **/*.tm"/>
+			<fileset dir="${tm.dir}/textmapper/resources"/>
 		</copy>
 		<javac debug="true" debuglevel="${debug.level}" destdir="${build.folder}/java.out/textmapper"
 			   source="${source}" target="${target}" includeantruntime="true">

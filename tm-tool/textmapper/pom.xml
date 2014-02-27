@@ -62,11 +62,7 @@
 
 		<resources>
 			<resource>
-				<directory>src</directory>
-				<includes>
-					<include>**/*.types</include>
-					<include>**/*.ltp</include>
-				</includes>
+				<directory>resources</directory>
 			</resource>
 		</resources>
 		<testResources>

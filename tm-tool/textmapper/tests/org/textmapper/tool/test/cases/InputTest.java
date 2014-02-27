@@ -39,7 +39,7 @@ public class InputTest extends LapgTestCase {
 	private TypesRegistry createDefaultTypesRegistry() {
 		ResourceRegistry resources = new ResourceRegistry(
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/test/cases/templates", "utf8"),
-				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/gen/templates", "utf8"));
+				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/templates", "utf8"));
 		return new TypesRegistry(resources, new TemplatesStatus() {
 			@Override
 			public void report(int kind, String message, SourceElement... anchors) {
