@@ -481,9 +481,9 @@ public class TMParser {
 		"lexer_part",
 		"named_pattern",
 		"lexeme",
-		"lexem_transition",
-		"lexem_attrs",
-		"lexem_attribute",
+		"lexeme_transition",
+		"lexeme_attrs",
+		"lexeme_attribute",
 		"state_selector",
 		"state_list",
 		"stateref",
@@ -528,9 +528,9 @@ public class TMParser {
 		"importsopt",
 		"parsing_algorithmopt",
 		"typeopt",
-		"lexem_transitionopt",
+		"lexeme_transitionopt",
 		"iconopt",
-		"lexem_attrsopt",
+		"lexeme_attrsopt",
 		"commandopt",
 		"identifieropt",
 		"Lnoeoiopt",
@@ -561,9 +561,9 @@ public class TMParser {
 		static final int lexer_part = 77;
 		static final int named_pattern = 78;
 		static final int lexeme = 79;
-		static final int lexem_transition = 80;
-		static final int lexem_attrs = 81;
-		static final int lexem_attribute = 82;
+		static final int lexeme_transition = 80;
+		static final int lexeme_attrs = 81;
+		static final int lexeme_attribute = 82;
 		static final int state_selector = 83;
 		static final int state_list = 84;
 		static final int stateref = 85;
@@ -608,9 +608,9 @@ public class TMParser {
 		static final int importsopt = 124;
 		static final int parsing_algorithmopt = 125;
 		static final int typeopt = 126;
-		static final int lexem_transitionopt = 127;
+		static final int lexeme_transitionopt = 127;
 		static final int iconopt = 128;
-		static final int lexem_attrsopt = 129;
+		static final int lexeme_attrsopt = 129;
 		static final int commandopt = 130;
 		static final int identifieropt = 131;
 		static final int Lnoeoiopt = 132;
@@ -848,29 +848,29 @@ public class TMParser {
 			case 47:  // named_pattern ::= ID '=' pattern
 				 tmLeft.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaPattern)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 58:  // lexeme ::= identifier typeopt ':' pattern lexem_transitionopt iconopt lexem_attrsopt commandopt
-				 tmLeft.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaPattern)tmStack[tmHead - 4].value), ((TmaStateref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
+			case 58:  // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
+				 tmLeft.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 6].value), ((TmaPattern)tmStack[tmHead - 4].value), ((TmaStateref)tmStack[tmHead - 3].value), ((Integer)tmStack[tmHead - 2].value), ((TmaLexemeAttrs)tmStack[tmHead - 1].value), ((TmaCommand)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 59:  // lexeme ::= identifier typeopt ':'
-				 tmLeft.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaPattern)null), ((TmaStateref)null), ((Integer)null), ((TmaLexemAttrs)null), ((TmaCommand)null), source, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaLexeme(((TmaIdentifier)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), ((TmaPattern)null), ((TmaStateref)null), ((Integer)null), ((TmaLexemeAttrs)null), ((TmaCommand)null), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 60:  // lexem_transition ::= '=>' stateref
+			case 60:  // lexeme_transition ::= '=>' stateref
 				 tmLeft.value = ((TmaStateref)tmStack[tmHead].value); 
 				break;
-			case 61:  // lexem_attrs ::= '(' lexem_attribute ')'
-				 tmLeft.value = ((TmaLexemAttrs)tmStack[tmHead - 1].value); 
+			case 61:  // lexeme_attrs ::= '(' lexeme_attribute ')'
+				 tmLeft.value = ((TmaLexemeAttrs)tmStack[tmHead - 1].value); 
 				break;
-			case 62:  // lexem_attribute ::= Lsoft
-				 tmLeft.value = new TmaLexemAttrs(TmaLexemAttribute.LSOFT, source, tmLeft.offset, tmLeft.endoffset); 
+			case 62:  // lexeme_attribute ::= Lsoft
+				 tmLeft.value = new TmaLexemeAttrs(TmaLexemeAttribute.LSOFT, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 63:  // lexem_attribute ::= Lclass
-				 tmLeft.value = new TmaLexemAttrs(TmaLexemAttribute.LCLASS, source, tmLeft.offset, tmLeft.endoffset); 
+			case 63:  // lexeme_attribute ::= Lclass
+				 tmLeft.value = new TmaLexemeAttrs(TmaLexemeAttribute.LCLASS, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 64:  // lexem_attribute ::= Lspace
-				 tmLeft.value = new TmaLexemAttrs(TmaLexemAttribute.LSPACE, source, tmLeft.offset, tmLeft.endoffset); 
+			case 64:  // lexeme_attribute ::= Lspace
+				 tmLeft.value = new TmaLexemeAttrs(TmaLexemeAttribute.LSPACE, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 65:  // lexem_attribute ::= Llayout
-				 tmLeft.value = new TmaLexemAttrs(TmaLexemAttribute.LLAYOUT, source, tmLeft.offset, tmLeft.endoffset); 
+			case 65:  // lexeme_attribute ::= Llayout
+				 tmLeft.value = new TmaLexemeAttrs(TmaLexemeAttribute.LLAYOUT, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 66:  // state_selector ::= '[' state_list ']'
 				 tmLeft.value = new TmaStateSelector(((List<TmaLexerState>)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 

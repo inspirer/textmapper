@@ -145,44 +145,44 @@ class Lexeme : LexerPart {
 	Identifier name;
 	String type;
 	Pattern pattern;
-	Stateref lexemTransition;
+	Stateref lexemeTransition;
 	Integer priority;
-	LexemAttrs lexemAttrs;
+	LexemeAttrs lexemeAttrs;
 	Command command;
 }
 
 lexeme  : Lexeme ::=
-	name=identifier type=typeopt ':' ({pattern} lexemTransition=lexem_transitionopt priority=iconopt lexemAttrs=lexem_attrsopt command=commandopt)?
+	name=identifier type=typeopt ':' ({pattern} lexemeTransition=lexeme_transitionopt priority=iconopt lexemeAttrs=lexeme_attrsopt command=commandopt)?
 ;
 
 class Stateref {
 	String name;
 }
 
-lexem_transition  : Stateref ::=
+lexeme_transition  : Stateref ::=
 	'=>' this=stateref
 ;
 
-class LexemAttrs {
-	LexemAttribute lexemAttribute;
+class LexemeAttrs {
+	LexemeAttribute lexemeAttribute;
 }
 
-lexem_attrs  : LexemAttrs ::=
-	'(' lexemAttribute=lexem_attribute ')'
+lexeme_attrs  : LexemeAttrs ::=
+	'(' lexemeAttribute=lexeme_attribute ')'
 ;
 
-enum LexemAttribute {
+enum LexemeAttribute {
 	LSOFT,
 	LCLASS,
 	LSPACE,
 	LLAYOUT
 }
 
-lexem_attribute  : LexemAttribute ::=
-	this=Lsoft as LexemAttribute.LSOFT
-  | this=Lclass as LexemAttribute.LCLASS
-  | this=Lspace as LexemAttribute.LSPACE
-  | this=Llayout as LexemAttribute.LLAYOUT
+lexeme_attribute  : LexemeAttribute ::=
+	this=Lsoft as LexemeAttribute.LSOFT
+  | this=Lclass as LexemeAttribute.LCLASS
+  | this=Lspace as LexemeAttribute.LSPACE
+  | this=Llayout as LexemeAttribute.LLAYOUT
 ;
 
 class StateSelector : LexerPart {
@@ -190,7 +190,7 @@ class StateSelector : LexerPart {
 }
 
 state_selector  : StateSelector ::=
-	'[' states=lexer_state_list ']'
+	'[' states=lexer_state_list_Comma_separated ']'
 ;
 
 stateref  : Stateref ::=
@@ -287,7 +287,7 @@ class DirectiveInput : GrammarPart {
 
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
-  | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list ';'
+  | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
 ;
 
 class Inputref {
@@ -307,7 +307,7 @@ references_cs  : list<Symref>
 		separator ',')+ ;
 
 rules  : list<Rule0> ::=
-	this=rule0_list
+	this=rule0_list_Or_separated
 ;
 
 class Rule0 {
@@ -365,13 +365,13 @@ rhsPart  : RhsPart ::=
 ;
 
 class RhsAnnotated : RhsPart {
-	RhsAnnotations rhsAnnotations;
+	Annotations annotations;
 	RhsPart rhsAssignment;
 }
 
 rhsAnnotated  : RhsPart ::=
 	this=rhsAssignment
-  | this=new.RhsAnnotated: {rhsAnnotations} {rhsAssignment}
+  | this=new.RhsAnnotated: {annotations} {rhsAssignment}
 ;
 
 class RhsAssignment : RhsPart {
@@ -465,7 +465,7 @@ rhsPrimary  : RhsPart ::=
   | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
-  | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list)? ')'
+  | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list_Comma_separated)? ')'
 ;
 
 class RhsBracketsPair {
@@ -475,17 +475,6 @@ class RhsBracketsPair {
 
 rhsBracketsPair  : RhsBracketsPair ::=
 	lhs=symref '..' rhs=symref
-;
-
-class RhsAnnotations {
-	list<Annotation> annotationList;
-	NegativeLa negativeLa;
-}
-
-rhsAnnotations  : RhsAnnotations ::=
-	annotationList=annotation_list
-  | negativeLa=negative_la annotationList=annotation_list
-  | negativeLa=negative_la
 ;
 
 class Annotations {
@@ -507,14 +496,6 @@ annotation  : Annotation ::=
   | '@' syntaxProblem=syntax_problem
 ;
 
-class NegativeLa {
-	list<Symref> unwantedSymbols;
-}
-
-negative_la  : NegativeLa ::=
-	'(?!' unwantedSymbols=symref_list ')'
-;
-
 interface Expression {
 }
 
@@ -531,7 +512,7 @@ expression  : Expression ::=
 	this=literal
   | this=symref
   | this=new.Instance: Lnew className=name '(' mapEntries=map_entriesopt ')'
-  | this=new.Array: '[' content=expression_list_opt ']'
+  | this=new.Array: '[' content=expression_list_Comma_separated_opt ']'
   | this=syntax_problem
 ;
 
@@ -604,23 +585,23 @@ typeopt (String) ::=
 	type?
 ;
 
-lexem_transitionopt  : Stateref ::=
-	this=lexem_transition?
+lexeme_transitionopt  : Stateref ::=
+	this=lexeme_transition?
 ;
 
 iconopt (Integer) ::=
 	icon?
 ;
 
-lexem_attrsopt  : LexemAttrs ::=
-	this=lexem_attrs?
+lexeme_attrsopt  : LexemeAttrs ::=
+	this=lexeme_attrs?
 ;
 
 commandopt  : Command ::=
 	this=command?
 ;
 
-lexer_state_list  : list<LexerState>
+lexer_state_list_Comma_separated  : list<LexerState>
 	(this+=lexer_state
 		separator ',')+ ;
 
@@ -628,11 +609,11 @@ identifieropt  : Identifier ::=
 	this=identifier?
 ;
 
-inputref_list  : list<Inputref>
+inputref_list_Comma_separated  : list<Inputref>
 	(this+=inputref
 		separator ',')+ ;
 
-rule0_list  : list<Rule0>
+rule0_list_Or_separated  : list<Rule0>
 	(this+=rule0
 		separator '|')+ ;
 
@@ -640,26 +621,22 @@ rhsSuffixopt  : RhsSuffix ::=
 	this=rhsSuffix?
 ;
 
-rhsBracketsPair_list  : list<RhsBracketsPair>
+rhsBracketsPair_list_Comma_separated  : list<RhsBracketsPair>
 	(this+=rhsBracketsPair
 		separator ',')+ ;
 
 annotation_list  : list<Annotation>
 	(this+=annotation)+ ;
 
-symref_list  : list<Symref>
-	(this+=symref
-		separator '|')+ ;
-
 map_entriesopt  : list<MapEntriesItem> ::=
 	this=map_entries?
 ;
 
-expression_list  : list<Expression>
+expression_list_Comma_separated  : list<Expression>
 	(this+=expression
 		separator ',')+ ;
 
-expression_list_opt  : list<Expression> ::=
-	this=expression_list?
+expression_list_Comma_separated_opt  : list<Expression> ::=
+	this=expression_list_Comma_separated?
 ;
 

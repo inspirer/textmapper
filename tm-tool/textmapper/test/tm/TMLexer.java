@@ -40,7 +40,7 @@ public class TMLexer {
 		public static final int afterAtID = 2;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int regexp = 1;
@@ -48,62 +48,61 @@ public class TMLexer {
 		public static final int icon = 3;
 		public static final int _skip = 4;
 		public static final int _skip_comment = 5;
-		public static final int PERCENT = 6;
-		public static final int COLONCOLONEQUAL = 7;
-		public static final int COLONCOLON = 8;
-		public static final int OR = 9;
-		public static final int EQUAL = 10;
-		public static final int EQUALGREATER = 11;
-		public static final int SEMICOLON = 12;
-		public static final int DOT = 13;
-		public static final int DOTDOT = 14;
-		public static final int COMMA = 15;
-		public static final int COLON = 16;
-		public static final int LSQUARE = 17;
-		public static final int RSQUARE = 18;
-		public static final int LPAREN = 19;
-		public static final int LPARENQUESTIONMARKEXCLAMATION = 20;
-		public static final int RPAREN = 21;
-		public static final int RCURLY = 22;
-		public static final int LESS = 23;
-		public static final int GREATER = 24;
-		public static final int MULT = 25;
-		public static final int PLUS = 26;
-		public static final int PLUSEQUAL = 27;
-		public static final int QUESTIONMARK = 28;
-		public static final int AMPERSAND = 29;
-		public static final int DOLLAR = 30;
-		public static final int ATSIGN = 31;
-		public static final int error = 32;
-		public static final int ID = 33;
-		public static final int Ltrue = 34;
-		public static final int Lfalse = 35;
-		public static final int Lnew = 36;
-		public static final int Lseparator = 37;
-		public static final int Las = 38;
-		public static final int Limport = 39;
-		public static final int Linline = 40;
-		public static final int Lprio = 41;
-		public static final int Lshift = 42;
-		public static final int Lreturns = 43;
-		public static final int Linput = 44;
-		public static final int Lleft = 45;
-		public static final int Lright = 46;
-		public static final int Lnonassoc = 47;
-		public static final int Lnoeoi = 48;
-		public static final int Lsoft = 49;
-		public static final int Lclass = 50;
-		public static final int Linterface = 51;
-		public static final int Lvoid = 52;
-		public static final int Lspace = 53;
-		public static final int Llayout = 54;
-		public static final int Llanguage = 55;
-		public static final int Llalr = 56;
-		public static final int Llexer = 57;
-		public static final int Lparser = 58;
-		public static final int Lreduce = 59;
-		public static final int code = 60;
-		public static final int LCURLY = 61;
+		public static final int Percent = 6;
+		public static final int ColonColonEqual = 7;
+		public static final int ColonColon = 8;
+		public static final int Or = 9;
+		public static final int Equal = 10;
+		public static final int EqualGreater = 11;
+		public static final int Semicolon = 12;
+		public static final int Dot = 13;
+		public static final int DotDot = 14;
+		public static final int Comma = 15;
+		public static final int Colon = 16;
+		public static final int Lsquare = 17;
+		public static final int Rsquare = 18;
+		public static final int Lparen = 19;
+		public static final int Rparen = 20;
+		public static final int Rcurly = 21;
+		public static final int Less = 22;
+		public static final int Greater = 23;
+		public static final int Mult = 24;
+		public static final int Plus = 25;
+		public static final int PlusEqual = 26;
+		public static final int Questionmark = 27;
+		public static final int Ampersand = 28;
+		public static final int Dollar = 29;
+		public static final int Atsign = 30;
+		public static final int error = 31;
+		public static final int ID = 32;
+		public static final int Ltrue = 33;
+		public static final int Lfalse = 34;
+		public static final int Lnew = 35;
+		public static final int Lseparator = 36;
+		public static final int Las = 37;
+		public static final int Limport = 38;
+		public static final int Linline = 39;
+		public static final int Lprio = 40;
+		public static final int Lshift = 41;
+		public static final int Lreturns = 42;
+		public static final int Linput = 43;
+		public static final int Lleft = 44;
+		public static final int Lright = 45;
+		public static final int Lnonassoc = 46;
+		public static final int Lnoeoi = 47;
+		public static final int Lsoft = 48;
+		public static final int Lclass = 49;
+		public static final int Linterface = 50;
+		public static final int Lvoid = 51;
+		public static final int Lspace = 52;
+		public static final int Llayout = 53;
+		public static final int Llanguage = 54;
+		public static final int Llalr = 55;
+		public static final int Llexer = 56;
+		public static final int Lparser = 57;
+		public static final int Lreduce = 58;
+		public static final int code = 59;
+		public static final int Lcurly = 60;
 	}
 
 	public interface ErrorReporter {
@@ -258,43 +257,42 @@ public class TMLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 34, 4, 1, 1, 9, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 33, 4, 1, 1, 9, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		34, 22, 6, 10, 29, 8, 28, 2, 20, 23, 26, 27, 17, 7, 16, 5,
-		33, 33, 33, 33, 33, 33, 33, 33, 33, 33, 11, 15, 25, 12, 14, 21,
-		30, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-		32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 18, 3, 19, 1, 32,
-		1, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-		32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 31, 13, 24, 1, 1
+		33, 1, 6, 10, 28, 8, 27, 2, 20, 21, 24, 25, 17, 7, 16, 5,
+		32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 11, 15, 23, 12, 14, 26,
+		29, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+		31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 18, 3, 19, 1, 31,
+		1, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31,
+		31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 30, 13, 22, 1, 1
 	};
 
 	private static final short tmStateMap[] = {
 		0, 0, 1
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(61,
-		"\41\1\2\3\0\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34" +
-		"\35\36\37\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70\71" +
-		"\72\73\74\75");
+	private static final short[] tmRuleSymbol = unpack_short(60,
+		"\40\1\2\3\0\4\5\6\7\10\11\12\13\14\15\16\17\20\21\22\23\24\25\26\27\30\31\32\33\34" +
+		"\35\36\41\42\43\44\45\46\47\50\51\52\53\54\55\56\57\60\61\62\63\64\65\66\67\70\71" +
+		"\72\73\74");
 
-	private static final int tmClassesCount = 35;
+	private static final int tmClassesCount = 34;
 
-	private static final short[] tmGoto = unpack_vc_short(1715,
+	private static final short[] tmGoto = unpack_vc_short(1598,
 		"\1\ufffe\1\uffff\1\2\1\uffff\1\3\1\4\1\5\1\6\1\7\1\3\1\10\1\11\1\12\1\13\1\14\1\15" +
-		"\1\16\1\17\1\20\1\21\1\22\1\23\1\uffff\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1" +
-		"\34\1\35\1\36\1\3\2\uffff\1\2\1\uffff\1\3\1\4\1\5\1\6\1\7\1\3\1\10\1\11\1\12\1\13" +
-		"\1\14\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\uffff\1\24\1\25\1\26\1\27\1\30\1\31\1" +
-		"\32\1\33\1\37\1\35\1\36\1\3\1\uffff\1\2\1\40\1\41\1\uffff\36\2\4\ufff8\1\3\4\ufff8" +
-		"\1\3\30\ufff8\1\3\1\uffff\2\4\1\42\1\uffff\1\43\35\4\1\uffff\2\5\1\44\1\uffff\1\5" +
-		"\1\45\34\5\41\uffff\1\36\1\uffff\10\ufff6\1\46\32\ufff6\1\ufff7\3\10\1\47\36\10\13" +
-		"\uffec\1\50\27\uffec\16\ufff2\1\51\24\ufff2\43\ufff3\43\uffe4\43\ufff0\20\uffef\1" +
-		"\52\22\uffef\43\uffed\43\uffeb\43\uffea\25\uffe9\1\53\15\uffe9\43\uffe0\43\uffe7" +
-		"\43\uffe6\43\uffe5\43\uffe3\14\uffe2\1\54\26\uffe2\43\uffdf\43\uffde\43\uffdd\43" +
-		"\uffc2\7\ufffd\1\55\30\ufffd\2\35\1\ufffd\41\ufffa\1\36\1\ufffa\43\uffc1\43\ufffd" +
-		"\1\uffff\3\2\1\uffff\36\2\1\uffff\3\4\1\uffff\36\4\43\ufffc\1\uffff\3\5\1\uffff\36" +
-		"\5\43\ufffb\1\ufff9\3\46\1\56\36\46\43\ufff7\14\ufff4\1\57\26\ufff4\43\ufff1\43\uffee" +
-		"\26\uffff\1\60\14\uffff\43\uffe1\7\uffff\1\55\30\uffff\2\35\1\uffff\43\ufff9\43\ufff5" +
-		"\43\uffe8");
+		"\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1\34\1\35" +
+		"\1\36\1\3\2\uffff\1\2\1\uffff\1\3\1\4\1\5\1\6\1\7\1\3\1\10\1\11\1\12\1\13\1\14\1" +
+		"\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\33\1\37\1" +
+		"\35\1\36\1\3\1\uffff\1\2\1\40\1\41\1\uffff\35\2\4\ufff8\1\3\4\ufff8\1\3\27\ufff8" +
+		"\1\3\1\uffff\2\4\1\42\1\uffff\1\43\34\4\1\uffff\2\5\1\44\1\uffff\1\5\1\45\33\5\40" +
+		"\uffff\1\36\1\uffff\10\ufff6\1\46\31\ufff6\1\ufff7\3\10\1\47\35\10\13\uffec\1\50" +
+		"\26\uffec\16\ufff2\1\51\23\ufff2\42\ufff3\42\uffe5\42\ufff0\20\uffef\1\52\21\uffef" +
+		"\42\uffed\42\uffeb\42\uffea\42\uffe9\42\uffe8\42\uffe7\42\uffe6\42\uffe4\14\uffe3" +
+		"\1\53\25\uffe3\42\uffe1\42\uffe0\42\uffdf\42\uffde\42\uffc3\7\ufffd\1\54\27\ufffd" +
+		"\2\35\1\ufffd\40\ufffa\1\36\1\ufffa\42\uffc2\42\ufffd\1\uffff\3\2\1\uffff\35\2\1" +
+		"\uffff\3\4\1\uffff\35\4\42\ufffc\1\uffff\3\5\1\uffff\35\5\42\ufffb\1\ufff9\3\46\1" +
+		"\55\35\46\42\ufff7\14\ufff4\1\56\25\ufff4\42\ufff1\42\uffee\42\uffe2\7\uffff\1\54" +
+		"\27\uffff\2\35\1\uffff\42\ufff9\42\ufff5");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -600,7 +598,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 21: // '(?!': /\(\?!/
+			case 21: // ')': /\)/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -610,7 +608,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 22: // ')': /\)/
+			case 22: // '}': /\}/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -620,7 +618,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 23: // '}': /\}/
+			case 23: // '<': /</
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -630,7 +628,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 24: // '<': /</
+			case 24: // '>': />/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -640,7 +638,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 25: // '>': />/
+			case 25: // '*': /\*/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -650,7 +648,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 26: // '*': /\*/
+			case 26: // '+': /\+/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -660,7 +658,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 27: // '+': /\+/
+			case 27: // '+=': /\+=/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -670,7 +668,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 28: // '+=': /\+=/
+			case 28: // '?': /\?/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -680,7 +678,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 29: // '?': /\?/
+			case 29: // '&': /&/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -690,7 +688,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 30: // '&': /&/
+			case 30: // '$': /$/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -700,20 +698,10 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 31: // '$': /$/
-				switch(state) {
-					case States.afterAt:
-						state = States.initial;
-						break;
-					case States.afterAtID:
-						state = States.initial;
-						break;
-				}
-				break;
-			case 32: // '@': /@/
+			case 31: // '@': /@/
 				state = States.afterAt;
 				break;
-			case 59: // code: /\{/
+			case 58: // code: /\{/
 				switch(state) {
 					case States.afterAt:
 						state = States.initial;
@@ -721,7 +709,7 @@ public class TMLexer {
 				}
 				 skipAction(); lapg_n.endoffset = getOffset(); 
 				break;
-			case 60: // '{': /\{/
+			case 59: // '{': /\{/
 				state = States.initial;
 				break;
 		}
@@ -730,32 +718,32 @@ public class TMLexer {
 
 	private static Map<String,Integer> subTokensOfID = new HashMap<String,Integer>();
 	static {
-		subTokensOfID.put("true", 33);
-		subTokensOfID.put("false", 34);
-		subTokensOfID.put("new", 35);
-		subTokensOfID.put("separator", 36);
-		subTokensOfID.put("as", 37);
-		subTokensOfID.put("import", 38);
-		subTokensOfID.put("inline", 39);
-		subTokensOfID.put("prio", 40);
-		subTokensOfID.put("shift", 41);
-		subTokensOfID.put("returns", 42);
-		subTokensOfID.put("input", 43);
-		subTokensOfID.put("left", 44);
-		subTokensOfID.put("right", 45);
-		subTokensOfID.put("nonassoc", 46);
-		subTokensOfID.put("no-eoi", 47);
-		subTokensOfID.put("soft", 48);
-		subTokensOfID.put("class", 49);
-		subTokensOfID.put("interface", 50);
-		subTokensOfID.put("void", 51);
-		subTokensOfID.put("space", 52);
-		subTokensOfID.put("layout", 53);
-		subTokensOfID.put("language", 54);
-		subTokensOfID.put("lalr", 55);
-		subTokensOfID.put("lexer", 56);
-		subTokensOfID.put("parser", 57);
-		subTokensOfID.put("reduce", 58);
+		subTokensOfID.put("true", 32);
+		subTokensOfID.put("false", 33);
+		subTokensOfID.put("new", 34);
+		subTokensOfID.put("separator", 35);
+		subTokensOfID.put("as", 36);
+		subTokensOfID.put("import", 37);
+		subTokensOfID.put("inline", 38);
+		subTokensOfID.put("prio", 39);
+		subTokensOfID.put("shift", 40);
+		subTokensOfID.put("returns", 41);
+		subTokensOfID.put("input", 42);
+		subTokensOfID.put("left", 43);
+		subTokensOfID.put("right", 44);
+		subTokensOfID.put("nonassoc", 45);
+		subTokensOfID.put("no-eoi", 46);
+		subTokensOfID.put("soft", 47);
+		subTokensOfID.put("class", 48);
+		subTokensOfID.put("interface", 49);
+		subTokensOfID.put("void", 50);
+		subTokensOfID.put("space", 51);
+		subTokensOfID.put("layout", 52);
+		subTokensOfID.put("language", 53);
+		subTokensOfID.put("lalr", 54);
+		subTokensOfID.put("lexer", 55);
+		subTokensOfID.put("parser", 56);
+		subTokensOfID.put("reduce", 57);
 	}
 
 	protected boolean createIDToken(LapgSymbol lapg_n, int ruleIndex) {
@@ -766,7 +754,7 @@ public class TMLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 33:	// true
+			case 32:	// true
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -776,7 +764,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 34:	// false
+			case 33:	// false
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -786,7 +774,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 35:	// new
+			case 34:	// new
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -796,7 +784,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 36:	// separator
+			case 35:	// separator
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -806,7 +794,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 37:	// as
+			case 36:	// as
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -816,7 +804,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 38:	// import
+			case 37:	// import
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -826,7 +814,7 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 58:	// reduce
+			case 57:	// reduce
 				switch(state) {
 					case States.afterAt:
 						state = States.afterAtID;
@@ -836,25 +824,25 @@ public class TMLexer {
 						break;
 				}
 				break;
-			case 39:	// inline (soft)
-			case 40:	// prio (soft)
-			case 41:	// shift (soft)
-			case 42:	// returns (soft)
-			case 43:	// input (soft)
-			case 44:	// left (soft)
-			case 45:	// right (soft)
-			case 46:	// nonassoc (soft)
-			case 47:	// no-eoi (soft)
-			case 48:	// soft (soft)
-			case 49:	// class (soft)
-			case 50:	// interface (soft)
-			case 51:	// void (soft)
-			case 52:	// space (soft)
-			case 53:	// layout (soft)
-			case 54:	// language (soft)
-			case 55:	// lalr (soft)
-			case 56:	// lexer (soft)
-			case 57:	// parser (soft)
+			case 38:	// inline (soft)
+			case 39:	// prio (soft)
+			case 40:	// shift (soft)
+			case 41:	// returns (soft)
+			case 42:	// input (soft)
+			case 43:	// left (soft)
+			case 44:	// right (soft)
+			case 45:	// nonassoc (soft)
+			case 46:	// no-eoi (soft)
+			case 47:	// soft (soft)
+			case 48:	// class (soft)
+			case 49:	// interface (soft)
+			case 50:	// void (soft)
+			case 51:	// space (soft)
+			case 52:	// layout (soft)
+			case 53:	// language (soft)
+			case 54:	// lalr (soft)
+			case 55:	// lexer (soft)
+			case 56:	// parser (soft)
 			case 0:	// <default>
 				switch(state) {
 					case States.afterAt:

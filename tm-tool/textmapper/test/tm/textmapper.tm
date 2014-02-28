@@ -183,15 +183,15 @@ named_pattern ::=
 
 lexeme ::=
 	  name=identifier typeopt ':'
-			(pattern lexem_transitionopt priority=iconopt lexem_attrsopt commandopt)? ;
+			(pattern lexeme_transitionopt priority=iconopt lexeme_attrsopt commandopt)? ;
 
-lexem_transition ::=
+lexeme_transition ::=
 	  '=>' @pass stateref ;
 
-lexem_attrs ::=
-	  '(' lexem_attribute ')' ;
+lexeme_attrs ::=
+	  '(' lexeme_attribute ')' ;
 
-lexem_attribute ::=
+lexeme_attribute ::=
 	  Lsoft
 	| Lclass
 	| Lspace

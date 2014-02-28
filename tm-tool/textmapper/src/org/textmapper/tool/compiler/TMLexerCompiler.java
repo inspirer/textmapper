@@ -107,8 +107,8 @@ public class TMLexerCompiler {
 
 	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, TmaLexeme l, RegexPart regex) {
 		LexerRule result = null;
-		TmaLexemAttrs attrs = l.getAttrs();
-		boolean isClass = attrs != null && attrs.getKind() == TmaLexemAttribute.LCLASS;
+		TmaLexemeAttrs attrs = l.getAttrs();
+		boolean isClass = attrs != null && attrs.getKind() == TmaLexemeAttribute.LCLASS;
 		if (regex.isConstant() && !isClass) {
 			for (LexerRule rule : classMatchers.keySet()) {
 				TmaLexeme astClassLexeme = (TmaLexeme) ((DerivedSourceElement) rule).getOrigin();
@@ -129,7 +129,7 @@ public class TMLexerCompiler {
 		return result;
 	}
 
-	public int getLexerRuleKind(TmaLexemAttrs attr) {
+	public int getLexerRuleKind(TmaLexemeAttrs attr) {
 		if (attr == null) {
 			return LexerRule.KIND_NONE;
 		}
@@ -176,8 +176,8 @@ public class TMLexerCompiler {
 				continue;
 			}
 			TmaLexeme lexeme = (TmaLexeme) clause;
-			TmaLexemAttrs attrs = lexeme.getAttrs();
-			if (attrs == null || attrs.getKind() != TmaLexemAttribute.LCLASS) {
+			TmaLexemeAttrs attrs = lexeme.getAttrs();
+			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.LCLASS) {
 				continue;
 			}
 			if (lexeme.getRegexp() == null) {
@@ -216,7 +216,7 @@ public class TMLexerCompiler {
 				continue;
 			}
 			TmaLexeme lexeme = (TmaLexeme) clause;
-			TmaLexemAttrs attrs = lexeme.getAttrs();
+			TmaLexemeAttrs attrs = lexeme.getAttrs();
 			int kind = getLexerRuleKind(attrs);
 			if (kind == LexerRule.KIND_CLASS) {
 				continue;

@@ -205,23 +205,23 @@ named_pattern (TmaNamedPattern) ::=
 ;
 
 lexeme (TmaLexeme) ::=
-	  identifier typeopt ':' (pattern lexem_transitionopt iconopt lexem_attrsopt commandopt)?
-                                                    	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexem_transitionopt, $iconopt, $lexem_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
+	  identifier typeopt ':' (pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt)?
+                                                    	{ $$ = new TmaLexeme($identifier, $typeopt, $pattern, $lexeme_transitionopt, $iconopt, $lexeme_attrsopt, $commandopt, source, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexem_transition (TmaStateref) ::=
+lexeme_transition (TmaStateref) ::=
 	  '=>' stateref										{ $$ = $1; }
 ;
 
-lexem_attrs (TmaLexemAttrs) ::=
-	  '(' lexem_attribute ')'							{ $$ = $1; }
+lexeme_attrs (TmaLexemeAttrs) ::=
+	  '(' lexeme_attribute ')'							{ $$ = $1; }
 ;
 
-lexem_attribute (TmaLexemAttrs) ::=
-	  Lsoft												{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LSOFT, source, ${left().offset}, ${left().endoffset}); }
-	| Lclass											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LCLASS, source, ${left().offset}, ${left().endoffset}); }
-	| Lspace											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LSPACE, source, ${left().offset}, ${left().endoffset}); }
-	| Llayout											{ $$ = new TmaLexemAttrs(TmaLexemAttribute.LLAYOUT, source, ${left().offset}, ${left().endoffset}); }
+lexeme_attribute (TmaLexemeAttrs) ::=
+	  Lsoft												{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LSOFT, source, ${left().offset}, ${left().endoffset}); }
+	| Lclass											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LCLASS, source, ${left().offset}, ${left().endoffset}); }
+	| Lspace											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LSPACE, source, ${left().offset}, ${left().endoffset}); }
+	| Llayout											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LLAYOUT, source, ${left().offset}, ${left().endoffset}); }
 ;
 
 state_selector (TmaStateSelector) ::=

@@ -23,12 +23,12 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 	private final String type;
 	private final TmaPattern regexp;
 	private final TmaStateref transition;
-	private final TmaLexemAttrs attrs;
+	private final TmaLexemeAttrs attrs;
 	private final int priority;
 	private final TmaCommand code;
 
 	public TmaLexeme(TmaIdentifier name, String type, TmaPattern regexp, TmaStateref transition,
-					 Integer priority, TmaLexemAttrs attrs, TmaCommand code, TextSource source, int offset,
+					 Integer priority, TmaLexemeAttrs attrs, TmaCommand code, TextSource source, int offset,
 					 int endoffset) {
 		super(source, offset, endoffset);
 		this.name = name;
@@ -60,7 +60,7 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		return priority;
 	}
 
-	public TmaLexemAttrs getAttrs() {
+	public TmaLexemeAttrs getAttrs() {
 		return attrs;
 	}
 

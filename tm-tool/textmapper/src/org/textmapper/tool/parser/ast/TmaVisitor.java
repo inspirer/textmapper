@@ -101,7 +101,7 @@ public class TmaVisitor {
 		return true;
 	}
 
-	public boolean visit(TmaLexemAttrs n) {
+	public boolean visit(TmaLexemeAttrs n) {
 		return true;
 	}
 
