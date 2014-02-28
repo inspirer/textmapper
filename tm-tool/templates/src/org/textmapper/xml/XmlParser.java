@@ -21,7 +21,7 @@ import java.util.List;
 import java.text.MessageFormat;
 import org.textmapper.xml.XmlLexer.ErrorReporter;
 import org.textmapper.xml.XmlLexer.LapgSymbol;
-import org.textmapper.xml.XmlLexer.Lexems;
+import org.textmapper.xml.XmlLexer.Tokens;
 import org.textmapper.xml.XmlTree.TextSource;
 
 public class XmlParser {
@@ -73,13 +73,13 @@ public class XmlParser {
 		"\36\1\1\1\1\2\2\12\12\7\16\7\24\16\7\32\27\33\34\25\15\22\30\35\3\13\4\11\4\11\10" +
 		"\10\31\5\5\5\5\6\6\6\6\14\23\17\20\26\21");
 
-	private static final short[] lapg_rlen = XmlLexer.unpack_short(17,
+	private static final short[] tmRuleLen = XmlLexer.unpack_short(17,
 		"\1\2\1\2\3\1\1\1\3\1\0\4\5\4\2\1\3");
 
-	private static final short[] lapg_rlex = XmlLexer.unpack_short(17,
+	private static final short[] tmRuleSymbol = XmlLexer.unpack_short(17,
 		"\13\14\14\15\15\15\15\16\16\24\24\17\20\21\22\22\23");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"any",
 		"'<'",
@@ -103,18 +103,18 @@ public class XmlParser {
 		"attributesopt",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int input = 11;
-		public static final int xml_tags = 12;
-		public static final int xml_tag_or_space = 13;
-		public static final int tag_name = 14;
-		public static final int tag_start = 15;
-		public static final int no_body_tag = 16;
-		public static final int tag_end = 17;
-		public static final int attributes = 18;
-		public static final int attribute = 19;
-		public static final int attributesopt = 20;
+		static final int input = 11;
+		static final int xml_tags = 12;
+		static final int xml_tag_or_space = 13;
+		static final int tag_name = 14;
+		static final int tag_start = 15;
+		static final int no_body_tag = 16;
+		static final int tag_end = 17;
+		static final int attributes = 18;
+		static final int attribute = 19;
+		static final int attributesopt = 20;
 	}
 
 	/**
@@ -195,7 +195,7 @@ public class XmlParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -203,36 +203,36 @@ public class XmlParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.line = startsym.line;
-		lapg_gg.offset = startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.line = startsym.line;
+		tmLeft.offset = startsym.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
-		switch (rule) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
+		switch (tmRule) {
 			case 0:  // input ::= xml_tags
-				 lapg_gg.value = new XmlNode("<root>", null, 1); ((XmlNode)lapg_gg.value).setData(((List<XmlElement>)tmStack[tmHead].value)); 
+				 tmLeft.value = new XmlNode("<root>", null, 1); ((XmlNode)tmLeft.value).setData(((List<XmlElement>)tmStack[tmHead].value)); 
 				break;
 			case 1:  // xml_tags ::= xml_tags xml_tag_or_space
 				 ((List<XmlElement>)tmStack[tmHead - 1].value).add(((XmlElement)tmStack[tmHead].value)); 
 				break;
 			case 2:  // xml_tags ::= xml_tag_or_space
-				 lapg_gg.value = new ArrayList<XmlElement>(); ((List<XmlElement>)lapg_gg.value).add(((XmlElement)tmStack[tmHead].value)); 
+				 tmLeft.value = new ArrayList<XmlElement>(); ((List<XmlElement>)tmLeft.value).add(((XmlElement)tmStack[tmHead].value)); 
 				break;
 			case 3:  // xml_tag_or_space ::= tag_start tag_end
 				 checkTag(((XmlNode)tmStack[tmHead - 1].value),((String)tmStack[tmHead].value),tmStack[tmHead].offset,tmStack[tmHead].endoffset,tmStack[tmHead].line); 
@@ -241,31 +241,31 @@ public class XmlParser {
 				 checkTag(((XmlNode)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value),tmStack[tmHead].offset,tmStack[tmHead].endoffset,tmStack[tmHead].line); ((XmlNode)tmStack[tmHead - 2].value).setData(((List<XmlElement>)tmStack[tmHead - 1].value)); 
 				break;
 			case 6:  // xml_tag_or_space ::= any
-				 lapg_gg.value = getData(lapg_gg.offset,lapg_gg.endoffset); 
+				 tmLeft.value = getData(tmLeft.offset,tmLeft.endoffset); 
 				break;
 			case 7:  // tag_name ::= identifier
-				 lapg_gg.value = ((String)tmStack[tmHead].value); 
+				 tmLeft.value = ((String)tmStack[tmHead].value); 
 				break;
 			case 8:  // tag_name ::= identifier ':' identifier
-				 lapg_gg.value = ((String)tmStack[tmHead - 2].value) + ":" + ((String)tmStack[tmHead].value); 
+				 tmLeft.value = ((String)tmStack[tmHead - 2].value) + ":" + ((String)tmStack[tmHead].value); 
 				break;
 			case 11:  // tag_start ::= '<' tag_name attributesopt '>'
-				 lapg_gg.value = new XmlNode(((String)tmStack[tmHead - 2].value), ((List<XmlAttribute>)tmStack[tmHead - 1].value), tmStack[tmHead - 3].line); 
+				 tmLeft.value = new XmlNode(((String)tmStack[tmHead - 2].value), ((List<XmlAttribute>)tmStack[tmHead - 1].value), tmStack[tmHead - 3].line); 
 				break;
 			case 12:  // no_body_tag ::= '<' tag_name attributesopt '/' '>'
-				 lapg_gg.value = new XmlNode(((String)tmStack[tmHead - 3].value), ((List<XmlAttribute>)tmStack[tmHead - 2].value), tmStack[tmHead - 4].line); 
+				 tmLeft.value = new XmlNode(((String)tmStack[tmHead - 3].value), ((List<XmlAttribute>)tmStack[tmHead - 2].value), tmStack[tmHead - 4].line); 
 				break;
 			case 13:  // tag_end ::= '<' '/' tag_name '>'
-				 lapg_gg.value = ((String)tmStack[tmHead - 1].value); 
+				 tmLeft.value = ((String)tmStack[tmHead - 1].value); 
 				break;
 			case 14:  // attributes ::= attributes attribute
 				 ((List<XmlAttribute>)tmStack[tmHead - 1].value).add(((XmlAttribute)tmStack[tmHead].value)); 
 				break;
 			case 15:  // attributes ::= attribute
-				 lapg_gg.value = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)lapg_gg.value).add(((XmlAttribute)tmStack[tmHead].value)); 
+				 tmLeft.value = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)tmLeft.value).add(((XmlAttribute)tmStack[tmHead].value)); 
 				break;
 			case 16:  // attribute ::= identifier '=' ccon
-				 lapg_gg.value = new XmlAttribute(((String)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value)); 
+				 tmLeft.value = new XmlAttribute(((String)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value)); 
 				break;
 		}
 	}

@@ -40,7 +40,7 @@ public class TMLexer {
 		public static final int afterAtID = 2;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int regexp = 1;

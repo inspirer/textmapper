@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import org.textmapper.tool.parser.action.SActionLexer.ErrorReporter;
 import org.textmapper.tool.parser.action.SActionLexer.LapgSymbol;
-import org.textmapper.tool.parser.action.SActionLexer.Lexems;
+import org.textmapper.tool.parser.action.SActionLexer.Tokens;
 
 public class SActionParser {
 
@@ -53,13 +53,13 @@ public class SActionParser {
 	private static final short[] lapg_sym_to = SActionLexer.unpack_short(14,
 		"\1\2\2\2\10\11\12\3\3\4\4\7\5\6");
 
-	private static final short[] lapg_rlen = SActionLexer.unpack_short(6,
+	private static final short[] tmRuleLen = SActionLexer.unpack_short(6,
 		"\1\0\3\2\1\3");
 
-	private static final short[] lapg_rlex = SActionLexer.unpack_short(6,
+	private static final short[] tmRuleSymbol = SActionLexer.unpack_short(6,
 		"\7\7\4\5\5\6");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"'{'",
 		"_skip",
@@ -70,12 +70,12 @@ public class SActionParser {
 		"command_tokensopt",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int javaaction = 4;
-		public static final int command_tokens = 5;
-		public static final int command_token = 6;
-		public static final int command_tokensopt = 7;
+		static final int javaaction = 4;
+		static final int command_tokens = 5;
+		static final int command_token = 6;
+		static final int command_tokensopt = 7;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class SActionParser {
 	protected static int tmAction(int state, int symbol) {
 		int p;
 		if (tmAction[state] < -2) {
-			if (symbol == Lexems.Unavailable_) {
+			if (symbol == Tokens.Unavailable_) {
 				return -3 - state;
 			}
 			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
@@ -134,7 +134,7 @@ public class SActionParser {
 		tmNext = tmLexer.next();
 
 		while (tmStack[tmHead].state != 10) {
-			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Lexems.Unavailable_ : tmNext.symbol);
+			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Tokens.Unavailable_ : tmNext.symbol);
 			if (action <= -3 && tmNext == null) {
 				tmNext = tmLexer.next();
 				action = tmAction(tmStack[tmHead].state, tmNext.symbol);
@@ -166,7 +166,7 @@ public class SActionParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = null;
@@ -174,25 +174,25 @@ public class SActionParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.line = startsym == null ? tmLexer.getLine() : startsym.line;
-		lapg_gg.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.line = startsym == null ? tmLexer.getLine() : startsym.line;
+		tmLeft.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 	}
 }

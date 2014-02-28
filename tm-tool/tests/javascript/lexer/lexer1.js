@@ -5,7 +5,7 @@
 
   var lexer1 = {};
 
-  lexer1.Lexemes = {
+  lexer1.Tokens = {
     eoi: 0,
     id: 1,
     icon: 2,

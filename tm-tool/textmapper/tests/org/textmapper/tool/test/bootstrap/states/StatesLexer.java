@@ -22,7 +22,7 @@ public class StatesLexer {
 		public static final int d = 4;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int x = 1;

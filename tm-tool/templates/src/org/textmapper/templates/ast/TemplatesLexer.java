@@ -37,7 +37,7 @@ public class TemplatesLexer {
 		public static final int query = 1;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int any = 1;

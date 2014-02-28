@@ -35,7 +35,7 @@ public class XmlLexer {
 		public static final int inTag = 1;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int any = 1;

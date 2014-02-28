@@ -22,7 +22,7 @@ import java.util.List;
 import org.textmapper.lapg.common.CharacterSetImpl;
 import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textmapper.lapg.regex.RegexDefLexer.LapgSymbol;
-import org.textmapper.lapg.regex.RegexDefLexer.Lexems;
+import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 import org.textmapper.lapg.regex.RegexDefTree.TextSource;
 
 public class RegexDefParser {
@@ -73,14 +73,14 @@ public class RegexDefParser {
 		"\30\31\32\5\5\5\5\26\26\34\6\6\6\6\7\7\7\7\10\10\10\10\35\40\22\22\36\36\11\16\12" +
 		"\12\33\12\13\13\13\13\23\23\37\37\24\25\14\14\14\15\15\41");
 
-	private static final short[] lapg_rlen = RegexDefLexer.unpack_short(28,
+	private static final short[] tmRuleLen = RegexDefLexer.unpack_short(28,
 		"\1\0\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2");
 
-	private static final short[] lapg_rlex = RegexDefLexer.unpack_short(28,
+	private static final short[] tmRuleSymbol = RegexDefLexer.unpack_short(28,
 		"\34\34\26\26\27\27\27\27\27\30\30\30\30\30\30\30\30\31\31\31\32\32\32\32\32\32\33" +
 		"\33");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"char",
 		"escaped",
@@ -112,15 +112,15 @@ public class RegexDefParser {
 		"partsopt",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int pattern = 22;
-		public static final int part = 23;
-		public static final int primitive_part = 24;
-		public static final int setsymbol = 25;
-		public static final int charset = 26;
-		public static final int parts = 27;
-		public static final int partsopt = 28;
+		static final int pattern = 22;
+		static final int part = 23;
+		static final int primitive_part = 24;
+		static final int setsymbol = 25;
+		static final int charset = 26;
+		static final int parts = 27;
+		static final int partsopt = 28;
 	}
 
 	/**
@@ -201,7 +201,7 @@ public class RegexDefParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -209,83 +209,83 @@ public class RegexDefParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.offset = startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.offset = startsym.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
-		switch (rule) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
+		switch (tmRule) {
 			case 2:  // pattern ::= partsopt
-				 lapg_gg.value = RegexUtil.emptyIfNull(((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
+				 tmLeft.value = RegexUtil.emptyIfNull(((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
 				break;
 			case 3:  // pattern ::= pattern '|' partsopt
-				 lapg_gg.value = RegexUtil.createOr(((RegexAstPart)tmStack[tmHead - 2].value), ((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
+				 tmLeft.value = RegexUtil.createOr(((RegexAstPart)tmStack[tmHead - 2].value), ((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
 				break;
 			case 5:  // part ::= primitive_part '*'
-				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, -1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 6:  // part ::= primitive_part '+'
-				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 1, -1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 1, -1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 7:  // part ::= primitive_part '?'
-				 lapg_gg.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, 1, source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, 1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 8:  // part ::= primitive_part quantifier
-				 lapg_gg.value = RegexUtil.createQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), source, tmStack[tmHead].offset, lapg_gg.endoffset, reporter); 
+				 tmLeft.value = RegexUtil.createQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), source, tmStack[tmHead].offset, tmLeft.endoffset, reporter); 
 				break;
 			case 9:  // primitive_part ::= char
-				 lapg_gg.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 10:  // primitive_part ::= escaped
-				 lapg_gg.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 11:  // primitive_part ::= charclass
-				 lapg_gg.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 12:  // primitive_part ::= '.'
-				 lapg_gg.value = new RegexAstAny(source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstAny(source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 13:  // primitive_part ::= '(' pattern ')'
-				 lapg_gg.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value)); 
+				 tmLeft.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value)); 
 				break;
 			case 14:  // primitive_part ::= '[' charset ']'
-				 lapg_gg.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false); 
+				 tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false); 
 				break;
 			case 15:  // primitive_part ::= '[^' charset ']'
-				 lapg_gg.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true); 
+				 tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true); 
 				break;
 			case 16:  // primitive_part ::= expand
-				 lapg_gg.value = new RegexAstExpand(source, lapg_gg.offset, lapg_gg.endoffset); RegexUtil.checkExpand((RegexAstExpand) lapg_gg.value, reporter); 
+				 tmLeft.value = new RegexAstExpand(source, tmLeft.offset, tmLeft.endoffset); RegexUtil.checkExpand((RegexAstExpand) tmLeft.value, reporter); 
 				break;
 			case 17:  // setsymbol ::= char
-				 lapg_gg.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 18:  // setsymbol ::= escaped
-				 lapg_gg.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 19:  // setsymbol ::= charclass
-				 lapg_gg.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, lapg_gg.offset, lapg_gg.endoffset), source, lapg_gg.offset, lapg_gg.endoffset); 
+				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 20:  // charset ::= '-'
-				 lapg_gg.value = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)lapg_gg.value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); 
+				 tmLeft.value = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)tmLeft.value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); 
 				break;
 			case 21:  // charset ::= setsymbol
-				 lapg_gg.value = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)lapg_gg.value), ((RegexAstPart)tmStack[tmHead].value), reporter); 
+				 tmLeft.value = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)tmLeft.value), ((RegexAstPart)tmStack[tmHead].value), reporter); 
 				break;
 			case 22:  // charset ::= charset setsymbol
 				 RegexUtil.addSetSymbol(((List<RegexAstPart>)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value), reporter); 
@@ -300,7 +300,7 @@ public class RegexDefParser {
 				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Character)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
 			case 27:  // parts ::= parts part
-				 lapg_gg.value = RegexUtil.createSequence(((RegexAstPart)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value)); 
+				 tmLeft.value = RegexUtil.createSequence(((RegexAstPart)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value)); 
 				break;
 		}
 	}

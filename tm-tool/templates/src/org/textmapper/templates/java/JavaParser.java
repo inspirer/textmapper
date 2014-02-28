@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import org.textmapper.templates.java.JavaLexer.ErrorReporter;
 import org.textmapper.templates.java.JavaLexer.LapgSymbol;
-import org.textmapper.templates.java.JavaLexer.Lexems;
+import org.textmapper.templates.java.JavaLexer.Tokens;
 
 public class JavaParser {
 
@@ -1639,7 +1639,7 @@ public class JavaParser {
 		"\354\354\354\354\354\354\354\354\354\354\354\354\u0266\u024a\u03c5\u03c9\u01dc\u01dd" +
 		"\u0252");
 
-	private static final short[] lapg_rlen = JavaLexer.unpack_short(499,
+	private static final short[] tmRuleLen = JavaLexer.unpack_short(499,
 		"\1\3\2\1\2\1\3\2\2\1\2\1\1\0\4\3\6\4\5\3\1\1\1\1\1\1\0\3\1\11\7\7\5\10\6\6\4\7\5" +
 		"\6\4\7\5\6\4\12\10\10\6\11\7\7\5\11\7\7\5\10\6\6\4\1\1\1\1\1\1\1\1\1\1\1\1\1\1\1" +
 		"\1\1\1\1\1\1\1\3\2\3\2\2\4\2\1\1\2\1\1\1\1\1\1\1\1\1\1\1\1\1\2\0\3\1\1\1\1\1\1\1" +
@@ -1654,7 +1654,7 @@ public class JavaParser {
 		"\1\1\2\2\1\1\2\2\1\1\3\3\3\3\3\3\3\3\1\1\1\3\3\3\3\3\3\3\3\1\1\1\3\3\3\3\3\1\1\1" +
 		"\5\1\1\2\0\3\1\0\12\11\1\1\1\2\2\5\3\1\1\0\5\3\1\1\1\3\1\4\3\3\2");
 
-	private static final short[] lapg_rlex = JavaLexer.unpack_short(499,
+	private static final short[] tmRuleSymbol = JavaLexer.unpack_short(499,
 		"\155\155\364\364\365\365\156\156\156\156\156\156\156\156\157\157\160\160\160\160" +
 		"\161\161\161\161\161\366\366\367\367\162\162\162\162\162\162\162\162\163\163\163" +
 		"\163\164\164\164\164\165\165\165\165\165\165\165\165\165\165\165\165\165\165\165" +
@@ -1683,7 +1683,7 @@ public class JavaParser {
 		"\357\360\360\u0115\u0115\u0116\u0116\360\361\362\362\362\u0117\u0117\363\363\363" +
 		"\363");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"WhiteSpace",
 		"EndOfLineComment",
@@ -1966,179 +1966,179 @@ public class JavaParser {
 		"MemberValue_list_Comma_separated",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int QualifiedIdentifier = 109;
-		public static final int CompilationUnit = 110;
-		public static final int PackageDeclaration = 111;
-		public static final int ImportDeclaration = 112;
-		public static final int TypeDeclaration = 113;
-		public static final int ClassDeclaration = 114;
-		public static final int EnumDeclaration = 115;
-		public static final int InterfaceDeclaration = 116;
-		public static final int AnnotationTypeDeclaration = 117;
-		public static final int Literal = 118;
-		public static final int Type = 119;
-		public static final int PrimitiveType = 120;
-		public static final int ReferenceType = 121;
-		public static final int ClassOrInterfaceType = 122;
-		public static final int ClassOrInterface = 123;
-		public static final int GenericType = 124;
-		public static final int ArrayType = 125;
-		public static final int ClassType = 126;
-		public static final int Modifiers = 127;
-		public static final int Modifier = 128;
-		public static final int InterfaceType = 129;
-		public static final int ClassBody = 130;
-		public static final int ClassBodyDeclaration = 131;
-		public static final int ClassMemberDeclaration = 132;
-		public static final int GenericMethodDeclaration = 133;
-		public static final int FieldDeclaration = 134;
-		public static final int VariableDeclarators = 135;
-		public static final int VariableDeclarator = 136;
-		public static final int VariableDeclaratorId = 137;
-		public static final int VariableInitializer = 138;
-		public static final int MethodDeclaration = 139;
-		public static final int AbstractMethodDeclaration = 140;
-		public static final int MethodHeader = 141;
-		public static final int MethodHeaderThrowsClause = 142;
-		public static final int FormalParameter = 143;
-		public static final int CatchFormalParameter = 144;
-		public static final int CatchType = 145;
-		public static final int MethodBody = 146;
-		public static final int StaticInitializer = 147;
-		public static final int ConstructorDeclaration = 148;
-		public static final int ExplicitConstructorInvocation = 149;
-		public static final int ExplicitConstructorId = 150;
-		public static final int ThisOrSuper = 151;
-		public static final int InterfaceBody = 152;
-		public static final int InterfaceMemberDeclaration = 153;
-		public static final int ConstantDeclaration = 154;
-		public static final int ArrayInitializer = 155;
-		public static final int Block = 156;
-		public static final int BlockStatement = 157;
-		public static final int LocalVariableDeclarationStatement = 158;
-		public static final int LocalVariableDeclaration = 159;
-		public static final int Statement = 160;
-		public static final int EmptyStatement = 161;
-		public static final int LabeledStatement = 162;
-		public static final int Label = 163;
-		public static final int ExpressionStatement = 164;
-		public static final int StatementExpression = 165;
-		public static final int IfStatement = 166;
-		public static final int SwitchStatement = 167;
-		public static final int SwitchBlockStatementGroup = 168;
-		public static final int SwitchLabel = 169;
-		public static final int WhileStatement = 170;
-		public static final int DoStatement = 171;
-		public static final int ForStatement = 172;
-		public static final int EnhancedForStatement = 173;
-		public static final int ForInit = 174;
-		public static final int AssertStatement = 175;
-		public static final int BreakStatement = 176;
-		public static final int ContinueStatement = 177;
-		public static final int ReturnStatement = 178;
-		public static final int ThrowStatement = 179;
-		public static final int SynchronizedStatement = 180;
-		public static final int TryStatement = 181;
-		public static final int Resource = 182;
-		public static final int CatchClause = 183;
-		public static final int Finally = 184;
-		public static final int Primary = 185;
-		public static final int PrimaryNoNewArray = 186;
-		public static final int ParenthesizedExpression = 187;
-		public static final int ClassInstanceCreationExpression = 188;
-		public static final int NonArrayType = 189;
-		public static final int ArrayCreationWithoutArrayInitializer = 190;
-		public static final int ArrayCreationWithArrayInitializer = 191;
-		public static final int DimWithOrWithOutExpr = 192;
-		public static final int Dims = 193;
-		public static final int FieldAccess = 194;
-		public static final int MethodInvocation = 195;
-		public static final int ArrayAccess = 196;
-		public static final int PostfixExpression = 197;
-		public static final int PostIncrementExpression = 198;
-		public static final int PostDecrementExpression = 199;
-		public static final int UnaryExpression = 200;
-		public static final int PreIncrementExpression = 201;
-		public static final int PreDecrementExpression = 202;
-		public static final int UnaryExpressionNotPlusMinus = 203;
-		public static final int CastExpression = 204;
-		public static final int ConditionalExpression = 205;
-		public static final int AssignmentExpression = 206;
-		public static final int LValue = 207;
-		public static final int Assignment = 208;
-		public static final int AssignmentOperator = 209;
-		public static final int Expression = 210;
-		public static final int ConstantExpression = 211;
-		public static final int EnumBody = 212;
-		public static final int EnumConstant = 213;
-		public static final int TypeArguments = 214;
-		public static final int TypeArgumentList = 215;
-		public static final int TypeArgument = 216;
-		public static final int ReferenceType1 = 217;
-		public static final int Wildcard = 218;
-		public static final int DeeperTypeArgument = 219;
-		public static final int TypeParameters = 220;
-		public static final int TypeParameterList = 221;
-		public static final int TypeParameter = 222;
-		public static final int TypeParameter1 = 223;
-		public static final int AdditionalBoundList = 224;
-		public static final int AdditionalBound = 225;
-		public static final int PostfixExpression_NotName = 226;
-		public static final int UnaryExpression_NotName = 227;
-		public static final int UnaryExpressionNotPlusMinus_NotName = 228;
-		public static final int ArithmeticExpressionNotName = 229;
-		public static final int ArithmeticPart = 230;
-		public static final int RelationalExpressionNotName = 231;
-		public static final int RelationalPart = 232;
-		public static final int LogicalExpressionNotName = 233;
-		public static final int BooleanOrBitwisePart = 234;
-		public static final int ConditionalExpressionNotName = 235;
-		public static final int ExpressionNotName = 236;
-		public static final int AnnotationTypeBody = 237;
-		public static final int AnnotationTypeMemberDeclaration = 238;
-		public static final int DefaultValue = 239;
-		public static final int Annotation = 240;
-		public static final int MemberValuePair = 241;
-		public static final int MemberValue = 242;
-		public static final int MemberValueArrayInitializer = 243;
-		public static final int ImportDeclaration_list = 244;
-		public static final int TypeDeclaration_list = 245;
-		public static final int Modifiersopt = 246;
-		public static final int InterfaceType_list_Comma_separated = 247;
-		public static final int ClassBodyDeclaration_optlist = 248;
-		public static final int Dimsopt = 249;
-		public static final int FormalParameter_list_Comma_separated = 250;
-		public static final int FormalParameter_list_Comma_separated_opt = 251;
-		public static final int MethodHeaderThrowsClauseopt = 252;
-		public static final int ClassType_list_Comma_separated = 253;
-		public static final int Type_list_Or_separated = 254;
-		public static final int Expression_list_Comma_separated = 255;
-		public static final int Expression_list_Comma_separated_opt = 256;
-		public static final int InterfaceMemberDeclaration_optlist = 257;
-		public static final int VariableInitializer_list_Comma_separated = 258;
-		public static final int BlockStatement_optlist = 259;
-		public static final int SwitchBlockStatementGroup_optlist = 260;
-		public static final int SwitchLabel_list = 261;
-		public static final int BlockStatement_list = 262;
-		public static final int ForInitopt = 263;
-		public static final int Expressionopt = 264;
-		public static final int StatementExpression_list_Comma_separated = 265;
-		public static final int StatementExpression_list_Comma_separated_opt = 266;
-		public static final int Identifieropt = 267;
-		public static final int Resource_list_Semicolon_separated = 268;
-		public static final int CatchClause_optlist = 269;
-		public static final int Finallyopt = 270;
-		public static final int ClassBodyopt = 271;
-		public static final int DimWithOrWithOutExpr_list = 272;
-		public static final int list_of_ApostropheLsquareApostrophe_and_1_elements = 273;
-		public static final int EnumConstant_list_Comma_separated = 274;
-		public static final int AnnotationTypeMemberDeclaration_optlist = 275;
-		public static final int DefaultValueopt = 276;
-		public static final int MemberValuePair_list_Comma_separated = 277;
-		public static final int MemberValuePair_list_Comma_separated_opt = 278;
-		public static final int MemberValue_list_Comma_separated = 279;
+		static final int QualifiedIdentifier = 109;
+		static final int CompilationUnit = 110;
+		static final int PackageDeclaration = 111;
+		static final int ImportDeclaration = 112;
+		static final int TypeDeclaration = 113;
+		static final int ClassDeclaration = 114;
+		static final int EnumDeclaration = 115;
+		static final int InterfaceDeclaration = 116;
+		static final int AnnotationTypeDeclaration = 117;
+		static final int Literal = 118;
+		static final int Type = 119;
+		static final int PrimitiveType = 120;
+		static final int ReferenceType = 121;
+		static final int ClassOrInterfaceType = 122;
+		static final int ClassOrInterface = 123;
+		static final int GenericType = 124;
+		static final int ArrayType = 125;
+		static final int ClassType = 126;
+		static final int Modifiers = 127;
+		static final int Modifier = 128;
+		static final int InterfaceType = 129;
+		static final int ClassBody = 130;
+		static final int ClassBodyDeclaration = 131;
+		static final int ClassMemberDeclaration = 132;
+		static final int GenericMethodDeclaration = 133;
+		static final int FieldDeclaration = 134;
+		static final int VariableDeclarators = 135;
+		static final int VariableDeclarator = 136;
+		static final int VariableDeclaratorId = 137;
+		static final int VariableInitializer = 138;
+		static final int MethodDeclaration = 139;
+		static final int AbstractMethodDeclaration = 140;
+		static final int MethodHeader = 141;
+		static final int MethodHeaderThrowsClause = 142;
+		static final int FormalParameter = 143;
+		static final int CatchFormalParameter = 144;
+		static final int CatchType = 145;
+		static final int MethodBody = 146;
+		static final int StaticInitializer = 147;
+		static final int ConstructorDeclaration = 148;
+		static final int ExplicitConstructorInvocation = 149;
+		static final int ExplicitConstructorId = 150;
+		static final int ThisOrSuper = 151;
+		static final int InterfaceBody = 152;
+		static final int InterfaceMemberDeclaration = 153;
+		static final int ConstantDeclaration = 154;
+		static final int ArrayInitializer = 155;
+		static final int Block = 156;
+		static final int BlockStatement = 157;
+		static final int LocalVariableDeclarationStatement = 158;
+		static final int LocalVariableDeclaration = 159;
+		static final int Statement = 160;
+		static final int EmptyStatement = 161;
+		static final int LabeledStatement = 162;
+		static final int Label = 163;
+		static final int ExpressionStatement = 164;
+		static final int StatementExpression = 165;
+		static final int IfStatement = 166;
+		static final int SwitchStatement = 167;
+		static final int SwitchBlockStatementGroup = 168;
+		static final int SwitchLabel = 169;
+		static final int WhileStatement = 170;
+		static final int DoStatement = 171;
+		static final int ForStatement = 172;
+		static final int EnhancedForStatement = 173;
+		static final int ForInit = 174;
+		static final int AssertStatement = 175;
+		static final int BreakStatement = 176;
+		static final int ContinueStatement = 177;
+		static final int ReturnStatement = 178;
+		static final int ThrowStatement = 179;
+		static final int SynchronizedStatement = 180;
+		static final int TryStatement = 181;
+		static final int Resource = 182;
+		static final int CatchClause = 183;
+		static final int Finally = 184;
+		static final int Primary = 185;
+		static final int PrimaryNoNewArray = 186;
+		static final int ParenthesizedExpression = 187;
+		static final int ClassInstanceCreationExpression = 188;
+		static final int NonArrayType = 189;
+		static final int ArrayCreationWithoutArrayInitializer = 190;
+		static final int ArrayCreationWithArrayInitializer = 191;
+		static final int DimWithOrWithOutExpr = 192;
+		static final int Dims = 193;
+		static final int FieldAccess = 194;
+		static final int MethodInvocation = 195;
+		static final int ArrayAccess = 196;
+		static final int PostfixExpression = 197;
+		static final int PostIncrementExpression = 198;
+		static final int PostDecrementExpression = 199;
+		static final int UnaryExpression = 200;
+		static final int PreIncrementExpression = 201;
+		static final int PreDecrementExpression = 202;
+		static final int UnaryExpressionNotPlusMinus = 203;
+		static final int CastExpression = 204;
+		static final int ConditionalExpression = 205;
+		static final int AssignmentExpression = 206;
+		static final int LValue = 207;
+		static final int Assignment = 208;
+		static final int AssignmentOperator = 209;
+		static final int Expression = 210;
+		static final int ConstantExpression = 211;
+		static final int EnumBody = 212;
+		static final int EnumConstant = 213;
+		static final int TypeArguments = 214;
+		static final int TypeArgumentList = 215;
+		static final int TypeArgument = 216;
+		static final int ReferenceType1 = 217;
+		static final int Wildcard = 218;
+		static final int DeeperTypeArgument = 219;
+		static final int TypeParameters = 220;
+		static final int TypeParameterList = 221;
+		static final int TypeParameter = 222;
+		static final int TypeParameter1 = 223;
+		static final int AdditionalBoundList = 224;
+		static final int AdditionalBound = 225;
+		static final int PostfixExpression_NotName = 226;
+		static final int UnaryExpression_NotName = 227;
+		static final int UnaryExpressionNotPlusMinus_NotName = 228;
+		static final int ArithmeticExpressionNotName = 229;
+		static final int ArithmeticPart = 230;
+		static final int RelationalExpressionNotName = 231;
+		static final int RelationalPart = 232;
+		static final int LogicalExpressionNotName = 233;
+		static final int BooleanOrBitwisePart = 234;
+		static final int ConditionalExpressionNotName = 235;
+		static final int ExpressionNotName = 236;
+		static final int AnnotationTypeBody = 237;
+		static final int AnnotationTypeMemberDeclaration = 238;
+		static final int DefaultValue = 239;
+		static final int Annotation = 240;
+		static final int MemberValuePair = 241;
+		static final int MemberValue = 242;
+		static final int MemberValueArrayInitializer = 243;
+		static final int ImportDeclaration_list = 244;
+		static final int TypeDeclaration_list = 245;
+		static final int Modifiersopt = 246;
+		static final int InterfaceType_list_Comma_separated = 247;
+		static final int ClassBodyDeclaration_optlist = 248;
+		static final int Dimsopt = 249;
+		static final int FormalParameter_list_Comma_separated = 250;
+		static final int FormalParameter_list_Comma_separated_opt = 251;
+		static final int MethodHeaderThrowsClauseopt = 252;
+		static final int ClassType_list_Comma_separated = 253;
+		static final int Type_list_Or_separated = 254;
+		static final int Expression_list_Comma_separated = 255;
+		static final int Expression_list_Comma_separated_opt = 256;
+		static final int InterfaceMemberDeclaration_optlist = 257;
+		static final int VariableInitializer_list_Comma_separated = 258;
+		static final int BlockStatement_optlist = 259;
+		static final int SwitchBlockStatementGroup_optlist = 260;
+		static final int SwitchLabel_list = 261;
+		static final int BlockStatement_list = 262;
+		static final int ForInitopt = 263;
+		static final int Expressionopt = 264;
+		static final int StatementExpression_list_Comma_separated = 265;
+		static final int StatementExpression_list_Comma_separated_opt = 266;
+		static final int Identifieropt = 267;
+		static final int Resource_list_Semicolon_separated = 268;
+		static final int CatchClause_optlist = 269;
+		static final int Finallyopt = 270;
+		static final int ClassBodyopt = 271;
+		static final int DimWithOrWithOutExpr_list = 272;
+		static final int list_of_ApostropheLsquareApostrophe_and_1_elements = 273;
+		static final int EnumConstant_list_Comma_separated = 274;
+		static final int AnnotationTypeMemberDeclaration_optlist = 275;
+		static final int DefaultValueopt = 276;
+		static final int MemberValuePair_list_Comma_separated = 277;
+		static final int MemberValuePair_list_Comma_separated_opt = 278;
+		static final int MemberValue_list_Comma_separated = 279;
 	}
 
 	/**
@@ -2219,7 +2219,7 @@ public class JavaParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -2227,27 +2227,27 @@ public class JavaParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.line = startsym.line;
-		lapg_gg.offset = startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.line = startsym.line;
+		tmLeft.offset = startsym.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 	}
 
 	public Object parseCompilationUnit(JavaLexer lexer) throws IOException, ParseException {

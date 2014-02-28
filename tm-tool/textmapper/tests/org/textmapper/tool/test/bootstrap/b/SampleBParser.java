@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.textmapper.tool.test.bootstrap.b.SampleBLexer.ErrorReporter;
 import org.textmapper.tool.test.bootstrap.b.SampleBLexer.LapgSymbol;
-import org.textmapper.tool.test.bootstrap.b.SampleBLexer.Lexems;
+import org.textmapper.tool.test.bootstrap.b.SampleBLexer.Tokens;
 import org.textmapper.tool.test.bootstrap.b.ast.AstClassdef;
 import org.textmapper.tool.test.bootstrap.b.ast.AstClassdeflistItem;
 import org.textmapper.tool.test.bootstrap.b.ast.IAstClassdefNoEoi;
@@ -62,13 +62,13 @@ public class SampleBParser {
 		"\3\7\10\17\10\1\1\1\1\3\5\7\10\17\10\23\6\15\21\26\16\25\24\27\30\11\11\3\7\10\17" +
 		"\10\31\2\12\20\12\4\13\13\14\22");
 
-	private static final short[] lapg_rlen = SampleBLexer.unpack_short(12,
+	private static final short[] tmRuleLen = SampleBLexer.unpack_short(12,
 		"\1\1\0\5\7\1\1\2\3\4\4\1");
 
-	private static final short[] lapg_rlex = SampleBLexer.unpack_short(12,
+	private static final short[] tmRuleSymbol = SampleBLexer.unpack_short(12,
 		"\21\25\25\22\22\23\24\24\24\24\24\24");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"identifier",
 		"_skip",
@@ -93,13 +93,13 @@ public class SampleBParser {
 		"classdeflistopt",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int classdef_NoEoi = 17;
-		public static final int classdef = 18;
-		public static final int ID = 19;
-		public static final int classdeflist = 20;
-		public static final int classdeflistopt = 21;
+		static final int classdef_NoEoi = 17;
+		static final int classdef = 18;
+		static final int ID = 19;
+		static final int classdeflist = 20;
+		static final int classdeflistopt = 21;
 	}
 
 	/**
@@ -111,7 +111,7 @@ public class SampleBParser {
 	protected static int tmAction(int state, int symbol) {
 		int p;
 		if (tmAction[state] < -2) {
-			if (symbol == Lexems.Unavailable_) {
+			if (symbol == Tokens.Unavailable_) {
 				return -3 - state;
 			}
 			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
@@ -152,14 +152,14 @@ public class SampleBParser {
 		tmLexer = lexer;
 		tmStack = new LapgSymbol[1024];
 		tmHead = 0;
-		int lapg_symbols_ok = 4;
+		int tmShiftsAfterError = 4;
 
 		tmStack[0] = new LapgSymbol();
 		tmStack[0].state = 0;
 		tmNext = tmLexer.next();
 
 		while (tmStack[tmHead].state != 25) {
-			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Lexems.Unavailable_ : tmNext.symbol);
+			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Tokens.Unavailable_ : tmNext.symbol);
 			if (action <= -3 && tmNext == null) {
 				tmNext = tmLexer.next();
 				action = tmAction(tmStack[tmHead].state, tmNext.symbol);
@@ -169,18 +169,18 @@ public class SampleBParser {
 				reduce(action);
 			} else if (action == -1) {
 				shift();
-				lapg_symbols_ok++;
+				tmShiftsAfterError++;
 			}
 
 			if (action == -2 || tmStack[tmHead].state == -1) {
 				if (restore()) {
-					if (lapg_symbols_ok >= 4) {
+					if (tmShiftsAfterError >= 4) {
 						reporter.error(MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()), tmNext.offset, tmNext.endoffset);
 					}
-					if (lapg_symbols_ok <= 1) {
+					if (tmShiftsAfterError <= 1) {
 						tmNext = tmLexer.next();
 					}
-					lapg_symbols_ok = 0;
+					tmShiftsAfterError = 0;
 					continue;
 				}
 				if (tmHead < 0) {
@@ -193,7 +193,7 @@ public class SampleBParser {
 		}
 
 		if (tmStack[tmHead].state != 25) {
-			if (lapg_symbols_ok >= 4) {
+			if (tmShiftsAfterError >= 4) {
 				reporter.error(MessageFormat.format("syntax error before line {0}",
 								tmLexer.getTokenLine()), tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset);
 			}
@@ -233,7 +233,7 @@ public class SampleBParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = null;
@@ -241,29 +241,29 @@ public class SampleBParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
-		switch (rule) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
+		switch (tmRule) {
 			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
-				lapg_gg.value = new AstClassdef(
+				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 3].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
@@ -272,7 +272,7 @@ public class SampleBParser {
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
-				lapg_gg.value = new AstClassdef(
+				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 5].value) /* ID */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
@@ -281,21 +281,21 @@ public class SampleBParser {
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
 			case 6:  // classdeflist ::= classdef
-				lapg_gg.value = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+				tmLeft.value = new ArrayList();
+				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
 				break;
 			case 7:  // classdeflist ::= classdeflist classdef
-				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset));
 				break;
 			case 8:  // classdeflist ::= identifier '(' ')'
-				lapg_gg.value = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+				tmLeft.value = new ArrayList();
+				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
@@ -304,14 +304,14 @@ public class SampleBParser {
 				 String s = /* should be string */ ((String)tmStack[tmHead - 1].value); 
 				break;
 			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
-				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset));
 				break;
 			case 11:  // classdeflist ::= error
-				lapg_gg.value = new ArrayList();
-				((List<AstClassdeflistItem>)lapg_gg.value).add(new AstClassdeflistItem(
+				tmLeft.value = new ArrayList();
+				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));

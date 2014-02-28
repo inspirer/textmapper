@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import org.textmapper.tool.compiler.input.RewriteLexer.ErrorReporter;
 import org.textmapper.tool.compiler.input.RewriteLexer.LapgSymbol;
-import org.textmapper.tool.compiler.input.RewriteLexer.Lexems;
+import org.textmapper.tool.compiler.input.RewriteLexer.Tokens;
 
 public class RewriteParser {
 
@@ -37,15 +37,15 @@ public class RewriteParser {
 	private static final short[] lapg_sym_to = RewriteLexer.unpack_short(2,
 		"\2\1");
 
-	private static final short[] lapg_rlen = RewriteLexer.unpack_short(51,
+	private static final short[] tmRuleLen = RewriteLexer.unpack_short(51,
 		"\0\1\1\1\1\1\2\1\2\1\3\1\3\1\4\1\4\4\4\1\1\1\4\4\4\0\1\2\0\2\2\0\2\0\2\0\1\2\1\4" +
 		"\0\4\0\1\1\0\2\0\1\2\1");
 
-	private static final short[] lapg_rlex = RewriteLexer.unpack_short(51,
+	private static final short[] tmRuleSymbol = RewriteLexer.unpack_short(51,
 		"\7\10\10\11\12\13\13\14\14\15\15\16\16\17\17\20\20\20\20\21\21\21\21\21\21\22\22" +
 		"\22\23\23\23\24\24\25\25\26\26\26\27\27\30\30\31\31\33\33\31\32\32\32\32");
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
 		"'{'",
 		"'}'",
@@ -76,29 +76,29 @@ public class RewriteParser {
 		"EStar1$1",
 	};
 
-	public interface Tokens extends Lexems {
+	public interface Nonterminals extends Tokens {
 		// non-terminals
-		public static final int input = 7;
-		public static final int Elem = 8;
-		public static final int Elem2 = 9;
-		public static final int Elem3 = 10;
-		public static final int ElemPlus1 = 11;
-		public static final int ElemPlus1rr = 12;
-		public static final int ElemPlus2 = 13;
-		public static final int ElemPlus2rr = 14;
-		public static final int ElemPlus3 = 15;
-		public static final int ElemPlus4 = 16;
-		public static final int ElemPlus5 = 17;
-		public static final int ElemStar1 = 18;
-		public static final int ElemStar1ex = 19;
-		public static final int ElemStar2 = 20;
-		public static final int ElemStar3rr = 21;
-		public static final int ElemStar4rr = 22;
-		public static final int ElemPlus5rr = 23;
-		public static final int ElemSep6rr = 24;
-		public static final int EStar1 = 25;
-		public static final int EStar2 = 26;
-		public static final int EStar1Dollar1 = 27;
+		static final int input = 7;
+		static final int Elem = 8;
+		static final int Elem2 = 9;
+		static final int Elem3 = 10;
+		static final int ElemPlus1 = 11;
+		static final int ElemPlus1rr = 12;
+		static final int ElemPlus2 = 13;
+		static final int ElemPlus2rr = 14;
+		static final int ElemPlus3 = 15;
+		static final int ElemPlus4 = 16;
+		static final int ElemPlus5 = 17;
+		static final int ElemStar1 = 18;
+		static final int ElemStar1ex = 19;
+		static final int ElemStar2 = 20;
+		static final int ElemStar3rr = 21;
+		static final int ElemStar4rr = 22;
+		static final int ElemPlus5rr = 23;
+		static final int ElemSep6rr = 24;
+		static final int EStar1 = 25;
+		static final int EStar2 = 26;
+		static final int EStar1Dollar1 = 27;
 	}
 
 	/**
@@ -179,7 +179,7 @@ public class RewriteParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -187,25 +187,25 @@ public class RewriteParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol lapg_gg = new LapgSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		LapgSymbol tmLeft = new LapgSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.line = startsym.line;
-		lapg_gg.offset = startsym.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.line = startsym.line;
+		tmLeft.offset = startsym.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 	}
 }

@@ -37,7 +37,7 @@ public class RegexDefLexer {
 		public static final int inSet = 2;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 		public static final int eoi = 0;
 		public static final int _char = 1;
