@@ -355,7 +355,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 				return gr;
 			}
-			if ("lexemSymbols".equals(propertyName)) {
+			if ("lexerRuleTokens".equals(propertyName)) {
 				LexerRule[] lexerRules = grammar.getLexerRules();
 				int[] result = new int[lexerRules.length];
 				for (int i = 0; i < lexerRules.length; i++) {

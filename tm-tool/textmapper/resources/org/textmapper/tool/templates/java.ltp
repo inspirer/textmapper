@@ -43,7 +43,7 @@ ${if self->needActionsTable()-}
 		int p;
 		if (tmAction[state] < -2) {
 ${if self->lazyNext()-}
-			if (symbol == ${call package}.${opts.prefix}Lexer.@Lexems.Unavailable_) {
+			if (symbol == ${call package}.${opts.prefix}Lexer.@Tokens.Unavailable_) {
 				return -3 - state;
 			}
 ${end-}
@@ -88,7 +88,7 @@ ${end-}
 		tmLexer = lexer;
 		tmStack = new ${self->symbolClassName()}[${opts.stack}];
 		tmHead = 0;
-${if self->hasRecovering()}		int lapg_symbols_ok = 4;
+${if self->hasRecovering()}		int tmShiftsAfterError = 4;
 ${end-}
 
 		tmStack[0] = new ${self->symbolClassName()}();
@@ -96,7 +96,7 @@ ${end-}
 		tmNext = tmLexer.next();
 
 		while (tmStack[tmHead].state != ${self->util.needFinalState() ? 'finalState' : parser.statesCount-1}) {
-			int action = tmAction(tmStack[tmHead].state, ${if self->lazyNext()}tmNext == null ? ${call package}.${opts.prefix}Lexer.@Lexems.Unavailable_ : ${end}tmNext.symbol);
+			int action = tmAction(tmStack[tmHead].state, ${if self->lazyNext()}tmNext == null ? ${call package}.${opts.prefix}Lexer.@Tokens.Unavailable_ : ${end}tmNext.symbol);
 ${if self->lazyNext()-}
 			if (action <= -3 && tmNext == null) {
 				tmNext = tmLexer.next();
@@ -108,7 +108,7 @@ ${end-}
 				reduce(action);
 			} else if (action == -1) {
 				shift(${if self->hasNoEoiInputs() && self->hasEoiInputs()}noEoi${end});
-${if self->hasRecovering()}				lapg_symbols_ok++;
+${if self->hasRecovering()}				tmShiftsAfterError++;
 ${end-}
 			}
 
@@ -116,14 +116,14 @@ ${end-}
 ${if self->hasRecovering()-}
 ${call dynamicRecoveringCheck-}
 				if (restore()) {
-					if (lapg_symbols_ok >= 4) {
+					if (tmShiftsAfterError >= 4) {
 						reporter.error(java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}",
 								tmLexer.getTokenLine(), tmNext.column)${else}", tmLexer.getTokenLine())${end}${self->err_location('tmNext', 'tmLexer').trim()});
 					}
-					if (lapg_symbols_ok <= 1) {
+					if (tmShiftsAfterError <= 1) {
 						tmNext = tmLexer.next();
 					}
-					lapg_symbols_ok = 0;
+					tmShiftsAfterError = 0;
 					continue;
 				}
 				if (tmHead < 0) {
@@ -138,7 +138,7 @@ ${end-}
 
 		if (tmStack[tmHead].state != ${self->util.needFinalState() ? 'finalState' : parser.statesCount-1}) {
 ${if self->hasRecovering()-}
-			if (lapg_symbols_ok >= 4) {
+			if (tmShiftsAfterError >= 4) {
 	${else-}
 ${end}			reporter.error(java.text.@MessageFormat.format("syntax error before line {0}${if opts.positions.contains('column')}, column {1}${end}",
 								tmLexer.getTokenLine()${if opts.positions.contains('column')}, ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column${end
@@ -167,16 +167,16 @@ ${end-}
 		if (tmNext.symbol == 0) {
 			return false;
 		}
-		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, ${self->errorLexem()}) == -1) {
+		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, ${self->errorToken()}) == -1) {
 			dispose(tmStack[tmHead]);
 			tmStack[tmHead] = null;
 			tmHead--;
 		}
 		if (tmHead >= 0) {
 			tmStack[++tmHead] = new ${self->symbolClassName()}();
-			tmStack[tmHead].symbol = ${self->errorLexem()};
+			tmStack[tmHead].symbol = ${self->errorToken()};
 			tmStack[tmHead].value = null;
-			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorLexem()});
+			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, ${self->errorToken()});
 ${foreach l in self->util.locationList()-}
 			tmStack[tmHead].${l} = tmNext.${l};
 ${end-}
@@ -207,41 +207,41 @@ ${call debugShift-}
 	}
 
 	protected void reduce(int rule) {
-		${self->symbolClassName()} lapg_gg = new ${self->symbolClassName()}();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		${self->symbolClassName()} tmLeft = new ${self->symbolClassName()}();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 ${call debugReduce-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
-		${self->symbolClassName()} startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
+		${self->symbolClassName()} startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
 ${if opts.positions.contains('line')-}
-		lapg_gg.line = ${if self->lazyNext()}startsym == null ? tmLexer.getLine() : ${end}startsym.line;
+		tmLeft.line = ${if self->lazyNext()}startsym == null ? tmLexer.getLine() : ${end}startsym.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-		lapg_gg.column = ${if self->lazyNext()}startsym == null ? tmLexer.getColumn() : ${end}startsym.column;
+		tmLeft.column = ${if self->lazyNext()}startsym == null ? tmLexer.getColumn() : ${end}startsym.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-		lapg_gg.offset = ${if self->lazyNext()}startsym == null ? tmLexer.getOffset() : ${end}startsym.offset;
+		tmLeft.offset = ${if self->lazyNext()}startsym == null ? tmLexer.getOffset() : ${end}startsym.offset;
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		lapg_gg.endline = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endline : ${if self->lazyNext()}tmNext == null ? tmLexer.getLine() : ${end}tmNext.line;
+		tmLeft.endline = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endline : ${if self->lazyNext()}tmNext == null ? tmLexer.getLine() : ${end}tmNext.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		lapg_gg.endcolumn = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endcolumn : ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column;
+		tmLeft.endcolumn = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endcolumn : ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : ${if self->lazyNext()}tmNext == null ? tmLexer.getOffset() : ${end}tmNext.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : ${if self->lazyNext()}tmNext == null ? tmLexer.getOffset() : ${end}tmNext.offset;
 ${end-}
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 ${if opts.genCleanup-}
 			cleanup(tmStack[tmHead]);
 ${end-}
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
 ${call applyRule-}
@@ -274,9 +274,9 @@ ${end}
 
 ${template applyRule-}
 	@SuppressWarnings("unchecked")
-	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(${self->symbolClassName()} tmLeft, int tmRule, int tmLength) {
 ${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
-		switch (rule) {
+		switch (tmRule) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
@@ -305,13 +305,13 @@ ${end}
 
 ${template debugShift-}
 		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", lapg_syms[tmNext.symbol], tmLexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
 		}
 ${end}
 
 ${template debugReduce-}
 		if (DEBUG_SYNTAX) {
-			System.out.println("reduce to " + lapg_syms[lapg_rlex[rule]]);
+			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
 ${end}
 
@@ -330,27 +330,27 @@ ${end-}
 
 	private static final short[] lapg_sym_to = ${opts.prefix}Lexer.${parser.symTo->java_pack.packShort()};
 
-	private static final short[] lapg_rlen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packShort()};
+	private static final short[] tmRuleLen = ${opts.prefix}Lexer.${parser.ruleLength->java_pack.packShort()};
 
-	private static final short[] lapg_rlex = ${opts.prefix}Lexer.${parser.left->java_pack.packShort()};
+	private static final short[] tmRuleSymbol = ${opts.prefix}Lexer.${parser.left->java_pack.packShort()};
 
-	protected static final String[] lapg_syms = new String[] {
+	protected static final String[] tmSymbolNames = new String[] {
 ${foreach s in parser.symbols-}
 		"${s.name}",
 ${end-}
 	};
 
-	public interface Tokens extends ${call package}.${opts.prefix}Lexer.@Lexems {
+	public interface Nonterminals extends ${call package}.${opts.prefix}Lexer.@Tokens {
 		// non-terminals
 ${for i in [parser.nterms, parser.nsyms-1]-}
-		public static final int ${parser.symbols[i].id->escapeJavaReserved()} = ${i};
+		static final int ${parser.symbols[i].id->escapeJavaReserved()} = ${i};
 ${end-}
 	}
 ${if syntax.rules.exists(x|x.getSource() is org.textmapper.lapg.api.rule.RhsSequence && x.getSource().name)}
 	public interface Rules {
 ${foreach rule in syntax.rules-}
 ${if rule.getSource() is org.textmapper.lapg.api.rule.RhsSequence && rule.getSource().name-}
-		public static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getSource().name, '__rules__')} = ${rule.getIndex()};  // ${rule}
+		static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getSource().name, '__rules__')} = ${rule.getIndex()};  // ${rule}
 ${end-}
 ${end-}
 	}
@@ -370,7 +370,7 @@ ${end}
 ${query symText(property) =
 	self.rightOffset == -1
 	? (property == 'value' ? 'null' : '-1')
-	: (self.isLeft ? 'lapg_gg' : 'tmStack[tmHead' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
+	: (self.isLeft ? 'tmLeft' : 'tmStack[tmHead' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
 	  + '.' + property }
 
 ${template symAccess(property)-}
@@ -401,7 +401,7 @@ ${end}
 ${query package() = opts.package ? opts.package : 'com.test' }
 
 ${cached query hasRecovering() = syntax.error}
-${cached query errorLexem() = syntax.error.index}
+${cached query errorToken() = syntax.error.index}
 
 ${template dynamicRecoveringCheck-}
 ${end}

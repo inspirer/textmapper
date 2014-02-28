@@ -33,7 +33,7 @@ public class GenericLexer {
 		public int endoffset;
 	}
 
-	public interface Lexems {
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 	}
 
@@ -68,7 +68,7 @@ public class GenericLexer {
 	public GenericLexer(Reader stream, ErrorReporter reporter, LexerData lexerData, Grammar grammar) throws IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		tmRuleSymbol = getLexemNum(grammar);
+		tmRuleSymbol = getRuleSymbols(grammar);
 		tmCharClass = lexerData.getChar2no();
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
@@ -210,11 +210,11 @@ public class GenericLexer {
 	}
 
 	protected boolean createToken(ParseSymbol lapg_n, int ruleIndex) throws IOException {
-		int lexemKind = grammar.getLexerRules()[ruleIndex].getKind();
-		return lexemKind != LexerRule.KIND_SPACE;
+		int lexemeKind = grammar.getLexerRules()[ruleIndex].getKind();
+		return lexemeKind != LexerRule.KIND_SPACE;
 	}
 
-	private static int[] getLexemNum(Grammar grammar) {
+	private static int[] getRuleSymbols(Grammar grammar) {
 		LexerRule[] lexerRules = grammar.getLexerRules();
 		int[] result = new int[lexerRules.length];
 		for (int i = 0; i < lexerRules.length; i++) {

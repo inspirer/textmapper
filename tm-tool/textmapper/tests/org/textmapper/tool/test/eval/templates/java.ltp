@@ -31,8 +31,8 @@ ${template parserCtor-}
 	private final short[] lapg_sym_goto;
 	private final short[] lapg_sym_from;
 	private final short[] lapg_sym_to;
-	private final int[] lapg_rlen;
-	private final int[] lapg_rlex;
+	private final int[] tmRuleLen;
+	private final int[] tmRuleSymbol;
 
 	private final boolean debugSyntax;
 
@@ -44,8 +44,8 @@ ${template parserCtor-}
 		this.lapg_sym_goto = tables.getSymGoto();
 		this.lapg_sym_to = tables.getSymTo();
 		this.lapg_sym_from = tables.getSymFrom();
-		this.lapg_rlen = tables.getRuleLength();
-		this.lapg_rlex = tables.getLeft();
+		this.tmRuleLen = tables.getRuleLength();
+		this.tmRuleSymbol = tables.getLeft();
 		this.debugSyntax = debugSyntax;
 	}
 ${end}
@@ -64,7 +64,7 @@ ${end}
 
 ${template debugReduce-}
 		if (debugSyntax) {
-			System.out.println("reduce to " + grammar.getSymbols()[lapg_rlex[rule]].getName());
+			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
 		}
 ${end}
 
@@ -75,13 +75,13 @@ ${template dynamicRecoveringCheck-}
 ${end}
 
 ${template applyRule-}
-	protected void applyRule(${self->symbolClassName()} lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(${self->symbolClassName()} tmLeft, int rule, int ruleLength) {
 		if (ruleLength == 1) {
 			Object right = tmStack[tmHead].value;
 			if (right instanceof org.textmapper.lapg.eval.@GenericNode) {
-				lapg_gg.value = right;
+				tmLeft.value = right;
 			} else {
-				lapg_gg.value = new org.textmapper.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+				tmLeft.value = new org.textmapper.lapg.eval.@GenericNode(source, tmLeft.offset, tmLeft.endoffset);
 			}
 		} else if (ruleLength > 1) {
 			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textmapper.lapg.eval.@GenericNode>(ruleLength);
@@ -90,7 +90,7 @@ ${template applyRule-}
 					children.add((org.textmapper.lapg.eval.@GenericNode) tmStack[tmHead - i].value);
 				}
 			}
-			lapg_gg.value = new org.textmapper.lapg.eval.@GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new org.textmapper.lapg.eval.@GenericNode[children.size()]));
+			tmLeft.value = new org.textmapper.lapg.eval.@GenericNode(source, tmLeft.offset, tmLeft.endoffset, children.toArray(new org.textmapper.lapg.eval.@GenericNode[children.size()]));
 		}
 	}
 ${end}
@@ -103,7 +103,7 @@ ${cached query symbolClassName() = 'ParseSymbol'}
 ${cached query lazyNext() = true}
 
 ${cached query hasRecovering() = true}
-${cached query errorLexem() = 'grammar.getError().getIndex()'}
+${cached query errorToken() = 'grammar.getError().getIndex()'}
 
 ${query mainParseVisibility() = 'public'}
 

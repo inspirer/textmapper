@@ -19,7 +19,7 @@ import org.textmapper.tool.gen.TemplateStaticMethods;
 import org.textmapper.tool.parser.TMLexer;
 import org.textmapper.tool.parser.TMLexer.ErrorReporter;
 import org.textmapper.tool.parser.TMLexer.LapgSymbol;
-import org.textmapper.tool.parser.TMLexer.Lexems;
+import org.textmapper.tool.parser.TMLexer.Tokens;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class TMTextUtil {
 			LapgSymbol sym = lexer.next();
 			int lastline = 0;
 			StringBuilder sb = new StringBuilder();
-			while (sym.symbol == Lexems._skip_comment && source.columnForOffset(sym.offset) == 0) {
+			while (sym.symbol == Tokens._skip_comment && source.columnForOffset(sym.offset) == 0) {
 				String val = lexer.current().substring(1);
 				if (val.endsWith("\n")) {
 					val = val.substring(0, val.length() - (val.endsWith("\r\n") ? 2 : 1));

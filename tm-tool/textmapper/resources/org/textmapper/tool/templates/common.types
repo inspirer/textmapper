@@ -17,7 +17,7 @@ class Grammar {
 	Rule rules[1..*];
 	Prio priorities[0..*];
 
-	Lexem lexems[0..*];
+	LexerRule lexerRules[0..*];
 
 	int terminals;
 	Symbol* input[1..*];
@@ -40,7 +40,7 @@ class SourceElement {
 	int endOffset;
 }
 
-class Lexem extends SourceElement {
+class LexerRule extends SourceElement {
 	Symbol* symbol;
 	string regexp;
 

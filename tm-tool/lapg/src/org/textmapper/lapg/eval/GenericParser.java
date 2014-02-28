@@ -22,8 +22,8 @@ import java.util.List;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.eval.GenericLexer.ErrorReporter;
-import org.textmapper.lapg.eval.GenericLexer.Lexems;
 import org.textmapper.lapg.eval.GenericLexer.ParseSymbol;
+import org.textmapper.lapg.eval.GenericLexer.Tokens;
 import org.textmapper.lapg.eval.GenericParseContext.TextSource;
 
 public class GenericParser {
@@ -45,8 +45,8 @@ public class GenericParser {
 	private final short[] lapg_sym_goto;
 	private final short[] lapg_sym_from;
 	private final short[] lapg_sym_to;
-	private final int[] lapg_rlen;
-	private final int[] lapg_rlex;
+	private final int[] tmRuleLen;
+	private final int[] tmRuleSymbol;
 
 	private final boolean debugSyntax;
 
@@ -58,8 +58,8 @@ public class GenericParser {
 		this.lapg_sym_goto = tables.getSymGoto();
 		this.lapg_sym_to = tables.getSymTo();
 		this.lapg_sym_from = tables.getSymFrom();
-		this.lapg_rlen = tables.getRuleLength();
-		this.lapg_rlex = tables.getLeft();
+		this.tmRuleLen = tables.getRuleLength();
+		this.tmRuleSymbol = tables.getLeft();
 		this.debugSyntax = debugSyntax;
 	}
 
@@ -72,7 +72,7 @@ public class GenericParser {
 	protected final int tmAction(int state, int symbol) {
 		int p;
 		if (tmAction[state] < -2) {
-			if (symbol == Lexems.Unavailable_) {
+			if (symbol == Tokens.Unavailable_) {
 				return -3 - state;
 			}
 			for (p = -tmAction[state] - 3; tmLalr[p] >= 0; p += 2) {
@@ -113,14 +113,14 @@ public class GenericParser {
 		tmLexer = lexer;
 		tmStack = new ParseSymbol[1024];
 		tmHead = 0;
-		int lapg_symbols_ok = 4;
+		int tmShiftsAfterError = 4;
 
 		tmStack[0] = new ParseSymbol();
 		tmStack[0].state = initialState;
 		tmNext = tmLexer.next();
 
 		while (tmStack[tmHead].state != finalState) {
-			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Lexems.Unavailable_ : tmNext.symbol);
+			int action = tmAction(tmStack[tmHead].state, tmNext == null ? Tokens.Unavailable_ : tmNext.symbol);
 			if (action <= -3 && tmNext == null) {
 				tmNext = tmLexer.next();
 				action = tmAction(tmStack[tmHead].state, tmNext.symbol);
@@ -130,7 +130,7 @@ public class GenericParser {
 				reduce(action);
 			} else if (action == -1) {
 				shift(noEoi);
-				lapg_symbols_ok++;
+				tmShiftsAfterError++;
 			}
 
 			if (action == -2 || tmStack[tmHead].state == -1) {
@@ -138,13 +138,13 @@ public class GenericParser {
 					break;
 				}
 				if (restore()) {
-					if (lapg_symbols_ok >= 4) {
+					if (tmShiftsAfterError >= 4) {
 						reporter.error(MessageFormat.format("syntax error before line {0}", tmLexer.getTokenLine()), tmNext.line, tmNext.offset, tmNext.endoffset);
 					}
-					if (lapg_symbols_ok <= 1) {
+					if (tmShiftsAfterError <= 1) {
 						tmNext = tmLexer.next();
 					}
-					lapg_symbols_ok = 0;
+					tmShiftsAfterError = 0;
 					continue;
 				}
 				if (tmHead < 0) {
@@ -157,7 +157,7 @@ public class GenericParser {
 		}
 
 		if (tmStack[tmHead].state != finalState) {
-			if (lapg_symbols_ok >= 4) {
+			if (tmShiftsAfterError >= 4) {
 				reporter.error(MessageFormat.format("syntax error before line {0}",
 								tmLexer.getTokenLine()), tmNext == null ? tmLexer.getLine() : tmNext.line, tmNext == null ? tmLexer.getOffset() : tmNext.offset, tmNext == null ? tmLexer.getOffset() : tmNext.endoffset);
 			}
@@ -206,33 +206,33 @@ public class GenericParser {
 	}
 
 	protected void reduce(int rule) {
-		ParseSymbol lapg_gg = new ParseSymbol();
-		lapg_gg.value = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]].value : null;
-		lapg_gg.symbol = lapg_rlex[rule];
-		lapg_gg.state = 0;
+		ParseSymbol tmLeft = new ParseSymbol();
+		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		tmLeft.symbol = tmRuleSymbol[rule];
+		tmLeft.state = 0;
 		if (debugSyntax) {
-			System.out.println("reduce to " + grammar.getSymbols()[lapg_rlex[rule]].getName());
+			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
 		}
-		ParseSymbol startsym = (lapg_rlen[rule] != 0) ? tmStack[tmHead + 1 - lapg_rlen[rule]] : tmNext;
-		lapg_gg.line = startsym == null ? tmLexer.getLine() : startsym.line;
-		lapg_gg.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
-		lapg_gg.endoffset = (lapg_rlen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
-		applyRule(lapg_gg, rule, lapg_rlen[rule]);
-		for (int e = lapg_rlen[rule]; e > 0; e--) {
+		ParseSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		tmLeft.line = startsym == null ? tmLexer.getLine() : startsym.line;
+		tmLeft.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
+		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
+		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			cleanup(tmStack[tmHead]);
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = lapg_gg;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, lapg_gg.symbol);
+		tmStack[++tmHead] = tmLeft;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
 	}
 
-	protected void applyRule(ParseSymbol lapg_gg, int rule, int ruleLength) {
+	protected void applyRule(ParseSymbol tmLeft, int rule, int ruleLength) {
 		if (ruleLength == 1) {
 			Object right = tmStack[tmHead].value;
 			if (right instanceof GenericNode) {
-				lapg_gg.value = right;
+				tmLeft.value = right;
 			} else {
-				lapg_gg.value = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset);
+				tmLeft.value = new GenericNode(source, tmLeft.offset, tmLeft.endoffset);
 			}
 		} else if (ruleLength > 1) {
 			List<GenericNode> children = new ArrayList<GenericNode>(ruleLength);
@@ -241,7 +241,7 @@ public class GenericParser {
 					children.add((GenericNode) tmStack[tmHead - i].value);
 				}
 			}
-			lapg_gg.value = new GenericNode(source, lapg_gg.offset, lapg_gg.endoffset, children.toArray(new GenericNode[children.size()]));
+			tmLeft.value = new GenericNode(source, tmLeft.offset, tmLeft.endoffset, children.toArray(new GenericNode[children.size()]));
 		}
 	}
 

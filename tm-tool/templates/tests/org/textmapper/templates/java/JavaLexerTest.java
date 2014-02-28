@@ -1,7 +1,7 @@
 package org.textmapper.templates.java;
 
 import org.junit.Test;
-import org.textmapper.templates.java.JavaLexer.Lexems;
+import org.textmapper.templates.java.JavaLexer.Tokens;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -15,187 +15,187 @@ public class JavaLexerTest {
 
     @Test
     public void testIdentifiers() {
-        assertJava(" String    ", Lexems.Identifier);
-        assertJava("i3", Lexems.Identifier);
-        assertJava(/* In greek */"\u03b1\u03c1\u03b5\u03c4\u03b7", Lexems.Identifier);
-        assertJava("MAX_VALUE", Lexems.Identifier);
-        assertJava("isLetterOrDigit", Lexems.Identifier);
-        assertJava("is\\u00aa", Lexems.Identifier);
+        assertJava(" String    ", Tokens.Identifier);
+        assertJava("i3", Tokens.Identifier);
+        assertJava(/* In greek */"\u03b1\u03c1\u03b5\u03c4\u03b7", Tokens.Identifier);
+        assertJava("MAX_VALUE", Tokens.Identifier);
+        assertJava("isLetterOrDigit", Tokens.Identifier);
+        assertJava("is\\u00aa", Tokens.Identifier);
     }
 
     @Test
     public void testKeywords() {
-        assertJava("abstract", Lexems.kw_abstract);
-        assertJava("continue", Lexems.kw_continue);
-        assertJava("for", Lexems.kw_for);
-        assertJava("new", Lexems.kw_new);
-        assertJava("switch", Lexems.kw_switch);
-        assertJava("assert", Lexems.kw_assert);
-        assertJava("default", Lexems.kw_default);
-        assertJava("if", Lexems.kw_if);
-        assertJava("package", Lexems.kw_package);
-        assertJava("synchronized", Lexems.kw_synchronized);
-        assertJava("boolean", Lexems.kw_boolean);
-        assertJava("do", Lexems.kw_do);
-        assertJava("goto", Lexems.kw_goto);
-        assertJava("private", Lexems.kw_private);
-        assertJava("this", Lexems.kw_this);
-        assertJava("break", Lexems.kw_break);
-        assertJava("double", Lexems.kw_double);
-        assertJava("implements", Lexems.kw_implements);
-        assertJava("protected", Lexems.kw_protected);
-        assertJava("throw", Lexems.kw_throw);
-        assertJava("byte", Lexems.kw_byte);
-        assertJava("else", Lexems.kw_else);
-        assertJava("import", Lexems.kw_import);
-        assertJava("public", Lexems.kw_public);
-        assertJava("throws", Lexems.kw_throws);
-        assertJava("case", Lexems.kw_case);
-        assertJava("enum", Lexems.kw_enum);
-        assertJava("instanceof", Lexems.kw_instanceof);
-        assertJava("return", Lexems.kw_return);
-        assertJava("transient", Lexems.kw_transient);
-        assertJava("catch", Lexems.kw_catch);
-        assertJava("extends", Lexems.kw_extends);
-        assertJava("int", Lexems.kw_int);
-        assertJava("short", Lexems.kw_short);
-        assertJava("try", Lexems.kw_try);
-        assertJava("char", Lexems.kw_char);
-        assertJava("final", Lexems.kw_final);
-        assertJava("interface", Lexems.kw_interface);
-        assertJava("static", Lexems.kw_static);
-        assertJava("void", Lexems.kw_void);
-        assertJava("class", Lexems.kw_class);
-        assertJava("finally", Lexems.kw_finally);
-        assertJava("long", Lexems.kw_long);
-        assertJava("strictfp", Lexems.kw_strictfp);
-        assertJava("volatile", Lexems.kw_volatile);
-        assertJava("const", Lexems.kw_const);
-        assertJava("float", Lexems.kw_float);
-        assertJava("native", Lexems.kw_native);
-        assertJava("super", Lexems.kw_super);
-        assertJava("while", Lexems.kw_while);
+        assertJava("abstract", Tokens.kw_abstract);
+        assertJava("continue", Tokens.kw_continue);
+        assertJava("for", Tokens.kw_for);
+        assertJava("new", Tokens.kw_new);
+        assertJava("switch", Tokens.kw_switch);
+        assertJava("assert", Tokens.kw_assert);
+        assertJava("default", Tokens.kw_default);
+        assertJava("if", Tokens.kw_if);
+        assertJava("package", Tokens.kw_package);
+        assertJava("synchronized", Tokens.kw_synchronized);
+        assertJava("boolean", Tokens.kw_boolean);
+        assertJava("do", Tokens.kw_do);
+        assertJava("goto", Tokens.kw_goto);
+        assertJava("private", Tokens.kw_private);
+        assertJava("this", Tokens.kw_this);
+        assertJava("break", Tokens.kw_break);
+        assertJava("double", Tokens.kw_double);
+        assertJava("implements", Tokens.kw_implements);
+        assertJava("protected", Tokens.kw_protected);
+        assertJava("throw", Tokens.kw_throw);
+        assertJava("byte", Tokens.kw_byte);
+        assertJava("else", Tokens.kw_else);
+        assertJava("import", Tokens.kw_import);
+        assertJava("public", Tokens.kw_public);
+        assertJava("throws", Tokens.kw_throws);
+        assertJava("case", Tokens.kw_case);
+        assertJava("enum", Tokens.kw_enum);
+        assertJava("instanceof", Tokens.kw_instanceof);
+        assertJava("return", Tokens.kw_return);
+        assertJava("transient", Tokens.kw_transient);
+        assertJava("catch", Tokens.kw_catch);
+        assertJava("extends", Tokens.kw_extends);
+        assertJava("int", Tokens.kw_int);
+        assertJava("short", Tokens.kw_short);
+        assertJava("try", Tokens.kw_try);
+        assertJava("char", Tokens.kw_char);
+        assertJava("final", Tokens.kw_final);
+        assertJava("interface", Tokens.kw_interface);
+        assertJava("static", Tokens.kw_static);
+        assertJava("void", Tokens.kw_void);
+        assertJava("class", Tokens.kw_class);
+        assertJava("finally", Tokens.kw_finally);
+        assertJava("long", Tokens.kw_long);
+        assertJava("strictfp", Tokens.kw_strictfp);
+        assertJava("volatile", Tokens.kw_volatile);
+        assertJava("const", Tokens.kw_const);
+        assertJava("float", Tokens.kw_float);
+        assertJava("native", Tokens.kw_native);
+        assertJava("super", Tokens.kw_super);
+        assertJava("while", Tokens.kw_while);
     }
 
     @Test
     public void testInts() {
-        assertJava("0", Lexems.IntegerLiteral);
-        assertJava("2", Lexems.IntegerLiteral);
-        assertJava("0372", Lexems.IntegerLiteral);
-        assertJava("0xDada_Cafe", Lexems.IntegerLiteral);
-        assertJava("1996", Lexems.IntegerLiteral);
-        assertJava("0x00_FF__00_FF", Lexems.IntegerLiteral);
+        assertJava("0", Tokens.IntegerLiteral);
+        assertJava("2", Tokens.IntegerLiteral);
+        assertJava("0372", Tokens.IntegerLiteral);
+        assertJava("0xDada_Cafe", Tokens.IntegerLiteral);
+        assertJava("1996", Tokens.IntegerLiteral);
+        assertJava("0x00_FF__00_FF", Tokens.IntegerLiteral);
 
-        assertJava("0l", Lexems.IntegerLiteral);
-        assertJava("0777L", Lexems.IntegerLiteral);
-        assertJava("0x100000000L", Lexems.IntegerLiteral);
-        assertJava("2_147_483_648L", Lexems.IntegerLiteral);
-        assertJava("0xC0B0L", Lexems.IntegerLiteral);
+        assertJava("0l", Tokens.IntegerLiteral);
+        assertJava("0777L", Tokens.IntegerLiteral);
+        assertJava("0x100000000L", Tokens.IntegerLiteral);
+        assertJava("2_147_483_648L", Tokens.IntegerLiteral);
+        assertJava("0xC0B0L", Tokens.IntegerLiteral);
     }
 
     @Test
     public void testFloat() {
-        assertJava("1e1f", Lexems.FloatingPointLiteral);
-        assertJava("2.f", Lexems.FloatingPointLiteral);
-        assertJava(".3f", Lexems.FloatingPointLiteral);
-        assertJava("0f", Lexems.FloatingPointLiteral);
-        assertJava("3.14f", Lexems.FloatingPointLiteral);
-        assertJava("6.022137e+23f", Lexems.FloatingPointLiteral);
+        assertJava("1e1f", Tokens.FloatingPointLiteral);
+        assertJava("2.f", Tokens.FloatingPointLiteral);
+        assertJava(".3f", Tokens.FloatingPointLiteral);
+        assertJava("0f", Tokens.FloatingPointLiteral);
+        assertJava("3.14f", Tokens.FloatingPointLiteral);
+        assertJava("6.022137e+23f", Tokens.FloatingPointLiteral);
 
-        assertJava("1e1", Lexems.FloatingPointLiteral);
-        assertJava("2.", Lexems.FloatingPointLiteral);
-        assertJava(".3", Lexems.FloatingPointLiteral);
-        assertJava("0.0", Lexems.FloatingPointLiteral);
-        assertJava("3.14", Lexems.FloatingPointLiteral);
-        assertJava("1e-9d", Lexems.FloatingPointLiteral);
-        assertJava("1e137", Lexems.FloatingPointLiteral);
+        assertJava("1e1", Tokens.FloatingPointLiteral);
+        assertJava("2.", Tokens.FloatingPointLiteral);
+        assertJava(".3", Tokens.FloatingPointLiteral);
+        assertJava("0.0", Tokens.FloatingPointLiteral);
+        assertJava("3.14", Tokens.FloatingPointLiteral);
+        assertJava("1e-9d", Tokens.FloatingPointLiteral);
+        assertJava("1e137", Tokens.FloatingPointLiteral);
     }
 
     @Test
     public void testChars() {
-        assertJava("'a'", Lexems.CharacterLiteral);
-        assertJava("'%'", Lexems.CharacterLiteral);
-        assertJava("'\\t'", Lexems.CharacterLiteral);
-        assertJava("'\\\\'", Lexems.CharacterLiteral);
-        assertJava("'\\''", Lexems.CharacterLiteral);
-        assertJava("'\\u03a9'", Lexems.CharacterLiteral);
-        assertJava("'\\uFFFF'", Lexems.CharacterLiteral);
-        assertJava("'\\177'", Lexems.CharacterLiteral);
-        assertJava("'\u03a9'", Lexems.CharacterLiteral);
-        assertJava("'\u2297'", Lexems.CharacterLiteral);
+        assertJava("'a'", Tokens.CharacterLiteral);
+        assertJava("'%'", Tokens.CharacterLiteral);
+        assertJava("'\\t'", Tokens.CharacterLiteral);
+        assertJava("'\\\\'", Tokens.CharacterLiteral);
+        assertJava("'\\''", Tokens.CharacterLiteral);
+        assertJava("'\\u03a9'", Tokens.CharacterLiteral);
+        assertJava("'\\uFFFF'", Tokens.CharacterLiteral);
+        assertJava("'\\177'", Tokens.CharacterLiteral);
+        assertJava("'\u03a9'", Tokens.CharacterLiteral);
+        assertJava("'\u2297'", Tokens.CharacterLiteral);
     }
 
     @Test
     public void testStrings() {
-        assertJava("\"\"", Lexems.StringLiteral);
-        assertJava("\"\\\"\"", Lexems.StringLiteral);
-        assertJava("\"This is a string\"", Lexems.StringLiteral);
-        assertJava("\"\\n\"", Lexems.StringLiteral);
+        assertJava("\"\"", Tokens.StringLiteral);
+        assertJava("\"\\\"\"", Tokens.StringLiteral);
+        assertJava("\"This is a string\"", Tokens.StringLiteral);
+        assertJava("\"\\n\"", Tokens.StringLiteral);
     }
 
     @Test
     public void testBooleanAndNull() {
-        assertJava("null", Lexems.NullLiteral);
-        assertJava("true", Lexems.BooleanLiteral);
-        assertJava("false", Lexems.BooleanLiteral);
+        assertJava("null", Tokens.NullLiteral);
+        assertJava("true", Tokens.BooleanLiteral);
+        assertJava("false", Tokens.BooleanLiteral);
     }
 
     @Test
     public void testComments() {
         assertComment("x//asdad\n    \ny",
-                Lexems.Identifier, Lexems.EndOfLineComment, Lexems.Identifier);
+                Tokens.Identifier, Tokens.EndOfLineComment, Tokens.Identifier);
 
         assertComment("  /**/   ",
-                Lexems.TraditionalComment);
+                Tokens.TraditionalComment);
 
         assertComment("x /* this comment /* // /** ends here: */ y",
-                Lexems.Identifier, Lexems.TraditionalComment, Lexems.Identifier);
+                Tokens.Identifier, Tokens.TraditionalComment, Tokens.Identifier);
     }
 
     @Test
     public void testSeparators() {
         assertJava(" (    )    {    }    [    ]    ;    ,    . ",
-                Lexems.Lparen, Lexems.Rparen, Lexems.Lcurly, Lexems.Rcurly, Lexems.Lsquare, Lexems.Rsquare,
-                Lexems.Semicolon, Lexems.Comma, Lexems.Dot);
+                Tokens.Lparen, Tokens.Rparen, Tokens.Lcurly, Tokens.Rcurly, Tokens.Lsquare, Tokens.Rsquare,
+                Tokens.Semicolon, Tokens.Comma, Tokens.Dot);
     }
 
     @Test
     public void testOperators() {
         assertJava("=   >   <   !   ~   ?   :",
-                Lexems.Equal, Lexems.Greater, Lexems.Less, Lexems.Exclamation, Lexems.Tilde,
-                Lexems.Questionmark, Lexems.Colon);
+                Tokens.Equal, Tokens.Greater, Tokens.Less, Tokens.Exclamation, Tokens.Tilde,
+                Tokens.Questionmark, Tokens.Colon);
 
         assertJava("==  <=  >=  !=  &&  ||  ++  --",
-                Lexems.EqualEqual, Lexems.LessEqual, Lexems.GreaterEqual, Lexems.ExclamationEqual,
-                Lexems.AmpersandAmpersand, Lexems.OrOr, Lexems.PlusPlus, Lexems.MinusMinus);
+                Tokens.EqualEqual, Tokens.LessEqual, Tokens.GreaterEqual, Tokens.ExclamationEqual,
+                Tokens.AmpersandAmpersand, Tokens.OrOr, Tokens.PlusPlus, Tokens.MinusMinus);
 
         assertJava("+   -   *   /   &   |   ^   %   <<   >>   >>>	@",
-                Lexems.Plus, Lexems.Minus, Lexems.Mult, Lexems.Slash,
-                Lexems.Ampersand, Lexems.Or, Lexems.Xor, Lexems.Percent,
-                Lexems.LessLess, Lexems.GreaterGreater, Lexems.GreaterGreaterGreater, Lexems.Atsign);
+                Tokens.Plus, Tokens.Minus, Tokens.Mult, Tokens.Slash,
+                Tokens.Ampersand, Tokens.Or, Tokens.Xor, Tokens.Percent,
+                Tokens.LessLess, Tokens.GreaterGreater, Tokens.GreaterGreaterGreater, Tokens.Atsign);
 
         assertJava("+=  -=  *=  /=  &=  |=  ^=  %=  <<=  >>=  >>>=",
-                Lexems.PlusEqual, Lexems.MinusEqual, Lexems.MultEqual, Lexems.SlashEqual,
-                Lexems.AmpersandEqual, Lexems.OrEqual, Lexems.XorEqual, Lexems.PercentEqual,
-                Lexems.LessLessEqual, Lexems.GreaterGreaterEqual, Lexems.GreaterGreaterGreaterEqual);
+                Tokens.PlusEqual, Tokens.MinusEqual, Tokens.MultEqual, Tokens.SlashEqual,
+                Tokens.AmpersandEqual, Tokens.OrEqual, Tokens.XorEqual, Tokens.PercentEqual,
+                Tokens.LessLessEqual, Tokens.GreaterGreaterEqual, Tokens.GreaterGreaterGreaterEqual);
     }
 
-    private void assertJava(String text, int... lexems) {
+    private void assertJava(String text, int... tokens) {
         try {
             JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter());
             JavaLexer.LapgSymbol next;
             int index = 0;
-            while ((next = javaLexer.next()).symbol != Lexems.eoi) {
-                if (lexems.length == index) {
+            while ((next = javaLexer.next()).symbol != Tokens.eoi) {
+                if (tokens.length == index) {
                     fail("unexpected lexem after eoi: " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ")");
                 }
-                if (lexems[index] != next.symbol) {
-                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + lexems[index]);
+                if (tokens[index] != next.symbol) {
+                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + tokens[index]);
                 }
                 index++;
             }
-            if (index < lexems.length) {
-                fail("expected lexem: " + lexems[index]);
+            if (index < tokens.length) {
+                fail("expected lexem: " + tokens[index]);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -203,12 +203,12 @@ public class JavaLexerTest {
         }
     }
 
-    private void assertComment(String text, int... lexems) {
+    private void assertComment(String text, int... tokens) {
         try {
             JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter()) {
                 @Override
                 protected boolean createToken(JavaLexer.LapgSymbol lapg_n, int lexemIndex) throws IOException {
-                    if (lapg_n.symbol == Lexems.EndOfLineComment || lapg_n.symbol == Lexems.TraditionalComment) {
+                    if (lapg_n.symbol == Tokens.EndOfLineComment || lapg_n.symbol == Tokens.TraditionalComment) {
                         return true;
                     }
                     return super.createToken(lapg_n, lexemIndex);
@@ -216,17 +216,17 @@ public class JavaLexerTest {
             };
             JavaLexer.LapgSymbol next;
             int index = 0;
-            while ((next = javaLexer.next()).symbol != Lexems.eoi) {
-                if (lexems.length == index) {
+            while ((next = javaLexer.next()).symbol != Tokens.eoi) {
+                if (tokens.length == index) {
                     fail("unexpected lexem after eoi: " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ")");
                 }
-                if (lexems[index] != next.symbol) {
-                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + lexems[index]);
+                if (tokens[index] != next.symbol) {
+                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + tokens[index]);
                 }
                 index++;
             }
-            if (index < lexems.length) {
-                fail("expected lexem: " + lexems[index]);
+            if (index < tokens.length) {
+                fail("expected lexem: " + tokens[index]);
             }
         } catch (IOException e) {
             e.printStackTrace();

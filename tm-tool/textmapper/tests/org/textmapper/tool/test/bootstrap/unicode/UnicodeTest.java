@@ -19,7 +19,7 @@ import org.junit.Test;
 import org.textmapper.lapg.api.regex.CharacterSet;
 import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.ErrorReporter;
 import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.LapgSymbol;
-import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.Lexems;
+import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.Tokens;
 import org.textmapper.lapg.unicode.UnicodeData;
 
 import java.io.IOException;
@@ -34,28 +34,28 @@ public class UnicodeTest {
 
 	@Test
 	public void testInts() {
-		valid("12 23 123", Lexems.icon, Lexems.icon, Lexems.icon);
-		valid("900000000", Lexems.icon);
-		valid("\n\t 1 \t\n", Lexems.icon);
+		valid("12 23 123", Tokens.icon, Tokens.icon, Tokens.icon);
+		valid("900000000", Tokens.icon);
+		valid("\n\t 1 \t\n", Tokens.icon);
 	}
 
 	@Test
 	public void testIds() {
-		valid("_", Lexems.identifier);
-		valid("a", Lexems.identifier);
-		valid("aa12 23 zaAa_", Lexems.identifier, Lexems.icon, Lexems.identifier);
+		valid("_", Tokens.identifier);
+		valid("a", Tokens.identifier);
+		valid("aa12 23 zaAa_", Tokens.identifier, Tokens.icon, Tokens.identifier);
 	}
 
 	@Test
 	public void testStrings() {
-		valid("\"a\"", Lexems.string);
+		valid("\"a\"", Tokens.string);
 		CharacterSet Ll = UnicodeData.getInstance().getCharacterSet("Ll");
 		for (int[] range : Ll) {
 			for (int i = range[0]; i < range[1]; i++) {
 				// TODO support > 0xffff
 				if (i > 0xffff) return;
 				assertTrue(Ll.contains(i));
-				valid("\"" + Character.toString((char) i) + "\"", Lexems.string);
+				valid("\"" + Character.toString((char) i) + "\"", Tokens.string);
 			}
 		}
 	}
@@ -73,11 +73,11 @@ public class UnicodeTest {
 			for (int i = 0; i < expectedLexems.length; i++) {
 				int expected = expectedLexems[i];
 				next = lexer.next();
-				assertFalse(next.symbol == Lexems.eoi);
+				assertFalse(next.symbol == Tokens.eoi);
 				assertEquals(expected, next.symbol);
 			}
 			next = lexer.next();
-			assertTrue(next.symbol == Lexems.eoi);
+			assertTrue(next.symbol == Tokens.eoi);
 
 		} catch (IOException e) {
 			fail(e.toString());

@@ -10,7 +10,7 @@ ${template lexerCtor-}
 	public ${opts.prefix}Lexer(java.io.@Reader stream, ErrorReporter reporter, org.textmapper.lapg.api.@LexerData lexerData, org.textmapper.lapg.api.@Grammar grammar) throws java.io.@IOException {
 		this.reporter = reporter;
 		this.grammar = grammar;
-		tmRuleSymbol = getLexemNum(grammar);
+		tmRuleSymbol = getRuleSymbols(grammar);
 		tmCharClass = lexerData.getChar2no();
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
@@ -30,22 +30,22 @@ ${end}
 
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
-		int lexemKind = grammar.getLexerRules()[ruleIndex].getKind();
-		return lexemKind != org.textmapper.lapg.api.@LexerRule.KIND_SPACE;
+		int lexemeKind = grammar.getLexerRules()[ruleIndex].getKind();
+		return lexemeKind != org.textmapper.lapg.api.@LexerRule.KIND_SPACE;
 	}
 ${end}
 
 ${template statesInterface-}
 ${end}
 
-${template lexemsInterface}
-	public interface Lexems {
+${template tokensInterface}
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 	}
 ${end}
 
 ${template unpackRoutines}
-	private static int[] getLexemNum(org.textmapper.lapg.api.@Grammar grammar) {
+	private static int[] getRuleSymbols(org.textmapper.lapg.api.@Grammar grammar) {
 		org.textmapper.lapg.api.@LexerRule[] lexerRules = grammar.getLexerRules();
 		int[] result = new int[lexerRules.length];
 		for (int i = 0; i < lexerRules.length; i++) {
@@ -58,8 +58,6 @@ ${end}
 ${template lexerTables-}
 ${end}
 
-${cached query hasLexemActions() = false}
-
-${cached query classLexems() = []}
+${cached query hasLexerActions() = false}
 
 ${query tmStateMapExists() = true}

@@ -1,5 +1,5 @@
 ${template unit-}
-${call lexemsInterface-}
+${call tokensInterface-}
 ${call statesInterface-}
 
   ${opts.module}.Lexer = function(text, errorHandler) {
@@ -113,7 +113,7 @@ ${end}
 
 ${template createToken-}
     createToken: function(lapg_n, ruleIndex) {
-${if self->hasLexemActions()-}
+${if self->hasLexerActions()-}
       var spaceToken = false;
       switch (ruleIndex) {
 ${foreach rule in syntax.lexerRules-}
@@ -224,7 +224,7 @@ ${if self->tmStateMapExists()-}
     ],
 ${end-}
     tmRuleSymbol: [
-      ${util.format(syntax.lexemSymbols, 16, 2)}
+      ${util.format(syntax.lexerRuleTokens, 16, 2)}
     ],
     tmClassesCount: ${lex.nchars},
     tmGoto: [
@@ -233,8 +233,8 @@ ${end-}
 ${end}
 
 
-${template lexemsInterface-}
-  ${opts.module}.Lexemes = {
+${template tokensInterface-}
+  ${opts.module}.Tokens = {
 ${for i in [0, syntax.terminals - 1] separator ',\n'-}
     ${syntax.symbols[i].id->js.escapeJsReserved()}: ${i-}
 ${end}
@@ -254,7 +254,7 @@ ${end}
 
 ${cached query stateId() = self.name->js.escapeJsReserved()}
 
-${cached query hasLexemActions() =
+${cached query hasLexerActions() =
   syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
 ${cached query hasActions() = self.action || self.transitions && self.kindAsText != 'soft' || self.kindAsText == 'space' }

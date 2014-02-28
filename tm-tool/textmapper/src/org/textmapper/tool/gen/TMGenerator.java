@@ -186,7 +186,7 @@ public final class TMGenerator {
 		EvaluationContext evaluationContext = new EvaluationContext(context);
 		evaluationContext.setVariable("util", new TemplateStaticMethods());
 		evaluationContext.setVariable("context", context);
-		evaluationContext.setVariable("$", "lapg_gg.value");
+		evaluationContext.setVariable("$", "tmLeft.value");
 		return evaluationContext;
 	}
 

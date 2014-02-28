@@ -5,7 +5,7 @@ package ${call java.package};
 public ${if opts.lexerInput == 'custom'}abstract ${end}class ${opts.prefix}Lexer {
 ${call symbolClass-}
 ${call statesInterface-}
-${call lexemsInterface-}
+${call tokensInterface-}
 ${call errorReporter-}
 
 	public static final int TOKEN_SIZE = ${opts.maxtoken};
@@ -234,7 +234,7 @@ ${end}
 
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
-${if self->hasLexemActions()-}
+${if self->hasLexerActions()-}
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 ${foreach rule in syntax.lexerRules-}
@@ -383,7 +383,7 @@ ${if self->tmStateMapExists()-}
 	};
 
 ${end-}
-	private static final short[] tmRuleSymbol = ${syntax.lexemSymbols->java_pack.packShort()};
+	private static final short[] tmRuleSymbol = ${syntax.lexerRuleTokens->java_pack.packShort()};
 
 	private static final int tmClassesCount = ${lex.nchars};
 
@@ -419,8 +419,8 @@ ${end-}
 	}
 ${end}
 
-${template lexemsInterface}
-	public interface Lexems {
+${template tokensInterface}
+	public interface Tokens {
 		public static final int Unavailable_ = -1;
 ${for i in [0, syntax.terminals - 1]-}
 		public static final int ${syntax.symbols[i].id->java.escapeJavaReserved()} = ${i};
@@ -450,7 +450,7 @@ ${end}
 ${template lexercode-}
 ${end}
 
-${cached query hasLexemActions() =
+${cached query hasLexerActions() =
 	syntax.lexerRules.exists(l|l->hasActions() && !l.classRule || l.kindAsText == 'class')}
 
 ${cached query hasActions() = self.action || self.transitions && self.kindAsText != 'soft' || self.kindAsText == 'space' }
