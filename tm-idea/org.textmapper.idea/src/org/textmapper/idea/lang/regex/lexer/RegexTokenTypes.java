@@ -17,7 +17,7 @@
 package org.textmapper.idea.lang.regex.lexer;
 
 import com.intellij.psi.tree.IElementType;
-import org.textmapper.lapg.regex.RegexDefLexer.Lexems;
+import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 
 /**
  * evgeny, 3/4/12
@@ -26,31 +26,31 @@ public interface RegexTokenTypes {
 
 	IElementType RE_DELIMITERS = new RegexElementType(-1, "/");
 
-	IElementType RE_CHAR = new RegexElementType(Lexems._char, "char");
-	IElementType RE_ESCAPED = new RegexElementType(Lexems.escaped, "\\escaped");
-	IElementType RE_CHARCLASS = new RegexElementType(Lexems.charclass, "charclass");
+	IElementType RE_CHAR = new RegexElementType(Tokens._char, "char");
+	IElementType RE_ESCAPED = new RegexElementType(Tokens.escaped, "\\escaped");
+	IElementType RE_CHARCLASS = new RegexElementType(Tokens.charclass, "charclass");
 
-	IElementType RE_DOT = new RegexElementType(Lexems.Dot, ".");
-	IElementType RE_MULT = new RegexElementType(Lexems.Mult, "*");
-	IElementType RE_PLUS = new RegexElementType(Lexems.Plus, "+");
-	IElementType RE_QUESTIONMARK = new RegexElementType(Lexems.Questionmark, "?");
-	IElementType RE_QUANTFIER = new RegexElementType(Lexems.quantifier, "{n,m}");
+	IElementType RE_DOT = new RegexElementType(Tokens.Dot, ".");
+	IElementType RE_MULT = new RegexElementType(Tokens.Mult, "*");
+	IElementType RE_PLUS = new RegexElementType(Tokens.Plus, "+");
+	IElementType RE_QUESTIONMARK = new RegexElementType(Tokens.Questionmark, "?");
+	IElementType RE_QUANTFIER = new RegexElementType(Tokens.quantifier, "{n,m}");
 
-	IElementType RE_LPAREN = new RegexElementType(Lexems.Lparen, "(");
-	IElementType RE_LPARENQMARK = new RegexElementType(Lexems.LparenQuestionmark, "(?");
-	IElementType RE_OR = new RegexElementType(Lexems.Or, "|");
-	IElementType RE_RPAREN = new RegexElementType(Lexems.Rparen, ")");
-	IElementType RE_EXPAND = new RegexElementType(Lexems.expand, "{expand}");
+	IElementType RE_LPAREN = new RegexElementType(Tokens.Lparen, "(");
+	IElementType RE_LPARENQMARK = new RegexElementType(Tokens.LparenQuestionmark, "(?");
+	IElementType RE_OR = new RegexElementType(Tokens.Or, "|");
+	IElementType RE_RPAREN = new RegexElementType(Tokens.Rparen, ")");
+	IElementType RE_EXPAND = new RegexElementType(Tokens.expand, "{expand}");
 
-	IElementType RE_LSQUARE = new RegexElementType(Lexems.Lsquare, "[");
-	IElementType RE_LSQUAREXOR = new RegexElementType(Lexems.LsquareXor, "[^");
-	IElementType RE_MINUS = new RegexElementType(Lexems.Minus, "-");
-	IElementType RE_RSQUARE = new RegexElementType(Lexems.Rsquare, "]");
+	IElementType RE_LSQUARE = new RegexElementType(Tokens.Lsquare, "[");
+	IElementType RE_LSQUAREXOR = new RegexElementType(Tokens.LsquareXor, "[^");
+	IElementType RE_MINUS = new RegexElementType(Tokens.Minus, "-");
+	IElementType RE_RSQUARE = new RegexElementType(Tokens.Rsquare, "]");
 
-	IElementType RE_SETDIFF = new RegexElementType(Lexems.op_minus, "{-}");
-	IElementType RE_SETUNION = new RegexElementType(Lexems.op_union, "{+}");
-	IElementType RE_INTERSECT = new RegexElementType(Lexems.op_intersect, "{&&}");
-	IElementType RE_EOI = new RegexElementType(Lexems.kw_eoi, "{eoi}");
+	IElementType RE_SETDIFF = new RegexElementType(Tokens.op_minus, "{-}");
+	IElementType RE_SETUNION = new RegexElementType(Tokens.op_union, "{+}");
+	IElementType RE_INTERSECT = new RegexElementType(Tokens.op_intersect, "{&&}");
+	IElementType RE_EOI = new RegexElementType(Tokens.kw_eoi, "{eoi}");
 
 	IElementType RE_BAD = new RegexElementType(-1, "bad char");
 }

@@ -20,7 +20,7 @@ import com.intellij.lexer.LexerBase;
 import com.intellij.psi.tree.IElementType;
 import org.textmapper.lapg.regex.RegexDefLexer;
 import org.textmapper.lapg.regex.RegexDefLexer.LapgSymbol;
-import org.textmapper.lapg.regex.RegexDefLexer.Lexems;
+import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -130,11 +130,11 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 				fTokenLength = 1;
 				return RE_DELIMITERS;
 			}
-			if (lexem.symbol == Lexems.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
+			if (lexem.symbol == Tokens.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
 				fTokenLength--;
 				return RE_BAD;
 			}
-			if (lexem.symbol == Lexems.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
+			if (lexem.symbol == Tokens.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
 				return RE_DELIMITERS;
 			}
 			return RE_BAD;
@@ -144,57 +144,57 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		LapgSymbol currentLexem = lexem;
 		lexem = null;
 		switch (token) {
-			case Lexems._char:
+			case Tokens._char:
 				return RE_CHAR;
-			case Lexems.escaped:
+			case Tokens.escaped:
 				return RE_ESCAPED;
-			case Lexems.charclass:
+			case Tokens.charclass:
 				return RE_CHARCLASS;
 
-			case Lexems.Dot:
+			case Tokens.Dot:
 				return RE_DOT;
-			case Lexems.Mult:
+			case Tokens.Mult:
 				return RE_MULT;
-			case Lexems.Plus:
+			case Tokens.Plus:
 				return RE_PLUS;
-			case Lexems.Questionmark:
+			case Tokens.Questionmark:
 				return RE_QUESTIONMARK;
-			case Lexems.quantifier:
+			case Tokens.quantifier:
 				return RE_QUANTFIER;
 
-			case Lexems.Lparen:
+			case Tokens.Lparen:
 				return RE_LPAREN;
-			case Lexems.LparenQuestionmark:
+			case Tokens.LparenQuestionmark:
 				return RE_LPARENQMARK;
-			case Lexems.Or:
+			case Tokens.Or:
 				return RE_OR;
-			case Lexems.Rparen:
+			case Tokens.Rparen:
 				return RE_RPAREN;
-			case Lexems.expand:
+			case Tokens.expand:
 				return RE_EXPAND;
 
-			case Lexems.Lsquare:
+			case Tokens.Lsquare:
 				return RE_LSQUARE;
-			case Lexems.LsquareXor:
+			case Tokens.LsquareXor:
 				return RE_LSQUAREXOR;
-			case Lexems.Minus:
+			case Tokens.Minus:
 				return RE_MINUS;
-			case Lexems.Rsquare:
+			case Tokens.Rsquare:
 				return RE_RSQUARE;
 
-			case Lexems.kw_eoi:
+			case Tokens.kw_eoi:
 				return RE_EOI;
-			case Lexems.op_intersect:
+			case Tokens.op_intersect:
 				return RE_INTERSECT;
-			case Lexems.op_minus:
+			case Tokens.op_minus:
 				return RE_SETDIFF;
-			case Lexems.op_union:
+			case Tokens.op_union:
 				return RE_SETUNION;
 		}
 
 		/* default, eoi */
 		lexem = currentLexem;
-		assert lexem.symbol == Lexems.eoi && lexem.endoffset == fDocumentLength;
+		assert lexem.symbol == Tokens.eoi && lexem.endoffset == fDocumentLength;
 		return null;
 	}
 

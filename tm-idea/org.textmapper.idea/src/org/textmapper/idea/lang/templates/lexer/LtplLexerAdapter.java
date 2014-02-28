@@ -21,7 +21,7 @@ import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.textmapper.templates.ast.TemplatesLexer;
 import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
-import org.textmapper.templates.ast.TemplatesLexer.Lexems;
+import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -121,143 +121,143 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		LapgSymbol currentLexem = lexem;
 		lexem = null;
 		switch (token) {
-			case Lexems.identifier:
+			case Tokens.identifier:
 				return IDENTIFIER;
-			case Lexems.any:
+			case Tokens.any:
 				return ANY;
-			case Lexems.escdollar:
+			case Tokens.escdollar:
 				return OP_ESCDOLLAR;
-			case Lexems.escid:
+			case Tokens.escid:
 				return ESCID;
-			case Lexems.escint:
+			case Tokens.escint:
 				return ESCINT;
-			case Lexems.DollarLcurly:
+			case Tokens.DollarLcurly:
 				return OP_DOLLARLCURLY;
-			case Lexems.DollarSlash:
+			case Tokens.DollarSlash:
 				return OP_DOLLARSLASH;
-			case Lexems.icon:
+			case Tokens.icon:
 				return ICON;
-			case Lexems.ccon:
+			case Tokens.ccon:
 				return CCON;
 
 			// keywords
-			case Lexems.Lcall:
+			case Tokens.Lcall:
 				return KW_CALL;
-			case Lexems.Lcached:
+			case Tokens.Lcached:
 				return KW_CACHED;
-			case Lexems.Lcase:
+			case Tokens.Lcase:
 				return KW_CASE;
-			case Lexems.Lend:
+			case Tokens.Lend:
 				return KW_END;
-			case Lexems.Lelse:
+			case Tokens.Lelse:
 				return KW_ELSE;
-			case Lexems.Leval:
+			case Tokens.Leval:
 				return KW_EVAL;
-			case Lexems.Lfalse:
+			case Tokens.Lfalse:
 				return KW_FALSE;
-			case Lexems.Lfor:
+			case Tokens.Lfor:
 				return KW_FOR;
-			case Lexems.Lfile:
+			case Tokens.Lfile:
 				return KW_FILE;
-			case Lexems.Lforeach:
+			case Tokens.Lforeach:
 				return KW_FOREACH;
-			case Lexems.Lgrep:
+			case Tokens.Lgrep:
 				return KW_GREP;
-			case Lexems.Lif:
+			case Tokens.Lif:
 				return KW_IF;
-			case Lexems.Lin:
+			case Tokens.Lin:
 				return KW_IN;
-			case Lexems.Limport:
+			case Tokens.Limport:
 				return KW_IMPORT;
-			case Lexems.Lis:
+			case Tokens.Lis:
 				return KW_IS;
-			case Lexems.Lmap:
+			case Tokens.Lmap:
 				return KW_MAP;
-			case Lexems.Lnew:
+			case Tokens.Lnew:
 				return KW_NEW;
-			case Lexems.Lnull:
+			case Tokens.Lnull:
 				return KW_NULL;
-			case Lexems.Lquery:
+			case Tokens.Lquery:
 				return KW_QUERY;
-			case Lexems.Lswitch:
+			case Tokens.Lswitch:
 				return KW_SWITCH;
-			case Lexems.Lseparator:
+			case Tokens.Lseparator:
 				return KW_SEPARATOR;
-			case Lexems.Ltemplate:
+			case Tokens.Ltemplate:
 				return KW_TEMPLATE;
-			case Lexems.Ltrue:
+			case Tokens.Ltrue:
 				return KW_TRUE;
-			case Lexems.Lself:
+			case Tokens.Lself:
 				return KW_SELF;
-			case Lexems.Lassert:
+			case Tokens.Lassert:
 				return KW_ASSERT;
 
 			// operators
-			case Lexems.Lcurly:
+			case Tokens.Lcurly:
 				return OP_LCURLY;
-			case Lexems.Rcurly:
+			case Tokens.Rcurly:
 				return OP_RCURLY;
-			case Lexems.MinusRcurly:
+			case Tokens.MinusRcurly:
 				return OP_MINUSRCURLY;
-			case Lexems.Plus:
+			case Tokens.Plus:
 				return OP_PLUS;
-			case Lexems.Minus:
+			case Tokens.Minus:
 				return OP_MINUS;
-			case Lexems.Mult:
+			case Tokens.Mult:
 				return OP_MULT;
-			case Lexems.Slash:
+			case Tokens.Slash:
 				return OP_SLASH;
-			case Lexems.Percent:
+			case Tokens.Percent:
 				return OP_PERCENT;
-			case Lexems.Exclamation:
+			case Tokens.Exclamation:
 				return OP_EXCLAMATION;
-			case Lexems.Or:
+			case Tokens.Or:
 				return OP_OR;
-			case Lexems.Lsquare:
+			case Tokens.Lsquare:
 				return OP_LSQUARE;
-			case Lexems.Rsquare:
+			case Tokens.Rsquare:
 				return OP_RSQUARE;
-			case Lexems.Lparen:
+			case Tokens.Lparen:
 				return OP_LPAREN;
-			case Lexems.Rparen:
+			case Tokens.Rparen:
 				return OP_RPAREN;
-			case Lexems.Dot:
+			case Tokens.Dot:
 				return OP_DOT;
-			case Lexems.Comma:
+			case Tokens.Comma:
 				return OP_COMMA;
-			case Lexems.AmpersandAmpersand:
+			case Tokens.AmpersandAmpersand:
 				return OP_AMPERSANDAMPERSAND;
-			case Lexems.OrOr:
+			case Tokens.OrOr:
 				return OP_OROR;
-			case Lexems.EqualEqual:
+			case Tokens.EqualEqual:
 				return OP_EQUALEQUAL;
-			case Lexems.Equal:
+			case Tokens.Equal:
 				return OP_EQUAL;
-			case Lexems.ExclamationEqual:
+			case Tokens.ExclamationEqual:
 				return OP_EXCLAMATIONEQUAL;
-			case Lexems.MinusGreater:
+			case Tokens.MinusGreater:
 				return OP_MINUSGREATER;
-			case Lexems.EqualGreater:
+			case Tokens.EqualGreater:
 				return OP_EQUALGREATER;
-			case Lexems.LessEqual:
+			case Tokens.LessEqual:
 				return OP_LESSEQUAL;
-			case Lexems.GreaterEqual:
+			case Tokens.GreaterEqual:
 				return OP_GREATEREQUAL;
-			case Lexems.Less:
+			case Tokens.Less:
 				return OP_LESS;
-			case Lexems.Greater:
+			case Tokens.Greater:
 				return OP_GREATER;
-			case Lexems.Colon:
+			case Tokens.Colon:
 				return OP_COLON;
-			case Lexems.Questionmark:
+			case Tokens.Questionmark:
 				return OP_QUESTIONMARK;
-			case Lexems._skip:
+			case Tokens._skip:
 				return WHITESPACE;
 		}
 
 		/* default, eoi */
 		lexem = currentLexem;
-		assert lexem.symbol == Lexems.eoi && lexem.endoffset == fDocumentLength;
+		assert lexem.symbol == Tokens.eoi && lexem.endoffset == fDocumentLength;
 		return null;
 	}
 

@@ -32,7 +32,7 @@ import org.textmapper.idea.lang.syntax.lexer.TMElementType;
 import org.textmapper.idea.lang.syntax.lexer.TMLexerAdapter;
 import org.textmapper.idea.lang.syntax.lexer.TMTokenTypes;
 import org.textmapper.idea.lang.syntax.psi.*;
-import org.textmapper.tool.parser.TMParser.Tokens;
+import org.textmapper.tool.parser.TMParser.Nonterminals;
 
 public class TMParserDefinition implements ParserDefinition {
 
@@ -68,59 +68,59 @@ public class TMParserDefinition implements ParserDefinition {
 	public PsiElement createElement(ASTNode node) {
 		IElementType type = node.getElementType();
 		switch (((TMElementType) type).getSymbol()) {
-			case Tokens.input:
+			case Nonterminals.input:
 				return new TmGrammar(node);
-			case Tokens.header:
+			case Nonterminals.header:
 				return new TmHeader(node);
-			case Tokens.import_:
+			case Nonterminals.import_:
 				return new TmImport(node);
-			case Tokens.option:
+			case Nonterminals.option:
 				return new TmOption(node);
-			case Tokens.lexem_attrs:
-				return new TmLexemAttrs(node);
-			case Tokens.state_selector:
+			case Nonterminals.lexeme_attrs:
+				return new TmLexemeAttrs(node);
+			case Nonterminals.state_selector:
 				return new TmLexerStateSelector(node);
-			case Tokens.lexer_state:
+			case Nonterminals.lexer_state:
 				return new TmLexerState(node);
-			case Tokens.rule0:
+			case Nonterminals.rule0:
 				return new TmRule(node);
-			case Tokens.rules:
+			case Nonterminals.rules:
 				return new TmRuleGroup(node);
-			case Tokens.rhsPrefix:
+			case Nonterminals.rhsPrefix:
 				return new TmRhsPrefix(node);
-			case Tokens.rhsSuffix:
+			case Nonterminals.rhsSuffix:
 				return new TmRhsSuffix(node);
-			case Tokens.rhsAnnotated:
+			case Nonterminals.rhsAnnotated:
 				return new TmRhsAnnotated(node);
-			case Tokens.rhsUnordered:
+			case Nonterminals.rhsUnordered:
 				return new TmRhsUnordered(node);
-			case Tokens.rhsPrimary:
+			case Nonterminals.rhsPrimary:
 				return new TmRhsPrimary(node);
-			case Tokens.command:
+			case Nonterminals.command:
 				return new TmAction(node);
-			case Tokens.type:
+			case Nonterminals.type:
 				return new TmType(node);
-			case Tokens.annotation:
+			case Nonterminals.annotation:
 				return new TmAnnotation(node);
-			case Tokens.expression:
+			case Nonterminals.expression:
 				return new TmExpression(node);
-			case Tokens.symref:
+			case Nonterminals.symref:
 				return new TmSymbolReference(node);
-			case Tokens.stateref:
+			case Nonterminals.stateref:
 				return new TmStateReference(node);
-			case Tokens.identifier:
+			case Nonterminals.identifier:
 				return new TmIdentifier(node);
-			case Tokens.qualified_id:
+			case Nonterminals.qualified_id:
 				return new TmQualifiedIdentifier(node);
-			case Tokens.lexeme:
+			case Nonterminals.lexeme:
 				return new TmLexem(node);
-			case Tokens.named_pattern:
+			case Nonterminals.named_pattern:
 				return new TmNamedPattern(node);
-			case Tokens.nonterm:
+			case Nonterminals.nonterm:
 				return new TmNonterm(node);
-			case Tokens.nonterm_type:
+			case Nonterminals.nonterm_type:
 				return new TmNontermType(node);
-			case Tokens.directive:
+			case Nonterminals.directive:
 				return new TmDirective(node);
 		}
 

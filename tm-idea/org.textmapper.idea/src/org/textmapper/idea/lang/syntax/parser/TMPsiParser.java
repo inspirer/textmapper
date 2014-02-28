@@ -28,9 +28,10 @@ import org.textmapper.idea.lang.syntax.lexer.TMTemplatesElementType;
 import org.textmapper.tool.parser.TMLexer;
 import org.textmapper.tool.parser.TMLexer.ErrorReporter;
 import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Tokens;
 import org.textmapper.tool.parser.TMParser;
 import org.textmapper.tool.parser.TMParser.ParseException;
-import org.textmapper.tool.parser.TMParser.Tokens;
+import org.textmapper.tool.parser.TMParser.Nonterminals;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -50,7 +51,7 @@ public class TMPsiParser implements PsiParser {
 				result.put(symbol, t);
 			}
 		}
-		result.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
+		result.put(Nonterminals.syntax_problem, TokenType.ERROR_ELEMENT);
 		return result;
 	}
 
@@ -162,14 +163,14 @@ public class TMPsiParser implements PsiParser {
 				if (elementType != null) {
 					lapg_gg.value = clone(m);
 
-					if (lapg_gg.symbol == Tokens.syntax_problem) {
+					if (lapg_gg.symbol == Nonterminals.syntax_problem) {
 						m.error("syntax error");
 					} else {
 						m.done(elementType);
 					}
 				}
 			}
-			if (lapg_gg.symbol == Tokens.input) {
+			if (lapg_gg.symbol == Nonterminals.input) {
 				drop(lapg_gg);
 			}
 		}
@@ -222,14 +223,14 @@ public class TMPsiParser implements PsiParser {
 			}
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
-				next.symbol = Lexems.eoi;
+				next.symbol = Tokens.eoi;
 			} else if (myBuilder.getTokenType() instanceof TMTemplatesElementType) {
 				TMTemplatesElementType tokenType = (TMTemplatesElementType) myBuilder.getTokenType();
 				next.symbol = tokenType.getSymbol();
 			} else {
 				TMElementType tokenType = (TMElementType) myBuilder.getTokenType();
 				next.symbol = tokenType.getSymbol();
-				if (next.symbol == Tokens.command) {
+				if (next.symbol == Nonterminals.command) {
 					// temp hack
 					return nextInternal();
 				}

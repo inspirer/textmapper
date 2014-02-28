@@ -20,42 +20,42 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.IFileElementType;
 import org.textmapper.idea.lang.syntax.TMFileType;
 import org.textmapper.idea.lang.syntax.lexer.TMElementType;
-import org.textmapper.tool.parser.TMParser.Tokens;
+import org.textmapper.tool.parser.TMParser.Nonterminals;
 
 public interface TextmapperElementTypes {
 	final IFileElementType FILE = new IFileElementType(TMFileType.TM_LANGUAGE);
-	public static final IElementType GRAMMAR = new TMElementType(Tokens.input, "grammar");
+	public static final IElementType GRAMMAR = new TMElementType(Nonterminals.input, "grammar");
 
-	public static final IElementType HEADER = new TMElementType(Tokens.header, "header");
-	public static final IElementType IMPORT = new TMElementType(Tokens.import_, "import");
-	public static final IElementType OPTION = new TMElementType(Tokens.option, "option");
+	public static final IElementType HEADER = new TMElementType(Nonterminals.header, "header");
+	public static final IElementType IMPORT = new TMElementType(Nonterminals.import_, "import");
+	public static final IElementType OPTION = new TMElementType(Nonterminals.option, "option");
 
-	public static final IElementType LEXEM = new TMElementType(Tokens.lexeme, "lexem");
-	public static final IElementType NAMED_PATTERN = new TMElementType(Tokens.named_pattern, "pattern");
-	public static final IElementType STATE_SELECTOR = new TMElementType(Tokens.state_selector, "lexer state selector");
-	public static final IElementType LEXEM_ATTRS = new TMElementType(Tokens.lexem_attrs, "lexem attrs");
-	public static final IElementType LEXER_STATE = new TMElementType(Tokens.lexer_state, "lexer state");
+	public static final IElementType LEXEM = new TMElementType(Nonterminals.lexeme, "lexem");
+	public static final IElementType NAMED_PATTERN = new TMElementType(Nonterminals.named_pattern, "pattern");
+	public static final IElementType STATE_SELECTOR = new TMElementType(Nonterminals.state_selector, "lexer state selector");
+	public static final IElementType LEXEM_ATTRS = new TMElementType(Nonterminals.lexeme_attrs, "lexeme attrs");
+	public static final IElementType LEXER_STATE = new TMElementType(Nonterminals.lexer_state, "lexer state");
 
-	public static final IElementType NONTERM = new TMElementType(Tokens.nonterm, "nonterminal");
-	public static final IElementType NONTERM_TYPE = new TMElementType(Tokens.nonterm_type, "nonterminal type");
-	public static final IElementType DIRECTIVE = new TMElementType(Tokens.directive, "directive");
+	public static final IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
+	public static final IElementType NONTERM_TYPE = new TMElementType(Nonterminals.nonterm_type, "nonterminal type");
+	public static final IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
 
-	public static final IElementType RULE = new TMElementType(Tokens.rule0, "rule");
-	public static final IElementType RHS_PREFIX = new TMElementType(Tokens.rhsPrefix, "rhs prefix");
-	public static final IElementType RHS_SUFFIX = new TMElementType(Tokens.rhsSuffix, "rhs suffix");
-	public static final IElementType RHS_PART = new TMElementType(Tokens.rhsAnnotated, "rhs part");
-	public static final IElementType RHS_UNORDERED = new TMElementType(Tokens.rhsUnordered, "rhs unordered");
-	public static final IElementType RHS_PRIMARY = new TMElementType(Tokens.rhsPrimary, "rhs primary");
-	public static final IElementType RHS_BRACKETS_PAIR = new TMElementType(Tokens.rhsBracketsPair, "brackets pair");
+	public static final IElementType RULE = new TMElementType(Nonterminals.rule0, "rule");
+	public static final IElementType RHS_PREFIX = new TMElementType(Nonterminals.rhsPrefix, "rhs prefix");
+	public static final IElementType RHS_SUFFIX = new TMElementType(Nonterminals.rhsSuffix, "rhs suffix");
+	public static final IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
+	public static final IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
+	public static final IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
+	public static final IElementType RHS_BRACKETS_PAIR = new TMElementType(Nonterminals.rhsBracketsPair, "brackets pair");
 
-	public static final IElementType ACTION = new TMElementType(Tokens.command, "action");
-	public static final IElementType TYPE = new TMElementType(Tokens.type, "type");
-	public static final IElementType ANNOTATION = new TMElementType(Tokens.annotation, "annotation");
-	public static final IElementType EXPRESSION = new TMElementType(Tokens.expression, "expression");
-	public static final IElementType SYMREF = new TMElementType(Tokens.symref, "symbol reference");
-	public static final IElementType STATEREF = new TMElementType(Tokens.stateref, "state reference");
-	public static final IElementType IDENTIFIER = new TMElementType(Tokens.identifier, "symbol");
-	public static final IElementType QUALIFIED_ID = new TMElementType(Tokens.qualified_id, "qualified identifier");
+	public static final IElementType ACTION = new TMElementType(Nonterminals.command, "action");
+	public static final IElementType TYPE = new TMElementType(Nonterminals.type, "type");
+	public static final IElementType ANNOTATION = new TMElementType(Nonterminals.annotation, "annotation");
+	public static final IElementType EXPRESSION = new TMElementType(Nonterminals.expression, "expression");
+	public static final IElementType SYMREF = new TMElementType(Nonterminals.symref, "symbol reference");
+	public static final IElementType STATEREF = new TMElementType(Nonterminals.stateref, "state reference");
+	public static final IElementType IDENTIFIER = new TMElementType(Nonterminals.identifier, "symbol");
+	public static final IElementType QUALIFIED_ID = new TMElementType(Nonterminals.qualified_id, "qualified identifier");
 
 	public static final IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,

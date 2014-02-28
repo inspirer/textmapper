@@ -27,9 +27,10 @@ import org.textmapper.idea.lang.templates.lexer.LtplElementType;
 import org.textmapper.templates.ast.TemplatesLexer;
 import org.textmapper.templates.ast.TemplatesLexer.ErrorReporter;
 import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 import org.textmapper.templates.ast.TemplatesParser;
 import org.textmapper.templates.ast.TemplatesParser.ParseException;
-import org.textmapper.templates.ast.TemplatesParser.Tokens;
+import org.textmapper.templates.ast.TemplatesParser.Nonterminals;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -46,7 +47,7 @@ public class LtplParser implements PsiParser {
 
 	private static Map<Integer, IElementType> initTypes() {
 		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
-		result.put(Tokens.syntax_problem, TokenType.ERROR_ELEMENT);
+		result.put(Nonterminals.syntax_problem, TokenType.ERROR_ELEMENT);
 		for (IElementType t : LtplElementTypes.allElements) {
 			result.put(((LtplElementType) t).getSymbol(), t);
 		}
@@ -192,14 +193,14 @@ public class LtplParser implements PsiParser {
 				if (elementType != null) {
 					lapg_gg.value = clone(m);
 
-					if (lapg_gg.symbol == Tokens.syntax_problem) {
+					if (lapg_gg.symbol == Nonterminals.syntax_problem) {
 						m.error("syntax error");
 					} else {
 						m.done(elementType);
 					}
 				}
 			}
-			if (lapg_gg.symbol == Tokens.input || lapg_gg.symbol == Tokens.body) {
+			if (lapg_gg.symbol == Nonterminals.input || lapg_gg.symbol == Nonterminals.body) {
 				drop(lapg_gg);
 			}
 		}
@@ -252,7 +253,7 @@ public class LtplParser implements PsiParser {
 			}
 			next = new LapgSymbol();
 			if (myBuilder.eof()) {
-				next.symbol = Lexems.eoi;
+				next.symbol = Tokens.eoi;
 			} else {
 				LtplElementType tokenType = (LtplElementType) myBuilder.getTokenType();
 				next.symbol = tokenType.getSymbol();

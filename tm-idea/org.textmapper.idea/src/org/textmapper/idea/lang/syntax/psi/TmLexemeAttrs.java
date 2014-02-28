@@ -22,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * evgeny, 8/14/12
  */
-public class TmLexemAttrs extends TmElement {
-	public TmLexemAttrs(@NotNull ASTNode node) {
+public class TmLexemeAttrs extends TmElement {
+	public TmLexemeAttrs(@NotNull ASTNode node) {
 		super(node);
 	}
 }

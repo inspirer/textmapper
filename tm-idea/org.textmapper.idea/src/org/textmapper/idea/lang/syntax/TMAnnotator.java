@@ -71,7 +71,7 @@ public class TMAnnotator implements Annotator {
 				|| element instanceof TmRhsSuffix
 				|| element instanceof TmNontermType
 				|| element instanceof TmHeader
-				|| element instanceof TmLexemAttrs) {
+				|| element instanceof TmLexemeAttrs) {
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
 				if (isSoft(((TMElementType) token.getTokenType()).getSymbol())) {
 					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);

@@ -20,7 +20,7 @@ import org.eclipse.jface.text.rules.Token;
 import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
 import org.textmapper.tool.parser.TMLexer;
 import org.textmapper.tool.parser.TMLexer.LapgSymbol;
-import org.textmapper.tool.parser.TMLexer.Lexems;
+import org.textmapper.tool.parser.TMLexer.Tokens;
 
 public class LapgPartitionScanner extends LexerBasedPartitionScanner implements IPartitions {
 
@@ -49,19 +49,19 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		}
 		int token = lexem.symbol;
 		switch (token) {
-			case Lexems._skip_comment:
-			case Lexems.scon:
-			case Lexems.regexp:
+			case Tokens._skip_comment:
+			case Tokens.scon:
+			case Tokens.regexp:
 				fTokenLength = lexem.endoffset - fTokenOffset;
 				lexem = null;
-				if (token == Lexems._skip_comment) {
+				if (token == Tokens._skip_comment) {
 					return fComment;
-				} else if (token == Lexems.scon) {
+				} else if (token == Tokens.scon) {
 					return fString;
 				} else {
 					return fRegexp;
 				}
-			case Lexems.code:
+			case Tokens.code:
 				fTokenLength = lexem.endoffset - fTokenOffset;
 				lexem = null;
 				return fAction;
@@ -110,12 +110,12 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		@Override
 		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
 			switch (lapg_n.symbol) {
-				case Lexems._skip_comment:
-				case Lexems.scon:
-				case Lexems.regexp:
-				case Lexems.eoi:
+				case Tokens._skip_comment:
+				case Tokens.scon:
+				case Tokens.regexp:
+				case Tokens.eoi:
 					return true;
-				case Lexems.code:
+				case Tokens.code:
 					return super.createToken(lapg_n, lexemIndex);
 			}
 			return false;

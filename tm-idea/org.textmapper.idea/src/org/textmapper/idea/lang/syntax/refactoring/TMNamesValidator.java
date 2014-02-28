@@ -19,7 +19,7 @@ package org.textmapper.idea.lang.syntax.refactoring;
 import com.intellij.lang.refactoring.NamesValidator;
 import com.intellij.openapi.project.Project;
 import org.textmapper.tool.parser.TMLexer;
-import org.textmapper.tool.parser.TMLexer.Lexems;
+import org.textmapper.tool.parser.TMLexer.Tokens;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -41,7 +41,7 @@ public class TMNamesValidator implements NamesValidator {
 	public boolean isIdentifier(String name, Project project) {
 		try {
 			TMLexer lapgLexer = new ValidatingLexer(name);
-			return lapgLexer.next().symbol == Lexems.ID && lapgLexer.next().symbol == Lexems.eoi;
+			return lapgLexer.next().symbol == Tokens.ID && lapgLexer.next().symbol == Tokens.eoi;
 		} catch (Exception ignored) {
 		}
 		return false;
