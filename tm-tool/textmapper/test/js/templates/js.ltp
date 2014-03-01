@@ -85,7 +85,7 @@ ${end-}
 		this.lapg_n = lexer.next();
 
 		while (this.lapg_m[this.lapg_head].state != ${syntax.input.length > 1 ? (parser.nstates - syntax.input.length) + '+state' : parser.nstates-1}) {
-			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.lexem);
+			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				this.reduce(lapg_i);
@@ -97,7 +97,7 @@ ${end-}
 
 			if (lapg_i == -2 || this.lapg_m[this.lapg_head].state == -1) {
 ${if syntax.error-}
-				if (this.lapg_n.lexem == 0) {
+				if (this.lapg_n.symbol == 0) {
 					break;
 				}
 				while (this.lapg_head >= 0 && this.lapg_state_sym(this.lapg_m[this.lapg_head].state, ${syntax.error.index}) == -1) {
@@ -106,7 +106,7 @@ ${if syntax.error-}
 				}
 				if (this.lapg_head >= 0) {
 					this.lapg_m[++this.lapg_head] = {
-						lexem: ${syntax.error.index},
+						symbol: ${syntax.error.index},
 						state: this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, ${syntax.error.index}),
 ${if opts.positions.contains('line')-}
 						line: this.lapg_n.line,
@@ -166,11 +166,11 @@ ${end-}
 
 	shift: function(lexer) {
 		this.lapg_m[++this.lapg_head] = this.lapg_n;
-		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.lexem);
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.symbol);
 		if (${opts.prefix}.DEBUG_SYNTAX) {
-			${opts.prefix}.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.lexem] + " (" + lexer.token + ")");
+			${opts.prefix}.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.symbol] + " (" + lexer.token + ")");
 		}
-		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.lexem != 0) {
+		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.symbol != 0) {
 			this.lapg_n = lexer.next();
 		}
 	},
@@ -178,7 +178,7 @@ ${end-}
 	reduce: function(rule) {
 		var lapg_gg = {};
 		lapg_gg.sym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = this.lapg_rlex[rule];
+		lapg_gg.symbol = this.lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (${opts.prefix}.DEBUG_SYNTAX) {
 			${opts.prefix}.DEBUG_SYNTAX("reduce to " + this.lapg_syms[this.lapg_rlex[rule]]);
@@ -224,7 +224,7 @@ ${end-}
 			this.lapg_m[this.lapg_head--] = null;
 		}
 		this.lapg_m[++this.lapg_head] = lapg_gg;
-		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, lapg_gg.lexem);
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, lapg_gg.symbol);
 	}
 ${if syntax.input.length > 1-}
 ${foreach inp in syntax.input}

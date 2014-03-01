@@ -187,15 +187,17 @@ public class JavaLexerTest {
             int index = 0;
             while ((next = javaLexer.next()).symbol != Tokens.eoi) {
                 if (tokens.length == index) {
-                    fail("unexpected lexem after eoi: " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ")");
+                    fail("unexpected token after eoi: " + next.symbol + "(" + text.substring(next.offset,
+							next.endoffset) + ")");
                 }
                 if (tokens[index] != next.symbol) {
-                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + tokens[index]);
-                }
+					fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset,
+							next.endoffset) + ") instead of " + tokens[index]);
+				}
                 index++;
             }
             if (index < tokens.length) {
-                fail("expected lexem: " + tokens[index]);
+                fail("expected token: " + tokens[index]);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -207,26 +209,28 @@ public class JavaLexerTest {
         try {
             JavaLexer javaLexer = new JavaLexer(new StringReader(text), testReporter()) {
                 @Override
-                protected boolean createToken(JavaLexer.LapgSymbol lapg_n, int lexemIndex) throws IOException {
+                protected boolean createToken(JavaLexer.LapgSymbol lapg_n, int ruleIndex) throws IOException {
                     if (lapg_n.symbol == Tokens.EndOfLineComment || lapg_n.symbol == Tokens.TraditionalComment) {
                         return true;
                     }
-                    return super.createToken(lapg_n, lexemIndex);
+                    return super.createToken(lapg_n, ruleIndex);
                 }
             };
             JavaLexer.LapgSymbol next;
             int index = 0;
             while ((next = javaLexer.next()).symbol != Tokens.eoi) {
                 if (tokens.length == index) {
-                    fail("unexpected lexem after eoi: " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ")");
+                    fail("unexpected token after eoi: " + next.symbol + "(" + text.substring(next.offset,
+							next.endoffset) + ")");
                 }
-                if (tokens[index] != next.symbol) {
-                    fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset, next.endoffset) + ") instead of " + tokens[index]);
-                }
-                index++;
+				if (tokens[index] != next.symbol) {
+					fail(next.line + ": got " + next.symbol + "(" + text.substring(next.offset,
+							next.endoffset) + ") instead of " + tokens[index]);
+				}
+				index++;
             }
             if (index < tokens.length) {
-                fail("expected lexem: " + tokens[index]);
+                fail("expected token: " + tokens[index]);
             }
         } catch (IOException e) {
             e.printStackTrace();

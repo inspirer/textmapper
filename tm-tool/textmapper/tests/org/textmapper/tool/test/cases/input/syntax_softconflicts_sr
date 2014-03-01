@@ -1,6 +1,6 @@
 language syntax_softconflicts_sr(java);
 
-prefix = "Lexems"
+prefix = "Lexemes"
 
 :: lexer
 

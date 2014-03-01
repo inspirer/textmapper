@@ -1,5 +1,5 @@
 ${template unit-}
-${opts.prefix}.Lexems = {
+${opts.prefix}.Tokens = {
 ${for i in [0, parser.nterms - 1]-}
 	${parser.sym[i].id->js.escapeJsReserved()}: ${i}${if i < parser.nterms-1},${end}
 ${end-}
@@ -39,7 +39,7 @@ ${opts.prefix}.Lexer.prototype = {
 
 ${call js.parserTable(lex.char2no, 'short', 'lapg_char2no', 'LapgCharMap')-}
 
-	lapg_lexem: [
+	lapg_lexeme: [
 		${util.format(lex.change, 2, '[', ']')}
 	],
 
@@ -66,7 +66,7 @@ ${end-}
 			var tokenStart = this.offset - 1;
 
 			for (state = this.group; state >= 0;) {
-				state = this.lapg_lexem[state][this.mapCharacter(this.chr)];
+				state = this.lapg_lexeme[state][this.mapCharacter(this.chr)];
 				if (state >= -1 && this.chr != 0) {
 ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 					this.currOffset++;

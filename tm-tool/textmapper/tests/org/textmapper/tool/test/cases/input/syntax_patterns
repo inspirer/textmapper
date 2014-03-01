@@ -1,6 +1,6 @@
 language syntax_patterns(java);
 
-prefix = "Lexems"
+prefix = "Lexemes"
 
 :: lexer
 

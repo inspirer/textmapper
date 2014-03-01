@@ -6,7 +6,7 @@ var JsTest = {
 	DEBUG_SYNTAX: false
 };
 
-JsTest.Lexems = {
+JsTest.Tokens = {
 	eoi: 0,
 	Lid: 1,
 	_skip: 2,
@@ -52,7 +52,7 @@ JsTest.Lexer.prototype = {
 		4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 1, 1, 1, 1, 1
 	],
 
-	lapg_lexem: [
+	lapg_lexeme: [
 		[ -2, -1, 1, 2, 3, -1, 2],
 		[ -1, -1, 4, -1, -1, -1, -1],
 		[ -4, -4, -4, 2, -4, -4, 2],
@@ -79,7 +79,7 @@ JsTest.Lexer.prototype = {
 			var tokenStart = this.offset - 1;
 
 			for (state = this.group; state >= 0;) {
-				state = this.lapg_lexem[state][this.mapCharacter(this.chr)];
+				state = this.lapg_lexeme[state][this.mapCharacter(this.chr)];
 				if (state >= -1 && this.chr != 0) {
 					this.currOffset++;
 					this.currColumn++;
@@ -99,8 +99,8 @@ JsTest.Lexer.prototype = {
 					this.errorHandler(lapg_n.offset, lapg_n.endoffset, this.currLine, "Unexpected end of file reached");
 					break;
 				}
-				this.errorHandler(lapg_n.offset, lapg_n.endoffset, this.currLine, "invalid lexem at line " + this.currLine + ": `" + this.token + "`, skipped");
-				lapg_n.lexem = -1;
+				this.errorHandler(lapg_n.offset, lapg_n.endoffset, this.currLine, "invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped");
+				lapg_n.symbol = -1;
 				continue;
 			}
 
@@ -108,15 +108,15 @@ JsTest.Lexer.prototype = {
 				this.token = this.text.slice(tokenStart, this.offset - 1);
 			}
 
-			lapg_n.lexem = - state - 2;
+			lapg_n.symbol = - state - 2;
 			lapg_n.sym = null;
 
-		} while (lapg_n.lexem == -1 || !this.createToken(lapg_n));
+		} while (lapg_n.symbol == -1 || !this.createToken(lapg_n));
 		return lapg_n;
 	},
 
 	createToken: function(lapg_n) {
-		switch (lapg_n.lexem) {
+		switch (lapg_n.symbol) {
 			case 1:
 				 lapg_n.sym = this.token; break; 
 			case 2:
@@ -199,7 +199,7 @@ JsTest.Parser.prototype = {
 		this.lapg_n = lexer.next();
 
 		while (this.lapg_m[this.lapg_head].state != 3) {
-			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.lexem);
+			var lapg_i = this.lapg_next(this.lapg_m[this.lapg_head].state, this.lapg_n.symbol);
 
 			if (lapg_i >= 0) {
 				this.reduce(lapg_i);
@@ -209,7 +209,7 @@ JsTest.Parser.prototype = {
 			}
 
 			if (lapg_i == -2 || this.lapg_m[this.lapg_head].state == -1) {
-				if (this.lapg_n.lexem == 0) {
+				if (this.lapg_n.symbol == 0) {
 					break;
 				}
 				while (this.lapg_head >= 0 && this.lapg_state_sym(this.lapg_m[this.lapg_head].state, 3) == -1) {
@@ -218,7 +218,7 @@ JsTest.Parser.prototype = {
 				}
 				if (this.lapg_head >= 0) {
 					this.lapg_m[++this.lapg_head] = {
-						lexem: 3,
+						symbol: 3,
 						state: this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, 3),
 						line: this.lapg_n.line,
 						column: this.lapg_n.column,
@@ -257,11 +257,11 @@ JsTest.Parser.prototype = {
 
 	shift: function(lexer) {
 		this.lapg_m[++this.lapg_head] = this.lapg_n;
-		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.lexem);
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, this.lapg_n.symbol);
 		if (JsTest.DEBUG_SYNTAX) {
-			JsTest.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.lexem] + " (" + lexer.token + ")");
+			JsTest.DEBUG_SYNTAX("shift: " + this.lapg_syms[this.lapg_n.symbol] + " (" + lexer.token + ")");
 		}
-		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.lexem != 0) {
+		if (this.lapg_m[this.lapg_head].state != -1 && this.lapg_n.symbol != 0) {
 			this.lapg_n = lexer.next();
 		}
 	},
@@ -269,7 +269,7 @@ JsTest.Parser.prototype = {
 	reduce: function(rule) {
 		var lapg_gg = {};
 		lapg_gg.sym = (this.lapg_rlen[rule] != 0) ? this.lapg_m[this.lapg_head + 1 - this.lapg_rlen[rule]].sym : null;
-		lapg_gg.lexem = this.lapg_rlex[rule];
+		lapg_gg.symbol = this.lapg_rlex[rule];
 		lapg_gg.state = 0;
 		if (JsTest.DEBUG_SYNTAX) {
 			JsTest.DEBUG_SYNTAX("reduce to " + this.lapg_syms[this.lapg_rlex[rule]]);
@@ -285,7 +285,7 @@ JsTest.Parser.prototype = {
 			this.lapg_m[this.lapg_head--] = null;
 		}
 		this.lapg_m[++this.lapg_head] = lapg_gg;
-		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, lapg_gg.lexem);
+		this.lapg_m[this.lapg_head].state = this.lapg_state_sym(this.lapg_m[this.lapg_head - 1].state, lapg_gg.symbol);
 	}
 };
 

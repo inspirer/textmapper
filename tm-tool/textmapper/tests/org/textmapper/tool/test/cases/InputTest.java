@@ -126,18 +126,18 @@ public class InputTest extends LapgTestCase {
 	}
 
 	@Test
-	public void testClassLexems() {
+	public void testClassLexemes() {
 		TestStatus notifier = new TestStatus("",
-				"syntax_lexems,25: regex matches two classes `identifier' and `identifierX', using first\n" +
-						"syntax_lexems,28: soft lexeme rule `L0choice' doesn't match any class rule\n" +
-						"syntax_lexems,31: soft lexeme rule `int' should have a constant regexp\n" +
-						"syntax_lexems,39: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
-						"syntax_lexems,42: redeclaration of soft terminal: ssss\n" +
-						"syntax_lexems,45: soft lexeme rule `wact' cannot have a semantic action\n" +
-						"syntax_lexems,48: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
-						"syntax_lexems,55: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
+				"syntax_lexemes,25: regex matches two classes `identifier' and `identifierX', using first\n" +
+						"syntax_lexemes,28: soft lexeme rule `L0choice' doesn't match any class rule\n" +
+						"syntax_lexemes,31: soft lexeme rule `int' should have a constant regexp\n" +
+						"syntax_lexemes,39: redeclaration of soft class for `abcde': found icon instead of identifier\n" +
+						"syntax_lexemes,42: redeclaration of soft terminal: ssss\n" +
+						"syntax_lexemes,45: soft lexeme rule `wact' cannot have a semantic action\n" +
+						"syntax_lexemes,48: soft terminal `wtype' overrides base type: expected `<no type>', found `int'\n" +
+						"syntax_lexemes,55: soft terminal `comma' overrides base type: expected `char', found `Character'\n"
 		);
-		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexems", FileUtil.getFileContents(openStream("syntax_lexems", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax_lexemes", FileUtil.getFileContents(openStream("syntax_lexemes", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}

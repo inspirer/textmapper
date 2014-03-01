@@ -1,4 +1,4 @@
-invalid lexem at line 1: ```, skipped
+invalid lexeme at line 1: ```, skipped
 shift: '[' ([)
 shift: Lid (a)
 shift: ']' (])

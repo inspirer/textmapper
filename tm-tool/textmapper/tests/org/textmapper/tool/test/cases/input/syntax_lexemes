@@ -1,6 +1,6 @@
-language syntax_lexems(java);
+language syntax_lexemes(java);
 
-prefix = "Lexems"
+prefix = "Lexemes"
 
 :: lexer
 

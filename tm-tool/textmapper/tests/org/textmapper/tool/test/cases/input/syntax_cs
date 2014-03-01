@@ -350,12 +350,12 @@ parenthesized (Node) ::=
 			// perform reduce
 			for( int e = lapg_rlen[lapg_i]; e > 0; e-- ) lapg_m[lapg_head--].sym = null;
 			lapg_m[++lapg_head] = lapg_gg;
-			lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.lexem );
+			lapg_m[lapg_head].state = lapg_state_sym( lapg_m[lapg_head-1].state, lapg_gg.symbol );
 			if( lapg_m[lapg_head].state != -1 ) {
 				// shift cast_token (if possible)
-				lapg_gg.lexem = (int)Tokens.cast_token;
+				lapg_gg.symbol = (int)Tokens.cast_token;
 				lapg_gg.sym = null;
-				lapg_gg.state = lapg_state_sym( lapg_m[lapg_head].state, lapg_gg.lexem );
+				lapg_gg.state = lapg_state_sym( lapg_m[lapg_head].state, lapg_gg.symbol );
 				lapg_gg.pos = lapg_gg.endpos = lapg_n.pos;
 				if( lapg_gg.state != -1 )
 					lapg_m[++lapg_head] = lapg_gg;
@@ -1053,7 +1053,7 @@ private static bool CastExpr( Node expr, lapg_symbol next ) {
 		return true;
 
 	// Type or Expr
-	switch( (Tokens)next.lexem ) {
+	switch ((Tokens)next.symbol) {
 		case Tokens.TILDE:
 		case Tokens.EXCL:
 		case Tokens.LROUNDBRACKET:
@@ -1072,7 +1072,7 @@ private static bool CastExpr( Node expr, lapg_symbol next ) {
 	}
 
 	// keyword
-	if( next.lexem >= (int)Tokens.Labstract && next.lexem <= (int)Tokens.Lwhile )
+	if( next.symbol >= (int)Tokens.Labstract && next.symbol <= (int)Tokens.Lwhile )
 		return true;
 
 	return false;

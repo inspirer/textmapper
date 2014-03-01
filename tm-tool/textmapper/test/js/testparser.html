@@ -48,8 +48,8 @@ b1.onclick = function() {
 
    var lexer = new JsTest.Lexer(text,logger);
    var next = lexer.next();
-   while(next.lexem != JsTest.Lexems.eoi) {
-     log.value += "[lexem]" + next.offset + "," + next.endoffset + ": " + lexer.token + "\n";
+   while(next.symbol != JsTest.Tokens.eoi) {
+     log.value += "[lexeme]" + next.offset + "," + next.endoffset + ": " + lexer.token + "\n";
      next = lexer.next();
    }
 }

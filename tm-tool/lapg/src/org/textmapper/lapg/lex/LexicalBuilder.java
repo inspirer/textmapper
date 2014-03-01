@@ -483,8 +483,8 @@ public class LexicalBuilder {
 		return errors == 0;
 	}
 
-	/*
-	 * Fills initial arrays from lexems descriptions
+	/**
+	 * Fills initial arrays from lexemes definitions
 	 */
 	private boolean prepare(LexerState[] lexerStates, LexerRule[] rules, NamedPattern[] patterns) {
 		RegexpCompiler rp = new RegexpCompiler(createContext(patterns));

@@ -37,8 +37,8 @@ reduce to parentheses
 shift: '[' ([)
 shift: Lid (cc)
 shift: ']' (])
-invalid lexem at line 3: `^`, skipped
-invalid lexem at line 3: ```, skipped
+invalid lexeme at line 3: `^`, skipped
+invalid lexeme at line 3: ```, skipped
 reduce to parenthesis
 in []: cc
 reduce to parentheses

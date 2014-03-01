@@ -60,7 +60,7 @@ public class UnicodeTest {
 		}
 	}
 
-	private void valid(String text, int... expectedLexems) {
+	private void valid(String text, int... expectedTokens) {
 		UnicodeTestLexer lexer;
 		try {
 			lexer = new UnicodeTestLexer(new StringReader(text), new ErrorReporter() {
@@ -70,8 +70,8 @@ public class UnicodeTest {
 				}
 			});
 			LapgSymbol next;
-			for (int i = 0; i < expectedLexems.length; i++) {
-				int expected = expectedLexems[i];
+			for (int i = 0; i < expectedTokens.length; i++) {
+				int expected = expectedTokens[i];
 				next = lexer.next();
 				assertFalse(next.symbol == Tokens.eoi);
 				assertEquals(expected, next.symbol);

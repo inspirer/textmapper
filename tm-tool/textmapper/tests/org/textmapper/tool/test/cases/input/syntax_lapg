@@ -60,8 +60,8 @@ lexical_definitions ::=
 
 lexical_definition ::=
 	'[' iconlist_in_bits ']'							{ currentgroups = $iconlist_in_bits; }
-	| symbol typeopt ':'								{ addLexem($symbol, $typeopt, null, null, null, @0.line); }
-	| symbol typeopt ':' regexp iconopt commandopt		{ addLexem($symbol, $typeopt, $regexp, $iconopt, $commandopt, @0.line); }
+	| symbol typeopt ':'								{ addLexeme($symbol, $typeopt, null, null, null, @0.line); }
+	| symbol typeopt ':' regexp iconopt commandopt		{ addLexeme($symbol, $typeopt, $regexp, $iconopt, $commandopt, @0.line); }
 ;
 
 iconlist_in_bits(Integer) ::=
@@ -134,7 +134,7 @@ private Parser(byte[] data, Map<String,String> defaultOptions) {
 	this.buff = data;
 	this.l = 0;
 	
-	addLexem(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
+	addLexeme(getSymbol(CSyntax.EOI, 1), null, null, null, null, 1);
 	options.putAll(defaultOptions);
 }
 
@@ -148,7 +148,7 @@ private List<CSymbol> symbols = new ArrayList<CSymbol>();
 private List<CRule> rules = new ArrayList<CRule>();
 private List<CPrio> prios = new ArrayList<CPrio>();
 private Map<String,String> options = new HashMap<String, String>();
-private List<CLexem> lexems = new ArrayList<CLexem>();
+private List<CLexeme> lexemes = new ArrayList<CLexeme>();
 
 private byte[] buff;
 private int l;
@@ -181,11 +181,11 @@ private CSymbol getSymbol(String name, int line) {
 	return res;
 }
 
-private void addLexem(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
+private void addLexeme(CSymbol sym, String type, String regexp, Integer lexprio, CAction command, int line) {
 	try {
 		sym.setTerminal(type, regexp != null, line);
 		if( regexp != null ) {
-			lexems.add(new CLexem(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,line));
+			lexemes.add(new CLexeme(sym,regexp,command,lexprio!=null?lexprio.intValue():0,currentgroups,line));
 		}
 	} catch( ParseException ex ) {
 		error(ex.getMessage());
@@ -244,7 +244,7 @@ public static CSyntax process(String data, Map<String,String> defaultOptions) {
 		}
 		p.getSymbol(CSyntax.INPUT, 1);
 	
-		return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexems);
+		return new CSyntax(p.symbols,p.rules,p.prios,p.options,p.lexemes);
 	} catch( UnsupportedEncodingException ex ) {
 		return null;
 	}

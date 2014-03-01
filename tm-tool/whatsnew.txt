@@ -17,7 +17,7 @@ IDEA plugin:
 
 [+] Negative Lookahead syntax: noPlusExpr ::= (?! '+') expression ;
 [+] \p{category} in lexer patterns
-[+] better syntax for space lexems: _skipNL: /[\n\r]+/ (space)
+[+] better syntax for space lexemes: _skipNL: /[\n\r]+/ (space)
 [+] syntax files without a parser (just lexer)
 [!] fixed types in AST tree generation
 [!] code which skips semantic action was extracted into a separate "Action" parser: saction.s
