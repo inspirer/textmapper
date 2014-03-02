@@ -28,7 +28,7 @@ import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.lalr.Builder;
-import org.textmapper.lapg.lex.LexicalBuilder;
+import org.textmapper.lapg.lex.LexerGenerator;
 import org.textmapper.lapg.regex.RegexFacade;
 
 import java.util.Map;
@@ -55,7 +55,7 @@ public class LapgCore {
 	}
 
 	public static LexerData generateLexer(Grammar g, ProcessingStatus status) {
-		return LexicalBuilder.compile(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), status);
+		return LexerGenerator.generate(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), status);
 	}
 
 	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) {

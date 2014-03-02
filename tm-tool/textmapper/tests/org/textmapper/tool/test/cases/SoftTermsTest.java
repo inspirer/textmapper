@@ -17,10 +17,10 @@ package org.textmapper.tool.test.cases;
 
 import org.junit.Test;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.lex.LexerGenerator;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
-import org.textmapper.lapg.lex.LexicalBuilder;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.tool.test.bootstrap.b.SampleBTree;
@@ -90,7 +90,8 @@ public class SoftTermsTest extends LapgTestCase {
 						"    classdef ::= Lclass identifier '(' memberslist ')'\n" +
 						"    classdef ::= Lclass identifier Lextends identifier '(' memberslist ')'\n" +
 						"\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), er);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
 		er.assertDone();
@@ -109,7 +110,8 @@ public class SoftTermsTest extends LapgTestCase {
 						"    typename ::= identifier\n" +
 						"\n" +
 						"conflicts: 1 shift/reduce and 0 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), er);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
 		er.assertDone();
@@ -129,7 +131,8 @@ public class SoftTermsTest extends LapgTestCase {
 						"    typename ::= identifier\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), er);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), er);
 		Builder.compile(g.getGrammar(), er);
 
 		er.assertDone();

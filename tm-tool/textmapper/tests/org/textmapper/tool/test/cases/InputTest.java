@@ -18,11 +18,11 @@ package org.textmapper.tool.test.cases;
 import org.junit.Test;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.common.FileUtil;
+import org.textmapper.lapg.lex.LexerGenerator;
 import org.textmapper.tool.compiler.TMDataUtil;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
-import org.textmapper.lapg.lex.LexicalBuilder;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.templates.api.SourceElement;
@@ -170,7 +170,8 @@ public class InputTest extends LapgTestCase {
 						+ "\n"
 						+ "conflicts: 1 shift/reduce and 0 reduce/reduce\n");
 
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -192,7 +193,8 @@ public class InputTest extends LapgTestCase {
 						"    list_item ::= Licon\n" +
 						"\n" +
 						"conflicts: 0 shift/reduce and 1 reduce/reduce\n");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();
@@ -219,7 +221,8 @@ public class InputTest extends LapgTestCase {
 		assertNotNull(g);
 
 		ts.reset("", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 		ts.assertDone();
 
@@ -248,7 +251,8 @@ public class InputTest extends LapgTestCase {
 				"resolved as reduce conflict (next: '*', '+', '-', '/')\n" +
 				"    expr ::= expr '/' expr\n" +
 				"\n", "");
-		LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), ts);
+		LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), ts);
 		Builder.compile(g.getGrammar(), ts);
 
 		ts.assertDone();

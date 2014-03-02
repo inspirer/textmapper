@@ -24,7 +24,7 @@ import org.textmapper.lapg.regex.RegexFacade;
 
 import java.util.*;
 
-public class LexicalBuilder {
+public class LexerGenerator {
 
 	private static final int BITS = 32;
 	private static final int MAX_RULES = 0x100000 - 1;
@@ -83,7 +83,7 @@ public class LexicalBuilder {
 
 	int[] groupset;
 
-	private LexicalBuilder(ProcessingStatus status) {
+	private LexerGenerator(ProcessingStatus status) {
 		this.status = status;
 	}
 
@@ -169,7 +169,9 @@ public class LexicalBuilder {
 					for (int l = 0; l < BITS; l++, m++) {
 						if ((word & 1 << l) != 0) {
 							RegexInstructionKind kind = ldata[lex].pattern[m].getKind();
-							if (kind == RegexInstructionKind.Set || kind == RegexInstructionKind.Symbol || kind == RegexInstructionKind.Any ||
+							if (kind == RegexInstructionKind.Set ||
+									kind == RegexInstructionKind.Symbol ||
+									kind == RegexInstructionKind.Any ||
 									kind == RegexInstructionKind.Done) {
 								clsr[outputSize++] = base + m;
 							}
@@ -372,7 +374,10 @@ public class LexicalBuilder {
 						if (lexnum != -1 && lexnum != nlex) {
 
 							if (ldata[nlex].prio == ldata[lexnum].prio) {
-								status.report(ProcessingStatus.KIND_ERROR, "two rules are identical: " + ldata[lexnum].name + " and " + ldata[nlex].name, ldata[lexnum].lexerRule, ldata[nlex].lexerRule);
+								status.report(ProcessingStatus.KIND_ERROR,
+										"two rules are identical: " + ldata[lexnum].name + " and " +
+												ldata[nlex].name, ldata[lexnum].lexerRule,
+										ldata[nlex].lexerRule);
 								errors++;
 
 							} else if (ldata[nlex].prio > ldata[lexnum].prio) {
@@ -419,7 +424,8 @@ public class LexicalBuilder {
 
 			// check for the empty lexeme
 			if (current == first && lexnum != -1) {
-				status.report(ProcessingStatus.KIND_ERROR, "`" + ldata[lexnum].name + "' can produce empty lexeme", ldata[lexnum].lexerRule);
+				status.report(ProcessingStatus.KIND_ERROR, "`" + ldata[lexnum].name + "' can produce empty lexeme",
+						ldata[lexnum].lexerRule);
 				errors++;
 			}
 
@@ -557,7 +563,8 @@ public class LexicalBuilder {
 		}
 
 		if (initialStateIsEmpty) {
-			status.report(ProcessingStatus.KIND_ERROR, "no rules in the `initial' state", nrules > 0 ? ldata[0].lexerRule : null);
+			status.report(ProcessingStatus.KIND_ERROR, "no rules in the `initial' state",
+					nrules > 0 ? ldata[0].lexerRule : null);
 			return false;
 		}
 
@@ -658,8 +665,9 @@ public class LexicalBuilder {
 	/*
 	 * Generates lexer tables
 	 */
-	public static LexerData compile(LexerState[] states, LexerRule[] lexerRules, NamedPattern[] patterns, ProcessingStatus status) {
-		LexicalBuilder lb = new LexicalBuilder(status);
+	public static LexerData generate(LexerState[] states, LexerRule[] lexerRules, NamedPattern[] patterns,
+									 ProcessingStatus status) {
+		LexerGenerator lb = new LexerGenerator(status);
 		return lb.generate(states, lexerRules, patterns);
 	}
 }

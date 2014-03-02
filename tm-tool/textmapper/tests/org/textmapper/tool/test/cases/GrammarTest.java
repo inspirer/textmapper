@@ -23,10 +23,10 @@ import org.textmapper.lapg.eval.GenericNode;
 import org.textmapper.lapg.eval.GenericParseContext;
 import org.textmapper.lapg.eval.GenericParseContext.ParseProblem;
 import org.textmapper.lapg.eval.GenericParseContext.Result;
+import org.textmapper.lapg.lex.LexerGenerator;
 import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.gen.SyntaxUtil;
 import org.textmapper.lapg.lalr.Builder;
-import org.textmapper.lapg.lex.LexicalBuilder;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.lapg.test.TestStatus;
 import org.textmapper.tool.test.bootstrap.a.SampleAParseContext;
@@ -49,7 +49,8 @@ public class GrammarTest extends LapgTestCase {
 		assertNotNull(g);
 		assertNotNull(g.getGrammar());
 
-		LexerData l = LexicalBuilder.compile(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(), g.getGrammar().getPatterns(), new TestStatus());
+		LexerData l = LexerGenerator.generate(g.getGrammar().getLexerStates(), g.getGrammar().getLexerRules(),
+				g.getGrammar().getPatterns(), new TestStatus());
 		ParserData r = Builder.compile(g.getGrammar(), new TestStatus());
 		return new GenericParseContext(g.getGrammar(), r, l);
 	}
