@@ -480,13 +480,14 @@ jsregex.Parser.prototype = {
     "parts",
     "partsopt"
   ],
+
   /**
    * -3-n   Lookahead (state id)
    * -2     Error
    * -1     Shift
    * 0..n   Reduce (rule index)
    */
-  tmAction: function(state, symbol) {
+  action: function(state, symbol) {
     var p;
     if (this.tmAction[state] < -2) {
       for (p = -this.tmAction[state] - 3; this.tmLalr[p] >= 0; p += 2) {
@@ -498,6 +499,7 @@ jsregex.Parser.prototype = {
     }
     return this.tmAction[state];
   },
+
   tmGoto: function(state, symbol) {
     var min = this.lapg_sym_goto[symbol], max = this.lapg_sym_goto[symbol + 1] - 1;
     var i, e;
@@ -515,6 +517,7 @@ jsregex.Parser.prototype = {
     }
     return -1;
   },
+
   parse: function(lexer) {
     this.tmLexer = lexer;
     this.tmStack = [];
@@ -524,7 +527,7 @@ jsregex.Parser.prototype = {
     this.tmNext = lexer.next();
 
     while (this.tmStack[this.tmHead].state != 36) {
-      var action = this.tmAction(this.tmStack[this.tmHead].state, this.tmNext.symbol);
+      var action = this.action(this.tmStack[this.tmHead].state, this.tmNext.symbol);
 
       if (action >= 0) {
         this.reduce(action);
@@ -543,6 +546,7 @@ jsregex.Parser.prototype = {
     }
     return this.tmStack[this.tmHead - 1].value;
   },
+
   shift: function() {
     this.tmStack[++this.tmHead] = this.tmNext;
     this.tmStack[this.tmHead].state = this.tmGoto(this.tmStack[this.tmHead - 1].state, this.tmNext.symbol);
@@ -553,6 +557,7 @@ jsregex.Parser.prototype = {
       this.tmNext = this.tmLexer.next();
     }
   },
+
   reduce: function(rule) {
     var tmLeft = {
       value: (this.tmRuleLen[rule] != 0) ? this.tmStack[this.tmHead + 1 - this.tmRuleLen[rule]].value : null,
@@ -583,7 +588,35 @@ jsregex.Parser.prototype = {
    */
   cleanup: function(value) {
   },
+
+  report: function(start, end, text) {
+    this.entities.push({start: start, end: end, text: text});
+  },
+
   applyRule: function(tmLeft, tmRule, tmLength) {
+    switch (tmRule) {
+    case 3:  // pattern ::= pattern '|' partsopt
+       this.report(tmLeft.offset, tmLeft.endoffset, "or"); 
+      break;
+    case 5:  // part ::= primitive_part '*'
+       this.report(tmLeft.offset, tmLeft.endoffset, "*"); 
+      break;
+    case 6:  // part ::= primitive_part '+'
+       this.report(tmLeft.offset, tmLeft.endoffset, "+"); 
+      break;
+    case 8:  // part ::= primitive_part quantifier
+       this.report(tmLeft.offset, tmLeft.endoffset, "{,}"); 
+      break;
+    case 10:  // primitive_part ::= escaped
+       this.report(tmLeft.offset, tmLeft.endoffset, "escaped"); 
+      break;
+    case 13:  // primitive_part ::= '(' pattern ')'
+       this.report(tmLeft.offset, tmLeft.endoffset, "()"); 
+      break;
+    case 14:  // primitive_part ::= '[' charset ']'
+       this.report(tmLeft.offset, tmLeft.endoffset, "charset"); 
+      break;
+    }
   }
 };
 

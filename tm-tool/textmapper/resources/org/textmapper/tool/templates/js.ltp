@@ -18,6 +18,21 @@ root.${opts.module} = ${opts.module};
 ${end-}
 ${end}
 
+${template parserAction-}
+${eval getAction()}
+${end}
+
+${query symText(property) =
+	self.rightOffset == -1
+	? (property == 'value' ? 'null' : '-1')
+	: (self.isLeft ? 'tmLeft' : 'this.tmStack[this.tmHead' + (self.rightOffset > 0 ? ' - ' + self.rightOffset : '') + ']')
+	  + '.' + property }
+
+${template symAccess(property)-}
+${assert ['value', 'line', 'column', 'offset', 'endline', 'endcolumn', 'endoffset'].contains(property)-}
+${self->symText(property)-}
+${end}
+
 
 ${query escapeJsReserved() =
 	[
@@ -50,4 +65,7 @@ ${query err_location(symvar,lexervar) = self->util.location(', ' + symvar + '.',
 ${template err_location_safe(symvar,lexervar)-}
 ${foreach l in self->util.locationList()-}
 , ${symvar} == null ? ${lexervar}.get${util.toFirstUpper(l.startsWith('end') ? l.substring(3) : l)}() : ${symvar}.${l}${end-}
+${end}
+
+${template classcode-}
 ${end}

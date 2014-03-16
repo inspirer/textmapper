@@ -1,3 +1,42 @@
+describe('Regex parser', function () {
+    it('parses plus', function () {
+        var errorHandler = jasmine.createSpy('errorHandler');
+        var lexer = new jsregex.Lexer("abc+", errorHandler);
+        var parser = new jsregex.Parser(errorHandler);
+        parser.entities = [];
+        parser.parse(lexer);
+        expect(parser.entities).toEqual([
+            { start: 2, end: 4, text: '+' }
+        ])
+        expect(errorHandler).not.toHaveBeenCalled();
+    });
+
+    it('parses or', function () {
+        var errorHandler = jasmine.createSpy('errorHandler');
+        var lexer = new jsregex.Lexer("{expandName}{1,5}|\\w*", errorHandler);
+        var parser = new jsregex.Parser(errorHandler);
+        parser.entities = [];
+        parser.parse(lexer);
+        expect(parser.entities).toEqual([
+            { start: 0, end: 17, text: '{,}' },
+            { start: 18, end: 21, text: '*' },
+            { start: 0, end: 21, text: 'or' }
+        ])
+        expect(errorHandler).not.toHaveBeenCalled();
+    });
+
+    it('handles errors', function () {
+        var errorHandler = jasmine.createSpy('errorHandler');
+        var lexer = new jsregex.Lexer("{expandName}{1,5}|\\w*[abc", errorHandler);
+        var parser = new jsregex.Parser(errorHandler);
+        parser.entities = [];
+        expect(function() {
+            parser.parse(lexer);
+        }).toThrow(Error("syntax error"));
+        expect(errorHandler).toHaveBeenCalled();
+    });
+});
+
 describe('Regex lexer', function () {
     function expectTokens(lexer, arr) {
         var n;
@@ -20,7 +59,7 @@ describe('Regex lexer', function () {
         var errorHandler = jasmine.createSpy('errorHandler');
         var lexer = new jsregex.Lexer("(\\011{1,3}{name})", errorHandler);
         expectTokens(lexer, [jsregex.Tokens.Lparen, jsregex.Tokens.escaped, jsregex.Tokens.quantifier,
-                            jsregex.Tokens.expand, jsregex.Tokens.Rparen]);
+            jsregex.Tokens.expand, jsregex.Tokens.Rparen]);
         expect(errorHandler).not.toHaveBeenCalled();
     });
 

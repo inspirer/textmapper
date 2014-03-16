@@ -12,32 +12,35 @@ ${opts.module}.Parser = function(errorHandler) {
 };
 
 ${opts.module}.Parser.prototype = {
-${call parserTables-}
-${call tmAction-}
-${call tmGoto-}
-${call tmParse-}
+${call parserTables}
+${call action}
+${call tmGoto}
+${call tmParse}
 ${if self->hasRecovering()-}
-${call restore-}
+${call restore}
 ${end-}
-${call shift-}
-${call reduce-}
-${if self->hasRecovering()}
+${call shift}
+${call reduce}
+${if self->hasRecovering()-}
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
 	dispose: function(value) {
 	},
+
 ${end-}
-${if opts.genCleanup}
+${if opts.genCleanup-}
 	/**
 	 * cleans node removed from the stack
 	 */
 	cleanup: function(value) {
 	},
+
 ${end-}
 ${if self->util.needFinalState()-}
-${call customParseRoutines-}
+${call customParseRoutines}
 ${end-}
+${call js.classcode-}
 ${call applyRule-}
 };
 ${end}
@@ -52,14 +55,14 @@ ${end}
 ${end}
 
 
-${template tmAction-}
+${template action-}
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error
 	 * -1     Shift
 	 * 0..n   Reduce (rule index)
 	 */
-	tmAction: function(state, symbol) {
+	action: function(state, symbol) {
 ${if self->needActionsTable()-}
 		var p;
 		if (this.tmAction[state] < -2) {
@@ -115,11 +118,11 @@ ${end-}
 		this.tmNext = lexer.next();
 
 		while (this.tmStack[this.tmHead].state != ${self->util.needFinalState() ? 'finalState' : parser.statesCount-1}) {
-			var action = this.tmAction(this.tmStack[this.tmHead].state, ${if self->lazyNext()}this.tmNext == null ? ${opts.module}.Lexer.Tokens.Unavailable_ : ${end}this.tmNext.symbol);
+			var action = this.action(this.tmStack[this.tmHead].state, ${if self->lazyNext()}this.tmNext == null ? ${opts.module}.Lexer.Tokens.Unavailable_ : ${end}this.tmNext.symbol);
 ${if self->lazyNext()-}
 			if (action <= -3 && this.tmNext == null) {
 				this.tmNext = this.tmLexer.next();
-				action = this.tmAction(this.tmStack[this.tmHead].state, this.tmNext.symbol);
+				action = this.action(this.tmStack[this.tmHead].state, this.tmNext.symbol);
 			}
 ${end-}
 
@@ -290,7 +293,7 @@ ${if syntax.rules.exists(r|r.getAction())-}
 ${foreach rule in syntax.rules-}
 ${if rule.getAction()-}
 		case ${rule.getIndex()}:  // ${rule}
-			${call java.parserAction for rule-}
+			${call js.parserAction for rule-}
 ${if opts.breaks }			break;$/
 ${end-}
 ${end-}

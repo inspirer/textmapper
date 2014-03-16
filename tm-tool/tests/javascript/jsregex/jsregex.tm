@@ -88,24 +88,24 @@ char:  /[\(\|\)]/
 
 pattern ::=
 	  partsopt
-	| left=pattern '|' partsopt
+	| left=pattern '|' partsopt					{ this.report(${left().offset}, ${left().endoffset}, "or"); }
 ;
 
 part ::=
 	  primitive_part
-	| primitive_part '*'
-	| primitive_part '+'
+	| primitive_part '*'            { this.report(${left().offset}, ${left().endoffset}, "*"); }
+	| primitive_part '+'            { this.report(${left().offset}, ${left().endoffset}, "+"); }
 	| primitive_part '?'
-	| primitive_part quantifier
+	| primitive_part quantifier     { this.report(${left().offset}, ${left().endoffset}, "{,}"); }
 ;
 
 primitive_part ::=
 	  char
-	| escaped
+	| escaped						{ this.report(${left().offset}, ${left().endoffset}, "escaped"); }
 	| charclass
 	| '.'
-	| '(' pattern ')'
-	| '[' charset ']'
+	| '(' pattern ')'               { this.report(${left().offset}, ${left().endoffset}, "()"); }
+	| '[' charset ']'				{ this.report(${left().offset}, ${left().endoffset}, "charset"); }
 	| '[^' charset ']'
 	| expand
 ;
@@ -143,6 +143,13 @@ ${template js_lexer.code-}
 			return;
 		}
 		if (this.state == 0) this.state = 1;
+	},
+
+${end}
+
+${template js.classcode-}
+	report: function(start, end, text) {
+		this.entities.push({start: start, end: end, text: text});
 	},
 
 ${end}
