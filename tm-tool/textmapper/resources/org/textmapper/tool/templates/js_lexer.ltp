@@ -84,23 +84,18 @@ ${if opts.endpositions.contains('column')-}
 			lapg_n.endcolumn = this.currColumn;
 ${end-}
 
-			if (state == -1) {
-				if (this.offset - 1 > tokenStart) {
-					this.token = this.text.slice(tokenStart, this.offset - 1);
-				}
-				this.errorHandler("invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped"${call js.err_location('lapg_n', 'this')});
-				lapg_n.symbol = -1;
-				continue;
-			}
-
 			if (state == -2) {
 				lapg_n.symbol = 0;
 				lapg_n.value = null;
 				return lapg_n;
 			}
 
-			if (this.offset - 1 > tokenStart) {
-				this.token = this.text.slice(tokenStart, this.offset - 1);
+			this.token = this.text.slice(tokenStart, ${if opts.positions.contains('offset')}this.currOffset${
+						else}this.chr == 0 && this.offset == this.text.length ? this.offset : this.offset - 1${end});
+			if (state == -1) {
+				this.errorHandler("invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped"${call js.err_location('lapg_n', 'this')});
+				lapg_n.symbol = -1;
+				continue;
 			}
 
 			lapg_n.symbol = this.tmRuleSymbol[-state - 3];
@@ -201,20 +196,20 @@ ${if self.kindAsText == 'space'-}
 ${end-}
 ${if self.transitions-}
 ${if self.transitions.stateSwitch-}
-			switch(state) {
+			switch(this.state) {
 ${foreach x in self.transitions.stateSwitch.entrySet()-}
 				case ${opts.module}.States.${x.key->stateId()}:
-					state = ${opts.module}.States.${x.value->stateId()};
+					this.state = ${opts.module}.States.${x.value->stateId()};
 					break;
 ${end-}
 ${if self.transitions.defaultTransition-}
 				default:
-					state = ${opts.module}.States.${self.transitions.defaultTransition->stateId()};
+					this.state = ${opts.module}.States.${self.transitions.defaultTransition->stateId()};
 					break;
 ${end-}
 			}
 ${else if self.transitions.defaultTransition-}
-			state = ${context.opts.module}.States.${self.transitions.defaultTransition->stateId()};
+			this.state = ${context.opts.module}.States.${self.transitions.defaultTransition->stateId()};
 ${end-}
 ${end-}
 ${if action-}

@@ -149,23 +149,17 @@ lexer1.Lexer.prototype = {
       lapg_n.endline = this.currLine;
       lapg_n.endcolumn = this.currColumn;
 
-      if (state == -1) {
-        if (this.offset - 1 > tokenStart) {
-          this.token = this.text.slice(tokenStart, this.offset - 1);
-        }
-        this.errorHandler("invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped", lapg_n.line, lapg_n.offset, lapg_n.column, lapg_n.endline, lapg_n.endoffset, lapg_n.endcolumn);
-        lapg_n.symbol = -1;
-        continue;
-      }
-
       if (state == -2) {
         lapg_n.symbol = 0;
         lapg_n.value = null;
         return lapg_n;
       }
 
-      if (this.offset - 1 > tokenStart) {
-        this.token = this.text.slice(tokenStart, this.offset - 1);
+      this.token = this.text.slice(tokenStart, this.currOffset);
+      if (state == -1) {
+        this.errorHandler("invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped", lapg_n.line, lapg_n.offset, lapg_n.column, lapg_n.endline, lapg_n.endoffset, lapg_n.endcolumn);
+        lapg_n.symbol = -1;
+        continue;
       }
 
       lapg_n.symbol = this.tmRuleSymbol[-state - 3];

@@ -17,7 +17,13 @@ package org.textmapper.lapg.regex;
 
 import org.junit.Test;
 import org.textmapper.lapg.api.regex.*;
+import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
+import org.textmapper.lapg.regex.RegexDefLexer.LapgSymbol;
+import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 import org.textmapper.lapg.regex.RegexDefTree.TextSource;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 import static org.junit.Assert.*;
 
@@ -68,7 +74,21 @@ public class RegexDefTest {
 
 	@Test
 	public void testIPv6() {
-		checkRegex("\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*");
+		checkRegex("\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1," +
+				"4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(" +
+				"([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
+				"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1," +
+				"3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
+				"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1," +
+				"4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
+				"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1," +
+				"5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
+				"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1," +
+				"6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\." +
+				"(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1," +
+				"4}){0," +
+				"5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)" +
+				"?\\s*");
 	}
 
 	@Test
@@ -101,6 +121,18 @@ public class RegexDefTest {
 		checkRegex("a{9}");
 		checkRegex("a{9,}");
 		checkRegex("a{9,10}");
+	}
+
+	@Test
+	public void testLexer() throws IOException {
+		checkLexer("abc", Tokens._char, Tokens._char, Tokens._char);
+		checkLexer("\\w++", Tokens.charclass, Tokens.Plus, Tokens._char);
+		checkLexer("(\\011{1,3}{name})",
+				Tokens.Lparen, Tokens.escaped, Tokens.quantifier, Tokens.expand, Tokens.Rparen);
+		checkLexer("[^()a-z]", Tokens.LsquareXor, Tokens._char, Tokens._char, Tokens._char, Tokens.Minus, Tokens._char,
+				Tokens.Rsquare);
+		checkLexer("a{+}\\p{abc}{-}\\x12{eoi}", Tokens._char, Tokens.op_union, Tokens.charclass, Tokens.op_minus,
+				Tokens.escaped, Tokens.kw_eoi);
 	}
 
 	@Test
@@ -167,6 +199,22 @@ public class RegexDefTest {
 
 	private RegexPart checkRegex(String regex) {
 		return checkRegex(regex, regex);
+	}
+
+	private void checkLexer(String regex, int... tokens) throws IOException {
+		RegexDefLexer lexer = new RegexDefLexer(new StringReader(regex), new ErrorReporter() {
+			@Override
+			public void error(String message, int offset, int endoffset) {
+				fail(message);
+			}
+		});
+		LapgSymbol next;
+		for (int i = 0; i < tokens.length; i++) {
+			next = lexer.next();
+			assertEquals(tokens[i], next.symbol);
+		}
+		next = lexer.next();
+		assertEquals(Tokens.eoi, next.symbol);
 	}
 
 	private RegexPart checkRegex(String regex, String expected) {

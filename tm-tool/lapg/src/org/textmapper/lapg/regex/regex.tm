@@ -58,8 +58,8 @@ charclass(String): /\\p\{\w+\}/					{ $symbol = current().substring(3, current()
 '?':  /?/
 quantifier:  /\{[0-9]+(,[0-9]*)?\}/
 
-op_minus:		/\{-\}/
-op_union:		/\{+\}/
+op_minus:		/\{\-\}/
+op_union:		/\{\+\}/
 op_intersect:	/\{&&\}/
 
 [initial, inSet]

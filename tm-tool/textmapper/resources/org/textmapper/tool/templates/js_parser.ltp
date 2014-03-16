@@ -1,4 +1,5 @@
 ${template unit-}
+
 ${call nonterminalsInterface-}
 
 ${opts.module}.Parser = function(errorHandler) {
@@ -337,7 +338,7 @@ ${end-}
 		${util.format(parser.left, 16, 2)}
 	],
 	tmSymbolNames: [
-${foreach s in parser.symbols separator ',\n\t\t'-}
+${foreach s in parser.symbols separator ',\n'-}
 		"${s.name}"${end}
 	],
 ${if syntax.rules.exists(x|x.getSource() is org.textmapper.lapg.api.rule.RhsSequence && x.getSource().name)}

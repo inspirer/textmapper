@@ -184,20 +184,20 @@ public class RegexDefLexer {
 		"\ufffc\1\24\3\ufffc\1\24\1\ufffc\7\24\1\uffff\4\25\1\26\1\27\1\30\1\31\1\32\1\33" +
 		"\1\34\1\35\17\25\1\uffff\1\25\2\uffff\1\36\1\37\1\25\1\40\1\41\1\40\1\25\1\40\50" +
 		"\uffee\50\uffe6\50\uffdf\20\uffe5\1\42\27\uffe5\50\uffe4\50\uffe3\31\uffe1\1\43\16" +
-		"\uffe1\2\ufffc\1\44\1\45\1\ufffc\10\24\5\ufffc\1\46\1\47\7\ufffc\1\24\1\50\2\ufffc" +
-		"\1\24\1\50\7\24\50\uffed\50\uffec\50\uffeb\50\uffdc\50\uffdb\50\uffdd\3\uffff\1\51" +
-		"\1\uffff\10\24\5\uffff\1\24\10\uffff\2\24\2\uffff\11\24\50\ufffb\50\ufffa\50\ufff9" +
-		"\50\ufff8\50\ufff7\50\ufff6\50\ufff5\50\ufff4\2\uffff\1\52\105\uffff\1\53\14\uffff" +
-		"\3\54\24\uffff\1\54\3\uffff\1\54\1\uffff\2\54\4\uffff\50\ufff0\5\uffff\3\55\24\uffff" +
-		"\1\55\3\uffff\1\55\1\uffff\2\55\26\uffff\1\56\23\uffff\2\56\50\uffe0\2\uffff\1\44" +
-		"\1\45\44\uffff\50\uffe8\3\uffff\1\57\67\uffff\1\60\27\uffff\1\61\15\uffff\1\62\12" +
-		"\uffff\1\50\3\uffff\1\50\7\uffff\50\ufffd\5\uffff\10\63\16\uffff\2\63\2\uffff\11" +
-		"\63\40\uffff\1\64\14\uffff\3\65\24\uffff\1\65\3\uffff\1\65\1\uffff\2\65\11\uffff" +
-		"\3\66\24\uffff\1\66\3\uffff\1\66\1\uffff\2\66\26\uffff\1\56\4\uffff\1\67\16\uffff" +
-		"\2\56\50\uffe9\3\uffff\1\70\44\uffff\50\uffea\3\uffff\1\61\30\uffff\1\62\3\uffff" +
-		"\1\62\12\uffff\1\71\1\uffff\10\63\16\uffff\2\63\2\uffff\11\63\50\ufff3\50\ufff2\5" +
-		"\uffff\3\72\24\uffff\1\72\3\uffff\1\72\1\uffff\2\72\4\uffff\50\uffe2\50\uffe7\50" +
-		"\uffef\5\uffff\3\73\24\uffff\1\73\3\uffff\1\73\1\uffff\2\73\4\uffff\50\ufff1");
+		"\uffe1\5\ufffc\10\24\2\ufffc\1\44\2\ufffc\1\45\1\46\7\ufffc\1\24\1\47\2\ufffc\1\24" +
+		"\1\47\7\24\50\uffed\50\uffec\50\uffeb\50\uffdc\50\uffdb\50\uffdd\3\uffff\1\50\1\uffff" +
+		"\10\24\5\uffff\1\24\10\uffff\2\24\2\uffff\11\24\50\ufffb\50\ufffa\50\ufff9\50\ufff8" +
+		"\50\ufff7\50\ufff6\50\ufff5\50\ufff4\2\uffff\1\51\105\uffff\1\52\14\uffff\3\53\24" +
+		"\uffff\1\53\3\uffff\1\53\1\uffff\2\53\4\uffff\50\ufff0\5\uffff\3\54\24\uffff\1\54" +
+		"\3\uffff\1\54\1\uffff\2\54\26\uffff\1\55\23\uffff\2\55\50\uffe0\3\uffff\1\56\47\uffff" +
+		"\1\57\67\uffff\1\60\27\uffff\1\61\15\uffff\1\62\12\uffff\1\47\3\uffff\1\47\7\uffff" +
+		"\50\ufffd\5\uffff\10\63\16\uffff\2\63\2\uffff\11\63\40\uffff\1\64\14\uffff\3\65\24" +
+		"\uffff\1\65\3\uffff\1\65\1\uffff\2\65\11\uffff\3\66\24\uffff\1\66\3\uffff\1\66\1" +
+		"\uffff\2\66\26\uffff\1\55\4\uffff\1\67\16\uffff\2\55\50\uffe8\50\uffe9\3\uffff\1" +
+		"\70\44\uffff\50\uffea\3\uffff\1\61\30\uffff\1\62\3\uffff\1\62\12\uffff\1\71\1\uffff" +
+		"\10\63\16\uffff\2\63\2\uffff\11\63\50\ufff3\50\ufff2\5\uffff\3\72\24\uffff\1\72\3" +
+		"\uffff\1\72\1\uffff\2\72\4\uffff\50\uffe2\50\uffe7\50\uffef\5\uffff\3\73\24\uffff" +
+		"\1\73\3\uffff\1\73\1\uffff\2\73\4\uffff\50\ufff1");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -357,7 +357,7 @@ public class RegexDefLexer {
 			case 20: // op_minus: /\{\-\}/
 				state = States.initial;
 				break;
-			case 21: // op_union: /\{+\}/
+			case 21: // op_union: /\{\+\}/
 				state = States.initial;
 				break;
 			case 22: // op_intersect: /\{&&\}/
