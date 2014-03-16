@@ -72,7 +72,7 @@ public class TmCompilerUtil {
 		TextSource input = new TextSource(task.getFile().getPath(), task.getFileContent().toCharArray(), 1);
 		new TMGenerator(options, status, new FileBasedStrategy(null) {
 			@Override
-			public void createFile(String name, String contents, ProcessingStatus status) {
+			public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 				throw new UnsupportedOperationException();
 			}
 		}).compileGrammar(input, true);

@@ -314,9 +314,9 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 			this.file = file;
 		}
 
-		public void createFile(String name, String contents, ProcessingStatus status) {
+		public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 			// TODO Auto-generated method stub
-			new GeneratedFile(null, name, contents, "utf8", false) {
+			new GeneratedFile(null, name, contents, options) {
 				@Override
 				public void create() {
 					result.put(name, getData());

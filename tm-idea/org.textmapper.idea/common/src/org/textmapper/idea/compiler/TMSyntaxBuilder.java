@@ -86,10 +86,9 @@ public class TMSyntaxBuilder implements ProcessingStrategy {
 		return new TMGenerator(options, status, this).compileGrammar(input, false);
 	}
 
-	public void createFile(String name, String contents, ProcessingStatus status) {
+	public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 		try {
-			// FIXME encoding, newline
-			new GeneratedFile(null, name, contents, FileUtil.DEFAULT_ENCODING, false) {
+			new GeneratedFile(null, name, contents, options) {
 				@Override
 				public void create() throws IOException {
 					checkName(name);
