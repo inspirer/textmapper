@@ -3,13 +3,17 @@ ${file opts.module+'.js'-}
 ${call js.header-}
 
 (function() {
-  var root = this;
 
-  var ${opts.module} = {};
+var root = this;
+var ${opts.module} = { DEBUG_SYNTAX: false };
 
 ${call js_lexer.unit-}
+${if parser-}
+${call js_parser.unit-}
+${end-}
 
-  root.${opts.module} = ${opts.module};
+root.${opts.module} = ${opts.module};
+
 }).call(this);
 ${end-}
 ${end}

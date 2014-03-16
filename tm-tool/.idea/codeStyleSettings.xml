@@ -18,7 +18,6 @@
           </value>
         </option>
         <option name="INSERT_INNER_CLASS_IMPORTS" value="true" />
-        <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="true" />
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
