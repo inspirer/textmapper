@@ -169,7 +169,7 @@ public class Tool {
 				if (debug == null) {
 					debug = openFile(OUT_TABLES);
 				}
-				debug.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
+				debug.print(FileUtil.fixWhitespaces(text, GeneratedFile.NL, 0));
 			} else if (kind == KIND_WARN) {
 				if (!isAnalysisMode()) {
 					return;
@@ -177,7 +177,7 @@ public class Tool {
 				if (warn == null) {
 					warn = openFile(OUT_ERRORS);
 				}
-				warn.print(FileUtil.fixLineSeparators(text, GeneratedFile.NL));
+				warn.print(FileUtil.fixWhitespaces(text, GeneratedFile.NL, 0));
 			}
 		}
 

@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -45,10 +46,9 @@ public class CheckingFileBasedStrategy implements ProcessingStrategy {
 	}
 
 	@Override
-	public void createFile(String name, String contents, ProcessingStatus status) {
+	public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 		try {
-			// FIXME encoding, newline
-			new GeneratedFile(root, name, contents, "utf8", false) {
+			new GeneratedFile(root, name, contents, options) {
 				public void check() throws IOException {
 					checkName(name);
 					String expected;

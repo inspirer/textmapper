@@ -137,7 +137,7 @@ public class LapgTemplatesTestHelper {
 
 		@Override
 		public void createStream(String name, String contents) {
-			strategy.createFile(name, contents, null);
+			strategy.createFile(name, contents,  new HashMap<String, Object>(), null);
 		}
 	}
 }

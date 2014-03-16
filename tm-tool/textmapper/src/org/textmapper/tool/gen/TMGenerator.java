@@ -107,7 +107,8 @@ public final class TMGenerator {
 			// Generate text
 			start = System.currentTimeMillis();
 			EvaluationContext context = createEvaluationContext(types, s, astModel, genOptions, l, r);
-			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context), registry);
+			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context),
+					registry, genOptions);
 			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
 			long textTime = System.currentTimeMillis() - start;
 			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
@@ -157,16 +158,19 @@ public final class TMGenerator {
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates, ResourceRegistry resources, TypesRegistry types, TemplatesStatus templatesStatus) {
+	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates, ResourceRegistry resources,
+													 TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		if (grammarTemplates != null) {
-			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()), grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
+			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()),
+					grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));
 		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, AstModel astModel, Map<String, Object> genOptions, LexerData l, ParserData r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, AstModel astModel,
+													  Map<String, Object> genOptions, LexerData l, ParserData r) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
@@ -191,14 +195,16 @@ public final class TMGenerator {
 	}
 
 	private final class TemplatesFacadeExt extends TemplatesFacade {
+		Map<String, Object> options;
 
-		private TemplatesFacadeExt(IxFactory factory, TemplatesRegistry registry) {
+		private TemplatesFacadeExt(IxFactory factory, TemplatesRegistry registry, Map<String, Object> options) {
 			super(factory, registry);
+			this.options = options;
 		}
 
 		@Override
 		public void createStream(String name, String contents) {
-			strategy.createFile(name, contents, status);
+			strategy.createFile(name, contents, options, status);
 		}
 	}
 }

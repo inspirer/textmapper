@@ -22,6 +22,7 @@ import org.textmapper.templates.storage.IResourceLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class FileBasedStrategy implements ProcessingStrategy {
 
@@ -31,10 +32,9 @@ public class FileBasedStrategy implements ProcessingStrategy {
 		this.rootFolder = rootFolder;
 	}
 
-	public void createFile(String name, String contents, ProcessingStatus status) {
+	public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 		try {
-			// FIXME encoding, newline
-			new GeneratedFile(rootFolder, name, contents, "utf8", false).create();
+			new GeneratedFile(rootFolder, name, contents, options).create();
 		} catch (IOException e) {
 			status.report(ProcessingStatus.KIND_ERROR, "cannot create file `" + name + "': " + e.getMessage());
 		}

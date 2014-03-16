@@ -23,6 +23,7 @@ import java.io.Reader;
 public class FileUtil {
 
 	public static final String DEFAULT_ENCODING = "utf8";
+	public static final String SPACES = "                            ";
 
 	public static String getFileContents(InputStream stream, String encoding) {
 		StringBuilder contents = new StringBuilder();
@@ -43,17 +44,31 @@ public class FileUtil {
 		return contents.toString();
 	}
 
-	public static String fixLineSeparators(String contents, String separator) {
-		StringBuilder sb = new StringBuilder(contents.length());
+	public static String fixWhitespaces(String contents, String lineSeparator, int expandTabs) {
 		int size = contents.length();
+		int outsize = size;
+		if (expandTabs > 0) {
+			for (int i = 0; i < size; i++) {
+				if (contents.charAt(i) == '\t') {
+					outsize += expandTabs - 1;
+				}
+			}
+		}
+		StringBuilder sb = new StringBuilder(outsize);
 		for (int i = 0; i < size; i++) {
 			char c = contents.charAt(i);
 			if (c == '\n') {
-				sb.append(separator);
+				sb.append(lineSeparator);
 			} else if (c == '\r') {
-				sb.append(separator);
+				sb.append(lineSeparator);
 				if (i + 1 < size && contents.charAt(i + 1) == '\n') {
 					i++;
+				}
+			} else if (c == '\t' && expandTabs > 0) {
+				for (int sp = expandTabs; sp > 0; ) {
+					int ins = Math.min(SPACES.length(), sp);
+					sp -= ins;
+					sb.append(SPACES, 0, ins);
 				}
 			} else {
 				sb.append(c);

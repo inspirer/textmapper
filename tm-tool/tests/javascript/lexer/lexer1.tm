@@ -5,6 +5,7 @@ language lexer1(js);
 module = "lexer1"
 positions = "line,column,offset"
 endpositions = "line,column,offset"
+expandTabs = 2
 
 :: lexer
 

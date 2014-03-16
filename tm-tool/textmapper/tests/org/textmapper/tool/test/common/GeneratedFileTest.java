@@ -50,7 +50,7 @@ public class GeneratedFileTest {
 						"\r\n" +
 						"class X extends xxx.@B {\r\n" +
 						"\tpublic final xxx.@D A;\r\n" +
-						"}\r\n", "utf-8", true);
+						"}\r\n", "utf-8", true, 0);
 		file.create();
 
 		String written = FileUtil.getFileContents(new FileInputStream(new File(baseFolder, "A.java")), "utf-8");
@@ -71,7 +71,7 @@ public class GeneratedFileTest {
 		File baseFolder = tempFolder.newFolder("testFolderFileConflict" + System.nanoTime());
 		assertTrue(new File(baseFolder, "A.txt").mkdir());
 
-		GeneratedFile file = new GeneratedFile(baseFolder, "A.txt", "content", "utf-8", true);
+		GeneratedFile file = new GeneratedFile(baseFolder, "A.txt", "content", "utf-8", true, 0);
 		try {
 			file.create();
 			fail("no exception");
@@ -86,7 +86,7 @@ public class GeneratedFileTest {
 	public void testUpperDirectory() throws Exception {
 		File baseFolder = tempFolder.newFolder("testUpperDirectory" + System.nanoTime());
 
-		GeneratedFile file = new GeneratedFile(baseFolder, "../subfolder/A.txt", "content", "utf-8", true);
+		GeneratedFile file = new GeneratedFile(baseFolder, "../subfolder/A.txt", "content", "utf-8", true, 0);
 		try {
 			file.create();
 			fail("no exception");
@@ -100,9 +100,9 @@ public class GeneratedFileTest {
 	@Test
 	public void testSubFolder() throws Exception {
 		File baseFolder = tempFolder.newFolder("testSubFolder" + System.nanoTime());
-		new GeneratedFile(baseFolder, "AAA", "content", "utf-8", true).create();
+		new GeneratedFile(baseFolder, "AAA", "content", "utf-8", true, 0).create();
 
-		GeneratedFile file = new GeneratedFile(baseFolder, "AAA/BB/A.txt", "content", "utf-8", true);
+		GeneratedFile file = new GeneratedFile(baseFolder, "AAA/BB/A.txt", "content", "utf-8", true, 0);
 		try {
 			file.create();
 			fail("no exception");

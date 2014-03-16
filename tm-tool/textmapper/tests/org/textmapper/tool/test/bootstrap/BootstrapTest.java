@@ -31,6 +31,7 @@ import org.textmapper.tool.test.CheckingFileBasedStrategy;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -152,10 +153,12 @@ public class BootstrapTest {
 			assertTrue(success);
 
 			if (status.isDebugMode()) {
-				strategy.createFile("tables", status.tablesFile != null ? status.tablesFile.toString() : "", status);
+				strategy.createFile("tables", status.tablesFile != null ? status.tablesFile.toString() : "",
+						new HashMap<String, Object>(), status);
 			}
 			if (status.isAnalysisMode()) {
-				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "", status);
+				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "",
+						new HashMap<String, Object>(), status);
 			}
 			for (String s : createdFiles) {
 				assertTrue("file is not generated: " + s, strategy.getCreated().contains(s));

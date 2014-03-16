@@ -18,9 +18,11 @@ package org.textmapper.tool.gen;
 import org.textmapper.lapg.api.ProcessingStatus;
 import org.textmapper.templates.storage.IResourceLoader;
 
+import java.util.Map;
+
 public interface ProcessingStrategy {
 
-	void createFile(String name, String contents, ProcessingStatus status);
+	void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status);
 
 	IResourceLoader createResourceLoader(String path);
 }

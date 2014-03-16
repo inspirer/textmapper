@@ -117,6 +117,10 @@ class List {
 
 class Options {
 	string lang[identifier] = "";
+
+	int expandTabs = 0;
+	bool forceLF = false;
+	string outputEncoding = "utf-8";
 }
 
 class AnnotateSymbol {
