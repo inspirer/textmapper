@@ -18,96 +18,11 @@ ${template header-}
 ${end}
 
 ${template main-}
-${file opts.prefix+'Parser.java'}${call unit}${end-}
+${file opts.prefix+'Parser.java'}${call java_parser.unit}${end-}
 ${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
-${end}
-
-${template parserCtor-}
-	protected org.textmapper.lapg.eval.GenericParseContext.@TextSource source;
-	protected final org.textmapper.lapg.api.@Grammar grammar;
-
-	private final int[] tmAction;
-	private final short[] tmLalr;
-	private final short[] lapg_sym_goto;
-	private final short[] lapg_sym_from;
-	private final short[] lapg_sym_to;
-	private final int[] tmRuleLen;
-	private final int[] tmRuleSymbol;
-
-	private final boolean debugSyntax;
-
-	public ${opts.prefix}Parser(${call package}.${opts.prefix}Lexer.@ErrorReporter reporter, org.textmapper.lapg.api.@ParserData tables, org.textmapper.lapg.api.@Grammar grammar, boolean debugSyntax) {
-		this.reporter = reporter;
-		this.grammar = grammar;
-		this.tmAction = tables.getAction();
-		this.tmLalr = tables.getLalr();
-		this.lapg_sym_goto = tables.getSymGoto();
-		this.lapg_sym_to = tables.getSymTo();
-		this.lapg_sym_from = tables.getSymFrom();
-		this.tmRuleLen = tables.getRuleLength();
-		this.tmRuleSymbol = tables.getLeft();
-		this.debugSyntax = debugSyntax;
-	}
 ${end}
 
 ${template classcode-}
 ${end}
 
-${template parserTables-}
-${end}
-
-${template debugShift-}
-		if (debugSyntax) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.current()));
-		}
-${end}
-
-${template debugReduce-}
-		if (debugSyntax) {
-			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
-		}
-${end}
-
-${template dynamicRecoveringCheck-}
-				if (grammar.getError() == null) {
-					break;
-				}
-${end}
-
-${template applyRule-}
-	protected void applyRule(${self->symbolClassName()} tmLeft, int rule, int ruleLength) {
-		if (ruleLength == 1) {
-			Object right = tmStack[tmHead].value;
-			if (right instanceof org.textmapper.lapg.eval.@GenericNode) {
-				tmLeft.value = right;
-			} else {
-				tmLeft.value = new org.textmapper.lapg.eval.@GenericNode(source, tmLeft.offset, tmLeft.endoffset);
-			}
-		} else if (ruleLength > 1) {
-			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textmapper.lapg.eval.@GenericNode>(ruleLength);
-			for (int i = ruleLength - 1; i >= 0; i--) {
-				if (tmStack[tmHead - i].value instanceof org.textmapper.lapg.eval.@GenericNode) {
-					children.add((org.textmapper.lapg.eval.@GenericNode) tmStack[tmHead - i].value);
-				}
-			}
-			tmLeft.value = new org.textmapper.lapg.eval.@GenericNode(source, tmLeft.offset, tmLeft.endoffset, children.toArray(new org.textmapper.lapg.eval.@GenericNode[children.size()]));
-		}
-	}
-${end}
-
-${template customParseRoutines-}
-${end}
-
 ${cached query symbolClassName() = 'ParseSymbol'}
-
-${cached query lazyNext() = true}
-
-${cached query hasRecovering() = true}
-${cached query errorToken() = 'grammar.getError().getIndex()'}
-
-${query mainParseVisibility() = 'public'}
-
-${cached query needActionsTable = true}
-${cached query hasNoEoiInputs = true}
-${cached query hasEoiInputs = true}
-${query methAccess() = 'protected final'}
