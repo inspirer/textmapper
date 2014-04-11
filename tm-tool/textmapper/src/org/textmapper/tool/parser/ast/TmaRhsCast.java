@@ -22,8 +22,8 @@ public class TmaRhsCast extends TmaNode implements ITmaRhsPart {
 	private final ITmaRhsPart left;
 	private final TmaSymref right;
 
-	public TmaRhsCast(ITmaRhsPart left, TmaSymref right, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsCast(ITmaRhsPart left, TmaSymref right, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}

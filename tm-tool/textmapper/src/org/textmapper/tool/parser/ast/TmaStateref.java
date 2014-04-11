@@ -17,15 +17,12 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * Gryaznov Evgeny, 7/6/13
- */
 public class TmaStateref extends TmaNode implements ITmaExpression {
 
 	private final String name;
 
-	public TmaStateref(String name, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaStateref(String name, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 	}
 
@@ -37,4 +34,3 @@ public class TmaStateref extends TmaNode implements ITmaExpression {
 		v.visit(this);
 	}
 }
-

@@ -86,7 +86,7 @@ public class TMCompiler {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		char[] text = tree.getSource().getContents();
 		if (offset < text.length && offset != -1) {
-			return new TmaNode(tree.getSource(), offset, text.length) {
+			return new TmaNode(tree.getSource(), tree.getSource().lineForOffset(offset), offset, text.length) {
 				@Override
 				public void accept(TmaVisitor v) {
 				}
@@ -109,7 +109,8 @@ public class TMCompiler {
 		// Load class
 		IClass optionsClass = types.getClass(expressionResolver.getTypesPackage() + ".Options", null);
 		if (optionsClass == null) {
-			resolver.error(tree.getRoot(), "cannot load options class `" + expressionResolver.getTypesPackage() + ".Options`");
+			resolver.error(tree.getRoot(), "cannot load options class `" + expressionResolver.getTypesPackage() +
+					".Options`");
 			return options;
 		}
 

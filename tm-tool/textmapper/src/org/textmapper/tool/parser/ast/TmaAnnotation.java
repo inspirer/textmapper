@@ -19,18 +19,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaAnnotation extends TmaNode {
 
-	private String name;
-	private ITmaExpression expression;
-	private TmaSyntaxProblem syntaxProblem;
+	private final String name;
+	private final ITmaExpression expression;
+	private final TmaSyntaxProblem syntaxProblem;
 
-	public TmaAnnotation(String name, ITmaExpression expression, TextSource input, int start, int end) {
-		super(input, start, end);
+	public TmaAnnotation(String name, ITmaExpression expression, TmaSyntaxProblem syntaxProblem, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 		this.expression = expression;
-	}
-
-	public TmaAnnotation(TmaSyntaxProblem syntaxProblem, TextSource input, int start, int end) {
-		super(input, start, end);
 		this.syntaxProblem = syntaxProblem;
 	}
 

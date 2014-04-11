@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsNested extends TmaNode implements ITmaRhsPart {
 
@@ -38,8 +37,8 @@ public class TmaRhsNested extends TmaNode implements ITmaRhsPart {
 			return;
 		}
 		if (rules != null) {
-			for (TmaRule0 rule : rules) {
-				rule.accept(v);
+			for (TmaRule0 it : rules) {
+				it.accept(v);
 			}
 		}
 	}

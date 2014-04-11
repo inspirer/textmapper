@@ -20,20 +20,20 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaRhsPrefix extends TmaNode {
 
 	private final TmaAnnotations annotations;
-	private final TmaIdentifier name;
+	private final TmaIdentifier alias;
 
-	public TmaRhsPrefix(TmaAnnotations annotations, TmaIdentifier name, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsPrefix(TmaAnnotations annotations, TmaIdentifier alias, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.annotations = annotations;
-		this.name = name;
+		this.alias = alias;
 	}
 
 	public TmaAnnotations getAnnotations() {
 		return annotations;
 	}
 
-	public TmaIdentifier getName() {
-		return name;
+	public TmaIdentifier getAlias() {
+		return alias;
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class TmaRhsPrefix extends TmaNode {
 		if (annotations != null) {
 			annotations.accept(v);
 		}
-		if (name != null) {
-			name.accept(v);
+		if (alias != null) {
+			alias.accept(v);
 		}
 	}
 }

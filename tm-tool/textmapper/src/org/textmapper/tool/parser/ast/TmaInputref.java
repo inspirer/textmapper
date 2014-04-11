@@ -22,8 +22,8 @@ public class TmaInputref extends TmaNode {
 	private final TmaSymref reference;
 	private final boolean nonEoi;
 
-	public TmaInputref(TmaSymref reference, boolean nonEoi, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaInputref(TmaSymref reference, boolean nonEoi, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.reference = reference;
 		this.nonEoi = nonEoi;
 	}

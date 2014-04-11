@@ -19,23 +19,23 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaHeader extends TmaNode {
 
-	private final TmaName target;
 	private final TmaName name;
+	private final TmaName target;
 	private final TmaParsingAlgorithm parsingAlgorithm;
 
-	public TmaHeader(TmaName target, TmaName name, TmaParsingAlgorithm parsingAlgorithm, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
-		this.target = target;
+	public TmaHeader(TmaName name, TmaName target, TmaParsingAlgorithm parsingAlgorithm, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
+		this.target = target;
 		this.parsingAlgorithm = parsingAlgorithm;
-	}
-
-	public TmaName getTarget() {
-		return target;
 	}
 
 	public TmaName getName() {
 		return name;
+	}
+
+	public TmaName getTarget() {
+		return target;
 	}
 
 	public TmaParsingAlgorithm getParsingAlgorithm() {
@@ -46,11 +46,11 @@ public class TmaHeader extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (target != null) {
-			target.accept(v);
-		}
 		if (name != null) {
 			name.accept(v);
+		}
+		if (target != null) {
+			target.accept(v);
 		}
 		if (parsingAlgorithm != null) {
 			parsingAlgorithm.accept(v);

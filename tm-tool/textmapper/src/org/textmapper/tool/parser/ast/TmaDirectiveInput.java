@@ -22,8 +22,8 @@ public class TmaDirectiveInput extends TmaNode implements ITmaGrammarPart {
 
 	private final List<TmaInputref> inputRefs;
 
-	public TmaDirectiveInput(List<TmaInputref> inputRefs, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaDirectiveInput(List<TmaInputref> inputRefs, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.inputRefs = inputRefs;
 	}
 

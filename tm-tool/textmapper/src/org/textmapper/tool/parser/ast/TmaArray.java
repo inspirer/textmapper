@@ -22,8 +22,8 @@ public class TmaArray extends TmaNode implements ITmaExpression {
 
 	private final List<ITmaExpression> content;
 
-	public TmaArray(List<ITmaExpression> content, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaArray(List<ITmaExpression> content, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.content = content;
 	}
 

@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRule0 extends TmaNode {
 
@@ -27,8 +26,8 @@ public class TmaRule0 extends TmaNode {
 	private final TmaSyntaxProblem error;
 
 	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
-					int offset, int endoffset) {
-		super(source, offset, endoffset);
+					int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.list = list;
 		this.suffix = attr;
 		this.prefix = prefix;
@@ -36,7 +35,7 @@ public class TmaRule0 extends TmaNode {
 	}
 
 	public TmaRule0(TmaSyntaxProblem err) {
-		super(err.getSource(), err.getOffset(), err.getEndoffset());
+		super(err.getSource(), err.getLine(), err.getOffset(), err.getEndoffset());
 		this.list = null;
 		this.suffix = null;
 		this.prefix = null;
@@ -62,7 +61,7 @@ public class TmaRule0 extends TmaNode {
 	@Deprecated
 	public String getAlias() {
 		// TODO use getPrefix()
-		return prefix != null && prefix.getName() != null ? prefix.getName().getID() : null;
+		return prefix != null && prefix.getAlias() != null ? prefix.getAlias().getID() : null;
 	}
 
 	@Deprecated

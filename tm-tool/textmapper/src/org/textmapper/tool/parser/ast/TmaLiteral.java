@@ -21,8 +21,8 @@ public class TmaLiteral extends TmaNode implements ITmaExpression {
 
 	private final Object literal;
 
-	public TmaLiteral(Object literal, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaLiteral(Object literal, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.literal = literal;
 	}
 

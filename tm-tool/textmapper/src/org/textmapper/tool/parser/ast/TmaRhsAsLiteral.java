@@ -17,16 +17,13 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 7/21/13
- */
 public class TmaRhsAsLiteral extends TmaNode implements ITmaRhsPart {
 
 	private final ITmaRhsPart inner;
 	private final TmaLiteral literal;
 
-	public TmaRhsAsLiteral(ITmaRhsPart inner, TmaLiteral literal, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsAsLiteral(ITmaRhsPart inner, TmaLiteral literal, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.inner = inner;
 		this.literal = literal;
 	}

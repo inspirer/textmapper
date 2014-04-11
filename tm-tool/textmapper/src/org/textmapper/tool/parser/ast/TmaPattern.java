@@ -21,8 +21,8 @@ public class TmaPattern extends TmaNode {
 
 	private final String regexp;
 
-	public TmaPattern(String regexp, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaPattern(String regexp, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.regexp = regexp;
 	}
 

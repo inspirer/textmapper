@@ -22,8 +22,8 @@ public class TmaRhsAnnotated extends TmaNode implements ITmaRhsPart {
 	private final TmaAnnotations annotations;
 	private final ITmaRhsPart inner;
 
-	public TmaRhsAnnotated(TmaAnnotations annotations, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsAnnotated(TmaAnnotations annotations, ITmaRhsPart inner, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.annotations = annotations;
 		this.inner = inner;
 	}

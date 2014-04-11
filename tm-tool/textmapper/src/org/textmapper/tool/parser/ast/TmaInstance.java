@@ -23,8 +23,8 @@ public class TmaInstance extends TmaNode implements ITmaExpression {
 	private final TmaName className;
 	private final List<TmaMapEntriesItem> mapEntries;
 
-	public TmaInstance(TmaName className, List<TmaMapEntriesItem> mapEntries, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaInstance(TmaName className, List<TmaMapEntriesItem> mapEntries, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.className = className;
 		this.mapEntries = mapEntries;
 	}

@@ -19,8 +19,8 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaCommand extends TmaNode implements ITmaRhsPart {
 
-	public TmaCommand(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaCommand(TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 	}
 
 	public void accept(TmaVisitor v) {

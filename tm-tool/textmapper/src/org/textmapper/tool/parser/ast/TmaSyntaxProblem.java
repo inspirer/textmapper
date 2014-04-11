@@ -19,8 +19,8 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaSyntaxProblem extends TmaNode implements ITmaLexerPart, ITmaGrammarPart, ITmaExpression, ITmaRhsPart {
 
-	public TmaSyntaxProblem(TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaSyntaxProblem(TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 	}
 
 	public void accept(TmaVisitor v) {

@@ -28,8 +28,8 @@ public class TmaRhsList extends TmaNode implements ITmaRhsPart {
 	private final List<TmaSymref> separator;
 	private final boolean atLeastOne;
 
-	public TmaRhsList(List<ITmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsList(List<ITmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.ruleParts = ruleParts;
 		this.separator = separator;
 		this.atLeastOne = atLeastOne;

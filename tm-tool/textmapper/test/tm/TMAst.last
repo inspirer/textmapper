@@ -57,13 +57,13 @@ import_  : Import ::=
 ;
 
 class Option {
-	String ID;
-	Expression expression;
+	String key;
+	Expression value;
 	SyntaxProblem syntaxProblem;
 }
 
 option  : Option ::=
-	{ID} '=' {expression}
+	key=ID '=' value=expression
   | syntaxProblem=syntax_problem
 ;
 
@@ -145,14 +145,14 @@ class Lexeme : LexerPart {
 	Identifier name;
 	String type;
 	Pattern pattern;
-	Stateref lexemeTransition;
+	Stateref transition;
 	Integer priority;
-	LexemeAttrs lexemeAttrs;
+	LexemeAttrs attrs;
 	Command command;
 }
 
 lexeme  : Lexeme ::=
-	name=identifier type=typeopt ':' ({pattern} lexemeTransition=lexeme_transitionopt priority=iconopt lexemeAttrs=lexeme_attrsopt command=commandopt)?
+	name=identifier type=typeopt ':' ({pattern} transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt command=commandopt)?
 ;
 
 class Stateref {
@@ -164,11 +164,11 @@ lexeme_transition  : Stateref ::=
 ;
 
 class LexemeAttrs {
-	LexemeAttribute lexemeAttribute;
+	LexemeAttribute kind;
 }
 
 lexeme_attrs  : LexemeAttrs ::=
-	'(' lexemeAttribute=lexeme_attribute ')'
+	'(' kind=lexeme_attribute ')'
 ;
 
 enum LexemeAttribute {
@@ -253,7 +253,7 @@ class NontermTypeHint : NontermType {
 }
 
 class NontermTypeRaw : NontermType {
-	String type;
+	String text;
 }
 
 nonterm_type  : NontermType ::=
@@ -261,7 +261,7 @@ nonterm_type  : NontermType ::=
   | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt
   | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
-  | this=new.NontermTypeRaw: {type}
+  | this=new.NontermTypeRaw: text=type
 ;
 
 enum Assoc {
@@ -291,12 +291,12 @@ directive  : GrammarPart ::=
 ;
 
 class Inputref {
-	Symref symref;
+	Symref reference;
 	boolean noeoi;
 }
 
 inputref  : Inputref ::=
-	{symref} noeoi=Lnoeoi as true?
+	reference=symref noeoi=Lnoeoi as true?
 ;
 
 references  : list<Symref>
@@ -406,14 +406,14 @@ class RhsCast : RhsPart {
 }
 
 class RhsAsLiteral : RhsPart {
-	RhsPart rhsClass;
+	RhsPart inner;
 	Literal literal;
 }
 
 rhsCast  : RhsPart ::=
 	this=rhsClass
   | this=new.RhsCast: {rhsClass} Las {symref}
-  | this=new.RhsAsLiteral: {rhsClass} Las {literal}
+  | this=new.RhsAsLiteral: inner=rhsClass Las {literal}
 ;
 
 class RhsUnordered : RhsPart {
@@ -436,7 +436,7 @@ rhsClass  : RhsPart ::=
 ;
 
 class RhsSymbol : RhsPart {
-	Symref symref;
+	Symref reference;
 }
 
 class RhsNested : RhsPart {
@@ -459,7 +459,7 @@ class RhsIgnored : RhsPart {
 }
 
 rhsPrimary  : RhsPart ::=
-	this=new.RhsSymbol: {symref}
+	this=new.RhsSymbol: reference=symref
   | this=new.RhsNested: '(' {rules} ')'
   | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='+' as QuantifierKind.PLUS
   | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT

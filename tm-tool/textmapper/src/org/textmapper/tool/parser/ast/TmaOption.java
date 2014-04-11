@@ -23,15 +23,15 @@ public class TmaOption extends TmaNode {
 	private final ITmaExpression value;
 	private final TmaSyntaxProblem error;
 
-	public TmaOption(String key, ITmaExpression value, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaOption(String key, ITmaExpression value, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.key = key;
 		this.value = value;
 		this.error = null;
 	}
 
-	public TmaOption(TmaSyntaxProblem error, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaOption(TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.key = null;
 		this.value = null;
 		this.error = error;

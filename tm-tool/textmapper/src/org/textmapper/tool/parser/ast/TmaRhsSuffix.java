@@ -22,8 +22,8 @@ public class TmaRhsSuffix extends TmaNode {
 	private final TmaRhsSuffix.TmaKindKind kind;
 	private final TmaSymref symref;
 
-	public TmaRhsSuffix(TmaRhsSuffix.TmaKindKind kind, TmaSymref symref, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsSuffix(TmaRhsSuffix.TmaKindKind kind, TmaSymref symref, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.kind = kind;
 		this.symref = symref;
 	}
@@ -46,7 +46,7 @@ public class TmaRhsSuffix extends TmaNode {
 	}
 
 	public enum TmaKindKind {
-		LSHIFT,
 		LPRIO,
+		LSHIFT,
 	}
 }

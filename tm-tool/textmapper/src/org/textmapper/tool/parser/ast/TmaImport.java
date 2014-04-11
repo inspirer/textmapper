@@ -22,8 +22,8 @@ public class TmaImport extends TmaNode {
 	private final String alias;
 	private final String file;
 
-	public TmaImport(String alias, String file, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaImport(String alias, String file, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.alias = alias;
 		this.file = file;
 	}

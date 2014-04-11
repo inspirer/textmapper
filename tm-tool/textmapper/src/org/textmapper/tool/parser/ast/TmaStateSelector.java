@@ -15,16 +15,15 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaStateSelector extends TmaNode implements ITmaLexerPart {
 
 	private final List<TmaLexerState> states;
 
-	public TmaStateSelector(List<TmaLexerState> states, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaStateSelector(List<TmaLexerState> states, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.states = states;
 	}
 

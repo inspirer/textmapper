@@ -21,8 +21,8 @@ public class TmaLexemeAttrs extends TmaNode {
 
 	private final TmaLexemeAttribute kind;
 
-	public TmaLexemeAttrs(TmaLexemeAttribute kind, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaLexemeAttrs(TmaLexemeAttribute kind, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.kind = kind;
 	}
 

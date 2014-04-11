@@ -19,16 +19,17 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaParsingAlgorithm extends TmaNode {
 
-	private Integer la;
+	private final Integer la;
 
-	public TmaParsingAlgorithm(Integer la, TextSource input, int start, int end) {
-		super(input, start, end);
+	public TmaParsingAlgorithm(Integer la, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.la = la;
 	}
 
 	public Integer getLa() {
 		return la;
 	}
+
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

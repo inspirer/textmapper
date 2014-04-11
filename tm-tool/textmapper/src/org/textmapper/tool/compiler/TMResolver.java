@@ -213,7 +213,7 @@ public class TMResolver {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
 					Nonterminal symopt = (Nonterminal) create(
-							new TmaIdentifier(id.getName(), id.getSource(), id.getOffset(), id.getEndoffset()),
+							new TmaIdentifier(id.getName(), id.getSource(), id.getLine(), id.getOffset(), id.getEndoffset()),
 							sym.getType(), false);
 					builder.addRule(symopt, builder.sequence(null,
 							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, id), id)), id), null);

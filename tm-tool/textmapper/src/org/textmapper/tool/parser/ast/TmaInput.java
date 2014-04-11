@@ -27,9 +27,9 @@ public class TmaInput extends TmaNode {
 	private final List<ITmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> grammar, TextSource source,
-					int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer,
+					List<ITmaGrammarPart> grammar, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.header = header;
 		this.imports = imports;
 		this.options = options;

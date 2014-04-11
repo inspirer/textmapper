@@ -22,8 +22,8 @@ public class TmaAnnotations extends TmaNode {
 
 	private final List<TmaAnnotation> annotations;
 
-	public TmaAnnotations(List<TmaAnnotation> annotations, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaAnnotations(List<TmaAnnotation> annotations, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.annotations = annotations;
 	}
 

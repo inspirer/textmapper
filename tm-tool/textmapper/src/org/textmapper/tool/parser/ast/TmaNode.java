@@ -24,11 +24,6 @@ public abstract class TmaNode implements ITmaNode {
 	protected int offset;
 	protected int endoffset;
 
-	@Deprecated
-	public TmaNode(TextSource source, int offset, int endoffset) {
-		this(source, 0, offset, endoffset);
-	}
-
 	public TmaNode(TextSource source, int line, int offset, int endoffset) {
 		this.source = source;
 		this.line = line;

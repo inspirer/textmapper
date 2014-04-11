@@ -862,15 +862,15 @@ public class TMParser {
 				break;
 			case 15:  // option ::= ID '=' expression
 				tmLeft.value = new TmaOption(
-						((String)tmStack[tmHead - 2].value) /* ID */,
-						((ITmaExpression)tmStack[tmHead].value) /* expression */,
+						((String)tmStack[tmHead - 2].value) /* key */,
+						((ITmaExpression)tmStack[tmHead].value) /* value */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 16:  // option ::= syntax_problem
 				tmLeft.value = new TmaOption(
-						null /* ID */,
-						null /* expression */,
+						null /* key */,
+						null /* value */,
 						((TmaSyntaxProblem)tmStack[tmHead].value) /* syntaxProblem */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
@@ -925,9 +925,9 @@ public class TMParser {
 						((TmaIdentifier)tmStack[tmHead - 7].value) /* name */,
 						((String)tmStack[tmHead - 6].value) /* type */,
 						((TmaPattern)tmStack[tmHead - 4].value) /* pattern */,
-						((TmaStateref)tmStack[tmHead - 3].value) /* lexemeTransition */,
+						((TmaStateref)tmStack[tmHead - 3].value) /* transition */,
 						((Integer)tmStack[tmHead - 2].value) /* priority */,
-						((TmaLexemeAttrs)tmStack[tmHead - 1].value) /* lexemeAttrs */,
+						((TmaLexemeAttrs)tmStack[tmHead - 1].value) /* attrs */,
 						((TmaCommand)tmStack[tmHead].value) /* command */,
 						null /* input */, tmStack[tmHead - 7].line, tmStack[tmHead - 7].offset, tmStack[tmHead].endoffset);
 				break;
@@ -936,9 +936,9 @@ public class TMParser {
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
 						((String)tmStack[tmHead - 1].value) /* type */,
 						null /* pattern */,
-						null /* lexemeTransition */,
+						null /* transition */,
 						null /* priority */,
-						null /* lexemeAttrs */,
+						null /* attrs */,
 						null /* command */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
@@ -947,7 +947,7 @@ public class TMParser {
 				break;
 			case 57:  // lexeme_attrs ::= '(' lexeme_attribute ')'
 				tmLeft.value = new TmaLexemeAttrs(
-						((TmaLexemeAttribute)tmStack[tmHead - 1].value) /* lexemeAttribute */,
+						((TmaLexemeAttribute)tmStack[tmHead - 1].value) /* kind */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 58:  // lexeme_attribute ::= Lsoft
@@ -1077,7 +1077,7 @@ public class TMParser {
 				break;
 			case 84:  // nonterm_type ::= type
 				tmLeft.value = new TmaNontermTypeRaw(
-						((String)tmStack[tmHead].value) /* type */,
+						((String)tmStack[tmHead].value) /* text */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 85:  // assoc ::= Lleft
@@ -1109,13 +1109,13 @@ public class TMParser {
 				break;
 			case 92:  // inputref ::= symref Lnoeoi
 				tmLeft.value = new TmaInputref(
-						((TmaSymref)tmStack[tmHead - 1].value) /* symref */,
+						((TmaSymref)tmStack[tmHead - 1].value) /* reference */,
 						true /* noeoi */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 93:  // inputref ::= symref
 				tmLeft.value = new TmaInputref(
-						((TmaSymref)tmStack[tmHead].value) /* symref */,
+						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						false /* noeoi */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1263,7 +1263,7 @@ public class TMParser {
 				break;
 			case 128:  // rhsCast ::= rhsClass Las literal
 				tmLeft.value = new TmaRhsAsLiteral(
-						((ITmaRhsPart)tmStack[tmHead - 2].value) /* rhsClass */,
+						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
 						((TmaLiteral)tmStack[tmHead].value) /* literal */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1281,7 +1281,7 @@ public class TMParser {
 				break;
 			case 132:  // rhsPrimary ::= symref
 				tmLeft.value = new TmaRhsSymbol(
-						((TmaSymref)tmStack[tmHead].value) /* symref */,
+						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 133:  // rhsPrimary ::= '(' rules ')'

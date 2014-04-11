@@ -24,8 +24,8 @@ public class TmaMapEntriesItem extends TmaNode {
 
 	private final TmaSyntaxProblem error;
 
-	public TmaMapEntriesItem(String name, ITmaExpression expression, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaMapEntriesItem(String name, ITmaExpression expression, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 		this.expression = expression;
 		this.error = null;

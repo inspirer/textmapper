@@ -24,8 +24,8 @@ public class TmaNontermTypeAST extends TmaNode implements ITmaNontermType {
 
 	private final TmaSymref reference;
 
-	public TmaNontermTypeAST(TmaSymref reference, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaNontermTypeAST(TmaSymref reference, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.reference = reference;
 	}
 

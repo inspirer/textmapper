@@ -15,25 +15,26 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 
+	private final TmaAnnotations annotations;
 	private final TmaIdentifier name;
 	private final ITmaNontermType type;
 	private final List<TmaRule0> rules;
-	private final TmaAnnotations annotations;
 
-	public TmaNonterm(TmaIdentifier name, ITmaNontermType type, List<TmaRule0> rules,
-					  TmaAnnotations annotations, TextSource source, int offset,
-					  int endoffset) {
-		super(source, offset, endoffset);
+	public TmaNonterm(TmaAnnotations annotations, TmaIdentifier name, ITmaNontermType type, List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
+		this.annotations = annotations;
 		this.name = name;
 		this.type = type;
 		this.rules = rules;
-		this.annotations = annotations;
+	}
+
+	public TmaAnnotations getAnnotations() {
+		return annotations;
 	}
 
 	public TmaIdentifier getName() {
@@ -48,10 +49,6 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		return rules;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
-	}
-
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
@@ -62,9 +59,12 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		if (name != null) {
 			name.accept(v);
 		}
+		if (type != null) {
+			type.accept(v);
+		}
 		if (rules != null) {
-			for (TmaRule0 r : rules) {
-				r.accept(v);
+			for (TmaRule0 it : rules) {
+				it.accept(v);
 			}
 		}
 	}

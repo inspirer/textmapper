@@ -23,8 +23,8 @@ public class TmaRhsAssignment extends TmaNode implements ITmaRhsPart {
 	private final boolean addition;
 	private final ITmaRhsPart inner;
 
-	public TmaRhsAssignment(TmaIdentifier id, boolean addition, ITmaRhsPart inner, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsAssignment(TmaIdentifier id, boolean addition, ITmaRhsPart inner, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.id = id;
 		this.addition = addition;
 		this.inner = inner;

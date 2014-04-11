@@ -21,8 +21,8 @@ public class TmaSymref extends TmaNode implements ITmaExpression {
 
 	private final String name;
 
-	public TmaSymref(String name, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaSymref(String name, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.name = name;
 	}
 

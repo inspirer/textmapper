@@ -23,8 +23,8 @@ public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 	private final List<TmaSymref> symbols;
 	private final TmaAssoc assoc;
 
-	public TmaDirectivePrio(List<TmaSymref> symbols, TmaAssoc assoc, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaDirectivePrio(List<TmaSymref> symbols, TmaAssoc assoc, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.symbols = symbols;
 		this.assoc = assoc;
 	}

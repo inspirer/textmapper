@@ -17,16 +17,13 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 8/6/12
- */
 public class TmaRhsUnordered extends TmaNode implements ITmaRhsPart {
 
 	private final ITmaRhsPart left;
 	private final ITmaRhsPart right;
 
-	public TmaRhsUnordered(ITmaRhsPart left, ITmaRhsPart right, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsUnordered(ITmaRhsPart left, ITmaRhsPart right, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}

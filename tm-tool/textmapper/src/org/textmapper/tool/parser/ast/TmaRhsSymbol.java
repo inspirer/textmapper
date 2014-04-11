@@ -17,15 +17,12 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 8/2/12
- */
 public class TmaRhsSymbol extends TmaNode implements ITmaRhsPart {
 
 	private final TmaSymref reference;
 
-	public TmaRhsSymbol(TmaSymref reference, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsSymbol(TmaSymref reference, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.reference = reference;
 	}
 

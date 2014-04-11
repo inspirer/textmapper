@@ -141,7 +141,7 @@ import_ ::=
 	  Limport alias=ID? file=scon ';' ;
 
 option ::=
-	  ID '=' expression
+	  key=ID '=' value=expression
 	| syntax_problem
 ;
 
@@ -183,13 +183,13 @@ named_pattern ::=
 
 lexeme ::=
 	  name=identifier typeopt ':'
-			(pattern lexeme_transitionopt priority=iconopt lexeme_attrsopt commandopt)? ;
+			(pattern transition=lexeme_transitionopt priority=iconopt attrs=lexeme_attrsopt commandopt)? ;
 
 lexeme_transition ::=
 	  '=>' @pass stateref ;
 
 lexeme_attrs ::=
-	  '(' lexeme_attribute ')' ;
+	  '(' kind=lexeme_attribute ')' ;
 
 lexeme_attribute ::=
 	  Lsoft
@@ -224,7 +224,7 @@ nonterm_type interface ::=
 	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt
 	| [nontermTypeHint] kind=Linterface name=identifieropt
 	| [nontermTypeHint] kind=Lvoid
-	| [nontermTypeRaw] type
+	| [nontermTypeRaw] text=type
 ;
 
 assoc ::=
@@ -236,7 +236,7 @@ directive returns grammar_part ::=
 ;
 
 inputref ::=
-	symref noeoi=Lnoeoi? ;
+	reference=symref noeoi=Lnoeoi? ;
 
 references ::=
 	  symref
@@ -298,7 +298,7 @@ rhsOptional returns rhsPart ::=
 rhsCast returns rhsPart ::=
 	  rhsClass
 	| rhsClass Las symref
-	| [rhsAsLiteral] rhsClass Las literal
+	| [rhsAsLiteral] inner=rhsClass Las literal
 ;
 
 rhsUnordered returns rhsPart ::=
@@ -311,7 +311,7 @@ rhsClass returns rhsPart ::=
 ;
 
 rhsPrimary returns rhsPart ::=
-	  [rhsSymbol] symref
+	  [rhsSymbol] reference=symref
 	| [rhsNested] '(' rules ')'
 	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='+'
 	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='*'

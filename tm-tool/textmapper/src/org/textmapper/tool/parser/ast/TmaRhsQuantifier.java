@@ -17,9 +17,6 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 8/3/12
- */
 public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 
 	public static final int KIND_OPTIONAL = 0;
@@ -29,8 +26,8 @@ public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 	private final int quantifier;
 	private final ITmaRhsPart inner;
 
-	public TmaRhsQuantifier(ITmaRhsPart inner, int quantifier, TextSource source, int offset, int endoffset) {
-		super(source, offset, endoffset);
+	public TmaRhsQuantifier(ITmaRhsPart inner, int quantifier, TextSource source, int line, int offset, int endoffset) {
+		super(source, line, offset, endoffset);
 		this.inner = inner;
 		this.quantifier = quantifier;
 	}
