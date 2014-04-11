@@ -49,6 +49,7 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		return rules;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

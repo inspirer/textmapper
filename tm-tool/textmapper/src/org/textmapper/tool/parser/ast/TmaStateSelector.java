@@ -31,13 +31,14 @@ public class TmaStateSelector extends TmaNode implements ITmaLexerPart {
 		return states;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
 		}
 		if (states != null) {
-			for (TmaLexerState state : states) {
-				state.accept(v);
+			for (TmaLexerState it : states) {
+				it.accept(v);
 			}
 		}
 	}

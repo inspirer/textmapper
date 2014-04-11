@@ -30,6 +30,7 @@ public class TmaParsingAlgorithm extends TmaNode {
 		return la;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

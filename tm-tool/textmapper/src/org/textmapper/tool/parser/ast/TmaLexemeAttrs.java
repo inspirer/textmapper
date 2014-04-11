@@ -30,6 +30,7 @@ public class TmaLexemeAttrs extends TmaNode {
 		return kind;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

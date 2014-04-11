@@ -36,6 +36,7 @@ public class TmaNamedPattern extends TmaNode implements ITmaLexerPart {
 		return pattern;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

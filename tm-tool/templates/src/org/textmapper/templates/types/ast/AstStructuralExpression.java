@@ -43,6 +43,7 @@ public class AstStructuralExpression extends AstNode implements IAstExpression {
 		return expressionList;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

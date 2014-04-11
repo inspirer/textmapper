@@ -36,6 +36,7 @@ public class Ast_String extends AstNode {
 		return scon;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

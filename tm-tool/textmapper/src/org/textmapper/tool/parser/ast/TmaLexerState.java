@@ -36,6 +36,7 @@ public class TmaLexerState extends TmaNode {
 		return defaultTransition;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

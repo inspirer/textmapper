@@ -43,6 +43,7 @@ public class AstMethodDeclaration extends AstNode implements IAstMemberDeclarati
 		return parameters;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

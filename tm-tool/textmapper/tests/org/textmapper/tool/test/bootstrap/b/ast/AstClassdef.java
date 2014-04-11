@@ -55,6 +55,7 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 		return identifier;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

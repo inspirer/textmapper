@@ -31,6 +31,7 @@ public class TmaDirectiveInput extends TmaNode implements ITmaGrammarPart {
 		return inputRefs;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

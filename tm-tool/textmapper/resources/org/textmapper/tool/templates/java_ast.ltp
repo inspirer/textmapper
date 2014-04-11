@@ -98,6 +98,7 @@ ${foreach prop in cl.fields-}
 
 ${end-}
 ${if true-}
+	@Override
 	public void accept(${opts.astprefix}Visitor v) {
 ${if cl.fields.select(f|f.type->acceptsVisitor()).size() == 0-}
 		v.visit(this);

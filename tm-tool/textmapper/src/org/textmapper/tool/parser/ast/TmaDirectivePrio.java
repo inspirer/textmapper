@@ -37,6 +37,7 @@ public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 		return assoc;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

@@ -31,6 +31,7 @@ public class TmaArray extends TmaNode implements ITmaExpression {
 		return content;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

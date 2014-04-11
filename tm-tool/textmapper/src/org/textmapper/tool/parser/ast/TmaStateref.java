@@ -30,6 +30,7 @@ public class TmaStateref extends TmaNode implements ITmaExpression {
 		return name;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

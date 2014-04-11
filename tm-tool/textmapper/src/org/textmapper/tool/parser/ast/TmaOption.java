@@ -49,6 +49,7 @@ public class TmaOption extends TmaNode {
 		return error;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

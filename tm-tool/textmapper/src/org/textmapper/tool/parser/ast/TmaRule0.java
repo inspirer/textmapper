@@ -70,6 +70,7 @@ public class TmaRule0 extends TmaNode {
 		return prefix != null ? prefix.getAnnotations() : null;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (error != null) {
 			v.visit(error);

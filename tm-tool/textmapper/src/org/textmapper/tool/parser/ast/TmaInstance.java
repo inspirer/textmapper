@@ -37,6 +37,7 @@ public class TmaInstance extends TmaNode implements ITmaExpression {
 		return mapEntries;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

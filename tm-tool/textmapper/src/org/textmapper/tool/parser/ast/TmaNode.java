@@ -35,26 +35,32 @@ public abstract class TmaNode implements ITmaNode {
 		return source.getLocation(offset);
 	}
 
+	@Override
 	public int getLine() {
 		return this.line == 0 ? source.lineForOffset(offset) : this.line;
 	}
 
+	@Override
 	public int getOffset() {
 		return this.offset;
 	}
 
+	@Override
 	public int getEndoffset() {
 		return this.endoffset;
 	}
 
+	@Override
 	public TextSource getSource() {
 		return source;
 	}
 
+	@Override
 	public String getResourceName() {
 		return source.getFile();
 	}
 
+	@Override
 	public String getText() {
 		return source.getText(offset, endoffset);
 	}

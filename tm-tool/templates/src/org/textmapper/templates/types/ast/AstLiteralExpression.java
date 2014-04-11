@@ -42,6 +42,7 @@ public class AstLiteralExpression extends AstNode implements IAstExpression {
 		return bcon;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

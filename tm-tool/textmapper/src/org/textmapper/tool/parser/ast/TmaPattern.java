@@ -30,6 +30,7 @@ public class TmaPattern extends TmaNode {
 		return regexp;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

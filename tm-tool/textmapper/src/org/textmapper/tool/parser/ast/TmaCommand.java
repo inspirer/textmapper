@@ -23,6 +23,7 @@ public class TmaCommand extends TmaNode implements ITmaRhsPart {
 		super(source, line, offset, endoffset);
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

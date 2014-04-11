@@ -42,6 +42,7 @@ public class AstListOfIdentifierAnd2ElementsCommaSeparatedItem extends AstNode {
 		return expression;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

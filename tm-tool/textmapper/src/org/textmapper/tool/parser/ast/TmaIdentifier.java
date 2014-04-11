@@ -30,6 +30,7 @@ public class TmaIdentifier extends TmaNode {
 		return ID;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

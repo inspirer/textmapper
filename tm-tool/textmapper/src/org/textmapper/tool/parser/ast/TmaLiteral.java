@@ -30,6 +30,7 @@ public class TmaLiteral extends TmaNode implements ITmaExpression {
 		return literal;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		v.visit(this);
 	}

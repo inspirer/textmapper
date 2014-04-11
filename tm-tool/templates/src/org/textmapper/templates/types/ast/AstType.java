@@ -55,6 +55,7 @@ public class AstType extends AstNode {
 		return parameters;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

@@ -36,6 +36,7 @@ public class AstClassdeflistItem extends AstNode {
 		return identifier;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

@@ -49,6 +49,7 @@ public class AstFeatureDeclaration extends AstNode implements IAstMemberDeclarat
 		return defaultval;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

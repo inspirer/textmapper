@@ -43,6 +43,7 @@ public class AstTypeDeclaration extends AstNode {
 		return members;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

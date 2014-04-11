@@ -43,6 +43,7 @@ public class AstStringConstraint extends AstNode {
 		return identifier;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

@@ -37,6 +37,7 @@ public class AstTypeEx extends AstNode {
 		return multiplicityListCommaSeparated;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

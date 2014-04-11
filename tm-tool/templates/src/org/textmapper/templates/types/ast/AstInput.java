@@ -31,6 +31,7 @@ public class AstInput extends AstNode {
 		return declarations;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		if (!v.visit(this)) {
 			return;

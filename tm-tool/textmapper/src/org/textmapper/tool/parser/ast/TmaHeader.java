@@ -42,6 +42,7 @@ public class TmaHeader extends TmaNode {
 		return parsingAlgorithm;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

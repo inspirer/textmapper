@@ -36,6 +36,7 @@ public class TmaRhsClass extends TmaNode implements ITmaRhsPart {
 		return inner;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

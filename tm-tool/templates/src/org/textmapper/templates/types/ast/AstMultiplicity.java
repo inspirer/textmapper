@@ -42,6 +42,7 @@ public class AstMultiplicity extends AstNode {
 		return hi;
 	}
 
+	@Override
 	public void accept(AstVisitor v) {
 		v.visit(this);
 	}

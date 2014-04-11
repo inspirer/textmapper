@@ -42,6 +42,7 @@ public class TmaAnnotation extends TmaNode {
 		return syntaxProblem;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

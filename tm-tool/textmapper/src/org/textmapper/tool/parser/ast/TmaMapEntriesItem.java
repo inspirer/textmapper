@@ -50,6 +50,7 @@ public class TmaMapEntriesItem extends TmaNode {
 		return error != null;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (error != null) {
 			v.visit(error);

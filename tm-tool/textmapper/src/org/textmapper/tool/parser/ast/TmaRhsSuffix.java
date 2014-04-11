@@ -36,6 +36,7 @@ public class TmaRhsSuffix extends TmaNode {
 		return symref;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

@@ -36,6 +36,7 @@ public class TmaInputref extends TmaNode {
 		return nonEoi;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;

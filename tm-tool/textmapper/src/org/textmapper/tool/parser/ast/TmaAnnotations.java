@@ -31,6 +31,7 @@ public class TmaAnnotations extends TmaNode {
 		return annotations;
 	}
 
+	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
