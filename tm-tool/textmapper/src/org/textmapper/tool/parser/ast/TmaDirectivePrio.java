@@ -20,21 +20,21 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaDirectivePrio extends TmaNode implements ITmaGrammarPart {
 
-	private final List<TmaSymref> symbols;
 	private final TmaAssoc assoc;
+	private final List<TmaSymref> symbols;
 
-	public TmaDirectivePrio(List<TmaSymref> symbols, TmaAssoc assoc, TextSource source, int line, int offset, int endoffset) {
+	public TmaDirectivePrio(TmaAssoc assoc, List<TmaSymref> symbols, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.symbols = symbols;
 		this.assoc = assoc;
-	}
-
-	public List<TmaSymref> getSymbols() {
-		return symbols;
+		this.symbols = symbols;
 	}
 
 	public TmaAssoc getAssoc() {
 		return assoc;
+	}
+
+	public List<TmaSymref> getSymbols() {
+		return symbols;
 	}
 
 	@Override

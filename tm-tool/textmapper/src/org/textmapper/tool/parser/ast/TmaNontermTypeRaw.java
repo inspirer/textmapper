@@ -19,15 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNontermTypeRaw extends TmaNode implements ITmaNontermType {
 
-	private final String type;
+	private final String typeText;
 
-	public TmaNontermTypeRaw(String type, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermTypeRaw(String typeText, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.type = type;
+		this.typeText = typeText;
 	}
 
 	public String getTypeText() {
-		return type;
+		return typeText;
 	}
 
 	@Override

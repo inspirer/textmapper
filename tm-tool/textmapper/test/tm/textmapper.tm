@@ -123,7 +123,7 @@ code:    /\{/                            { skipAction(); lapg_n.endoffset = getO
 %input input, expression;
 
 input ::=
-	  header import_* option* lexer_section parser_section? ;
+	  header imports=import_* options=option* lexer=lexer_section parser=parser_section? ;
 
 header ::=
 	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';' ;
@@ -220,11 +220,11 @@ nonterm ::=
 	  annotations? name=identifier type=nonterm_type? '::=' rules ';' ;
 
 nonterm_type interface ::=
-	  [nontermTypeAST] Lreturns symref
+	  [nontermTypeAST] Lreturns reference=symref
 	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt
 	| [nontermTypeHint] kind=Linterface name=identifieropt
 	| [nontermTypeHint] kind=Lvoid
-	| [nontermTypeRaw] text=type
+	| [nontermTypeRaw] typeText=type
 ;
 
 assoc ::=
@@ -282,7 +282,7 @@ rhsPart ::=
 
 rhsAnnotated returns rhsPart ::=
 	  rhsAssignment
-	| annotations rhsAssignment
+	| annotations inner=rhsAssignment
 ;
 
 rhsAssignment returns rhsPart ::=
@@ -351,8 +351,8 @@ literal ::=
 ;
 
 map_entries ::=
-	  ID map_separator expression
-	| map_entries ',' ID map_separator expression
+	  name=ID map_separator expression
+	| map_entries ',' name=ID map_separator expression
 ;
 
 map_separator void ::=

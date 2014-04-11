@@ -816,10 +816,10 @@ public class TMParser {
 				 ((List<TmaOption>)tmStack[tmHead - 1].value).add(((TmaOption)tmStack[tmHead].value)); 
 				break;
 			case 19:  // option ::= ID '=' expression
-				 tmLeft.value = new TmaOption(((String)tmStack[tmHead - 2].value), ((ITmaExpression)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaOption(((String)tmStack[tmHead - 2].value), ((ITmaExpression)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 20:  // option ::= syntax_problem
-				 tmLeft.value = new TmaOption(((TmaSyntaxProblem)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaOption(null, null, ((TmaSyntaxProblem)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 21:  // identifier ::= ID
 				 tmLeft.value = new TmaIdentifier(((String)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -915,16 +915,16 @@ public class TMParser {
 				 tmLeft.value = new TmaNontermTypeAST(((TmaSymref)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 84:  // nonterm_type ::= Linline Lclass identifieropt
-				 tmLeft.value = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.INLINE_CLASS, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaNontermTypeHint(true, TmaNontermTypeHint.TmaKindKind.LCLASS, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 85:  // nonterm_type ::= Lclass identifieropt
-				 tmLeft.value = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.CLASS, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LCLASS, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 86:  // nonterm_type ::= Linterface identifieropt
-				 tmLeft.value = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.INTERFACE, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LINTERFACE, ((TmaIdentifier)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 87:  // nonterm_type ::= Lvoid
-				 tmLeft.value = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.VOID, null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LVOID, null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 88:  // nonterm_type ::= type
 				 tmLeft.value = new TmaNontermTypeRaw(((String)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -939,7 +939,7 @@ public class TMParser {
 				 tmLeft.value = TmaAssoc.LNONASSOC; 
 				break;
 			case 92:  // directive ::= '%' assoc references ';'
-				 tmLeft.value = new TmaDirectivePrio(((List<TmaSymref>)tmStack[tmHead - 1].value), ((TmaAssoc)tmStack[tmHead - 2].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaDirectivePrio(((TmaAssoc)tmStack[tmHead - 2].value), ((List<TmaSymref>)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 93:  // directive ::= '%' Linput inputs ';'
 				 tmLeft.value = new TmaDirectiveInput(((List<TmaInputref>)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 

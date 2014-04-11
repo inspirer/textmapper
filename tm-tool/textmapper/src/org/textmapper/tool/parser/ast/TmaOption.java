@@ -21,20 +21,13 @@ public class TmaOption extends TmaNode {
 
 	private final String key;
 	private final ITmaExpression value;
-	private final TmaSyntaxProblem error;
+	private final TmaSyntaxProblem syntaxProblem;
 
-	public TmaOption(String key, ITmaExpression value, TextSource source, int line, int offset, int endoffset) {
+	public TmaOption(String key, ITmaExpression value, TmaSyntaxProblem syntaxProblem, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.key = key;
 		this.value = value;
-		this.error = null;
-	}
-
-	public TmaOption(TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
-		super(source, line, offset, endoffset);
-		this.key = null;
-		this.value = null;
-		this.error = error;
+		this.syntaxProblem = syntaxProblem;
 	}
 
 	public String getKey() {
@@ -46,7 +39,7 @@ public class TmaOption extends TmaNode {
 	}
 
 	public TmaSyntaxProblem getSyntaxProblem() {
-		return error;
+		return syntaxProblem;
 	}
 
 	@Override
@@ -57,8 +50,8 @@ public class TmaOption extends TmaNode {
 		if (value != null) {
 			value.accept(v);
 		}
-		if (error != null) {
-			error.accept(v);
+		if (syntaxProblem != null) {
+			syntaxProblem.accept(v);
 		}
 	}
 }

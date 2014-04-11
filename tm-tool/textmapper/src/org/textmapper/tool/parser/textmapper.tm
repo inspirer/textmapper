@@ -161,8 +161,8 @@ options (List<TmaOption>) ::=
 ;
 
 option (TmaOption) ::=
-	  ID '=' expression 								{ $$ = new TmaOption($ID, $expression, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| syntax_problem									{ $$ = new TmaOption($syntax_problem, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  ID '=' expression 								{ $$ = new TmaOption($ID, $expression, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| syntax_problem									{ $$ = new TmaOption(null, null, $syntax_problem, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 identifier (TmaIdentifier) ::=
@@ -259,9 +259,9 @@ nonterm (TmaNonterm) ::=
 
 nonterm_type (ITmaNontermType) ::=
 	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Linline? Lclass name=identifieropt				{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.${if self.Linline.rightOffset>=0}INLINE_CLASS${else}CLASS${end}, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Linterface name=identifieropt						{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.INTERFACE, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Lvoid												{ $$ = new TmaNontermTypeHint(TmaNontermTypeHint.Kind.VOID, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Linline? Lclass name=identifieropt				{ $$ = new TmaNontermTypeHint(${self.Linline.rightOffset>=0 ? 'true' : 'false'}, TmaNontermTypeHint.TmaKindKind.LCLASS, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Linterface name=identifieropt						{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LINTERFACE, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Lvoid												{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LVOID, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| type                                              { $$ = new TmaNontermTypeRaw($type, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -272,7 +272,7 @@ assoc (TmaAssoc) ::=
 ;
 
 directive (ITmaGrammarPart) ::=
-	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($references, $assoc, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($assoc, $references, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 

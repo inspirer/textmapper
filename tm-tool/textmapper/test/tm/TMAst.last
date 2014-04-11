@@ -3,14 +3,14 @@
 
 class Input {
 	Header header;
-	list<Import> importOptlist;
-	list<Option> optionOptlist;
-	LexerSection lexerSection;
-	ParserSection parserSection;
+	list<Import> imports;
+	list<Option> options;
+	LexerSection lexer;
+	ParserSection parser;
 }
 
 input  : Input ::=
-	{header} importOptlist=import__optlist optionOptlist=option_optlist lexerSection=lexer_section parserSection=parser_section?
+	{header} imports=import__optlist options=option_optlist lexer=lexer_section parser=parser_section?
 ;
 
 class Header {
@@ -238,7 +238,7 @@ interface NontermType {
 }
 
 class NontermTypeAST : NontermType {
-	Symref symref;
+	Symref reference;
 }
 
 class NontermTypeHint : NontermType {
@@ -253,15 +253,15 @@ class NontermTypeHint : NontermType {
 }
 
 class NontermTypeRaw : NontermType {
-	String text;
+	String typeText;
 }
 
 nonterm_type  : NontermType ::=
-	this=new.NontermTypeAST: Lreturns {symref}
+	this=new.NontermTypeAST: Lreturns reference=symref
   | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt
   | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
-  | this=new.NontermTypeRaw: text=type
+  | this=new.NontermTypeRaw: typeText=type
 ;
 
 enum Assoc {
@@ -366,12 +366,12 @@ rhsPart  : RhsPart ::=
 
 class RhsAnnotated : RhsPart {
 	Annotations annotations;
-	RhsPart rhsAssignment;
+	RhsPart inner;
 }
 
 rhsAnnotated  : RhsPart ::=
 	this=rhsAssignment
-  | this=new.RhsAnnotated: {annotations} {rhsAssignment}
+  | this=new.RhsAnnotated: {annotations} inner=rhsAssignment
 ;
 
 class RhsAssignment : RhsPart {
@@ -530,12 +530,12 @@ literal  : Literal ::=
 ;
 
 class MapEntriesItem {
-	String ID;
+	String name;
 	Expression expression;
 }
 
 map_entries  : list<MapEntriesItem>
-	(this+=new.MapEntriesItem({ID} map_separator {expression})
+	(this+=new.MapEntriesItem(name=ID map_separator {expression})
 		separator ',')+ ;
 
 map_separator  : void ::=

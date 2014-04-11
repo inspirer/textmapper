@@ -180,7 +180,7 @@ public class TMLexerCompiler {
 			if (attrs == null || attrs.getKind() != TmaLexemeAttribute.LCLASS) {
 				continue;
 			}
-			if (lexeme.getRegexp() == null) {
+			if (lexeme.getPattern() == null) {
 				error(lexeme, "class lexeme rule without regular expression, ignored");
 				continue;
 			}
@@ -195,17 +195,18 @@ public class TMLexerCompiler {
 
 			RegexPart regex;
 			try {
-				regex = LapgCore.parse(s.getName(), lexeme.getRegexp().getRegexp());
+				regex = LapgCore.parse(s.getName(), lexeme.getPattern().getRegexp());
 			} catch (RegexParseException e) {
-				error(lexeme.getRegexp(), e.getMessage());
+				error(lexeme.getPattern(), e.getMessage());
 				continue;
 			}
 
+			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
-					attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+					attributes.get(lexeme).getApplicableInStates(), priority,
 					null, lexeme);
 			classMatchers.put(liLexerRule, LapgCore.createMatcher(liLexerRule.getRegexp(), context));
-			TMDataUtil.putCode(liLexerRule, lexeme.getCode());
+			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 
@@ -241,7 +242,7 @@ public class TMLexerCompiler {
 				nonSoft.add(term);
 			}
 
-			if (lexeme.getRegexp() == null) {
+			if (lexeme.getPattern() == null) {
 				if (isSoft) {
 					error(lexeme, "soft lexeme rule `" + lexeme.getName().getID() + "' should have a regular expression");
 				}
@@ -251,15 +252,15 @@ public class TMLexerCompiler {
 			String name = lexeme.getName().getID();
 			RegexPart regex;
 			try {
-				regex = LapgCore.parse(name, lexeme.getRegexp().getRegexp());
+				regex = LapgCore.parse(name, lexeme.getPattern().getRegexp());
 			} catch (RegexParseException e) {
-				error(lexeme.getRegexp(), e.getMessage());
+				error(lexeme.getPattern(), e.getMessage());
 				continue;
 			}
 
-			if (isSoft && lexeme.getCode() != null) {
+			if (isSoft && lexeme.getCommand() != null) {
 				// TODO Note: soft lexeme is able to override the code
-				error(lexeme.getCode(), "soft lexeme rule `" + lexeme.getName().getID()
+				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getID()
 						+ "' cannot have a semantic action");
 			}
 			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);
@@ -292,9 +293,11 @@ public class TMLexerCompiler {
 				// TODO check applicable states
 			}
 
-			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex, attributes.get(lexeme).getApplicableInStates(), lexeme.getPriority(),
+			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
+			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
+					attributes.get(lexeme).getApplicableInStates(), priority,
 					classRule, lexeme);
-			TMDataUtil.putCode(liLexerRule, lexeme.getCode());
+			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
 	}

@@ -804,19 +804,19 @@ public class TMParser {
 			case 4:  // input ::= header import__optlist option_optlist lexer_section parser_section
 				tmLeft.value = new TmaInput(
 						((TmaHeader)tmStack[tmHead - 4].value) /* header */,
-						((List<TmaImport>)tmStack[tmHead - 3].value) /* importOptlist */,
-						((List<TmaOption>)tmStack[tmHead - 2].value) /* optionOptlist */,
-						((TmaLexerSection)tmStack[tmHead - 1].value) /* lexerSection */,
-						((TmaParserSection)tmStack[tmHead].value) /* parserSection */,
+						((List<TmaImport>)tmStack[tmHead - 3].value) /* imports */,
+						((List<TmaOption>)tmStack[tmHead - 2].value) /* options */,
+						((TmaLexerSection)tmStack[tmHead - 1].value) /* lexer */,
+						((TmaParserSection)tmStack[tmHead].value) /* parser */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 5:  // input ::= header import__optlist option_optlist lexer_section
 				tmLeft.value = new TmaInput(
 						((TmaHeader)tmStack[tmHead - 3].value) /* header */,
-						((List<TmaImport>)tmStack[tmHead - 2].value) /* importOptlist */,
-						((List<TmaOption>)tmStack[tmHead - 1].value) /* optionOptlist */,
-						((TmaLexerSection)tmStack[tmHead].value) /* lexerSection */,
-						null /* parserSection */,
+						((List<TmaImport>)tmStack[tmHead - 2].value) /* imports */,
+						((List<TmaOption>)tmStack[tmHead - 1].value) /* options */,
+						((TmaLexerSection)tmStack[tmHead].value) /* lexer */,
+						null /* parser */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 8:  // header ::= Llanguage name '(' name ')' parsing_algorithmopt ';'
@@ -1044,7 +1044,7 @@ public class TMParser {
 				break;
 			case 77:  // nonterm_type ::= Lreturns symref
 				tmLeft.value = new TmaNontermTypeAST(
-						((TmaSymref)tmStack[tmHead].value) /* symref */,
+						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 80:  // nonterm_type ::= Linline Lclass identifieropt
@@ -1077,7 +1077,7 @@ public class TMParser {
 				break;
 			case 84:  // nonterm_type ::= type
 				tmLeft.value = new TmaNontermTypeRaw(
-						((String)tmStack[tmHead].value) /* text */,
+						((String)tmStack[tmHead].value) /* typeText */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 85:  // assoc ::= Lleft
@@ -1232,7 +1232,7 @@ public class TMParser {
 			case 120:  // rhsAnnotated ::= annotations rhsAssignment
 				tmLeft.value = new TmaRhsAnnotated(
 						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
-						((ITmaRhsPart)tmStack[tmHead].value) /* rhsAssignment */,
+						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 122:  // rhsAssignment ::= identifier '=' rhsOptional
@@ -1422,13 +1422,13 @@ public class TMParser {
 			case 164:  // map_entries ::= ID map_separator expression
 				tmLeft.value = new ArrayList();
 				((List<TmaMapEntriesItem>)tmLeft.value).add(new TmaMapEntriesItem(
-						((String)tmStack[tmHead - 2].value) /* ID */,
+						((String)tmStack[tmHead - 2].value) /* name */,
 						((ITmaExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
 			case 165:  // map_entries ::= map_entries ',' ID map_separator expression
 				((List<TmaMapEntriesItem>)tmLeft.value).add(new TmaMapEntriesItem(
-						((String)tmStack[tmHead - 2].value) /* ID */,
+						((String)tmStack[tmHead - 2].value) /* name */,
 						((ITmaExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
 				break;

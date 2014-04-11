@@ -20,20 +20,20 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaInputref extends TmaNode {
 
 	private final TmaSymref reference;
-	private final boolean nonEoi;
+	private final boolean noeoi;
 
-	public TmaInputref(TmaSymref reference, boolean nonEoi, TextSource source, int line, int offset, int endoffset) {
+	public TmaInputref(TmaSymref reference, boolean noeoi, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.reference = reference;
-		this.nonEoi = nonEoi;
+		this.noeoi = noeoi;
 	}
 
 	public TmaSymref getReference() {
 		return reference;
 	}
 
-	public boolean isNonEoi() {
-		return nonEoi;
+	public boolean getNoeoi() {
+		return noeoi;
 	}
 
 	@Override

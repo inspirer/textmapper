@@ -21,23 +21,21 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 
 	private final TmaIdentifier name;
 	private final String type;
-	private final TmaPattern regexp;
+	private final TmaPattern pattern;
 	private final TmaStateref transition;
+	private final Integer priority;
 	private final TmaLexemeAttrs attrs;
-	private final int priority;
-	private final TmaCommand code;
+	private final TmaCommand command;
 
-	public TmaLexeme(TmaIdentifier name, String type, TmaPattern regexp, TmaStateref transition, Integer priority,
-					 TmaLexemeAttrs attrs, TmaCommand code, TextSource source,
-					 int line, int offset, int endoffset) {
+	public TmaLexeme(TmaIdentifier name, String type, TmaPattern pattern, TmaStateref transition, Integer priority, TmaLexemeAttrs attrs, TmaCommand command, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.type = type;
-		this.regexp = regexp;
+		this.pattern = pattern;
 		this.transition = transition;
+		this.priority = priority;
 		this.attrs = attrs;
-		this.priority = priority != null ? priority : 0;
-		this.code = code;
+		this.command = command;
 	}
 
 	public TmaIdentifier getName() {
@@ -48,15 +46,15 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		return type;
 	}
 
-	public TmaPattern getRegexp() {
-		return regexp;
+	public TmaPattern getPattern() {
+		return pattern;
 	}
 
 	public TmaStateref getTransition() {
 		return transition;
 	}
 
-	public int getPriority() {
+	public Integer getPriority() {
 		return priority;
 	}
 
@@ -64,8 +62,8 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		return attrs;
 	}
 
-	public TmaCommand getCode() {
-		return code;
+	public TmaCommand getCommand() {
+		return command;
 	}
 
 	@Override
@@ -76,8 +74,8 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		if (name != null) {
 			name.accept(v);
 		}
-		if (regexp != null) {
-			regexp.accept(v);
+		if (pattern != null) {
+			pattern.accept(v);
 		}
 		if (transition != null) {
 			transition.accept(v);
@@ -85,8 +83,8 @@ public class TmaLexeme extends TmaNode implements ITmaLexerPart {
 		if (attrs != null) {
 			attrs.accept(v);
 		}
-		if (code != null) {
-			code.accept(v);
+		if (command != null) {
+			command.accept(v);
 		}
 	}
 }

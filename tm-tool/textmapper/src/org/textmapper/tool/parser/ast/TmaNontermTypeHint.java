@@ -17,21 +17,24 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-/**
- * evgeny, 7/21/13
- */
 public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 
-	private final Kind kind;
+	private final boolean isInline;
+	private final TmaNontermTypeHint.TmaKindKind kind;
 	private final TmaIdentifier name;
 
-	public TmaNontermTypeHint(Kind kind, TmaIdentifier name, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermTypeHint(boolean isInline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.isInline = isInline;
 		this.kind = kind;
 		this.name = name;
 	}
 
-	public Kind getKind() {
+	public boolean getIsInline() {
+		return isInline;
+	}
+
+	public TmaNontermTypeHint.TmaKindKind getKind() {
 		return kind;
 	}
 
@@ -49,10 +52,9 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 		}
 	}
 
-	public static enum Kind {
-		VOID,
-		CLASS,
-		INLINE_CLASS,
-		INTERFACE
+	public enum TmaKindKind {
+		LCLASS,
+		LVOID,
+		LINTERFACE,
 	}
 }

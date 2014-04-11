@@ -23,8 +23,8 @@ import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
-import org.textmapper.tool.parser.ast.TmaNontermTypeHint.Kind;
-import org.textmapper.tool.parser.ast.TmaRhsSuffix.TmaKindKind;
+import org.textmapper.tool.parser.ast.TmaNontermTypeHint;
+import org.textmapper.tool.parser.ast.TmaRhsSuffix;
 
 import java.util.*;
 
@@ -98,12 +98,12 @@ public class TMParserCompiler {
 					}
 				} else if (nonterm.getType() instanceof TmaNontermTypeHint) {
 					TmaNontermTypeHint hint = (TmaNontermTypeHint) nonterm.getType();
-					if (hint.getKind() == Kind.INLINE_CLASS) {
+					if (hint.getIsInline()) {
 						error(hint, "inline classes are not supported yet");
 						continue;
 					}
-					TMTypeHint.Kind kind = hint.getKind() == Kind.VOID ? TMTypeHint.Kind.VOID :
-							hint.getKind() == Kind.CLASS ? TMTypeHint.Kind.CLASS : TMTypeHint.Kind.INTERFACE;
+					TMTypeHint.Kind kind = hint.getKind() == TmaNontermTypeHint.TmaKindKind.LVOID ? TMTypeHint.Kind.VOID :
+							hint.getKind() == TmaNontermTypeHint.TmaKindKind.LCLASS ? TMTypeHint.Kind.CLASS : TMTypeHint.Kind.INTERFACE;
 					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind, hint.getName() == null ? null : hint.getName().getID()));
 				}
 			}
@@ -149,7 +149,7 @@ public class TMParserCompiler {
 				List<TmaInputref> refs = ((TmaDirectiveInput) clause).getInputRefs();
 				for (TmaInputref inputRef : refs) {
 					Symbol sym = resolver.resolve(inputRef.getReference());
-					boolean hasEoi = !inputRef.isNonEoi();
+					boolean hasEoi = !inputRef.getNoeoi();
 					if (sym instanceof Nonterminal) {
 						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
 						hasInputs = true;
@@ -208,7 +208,7 @@ public class TMParserCompiler {
 			}
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
-		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaKindKind.LPRIO ? ruleAttribute.getSymref() : null;
+		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO ? ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {
 			Symbol prioSym = resolver.resolve(rulePrio);

@@ -41,7 +41,11 @@ public class TmaRhsAsLiteral extends TmaNode implements ITmaRhsPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		inner.accept(v);
-		literal.accept(v);
+		if (inner != null) {
+			inner.accept(v);
+		}
+		if (literal != null) {
+			literal.accept(v);
+		}
 	}
 }
