@@ -156,7 +156,9 @@ public class TMLexerCompiler {
 		TMStateTransitionSwitch activeTransitions = null;
 		List<LexerState> activeStates = Collections.singletonList(resolver.getState(TMResolver.INITIAL_STATE));
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		TmaLexerSection lexer = tree.getRoot().getLexer();
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
 				attributes.put(lexeme, new RuleAttributes(getTransition(lexeme, activeTransitions), activeStates));
@@ -171,7 +173,8 @@ public class TMLexerCompiler {
 		RegexContext context = resolver.createRegexContext();
 		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<LexerRule, RegexMatcher>();
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (!(clause instanceof TmaLexeme)) {
 				continue;
 			}
@@ -212,7 +215,8 @@ public class TMLexerCompiler {
 
 		// Step 3. Process other lexical rules. Match soft lexemes with their classes.
 
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (!(clause instanceof TmaLexeme)) {
 				continue;
 			}

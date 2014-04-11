@@ -1142,41 +1142,41 @@ public class TMParser {
 				break;
 			case 103:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
 				tmLeft.value = new TmaRule0(
-						((TmaRhsPrefix)tmStack[tmHead - 2].value) /* rhsPrefix */,
-						((List<TmaRhsPartsItem>)tmStack[tmHead - 1].value) /* rhsParts */,
-						((TmaRhsSuffix)tmStack[tmHead].value) /* rhsSuffix */,
+						((TmaRhsPrefix)tmStack[tmHead - 2].value) /* prefix */,
+						((List<TmaRhsPartsItem>)tmStack[tmHead - 1].value) /* list */,
+						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 104:  // rule0 ::= rhsPrefix rhsSuffixopt
 				tmLeft.value = new TmaRule0(
-						((TmaRhsPrefix)tmStack[tmHead - 1].value) /* rhsPrefix */,
-						null /* rhsParts */,
-						((TmaRhsSuffix)tmStack[tmHead].value) /* rhsSuffix */,
+						((TmaRhsPrefix)tmStack[tmHead - 1].value) /* prefix */,
+						null /* list */,
+						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 105:  // rule0 ::= rhsParts rhsSuffixopt
 				tmLeft.value = new TmaRule0(
-						null /* rhsPrefix */,
-						((List<TmaRhsPartsItem>)tmStack[tmHead - 1].value) /* rhsParts */,
-						((TmaRhsSuffix)tmStack[tmHead].value) /* rhsSuffix */,
+						null /* prefix */,
+						((List<TmaRhsPartsItem>)tmStack[tmHead - 1].value) /* list */,
+						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 106:  // rule0 ::= rhsSuffixopt
 				tmLeft.value = new TmaRule0(
-						null /* rhsPrefix */,
-						null /* rhsParts */,
-						((TmaRhsSuffix)tmStack[tmHead].value) /* rhsSuffix */,
+						null /* prefix */,
+						null /* list */,
+						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 107:  // rule0 ::= syntax_problem
 				tmLeft.value = new TmaRule0(
-						null /* rhsPrefix */,
-						null /* rhsParts */,
-						null /* rhsSuffix */,
+						null /* prefix */,
+						null /* list */,
+						null /* suffix */,
 						((TmaSyntaxProblem)tmStack[tmHead].value) /* syntaxProblem */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1255,10 +1255,16 @@ public class TMParser {
 						TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK /* quantifier */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
+			case 126:  // rhsCast ::= rhsClass
+				tmLeft.value = new TmaRhsCast(
+						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
+						null /* target */,
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
+				break;
 			case 127:  // rhsCast ::= rhsClass Las symref
 				tmLeft.value = new TmaRhsCast(
-						((ITmaRhsPart)tmStack[tmHead - 2].value) /* rhsClass */,
-						((TmaSymref)tmStack[tmHead].value) /* symref */,
+						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
+						((TmaSymref)tmStack[tmHead].value) /* target */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 128:  // rhsCast ::= rhsClass Las literal
@@ -1291,16 +1297,16 @@ public class TMParser {
 				break;
 			case 134:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
 				tmLeft.value = new TmaRhsList(
-						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
-						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
-						TmaRhsList.TmaQuantifierKind.PLUS /* quantifier */,
+						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* ruleParts */,
+						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
+						true /* atLeastOne */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 135:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
 				tmLeft.value = new TmaRhsList(
-						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* rhsParts */,
-						((List<TmaSymref>)tmStack[tmHead - 2].value) /* references */,
-						TmaRhsList.TmaQuantifierKind.MULT /* quantifier */,
+						((List<TmaRhsPartsItem>)tmStack[tmHead - 4].value) /* ruleParts */,
+						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
+						false /* atLeastOne */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 136:  // rhsPrimary ::= rhsPrimary '*'

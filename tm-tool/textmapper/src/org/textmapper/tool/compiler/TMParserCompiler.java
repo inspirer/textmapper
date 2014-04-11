@@ -67,7 +67,9 @@ public class TMParserCompiler {
 
 	private void collectAstTypes() {
 		Set<String> withType = new HashSet<String>();
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		TmaParserSection parser = tree.getRoot().getParser();
+		for (TmaGrammarPartsItem item : parser.getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				if (nonterm.getType() != null) {
@@ -76,7 +78,8 @@ public class TMParserCompiler {
 			}
 		}
 
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (TmaGrammarPartsItem item : parser.getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
@@ -111,7 +114,9 @@ public class TMParserCompiler {
 	}
 
 	private void collectRules() {
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		TmaParserSection parser = tree.getRoot().getParser();
+		for (TmaGrammarPartsItem item : parser.getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
@@ -128,7 +133,9 @@ public class TMParserCompiler {
 	}
 
 	private void collectDirectives() {
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		TmaParserSection parser = tree.getRoot().getParser();
+		for (TmaGrammarPartsItem item : parser.getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
 				TmaAssoc key = directive.getAssoc();
@@ -181,7 +188,9 @@ public class TMParserCompiler {
 	}
 
 	private void collectAnnotations() {
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		TmaParserSection parser = tree.getRoot().getParser();
+		for (TmaGrammarPartsItem item : parser.getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(), "AnnotateSymbol"));

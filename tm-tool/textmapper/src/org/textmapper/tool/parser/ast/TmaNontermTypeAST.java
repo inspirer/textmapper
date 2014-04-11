@@ -35,6 +35,8 @@ public class TmaNontermTypeAST extends TmaNode implements ITmaNontermType {
 		if (!v.visit(this)) {
 			return;
 		}
-		reference.accept(v);
+		if (reference != null) {
+			reference.accept(v);
+		}
 	}
 }

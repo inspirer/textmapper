@@ -18,29 +18,17 @@ package org.textmapper.tool.parser.ast;
 import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsList extends TmaNode implements ITmaRhsPart {
+public class TmaLexerSection extends TmaNode {
 
-	private final List<ITmaRhsPart> ruleParts;
-	private final List<TmaSymref> separator;
-	private final boolean atLeastOne;
+	private final List<TmaLexerPartsItem> lexerParts;
 
-	public TmaRhsList(List<ITmaRhsPart> ruleParts, List<TmaSymref> separator, boolean atLeastOne, TextSource source, int line, int offset, int endoffset) {
+	public TmaLexerSection(List<TmaLexerPartsItem> lexerParts, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.ruleParts = ruleParts;
-		this.separator = separator;
-		this.atLeastOne = atLeastOne;
+		this.lexerParts = lexerParts;
 	}
 
-	public List<ITmaRhsPart> getRuleParts() {
-		return ruleParts;
-	}
-
-	public List<TmaSymref> getSeparator() {
-		return separator;
-	}
-
-	public boolean isAtLeastOne() {
-		return atLeastOne;
+	public List<TmaLexerPartsItem> getLexerParts() {
+		return lexerParts;
 	}
 
 	@Override
@@ -48,13 +36,8 @@ public class TmaRhsList extends TmaNode implements ITmaRhsPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (ruleParts != null) {
-			for (ITmaRhsPart it : ruleParts) {
-				it.accept(v);
-			}
-		}
-		if (separator != null) {
-			for (TmaSymref it : separator) {
+		if (lexerParts != null) {
+			for (TmaLexerPartsItem it : lexerParts) {
 				it.accept(v);
 			}
 		}

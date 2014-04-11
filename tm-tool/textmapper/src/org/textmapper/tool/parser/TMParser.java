@@ -771,16 +771,16 @@ public class TMParser {
 	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 		switch (tmRule) {
 			case 2:  // input ::= header importsopt options lexer_section parser_section
-				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 4].value), ((List<TmaImport>)tmStack[tmHead - 3].value), ((List<TmaOption>)tmStack[tmHead - 2].value), ((List<ITmaLexerPart>)tmStack[tmHead - 1].value), ((List<ITmaGrammarPart>)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 4].value), ((List<TmaImport>)tmStack[tmHead - 3].value), ((List<TmaOption>)tmStack[tmHead - 2].value), ((TmaLexerSection)tmStack[tmHead - 1].value), ((TmaParserSection)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 3:  // input ::= header importsopt options lexer_section
-				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 3].value), ((List<TmaImport>)tmStack[tmHead - 2].value), ((List<TmaOption>)tmStack[tmHead - 1].value), ((List<ITmaLexerPart>)tmStack[tmHead].value), ((List<ITmaGrammarPart>)null), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 3].value), ((List<TmaImport>)tmStack[tmHead - 2].value), ((List<TmaOption>)tmStack[tmHead - 1].value), ((TmaLexerSection)tmStack[tmHead].value), ((TmaParserSection)null), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 4:  // input ::= header importsopt lexer_section parser_section
-				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 3].value), ((List<TmaImport>)tmStack[tmHead - 2].value), ((List<TmaOption>)null), ((List<ITmaLexerPart>)tmStack[tmHead - 1].value), ((List<ITmaGrammarPart>)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 3].value), ((List<TmaImport>)tmStack[tmHead - 2].value), ((List<TmaOption>)null), ((TmaLexerSection)tmStack[tmHead - 1].value), ((TmaParserSection)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 5:  // input ::= header importsopt lexer_section
-				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 2].value), ((List<TmaImport>)tmStack[tmHead - 1].value), ((List<TmaOption>)null), ((List<ITmaLexerPart>)tmStack[tmHead].value), ((List<ITmaGrammarPart>)null), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaInput(((TmaHeader)tmStack[tmHead - 2].value), ((List<TmaImport>)tmStack[tmHead - 1].value), ((List<TmaOption>)null), ((TmaLexerSection)tmStack[tmHead].value), ((TmaParserSection)null), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 8:  // header ::= Llanguage name '(' name ')' parsing_algorithmopt ';'
 				 tmLeft.value = new TmaHeader(((TmaName)tmStack[tmHead - 5].value), ((TmaName)tmStack[tmHead - 3].value), ((TmaParsingAlgorithm)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -789,10 +789,10 @@ public class TMParser {
 				 tmLeft.value = new TmaHeader(((TmaName)tmStack[tmHead - 2].value), ((TmaName)null), ((TmaParsingAlgorithm)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 10:  // lexer_section ::= '::' Llexer lexer_parts
-				 tmLeft.value = ((List<ITmaLexerPart>)tmStack[tmHead].value); 
+				 tmLeft.value = new TmaLexerSection(((List<TmaLexerPartsItem>)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 11:  // parser_section ::= '::' Lparser grammar_parts
-				 tmLeft.value = ((List<ITmaGrammarPart>)tmStack[tmHead].value); 
+				 tmLeft.value = new TmaParserSection(((List<TmaGrammarPartsItem>)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 12:  // parsing_algorithm ::= Llalr '(' icon ')'
 				 tmLeft.value = new TmaParsingAlgorithm(((Integer)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -837,13 +837,13 @@ public class TMParser {
 				 tmLeft.value = new TmaPattern(((String)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 41:  // lexer_parts ::= lexer_part
-				 tmLeft.value = new ArrayList<ITmaLexerPart>(64); ((List<ITmaLexerPart>)tmLeft.value).add(((ITmaLexerPart)tmStack[tmHead].value)); 
+				 tmLeft.value = new ArrayList<ITmaLexerPart>(64); ((List<TmaLexerPartsItem>)tmLeft.value).add(new TmaLexerPartsItem(((ITmaLexerPart)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 42:  // lexer_parts ::= lexer_parts lexer_part
-				 ((List<ITmaLexerPart>)tmStack[tmHead - 1].value).add(((ITmaLexerPart)tmStack[tmHead].value)); 
+				 ((List<TmaLexerPartsItem>)tmStack[tmHead - 1].value).add(new TmaLexerPartsItem(((ITmaLexerPart)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 43:  // lexer_parts ::= lexer_parts syntax_problem
-				 ((List<ITmaLexerPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
+				 ((List<TmaLexerPartsItem>)tmStack[tmHead - 1].value).add(new TmaLexerPartsItem(null, ((TmaSyntaxProblem)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 47:  // named_pattern ::= ID '=' pattern
 				 tmLeft.value = new TmaNamedPattern(((String)tmStack[tmHead - 2].value), ((TmaPattern)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -891,13 +891,13 @@ public class TMParser {
 				 tmLeft.value = new TmaLexerState(((TmaIdentifier)tmStack[tmHead].value), ((TmaStateref)null), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 72:  // grammar_parts ::= grammar_part
-				 tmLeft.value = new ArrayList<ITmaGrammarPart>(64); ((List<ITmaGrammarPart>)tmLeft.value).add(((ITmaGrammarPart)tmStack[tmHead].value)); 
+				 tmLeft.value = new ArrayList<TmaGrammarPartsItem>(64); ((List<TmaGrammarPartsItem>)tmLeft.value).add(new TmaGrammarPartsItem(((ITmaGrammarPart)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 73:  // grammar_parts ::= grammar_parts grammar_part
-				 ((List<ITmaGrammarPart>)tmStack[tmHead - 1].value).add(((ITmaGrammarPart)tmStack[tmHead].value)); 
+				 ((List<TmaGrammarPartsItem>)tmStack[tmHead - 1].value).add(new TmaGrammarPartsItem(((ITmaGrammarPart)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 74:  // grammar_parts ::= grammar_parts syntax_problem
-				 ((List<ITmaGrammarPart>)tmStack[tmHead - 1].value).add(((TmaSyntaxProblem)tmStack[tmHead].value)); 
+				 ((List<TmaGrammarPartsItem>)tmStack[tmHead - 1].value).add(new TmaGrammarPartsItem(null, ((TmaSyntaxProblem)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset)); 
 				break;
 			case 77:  // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
 				 tmLeft.value = new TmaNonterm(((TmaAnnotations)tmStack[tmHead - 5].value), ((TmaIdentifier)tmStack[tmHead - 4].value), ((ITmaNontermType)tmStack[tmHead - 3].value), ((List<TmaRule0>)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 

@@ -311,14 +311,14 @@ rules  : list<Rule0> ::=
 ;
 
 class Rule0 {
-	RhsPrefix rhsPrefix;
-	list<RhsPartsItem> rhsParts;
-	RhsSuffix rhsSuffix;
+	RhsPrefix prefix;
+	list<RhsPartsItem> list;
+	RhsSuffix suffix;
 	SyntaxProblem syntaxProblem;
 }
 
 rule0  : Rule0 ::=
-	{rhsPrefix}? {rhsParts}? rhsSuffix=rhsSuffixopt
+	prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt
   | syntaxProblem=syntax_problem
 ;
 
@@ -401,8 +401,8 @@ rhsOptional  : RhsPart ::=
 ;
 
 class RhsCast : RhsPart {
-	RhsPart rhsClass;
-	Symref symref;
+	RhsPart inner;
+	Symref target;
 }
 
 class RhsAsLiteral : RhsPart {
@@ -411,8 +411,8 @@ class RhsAsLiteral : RhsPart {
 }
 
 rhsCast  : RhsPart ::=
-	this=rhsClass
-  | this=new.RhsCast: {rhsClass} Las {symref}
+	this=new.RhsCast: inner=rhsClass
+  | this=new.RhsCast: inner=rhsClass Las target=symref
   | this=new.RhsAsLiteral: inner=rhsClass Las {literal}
 ;
 
@@ -444,13 +444,9 @@ class RhsNested : RhsPart {
 }
 
 class RhsList : RhsPart {
-	list<RhsPartsItem> rhsParts;
-	list<Symref> references;
-	QuantifierKind quantifier;
-	enum QuantifierKind {
-		PLUS,
-		MULT
-	}
+	list<RhsPartsItem> ruleParts;
+	list<Symref> separator;
+	boolean atLeastOne;
 }
 
 class RhsIgnored : RhsPart {
@@ -461,8 +457,8 @@ class RhsIgnored : RhsPart {
 rhsPrimary  : RhsPart ::=
 	this=new.RhsSymbol: reference=symref
   | this=new.RhsNested: '(' {rules} ')'
-  | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='+' as QuantifierKind.PLUS
-  | this=new.RhsList: '(' {rhsParts} Lseparator {references} ')' quantifier='*' as QuantifierKind.MULT
+  | this=new.RhsList: '(' ruleParts=rhsParts Lseparator separator=references ')' atLeastOne='+' as true
+  | this=new.RhsList: '(' ruleParts=rhsParts Lseparator separator=references ')' atLeastOne='*' as false
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
   | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list_Comma_separated)? ')'

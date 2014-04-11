@@ -252,7 +252,7 @@ rules ::=
  	(rule0 separator '|')+ ;
 
 rule0 ::=
-	  rhsPrefix? rhsParts? rhsSuffixopt
+	  prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt
 	| syntax_problem
 ;
 
@@ -296,8 +296,8 @@ rhsOptional returns rhsPart ::=
 ;
 
 rhsCast returns rhsPart ::=
-	  rhsClass
-	| rhsClass Las symref
+	  inner=rhsClass
+	| inner=rhsClass Las target=symref
 	| [rhsAsLiteral] inner=rhsClass Las literal
 ;
 
@@ -313,8 +313,8 @@ rhsClass returns rhsPart ::=
 rhsPrimary returns rhsPart ::=
 	  [rhsSymbol] reference=symref
 	| [rhsNested] '(' rules ')'
-	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='+'
-	| [rhsList] '(' rhsParts Lseparator references ')' quantifier='*'
+	| [rhsList] '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true
+	| [rhsList] '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false
 	| [rhsQuantifier] inner=rhsPrimary quantifier='*'
 	| [rhsQuantifier] inner=rhsPrimary quantifier='+'
 	| [rhsIgnored] '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'

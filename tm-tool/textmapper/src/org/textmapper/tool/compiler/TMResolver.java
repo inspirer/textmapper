@@ -85,14 +85,16 @@ public class TMResolver {
 		collectLexerStates();
 		collectLexerSymbols();
 
-		if (tree.getRoot().getGrammar() != null) {
+		if (tree.getRoot().getParser() != null) {
 			collectNonterminals();
 		}
 	}
 
 	private void collectLexerStates() {
 		TmaIdentifier initialOrigin = null;
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		TmaLexerSection lexer = tree.getRoot().getLexer();
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (clause instanceof TmaStateSelector) {
 				for (TmaLexerState state : ((TmaStateSelector) clause).getStates()) {
 					if (state.getName().getID().equals(INITIAL_STATE)) {
@@ -107,7 +109,8 @@ public class TMResolver {
 		}
 
 		statesMap.put(INITIAL_STATE, builder.addState(INITIAL_STATE, initialOrigin));
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (clause instanceof TmaStateSelector) {
 				TmaStateSelector selector = (TmaStateSelector) clause;
 				for (TmaLexerState state : selector.getStates()) {
@@ -121,7 +124,9 @@ public class TMResolver {
 	}
 
 	private void collectLexerSymbols() {
-		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
+		TmaLexerSection lexer = tree.getRoot().getLexer();
+		for (TmaLexerPartsItem item : lexer.getLexerParts()) {
+			ITmaLexerPart clause = item.getLexerPart();
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
 				create(lexeme.getName(), convertRawType(lexeme.getType(), lexeme), true);
@@ -159,7 +164,8 @@ public class TMResolver {
 	}
 
 	private void collectNonterminals() {
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (TmaGrammarPartsItem item : tree.getRoot().getParser().getGrammarParts()) {
+			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);

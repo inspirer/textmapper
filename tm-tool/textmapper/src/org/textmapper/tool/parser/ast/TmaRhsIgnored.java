@@ -15,9 +15,8 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
 import java.util.List;
+import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsIgnored extends TmaNode implements ITmaRhsPart {
 
@@ -44,13 +43,13 @@ public class TmaRhsIgnored extends TmaNode implements ITmaRhsPart {
 			return;
 		}
 		if (rules != null) {
-			for (TmaRule0 rule : rules) {
-				rule.accept(v);
+			for (TmaRule0 it : rules) {
+				it.accept(v);
 			}
 		}
 		if (brackets != null) {
-			for (TmaRhsBracketsPair bracket : brackets) {
-				bracket.accept(v);
+			for (TmaRhsBracketsPair it : brackets) {
+				it.accept(v);
 			}
 		}
 	}

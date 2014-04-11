@@ -41,7 +41,11 @@ public class TmaRhsAnnotated extends TmaNode implements ITmaRhsPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		annotations.accept(v);
-		inner.accept(v);
+		if (annotations != null) {
+			annotations.accept(v);
+		}
+		if (inner != null) {
+			inner.accept(v);
+		}
 	}
 }
