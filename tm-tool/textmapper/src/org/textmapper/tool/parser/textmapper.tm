@@ -131,12 +131,12 @@ header (TmaHeader) ::=
 														{ $$ = new TmaHeader($name, $target, $parsing_algorithmopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_section (TmaLexerSection) ::=
-	  '::' Llexer lexer_parts							{ $$ = new TmaLexerSection($lexer_parts, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+lexer_section (List<ITmaLexerPart>) ::=
+	  '::' Llexer lexer_parts							{ $$ = $2; }
 ;
 
-parser_section (TmaParserSection) ::=
-	  '::' Lparser grammar_parts						{ $$ = new TmaParserSection($grammar_parts, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+parser_section (List<ITmaGrammarPart>) ::=
+	  '::' Lparser grammar_parts						{ $$ = $2; }
 ;
 
 # ignored
@@ -188,10 +188,10 @@ pattern (TmaPattern) ::=
 	  regexp											{ $$ = new TmaPattern($regexp, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
-lexer_parts (List<TmaLexerPartsItem>) ::=
-	  lexer_part 										{ $$ = new ArrayList<ITmaLexerPart>(64); ${left()}.add(new TmaLexerPartsItem($lexer_part, null, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
-	| list=lexer_parts lexer_part						{ $list.add(new TmaLexerPartsItem($lexer_part, null, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
-	| list=lexer_parts syntax_problem					{ $list.add(new TmaLexerPartsItem(null, $syntax_problem, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
+lexer_parts (List<ITmaLexerPart>) ::=
+	  lexer_part 										{ $$ = new ArrayList<ITmaLexerPart>(64); ${left()}.add($lexer_part); }
+	| list=lexer_parts lexer_part						{ $list.add($lexer_part); }
+	| list=lexer_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
 lexer_part (ITmaLexerPart) ::=
@@ -241,10 +241,10 @@ lexer_state (TmaLexerState) ::=
 	  identifier ('=>' defaultTransition=stateref)?		{ $$ = new TmaLexerState($identifier, $defaultTransition, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
-grammar_parts (List<TmaGrammarPartsItem>) ::=
-	  grammar_part 										{ $$ = new ArrayList<TmaGrammarPartsItem>(64); ${left()}.add(new TmaGrammarPartsItem($grammar_part, null, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
-	| list=grammar_parts grammar_part					{ $list.add(new TmaGrammarPartsItem($grammar_part, null, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
-	| list=grammar_parts syntax_problem					{ $list.add(new TmaGrammarPartsItem(null, $syntax_problem, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
+grammar_parts (List<ITmaGrammarPart>) ::=
+	  grammar_part 										{ $$ = new ArrayList<ITmaGrammarPart>(64); ${left()}.add($grammar_part); }
+	| list=grammar_parts grammar_part					{ $list.add($grammar_part); }
+	| list=grammar_parts syntax_problem					{ $list.add($syntax_problem); }
 ;
 
 grammar_part (ITmaGrammarPart) ::=

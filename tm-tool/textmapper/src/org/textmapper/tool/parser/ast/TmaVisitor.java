@@ -15,201 +15,185 @@
  */
 package org.textmapper.tool.parser.ast;
 
-public abstract class TmaVisitor {
+public class TmaVisitor {
 
-	protected boolean visit(TmaNontermTypeAST n) {
+	public boolean visit(TmaCommand n) {
 		return true;
 	}
 
-	protected boolean visit(TmaNontermTypeHint n) {
+	public boolean visit(TmaDirectivePrio n) {
 		return true;
 	}
 
-	protected boolean visit(TmaNontermTypeRaw n) {
+	public boolean visit(TmaDirectiveInput n) {
 		return true;
 	}
 
-	protected boolean visit(TmaInstance n) {
+	public boolean visit(TmaStateSelector n) {
 		return true;
 	}
 
-	protected boolean visit(TmaArray n) {
+	public boolean visit(TmaIdentifier n) {
 		return true;
 	}
 
-	protected boolean visit(TmaInput n) {
+	public boolean visit(TmaNamedPattern n) {
 		return true;
 	}
 
-	protected boolean visit(TmaHeader n) {
+	public boolean visit(TmaLexeme n) {
 		return true;
 	}
 
-	protected boolean visit(TmaLexerSection n) {
+	public boolean visit(TmaNonterm n) {
 		return true;
 	}
 
-	protected boolean visit(TmaParserSection n) {
+	public boolean visit(TmaOption n) {
 		return true;
 	}
 
-	protected boolean visit(TmaParsingAlgorithm n) {
+	public boolean visit(TmaSymref astSymbol) {
 		return true;
 	}
 
-	protected boolean visit(TmaImport n) {
+	public boolean visit(TmaPattern n) {
 		return true;
 	}
 
-	protected boolean visit(TmaOption n) {
+	public boolean visit(TmaInput n) {
 		return true;
 	}
 
-	protected boolean visit(TmaIdentifier n) {
+	public boolean visit(TmaRule0 n) {
 		return true;
 	}
 
-	protected boolean visit(TmaSymref n) {
+	public boolean visit(TmaSyntaxProblem n) {
 		return true;
 	}
 
-	protected boolean visit(TmaPattern n) {
+	public boolean visit(TmaAnnotations n) {
 		return true;
 	}
 
-	protected boolean visit(TmaNamedPattern n) {
+	public boolean visit(TmaArray n) {
 		return true;
 	}
 
-	protected boolean visit(TmaLexeme n) {
+	public boolean visit(TmaInstance n) {
 		return true;
 	}
 
-	protected boolean visit(TmaLexemeAttrs n) {
+	public boolean visit(TmaMapEntriesItem n) {
 		return true;
 	}
 
-	protected boolean visit(TmaStateSelector n) {
+	public boolean visit(TmaLiteral n) {
 		return true;
 	}
 
-	protected boolean visit(TmaStateref n) {
+	public boolean visit(TmaName n) {
 		return true;
 	}
 
-	protected boolean visit(TmaLexerState n) {
+	public boolean visit(TmaRhsSuffix n) {
 		return true;
 	}
 
-	protected boolean visit(TmaNonterm n) {
+	public boolean visit(TmaLexemeAttrs n) {
 		return true;
 	}
 
-	protected boolean visit(TmaInputref n) {
+	public boolean visit(TmaInputref n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRule0 n) {
+	public boolean visit(TmaRhsSymbol n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsPrefix n) {
+	public boolean visit(TmaRhsNested n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsSuffix n) {
+	public boolean visit(TmaRhsQuantifier n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsBracketsPair n) {
+	public boolean visit(TmaRhsUnordered n) {
 		return true;
 	}
 
-	protected boolean visit(TmaAnnotations n) {
+	public boolean visit(TmaRhsList n) {
 		return true;
 	}
 
-	protected boolean visit(TmaAnnotation n) {
+	public boolean visit(TmaLexerState n) {
 		return true;
 	}
 
-	protected boolean visit(TmaLiteral n) {
+	public boolean visit(TmaRhsCast n) {
 		return true;
 	}
 
-	protected boolean visit(TmaName n) {
+	public boolean visit(TmaRhsAssignment n) {
 		return true;
 	}
 
-	protected boolean visit(TmaCommand n) {
+	public boolean visit(TmaRhsAnnotated n) {
 		return true;
 	}
 
-	protected boolean visit(TmaSyntaxProblem n) {
+	public boolean visit(TmaRhsPrefix n) {
 		return true;
 	}
 
-	protected boolean visit(TmaDirectivePrio n) {
+	public boolean visit(TmaNontermTypeAST n) {
 		return true;
 	}
 
-	protected boolean visit(TmaDirectiveInput n) {
+	public boolean visit(TmaNontermTypeHint n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsAnnotated n) {
+	public boolean visit(TmaNontermTypeRaw n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsAssignment n) {
+	public boolean visit(TmaStateref n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsQuantifier n) {
+	public boolean visit(TmaImport n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsCast n) {
+	public boolean visit(TmaHeader n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsAsLiteral n) {
+	public boolean visit(TmaRhsAsLiteral n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsUnordered n) {
+	public boolean visit(TmaAnnotation n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsClass n) {
+	public boolean visit(TmaRhsClass n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsSymbol n) {
+	public boolean visit(TmaParsingAlgorithm n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsNested n) {
+	public boolean visit(TmaRhsIgnored n) {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsList n) {
-		return true;
-	}
-
-	protected boolean visit(TmaRhsIgnored n) {
-		return true;
-	}
-
-	protected boolean visit(TmaLexerPartsItem n) {
-		return true;
-	}
-
-	protected boolean visit(TmaGrammarPartsItem n) {
-		return true;
-	}
-
-	protected boolean visit(TmaMapEntriesItem n) {
+	public boolean visit(TmaRhsBracketsPair n) {
 		return true;
 	}
 }

@@ -23,17 +23,18 @@ public class TmaInput extends TmaNode {
 	private final TmaHeader header;
 	private final List<TmaImport> imports;
 	private final List<TmaOption> options;
-	private final TmaLexerSection lexer;
-	private final TmaParserSection parser;
+	private final List<ITmaLexerPart> lexer;
+	private final List<ITmaGrammarPart> grammar;
 	private int templatesStart = -1;
 
-	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, TmaLexerSection lexer, TmaParserSection parser, TextSource source, int line, int offset, int endoffset) {
+	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer,
+					List<ITmaGrammarPart> grammar, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.header = header;
 		this.imports = imports;
 		this.options = options;
 		this.lexer = lexer;
-		this.parser = parser;
+		this.grammar = grammar;
 	}
 
 	public TmaHeader getHeader() {
@@ -48,12 +49,12 @@ public class TmaInput extends TmaNode {
 		return options;
 	}
 
-	public TmaLexerSection getLexer() {
+	public List<ITmaLexerPart> getLexer() {
 		return lexer;
 	}
 
-	public TmaParserSection getParser() {
-		return parser;
+	public List<ITmaGrammarPart> getGrammar() {
+		return grammar;
 	}
 
 	public int getTemplatesStart() {
@@ -69,24 +70,26 @@ public class TmaInput extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (header != null) {
-			header.accept(v);
-		}
+		header.accept(v);
 		if (imports != null) {
-			for (TmaImport it : imports) {
-				it.accept(v);
+			for (TmaImport i : imports) {
+				i.accept(v);
 			}
 		}
 		if (options != null) {
-			for (TmaOption it : options) {
-				it.accept(v);
+			for (TmaOption o : options) {
+				o.accept(v);
 			}
 		}
 		if (lexer != null) {
-			lexer.accept(v);
+			for (ITmaLexerPart l : lexer) {
+				l.accept(v);
+			}
 		}
-		if (parser != null) {
-			parser.accept(v);
+		if (grammar != null) {
+			for (ITmaGrammarPart g : grammar) {
+				g.accept(v);
+			}
 		}
 	}
 }

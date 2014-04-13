@@ -56,7 +56,7 @@ public class TMCompiler {
 
 		new TMLexerCompiler(resolver).compile();
 
-		if (tree.getRoot().getParser() != null) {
+		if (tree.getRoot().getGrammar() != null) {
 			new TMParserCompiler(resolver, expressionResolver).compile();
 		}
 
