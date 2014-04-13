@@ -245,6 +245,7 @@ class NontermTypeHint : NontermType {
 	boolean isInline;
 	KindKind kind;
 	Identifier name;
+	list<Symref> implements;
 	enum KindKind {
 		LCLASS,
 		LVOID,
@@ -258,10 +259,14 @@ class NontermTypeRaw : NontermType {
 
 nonterm_type  : NontermType ::=
 	this=new.NontermTypeAST: Lreturns reference=symref
-  | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt
-  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt
+  | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
+  | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
   | this=new.NontermTypeRaw: typeText=type
+;
+
+implements  : list<Symref> ::=
+	':' this=references_cs
 ;
 
 enum Assoc {
@@ -603,6 +608,10 @@ lexer_state_list_Comma_separated  : list<LexerState>
 
 identifieropt  : Identifier ::=
 	this=identifier?
+;
+
+implementsopt  : list<Symref> ::=
+	this=implements?
 ;
 
 inputref_list_Comma_separated  : list<Inputref>

@@ -221,11 +221,14 @@ nonterm ::=
 
 nonterm_type interface ::=
 	  [nontermTypeAST] Lreturns reference=symref
-	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt
-	| [nontermTypeHint] kind=Linterface name=identifieropt
+	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt implementsopt
+	| [nontermTypeHint] kind=Linterface name=identifieropt implementsopt
 	| [nontermTypeHint] kind=Lvoid
 	| [nontermTypeRaw] typeText=type
 ;
+
+implements ::=
+	  ':' @pass references_cs ;
 
 assoc ::=
 	Lleft | Lright | Lnonassoc ;

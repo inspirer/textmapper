@@ -259,10 +259,16 @@ nonterm (TmaNonterm) ::=
 
 nonterm_type (ITmaNontermType) ::=
 	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Linline? Lclass name=identifieropt				{ $$ = new TmaNontermTypeHint(${self.Linline.rightOffset>=0 ? 'true' : 'false'}, TmaNontermTypeHint.TmaKindKind.LCLASS, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Linterface name=identifieropt						{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LINTERFACE, $name, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Lvoid												{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LVOID, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Linline? Lclass name=identifieropt implementsopt
+														{ $$ = new TmaNontermTypeHint(${self.Linline.rightOffset>=0 ? 'true' : 'false'}, TmaNontermTypeHint.TmaKindKind.LCLASS, $name, $implementsopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Linterface name=identifieropt implementsopt
+														{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LINTERFACE, $name, $implementsopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Lvoid												{ $$ = new TmaNontermTypeHint(false, TmaNontermTypeHint.TmaKindKind.LVOID, null, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| type                                              { $$ = new TmaNontermTypeRaw($type, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+implements (List<TmaSymref>) ::=
+	  ':' references_cs									{ $$ = $1; }
 ;
 
 assoc (TmaAssoc) ::=

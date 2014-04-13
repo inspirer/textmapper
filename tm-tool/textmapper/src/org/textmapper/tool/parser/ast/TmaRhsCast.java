@@ -19,21 +19,21 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsCast extends TmaNode implements ITmaRhsPart {
 
-	private final ITmaRhsPart left;
-	private final TmaSymref right;
+	private final ITmaRhsPart inner;
+	private final TmaSymref target;
 
-	public TmaRhsCast(ITmaRhsPart left, TmaSymref right, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsCast(ITmaRhsPart inner, TmaSymref target, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.left = left;
-		this.right = right;
+		this.inner = inner;
+		this.target = target;
 	}
 
 	public ITmaRhsPart getInner() {
-		return left;
+		return inner;
 	}
 
 	public TmaSymref getTarget() {
-		return right;
+		return target;
 	}
 
 	@Override
@@ -41,7 +41,11 @@ public class TmaRhsCast extends TmaNode implements ITmaRhsPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		left.accept(v);
-		right.accept(v);
+		if (inner != null) {
+			inner.accept(v);
+		}
+		if (target != null) {
+			target.accept(v);
+		}
 	}
 }

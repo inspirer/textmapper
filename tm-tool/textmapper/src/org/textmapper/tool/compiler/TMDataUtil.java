@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.UserDataHolder;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.TmaCommand;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,6 +36,7 @@ public class TMDataUtil {
 	private static final String UD_TRANSITIONMAP = "transitionMap";
 	private static final String UD_CUSTOM_TYPE = "customType";
 	private static final String UD_TYPE_HINT = "typeHint";
+	private static final String UD_IMPLEMENTS = "implements";
 	private static final String UD_LITERAL = "literal";
 
 	public static void putAnnotations(UserDataHolder element, Map<String, Object> annotations) {
@@ -75,6 +77,14 @@ public class TMDataUtil {
 
 	public static TMTypeHint getTypeHint(Nonterminal element) {
 		return (TMTypeHint) element.getUserData(UD_TYPE_HINT);
+	}
+
+	public static void putImplements(Nonterminal element, List<Nonterminal> interfaces) {
+		element.putUserData(UD_IMPLEMENTS, interfaces);
+	}
+
+	public static List<Nonterminal> getImplements(Nonterminal element) {
+		return (List<Nonterminal>) element.getUserData(UD_IMPLEMENTS);
 	}
 
 	public static void putTransition(LexerRule rule, TMStateTransitionSwitch transitionSwitch) {

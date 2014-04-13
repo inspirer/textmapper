@@ -21,6 +21,7 @@ import org.textmapper.lapg.api.rule.RhsList;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.tool.compiler.TMTypeHint.Kind;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
 import org.textmapper.tool.parser.ast.TmaNontermTypeHint;
@@ -65,6 +66,21 @@ public class TMParserCompiler {
 		}
 	}
 
+	private Nonterminal asNonterminalWithoutType(TmaSymref ref, Set<String> withType) {
+		String name = ref.getName();
+		Symbol type = resolver.getSymbol(name);
+		if (type == null) {
+			error(ref, name + " cannot be resolved");
+		} else if (!(type instanceof Nonterminal)) {
+			error(ref, "ast type must be a nonterminal");
+		} else if (withType != null && withType.contains(name)) {
+			error(ref, "nonterminal without a type is expected (instead of `" + name + "')");
+		} else {
+			return (Nonterminal) type;
+		}
+		return null;
+	}
+
 	private void collectAstTypes() {
 		Set<String> withType = new HashSet<String>();
 		TmaParserSection parser = tree.getRoot().getParser();
@@ -88,16 +104,9 @@ public class TMParserCompiler {
 				}
 				if (nonterm.getType() instanceof TmaNontermTypeAST) {
 					final TmaNontermTypeAST astType = (TmaNontermTypeAST) nonterm.getType();
-					final String name = astType.getReference().getName();
-					Symbol type = resolver.getSymbol(name);
-					if (type == null) {
-						error(astType, name + " cannot be resolved");
-					} else if (!(type instanceof Nonterminal)) {
-						error(astType, "ast type must be a nonterminal");
-					} else if (withType.contains(name)) {
-						error(astType, "nonterminal without a type is expected (instead of `" + name + "')");
-					} else {
-						TMDataUtil.putCustomType((Nonterminal) left, (Nonterminal) type);
+					Nonterminal type = asNonterminalWithoutType(astType.getReference(), withType);
+					if (type != null) {
+						TMDataUtil.putCustomType((Nonterminal) left, type);
 					}
 				} else if (nonterm.getType() instanceof TmaNontermTypeHint) {
 					TmaNontermTypeHint hint = (TmaNontermTypeHint) nonterm.getType();
@@ -105,9 +114,38 @@ public class TMParserCompiler {
 						error(hint, "inline classes are not supported yet");
 						continue;
 					}
-					TMTypeHint.Kind kind = hint.getKind() == TmaNontermTypeHint.TmaKindKind.LVOID ? TMTypeHint.Kind.VOID :
-							hint.getKind() == TmaNontermTypeHint.TmaKindKind.LCLASS ? TMTypeHint.Kind.CLASS : TMTypeHint.Kind.INTERFACE;
-					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind, hint.getName() == null ? null : hint.getName().getID()));
+
+					TMTypeHint.Kind kind;
+					switch (hint.getKind()) {
+						case LCLASS:
+							kind = Kind.CLASS;
+							break;
+						case LINTERFACE:
+							kind = Kind.INTERFACE;
+							break;
+						case LVOID:
+							kind = Kind.VOID;
+							break;
+						default:
+							throw new IllegalStateException();
+					}
+					TMDataUtil.putTypeHint((Nonterminal) left, new TMTypeHint(kind,
+							hint.getName() == null ? null : hint.getName().getID()));
+
+					if (hint.getImplements() != null && !hint.getImplements().isEmpty()) {
+						List<Nonterminal> interfaces = new ArrayList<Nonterminal>();
+						for (TmaSymref ref : hint.getImplements()) {
+							Nonterminal type = asNonterminalWithoutType(ref, withType);
+							if (type != null) {
+								interfaces.add(type);
+							}
+						}
+
+						if (!interfaces.isEmpty()) {
+							TMDataUtil.putImplements((Nonterminal) left, interfaces);
+						}
+					}
+
 				}
 			}
 		}
@@ -193,7 +231,8 @@ public class TMParserCompiler {
 			ITmaGrammarPart clause = item.getGrammarPart();
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(), "AnnotateSymbol"));
+				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(),
+						"AnnotateSymbol"));
 			}
 		}
 	}
@@ -217,7 +256,8 @@ public class TMParserCompiler {
 			}
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
-		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO ? ruleAttribute.getSymref() : null;
+		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO ?
+				ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {
 			Symbol prioSym = resolver.resolve(rulePrio);

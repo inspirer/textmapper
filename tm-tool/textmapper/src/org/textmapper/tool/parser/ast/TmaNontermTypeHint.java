@@ -15,6 +15,7 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
@@ -22,12 +23,14 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 	private final boolean isInline;
 	private final TmaNontermTypeHint.TmaKindKind kind;
 	private final TmaIdentifier name;
+	private final List<TmaSymref> _implements;
 
-	public TmaNontermTypeHint(boolean isInline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermTypeHint(boolean isInline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, List<TmaSymref> _implements, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.isInline = isInline;
 		this.kind = kind;
 		this.name = name;
+		this._implements = _implements;
 	}
 
 	public boolean getIsInline() {
@@ -42,6 +45,10 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 		return name;
 	}
 
+	public List<TmaSymref> getImplements() {
+		return _implements;
+	}
+
 	@Override
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
@@ -49,6 +56,11 @@ public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 		}
 		if (name != null) {
 			name.accept(v);
+		}
+		if (_implements != null) {
+			for (TmaSymref it : _implements) {
+				it.accept(v);
+			}
 		}
 	}
 

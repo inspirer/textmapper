@@ -299,8 +299,30 @@ public class TMMapper {
 				try {
 					builder.addExtends(cl, baseClass);
 				} catch (IllegalArgumentException ex) {
-					error(n, n.getName() + ": " + cl.getName() + " cannot extends " + baseClass.getName() +
-							" (introduces a cycle in the inheritance hierarchy)");
+					error(n, n.getName() + ": " + cl.getName() + " cannot extend " + baseClass.getName() +
+							" (would introduce a cycle in the inheritance hierarchy)");
+				}
+			}
+		});
+	}
+
+	private void addInterface(final AstClass cl, final Nonterminal baseInterface, final SourceElement origin) {
+		whenMapped(baseInterface, new Runnable() {
+			@Override
+			public void run() {
+				boolean isInterface = baseInterface.getType() instanceof AstClass &&
+						((AstClass) baseInterface.getType()).isInterface();
+				if (!isInterface) {
+					error(origin, cl.getName() + " cannot extend " + baseInterface.getName() +
+							" (interface is expected)");
+					return;
+				}
+				AstClass superInterface = (AstClass) baseInterface.getType();
+				try {
+					builder.addExtends(cl, superInterface);
+				} catch (IllegalArgumentException ex) {
+					error(origin, cl.getName() + " cannot extend " + superInterface.getName() +
+							" (would introduce a cycle in the inheritance hierarchy)");
 				}
 			}
 		});
@@ -356,6 +378,13 @@ public class TMMapper {
 			}
 			if (isInterface && (!passSymbols.isEmpty() || hasInterfaceHint(n) && hasNamedRules)) {
 				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n, null), null, n);
+				List<Nonterminal> superInterfaces = TMDataUtil.getImplements(n);
+				if (superInterfaces != null) {
+					for (Nonterminal si : superInterfaces) {
+						addInterface(interfaceClass, si, n);
+					}
+				}
+
 				mapNonterm(n, interfaceClass);
 				for (Nonterminal nonterminal : extList) {
 					addExtends(nonterminal, interfaceClass);
@@ -415,12 +444,21 @@ public class TMMapper {
 			Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList || TMDataUtil.getCustomType(n) != null) continue;
 			AstClass cl = builder.addClass(getNonterminalTypeName(n, null), null, n);
+			List<Nonterminal> superInterfaces = TMDataUtil.getImplements(n);
+			if (superInterfaces != null) {
+				for (Nonterminal si : superInterfaces) {
+					addInterface(cl, si, n);
+				}
+			}
 			mapNonterm(n, cl);
 			mapClass(cl, RhsUtil.unwrap(n.getDefinition()));
 			i.remove();
 		}
 	}
 
+	/**
+	 * Maps `A returns B` nonterminals.
+	 */
 	private void mapCustomTypeClasses() {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		Map<Nonterminal, AstClass> customTypes = new LinkedHashMap<Nonterminal, AstClass>();
@@ -751,7 +789,8 @@ public class TMMapper {
 	private static class DefaultMappingContext implements MappingContext {
 
 		private List<FieldDescriptor> result = new ArrayList<FieldDescriptor>();
-		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId, Collection<FieldDescriptor>>();
+		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId,
+				Collection<FieldDescriptor>>();
 
 		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
@@ -773,7 +812,8 @@ public class TMMapper {
 	private static class ChoiceMappingContext implements MappingContext {
 
 		private final MappingContext parent;
-		private Map<FieldId, Collection<FieldDescriptor>> localMap = new HashMap<FieldId, Collection<FieldDescriptor>>();
+		private Map<FieldId, Collection<FieldDescriptor>> localMap = new HashMap<FieldId,
+				Collection<FieldDescriptor>>();
 		private Set<FieldDescriptor> used;
 
 		private ChoiceMappingContext(MappingContext parent) {

@@ -54,4 +54,3 @@ public class TmaRhsIgnored extends TmaNode implements ITmaRhsPart {
 		}
 	}
 }
-
