@@ -111,7 +111,7 @@ public class LapgReferenceHyperlink implements IHyperlink {
 	}
 
 	private ITmaNode searchInRoot(TmaInput root, String symbolName) {
-		for (ITmaGrammarPart p : root.getGrammar()) {
+		for (ITmaGrammarPart p : root.getParser()) {
 			if (p instanceof TmaNonterm) {
 				if (((TmaNonterm) p).getName().getID().equals(symbolName)) {
 					return p;
