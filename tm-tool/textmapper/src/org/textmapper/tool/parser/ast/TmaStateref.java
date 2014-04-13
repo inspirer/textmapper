@@ -17,7 +17,7 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaStateref extends TmaNode implements ITmaExpression {
+public class TmaStateref extends TmaNode {
 
 	private final String name;
 

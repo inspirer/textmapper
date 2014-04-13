@@ -37,7 +37,7 @@ public abstract class TmaNode implements ITmaNode {
 
 	@Override
 	public int getLine() {
-		return this.line == 0 ? source.lineForOffset(offset) : this.line;
+		return this.line;
 	}
 
 	@Override
@@ -67,6 +67,6 @@ public abstract class TmaNode implements ITmaNode {
 
 	@Override
 	public String toString() {
-		return source.getText(offset, endoffset);
+		return source == null ? "" : source.getText(offset, endoffset);
 	}
 }

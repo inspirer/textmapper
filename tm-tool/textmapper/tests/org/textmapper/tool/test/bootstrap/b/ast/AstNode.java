@@ -18,7 +18,7 @@ package org.textmapper.tool.test.bootstrap.b.ast;
 import org.textmapper.tool.test.bootstrap.b.SampleBTree.TextSource;
 
 public abstract class AstNode implements IAstNode {
-	
+
 	protected TextSource source;
 	protected int offset;
 	protected int endoffset;
@@ -29,22 +29,23 @@ public abstract class AstNode implements IAstNode {
 		this.endoffset = endoffset;
 	}
 
+	@Override
 	public int getOffset() {
 		return this.offset;
 	}
 
+	@Override
 	public int getEndoffset() {
 		return this.endoffset;
 	}
 
+	@Override
 	public TextSource getSource() {
 		return source;
 	}
 
+	@Override
 	public String toString() {
 		return source == null ? "" : source.getText(offset, endoffset);
 	}
-
-	//public abstract void accept(Visitor v);
 }
-

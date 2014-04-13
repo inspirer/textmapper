@@ -85,7 +85,7 @@ public class TMResolver {
 		collectLexerStates();
 		collectLexerSymbols();
 
-		if (tree.getRoot().getGrammar() != null) {
+		if (tree.getRoot().getParser() != null) {
 			collectNonterminals();
 		}
 	}
@@ -159,7 +159,7 @@ public class TMResolver {
 	}
 
 	private void collectNonterminals() {
-		for (ITmaGrammarPart clause : tree.getRoot().getGrammar()) {
+		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				create(nonterm.getName(), convertRawType(nonterm.getType(), nonterm), false);

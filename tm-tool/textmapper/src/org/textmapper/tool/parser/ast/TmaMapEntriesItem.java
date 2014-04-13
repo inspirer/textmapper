@@ -22,20 +22,10 @@ public class TmaMapEntriesItem extends TmaNode {
 	private final String name;
 	private final ITmaExpression expression;
 
-	private final TmaSyntaxProblem error;
-
 	public TmaMapEntriesItem(String name, ITmaExpression expression, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.expression = expression;
-		this.error = null;
-	}
-
-	public TmaMapEntriesItem(TmaSyntaxProblem error) {
-		super(error.getSource(), error.getLine(), error.getOffset(), error.getEndoffset());
-		this.name = null;
-		this.expression = null;
-		this.error = error;
 	}
 
 	public String getName() {
@@ -46,16 +36,8 @@ public class TmaMapEntriesItem extends TmaNode {
 		return expression;
 	}
 
-	public boolean hasSyntaxError() {
-		return error != null;
-	}
-
 	@Override
 	public void accept(TmaVisitor v) {
-		if (error != null) {
-			v.visit(error);
-			return;
-		}
 		if (!v.visit(this)) {
 			return;
 		}

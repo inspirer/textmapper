@@ -18,7 +18,7 @@ package org.textmapper.tool.test.bootstrap.a.ast;
 import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
 public abstract class AstNode implements IAstNode {
-	
+
 	protected TextSource source;
 	protected int line;
 	protected int offset;
@@ -37,38 +37,43 @@ public abstract class AstNode implements IAstNode {
 		this.endcolumn = endcolumn;
 	}
 
+	@Override
 	public int getLine() {
 		return this.line;
 	}
 
+	@Override
 	public int getOffset() {
 		return this.offset;
 	}
 
+	@Override
 	public int getColumn() {
 		return this.column;
 	}
 
+	@Override
 	public int getEndline() {
 		return this.endline;
 	}
 
+	@Override
 	public int getEndoffset() {
 		return this.endoffset;
 	}
 
+	@Override
 	public int getEndcolumn() {
 		return this.endcolumn;
 	}
 
+	@Override
 	public TextSource getSource() {
 		return source;
 	}
 
+	@Override
 	public String toString() {
 		return source == null ? "" : source.getText(offset, endoffset);
 	}
-
-	//public abstract void accept(Visitor v);
 }
-

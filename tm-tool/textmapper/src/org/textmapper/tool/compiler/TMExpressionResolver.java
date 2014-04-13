@@ -105,9 +105,6 @@ public class TMExpressionResolver {
 					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
 					if (list != null) {
 						for (TmaMapEntriesItem entry : list) {
-							if (entry.hasSyntaxError()) {
-								continue;
-							}
 							props.put(entry.getName(), entry.getExpression());
 						}
 					}

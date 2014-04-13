@@ -17,7 +17,7 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaSyntaxProblem extends TmaNode implements ITmaLexerPart, ITmaGrammarPart, ITmaExpression, ITmaRhsPart {
+public class TmaSyntaxProblem extends TmaNode implements ITmaLexerPart, ITmaGrammarPart, ITmaRhsPart, ITmaExpression {
 
 	public TmaSyntaxProblem(TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);

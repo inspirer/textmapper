@@ -129,10 +129,10 @@ header ::=
 	  Llanguage name ('(' target=name ')')? parsing_algorithmopt ';' ;
 
 lexer_section ::=
-	  '::' Llexer lexer_parts ;
+	  '::' Llexer @pass lexer_parts ;
 
 parser_section ::=
-	  '::' Lparser grammar_parts ;
+	  '::' Lparser @pass grammar_parts ;
 
 parsing_algorithm ::=
 	  Llalr '(' la=icon ')' ;
@@ -474,3 +474,5 @@ if (result != null) {
 }
 ${end-}
 ${end}
+
+${query java_ast.astNodeExtends = ' extends org.textmapper.lapg.api.@TextSourceElement'}

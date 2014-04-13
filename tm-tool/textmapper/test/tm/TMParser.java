@@ -818,8 +818,8 @@ public class TMParser {
 						((TmaHeader)tmStack[tmHead - 4].value) /* header */,
 						((List<TmaImport>)tmStack[tmHead - 3].value) /* imports */,
 						((List<TmaOption>)tmStack[tmHead - 2].value) /* options */,
-						((TmaLexerSection)tmStack[tmHead - 1].value) /* lexer */,
-						((TmaParserSection)tmStack[tmHead].value) /* parser */,
+						((List<ITmaLexerPart>)tmStack[tmHead - 1].value) /* lexer */,
+						((List<ITmaGrammarPart>)tmStack[tmHead].value) /* parser */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 5:  // input ::= header import__optlist option_optlist lexer_section
@@ -827,7 +827,7 @@ public class TMParser {
 						((TmaHeader)tmStack[tmHead - 3].value) /* header */,
 						((List<TmaImport>)tmStack[tmHead - 2].value) /* imports */,
 						((List<TmaOption>)tmStack[tmHead - 1].value) /* options */,
-						((TmaLexerSection)tmStack[tmHead].value) /* lexer */,
+						((List<ITmaLexerPart>)tmStack[tmHead].value) /* lexer */,
 						null /* parser */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
@@ -846,14 +846,10 @@ public class TMParser {
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 10:  // lexer_section ::= '::' Llexer lexer_parts
-				tmLeft.value = new TmaLexerSection(
-						((List<ITmaLexerPart>)tmStack[tmHead].value) /* lexerParts */,
-						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				tmLeft.value = ((List<ITmaLexerPart>)tmStack[tmHead].value);
 				break;
 			case 11:  // parser_section ::= '::' Lparser grammar_parts
-				tmLeft.value = new TmaParserSection(
-						((List<ITmaGrammarPart>)tmStack[tmHead].value) /* grammarParts */,
-						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				tmLeft.value = ((List<ITmaGrammarPart>)tmStack[tmHead].value);
 				break;
 			case 12:  // parsing_algorithm ::= Llalr '(' icon ')'
 				tmLeft.value = new TmaParsingAlgorithm(

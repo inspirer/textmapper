@@ -5,8 +5,8 @@ class Input {
 	Header header;
 	list<Import> imports;
 	list<Option> options;
-	LexerSection lexer;
-	ParserSection parser;
+	list<LexerPart> lexer;
+	list<GrammarPart> parser;
 }
 
 input  : Input ::=
@@ -23,20 +23,12 @@ header  : Header ::=
 	Llanguage {name} ('(' target=name ')')? parsingAlgorithm=parsing_algorithmopt ';'
 ;
 
-class LexerSection {
-	list<LexerPart> lexerParts;
-}
-
-lexer_section  : LexerSection ::=
-	'::' Llexer lexerParts=lexer_parts
+lexer_section  : list<LexerPart> ::=
+	'::' Llexer this=lexer_parts
 ;
 
-class ParserSection {
-	list<GrammarPart> grammarParts;
-}
-
-parser_section  : ParserSection ::=
-	'::' Lparser grammarParts=grammar_parts
+parser_section  : list<GrammarPart> ::=
+	'::' Lparser this=grammar_parts
 ;
 
 class ParsingAlgorithm {

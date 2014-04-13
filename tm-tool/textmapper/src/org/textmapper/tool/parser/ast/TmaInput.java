@@ -24,17 +24,16 @@ public class TmaInput extends TmaNode {
 	private final List<TmaImport> imports;
 	private final List<TmaOption> options;
 	private final List<ITmaLexerPart> lexer;
-	private final List<ITmaGrammarPart> grammar;
+	private final List<ITmaGrammarPart> parser;
 	private int templatesStart = -1;
 
-	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer,
-					List<ITmaGrammarPart> grammar, TextSource source, int line, int offset, int endoffset) {
+	public TmaInput(TmaHeader header, List<TmaImport> imports, List<TmaOption> options, List<ITmaLexerPart> lexer, List<ITmaGrammarPart> parser, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.header = header;
 		this.imports = imports;
 		this.options = options;
 		this.lexer = lexer;
-		this.grammar = grammar;
+		this.parser = parser;
 	}
 
 	public TmaHeader getHeader() {
@@ -53,8 +52,8 @@ public class TmaInput extends TmaNode {
 		return lexer;
 	}
 
-	public List<ITmaGrammarPart> getGrammar() {
-		return grammar;
+	public List<ITmaGrammarPart> getParser() {
+		return parser;
 	}
 
 	public int getTemplatesStart() {
@@ -70,25 +69,27 @@ public class TmaInput extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		header.accept(v);
+		if (header != null) {
+			header.accept(v);
+		}
 		if (imports != null) {
-			for (TmaImport i : imports) {
-				i.accept(v);
+			for (TmaImport it : imports) {
+				it.accept(v);
 			}
 		}
 		if (options != null) {
-			for (TmaOption o : options) {
-				o.accept(v);
+			for (TmaOption it : options) {
+				it.accept(v);
 			}
 		}
 		if (lexer != null) {
-			for (ITmaLexerPart l : lexer) {
-				l.accept(v);
+			for (ITmaLexerPart it : lexer) {
+				it.accept(v);
 			}
 		}
-		if (grammar != null) {
-			for (ITmaGrammarPart g : grammar) {
-				g.accept(v);
+		if (parser != null) {
+			for (ITmaGrammarPart it : parser) {
+				it.accept(v);
 			}
 		}
 	}

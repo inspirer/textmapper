@@ -149,7 +149,7 @@ ${file self->astPath() + 'I' + opts.astprefix + 'Node.java'-}
 ${call java.header-}
 package ${self->astPackage()};
 
-public interface I${opts.astprefix}Node {
+public interface I${opts.astprefix}Node${call astNodeExtends} {
 ${foreach l in self->util.locationList()-}
 	public int get${util.toFirstUpper(l)}();
 ${end-}
@@ -182,7 +182,7 @@ ${call java.header-}
 package ${self->astPackage()};
 
 public abstract class ${opts.astprefix}Node implements I${opts.astprefix}Node {
-	
+
 	protected ${call java.package}.${opts.prefix}Tree.@TextSource source;
 ${self->util.location('\tprotected int ', ';\n', '')-}
 
@@ -193,21 +193,22 @@ ${foreach l in self->util.locationList()-}
 ${end-}
 	}
 ${foreach l in self->util.locationList()}
+	@Override
 	public int get${util.toFirstUpper(l)}() {
 		return this.${l};
 	}
 ${end}
+	@Override
 	public ${call java.package}.${opts.prefix}Tree.@TextSource getSource() {
 		return source;
 	}
 ${if self->util.hasOffsets()}
+	@Override
 	public String toString() {
 		return source == null ? "" : source.getText(offset, endoffset);
 	}
-${end}
-	//public abstract void accept(Visitor v);
+${end-}
 }
-
 ${end-}
 ${end}
 
@@ -281,3 +282,5 @@ ${query astPackage() = context->java.package() + (context.opts.astsubpackage ? '
 ${query astPath() = context.opts.astsubpackage ? context.opts.astsubpackage.replaceAll('\\.','/') + '/' : ''}
 
 ${query astSource() = 'null /* input */'}
+
+${query astNodeExtends() = ''}
