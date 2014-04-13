@@ -24,7 +24,7 @@ header  : Header ::=
 ;
 
 class LexerSection {
-	list<LexerPartsItem> lexerParts;
+	list<LexerPart> lexerParts;
 }
 
 lexer_section  : LexerSection ::=
@@ -32,7 +32,7 @@ lexer_section  : LexerSection ::=
 ;
 
 class ParserSection {
-	list<GrammarPartsItem> grammarParts;
+	list<GrammarPart> grammarParts;
 }
 
 parser_section  : ParserSection ::=
@@ -114,14 +114,9 @@ pattern  : Pattern ::=
 	{regexp}
 ;
 
-class LexerPartsItem {
-	LexerPart lexerPart;
-	SyntaxProblem syntaxProblem;
-}
-
-lexer_parts  : list<LexerPartsItem>
-	this+=new.LexerPartsItem(lexerPart=lexer_part)
-		(this+=new.LexerPartsItem((lexerPart=lexer_part | syntaxProblem=syntax_problem)))* ;
+lexer_parts  : list<LexerPart>
+	this+=lexer_part
+		((this+=lexer_part | this+=syntax_problem))* ;
 
 interface LexerPart {
 }
@@ -206,14 +201,9 @@ lexer_state  : LexerState ::=
 	name=identifier ('=>' defaultTransition=stateref)?
 ;
 
-class GrammarPartsItem {
-	GrammarPart grammarPart;
-	SyntaxProblem syntaxProblem;
-}
-
-grammar_parts  : list<GrammarPartsItem>
-	this+=new.GrammarPartsItem(grammarPart=grammar_part)
-		(this+=new.GrammarPartsItem((grammarPart=grammar_part | syntaxProblem=syntax_problem)))* ;
+grammar_parts  : list<GrammarPart>
+	this+=grammar_part
+		((this+=grammar_part | this+=syntax_problem))* ;
 
 interface GrammarPart {
 }
@@ -317,7 +307,7 @@ rules  : list<Rule0> ::=
 
 class Rule0 {
 	RhsPrefix prefix;
-	list<RhsPartsItem> list;
+	list<RhsPart> list;
 	RhsSuffix suffix;
 	SyntaxProblem syntaxProblem;
 }
@@ -351,14 +341,9 @@ rhsSuffix  : RhsSuffix ::=
   | '%' kind=Lshift as KindKind.LSHIFT {symref}
 ;
 
-class RhsPartsItem {
-	RhsPart rhsPart;
-	SyntaxProblem syntaxProblem;
-}
-
-rhsParts  : list<RhsPartsItem>
-	this+=new.RhsPartsItem({rhsPart})
-		(this+=new.RhsPartsItem(({rhsPart} | syntaxProblem=syntax_problem)))* ;
+rhsParts  : list<RhsPart>
+	this+=rhsPart
+		((this+=rhsPart | this+=syntax_problem))* ;
 
 interface RhsPart {
 }
@@ -449,7 +434,7 @@ class RhsNested : RhsPart {
 }
 
 class RhsList : RhsPart {
-	list<RhsPartsItem> ruleParts;
+	list<RhsPart> ruleParts;
 	list<Symref> separator;
 	boolean atLeastOne;
 }
@@ -565,7 +550,7 @@ command  : Command ::=
 	code
 ;
 
-class SyntaxProblem : Expression {
+class SyntaxProblem : LexerPart, GrammarPart, RhsPart, Expression {
 }
 
 syntax_problem  : SyntaxProblem ::=

@@ -531,39 +531,53 @@ public class TMMapper {
 	}
 
 	private void mapLists() {
+		final List<RhsSymbol> rhsSymbols = new ArrayList<RhsSymbol>();
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
 			if (!(n.getDefinition() instanceof RhsList)) continue;
 			final RhsList list = (RhsList) n.getDefinition();
 
-			final RhsSymbolHandle elementHandle = getSingleSymbol(list.getElement());
-			final RhsSymbolHandle initialElemHandle =
-					list.getCustomInitialElement() != null ? getSingleSymbol(list.getCustomInitialElement()) : null;
+			// Is there already exists a type for the list element?
+			rhsSymbols.clear();
+			TypeOrSymbolHandle typeOrSymbol = getTypeOrUnresolvedSymbol(list.getElement(), rhsSymbols);
+			if (typeOrSymbol != null && list.getCustomInitialElement() != null) {
+				typeOrSymbol = typeOrSymbol.merge(getTypeOrUnresolvedSymbol(list.getCustomInitialElement(),
+						rhsSymbols));
+			}
 
-			boolean requiresClass = elementHandle == null
-					|| list.getCustomInitialElement() != null && initialElemHandle == null
-					|| initialElemHandle != null && initialElemHandle.getSymbol() != elementHandle.getSymbol();
-
-			if (!requiresClass) {
-				final Symbol listElement = elementHandle.getSymbol();
-				if (listElement instanceof Terminal && listElement.getType() == null) {
-					error(listElement, "terminal symbol must have a type");
-				} else {
-					whenMapped(listElement, new Runnable() {
-						@Override
-						public void run() {
-							if (listElement.getType() instanceof VoidType) {
-								mapper.map(n, VoidType.INSTANCE);
-								return;
-							}
-							mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
-							mapper.map(elementHandle.symbol, null, null, true);
-							if (initialElemHandle != null) {
-								mapper.map(initialElemHandle.symbol, null, null, true);
-							}
+			// Can we proceed without a separate class?
+			if (typeOrSymbol != null) {
+				if (typeOrSymbol.getType() != null) {
+					// Symbol elements have a common type.
+					if (typeOrSymbol.getType() instanceof VoidType) {
+						mapper.map(n, VoidType.INSTANCE);
+					} else {
+						mapNonterm(n, builder.list(typeOrSymbol.getType(), list.isNonEmpty(), n));
+						for (RhsSymbol sym : rhsSymbols) {
+							mapper.map(sym, null, null, true);
 						}
-					});
+					}
+				} else {
+					// We got some unresolved symbol, which usually means list<list<...>>
+					final Symbol listElement = typeOrSymbol.getUnresolvedSymbol();
+					if (listElement instanceof Terminal && listElement.getType() == null) {
+						error(listElement, "terminal symbol must have a type");
+					} else {
+						whenMapped(listElement, new Runnable() {
+							@Override
+							public void run() {
+								if (listElement.getType() instanceof VoidType) {
+									mapper.map(n, VoidType.INSTANCE);
+									return;
+								}
+								mapNonterm(n, builder.list(listElement.getType(), list.isNonEmpty(), n));
+								for (RhsSymbol sym : rhsSymbols) {
+									mapper.map(sym, null, null, true);
+								}
+							}
+						});
+					}
 				}
 			} else {
 				AstClass elementClass = builder.addClass(getNonterminalTypeName(n, "_item"), null, n);
@@ -712,7 +726,11 @@ public class TMMapper {
 	}
 
 
-	private static RhsSymbolHandle getSingleSymbol(RhsPart part) {
+	/**
+	 *  Returns AST type of the given part (if exists). Builds a list of all RhsSymbols that
+	 *  contribute to the returned type.
+	 */
+	private static TypeOrSymbolHandle getTypeOrUnresolvedSymbol(RhsPart part, List<RhsSymbol> out) {
 		part = RhsUtil.unwrap(part);
 		RhsCast cast = null;
 		boolean optional = false;
@@ -722,11 +740,31 @@ public class TMMapper {
 			} else if (part instanceof RhsOptional) {
 				part = RhsUtil.unwrap(((RhsOptional) part).getPart());
 				optional = true;
+			} else if (part instanceof RhsChoice) {
+				TypeOrSymbolHandle result = null;
+				for (RhsPart p : ((RhsChoice) part).getParts()) {
+					TypeOrSymbolHandle update = getTypeOrUnresolvedSymbol(p, out);
+					if (update == null) {
+						if (!RhsUtil.isEmpty(RhsUtil.unwrap(p))) return null;
+
+						optional = true;
+						continue;
+					}
+
+					result = result == null ? update : result.merge(update);
+					if (result == null) break;
+				}
+				if (optional && result != null) {
+					result = result.toOptional();
+				}
+				return result;
 			} else if (part instanceof RhsCast) {
 				cast = (RhsCast) part;
 				part = RhsUtil.unwrap(cast.getPart());
 			} else if (part instanceof RhsSymbol) {
-				return new RhsSymbolHandle((RhsSymbol) part, cast, optional);
+				Symbol sym = cast != null ? cast.getTarget() : ((RhsSymbol) part).getTarget();
+				out.add((RhsSymbol) part);
+				return new TypeOrSymbolHandle(sym, optional);
 			} else {
 				part = null;
 			}
@@ -735,7 +773,7 @@ public class TMMapper {
 	}
 
 	private static AstClass getJoinClass(String contextId, AstClass c1, AstClass c2) {
-		// TODO implement
+		// TODO find the least common supertype...
 		return null;
 	}
 
@@ -952,20 +990,54 @@ public class TMMapper {
 		}
 	}
 
-	private static final class RhsSymbolHandle {
+	private static final class TypeOrSymbolHandle {
 
-		private final RhsSymbol symbol;
-		private final RhsCast cast;
-		private final boolean isOptional;
+		// One of the following two is not null.
+		private final Symbol unresolvedSymbol;
+		private final AstType type;
 
-		private RhsSymbolHandle(RhsSymbol symbol, RhsCast cast, boolean optional) {
-			this.symbol = symbol;
-			this.cast = cast;
-			this.isOptional = optional;
+		private final boolean isNullable;
+
+		private TypeOrSymbolHandle(Symbol symbol, boolean optional) {
+			this(symbol.getType() == null ? symbol : null, symbol.getType(), optional);
 		}
 
-		public Symbol getSymbol() {
-			return cast != null ? cast.getTarget() : symbol.getTarget();
+		private TypeOrSymbolHandle(Symbol symbol, AstType type, boolean optional) {
+			assert (symbol == null) ^ (type == null);
+			this.unresolvedSymbol = symbol;
+			this.type = type;
+			this.isNullable = optional;
+		}
+
+		public TypeOrSymbolHandle merge(TypeOrSymbolHandle other) {
+			if (other == null) return null;
+
+			if (unresolvedSymbol != null && other.unresolvedSymbol == unresolvedSymbol) {
+				return isNullable ? this : other;
+			}
+			if (type != null && other.type != null) {
+				AstType common = getJoinType(null, type, other.type);
+				if (common != null) {
+					return new TypeOrSymbolHandle(null, common, isNullable || other.isNullable);
+				}
+			}
+			return null;
+		}
+
+		public TypeOrSymbolHandle toOptional() {
+			return new TypeOrSymbolHandle(unresolvedSymbol, type, true);
+		}
+
+		public boolean isNullable() {
+			return isNullable;
+		}
+
+		public Symbol getUnresolvedSymbol() {
+			return unresolvedSymbol;
+		}
+
+		public AstType getType() {
+			return type;
 		}
 	}
 }

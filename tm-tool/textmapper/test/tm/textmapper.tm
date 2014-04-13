@@ -372,7 +372,7 @@ qualified_id (String) ::=
 command class ::=
 	code ;
 
-syntax_problem ::=
+syntax_problem class : lexer_part, grammar_part, rhsPart ::=
 	error ;
 
 ##################################################################################
