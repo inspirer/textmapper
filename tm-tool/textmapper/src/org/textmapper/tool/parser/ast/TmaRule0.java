@@ -59,12 +59,6 @@ public class TmaRule0 extends TmaNode {
 	}
 
 	@Deprecated
-	public String getAlias() {
-		// TODO use getPrefix()
-		return prefix != null && prefix.getAlias() != null ? prefix.getAlias().getID() : null;
-	}
-
-	@Deprecated
 	public TmaAnnotations getAnnotations() {
 		// TODO -use getPrefix()
 		return prefix != null ? prefix.getAnnotations() : null;

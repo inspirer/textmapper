@@ -41,6 +41,12 @@ public class RuleUtil {
 				}
 				return super.caseAssignment(p1);
 			}
+
+			@Override
+			public Boolean caseIgnored(RhsIgnored p) {
+				// cannot contain named elements
+				return false;
+			}
 		});
 		return p.accept(new SymbolResolver(name, aliasesOnly));
 	}
@@ -211,7 +217,7 @@ public class RuleUtil {
 
 		@Override
 		public Boolean caseSet(RhsSet p) {
-			return caseAny(p.getParts());
+			return false;
 		}
 
 		@Override

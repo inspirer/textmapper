@@ -260,8 +260,9 @@ public class TMParserCompiler {
 		}
 
 		// TODO store %shift attribute
-		// TODO check right.getAnnotations().getNegativeLA() == null
-		Collection<Rule> result = builder.addRule(left, builder.sequence(right.getAlias(), rhs, right), prio);
+		TmaRhsPrefix rulePrefix = right.getPrefix();
+		String alias = rulePrefix != null && rulePrefix.getAlias() != null ? rulePrefix.getAlias().getID() : null;
+		Collection<Rule> result = builder.addRule(left, builder.sequence(alias, rhs, right), prio);
 		Map<String, Object> annotations = expressionResolver.convert(right.getAnnotations(), "AnnotateRule");
 		for (Rule r : result) {
 			TMDataUtil.putAnnotations(r, annotations);

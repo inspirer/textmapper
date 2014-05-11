@@ -17,19 +17,22 @@ package org.textmapper.lapg.api.rule;
 
 import org.textmapper.lapg.api.Symbol;
 
-public interface RhsSet extends RhsRoot {
+public interface RhsSet extends RhsPart {
 
 	enum Kind {
-		Derivable,
-		FirstOf,
-		Compound,
+		/* Sets of terminals related to a symbol */
+		Any,
+		First,
+		Follow,
+		/* Composite sets */
 		Union,
-		Difference,
+		Intersection,
+		Complement,
 	}
 
 	Kind getKind();
 
-	Symbol[] getSymbols();
+	Symbol getSymbol();
 
-	RhsSet[] getParts();
+	RhsSet[] getSets();
 }
