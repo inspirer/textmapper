@@ -36,9 +36,8 @@ public class TMParserCompiler {
 
 	private final TMTree<TmaInput> tree;
 	private final TMResolver resolver;
-	private TMExpressionResolver expressionResolver;
 	private final GrammarBuilder builder;
-
+	private TMExpressionResolver expressionResolver;
 	private boolean hasInputs = false;
 
 	public TMParserCompiler(TMResolver resolver, TMExpressionResolver expressionResolver) {
@@ -86,7 +85,7 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				if (nonterm.getType() != null) {
+				if (nonterm.getType() instanceof TmaNontermTypeRaw) {
 					withType.add(nonterm.getName().getID());
 				}
 			}
