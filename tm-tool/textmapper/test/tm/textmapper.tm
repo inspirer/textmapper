@@ -64,6 +64,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+':	/+/
 '+=':	/+=/
 '?':	/?/
+'~':	/~/
 '&':	/&/
 '$':	/$/
 '@':    /@/ => afterAt
@@ -80,6 +81,8 @@ Lnew:   /new/
 Lseparator: /separator/
 Las: /as/
 Limport: /import/
+Lset: /set/
+
 Linline: /inline/			(soft)
 
 Lprio:  /prio/				(soft)
@@ -112,7 +115,7 @@ Lreduce: /reduce/
 
 [initial, afterAt => initial]
 
-code:    /\{/                            { skipAction(); lapg_n.endoffset = getOffset(); }
+code:   /\{/     { skipAction(); lapg_n.endoffset = getOffset(); }
 
 [afterAtID => initial]
 '{':	/\{/
@@ -275,6 +278,7 @@ rhsParts ::=
 	| rhsParts syntax_problem
 ;
 
+%left '|';
 %left '&';
 
 rhsPart ::=
@@ -321,6 +325,19 @@ rhsPrimary returns rhsPart ::=
 	| [rhsQuantifier] inner=rhsPrimary quantifier='*'
 	| [rhsQuantifier] inner=rhsPrimary quantifier='+'
 	| [rhsIgnored] '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
+	| [rhsSet] Lset '(' expr=setExpression ')'
+;
+
+setPrimary returns setExpression ::=
+	  [setSymbol] operator=ID? symbol=symref
+	| [setCompound] '(' inner=setExpression ')'
+	| [setComplement] '~' inner=setPrimary
+;
+
+setExpression interface ::=
+	  setPrimary
+	| [setBinary] left=setExpression kind='|' right=setExpression
+	| [setBinary] left=setExpression kind='&' right=setExpression
 ;
 
 rhsBracketsPair ::=

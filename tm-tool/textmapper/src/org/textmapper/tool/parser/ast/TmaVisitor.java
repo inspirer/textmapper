@@ -29,6 +29,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaSetBinary n) {
+		return true;
+	}
+
 	protected boolean visit(TmaInstance n) {
 		return true;
 	}
@@ -190,6 +194,22 @@ public abstract class TmaVisitor {
 	}
 
 	protected boolean visit(TmaRhsIgnored n) {
+		return true;
+	}
+
+	protected boolean visit(TmaRhsSet n) {
+		return true;
+	}
+
+	protected boolean visit(TmaSetSymbol n) {
+		return true;
+	}
+
+	protected boolean visit(TmaSetCompound n) {
+		return true;
+	}
+
+	protected boolean visit(TmaSetComplement n) {
 		return true;
 	}
 

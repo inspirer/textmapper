@@ -18,14 +18,15 @@ language textmapper(java);
 
 prefix = "TM"
 package = "org.textmapper.tool.parser"
+astprefix = "Tma"
 maxtoken = 2048
 breaks = true
 gentree = true
-genast = true
 positions = "line,offset"
 endpositions = "offset"
 genCleanup = true
 genCopyright = true
+genast = true
 
 :: lexer
 
@@ -47,7 +48,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '=>':	/=>/
 ';':    /;/
 '.':    /\./
-'..':    /\.\./
+'..':   /\.\./
 ',':	/,/
 ':':    /:/
 '[':    /\[/
@@ -62,6 +63,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+':	/+/
 '+=':	/+=/
 '?':	/?/
+'~':	/~/
 '&':	/&/
 '$':	/$/
 '@':    /@/ => afterAt
@@ -70,8 +72,7 @@ error:
 
 [initial, afterAt => afterAtID, afterAtID => initial]
 
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)
-			{ $symbol = current(); }
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $symbol = current(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -79,6 +80,8 @@ Lnew:   /new/
 Lseparator: /separator/
 Las: /as/
 Limport: /import/
+Lset: /set/
+
 Linline: /inline/			(soft)
 
 Lprio:  /prio/				(soft)
@@ -111,7 +114,7 @@ Lreduce: /reduce/
 
 [initial, afterAt => initial]
 
-code:	/\{/			{ skipAction(); lapg_n.endoffset = getOffset(); }
+code:   /\{/     { skipAction(); lapg_n.endoffset = getOffset(); }
 
 [afterAtID => initial]
 '{':	/\{/
@@ -331,6 +334,7 @@ rhsParts (List<ITmaRhsPart>) ::=
 	| list=rhsParts syntax_problem						{ $list.add($syntax_problem); }
 ;
 
+%left '|';
 %left '&';
 
 rhsPart (ITmaRhsPart) ::=
@@ -379,6 +383,19 @@ rhsPrimary (ITmaRhsPart) ::=
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
 														{ $$ = new TmaRhsIgnored($rules, $brackets, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+setPrimary (ITmaSetExpression) ::=
+	  operator=ID? symbol=symref						{ $$ = new TmaSetSymbol($operator, $symbol, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '(' inner=setExpression ')'						{ $$ = new TmaSetCompound($inner, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '~' inner=setPrimary								{ $$ = new TmaSetComplement($inner, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+setExpression (ITmaSetExpression) ::=
+	  setPrimary
+	| left=setExpression kind='|' right=setExpression	{ $$ = new TmaSetBinary($left, TmaSetBinary.TmaKindKind.OR, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| left=setExpression kind='&' right=setExpression	{ $$ = new TmaSetBinary($left, TmaSetBinary.TmaKindKind.AMPERSAND, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsBracketsPair (TmaRhsBracketsPair) ::=

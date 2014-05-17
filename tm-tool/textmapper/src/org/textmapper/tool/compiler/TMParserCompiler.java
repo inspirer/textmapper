@@ -405,6 +405,11 @@ public class TMParserCompiler {
 			// TODO
 			return null;
 
+		} else if (part instanceof TmaRhsSet) {
+			error(part, "set( ) is not supported, yet");
+			// TODO
+			return null;
+
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
 
@@ -418,7 +423,7 @@ public class TMParserCompiler {
 				if (s instanceof Terminal) {
 					sep.add(builder.symbol(s, ref));
 				} else {
-					error(ref, "separator should be terminal symbol");
+					error(ref, "separator must be a terminal symbol");
 				}
 			}
 			RhsPart separator = builder.sequence(null, sep, listWithSeparator);

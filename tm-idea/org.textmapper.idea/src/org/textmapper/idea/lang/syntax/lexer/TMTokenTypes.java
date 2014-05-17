@@ -73,10 +73,11 @@ public interface TMTokenTypes {
 	//TODO IElementType OP_ARROW = new TMElementType(Tokens.MINUSGREATER, "->");
 	IElementType OP_AND = new TMElementType(Tokens.Ampersand, "&");
 	IElementType OP_AT = new TMElementType(Tokens.Atsign, "@");
+	IElementType OP_TILDE = new TMElementType(Tokens.Tilde, "~");
 
 	TokenSet operators = TokenSet.create(
 			OP_PERCENT, OP_DOLLAR, OP_DOTDOT, OP_CCEQ, OP_OR, OP_EQ, OP_EQGT, OP_COLON,
-			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_AND, OP_AT
+			OP_LT, OP_GT, OP_PLUSEQ/*, OP_ARROW*/, OP_AND, OP_AT, OP_TILDE
 	);
 
 	TokenSet quantifiers = TokenSet.create(OP_PLUS, OP_QMARK, OP_STAR);
@@ -88,6 +89,7 @@ public interface TMTokenTypes {
 	IElementType KW_SEPARATOR = new TMElementType(Tokens.Lseparator, "separator");
 	IElementType KW_AS = new TMElementType(Tokens.Las, "as");
 	IElementType KW_IMPORT = new TMElementType(Tokens.Limport, "import");
+	IElementType KW_SET = new TMElementType(Tokens.Lset, "set");
 
 	// soft keywords
 	IElementType KW_PRIO = new TMElementType(Tokens.Lprio, "prio");
@@ -113,7 +115,7 @@ public interface TMTokenTypes {
 	IElementType KW_SPACE = new TMElementType(Tokens.Lspace, "space");
 
 	TokenSet keywords = TokenSet.create(
-			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT);
+			KW_TRUE, KW_FALSE, KW_NEW, KW_SEPARATOR, KW_AS, KW_IMPORT, KW_SET);
 
 	TokenSet softKeywords = TokenSet.create(
 			KW_PRIO, KW_SHIFT, KW_REDUCE,

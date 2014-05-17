@@ -38,9 +38,9 @@ import static org.junit.Assert.*;
 public class BootstrapTest {
 
 	@Test
-	public void testLapgTm() {
+	public void testTextmapperTm() {
 		bootstrap("src/org/textmapper/tool/parser", "textmapper.tm", new String[0], new String[]{
-				"TMParser.java", "TMLexer.java", "TMTree.java"}, 1);
+				"TMParser.java", "TMLexer.java", "TMTree.java"}, 4);
 	}
 
 	@Test

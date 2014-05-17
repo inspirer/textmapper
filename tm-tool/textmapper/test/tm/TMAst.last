@@ -436,6 +436,10 @@ class RhsIgnored : RhsPart {
 	list<RhsBracketsPair> brackets;
 }
 
+class RhsSet : RhsPart {
+	SetExpression expr;
+}
+
 rhsPrimary  : RhsPart ::=
 	this=new.RhsSymbol: reference=symref
   | this=new.RhsNested: '(' {rules} ')'
@@ -444,6 +448,45 @@ rhsPrimary  : RhsPart ::=
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
   | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list_Comma_separated)? ')'
+  | this=new.RhsSet: Lset '(' expr=setExpression ')'
+;
+
+interface SetExpression {
+}
+
+class SetSymbol : SetExpression {
+	String operator;
+	Symref symbol;
+}
+
+class SetCompound : SetExpression {
+	SetExpression inner;
+}
+
+class SetComplement : SetExpression {
+	SetExpression inner;
+}
+
+setPrimary  : SetExpression ::=
+	this=new.SetSymbol: operator=ID? symbol=symref
+  | this=new.SetCompound: '(' inner=setExpression ')'
+  | this=new.SetComplement: '~' inner=setPrimary
+;
+
+class SetBinary : SetExpression {
+	SetExpression left;
+	KindKind kind;
+	SetExpression right;
+	enum KindKind {
+		OR,
+		AMPERSAND
+	}
+}
+
+setExpression  : SetExpression ::=
+	this=setPrimary
+  | this=new.SetBinary: left=setExpression kind='|' as KindKind.OR right=setExpression
+  | this=new.SetBinary: left=setExpression kind='&' as KindKind.AMPERSAND right=setExpression
 ;
 
 class RhsBracketsPair {

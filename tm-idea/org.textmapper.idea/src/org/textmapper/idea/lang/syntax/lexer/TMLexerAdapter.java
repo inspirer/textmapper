@@ -198,6 +198,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_AND;
 			case Tokens.Atsign:
 				return OP_AT;
+			case Tokens.Tilde:
+				return OP_TILDE;
 
 			// keywords
 			case Tokens.Ltrue:
@@ -228,6 +230,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_AS;
 			case Tokens.Limport:
 				return KW_IMPORT;
+			case Tokens.Lset:
+				return KW_SET;
 			case Tokens.Linline:
 				return KW_INLINE;
 			case Tokens.Lreturns:
