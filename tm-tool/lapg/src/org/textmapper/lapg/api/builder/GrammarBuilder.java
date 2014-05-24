@@ -41,7 +41,8 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	LexerState addState(String name, SourceElement origin);
 
-	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin);
+	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states,
+						   int priority, LexerRule classLexerRule, SourceElement origin);
 
 
 	RhsSymbol symbol(Symbol sym, SourceElement origin);
@@ -68,7 +69,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsSet set(RhsSet.Kind kind, Collection<Symbol> symbols, Collection<RhsSet> parts, SourceElement origin);
 
-	Collection<Rule> addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
+	void addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 
 
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);

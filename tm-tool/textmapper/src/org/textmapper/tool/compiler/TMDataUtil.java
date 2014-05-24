@@ -15,10 +15,7 @@
  */
 package org.textmapper.tool.compiler;
 
-import org.textmapper.lapg.api.LexerRule;
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.UserDataHolder;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.parser.ast.TmaCommand;
 
@@ -39,12 +36,25 @@ public class TMDataUtil {
 	private static final String UD_IMPLEMENTS = "implements";
 	private static final String UD_LITERAL = "literal";
 
+	private static Object lookupUserData(UserDataHolder element, String key) {
+		while (element != null) {
+			Object result = element.getUserData(key);
+			if (result != null) return result;
+
+			if (!(element instanceof DerivedSourceElement)) return null;
+			SourceElement origin = ((DerivedSourceElement) element).getOrigin();
+			if (!(origin instanceof UserDataHolder)) return null;
+			element = (UserDataHolder) origin;
+		}
+		return null;
+	}
+
 	public static void putAnnotations(UserDataHolder element, Map<String, Object> annotations) {
 		element.putUserData(UD_ANNOTATIONS, annotations);
 	}
 
 	public static Map<String, Object> getAnnotations(UserDataHolder element) {
-		return (Map<String, Object>) element.getUserData(UD_ANNOTATIONS);
+		return (Map<String, Object>) lookupUserData(element, UD_ANNOTATIONS);
 	}
 
 	public static void putCode(UserDataHolder element, TmaCommand code) {
@@ -52,7 +62,7 @@ public class TMDataUtil {
 	}
 
 	public static TmaCommand getCode(UserDataHolder element) {
-		return (TmaCommand) element.getUserData(UD_CODE);
+		return (TmaCommand) lookupUserData(element, UD_CODE);
 	}
 
 	public static void putId(Symbol element, String identifier) {

@@ -193,7 +193,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Collection<Rule> addRule(Nonterminal left, RhsPart rhs, Terminal prio) {
+	public void addRule(Nonterminal left, RhsPart rhs, Terminal prio) {
 		check(left);
 		check(rhs, false);
 		if (prio != null) {
@@ -208,17 +208,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			liLeft.addRule(right);
 		}
 
-		List<Rule> result = new ArrayList<Rule>();
 		for (RhsSequence r : ((LiRhsRoot) liLeft.getDefinition()).preprocess(right)) {
 			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
 			for (RhsSymbol[] arr : expanded) {
 				LiRule rule = new LiRule(rules.size(), left, arr, prio, r);
 				rules.add(rule);
-				result.add(rule);
 			}
 		}
-
-		return result;
 	}
 
 	@Override

@@ -24,8 +24,6 @@ import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
-import org.textmapper.tool.parser.ast.TmaNontermTypeHint;
-import org.textmapper.tool.parser.ast.TmaRhsSuffix;
 
 import java.util.*;
 
@@ -261,22 +259,21 @@ public class TMParserCompiler {
 		// TODO store %shift attribute
 		TmaRhsPrefix rulePrefix = right.getPrefix();
 		String alias = rulePrefix != null && rulePrefix.getAlias() != null ? rulePrefix.getAlias().getID() : null;
-		Collection<Rule> result = builder.addRule(left, builder.sequence(alias, rhs, right), prio);
+		RhsSequence rule = builder.sequence(alias, rhs, right);
+		builder.addRule(left, rule, prio);
 		Map<String, Object> annotations = expressionResolver.convert(right.getAnnotations(), "AnnotateRule");
-		for (Rule r : result) {
-			TMDataUtil.putAnnotations(r, annotations);
-			TMDataUtil.putCode(r, lastAction);
-		}
+
+		TMDataUtil.putAnnotations(rule, annotations);
+		TMDataUtil.putCode(rule, lastAction);
 	}
 
 	private RhsPart convertPart(Symbol outer, ITmaRhsPart part) {
 		if (part instanceof TmaCommand) {
 			TmaCommand astCode = (TmaCommand) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
-			Collection<Rule> actionRules = builder.addRule(codeSym, builder.empty(astCode), null);
-			for (Rule actionRule : actionRules) {
-				TMDataUtil.putCode(actionRule, astCode);
-			}
+			RhsSequence actionRule = builder.empty(astCode);
+			builder.addRule(codeSym, actionRule, null);
+			TMDataUtil.putCode(actionRule, astCode);
 			return builder.symbol(codeSym, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
