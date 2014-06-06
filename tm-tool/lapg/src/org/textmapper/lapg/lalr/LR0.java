@@ -20,8 +20,7 @@ import org.textmapper.lapg.api.ParserConflict.Input;
 import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 import org.textmapper.lapg.lalr.SoftConflictBuilder.SoftClassConflict;
 
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * LR(0) states generator
@@ -37,9 +36,9 @@ class LR0 extends ContextFree {
 	private int varset, ruleset;
 	private int[] ruleforvar /* nvars: set of rules (closure) */;
 
-	private short[] toreduce, closure /* [situations] */;
+	private short[] toreduce, closure /* [items] */;
 	private int closureend /* size of closure */;
-	private short[][] symbase /* nsyms: array of size symbasesize[i] = situations after sym shift */;
+	private short[][] symbase /* nsyms: array of size symbasesize[i] = items after sym shift */;
 	private int[] symbasesize;
 	private short[] symcanshift /* list of symbols to shift [nsyms] */;
 	private int[] closurebit /* list of rules, added to closure [ruleset] */;
@@ -88,7 +87,7 @@ class LR0 extends ContextFree {
 		termset = (((nterms) + BITS - 1) / BITS);
 
 		toreduce = new short[rules + 1];
-		closure = new short[situations];
+		closure = new short[items];
 		closurebit = new int[ruleset];
 
 		table = new State[STATE_TABLE_SIZE];
@@ -102,7 +101,7 @@ class LR0 extends ContextFree {
 
 		int i;
 
-		for (i = 0; i < situations; i++) {
+		for (i = 0; i < items; i++) {
 			if (rright[i] >= 0) {
 				symnum[rright[i]]++;
 			}
@@ -287,12 +286,12 @@ class LR0 extends ContextFree {
 		short[] new_core = symbase[symbol];
 		int size = symbasesize[symbol];
 		int i, hash;
-		State t;
 
 		for (hash = i = 0; i < size; i++) {
-			hash += new_core[i];
+			hash = 31 * hash + new_core[i];
 		}
-		t = table[hash % STATE_TABLE_SIZE];
+		hash = Math.abs(hash);
+		State t = table[hash % STATE_TABLE_SIZE];
 		int inputsign = current.number < inputs.length && inputs[current.number] == symbol ? current.number : -1;
 
 		while (t != null) {
@@ -302,7 +301,7 @@ class LR0 extends ContextFree {
 				}
 			}
 
-			if (i == size && inputsign == t.inputsign) {
+			if (i == size && t.elems[size] == -1 && inputsign == t.inputsign) {
 				break;
 			}
 
@@ -311,9 +310,7 @@ class LR0 extends ContextFree {
 
 		if (t == null) {
 			t = new_state(current.number, symbol, hash, size, inputsign);
-			for (i = 0; i < size; i++) {
-				t.elems[i] = new_core[i];
-			}
+			System.arraycopy(new_core, 0, t.elems, 0, size);
 			t.elems[size] = -1;
 		}
 
@@ -379,15 +376,15 @@ class LR0 extends ContextFree {
 				if (conflict == null) {
 					current.softConflicts = true;
 					conflict = softconflicts.addConflict(current.number);
-					conflict.addSymbol((Terminal)sym[classTerm]);
+					conflict.addSymbol((Terminal) sym[classTerm]);
 					core = symbase[classTerm];
-					for(int i = 0; i < symbasesize[classTerm]; i++) {
+					for (int i = 0; i < symbasesize[classTerm]; i++) {
 						conflict.addRule(wrules[ruleIndex(core[i])]);
 					}
 				}
 				conflict.addSymbol((Terminal) sym[soft]);
 				core = symbase[soft];
-				for(int i = 0; i < symbasesize[soft]; i++) {
+				for (int i = 0; i < symbasesize[soft]; i++) {
 					conflict.addRule(wrules[ruleIndex(core[i])]);
 				}
 			}
@@ -485,8 +482,23 @@ class LR0 extends ContextFree {
 
 			build_closure(t, t.elems);
 
+			List<String> items = new ArrayList<String>();
 			for (int i = 0; i < closureend; i++) {
-				print_situation(closure[i]);
+				items.add(debugText(closure[i]));
+			}
+			Collections.sort(items);
+			for (String s : items) {
+				status.debug("  ");
+				status.debug(s);
+				status.debug("\n");
+			}
+
+			status.debug("  (Transitions): ");
+			for (int i = t.nshifts - 1; i >= 0; i--) {
+				int newstate = t.shifts[i];
+				int symnum = state[newstate].symbol;
+				status.debug(sym[symnum].getName() + " -> " + newstate);
+				status.debug(i > 0 ? ", " : "\n");
 			}
 		}
 	}

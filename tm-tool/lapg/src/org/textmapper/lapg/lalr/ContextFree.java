@@ -31,7 +31,7 @@ abstract class ContextFree {
 	protected final int nsyms, nterms, eoi, errorn;
 	protected final int[] inputs;
 	protected final boolean[] noEoiInput;
-	protected final int rules, situations;
+	protected final int rules, items;
 	protected final Symbol[] sym;
 	protected final Rule[] wrules;
 	protected final int[] priorul;
@@ -61,7 +61,7 @@ abstract class ContextFree {
 		this.eoi = g.getEoi().getIndex();
 		this.errorn = g.getError() == null ? -1 : g.getError().getIndex();
 
-		this.situations = getSituations(wrules);
+		this.items = computeItems(wrules);
 
 		this.priorul = getPriorityRules(g.getPriorities());
 
@@ -73,7 +73,8 @@ abstract class ContextFree {
 			Terminal term = (Terminal) this.sym[i];
 			if (term.isSoft()) {
 				int classindex = term.getSoftClass().getIndex();
-				assert classindex < nterms && this.sym[classindex] instanceof Terminal && !((Terminal)this.sym[classindex]).isSoft();
+				assert classindex < nterms && this.sym[classindex] instanceof Terminal &&
+						!((Terminal) this.sym[classindex]).isSoft();
 				this.classterm[i] = classindex;
 				this.classterm[classindex] = -1;
 				this.softterms[i] = this.softterms[classindex];
@@ -84,7 +85,7 @@ abstract class ContextFree {
 		this.rleft = new int[rules];
 		this.rprio = new int[rules];
 		this.rindex = new int[rules];
-		this.rright = new int[situations];
+		this.rright = new int[items];
 		this.sym_empty = new boolean[nsyms];
 
 		int curr_rindex = 0;
@@ -103,10 +104,10 @@ abstract class ContextFree {
 			}
 		}
 
-		assert situations == curr_rindex;
+		assert items == curr_rindex;
 	}
 
-	private static int getSituations(Rule[] rules) {
+	private static int computeItems(Rule[] rules) {
 		int counter = 0;
 		for (Rule rule : rules) {
 			counter += rule.getRight().length + 1;
@@ -144,32 +145,30 @@ abstract class ContextFree {
 		return result;
 	}
 
-	protected int ruleIndex(int situation) {
-		while (rright[situation] >= 0) situation++;
-		return -rright[situation] - 1;
+	protected int ruleIndex(int item) {
+		while (rright[item] >= 0) item++;
+		return -rright[item] - 1;
 	}
 
 	// info
 
-	protected void print_situation(int situation) {
-		int rulenum, i;
-
-		for (i = situation; rright[i] >= 0; i++) {
-		}
-		rulenum = -rright[i] - 1;
+	protected String debugText(int item) {
+		StringBuilder sb = new StringBuilder();
+		int rule = ruleIndex(item);
 
 		// left part of the rule
-		status.debug("  " + sym[rleft[rulenum]].getName() + " ::=");
+		sb.append(sym[rleft[rule]].getName()).append(" ::=");
 
-		for (i = rindex[rulenum]; rright[i] >= 0; i++) {
-			if (i == situation) {
-				status.debug(" _");
+		int i;
+		for (i = rindex[rule]; rright[i] >= 0; i++) {
+			if (i == item) {
+				sb.append(" _");
 			}
-			status.debug(" " + sym[rright[i]].getName());
+			sb.append(" " + sym[rright[i]].getName());
 		}
-		if (i == situation) {
-			status.debug(" _");
+		if (i == item) {
+			sb.append(" _");
 		}
-		status.debug("\n");
+		return sb.toString();
 	}
 }

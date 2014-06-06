@@ -84,7 +84,7 @@ class Lalr1 extends LR0 {
 
 		// calculate maxrpart
 		maxrpart = 2;
-		for (e = i = 0; i < situations; i++) {
+		for (e = i = 0; i < items; i++) {
 			if (rright[i] < 0) {
 				if (e > maxrpart) {
 					maxrpart = e;
@@ -134,8 +134,8 @@ class Lalr1 extends LR0 {
 		int i, e, symnum;
 
 		term_goto = new short[nsyms + 1];
-		short[] symshiftCounter = new short[nsyms];
-		Arrays.fill(symshiftCounter, (short) 0);
+		int[] symshiftCounter = new int[nsyms];
+		Arrays.fill(symshiftCounter, 0);
 
 		ngotos = 0;
 		for (State t = first; t != null; t = t.next) {
@@ -231,12 +231,11 @@ class Lalr1 extends LR0 {
 	private void init_follow() {
 		int settrav = 0, nedges = 0;
 		short[][] empties = graph;
-		int k, i;
 
 		follow = new int[ngotos * termset];
 		Arrays.fill(follow, 0);
 
-		for (i = 0; i < ngotos; i++, settrav += termset) {
+		for (int i = 0; i < ngotos; i++, settrav += termset) {
 			int st = term_to[ntgotos + i];
 			short[] shifts = state[st].shifts;
 			int nshifts = state[st].nshifts, shifts_ind = 0;
@@ -245,10 +244,10 @@ class Lalr1 extends LR0 {
 			if (term_from[ntgotos + i] < inputs.length) {
 				int src = term_from[ntgotos + i];
 				if (noEoiInput[src] && final_states[src] == st) {
-					for (k = 0; k < termset - 1; k++) {
-						follow[settrav + k] = 0xffffffff;
+					for (int k = 0; k < termset - 1; k++) {
+						follow[settrav + k] = ~0;
 					}
-					for (k = (termset - 1) * BITS; k < nterms; k++) {
+					for (int k = (termset - 1) * BITS; k < nterms; k++) {
 						follow[settrav + termset - 1] |= (1 << (k % BITS));
 					}
 				}
@@ -267,7 +266,7 @@ class Lalr1 extends LR0 {
 			}
 
 			for (; shifts_ind < nshifts; shifts_ind++) {
-				k = state[shifts[shifts_ind]].symbol;
+				int k = state[shifts[shifts_ind]].symbol;
 				if (sym_empty[k]) {
 					edge[nedges++] = (short) select_goto(st, k);
 				}
@@ -461,7 +460,7 @@ class Lalr1 extends LR0 {
 					while (rright[k] >= 0) {
 						k++;
 					}
-					print_situation(k);
+					status.debug("  " + debugText(k) + "\n");
 					int set = termset * e;
 
 					status.debug("  >>>");
