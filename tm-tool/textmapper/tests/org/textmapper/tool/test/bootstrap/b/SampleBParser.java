@@ -43,13 +43,13 @@ public class SampleBParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int[] tmAction = SampleBLexer.unpack_int(26,
-		"\uffff\uffff\uffff\uffff\0\0\5\0\uffff\uffff\uffff\uffff\ufffd\uffff\uffff\uffff" +
-		"\uffff\uffff\13\0\6\0\uffef\uffff\uffff\uffff\uffe3\uffff\uffff\uffff\uffff\uffff" +
-		"\7\0\3\0\uffff\uffff\uffff\uffff\10\0\uffff\uffff\4\0\11\0\12\0\ufffe\uffff");
+		"\uffff\uffff\uffff\uffff\0\0\3\0\uffff\uffff\uffff\uffff\ufffd\uffff\uffff\uffff" +
+		"\uffff\uffff\11\0\4\0\uffef\uffff\uffff\uffff\uffe3\uffff\uffff\uffff\uffff\uffff" +
+		"\5\0\1\0\uffff\uffff\uffff\uffff\6\0\uffff\uffff\2\0\7\0\10\0\ufffe\uffff");
 
 	private static final short[] tmLalr = SampleBLexer.unpack_short(40,
-		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\2\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
-		"\3\uffff\6\1\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\2\uffff\ufffe");
+		"\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\13\uffff\ufffe\1\uffff\20\uffff\4\uffff" +
+		"\3\uffff\6\12\uffff\ufffe\1\uffff\20\uffff\4\uffff\3\uffff\13\uffff\6\13\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleBLexer.unpack_short(23,
 		"\0\0\5\5\11\20\22\24\26\31\31\31\33\33\33\33\33\40\41\45\46\50\52");
@@ -63,10 +63,10 @@ public class SampleBParser {
 		"\10\31\2\12\20\12\4\13\13\14\22");
 
 	private static final short[] tmRuleLen = SampleBLexer.unpack_short(12,
-		"\1\1\0\5\7\1\1\2\3\4\4\1");
+		"\1\5\7\1\1\2\3\4\4\1\1\0");
 
 	private static final short[] tmRuleSymbol = SampleBLexer.unpack_short(12,
-		"\21\25\25\22\22\23\24\24\24\24\24\24");
+		"\21\22\22\23\24\24\24\24\24\24\25\25");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -262,7 +262,7 @@ public class SampleBParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 		switch (tmRule) {
-			case 3:  // classdef ::= Lclass ID '{' classdeflistopt '}'
+			case 1:  // classdef ::= Lclass ID '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 3].value) /* ID */,
@@ -271,7 +271,7 @@ public class SampleBParser {
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 4:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
+			case 2:  // classdef ::= Lclass ID Lextends identifier '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						true /* tc */,
 						((String)tmStack[tmHead - 5].value) /* ID */,
@@ -280,36 +280,36 @@ public class SampleBParser {
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
 				break;
-			case 6:  // classdeflist ::= classdef
+			case 4:  // classdeflist ::= classdef
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
 				break;
-			case 7:  // classdeflist ::= classdeflist classdef
+			case 5:  // classdeflist ::= classdeflist classdef
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset));
 				break;
-			case 8:  // classdeflist ::= identifier '(' ')'
+			case 6:  // classdeflist ::= identifier '(' ')'
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
-			case 9:  // classdeflist ::= identifier '(' Lextends ')'
+			case 7:  // classdeflist ::= identifier '(' Lextends ')'
 				 String s = /* should be string */ ((String)tmStack[tmHead - 1].value); 
 				break;
-			case 10:  // classdeflist ::= classdeflist identifier '(' ')'
+			case 8:  // classdeflist ::= classdeflist identifier '(' ')'
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						null /* input */, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset));
 				break;
-			case 11:  // classdeflist ::= error
+			case 9:  // classdeflist ::= error
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,

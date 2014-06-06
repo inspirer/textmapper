@@ -43,11 +43,11 @@ public class SampleAParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int[] tmAction = SampleALexer.unpack_int(15,
-		"\uffff\uffff\uffff\uffff\uffff\uffff\0\0\uffff\uffff\ufffd\uffff\6\0\4\0\ufff5\uffff" +
-		"\uffff\uffff\5\0\3\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
+		"\uffff\uffff\uffff\uffff\uffff\uffff\0\0\uffff\uffff\ufffd\uffff\4\0\2\0\ufff5\uffff" +
+		"\uffff\uffff\3\0\1\0\ufffe\uffff\uffff\uffff\ufffe\uffff");
 
 	private static final short[] tmLalr = SampleALexer.unpack_short(14,
-		"\3\uffff\6\uffff\5\2\uffff\ufffe\3\uffff\5\1\uffff\ufffe");
+		"\3\uffff\6\uffff\5\6\uffff\ufffe\3\uffff\5\5\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = SampleALexer.unpack_short(12,
 		"\0\1\2\2\6\7\10\11\12\16\17\20");
@@ -59,10 +59,10 @@ public class SampleAParser {
 		"\16\4\2\2\2\2\5\13\6\14\3\15\7\12\10\11");
 
 	private static final short[] tmRuleLen = SampleALexer.unpack_short(7,
-		"\1\1\0\5\1\2\1");
+		"\1\5\1\2\1\1\0");
 
 	private static final short[] tmRuleSymbol = SampleALexer.unpack_short(7,
-		"\7\12\12\10\11\11\11");
+		"\7\10\11\11\11\12\12");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -255,24 +255,24 @@ public class SampleAParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 		switch (tmRule) {
-			case 3:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
+			case 1:  // classdef ::= Lclass identifier '{' classdeflistopt '}'
 				tmLeft.value = new AstClassdef(
 						((String)tmStack[tmHead - 3].value) /* identifier */,
 						((List<AstClassdeflistItem>)tmStack[tmHead - 1].value) /* classdeflist */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead - 4].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn);
 				break;
-			case 4:  // classdeflist ::= classdef
+			case 2:  // classdeflist ::= classdef
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
-			case 5:  // classdeflist ::= classdeflist classdef
+			case 3:  // classdeflist ::= classdeflist classdef
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						((AstClassdef)tmStack[tmHead].value) /* classdef */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead - 1].column, tmStack[tmHead].endline, tmStack[tmHead].endoffset, tmStack[tmHead].endcolumn));
 				break;
-			case 6:  // classdeflist ::= error
+			case 4:  // classdeflist ::= error
 				tmLeft.value = new ArrayList();
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
 						null /* classdef */,

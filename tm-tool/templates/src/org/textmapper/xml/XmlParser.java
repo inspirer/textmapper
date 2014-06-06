@@ -54,13 +54,13 @@ public class XmlParser {
 	}
 	private static final int[] tmAction = XmlLexer.unpack_int(31,
 		"\uffff\uffff\6\0\uffff\uffff\ufffd\uffff\2\0\uffff\uffff\5\0\ufff5\uffff\uffeb\uffff" +
-		"\1\0\uffff\uffff\uffff\uffff\3\0\uffff\uffff\uffff\uffff\uffe3\uffff\17\0\uffff\uffff" +
-		"\uffff\uffff\4\0\10\0\uffff\uffff\16\0\13\0\uffff\uffff\uffff\uffff\20\0\14\0\15" +
+		"\1\0\uffff\uffff\uffff\uffff\3\0\uffff\uffff\uffff\uffff\uffe3\uffff\15\0\uffff\uffff" +
+		"\uffff\uffff\4\0\10\0\uffff\uffff\14\0\11\0\uffff\uffff\uffff\uffff\16\0\12\0\13" +
 		"\0\uffff\uffff\ufffe\uffff");
 
 	private static final short[] tmLalr = XmlLexer.unpack_short(34,
-		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\12\11" +
-		"\12\uffff\ufffe\4\uffff\6\11\11\11\uffff\ufffe");
+		"\1\uffff\2\uffff\0\0\uffff\ufffe\10\uffff\4\7\6\7\11\7\uffff\ufffe\4\uffff\6\20\11" +
+		"\20\uffff\ufffe\4\uffff\6\17\11\17\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = XmlLexer.unpack_short(22,
 		"\0\1\5\11\11\17\20\23\24\25\27\27\30\32\36\41\45\51\53\54\56\57");
@@ -74,10 +74,10 @@ public class XmlParser {
 		"\10\31\5\5\5\5\6\6\6\6\14\23\17\20\26\21");
 
 	private static final short[] tmRuleLen = XmlLexer.unpack_short(17,
-		"\1\2\1\2\3\1\1\1\3\1\0\4\5\4\2\1\3");
+		"\1\2\1\2\3\1\1\1\3\4\5\4\2\1\3\1\0");
 
 	private static final short[] tmRuleSymbol = XmlLexer.unpack_short(17,
-		"\13\14\14\15\15\15\15\16\16\24\24\17\20\21\22\22\23");
+		"\13\14\14\15\15\15\15\16\16\17\20\21\22\22\23\24\24");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -249,22 +249,22 @@ public class XmlParser {
 			case 8:  // tag_name ::= identifier ':' identifier
 				 tmLeft.value = ((String)tmStack[tmHead - 2].value) + ":" + ((String)tmStack[tmHead].value); 
 				break;
-			case 11:  // tag_start ::= '<' tag_name attributesopt '>'
+			case 9:  // tag_start ::= '<' tag_name attributesopt '>'
 				 tmLeft.value = new XmlNode(((String)tmStack[tmHead - 2].value), ((List<XmlAttribute>)tmStack[tmHead - 1].value), tmStack[tmHead - 3].line); 
 				break;
-			case 12:  // no_body_tag ::= '<' tag_name attributesopt '/' '>'
+			case 10:  // no_body_tag ::= '<' tag_name attributesopt '/' '>'
 				 tmLeft.value = new XmlNode(((String)tmStack[tmHead - 3].value), ((List<XmlAttribute>)tmStack[tmHead - 2].value), tmStack[tmHead - 4].line); 
 				break;
-			case 13:  // tag_end ::= '<' '/' tag_name '>'
+			case 11:  // tag_end ::= '<' '/' tag_name '>'
 				 tmLeft.value = ((String)tmStack[tmHead - 1].value); 
 				break;
-			case 14:  // attributes ::= attributes attribute
+			case 12:  // attributes ::= attributes attribute
 				 ((List<XmlAttribute>)tmStack[tmHead - 1].value).add(((XmlAttribute)tmStack[tmHead].value)); 
 				break;
-			case 15:  // attributes ::= attribute
+			case 13:  // attributes ::= attribute
 				 tmLeft.value = new ArrayList<XmlAttribute>(); ((List<XmlAttribute>)tmLeft.value).add(((XmlAttribute)tmStack[tmHead].value)); 
 				break;
-			case 16:  // attribute ::= identifier '=' ccon
+			case 14:  // attribute ::= identifier '=' ccon
 				 tmLeft.value = new XmlAttribute(((String)tmStack[tmHead - 2].value),((String)tmStack[tmHead].value)); 
 				break;
 		}

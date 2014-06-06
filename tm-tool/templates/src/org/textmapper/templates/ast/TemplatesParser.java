@@ -158,109 +158,109 @@ public class TemplatesParser {
 		}
 	}
 	private static final int[] tmAction = TemplatesLexer.unpack_int(275,
-		"\ufffd\uffff\uffff\uffff\7\0\ufff5\uffff\uffed\uffff\3\0\5\0\6\0\uffff\uffff\2\0" +
-		"\46\0\45\0\43\0\44\0\uffff\uffff\uffe5\uffff\35\0\42\0\40\0\41\0\uffff\uffff\21\0" +
-		"\uffff\uffff\12\0\uffff\uffff\4\0\uffff\uffff\11\0\uffff\uffff\uffd7\uffff\122\0" +
-		"\124\0\uffff\uffff\uffff\uffff\155\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\126\0\uffff\uffff\154\0\125\0\uffff\uffff\uff9f\uffff\uffff\uffff\uffff" +
-		"\uffff\uff97\uffff\uffff\uffff\215\0\uffff\uffff\uffff\uffff\uff79\uffff\140\0\137" +
-		"\0\123\0\161\0\uff45\uffff\uff17\uffff\ufefb\uffff\ufee1\uffff\206\0\210\0\ufecb" +
-		"\uffff\62\0\34\0\uffff\uffff\64\0\ufec3\uffff\uffff\uffff\uffff\uffff\10\0\ufeb7" +
-		"\uffff\uffff\uffff\ufe99\uffff\ufe8d\uffff\ufe57\uffff\uffff\uffff\ufe4f\uffff\uffff" +
-		"\uffff\ufe47\uffff\uffff\uffff\uffff\uffff\ufe3f\uffff\ufe37\uffff\160\0\157\0\ufe31" +
-		"\uffff\uffff\uffff\212\0\ufdff\uffff\uffff\uffff\uffff\uffff\37\0\36\0\47\0\106\0" +
+		"\ufffd\uffff\uffff\uffff\5\0\ufff5\uffff\uffed\uffff\1\0\3\0\4\0\uffff\uffff\0\0" +
+		"\34\0\33\0\31\0\32\0\uffff\uffff\uffe5\uffff\23\0\30\0\26\0\27\0\uffff\uffff\11\0" +
+		"\uffff\uffff\170\0\uffff\uffff\2\0\uffff\uffff\7\0\uffff\uffff\uffd7\uffff\74\0\76" +
+		"\0\uffff\uffff\uffff\uffff\125\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\100\0\uffff\uffff\124\0\77\0\uffff\uffff\uff9f\uffff\uffff\uffff\uffff" +
+		"\uffff\uff97\uffff\uffff\uffff\165\0\uffff\uffff\uffff\uffff\uff79\uffff\112\0\111" +
+		"\0\75\0\131\0\uff45\uffff\uff17\uffff\ufefb\uffff\ufee1\uffff\156\0\160\0\ufecb\uffff" +
+		"\42\0\22\0\uffff\uffff\44\0\ufec3\uffff\uffff\uffff\uffff\uffff\6\0\ufeb7\uffff\uffff" +
+		"\uffff\ufe99\uffff\ufe8d\uffff\ufe57\uffff\uffff\uffff\ufe4f\uffff\uffff\uffff\ufe47" +
+		"\uffff\uffff\uffff\uffff\uffff\ufe3f\uffff\ufe37\uffff\130\0\127\0\ufe31\uffff\uffff" +
+		"\uffff\162\0\ufdff\uffff\uffff\uffff\uffff\uffff\25\0\24\0\35\0\62\0\uffff\uffff" +
 		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
 		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\117\0\72" +
-		"\0\75\0\ufdf7\uffff\uffff\uffff\14\0\ufdf1\uffff\ufde9\uffff\33\0\uffff\uffff\207" +
-		"\0\ufddf\uffff\51\0\ufdc1\uffff\uffff\uffff\56\0\60\0\uffff\uffff\uffff\uffff\ufdb9" +
-		"\uffff\ufdb3\uffff\ufdad\uffff\ufda1\uffff\uffff\uffff\uffff\uffff\152\0\153\0\151" +
-		"\0\uffff\uffff\143\0\uffff\uffff\uffff\uffff\142\0\121\0\uffff\uffff\ufd99\uffff" +
-		"\uffff\uffff\uffff\uffff\ufd63\uffff\ufd35\uffff\ufd07\uffff\ufcd9\uffff\ufcab\uffff" +
-		"\ufc7d\uffff\ufc4f\uffff\ufc21\uffff\ufbf3\uffff\175\0\ufbc5\uffff\ufba7\uffff\ufb8b" +
-		"\uffff\ufb6f\uffff\ufb59\uffff\uffff\uffff\211\0\uffff\uffff\uffff\uffff\uffff\uffff" +
-		"\65\0\uffff\uffff\16\0\uffff\uffff\ufb43\uffff\127\0\uffff\uffff\uffff\uffff\53\0" +
-		"\55\0\63\0\uffff\uffff\ufb3d\uffff\uffff\uffff\ufb33\uffff\uffff\uffff\76\0\uffff" +
-		"\uffff\uffff\uffff\27\0\uffff\uffff\147\0\uffff\uffff\213\0\136\0\ufb2d\uffff\uffff" +
-		"\uffff\ufb0f\uffff\uffff\uffff\116\0\uffff\uffff\uffff\uffff\25\0\ufaf1\uffff\22" +
-		"\0\uffff\uffff\71\0\ufae7\uffff\uffff\uffff\uffff\uffff\107\0\111\0\146\0\uffff\uffff" +
-		"\uffff\uffff\102\0\ufadf\uffff\uffff\uffff\uffff\uffff\uffff\uffff\ufad3\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\205\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
-		"\ufaa5\uffff\uffff\uffff\uffff\uffff\104\0\103\0\101\0\31\0\141\0\150\0\uffff\uffff" +
-		"\131\0\ufa9d\uffff\134\0\uffff\uffff\uffff\uffff\74\0\uffff\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\20\0\ufa7f\uffff\105\0\uffff" +
-		"\uffff\132\0\uffff\uffff\135\0\73\0\112\0\uffff\uffff\uffff\uffff\100\0\133\0\uffff" +
-		"\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
+		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\71\0\50\0\53\0\ufdf7" +
+		"\uffff\uffff\uffff\172\0\ufdf1\uffff\ufde9\uffff\21\0\uffff\uffff\157\0\ufddf\uffff" +
+		"\200\0\ufdc1\uffff\uffff\uffff\204\0\40\0\uffff\uffff\uffff\uffff\ufdb9\uffff\ufdb3" +
+		"\uffff\ufdad\uffff\ufda1\uffff\uffff\uffff\uffff\uffff\122\0\123\0\121\0\uffff\uffff" +
+		"\115\0\uffff\uffff\uffff\uffff\114\0\73\0\uffff\uffff\ufd99\uffff\uffff\uffff\uffff" +
+		"\uffff\ufd63\uffff\ufd35\uffff\ufd07\uffff\ufcd9\uffff\ufcab\uffff\ufc7d\uffff\ufc4f" +
+		"\uffff\ufc21\uffff\ufbf3\uffff\145\0\ufbc5\uffff\ufba7\uffff\ufb8b\uffff\ufb6f\uffff" +
+		"\ufb59\uffff\uffff\uffff\161\0\uffff\uffff\uffff\uffff\uffff\uffff\45\0\uffff\uffff" +
+		"\174\0\uffff\uffff\ufb43\uffff\101\0\uffff\uffff\uffff\uffff\202\0\37\0\43\0\uffff" +
+		"\uffff\ufb3d\uffff\uffff\uffff\ufb33\uffff\uffff\uffff\210\0\uffff\uffff\uffff\uffff" +
+		"\15\0\uffff\uffff\117\0\uffff\uffff\163\0\110\0\ufb2d\uffff\uffff\uffff\ufb0f\uffff" +
+		"\uffff\uffff\70\0\uffff\uffff\uffff\uffff\13\0\ufaf1\uffff\12\0\uffff\uffff\47\0" +
+		"\ufae7\uffff\uffff\uffff\uffff\uffff\212\0\63\0\116\0\uffff\uffff\uffff\uffff\56" +
+		"\0\ufadf\uffff\uffff\uffff\uffff\uffff\uffff\uffff\ufad3\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\155\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\ufaa5\uffff" +
+		"\uffff\uffff\uffff\uffff\60\0\57\0\55\0\17\0\113\0\120\0\uffff\uffff\103\0\ufa9d" +
+		"\uffff\106\0\uffff\uffff\uffff\uffff\52\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\10\0\ufa7f\uffff\61\0\uffff\uffff\104" +
+		"\0\uffff\uffff\107\0\51\0\64\0\uffff\uffff\uffff\uffff\54\0\105\0\uffff\uffff\uffff" +
+		"\uffff\ufffe\uffff\ufffe\uffff");
 
 	private static final short[] tmLalr = TemplatesLexer.unpack_short(1414,
-		"\1\uffff\5\uffff\0\1\uffff\ufffe\13\uffff\37\uffff\34\13\uffff\ufffe\1\uffff\5\uffff" +
-		"\0\0\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\0\214\uffff\ufffe\57\uffff" +
-		"\66\uffff\30\120\36\120\44\120\45\120\46\120\47\120\50\120\51\120\52\120\55\120\56" +
-		"\120\60\120\61\120\62\120\63\120\64\120\65\120\67\120\70\120\72\120\73\120\74\120" +
-		"\75\120\76\120\77\120\uffff\ufffe\13\uffff\7\13\71\13\uffff\ufffe\7\uffff\10\uffff" +
-		"\11\uffff\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff" +
-		"\55\uffff\57\uffff\56\70\uffff\ufffe\55\uffff\61\uffff\70\uffff\30\156\36\156\44" +
-		"\156\45\156\46\156\47\156\50\156\51\156\52\156\56\156\60\156\62\156\63\156\64\156" +
-		"\65\156\67\156\72\156\73\156\74\156\75\156\76\156\77\156\uffff\ufffe\46\uffff\47" +
-		"\uffff\50\uffff\51\uffff\52\uffff\72\uffff\73\uffff\74\uffff\75\uffff\30\173\36\173" +
-		"\44\173\45\173\56\173\60\173\62\173\63\173\64\173\65\173\67\173\76\173\77\173\uffff" +
-		"\ufffe\30\uffff\36\176\44\176\45\176\56\176\60\176\62\176\63\176\64\176\65\176\67" +
-		"\176\76\176\77\176\uffff\ufffe\65\uffff\67\uffff\36\201\44\201\45\201\56\201\60\201" +
-		"\62\201\63\201\64\201\76\201\77\201\uffff\ufffe\63\uffff\64\uffff\77\uffff\36\204" +
-		"\44\204\45\204\56\204\60\204\62\204\76\204\uffff\ufffe\62\uffff\44\50\45\50\uffff" +
-		"\ufffe\57\uffff\61\uffff\21\15\44\15\45\15\uffff\ufffe\7\uffff\10\uffff\11\uffff" +
-		"\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff" +
-		"\57\uffff\60\70\uffff\ufffe\57\uffff\61\uffff\21\52\44\52\45\52\uffff\ufffe\57\uffff" +
-		"\30\120\36\120\44\120\45\120\46\120\47\120\50\120\51\120\52\120\55\120\56\120\60" +
-		"\120\61\120\62\120\63\120\64\120\65\120\67\120\70\120\72\120\73\120\74\120\75\120" +
-		"\76\120\77\120\uffff\ufffe\62\uffff\44\57\45\57\uffff\ufffe\62\uffff\44\114\45\114" +
-		"\uffff\ufffe\62\uffff\44\113\45\113\uffff\ufffe\62\uffff\44\61\45\61\uffff\ufffe" +
-		"\7\uffff\71\24\uffff\ufffe\57\uffff\66\uffff\71\uffff\76\uffff\30\120\46\120\47\120" +
-		"\50\120\51\120\52\120\55\120\56\120\61\120\62\120\63\120\64\120\65\120\67\120\70" +
-		"\120\72\120\73\120\74\120\75\120\77\120\uffff\ufffe\62\uffff\56\67\60\67\uffff\ufffe" +
-		"\7\uffff\60\24\uffff\ufffe\21\uffff\44\17\45\17\uffff\ufffe\57\uffff\61\uffff\21" +
-		"\15\66\15\uffff\ufffe\7\uffff\10\uffff\11\uffff\20\uffff\32\uffff\33\uffff\40\uffff" +
-		"\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff\57\uffff\60\70\uffff\ufffe\21\uffff" +
-		"\44\54\45\54\uffff\ufffe\7\uffff\60\145\uffff\ufffe\1\uffff\5\77\uffff\ufffe\60\26" +
-		"\62\26\71\26\7\64\61\64\uffff\ufffe\62\uffff\60\23\71\23\uffff\ufffe\57\uffff\30" +
-		"\130\36\130\44\130\45\130\46\130\47\130\50\130\51\130\52\130\55\130\56\130\60\130" +
-		"\61\130\62\130\63\130\64\130\65\130\67\130\70\130\72\130\73\130\74\130\75\130\76" +
-		"\130\77\130\uffff\ufffe\46\165\47\165\50\uffff\51\uffff\52\uffff\72\165\73\165\74" +
-		"\165\75\165\30\165\36\165\44\165\45\165\56\165\60\165\62\165\63\165\64\165\65\165" +
-		"\67\165\76\165\77\165\uffff\ufffe\46\166\47\166\50\uffff\51\uffff\52\uffff\72\166" +
-		"\73\166\74\166\75\166\30\166\36\166\44\166\45\166\56\166\60\166\62\166\63\166\64" +
-		"\166\65\166\67\166\76\166\77\166\uffff\ufffe\46\162\47\162\50\162\51\162\52\162\72" +
-		"\162\73\162\74\162\75\162\30\162\36\162\44\162\45\162\56\162\60\162\62\162\63\162" +
-		"\64\162\65\162\67\162\76\162\77\162\uffff\ufffe\46\163\47\163\50\163\51\163\52\163" +
-		"\72\163\73\163\74\163\75\163\30\163\36\163\44\163\45\163\56\163\60\163\62\163\63" +
-		"\163\64\163\65\163\67\163\76\163\77\163\uffff\ufffe\46\164\47\164\50\164\51\164\52" +
-		"\164\72\164\73\164\74\164\75\164\30\164\36\164\44\164\45\164\56\164\60\164\62\164" +
-		"\63\164\64\164\65\164\67\164\76\164\77\164\uffff\ufffe\46\uffff\47\uffff\50\uffff" +
-		"\51\uffff\52\uffff\72\171\73\171\74\171\75\171\30\171\36\171\44\171\45\171\56\171" +
-		"\60\171\62\171\63\171\64\171\65\171\67\171\76\171\77\171\uffff\ufffe\46\uffff\47" +
-		"\uffff\50\uffff\51\uffff\52\uffff\72\172\73\172\74\172\75\172\30\172\36\172\44\172" +
-		"\45\172\56\172\60\172\62\172\63\172\64\172\65\172\67\172\76\172\77\172\uffff\ufffe" +
-		"\46\uffff\47\uffff\50\uffff\51\uffff\52\uffff\72\167\73\167\74\167\75\167\30\167" +
-		"\36\167\44\167\45\167\56\167\60\167\62\167\63\167\64\167\65\167\67\167\76\167\77" +
-		"\167\uffff\ufffe\46\uffff\47\uffff\50\uffff\51\uffff\52\uffff\72\170\73\170\74\170" +
-		"\75\170\30\170\36\170\44\170\45\170\56\170\60\170\62\170\63\170\64\170\65\170\67" +
-		"\170\76\170\77\170\uffff\ufffe\61\uffff\30\174\36\174\44\174\45\174\56\174\60\174" +
-		"\62\174\63\174\64\174\65\174\67\174\76\174\77\174\uffff\ufffe\30\uffff\36\177\44" +
-		"\177\45\177\56\177\60\177\62\177\63\177\64\177\65\177\67\177\76\177\77\177\uffff" +
-		"\ufffe\30\uffff\36\200\44\200\45\200\56\200\60\200\62\200\63\200\64\200\65\200\67" +
-		"\200\76\200\77\200\uffff\ufffe\63\202\64\202\36\202\44\202\45\202\56\202\60\202\62" +
-		"\202\76\202\77\202\uffff\ufffe\63\uffff\64\203\36\203\44\203\45\203\56\203\60\203" +
-		"\62\203\76\203\77\203\uffff\ufffe\21\uffff\66\17\uffff\ufffe\36\uffff\62\uffff\44" +
-		"\110\45\110\uffff\ufffe\62\uffff\60\144\uffff\ufffe\7\uffff\10\uffff\11\uffff\20" +
+		"\1\uffff\5\uffff\0\167\uffff\ufffe\13\uffff\37\uffff\34\171\uffff\ufffe\1\uffff\5" +
+		"\uffff\0\166\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\5\uffff\0\164\uffff\ufffe" +
+		"\57\uffff\66\uffff\30\72\36\72\44\72\45\72\46\72\47\72\50\72\51\72\52\72\55\72\56" +
+		"\72\60\72\61\72\62\72\63\72\64\72\65\72\67\72\70\72\72\72\73\72\74\72\75\72\76\72" +
+		"\77\72\uffff\ufffe\13\uffff\7\171\71\171\uffff\ufffe\7\uffff\10\uffff\11\uffff\20" +
 		"\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff\57" +
-		"\uffff\60\70\uffff\ufffe\7\uffff\10\uffff\11\uffff\20\uffff\32\uffff\33\uffff\40" +
-		"\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff\57\uffff\60\70\uffff\ufffe\61" +
-		"\uffff\44\32\45\32\66\32\uffff\ufffe\62\uffff\44\66\45\66\uffff\ufffe\60\30\62\30" +
-		"\71\30\7\64\61\64\uffff\ufffe\54\uffff\57\uffff\30\120\46\120\47\120\50\120\51\120" +
-		"\52\120\55\120\60\120\61\120\62\120\63\120\64\120\65\120\67\120\70\120\72\120\73" +
-		"\120\74\120\75\120\77\120\uffff\ufffe\62\uffff\44\115\45\115\uffff\ufffe\7\uffff" +
-		"\10\uffff\11\uffff\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff" +
-		"\53\uffff\55\uffff\57\uffff\60\70\uffff\ufffe\36\uffff\44\110\45\110\uffff\ufffe");
+		"\uffff\56\207\uffff\ufffe\55\uffff\61\uffff\70\uffff\30\126\36\126\44\126\45\126" +
+		"\46\126\47\126\50\126\51\126\52\126\56\126\60\126\62\126\63\126\64\126\65\126\67" +
+		"\126\72\126\73\126\74\126\75\126\76\126\77\126\uffff\ufffe\46\uffff\47\uffff\50\uffff" +
+		"\51\uffff\52\uffff\72\uffff\73\uffff\74\uffff\75\uffff\30\143\36\143\44\143\45\143" +
+		"\56\143\60\143\62\143\63\143\64\143\65\143\67\143\76\143\77\143\uffff\ufffe\30\uffff" +
+		"\36\146\44\146\45\146\56\146\60\146\62\146\63\146\64\146\65\146\67\146\76\146\77" +
+		"\146\uffff\ufffe\65\uffff\67\uffff\36\151\44\151\45\151\56\151\60\151\62\151\63\151" +
+		"\64\151\76\151\77\151\uffff\ufffe\63\uffff\64\uffff\77\uffff\36\154\44\154\45\154" +
+		"\56\154\60\154\62\154\76\154\uffff\ufffe\62\uffff\44\36\45\36\uffff\ufffe\57\uffff" +
+		"\61\uffff\21\173\44\173\45\173\uffff\ufffe\7\uffff\10\uffff\11\uffff\20\uffff\32" +
+		"\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff\57\uffff\60" +
+		"\207\uffff\ufffe\57\uffff\61\uffff\21\201\44\201\45\201\uffff\ufffe\57\uffff\30\72" +
+		"\36\72\44\72\45\72\46\72\47\72\50\72\51\72\52\72\55\72\56\72\60\72\61\72\62\72\63" +
+		"\72\64\72\65\72\67\72\70\72\72\72\73\72\74\72\75\72\76\72\77\72\uffff\ufffe\62\uffff" +
+		"\44\205\45\205\uffff\ufffe\62\uffff\44\66\45\66\uffff\ufffe\62\uffff\44\65\45\65" +
+		"\uffff\ufffe\62\uffff\44\41\45\41\uffff\ufffe\7\uffff\71\177\uffff\ufffe\57\uffff" +
+		"\66\uffff\71\uffff\76\uffff\30\72\46\72\47\72\50\72\51\72\52\72\55\72\56\72\61\72" +
+		"\62\72\63\72\64\72\65\72\67\72\70\72\72\72\73\72\74\72\75\72\77\72\uffff\ufffe\62" +
+		"\uffff\56\206\60\206\uffff\ufffe\7\uffff\60\177\uffff\ufffe\21\uffff\44\175\45\175" +
+		"\uffff\ufffe\57\uffff\61\uffff\21\173\66\173\uffff\ufffe\7\uffff\10\uffff\11\uffff" +
+		"\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff" +
+		"\57\uffff\60\207\uffff\ufffe\21\uffff\44\203\45\203\uffff\ufffe\7\uffff\60\215\uffff" +
+		"\ufffe\1\uffff\5\211\uffff\ufffe\60\14\62\14\71\14\7\44\61\44\uffff\ufffe\62\uffff" +
+		"\60\176\71\176\uffff\ufffe\57\uffff\30\102\36\102\44\102\45\102\46\102\47\102\50" +
+		"\102\51\102\52\102\55\102\56\102\60\102\61\102\62\102\63\102\64\102\65\102\67\102" +
+		"\70\102\72\102\73\102\74\102\75\102\76\102\77\102\uffff\ufffe\46\135\47\135\50\uffff" +
+		"\51\uffff\52\uffff\72\135\73\135\74\135\75\135\30\135\36\135\44\135\45\135\56\135" +
+		"\60\135\62\135\63\135\64\135\65\135\67\135\76\135\77\135\uffff\ufffe\46\136\47\136" +
+		"\50\uffff\51\uffff\52\uffff\72\136\73\136\74\136\75\136\30\136\36\136\44\136\45\136" +
+		"\56\136\60\136\62\136\63\136\64\136\65\136\67\136\76\136\77\136\uffff\ufffe\46\132" +
+		"\47\132\50\132\51\132\52\132\72\132\73\132\74\132\75\132\30\132\36\132\44\132\45" +
+		"\132\56\132\60\132\62\132\63\132\64\132\65\132\67\132\76\132\77\132\uffff\ufffe\46" +
+		"\133\47\133\50\133\51\133\52\133\72\133\73\133\74\133\75\133\30\133\36\133\44\133" +
+		"\45\133\56\133\60\133\62\133\63\133\64\133\65\133\67\133\76\133\77\133\uffff\ufffe" +
+		"\46\134\47\134\50\134\51\134\52\134\72\134\73\134\74\134\75\134\30\134\36\134\44" +
+		"\134\45\134\56\134\60\134\62\134\63\134\64\134\65\134\67\134\76\134\77\134\uffff" +
+		"\ufffe\46\uffff\47\uffff\50\uffff\51\uffff\52\uffff\72\141\73\141\74\141\75\141\30" +
+		"\141\36\141\44\141\45\141\56\141\60\141\62\141\63\141\64\141\65\141\67\141\76\141" +
+		"\77\141\uffff\ufffe\46\uffff\47\uffff\50\uffff\51\uffff\52\uffff\72\142\73\142\74" +
+		"\142\75\142\30\142\36\142\44\142\45\142\56\142\60\142\62\142\63\142\64\142\65\142" +
+		"\67\142\76\142\77\142\uffff\ufffe\46\uffff\47\uffff\50\uffff\51\uffff\52\uffff\72" +
+		"\137\73\137\74\137\75\137\30\137\36\137\44\137\45\137\56\137\60\137\62\137\63\137" +
+		"\64\137\65\137\67\137\76\137\77\137\uffff\ufffe\46\uffff\47\uffff\50\uffff\51\uffff" +
+		"\52\uffff\72\140\73\140\74\140\75\140\30\140\36\140\44\140\45\140\56\140\60\140\62" +
+		"\140\63\140\64\140\65\140\67\140\76\140\77\140\uffff\ufffe\61\uffff\30\144\36\144" +
+		"\44\144\45\144\56\144\60\144\62\144\63\144\64\144\65\144\67\144\76\144\77\144\uffff" +
+		"\ufffe\30\uffff\36\147\44\147\45\147\56\147\60\147\62\147\63\147\64\147\65\147\67" +
+		"\147\76\147\77\147\uffff\ufffe\30\uffff\36\150\44\150\45\150\56\150\60\150\62\150" +
+		"\63\150\64\150\65\150\67\150\76\150\77\150\uffff\ufffe\63\152\64\152\36\152\44\152" +
+		"\45\152\56\152\60\152\62\152\76\152\77\152\uffff\ufffe\63\uffff\64\153\36\153\44" +
+		"\153\45\153\56\153\60\153\62\153\76\153\77\153\uffff\ufffe\21\uffff\66\175\uffff" +
+		"\ufffe\36\uffff\62\uffff\44\213\45\213\uffff\ufffe\62\uffff\60\214\uffff\ufffe\7" +
+		"\uffff\10\uffff\11\uffff\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47" +
+		"\uffff\53\uffff\55\uffff\57\uffff\60\207\uffff\ufffe\7\uffff\10\uffff\11\uffff\20" +
+		"\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47\uffff\53\uffff\55\uffff\57" +
+		"\uffff\60\207\uffff\ufffe\61\uffff\44\20\45\20\66\20\uffff\ufffe\62\uffff\44\46\45" +
+		"\46\uffff\ufffe\60\16\62\16\71\16\7\44\61\44\uffff\ufffe\54\uffff\57\uffff\30\72" +
+		"\46\72\47\72\50\72\51\72\52\72\55\72\60\72\61\72\62\72\63\72\64\72\65\72\67\72\70" +
+		"\72\72\72\73\72\74\72\75\72\77\72\uffff\ufffe\62\uffff\44\67\45\67\uffff\ufffe\7" +
+		"\uffff\10\uffff\11\uffff\20\uffff\32\uffff\33\uffff\40\uffff\41\uffff\43\uffff\47" +
+		"\uffff\53\uffff\55\uffff\57\uffff\60\207\uffff\ufffe\36\uffff\44\213\45\213\uffff" +
+		"\ufffe");
 
 	private static final short[] lapg_sym_goto = TemplatesLexer.unpack_short(125,
 		"\0\2\22\37\54\71\111\116\225\312\u0100\u0105\u0107\u0109\u010d\u010f\u0114\u0149" +
@@ -432,20 +432,20 @@ public class TemplatesParser {
 		"\301\331\u010a\277");
 
 	private static final short[] tmRuleLen = TemplatesLexer.unpack_short(142,
-		"\1\0\1\1\2\1\1\1\3\2\1\0\1\0\1\0\11\1\6\1\0\3\1\2\3\4\2\3\2\1\1\1\1\1\1\1\1\1\1\3" +
-		"\1\1\0\1\0\4\1\0\3\2\1\2\1\3\2\1\0\3\3\7\5\1\1\0\13\7\1\2\2\4\3\1\0\5\11\2\2\2\3" +
-		"\1\1\3\1\1\1\1\1\4\3\6\10\12\6\10\4\1\1\6\3\3\1\0\5\3\5\1\1\1\1\1\1\2\2\1\3\3\3\3" +
-		"\3\3\3\3\3\1\3\3\1\3\3\1\3\3\1\5\1\3\1\3\1\3\1\1");
+		"\1\1\2\1\1\1\3\2\11\1\6\3\1\2\3\4\2\3\2\1\1\1\1\1\1\1\1\1\1\3\1\4\3\2\1\2\1\3\2\3" +
+		"\3\7\5\1\13\7\1\2\2\4\3\5\11\2\2\2\3\1\1\3\1\1\1\1\1\4\3\6\10\12\6\10\4\1\1\6\3\3" +
+		"\5\3\5\1\1\1\1\1\1\2\2\1\3\3\3\3\3\3\3\3\3\1\3\3\1\3\3\1\3\3\1\5\1\3\1\3\1\3\1\1" +
+		"\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0\1\0");
 
 	private static final short[] tmRuleSymbol = TemplatesLexer.unpack_short(142,
-		"\160\160\102\103\103\104\104\104\105\105\161\161\162\162\163\163\106\107\110\164" +
-		"\164\111\112\112\112\112\113\114\115\115\116\116\117\117\117\117\117\117\117\120" +
-		"\121\165\165\166\166\121\167\167\121\121\121\122\123\123\124\170\170\125\126\127" +
-		"\127\127\171\171\130\130\131\131\131\132\133\172\172\134\134\134\134\135\136\136" +
-		"\137\137\137\137\137\137\137\137\137\137\137\137\137\137\137\137\137\140\141\141" +
-		"\173\173\141\142\142\143\143\143\144\144\145\145\145\146\146\146\146\146\146\146" +
-		"\146\146\146\147\147\147\150\150\150\151\151\151\152\152\153\153\154\154\155\155" +
-		"\156\157");
+		"\102\103\103\104\104\104\105\105\106\107\110\111\112\112\112\112\113\114\115\115" +
+		"\116\116\117\117\117\117\117\117\117\120\121\121\121\121\121\122\123\123\124\125" +
+		"\126\127\127\127\130\130\131\131\131\132\133\134\134\134\134\135\136\136\137\137" +
+		"\137\137\137\137\137\137\137\137\137\137\137\137\137\137\137\140\141\141\141\142" +
+		"\142\143\143\143\144\144\145\145\145\146\146\146\146\146\146\146\146\146\146\147" +
+		"\147\147\150\150\150\151\151\151\152\152\153\153\154\154\155\155\156\157\160\160" +
+		"\161\161\162\162\163\163\164\164\165\165\166\166\167\167\170\170\171\171\172\172" +
+		"\173\173");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -786,277 +786,277 @@ public class TemplatesParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 		switch (tmRule) {
-			case 3:  // definitions ::= definition
+			case 1:  // definitions ::= definition
 				 tmLeft.value = new ArrayList(); if (((IBundleEntity)tmStack[tmHead].value) != null) ((List<IBundleEntity>)tmLeft.value).add(((IBundleEntity)tmStack[tmHead].value)); 
 				break;
-			case 4:  // definitions ::= definitions definition
+			case 2:  // definitions ::= definitions definition
 				 if (((IBundleEntity)tmStack[tmHead].value) != null) ((List<IBundleEntity>)tmStack[tmHead - 1].value).add(((IBundleEntity)tmStack[tmHead].value)); 
 				break;
-			case 7:  // definition ::= any
+			case 5:  // definition ::= any
 				 tmLeft.value = null; 
 				break;
-			case 8:  // template_def ::= template_start instructions template_end
+			case 6:  // template_def ::= template_start instructions template_end
 				 ((TemplateNode)tmStack[tmHead - 2].value).setInstructions(((ArrayList<Node>)tmStack[tmHead - 1].value)); 
 				break;
-			case 16:  // query_def ::= '${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
+			case 8:  // query_def ::= '${' cached_flagopt Lquery qualified_id parametersopt context_typeopt '=' expression '}'
 				 tmLeft.value = new QueryNode(((String)tmStack[tmHead - 5].value), ((List<ParameterNode>)tmStack[tmHead - 4].value), ((String)tmStack[tmHead - 3].value), templatePackage, ((ExpressionNode)tmStack[tmHead - 1].value), ((Boolean)tmStack[tmHead - 7].value) != null, source, tmLeft.offset, tmLeft.endoffset); checkFqn(((String)tmStack[tmHead - 5].value), tmLeft.offset, tmLeft.endoffset, tmStack[tmHead - 8].line); 
 				break;
-			case 17:  // cached_flag ::= Lcached
+			case 9:  // cached_flag ::= Lcached
 				 tmLeft.value = Boolean.TRUE; 
 				break;
-			case 18:  // template_start ::= '${' Ltemplate qualified_id parametersopt context_typeopt '[-]}'
+			case 10:  // template_start ::= '${' Ltemplate qualified_id parametersopt context_typeopt '[-]}'
 				 tmLeft.value = new TemplateNode(((String)tmStack[tmHead - 3].value), ((List<ParameterNode>)tmStack[tmHead - 2].value), ((String)tmStack[tmHead - 1].value), templatePackage, source, tmLeft.offset, tmLeft.endoffset); checkFqn(((String)tmStack[tmHead - 3].value), tmLeft.offset, tmLeft.endoffset, tmStack[tmHead - 5].line); 
 				break;
-			case 21:  // parameters ::= '(' parameter_listopt ')'
+			case 11:  // parameters ::= '(' parameter_listopt ')'
 				 tmLeft.value = ((List<ParameterNode>)tmStack[tmHead - 1].value); 
 				break;
-			case 22:  // parameter_list ::= identifier
+			case 12:  // parameter_list ::= identifier
 				 tmLeft.value = new ArrayList(); ((List<ParameterNode>)tmLeft.value).add(new ParameterNode(null, ((String)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmLeft.endoffset)); 
 				break;
-			case 23:  // parameter_list ::= qualified_id identifier
+			case 13:  // parameter_list ::= qualified_id identifier
 				 tmLeft.value = new ArrayList(); ((List<ParameterNode>)tmLeft.value).add(new ParameterNode(((String)tmStack[tmHead - 1].value), ((String)tmStack[tmHead].value), source, tmStack[tmHead - 1].offset, tmLeft.endoffset)); 
 				break;
-			case 24:  // parameter_list ::= parameter_list ',' identifier
+			case 14:  // parameter_list ::= parameter_list ',' identifier
 				 ((List<ParameterNode>)tmStack[tmHead - 2].value).add(new ParameterNode(null, ((String)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmLeft.endoffset)); 
 				break;
-			case 25:  // parameter_list ::= parameter_list ',' qualified_id identifier
+			case 15:  // parameter_list ::= parameter_list ',' qualified_id identifier
 				 ((List<ParameterNode>)tmStack[tmHead - 3].value).add(new ParameterNode(((String)tmStack[tmHead - 1].value), ((String)tmStack[tmHead].value), source, tmStack[tmHead - 1].offset, tmLeft.endoffset)); 
 				break;
-			case 26:  // context_type ::= Lfor qualified_id
+			case 16:  // context_type ::= Lfor qualified_id
 				 tmLeft.value = ((String)tmStack[tmHead].value); 
 				break;
-			case 28:  // instructions ::= instructions instruction
+			case 18:  // instructions ::= instructions instruction
 				 if (((Node)tmStack[tmHead].value) != null) ((ArrayList<Node>)tmStack[tmHead - 1].value).add(((Node)tmStack[tmHead].value)); 
 				break;
-			case 29:  // instructions ::= instruction
+			case 19:  // instructions ::= instruction
 				 tmLeft.value = new ArrayList<Node>(); if (((Node)tmStack[tmHead].value)!=null) ((ArrayList<Node>)tmLeft.value).add(((Node)tmStack[tmHead].value)); 
 				break;
-			case 30:  // '[-]}' ::= '-}'
+			case 20:  // '[-]}' ::= '-}'
 				 skipSpaces(tmStack[tmHead].offset+1); 
 				break;
-			case 35:  // instruction ::= escid
+			case 25:  // instruction ::= escid
 				 tmLeft.value = createEscapedId(((String)tmStack[tmHead].value), tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 36:  // instruction ::= escint
+			case 26:  // instruction ::= escint
 				 tmLeft.value = new IndexNode(null, new LiteralNode(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 37:  // instruction ::= escdollar
+			case 27:  // instruction ::= escdollar
 				 tmLeft.value = new DollarNode(source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 38:  // instruction ::= any
+			case 28:  // instruction ::= any
 				 tmLeft.value = new TextNode(source, rawText(tmLeft.offset, tmLeft.endoffset), tmLeft.endoffset); 
 				break;
-			case 39:  // simple_instruction ::= '${' sentence '[-]}'
+			case 29:  // simple_instruction ::= '${' sentence '[-]}'
 				 tmLeft.value = ((Node)tmStack[tmHead - 1].value); 
 				break;
-			case 45:  // sentence ::= Lcall qualified_id template_argumentsopt template_for_expropt
+			case 31:  // sentence ::= Lcall qualified_id template_argumentsopt template_for_expropt
 				 tmLeft.value = new CallTemplateNode(((String)tmStack[tmHead - 2].value), ((ArrayList)tmStack[tmHead - 1].value), ((ExpressionNode)tmStack[tmHead].value), templatePackage, true, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 48:  // sentence ::= Leval conditional_expression comma_expropt
+			case 32:  // sentence ::= Leval conditional_expression comma_expropt
 				 tmLeft.value = new EvalNode(((ExpressionNode)tmStack[tmHead - 1].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 49:  // sentence ::= Lassert expression
+			case 33:  // sentence ::= Lassert expression
 				 tmLeft.value = new AssertNode(((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 50:  // sentence ::= syntax_problem
+			case 34:  // sentence ::= syntax_problem
 				 tmLeft.value = null; 
 				break;
-			case 51:  // comma_expr ::= ',' conditional_expression
+			case 35:  // comma_expr ::= ',' conditional_expression
 				 tmLeft.value = ((ExpressionNode)tmStack[tmHead].value); 
 				break;
-			case 53:  // qualified_id ::= qualified_id '.' identifier
+			case 37:  // qualified_id ::= qualified_id '.' identifier
 				 tmLeft.value = ((String)tmStack[tmHead - 2].value) + "." + ((String)tmStack[tmHead].value); 
 				break;
-			case 54:  // template_for_expr ::= Lfor expression
+			case 38:  // template_for_expr ::= Lfor expression
 				 tmLeft.value = ((ExpressionNode)tmStack[tmHead].value); 
 				break;
-			case 57:  // template_arguments ::= '(' expression_listopt ')'
+			case 39:  // template_arguments ::= '(' expression_listopt ')'
 				 tmLeft.value = ((ArrayList)tmStack[tmHead - 1].value); 
 				break;
-			case 58:  // control_instruction ::= control_start instructions else_clause
+			case 40:  // control_instruction ::= control_start instructions else_clause
 				 ((CompoundNode)tmStack[tmHead - 2].value).setInstructions(((ArrayList<Node>)tmStack[tmHead - 1].value)); applyElse(((CompoundNode)tmStack[tmHead - 2].value),((ElseIfNode)tmStack[tmHead].value), tmLeft.offset, tmLeft.endoffset, tmLeft.line); 
 				break;
-			case 59:  // else_clause ::= '${' Lelse Lif expression '[-]}' instructions else_clause
+			case 41:  // else_clause ::= '${' Lelse Lif expression '[-]}' instructions else_clause
 				 tmLeft.value = new ElseIfNode(((ExpressionNode)tmStack[tmHead - 3].value), ((ArrayList<Node>)tmStack[tmHead - 1].value), ((ElseIfNode)tmStack[tmHead].value), source, tmStack[tmHead - 6].offset, tmStack[tmHead - 1].endoffset); 
 				break;
-			case 60:  // else_clause ::= '${' Lelse '[-]}' instructions control_end
+			case 42:  // else_clause ::= '${' Lelse '[-]}' instructions control_end
 				 tmLeft.value = new ElseIfNode(null, ((ArrayList<Node>)tmStack[tmHead - 1].value), null, source, tmStack[tmHead - 4].offset, tmStack[tmHead - 1].endoffset); 
 				break;
-			case 61:  // else_clause ::= control_end
+			case 43:  // else_clause ::= control_end
 				 tmLeft.value = null; 
 				break;
-			case 64:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list '${' Lelse '[-]}' instructions control_end
+			case 44:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list '${' Lelse '[-]}' instructions control_end
 				 tmLeft.value = new SwitchNode(((ExpressionNode)tmStack[tmHead - 8].value), ((ArrayList)tmStack[tmHead - 5].value), ((ArrayList<Node>)tmStack[tmHead - 1].value), source, tmLeft.offset,tmLeft.endoffset); checkIsSpace(tmStack[tmHead - 6].offset,tmStack[tmHead - 6].endoffset, tmStack[tmHead - 6].line); 
 				break;
-			case 65:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list control_end
+			case 45:  // switch_instruction ::= '${' Lswitch expression '[-]}' anyopt case_list control_end
 				 tmLeft.value = new SwitchNode(((ExpressionNode)tmStack[tmHead - 4].value), ((ArrayList)tmStack[tmHead - 1].value), ((ArrayList<Node>)null), source, tmLeft.offset,tmLeft.endoffset); checkIsSpace(tmStack[tmHead - 2].offset,tmStack[tmHead - 2].endoffset, tmStack[tmHead - 2].line); 
 				break;
-			case 66:  // case_list ::= one_case
+			case 46:  // case_list ::= one_case
 				 tmLeft.value = new ArrayList(); ((ArrayList)tmLeft.value).add(((CaseNode)tmStack[tmHead].value)); 
 				break;
-			case 67:  // case_list ::= case_list one_case
+			case 47:  // case_list ::= case_list one_case
 				 ((ArrayList)tmStack[tmHead - 1].value).add(((CaseNode)tmStack[tmHead].value)); 
 				break;
-			case 68:  // case_list ::= case_list instruction
+			case 48:  // case_list ::= case_list instruction
 				 CaseNode.add(((ArrayList)tmStack[tmHead - 1].value), ((Node)tmStack[tmHead].value)); 
 				break;
-			case 69:  // one_case ::= '${' Lcase expression '[-]}'
+			case 49:  // one_case ::= '${' Lcase expression '[-]}'
 				 tmLeft.value = new CaseNode(((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 70:  // control_start ::= '${' control_sentence '[-]}'
+			case 50:  // control_start ::= '${' control_sentence '[-]}'
 				 tmLeft.value = ((CompoundNode)tmStack[tmHead - 1].value); 
 				break;
-			case 73:  // control_sentence ::= Lforeach identifier Lin expression separator_expropt
+			case 51:  // control_sentence ::= Lforeach identifier Lin expression separator_expropt
 				 tmLeft.value = new ForeachNode(((String)tmStack[tmHead - 3].value), ((ExpressionNode)tmStack[tmHead - 1].value), null, ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 74:  // control_sentence ::= Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']' separator_expropt
+			case 52:  // control_sentence ::= Lfor identifier Lin '[' conditional_expression ',' conditional_expression ']' separator_expropt
 				 tmLeft.value = new ForeachNode(((String)tmStack[tmHead - 7].value), ((ExpressionNode)tmStack[tmHead - 4].value), ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 75:  // control_sentence ::= Lif expression
+			case 53:  // control_sentence ::= Lif expression
 				 tmLeft.value = new IfNode(((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 76:  // control_sentence ::= Lfile expression
+			case 54:  // control_sentence ::= Lfile expression
 				 tmLeft.value = new FileNode(((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 77:  // separator_expr ::= Lseparator expression
+			case 55:  // separator_expr ::= Lseparator expression
 				 tmLeft.value = ((ExpressionNode)tmStack[tmHead].value); 
 				break;
-			case 80:  // primary_expression ::= identifier
+			case 58:  // primary_expression ::= identifier
 				 tmLeft.value = new SelectNode(null, ((String)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 81:  // primary_expression ::= '(' expression ')'
+			case 59:  // primary_expression ::= '(' expression ')'
 				 tmLeft.value = new ParenthesesNode(((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 82:  // primary_expression ::= icon
+			case 60:  // primary_expression ::= icon
 				 tmLeft.value = new LiteralNode(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 83:  // primary_expression ::= bcon
+			case 61:  // primary_expression ::= bcon
 				 tmLeft.value = new LiteralNode(((Boolean)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 84:  // primary_expression ::= ccon
+			case 62:  // primary_expression ::= ccon
 				 tmLeft.value = new LiteralNode(((String)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 85:  // primary_expression ::= Lself
+			case 63:  // primary_expression ::= Lself
 				 tmLeft.value = new ThisNode(source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 86:  // primary_expression ::= Lnull
+			case 64:  // primary_expression ::= Lnull
 				 tmLeft.value = new LiteralNode(null, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 87:  // primary_expression ::= identifier '(' expression_listopt ')'
+			case 65:  // primary_expression ::= identifier '(' expression_listopt ')'
 				 tmLeft.value = new MethodCallNode(null, ((String)tmStack[tmHead - 3].value), ((ArrayList)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 88:  // primary_expression ::= primary_expression '.' identifier
+			case 66:  // primary_expression ::= primary_expression '.' identifier
 				 tmLeft.value = new SelectNode(((ExpressionNode)tmStack[tmHead - 2].value), ((String)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 89:  // primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
+			case 67:  // primary_expression ::= primary_expression '.' identifier '(' expression_listopt ')'
 				 tmLeft.value = new MethodCallNode(((ExpressionNode)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((ArrayList)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 90:  // primary_expression ::= primary_expression '.' identifier '(' identifier '|' expression ')'
+			case 68:  // primary_expression ::= primary_expression '.' identifier '(' identifier '|' expression ')'
 				 tmLeft.value = createCollectionProcessor(((ExpressionNode)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 5].value), ((String)tmStack[tmHead - 3].value), ((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset, tmLeft.line); 
 				break;
-			case 91:  // primary_expression ::= primary_expression '.' identifier '(' identifier '|' expression ':' expression ')'
+			case 69:  // primary_expression ::= primary_expression '.' identifier '(' identifier '|' expression ':' expression ')'
 				 tmLeft.value = createMapCollect(((ExpressionNode)tmStack[tmHead - 9].value), ((String)tmStack[tmHead - 7].value), ((String)tmStack[tmHead - 5].value), ((ExpressionNode)tmStack[tmHead - 3].value), ((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset, tmLeft.line); 
 				break;
-			case 92:  // primary_expression ::= primary_expression '->' qualified_id '(' expression_listopt ')'
+			case 70:  // primary_expression ::= primary_expression '->' qualified_id '(' expression_listopt ')'
 				 tmLeft.value = new CallTemplateNode(((String)tmStack[tmHead - 3].value), ((ArrayList)tmStack[tmHead - 1].value), ((ExpressionNode)tmStack[tmHead - 5].value), templatePackage, false, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 93:  // primary_expression ::= primary_expression '->' '(' expression ')' '(' expression_listopt ')'
+			case 71:  // primary_expression ::= primary_expression '->' '(' expression ')' '(' expression_listopt ')'
 				 tmLeft.value = new CallTemplateNode(((ExpressionNode)tmStack[tmHead - 4].value),((ArrayList)tmStack[tmHead - 1].value),((ExpressionNode)tmStack[tmHead - 7].value),templatePackage, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 94:  // primary_expression ::= primary_expression '[' expression ']'
+			case 72:  // primary_expression ::= primary_expression '[' expression ']'
 				 tmLeft.value = new IndexNode(((ExpressionNode)tmStack[tmHead - 3].value), ((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 97:  // closure ::= '{' cached_flagopt parameter_listopt '=>' expression '}'
+			case 75:  // closure ::= '{' cached_flagopt parameter_listopt '=>' expression '}'
 				 tmLeft.value = new ClosureNode(((Boolean)tmStack[tmHead - 4].value) != null, ((List<ParameterNode>)tmStack[tmHead - 3].value), ((ExpressionNode)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 98:  // complex_data ::= '[' expression_listopt ']'
+			case 76:  // complex_data ::= '[' expression_listopt ']'
 				 tmLeft.value = new ListNode(((ArrayList)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 99:  // complex_data ::= '[' map_entries ']'
+			case 77:  // complex_data ::= '[' map_entries ']'
 				 tmLeft.value = new ConcreteMapNode(((Map<String,ExpressionNode>)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 102:  // complex_data ::= Lnew qualified_id '(' map_entriesopt ')'
+			case 78:  // complex_data ::= Lnew qualified_id '(' map_entriesopt ')'
 				 tmLeft.value = new CreateClassNode(((String)tmStack[tmHead - 3].value), ((Map<String,ExpressionNode>)tmStack[tmHead - 1].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 103:  // map_entries ::= identifier map_separator conditional_expression
+			case 79:  // map_entries ::= identifier map_separator conditional_expression
 				 tmLeft.value = new LinkedHashMap(); ((Map<String,ExpressionNode>)tmLeft.value).put(((String)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value)); 
 				break;
-			case 104:  // map_entries ::= map_entries ',' identifier map_separator conditional_expression
+			case 80:  // map_entries ::= map_entries ',' identifier map_separator conditional_expression
 				 ((Map<String,ExpressionNode>)tmStack[tmHead - 4].value).put(((String)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value)); 
 				break;
-			case 108:  // bcon ::= Ltrue
+			case 84:  // bcon ::= Ltrue
 				 tmLeft.value = Boolean.TRUE; 
 				break;
-			case 109:  // bcon ::= Lfalse
+			case 85:  // bcon ::= Lfalse
 				 tmLeft.value = Boolean.FALSE; 
 				break;
-			case 111:  // unary_expression ::= '!' unary_expression
+			case 87:  // unary_expression ::= '!' unary_expression
 				 tmLeft.value = new UnaryExpression(UnaryExpression.NOT, ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 112:  // unary_expression ::= '-' unary_expression
+			case 88:  // unary_expression ::= '-' unary_expression
 				 tmLeft.value = new UnaryExpression(UnaryExpression.MINUS, ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 114:  // binary_op ::= binary_op '*' binary_op
+			case 90:  // binary_op ::= binary_op '*' binary_op
 				 tmLeft.value = new ArithmeticNode(ArithmeticNode.MULT, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 115:  // binary_op ::= binary_op '/' binary_op
+			case 91:  // binary_op ::= binary_op '/' binary_op
 				 tmLeft.value = new ArithmeticNode(ArithmeticNode.DIV, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 116:  // binary_op ::= binary_op '%' binary_op
+			case 92:  // binary_op ::= binary_op '%' binary_op
 				 tmLeft.value = new ArithmeticNode(ArithmeticNode.REM, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 117:  // binary_op ::= binary_op '+' binary_op
+			case 93:  // binary_op ::= binary_op '+' binary_op
 				 tmLeft.value = new ArithmeticNode(ArithmeticNode.PLUS, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 118:  // binary_op ::= binary_op '-' binary_op
+			case 94:  // binary_op ::= binary_op '-' binary_op
 				 tmLeft.value = new ArithmeticNode(ArithmeticNode.MINUS, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 119:  // binary_op ::= binary_op '<' binary_op
+			case 95:  // binary_op ::= binary_op '<' binary_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.LT, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 120:  // binary_op ::= binary_op '>' binary_op
+			case 96:  // binary_op ::= binary_op '>' binary_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.GT, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 121:  // binary_op ::= binary_op '<=' binary_op
+			case 97:  // binary_op ::= binary_op '<=' binary_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.LE, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 122:  // binary_op ::= binary_op '>=' binary_op
+			case 98:  // binary_op ::= binary_op '>=' binary_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.GE, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 124:  // instanceof_expression ::= instanceof_expression Lis qualified_id
+			case 100:  // instanceof_expression ::= instanceof_expression Lis qualified_id
 				 tmLeft.value = new InstanceOfNode(((ExpressionNode)tmStack[tmHead - 2].value), ((String)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 125:  // instanceof_expression ::= instanceof_expression Lis ccon
+			case 101:  // instanceof_expression ::= instanceof_expression Lis ccon
 				 tmLeft.value = new InstanceOfNode(((ExpressionNode)tmStack[tmHead - 2].value), ((String)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 127:  // equality_expression ::= equality_expression '==' instanceof_expression
+			case 103:  // equality_expression ::= equality_expression '==' instanceof_expression
 				 tmLeft.value = new ConditionalNode(ConditionalNode.EQ, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 128:  // equality_expression ::= equality_expression '!=' instanceof_expression
+			case 104:  // equality_expression ::= equality_expression '!=' instanceof_expression
 				 tmLeft.value = new ConditionalNode(ConditionalNode.NE, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 130:  // conditional_op ::= conditional_op '&&' conditional_op
+			case 106:  // conditional_op ::= conditional_op '&&' conditional_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.AND, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 131:  // conditional_op ::= conditional_op '||' conditional_op
+			case 107:  // conditional_op ::= conditional_op '||' conditional_op
 				 tmLeft.value = new ConditionalNode(ConditionalNode.OR, ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 133:  // conditional_expression ::= conditional_op '?' conditional_expression ':' conditional_expression
+			case 109:  // conditional_expression ::= conditional_op '?' conditional_expression ':' conditional_expression
 				 tmLeft.value = new TriplexNode(((ExpressionNode)tmStack[tmHead - 4].value), ((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 135:  // assignment_expression ::= identifier '=' conditional_expression
+			case 111:  // assignment_expression ::= identifier '=' conditional_expression
 				 tmLeft.value = new AssignNode(((String)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 137:  // expression ::= expression ',' assignment_expression
+			case 113:  // expression ::= expression ',' assignment_expression
 				 tmLeft.value = new CommaNode(((ExpressionNode)tmStack[tmHead - 2].value), ((ExpressionNode)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 138:  // expression_list ::= conditional_expression
+			case 114:  // expression_list ::= conditional_expression
 				 tmLeft.value = new ArrayList(); ((ArrayList)tmLeft.value).add(((ExpressionNode)tmStack[tmHead].value)); 
 				break;
-			case 139:  // expression_list ::= expression_list ',' conditional_expression
+			case 115:  // expression_list ::= expression_list ',' conditional_expression
 				 ((ArrayList)tmStack[tmHead - 2].value).add(((ExpressionNode)tmStack[tmHead].value)); 
 				break;
-			case 140:  // body ::= instructions
+			case 116:  // body ::= instructions
 				
 							tmLeft.value = new TemplateNode("inline", null, null, templatePackage, source, tmLeft.offset, tmLeft.endoffset);
 							((TemplateNode)tmLeft.value).setInstructions(((ArrayList<Node>)tmStack[tmHead].value));
