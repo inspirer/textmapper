@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.rule.*;
 
@@ -34,6 +35,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	private final LiRhsPart[] parts;
 	private AstType type;
 	private RhsMapping mapping;
+	private Terminal prio;
 
 	LiRhsSequence(String name, LiRhsPart[] parts, boolean isRewrite, SourceElement origin) {
 		super(origin);
@@ -138,5 +140,13 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 			toString(sb, parts, " ");
 			sb.append(")");
 		}
+	}
+
+	Terminal getPrio() {
+		return prio;
+	}
+
+	void setPrio(Terminal prio) {
+		this.prio = prio;
 	}
 }

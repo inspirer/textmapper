@@ -67,7 +67,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsIgnored ignored(RhsPart inner, Collection<RhsIgnored.ParenthesisPair> parentheses, SourceElement origin);
 
-	RhsSet set(RhsSet.Kind kind, Collection<Symbol> symbols, Collection<RhsSet> parts, SourceElement origin);
+	RhsSet set(RhsSet.Kind kind, Symbol symbol, Collection<RhsSet> parts, SourceElement origin);
 
 	void addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 

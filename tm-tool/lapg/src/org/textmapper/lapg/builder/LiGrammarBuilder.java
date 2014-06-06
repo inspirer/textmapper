@@ -86,7 +86,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new IllegalStateException("soft terminal cannot override class terminal's type");
 		}
 		if (sealedTerminals.contains(terminal)) {
-			throw new IllegalArgumentException("cannot convert terminal into a soft terminal (was already used as non-soft)");
+			throw new IllegalArgumentException("cannot convert terminal into a soft terminal (was already used as " +
+					"non-soft)");
 		}
 		if (softClass.isSoft()) {
 			throw new IllegalArgumentException("cannot use soft terminal as a class terminal");
@@ -143,7 +144,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin) {
+	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority,
+								  LexerRule classLexerRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
 			throw new NullPointerException();
@@ -162,7 +164,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (liStates.isEmpty()) {
 			throw new IllegalArgumentException("no states passed");
 		}
-		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority, classLexerRule, origin);
+		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority, classLexerRule,
+				origin);
 		lexerRules.add(l);
 		((LiTerminal) sym).addRule(l);
 		return l;
@@ -203,17 +206,17 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsPart right = (LiRhsPart) rhs;
 		final LiNonterminal liLeft = (LiNonterminal) left;
 		if (right instanceof LiRhsRoot) {
+			if (prio != null) {
+				throw new IllegalArgumentException("prio");
+			}
 			liLeft.setDefinition((LiRhsRoot) right);
 		} else {
-			liLeft.addRule(right);
-		}
-
-		for (RhsSequence r : ((LiRhsRoot) liLeft.getDefinition()).preprocess(right)) {
-			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
-			for (RhsSymbol[] arr : expanded) {
-				LiRule rule = new LiRule(rules.size(), left, arr, prio, r);
-				rules.add(rule);
+			if (!(right instanceof LiRhsSequence)) {
+				right = new LiRhsSequence(null, new LiRhsPart[]{right}, false, right);
 			}
+			LiRhsSequence rule = (LiRhsSequence) right;
+			rule.setPrio(prio);
+			liLeft.addRule(rule);
 		}
 	}
 
@@ -306,7 +309,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (!nonEmpty && separator != null) {
 			throw new IllegalArgumentException("list with separator should have at least one element");
 		}
-		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator, nonEmpty, null, false, false, origin);
+		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator, nonEmpty, null, false, false,
+				origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -322,8 +326,37 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSet set(Kind kind, Collection<Symbol> symbols, Collection<RhsSet> parts, SourceElement origin) {
-		throw new UnsupportedOperationException();
+	public RhsSet set(Kind kind, Symbol symbol, Collection<RhsSet> parts, SourceElement origin) {
+		LiRhsSet[] liparts = null;
+		switch (kind) {
+			case Any:
+			case First:
+			case Follow:
+				check(symbol);
+				if (parts != null) {
+					throw new IllegalArgumentException("parts");
+				}
+				break;
+			case Union:
+			case Intersection:
+			case Complement:
+				if (symbol != null) {
+					throw new IllegalArgumentException("symbol");
+				}
+				if (parts.size() == 0 || kind == Kind.Complement && parts.size() != 1) {
+					throw new IllegalArgumentException("parts");
+				}
+				liparts = new LiRhsSet[parts.size()];
+				int index = 0;
+				for (RhsPart p : parts) {
+					check(p, true);
+					liparts[index++] = (LiRhsSet) p;
+				}
+				break;
+		}
+		LiRhsSet result = new LiRhsSet(kind, symbol, liparts, origin);
+		rhsSet.add(result);
+		return result;
 	}
 
 	@Override
@@ -360,32 +393,24 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Grammar create() {
-		LiSymbol[] symbolArr = symbols.toArray(new LiSymbol[symbols.size()]);
-		Arrays.sort(symbolArr, new Comparator<LiSymbol>() {
-			@Override
-			public int compare(LiSymbol o1, LiSymbol o2) {
-				int kind1 = o1.isTerm() ? 0 : 1;
-				int kind2 = o2.isTerm() ? 0 : 1;
-				return new Integer(kind1).compareTo(kind2);
-			}
-		});
-		for (int i = 0; i < symbolArr.length; i++) {
-			symbolArr[i].setIndex(i);
-		}
+		LiSymbol[] symbolArr = sortAndEnumerateSymbols();
 		int terminals = 0;
 		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
 			terminals++;
 		}
 		int grammarSymbols = symbolArr.length;
+		for (int i = terminals; i < grammarSymbols; i++) {
+			expandNonterminal((Nonterminal) symbolArr[i]);
+		}
 
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
 		LiSymbol error = symbolsMap.get("error");
 
-		LiRule[] ruleArr;
-		LiPrio[] prioArr;
-		LiInputRef[] inputArr;
+		final LiRule[] ruleArr;
+		final LiPrio[] prioArr;
+		final LiInputRef[] inputArr;
 
 		if (rules.size() != 0) {
 			ruleArr = rules.toArray(new LiRule[rules.size()]);
@@ -400,7 +425,34 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 		assignNames();
 		annotateNullables();
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error, terminals, grammarSymbols);
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error,
+				terminals, grammarSymbols);
+	}
+
+	private void expandNonterminal(Nonterminal n) {
+		for (RhsSequence r : ((LiRhsRoot) n.getDefinition()).preprocess()) {
+			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
+			for (RhsSymbol[] arr : expanded) {
+				rules.add(new LiRule(rules.size(), n, arr, ((LiRhsSequence) r).getPrio(), r));
+			}
+		}
+	}
+
+	private LiSymbol[] sortAndEnumerateSymbols() {
+		LiSymbol[] result = symbols.toArray(new LiSymbol[symbols.size()]);
+		Arrays.sort(result, new Comparator<LiSymbol>() {
+			@Override
+			public int compare(LiSymbol o1, LiSymbol o2) {
+				int kind1 = o1.isTerm() ? 0 : 1;
+				int kind2 = o2.isTerm() ? 0 : 1;
+				return new Integer(kind1).compareTo(kind2);
+			}
+		});
+		for (int i = 0; i < result.length; i++) {
+			result[i].setIndex(i);
+		}
+		return result;
+
 	}
 
 	private void assignNames() {

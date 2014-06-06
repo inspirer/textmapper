@@ -18,7 +18,9 @@ package org.textmapper.lapg.common;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.util.RhsUtil;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * TODO remove

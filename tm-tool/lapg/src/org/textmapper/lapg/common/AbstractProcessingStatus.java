@@ -16,7 +16,6 @@
 package org.textmapper.lapg.common;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.TextSourceElement;
 
 public abstract class AbstractProcessingStatus implements ProcessingStatus {
 

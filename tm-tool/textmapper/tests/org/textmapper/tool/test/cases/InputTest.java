@@ -111,7 +111,7 @@ public class InputTest extends LapgTestCase {
 		assertEquals("subitem", syms[9].getName());
 		assertEquals("listopt", syms[10].getName());
 		assertEquals(13, g.getGrammar().getRules().length);
-		assertEquals("  ${for a in b}..!..$$  ", TMDataUtil.getCode(g.getGrammar().getRules()[7]).getText());
+		assertEquals("  ${for a in b}..!..$$  ", TMDataUtil.getCode(g.getGrammar().getRules()[5]).getText());
 		assertEquals(1, g.getGrammar().getRules()[9].getRight().length);
 	}
 

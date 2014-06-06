@@ -17,11 +17,8 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsRoot;
 import org.textmapper.lapg.api.rule.RhsSequence;
-
-import java.util.Collections;
 
 /**
  * evgeny, 2/4/13
@@ -57,16 +54,7 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 	 * Pre-processing may split complex rules (like lists) into several intermediate rules,
 	 * which become sources of the grammar rules.
 	 */
-	protected Iterable<RhsSequence> preprocess(RhsPart def) {
-		RhsSequence result;
-		if (def instanceof RhsSequence) {
-			result = (RhsSequence) def;
-		} else {
-			result = new LiRhsSequence(null, new LiRhsPart[]{(LiRhsPart) def}, true, def);
-			register(true, (LiRhsSequence) result, (LiRhsPart) def);
-		}
-		return Collections.singleton(result);
-	}
+	protected abstract RhsSequence[] preprocess();
 
 	@Override
 	public String getProvisionalName() {

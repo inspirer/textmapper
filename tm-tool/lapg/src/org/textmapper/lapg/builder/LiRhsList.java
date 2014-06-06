@@ -24,7 +24,6 @@ import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -169,11 +168,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	protected Iterable<RhsSequence> preprocess(RhsPart def) {
-		if (def != this) {
-			throw new IllegalArgumentException();
-		}
-
+	protected RhsSequence[] preprocess() {
 		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), this);
 		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
 		listRule.add(rightRecursive ? element : selfRef);
@@ -181,16 +176,16 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			listRule.add(separator);
 		}
 		listRule.add(rightRecursive ? selfRef : element);
-		LiRhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, def);
+		LiRhsSequence rule1 = new LiRhsSequence(null, listRule.toArray(new LiRhsPart[listRule.size()]), true, this);
 
 		LiRhsSequence rule2;
 		if (nonEmpty) {
 			rule2 = customInitialElement != null ? customInitialElement : element;
 		} else {
-			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, def);
+			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, this);
 		}
 		register(true, rule1, rule2, customInitialElement, element, separator);
-		return Arrays.<RhsSequence>asList(rule1, rule2);
+		return new RhsSequence[]{rule1, rule2};
 	}
 
 	private static String getSymbolName(Symbol s) {

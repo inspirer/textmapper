@@ -59,7 +59,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		part.setLeft(this);
 	}
 
-	void addRule(LiRhsPart part) {
+	void addRule(LiRhsSequence part) {
 		if (definition == null) {
 			definition = new LiRootRhsChoice(this);
 		} else if (!(definition instanceof LiRootRhsChoice)) {
