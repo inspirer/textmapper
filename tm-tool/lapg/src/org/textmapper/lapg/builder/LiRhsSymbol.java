@@ -33,8 +33,6 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	public LiRhsSymbol(Symbol target, SourceElement origin) {
 		super(origin);
 		this.target = target;
-		((LiSymbol) target).addUsage(this);
-
 	}
 
 	@Override

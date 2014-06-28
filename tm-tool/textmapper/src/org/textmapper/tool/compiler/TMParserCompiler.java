@@ -17,13 +17,11 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
-import org.textmapper.lapg.api.rule.RhsList;
-import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
+import org.textmapper.tool.parser.ast.TmaSetBinary.TmaKindKind;
 
 import java.util.*;
 
@@ -378,6 +376,58 @@ public class TMParserCompiler {
 		return result;
 	}
 
+	private Collection<RhsSet> asCollection(RhsSet... sets) {
+		if (sets.length == 0) return null;
+		for (RhsSet s : sets) {
+			if (s == null) return null;
+		}
+		if (sets.length == 1) return Collections.singleton(sets[0]);
+		return Arrays.asList(sets);
+	}
+
+	private RhsSet convertSet(ITmaSetExpression expr) {
+		if (expr instanceof TmaSetBinary) {
+			TmaSetBinary binary = (TmaSetBinary) expr;
+			boolean is_and = binary.getKind() == TmaKindKind.AMPERSAND;
+
+			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()), convertSet(binary.getRight()));
+			if (parts == null) return null;
+
+			return builder.set(is_and ? RhsSet.Kind.Intersection : RhsSet.Kind.Union, null, parts, expr);
+
+		} else if (expr instanceof TmaSetComplement) {
+			Collection<RhsSet> parts = asCollection(convertSet(((TmaSetComplement) expr).getInner()));
+			if (parts == null) return null;
+
+			return builder.set(RhsSet.Kind.Complement, null, parts, expr);
+
+		} else if (expr instanceof TmaSetCompound) {
+			return convertSet(((TmaSetCompound) expr).getInner());
+
+		} else if (expr instanceof TmaSetSymbol) {
+			TmaSetSymbol ss = (TmaSetSymbol) expr;
+			Symbol s = resolver.resolve(ss.getSymbol());
+			if (s == null) return null;
+
+			RhsSet.Kind kind = RhsSet.Kind.Any;
+			if (ss.getOperator() != null) {
+				String op = ss.getOperator();
+				if (op.equals("first")) {
+					kind = RhsSet.Kind.First;
+				} else if (op.equals("follow")) {
+					kind = RhsSet.Kind.Follow;
+				} else {
+					error(ss, "operator can be either 'first', or 'follow'");
+				}
+			}
+
+			return builder.set(kind, s, null, expr);
+		}
+
+		error(expr, "internal error: unknown set expression found");
+		return null;
+	}
+
 	private RhsSymbol convertPrimary(Symbol outer, ITmaRhsPart part) {
 
 		if (part instanceof TmaRhsSymbol) {
@@ -403,9 +453,12 @@ public class TMParserCompiler {
 			return null;
 
 		} else if (part instanceof TmaRhsSet) {
-			error(part, "set( ) is not supported, yet");
-			// TODO
-			return null;
+			RhsSet set = convertSet(((TmaRhsSet) part).getExpr());
+			if (set == null) return null;
+
+			String setName = set.getProvisionalName();
+			Nonterminal result = builder.addShared(set, setName);
+			return builder.symbol(result, part);
 
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;

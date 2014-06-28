@@ -13,28 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.rule;
+package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 
-public interface RhsSet extends RhsPart {
-
-	enum Kind {
-		/* Sets of terminals related to a symbol */
-		Any,
-		First,
-		Follow,
-		/* Composite sets */
-		Union,
-		Intersection,
-		Complement,
+public class LiUtil {
+	public static String getSymbolName(Symbol s) {
+		String name = s.getName();
+		if (name != null) {
+			return name;
+		}
+		// for anonymous nonterminals we can get an approximate name from nameHint user data.
+		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
 	}
 
-	Kind getKind();
-
-	Symbol getSymbol();
-
-	RhsSet[] getSets();
-
-	String getProvisionalName();
 }

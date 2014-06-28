@@ -188,27 +188,18 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		return new RhsSequence[]{rule1, rule2};
 	}
 
-	private static String getSymbolName(Symbol s) {
-		String name = s.getName();
-		if (name != null) {
-			return name;
-		}
-		// for anonymous nonterminals we can get an approximate name from nameHint user data.
-		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
-	}
-
 	@Override
 	public String getProvisionalName() {
 		StringBuilder sb = new StringBuilder();
 		Symbol representative = RhsUtil.getRepresentative(element);
 		if (representative != null) {
-			sb.append(getSymbolName(representative));
+			sb.append(LiUtil.getSymbolName(representative));
 			sb.append(nonEmpty || separator != null ? "_list" : "_optlist");
 		} else {
 			RhsSymbol[] rhsSymbols = RhsUtil.getRhsSymbols(element);
 			sb.append("list_of_");
 			if (rhsSymbols.length > 0) {
-				sb.append(getSymbolName(rhsSymbols[0].getTarget()));
+				sb.append(LiUtil.getSymbolName(rhsSymbols[0].getTarget()));
 				if (rhsSymbols.length > 1) {
 					sb.append("_and_").append(rhsSymbols.length - 1).append("_elements");
 				}

@@ -296,11 +296,6 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
-				public Iterable<RhsSymbol> getUsages() {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
 				public AstType getType() {
 					return null;
 				}

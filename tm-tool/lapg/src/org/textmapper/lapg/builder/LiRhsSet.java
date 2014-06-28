@@ -52,6 +52,14 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	}
 
 	@Override
+	public String getProvisionalName() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("setof_");
+		toProvisionalName(sb);
+		return sb.toString();
+	}
+
+	@Override
 	List<RhsSymbol[]> expand() {
 		throw new IllegalStateException("sets must be eliminated before expansions");
 	}
@@ -106,27 +114,49 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 				parts[0].toString(sb, 0);
 				break;
 			case Intersection:
-				for (LiRhsSet p : parts) {
-					if (first) {
-						first = false;
-					} else {
-						sb.append(" & ");
-					}
-					p.toString(sb, 0);
-				}
-				break;
 			case Union:
 				for (LiRhsSet p : parts) {
 					if (first) {
 						first = false;
 					} else {
-						sb.append(" | ");
+						sb.append(kind == Kind.Intersection ? " & " : " | ");
 					}
-					p.toString(sb, 1);
+					p.toString(sb, kind == Kind.Intersection ? 0 : 1);
 				}
 				break;
 		}
 		if (level > prec) sb.append(")");
+	}
+
+	private void toProvisionalName(StringBuilder sb) {
+		boolean first = true;
+		switch (kind) {
+			case Any:
+				sb.append(LiUtil.getSymbolName(symbol));
+				break;
+			case First:
+				sb.append("first_").append(LiUtil.getSymbolName(symbol));
+				break;
+			case Follow:
+				sb.append("follow_").append(LiUtil.getSymbolName(symbol));
+				break;
+			case Complement:
+				assert parts.length == 1;
+				sb.append("not_");
+				parts[0].toString(sb, 0);
+				break;
+			case Intersection:
+			case Union:
+				for (LiRhsSet p : parts) {
+					if (first) {
+						first = false;
+					} else {
+						sb.append(kind == Kind.Intersection ? "_" : "_or_");
+					}
+					p.toProvisionalName(sb);
+				}
+				break;
+		}
 	}
 
 	@Override

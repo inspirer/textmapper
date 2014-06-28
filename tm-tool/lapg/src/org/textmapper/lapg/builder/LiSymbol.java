@@ -19,17 +19,12 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstType;
-import org.textmapper.lapg.api.rule.RhsSymbol;
-
-import java.util.ArrayList;
-import java.util.List;
 
 abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourceElement {
 
 	private int index;
 	private String name;
 	private final SourceElement origin;
-	private final List<RhsSymbol> usages = new ArrayList<RhsSymbol>();
 	private AstType mapping;
 
 	protected LiSymbol(String name, SourceElement origin) {
@@ -73,17 +68,8 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	@Override
-	public Iterable<RhsSymbol> getUsages() {
-		return usages;
-	}
-
-	@Override
 	public SourceElement getOrigin() {
 		return origin;
-	}
-
-	void addUsage(RhsSymbol usage) {
-		usages.add(usage);
 	}
 
 	@Override
