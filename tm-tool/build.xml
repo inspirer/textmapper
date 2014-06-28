@@ -122,6 +122,7 @@
 	<target name="test" depends="build.tests">
 		<mkdir dir="${build.folder}/results"/>
 		<junit haltonfailure="yes" printsummary="true" dir="${tm.dir}/textmapper" logfailedtests="true">
+			<jvmarg value="-ea"/>
 			<batchtest fork="yes" todir="${build.folder}/results">
 				<fileset dir="${tm.dir}/lapg/tests">
 					<include name="**/*Test.java"/>

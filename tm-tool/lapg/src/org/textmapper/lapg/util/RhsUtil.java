@@ -162,6 +162,85 @@ public class RhsUtil {
 		}
 	}
 
+	/**
+	 * Returns true, if an empty string can be derived from "part".
+	 * "dependencies" list will contain all nonterminals that prevent "part" to be nullable.
+	 */
+	public static boolean isNullable(RhsPart part, final List<Nonterminal> dependencies) {
+		return part.accept(new RhsSwitch<Boolean>() {
+			@Override
+			public Boolean caseChoice(RhsChoice p) {
+				for (RhsPart inner : p.getParts()) {
+					if (inner.accept(this)) return true;
+				}
+				return false;
+			}
+
+			@Override
+			public Boolean caseOptional(RhsOptional p) {
+				return true;
+			}
+
+			@Override
+			public Boolean caseSequence(RhsSequence p) {
+				boolean isNullable = true;
+				for (RhsPart inner : p.getParts()) {
+					// Note: we do not return immediately to collect all the dependencies.
+					if (!inner.accept(this)) isNullable = false;
+				}
+				return isNullable;
+			}
+
+			@Override
+			public Boolean caseUnordered(RhsUnordered p) {
+				boolean isNullable = true;
+				for (RhsPart inner : p.getParts()) {
+					// Note: we do not return immediately to collect all the dependencies.
+					if (!inner.accept(this)) isNullable = false;
+				}
+				return isNullable;
+			}
+
+			@Override
+			public Boolean caseSymbol(RhsSymbol p) {
+				if (p.getTarget().isTerm()) return false;
+				Nonterminal n = (Nonterminal) p.getTarget();
+
+				if (n.isNullable()) return true;
+				if (dependencies != null) dependencies.add(n);
+				return false;
+			}
+
+			@Override
+			public Boolean caseAssignment(RhsAssignment p) {
+				return p.getPart().accept(this);
+			}
+
+			@Override
+			public Boolean caseList(RhsList p) {
+				if (!p.isNonEmpty()) return true;
+				RhsPart first = p.getCustomInitialElement() != null ? p.getCustomInitialElement() : p.getElement();
+				return first.accept(this);
+			}
+
+			@Override
+			public Boolean caseCast(RhsCast p) {
+				return p.getPart().accept(this);
+			}
+
+			@Override
+			public Boolean caseSet(RhsSet p) {
+				// Sets have at least one element.
+				return false;
+			}
+
+			@Override
+			public Boolean caseIgnored(RhsIgnored p) {
+				return p.getInner().accept(this);
+			}
+		});
+	}
+
 	public static RhsChoice asChoice(final RhsPart... parts) {
 		return new RhsChoice() {
 			@Override

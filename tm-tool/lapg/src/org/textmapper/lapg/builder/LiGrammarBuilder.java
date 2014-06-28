@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
 import org.textmapper.lapg.api.rule.RhsSet.Kind;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -470,53 +471,47 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private void annotateNullables() {
-		// a set of non-empty rules without terminals on the right side
-		Set<Rule> candidates = new HashSet<Rule>();
-		for (Rule r : rules) {
-			if (r.getRight().length == 0) {
-				((LiNonterminal) r.getLeft()).setNullable(true);
-				continue;
-			}
-			boolean candidate = true;
-			for (RhsSymbol rhsSymbol : r.getRight()) {
-				if (rhsSymbol.getTarget().isTerm()) {
-					candidate = false;
-					break;
+		// build back dependencies and mark first layer of nullable nonterminals
+		Map<Nonterminal, List<Nonterminal>> backDependencies = new HashMap<Nonterminal, List<Nonterminal>>();
+		List<Nonterminal> dependencies = new ArrayList<Nonterminal>();
+		Set<Nonterminal> candidates = new HashSet<Nonterminal>();
+		for (Symbol s : symbols) {
+			if (s.isTerm()) continue;
+
+			Nonterminal n = (Nonterminal) s;
+			dependencies.clear();
+			boolean nullable = RhsUtil.isNullable(n.getDefinition(), dependencies);
+			if (nullable) {
+				((LiNonterminal) n).setNullable(true);
+			} else if (!dependencies.isEmpty()) {
+				candidates.add(n);
+				for (Nonterminal dep : dependencies) {
+					if (dep == n) continue;
+					List<Nonterminal> dependOn = backDependencies.get(dep);
+					if (dependOn == null) {
+						dependOn = new ArrayList<Nonterminal>();
+						backDependencies.put(dep, dependOn);
+					}
+					dependOn.add(n);
 				}
-			}
-			if (candidate) {
-				candidates.add(r);
 			}
 		}
 
-		// effectively invalidate potential nullable nonterminals
-		Queue<Rule> queue = new LinkedList<Rule>(candidates);
-		Set<Rule> inQueue = new HashSet<Rule>(candidates);
-		Rule next;
+		// effectively invalidate potentially nullable nonterminals
+		Queue<Nonterminal> queue = new LinkedList<Nonterminal>(candidates);
+		Set<Nonterminal> inQueue = new HashSet<Nonterminal>(candidates);
+		Nonterminal next;
 		while ((next = queue.poll()) != null) {
-			if (next.getLeft().isNullable()) {
-				inQueue.remove(next);
-				continue;
-			}
+			assert !next.isNullable();
+			if (RhsUtil.isNullable(next.getDefinition(), null)) {
+				((LiNonterminal) next).setNullable(true);
 
-			boolean isEmpty = true;
-			for (RhsSymbol rhsSymbol : next.getRight()) {
-				if (!((Nonterminal) rhsSymbol.getTarget()).isNullable()) {
-					isEmpty = false;
-					break;
-				}
-			}
-
-			if (isEmpty) {
-				final LiNonterminal left = (LiNonterminal) next.getLeft();
-				left.setNullable(true);
-				for (RhsSymbol usage : left.getUsages()) {
-					if (usage.getLeft().isNullable()) continue;
-
-					for (Rule usingRule : usage.getLeft().getRules()) {
-						if (!inQueue.contains(usingRule) && candidates.contains(usingRule)) {
-							queue.add(usingRule);
-							inQueue.add(usingRule);
+				List<Nonterminal> deps = backDependencies.get(next);
+				if (deps != null) {
+					for (Nonterminal dep : deps) {
+						if (!dep.isNullable() && !inQueue.contains(dep) && candidates.contains(dep)) {
+							queue.add(dep);
+							inQueue.add(dep);
 						}
 					}
 				}
