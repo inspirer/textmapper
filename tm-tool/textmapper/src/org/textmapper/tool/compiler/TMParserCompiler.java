@@ -18,6 +18,7 @@ package org.textmapper.tool.compiler;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
@@ -393,13 +394,13 @@ public class TMParserCompiler {
 			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()), convertSet(binary.getRight()));
 			if (parts == null) return null;
 
-			return builder.set(is_and ? RhsSet.Kind.Intersection : RhsSet.Kind.Union, null, parts, expr);
+			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, parts, expr);
 
 		} else if (expr instanceof TmaSetComplement) {
 			Collection<RhsSet> parts = asCollection(convertSet(((TmaSetComplement) expr).getInner()));
 			if (parts == null) return null;
 
-			return builder.set(RhsSet.Kind.Complement, null, parts, expr);
+			return builder.set(Operation.Complement, null, parts, expr);
 
 		} else if (expr instanceof TmaSetCompound) {
 			return convertSet(((TmaSetCompound) expr).getInner());
@@ -409,13 +410,13 @@ public class TMParserCompiler {
 			Symbol s = resolver.resolve(ss.getSymbol());
 			if (s == null) return null;
 
-			RhsSet.Kind kind = RhsSet.Kind.Any;
+			Operation kind = Operation.Any;
 			if (ss.getOperator() != null) {
 				String op = ss.getOperator();
 				if (op.equals("first")) {
-					kind = RhsSet.Kind.First;
+					kind = Operation.First;
 				} else if (op.equals("follow")) {
-					kind = RhsSet.Kind.Follow;
+					kind = Operation.Follow;
 				} else {
 					error(ss, "operator can be either 'first', or 'follow'");
 				}

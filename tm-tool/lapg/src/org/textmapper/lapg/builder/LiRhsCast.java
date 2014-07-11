@@ -71,6 +71,11 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Cast;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseCast(this);
 	}

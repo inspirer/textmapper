@@ -69,6 +69,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Symbol;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseSymbol(this);
 	}

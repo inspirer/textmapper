@@ -74,6 +74,11 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Unordered;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseUnordered(this);
 	}

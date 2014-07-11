@@ -25,20 +25,20 @@ import java.util.List;
 
 public class LiRhsSet extends LiRhsPart implements RhsSet {
 
-	private Kind kind;
+	private Operation operation;
 	private Symbol symbol;
 	private LiRhsSet[] parts;
 
-	public LiRhsSet(Kind kind, Symbol symbol, LiRhsSet[] parts, SourceElement origin) {
+	public LiRhsSet(Operation operation, Symbol symbol, LiRhsSet[] parts, SourceElement origin) {
 		super(origin);
-		this.kind = kind;
+		this.operation = operation;
 		this.symbol = symbol;
 		this.parts = parts;
 	}
 
 	@Override
-	public Kind getKind() {
-		return kind;
+	public Operation getOperation() {
+		return operation;
 	}
 
 	@Override
@@ -70,14 +70,14 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiRhsSet that = (LiRhsSet) o;
-		if (kind != that.kind) return false;
+		if (operation != that.operation) return false;
 		if (symbol != null ? !symbol.equals(that.symbol) : that.symbol != null) return false;
 		return structurallyEquals(parts, that.parts);
 	}
 
 	@Override
 	public int structuralHashCode() {
-		int result = kind.hashCode();
+		int result = operation.hashCode();
 		result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
 		result = 31 * result + structuralHashCode(parts);
 		return result;
@@ -94,11 +94,11 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	 * @param prec 0 - primary; 1 - intersection; 2 - union
 	 */
 	private void toString(StringBuilder sb, int prec) {
-		int level = kind == Kind.Intersection ? 1 : kind == Kind.Union ? 2 : 0;
+		int level = operation == Operation.Intersection ? 1 : operation == Operation.Union ? 2 : 0;
 		if (level > prec) sb.append("(");
 
 		boolean first = true;
-		switch (kind) {
+		switch (operation) {
 			case Any:
 				sb.append(symbol.getName());
 				break;
@@ -119,9 +119,9 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 					if (first) {
 						first = false;
 					} else {
-						sb.append(kind == Kind.Intersection ? " & " : " | ");
+						sb.append(operation == Operation.Intersection ? " & " : " | ");
 					}
-					p.toString(sb, kind == Kind.Intersection ? 0 : 1);
+					p.toString(sb, operation == Operation.Intersection ? 0 : 1);
 				}
 				break;
 		}
@@ -130,7 +130,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 
 	private void toProvisionalName(StringBuilder sb) {
 		boolean first = true;
-		switch (kind) {
+		switch (operation) {
 			case Any:
 				sb.append(LiUtil.getSymbolName(symbol));
 				break;
@@ -151,12 +151,17 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 					if (first) {
 						first = false;
 					} else {
-						sb.append(kind == Kind.Intersection ? "_" : "_or_");
+						sb.append(operation == Operation.Intersection ? "_" : "_or_");
 					}
 					p.toProvisionalName(sb);
 				}
 				break;
 		}
+	}
+
+	@Override
+	public Kind getKind() {
+		return Kind.Set;
 	}
 
 	@Override

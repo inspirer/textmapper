@@ -24,6 +24,21 @@ import org.textmapper.lapg.api.UserDataHolder;
  */
 public interface RhsPart extends SourceElement, UserDataHolder {
 
+	enum Kind {
+		Choice,
+		Optional,
+		Sequence,
+		Symbol,
+		Unordered,
+		Assignment,
+		List,
+		Cast,
+		Set,
+		Ignored,
+	}
+
+	Kind getKind();
+
 	Nonterminal getLeft();
 
 	RhsSequence getContext();

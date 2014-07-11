@@ -65,6 +65,11 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Choice;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseChoice(this);
 	}

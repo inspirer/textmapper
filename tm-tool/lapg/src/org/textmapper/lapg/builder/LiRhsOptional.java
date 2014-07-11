@@ -71,6 +71,11 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Optional;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseOptional(this);
 	}

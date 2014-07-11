@@ -21,7 +21,7 @@ import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
-import org.textmapper.lapg.api.rule.RhsSet.Kind;
+import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
@@ -327,9 +327,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSet set(Kind kind, Symbol symbol, Collection<RhsSet> parts, SourceElement origin) {
+	public RhsSet set(Operation operation, Symbol symbol, Collection<RhsSet> parts, SourceElement origin) {
 		LiRhsSet[] liparts = null;
-		switch (kind) {
+		switch (operation) {
 			case Any:
 			case First:
 			case Follow:
@@ -344,7 +344,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				if (symbol != null) {
 					throw new IllegalArgumentException("symbol");
 				}
-				if (parts.size() == 0 || kind == Kind.Complement && parts.size() != 1) {
+				if (parts.size() == 0 || operation == Operation.Complement && parts.size() != 1) {
 					throw new IllegalArgumentException("parts");
 				}
 				liparts = new LiRhsSet[parts.size()];
@@ -355,7 +355,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				}
 				break;
 		}
-		LiRhsSet result = new LiRhsSet(kind, symbol, liparts, origin);
+		LiRhsSet result = new LiRhsSet(operation, symbol, liparts, origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -394,6 +394,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Grammar create() {
+		annotateNullables();
 		LiSymbol[] symbolArr = sortAndEnumerateSymbols();
 		int terminals = 0;
 		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
@@ -425,7 +426,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
 
 		assignNames();
-		annotateNullables();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error,
 				terminals, grammarSymbols);
 	}

@@ -127,6 +127,11 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.Sequence;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseSequence(this);
 	}

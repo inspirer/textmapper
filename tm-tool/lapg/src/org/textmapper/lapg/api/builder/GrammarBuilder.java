@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsSet.Operation;
 
 import java.util.Collection;
 
@@ -67,7 +68,7 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsIgnored ignored(RhsPart inner, Collection<RhsIgnored.ParenthesisPair> parentheses, SourceElement origin);
 
-	RhsSet set(RhsSet.Kind kind, Symbol symbol, Collection<RhsSet> parts, SourceElement origin);
+	RhsSet set(Operation operation, Symbol symbol, Collection<RhsSet> parts, SourceElement origin);
 
 	void addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 

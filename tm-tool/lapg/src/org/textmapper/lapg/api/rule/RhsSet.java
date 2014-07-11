@@ -19,7 +19,7 @@ import org.textmapper.lapg.api.Symbol;
 
 public interface RhsSet extends RhsPart {
 
-	enum Kind {
+	enum Operation {
 		/* Sets of terminals related to a symbol */
 		Any,
 		First,
@@ -30,7 +30,7 @@ public interface RhsSet extends RhsPart {
 		Complement,
 	}
 
-	Kind getKind();
+	Operation getOperation();
 
 	Symbol getSymbol();
 

@@ -249,6 +249,11 @@ public class RhsUtil {
 			}
 
 			@Override
+			public Kind getKind() {
+				return Kind.Choice;
+			}
+
+			@Override
 			public Nonterminal getLeft() {
 				throw new UnsupportedOperationException();
 			}

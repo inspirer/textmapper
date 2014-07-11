@@ -114,6 +114,11 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
+	public Kind getKind() {
+		return Kind.List;
+	}
+
+	@Override
 	public <T> T accept(RhsSwitch<T> switch_) {
 		return switch_.caseList(this);
 	}
