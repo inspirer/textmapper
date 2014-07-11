@@ -31,7 +31,7 @@ final class IntegerSets {
 	private int count = 0;
 
 	public IntegerSets() {
-		push(0, new int[]{});
+		push(1, new int[]{});
 	}
 
 	public int add(int... set) {
@@ -123,6 +123,7 @@ final class IntegerSets {
 	}
 
 	private int push(int hash, int[] set) {
+		assert hash == hashCode(set);
 		if (set.length == 0 && count > 0) return EMPTY_SET;
 		if (count >= sets.length) {
 			int[][] nn = new int[sets.length * 2][];
