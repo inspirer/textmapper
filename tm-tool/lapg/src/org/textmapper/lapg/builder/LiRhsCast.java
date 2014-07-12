@@ -18,7 +18,6 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsCast;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.List;
@@ -73,11 +72,6 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	@Override
 	public Kind getKind() {
 		return Kind.Cast;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseCast(this);
 	}
 
 	@Override

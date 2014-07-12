@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsMapping;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Collections;
@@ -71,11 +70,6 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	@Override
 	public Kind getKind() {
 		return Kind.Symbol;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseSymbol(this);
 	}
 
 	@Override

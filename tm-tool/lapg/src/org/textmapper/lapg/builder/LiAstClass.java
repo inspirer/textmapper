@@ -62,7 +62,7 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	}
 
 	void addSuper(AstClass cl) {
-		if(isInterface && !(cl.isInterface())) {
+		if (isInterface && !(cl.isInterface())) {
 			throw new IllegalArgumentException("interfaces cannot extend classes");
 		}
 		superClasses.add(cl);

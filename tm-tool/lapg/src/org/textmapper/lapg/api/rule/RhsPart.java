@@ -44,6 +44,4 @@ public interface RhsPart extends SourceElement, UserDataHolder {
 	RhsSequence getContext();
 
 	Object structuralNode();
-
-	<T> T accept(RhsSwitch<T> switch_);
 }

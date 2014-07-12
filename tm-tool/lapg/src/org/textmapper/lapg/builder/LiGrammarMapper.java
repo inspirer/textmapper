@@ -79,7 +79,8 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 
 		if (field != null && contextType != field.getContainingClass()) {
-			throw new IllegalArgumentException("field must belong to the context class (" + contextType.toString() + ")");
+			throw new IllegalArgumentException("field must belong to the context class (" +
+					contextType.toString() + ")");
 		}
 
 		AstType type = field != null ? field.getType() : contextType;
@@ -91,7 +92,8 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 
 		if (subType != null && !subType.isSubtypeOf(type)) {
-			throw new IllegalArgumentException("sequence type should be a subtype of its context type (" + type.toString() + ")");
+			throw new IllegalArgumentException("sequence type should be a subtype of its context type (" +
+					type.toString() + ")");
 		}
 		if (seq.getMapping() != null || seq.getType() != null) {
 			throw new IllegalArgumentException("cannot re-map sequences");
@@ -132,7 +134,8 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 
 		if (field != null && contextType != field.getContainingClass()) {
-			throw new IllegalArgumentException("field must belong to the context class (" + contextType.toString() + ")");
+			throw new IllegalArgumentException("field must belong to the context class (" +
+					contextType.toString() + ")");
 		}
 
 		AstType type = field != null ? field.getType() : contextType;

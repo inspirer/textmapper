@@ -15,11 +15,13 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
-import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsList;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.lapg.util.RhsUtil;
 
@@ -116,11 +118,6 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	@Override
 	public Kind getKind() {
 		return Kind.List;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseList(this);
 	}
 
 	@Override

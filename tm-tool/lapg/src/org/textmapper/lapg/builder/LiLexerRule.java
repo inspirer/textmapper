@@ -29,7 +29,8 @@ class LiLexerRule extends LiUserDataHolder implements LexerRule, DerivedSourceEl
 	private final LexerRule classLexerRule;
 	private final SourceElement origin;
 
-	public LiLexerRule(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority, LexerRule classLexerRule, SourceElement origin) {
+	public LiLexerRule(int kind, int index, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority,
+					   LexerRule classLexerRule, SourceElement origin) {
 		this.kind = kind;
 		this.index = index;
 		this.sym = sym;

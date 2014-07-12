@@ -18,7 +18,6 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.rule.RhsChoice;
 import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
@@ -90,11 +89,6 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	@Override
 	public Kind getKind() {
 		return Kind.Choice;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseChoice(this);
 	}
 
 	@Override

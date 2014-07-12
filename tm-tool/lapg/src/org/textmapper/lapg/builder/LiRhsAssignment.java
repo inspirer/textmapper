@@ -18,7 +18,6 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsAssignment;
 import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.List;
@@ -82,11 +81,6 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	@Override
 	public Kind getKind() {
 		return Kind.Assignment;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseAssignment(this);
 	}
 
 	@Override

@@ -17,7 +17,6 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsPart;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.api.rule.RhsUnordered;
 
@@ -76,11 +75,6 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	@Override
 	public Kind getKind() {
 		return Kind.Unordered;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseUnordered(this);
 	}
 
 	@Override

@@ -102,7 +102,10 @@ public class RhsUtil {
 		RhsMapping mapping = seq.getMapping();
 		if (mapping == null) return false;
 
-		if (mapping.getField() == null && mapping.getValue() == null && !mapping.isAddition() && seq.getType() == null) {
+		if (mapping.getField() == null
+				&& mapping.getValue() == null
+				&& !mapping.isAddition()
+				&& seq.getType() == null) {
 			// identity mapping => ignore
 			return false;
 		}
@@ -110,18 +113,19 @@ public class RhsUtil {
 	}
 
 	public static Iterable<RhsPart> getChildren(RhsPart part) {
-		if (part instanceof RhsSequence) {
-			return Arrays.asList(((RhsSequence) part).getParts());
-		} else if (part instanceof RhsOptional) {
-			return Arrays.asList(((RhsOptional) part).getPart());
-		} else if (part instanceof RhsCast) {
-			return Arrays.asList(((RhsCast) part).getPart());
-		} else if (part instanceof RhsAssignment) {
-			return Arrays.asList(((RhsAssignment) part).getPart());
-		} else if (part instanceof RhsChoice) {
-			return Arrays.asList(((RhsChoice) part).getParts());
-		} else if (part instanceof RhsUnordered) {
-			return Arrays.asList(((RhsUnordered) part).getParts());
+		switch (part.getKind()) {
+			case Sequence:
+				return Arrays.asList(((RhsSequence) part).getParts());
+			case Optional:
+				return Arrays.asList(((RhsOptional) part).getPart());
+			case Cast:
+				return Arrays.asList(((RhsCast) part).getPart());
+			case Assignment:
+				return Arrays.asList(((RhsAssignment) part).getPart());
+			case Choice:
+				return Arrays.asList(((RhsChoice) part).getParts());
+			case Unordered:
+				return Arrays.asList(((RhsUnordered) part).getParts());
 		}
 		return null;
 	}
@@ -167,78 +171,59 @@ public class RhsUtil {
 	 * "dependencies" list will contain all nonterminals that prevent "part" to be nullable.
 	 */
 	public static boolean isNullable(RhsPart part, final List<Nonterminal> dependencies) {
-		return part.accept(new RhsSwitch<Boolean>() {
-			@Override
-			public Boolean caseChoice(RhsChoice p) {
-				for (RhsPart inner : p.getParts()) {
-					if (inner.accept(this)) return true;
+		switch (part.getKind()) {
+			case Choice:
+				for (RhsPart inner : ((RhsChoice) part).getParts()) {
+					if (isNullable(inner, dependencies)) return true;
 				}
 				return false;
-			}
-
-			@Override
-			public Boolean caseOptional(RhsOptional p) {
+			case Optional:
 				return true;
-			}
-
-			@Override
-			public Boolean caseSequence(RhsSequence p) {
+			case Sequence: {
 				boolean isNullable = true;
-				for (RhsPart inner : p.getParts()) {
+				for (RhsPart inner : ((RhsSequence) part).getParts()) {
 					// Note: we do not return immediately to collect all the dependencies.
-					if (!inner.accept(this)) isNullable = false;
+					if (!isNullable(inner, dependencies)) isNullable = false;
 				}
 				return isNullable;
 			}
-
-			@Override
-			public Boolean caseUnordered(RhsUnordered p) {
-				boolean isNullable = true;
-				for (RhsPart inner : p.getParts()) {
-					// Note: we do not return immediately to collect all the dependencies.
-					if (!inner.accept(this)) isNullable = false;
-				}
-				return isNullable;
-			}
-
-			@Override
-			public Boolean caseSymbol(RhsSymbol p) {
-				if (p.getTarget().isTerm()) return false;
-				Nonterminal n = (Nonterminal) p.getTarget();
+			case Symbol: {
+				if (((RhsSymbol) part).getTarget().isTerm()) return false;
+				Nonterminal n = (Nonterminal) ((RhsSymbol) part).getTarget();
 
 				if (n.isNullable()) return true;
 				if (dependencies != null) dependencies.add(n);
 				return false;
 			}
-
-			@Override
-			public Boolean caseAssignment(RhsAssignment p) {
-				return p.getPart().accept(this);
+			case Unordered: {
+				boolean isNullable = true;
+				for (RhsPart inner : ((RhsUnordered) part).getParts()) {
+					// Note: we do not return immediately to collect all the dependencies.
+					if (!isNullable(inner, dependencies)) isNullable = false;
+				}
+				return isNullable;
 			}
 
-			@Override
-			public Boolean caseList(RhsList p) {
-				if (!p.isNonEmpty()) return true;
-				RhsPart first = p.getCustomInitialElement() != null ? p.getCustomInitialElement() : p.getElement();
-				return first.accept(this);
+			case List: {
+				RhsList list = (RhsList) part;
+				if (!list.isNonEmpty()) return true;
+				RhsPart first = list.getCustomInitialElement() != null
+						? list.getCustomInitialElement()
+						: list.getElement();
+				return isNullable(first, dependencies);
 			}
-
-			@Override
-			public Boolean caseCast(RhsCast p) {
-				return p.getPart().accept(this);
-			}
-
-			@Override
-			public Boolean caseSet(RhsSet p) {
+			case Set:
 				// Sets have at least one element.
 				return false;
-			}
+			case Assignment:
+				return isNullable(((RhsAssignment) part).getPart(), dependencies);
+			case Cast:
+				return isNullable(((RhsCast) part).getPart(), dependencies);
+			case Ignored:
+				return isNullable(((RhsIgnored) part).getInner(), dependencies);
+		}
 
-			@Override
-			public Boolean caseIgnored(RhsIgnored p) {
-				return p.getInner().accept(this);
-			}
-		});
+		throw new IllegalStateException();
 	}
 
 	public static RhsChoice asChoice(final RhsPart... parts) {
@@ -266,11 +251,6 @@ public class RhsUtil {
 			@Override
 			public Object structuralNode() {
 				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public <T> T accept(RhsSwitch<T> switch_) {
-				return switch_.caseChoice(this);
 			}
 
 			@Override

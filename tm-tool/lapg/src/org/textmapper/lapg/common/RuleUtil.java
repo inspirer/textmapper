@@ -30,30 +30,55 @@ public class RuleUtil {
 	private RuleUtil() {
 	}
 
+	public static boolean hasAliases(RhsPart part, String name) {
+		switch (part.getKind()) {
+			case Assignment: {
+				RhsAssignment a = (RhsAssignment) part;
+				RhsSymbol sym = getAssignmentSymbol(a);
+				if (sym != null) {
+					return name.equals(a.getName());
+				}
+				return hasAliases(a.getPart(), name);
+			}
+			case Ignored:
+			case Symbol:
+			case Set:
+				// cannot contain aliases
+				return false;
+			case Optional:
+				return hasAliases(((RhsOptional) part).getPart(), name);
+			case Cast:
+				return hasAliases(((RhsCast) part).getPart(), name);
+			case Choice:
+				for (RhsPart p : ((RhsChoice) part).getParts()) {
+					if (hasAliases(p, name)) return true;
+				}
+				return false;
+			case Sequence:
+				for (RhsPart p : ((RhsSequence) part).getParts()) {
+					if (hasAliases(p, name)) return true;
+				}
+				return false;
+			case Unordered:
+				for (RhsPart p : ((RhsUnordered) part).getParts()) {
+					if (hasAliases(p, name)) return true;
+				}
+				return false;
+			case List:
+				throw new UnsupportedOperationException();
+			default:
+				throw new IllegalStateException();
+		}
+	}
+
 	/**
 	 * @return null if undefined, empty set if ambiguous
 	 */
 	public static Set<RhsSymbol> getSymbolsByName(final String name, RhsPart p) {
-		boolean aliasesOnly = p.accept(new AnySwitchBase() {
-			@Override
-			public Boolean caseAssignment(RhsAssignment p1) {
-				RhsSymbol sym = getAssignmentSymbol(p1);
-				if (sym != null) {
-					return name.equals(p1.getName());
-				}
-				return super.caseAssignment(p1);
-			}
-
-			@Override
-			public Boolean caseIgnored(RhsIgnored p) {
-				// cannot contain named elements
-				return false;
-			}
-		});
-		return p.accept(new SymbolResolver(name, aliasesOnly));
+		return new SymbolResolver(name, hasAliases(p, name)).resolve(p);
 	}
 
-	private static class SymbolResolver extends RhsSwitch<Set<RhsSymbol>> {
+	private static class SymbolResolver {
 		private final String name;
 		private final boolean aliasesOnly;
 
@@ -62,28 +87,46 @@ public class RuleUtil {
 			this.aliasesOnly = aliasesOnly;
 		}
 
-		@Override
-		public Set<RhsSymbol> caseAssignment(RhsAssignment p) {
-			RhsSymbol sym = getAssignmentSymbol(p);
-			if (sym != null) {
-				return name.equals(p.getName()) ? Collections.singleton(sym) : null;
+		public Set<RhsSymbol> resolve(RhsPart part) {
+			switch (part.getKind()) {
+				case Assignment: {
+					RhsAssignment a = (RhsAssignment) part;
+					RhsSymbol sym = getAssignmentSymbol(a);
+					if (sym != null) {
+						return name.equals(a.getName()) ? Collections.singleton(sym) : null;
+					}
+					return resolve(a.getPart());
+				}
+				case Symbol:
+					if (!aliasesOnly && name.equals(((RhsSymbol) part).getTarget().getName())) {
+						return Collections.singleton((RhsSymbol) part);
+					}
+					return null;
+				case Unordered:
+					return fromList(((RhsUnordered) part).getParts());
+				case Sequence:
+					return fromList(((RhsSequence) part).getParts());
+				case Choice:
+					return choice((RhsChoice) part);
+				case Optional:
+					return resolve(((RhsOptional) part).getPart());
+				case Cast:
+					return resolve(((RhsCast) part).getPart());
+				case Set:
+				case Ignored:
+					// cannot contain named elements
+					return null;
+				case List:
+					throw new UnsupportedOperationException();
+				default:
+					throw new IllegalStateException();
 			}
-			return p.getPart().accept(this);
 		}
 
-		@Override
-		public Set<RhsSymbol> caseSymbol(RhsSymbol p) {
-			if (name.equals(p.getTarget().getName()) && !aliasesOnly) {
-				return Collections.singleton(p);
-			}
-			return null;
-		}
-
-		@Override
-		public Set<RhsSymbol> caseChoice(RhsChoice p) {
+		public Set<RhsSymbol> choice(RhsChoice p) {
 			Set<RhsSymbol> result = null;
 			for (RhsPart part : p.getParts()) {
-				Set<RhsSymbol> pr = part.accept(this);
+				Set<RhsSymbol> pr = resolve(part);
 				if (pr != null) {
 					if (pr.size() == 0) {
 						return pr;
@@ -109,7 +152,7 @@ public class RuleUtil {
 		private Set<RhsSymbol> fromList(RhsPart[] list) {
 			Set<RhsSymbol> result = null;
 			for (RhsPart p : list) {
-				Set<RhsSymbol> pr = p.accept(this);
+				Set<RhsSymbol> pr = resolve(p);
 				if (pr != null) {
 					if (pr.size() == 0) {
 						return pr;
@@ -122,109 +165,10 @@ public class RuleUtil {
 			}
 			return result;
 		}
-
-		@Override
-		public Set<RhsSymbol> caseOptional(RhsOptional p) {
-			return p.getPart().accept(this);
-		}
-
-		@Override
-		public Set<RhsSymbol> caseCast(RhsCast p) {
-			return p.getPart().accept(this);
-		}
-
-		@Override
-		public Set<RhsSymbol> caseSet(RhsSet p) {
-			// cannot contain named elements
-			return null;
-		}
-
-		@Override
-		public Set<RhsSymbol> caseIgnored(RhsIgnored p) {
-			// cannot contain named elements
-			return null;
-		}
-
-		@Override
-		public Set<RhsSymbol> caseSequence(RhsSequence p) {
-			return fromList(p.getParts());
-		}
-
-		@Override
-		public Set<RhsSymbol> caseUnordered(RhsUnordered p) {
-			return fromList(p.getParts());
-		}
-
-		@Override
-		public Set<RhsSymbol> caseList(RhsList p) {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	private static RhsSymbol getAssignmentSymbol(RhsAssignment p) {
 		final RhsPart part = RhsUtil.unwrapEx(p, true, true, true);
 		return part instanceof RhsSymbol ? (RhsSymbol) part : null;
-	}
-
-
-	private static class AnySwitchBase extends RhsSwitch<Boolean> {
-		private Boolean caseAny(RhsPart[] parts) {
-			for (RhsPart part : parts) {
-				if (part.accept(this)) {
-					return Boolean.TRUE;
-				}
-			}
-			return Boolean.FALSE;
-		}
-
-		@Override
-		public Boolean caseChoice(RhsChoice p) {
-			return caseAny(p.getParts());
-		}
-
-		@Override
-		public Boolean caseAssignment(RhsAssignment p) {
-			return p.getPart().accept(this);
-		}
-
-		@Override
-		public Boolean caseOptional(RhsOptional p) {
-			return p.getPart().accept(this);
-		}
-
-		@Override
-		public Boolean caseSequence(RhsSequence p) {
-			return caseAny(p.getParts());
-		}
-
-		@Override
-		public Boolean caseSymbol(RhsSymbol p) {
-			return false;
-		}
-
-		@Override
-		public Boolean caseUnordered(RhsUnordered p) {
-			return caseAny(p.getParts());
-		}
-
-		@Override
-		public Boolean caseList(RhsList p) {
-			throw new IllegalStateException();
-		}
-
-		@Override
-		public Boolean caseCast(RhsCast p) {
-			return p.getPart().accept(this);
-		}
-
-		@Override
-		public Boolean caseSet(RhsSet p) {
-			return false;
-		}
-
-		@Override
-		public Boolean caseIgnored(RhsIgnored p) {
-			return p.getInner().accept(this);
-		}
 	}
 }

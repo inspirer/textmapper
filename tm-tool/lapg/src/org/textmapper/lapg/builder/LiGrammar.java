@@ -33,7 +33,8 @@ class LiGrammar implements Grammar {
 	private final int terminals;
 	private final int grammarSymbols;
 
-	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, LexerRule[] lexerRules, NamedPattern[] patterns,
+	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, LexerRule[] lexerRules,
+					 NamedPattern[] patterns,
 					 LexerState[] lexerStates,
 					 InputRef[] inputs, Symbol eoi,
 					 Symbol error, int terminals, int grammarSymbols) {

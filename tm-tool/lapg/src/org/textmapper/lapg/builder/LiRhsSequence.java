@@ -18,7 +18,10 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.ast.AstType;
-import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsMapping;
+import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -129,11 +132,6 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	@Override
 	public Kind getKind() {
 		return Kind.Sequence;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseSequence(this);
 	}
 
 	@Override

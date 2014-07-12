@@ -163,7 +163,8 @@ public class ListsRewriter {
 		}
 	}
 
-	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules, int skipParts, boolean rightRecursive) {
+	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules, int skipParts,
+													   boolean rightRecursive) {
 		List<LiRhsPart> result = new ArrayList<LiRhsPart>();
 
 		for (LiRhsSequence part : listRules) {

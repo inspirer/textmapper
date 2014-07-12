@@ -18,7 +18,6 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.rule.RhsSet;
-import org.textmapper.lapg.api.rule.RhsSwitch;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.List;
@@ -162,10 +161,5 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	@Override
 	public Kind getKind() {
 		return Kind.Set;
-	}
-
-	@Override
-	public <T> T accept(RhsSwitch<T> switch_) {
-		return switch_.caseSet(this);
 	}
 }
