@@ -46,6 +46,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
 	private final Map<Object, Nonterminal> instantiations = new HashMap<Object, Nonterminal>();
 	private final Map<Nonterminal, String> anonymousNames = new LinkedHashMap<Nonterminal, String>();
+	private final List<Problem> problems = new ArrayList<Problem>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
 	private final Terminal eoi;
@@ -395,6 +396,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public Grammar create() {
 		annotateNullables();
+
+		ExpansionContext expansionContext = new ExpansionContext();
+		computeSets(expansionContext);
+
 		LiSymbol[] symbolArr = sortAndEnumerateSymbols();
 		int terminals = 0;
 		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
@@ -402,7 +407,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		int grammarSymbols = symbolArr.length;
 		for (int i = terminals; i < grammarSymbols; i++) {
-			expandNonterminal((Nonterminal) symbolArr[i]);
+			expandNonterminal((Nonterminal) symbolArr[i], expansionContext);
 		}
 
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
@@ -424,15 +429,20 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			inputArr = null;
 		}
 		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
+		Problem[] problemsArr = problems.toArray(new Problem[problems.size()]);
 
 		assignNames();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error,
-				terminals, grammarSymbols);
+				terminals, grammarSymbols, problemsArr);
 	}
 
-	private void expandNonterminal(Nonterminal n) {
+	private void computeSets(ExpansionContext expansionContext) {
+		// TODO resolve sets and populate the context
+	}
+
+	private void expandNonterminal(Nonterminal n, ExpansionContext context) {
 		for (RhsSequence r : ((LiRhsRoot) n.getDefinition()).preprocess()) {
-			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand();
+			List<RhsSymbol[]> expanded = ((LiRhsPart) r).expand(context);
 			for (RhsSymbol[] arr : expanded) {
 				rules.add(new LiRule(rules.size(), n, arr, ((LiRhsSequence) r).getPrio(), r));
 			}

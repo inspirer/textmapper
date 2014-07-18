@@ -48,8 +48,8 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
-		return inner.expand();
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		return inner.expand(context);
 	}
 
 	@Override

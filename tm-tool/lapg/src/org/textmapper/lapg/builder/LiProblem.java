@@ -13,34 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
 
-/**
- * Input grammar definition.
- */
-public interface Grammar {
+import org.textmapper.lapg.api.Problem;
+import org.textmapper.lapg.api.SourceElement;
 
-	Symbol[] getSymbols();
+public class LiProblem implements Problem {
 
-	Rule[] getRules();
+	private final SourceElement element;
+	private final String message;
 
-	Prio[] getPriorities();
+	public LiProblem(SourceElement element, String message) {
+		this.element = element;
+		this.message = message;
+	}
 
-	LexerState[] getLexerStates();
+	@Override
+	public SourceElement getSourceElement() {
+		return element;
+	}
 
-	LexerRule[] getLexerRules();
-
-	NamedPattern[] getPatterns();
-
-	int getTerminals();
-
-	int getGrammarSymbols();
-
-	InputRef[] getInput();
-
-	Symbol getEoi();
-
-	Symbol getError();
-
-	Problem[] getProblems();
+	@Override
+	public String getMessage() {
+		return message;
+	}
 }

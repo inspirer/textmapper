@@ -13,34 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api;
+package org.textmapper.lapg.builder;
 
-/**
- * Input grammar definition.
- */
-public interface Grammar {
+import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.rule.RhsSet;
 
-	Symbol[] getSymbols();
+final class ExpansionContext {
 
-	Rule[] getRules();
-
-	Prio[] getPriorities();
-
-	LexerState[] getLexerStates();
-
-	LexerRule[] getLexerRules();
-
-	NamedPattern[] getPatterns();
-
-	int getTerminals();
-
-	int getGrammarSymbols();
-
-	InputRef[] getInput();
-
-	Symbol getEoi();
-
-	Symbol getError();
-
-	Problem[] getProblems();
+	Terminal[] resolveSet(RhsSet set) {
+		// TODO implement
+		return new Terminal[0];
+	}
 }

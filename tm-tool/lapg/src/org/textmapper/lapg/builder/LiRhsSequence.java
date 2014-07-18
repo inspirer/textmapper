@@ -73,8 +73,8 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
-		return expandList(parts);
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		return expandList(parts, context);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		return structuralHashCode(parts);
 	}
 
-	static List<RhsSymbol[]> expandList(LiRhsPart[] list) {
+	static List<RhsSymbol[]> expandList(LiRhsPart[] list, ExpansionContext context) {
 		boolean simplePartsOnly = true;
 		for (RhsPart part : list) {
 			if (!(part instanceof RhsSymbol)) {
@@ -106,7 +106,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		} else {
 			List<RhsSymbol[]> result = ONE;
 			for (LiRhsPart part : list) {
-				List<RhsSymbol[]> val = part.expand();
+				List<RhsSymbol[]> val = part.expand(context);
 				result = cartesianProduct(result, val);
 			}
 			return result;

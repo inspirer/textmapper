@@ -15,32 +15,9 @@
  */
 package org.textmapper.lapg.api;
 
-/**
- * Input grammar definition.
- */
-public interface Grammar {
+public interface Problem {
 
-	Symbol[] getSymbols();
+	SourceElement getSourceElement();
 
-	Rule[] getRules();
-
-	Prio[] getPriorities();
-
-	LexerState[] getLexerStates();
-
-	LexerRule[] getLexerRules();
-
-	NamedPattern[] getPatterns();
-
-	int getTerminals();
-
-	int getGrammarSymbols();
-
-	InputRef[] getInput();
-
-	Symbol getEoi();
-
-	Symbol getError();
-
-	Problem[] getProblems();
+	String getMessage();
 }

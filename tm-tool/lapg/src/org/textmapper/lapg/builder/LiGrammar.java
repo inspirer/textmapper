@@ -32,12 +32,14 @@ class LiGrammar implements Grammar {
 
 	private final int terminals;
 	private final int grammarSymbols;
+	private final Problem[] problems;
 
 	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, LexerRule[] lexerRules,
 					 NamedPattern[] patterns,
 					 LexerState[] lexerStates,
 					 InputRef[] inputs, Symbol eoi,
-					 Symbol error, int terminals, int grammarSymbols) {
+					 Symbol error, int terminals, int grammarSymbols,
+					 Problem[] problems) {
 		this.symbols = symbols;
 		this.rules = rules;
 		this.priorities = priorities;
@@ -49,6 +51,7 @@ class LiGrammar implements Grammar {
 		this.error = error;
 		this.terminals = terminals;
 		this.grammarSymbols = grammarSymbols;
+		this.problems = problems;
 	}
 
 	@Override
@@ -94,6 +97,11 @@ class LiGrammar implements Grammar {
 	@Override
 	public Symbol getError() {
 		return error;
+	}
+
+	@Override
+	public Problem[] getProblems() {
+		return problems;
 	}
 
 	@Override

@@ -16,10 +16,7 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
-import org.textmapper.lapg.api.LexerState;
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -212,9 +209,9 @@ public class TMResolver {
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
-					Nonterminal symopt = (Nonterminal) create(
-							new TmaIdentifier(id.getName(), id.getSource(), id.getLine(), id.getOffset(), id.getEndoffset()),
-							sym.getType(), false);
+					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(), id.getLine(),
+							id.getOffset(), id.getEndoffset());
+					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
 					builder.addRule(symopt, builder.sequence(null,
 							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, id), id)), id), null);
 					return symopt;
@@ -225,8 +222,10 @@ public class TMResolver {
 		return sym;
 	}
 
-	void error(ITmaNode n, String message) {
-		tree.getErrors().add(new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
+	void error(TextSourceElement n, String message) {
+		if (n == null || message == null) return;
+		tree.getErrors().add(
+				new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
 	}
 
 	private static class LapgResolverProblem extends TMProblem {

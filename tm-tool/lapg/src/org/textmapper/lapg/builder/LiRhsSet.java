@@ -17,9 +17,12 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsSet;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class LiRhsSet extends LiRhsPart implements RhsSet {
@@ -59,8 +62,18 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
-		throw new IllegalStateException("sets must be eliminated before expansions");
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		Terminal[] terminals = context.resolveSet(this);
+		if (terminals == null) {
+			// errors were already reported, so just ignoring the set
+			return Collections.singletonList(RhsSymbol.EMPTY_LIST);
+		}
+
+		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>(terminals.length);
+		for (Terminal t : terminals) {
+			result.add(new RhsSymbol[]{new LiRhsSymbol(t, this)});
+		}
+		return result;
 	}
 
 	@Override

@@ -86,7 +86,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
+	List<RhsSymbol[]> expand(ExpansionContext context) {
 		throw new UnsupportedOperationException();
 	}
 

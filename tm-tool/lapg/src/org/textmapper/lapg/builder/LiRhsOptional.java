@@ -42,8 +42,8 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
-		List<RhsSymbol[]> result = inner.expand();
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		List<RhsSymbol[]> result = inner.expand(context);
 		for (RhsSymbol[] p : result) {
 			if (p.length == 0) {
 				return result;

@@ -194,6 +194,7 @@
 			<pathelement location="${ideaPath}/lib/javac2.jar"/>
 			<pathelement location="${ideaPath}/lib/jdom.jar"/>
 			<pathelement location="${ideaPath}/lib/asm.jar"/>
+			<pathelement location="${ideaPath}/lib/asm-all.jar"/>
 			<pathelement location="${ideaPath}/lib/asm4-all.jar"/>
 			<pathelement location="${ideaPath}/lib/jgoodies-forms.jar"/>
 		</path>

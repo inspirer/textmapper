@@ -42,7 +42,7 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
+	List<RhsSymbol[]> expand(ExpansionContext context) {
 		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
 		int[] permutation = new int[parts.length];
 		for (int i = 0; i < permutation.length; i++) {
@@ -53,7 +53,7 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 			for (int i = 0; i < parts.length; i++) {
 				temp[i] = parts[permutation[i]];
 			}
-			result.addAll(LiRhsSequence.expandList(temp));
+			result.addAll(LiRhsSequence.expandList(temp, context));
 		} while (permute(permutation));
 		return result;
 	}

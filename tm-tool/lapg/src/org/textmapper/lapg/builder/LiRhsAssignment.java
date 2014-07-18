@@ -55,8 +55,8 @@ class LiRhsAssignment extends LiRhsPart implements RhsAssignment {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
-		return inner.expand();
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		return inner.expand(context);
 	}
 
 	@Override

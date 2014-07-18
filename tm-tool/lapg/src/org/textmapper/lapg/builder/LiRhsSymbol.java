@@ -49,7 +49,8 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 	}
 
 	@Override
-	List<RhsSymbol[]> expand() {
+	List<RhsSymbol[]> expand(ExpansionContext context) {
+		// TODO inline?
 		return Collections.singletonList(new RhsSymbol[]{this});
 	}
 

@@ -16,9 +16,7 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
-import org.textmapper.lapg.api.Grammar;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.common.FormatUtil;
 import org.textmapper.templates.api.types.IClass;
@@ -64,6 +62,9 @@ public class TMCompiler {
 		String copyrightHeader = TMTextUtil.extractCopyright(tree.getSource());
 
 		Grammar g = builder.create();
+		for (Problem p : g.getProblems()) {
+			resolver.error(unwrap(p.getSourceElement()), p.getMessage());
+		}
 		generateUniqueIds(g);
 		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader, targetLanguage);
 	}
@@ -144,4 +145,14 @@ public class TMCompiler {
 		return options;
 	}
 
+	private TextSourceElement unwrap(SourceElement element) {
+		while (element instanceof DerivedSourceElement) {
+			element = ((DerivedSourceElement) element).getOrigin();
+		}
+		if (element instanceof TextSourceElement) {
+			return (TextSourceElement) element;
+		}
+		return null;
+
+	}
 }

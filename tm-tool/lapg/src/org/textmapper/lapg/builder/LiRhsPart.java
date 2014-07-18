@@ -37,7 +37,7 @@ abstract class LiRhsPart extends LiUserDataHolder implements RhsPart, DerivedSou
 		this.origin = origin;
 	}
 
-	abstract List<RhsSymbol[]> expand();
+	abstract List<RhsSymbol[]> expand(ExpansionContext context);
 
 	@Override
 	public final SourceElement getOrigin() {
