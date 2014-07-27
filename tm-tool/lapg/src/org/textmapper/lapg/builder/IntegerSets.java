@@ -20,7 +20,7 @@ import java.util.Arrays;
 /**
  * Gryaznov Evgeny, 8/17/11
  * <p/>
- * Effectively stores and merges integer sets (represented as sorted arrays)
+ * Effectively stores, merges and intersects integer sets (represented as sorted arrays).
  */
 final class IntegerSets {
 
@@ -34,8 +34,19 @@ final class IntegerSets {
 		push(1, new int[]{});
 	}
 
+	private static boolean isSet(int... set) {
+		if (set.length < 2) return true;
+		int prev = set[0] - 1;
+		for (int i : set) {
+			if (prev >= i) return false;
+			prev = i;
+		}
+		return true;
+	}
+
 	public int add(int... set) {
 		if (set.length == 0) return EMPTY_SET;
+		if (!isSet(set)) throw new IllegalArgumentException();
 		int hash = hashCode(set);
 		for (HashEntry bucket = htable[toHashIndex(hash)]; bucket != null; bucket = bucket.next) {
 			if (bucket.hash == hash && Arrays.equals(sets[bucket.index], set)) {
