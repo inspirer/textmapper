@@ -120,8 +120,9 @@ class LiSetResolver {
 			int i = index.set(set);
 			assert sets[i] != null;
 			int[] resultSet = closure.getSet(sets[i].set);
+			boolean complement = closure.isComplement(sets[i].set);
 			Terminal[] result;
-			if (closure.isComplement(sets[i].set)) {
+			if (complement) {
 				result = new Terminal[index.terminals() - resultSet.length];
 				int k = 0;
 				for (int e = 0; e < index.terminals(); e++) {
@@ -136,6 +137,10 @@ class LiSetResolver {
 				for (int e = 0; e < resultSet.length; e++) {
 					result[e] = index.terminal(resultSet[e]);
 				}
+			}
+			if (result.length == 0) {
+				problems.add(new LiProblem(set, "Set is empty."));
+				continue;
 			}
 			expansionContext.addSet(set, result);
 		}
@@ -171,13 +176,16 @@ class LiSetResolver {
 					dependenciesSet.add(targetIndex);
 				}
 				return new Descriptor(closure.addSet(EMPTY_ARRAY, set), dependenciesSet.create());
-			case Intersection:
-				for (RhsSet child : set.getSets()) {
-					int targetIndex = index.set(child);
+			case Intersection: {
+				RhsSet[] children = set.getSets();
+				int[] childSets = new int[children.length];
+				for (int i = 0; i < children.length; i++) {
+					int targetIndex = index.set(children[i]);
 					assert sets[targetIndex] != null;
-					dependenciesSet.add(sets[targetIndex].set);
+					childSets[i] = sets[targetIndex].set;
 				}
-				return new Descriptor(closure.addIntersection(dependenciesSet.create(), set), EMPTY_ARRAY);
+				return new Descriptor(closure.addIntersection(childSets, set), EMPTY_ARRAY);
+			}
 			default:
 				throw new IllegalStateException();
 		}

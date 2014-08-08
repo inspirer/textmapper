@@ -31,6 +31,7 @@ class SetBuilder {
 	}
 
 	public void add(int i) {
+		assert i >= 0 && i < set.length;
 		if (set[i] != -1) return;
 
 		set[i] = (first == -1) ? -2 : first;
