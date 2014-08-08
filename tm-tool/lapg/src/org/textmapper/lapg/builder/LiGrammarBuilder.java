@@ -400,11 +400,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		ExpansionContext expansionContext = new ExpansionContext();
 		computeSets(expansionContext);
 
-		LiSymbol[] symbolArr = sortAndEnumerateSymbols();
-		int terminals = 0;
-		while (terminals < symbolArr.length && symbolArr[terminals].isTerm()) {
-			terminals++;
-		}
+		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		int terminals = sortAndEnumerateSymbols(symbolArr);
 		int grammarSymbols = symbolArr.length;
 		for (int i = terminals; i < grammarSymbols; i++) {
 			expandNonterminal((Nonterminal) symbolArr[i], expansionContext);
@@ -437,7 +434,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private void computeSets(ExpansionContext expansionContext) {
-		// TODO resolve sets and populate the context
+		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		int terminals = sortAndEnumerateSymbols(symbolArr);
+		LiSetResolver resolver = new LiSetResolver(symbolArr, terminals);
+		resolver.resolve(expansionContext, problems);
 	}
 
 	private void expandNonterminal(Nonterminal n, ExpansionContext context) {
@@ -449,21 +449,25 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 	}
 
-	private LiSymbol[] sortAndEnumerateSymbols() {
-		LiSymbol[] result = symbols.toArray(new LiSymbol[symbols.size()]);
-		Arrays.sort(result, new Comparator<LiSymbol>() {
-			@Override
-			public int compare(LiSymbol o1, LiSymbol o2) {
-				int kind1 = o1.isTerm() ? 0 : 1;
-				int kind2 = o2.isTerm() ? 0 : 1;
-				return new Integer(kind1).compareTo(kind2);
+	private int sortAndEnumerateSymbols(LiSymbol[] result) {
+		int terminals = 0;
+		for (LiSymbol s : symbols) {
+			if (s.isTerm()) terminals++;
+		}
+		int term_index = 0, nonterm_index = terminals;
+		for (LiSymbol s : symbols) {
+			if (s.isTerm()) {
+				result[term_index++] = s;
+			} else {
+				result[nonterm_index++] = s;
 			}
-		});
+		}
+		assert term_index == terminals;
+		assert nonterm_index == result.length;
 		for (int i = 0; i < result.length; i++) {
 			result[i].setIndex(i);
 		}
-		return result;
-
+		return terminals;
 	}
 
 	private void assignNames() {

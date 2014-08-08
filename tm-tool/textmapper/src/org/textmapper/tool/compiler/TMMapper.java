@@ -664,6 +664,9 @@ public class TMMapper {
 		if (part instanceof RhsOptional) {
 			traverseFields(((RhsOptional) part).getPart(), context, index, withAlias);
 
+		} else if (part instanceof RhsSet) {
+			// sets do not contain any useful information for ASTs
+
 		} else if (part instanceof RhsUnordered || part instanceof RhsSequence) {
 			RhsPart[] parts = part instanceof RhsUnordered
 					? ((RhsUnordered) part).getParts()

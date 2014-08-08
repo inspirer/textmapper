@@ -15,24 +15,35 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Terminal;
-import org.textmapper.lapg.api.rule.RhsSet;
+import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.junit.Assert.*;
 
-final class ExpansionContext {
+public class SetBuilderTest {
+	@Test
+	public void testSimple() throws Exception {
+		SetBuilder b = new SetBuilder(7);
+		b.add(1);
+		b.add(4);
+		b.add(3);
 
-	private Map<RhsSet, Terminal[]> resolvedSets = new HashMap<RhsSet, Terminal[]>();
+		assertArrayEquals(new int[]{1,3,4}, b.create());
+		assertArrayEquals(new int[]{}, b.create());
 
-	ExpansionContext() {
+		b.add(6);
+
+		assertArrayEquals(new int[]{6}, b.create());
 	}
 
-	Terminal[] resolveSet(RhsSet set) {
-		return resolvedSets.get(set);
-	}
+	@Test
+	public void testFull() throws Exception {
+		SetBuilder b = new SetBuilder(100);
+		for (int i = 99; i >= 0; i--) {
+			b.add(i);
+		}
 
-	void addSet(RhsSet set, Terminal[] value) {
-		resolvedSets.put(set, value);
+		int[] expected = new int[100];
+		for (int i = 0; i < 100; i++) expected[i] = i;
+		assertArrayEquals(expected, b.create());
 	}
 }
