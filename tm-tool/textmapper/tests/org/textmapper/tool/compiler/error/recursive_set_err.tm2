@@ -16,11 +16,12 @@ input ::=
 ;
 
 abc ::=
-# ERR: @'a' | ~abc: Cannot resolve set, since it recursively depends on itself.
+# ERR: @~abc: Cannot resolve set, since it recursively depends on itself.
 	  set('a' | ~abc) 'b'
 ;
 
 xyz ::=
+# ERR: @~xyz: Cannot resolve set, since it recursively depends on itself.
 # ERR: @'c' & ~xyz: Cannot resolve set, since it recursively depends on itself.
 	  set('c' & ~xyz) 'b'
 ;

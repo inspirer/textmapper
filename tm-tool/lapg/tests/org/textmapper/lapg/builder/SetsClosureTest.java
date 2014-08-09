@@ -94,12 +94,12 @@ public class SetsClosureTest {
 		closure.addDependencies(3, 4);
 		closure.addDependencies(4, 2);
 
-		closure.addIntersection(new int[]{0, 1}, 2);
-		closure.addIntersection(new int[]{1, 4}, 2);
+		closure.addIntersection(new int[]{0, 1}, 2);	// 0 & 1: 3, 5, 9
+		closure.addIntersection(new int[]{1, 4}, 2);	// 3, 9, 12
 		closure.addIntersection(new int[]{5, 6}, 2);
 
-		closure.addIntersection(new int[]{1, closure.complement(7)}, 2); // 8: = 1 \ {3, 9}
-		closure.addIntersection(new int[]{8, closure.complement(0)}, 2); // 9: = 8 \ 0
+		closure.addIntersection(new int[]{1, closure.complement(7, 78)}, 2); // 8, 9: = 1 \ {3, 9} = 0 5 12
+		closure.addIntersection(new int[]{9, closure.complement(0, 78)}, 2); // 10, 11: = 8 \ 0
 
 		assertTrue(closure.compute());
 
@@ -108,8 +108,8 @@ public class SetsClosureTest {
 		assertArrayEquals(new int[]{3, 9, 12}, closure.getSet(6));
 		assertArrayEquals(new int[]{3, 9}, closure.getSet(7));
 
-		assertArrayEquals(new int[]{0, 5, 12}, closure.getSet(8));
-		assertArrayEquals(new int[]{0, 12}, closure.getSet(9));
+		assertArrayEquals(new int[]{0, 5, 12}, closure.getSet(9));
+		assertArrayEquals(new int[]{0, 12}, closure.getSet(11));
 	}
 
 	@Test
@@ -119,7 +119,7 @@ public class SetsClosureTest {
 		closure.addSet(new int[]{1, 2, 3, 4, 5, 6, 9}, 1);
 		closure.addSet(new int[]{0, 3, 5, 9, 12}, 2);
 
-		closure.addDependencies(1, closure.complement(0));
+		closure.addDependencies(1, closure.complement(0, 78));
 
 		assertTrue(closure.compute());
 
@@ -153,10 +153,10 @@ public class SetsClosureTest {
 		closure.addSet(new int[]{0, 3, 5, 9, 12}, 2);
 
 		closure.addDependencies(0, 1);
-		closure.addDependencies(1, closure.complement(0));
+		closure.addDependencies(1, closure.complement(0, 78));
 
 		assertFalse(closure.compute());
 
-		assertArrayEquals(new Object[]{2}, closure.getErrorNodes());
+		assertArrayEquals(new Object[]{78}, closure.getErrorNodes());
 	}
 }

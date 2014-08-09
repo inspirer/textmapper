@@ -33,8 +33,8 @@ class LiSetResolver {
 	private static final Descriptor SENTINEL = new Descriptor(-1, EMPTY_ARRAY);
 
 	private static class Descriptor {
-		private int set;
-		private int[] dependencies;
+		private int set;      			// positive
+		private int[] dependencies;		// contains indices in "sets" field
 
 		private Descriptor(int set, int[] dependencies) {
 			this.set = set;
@@ -167,7 +167,7 @@ class LiSetResolver {
 				assert set.getSets().length == 1;
 				int targetIndex = index.set(set.getSets()[0]);
 				assert sets[targetIndex] != null;
-				return new Descriptor(closure.complement(sets[targetIndex].set), EMPTY_ARRAY);
+				return new Descriptor(closure.complement(sets[targetIndex].set, set), EMPTY_ARRAY);
 			}
 			case Union:
 				for (RhsSet child : set.getSets()) {

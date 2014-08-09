@@ -47,11 +47,15 @@ class SetsClosure {
 	}
 
 	public void addDependencies(int node, int... source) {
+		assert node >= 0 && node < nodes.size();
 		nodes.get(node).setEdges(source);
 	}
 
-	public int complement(int node) {
-		return -1 - node;
+	public int complement(int node, Object origin) {
+		SetNode result = new SetNode(IntegerSets.EMPTY_SET, origin);
+		this.nodes.add(result);
+		result.setEdges(-1 - node);
+		return nodes.size() - 1;
 	}
 
 	public boolean compute() {
@@ -62,15 +66,18 @@ class SetsClosure {
 			graph[i] = nodes.get(i).edges;
 			if (graph[i] == null) graph[i] = EMPTY_ARRAY;
 			node_set[i] = nodes.get(i).index;
+			assert node_set[i] >= -1;
 		}
 		return new TransitiveClosure().run();
 	}
 
 	public boolean isComplement(int node) {
+		assert node >= 0 && node < nodes.size();
 		return node_set[node] < 0;
 	}
 
 	public int[] getSet(int node) {
+		assert node >= 0 && node < nodes.size();
 		int set = node_set[node];
 		return sets.sets[set < 0 ? sets.complement(set) : set];
 	}
@@ -145,7 +152,7 @@ class SetsClosure {
 				// Intersection.
 				int result = sets.complement(IntegerSets.EMPTY_SET);
 				for (int node : graph[stack[top]]) {
-					int s = node < 0 ? sets.complement(node_set[complement(node)]) : node_set[node];
+					int s = node < 0 ? sets.complement(node_set[-1 - node]) : node_set[node];
 					result = sets.intersection(result, s);
 				}
 				node_set[stack[top]] = result;
@@ -169,7 +176,7 @@ class SetsClosure {
 						hasErrors = true;
 						break;
 					}
-					int wNode = w < 0 ? complement(w) : w;
+					int wNode = w < 0 ? -w - 1 : w;
 					if (onstack[wNode]) continue;
 
 					result = sets.union(result, w < 0 ? sets.complement(node_set[wNode]) : node_set[wNode]);
@@ -186,7 +193,7 @@ class SetsClosure {
 	}
 
 	private static class SetNode {
-		public final int index;    // -1 for intersection nodes
+		public final int index;    // -1 for intersection nodes, 0+ initial set
 		public final Object origin;
 		private int[] edges;  // negative edges mean complement of the target set
 		private boolean isError;

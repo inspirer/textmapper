@@ -44,7 +44,7 @@ public class ErrorsTest {
 
 	@Test
 	public void testRecursiveSetErr() {
-		process("tests/org/textmapper/tool/compiler/error/recursive_set_err.tm2", 3);
+		process("tests/org/textmapper/tool/compiler/error/recursive_set_err.tm2", 4);
 	}
 
 	private void process(String filename, int errors) {
@@ -80,28 +80,32 @@ public class ErrorsTest {
 		final BufferedReader bufferedReader = new BufferedReader(new StringReader(contents));
 		LinkedHashSet<ReportedProblem> result = new LinkedHashSet<ReportedProblem>();
 		int lineNumber = 0;
+		List<ReportedProblem> pending = new ArrayList<ReportedProblem>(4);
+
 		String line;
-		String expected = null;
-		String errorString = null;
 		while ((line = bufferedReader.readLine()) != null) {
 			lineNumber++;
-			if (expected != null) {
-				assertTrue("bad line: " + line, line.contains(expected));
-				result.add(new ReportedProblem(lineNumber, expected, errorString));
-				expected = null;
-				continue;
-			}
 			if (line.startsWith(PREFIX)) {
-				expected = line.substring(PREFIX.length()).trim();
-				int i = expected.indexOf(": ");
+				line = line.substring(PREFIX.length()).trim();
+				int i = line.indexOf(": ");
 				assertTrue(i > 0);
-				errorString = expected.substring(i + 2);
-				expected = expected.substring(0, i);
+				pending.add(new ReportedProblem(0,
+						line.substring(0, i),
+						line.substring(i + 2)));
+
+			} else if (!pending.isEmpty()) {
+				for (ReportedProblem p : pending) {
+					assertTrue("bad line: " + line + " for " + p.toString(), line.contains(p.getElement()));
+					p.setLine(lineNumber);
+					result.add(p);
+				}
+				pending.clear();
+				continue;
 			} else {
 				assertFalse("bad comment: " + line, line.startsWith("#") && line.contains("ERR"));
 			}
 		}
-		assertNull(expected);
+		assertTrue(pending.isEmpty());
 		return result;
 	}
 
@@ -174,6 +178,14 @@ public class ErrorsTest {
 			this.line = line;
 			this.element = element;
 			this.message = message;
+		}
+
+		public String getElement() {
+			return element;
+		}
+
+		public void setLine(int line) {
+			this.line = line;
 		}
 
 		@Override
