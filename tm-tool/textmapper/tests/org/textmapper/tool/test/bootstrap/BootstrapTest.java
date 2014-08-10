@@ -61,7 +61,8 @@ public class BootstrapTest {
 				"TypesParser.java", "TypesLexer.java", "TypesTree.java", "ast/AstNode.java", "ast/AstNode.java",
 				"ast/AstType.java", "ast/AstFeatureDeclaration.java", "ast/AstConstraint.java",
 				"ast/IAstExpression.java", "ast/AstInput.java", "ast/AstLiteralExpression.java",
-				"ast/AstListOfIdentifierAnd2ElementsCommaSeparatedItem.java", "ast/AstMultiplicity.java", "ast/AstTypeEx.java",
+				"ast/AstListOfIdentifierAnd2ElementsCommaSeparatedItem.java", "ast/AstMultiplicity.java",
+				"ast/AstTypeEx.java",
 				"ast/AstMethodDeclaration.java"}, 0);
 	}
 
@@ -79,8 +80,8 @@ public class BootstrapTest {
 
 	@Test
 	public void testRewriteTm() {
-		bootstrap("tests/org/textmapper/tool/compiler/input", "rewrite.tm", new String[0], new String[]{
-				"RewriteParser.java", "RewriteLexer.java"}, 0);
+		bootstrap("tests/org/textmapper/tool/compiler/input", "rewrite.tm", new String[0],
+				new String[0], 0);
 	}
 
 	@Test
@@ -113,6 +114,12 @@ public class BootstrapTest {
 	public void testSampleNoParser() {
 		bootstrap("tests/org/textmapper/tool/test/bootstrap/lexeronly", "noparser.tm",
 				new String[0], new String[]{"NoparserLexer.java"}, 0);
+	}
+
+	@Test
+	public void testSets() {
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/set", "set_test.tm",
+				new String[0], new String[]{"SetLexer.java", "SetParser.java"}, 0);
 	}
 
 	@Test

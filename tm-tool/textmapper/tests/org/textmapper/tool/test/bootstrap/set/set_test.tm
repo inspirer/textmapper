@@ -3,7 +3,7 @@ language set_test(java);
 prefix = "Set"
 package = "org.textmapper.tool.test.bootstrap.set"
 breaks = true
-gentree = true
+gentree = false
 genast = false
 genastdef = true
 positions = "line,offset"

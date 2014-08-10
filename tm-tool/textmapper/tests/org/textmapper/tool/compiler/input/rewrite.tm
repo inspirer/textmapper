@@ -1,7 +1,4 @@
-language rewrite(java);
-
-prefix = "Rewrite"
-package = "org.textmapper.tool.compiler.input"
+language rewrite(null);
 
 :: lexer
 
