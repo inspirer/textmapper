@@ -22,10 +22,7 @@ import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.RhsUtil;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 class LiSetResolver {
 
@@ -33,8 +30,8 @@ class LiSetResolver {
 	private static final Descriptor SENTINEL = new Descriptor(-1, EMPTY_ARRAY);
 
 	private static class Descriptor {
-		private int set;      			// positive
-		private int[] dependencies;		// contains indices in "sets" field
+		private int set;                // positive
+		private int[] dependencies;        // contains indices in "sets" field
 
 		private Descriptor(int set, int[] dependencies) {
 			this.set = set;
@@ -109,9 +106,20 @@ class LiSetResolver {
 		}
 
 		if (!closure.compute()) {
+			Set<RhsSet> problemSets = new HashSet<RhsSet>();
+			List<RhsPart> errors = new ArrayList<RhsPart>();
 			for (Object errorNode : closure.getErrorNodes()) {
-				problems.add(new LiProblem((RhsPart) errorNode,
-						"Cannot resolve set, since it recursively depends on itself."));
+				if (errorNode instanceof RhsSet) {
+					problemSets.add((RhsSet) errorNode);
+				} else if (errorNode instanceof RhsPart) {
+					errors.add((RhsPart) errorNode);
+				}
+			}
+			for (RhsSet set : index.topLevelSets()) {
+				traverseProblemSets(set, problemSets, errors);
+			}
+			for (RhsPart error : errors) {
+				problems.add(new LiProblem(error, "Cannot resolve set, since it recursively depends on itself."));
 			}
 			return;
 		}
@@ -256,6 +264,23 @@ class LiSetResolver {
 				break;
 			default:
 				throw new IllegalStateException();
+		}
+	}
+
+	/**
+	 * Copies to errors only topmost problem sets.
+	 */
+	private static void traverseProblemSets(RhsSet set, Set<RhsSet> problemSets, List<RhsPart> errors) {
+		if (problemSets.contains(set)) {
+			errors.add(set);
+			return;
+		}
+
+		RhsSet[] children = set.getSets();
+		if (children == null) return;
+
+		for (RhsSet child : children) {
+			traverseProblemSets(child, problemSets, errors);
 		}
 	}
 }

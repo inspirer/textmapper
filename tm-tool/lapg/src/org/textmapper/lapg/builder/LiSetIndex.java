@@ -20,10 +20,7 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 class LiSetIndex {
 
@@ -100,11 +97,11 @@ class LiSetIndex {
 	}
 
 	// Returns indexed sets in topological order.
-	Iterable<RhsSet> sortedSets() {
+	Collection<RhsSet> sortedSets() {
 		return sortedSets;
 	}
 
-	Iterable<RhsSet> topLevelSets() {
+	Collection<RhsSet> topLevelSets() {
 		return topLevelSets;
 	}
 

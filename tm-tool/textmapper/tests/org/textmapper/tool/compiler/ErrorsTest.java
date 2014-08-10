@@ -44,7 +44,7 @@ public class ErrorsTest {
 
 	@Test
 	public void testRecursiveSetErr() {
-		process("tests/org/textmapper/tool/compiler/error/recursive_set_err.tm2", 4);
+		process("tests/org/textmapper/tool/compiler/error/recursive_set_err.tm2", 3);
 	}
 
 	private void process(String filename, int errors) {

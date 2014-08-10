@@ -21,7 +21,6 @@ abc ::=
 ;
 
 xyz ::=
-# ERR: @~xyz: Cannot resolve set, since it recursively depends on itself.
 # ERR: @'c' & ~xyz: Cannot resolve set, since it recursively depends on itself.
 	  set('c' & ~xyz) 'b'
 ;
