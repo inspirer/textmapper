@@ -17,17 +17,23 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrefix extends TmaNode {
+public class TmaRuleAction extends TmaNode {
 
-	private final TmaAnnotations annotations;
+	private final TmaIdentifier action;
+	private final String parameter;
 
-	public TmaRhsPrefix(TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaRuleAction(TmaIdentifier action, String parameter, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.annotations = annotations;
+		this.action = action;
+		this.parameter = parameter;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+	public TmaIdentifier getAction() {
+		return action;
+	}
+
+	public String getParameter() {
+		return parameter;
 	}
 
 	@Override
@@ -35,8 +41,8 @@ public class TmaRhsPrefix extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (action != null) {
+			action.accept(v);
 		}
 	}
 }

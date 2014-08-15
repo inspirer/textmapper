@@ -256,8 +256,8 @@ public class TMParserCompiler {
 		}
 
 		// TODO store %shift attribute
-		TmaRhsPrefix rulePrefix = right.getPrefix();
-		String alias = rulePrefix != null && rulePrefix.getAlias() != null ? rulePrefix.getAlias().getID() : null;
+		TmaRuleAction action = right.getAction();
+		String alias = action != null && action.getAction() != null ? action.getAction().getID() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);
 		builder.addRule(left, rule, prio);
 		Map<String, Object> annotations = expressionResolver.convert(right.getAnnotations(), "AnnotateRule");

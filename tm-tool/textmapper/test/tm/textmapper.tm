@@ -57,6 +57,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '(':	/\(/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
+'{~':	/\{~/
 '}':	/\}/
 '<':	/</
 '>':	/>/
@@ -258,18 +259,21 @@ rules ::=
  	(rule0 separator '|')+ ;
 
 rule0 ::=
-	  prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt
+	  prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
 	| syntax_problem
 ;
 
 rhsPrefix ::=
-	  '[' annotations=annotations ']'
-	| '[' annotations=annotations? alias=identifier ']'
+	  annotations ':'
 ;
 
 rhsSuffix ::=
 	  '%' kind=Lprio symref
 	| '%' kind=Lshift symref
+;
+
+ruleAction ::=
+	  '{~' action=identifier parameter=scon? '}'
 ;
 
 rhsParts ::=
@@ -387,7 +391,8 @@ qualified_id (String) ::=
 ;
 
 command class ::=
-	code ;
+	  code
+;
 
 syntax_problem class : lexer_part, grammar_part, rhsPart ::=
 	error ;

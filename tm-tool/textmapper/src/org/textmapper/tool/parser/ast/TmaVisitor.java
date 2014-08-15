@@ -117,6 +117,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaRuleAction n) {
+		return true;
+	}
+
 	protected boolean visit(TmaRhsBracketsPair n) {
 		return true;
 	}

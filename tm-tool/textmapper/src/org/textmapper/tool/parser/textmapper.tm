@@ -56,6 +56,7 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '(':	/\(/
 # TODO overlaps with ID '->':	/->/
 ')':	/\)/
+'{~':	/\{~/
 '}':	/\}/
 '<':	/</
 '>':	/>/
@@ -314,18 +315,21 @@ rule_list (List<TmaRule0>) ::=
 ;
 
 rule0 (TmaRule0) ::=
-	  rhsPrefix? rhsParts? rhsSuffixopt					{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $rhsSuffixopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  rhsPrefix? rhsParts? ruleAction? rhsSuffixopt		{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $ruleAction, $rhsSuffixopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem									{ $$ = new TmaRule0($syntax_problem); }
 ;
 
 rhsPrefix (TmaRhsPrefix) ::=
-	  '[' annotations ']'								{ $$ = new TmaRhsPrefix($annotations, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| '[' annotations? alias=identifier ']'				{ $$ = new TmaRhsPrefix($annotations, $alias, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=
 	  '%' Lprio symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LPRIO, $symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '%' Lshift symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LSHIFT, $symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+ruleAction (TmaRuleAction) ::=
+	  '{~' action=identifier parameter=scon? '}'		{ $$ = new TmaRuleAction($action, $parameter, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsParts (List<ITmaRhsPart>) ::=

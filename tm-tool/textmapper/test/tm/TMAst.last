@@ -300,23 +300,22 @@ rules  : list<Rule0> ::=
 class Rule0 {
 	RhsPrefix prefix;
 	list<RhsPart> list;
+	RuleAction action;
 	RhsSuffix suffix;
 	SyntaxProblem syntaxProblem;
 }
 
 rule0  : Rule0 ::=
-	prefix=rhsPrefix? list=rhsParts? suffix=rhsSuffixopt
+	prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
   | syntaxProblem=syntax_problem
 ;
 
 class RhsPrefix {
 	Annotations annotations;
-	Identifier alias;
 }
 
 rhsPrefix  : RhsPrefix ::=
-	'[' {annotations} ']'
-  | '[' {annotations}? alias=identifier ']'
+	{annotations} ':'
 ;
 
 class RhsSuffix {
@@ -331,6 +330,15 @@ class RhsSuffix {
 rhsSuffix  : RhsSuffix ::=
 	'%' kind=Lprio as KindKind.LPRIO {symref}
   | '%' kind=Lshift as KindKind.LSHIFT {symref}
+;
+
+class RuleAction {
+	Identifier action;
+	String parameter;
+}
+
+ruleAction  : RuleAction ::=
+	'{~' action=identifier parameter=scon? '}'
 ;
 
 rhsParts  : list<RhsPart>

@@ -20,25 +20,28 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRule0 extends TmaNode {
 
-	private final List<ITmaRhsPart> list;
 	private final TmaRhsPrefix prefix;
+	private final List<ITmaRhsPart> list;
+	private final TmaRuleAction action;
 	private final TmaRhsSuffix suffix;
 	private final TmaSyntaxProblem error;
 
-	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRhsSuffix attr, TextSource source,
+	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TextSource source,
 					int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.list = list;
-		this.suffix = attr;
 		this.prefix = prefix;
+		this.list = list;
+		this.action = action;
+		this.suffix = suffix;
 		this.error = null;
 	}
 
 	public TmaRule0(TmaSyntaxProblem err) {
 		super(err.getSource(), err.getLine(), err.getOffset(), err.getEndoffset());
-		this.list = null;
-		this.suffix = null;
 		this.prefix = null;
+		this.list = null;
+		this.action = null;
+		this.suffix = null;
 		this.error = err;
 	}
 
@@ -46,12 +49,16 @@ public class TmaRule0 extends TmaNode {
 		return error != null;
 	}
 
+	public TmaRhsPrefix getPrefix() {
+		return prefix;
+	}
+
 	public List<ITmaRhsPart> getList() {
 		return list;
 	}
 
-	public TmaRhsPrefix getPrefix() {
-		return prefix;
+	public TmaRuleAction getAction() {
+		return action;
 	}
 
 	public TmaRhsSuffix getSuffix() {
@@ -77,9 +84,12 @@ public class TmaRule0 extends TmaNode {
 			prefix.accept(v);
 		}
 		if (list != null) {
-			for (ITmaRhsPart part : list) {
-				part.accept(v);
+			for (ITmaRhsPart it : list) {
+				it.accept(v);
 			}
+		}
+		if (action != null) {
+			action.accept(v);
 		}
 		if (suffix != null) {
 			suffix.accept(v);
