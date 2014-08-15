@@ -224,11 +224,11 @@ nonterm ::=
 	  annotations? name=identifier type=nonterm_type? '::=' rules ';' ;
 
 nonterm_type interface ::=
-	  [nontermTypeAST] Lreturns reference=symref
-	| [nontermTypeHint] isInline=Linline? kind=Lclass name=identifieropt implementsopt
-	| [nontermTypeHint] kind=Linterface name=identifieropt implementsopt
-	| [nontermTypeHint] kind=Lvoid
-	| [nontermTypeRaw] typeText=type
+	  Lreturns reference=symref											{~nontermTypeAST}
+	| isInline=Linline? kind=Lclass name=identifieropt implementsopt	{~nontermTypeHint}
+	| kind=Linterface name=identifieropt implementsopt					{~nontermTypeHint}
+	| kind=Lvoid														{~nontermTypeHint}
+	| typeText=type														{~nontermTypeRaw}
 ;
 
 implements ::=
@@ -238,8 +238,8 @@ assoc ::=
 	Lleft | Lright | Lnonassoc ;
 
 directive returns grammar_part ::=
-	  [directivePrio] '%' assoc symbols=references ';'
-	| [directiveInput] '%' Linput inputRefs=(inputref separator ',')+ ';'
+	  '%' assoc symbols=references ';' 						{~directivePrio}
+	| '%' Linput inputRefs=(inputref separator ',')+ ';'	{~directiveInput}
 ;
 
 inputref ::=
@@ -303,13 +303,13 @@ rhsAssignment returns rhsPart ::=
 
 rhsOptional returns rhsPart ::=
 	  rhsCast
-	| [rhsQuantifier] inner=rhsCast quantifier='?'
+	| inner=rhsCast quantifier='?' 		{~rhsQuantifier}
 ;
 
 rhsCast returns rhsPart ::=
 	  inner=rhsClass
 	| inner=rhsClass Las target=symref
-	| [rhsAsLiteral] inner=rhsClass Las literal
+	| inner=rhsClass Las literal 		{~rhsAsLiteral}
 ;
 
 rhsUnordered returns rhsPart ::=
@@ -322,26 +322,26 @@ rhsClass returns rhsPart ::=
 ;
 
 rhsPrimary returns rhsPart ::=
-	  [rhsSymbol] reference=symref
-	| [rhsNested] '(' rules ')'
-	| [rhsList] '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true
-	| [rhsList] '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false
-	| [rhsQuantifier] inner=rhsPrimary quantifier='*'
-	| [rhsQuantifier] inner=rhsPrimary quantifier='+'
-	| [rhsIgnored] '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
-	| [rhsSet] Lset '(' expr=setExpression ')'
+	  reference=symref 																		{~rhsSymbol}
+	| '(' rules ')' 																		{~rhsNested}
+	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='+' as true 	{~rhsList}
+	| '(' ruleParts=rhsParts Lseparator separator_=references ')' atLeastOne='*' as false 	{~rhsList}
+	| inner=rhsPrimary quantifier='*'														{~rhsQuantifier}
+	| inner=rhsPrimary quantifier='+'														{~rhsQuantifier}
+	| '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')' 					{~rhsIgnored}
+	| Lset '(' expr=setExpression ')' 														{~rhsSet}
 ;
 
 setPrimary returns setExpression ::=
-	  [setSymbol] operator=ID? symbol=symref
-	| [setCompound] '(' inner=setExpression ')'
-	| [setComplement] '~' inner=setPrimary
+	  operator=ID? symbol=symref 			{~setSymbol}
+	| '(' inner=setExpression ')' 			{~setCompound}
+	| '~' inner=setPrimary 					{~setComplement}
 ;
 
 setExpression interface ::=
 	  setPrimary
-	| [setBinary] left=setExpression kind='|' right=setExpression
-	| [setBinary] left=setExpression kind='&' right=setExpression
+	| left=setExpression kind='|' right=setExpression 	{~setBinary}
+	| left=setExpression kind='&' right=setExpression 	{~setBinary}
 ;
 
 rhsBracketsPair ::=
@@ -361,16 +361,16 @@ annotation ::=
 expression ::=
 	  literal
 	| symref
-	| [instance] Lnew className=name '(' map_entriesopt ')'
-	| [array] '[' content=(expression separator ',')* ']'
+	| Lnew className=name '(' map_entriesopt ')' 	{~instance}
+	| '[' content=(expression separator ',')* ']' 	{~array}
 	| syntax_problem
 ;
 
 literal ::=
-	  [literal] sval=scon
-	| [literal] ival=icon
-	| [literal] val=Ltrue as true
-    | [literal] val=Lfalse as false
+	  sval=scon 			{~literal}
+	| ival=icon 			{~literal}
+	| val=Ltrue as true 	{~literal}
+    | val=Lfalse as false	{~literal}
 
 ;
 

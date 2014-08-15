@@ -47,6 +47,7 @@ public interface TMTokenTypes {
 	IElementType OP_LPAREN = new TMElementType(Tokens.Lparen, "(");
 	IElementType OP_RPAREN = new TMElementType(Tokens.Rparen, ")");
 	IElementType OP_LCURLY = new TMElementType(Tokens.Lcurly, "{");
+	IElementType OP_LCURLYTILDE = new TMElementType(Tokens.LcurlyTilde, "{~");
 	IElementType OP_RCURLY = new TMElementType(Tokens.Rcurly, "}");
 
 	// punctuation

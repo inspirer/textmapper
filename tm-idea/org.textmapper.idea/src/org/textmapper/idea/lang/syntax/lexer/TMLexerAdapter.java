@@ -178,6 +178,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_RPAREN;
 			case Tokens.Lcurly:
 				return OP_LCURLY;
+			case Tokens.LcurlyTilde:
+				return OP_LCURLYTILDE;
 			case Tokens.Rcurly:
 				return OP_RCURLY;
 			case Tokens.Less:

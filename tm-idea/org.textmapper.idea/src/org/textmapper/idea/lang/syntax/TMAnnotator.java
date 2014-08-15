@@ -79,18 +79,18 @@ public class TMAnnotator implements Annotator {
 				}
 			}
 		}
-		if (element instanceof TmRhsPrefix) {
+		if (element instanceof TmRuleAction) {
 			for (PsiElement el = element.getFirstChild(); el != null; el = el.getNextSibling()) {
 				if (el instanceof PsiWhiteSpace) continue;
 				if (el instanceof TmToken) {
 					IElementType type = ((TmToken) el).getTokenType();
-					if (type == TMTokenTypes.OP_LBRACKET || type == TMTokenTypes.OP_RBRACKET) {
+					if (type == TMTokenTypes.OP_LCURLYTILDE || type == TMTokenTypes.OP_RCURLY) {
 						Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-						infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RHS_PREFIX);
+						infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RULE_METADATA);
 					}
 				} else if (el instanceof TmIdentifier) {
 					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
-					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RHS_PREFIX);
+					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RULE_METADATA);
 				}
 			}
 		}

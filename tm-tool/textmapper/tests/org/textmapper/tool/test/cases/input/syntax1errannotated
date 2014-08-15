@@ -20,8 +20,8 @@ list ::=
 
 @weight{5} @name{"wwo"}
 list_item ::=
-	  [@name{"rule1"}] @ids{[4,2,3]} identifier
-	| [@name{"rule2"}] Licon
+	  @name{"rule1"}: @ids{[4,2,3]} identifier
+	| @name{"rule2"}: Licon
 ;
 
 @name{"aaa"} @ref{notexistingsym}

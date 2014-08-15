@@ -76,8 +76,8 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 	static final TextAttributesKey SECTION =
 			TextAttributesKey.createTextAttributesKey("TM.SECTION", DefaultLanguageHighlighterColors.STRING);
 
-	static final TextAttributesKey RHS_PREFIX =
-			TextAttributesKey.createTextAttributesKey("TM.RHS_PREFIX", DefaultLanguageHighlighterColors.NUMBER);
+	static final TextAttributesKey RULE_METADATA =
+			TextAttributesKey.createTextAttributesKey("TM.RULE_METADATA", DefaultLanguageHighlighterColors.NUMBER);
 
 	// Regexp
 
@@ -128,7 +128,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 		fillMap(attributes, TMTokenTypes.quantifiers, QUANTIFIER);
 		fillMap(attributes, BRACKETS, TMTokenTypes.OP_LBRACKET, TMTokenTypes.OP_RBRACKET);
 		fillMap(attributes, PARENTHS, TMTokenTypes.OP_LPAREN, TMTokenTypes.OP_RPAREN);
-		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
+		fillMap(attributes, BRACES, TMTokenTypes.OP_LCURLYTILDE, TMTokenTypes.OP_LCURLY, TMTokenTypes.OP_RCURLY);
 
 		// punctuation
 		fillMap(attributes, DefaultLanguageHighlighterColors.DOT, TMTokenTypes.OP_DOT);

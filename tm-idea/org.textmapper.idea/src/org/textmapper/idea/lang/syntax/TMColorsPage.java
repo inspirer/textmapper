@@ -48,7 +48,7 @@ public class TMColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Line comment", TMSyntaxHighlighter.LINE_COMMENT),
 			new AttributesDescriptor("Annotations", TMSyntaxHighlighter.ANNOTATION),
 			new AttributesDescriptor("Sections", TMSyntaxHighlighter.SECTION),
-			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RHS_PREFIX),
+			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RULE_METADATA),
 
 			new AttributesDescriptor("RegExp Delimiters", TMSyntaxHighlighter.RE_DELIMITERS),
 			new AttributesDescriptor("RegExp Text", TMSyntaxHighlighter.RE_TEXT),
@@ -72,7 +72,7 @@ public class TMColorsPage implements ColorSettingsPage {
 	static {
 		ourTagToDescriptorMap.put("lexemeRef", TMSyntaxHighlighter.LEXEM_REFERENCE);
 		ourTagToDescriptorMap.put("annotation", TMSyntaxHighlighter.ANNOTATION);
-		ourTagToDescriptorMap.put("rhsPrefix", TMSyntaxHighlighter.RHS_PREFIX);
+		ourTagToDescriptorMap.put("ruleMeta", TMSyntaxHighlighter.RULE_METADATA);
 		ourTagToDescriptorMap.put("sect", TMSyntaxHighlighter.SECTION);
 		ourTagToDescriptorMap.put("kw", TMSyntaxHighlighter.KEYWORD);
 	}
@@ -142,7 +142,7 @@ public class TMColorsPage implements ColorSettingsPage {
 				"expr ::=\n" +
 				"      <lexemeRef>identifier</lexemeRef>\n" +
 				"    | expr <lexemeRef>'+'</lexemeRef> expr\n" +
-				"    | <rhsPrefix>[multiply]</rhsPrefix> expr <lexemeRef>'*'</lexemeRef> expr\n" +
+				"    | expr <lexemeRef>'*'</lexemeRef> expr  <ruleMeta>{~multiply}</ruleMeta>\n" +
 				"    | <lexemeRef>identifier</lexemeRef> <lexemeRef>'('</lexemeRef> (expr <kw>separator</kw> <lexemeRef>','</lexemeRef>)* <lexemeRef>')'</lexemeRef>\n" +
 				";\n" +
 				"%%\n" +

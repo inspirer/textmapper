@@ -43,6 +43,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType RULE = new TMElementType(Nonterminals.rule0, "rule");
 	public static final IElementType RHS_PREFIX = new TMElementType(Nonterminals.rhsPrefix, "rhs prefix");
 	public static final IElementType RHS_SUFFIX = new TMElementType(Nonterminals.rhsSuffix, "rhs suffix");
+	public static final IElementType RULE_ACTION = new TMElementType(Nonterminals.ruleAction, "rule action");
 	public static final IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
 	public static final IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
 	public static final IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
@@ -61,7 +62,7 @@ public interface TextmapperElementTypes {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE,
 			NONTERM, NONTERM_TYPE, DIRECTIVE,
-			RULE, RHS_PREFIX, RHS_SUFFIX, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_BRACKETS_PAIR,
+			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY, RHS_BRACKETS_PAIR,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, SYMREF, STATEREF, IDENTIFIER, QUALIFIED_ID
 	};
 }
