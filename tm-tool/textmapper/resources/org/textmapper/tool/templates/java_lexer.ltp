@@ -16,6 +16,9 @@ ${call errorReporter-}
 ${if opts.lexerInput == 'buffered'-}
 	final private char[] data = new char[2048];
 	private int datalen, l, tokenStart;
+${else if opts.lexerInput == 'char[]'-}
+	private char[] data;
+	private int l, tokenStart;
 ${end-}
 	private char chr;
 
@@ -35,8 +38,12 @@ ${util.shiftRight(self->lexercode(), 1)-}
 
 ${call lexerCtor-}
 
-	public void reset(${if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
-${if opts.lexerInput != 'custom'-}
+	public void reset(${if opts.lexerInput == 'char[]'}char[] input${else if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
+${if opts.lexerInput == 'char[]'-}
+		this.data = input;
+		l = 0;
+		chr = l < data.length ? data[l++] : 0;
+${else if opts.lexerInput != 'custom'-}
 		this.stream = stream;
 ${end-}
 		this.state = 0;
@@ -129,7 +136,7 @@ ${end-}
 				token.trimToSize();
 			}
 			token.setLength(0);
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
 			tokenStart = l - 1;
 ${end-}
 
@@ -171,7 +178,7 @@ ${if opts.endpositions.contains('column')-}
 ${end-}
 
 			if (state == -1) {
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
@@ -190,7 +197,7 @@ ${end-}
 				return lapg_n;
 			}
 
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
@@ -216,9 +223,9 @@ ${call java_pack.unpackShort-}
 ${end}
 
 ${template lexerCtor-}
-	public ${opts.prefix}Lexer(${if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(${if opts.lexerInput == 'char[]'}char[] input, ${else if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
 		this.reporter = reporter;
-		reset(${if opts.lexerInput != 'custom'}stream${end});
+		reset(${if opts.lexerInput == 'char[]'}input${else if opts.lexerInput != 'custom'}stream${end});
 	}
 ${end}
 
@@ -320,6 +327,8 @@ ${if opts.lexerInput == 'char'-}
 ${else if opts.lexerInput == 'custom'-}
 		token.append(chr);
 		chr = nextChar();
+${else if opts.lexerInput == 'char[]'-}
+		chr = l < data.length ? data[l++] : 0;
 ${else if opts.lexerInput == 'buffered'-}
 		if (l >= datalen) {
 ${if inNext-}
