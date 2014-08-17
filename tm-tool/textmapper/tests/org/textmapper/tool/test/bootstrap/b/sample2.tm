@@ -22,10 +22,13 @@ maxtoken = 2048
 breaks = true
 genast = true
 gentree = true
+genmain = true
+defaultExtension = "b"
 positions = "offset"
 endpositions = "offset"
 genCleanup = false
 genCopyright = true
+lexerInput = "char[]"
 
 :: lexer
 

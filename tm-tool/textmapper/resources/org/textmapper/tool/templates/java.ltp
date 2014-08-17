@@ -1,8 +1,7 @@
 ${template main-}
+${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
 ${if parser-}
 ${file opts.prefix+'Parser.java'}${call java_parser.unit}${end-}
-${end-}
-${file opts.prefix+'Lexer.java'}${call java_lexer.unit}${end-}
 ${if opts.gentree-}
 ${file opts.prefix+'Tree.java'}${call java_tree.unit}${end-}
 ${end-}
@@ -11,6 +10,7 @@ ${call java_ast.unit-}
 ${end-}
 ${if opts.genmain-}
 ${file opts.prefix+'Main.java'}${call java_main.unit}${end-}
+${end-}
 ${end-}
 ${end}
 

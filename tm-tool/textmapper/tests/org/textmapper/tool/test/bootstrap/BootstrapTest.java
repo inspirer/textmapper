@@ -100,8 +100,8 @@ public class BootstrapTest {
 	@Test
 	public void testSampleB() {
 		bootstrap("tests/org/textmapper/tool/test/bootstrap/b", "sample2.tm", new String[0],
-				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "ast/IAstNode.java",
-						"ast/IAstClassdefNoEoi.java"}, 0);
+				new String[]{"SampleBLexer.java", "SampleBTree.java", "SampleBParser.java", "SampleBMain.java",
+						"ast/IAstNode.java", "ast/IAstClassdefNoEoi.java"}, 0);
 	}
 
 	@Test

@@ -61,8 +61,8 @@ public class SampleBLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	final private char[] data = new char[2048];
-	private int datalen, l, tokenStart;
+	private char[] data;
+	private int l, tokenStart;
 	private char chr;
 
 	private int state;
@@ -73,18 +73,16 @@ public class SampleBLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
-	public SampleBLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public SampleBLexer(char[] input, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset(input);
 	}
 
-	public void reset(Reader stream) throws IOException {
-		this.stream = stream;
-		this.state = 0;
-		datalen = stream.read(data);
+	public void reset(char[] input) throws IOException {
+		this.data = input;
 		l = 0;
-		tokenStart = -1;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < data.length ? data[l++] : 0;
+		this.state = 0;
 	}
 
 	protected void advance() throws IOException {
@@ -93,15 +91,7 @@ public class SampleBLexer {
 		if (chr == '\n') {
 			currLine++;
 		}
-		if (l >= datalen) {
-			if (tokenStart >= 0) {
-				token.append(data, tokenStart, l - tokenStart);
-				tokenStart = 0;
-			}
-			l = 0;
-			datalen = stream.read(data);
-		}
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < data.length ? data[l++] : 0;
 	}
 
 	public int getState() {
@@ -206,7 +196,6 @@ public class SampleBLexer {
 					lapg_n.value = null;
 					reporter.error("Unexpected end of input reached", lapg_n.offset, lapg_n.endoffset);
 					lapg_n.offset = currOffset;
-					tokenStart = -1;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
@@ -214,12 +203,7 @@ public class SampleBLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					if (l >= datalen) {
-						token.append(data, tokenStart, l - tokenStart);
-						tokenStart = l = 0;
-						datalen = stream.read(data);
-					}
-					chr = l < datalen ? data[l++] : 0;
+					chr = l < data.length ? data[l++] : 0;
 				}
 			}
 			lapg_n.endoffset = currOffset;
@@ -236,7 +220,6 @@ public class SampleBLexer {
 			if (state == -2) {
 				lapg_n.symbol = 0;
 				lapg_n.value = null;
-				tokenStart = -1;
 				return lapg_n;
 			}
 
@@ -248,7 +231,6 @@ public class SampleBLexer {
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		tokenStart = -1;
 		return lapg_n;
 	}
 

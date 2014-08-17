@@ -20,6 +20,7 @@ prefix = "Noparser"
 package = "org.textmapper.tool.test.bootstrap.lexeronly"
 lexerInput = "char"
 genCopyright = true
+genmain = true			 # should be ignored
 
 :: lexer
 

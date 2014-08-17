@@ -63,7 +63,7 @@ public class SampleBTree<T> {
 		};
 
 		try {
-			SampleBLexer lexer = new SampleBLexer(source.getStream(), reporter);
+			SampleBLexer lexer = new SampleBLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			SampleBParser parser = new SampleBParser(reporter);
