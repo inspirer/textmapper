@@ -10,11 +10,13 @@ class Options extends common.Options {
 	string positions [set:line,column,offset] = "line,offset";
 	string endpositions [set:line,column,offset] = "";
 	string lexerInput [choice:buffered,char,"char[]",custom] = "buffered";
+	string defaultExtension;
 
 	bool breaks = true;
 	bool gentree = false;
 	bool genast = false;
 	bool genastdef = false;
+	bool genmain = false;
 
 	string astprefix = "Ast";
 	string astsubpackage[qualified] = "ast";

@@ -9,6 +9,9 @@ ${end-}
 ${if opts.genast-}
 ${call java_ast.unit-}
 ${end-}
+${if opts.genmain-}
+${file opts.prefix+'Main.java'}${call java_main.unit}${end-}
+${end-}
 ${end}
 
 ${template parserAction-}
