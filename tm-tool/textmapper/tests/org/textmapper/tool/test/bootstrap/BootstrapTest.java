@@ -91,6 +91,13 @@ public class BootstrapTest {
 	}
 
 	@Test
+	public void testBisonTm() {
+		bootstrap("src/org/textmapper/tool/importer", "bison.tm", new String[0],
+				new String[]{"BisonLexer.java", "BisonParser.java", "BisonTree.java"}, 0);
+	}
+
+
+	@Test
 	public void testSampleA() {
 		bootstrap("tests/org/textmapper/tool/test/bootstrap/a", "sample1.tm", new String[0],
 				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
