@@ -23,6 +23,7 @@ import org.textmapper.templates.ast.TemplatesTree.TextSource;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.storage.Resource;
 
+import java.io.File;
 import java.net.URI;
 
 public class EvalNode extends Node {
@@ -47,9 +48,10 @@ public class EvalNode extends Node {
 				resource = new Resource(URI.create(prepareForURI(id)), templateCode, 1, 0);
 			} else {
 				Object unwrapped = toEvaluate instanceof IxWrapper ? ((IxWrapper)toEvaluate).getObject() : toEvaluate;
-				if(unwrapped instanceof SourceElement) {
+				if (unwrapped instanceof SourceElement) {
 					SourceElement elem = (SourceElement) unwrapped;
-					resource = new Resource(URI.create(elem.getResourceName()), templateCode, elem.getLine(), elem.getOffset());
+					File file = new File(elem.getResourceName());
+					resource = new Resource(file.toURI(), templateCode, elem.getLine(), elem.getOffset());
 				} else {
 					resource = new Resource(URI.create("inline"), templateCode, 1, 0);
 				}
