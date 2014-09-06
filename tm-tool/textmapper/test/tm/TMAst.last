@@ -560,13 +560,22 @@ param_ref  : Identifier ::=
 ;
 
 class SymrefArgs {
-	list<ParamValueListCommaSeparatedItem> paramValueListCommaSeparated;
-	list<ListOfParamRefAnd2ElementsCommaSeparatedItem> listOfParamRefAnd2ElementsCommaSeparated;
+	list<ParamValue> valueList;
+	list<KeyvalArg> keyvalueList;
 }
 
 symref_args  : SymrefArgs ::=
-	'<' paramValueListCommaSeparated=param_value_list_Comma_separated '>'
-  | '<' listOfParamRefAnd2ElementsCommaSeparated=list_of_param_ref_and_2_elements_Comma_separated_opt '>'
+	'<' valueList=param_value_list_Comma_separated '>'
+  | '<' keyvalueList=keyval_arg_list_Comma_separated_opt '>'
+;
+
+class KeyvalArg {
+	Identifier name;
+	ParamValue val;
+}
+
+keyval_arg  : KeyvalArg ::=
+	name=param_ref ':' val=param_value
 ;
 
 enum ParamType {
@@ -632,7 +641,7 @@ interface Expression {
 
 class Instance : Expression {
 	Name className;
-	list<MapEntry> mapEntryListCommaSeparated;
+	list<MapEntry> entries;
 }
 
 class Array : Expression {
@@ -642,7 +651,7 @@ class Array : Expression {
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.Instance: Lnew className=name '(' mapEntryListCommaSeparated=map_entry_list_Comma_separated_opt ')'
+  | this=new.Instance: Lnew className=name '(' entries=map_entry_list_Comma_separated_opt ')'
   | this=new.Array: '[' content=expression_list_Comma_separated_opt ']'
   | this=syntax_problem
 ;
@@ -757,25 +766,16 @@ param_ref_list_Comma_separated  : list<Identifier>
 	(this+=param_ref
 		separator ',')+ ;
 
-class ParamValueListCommaSeparatedItem {
-	ParamValue val;
-}
-
-param_value_list_Comma_separated  : list<ParamValueListCommaSeparatedItem>
-	(this+=new.ParamValueListCommaSeparatedItem(val=param_value)
+param_value_list_Comma_separated  : list<ParamValue>
+	(this+=param_value
 		separator ',')+ ;
 
-class ListOfParamRefAnd2ElementsCommaSeparatedItem {
-	Identifier name;
-	ParamValue val;
-}
-
-list_of_param_ref_and_2_elements_Comma_separated  : list<ListOfParamRefAnd2ElementsCommaSeparatedItem>
-	(this+=new.ListOfParamRefAnd2ElementsCommaSeparatedItem(name=param_ref ':' val=param_value)
+keyval_arg_list_Comma_separated  : list<KeyvalArg>
+	(this+=keyval_arg
 		separator ',')+ ;
 
-list_of_param_ref_and_2_elements_Comma_separated_opt  : list<ListOfParamRefAnd2ElementsCommaSeparatedItem> ::=
-	this=list_of_param_ref_and_2_elements_Comma_separated?
+keyval_arg_list_Comma_separated_opt  : list<KeyvalArg> ::=
+	this=keyval_arg_list_Comma_separated?
 ;
 
 map_entry_list_Comma_separated  : list<MapEntry>

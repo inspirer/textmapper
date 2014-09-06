@@ -17,21 +17,32 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaSymref extends TmaNode implements ITmaExpression {
+public class TmaSymref extends TmaNode implements ITmaParamValue, ITmaExpression {
 
 	private final String name;
+	private final TmaSymrefArgs args;
 
-	public TmaSymref(String name, TextSource source, int line, int offset, int endoffset) {
+	public TmaSymref(String name, TmaSymrefArgs args, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
+		this.args = args;
 	}
 
 	public String getName() {
 		return name;
 	}
 
+	public TmaSymrefArgs getArgs() {
+		return args;
+	}
+
 	@Override
 	public void accept(TmaVisitor v) {
-		v.visit(this);
+		if (!v.visit(this)) {
+			return;
+		}
+		if (args != null) {
+			args.accept(v);
+		}
 	}
 }

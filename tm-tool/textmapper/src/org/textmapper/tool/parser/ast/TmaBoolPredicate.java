@@ -17,23 +17,23 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrefix extends TmaNode {
+public class TmaBoolPredicate extends TmaNode implements ITmaPredicateExpression {
 
-	private final ITmaPredicateExpression predicate;
-	private final TmaAnnotations annotations;
+	private final boolean isNegated;
+	private final TmaIdentifier paramRef;
 
-	public TmaRhsPrefix(ITmaPredicateExpression predicate, TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaBoolPredicate(boolean isNegated, TmaIdentifier paramRef, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.predicate = predicate;
-		this.annotations = annotations;
+		this.isNegated = isNegated;
+		this.paramRef = paramRef;
 	}
 
-	public ITmaPredicateExpression getPredicate() {
-		return predicate;
+	public boolean getIsNegated() {
+		return isNegated;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+	public TmaIdentifier getParamRef() {
+		return paramRef;
 	}
 
 	@Override
@@ -41,11 +41,8 @@ public class TmaRhsPrefix extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (predicate != null) {
-			predicate.accept(v);
-		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (paramRef != null) {
+			paramRef.accept(v);
 		}
 	}
 }

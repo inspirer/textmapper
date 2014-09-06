@@ -15,23 +15,9 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class TmaLiteral extends TmaNode implements ITmaParamValue, ITmaExpression {
-
-	private final Object literal;
-
-	public TmaLiteral(Object literal, TextSource source, int line, int offset, int endoffset) {
-		super(source, line, offset, endoffset);
-		this.literal = literal;
-	}
-
-	public Object getLiteral() {
-		return literal;
-	}
-
-	@Override
-	public void accept(TmaVisitor v) {
-		v.visit(this);
-	}
+public enum TmaParamType {
+	LINT,
+	LSTRING,
+	LBOOL,
+	LSYMBOL,
 }

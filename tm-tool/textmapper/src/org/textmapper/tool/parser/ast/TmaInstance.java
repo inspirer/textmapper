@@ -21,20 +21,20 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaInstance extends TmaNode implements ITmaExpression {
 
 	private final TmaName className;
-	private final List<TmaMapEntriesItem> mapEntries;
+	private final List<TmaMapEntry> entries;
 
-	public TmaInstance(TmaName className, List<TmaMapEntriesItem> mapEntries, TextSource source, int line, int offset, int endoffset) {
+	public TmaInstance(TmaName className, List<TmaMapEntry> entries, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.className = className;
-		this.mapEntries = mapEntries;
+		this.entries = entries;
 	}
 
 	public TmaName getClassName() {
 		return className;
 	}
 
-	public List<TmaMapEntriesItem> getMapEntries() {
-		return mapEntries;
+	public List<TmaMapEntry> getEntries() {
+		return entries;
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class TmaInstance extends TmaNode implements ITmaExpression {
 		if (className != null) {
 			className.accept(v);
 		}
-		if (mapEntries != null) {
-			for (TmaMapEntriesItem it : mapEntries) {
+		if (entries != null) {
+			for (TmaMapEntry it : entries) {
 				it.accept(v);
 			}
 		}

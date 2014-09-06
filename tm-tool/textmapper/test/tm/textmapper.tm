@@ -385,9 +385,12 @@ param_ref ::=
 	  identifier ;
 
 symref_args ::=
-	  '<' (val=param_value separator ',')+ '>'
-	| '<' (name=param_ref ':' val=param_value separator ',')* '>'
+	  '<' value_list=(param_value separator ',')+ '>'
+	| '<' keyvalue_list=(keyval_arg separator ',')* '>'
 ;
+
+keyval_arg ::=
+	  name=param_ref ':' val=param_value ;
 
 param_type ::=
 	  Lint | Lstring | Lbool | Lsymbol ;
@@ -418,7 +421,7 @@ predicate_expression interface ::=
 expression ::=
 	  literal
 	| symref
-	| Lnew className=name '(' (map_entry separator ',')* ')' 	{~instance}
+	| Lnew className=name '(' entries=(map_entry separator ',')* ')' 	{~instance}
 	| '[' content=(expression separator ',')* ']' 	{~array}
 	| syntax_problem
 ;

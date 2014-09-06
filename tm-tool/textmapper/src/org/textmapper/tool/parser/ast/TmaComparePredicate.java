@@ -17,23 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrefix extends TmaNode {
+public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpression {
 
-	private final ITmaPredicateExpression predicate;
-	private final TmaAnnotations annotations;
+	private final TmaIdentifier paramRef;
+	private final TmaComparePredicate.TmaKindKind kind;
+	private final TmaLiteral literal;
 
-	public TmaRhsPrefix(ITmaPredicateExpression predicate, TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaComparePredicate(TmaIdentifier paramRef, TmaComparePredicate.TmaKindKind kind, TmaLiteral literal, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.predicate = predicate;
-		this.annotations = annotations;
+		this.paramRef = paramRef;
+		this.kind = kind;
+		this.literal = literal;
 	}
 
-	public ITmaPredicateExpression getPredicate() {
-		return predicate;
+	public TmaIdentifier getParamRef() {
+		return paramRef;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+	public TmaComparePredicate.TmaKindKind getKind() {
+		return kind;
+	}
+
+	public TmaLiteral getLiteral() {
+		return literal;
 	}
 
 	@Override
@@ -41,11 +47,16 @@ public class TmaRhsPrefix extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (predicate != null) {
-			predicate.accept(v);
+		if (paramRef != null) {
+			paramRef.accept(v);
 		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (literal != null) {
+			literal.accept(v);
 		}
+	}
+
+	public enum TmaKindKind {
+		EQUAL_EQUAL,
+		EXCLAMATION_EQUAL,
 	}
 }

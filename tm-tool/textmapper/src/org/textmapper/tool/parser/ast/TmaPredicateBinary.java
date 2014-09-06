@@ -17,23 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrefix extends TmaNode {
+public class TmaPredicateBinary extends TmaNode implements ITmaPredicateExpression {
 
-	private final ITmaPredicateExpression predicate;
-	private final TmaAnnotations annotations;
+	private final ITmaPredicateExpression left;
+	private final TmaPredicateBinary.TmaKindKind kind;
+	private final ITmaPredicateExpression right;
 
-	public TmaRhsPrefix(ITmaPredicateExpression predicate, TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaPredicateBinary(ITmaPredicateExpression left, TmaPredicateBinary.TmaKindKind kind, ITmaPredicateExpression right, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.predicate = predicate;
-		this.annotations = annotations;
+		this.left = left;
+		this.kind = kind;
+		this.right = right;
 	}
 
-	public ITmaPredicateExpression getPredicate() {
-		return predicate;
+	public ITmaPredicateExpression getLeft() {
+		return left;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+	public TmaPredicateBinary.TmaKindKind getKind() {
+		return kind;
+	}
+
+	public ITmaPredicateExpression getRight() {
+		return right;
 	}
 
 	@Override
@@ -41,11 +47,16 @@ public class TmaRhsPrefix extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (predicate != null) {
-			predicate.accept(v);
+		if (left != null) {
+			left.accept(v);
 		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (right != null) {
+			right.accept(v);
 		}
+	}
+
+	public enum TmaKindKind {
+		AMPERSAND_AMPERSAND,
+		OR_OR,
 	}
 }

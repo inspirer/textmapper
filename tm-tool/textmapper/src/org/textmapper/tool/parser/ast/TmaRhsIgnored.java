@@ -21,20 +21,14 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaRhsIgnored extends TmaNode implements ITmaRhsPart {
 
 	private final List<TmaRule0> rules;
-	private final List<TmaRhsBracketsPair> brackets;
 
-	public TmaRhsIgnored(List<TmaRule0> rules, List<TmaRhsBracketsPair> brackets, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsIgnored(List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.rules = rules;
-		this.brackets = brackets;
 	}
 
 	public List<TmaRule0> getRules() {
 		return rules;
-	}
-
-	public List<TmaRhsBracketsPair> getBrackets() {
-		return brackets;
 	}
 
 	@Override
@@ -44,11 +38,6 @@ public class TmaRhsIgnored extends TmaNode implements ITmaRhsPart {
 		}
 		if (rules != null) {
 			for (TmaRule0 it : rules) {
-				it.accept(v);
-			}
-		}
-		if (brackets != null) {
-			for (TmaRhsBracketsPair it : brackets) {
 				it.accept(v);
 			}
 		}

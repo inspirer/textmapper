@@ -33,6 +33,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaPredicateBinary n) {
+		return true;
+	}
+
 	protected boolean visit(TmaInstance n) {
 		return true;
 	}
@@ -121,15 +125,27 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaRhsBracketsPair n) {
-		return true;
-	}
-
 	protected boolean visit(TmaAnnotations n) {
 		return true;
 	}
 
 	protected boolean visit(TmaAnnotation n) {
+		return true;
+	}
+
+	protected boolean visit(TmaNontermParams n) {
+		return true;
+	}
+
+	protected boolean visit(TmaSymrefArgs n) {
+		return true;
+	}
+
+	protected boolean visit(TmaKeyvalArg n) {
+		return true;
+	}
+
+	protected boolean visit(TmaMapEntry n) {
 		return true;
 	}
 
@@ -149,11 +165,19 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaDirectiveBrackets n) {
+		return true;
+	}
+
 	protected boolean visit(TmaDirectivePrio n) {
 		return true;
 	}
 
 	protected boolean visit(TmaDirectiveInput n) {
+		return true;
+	}
+
+	protected boolean visit(TmaDirectiveParam n) {
 		return true;
 	}
 
@@ -217,7 +241,11 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaMapEntriesItem n) {
+	protected boolean visit(TmaBoolPredicate n) {
+		return true;
+	}
+
+	protected boolean visit(TmaComparePredicate n) {
 		return true;
 	}
 }

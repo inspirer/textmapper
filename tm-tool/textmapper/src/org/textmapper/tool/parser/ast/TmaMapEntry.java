@@ -17,23 +17,23 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaMapEntriesItem extends TmaNode {
+public class TmaMapEntry extends TmaNode {
 
 	private final String name;
-	private final ITmaExpression expression;
+	private final ITmaExpression value;
 
-	public TmaMapEntriesItem(String name, ITmaExpression expression, TextSource source, int line, int offset, int endoffset) {
+	public TmaMapEntry(String name, ITmaExpression value, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
-		this.expression = expression;
+		this.value = value;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public ITmaExpression getExpression() {
-		return expression;
+	public ITmaExpression getValue() {
+		return value;
 	}
 
 	@Override
@@ -41,8 +41,8 @@ public class TmaMapEntriesItem extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (expression != null) {
-			expression.accept(v);
+		if (value != null) {
+			value.accept(v);
 		}
 	}
 }

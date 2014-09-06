@@ -40,7 +40,7 @@ public class BootstrapTest {
 	@Test
 	public void testTextmapperTm() {
 		bootstrap("src/org/textmapper/tool/parser", "textmapper.tm", new String[0], new String[]{
-				"TMParser.java", "TMLexer.java", "TMTree.java"}, 4);
+				"TMParser.java", "TMLexer.java", "TMTree.java"}, 7);
 	}
 
 	@Test

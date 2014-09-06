@@ -15,25 +15,20 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsBracketsPair extends TmaNode {
+public class TmaNontermParams extends TmaNode {
 
-	private final TmaSymref lhs;
-	private final TmaSymref rhs;
+	private final List<TmaIdentifier> refs;
 
-	public TmaRhsBracketsPair(TmaSymref lhs, TmaSymref rhs, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermParams(List<TmaIdentifier> refs, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.lhs = lhs;
-		this.rhs = rhs;
+		this.refs = refs;
 	}
 
-	public TmaSymref getLhs() {
-		return lhs;
-	}
-
-	public TmaSymref getRhs() {
-		return rhs;
+	public List<TmaIdentifier> getRefs() {
+		return refs;
 	}
 
 	@Override
@@ -41,11 +36,10 @@ public class TmaRhsBracketsPair extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (lhs != null) {
-			lhs.accept(v);
-		}
-		if (rhs != null) {
-			rhs.accept(v);
+		if (refs != null) {
+			for (TmaIdentifier it : refs) {
+				it.accept(v);
+			}
 		}
 	}
 }

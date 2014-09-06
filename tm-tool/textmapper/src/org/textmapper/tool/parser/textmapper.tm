@@ -44,11 +44,13 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '::=':  /::=/
 '::':   /::/
 '|':    /\|/
+'||':    /\|\|/
 '=':	/=/
+'==':   /==/
+'!=':   /!=/
 '=>':	/=>/
 ';':    /;/
 '.':    /\./
-'..':   /\.\./
 ',':	/,/
 ':':    /:/
 '[':    /\[/
@@ -64,8 +66,10 @@ _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 '+':	/+/
 '+=':	/+=/
 '?':	/?/
+'!':	/!/
 '~':	/~/
 '&':	/&/
+'&&':	/&&/
 '$':	/$/
 '@':    /@/ => afterAt
 
@@ -83,6 +87,8 @@ Las: /as/
 Limport: /import/
 Lset: /set/
 
+Lbrackets: /brackets/		(soft)
+
 Linline: /inline/			(soft)
 
 Lprio:  /prio/				(soft)
@@ -94,6 +100,12 @@ Linput: /input/				(soft)
 Lleft:  /left/				(soft)
 Lright: /right/				(soft)
 Lnonassoc: /nonassoc/		(soft)
+
+Lparam: /param/			    (soft)
+Lstring: /string/			(soft)
+Lbool: /bool/				(soft)
+Lint: /int/					(soft)
+Lsymbol: /symbol/			(soft)
 
 Lnoeoi: /no-eoi/			(soft)
 
@@ -174,7 +186,11 @@ identifier (TmaIdentifier) ::=
 ;
 
 symref (TmaSymref) ::=
-	  ID												{ $$ = new TmaSymref($ID, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  ID symref_args?									{ $$ = new TmaSymref($ID, $symref_args, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+symref_noargs (TmaSymref) ::=
+	  ID												{ $$ = new TmaSymref($ID, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 type (String) ::=
@@ -202,6 +218,7 @@ lexer_part (ITmaLexerPart) ::=
 	  state_selector
 	| named_pattern
 	| lexeme
+	| lexer_directive
 ;
 
 named_pattern (TmaNamedPattern) ::=
@@ -226,6 +243,11 @@ lexeme_attribute (TmaLexemeAttrs) ::=
 	| Lclass											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LCLASS, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Lspace											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LSPACE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Llayout											{ $$ = new TmaLexemeAttrs(TmaLexemeAttribute.LLAYOUT, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+lexer_directive (TmaDirectiveBrackets) ::=
+	  '%' Lbrackets opening=symref_noargs closing=symref_noargs
+														{ $$ = new TmaDirectiveBrackets($opening, $closing, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 state_selector (TmaStateSelector) ::=
@@ -257,12 +279,12 @@ grammar_part (ITmaGrammarPart) ::=
 ;
 
 nonterm (TmaNonterm) ::=
-	  annotations? identifier nonterm_type? '::=' rules ';'
-	  													{ $$ = new TmaNonterm($annotations, $identifier, $nonterm_type, $rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  annotations? identifier nonterm_params? nonterm_type? '::=' rules ';'
+	  													{ $$ = new TmaNonterm($annotations, $identifier, $nonterm_params, $nonterm_type, $rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 nonterm_type (ITmaNontermType) ::=
-	  Lreturns symref                                   { $$ = new TmaNontermTypeAST($symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  Lreturns symref_noargs                            { $$ = new TmaNontermTypeAST($symref_noargs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Linline? Lclass name=identifieropt implementsopt
 														{ $$ = new TmaNontermTypeHint(${self.Linline.rightOffset>=0 ? 'true' : 'false'}, TmaNontermTypeHint.TmaKindKind.LCLASS, $name, $implementsopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Linterface name=identifieropt implementsopt
@@ -284,6 +306,8 @@ assoc (TmaAssoc) ::=
 directive (ITmaGrammarPart) ::=
 	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($assoc, $references, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '%' Lparam identifier param_type ('=' param_value)? ';'
+														{ $$ = new TmaDirectiveParam($identifier, $param_type, $param_value, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 inputs (List<TmaInputref>) ::=
@@ -292,17 +316,17 @@ inputs (List<TmaInputref>) ::=
 ;
 
 inputref (TmaInputref) ::=
-	symref Lnoeoiopt									{ $$ = new TmaInputref($symref, $Lnoeoiopt != null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	symref_noargs Lnoeoiopt								{ $$ = new TmaInputref($symref_noargs, $Lnoeoiopt != null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 references (List<TmaSymref>) ::=
-	  symref											{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref); }
-	| list=references symref							{ $list.add($symref); }
+	  symref_noargs										{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref_noargs); }
+	| list=references symref_noargs						{ $list.add($symref_noargs); }
 ;
 
 references_cs (List<TmaSymref>) ::=
-	  symref											{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref); }
-	| list=references_cs ',' symref						{ $list.add($symref); }
+	  symref_noargs										{ $$ = new ArrayList<TmaSymref>(); ${left()}.add($symref_noargs); }
+	| list=references_cs ',' symref_noargs				{ $list.add($symref_noargs); }
 ;
 
 rules (List<TmaRule0>) ::=
@@ -319,13 +343,18 @@ rule0 (TmaRule0) ::=
 	| syntax_problem									{ $$ = new TmaRule0($syntax_problem); }
 ;
 
+predicate (ITmaPredicateExpression) ::=
+	  '[' predicate_expression ']'						{ $$ = $1; }
+;
+
 rhsPrefix (TmaRhsPrefix) ::=
-	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  predicate? annotations ':'						{ $$ = new TmaRhsPrefix($predicate, $annotations, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| predicate ':'										{ $$ = new TmaRhsPrefix($predicate, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=
-	  '%' Lprio symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LPRIO, $symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| '%' Lshift symref									{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LSHIFT, $symref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  '%' Lprio symref_noargs							{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LPRIO, $symref_noargs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '%' Lshift symref_noargs							{ $$ = new TmaRhsSuffix(TmaRhsSuffix.TmaKindKind.LSHIFT, $symref_noargs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 ruleAction (TmaRuleAction) ::=
@@ -385,8 +414,7 @@ rhsPrimary (ITmaRhsPart) ::=
 	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ZEROORMORE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| '$' '(' rules (';' brackets=(rhsBracketsPair separator ',')+)? ')'
-														{ $$ = new TmaRhsIgnored($rules, $brackets, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '$' '(' rules ')'									{ $$ = new TmaRhsIgnored($rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -400,10 +428,6 @@ setExpression (ITmaSetExpression) ::=
 	  setPrimary
 	| left=setExpression kind='|' right=setExpression	{ $$ = new TmaSetBinary($left, TmaSetBinary.TmaKindKind.OR, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| left=setExpression kind='&' right=setExpression	{ $$ = new TmaSetBinary($left, TmaSetBinary.TmaKindKind.AMPERSAND, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-;
-
-rhsBracketsPair (TmaRhsBracketsPair) ::=
-	  lhs=symref '..' rhs=symref						{ $$ = new TmaRhsBracketsPair($lhs, $rhs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 annotations (TmaAnnotations) ::=
@@ -420,14 +444,68 @@ annotation (TmaAnnotation) ::=
 	| '@' syntax_problem                                { $$ = new TmaAnnotation(null, null, $syntax_problem, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
+##### Nonterminal parameters
+
+nonterm_params (TmaNontermParams) ::=
+	  '<' refs=(param_ref separator ',')+ '>'			{ $$ = new TmaNontermParams($refs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+param_ref (TmaIdentifier) ::=
+	  identifier ;
+
+symref_args (TmaSymrefArgs) ::=
+	  '<' value_list=(param_value separator ',')+ '>'	{ $$ = new TmaSymrefArgs($value_list, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '<' keyvalue_list=(keyval_arg separator ',')* '>'	{ $$ = new TmaSymrefArgs(null, $keyvalue_list, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+keyval_arg (TmaKeyvalArg) ::=
+	  param_ref ':' param_value							{ $$ = new TmaKeyvalArg($param_ref, $param_value, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+param_type (TmaParamType) ::=
+	  Lint												{ $$ = TmaParamType.LINT; }
+	| Lstring											{ $$ = TmaParamType.LSTRING; }
+	| Lbool                                             { $$ = TmaParamType.LBOOL; }
+	| Lsymbol                                           { $$ = TmaParamType.LSYMBOL; }
+;
+
+param_value (ITmaParamValue) ::=
+	  literal
+	| symref
+;
+
+predicate_primary (ITmaPredicateExpression) ::=
+	  is_negated='!'? param_ref							{ $$ = new TmaBoolPredicate(${is_negated.rightOffset >= 0 ? 'true' : 'false'}, $param_ref, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| param_ref '==' literal
+														{ $$ = new TmaComparePredicate($param_ref, TmaComparePredicate.TmaKindKind.EQUAL_EQUAL, $literal, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| param_ref '!=' literal
+														{ $$ = new TmaComparePredicate($param_ref, TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL, $literal, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
+%left '||';
+%left '&&';
+
+predicate_expression (ITmaPredicateExpression) ::=
+	  predicate_primary
+	| left=predicate_expression kind='&&' right=predicate_expression	{ $$ = new TmaPredicateBinary($left, TmaPredicateBinary.TmaKindKind.AMPERSAND_AMPERSAND, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| left=predicate_expression kind='||' right=predicate_expression	{ $$ = new TmaPredicateBinary($left, TmaPredicateBinary.TmaKindKind.OR_OR, $right, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
 ##### EXPRESSIONS
+
+# TODO use json, get rid of new & symref
 
 expression (ITmaExpression) ::=
 	  literal
 	| symref
-	| Lnew name '(' map_entriesopt ')'					{ $$ = new TmaInstance($name, $map_entriesopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| '[' expression_listopt ']'						{ $$ = new TmaArray($expression_listopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| Lnew name '(' entries=(map_entry separator ',')* ')'
+														{ $$ = new TmaInstance($name, $entries, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '[' content=(expression separator ',')* ']'		{ $$ = new TmaArray($content, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| syntax_problem
+;
+
+map_entry (TmaMapEntry) ::=
+	  ID ':' expression									{ $$ = new TmaMapEntry($ID, $expression, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 literal (TmaLiteral) ::=
@@ -441,14 +519,6 @@ expression_list (List<ITmaExpression>) ::=
 	expression											{ $$ = new ArrayList(); ${left()}.add($expression); }
 	| expression_list ',' expression					{ $expression_list.add($expression); }
 ;
-
-map_entries (java.util.@List<TmaMapEntriesItem>) ::=
-	  ID map_separator expression						{ $$ = new java.util.@ArrayList<TmaMapEntriesItem>(); ${left()}.add(new TmaMapEntriesItem($ID, $expression, source, ${left().line}, ${left().offset}, ${left().endoffset})); }
-	| map_entries ',' ID map_separator expression		{ $map_entries.add(new TmaMapEntriesItem($ID, $expression, source, ${ID.line}, ${ID.offset}, ${left().endoffset})); }
-;
-
-map_separator void ::=
-	':' | '=' | '=>' ;
 
 name (TmaName) ::=
 	qualified_id 										{ $$ = new TmaName($qualified_id, source, ${left().line}, ${left().offset}, ${left().endoffset}); }

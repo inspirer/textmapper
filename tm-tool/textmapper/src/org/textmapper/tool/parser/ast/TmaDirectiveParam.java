@@ -15,44 +15,31 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
+public class TmaDirectiveParam extends TmaNode implements ITmaGrammarPart {
 
-	private final TmaAnnotations annotations;
 	private final TmaIdentifier name;
-	private final TmaNontermParams params;
-	private final ITmaNontermType type;
-	private final List<TmaRule0> rules;
+	private final TmaParamType paramType;
+	private final ITmaParamValue paramValue;
 
-	public TmaNonterm(TmaAnnotations annotations, TmaIdentifier name, TmaNontermParams params, ITmaNontermType type, List<TmaRule0> rules, TextSource source, int line, int offset, int endoffset) {
+	public TmaDirectiveParam(TmaIdentifier name, TmaParamType paramType, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.annotations = annotations;
 		this.name = name;
-		this.params = params;
-		this.type = type;
-		this.rules = rules;
-	}
-
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+		this.paramType = paramType;
+		this.paramValue = paramValue;
 	}
 
 	public TmaIdentifier getName() {
 		return name;
 	}
 
-	public TmaNontermParams getParams() {
-		return params;
+	public TmaParamType getParamType() {
+		return paramType;
 	}
 
-	public ITmaNontermType getType() {
-		return type;
-	}
-
-	public List<TmaRule0> getRules() {
-		return rules;
+	public ITmaParamValue getParamValue() {
+		return paramValue;
 	}
 
 	@Override
@@ -60,22 +47,11 @@ public class TmaNonterm extends TmaNode implements ITmaGrammarPart {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (annotations != null) {
-			annotations.accept(v);
-		}
 		if (name != null) {
 			name.accept(v);
 		}
-		if (params != null) {
-			params.accept(v);
-		}
-		if (type != null) {
-			type.accept(v);
-		}
-		if (rules != null) {
-			for (TmaRule0 it : rules) {
-				it.accept(v);
-			}
+		if (paramValue != null) {
+			paramValue.accept(v);
 		}
 	}
 }

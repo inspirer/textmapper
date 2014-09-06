@@ -15,25 +15,26 @@
  */
 package org.textmapper.tool.parser.ast;
 
+import java.util.List;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaRhsPrefix extends TmaNode {
+public class TmaSymrefArgs extends TmaNode {
 
-	private final ITmaPredicateExpression predicate;
-	private final TmaAnnotations annotations;
+	private final List<ITmaParamValue> valueList;
+	private final List<TmaKeyvalArg> keyvalueList;
 
-	public TmaRhsPrefix(ITmaPredicateExpression predicate, TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaSymrefArgs(List<ITmaParamValue> valueList, List<TmaKeyvalArg> keyvalueList, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.predicate = predicate;
-		this.annotations = annotations;
+		this.valueList = valueList;
+		this.keyvalueList = keyvalueList;
 	}
 
-	public ITmaPredicateExpression getPredicate() {
-		return predicate;
+	public List<ITmaParamValue> getValueList() {
+		return valueList;
 	}
 
-	public TmaAnnotations getAnnotations() {
-		return annotations;
+	public List<TmaKeyvalArg> getKeyvalueList() {
+		return keyvalueList;
 	}
 
 	@Override
@@ -41,11 +42,15 @@ public class TmaRhsPrefix extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (predicate != null) {
-			predicate.accept(v);
+		if (valueList != null) {
+			for (ITmaParamValue it : valueList) {
+				it.accept(v);
+			}
 		}
-		if (annotations != null) {
-			annotations.accept(v);
+		if (keyvalueList != null) {
+			for (TmaKeyvalArg it : keyvalueList) {
+				it.accept(v);
+			}
 		}
 	}
 }

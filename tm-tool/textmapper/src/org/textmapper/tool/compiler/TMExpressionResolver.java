@@ -101,11 +101,11 @@ public class TMExpressionResolver {
 			@Override
 			public Object resolve(ITmaExpression expression, IType type) {
 				if (expression instanceof TmaInstance) {
-					List<TmaMapEntriesItem> list = ((TmaInstance) expression).getMapEntries();
+					List<TmaMapEntry> list = ((TmaInstance) expression).getEntries();
 					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
 					if (list != null) {
-						for (TmaMapEntriesItem entry : list) {
-							props.put(entry.getName(), entry.getExpression());
+						for (TmaMapEntry entry : list) {
+							props.put(entry.getName(), entry.getValue());
 						}
 					}
 					String name = ((TmaInstance) expression).getClassName().getQualifiedId();
