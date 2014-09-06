@@ -23,6 +23,7 @@ import org.textmapper.templates.ast.TemplatesTree.TextSource;
 import org.textmapper.templates.objects.IxWrapper;
 import org.textmapper.templates.storage.Resource;
 
+import java.io.File;
 import java.net.URI;
 
 public class EvalNode extends Node {
@@ -42,14 +43,15 @@ public class EvalNode extends Node {
 			Object toEvaluate = env.evaluate(templateExpr, context, false);
 			String templateCode = env.toString(toEvaluate, templateExpr);
 			Resource resource;
-			if( templateLocation != null ) {
+			if (templateLocation != null) {
 				String id = env.toString(env.evaluate(templateLocation, context, false), templateLocation);
 				resource = new Resource(URI.create(prepareForURI(id)), templateCode, 1, 0);
 			} else {
 				Object unwrapped = toEvaluate instanceof IxWrapper ? ((IxWrapper)toEvaluate).getObject() : toEvaluate;
-				if(unwrapped instanceof SourceElement) {
+				if (unwrapped instanceof SourceElement) {
 					SourceElement elem = (SourceElement) unwrapped;
-					resource = new Resource(URI.create(elem.getResourceName()), templateCode, elem.getLine(), elem.getOffset());
+					File file = new File(elem.getResourceName());
+					resource = new Resource(file.toURI(), templateCode, elem.getLine(), elem.getOffset());
 				} else {
 					resource = new Resource(URI.create("inline"), templateCode, 1, 0);
 				}
@@ -62,12 +64,12 @@ public class EvalNode extends Node {
 
 	private String prepareForURI(String s) {
 		StringBuilder sb = new StringBuilder();
-		for(char c : s.toCharArray()) {
-			if(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9') {
+		for (char c : s.toCharArray()) {
+			if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9') {
 				sb.append(c);
 				continue;
 			}
-			if(c >= 16) {
+			if (c >= 16) {
 				sb.append("%");
 				sb.append(Integer.toHexString(c));
 			}

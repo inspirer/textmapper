@@ -40,7 +40,7 @@ import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMMapper;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-import java.net.URI;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -162,7 +162,8 @@ public final class TMGenerator {
 													 TypesRegistry types, TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
 		if (grammarTemplates != null) {
-			loaders.add(new StringTemplateLoader(new Resource(URI.create(grammarTemplates.getResourceName()),
+			File file = new File(grammarTemplates.getResourceName());
+			loaders.add(new StringTemplateLoader(new Resource(file.toURI(),
 					grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));

@@ -20,6 +20,7 @@ import com.intellij.facet.FacetManager;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleUtilCore;
@@ -53,6 +54,8 @@ import java.util.List;
  * evgeny, 7/19/13
  */
 public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMessage>> {
+
+	private static final Logger LOG = Logger.getInstance("#org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator");
 
 	@Override
 	@Nullable
@@ -274,6 +277,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 		public void report(String message, Throwable th) {
 			hasErrors = true;
 			result.add(new TMMessage(ProcessingStatus.KIND_ERROR, 0, 0, message));
+			LOG.error(message, th);
 		}
 
 		public void report(ParserConflict conflict) {
