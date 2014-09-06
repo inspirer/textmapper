@@ -67,11 +67,16 @@ identifier  : Identifier ::=
 	{ID}
 ;
 
-class Symref : Expression {
+class Symref : ParamValue, Expression {
 	String name;
+	SymrefArgs args;
 }
 
 symref  : Symref ::=
+	name=ID args=symref_args?
+;
+
+symref_noargs  : Symref ::=
 	name=ID
 ;
 
@@ -117,6 +122,7 @@ lexer_part  : LexerPart ::=
 	this=state_selector
   | this=named_pattern
   | this=lexeme
+  | this=lexer_directive
 ;
 
 class NamedPattern : LexerPart {
@@ -172,6 +178,15 @@ lexeme_attribute  : LexemeAttribute ::=
   | this=Llayout as LexemeAttribute.LLAYOUT
 ;
 
+class DirectiveBrackets : LexerPart {
+	Symref opening;
+	Symref closing;
+}
+
+lexer_directive  : LexerPart ::=
+	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs
+;
+
 class StateSelector : LexerPart {
 	list<LexerState> states;
 }
@@ -208,12 +223,13 @@ grammar_part  : GrammarPart ::=
 class Nonterm : GrammarPart {
 	Annotations annotations;
 	Identifier name;
+	NontermParams params;
 	NontermType type;
 	list<Rule0> rules;
 }
 
 nonterm  : Nonterm ::=
-	{annotations}? name=identifier type=nonterm_type? '::=' {rules} ';'
+	{annotations}? name=identifier params=nonterm_params? type=nonterm_type? '::=' {rules} ';'
 ;
 
 interface NontermType {
@@ -240,7 +256,7 @@ class NontermTypeRaw : NontermType {
 }
 
 nonterm_type  : NontermType ::=
-	this=new.NontermTypeAST: Lreturns reference=symref
+	this=new.NontermTypeAST: Lreturns reference=symref_noargs
   | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
@@ -272,9 +288,16 @@ class DirectiveInput : GrammarPart {
 	list<Inputref> inputRefs;
 }
 
+class DirectiveParam : GrammarPart {
+	Identifier name;
+	ParamType paramType;
+	ParamValue paramValue;
+}
+
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
   | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
+  | this=new.DirectiveParam: '%' Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
 ;
 
 class Inputref {
@@ -283,14 +306,14 @@ class Inputref {
 }
 
 inputref  : Inputref ::=
-	reference=symref noeoi=Lnoeoi as true?
+	reference=symref_noargs noeoi=Lnoeoi as true?
 ;
 
 references  : list<Symref>
-	(this+=symref)+ ;
+	(this+=symref_noargs)+ ;
 
 references_cs  : list<Symref>
-	(this+=symref
+	(this+=symref_noargs
 		separator ',')+ ;
 
 rules  : list<Rule0> ::=
@@ -310,12 +333,21 @@ rule0  : Rule0 ::=
   | syntaxProblem=syntax_problem
 ;
 
+interface PredicateExpression {
+}
+
+predicate  : PredicateExpression ::=
+	'[' this=predicate_expression ']'
+;
+
 class RhsPrefix {
+	PredicateExpression predicate;
 	Annotations annotations;
 }
 
 rhsPrefix  : RhsPrefix ::=
-	{annotations} ':'
+	{predicate}? {annotations} ':'
+  | {predicate} ':'
 ;
 
 class RhsSuffix {
@@ -328,8 +360,8 @@ class RhsSuffix {
 }
 
 rhsSuffix  : RhsSuffix ::=
-	'%' kind=Lprio as KindKind.LPRIO {symref}
-  | '%' kind=Lshift as KindKind.LSHIFT {symref}
+	'%' kind=Lprio as KindKind.LPRIO symref=symref_noargs
+  | '%' kind=Lshift as KindKind.LSHIFT symref=symref_noargs
 ;
 
 class RuleAction {
@@ -441,7 +473,6 @@ class RhsList : RhsPart {
 
 class RhsIgnored : RhsPart {
 	list<Rule0> rules;
-	list<RhsBracketsPair> brackets;
 }
 
 class RhsSet : RhsPart {
@@ -455,7 +486,7 @@ rhsPrimary  : RhsPart ::=
   | this=new.RhsList: '(' ruleParts=rhsParts Lseparator separator=references ')' atLeastOne='*' as false
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
-  | this=new.RhsIgnored: '$' '(' {rules} (';' brackets=rhsBracketsPair_list_Comma_separated)? ')'
+  | this=new.RhsIgnored: '$' '(' {rules} ')'
   | this=new.RhsSet: Lset '(' expr=setExpression ')'
 ;
 
@@ -497,15 +528,6 @@ setExpression  : SetExpression ::=
   | this=new.SetBinary: left=setExpression kind='&' as KindKind.AMPERSAND right=setExpression
 ;
 
-class RhsBracketsPair {
-	Symref lhs;
-	Symref rhs;
-}
-
-rhsBracketsPair  : RhsBracketsPair ::=
-	lhs=symref '..' rhs=symref
-;
-
 class Annotations {
 	list<Annotation> annotations;
 }
@@ -525,12 +547,92 @@ annotation  : Annotation ::=
   | '@' syntaxProblem=syntax_problem
 ;
 
+class NontermParams {
+	list<Identifier> refs;
+}
+
+nonterm_params  : NontermParams ::=
+	'<' refs=param_ref_list_Comma_separated '>'
+;
+
+param_ref  : Identifier ::=
+	this=identifier
+;
+
+class SymrefArgs {
+	list<ParamValueListCommaSeparatedItem> paramValueListCommaSeparated;
+	list<ListOfParamRefAnd2ElementsCommaSeparatedItem> listOfParamRefAnd2ElementsCommaSeparated;
+}
+
+symref_args  : SymrefArgs ::=
+	'<' paramValueListCommaSeparated=param_value_list_Comma_separated '>'
+  | '<' listOfParamRefAnd2ElementsCommaSeparated=list_of_param_ref_and_2_elements_Comma_separated_opt '>'
+;
+
+enum ParamType {
+	LINT,
+	LSTRING,
+	LBOOL,
+	LSYMBOL
+}
+
+param_type  : ParamType ::=
+	this=Lint as ParamType.LINT
+  | this=Lstring as ParamType.LSTRING
+  | this=Lbool as ParamType.LBOOL
+  | this=Lsymbol as ParamType.LSYMBOL
+;
+
+interface ParamValue {
+}
+
+param_value  : ParamValue ::=
+	this=literal
+  | this=symref
+;
+
+class BoolPredicate : PredicateExpression {
+	boolean isNegated;
+	Identifier paramRef;
+}
+
+class ComparePredicate : PredicateExpression {
+	Identifier paramRef;
+	KindKind kind;
+	Literal literal;
+	enum KindKind {
+		EQUAL_EQUAL,
+		EXCLAMATION_EQUAL
+	}
+}
+
+predicate_primary  : PredicateExpression ::=
+	this=new.BoolPredicate: isNegated='!' as true? paramRef=param_ref
+  | this=new.ComparePredicate: paramRef=param_ref (kind='==' as KindKind.EQUAL_EQUAL | kind='!=' as KindKind.EXCLAMATION_EQUAL) {literal}
+;
+
+class PredicateBinary : PredicateExpression {
+	PredicateExpression left;
+	KindKind kind;
+	PredicateExpression right;
+	enum KindKind {
+		AMPERSAND_AMPERSAND,
+		OR_OR
+	}
+}
+
+predicate_expression  : PredicateExpression ::=
+	this=predicate_primary
+  | this=new.PredicateBinary: left=predicate_expression kind='&&' as KindKind.AMPERSAND_AMPERSAND right=predicate_expression
+  | this=new.PredicateBinary: left=predicate_expression kind='||' as KindKind.OR_OR right=predicate_expression
+;
+
 interface Expression {
 }
 
 class Instance : Expression {
 	Name className;
-	list<MapEntriesItem> mapEntries;
+	list<MapEntry> mapEntryListCommaSeparated;
 }
 
 class Array : Expression {
@@ -540,12 +642,21 @@ class Array : Expression {
 expression  : Expression ::=
 	this=literal
   | this=symref
-  | this=new.Instance: Lnew className=name '(' mapEntries=map_entriesopt ')'
+  | this=new.Instance: Lnew className=name '(' mapEntryListCommaSeparated=map_entry_list_Comma_separated_opt ')'
   | this=new.Array: '[' content=expression_list_Comma_separated_opt ']'
   | this=syntax_problem
 ;
 
-class Literal : Expression {
+class MapEntry {
+	String name;
+	Expression value;
+}
+
+map_entry  : MapEntry ::=
+	name=ID ':' value=expression
+;
+
+class Literal : ParamValue, Expression {
 	String sval;
 	Integer ival;
 	boolean val;
@@ -556,21 +667,6 @@ literal  : Literal ::=
   | ival=icon
   | val=Ltrue as true
   | val=Lfalse as false
-;
-
-class MapEntriesItem {
-	String name;
-	Expression expression;
-}
-
-map_entries  : list<MapEntriesItem>
-	(this+=new.MapEntriesItem(name=ID map_separator {expression})
-		separator ',')+ ;
-
-map_separator  : void ::=
-	':'
-  | '='
-  | '=>'
 ;
 
 class Name {
@@ -654,15 +750,40 @@ rhsSuffixopt  : RhsSuffix ::=
 	this=rhsSuffix?
 ;
 
-rhsBracketsPair_list_Comma_separated  : list<RhsBracketsPair>
-	(this+=rhsBracketsPair
-		separator ',')+ ;
-
 annotation_list  : list<Annotation>
 	(this+=annotation)+ ;
 
-map_entriesopt  : list<MapEntriesItem> ::=
-	this=map_entries?
+param_ref_list_Comma_separated  : list<Identifier>
+	(this+=param_ref
+		separator ',')+ ;
+
+class ParamValueListCommaSeparatedItem {
+	ParamValue val;
+}
+
+param_value_list_Comma_separated  : list<ParamValueListCommaSeparatedItem>
+	(this+=new.ParamValueListCommaSeparatedItem(val=param_value)
+		separator ',')+ ;
+
+class ListOfParamRefAnd2ElementsCommaSeparatedItem {
+	Identifier name;
+	ParamValue val;
+}
+
+list_of_param_ref_and_2_elements_Comma_separated  : list<ListOfParamRefAnd2ElementsCommaSeparatedItem>
+	(this+=new.ListOfParamRefAnd2ElementsCommaSeparatedItem(name=param_ref ':' val=param_value)
+		separator ',')+ ;
+
+list_of_param_ref_and_2_elements_Comma_separated_opt  : list<ListOfParamRefAnd2ElementsCommaSeparatedItem> ::=
+	this=list_of_param_ref_and_2_elements_Comma_separated?
+;
+
+map_entry_list_Comma_separated  : list<MapEntry>
+	(this+=map_entry
+		separator ',')+ ;
+
+map_entry_list_Comma_separated_opt  : list<MapEntry> ::=
+	this=map_entry_list_Comma_separated?
 ;
 
 expression_list_Comma_separated  : list<Expression>

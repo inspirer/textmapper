@@ -43,405 +43,589 @@ public class TMParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
-	private static final int[] tmAction = TMLexer.unpack_int(317,
-		"\uffff\uffff\uffff\uffff\uffff\uffff\ufffd\uffff\211\0\212\0\uffcd\uffff\226\0\14" +
-		"\0\213\0\214\0\uffff\uffff\205\0\204\0\210\0\223\0\uff93\uffff\uff8b\uffff\uff7f" +
-		"\uffff\272\0\uff4f\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\233\0\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\227\0\uffff\uffff\uffff\uffff\207\0\uff49\uffff\uffff" +
-		"\uffff\uffff\uffff\3\0\224\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uff1d" +
-		"\uffff\231\0\12\0\271\0\uffff\uffff\uff17\uffff\uffff\uffff\uff11\uffff\uffff\uffff" +
-		"\10\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\0\0\220\0\221\0\217\0\uffff" +
-		"\uffff\uffff\uffff\206\0\uffff\uffff\6\0\7\0\uffff\uffff\uff0b\uffff\uff03\uffff" +
-		"\ufefd\uffff\37\0\43\0\44\0\42\0\11\0\uffff\uffff\215\0\uffff\uffff\2\0\13\0\ufecb" +
-		"\uffff\250\0\uffff\uffff\uffff\uffff\uffff\uffff\235\0\uffff\uffff\40\0\41\0\uffff" +
-		"\uffff\uffff\uffff\uffff\uffff\ufec3\uffff\62\0\65\0\66\0\uffff\uffff\266\0\ufe91" +
-		"\uffff\uffff\uffff\uffff\uffff\uffff\uffff\56\0\36\0\45\0\uffff\uffff\27\0\30\0\23" +
-		"\0\24\0\uffff\uffff\21\0\22\0\26\0\31\0\33\0\32\0\25\0\uffff\uffff\20\0\ufe5d\uffff" +
-		"\uffff\uffff\102\0\103\0\104\0\uffff\uffff\ufe29\uffff\203\0\ufdf3\uffff\uffff\uffff" +
-		"\uffff\uffff\ufdb5\uffff\ufd87\uffff\77\0\100\0\uffff\uffff\63\0\64\0\uffff\uffff" +
-		"\265\0\216\0\57\0\60\0\247\0\15\0\35\0\uffff\uffff\16\0\17\0\ufd59\uffff\ufd1f\uffff" +
-		"\256\0\uffff\uffff\111\0\uffff\uffff\uffff\uffff\uffff\uffff\ufd17\uffff\uffff\uffff" +
-		"\uffff\uffff\ufcd9\uffff\uffff\uffff\225\0\uffff\uffff\157\0\uffff\uffff\260\0\ufc87" +
-		"\uffff\261\0\ufc49\uffff\ufc3f\uffff\ufbff\uffff\137\0\142\0\144\0\ufbbb\uffff\140" +
-		"\0\ufb75\uffff\ufb2d\uffff\uffff\uffff\141\0\126\0\ufae1\uffff\125\0\ufad9\uffff" +
-		"\73\0\251\0\ufaab\uffff\ufaa5\uffff\ufa9f\uffff\ufa61\uffff\uffff\uffff\34\0\uffff" +
-		"\uffff\237\0\ufa23\uffff\107\0\106\0\uffff\uffff\105\0\112\0\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\uf9eb\uffff\uffff\uffff\uf9ab\uffff\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\72\0\uf96b\uffff\uf961\uffff\uffff\uffff\121\0\124\0\uf921" +
-		"\uffff\uf917\uffff\136\0\123\0\uffff\uffff\150\0\uffff\uffff\163\0\164\0\127\0\143" +
-		"\0\uf8d3\uffff\uf893\uffff\uffff\uffff\253\0\75\0\76\0\uffff\uffff\uffff\uffff\uf88d" +
-		"\uffff\50\0\241\0\uf84f\uffff\255\0\201\0\130\0\131\0\160\0\uffff\uffff\uffff\uffff" +
-		"\133\0\uffff\uffff\uffff\uffff\uffff\uffff\uf819\uffff\171\0\174\0\uffff\uffff\uffff" +
-		"\uffff\145\0\uf7e9\uffff\146\0\120\0\uf79d\uffff\117\0\122\0\uf793\uffff\152\0\153" +
-		"\0\257\0\74\0\113\0\uf74f\uffff\71\0\70\0\uffff\uffff\uffff\uffff\243\0\uf749\uffff" +
-		"\uffff\uffff\132\0\uffff\uffff\166\0\uffff\uffff\173\0\170\0\uffff\uffff\167\0\uffff" +
-		"\uffff\116\0\uffff\uffff\67\0\52\0\53\0\54\0\55\0\uffff\uffff\245\0\46\0\uffff\uffff" +
-		"\uffff\uffff\264\0\uffff\uffff\172\0\uf715\uffff\uf70d\uffff\114\0\51\0\162\0\161" +
-		"\0\uffff\uffff\uffff\uffff\165\0\177\0\263\0\uffff\uffff\uffff\uffff\ufffe\uffff" +
-		"\ufffe\uffff");
+	private static final int[] tmAction = TMLexer.unpack_int(382,
+		"\uffff\uffff\uffff\uffff\uffff\uffff\ufffd\uffff\246\0\247\0\uffc1\uffff\256\0\uff7b" +
+		"\uffff\250\0\251\0\uffff\uffff\241\0\240\0\244\0\253\0\uff15\uffff\uff0d\uffff\uff01" +
+		"\uffff\332\0\ufec5\uffff\uffff\uffff\ufebf\uffff\14\0\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\263\0\uffff\uffff\uffff\uffff\uffff\uffff\257\0\uffff\uffff\uffff\uffff\243" +
+		"\0\ufe7f\uffff\220\0\230\0\uffff\uffff\320\0\227\0\uffff\uffff\ufe1b\uffff\uffff" +
+		"\uffff\ufe15\uffff\uffff\uffff\uffff\uffff\3\0\254\0\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\ufddd\uffff\261\0\12\0\331\0\uffff\uffff\uffff\uffff\221\0\uffff" +
+		"\uffff\222\0\uffff\uffff\326\0\ufdd7\uffff\uffff\uffff\ufdd1\uffff\uffff\uffff\10" +
+		"\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\0\0\322\0\317\0\13\0\uffff\uffff" +
+		"\uffff\uffff\uffff\uffff\242\0\uffff\uffff\6\0\7\0\uffff\uffff\uffff\uffff\ufdcb" +
+		"\uffff\ufdc3\uffff\ufdbd\uffff\41\0\45\0\46\0\47\0\44\0\11\0\uffff\uffff\uffff\uffff" +
+		"\245\0\325\0\2\0\uffff\uffff\ufd7d\uffff\300\0\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\265\0\uffff\uffff\42\0\43\0\uffff\uffff\uffff\uffff\uffff\uffff\ufd75\uffff\66\0" +
+		"\71\0\72\0\uffff\uffff\314\0\ufd37\uffff\321\0\16\0\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\62\0\40\0\50\0\uffff\uffff\31\0\32\0\25\0\26\0\uffff\uffff\23\0\24\0\30\0" +
+		"\33\0\35\0\34\0\27\0\uffff\uffff\22\0\ufcf7\uffff\uffff\uffff\112\0\113\0\114\0\uffff" +
+		"\uffff\uffff\uffff\ufcb5\uffff\216\0\ufc73\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\ufc27\uffff\ufbed\uffff\107\0\110\0\uffff\uffff\uffff\uffff\67\0\70\0\uffff\uffff" +
+		"\313\0\61\0\63\0\64\0\277\0\17\0\37\0\uffff\uffff\20\0\21\0\ufbb3\uffff\ufb6b\uffff" +
+		"\306\0\uffff\uffff\uffff\uffff\123\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\ufb63\uffff\uffff\uffff\uffff\uffff\uffff\uffff\255\0\uffff\uffff\174\0\uffff\uffff" +
+		"\310\0\uffff\uffff\ufb17\uffff\311\0\ufacd\uffff\ufac3\uffff\ufa77\uffff\154\0\157" +
+		"\0\161\0\ufa27\uffff\155\0\uf9d5\uffff\uf981\uffff\uffff\uffff\156\0\140\0\uf929" +
+		"\uffff\137\0\316\0\uffff\uffff\uf921\uffff\103\0\301\0\uf8e7\uffff\uf8e1\uffff\uf8db" +
+		"\uffff\uf88f\uffff\uffff\uffff\uf843\uffff\uffff\uffff\uffff\uffff\36\0\uffff\uffff" +
+		"\267\0\uf7f7\uffff\121\0\116\0\uffff\uffff\224\0\225\0\223\0\226\0\uffff\uffff\115" +
+		"\0\124\0\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uffff\uf7b1\uffff\235\0\uffff" +
+		"\uffff\uffff\uffff\uf7a5\uffff\uffff\uffff\uf759\uffff\uffff\uffff\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\102\0\144\0\uffff\uffff\uf70d\uffff\uf703\uffff\uffff\uffff\133" +
+		"\0\136\0\uf6b7\uffff\uf6ad\uffff\153\0\135\0\uffff\uffff\165\0\uffff\uffff\200\0" +
+		"\201\0\143\0\160\0\uf65d\uffff\uffff\uffff\217\0\uf60f\uffff\uffff\uffff\303\0\105" +
+		"\0\106\0\uffff\uffff\uffff\uffff\uf609\uffff\uffff\uffff\uf5bd\uffff\uf571\uffff" +
+		"\uffff\uffff\53\0\271\0\uf525\uffff\305\0\uffff\uffff\120\0\214\0\145\0\146\0\231" +
+		"\0\uffff\uffff\uffff\uffff\uffff\uffff\141\0\uffff\uffff\175\0\uffff\uffff\uffff" +
+		"\uffff\150\0\uffff\uffff\uffff\uffff\uffff\uffff\uf4e1\uffff\205\0\210\0\uffff\uffff" +
+		"\uffff\uffff\162\0\uf4a3\uffff\163\0\142\0\132\0\uf44b\uffff\131\0\134\0\uf441\uffff" +
+		"\167\0\170\0\307\0\315\0\104\0\125\0\uf3f1\uffff\101\0\100\0\uffff\uffff\76\0\uffff" +
+		"\uffff\uffff\uffff\uf3eb\uffff\uffff\uffff\273\0\uf39f\uffff\uffff\uffff\233\0\234" +
+		"\0\uf35d\uffff\uf355\uffff\uffff\uffff\147\0\202\0\uffff\uffff\207\0\204\0\uffff" +
+		"\uffff\203\0\uffff\uffff\130\0\uffff\uffff\77\0\75\0\74\0\uffff\uffff\55\0\56\0\57" +
+		"\0\60\0\uffff\uffff\275\0\51\0\117\0\uffff\uffff\206\0\uf34d\uffff\uf345\uffff\126" +
+		"\0\73\0\54\0\177\0\176\0\uffff\uffff\uffff\uffff\ufffe\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = TMLexer.unpack_short(2296,
-		"\10\230\41\230\42\230\50\230\52\230\53\230\54\230\55\230\56\230\57\230\60\230\61" +
-		"\230\62\230\63\230\64\230\65\230\66\230\67\230\70\230\71\230\72\230\73\230\74\230" +
-		"\uffff\ufffe\2\uffff\3\uffff\21\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff" +
-		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
-		"\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\43\uffff\44\uffff" +
-		"\45\uffff\22\274\uffff\ufffe\23\uffff\72\uffff\14\234\uffff\ufffe\15\uffff\14\222" +
-		"\23\222\24\222\72\222\uffff\ufffe\50\uffff\10\232\41\232\42\232\52\232\53\232\54" +
-		"\232\55\232\56\232\57\232\60\232\61\232\62\232\63\232\64\232\65\232\66\232\67\232" +
-		"\70\232\71\232\72\232\73\232\74\232\uffff\ufffe\17\uffff\22\273\uffff\ufffe\42\uffff" +
-		"\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff" +
-		"\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff" +
-		"\52\uffff\24\270\uffff\ufffe\10\uffff\0\1\uffff\ufffe\17\uffff\24\267\uffff\ufffe" +
-		"\72\uffff\14\234\uffff\ufffe\12\uffff\20\13\23\13\uffff\ufffe\23\uffff\20\236\uffff" +
-		"\ufffe\21\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67" +
+	private static final short[] tmLalr = TMLexer.unpack_short(3264,
+		"\10\260\45\260\46\260\54\260\56\260\57\260\60\260\61\260\62\260\63\260\64\260\65" +
+		"\260\66\260\67\260\70\260\71\260\72\260\73\260\74\260\75\260\76\260\77\260\100\260" +
+		"\101\260\102\260\103\260\104\260\105\260\106\260\uffff\ufffe\2\uffff\3\uffff\23\uffff" +
+		"\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100" +
+		"\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67" +
 		"\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56" +
-		"\uffff\55\uffff\54\uffff\53\uffff\52\uffff\0\4\10\4\uffff\ufffe\13\uffff\17\61\22" +
-		"\61\uffff\ufffe\6\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71" +
-		"\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60" +
-		"\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\0\5\uffff\ufffe\40\uffff" +
-		"\20\200\23\200\37\200\42\200\51\200\52\200\53\200\54\200\55\200\56\200\57\200\60" +
-		"\200\61\200\62\200\63\200\64\200\65\200\66\200\67\200\70\200\71\200\72\200\73\200" +
-		"\74\200\uffff\ufffe\1\uffff\0\47\10\47\21\47\41\47\42\47\52\47\53\47\54\47\55\47" +
-		"\56\47\57\47\60\47\61\47\62\47\63\47\64\47\65\47\66\47\67\47\70\47\71\47\72\47\73" +
-		"\47\74\47\uffff\ufffe\77\uffff\20\202\23\202\37\202\40\202\42\202\51\202\52\202\53" +
-		"\202\54\202\55\202\56\202\57\202\60\202\61\202\62\202\63\202\64\202\65\202\66\202" +
-		"\67\202\70\202\71\202\72\202\73\202\74\202\uffff\ufffe\6\uffff\23\uffff\25\uffff" +
-		"\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff" +
-		"\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff" +
-		"\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51\uffff\76\uffff\11\262\14\262\uffff" +
-		"\ufffe\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65" +
-		"\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54" +
-		"\uffff\53\uffff\52\uffff\7\252\20\252\uffff\ufffe\42\uffff\74\uffff\73\uffff\72\uffff" +
-		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
-		"\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\7\252\20\252\uffff" +
-		"\ufffe\13\uffff\0\240\3\240\10\240\21\240\23\240\41\240\42\240\52\240\53\240\54\240" +
-		"\55\240\56\240\57\240\60\240\61\240\62\240\63\240\64\240\65\240\66\240\67\240\70" +
-		"\240\71\240\72\240\73\240\74\240\76\240\uffff\ufffe\62\uffff\14\110\17\110\uffff" +
-		"\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73" +
-		"\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62" +
-		"\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51" +
-		"\uffff\76\uffff\11\262\24\262\uffff\ufffe\12\13\20\13\33\13\6\14\11\14\14\14\23\14" +
-		"\24\14\25\14\31\14\32\14\34\14\36\14\37\14\40\14\41\14\42\14\46\14\47\14\51\14\52" +
-		"\14\53\14\54\14\55\14\56\14\57\14\60\14\61\14\62\14\63\14\64\14\65\14\66\14\67\14" +
-		"\70\14\71\14\72\14\73\14\74\14\76\14\uffff\ufffe\6\uffff\23\uffff\25\uffff\37\uffff" +
-		"\40\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff" +
-		"\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff" +
-		"\54\uffff\53\uffff\52\uffff\51\uffff\76\uffff\11\262\14\262\24\262\uffff\ufffe\6" +
-		"\uffff\11\262\14\262\24\262\uffff\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff" +
-		"\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff" +
-		"\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff" +
-		"\54\uffff\53\uffff\52\uffff\51\uffff\76\uffff\11\262\14\262\24\262\uffff\ufffe\36" +
-		"\uffff\6\134\11\134\14\134\23\134\24\134\25\134\37\134\40\134\41\134\42\134\46\134" +
-		"\51\134\52\134\53\134\54\134\55\134\56\134\57\134\60\134\61\134\62\134\63\134\64" +
-		"\134\65\134\66\134\67\134\70\134\71\134\72\134\73\134\74\134\76\134\uffff\ufffe\34" +
-		"\uffff\6\147\11\147\14\147\23\147\24\147\25\147\36\147\37\147\40\147\41\147\42\147" +
-		"\46\147\51\147\52\147\53\147\54\147\55\147\56\147\57\147\60\147\61\147\62\147\63" +
-		"\147\64\147\65\147\66\147\67\147\70\147\71\147\72\147\73\147\74\147\76\147\uffff" +
-		"\ufffe\47\uffff\6\151\11\151\14\151\23\151\24\151\25\151\34\151\36\151\37\151\40" +
-		"\151\41\151\42\151\46\151\51\151\52\151\53\151\54\151\55\151\56\151\57\151\60\151" +
-		"\61\151\62\151\63\151\64\151\65\151\66\151\67\151\70\151\71\151\72\151\73\151\74" +
-		"\151\76\151\uffff\ufffe\31\uffff\32\uffff\6\155\11\155\14\155\23\155\24\155\25\155" +
-		"\34\155\36\155\37\155\40\155\41\155\42\155\46\155\47\155\51\155\52\155\53\155\54" +
-		"\155\55\155\56\155\57\155\60\155\61\155\62\155\63\155\64\155\65\155\66\155\67\155" +
-		"\70\155\71\155\72\155\73\155\74\155\76\155\uffff\ufffe\11\uffff\14\115\24\115\uffff" +
-		"\ufffe\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65" +
-		"\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54" +
-		"\uffff\53\uffff\52\uffff\7\252\20\252\uffff\ufffe\20\uffff\7\254\uffff\ufffe\20\uffff" +
-		"\7\254\uffff\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff" +
+		"\uffff\47\uffff\50\uffff\51\uffff\24\334\uffff\ufffe\31\uffff\0\15\6\15\10\15\11" +
+		"\15\17\15\21\15\24\15\25\15\26\15\27\15\30\15\32\15\33\15\34\15\36\15\41\15\43\15" +
+		"\44\15\45\15\46\15\52\15\53\15\55\15\56\15\57\15\60\15\61\15\62\15\63\15\64\15\65" +
+		"\15\66\15\67\15\70\15\71\15\72\15\73\15\74\15\75\15\76\15\77\15\100\15\101\15\102" +
+		"\15\103\15\104\15\105\15\106\15\110\15\uffff\ufffe\25\uffff\104\uffff\17\264\uffff" +
+		"\ufffe\20\uffff\17\252\25\252\26\252\104\252\uffff\ufffe\54\uffff\10\262\45\262\46" +
+		"\262\56\262\57\262\60\262\61\262\62\262\63\262\64\262\65\262\66\262\67\262\70\262" +
+		"\71\262\72\262\73\262\74\262\75\262\76\262\77\262\100\262\101\262\102\262\103\262" +
+		"\104\262\105\262\106\262\uffff\ufffe\21\uffff\24\333\uffff\ufffe\2\uffff\3\uffff" +
+		"\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77" +
+		"\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66" +
+		"\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\47" +
+		"\uffff\50\uffff\32\324\uffff\ufffe\31\uffff\13\13\22\13\35\13\6\15\11\15\17\15\21" +
+		"\15\25\15\26\15\27\15\32\15\33\15\34\15\36\15\41\15\43\15\44\15\45\15\46\15\52\15" +
+		"\53\15\55\15\56\15\57\15\60\15\61\15\62\15\63\15\64\15\65\15\66\15\67\15\70\15\71" +
+		"\15\72\15\73\15\74\15\75\15\76\15\77\15\100\15\101\15\102\15\103\15\104\15\105\15" +
+		"\106\15\110\15\uffff\ufffe\21\uffff\32\323\uffff\ufffe\46\uffff\106\uffff\105\uffff" +
+		"\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74" +
+		"\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63" +
+		"\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\26\330\uffff\ufffe\10\uffff\0" +
+		"\1\uffff\ufffe\21\uffff\26\327\uffff\ufffe\104\uffff\17\264\uffff\ufffe\13\uffff" +
+		"\22\13\25\13\uffff\ufffe\25\uffff\22\266\uffff\ufffe\6\uffff\23\uffff\45\uffff\46" +
+		"\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff" +
+		"\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff" +
+		"\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\0\4\10\4" +
+		"\uffff\ufffe\16\uffff\21\65\24\65\uffff\ufffe\6\uffff\44\uffff\45\uffff\46\uffff" +
+		"\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76" +
+		"\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65" +
+		"\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\0\5\uffff\ufffe" +
+		"\44\uffff\22\213\25\213\43\213\46\213\55\213\56\213\57\213\60\213\61\213\62\213\63" +
+		"\213\64\213\65\213\66\213\67\213\70\213\71\213\72\213\73\213\74\213\75\213\76\213" +
+		"\77\213\100\213\101\213\102\213\103\213\104\213\105\213\106\213\uffff\ufffe\1\uffff" +
+		"\0\52\6\52\10\52\23\52\45\52\46\52\56\52\57\52\60\52\61\52\62\52\63\52\64\52\65\52" +
+		"\66\52\67\52\70\52\71\52\72\52\73\52\74\52\75\52\76\52\77\52\100\52\101\52\102\52" +
+		"\103\52\104\52\105\52\106\52\uffff\ufffe\111\uffff\22\215\25\215\43\215\44\215\46" +
+		"\215\55\215\56\215\57\215\60\215\61\215\62\215\63\215\64\215\65\215\66\215\67\215" +
+		"\70\215\71\215\72\215\73\215\74\215\75\215\76\215\77\215\100\215\101\215\102\215" +
+		"\103\215\104\215\105\215\106\215\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff\43" +
+		"\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff" +
+		"\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff" +
+		"\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff" +
+		"\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17\312\uffff\ufffe\46\uffff\106\uffff" +
+		"\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75" +
+		"\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64" +
+		"\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\7\302\22\302\uffff\ufffe" +
+		"\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77" +
+		"\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66" +
+		"\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\7" +
+		"\302\22\302\uffff\ufffe\16\uffff\0\270\3\270\6\270\10\270\23\270\25\270\45\270\46" +
+		"\270\56\270\57\270\60\270\61\270\62\270\63\270\64\270\65\270\66\270\67\270\70\270" +
+		"\71\270\72\270\73\270\74\270\75\270\76\270\77\270\100\270\101\270\102\270\103\270" +
+		"\104\270\105\270\106\270\110\270\uffff\ufffe\74\uffff\17\122\21\122\uffff\ufffe\6" +
+		"\uffff\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105" +
+		"\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff" +
 		"\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff" +
-		"\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff" +
-		"\52\uffff\51\uffff\76\uffff\11\262\14\262\uffff\ufffe\6\uffff\23\uffff\25\uffff\37" +
-		"\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67" +
-		"\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56" +
-		"\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51\uffff\76\uffff\11\262\14\262\uffff" +
-		"\ufffe\3\uffff\0\242\10\242\21\242\23\242\41\242\42\242\52\242\53\242\54\242\55\242" +
-		"\56\242\57\242\60\242\61\242\62\242\63\242\64\242\65\242\66\242\67\242\70\242\71" +
-		"\242\72\242\73\242\74\242\76\242\uffff\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40" +
-		"\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66" +
-		"\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55" +
-		"\uffff\54\uffff\53\uffff\52\uffff\46\uffff\51\uffff\76\uffff\11\262\24\262\uffff" +
-		"\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73" +
-		"\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62" +
-		"\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51" +
-		"\uffff\76\uffff\11\262\14\262\24\262\uffff\ufffe\6\uffff\11\262\14\262\24\262\uffff" +
-		"\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73" +
-		"\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62" +
-		"\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51" +
-		"\uffff\76\uffff\11\262\14\262\24\262\uffff\ufffe\6\uffff\11\262\14\262\24\262\uffff" +
-		"\ufffe\36\uffff\6\135\11\135\14\135\23\135\24\135\25\135\37\135\40\135\41\135\42" +
-		"\135\46\135\51\135\52\135\53\135\54\135\55\135\56\135\57\135\60\135\61\135\62\135" +
-		"\63\135\64\135\65\135\66\135\67\135\70\135\71\135\72\135\73\135\74\135\76\135\uffff" +
-		"\ufffe\6\uffff\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73" +
-		"\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62" +
-		"\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51" +
-		"\uffff\76\uffff\11\262\14\262\24\262\uffff\ufffe\20\uffff\7\254\uffff\ufffe\6\uffff" +
-		"\23\uffff\25\uffff\37\uffff\40\uffff\41\uffff\42\uffff\74\uffff\73\uffff\72\uffff" +
-		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
-		"\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\51\uffff\76\uffff" +
-		"\11\262\14\262\uffff\ufffe\23\uffff\0\244\10\244\21\244\41\244\42\244\52\244\53\244" +
-		"\54\244\55\244\56\244\57\244\60\244\61\244\62\244\63\244\64\244\65\244\66\244\67" +
-		"\244\70\244\71\244\72\244\73\244\74\244\76\244\uffff\ufffe\42\uffff\74\uffff\73\uffff" +
+		"\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312" +
+		"\26\312\uffff\ufffe\6\uffff\25\uffff\27\uffff\43\uffff\44\uffff\46\uffff\106\uffff" +
+		"\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75" +
+		"\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64" +
+		"\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11" +
+		"\312\17\312\26\312\uffff\ufffe\6\uffff\11\312\17\312\26\312\uffff\ufffe\6\uffff\25" +
+		"\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff" +
+		"\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff" +
 		"\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff" +
-		"\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\54\uffff\53\uffff\52\uffff\11\14\24" +
-		"\14\36\14\uffff\ufffe\31\uffff\32\uffff\6\156\11\156\14\156\23\156\24\156\25\156" +
-		"\34\156\36\156\37\156\40\156\41\156\42\156\46\156\47\156\51\156\52\156\53\156\54" +
-		"\156\55\156\56\156\57\156\60\156\61\156\62\156\63\156\64\156\65\156\66\156\67\156" +
-		"\70\156\71\156\72\156\73\156\74\156\76\156\uffff\ufffe\6\uffff\11\262\14\262\24\262" +
-		"\uffff\ufffe\36\154\6\154\11\154\14\154\23\154\24\154\25\154\37\154\40\154\41\154" +
-		"\42\154\46\154\51\154\52\154\53\154\54\154\55\154\56\154\57\154\60\154\61\154\62" +
-		"\154\63\154\64\154\65\154\66\154\67\154\70\154\71\154\72\154\73\154\74\154\76\154" +
-		"\uffff\ufffe\17\uffff\7\101\uffff\ufffe\76\uffff\0\246\10\246\21\246\41\246\42\246" +
-		"\52\246\53\246\54\246\55\246\56\246\57\246\60\246\61\246\62\246\63\246\64\246\65" +
-		"\246\66\246\67\246\70\246\71\246\72\246\73\246\74\246\uffff\ufffe\11\175\36\uffff" +
-		"\24\175\uffff\ufffe\11\176\36\176\24\176\uffff\ufffe");
+		"\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17\312\26\312\uffff" +
+		"\ufffe\41\uffff\6\151\11\151\17\151\25\151\26\151\27\151\43\151\44\151\45\151\46" +
+		"\151\52\151\55\151\56\151\57\151\60\151\61\151\62\151\63\151\64\151\65\151\66\151" +
+		"\67\151\70\151\71\151\72\151\73\151\74\151\75\151\76\151\77\151\100\151\101\151\102" +
+		"\151\103\151\104\151\105\151\106\151\110\151\uffff\ufffe\36\uffff\6\164\11\164\17" +
+		"\164\25\164\26\164\27\164\41\164\43\164\44\164\45\164\46\164\52\164\55\164\56\164" +
+		"\57\164\60\164\61\164\62\164\63\164\64\164\65\164\66\164\67\164\70\164\71\164\72" +
+		"\164\73\164\74\164\75\164\76\164\77\164\100\164\101\164\102\164\103\164\104\164\105" +
+		"\164\106\164\110\164\uffff\ufffe\53\uffff\6\166\11\166\17\166\25\166\26\166\27\166" +
+		"\36\166\41\166\43\166\44\166\45\166\46\166\52\166\55\166\56\166\57\166\60\166\61" +
+		"\166\62\166\63\166\64\166\65\166\66\166\67\166\70\166\71\166\72\166\73\166\74\166" +
+		"\75\166\76\166\77\166\100\166\101\166\102\166\103\166\104\166\105\166\106\166\110" +
+		"\166\uffff\ufffe\33\uffff\34\uffff\6\172\11\172\17\172\25\172\26\172\27\172\36\172" +
+		"\41\172\43\172\44\172\45\172\46\172\52\172\53\172\55\172\56\172\57\172\60\172\61" +
+		"\172\62\172\63\172\64\172\65\172\66\172\67\172\70\172\71\172\72\172\73\172\74\172" +
+		"\75\172\76\172\77\172\100\172\101\172\102\172\103\172\104\172\105\172\106\172\110" +
+		"\172\uffff\ufffe\11\uffff\17\127\26\127\uffff\ufffe\46\uffff\106\uffff\105\uffff" +
+		"\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74" +
+		"\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63" +
+		"\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\7\302\22\302\uffff\ufffe\22\uffff" +
+		"\7\304\uffff\ufffe\22\uffff\7\304\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff" +
+		"\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102" +
+		"\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff" +
+		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
+		"\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17\312\uffff\ufffe\6\uffff" +
+		"\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff" +
+		"\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74" +
+		"\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63" +
+		"\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17" +
+		"\312\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46" +
+		"\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff" +
+		"\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff" +
+		"\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff" +
+		"\110\uffff\11\312\17\312\uffff\ufffe\3\uffff\0\272\6\272\10\272\23\272\25\272\45" +
+		"\272\46\272\56\272\57\272\60\272\61\272\62\272\63\272\64\272\65\272\66\272\67\272" +
+		"\70\272\71\272\72\272\73\272\74\272\75\272\76\272\77\272\100\272\101\272\102\272" +
+		"\103\272\104\272\105\272\106\272\110\272\uffff\ufffe\14\uffff\15\uffff\12\232\24" +
+		"\232\42\232\uffff\ufffe\6\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff" +
+		"\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76" +
+		"\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65" +
+		"\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\52\uffff\55" +
+		"\uffff\110\uffff\11\312\26\312\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff\43" +
+		"\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff" +
+		"\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff" +
+		"\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff" +
+		"\57\uffff\56\uffff\55\uffff\110\uffff\11\312\26\312\uffff\ufffe\6\uffff\11\312\17" +
+		"\312\26\312\uffff\ufffe\6\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff" +
+		"\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76" +
+		"\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65" +
+		"\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110" +
+		"\uffff\11\312\17\312\26\312\uffff\ufffe\6\uffff\11\312\17\312\26\312\uffff\ufffe" +
+		"\41\uffff\6\152\11\152\17\152\25\152\26\152\27\152\43\152\44\152\45\152\46\152\52" +
+		"\152\55\152\56\152\57\152\60\152\61\152\62\152\63\152\64\152\65\152\66\152\67\152" +
+		"\70\152\71\152\72\152\73\152\74\152\75\152\76\152\77\152\100\152\101\152\102\152" +
+		"\103\152\104\152\105\152\106\152\110\152\uffff\ufffe\6\uffff\23\uffff\25\uffff\27" +
+		"\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff" +
+		"\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff" +
+		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
+		"\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17\312\26\312\uffff\ufffe\22" +
+		"\uffff\7\304\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45" +
+		"\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff" +
+		"\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff" +
+		"\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff" +
+		"\55\uffff\110\uffff\11\312\17\312\uffff\ufffe\6\uffff\23\uffff\25\uffff\27\uffff" +
+		"\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff\102" +
+		"\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff" +
+		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
+		"\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17\312\uffff\ufffe\6\uffff" +
+		"\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106\uffff\105\uffff" +
+		"\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74" +
+		"\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63" +
+		"\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff\11\312\17" +
+		"\312\uffff\ufffe\25\uffff\0\274\6\274\10\274\23\274\45\274\46\274\56\274\57\274\60" +
+		"\274\61\274\62\274\63\274\64\274\65\274\66\274\67\274\70\274\71\274\72\274\73\274" +
+		"\74\274\75\274\76\274\77\274\100\274\101\274\102\274\103\274\104\274\105\274\106" +
+		"\274\110\274\uffff\ufffe\31\uffff\46\uffff\106\uffff\105\uffff\104\uffff\103\uffff" +
+		"\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff\75\uffff\74\uffff\73\uffff\72\uffff" +
+		"\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff\64\uffff\63\uffff\62\uffff\61\uffff" +
+		"\60\uffff\57\uffff\56\uffff\11\15\26\15\41\15\uffff\ufffe\33\uffff\34\uffff\6\173" +
+		"\11\173\17\173\25\173\26\173\27\173\36\173\41\173\43\173\44\173\45\173\46\173\52" +
+		"\173\53\173\55\173\56\173\57\173\60\173\61\173\62\173\63\173\64\173\65\173\66\173" +
+		"\67\173\70\173\71\173\72\173\73\173\74\173\75\173\76\173\77\173\100\173\101\173\102" +
+		"\173\103\173\104\173\105\173\106\173\110\173\uffff\ufffe\6\uffff\11\312\17\312\26" +
+		"\312\uffff\ufffe\41\171\6\171\11\171\17\171\25\171\26\171\27\171\43\171\44\171\45" +
+		"\171\46\171\52\171\55\171\56\171\57\171\60\171\61\171\62\171\63\171\64\171\65\171" +
+		"\66\171\67\171\70\171\71\171\72\171\73\171\74\171\75\171\76\171\77\171\100\171\101" +
+		"\171\102\171\103\171\104\171\105\171\106\171\110\171\uffff\ufffe\21\uffff\7\111\uffff" +
+		"\ufffe\6\uffff\23\uffff\25\uffff\27\uffff\43\uffff\44\uffff\45\uffff\46\uffff\106" +
+		"\uffff\105\uffff\104\uffff\103\uffff\102\uffff\101\uffff\100\uffff\77\uffff\76\uffff" +
+		"\75\uffff\74\uffff\73\uffff\72\uffff\71\uffff\70\uffff\67\uffff\66\uffff\65\uffff" +
+		"\64\uffff\63\uffff\62\uffff\61\uffff\60\uffff\57\uffff\56\uffff\55\uffff\110\uffff" +
+		"\11\312\17\312\uffff\ufffe\110\uffff\0\276\6\276\10\276\23\276\45\276\46\276\56\276" +
+		"\57\276\60\276\61\276\62\276\63\276\64\276\65\276\66\276\67\276\70\276\71\276\72" +
+		"\276\73\276\74\276\75\276\76\276\77\276\100\276\101\276\102\276\103\276\104\276\105" +
+		"\276\106\276\uffff\ufffe\12\237\42\uffff\24\237\uffff\ufffe\12\236\42\236\24\236" +
+		"\uffff\ufffe\11\211\41\uffff\26\211\uffff\ufffe\11\212\41\212\26\212\uffff\ufffe");
 
-	private static final short[] lapg_sym_goto = TMLexer.unpack_short(144,
-		"\0\2\4\20\32\32\32\53\57\61\66\73\77\112\117\120\132\143\160\166\231\247\262\265" +
-		"\271\275\304\307\310\315\322\335\356\u0101\u0116\u015d\u0165\u016d\u0174\u0175\u0176" +
-		"\u0177\u0188\u01d1\u0219\u0261\u02aa\u02f2\u033a\u0382\u03ca\u0412\u045a\u04a5\u04ee" +
-		"\u0537\u057f\u05c7\u060f\u0658\u06a0\u06e8\u06e8\u06f5\u06f6\u06f7\u06f8\u06f9\u06fa" +
-		"\u06fc\u06fd\u06fe\u0719\u0746\u0749\u074b\u074f\u0751\u0752\u0754\u0756\u0758\u0759" +
-		"\u075a\u075b\u075d\u075f\u0761\u0762\u0764\u0766\u0768\u076b\u076c\u076e\u0770\u0772" +
-		"\u0773\u0779\u0780\u0787\u0796\u07a1\u07a9\u07b5\u07c1\u07cf\u07df\u07ef\u07fb\u080b" +
-		"\u081c\u0821\u0825\u0827\u0835\u0844\u084b\u0853\u0854\u0856\u0859\u085c\u0869\u087e" +
-		"\u087f\u0880\u0882\u0883\u0884\u0885\u0886\u0887\u0888\u088b\u088e\u088f\u0895\u08a4" +
-		"\u08a5\u08b3\u08b4\u08b5\u08b6");
+	private static final short[] lapg_sym_goto = TMLexer.unpack_short(166,
+		"\0\2\4\26\46\46\46\75\105\107\114\117\123\124\125\127\147\154\170\204\233\242\313" +
+		"\330\347\352\363\372\u0101\u0104\u0105\u010a\u010d\u0112\u011d\u0120\u0135\u014d" +
+		"\u0165\u01bb\u01c9\u01d7\u01dd\u01de\u01df\u01e0\u01f5\u024c\u02a6\u02fd\u0354\u03ae" +
+		"\u0405\u045c\u04b3\u050a\u0561\u05b8\u060f\u0666\u06bd\u0714\u076b\u07c7\u0821\u087b" +
+		"\u08d2\u0929\u0980\u09d8\u0a2f\u0a86\u0a86\u0a97\u0a98\u0a99\u0a9a\u0a9b\u0a9c\u0a9e" +
+		"\u0a9f\u0aa0\u0ac8\u0aef\u0afc\u0b01\u0b03\u0b07\u0b09\u0b0a\u0b0c\u0b0e\u0b10\u0b11" +
+		"\u0b12\u0b13\u0b15\u0b17\u0b19\u0b1b\u0b1c\u0b1e\u0b20\u0b24\u0b27\u0b28\u0b2a\u0b2c" +
+		"\u0b2e\u0b2f\u0b39\u0b44\u0b4f\u0b5a\u0b6d\u0b7c\u0b88\u0b98\u0ba8\u0bba\u0bce\u0be2" +
+		"\u0bf2\u0c06\u0c1b\u0c20\u0c24\u0c37\u0c4b\u0c4d\u0c55\u0c58\u0c59\u0c5e\u0c61\u0c64" +
+		"\u0c6a\u0c6c\u0c7a\u0c7d\u0c80\u0c91\u0ca9\u0caa\u0cab\u0cad\u0cae\u0caf\u0cb0\u0cb1" +
+		"\u0cb2\u0cb3\u0cb6\u0cb9\u0cba\u0cc4\u0cd7\u0cea\u0ceb\u0cec\u0ced\u0cee\u0cef\u0cf0" +
+		"\u0cf1\u0cf2");
 
-	private static final short[] lapg_sym_from = TMLexer.unpack_short(2230,
-		"\u0139\u013a\123\170\1\6\34\37\47\66\74\124\143\233\316\340\1\6\37\43\66\74\143\233" +
-		"\303\340\113\134\200\235\247\251\252\275\276\315\317\325\326\332\345\355\u0105\133" +
-		"\207\212\277\36\52\266\377\u0119\u012e\u012f\51\56\103\115\243\56\115\120\225\32" +
-		"\46\64\77\230\232\245\353\354\371\u0111\21\124\156\166\222\u012a\24\57\122\124\156" +
-		"\166\222\230\u010e\u012c\56\115\126\243\263\273\274\346\u0100\1\6\37\65\66\74\105" +
-		"\124\143\156\166\222\233\25\122\124\156\166\222\20\26\30\104\124\133\156\166\200" +
-		"\212\222\235\237\241\247\252\263\275\276\315\317\320\321\322\323\326\327\336\345" +
-		"\355\360\372\373\u011c\u011e\42\60\62\151\156\166\222\314\371\377\u0115\u0119\u0126" +
-		"\u012c\200\235\247\252\275\276\315\317\326\345\355\311\316\367\124\156\166\222\124" +
-		"\156\166\222\124\156\166\222\262\u0102\u0129\262\u0102\u0129\243\124\156\166\222" +
-		"\257\320\372\373\u011c\u011e\124\156\166\222\253\333\377\u0108\u0119\u012e\u012f" +
-		"\200\235\247\252\263\275\276\315\317\321\322\323\326\327\336\345\355\113\124\134" +
-		"\142\156\166\200\222\235\247\252\275\276\315\317\326\336\345\355\1\6\36\37\66\74" +
-		"\105\132\134\143\200\233\235\252\275\276\315\317\326\345\355\1\2\6\13\27\33\34\36" +
-		"\37\41\65\66\74\75\102\105\113\124\132\134\140\143\144\145\156\166\171\175\200\202" +
-		"\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315\317\320" +
-		"\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e" +
-		"\u0120\u0134\u0135\1\6\37\66\74\143\233\340\1\6\37\66\74\143\233\340\1\6\37\66\74" +
-		"\143\233\315\261\22\200\235\247\252\263\275\276\315\317\321\322\323\326\327\336\345" +
-		"\355\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\132\133\134\140\143\144" +
-		"\145\156\166\171\175\200\202\203\204\212\222\232\233\235\236\247\252\263\270\275" +
-		"\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345\347\355\366\372" +
-		"\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65" +
-		"\66\74\75\102\105\113\124\132\134\140\143\144\145\156\166\171\175\200\202\203\204" +
-		"\222\232\233\234\235\236\247\252\263\270\275\276\301\306\312\313\315\317\320\321" +
-		"\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120" +
-		"\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\132\134\140\143" +
-		"\144\145\156\166\171\175\200\202\203\204\222\232\233\234\235\236\247\252\263\270" +
-		"\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345\347\355\366" +
-		"\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41" +
-		"\65\66\74\75\102\105\113\124\132\133\134\140\143\144\145\156\166\171\175\200\202" +
-		"\203\204\212\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315\317" +
-		"\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e" +
-		"\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\131\132" +
-		"\134\140\143\144\145\156\166\171\175\200\202\203\204\222\232\233\235\236\247\252" +
-		"\263\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345\347" +
-		"\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34" +
-		"\36\37\41\65\66\74\75\102\105\113\124\131\132\134\140\143\144\145\156\166\171\175" +
-		"\200\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315" +
-		"\317\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c" +
-		"\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\131" +
-		"\132\134\140\143\144\145\156\166\171\175\200\202\203\204\222\232\233\235\236\247" +
-		"\252\263\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345" +
-		"\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33" +
-		"\34\36\37\41\65\66\74\75\102\105\113\124\131\132\134\140\143\144\145\156\166\171" +
-		"\175\200\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313" +
-		"\315\317\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117" +
-		"\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113" +
-		"\124\132\134\140\143\144\145\156\166\171\175\200\202\203\204\222\226\232\233\235" +
-		"\236\247\252\263\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336" +
-		"\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6" +
-		"\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\132\134\140\143\144\145\156\166" +
-		"\171\175\200\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312" +
-		"\313\315\317\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0112\u0115" +
-		"\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105" +
-		"\113\124\132\133\134\140\143\144\145\156\166\171\175\200\201\202\203\204\212\222" +
-		"\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315\317\320\321\322\323" +
-		"\326\327\336\340\345\347\355\366\372\373\374\u0112\u0115\u0117\u011c\u011e\u0120" +
-		"\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\132\133\134\140" +
-		"\143\144\145\156\166\171\175\200\202\203\204\212\222\232\233\235\236\247\252\263" +
-		"\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345\347\355" +
-		"\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37" +
-		"\41\65\66\74\75\102\105\113\124\132\133\134\140\143\144\145\156\166\171\175\200\202" +
-		"\203\204\212\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315\317" +
-		"\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e" +
-		"\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124\132\134" +
-		"\140\143\144\145\156\166\171\175\200\202\203\204\222\232\233\235\236\247\252\263" +
-		"\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345\347\355" +
-		"\366\372\373\374\u0112\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34" +
-		"\36\37\41\65\66\74\75\102\105\113\124\132\134\140\143\144\145\156\166\171\175\200" +
-		"\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313\315\317" +
-		"\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0112\u0115\u0117\u011c" +
-		"\u011e\u0120\u0134\u0135\0\1\2\6\13\27\33\34\36\37\41\65\66\74\75\102\105\113\124" +
-		"\132\134\140\143\144\145\156\166\171\175\200\202\203\204\222\232\233\235\236\247" +
-		"\252\263\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336\340\345" +
-		"\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6\13\20\27" +
-		"\33\34\36\37\41\61\65\66\74\75\102\105\113\124\132\134\140\143\144\145\156\166\171" +
-		"\175\200\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306\312\313" +
-		"\315\317\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117" +
-		"\u011c\u011e\u0120\u0134\u0135\1\2\6\13\27\33\34\36\37\41\50\65\66\74\75\102\105" +
-		"\113\124\132\134\140\143\144\145\156\166\171\175\200\202\203\204\222\232\233\235" +
-		"\236\247\252\263\270\275\276\301\306\312\313\315\317\320\321\322\323\326\327\336" +
-		"\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134\u0135\1\2\6" +
-		"\13\27\33\34\36\37\41\65\66\67\74\75\102\105\113\124\132\134\140\143\144\145\156" +
-		"\166\171\175\200\202\203\204\222\232\233\235\236\247\252\263\270\275\276\301\306" +
-		"\312\313\315\317\320\321\322\323\326\327\336\340\345\347\355\366\372\373\374\u0115" +
-		"\u0117\u011c\u011e\u0120\u0134\u0135\200\235\247\252\275\276\315\317\326\336\345" +
-		"\355\u0114\176\0\0\36\52\20\61\22\36\65\102\105\113\134\140\145\200\203\204\235\236" +
-		"\247\252\263\270\275\276\315\317\321\323\326\327\336\345\355\1\6\37\66\74\143\171" +
-		"\175\200\202\232\233\235\247\252\263\275\276\306\312\313\315\317\320\321\322\323" +
-		"\326\327\336\340\345\347\355\366\372\373\374\u0115\u0117\u011c\u011e\u0120\u0134" +
-		"\u0135\104\133\212\124\156\124\156\166\222\123\170\65\65\105\65\105\65\105\225\360" +
-		"\u0112\65\105\144\301\102\145\113\113\134\113\134\133\212\273\274\346\131\113\134" +
-		"\171\306\175\366\347\200\235\275\276\317\355\200\235\275\276\317\345\355\200\235" +
-		"\275\276\317\345\355\200\235\247\251\252\275\276\315\317\325\326\332\345\355\u0105" +
-		"\200\235\247\252\275\276\315\317\326\345\355\200\235\247\275\276\317\345\355\200" +
-		"\235\247\252\275\276\315\317\326\336\345\355\200\235\247\252\275\276\315\317\326" +
-		"\336\345\355\200\235\247\252\263\275\276\315\317\326\327\336\345\355\200\235\247" +
-		"\252\263\275\276\315\317\321\323\326\327\336\345\355\200\235\247\252\263\275\276" +
-		"\315\317\321\323\326\327\336\345\355\200\235\247\252\275\276\315\317\326\336\345" +
-		"\355\200\235\247\252\263\275\276\315\317\321\323\326\327\336\345\355\200\235\247" +
-		"\252\263\275\276\315\317\321\322\323\326\327\336\345\355\320\372\373\u011c\u011e" +
-		"\320\372\u011c\u011e\u0117\u0135\113\134\200\235\247\252\275\276\315\317\326\336" +
-		"\345\355\113\134\142\200\235\247\252\275\276\315\317\326\336\345\355\1\6\37\66\74" +
-		"\143\233\1\6\37\66\74\143\233\340\41\56\115\2\13\27\2\13\27\200\235\247\252\275\276" +
-		"\315\317\326\336\345\355\u0114\1\6\36\37\66\74\105\132\134\143\200\233\235\252\275" +
-		"\276\315\317\326\345\355\3\22\20\61\104\225\303\360\u0114\102\203\204\270\273\274" +
-		"\346\171\200\235\275\276\317\355\200\235\247\251\252\275\276\315\317\325\326\332" +
-		"\345\355\u0105\u0117\113\134\200\235\247\252\275\276\315\317\326\336\345\355\41\6" +
-		"\6");
+	private static final short[] lapg_sym_from = TMLexer.unpack_short(3314,
+		"\u017a\u017b\150\217\1\6\26\36\41\62\71\72\107\116\140\151\266\370\u010c\u0124\u012a" +
+		"\u012b\1\6\26\41\56\71\72\107\116\140\266\344\u010c\u0124\u012a\u012b\106\130\137" +
+		"\161\230\271\303\305\306\333\334\336\367\371\u0101\u0102\u0106\u0111\u011b\u011d" +
+		"\u011e\u0140\u0151\160\240\241\244\335\337\340\u011f\40\65\322\u0139\u015d\u0173" +
+		"\u0174\365\u0158\u0159\64\126\276\354\363\363\145\257\34\61\105\121\262\265\300\354" +
+		"\u0119\u011a\u011c\u014d\u014f\u0150\u0155\u0168\21\151\205\215\254\24\51\52\100" +
+		"\147\151\205\215\254\262\325\u014a\46\76\115\153\276\302\317\331\332\u0100\u0114" +
+		"\u013a\1\6\41\106\107\116\130\151\205\215\230\254\266\271\333\334\336\371\u0111\u011b" +
+		"\u011d\u011e\u0151\25\147\151\205\215\254\365\20\30\32\127\151\160\205\215\230\241" +
+		"\244\254\271\273\274\303\306\317\333\334\336\340\367\371\372\373\374\375\u0102\u0103" +
+		"\u010a\u0111\u011b\u011d\u011e\u0122\u0134\u0135\u0151\u0160\u0162\55\101\103\200" +
+		"\205\215\254\366\u0133\u0139\u015a\u015d\u016d\230\271\303\306\333\334\336\367\371" +
+		"\u0102\u0111\u011b\u011d\u011e\u0151\357\370\u0131\10\43\151\160\205\215\244\254" +
+		"\u0136\51\53\151\205\215\254\325\151\205\215\254\316\u013c\u0171\316\u013c\u0171" +
+		"\276\151\205\215\254\313\270\u012c\u012e\372\u0134\u0135\u0160\u0162\151\205\215" +
+		"\254\307\u0107\u0139\u0143\u015d\u0173\u0174\365\u0158\u0159\230\271\303\306\317" +
+		"\333\334\336\367\371\373\374\375\u0102\u0103\u010a\u0111\u011b\u011d\u011e\u0151" +
+		"\137\151\161\167\205\215\230\254\271\302\303\306\333\334\336\367\371\u0102\u010a" +
+		"\u0111\u011b\u011d\u011e\u0151\1\6\40\41\107\116\130\157\161\230\266\271\306\333" +
+		"\334\336\367\371\u0102\u0111\u011b\u011d\u011e\u0151\1\2\6\13\26\31\35\36\40\41\54" +
+		"\71\72\74\106\107\116\117\125\130\137\140\144\151\157\161\165\172\173\174\205\215" +
+		"\220\224\225\230\231\233\234\235\254\265\266\270\271\272\303\306\317\326\333\334" +
+		"\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112" +
+		"\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160" +
+		"\u0162\u0164\1\6\26\41\71\72\107\116\140\266\u010c\u0124\u012a\u012b\1\6\26\41\71" +
+		"\72\107\116\140\266\u010c\u0124\u012a\u012b\1\6\41\107\116\266\367\315\22\230\271" +
+		"\303\306\317\333\334\336\367\371\373\374\375\u0102\u0103\u010a\u0111\u011b\u011d" +
+		"\u011e\u0151\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\124\125\130\137" +
+		"\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254" +
+		"\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372" +
+		"\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c" +
+		"\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36" +
+		"\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157\160\161\165\172\173" +
+		"\174\205\215\220\224\225\230\231\233\234\235\241\244\254\265\266\270\271\272\303" +
+		"\306\317\326\333\334\336\340\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103" +
+		"\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135" +
+		"\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107" +
+		"\116\117\125\130\137\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230" +
+		"\231\233\234\235\254\265\266\267\270\271\272\303\306\317\326\333\334\336\342\347" +
+		"\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b" +
+		"\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164" +
+		"\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157" +
+		"\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\267\270" +
+		"\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375" +
+		"\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130" +
+		"\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71" +
+		"\72\74\106\107\116\117\125\130\137\140\144\151\157\160\161\165\172\173\174\205\215" +
+		"\220\224\225\230\231\233\234\235\241\244\254\265\266\270\271\272\303\306\317\326" +
+		"\333\334\336\340\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c" +
+		"\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151" +
+		"\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125" +
+		"\130\137\140\144\151\156\157\161\165\172\173\174\205\215\220\224\225\230\231\233" +
+		"\234\235\254\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360\361\362" +
+		"\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e" +
+		"\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13" +
+		"\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\156\157\161" +
+		"\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270\271\272" +
+		"\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103" +
+		"\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135" +
+		"\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107" +
+		"\116\117\125\130\137\140\144\151\156\157\161\165\172\173\174\205\215\220\224\225" +
+		"\230\231\233\234\235\254\265\266\270\271\272\303\306\317\326\333\334\336\342\347" +
+		"\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b" +
+		"\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164" +
+		"\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\156" +
+		"\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270" +
+		"\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375" +
+		"\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130" +
+		"\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71" +
+		"\72\74\106\107\116\117\125\130\137\140\144\151\156\157\161\165\172\173\174\205\215" +
+		"\220\224\225\230\231\233\234\235\254\265\266\270\271\272\303\306\317\326\333\334" +
+		"\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112" +
+		"\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160" +
+		"\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140" +
+		"\144\151\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\263" +
+		"\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372" +
+		"\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c" +
+		"\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36" +
+		"\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157\161\165\172\173\174" +
+		"\205\215\220\224\225\230\231\233\234\235\254\263\265\266\270\271\272\303\306\317" +
+		"\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c" +
+		"\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151" +
+		"\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125" +
+		"\130\137\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234" +
+		"\235\254\263\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360\361\362" +
+		"\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e" +
+		"\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13" +
+		"\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157\161\165" +
+		"\172\173\174\205\215\220\224\225\230\231\233\234\235\254\263\265\266\270\271\272" +
+		"\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103" +
+		"\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135" +
+		"\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107" +
+		"\116\117\125\130\137\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230" +
+		"\231\233\234\235\254\260\265\266\270\271\272\303\306\317\326\333\334\336\342\347" +
+		"\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b" +
+		"\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164" +
+		"\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157" +
+		"\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270\271" +
+		"\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102" +
+		"\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134" +
+		"\u0135\u0136\u0151\u0152\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71" +
+		"\72\74\106\107\116\117\125\130\137\140\144\151\157\160\161\165\172\173\174\205\215" +
+		"\220\224\225\230\231\232\233\234\235\241\244\254\265\266\270\271\272\303\306\317" +
+		"\326\333\334\336\340\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a" +
+		"\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136" +
+		"\u0151\u0152\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107" +
+		"\116\117\125\130\137\140\144\151\157\160\161\165\172\173\174\205\215\220\224\225" +
+		"\230\231\233\234\235\241\244\254\265\266\270\271\272\303\306\317\326\333\334\336" +
+		"\340\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112" +
+		"\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160" +
+		"\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140" +
+		"\144\151\157\160\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\241" +
+		"\244\254\265\266\270\271\272\303\306\317\326\333\334\336\340\342\347\360\361\362" +
+		"\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e" +
+		"\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13" +
+		"\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137\140\144\151\157\161\165" +
+		"\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270\271\272\303" +
+		"\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103" +
+		"\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135" +
+		"\u0136\u0151\u0152\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\71\72\74" +
+		"\106\107\116\117\125\130\137\140\144\151\157\161\165\172\173\174\205\215\220\224" +
+		"\225\230\231\233\234\235\254\265\266\270\271\272\303\306\317\326\333\334\336\342" +
+		"\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115" +
+		"\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u0152\u015a\u0160" +
+		"\u0162\u0164\0\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\116\117\125\130\137" +
+		"\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254" +
+		"\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372" +
+		"\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c" +
+		"\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\1\2\6\13\20\26\31\35" +
+		"\36\40\41\54\71\72\74\102\106\107\116\117\125\130\137\140\144\151\157\161\165\172" +
+		"\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270\271\272\303\306" +
+		"\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375\u0102\u0103\u010a" +
+		"\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136" +
+		"\u0151\u015a\u0160\u0162\u0164\1\2\6\13\26\31\35\36\40\41\54\63\71\72\74\106\107" +
+		"\116\117\125\130\137\140\144\151\157\161\165\172\173\174\205\215\220\224\225\230" +
+		"\231\233\234\235\254\265\266\270\271\272\303\306\317\326\333\334\336\342\347\360" +
+		"\361\362\367\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b" +
+		"\u011d\u011e\u0124\u012c\u012e\u0130\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164" +
+		"\1\2\6\13\26\31\35\36\40\41\54\71\72\74\106\107\110\116\117\125\130\137\140\144\151" +
+		"\157\161\165\172\173\174\205\215\220\224\225\230\231\233\234\235\254\265\266\270" +
+		"\271\272\303\306\317\326\333\334\336\342\347\360\361\362\367\371\372\373\374\375" +
+		"\u0102\u0103\u010a\u010c\u0111\u0112\u0115\u011b\u011d\u011e\u0124\u012c\u012e\u0130" +
+		"\u0134\u0135\u0136\u0151\u015a\u0160\u0162\u0164\230\271\303\306\333\334\336\367" +
+		"\371\u0102\u010a\u0111\u011b\u011d\u011e\u0151\u0154\226\0\0\40\65\20\102\22\40\26" +
+		"\74\106\125\130\137\161\165\174\224\230\231\234\235\270\271\272\303\306\317\326\333" +
+		"\334\336\362\367\371\373\375\u0102\u0103\u010a\u0111\u0112\u011b\u011d\u011e\u012c" +
+		"\u012e\u0151\1\6\26\41\71\72\107\116\140\230\266\271\303\306\317\333\334\336\367" +
+		"\371\372\373\374\375\u0102\u0103\u010a\u010c\u0111\u011b\u011d\u011e\u0124\u0134" +
+		"\u0135\u0136\u0151\u0160\u0162\144\172\220\225\233\265\347\360\361\u0115\u0130\u015a" +
+		"\u0164\127\160\241\244\340\151\205\151\205\215\254\150\217\106\106\130\106\130\106" +
+		"\130\257\u0122\u0152\106\130\106\130\173\342\125\174\137\137\161\137\161\160\241" +
+		"\244\340\331\332\u0114\156\137\161\220\347\225\u0130\u0115\230\271\333\334\336\371" +
+		"\u011b\u011d\u011e\u0151\230\271\333\334\336\371\u0111\u011b\u011d\u011e\u0151\230" +
+		"\271\333\334\336\371\u0111\u011b\u011d\u011e\u0151\230\271\333\334\336\371\u0111" +
+		"\u011b\u011d\u011e\u0151\230\271\303\305\306\333\334\336\367\371\u0101\u0102\u0106" +
+		"\u0111\u011b\u011d\u011e\u0140\u0151\230\271\303\306\333\334\336\367\371\u0102\u0111" +
+		"\u011b\u011d\u011e\u0151\230\271\303\333\334\336\371\u0111\u011b\u011d\u011e\u0151" +
+		"\230\271\303\306\333\334\336\367\371\u0102\u010a\u0111\u011b\u011d\u011e\u0151\230" +
+		"\271\303\306\333\334\336\367\371\u0102\u010a\u0111\u011b\u011d\u011e\u0151\230\271" +
+		"\303\306\317\333\334\336\367\371\u0102\u0103\u010a\u0111\u011b\u011d\u011e\u0151" +
+		"\230\271\303\306\317\333\334\336\367\371\373\375\u0102\u0103\u010a\u0111\u011b\u011d" +
+		"\u011e\u0151\230\271\303\306\317\333\334\336\367\371\373\375\u0102\u0103\u010a\u0111" +
+		"\u011b\u011d\u011e\u0151\230\271\303\306\333\334\336\367\371\u0102\u010a\u0111\u011b" +
+		"\u011d\u011e\u0151\230\271\303\306\317\333\334\336\367\371\373\375\u0102\u0103\u010a" +
+		"\u0111\u011b\u011d\u011e\u0151\230\271\303\306\317\333\334\336\367\371\373\374\375" +
+		"\u0102\u0103\u010a\u0111\u011b\u011d\u011e\u0151\372\u0134\u0135\u0160\u0162\372" +
+		"\u0134\u0160\u0162\137\161\230\271\302\303\306\333\334\336\367\371\u0102\u010a\u0111" +
+		"\u011b\u011d\u011e\u0151\137\161\167\230\271\302\303\306\333\334\336\367\371\u0102" +
+		"\u010a\u0111\u011b\u011d\u011e\u0151\160\244\26\74\231\270\362\u0112\u012c\u012e" +
+		"\10\43\u0136\263\26\71\72\140\u0124\270\u012c\u012e\270\u012c\u012e\1\6\41\107\116" +
+		"\266\54\117\1\6\26\41\71\72\107\116\140\266\u010c\u0124\u012a\u012b\2\13\31\2\13" +
+		"\31\230\271\303\306\333\334\336\367\371\u0102\u010a\u0111\u011b\u011d\u011e\u0151" +
+		"\u0154\1\6\40\41\107\116\130\157\161\230\266\271\306\333\334\336\367\371\u0102\u0111" +
+		"\u011b\u011d\u011e\u0151\3\22\20\102\127\257\344\u0122\u0154\125\234\235\326\331" +
+		"\332\u0114\220\230\271\333\334\336\371\u011b\u011d\u011e\u0151\230\271\303\305\306" +
+		"\333\334\336\367\371\u0101\u0102\u0106\u0111\u011b\u011d\u011e\u0140\u0151\137\161" +
+		"\230\271\302\303\306\333\334\336\367\371\u0102\u010a\u0111\u011b\u011d\u011e\u0151" +
+		"\231\26\26\26\54\54\6\6");
 
-	private static final short[] lapg_sym_to = TMLexer.unpack_short(2230,
-		"\u013b\u013c\147\147\4\4\46\4\64\4\4\151\4\4\367\4\5\5\5\62\5\5\5\5\357\5\131\131" +
-		"\234\234\234\234\234\234\234\234\234\234\234\234\234\234\234\200\275\276\355\50\67" +
-		"\345\u011c\u011c\u011c\u011c\66\71\123\71\321\72\72\144\301\44\63\101\116\305\307" +
-		"\324\u010f\u0110\u0117\u0121\33\152\152\152\152\u0134\37\75\145\153\153\153\153\306" +
-		"\u0120\u0135\73\73\170\322\343\347\347\347\322\6\6\6\102\6\6\102\154\6\154\154\154" +
-		"\6\40\146\155\155\155\155\27\41\43\124\156\124\156\156\235\124\156\235\317\320\235" +
-		"\235\235\235\235\235\235\372\235\235\235\235\235\235\235\235\u0112\372\372\372\372" +
-		"\61\76\100\220\221\223\300\365\u0118\u011d\u0129\u012d\u0131\u0136\236\236\236\236" +
-		"\236\236\236\236\236\236\236\362\370\u0116\157\157\157\157\160\160\160\160\161\161" +
-		"\161\161\341\341\u0132\342\342\u0133\323\162\162\162\162\337\373\373\373\373\373" +
-		"\163\163\163\163\336\336\u011e\336\u011e\u011e\u011e\237\237\237\237\237\237\237" +
-		"\237\237\237\237\237\237\237\237\237\237\132\164\132\132\164\164\132\164\132\132" +
-		"\132\132\132\132\132\132\132\132\132\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\10" +
-		"\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\176\117\117\10\215\117" +
-		"\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240\240\215\10\10" +
-		"\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374" +
-		"\10\10\10\11\11\11\11\11\11\11\11\12\12\12\12\12\12\12\12\13\13\13\13\13\13\13\366" +
-		"\340\34\241\241\241\241\241\241\241\241\241\241\241\241\241\241\241\241\241\10\17" +
-		"\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\176\201\117\117\10\215\117" +
-		"\165\165\10\10\240\10\117\117\201\165\10\10\240\117\240\240\240\117\240\240\215\10" +
-		"\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374" +
-		"\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\176\117\117" +
-		"\10\215\117\165\165\10\10\240\10\117\117\165\10\10\312\240\117\240\240\240\117\240" +
-		"\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10" +
-		"\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165" +
-		"\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10\313\240\117\240\240" +
-		"\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10" +
-		"\374\374\10\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117" +
-		"\103\117\165\176\202\117\117\10\215\117\165\165\10\10\240\10\117\117\202\165\10\10" +
-		"\240\117\240\240\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240" +
-		"\10\240\10\240\10\374\374\10\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56" +
-		"\103\10\10\115\117\103\117\165\171\176\117\117\10\215\117\165\165\10\10\240\10\117" +
-		"\117\165\10\10\240\117\240\240\240\117\240\240\215\10\10\10\240\240\374\240\10\240" +
-		"\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374\10\10\10\10\17\10\17\17\45" +
-		"\47\51\10\56\103\10\10\115\117\103\117\165\172\176\117\117\10\215\117\165\165\10" +
-		"\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240\240\215\10\10\10\240\240" +
-		"\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374\10\10\10\10" +
-		"\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\173\176\117\117\10\215" +
-		"\117\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240\240\215\10" +
-		"\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374" +
-		"\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\174\176\117" +
-		"\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240" +
-		"\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10" +
-		"\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165" +
-		"\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\304\10\10\240\117\240\240" +
-		"\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10" +
-		"\374\374\10\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117" +
-		"\103\117\165\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10\240\117" +
-		"\240\240\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10" +
-		"\240\10\374\374\10\u0122\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103" +
-		"\10\10\115\117\103\117\165\176\203\117\117\10\215\117\165\165\10\10\240\270\10\117" +
-		"\117\203\165\10\10\240\117\240\240\240\117\240\240\215\10\10\10\240\240\374\240\10" +
-		"\240\240\240\240\10\240\10\240\10\374\374\10\u0123\10\10\374\374\10\10\10\10\17\10" +
-		"\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\176\204\117\117\10\215\117\165" +
-		"\165\10\10\240\10\117\117\204\165\10\10\240\117\240\240\240\117\240\240\215\10\10" +
-		"\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374" +
-		"\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117\165\176\205\117" +
-		"\117\10\215\117\165\165\10\10\240\10\117\117\205\165\10\10\240\117\240\240\240\117" +
-		"\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374" +
-		"\10\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10\115\117\103\117" +
-		"\165\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240" +
-		"\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10" +
-		"\374\374\10\u0124\10\10\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\10" +
-		"\115\117\103\117\165\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10" +
-		"\240\117\240\240\240\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240" +
-		"\10\240\10\240\10\374\374\10\u0125\10\10\374\374\10\10\10\2\10\17\10\17\17\45\47" +
-		"\51\10\56\103\10\10\115\117\103\117\165\176\117\117\10\215\117\165\165\10\10\240" +
-		"\10\117\117\165\10\10\240\117\240\240\240\117\240\240\215\10\10\10\240\240\374\240" +
-		"\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374\10\10\10\10\17\10\17" +
-		"\30\17\45\47\51\10\56\30\103\10\10\115\117\103\117\165\176\117\117\10\215\117\165" +
-		"\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240\240\215\10\10\10" +
-		"\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10\374\374\10" +
-		"\10\10\10\17\10\17\17\45\47\51\10\56\65\103\10\10\115\117\103\117\165\176\117\117" +
-		"\10\215\117\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240\117\240\240" +
-		"\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374\374\10\10\10" +
-		"\374\374\10\10\10\10\17\10\17\17\45\47\51\10\56\103\10\113\10\115\117\103\117\165" +
-		"\176\117\117\10\215\117\165\165\10\10\240\10\117\117\165\10\10\240\117\240\240\240" +
-		"\117\240\240\215\10\10\10\240\240\374\240\10\240\240\240\240\10\240\10\240\10\374" +
-		"\374\10\10\10\374\374\10\10\10\242\242\242\242\242\242\242\242\242\242\242\242\242" +
-		"\233\u0139\3\52\70\31\31\35\53\104\120\104\133\133\212\120\243\272\272\243\316\243" +
-		"\243\243\272\243\243\243\243\u0100\u0100\243\243\243\243\243\14\14\14\14\14\14\226" +
-		"\231\244\271\310\14\244\244\244\244\244\244\226\363\364\244\244\375\244\244\244\244" +
-		"\244\244\u0109\244\u010d\244\231\375\375\u011b\310\u012a\375\375\u0130\u0137\u012a" +
-		"\125\206\206\166\222\167\167\224\224\150\225\105\106\127\107\107\110\110\302\u0113" +
-		"\u0126\111\111\216\356\121\217\134\135\210\136\136\207\277\350\350\350\175\137\137" +
-		"\227\361\232\u0115\u010e\245\314\353\354\371\u0111\246\246\246\246\246\u010b\246" +
-		"\247\247\247\247\247\247\247\250\250\250\250\250\250\250\250\250\250\250\250\250" +
-		"\250\250\251\251\325\332\251\251\332\251\u0105\251\251\252\315\326\252\252\252\252" +
-		"\252\253\253\253\333\253\253\333\253\333\u0108\253\253\254\254\254\254\254\254\254" +
-		"\254\254\254\254\254\255\255\255\255\344\255\255\255\255\255\344\255\255\255\256" +
-		"\256\256\256\256\256\256\256\256\u0101\u0103\256\256\256\256\256\257\257\257\257" +
-		"\257\257\257\257\257\257\257\257\257\257\257\257\260\260\260\260\260\260\260\260" +
-		"\260\260\260\260\261\261\261\261\261\261\261\261\261\261\261\261\261\261\261\261" +
-		"\262\262\262\262\262\262\262\262\262\262\u0102\262\262\262\262\262\262\376\376\u011a" +
-		"\376\376\377\u0119\u012e\u012f\u012b\u0138\140\140\263\263\327\327\263\263\327\263" +
-		"\327\327\263\263\141\141\213\141\141\141\141\141\141\141\141\141\141\141\141\u013a" +
-		"\23\55\112\114\214\311\15\15\15\15\15\15\15\u010a\57\74\143\20\26\42\21\21\21\264" +
-		"\264\264\264\264\264\264\264\264\264\264\264\u0127\16\16\54\16\16\16\130\177\211" +
-		"\16\265\16\265\334\265\265\334\265\334\265\265\22\36\32\77\126\303\360\u0114\u0128" +
-		"\122\273\274\346\351\352\u010c\230\266\266\266\266\266\266\267\267\330\331\335\267" +
-		"\267\335\267\u0104\u0106\u0107\267\267\u011f\u012c\142\142\142\142\142\142\142\142" +
-		"\142\142\142\142\142\142\60\24\25");
+	private static final short[] lapg_sym_to = TMLexer.unpack_short(3314,
+		"\u017c\u017d\176\176\4\4\4\61\4\105\4\4\4\4\4\200\4\u0131\4\4\4\4\5\5\5\5\103\5\5" +
+		"\5\5\5\5\u0121\5\5\5\5\124\124\156\156\267\267\267\267\267\267\267\267\267\267\267" +
+		"\267\267\267\267\267\267\267\267\230\333\334\336\u011b\u011d\u011e\u0151\63\110\u0111" +
+		"\u0160\u0160\u0160\u0160\u012c\u012c\u012c\107\150\373\u0124\u012a\u012b\173\342" +
+		"\57\104\123\143\346\355\376\u0125\u014b\u014c\u014e\u0165\u0166\u0167\u0170\u0176" +
+		"\35\201\201\201\201\41\72\74\117\174\202\202\202\202\347\u0112\u0164\71\116\140\217" +
+		"\374\377\u010f\u0115\u0115\u013e\u0115\374\6\6\6\125\6\6\125\203\203\203\270\203" +
+		"\6\270\270\270\270\270\270\270\270\270\270\42\175\204\204\204\204\u012d\31\54\56" +
+		"\151\205\151\205\205\271\151\151\205\271\371\372\271\271\271\271\271\271\151\271" +
+		"\271\u0134\271\271\271\271\271\271\271\271\271\271\u0152\u0134\u0134\271\u0134\u0134" +
+		"\102\120\122\252\253\255\341\u012f\u015c\u0161\u0171\u0172\u0177\272\272\272\272" +
+		"\272\272\272\272\272\272\272\272\272\272\272\u0126\u0132\u015b\26\26\206\231\206" +
+		"\206\231\206\26\73\75\207\207\207\207\u0113\210\210\210\210\u010d\u010d\u0178\u010e" +
+		"\u010e\u0179\375\211\211\211\211\u010b\362\362\362\u0135\u0135\u0135\u0135\u0135" +
+		"\212\212\212\212\u010a\u010a\u0162\u010a\u0162\u0162\u0162\u012e\u012e\u012e\273" +
+		"\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273\273" +
+		"\157\213\157\157\213\213\157\213\157\157\157\157\157\157\157\157\157\157\157\157" +
+		"\157\157\157\157\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\7\10\17\10\17\43\17" +
+		"\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247" +
+		"\114\214\214\171\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43" +
+		"\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10" +
+		"\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\11\11\11\11\11\11\11\11\11\11" +
+		"\11\11\11\11\12\12\12\12\12\12\12\12\12\12\12\12\12\12\13\13\13\13\13\13\u0130\u010c" +
+		"\36\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274\274" +
+		"\274\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76\144\114\126\114\10\171" +
+		"\214\226\114\114\171\247\114\214\214\171\114\171\43\114\171\114\114\214\171\10\114" +
+		"\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10" +
+		"\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10" +
+		"\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\232\114" +
+		"\114\171\247\114\214\214\171\114\171\43\114\171\114\114\232\232\214\171\10\114\43" +
+		"\114\43\43\43\114\43\43\43\232\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43" +
+		"\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17" +
+		"\10\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114" +
+		"\114\171\247\114\214\214\171\114\171\43\114\171\114\114\214\171\10\360\114\43\114" +
+		"\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114" +
+		"\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43" +
+		"\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171" +
+		"\247\114\214\214\171\114\171\43\114\171\114\114\214\171\10\361\114\43\114\43\43\43" +
+		"\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43" +
+		"\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60" +
+		"\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\233\114\114\171\247" +
+		"\114\214\214\171\114\171\43\114\171\114\114\233\233\214\171\10\114\43\114\43\43\43" +
+		"\114\43\43\43\233\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171" +
+		"\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17" +
+		"\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\220\226\114\114\171" +
+		"\247\114\214\214\171\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114" +
+		"\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43" +
+		"\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64" +
+		"\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\221\226\114\114\171\247\114" +
+		"\214\214\171\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43" +
+		"\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114" +
+		"\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10" +
+		"\10\114\126\10\10\76\114\126\114\10\171\214\222\226\114\114\171\247\114\214\214\171" +
+		"\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171" +
+		"\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136" +
+		"\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10" +
+		"\10\76\114\126\114\10\171\214\223\226\114\114\171\247\114\214\214\171\114\171\43" +
+		"\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114" +
+		"\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136" +
+		"\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76" +
+		"\114\126\114\10\171\214\224\226\114\114\171\247\114\214\214\171\114\171\43\114\171" +
+		"\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136" +
+		"\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136" +
+		"\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10" +
+		"\171\214\226\114\114\171\247\114\214\214\171\114\171\43\114\171\114\114\214\350\171" +
+		"\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43" +
+		"\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171" +
+		"\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226" +
+		"\114\114\171\247\114\214\214\171\114\171\43\114\171\114\114\214\351\171\10\114\43" +
+		"\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43" +
+		"\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17" +
+		"\43\17\60\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171" +
+		"\247\114\214\214\171\114\171\43\114\171\114\114\214\352\171\10\114\43\114\43\43\43" +
+		"\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43" +
+		"\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60" +
+		"\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114" +
+		"\214\214\171\114\171\43\114\171\114\114\214\353\171\10\114\43\114\43\43\43\114\43" +
+		"\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10" +
+		"\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10" +
+		"\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114\214\214" +
+		"\171\114\171\43\114\171\114\114\214\345\171\10\114\43\114\43\43\43\114\43\43\43\247" +
+		"\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114" +
+		"\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10" +
+		"\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114\214\214\171\114" +
+		"\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171" +
+		"\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136" +
+		"\10\43\u0169\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10" +
+		"\10\76\114\126\114\10\171\214\226\234\114\114\171\247\114\214\214\171\114\171\43" +
+		"\114\326\171\114\114\234\234\214\171\10\114\43\114\43\43\43\114\43\43\43\234\247" +
+		"\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114" +
+		"\171\u0136\u0136\10\43\u016a\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76" +
+		"\10\10\114\126\10\10\76\114\126\114\10\171\214\226\235\114\114\171\247\114\214\214" +
+		"\171\114\171\43\114\171\114\114\235\235\214\171\10\114\43\114\43\43\43\114\43\43" +
+		"\43\235\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43" +
+		"\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64" +
+		"\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\236\114\114\171\247\114" +
+		"\214\214\171\114\171\43\114\171\114\114\236\236\214\171\10\114\43\114\43\43\43\114" +
+		"\43\43\43\236\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43" +
+		"\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171\10\17\10\17\43\17\60" +
+		"\62\64\10\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114" +
+		"\214\214\171\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43" +
+		"\43\247\171\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114" +
+		"\114\171\u0136\u0136\10\43\u016b\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10" +
+		"\76\10\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114\214\214" +
+		"\171\114\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171" +
+		"\171\171\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171" +
+		"\u0136\u0136\10\43\u016c\171\u0136\u0136\171\2\10\17\10\17\43\17\60\62\64\10\76\10" +
+		"\10\114\126\10\10\76\114\126\114\10\171\214\226\114\114\171\247\114\214\214\171\114" +
+		"\171\43\114\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171" +
+		"\114\43\43\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136" +
+		"\10\43\171\u0136\u0136\171\10\17\10\17\32\43\17\60\62\64\10\76\10\10\114\32\126\10" +
+		"\10\76\114\126\114\10\171\214\226\114\114\171\247\114\214\214\171\114\171\43\114" +
+		"\171\114\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43" +
+		"\u0136\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43" +
+		"\171\u0136\u0136\171\10\17\10\17\43\17\60\62\64\10\76\106\10\10\114\126\10\10\76" +
+		"\114\126\114\10\171\214\226\114\114\171\247\114\214\214\171\114\171\43\114\171\114" +
+		"\114\214\171\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136" +
+		"\43\10\43\43\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136" +
+		"\u0136\171\10\17\10\17\43\17\60\62\64\10\76\10\10\114\126\10\137\10\76\114\126\114" +
+		"\10\171\214\226\114\114\171\247\114\214\214\171\114\171\43\114\171\114\114\214\171" +
+		"\10\114\43\114\43\43\43\114\43\43\43\247\171\171\171\114\43\43\u0136\43\10\43\43" +
+		"\43\43\10\43\114\171\43\43\43\10\114\114\171\u0136\u0136\10\43\171\u0136\u0136\171" +
+		"\275\275\275\275\275\275\275\275\275\275\275\275\275\275\275\275\275\266\u017a\3" +
+		"\65\111\33\33\37\66\44\44\127\145\127\160\160\244\145\263\276\44\330\330\44\276\370" +
+		"\276\276\276\330\276\276\276\44\276\276\u013a\u013a\276\276\276\276\44\276\276\276" +
+		"\44\44\276\14\14\45\14\45\45\14\14\45\277\14\277\277\277\277\277\277\277\277\277" +
+		"\u0137\277\277\277\277\277\277\u0144\277\277\277\277\45\u0137\u0137\u015f\277\u0137" +
+		"\u0137\172\246\260\264\327\356\260\u0127\u0128\u0149\264\356\u0175\152\237\237\237" +
+		"\237\215\254\216\216\256\256\177\257\130\131\154\132\132\133\133\343\u0153\u016d" +
+		"\134\134\135\135\250\u0120\146\251\161\162\242\163\163\240\335\337\u011f\u0116\u0116" +
+		"\u0116\225\164\164\261\u0123\265\u015a\u014a\300\366\u0119\u011a\u011c\u0133\u014d" +
+		"\u014f\u0150\u0168\301\301\301\301\301\301\u0146\301\301\301\301\302\302\302\302" +
+		"\302\302\302\302\302\302\302\303\303\303\303\303\303\303\303\303\303\303\304\304" +
+		"\304\304\304\304\304\304\304\304\304\304\304\304\304\304\304\304\304\305\305\u0101" +
+		"\u0106\305\305\305\u0106\305\u0140\305\305\305\305\305\306\367\u0102\306\306\306" +
+		"\306\306\306\306\306\306\307\307\307\u0107\307\307\307\u0107\307\u0107\u0143\307" +
+		"\307\307\307\307\310\310\310\310\310\310\310\310\310\310\310\310\310\310\310\310" +
+		"\311\311\311\311\u0110\311\311\311\311\311\311\u0110\311\311\311\311\311\311\312" +
+		"\312\312\312\312\312\312\312\312\312\u013b\u013d\312\312\312\312\312\312\312\312" +
+		"\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313\313" +
+		"\314\314\314\314\314\314\314\314\314\314\314\314\314\314\314\314\315\315\315\315" +
+		"\315\315\315\315\315\315\315\315\315\315\315\315\315\315\315\315\316\316\316\316" +
+		"\316\316\316\316\316\316\316\u013c\316\316\316\316\316\316\316\316\316\u0138\u0138" +
+		"\u015e\u0138\u0138\u0139\u015d\u0173\u0174\165\165\317\317\u0100\u0103\u0103\317" +
+		"\317\317\u0103\317\u0103\u0103\317\317\317\317\317\166\166\245\166\166\166\166\166" +
+		"\166\166\166\166\166\166\166\166\166\166\166\166\241\340\46\115\324\363\u0129\u0147" +
+		"\363\363\27\27\27\354\47\112\113\170\u0155\364\364\364\365\u0158\u0159\u017b\23\70" +
+		"\136\141\357\77\142\15\15\50\15\50\50\15\15\50\15\u0145\50\u0156\u0157\20\30\55\21" +
+		"\21\21\320\320\320\320\320\320\320\320\320\320\320\320\320\320\320\320\u016e\16\16" +
+		"\67\16\16\16\155\227\243\321\16\321\u0108\321\321\321\u0108\321\u0108\321\321\321" +
+		"\321\321\22\40\34\121\153\344\u0122\u0154\u016f\147\331\332\u0114\u0117\u0118\u0148" +
+		"\262\322\322\322\322\322\322\322\322\322\322\323\323\u0104\u0105\u0109\323\323\323" +
+		"\u0109\323\u013f\u0141\u0142\323\323\323\323\u0163\323\167\167\167\167\167\167\167" +
+		"\167\167\167\167\167\167\167\167\167\167\167\167\325\51\52\53\100\101\24\25");
 
-	private static final short[] tmRuleLen = TMLexer.unpack_short(189,
-		"\5\4\7\4\3\3\4\4\3\3\1\1\1\3\3\2\1\1\1\1\1\1\1\1\1\1\1\1\3\2\1\1\2\2\1\1\1\3\10\3" +
-		"\2\3\1\1\1\1\3\1\3\1\1\2\2\1\1\6\5\5\4\2\4\3\3\1\1\2\1\1\1\4\4\2\1\1\2\1\3\1\4\3" +
-		"\3\2\3\2\2\1\1\2\3\3\4\3\1\2\2\1\1\1\1\2\1\3\3\1\2\1\3\3\3\1\3\1\3\6\6\2\2\6\4\4" +
-		"\2\1\3\2\1\3\3\3\1\5\2\2\1\1\5\3\1\1\1\1\1\3\5\1\1\1\1\1\3\1\1\2\0\2\0\1\0\1\0\1" +
-		"\0\1\0\1\0\1\0\3\1\1\0\1\0\3\1\3\1\1\0\3\1\2\1\1\0\3\1\1\0");
+	private static final short[] tmRuleLen = TMLexer.unpack_short(221,
+		"\5\4\7\4\3\3\4\4\3\3\1\1\2\1\1\3\3\2\1\1\1\1\1\1\1\1\1\1\1\1\3\2\1\1\2\2\1\1\1\1" +
+		"\3\10\3\2\3\1\1\1\1\4\3\1\3\1\1\2\2\1\1\7\6\6\5\6\5\5\4\2\4\3\3\1\1\2\1\1\1\4\4\7" +
+		"\5\2\1\1\2\1\3\1\4\3\3\2\3\2\2\1\1\3\3\2\2\3\3\4\3\1\2\2\1\1\1\1\2\1\3\3\1\2\1\3" +
+		"\3\3\1\3\1\3\6\6\2\2\4\4\2\1\3\2\1\3\3\1\5\2\2\3\1\3\3\1\1\1\1\1\1\2\1\3\3\1\3\3" +
+		"\1\1\5\3\1\3\1\1\1\1\1\1\3\1\1\2\0\2\0\1\0\1\0\1\0\1\0\1\0\1\0\3\1\1\0\1\0\3\1\3" +
+		"\1\1\0\2\1\3\1\3\1\5\3\1\0\3\1\1\0\3\1\1\0");
 
-	private static final short[] tmRuleSymbol = TMLexer.unpack_short(189,
-		"\100\100\101\101\102\103\104\105\105\106\106\107\110\111\111\112\112\113\113\113" +
-		"\113\113\113\113\113\113\113\113\113\113\114\115\115\115\116\116\116\117\120\120" +
-		"\121\122\123\123\123\123\124\125\126\126\127\127\127\130\130\131\131\131\131\132" +
-		"\132\132\132\132\132\133\134\134\134\135\135\136\136\137\137\140\140\141\142\142" +
-		"\142\142\142\142\142\142\142\143\144\144\145\145\146\146\146\147\147\147\150\150" +
-		"\151\151\151\152\152\153\153\153\154\155\155\156\156\156\156\156\156\156\156\156" +
-		"\157\157\157\157\160\160\160\161\162\163\163\163\164\164\164\164\164\165\165\165" +
-		"\165\166\166\167\167\167\170\171\171\172\173\174\174\175\175\176\176\177\177\200" +
-		"\200\201\201\202\202\203\203\204\204\205\205\206\206\207\207\210\210\211\211\212" +
-		"\212\213\213\214\214\215\215\216\216");
+	private static final short[] tmRuleSymbol = TMLexer.unpack_short(221,
+		"\112\112\113\113\114\115\116\117\117\120\120\121\122\122\123\124\124\125\125\126" +
+		"\126\126\126\126\126\126\126\126\126\126\126\126\127\130\130\130\131\131\131\131" +
+		"\132\133\133\134\135\136\136\136\136\137\140\141\142\142\143\143\143\144\144\145" +
+		"\145\145\145\145\145\145\145\146\146\146\146\146\146\147\150\150\150\151\151\151" +
+		"\151\152\152\153\153\154\154\155\156\156\156\156\156\156\156\156\156\157\160\160" +
+		"\160\161\161\162\162\163\163\163\164\164\164\165\165\166\166\166\167\167\170\170" +
+		"\170\171\172\172\173\173\173\173\173\173\173\173\174\174\174\174\175\175\175\176" +
+		"\177\177\177\200\201\202\202\203\203\203\203\204\204\205\205\205\205\206\206\206" +
+		"\207\207\207\207\207\210\211\211\211\211\212\213\213\214\215\216\216\217\217\220" +
+		"\220\221\221\222\222\223\223\224\224\225\225\226\226\227\227\230\230\231\231\232" +
+		"\232\233\233\234\234\235\235\236\236\237\237\240\240\241\241\242\242\243\243\244" +
+		"\244");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -454,11 +638,13 @@ public class TMParser {
 		"'::='",
 		"'::'",
 		"'|'",
+		"'||'",
 		"'='",
+		"'=='",
+		"'!='",
 		"'=>'",
 		"';'",
 		"'.'",
-		"'..'",
 		"','",
 		"':'",
 		"'['",
@@ -473,8 +659,10 @@ public class TMParser {
 		"'+'",
 		"'+='",
 		"'?'",
+		"'!'",
 		"'~'",
 		"'&'",
+		"'&&'",
 		"'$'",
 		"'@'",
 		"error",
@@ -486,6 +674,7 @@ public class TMParser {
 		"Las",
 		"Limport",
 		"Lset",
+		"Lbrackets",
 		"Linline",
 		"Lprio",
 		"Lshift",
@@ -494,6 +683,11 @@ public class TMParser {
 		"Lleft",
 		"Lright",
 		"Lnonassoc",
+		"Lparam",
+		"Lstring",
+		"Lbool",
+		"Lint",
+		"Lsymbol",
 		"Lnoeoi",
 		"Lsoft",
 		"Lclass",
@@ -517,6 +711,7 @@ public class TMParser {
 		"option",
 		"identifier",
 		"symref",
+		"symref_noargs",
 		"type",
 		"type_part_list",
 		"type_part",
@@ -528,6 +723,7 @@ public class TMParser {
 		"lexeme_transition",
 		"lexeme_attrs",
 		"lexeme_attribute",
+		"lexer_directive",
 		"state_selector",
 		"stateref",
 		"lexer_state",
@@ -543,6 +739,7 @@ public class TMParser {
 		"references_cs",
 		"rules",
 		"rule0",
+		"predicate",
 		"rhsPrefix",
 		"rhsSuffix",
 		"ruleAction",
@@ -557,13 +754,18 @@ public class TMParser {
 		"rhsPrimary",
 		"setPrimary",
 		"setExpression",
-		"rhsBracketsPair",
 		"annotations",
 		"annotation",
+		"nonterm_params",
+		"param_ref",
+		"symref_args",
+		"param_type",
+		"param_value",
+		"predicate_primary",
+		"predicate_expression",
 		"expression",
+		"map_entry",
 		"literal",
-		"map_entries",
-		"map_separator",
 		"name",
 		"qualified_id",
 		"command",
@@ -582,128 +784,152 @@ public class TMParser {
 		"inputref_list_Comma_separated",
 		"rule0_list_Or_separated",
 		"rhsSuffixopt",
-		"rhsBracketsPair_list_Comma_separated",
 		"annotation_list",
-		"map_entriesopt",
+		"param_ref_list_Comma_separated",
+		"param_value_list_Comma_separated",
+		"list_of_param_ref_and_2_elements_Comma_separated",
+		"list_of_param_ref_and_2_elements_Comma_separated_opt",
+		"map_entry_list_Comma_separated",
+		"map_entry_list_Comma_separated_opt",
 		"expression_list_Comma_separated",
 		"expression_list_Comma_separated_opt",
 	};
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 64;
-		static final int header = 65;
-		static final int lexer_section = 66;
-		static final int parser_section = 67;
-		static final int parsing_algorithm = 68;
-		static final int import_ = 69;
-		static final int option = 70;
-		static final int identifier = 71;
-		static final int symref = 72;
-		static final int type = 73;
-		static final int type_part_list = 74;
-		static final int type_part = 75;
-		static final int pattern = 76;
-		static final int lexer_parts = 77;
-		static final int lexer_part = 78;
-		static final int named_pattern = 79;
-		static final int lexeme = 80;
-		static final int lexeme_transition = 81;
-		static final int lexeme_attrs = 82;
-		static final int lexeme_attribute = 83;
-		static final int state_selector = 84;
-		static final int stateref = 85;
-		static final int lexer_state = 86;
-		static final int grammar_parts = 87;
-		static final int grammar_part = 88;
-		static final int nonterm = 89;
-		static final int nonterm_type = 90;
-		static final int _implements = 91;
-		static final int assoc = 92;
-		static final int directive = 93;
-		static final int inputref = 94;
-		static final int references = 95;
-		static final int references_cs = 96;
-		static final int rules = 97;
-		static final int rule0 = 98;
-		static final int rhsPrefix = 99;
-		static final int rhsSuffix = 100;
-		static final int ruleAction = 101;
-		static final int rhsParts = 102;
-		static final int rhsPart = 103;
-		static final int rhsAnnotated = 104;
-		static final int rhsAssignment = 105;
-		static final int rhsOptional = 106;
-		static final int rhsCast = 107;
-		static final int rhsUnordered = 108;
-		static final int rhsClass = 109;
-		static final int rhsPrimary = 110;
-		static final int setPrimary = 111;
-		static final int setExpression = 112;
-		static final int rhsBracketsPair = 113;
-		static final int annotations = 114;
-		static final int annotation = 115;
-		static final int expression = 116;
-		static final int literal = 117;
-		static final int map_entries = 118;
-		static final int map_separator = 119;
-		static final int name = 120;
-		static final int qualified_id = 121;
-		static final int command = 122;
-		static final int syntax_problem = 123;
-		static final int import__optlist = 124;
-		static final int option_optlist = 125;
-		static final int parsing_algorithmopt = 126;
-		static final int typeopt = 127;
-		static final int lexeme_transitionopt = 128;
-		static final int iconopt = 129;
-		static final int lexeme_attrsopt = 130;
-		static final int commandopt = 131;
-		static final int lexer_state_list_Comma_separated = 132;
-		static final int identifieropt = 133;
-		static final int implementsopt = 134;
-		static final int inputref_list_Comma_separated = 135;
-		static final int rule0_list_Or_separated = 136;
-		static final int rhsSuffixopt = 137;
-		static final int rhsBracketsPair_list_Comma_separated = 138;
-		static final int annotation_list = 139;
-		static final int map_entriesopt = 140;
-		static final int expression_list_Comma_separated = 141;
-		static final int expression_list_Comma_separated_opt = 142;
+		static final int input = 74;
+		static final int header = 75;
+		static final int lexer_section = 76;
+		static final int parser_section = 77;
+		static final int parsing_algorithm = 78;
+		static final int import_ = 79;
+		static final int option = 80;
+		static final int identifier = 81;
+		static final int symref = 82;
+		static final int symref_noargs = 83;
+		static final int type = 84;
+		static final int type_part_list = 85;
+		static final int type_part = 86;
+		static final int pattern = 87;
+		static final int lexer_parts = 88;
+		static final int lexer_part = 89;
+		static final int named_pattern = 90;
+		static final int lexeme = 91;
+		static final int lexeme_transition = 92;
+		static final int lexeme_attrs = 93;
+		static final int lexeme_attribute = 94;
+		static final int lexer_directive = 95;
+		static final int state_selector = 96;
+		static final int stateref = 97;
+		static final int lexer_state = 98;
+		static final int grammar_parts = 99;
+		static final int grammar_part = 100;
+		static final int nonterm = 101;
+		static final int nonterm_type = 102;
+		static final int _implements = 103;
+		static final int assoc = 104;
+		static final int directive = 105;
+		static final int inputref = 106;
+		static final int references = 107;
+		static final int references_cs = 108;
+		static final int rules = 109;
+		static final int rule0 = 110;
+		static final int predicate = 111;
+		static final int rhsPrefix = 112;
+		static final int rhsSuffix = 113;
+		static final int ruleAction = 114;
+		static final int rhsParts = 115;
+		static final int rhsPart = 116;
+		static final int rhsAnnotated = 117;
+		static final int rhsAssignment = 118;
+		static final int rhsOptional = 119;
+		static final int rhsCast = 120;
+		static final int rhsUnordered = 121;
+		static final int rhsClass = 122;
+		static final int rhsPrimary = 123;
+		static final int setPrimary = 124;
+		static final int setExpression = 125;
+		static final int annotations = 126;
+		static final int annotation = 127;
+		static final int nonterm_params = 128;
+		static final int param_ref = 129;
+		static final int symref_args = 130;
+		static final int param_type = 131;
+		static final int param_value = 132;
+		static final int predicate_primary = 133;
+		static final int predicate_expression = 134;
+		static final int expression = 135;
+		static final int map_entry = 136;
+		static final int literal = 137;
+		static final int name = 138;
+		static final int qualified_id = 139;
+		static final int command = 140;
+		static final int syntax_problem = 141;
+		static final int import__optlist = 142;
+		static final int option_optlist = 143;
+		static final int parsing_algorithmopt = 144;
+		static final int typeopt = 145;
+		static final int lexeme_transitionopt = 146;
+		static final int iconopt = 147;
+		static final int lexeme_attrsopt = 148;
+		static final int commandopt = 149;
+		static final int lexer_state_list_Comma_separated = 150;
+		static final int identifieropt = 151;
+		static final int implementsopt = 152;
+		static final int inputref_list_Comma_separated = 153;
+		static final int rule0_list_Or_separated = 154;
+		static final int rhsSuffixopt = 155;
+		static final int annotation_list = 156;
+		static final int param_ref_list_Comma_separated = 157;
+		static final int param_value_list_Comma_separated = 158;
+		static final int list_of_param_ref_and_2_elements_Comma_separated = 159;
+		static final int list_of_param_ref_and_2_elements_Comma_separated_opt = 160;
+		static final int map_entry_list_Comma_separated = 161;
+		static final int map_entry_list_Comma_separated_opt = 162;
+		static final int expression_list_Comma_separated = 163;
+		static final int expression_list_Comma_separated_opt = 164;
 	}
 
 	public interface Rules {
-		static final int nonterm_type_nontermTypeAST = 59;  // nonterm_type ::= Lreturns symref
-		static final int nonterm_type_nontermTypeHint = 60;  // nonterm_type ::= Linline Lclass identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint2 = 61;  // nonterm_type ::= Lclass identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint3 = 62;  // nonterm_type ::= Linterface identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint4 = 63;  // nonterm_type ::= Lvoid
-		static final int nonterm_type_nontermTypeRaw = 64;  // nonterm_type ::= type
-		static final int directive_directivePrio = 69;  // directive ::= '%' assoc references ';'
-		static final int directive_directiveInput = 70;  // directive ::= '%' Linput inputref_list_Comma_separated ';'
-		static final int rhsOptional_rhsQuantifier = 104;  // rhsOptional ::= rhsCast '?'
-		static final int rhsCast_rhsAsLiteral = 107;  // rhsCast ::= rhsClass Las literal
-		static final int rhsPrimary_rhsSymbol = 111;  // rhsPrimary ::= symref
-		static final int rhsPrimary_rhsNested = 112;  // rhsPrimary ::= '(' rules ')'
-		static final int rhsPrimary_rhsList = 113;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
-		static final int rhsPrimary_rhsList2 = 114;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
-		static final int rhsPrimary_rhsQuantifier = 115;  // rhsPrimary ::= rhsPrimary '*'
-		static final int rhsPrimary_rhsQuantifier2 = 116;  // rhsPrimary ::= rhsPrimary '+'
-		static final int rhsPrimary_rhsIgnored = 117;  // rhsPrimary ::= '$' '(' rules ';' rhsBracketsPair_list_Comma_separated ')'
-		static final int rhsPrimary_rhsIgnored2 = 118;  // rhsPrimary ::= '$' '(' rules ')'
-		static final int rhsPrimary_rhsSet = 119;  // rhsPrimary ::= Lset '(' setExpression ')'
-		static final int setPrimary_setSymbol = 120;  // setPrimary ::= ID symref
-		static final int setPrimary_setSymbol2 = 121;  // setPrimary ::= symref
-		static final int setPrimary_setCompound = 122;  // setPrimary ::= '(' setExpression ')'
-		static final int setPrimary_setComplement = 123;  // setPrimary ::= '~' setPrimary
-		static final int setExpression_setBinary = 125;  // setExpression ::= setExpression '|' setExpression
-		static final int setExpression_setBinary2 = 126;  // setExpression ::= setExpression '&' setExpression
-		static final int expression_instance = 134;  // expression ::= Lnew name '(' map_entriesopt ')'
-		static final int expression_array = 135;  // expression ::= '[' expression_list_Comma_separated_opt ']'
-		static final int literal_literal = 137;  // literal ::= scon
-		static final int literal_literal2 = 138;  // literal ::= icon
-		static final int literal_literal3 = 139;  // literal ::= Ltrue
-		static final int literal_literal4 = 140;  // literal ::= Lfalse
+		static final int lexer_directive_directiveBrackets = 49;  // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs
+		static final int nonterm_type_nontermTypeAST = 67;  // nonterm_type ::= Lreturns symref_noargs
+		static final int nonterm_type_nontermTypeHint = 68;  // nonterm_type ::= Linline Lclass identifieropt implementsopt
+		static final int nonterm_type_nontermTypeHint2 = 69;  // nonterm_type ::= Lclass identifieropt implementsopt
+		static final int nonterm_type_nontermTypeHint3 = 70;  // nonterm_type ::= Linterface identifieropt implementsopt
+		static final int nonterm_type_nontermTypeHint4 = 71;  // nonterm_type ::= Lvoid
+		static final int nonterm_type_nontermTypeRaw = 72;  // nonterm_type ::= type
+		static final int directive_directivePrio = 77;  // directive ::= '%' assoc references ';'
+		static final int directive_directiveInput = 78;  // directive ::= '%' Linput inputref_list_Comma_separated ';'
+		static final int directive_directiveParam = 79;  // directive ::= '%' Lparam identifier param_type '=' param_value ';'
+		static final int directive_directiveParam2 = 80;  // directive ::= '%' Lparam identifier param_type ';'
+		static final int rhsOptional_rhsQuantifier = 117;  // rhsOptional ::= rhsCast '?'
+		static final int rhsCast_rhsAsLiteral = 120;  // rhsCast ::= rhsClass Las literal
+		static final int rhsPrimary_rhsSymbol = 124;  // rhsPrimary ::= symref
+		static final int rhsPrimary_rhsNested = 125;  // rhsPrimary ::= '(' rules ')'
+		static final int rhsPrimary_rhsList = 126;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+		static final int rhsPrimary_rhsList2 = 127;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+		static final int rhsPrimary_rhsQuantifier = 128;  // rhsPrimary ::= rhsPrimary '*'
+		static final int rhsPrimary_rhsQuantifier2 = 129;  // rhsPrimary ::= rhsPrimary '+'
+		static final int rhsPrimary_rhsIgnored = 130;  // rhsPrimary ::= '$' '(' rules ')'
+		static final int rhsPrimary_rhsSet = 131;  // rhsPrimary ::= Lset '(' setExpression ')'
+		static final int setPrimary_setSymbol = 132;  // setPrimary ::= ID symref
+		static final int setPrimary_setSymbol2 = 133;  // setPrimary ::= symref
+		static final int setPrimary_setCompound = 134;  // setPrimary ::= '(' setExpression ')'
+		static final int setPrimary_setComplement = 135;  // setPrimary ::= '~' setPrimary
+		static final int setExpression_setBinary = 137;  // setExpression ::= setExpression '|' setExpression
+		static final int setExpression_setBinary2 = 138;  // setExpression ::= setExpression '&' setExpression
+		static final int predicate_primary_boolPredicate = 153;  // predicate_primary ::= '!' param_ref
+		static final int predicate_primary_boolPredicate2 = 154;  // predicate_primary ::= param_ref
+		static final int predicate_primary_comparePredicate = 155;  // predicate_primary ::= param_ref '==' literal
+		static final int predicate_primary_comparePredicate2 = 156;  // predicate_primary ::= param_ref '!=' literal
+		static final int predicate_expression_predicateBinary = 158;  // predicate_expression ::= predicate_expression '&&' predicate_expression
+		static final int predicate_expression_predicateBinary2 = 159;  // predicate_expression ::= predicate_expression '||' predicate_expression
+		static final int expression_instance = 162;  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
+		static final int expression_array = 163;  // expression ::= '[' expression_list_Comma_separated_opt ']'
+		static final int literal_literal = 166;  // literal ::= scon
+		static final int literal_literal2 = 167;  // literal ::= icon
+		static final int literal_literal3 = 168;  // literal ::= Ltrue
+		static final int literal_literal4 = 169;  // literal ::= Lfalse
 	}
 
 	/**
@@ -803,16 +1029,16 @@ public class TMParser {
 		if (tmNext.symbol == 0) {
 			return false;
 		}
-		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, 33) == -1) {
+		while (tmHead >= 0 && tmGoto(tmStack[tmHead].state, 37) == -1) {
 			dispose(tmStack[tmHead]);
 			tmStack[tmHead] = null;
 			tmHead--;
 		}
 		if (tmHead >= 0) {
 			tmStack[++tmHead] = new LapgSymbol();
-			tmStack[tmHead].symbol = 33;
+			tmStack[tmHead].symbol = 37;
 			tmStack[tmHead].value = null;
-			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, 33);
+			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, 37);
 			tmStack[tmHead].line = tmNext.line;
 			tmStack[tmHead].offset = tmNext.offset;
 			tmStack[tmHead].endoffset = tmNext.endoffset;
@@ -930,39 +1156,52 @@ public class TMParser {
 						((String)tmStack[tmHead].value) /* ID */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 12:  // symref ::= ID
+			case 12:  // symref ::= ID symref_args
+				tmLeft.value = new TmaSymref(
+						((String)tmStack[tmHead - 1].value) /* name */,
+						((TmaSymrefArgs)tmStack[tmHead].value) /* args */,
+						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
+				break;
+			case 13:  // symref ::= ID
 				tmLeft.value = new TmaSymref(
 						((String)tmStack[tmHead].value) /* name */,
+						null /* args */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 13:  // type ::= '(' scon ')'
+			case 14:  // symref_noargs ::= ID
+				tmLeft.value = new TmaSymref(
+						((String)tmStack[tmHead].value) /* name */,
+						null /* args */,
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
+				break;
+			case 15:  // type ::= '(' scon ')'
 				 tmLeft.value = ((String)tmStack[tmHead - 1].value); 
 				break;
-			case 14:  // type ::= '(' type_part_list ')'
+			case 16:  // type ::= '(' type_part_list ')'
 				 tmLeft.value = source.getText(tmStack[tmHead - 2].offset+1, tmStack[tmHead].endoffset-1); 
 				break;
-			case 30:  // pattern ::= regexp
+			case 32:  // pattern ::= regexp
 				tmLeft.value = new TmaPattern(
 						((String)tmStack[tmHead].value) /* regexp */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 31:  // lexer_parts ::= lexer_part
+			case 33:  // lexer_parts ::= lexer_part
 				tmLeft.value = new ArrayList();
 				((List<ITmaLexerPart>)tmLeft.value).add(((ITmaLexerPart)tmStack[tmHead].value));
 				break;
-			case 32:  // lexer_parts ::= lexer_parts lexer_part
+			case 34:  // lexer_parts ::= lexer_parts lexer_part
 				((List<ITmaLexerPart>)tmLeft.value).add(((ITmaLexerPart)tmStack[tmHead].value));
 				break;
-			case 33:  // lexer_parts ::= lexer_parts syntax_problem
+			case 35:  // lexer_parts ::= lexer_parts syntax_problem
 				((List<ITmaLexerPart>)tmLeft.value).add(((TmaSyntaxProblem)tmStack[tmHead].value));
 				break;
-			case 37:  // named_pattern ::= ID '=' pattern
+			case 40:  // named_pattern ::= ID '=' pattern
 				tmLeft.value = new TmaNamedPattern(
 						((String)tmStack[tmHead - 2].value) /* name */,
 						((TmaPattern)tmStack[tmHead].value) /* pattern */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 38:  // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
+			case 41:  // lexeme ::= identifier typeopt ':' pattern lexeme_transitionopt iconopt lexeme_attrsopt commandopt
 				tmLeft.value = new TmaLexeme(
 						((TmaIdentifier)tmStack[tmHead - 7].value) /* name */,
 						((String)tmStack[tmHead - 6].value) /* type */,
@@ -973,7 +1212,7 @@ public class TMParser {
 						((TmaCommand)tmStack[tmHead].value) /* command */,
 						null /* input */, tmStack[tmHead - 7].line, tmStack[tmHead - 7].offset, tmStack[tmHead].endoffset);
 				break;
-			case 39:  // lexeme ::= identifier typeopt ':'
+			case 42:  // lexeme ::= identifier typeopt ':'
 				tmLeft.value = new TmaLexeme(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
 						((String)tmStack[tmHead - 1].value) /* type */,
@@ -984,96 +1223,142 @@ public class TMParser {
 						null /* command */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 40:  // lexeme_transition ::= '=>' stateref
+			case 43:  // lexeme_transition ::= '=>' stateref
 				tmLeft.value = ((TmaStateref)tmStack[tmHead].value);
 				break;
-			case 41:  // lexeme_attrs ::= '(' lexeme_attribute ')'
+			case 44:  // lexeme_attrs ::= '(' lexeme_attribute ')'
 				tmLeft.value = new TmaLexemeAttrs(
 						((TmaLexemeAttribute)tmStack[tmHead - 1].value) /* kind */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 42:  // lexeme_attribute ::= Lsoft
+			case 45:  // lexeme_attribute ::= Lsoft
 				tmLeft.value = TmaLexemeAttribute.LSOFT;
 				break;
-			case 43:  // lexeme_attribute ::= Lclass
+			case 46:  // lexeme_attribute ::= Lclass
 				tmLeft.value = TmaLexemeAttribute.LCLASS;
 				break;
-			case 44:  // lexeme_attribute ::= Lspace
+			case 47:  // lexeme_attribute ::= Lspace
 				tmLeft.value = TmaLexemeAttribute.LSPACE;
 				break;
-			case 45:  // lexeme_attribute ::= Llayout
+			case 48:  // lexeme_attribute ::= Llayout
 				tmLeft.value = TmaLexemeAttribute.LLAYOUT;
 				break;
-			case 46:  // state_selector ::= '[' lexer_state_list_Comma_separated ']'
+			case 49:  // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs
+				tmLeft.value = new TmaDirectiveBrackets(
+						((TmaSymref)tmStack[tmHead - 1].value) /* opening */,
+						((TmaSymref)tmStack[tmHead].value) /* closing */,
+						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
+				break;
+			case 50:  // state_selector ::= '[' lexer_state_list_Comma_separated ']'
 				tmLeft.value = new TmaStateSelector(
 						((List<TmaLexerState>)tmStack[tmHead - 1].value) /* states */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 47:  // stateref ::= ID
+			case 51:  // stateref ::= ID
 				tmLeft.value = new TmaStateref(
 						((String)tmStack[tmHead].value) /* name */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 48:  // lexer_state ::= identifier '=>' stateref
+			case 52:  // lexer_state ::= identifier '=>' stateref
 				tmLeft.value = new TmaLexerState(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
 						((TmaStateref)tmStack[tmHead].value) /* defaultTransition */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 49:  // lexer_state ::= identifier
+			case 53:  // lexer_state ::= identifier
 				tmLeft.value = new TmaLexerState(
 						((TmaIdentifier)tmStack[tmHead].value) /* name */,
 						null /* defaultTransition */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 50:  // grammar_parts ::= grammar_part
+			case 54:  // grammar_parts ::= grammar_part
 				tmLeft.value = new ArrayList();
 				((List<ITmaGrammarPart>)tmLeft.value).add(((ITmaGrammarPart)tmStack[tmHead].value));
 				break;
-			case 51:  // grammar_parts ::= grammar_parts grammar_part
+			case 55:  // grammar_parts ::= grammar_parts grammar_part
 				((List<ITmaGrammarPart>)tmLeft.value).add(((ITmaGrammarPart)tmStack[tmHead].value));
 				break;
-			case 52:  // grammar_parts ::= grammar_parts syntax_problem
+			case 56:  // grammar_parts ::= grammar_parts syntax_problem
 				((List<ITmaGrammarPart>)tmLeft.value).add(((TmaSyntaxProblem)tmStack[tmHead].value));
 				break;
-			case 55:  // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
+			case 59:  // nonterm ::= annotations identifier nonterm_params nonterm_type '::=' rules ';'
+				tmLeft.value = new TmaNonterm(
+						((TmaAnnotations)tmStack[tmHead - 6].value) /* annotations */,
+						((TmaIdentifier)tmStack[tmHead - 5].value) /* name */,
+						((TmaNontermParams)tmStack[tmHead - 4].value) /* params */,
+						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
+						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
+						null /* input */, tmStack[tmHead - 6].line, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
+				break;
+			case 60:  // nonterm ::= annotations identifier nonterm_params '::=' rules ';'
 				tmLeft.value = new TmaNonterm(
 						((TmaAnnotations)tmStack[tmHead - 5].value) /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
+						((TmaNontermParams)tmStack[tmHead - 3].value) /* params */,
+						null /* type */,
+						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
+						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
+				break;
+			case 61:  // nonterm ::= annotations identifier nonterm_type '::=' rules ';'
+				tmLeft.value = new TmaNonterm(
+						((TmaAnnotations)tmStack[tmHead - 5].value) /* annotations */,
+						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
+						null /* params */,
 						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 56:  // nonterm ::= annotations identifier '::=' rules ';'
+			case 62:  // nonterm ::= annotations identifier '::=' rules ';'
 				tmLeft.value = new TmaNonterm(
 						((TmaAnnotations)tmStack[tmHead - 4].value) /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 3].value) /* name */,
+						null /* params */,
 						null /* type */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 57:  // nonterm ::= identifier nonterm_type '::=' rules ';'
+			case 63:  // nonterm ::= identifier nonterm_params nonterm_type '::=' rules ';'
+				tmLeft.value = new TmaNonterm(
+						null /* annotations */,
+						((TmaIdentifier)tmStack[tmHead - 5].value) /* name */,
+						((TmaNontermParams)tmStack[tmHead - 4].value) /* params */,
+						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
+						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
+						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
+				break;
+			case 64:  // nonterm ::= identifier nonterm_params '::=' rules ';'
 				tmLeft.value = new TmaNonterm(
 						null /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
+						((TmaNontermParams)tmStack[tmHead - 3].value) /* params */,
+						null /* type */,
+						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
+						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
+				break;
+			case 65:  // nonterm ::= identifier nonterm_type '::=' rules ';'
+				tmLeft.value = new TmaNonterm(
+						null /* annotations */,
+						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
+						null /* params */,
 						((ITmaNontermType)tmStack[tmHead - 3].value) /* type */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 58:  // nonterm ::= identifier '::=' rules ';'
+			case 66:  // nonterm ::= identifier '::=' rules ';'
 				tmLeft.value = new TmaNonterm(
 						null /* annotations */,
 						((TmaIdentifier)tmStack[tmHead - 3].value) /* name */,
+						null /* params */,
 						null /* type */,
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 59:  // nonterm_type ::= Lreturns symref
+			case 67:  // nonterm_type ::= Lreturns symref_noargs
 				tmLeft.value = new TmaNontermTypeAST(
 						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 60:  // nonterm_type ::= Linline Lclass identifieropt implementsopt
+			case 68:  // nonterm_type ::= Linline Lclass identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
 						true /* isInline */,
 						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
@@ -1081,7 +1366,7 @@ public class TMParser {
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 61:  // nonterm_type ::= Lclass identifieropt implementsopt
+			case 69:  // nonterm_type ::= Lclass identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* isInline */,
 						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
@@ -1089,7 +1374,7 @@ public class TMParser {
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 62:  // nonterm_type ::= Linterface identifieropt implementsopt
+			case 70:  // nonterm_type ::= Linterface identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* isInline */,
 						TmaNontermTypeHint.TmaKindKind.LINTERFACE /* kind */,
@@ -1097,7 +1382,7 @@ public class TMParser {
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 63:  // nonterm_type ::= Lvoid
+			case 71:  // nonterm_type ::= Lvoid
 				tmLeft.value = new TmaNontermTypeHint(
 						false /* isInline */,
 						TmaNontermTypeHint.TmaKindKind.LVOID /* kind */,
@@ -1105,61 +1390,75 @@ public class TMParser {
 						null /* _implements */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 64:  // nonterm_type ::= type
+			case 72:  // nonterm_type ::= type
 				tmLeft.value = new TmaNontermTypeRaw(
 						((String)tmStack[tmHead].value) /* typeText */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 65:  // implements ::= ':' references_cs
+			case 73:  // implements ::= ':' references_cs
 				tmLeft.value = ((List<TmaSymref>)tmStack[tmHead].value);
 				break;
-			case 66:  // assoc ::= Lleft
+			case 74:  // assoc ::= Lleft
 				tmLeft.value = TmaAssoc.LLEFT;
 				break;
-			case 67:  // assoc ::= Lright
+			case 75:  // assoc ::= Lright
 				tmLeft.value = TmaAssoc.LRIGHT;
 				break;
-			case 68:  // assoc ::= Lnonassoc
+			case 76:  // assoc ::= Lnonassoc
 				tmLeft.value = TmaAssoc.LNONASSOC;
 				break;
-			case 69:  // directive ::= '%' assoc references ';'
+			case 77:  // directive ::= '%' assoc references ';'
 				tmLeft.value = new TmaDirectivePrio(
 						((TmaAssoc)tmStack[tmHead - 2].value) /* assoc */,
 						((List<TmaSymref>)tmStack[tmHead - 1].value) /* symbols */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 70:  // directive ::= '%' Linput inputref_list_Comma_separated ';'
+			case 78:  // directive ::= '%' Linput inputref_list_Comma_separated ';'
 				tmLeft.value = new TmaDirectiveInput(
 						((List<TmaInputref>)tmStack[tmHead - 1].value) /* inputRefs */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 71:  // inputref ::= symref Lnoeoi
+			case 79:  // directive ::= '%' Lparam identifier param_type '=' param_value ';'
+				tmLeft.value = new TmaDirectiveParam(
+						((TmaIdentifier)tmStack[tmHead - 4].value) /* name */,
+						((TmaParamType)tmStack[tmHead - 3].value) /* paramType */,
+						((ITmaParamValue)tmStack[tmHead - 1].value) /* paramValue */,
+						null /* input */, tmStack[tmHead - 6].line, tmStack[tmHead - 6].offset, tmStack[tmHead].endoffset);
+				break;
+			case 80:  // directive ::= '%' Lparam identifier param_type ';'
+				tmLeft.value = new TmaDirectiveParam(
+						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
+						((TmaParamType)tmStack[tmHead - 1].value) /* paramType */,
+						null /* paramValue */,
+						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
+				break;
+			case 81:  // inputref ::= symref_noargs Lnoeoi
 				tmLeft.value = new TmaInputref(
 						((TmaSymref)tmStack[tmHead - 1].value) /* reference */,
 						true /* noeoi */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 72:  // inputref ::= symref
+			case 82:  // inputref ::= symref_noargs
 				tmLeft.value = new TmaInputref(
 						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						false /* noeoi */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 73:  // references ::= symref
+			case 83:  // references ::= symref_noargs
 				tmLeft.value = new ArrayList();
 				((List<TmaSymref>)tmLeft.value).add(((TmaSymref)tmStack[tmHead].value));
 				break;
-			case 74:  // references ::= references symref
+			case 84:  // references ::= references symref_noargs
 				((List<TmaSymref>)tmLeft.value).add(((TmaSymref)tmStack[tmHead].value));
 				break;
-			case 75:  // references_cs ::= symref
+			case 85:  // references_cs ::= symref_noargs
 				tmLeft.value = new ArrayList();
 				((List<TmaSymref>)tmLeft.value).add(((TmaSymref)tmStack[tmHead].value));
 				break;
-			case 76:  // references_cs ::= references_cs ',' symref
+			case 86:  // references_cs ::= references_cs ',' symref_noargs
 				((List<TmaSymref>)tmLeft.value).add(((TmaSymref)tmStack[tmHead].value));
 				break;
-			case 78:  // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
+			case 88:  // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						((TmaRhsPrefix)tmStack[tmHead - 3].value) /* prefix */,
 						((List<ITmaRhsPart>)tmStack[tmHead - 2].value) /* list */,
@@ -1168,7 +1467,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 79:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
+			case 89:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						((TmaRhsPrefix)tmStack[tmHead - 2].value) /* prefix */,
 						((List<ITmaRhsPart>)tmStack[tmHead - 1].value) /* list */,
@@ -1177,7 +1476,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 80:  // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
+			case 90:  // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						((TmaRhsPrefix)tmStack[tmHead - 2].value) /* prefix */,
 						null /* list */,
@@ -1186,7 +1485,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 81:  // rule0 ::= rhsPrefix rhsSuffixopt
+			case 91:  // rule0 ::= rhsPrefix rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						((TmaRhsPrefix)tmStack[tmHead - 1].value) /* prefix */,
 						null /* list */,
@@ -1195,7 +1494,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 82:  // rule0 ::= rhsParts ruleAction rhsSuffixopt
+			case 92:  // rule0 ::= rhsParts ruleAction rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						null /* prefix */,
 						((List<ITmaRhsPart>)tmStack[tmHead - 2].value) /* list */,
@@ -1204,7 +1503,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 83:  // rule0 ::= rhsParts rhsSuffixopt
+			case 93:  // rule0 ::= rhsParts rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						null /* prefix */,
 						((List<ITmaRhsPart>)tmStack[tmHead - 1].value) /* list */,
@@ -1213,7 +1512,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 84:  // rule0 ::= ruleAction rhsSuffixopt
+			case 94:  // rule0 ::= ruleAction rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						null /* prefix */,
 						null /* list */,
@@ -1222,7 +1521,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 85:  // rule0 ::= rhsSuffixopt
+			case 95:  // rule0 ::= rhsSuffixopt
 				tmLeft.value = new TmaRule0(
 						null /* prefix */,
 						null /* list */,
@@ -1231,7 +1530,7 @@ public class TMParser {
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 86:  // rule0 ::= syntax_problem
+			case 96:  // rule0 ::= syntax_problem
 				tmLeft.value = new TmaRule0(
 						null /* prefix */,
 						null /* list */,
@@ -1240,341 +1539,437 @@ public class TMParser {
 						((TmaSyntaxProblem)tmStack[tmHead].value) /* syntaxProblem */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 87:  // rhsPrefix ::= annotations ':'
+			case 97:  // predicate ::= '[' predicate_expression ']'
+				tmLeft.value = ((ITmaPredicateExpression)tmStack[tmHead - 1].value);
+				break;
+			case 98:  // rhsPrefix ::= predicate annotations ':'
 				tmLeft.value = new TmaRhsPrefix(
+						((ITmaPredicateExpression)tmStack[tmHead - 2].value) /* predicate */,
+						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 99:  // rhsPrefix ::= annotations ':'
+				tmLeft.value = new TmaRhsPrefix(
+						null /* predicate */,
 						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 88:  // rhsSuffix ::= '%' Lprio symref
+			case 100:  // rhsPrefix ::= predicate ':'
+				tmLeft.value = new TmaRhsPrefix(
+						((ITmaPredicateExpression)tmStack[tmHead - 1].value) /* predicate */,
+						null /* annotations */,
+						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
+				break;
+			case 101:  // rhsSuffix ::= '%' Lprio symref_noargs
 				tmLeft.value = new TmaRhsSuffix(
 						TmaRhsSuffix.TmaKindKind.LPRIO /* kind */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 89:  // rhsSuffix ::= '%' Lshift symref
+			case 102:  // rhsSuffix ::= '%' Lshift symref_noargs
 				tmLeft.value = new TmaRhsSuffix(
 						TmaRhsSuffix.TmaKindKind.LSHIFT /* kind */,
 						((TmaSymref)tmStack[tmHead].value) /* symref */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 90:  // ruleAction ::= '{~' identifier scon '}'
+			case 103:  // ruleAction ::= '{~' identifier scon '}'
 				tmLeft.value = new TmaRuleAction(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* action */,
 						((String)tmStack[tmHead - 1].value) /* parameter */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 91:  // ruleAction ::= '{~' identifier '}'
+			case 104:  // ruleAction ::= '{~' identifier '}'
 				tmLeft.value = new TmaRuleAction(
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* action */,
 						null /* parameter */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 92:  // rhsParts ::= rhsPart
+			case 105:  // rhsParts ::= rhsPart
 				tmLeft.value = new ArrayList();
 				((List<ITmaRhsPart>)tmLeft.value).add(((ITmaRhsPart)tmStack[tmHead].value));
 				break;
-			case 93:  // rhsParts ::= rhsParts rhsPart
+			case 106:  // rhsParts ::= rhsParts rhsPart
 				((List<ITmaRhsPart>)tmLeft.value).add(((ITmaRhsPart)tmStack[tmHead].value));
 				break;
-			case 94:  // rhsParts ::= rhsParts syntax_problem
+			case 107:  // rhsParts ::= rhsParts syntax_problem
 				((List<ITmaRhsPart>)tmLeft.value).add(((TmaSyntaxProblem)tmStack[tmHead].value));
 				break;
-			case 99:  // rhsAnnotated ::= annotations rhsAssignment
+			case 112:  // rhsAnnotated ::= annotations rhsAssignment
 				tmLeft.value = new TmaRhsAnnotated(
 						((TmaAnnotations)tmStack[tmHead - 1].value) /* annotations */,
 						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 101:  // rhsAssignment ::= identifier '=' rhsOptional
+			case 114:  // rhsAssignment ::= identifier '=' rhsOptional
 				tmLeft.value = new TmaRhsAssignment(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* id */,
 						false /* addition */,
 						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 102:  // rhsAssignment ::= identifier '+=' rhsOptional
+			case 115:  // rhsAssignment ::= identifier '+=' rhsOptional
 				tmLeft.value = new TmaRhsAssignment(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* id */,
 						true /* addition */,
 						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 104:  // rhsOptional ::= rhsCast '?'
+			case 117:  // rhsOptional ::= rhsCast '?'
 				tmLeft.value = new TmaRhsQuantifier(
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* inner */,
 						TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK /* quantifier */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 105:  // rhsCast ::= rhsClass
+			case 118:  // rhsCast ::= rhsClass
 				tmLeft.value = new TmaRhsCast(
 						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* target */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 106:  // rhsCast ::= rhsClass Las symref
+			case 119:  // rhsCast ::= rhsClass Las symref
 				tmLeft.value = new TmaRhsCast(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
 						((TmaSymref)tmStack[tmHead].value) /* target */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 107:  // rhsCast ::= rhsClass Las literal
+			case 120:  // rhsCast ::= rhsClass Las literal
 				tmLeft.value = new TmaRhsAsLiteral(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,
 						((TmaLiteral)tmStack[tmHead].value) /* literal */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 108:  // rhsUnordered ::= rhsPart '&' rhsPart
+			case 121:  // rhsUnordered ::= rhsPart '&' rhsPart
 				tmLeft.value = new TmaRhsUnordered(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* left */,
 						((ITmaRhsPart)tmStack[tmHead].value) /* right */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 110:  // rhsClass ::= identifier ':' rhsPrimary
+			case 123:  // rhsClass ::= identifier ':' rhsPrimary
 				tmLeft.value = new TmaRhsClass(
 						((TmaIdentifier)tmStack[tmHead - 2].value) /* identifier */,
 						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 111:  // rhsPrimary ::= symref
+			case 124:  // rhsPrimary ::= symref
 				tmLeft.value = new TmaRhsSymbol(
 						((TmaSymref)tmStack[tmHead].value) /* reference */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 112:  // rhsPrimary ::= '(' rules ')'
+			case 125:  // rhsPrimary ::= '(' rules ')'
 				tmLeft.value = new TmaRhsNested(
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 113:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+			case 126:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
 				tmLeft.value = new TmaRhsList(
 						((List<ITmaRhsPart>)tmStack[tmHead - 4].value) /* ruleParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
 						true /* atLeastOne */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 114:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+			case 127:  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
 				tmLeft.value = new TmaRhsList(
 						((List<ITmaRhsPart>)tmStack[tmHead - 4].value) /* ruleParts */,
 						((List<TmaSymref>)tmStack[tmHead - 2].value) /* separator */,
 						false /* atLeastOne */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 115:  // rhsPrimary ::= rhsPrimary '*'
+			case 128:  // rhsPrimary ::= rhsPrimary '*'
 				tmLeft.value = new TmaRhsQuantifier(
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* inner */,
 						TmaRhsQuantifier.TmaQuantifierKind.MULT /* quantifier */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 116:  // rhsPrimary ::= rhsPrimary '+'
+			case 129:  // rhsPrimary ::= rhsPrimary '+'
 				tmLeft.value = new TmaRhsQuantifier(
 						((ITmaRhsPart)tmStack[tmHead - 1].value) /* inner */,
 						TmaRhsQuantifier.TmaQuantifierKind.PLUS /* quantifier */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 117:  // rhsPrimary ::= '$' '(' rules ';' rhsBracketsPair_list_Comma_separated ')'
-				tmLeft.value = new TmaRhsIgnored(
-						((List<TmaRule0>)tmStack[tmHead - 3].value) /* rules */,
-						((List<TmaRhsBracketsPair>)tmStack[tmHead - 1].value) /* brackets */,
-						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
-				break;
-			case 118:  // rhsPrimary ::= '$' '(' rules ')'
+			case 130:  // rhsPrimary ::= '$' '(' rules ')'
 				tmLeft.value = new TmaRhsIgnored(
 						((List<TmaRule0>)tmStack[tmHead - 1].value) /* rules */,
-						null /* brackets */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 119:  // rhsPrimary ::= Lset '(' setExpression ')'
+			case 131:  // rhsPrimary ::= Lset '(' setExpression ')'
 				tmLeft.value = new TmaRhsSet(
 						((ITmaSetExpression)tmStack[tmHead - 1].value) /* expr */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 120:  // setPrimary ::= ID symref
+			case 132:  // setPrimary ::= ID symref
 				tmLeft.value = new TmaSetSymbol(
 						((String)tmStack[tmHead - 1].value) /* operator */,
 						((TmaSymref)tmStack[tmHead].value) /* symbol */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 121:  // setPrimary ::= symref
+			case 133:  // setPrimary ::= symref
 				tmLeft.value = new TmaSetSymbol(
 						null /* operator */,
 						((TmaSymref)tmStack[tmHead].value) /* symbol */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 122:  // setPrimary ::= '(' setExpression ')'
+			case 134:  // setPrimary ::= '(' setExpression ')'
 				tmLeft.value = new TmaSetCompound(
 						((ITmaSetExpression)tmStack[tmHead - 1].value) /* inner */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 123:  // setPrimary ::= '~' setPrimary
+			case 135:  // setPrimary ::= '~' setPrimary
 				tmLeft.value = new TmaSetComplement(
 						((ITmaSetExpression)tmStack[tmHead].value) /* inner */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 125:  // setExpression ::= setExpression '|' setExpression
+			case 137:  // setExpression ::= setExpression '|' setExpression
 				tmLeft.value = new TmaSetBinary(
 						((ITmaSetExpression)tmStack[tmHead - 2].value) /* left */,
 						TmaSetBinary.TmaKindKind.OR /* kind */,
 						((ITmaSetExpression)tmStack[tmHead].value) /* right */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 126:  // setExpression ::= setExpression '&' setExpression
+			case 138:  // setExpression ::= setExpression '&' setExpression
 				tmLeft.value = new TmaSetBinary(
 						((ITmaSetExpression)tmStack[tmHead - 2].value) /* left */,
 						TmaSetBinary.TmaKindKind.AMPERSAND /* kind */,
 						((ITmaSetExpression)tmStack[tmHead].value) /* right */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 127:  // rhsBracketsPair ::= symref '..' symref
-				tmLeft.value = new TmaRhsBracketsPair(
-						((TmaSymref)tmStack[tmHead - 2].value) /* lhs */,
-						((TmaSymref)tmStack[tmHead].value) /* rhs */,
-						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
-				break;
-			case 128:  // annotations ::= annotation_list
+			case 139:  // annotations ::= annotation_list
 				tmLeft.value = new TmaAnnotations(
 						((List<TmaAnnotation>)tmStack[tmHead].value) /* annotations */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 129:  // annotation ::= '@' ID '{' expression '}'
+			case 140:  // annotation ::= '@' ID '{' expression '}'
 				tmLeft.value = new TmaAnnotation(
 						((String)tmStack[tmHead - 3].value) /* name */,
 						((ITmaExpression)tmStack[tmHead - 1].value) /* expression */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 130:  // annotation ::= '@' ID
+			case 141:  // annotation ::= '@' ID
 				tmLeft.value = new TmaAnnotation(
 						((String)tmStack[tmHead].value) /* name */,
 						null /* expression */,
 						null /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 131:  // annotation ::= '@' syntax_problem
+			case 142:  // annotation ::= '@' syntax_problem
 				tmLeft.value = new TmaAnnotation(
 						null /* name */,
 						null /* expression */,
 						((TmaSyntaxProblem)tmStack[tmHead].value) /* syntaxProblem */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 134:  // expression ::= Lnew name '(' map_entriesopt ')'
+			case 143:  // nonterm_params ::= '<' param_ref_list_Comma_separated '>'
+				tmLeft.value = new TmaNontermParams(
+						((List<TmaIdentifier>)tmStack[tmHead - 1].value) /* refs */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 145:  // symref_args ::= '<' param_value_list_Comma_separated '>'
+				tmLeft.value = new TmaSymrefArgs(
+						((List<TmaParamValueListCommaSeparatedItem>)tmStack[tmHead - 1].value) /* paramValueListCommaSeparated */,
+						null /* listOfParamRefAnd2ElementsCommaSeparated */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 146:  // symref_args ::= '<' list_of_param_ref_and_2_elements_Comma_separated_opt '>'
+				tmLeft.value = new TmaSymrefArgs(
+						null /* paramValueListCommaSeparated */,
+						((List<TmaListOfParamRefAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* listOfParamRefAnd2ElementsCommaSeparated */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 147:  // param_type ::= Lint
+				tmLeft.value = TmaParamType.LINT;
+				break;
+			case 148:  // param_type ::= Lstring
+				tmLeft.value = TmaParamType.LSTRING;
+				break;
+			case 149:  // param_type ::= Lbool
+				tmLeft.value = TmaParamType.LBOOL;
+				break;
+			case 150:  // param_type ::= Lsymbol
+				tmLeft.value = TmaParamType.LSYMBOL;
+				break;
+			case 153:  // predicate_primary ::= '!' param_ref
+				tmLeft.value = new TmaBoolPredicate(
+						true /* isNegated */,
+						((TmaIdentifier)tmStack[tmHead].value) /* paramRef */,
+						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
+				break;
+			case 154:  // predicate_primary ::= param_ref
+				tmLeft.value = new TmaBoolPredicate(
+						false /* isNegated */,
+						((TmaIdentifier)tmStack[tmHead].value) /* paramRef */,
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
+				break;
+			case 155:  // predicate_primary ::= param_ref '==' literal
+				tmLeft.value = new TmaComparePredicate(
+						((TmaIdentifier)tmStack[tmHead - 2].value) /* paramRef */,
+						TmaComparePredicate.TmaKindKind.EQUAL_EQUAL /* kind */,
+						((TmaLiteral)tmStack[tmHead].value) /* literal */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 156:  // predicate_primary ::= param_ref '!=' literal
+				tmLeft.value = new TmaComparePredicate(
+						((TmaIdentifier)tmStack[tmHead - 2].value) /* paramRef */,
+						TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL /* kind */,
+						((TmaLiteral)tmStack[tmHead].value) /* literal */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 158:  // predicate_expression ::= predicate_expression '&&' predicate_expression
+				tmLeft.value = new TmaPredicateBinary(
+						((ITmaPredicateExpression)tmStack[tmHead - 2].value) /* left */,
+						TmaPredicateBinary.TmaKindKind.AMPERSAND_AMPERSAND /* kind */,
+						((ITmaPredicateExpression)tmStack[tmHead].value) /* right */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 159:  // predicate_expression ::= predicate_expression '||' predicate_expression
+				tmLeft.value = new TmaPredicateBinary(
+						((ITmaPredicateExpression)tmStack[tmHead - 2].value) /* left */,
+						TmaPredicateBinary.TmaKindKind.OR_OR /* kind */,
+						((ITmaPredicateExpression)tmStack[tmHead].value) /* right */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 162:  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
 				tmLeft.value = new TmaInstance(
 						((TmaName)tmStack[tmHead - 3].value) /* className */,
-						((List<TmaMapEntriesItem>)tmStack[tmHead - 1].value) /* mapEntries */,
+						((List<TmaMapEntry>)tmStack[tmHead - 1].value) /* mapEntryListCommaSeparated */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 135:  // expression ::= '[' expression_list_Comma_separated_opt ']'
+			case 163:  // expression ::= '[' expression_list_Comma_separated_opt ']'
 				tmLeft.value = new TmaArray(
 						((List<ITmaExpression>)tmStack[tmHead - 1].value) /* content */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 137:  // literal ::= scon
+			case 165:  // map_entry ::= ID ':' expression
+				tmLeft.value = new TmaMapEntry(
+						((String)tmStack[tmHead - 2].value) /* name */,
+						((ITmaExpression)tmStack[tmHead].value) /* value */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 166:  // literal ::= scon
 				tmLeft.value = new TmaLiteral(
 						((String)tmStack[tmHead].value) /* sval */,
 						null /* ival */,
 						false /* val */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 138:  // literal ::= icon
+			case 167:  // literal ::= icon
 				tmLeft.value = new TmaLiteral(
 						null /* sval */,
 						((Integer)tmStack[tmHead].value) /* ival */,
 						false /* val */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 139:  // literal ::= Ltrue
+			case 168:  // literal ::= Ltrue
 				tmLeft.value = new TmaLiteral(
 						null /* sval */,
 						null /* ival */,
 						true /* val */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 140:  // literal ::= Lfalse
+			case 169:  // literal ::= Lfalse
 				tmLeft.value = new TmaLiteral(
 						null /* sval */,
 						null /* ival */,
 						false /* val */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 141:  // map_entries ::= ID map_separator expression
-				tmLeft.value = new ArrayList();
-				((List<TmaMapEntriesItem>)tmLeft.value).add(new TmaMapEntriesItem(
-						((String)tmStack[tmHead - 2].value) /* name */,
-						((ITmaExpression)tmStack[tmHead].value) /* expression */,
-						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
-				break;
-			case 142:  // map_entries ::= map_entries ',' ID map_separator expression
-				((List<TmaMapEntriesItem>)tmLeft.value).add(new TmaMapEntriesItem(
-						((String)tmStack[tmHead - 2].value) /* name */,
-						((ITmaExpression)tmStack[tmHead].value) /* expression */,
-						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
-				break;
-			case 146:  // name ::= qualified_id
+			case 170:  // name ::= qualified_id
 				tmLeft.value = new TmaName(
 						((String)tmStack[tmHead].value) /* qualifiedId */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 148:  // qualified_id ::= qualified_id '.' ID
+			case 172:  // qualified_id ::= qualified_id '.' ID
 				 tmLeft.value = ((String)tmStack[tmHead - 2].value) + "." + ((String)tmStack[tmHead].value); 
 				break;
-			case 149:  // command ::= code
+			case 173:  // command ::= code
 				tmLeft.value = new TmaCommand(
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 150:  // syntax_problem ::= error
+			case 174:  // syntax_problem ::= error
 				tmLeft.value = new TmaSyntaxProblem(
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 151:  // import__optlist ::= import__optlist import_
+			case 175:  // import__optlist ::= import__optlist import_
 				((List<TmaImport>)tmLeft.value).add(((TmaImport)tmStack[tmHead].value));
 				break;
-			case 152:  // import__optlist ::=
+			case 176:  // import__optlist ::=
 				tmLeft.value = new ArrayList();
 				break;
-			case 153:  // option_optlist ::= option_optlist option
+			case 177:  // option_optlist ::= option_optlist option
 				((List<TmaOption>)tmLeft.value).add(((TmaOption)tmStack[tmHead].value));
 				break;
-			case 154:  // option_optlist ::=
+			case 178:  // option_optlist ::=
 				tmLeft.value = new ArrayList();
 				break;
-			case 167:  // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
+			case 191:  // lexer_state_list_Comma_separated ::= lexer_state_list_Comma_separated ',' lexer_state
 				((List<TmaLexerState>)tmLeft.value).add(((TmaLexerState)tmStack[tmHead].value));
 				break;
-			case 168:  // lexer_state_list_Comma_separated ::= lexer_state
+			case 192:  // lexer_state_list_Comma_separated ::= lexer_state
 				tmLeft.value = new ArrayList();
 				((List<TmaLexerState>)tmLeft.value).add(((TmaLexerState)tmStack[tmHead].value));
 				break;
-			case 173:  // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
+			case 197:  // inputref_list_Comma_separated ::= inputref_list_Comma_separated ',' inputref
 				((List<TmaInputref>)tmLeft.value).add(((TmaInputref)tmStack[tmHead].value));
 				break;
-			case 174:  // inputref_list_Comma_separated ::= inputref
+			case 198:  // inputref_list_Comma_separated ::= inputref
 				tmLeft.value = new ArrayList();
 				((List<TmaInputref>)tmLeft.value).add(((TmaInputref)tmStack[tmHead].value));
 				break;
-			case 175:  // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
+			case 199:  // rule0_list_Or_separated ::= rule0_list_Or_separated '|' rule0
 				((List<TmaRule0>)tmLeft.value).add(((TmaRule0)tmStack[tmHead].value));
 				break;
-			case 176:  // rule0_list_Or_separated ::= rule0
+			case 200:  // rule0_list_Or_separated ::= rule0
 				tmLeft.value = new ArrayList();
 				((List<TmaRule0>)tmLeft.value).add(((TmaRule0)tmStack[tmHead].value));
 				break;
-			case 179:  // rhsBracketsPair_list_Comma_separated ::= rhsBracketsPair_list_Comma_separated ',' rhsBracketsPair
-				((List<TmaRhsBracketsPair>)tmLeft.value).add(((TmaRhsBracketsPair)tmStack[tmHead].value));
-				break;
-			case 180:  // rhsBracketsPair_list_Comma_separated ::= rhsBracketsPair
-				tmLeft.value = new ArrayList();
-				((List<TmaRhsBracketsPair>)tmLeft.value).add(((TmaRhsBracketsPair)tmStack[tmHead].value));
-				break;
-			case 181:  // annotation_list ::= annotation_list annotation
+			case 203:  // annotation_list ::= annotation_list annotation
 				((List<TmaAnnotation>)tmLeft.value).add(((TmaAnnotation)tmStack[tmHead].value));
 				break;
-			case 182:  // annotation_list ::= annotation
+			case 204:  // annotation_list ::= annotation
 				tmLeft.value = new ArrayList();
 				((List<TmaAnnotation>)tmLeft.value).add(((TmaAnnotation)tmStack[tmHead].value));
 				break;
-			case 185:  // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
+			case 205:  // param_ref_list_Comma_separated ::= param_ref_list_Comma_separated ',' param_ref
+				((List<TmaIdentifier>)tmLeft.value).add(((TmaIdentifier)tmStack[tmHead].value));
+				break;
+			case 206:  // param_ref_list_Comma_separated ::= param_ref
+				tmLeft.value = new ArrayList();
+				((List<TmaIdentifier>)tmLeft.value).add(((TmaIdentifier)tmStack[tmHead].value));
+				break;
+			case 207:  // param_value_list_Comma_separated ::= param_value_list_Comma_separated ',' param_value
+				((List<TmaParamValueListCommaSeparatedItem>)tmLeft.value).add(new TmaParamValueListCommaSeparatedItem(
+						((ITmaParamValue)tmStack[tmHead].value) /* val */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
+				break;
+			case 208:  // param_value_list_Comma_separated ::= param_value
+				tmLeft.value = new ArrayList();
+				((List<TmaParamValueListCommaSeparatedItem>)tmLeft.value).add(new TmaParamValueListCommaSeparatedItem(
+						((ITmaParamValue)tmStack[tmHead].value) /* val */,
+						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset));
+				break;
+			case 209:  // list_of_param_ref_and_2_elements_Comma_separated ::= list_of_param_ref_and_2_elements_Comma_separated ',' param_ref ':' param_value
+				((List<TmaListOfParamRefAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new TmaListOfParamRefAnd2ElementsCommaSeparatedItem(
+						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
+						((ITmaParamValue)tmStack[tmHead].value) /* val */,
+						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
+				break;
+			case 210:  // list_of_param_ref_and_2_elements_Comma_separated ::= param_ref ':' param_value
+				tmLeft.value = new ArrayList();
+				((List<TmaListOfParamRefAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new TmaListOfParamRefAnd2ElementsCommaSeparatedItem(
+						((TmaIdentifier)tmStack[tmHead - 2].value) /* name */,
+						((ITmaParamValue)tmStack[tmHead].value) /* val */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
+				break;
+			case 213:  // map_entry_list_Comma_separated ::= map_entry_list_Comma_separated ',' map_entry
+				((List<TmaMapEntry>)tmLeft.value).add(((TmaMapEntry)tmStack[tmHead].value));
+				break;
+			case 214:  // map_entry_list_Comma_separated ::= map_entry
+				tmLeft.value = new ArrayList();
+				((List<TmaMapEntry>)tmLeft.value).add(((TmaMapEntry)tmStack[tmHead].value));
+				break;
+			case 217:  // expression_list_Comma_separated ::= expression_list_Comma_separated ',' expression
 				((List<ITmaExpression>)tmLeft.value).add(((ITmaExpression)tmStack[tmHead].value));
 				break;
-			case 186:  // expression_list_Comma_separated ::= expression
+			case 218:  // expression_list_Comma_separated ::= expression
 				tmLeft.value = new ArrayList();
 				((List<ITmaExpression>)tmLeft.value).add(((ITmaExpression)tmStack[tmHead].value));
 				break;
@@ -1594,10 +1989,10 @@ public class TMParser {
 	}
 
 	public TmaInput parseInput(TMLexer lexer) throws IOException, ParseException {
-		return (TmaInput) parse(lexer, 0, 315);
+		return (TmaInput) parse(lexer, 0, 380);
 	}
 
 	public ITmaExpression parseExpression(TMLexer lexer) throws IOException, ParseException {
-		return (ITmaExpression) parse(lexer, 1, 316);
+		return (ITmaExpression) parse(lexer, 1, 381);
 	}
 }
