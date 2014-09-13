@@ -82,4 +82,9 @@ public class TmGrammar extends TmElement {
 		}
 		return null;
 	}
+
+	public TmNamedElement resolveParameter(String name) {
+		// TODO
+		return null;
+	}
 }

@@ -33,7 +33,7 @@ import java.util.List;
 public class TmElementsFactory {
 
 	public static TmIdentifier createIdentifier(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "token: / /\n" + name + " ::= token ;";
+		@NonNls String text = "language a;%%lexer\ntoken: / /\n" + name + " ::= token ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonterm> s = grammar.getNonterms();
@@ -44,7 +44,7 @@ public class TmElementsFactory {
 	}
 
 	public static TmSymbolReference createSymbolReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = name + ": / /\ninput ::= " + name + " ;";
+		@NonNls String text = "language a;%%lexer\n%% parser\n" + name + ": / /\ninput ::= " + name + " ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonterm> s = grammar.getNonterms();
@@ -67,7 +67,7 @@ public class TmElementsFactory {
 			throw new IncorrectOperationException();
 		}
 
-		TmRhsPrimary symbolRef = ((TmRhsAnnotated)parts.get(0)).getSymbolRef();
+		TmRhsPrimary symbolRef = ((TmRhsAnnotated) parts.get(0)).getSymbolRef();
 		if (symbolRef == null) {
 			throw new IncorrectOperationException();
 		}
@@ -81,7 +81,7 @@ public class TmElementsFactory {
 	}
 
 	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "[" + name + "=>" + name + "]";
+		@NonNls String text = "language a;%%lexer\n[" + name + "=>" + name + "]";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmLexerStateSelector> s = grammar.getStateSelectors();

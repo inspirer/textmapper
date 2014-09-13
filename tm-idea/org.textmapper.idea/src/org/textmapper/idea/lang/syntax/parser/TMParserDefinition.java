@@ -106,7 +106,14 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmAnnotation(node);
 			case Nonterminals.expression:
 				return new TmExpression(node);
+			case Nonterminals.predicate:
+				return new TmPredicate(node);
+			case Nonterminals.predicate_expression:
+				return new TmPredicateExpression(node);
+			case Nonterminals.symref_args:
+				return new TmSymbolArguments(node);
 			case Nonterminals.symref:
+			case Nonterminals.symref_noargs:
 				return new TmSymbolReference(node);
 			case Nonterminals.stateref:
 				return new TmStateReference(node);
@@ -120,10 +127,20 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmNamedPattern(node);
 			case Nonterminals.nonterm:
 				return new TmNonterm(node);
+			case Nonterminals.nonterm_params:
+				return new TmNontermParams(node);
 			case Nonterminals.nonterm_type:
 				return new TmNontermType(node);
 			case Nonterminals.directive:
 				return new TmDirective(node);
+			case Nonterminals.lexer_directive:
+				return new TmLexerDirective(node);
+			case Nonterminals.param_ref:
+				return new TmParameterReference(node);
+			case Nonterminals.keyval_arg:
+				return new TmKeyValueArgument(node);
+			case Nonterminals.map_entry:
+				return new TmMapEntry(node);
 		}
 
 		return new TmElement(node);

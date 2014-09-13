@@ -148,14 +148,18 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_PERCENT;
 			case Tokens.Dollar:
 				return OP_DOLLAR;
-			case Tokens.DotDot:
-				return OP_DOTDOT;
 			case Tokens.ColonColonEqual:
 				return OP_CCEQ;
 			case Tokens.Or:
 				return OP_OR;
+			case Tokens.OrOr:
+				return OP_OROR;
 			case Tokens.Equal:
 				return OP_EQ;
+			case Tokens.EqualEqual:
+				return OP_EQEQ;
+			case Tokens.ExclamationEqual:
+				return OP_EXCLEQ;
 			case Tokens.EqualGreater:
 				return OP_EQGT;
 			case Tokens.Semicolon:
@@ -194,10 +198,14 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return OP_PLUSEQ;
 			case Tokens.Questionmark:
 				return OP_QMARK;
+			case Tokens.Exclamation:
+				return OP_EMARK;
 //			case Tokens.MINUSGREATER:
 //				return OP_ARROW;
 			case Tokens.Ampersand:
 				return OP_AND;
+			case Tokens.AmpersandAmpersand:
+				return OP_ANDAND;
 			case Tokens.Atsign:
 				return OP_AT;
 			case Tokens.Tilde:
@@ -208,56 +216,77 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 				return KW_TRUE;
 			case Tokens.Lfalse:
 				return KW_FALSE;
-			case Tokens.Lseparator:
-				return KW_SEPARATOR;
-			case Tokens.Lprio:
-				return KW_PRIO;
-			case Tokens.Lshift:
-				return KW_SHIFT;
-			case Tokens.Lreduce:
-				return KW_REDUCE;
-			case Tokens.Linput:
-				return KW_INPUT;
-			case Tokens.Lleft:
-				return KW_LEFT;
-			case Tokens.Lright:
-				return KW_RIGHT;
 			case Tokens.Lnew:
 				return KW_NEW;
-			case Tokens.Lnonassoc:
-				return KW_NONASSOC;
-			case Tokens.Lnoeoi:
-				return KW_NOEOI;
+			case Tokens.Lseparator:
+				return KW_SEPARATOR;
 			case Tokens.Las:
 				return KW_AS;
 			case Tokens.Limport:
 				return KW_IMPORT;
 			case Tokens.Lset:
 				return KW_SET;
+
+			// soft keywords
+			case Tokens.Lbrackets:
+				return KW_BRACKETS;
 			case Tokens.Linline:
 				return KW_INLINE;
+
+			case Tokens.Lprio:
+				return KW_PRIO;
+			case Tokens.Lshift:
+				return KW_SHIFT;
+			case Tokens.Lreduce:
+				return KW_REDUCE;
 			case Tokens.Lreturns:
 				return KW_RETURNS;
-			case Tokens.Linterface:
-				return KW_INTERFACE;
-			case Tokens.Lvoid:
-				return KW_VOID;
-			case Tokens.Llanguage:
-				return KW_LANGUAGE;
-			case Tokens.Llalr:
-				return KW_LALR;
-			case Tokens.Llexer:
-				return fState == STATE_AFTER_COLONCOLON ? KW_LEXER_ACC : KW_LEXER;
-			case Tokens.Lparser:
-				return fState == STATE_AFTER_COLONCOLON ? KW_PARSER_ACC : KW_PARSER;
 
-			// soft keywords without highlighting
+			case Tokens.Linput:
+				return KW_INPUT;
+			case Tokens.Lleft:
+				return KW_LEFT;
+			case Tokens.Lright:
+				return KW_RIGHT;
+			case Tokens.Lnonassoc:
+				return KW_NONASSOC;
+
+			case Tokens.Lparam:
+				return KW_PARAM;
+			case Tokens.Lstring:
+				return KW_STRING;
+			case Tokens.Lbool:
+				return KW_BOOL;
+			case Tokens.Lint:
+				return KW_INT;
+			case Tokens.Lsymbol:
+				return KW_SYMBOL;
+
+			case Tokens.Lnoeoi:
+				return KW_NOEOI;
+
 			case Tokens.Lsoft:
 				return KW_SOFT;
 			case Tokens.Lclass:
 				return KW_CLASS;
+			case Tokens.Linterface:
+				return KW_INTERFACE;
+			case Tokens.Lvoid:
+				return KW_VOID;
 			case Tokens.Lspace:
 				return KW_SPACE;
+
+			case Tokens.Llayout:
+				return KW_LAYOUT;
+			case Tokens.Llanguage:
+				return KW_LANGUAGE;
+			case Tokens.Llalr:
+				return KW_LALR;
+
+			case Tokens.Llexer:
+				return fState == STATE_AFTER_COLONCOLON ? KW_LEXER_ACC : KW_LEXER;
+			case Tokens.Lparser:
+				return fState == STATE_AFTER_COLONCOLON ? KW_PARSER_ACC : KW_PARSER;
 		}
 
 		/* default, eoi */
