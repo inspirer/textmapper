@@ -94,7 +94,7 @@ public class TMStructureViewElement implements StructureViewTreeElement {
 	private String getElementText() {
 		if (myElement instanceof TMPsiFile) {
 			return "file";
-		} else if (myElement instanceof TmLexem) {
+		} else if (myElement instanceof TmLexeme) {
 			return myElement.getName();
 		} else if (myElement instanceof TmNonterm) {
 			return myElement.getName();

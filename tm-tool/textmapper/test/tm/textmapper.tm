@@ -219,7 +219,7 @@ lexeme_attribute ::=
 ;
 
 lexer_directive returns lexer_part ::=
-	  '%' Lbrackets opening=symref_noargs closing=symref_noargs		{~directiveBrackets}
+	  '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'		{~directiveBrackets}
 ;
 
 state_selector ::=
@@ -238,7 +238,7 @@ grammar_parts ::=
 ;
 
 grammar_part ::=
-	  nonterm | directive ;
+	  nonterm | nonterm_param | directive ;
 
 nonterm ::=
 	  annotations? name=identifier params=nonterm_params? type=nonterm_type? '::=' rules ';' ;
@@ -257,10 +257,13 @@ implements ::=
 assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
+nonterm_param returns grammar_part ::=
+	  '%' Lparam name=identifier param_type ('=' param_value)? ';'
+;
+
 directive returns grammar_part ::=
 	  '%' assoc symbols=references ';' 						        {~directivePrio}
 	| '%' Linput inputRefs=(inputref separator ',')+ ';'	        {~directiveInput}
-	| '%' Lparam name=identifier param_type ('=' param_value)? ';'	{~directiveParam}
 ;
 
 inputref ::=

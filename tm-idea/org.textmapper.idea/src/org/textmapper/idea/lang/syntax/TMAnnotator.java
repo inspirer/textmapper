@@ -43,9 +43,12 @@ public class TMAnnotator implements Annotator {
 		if (element instanceof TmSymbolReference) {
 			TmSymbolReference ref = (TmSymbolReference) element;
 			PsiElement target = ref.resolve();
-			if (target instanceof TmLexem) {
+			if (target instanceof TmLexeme) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.LEXEM_REFERENCE);
+			} else if (target instanceof TmNontermParam) {
+				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
+				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
 			} else if (target == null) {
 				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve `" + ref.getReferenceText() + "'");
 				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
@@ -71,7 +74,9 @@ public class TMAnnotator implements Annotator {
 				|| element instanceof TmRhsSuffix
 				|| element instanceof TmNontermType
 				|| element instanceof TmHeader
-				|| element instanceof TmLexemeAttrs) {
+				|| element instanceof TmLexemeAttrs
+				|| element instanceof TmLexerDirective
+				|| element instanceof TmNontermParam) {
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
 				if (isSoft(((TMElementType) token.getTokenType()).getSymbol())) {
 					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);
@@ -92,6 +97,17 @@ public class TMAnnotator implements Annotator {
 					Annotation infoAnnotation = holder.createInfoAnnotation(el, null);
 					infoAnnotation.setTextAttributes(TMSyntaxHighlighter.RULE_METADATA);
 				}
+			}
+		}
+		if (element instanceof TmParameterReference) {
+			TmParameterReference ref = (TmParameterReference) element;
+			PsiElement target = ref.resolve();
+			if (target instanceof TmNontermParam) {
+				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
+				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
+			} else if (target == null) {
+				Annotation infoAnnotation = holder.createErrorAnnotation(ref, "cannot resolve parameter `" + ref.getReferenceText() + "'");
+				infoAnnotation.setTextAttributes(CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES);
 			}
 		}
 	}

@@ -169,15 +169,15 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaNontermParam n) {
+		return true;
+	}
+
 	protected boolean visit(TmaDirectivePrio n) {
 		return true;
 	}
 
 	protected boolean visit(TmaDirectiveInput n) {
-		return true;
-	}
-
-	protected boolean visit(TmaDirectiveParam n) {
 		return true;
 	}
 

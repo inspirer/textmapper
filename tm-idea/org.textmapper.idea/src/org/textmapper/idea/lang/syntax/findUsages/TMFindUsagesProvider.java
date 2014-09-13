@@ -55,8 +55,11 @@ public class TMFindUsagesProvider implements FindUsagesProvider {
 		if (psiElement instanceof TmNonterm) {
 			return "nonterm";
 		}
-		if (psiElement instanceof TmLexem) {
-			return "lexem";
+		if (psiElement instanceof TmLexeme) {
+			return "lexeme";
+		}
+		if (psiElement instanceof TmNontermParam) {
+			return "parameter";
 		}
 		if (psiElement instanceof TmLexerState) {
 			return "lexer state";

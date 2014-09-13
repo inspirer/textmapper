@@ -79,6 +79,9 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 	static final TextAttributesKey RULE_METADATA =
 			TextAttributesKey.createTextAttributesKey("TM.RULE_METADATA", DefaultLanguageHighlighterColors.NUMBER);
 
+	static final TextAttributesKey NONTERM_PARAMETER_NAME =
+			TextAttributesKey.createTextAttributesKey("TM.NONTERM_PARAMETER", CodeInsightColors.TYPE_PARAMETER_NAME_ATTRIBUTES);
+
 	// Regexp
 
 	static final TextAttributesKey RE_DELIMITERS =

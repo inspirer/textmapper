@@ -22,9 +22,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Gryaznov Evgeny, 1/26/11
  */
-public class TmLexem extends TmNamedElement {
+public class TmLexeme extends TmNamedElement {
 
-	public TmLexem(@NotNull ASTNode node) {
+	public TmLexeme(@NotNull ASTNode node) {
 		super(node);
 	}
 }

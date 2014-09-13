@@ -122,7 +122,7 @@ public class TMParserDefinition implements ParserDefinition {
 			case Nonterminals.qualified_id:
 				return new TmQualifiedIdentifier(node);
 			case Nonterminals.lexeme:
-				return new TmLexem(node);
+				return new TmLexeme(node);
 			case Nonterminals.named_pattern:
 				return new TmNamedPattern(node);
 			case Nonterminals.nonterm:
@@ -133,6 +133,8 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmNontermType(node);
 			case Nonterminals.directive:
 				return new TmDirective(node);
+			case Nonterminals.nonterm_param:
+				return new TmNontermParam(node);
 			case Nonterminals.lexer_directive:
 				return new TmLexerDirective(node);
 			case Nonterminals.param_ref:

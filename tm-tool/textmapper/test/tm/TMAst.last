@@ -184,7 +184,7 @@ class DirectiveBrackets : LexerPart {
 }
 
 lexer_directive  : LexerPart ::=
-	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs
+	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
 ;
 
 class StateSelector : LexerPart {
@@ -217,6 +217,7 @@ interface GrammarPart {
 
 grammar_part  : GrammarPart ::=
 	this=nonterm
+  | this=nonterm_param
   | this=directive
 ;
 
@@ -279,6 +280,16 @@ assoc  : Assoc ::=
   | this=Lnonassoc as Assoc.LNONASSOC
 ;
 
+class NontermParam : GrammarPart {
+	Identifier name;
+	ParamType paramType;
+	ParamValue paramValue;
+}
+
+nonterm_param  : GrammarPart ::=
+	this=new.NontermParam: '%' Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
+;
+
 class DirectivePrio : GrammarPart {
 	Assoc assoc;
 	list<Symref> symbols;
@@ -288,16 +299,9 @@ class DirectiveInput : GrammarPart {
 	list<Inputref> inputRefs;
 }
 
-class DirectiveParam : GrammarPart {
-	Identifier name;
-	ParamType paramType;
-	ParamValue paramValue;
-}
-
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
   | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
-  | this=new.DirectiveParam: '%' Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
 ;
 
 class Inputref {

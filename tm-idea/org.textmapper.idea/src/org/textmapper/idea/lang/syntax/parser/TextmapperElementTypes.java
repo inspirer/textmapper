@@ -38,6 +38,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType LEXER_DIRECTIVE = new TMElementType(Nonterminals.lexer_directive, "lexer directive");
 
 	public static final IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
+	public static final IElementType NONTERM_PARAM = new TMElementType(Nonterminals.nonterm_param, "nonterminal parameter definition");
 	public static final IElementType NONTERM_PARAMS = new TMElementType(Nonterminals.nonterm_params, "nonterminal parameters");
 	public static final IElementType NONTERM_TYPE = new TMElementType(Nonterminals.nonterm_type, "nonterminal type");
 	public static final IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
@@ -70,7 +71,7 @@ public interface TextmapperElementTypes {
 	public static final IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, LEXER_DIRECTIVE,
-			NONTERM, NONTERM_PARAMS, NONTERM_TYPE, DIRECTIVE,
+			NONTERM, NONTERM_PARAM, NONTERM_PARAMS, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
 			SYMREF, SYMREF_ARGS, SYMREF_NA, STATEREF, IDENTIFIER, QUALIFIED_ID,

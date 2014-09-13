@@ -39,7 +39,7 @@ public class TmParameterReference extends TmElement implements PsiReference {
 		while (context != null) {
 			if (context instanceof TmGrammar) {
 				TmGrammar grammar = (TmGrammar) context;
-				return grammar.resolveParameter(referenceText);
+				return grammar.resolve(referenceText);
 			}
 			context = context.getContext();
 		}

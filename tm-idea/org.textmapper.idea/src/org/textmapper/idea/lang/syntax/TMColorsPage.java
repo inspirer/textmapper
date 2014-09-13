@@ -49,6 +49,7 @@ public class TMColorsPage implements ColorSettingsPage {
 			new AttributesDescriptor("Annotations", TMSyntaxHighlighter.ANNOTATION),
 			new AttributesDescriptor("Sections", TMSyntaxHighlighter.SECTION),
 			new AttributesDescriptor("Rule metadata", TMSyntaxHighlighter.RULE_METADATA),
+			new AttributesDescriptor("Parameter Name", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME),
 
 			new AttributesDescriptor("RegExp Delimiters", TMSyntaxHighlighter.RE_DELIMITERS),
 			new AttributesDescriptor("RegExp Text", TMSyntaxHighlighter.RE_TEXT),
@@ -75,6 +76,7 @@ public class TMColorsPage implements ColorSettingsPage {
 		ourTagToDescriptorMap.put("ruleMeta", TMSyntaxHighlighter.RULE_METADATA);
 		ourTagToDescriptorMap.put("sect", TMSyntaxHighlighter.SECTION);
 		ourTagToDescriptorMap.put("kw", TMSyntaxHighlighter.KEYWORD);
+		ourTagToDescriptorMap.put("param", TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
 	}
 
 	@NotNull

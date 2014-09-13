@@ -246,7 +246,7 @@ lexeme_attribute (TmaLexemeAttrs) ::=
 ;
 
 lexer_directive (TmaDirectiveBrackets) ::=
-	  '%' Lbrackets opening=symref_noargs closing=symref_noargs
+	  '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
 														{ $$ = new TmaDirectiveBrackets($opening, $closing, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
@@ -275,6 +275,7 @@ grammar_parts (List<ITmaGrammarPart>) ::=
 
 grammar_part (ITmaGrammarPart) ::=
 	  nonterm
+	| nonterm_param
 	| directive
 ;
 
@@ -303,11 +304,14 @@ assoc (TmaAssoc) ::=
 	| Lnonassoc											{ $$ = TmaAssoc.LNONASSOC; }
 ;
 
+nonterm_param (ITmaGrammarPart) ::=
+	  '%' Lparam identifier param_type ('=' param_value)? ';'
+														{ $$ = new TmaNontermParam($identifier, $param_type, $param_value, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+;
+
 directive (ITmaGrammarPart) ::=
 	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($assoc, $references, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| '%' Lparam identifier param_type ('=' param_value)? ';'
-														{ $$ = new TmaDirectiveParam($identifier, $param_type, $param_value, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 inputs (List<TmaInputref>) ::=

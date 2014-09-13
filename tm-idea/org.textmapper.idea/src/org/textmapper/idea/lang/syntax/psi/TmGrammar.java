@@ -47,8 +47,8 @@ public class TmGrammar extends TmElement {
 		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmOption.class);
 	}
 
-	public List<TmLexem> getLexems() {
-		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexem.class);
+	public List<TmLexeme> getLexemes() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmLexeme.class);
 	}
 
 	public List<TmNonterm> getNonterms() {
@@ -80,11 +80,6 @@ public class TmGrammar extends TmElement {
 				}
 			}
 		}
-		return null;
-	}
-
-	public TmNamedElement resolveParameter(String name) {
-		// TODO
 		return null;
 	}
 }
