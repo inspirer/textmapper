@@ -117,22 +117,26 @@ public class TMColorsPage implements ColorSettingsPage {
 				"\n" +
 				"[initial]\n" +
 				"idStart = /[a-zA-Z_]/\n" +
-				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (class)\n" +
+				"identifier(String): /{idStart}([A-Za-z_\\d])*/  (<kw>class</kw>)\n" +
 				"                 { $lexem = current(); break; }\n" +
-				"kw_eval:  /eval/ (soft)\n" +
+				"kw_eval:  /eval/ (<kw>soft</kw>)\n" +
 				"'(': /\\(/\n" +
 				"')': /\\)/\n" +
 				"',': /,/\n" +
 				"'*': /*/\n" +
 				"'+': /+/\n" +
 				"complex: /\\p{Lu}-a{1,8}-[^a-z] \\y . forwardSlash:\\/ /\n" +
-				"skip: /[\\t\\r\\n ]+/ (space)\n" +
+				"skip: /[\\t\\r\\n ]+/ (<kw>space</kw>)\n" +
 				"\n" +
 				"<sect>:: parser</sect>\n" +
 				"\n" +
-				"%input root;\n" +
-				"%left <lexemeRef>'+'</lexemeRef>;\n" +
-				"%left <lexemeRef>'*'</lexemeRef>;\n" +
+				"%<kw>param</kw> X <kw>symbol</kw>;\n" +
+				"\n" +
+				"parenthesized<<param>X</param>> ::= <lexemeRef>'('</lexemeRef> <param>X</param> <lexemeRef>')'</lexemeRef>;\n" +
+				"\n" +
+				"%<kw>input</kw> root;\n" +
+				"%<kw>left</kw> <lexemeRef>'+'</lexemeRef>;\n" +
+				"%<kw>left</kw> <lexemeRef>'*'</lexemeRef>;\n" +
 				"\n" +
 				"root (ParsedRoot) ::=\n" +
 				"      <lexemeRef>kw_eval</lexemeRef> expr  {  $$ = new ParsedRoot($expr, ${root.offset}, ${root.endoffset}); }\n" +
