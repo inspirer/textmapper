@@ -252,7 +252,7 @@ public class RegexDefParser {
 				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 8:  // primitive_part ::= escaped
-				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 9:  // primitive_part ::= charclass
 				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
@@ -276,7 +276,7 @@ public class RegexDefParser {
 				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 16:  // setsymbol ::= escaped
-				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 17:  // setsymbol ::= charclass
 				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
@@ -297,7 +297,7 @@ public class RegexDefParser {
 				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Character)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
 			case 23:  // charset ::= charset '-' escaped
-				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Character)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
+				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
 			case 25:  // parts ::= parts part
 				 tmLeft.value = RegexUtil.createSequence(((RegexAstPart)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value)); 

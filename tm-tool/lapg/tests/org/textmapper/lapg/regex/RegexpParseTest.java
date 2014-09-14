@@ -136,34 +136,6 @@ public class RegexpParseTest {
 	}
 
 	@Test
-	public void testHexConverter() {
-		assertEquals(0, RegexUtil.unescapeHex("0"));
-		assertEquals(10, RegexUtil.unescapeHex("a"));
-		assertEquals(11, RegexUtil.unescapeHex("b"));
-		assertEquals(12, RegexUtil.unescapeHex("C"));
-		assertEquals(16, RegexUtil.unescapeHex("10"));
-		assertEquals(39664, RegexUtil.unescapeHex("9aF0"));
-		try {
-			RegexUtil.unescapeHex("9aF0!");
-			fail("no exception");
-		} catch (Throwable th) {
-			assertTrue(th instanceof NumberFormatException);
-		}
-		try {
-			RegexUtil.unescapeHex("g");
-			fail("no exception");
-		} catch (Throwable th) {
-			assertTrue(th instanceof NumberFormatException);
-		}
-		try {
-			RegexUtil.unescapeHex("G");
-			fail("no exception");
-		} catch (Throwable th) {
-			assertTrue(th instanceof NumberFormatException);
-		}
-	}
-
-	@Test
 	public void testParserParen() {
 		try {
 			RegexpCompiler rp = createTestCompiler();

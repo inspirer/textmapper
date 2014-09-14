@@ -33,19 +33,20 @@ genCopyright = true
 [initial, afterChar, inSet]
 
 char(Character): /[^()\[\]\.|\\\/*?+-]/			{ $symbol = current().charAt(0); quantifierReady(); }
-escaped(Character): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-												{ $symbol = current().charAt(1); quantifierReady(); }
-escaped(Character): /\\a/						{ $symbol = (char) 7; quantifierReady(); }
-escaped(Character): /\\b/						{ $symbol = '\b'; quantifierReady(); }
-escaped(Character): /\\f/						{ $symbol = '\f'; quantifierReady(); }
-escaped(Character): /\\n/						{ $symbol = '\n'; quantifierReady(); }
-escaped(Character): /\\r/						{ $symbol = '\r'; quantifierReady(); }
-escaped(Character): /\\t/						{ $symbol = '\t'; quantifierReady(); }
-escaped(Character): /\\v/						{ $symbol = (char) 0xb; quantifierReady(); }
-escaped(Character): /\\[0-7][0-7][0-7]/			{ $symbol = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
+escaped(Integer): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
+												{ $symbol = (int) current().charAt(1); quantifierReady(); }
+escaped(Integer): /\\a/							{ $symbol = (int) 7; quantifierReady(); }
+escaped(Integer): /\\b/							{ $symbol = (int) '\b'; quantifierReady(); }
+escaped(Integer): /\\f/							{ $symbol = (int) '\f'; quantifierReady(); }
+escaped(Integer): /\\n/							{ $symbol = (int) '\n'; quantifierReady(); }
+escaped(Integer): /\\r/							{ $symbol = (int) '\r'; quantifierReady(); }
+escaped(Integer): /\\t/							{ $symbol = (int) '\t'; quantifierReady(); }
+escaped(Integer): /\\v/							{ $symbol = (int) 0xb; quantifierReady(); }
+escaped(Integer): /\\[0-7][0-7][0-7]/			{ $symbol = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
 hx = /[0-9A-Fa-f]/
-escaped(Character): /\\[xX]{hx}{hx}/			{ $symbol = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
-escaped(Character): /\\[uU]{hx}{hx}{hx}{hx}/	{ $symbol = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); }
+escaped(Integer): /\\x{hx}{2}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
+escaped(Integer): /\\u{hx}{4}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
+escaped(Integer): /\\U{hx}{8}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
 charclass(String): /\\[wWsSdD]/					{ $symbol = current().substring(1); quantifierReady(); }
 charclass(String): /\\p\{\w+\}/					{ $symbol = current().substring(3, current().length() - 1); quantifierReady(); }
 
@@ -156,6 +157,13 @@ private void quantifierReady() {
 		return;
 	}
 	if (state == 0) state = 1;
+}
+
+private int parseCodePoint(String s, LapgSymbol lapg_n) {
+	int ch = RegexUtil.unescapeHex(s);
+	if (Character.isValidCodePoint(ch)) return ch;
+	reporter.error("unicode code point is out of range", lapg_n.offset, lapg_n.endoffset);
+	return 0;
 }
 ${end}
 

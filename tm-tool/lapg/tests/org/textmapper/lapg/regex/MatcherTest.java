@@ -96,6 +96,18 @@ public class MatcherTest {
 	}
 
 	@Test
+	public void testTwoCharRE() throws RegexParseException {
+		String oldItalicX = new String(Character.toChars(0x10317));
+		assertEquals(2, oldItalicX.length());
+
+		RegexPart parsedRegex = RegexFacade.parse("id", "[^p-z]");
+		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
+		checkMatch(matcher, "a", true);
+		checkMatch(matcher, oldItalicX, true);
+		checkMatch(matcher, "aa", false);
+	}
+
+	@Test
 	public void testRegex() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
 		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());

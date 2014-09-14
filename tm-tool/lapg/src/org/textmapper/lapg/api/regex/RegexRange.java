@@ -17,7 +17,7 @@ package org.textmapper.lapg.api.regex;
 
 public interface RegexRange extends RegexPart {
 
-	char getLeft();
+	int getLeft();
 
-	char getRight();
+	int getRight();
 }

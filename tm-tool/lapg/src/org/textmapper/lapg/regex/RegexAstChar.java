@@ -25,14 +25,14 @@ import org.textmapper.lapg.regex.RegexDefTree.TextSource;
  */
 class RegexAstChar extends RegexAstPart implements RegexChar {
 
-	private final char c;
+	private final int c;
 
-	public RegexAstChar(char c, TextSource source, int offset, int endoffset) {
+	public RegexAstChar(int c, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.c = c;
 	}
 
-	public char getChar() {
+	public int getChar() {
 		return c;
 	}
 
@@ -43,7 +43,7 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 
 	@Override
 	public String getConstantValue() {
-		return Character.toString(c);
+		return new String(Character.toChars(c));
 	}
 
 	@Override

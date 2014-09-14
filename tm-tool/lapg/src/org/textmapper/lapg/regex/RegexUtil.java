@@ -107,7 +107,7 @@ class RegexUtil {
 		builder.clear();
 		for (RegexAstPart part : charset) {
 			if (part instanceof RegexAstChar) {
-				char c = ((RegexAstChar) part).getChar();
+				int c = ((RegexAstChar) part).getChar();
 				builder.addSymbol(c);
 			} else if (part instanceof RegexAstRange) {
 				RegexAstRange range = (RegexAstRange) part;
@@ -123,7 +123,7 @@ class RegexUtil {
 		return new RegexAstSet(builder.create(inverted), charset, charset.get(0).getInput(), charset.get(0).getOffset(), charset.get(charset.size() - 1).getEndOffset());
 	}
 
-	private static boolean isRangeChar(char c) {
+	private static boolean isRangeChar(int c) {
 		switch (c) {
 			case '.':
 			case '-':
@@ -145,8 +145,9 @@ class RegexUtil {
 		return c >= 0x20;
 	}
 
-	static char unescapeOct(String s) {
-		assert s.length() == 3;
+	static int unescapeOct(String s) {
+		if (s.length() != 3) throw new IllegalArgumentException();
+
 		int result = 0;
 		for (int i = 0; i < 3; i++) {
 			result <<= 3;
@@ -160,7 +161,10 @@ class RegexUtil {
 		return (char) result;
 	}
 
-	public static char unescapeHex(String s) {
+	public static int unescapeHex(String s) {
+		if (s.length() > 8 || s.isEmpty()) {
+			throw new IllegalArgumentException();
+		}
 		int result = 0;
 		for (int i = 0; i < s.length(); i++) {
 			result <<= 4;
@@ -175,10 +179,13 @@ class RegexUtil {
 				throw new NumberFormatException();
 			}
 		}
-		return (char) result;
+		return result;
 	}
 
-	static void escape(StringBuilder sb, char c, boolean inSet) {
+	static void escape(StringBuilder sb, int c, boolean inSet) {
+		if (!Character.isValidCodePoint(c)) {
+			throw new IllegalArgumentException();
+		}
 		switch (c) {
 			case '(':
 			case '|':
@@ -191,7 +198,7 @@ class RegexUtil {
 				if (!inSet) {
 					sb.append('\\');
 				}
-				sb.append(c);
+				sb.append((char) c);
 				return;
 			case '.':
 			case '-':
@@ -201,7 +208,7 @@ class RegexUtil {
 			case '\\':
 			case '/':
 				sb.append('\\');
-				sb.append(c);
+				sb.append((char) c);
 				return;
 			case 7:
 				sb.append("\\a");
@@ -226,15 +233,16 @@ class RegexUtil {
 				return;
 		}
 		if (c >= 0x20 && c < 0x80) {
-			sb.append(c);
+			sb.append((char) c);
 			return;
 		}
 		String sym = Integer.toString(c, 16);
 		boolean isShort = sym.length() <= 2;
-		sb.append(isShort ? "\\x" : "\\u");
-		int len = isShort ? 2 : 4;
+		boolean isLong = sym.length() > 4;
+		sb.append(isShort ? "\\x" : isLong ? "\\U" : "\\u");
+		int len = isShort ? 2 : isLong ? 8 : 4;
 		if (sym.length() < len) {
-			sb.append("0000".substring(sym.length() + (4 - len)));
+			sb.append("00000000".substring(sym.length() + (8 - len)));
 		}
 		sb.append(sym);
 	}

@@ -92,6 +92,13 @@ public class RegexDefLexer {
 		if (state == 0) state = 1;
 	}
 
+	private int parseCodePoint(String s, LapgSymbol lapg_n) {
+		int ch = RegexUtil.unescapeHex(s);
+		if (Character.isValidCodePoint(ch)) return ch;
+		reporter.error("unicode code point is out of range", lapg_n.offset, lapg_n.endoffset);
+		return 0;
+	}
+
 	public RegexDefLexer(Reader stream, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(stream);
@@ -156,48 +163,51 @@ public class RegexDefLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 30, 30, 1, 1, 30, 1, 1,
+		0, 1, 1, 1, 1, 1, 1, 1, 1, 33, 33, 1, 1, 33, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 19, 1, 20, 22, 14, 15, 17, 18, 13, 29,
-		32, 32, 32, 32, 32, 32, 32, 32, 28, 28, 23, 1, 1, 1, 1, 16,
-		1, 34, 34, 34, 35, 34, 34, 27, 27, 27, 27, 27, 27, 27, 27, 27,
-		31, 27, 27, 37, 27, 36, 27, 37, 33, 27, 27, 24, 4, 26, 25, 27,
-		1, 5, 6, 34, 35, 34, 7, 27, 27, 38, 27, 27, 27, 27, 8, 27,
-		12, 27, 9, 39, 10, 36, 11, 37, 33, 27, 27, 2, 21, 3, 1, 1
+		1, 1, 1, 1, 1, 1, 22, 1, 23, 25, 17, 18, 20, 21, 16, 32,
+		35, 35, 35, 35, 35, 35, 35, 35, 31, 31, 26, 1, 1, 1, 1, 19,
+		1, 36, 36, 36, 37, 36, 36, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+		34, 30, 30, 38, 30, 14, 30, 38, 34, 30, 30, 27, 4, 29, 28, 30,
+		1, 5, 6, 36, 37, 36, 7, 30, 30, 39, 30, 30, 30, 30, 8, 30,
+		15, 30, 9, 40, 10, 13, 11, 38, 12, 30, 30, 2, 24, 3, 1, 1
 	};
 
 	private static final short tmStateMap[] = {
 		0, 1, 2
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(35,
-		"\22\1\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24\25" +
-		"\1");
+	private static final short[] tmRuleSymbol = unpack_short(36,
+		"\22\1\2\2\2\2\2\2\2\2\2\2\2\2\3\3\4\5\6\7\10\11\12\13\1\14\15\16\17\20\21\1\23\24" +
+		"\25\1");
 
-	private static final int tmClassesCount = 40;
+	private static final int tmClassesCount = 41;
 
-	private static final short[] tmGoto = unpack_vc_short(2400,
-		"\1\ufffe\1\3\1\4\1\3\1\5\10\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
-		"\uffff\2\3\1\uffff\12\3\1\uffff\1\3\1\15\1\3\1\5\10\3\1\6\1\16\1\17\1\20\1\3\1\10" +
-		"\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1\uffff\2\3\1\uffff\12\3\1\uffff\3\3\1\5\10\3\1" +
-		"\6\3\7\1\3\1\21\1\3\3\22\1\3\1\uffff\1\3\1\23\2\3\1\uffff\12\3\55\ufffc\10\24\16" +
-		"\ufffc\1\24\3\ufffc\1\24\1\ufffc\7\24\1\uffff\4\25\1\26\1\27\1\30\1\31\1\32\1\33" +
-		"\1\34\1\35\17\25\1\uffff\1\25\2\uffff\1\36\1\37\1\25\1\40\1\41\1\40\1\25\1\40\50" +
-		"\uffee\50\uffe6\50\uffdf\20\uffe5\1\42\27\uffe5\50\uffe4\50\uffe3\31\uffe1\1\43\16" +
-		"\uffe1\5\ufffc\10\24\2\ufffc\1\44\2\ufffc\1\45\1\46\7\ufffc\1\24\1\47\2\ufffc\1\24" +
-		"\1\47\7\24\50\uffed\50\uffec\50\uffeb\50\uffdc\50\uffdb\50\uffdd\3\uffff\1\50\1\uffff" +
-		"\10\24\5\uffff\1\24\10\uffff\2\24\2\uffff\11\24\50\ufffb\50\ufffa\50\ufff9\50\ufff8" +
-		"\50\ufff7\50\ufff6\50\ufff5\50\ufff4\2\uffff\1\51\105\uffff\1\52\14\uffff\3\53\24" +
-		"\uffff\1\53\3\uffff\1\53\1\uffff\2\53\4\uffff\50\ufff0\5\uffff\3\54\24\uffff\1\54" +
-		"\3\uffff\1\54\1\uffff\2\54\26\uffff\1\55\23\uffff\2\55\50\uffe0\3\uffff\1\56\47\uffff" +
-		"\1\57\67\uffff\1\60\27\uffff\1\61\15\uffff\1\62\12\uffff\1\47\3\uffff\1\47\7\uffff" +
-		"\50\ufffd\5\uffff\10\63\16\uffff\2\63\2\uffff\11\63\40\uffff\1\64\14\uffff\3\65\24" +
-		"\uffff\1\65\3\uffff\1\65\1\uffff\2\65\11\uffff\3\66\24\uffff\1\66\3\uffff\1\66\1" +
-		"\uffff\2\66\26\uffff\1\55\4\uffff\1\67\16\uffff\2\55\50\uffe8\50\uffe9\3\uffff\1" +
-		"\70\44\uffff\50\uffea\3\uffff\1\61\30\uffff\1\62\3\uffff\1\62\12\uffff\1\71\1\uffff" +
-		"\10\63\16\uffff\2\63\2\uffff\11\63\50\ufff3\50\ufff2\5\uffff\3\72\24\uffff\1\72\3" +
-		"\uffff\1\72\1\uffff\2\72\4\uffff\50\uffe2\50\uffe7\50\uffef\5\uffff\3\73\24\uffff" +
-		"\1\73\3\uffff\1\73\1\uffff\2\73\4\uffff\50\ufff1");
+	private static final short[] tmGoto = unpack_vc_short(2829,
+		"\1\ufffe\1\3\1\4\1\3\1\5\13\3\1\6\3\7\1\3\1\10\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1" +
+		"\uffff\2\3\1\uffff\10\3\1\uffff\1\3\1\15\1\3\1\5\13\3\1\6\1\16\1\17\1\20\1\3\1\10" +
+		"\1\3\1\11\1\12\1\13\1\3\1\14\1\3\1\uffff\2\3\1\uffff\10\3\1\uffff\3\3\1\5\13\3\1" +
+		"\6\3\7\1\3\1\21\1\3\3\22\1\3\1\uffff\1\3\1\23\2\3\1\uffff\10\3\56\ufffc\13\24\16" +
+		"\ufffc\1\24\3\ufffc\1\24\1\ufffc\5\24\1\uffff\4\25\1\26\1\27\1\30\1\31\1\32\1\33" +
+		"\1\34\1\35\1\36\1\37\1\40\17\25\1\uffff\1\25\2\uffff\1\41\1\25\2\42\1\25\1\42\51" +
+		"\uffed\51\uffe5\51\uffde\23\uffe4\1\43\25\uffe4\51\uffe3\51\uffe2\34\uffe0\1\44\14" +
+		"\uffe0\5\ufffc\13\24\2\ufffc\1\45\2\ufffc\1\46\1\47\7\ufffc\1\24\1\50\2\ufffc\1\24" +
+		"\1\50\5\24\51\uffec\51\uffeb\51\uffea\51\uffdb\51\uffda\51\uffdc\3\uffff\1\51\1\uffff" +
+		"\13\24\5\uffff\1\24\10\uffff\2\24\2\uffff\7\24\51\ufffb\51\ufffa\51\ufff9\51\ufff8" +
+		"\51\ufff7\51\ufff6\51\ufff5\51\ufff4\5\uffff\3\52\27\uffff\1\52\3\uffff\3\52\10\uffff" +
+		"\3\53\27\uffff\1\53\3\uffff\3\53\10\uffff\3\54\27\uffff\1\54\3\uffff\3\54\5\uffff" +
+		"\1\55\111\uffff\1\56\5\uffff\51\uffef\25\uffff\1\57\21\uffff\2\57\51\uffdf\3\uffff" +
+		"\1\60\50\uffff\1\61\73\uffff\1\62\25\uffff\1\63\20\uffff\1\64\12\uffff\1\50\3\uffff" +
+		"\1\50\5\uffff\51\ufffd\5\uffff\3\65\27\uffff\1\65\3\uffff\3\65\10\uffff\3\66\27\uffff" +
+		"\1\66\3\uffff\3\66\10\uffff\3\67\27\uffff\1\67\3\uffff\3\67\10\uffff\13\70\16\uffff" +
+		"\2\70\2\uffff\7\70\43\uffff\1\71\32\uffff\1\57\4\uffff\1\72\14\uffff\2\57\51\uffe7" +
+		"\51\uffe8\3\uffff\1\73\45\uffff\51\uffe9\3\uffff\1\63\33\uffff\1\64\3\uffff\1\64" +
+		"\5\uffff\51\ufff2\5\uffff\3\74\27\uffff\1\74\3\uffff\3\74\10\uffff\3\75\27\uffff" +
+		"\1\75\3\uffff\3\75\6\uffff\1\76\1\uffff\13\70\16\uffff\2\70\2\uffff\7\70\51\ufff3" +
+		"\51\uffe1\51\uffe6\5\uffff\3\77\27\uffff\1\77\3\uffff\3\77\10\uffff\3\100\27\uffff" +
+		"\1\100\3\uffff\3\100\3\uffff\51\uffee\51\ufff1\5\uffff\3\101\27\uffff\1\101\3\uffff" +
+		"\3\101\10\uffff\3\102\27\uffff\1\102\3\uffff\3\102\10\uffff\3\103\27\uffff\1\103" +
+		"\3\uffff\3\103\10\uffff\3\104\27\uffff\1\104\3\uffff\3\104\3\uffff\51\ufff0");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -301,96 +311,99 @@ public class RegexDefLexer {
 				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
 			case 2: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-				 lapg_n.value = current().charAt(1); quantifierReady(); 
+				 lapg_n.value = (int) current().charAt(1); quantifierReady(); 
 				break;
 			case 3: // escaped: /\\a/
-				 lapg_n.value = (char) 7; quantifierReady(); 
+				 lapg_n.value = (int) 7; quantifierReady(); 
 				break;
 			case 4: // escaped: /\\b/
-				 lapg_n.value = '\b'; quantifierReady(); 
+				 lapg_n.value = (int) '\b'; quantifierReady(); 
 				break;
 			case 5: // escaped: /\\f/
-				 lapg_n.value = '\f'; quantifierReady(); 
+				 lapg_n.value = (int) '\f'; quantifierReady(); 
 				break;
 			case 6: // escaped: /\\n/
-				 lapg_n.value = '\n'; quantifierReady(); 
+				 lapg_n.value = (int) '\n'; quantifierReady(); 
 				break;
 			case 7: // escaped: /\\r/
-				 lapg_n.value = '\r'; quantifierReady(); 
+				 lapg_n.value = (int) '\r'; quantifierReady(); 
 				break;
 			case 8: // escaped: /\\t/
-				 lapg_n.value = '\t'; quantifierReady(); 
+				 lapg_n.value = (int) '\t'; quantifierReady(); 
 				break;
 			case 9: // escaped: /\\v/
-				 lapg_n.value = (char) 0xb; quantifierReady(); 
+				 lapg_n.value = (int) 0xb; quantifierReady(); 
 				break;
 			case 10: // escaped: /\\[0-7][0-7][0-7]/
 				 lapg_n.value = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); 
 				break;
-			case 11: // escaped: /\\[xX]{hx}{hx}/
-				 lapg_n.value = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
+			case 11: // escaped: /\\x{hx}{2}/
+				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
 				break;
-			case 12: // escaped: /\\[uU]{hx}{hx}{hx}{hx}/
-				 lapg_n.value = RegexUtil.unescapeHex(current().substring(2)); quantifierReady(); 
+			case 12: // escaped: /\\u{hx}{4}/
+				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
 				break;
-			case 13: // charclass: /\\[wWsSdD]/
+			case 13: // escaped: /\\U{hx}{8}/
+				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
+				break;
+			case 14: // charclass: /\\[wWsSdD]/
 				 lapg_n.value = current().substring(1); quantifierReady(); 
 				break;
-			case 14: // charclass: /\\p\{\w+\}/
+			case 15: // charclass: /\\p\{\w+\}/
 				 lapg_n.value = current().substring(3, current().length() - 1); quantifierReady(); 
 				break;
-			case 15: // '.': /\./
+			case 16: // '.': /\./
 				 quantifierReady(); 
 				break;
-			case 16: // '*': /\*/
+			case 17: // '*': /\*/
 				state = States.initial;
 				break;
-			case 17: // '+': /\+/
+			case 18: // '+': /\+/
 				state = States.initial;
 				break;
-			case 18: // '?': /\?/
+			case 19: // '?': /\?/
 				state = States.initial;
 				break;
-			case 19: // quantifier: /\{[0-9]+(,[0-9]*)?\}/
+			case 20: // quantifier: /\{[0-9]+(,[0-9]*)?\}/
 				state = States.initial;
 				break;
-			case 20: // op_minus: /\{\-\}/
+			case 21: // op_minus: /\{\-\}/
 				state = States.initial;
 				break;
-			case 21: // op_union: /\{\+\}/
+			case 22: // op_union: /\{\+\}/
 				state = States.initial;
 				break;
-			case 22: // op_intersect: /\{&&\}/
+			case 23: // op_intersect: /\{&&\}/
 				state = States.initial;
 				break;
-			case 23: // char: /[*+?]/
+			case 24: // char: /[*+?]/
 				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
-			case 24: // '(': /\(/
+			case 25: // '(': /\(/
 				 state = 0; 
 				break;
-			case 25: // '|': /\|/
+			case 26: // '|': /\|/
 				 state = 0; 
 				break;
-			case 26: // ')': /\)/
+			case 27: // ')': /\)/
 				 quantifierReady(); 
 				break;
-			case 27: // '(?': /\(\?[is\-]+:/
+			case 28: // '(?': /\(\?[is\-]+:/
 				 state = 0; 
 				break;
-			case 28: // '[': /\[/
+			case 29: // '[': /\[/
 				state = States.inSet;
 				break;
-			case 29: // '[^': /\[\^/
+			case 30: // '[^': /\[\^/
 				state = States.inSet;
 				break;
-			case 30: // char: /\-/
+			case 31: // char: /\-/
 				 lapg_n.value = current().charAt(0); quantifierReady(); 
 				break;
-			case 32: // ']': /\]/
+			case 33: // ']': /\]/
 				 state = 0; quantifierReady(); 
 				break;
-			case 34: // char: /[(|)]/
+			case 35: // char: /[(|)]/
 				 lapg_n.value = current().charAt(0); 
 				break;
 		}
@@ -399,7 +412,7 @@ public class RegexDefLexer {
 
 	private static Map<String,Integer> subTokensOfExpand = new HashMap<String,Integer>();
 	static {
-		subTokensOfExpand.put("{eoi}", 31);
+		subTokensOfExpand.put("{eoi}", 32);
 	}
 
 	protected boolean createExpandToken(LapgSymbol lapg_n, int ruleIndex) {
@@ -410,7 +423,7 @@ public class RegexDefLexer {
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
-			case 31:	// {eoi}
+			case 32:	// {eoi}
 				 state = 0; 
 				break;
 			case 0:	// <default>

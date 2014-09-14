@@ -46,7 +46,12 @@ class RegexMatcherImpl implements RegexMatcher {
 		int index = 0;
 		boolean[] current = holders[0];
 		states[0].applyTo(current);
-		for (char c : text.toCharArray()) {
+		char[] input = text.toCharArray();
+		for (int e = 0; e < input.length; e++) {
+			int c = input[e];
+			if (Character.isHighSurrogate(input[e]) && e + 1 < input.length) {
+				c = Character.toCodePoint(input[e++], input[e]);
+			}
 			boolean[] next = holders[++index % 2];
 			Arrays.fill(next, false);
 			boolean isValid = false;
@@ -64,7 +69,7 @@ class RegexMatcherImpl implements RegexMatcher {
 		return current[states.length - 1];
 	}
 
-	private boolean accepts(RegexPart simple, char c) {
+	private boolean accepts(RegexPart simple, int c) {
 		if (simple instanceof RegexChar) {
 			return c == ((RegexChar) simple).getChar();
 		} else if (simple instanceof RegexSet) {

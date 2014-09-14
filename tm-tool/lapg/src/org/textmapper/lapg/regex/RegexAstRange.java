@@ -25,20 +25,20 @@ import org.textmapper.lapg.regex.RegexDefTree.TextSource;
  */
 class RegexAstRange extends RegexAstPart implements RegexRange {
 
-	private char left;
-	private char right;
+	private int left;
+	private int right;
 
-	public RegexAstRange(char left, char right, TextSource source, int offset, int endoffset) {
+	public RegexAstRange(int left, int right, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.left = left;
 		this.right = right;
 	}
 
-	public char getLeft() {
+	public int getLeft() {
 		return left;
 	}
 
-	public char getRight() {
+	public int getRight() {
 		return right;
 	}
 
