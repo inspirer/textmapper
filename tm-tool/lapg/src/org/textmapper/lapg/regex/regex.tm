@@ -32,7 +32,7 @@ genCopyright = true
 
 [initial, afterChar, inSet]
 
-char(Character): /[^()\[\]\.|\\\/*?+-]/			{ $symbol = current().charAt(0); quantifierReady(); }
+char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $symbol = current().codePointAt(0); quantifierReady(); }
 escaped(Integer): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
 												{ $symbol = (int) current().charAt(1); quantifierReady(); }
 escaped(Integer): /\\a/							{ $symbol = (int) 7; quantifierReady(); }
@@ -65,7 +65,7 @@ op_intersect:	/\{&&\}/
 
 [initial, inSet]
 
-char(Character): /[*+?]/						{ $symbol = current().charAt(0); quantifierReady(); }
+char(Integer): /[*+?]/							{ $symbol = current().codePointAt(0); quantifierReady(); }
 
 [initial, afterChar]
 
@@ -77,7 +77,7 @@ char(Character): /[*+?]/						{ $symbol = current().charAt(0); quantifierReady()
 
 '[':	/\[/  => inSet
 '[^':	/\[^/ => inSet
-char(Character):  /-/							{ $symbol = current().charAt(0); quantifierReady(); }
+char(Integer):  /-/								{ $symbol = current().codePointAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
 
@@ -88,7 +88,7 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 
 ']':  /\]/										{ state = 0; quantifierReady(); }
 '-':  /-/
-char(Character):  /[\(\|\)]/					{ $symbol = current().charAt(0); }
+char(Integer):  /[\(\|\)]/						{ $symbol = current().codePointAt(0); }
 
 :: parser
 

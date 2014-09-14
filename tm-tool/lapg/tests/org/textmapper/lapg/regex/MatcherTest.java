@@ -108,6 +108,19 @@ public class MatcherTest {
 	}
 
 	@Test
+	public void testMultiCharUnicode() throws RegexParseException {
+		String oldItalicX = new String(Character.toChars(0x10317));
+		assertEquals(2, oldItalicX.length());
+
+		RegexPart parsedRegex = RegexFacade.parse("multi", oldItalicX + "+b");
+		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
+		checkMatch(matcher, oldItalicX + oldItalicX, false);
+		checkMatch(matcher, oldItalicX + oldItalicX + "b", true);
+		checkMatch(matcher, oldItalicX + "b", true);
+		checkMatch(matcher, "b", false);
+	}
+
+	@Test
 	public void testRegex() throws RegexParseException {
 		RegexPart parsedRegex = RegexFacade.parse("re", "\\/([^\\/\\\\\\n]|\\\\.)*\\/");
 		RegexMatcherImpl matcher = new RegexMatcherImpl(parsedRegex, createEmptyContext());
@@ -175,7 +188,8 @@ public class MatcherTest {
 	}
 
 	private static void checkMatch(RegexMatcherImpl matcher, String sample, boolean expected) {
-		assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected, matcher.matches(sample));
+		assertEquals("regex: `" + matcher.toString() + "` vs sample: `" + sample + "`", expected,
+				matcher.matches(sample));
 	}
 
 	private static RegexContext createEmptyContext() {

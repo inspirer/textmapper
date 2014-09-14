@@ -348,7 +348,7 @@ public class RegexDefLexer {
 			case 0:
 				return createExpandToken(lapg_n, ruleIndex);
 			case 1: // char: /[^()\[\]\.|\\\/*?+\-]/
-				 lapg_n.value = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
 				break;
 			case 2: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
 				 lapg_n.value = (int) current().charAt(1); quantifierReady(); 
@@ -417,7 +417,7 @@ public class RegexDefLexer {
 				state = States.initial;
 				break;
 			case 24: // char: /[*+?]/
-				 lapg_n.value = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
 				break;
 			case 25: // '(': /\(/
 				 state = 0; 
@@ -438,13 +438,13 @@ public class RegexDefLexer {
 				state = States.inSet;
 				break;
 			case 31: // char: /\-/
-				 lapg_n.value = current().charAt(0); quantifierReady(); 
+				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
 				break;
 			case 33: // ']': /\]/
 				 state = 0; quantifierReady(); 
 				break;
 			case 35: // char: /[(|)]/
-				 lapg_n.value = current().charAt(0); 
+				 lapg_n.value = current().codePointAt(0); 
 				break;
 		}
 		return !(spaceToken);

@@ -249,7 +249,7 @@ public class RegexDefParser {
 				 tmLeft.value = RegexUtil.createQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), source, tmStack[tmHead].offset, tmLeft.endoffset, reporter); 
 				break;
 			case 7:  // primitive_part ::= char
-				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 8:  // primitive_part ::= escaped
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
@@ -273,7 +273,7 @@ public class RegexDefParser {
 				 tmLeft.value = new RegexAstExpand(source, tmLeft.offset, tmLeft.endoffset); RegexUtil.checkExpand((RegexAstExpand) tmLeft.value, reporter); 
 				break;
 			case 15:  // setsymbol ::= char
-				 tmLeft.value = new RegexAstChar(((Character)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 16:  // setsymbol ::= escaped
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
@@ -294,7 +294,7 @@ public class RegexDefParser {
 				 ((List<RegexAstPart>)tmStack[tmHead - 1].value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); 
 				break;
 			case 22:  // charset ::= charset '-' char
-				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Character)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
+				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
 			case 23:  // charset ::= charset '-' escaped
 				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
