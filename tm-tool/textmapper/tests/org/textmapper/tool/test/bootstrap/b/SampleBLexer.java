@@ -63,7 +63,7 @@ public class SampleBLexer {
 
 	private char[] data;
 	private int l, tokenStart;
-	private char chr;
+	private int chr;
 
 	private int state;
 

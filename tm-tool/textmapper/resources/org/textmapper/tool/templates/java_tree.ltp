@@ -74,7 +74,7 @@ ${end}
 ${template parseParameters}TextSource source${end}
 
 ${template createLexer-}
-${if opts.lexerInput == 'char[]'-}
+${if opts.lexerInput == 'buffer'-}
 ${opts.prefix}Lexer lexer = new ${opts.prefix}Lexer(source.getContents(), reporter);
 ${else-}
 ${opts.prefix}Lexer lexer = new ${opts.prefix}Lexer(source.getStream(), reporter);

@@ -575,7 +575,7 @@ private boolean skipAction() throws java.io.@IOException {
 	};
 	org.textmapper.tool.parser.action.@SActionLexer l = new org.textmapper.tool.parser.action.@SActionLexer(innerreporter) {
 		@Override
-		protected char nextChar() throws java.io.@IOException {
+		protected int nextChar() throws java.io.@IOException {
 			if (ind[0] < 2) {
 				return ind[0]++ == 0 ? '{' : chr;
 			}

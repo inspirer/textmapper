@@ -13,14 +13,14 @@ ${call errorReporter-}
 	private java.io.@Reader stream;
 	final private ErrorReporter reporter;
 
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'stream'-}
 	final private char[] data = new char[2048];
 	private int datalen, l, tokenStart;
-${else if opts.lexerInput == 'char[]'-}
+${else if opts.lexerInput == 'buffer'-}
 	private char[] data;
 	private int l, tokenStart;
 ${end-}
-	private char chr;
+	private int chr;
 
 	private int state;
 
@@ -38,8 +38,8 @@ ${util.shiftRight(self->lexercode(), 1)-}
 
 ${call lexerCtor-}
 
-	public void reset(${if opts.lexerInput == 'char[]'}char[] input${else if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
-${if opts.lexerInput == 'char[]'-}
+	public void reset(${if opts.lexerInput == 'buffer'}char[] input${else if opts.lexerInput != 'custom'}java.io.@Reader stream${end}) throws java.io.@IOException {
+${if opts.lexerInput == 'buffer'-}
 		this.data = input;
 		l = 0;
 		chr = l < data.length ? data[l++] : 0;
@@ -47,24 +47,18 @@ ${else if opts.lexerInput != 'custom'-}
 		this.stream = stream;
 ${end-}
 		this.state = 0;
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'stream'-}
 		datalen = stream.read(data);
 		l = 0;
 		tokenStart = -1;
 		chr = l < datalen ? data[l++] : 0;
-${else if opts.lexerInput == 'char'-}
-		int c = stream.read();
-		if (c == -1) {
-			c = 0;
-		}
-		chr = (char) c;
 ${else if opts.lexerInput == 'custom'-}
 		chr = nextChar();
 ${end-}
 	}
 ${if opts.lexerInput == 'custom'-}
 
-	protected abstract char nextChar() throws java.io.@IOException;
+	protected abstract int nextChar() throws java.io.@IOException;
 ${end-}
 
 	protected void advance() throws java.io.@IOException {
@@ -136,7 +130,7 @@ ${end-}
 				token.trimToSize();
 			}
 			token.setLength(0);
-${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
+${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
 			tokenStart = l - 1;
 ${end-}
 
@@ -158,7 +152,7 @@ ${end-}
 ${if opts.positions.contains('offset')-}
 					lapg_n.offset = currOffset;
 ${end-}
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'stream'-}
 					tokenStart = -1;
 ${end-}
 					return lapg_n;
@@ -178,7 +172,7 @@ ${if opts.endpositions.contains('column')-}
 ${end-}
 
 			if (state == -1) {
-${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
+${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
@@ -191,13 +185,13 @@ ${end-}
 			if (state == -2) {
 				lapg_n.symbol = 0;
 				lapg_n.value = null;
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'stream'-}
 				tokenStart = -1;
 ${end-}
 				return lapg_n;
 			}
 
-${if opts.lexerInput == 'buffered' || opts.lexerInput == 'char[]'-}
+${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
 			if (l - 1 > tokenStart) {
 				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
@@ -207,7 +201,7 @@ ${end-}
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-${if opts.lexerInput == 'buffered'-}
+${if opts.lexerInput == 'stream'-}
 		tokenStart = -1;
 ${end-}
 		return lapg_n;
@@ -223,9 +217,9 @@ ${call java_pack.unpackShort-}
 ${end}
 
 ${template lexerCtor-}
-	public ${opts.prefix}Lexer(${if opts.lexerInput == 'char[]'}char[] input, ${else if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
+	public ${opts.prefix}Lexer(${if opts.lexerInput == 'buffer'}char[] input, ${else if opts.lexerInput != 'custom'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
 		this.reporter = reporter;
-		reset(${if opts.lexerInput == 'char[]'}input${else if opts.lexerInput != 'custom'}stream${end});
+		reset(${if opts.lexerInput == 'buffer'}input${else if opts.lexerInput == 'stream'}stream${end});
 	}
 ${end}
 
@@ -317,19 +311,12 @@ ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 ${end-}
 			currLine++;
 		}
-${if opts.lexerInput == 'char'-}
-		token.append(chr);
-		int c = stream.read();
-		if (c == -1) {
-			c = 0;
-		}
-		chr = (char) c;
-${else if opts.lexerInput == 'custom'-}
+${if opts.lexerInput == 'custom'-}
 		token.append(chr);
 		chr = nextChar();
-${else if opts.lexerInput == 'char[]'-}
+${else if opts.lexerInput == 'buffer'-}
 		chr = l < data.length ? data[l++] : 0;
-${else if opts.lexerInput == 'buffered'-}
+${else if opts.lexerInput == 'stream'-}
 		if (l >= datalen) {
 ${if inNext-}
 			token.append(data, tokenStart, l - tokenStart);

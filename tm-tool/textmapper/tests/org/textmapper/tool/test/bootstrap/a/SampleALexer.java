@@ -55,7 +55,7 @@ public class SampleALexer {
 
 	final private char[] data = new char[2048];
 	private int datalen, l, tokenStart;
-	private char chr;
+	private int chr;
 
 	private int state;
 

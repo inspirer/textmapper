@@ -107,7 +107,7 @@ public class BisonLexer {
 
 	private char[] data;
 	private int l, tokenStart;
-	private char chr;
+	private int chr;
 
 	private int state;
 

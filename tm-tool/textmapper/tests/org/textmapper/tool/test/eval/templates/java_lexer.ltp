@@ -15,7 +15,7 @@ ${template lexerCtor-}
 		tmGoto = lexerData.getChange();
 		tmClassesCount = lexerData.getNchars();
 		tmStateMap = lexerData.getGroupset();
-		reset(${if opts.lexerInput != 'custom'}stream${end});
+		reset(stream);
 	}
 ${end}
 

@@ -129,7 +129,7 @@ public class TMLexer {
 
 	final private char[] data = new char[2048];
 	private int datalen, l, tokenStart;
-	private char chr;
+	private int chr;
 
 	private int state;
 
@@ -161,7 +161,7 @@ public class TMLexer {
 		};
 		SActionLexer l = new SActionLexer(innerreporter) {
 			@Override
-			protected char nextChar() throws IOException {
+			protected int nextChar() throws IOException {
 				if (ind[0] < 2) {
 					return ind[0]++ == 0 ? '{' : chr;
 				}

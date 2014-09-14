@@ -46,7 +46,7 @@ public abstract class SActionLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	private char chr;
+	private int chr;
 
 	private int state;
 
@@ -66,7 +66,7 @@ public abstract class SActionLexer {
 		chr = nextChar();
 	}
 
-	protected abstract char nextChar() throws IOException;
+	protected abstract int nextChar() throws IOException;
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;

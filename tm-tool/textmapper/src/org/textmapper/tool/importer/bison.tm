@@ -24,7 +24,7 @@ genmain = true
 genast = false
 positions = "line,offset"
 endpositions = "offset"
-lexerInput = "char[]"
+lexerInput = "buffer"
 defaultExtension = "y"
 
 :: lexer

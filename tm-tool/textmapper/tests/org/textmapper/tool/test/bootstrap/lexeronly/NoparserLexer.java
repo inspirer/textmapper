@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.text.MessageFormat;
 
-public class NoparserLexer {
+public abstract class NoparserLexer {
 
 	public static class LapgSymbol {
 		public Object value;
@@ -46,7 +46,7 @@ public class NoparserLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	private char chr;
+	private int chr;
 
 	private int state;
 
@@ -56,20 +56,17 @@ public class NoparserLexer {
 	private int currLine = 1;
 	private int currOffset = 0;
 
-	public NoparserLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public NoparserLexer(ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset();
 	}
 
-	public void reset(Reader stream) throws IOException {
-		this.stream = stream;
+	public void reset() throws IOException {
 		this.state = 0;
-		int c = stream.read();
-		if (c == -1) {
-			c = 0;
-		}
-		chr = (char) c;
+		chr = nextChar();
 	}
+
+	protected abstract int nextChar() throws IOException;
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;
@@ -78,11 +75,7 @@ public class NoparserLexer {
 			currLine++;
 		}
 		token.append(chr);
-		int c = stream.read();
-		if (c == -1) {
-			c = 0;
-		}
-		chr = (char) c;
+		chr = nextChar();
 	}
 
 	public int getState() {
@@ -191,11 +184,7 @@ public class NoparserLexer {
 						currLine++;
 					}
 					token.append(chr);
-					int c = stream.read();
-					if (c == -1) {
-						c = 0;
-					}
-					chr = (char) c;
+					chr = nextChar();
 				}
 			}
 

@@ -42,7 +42,7 @@ public class GenericParserTest {
 			res.put("package", "org.textmapper.lapg.eval");
 			res.put("positions", "line,offset");
 			res.put("endpositions", "offset");
-			res.put("lexerInput", "buffered");
+			res.put("lexerInput", "stream");
 			res.put("maxtoken", 2048);
 			res.put("stack", 1024);
 			res.put("genast", false);
