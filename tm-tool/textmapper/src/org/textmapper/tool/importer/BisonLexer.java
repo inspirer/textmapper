@@ -106,16 +106,16 @@ public class BisonLexer {
 	final private ErrorReporter reporter;
 
 	private char[] data;
-	private int l, tokenStart;
+	private int tokenOffset;
+	private int l;
+	private int charOffset;
 	private int chr;
 
 	private int state;
 
-	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
-
-	private int tokenLine = 1;
-	private int currLine = 1;
-	private int currOffset = 0;
+	private int tokenLine;
+	private int currLine;
+	private int currOffset;
 
 	private int nesting = 0;
 	private int lexemeStart = -1;
@@ -144,19 +144,31 @@ public class BisonLexer {
 	}
 
 	public void reset(char[] input) throws IOException {
-		this.data = input;
-		l = 0;
-		chr = l < data.length ? data[l++] : 0;
 		this.state = 0;
+		tokenLine = currLine = 1;
+		currOffset = 0;
+		this.data = input;
+		tokenOffset = l = 0;
+		charOffset = l;
+		chr = l < data.length ? data[l++] : 0;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
+				Character.isLowSurrogate(data[l])) {
+			chr = Character.toCodePoint((char) chr, data[l++]);
+		}
 	}
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;
-		currOffset++;
+		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
 		}
+		charOffset = l;
 		chr = l < data.length ? data[l++] : 0;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
+				Character.isLowSurrogate(data[l])) {
+			chr = Character.toCodePoint((char) chr, data[l++]);
+		}
 	}
 
 	public int getState() {
@@ -188,7 +200,7 @@ public class BisonLexer {
 	}
 
 	public String current() {
-		return token.toString();
+		return new String(data, tokenOffset, charOffset - tokenOffset);
 	}
 
 	private static final short tmCharClass[] = {
@@ -407,12 +419,7 @@ public class BisonLexer {
 		do {
 			lapg_n.offset = currOffset;
 			tokenLine = lapg_n.line = currLine;
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
-			}
-			token.setLength(0);
-			tokenStart = l - 1;
+			tokenOffset = charOffset;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
@@ -425,19 +432,21 @@ public class BisonLexer {
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
-					currOffset++;
+					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
 					}
+					charOffset = l;
 					chr = l < data.length ? data[l++] : 0;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
+							Character.isLowSurrogate(data[l])) {
+						chr = Character.toCodePoint((char) chr, data[l++]);
+					}
 				}
 			}
 			lapg_n.endoffset = currOffset;
 
 			if (state == -1) {
-				if (l - 1 > tokenStart) {
-					token.append(data, tokenStart, l - 1 - tokenStart);
-				}
 				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 				lapg_n.symbol = -1;
 				continue;
@@ -447,10 +456,6 @@ public class BisonLexer {
 				lapg_n.symbol = 0;
 				lapg_n.value = null;
 				return lapg_n;
-			}
-
-			if (l - 1 > tokenStart) {
-				token.append(data, tokenStart, l - 1 - tokenStart);
 			}
 
 			lapg_n.symbol = tmRuleSymbol[-state - 3];

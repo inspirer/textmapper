@@ -73,16 +73,19 @@ public class TypesLexer {
 	final private ErrorReporter reporter;
 
 	final private char[] data = new char[2048];
-	private int datalen, l, tokenStart;
+	private int datalen;
+	private int tokenOffset;
+	private int l;
+	private int charOffset;
 	private int chr;
 
 	private int state;
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
-	private int tokenLine = 1;
-	private int currLine = 1;
-	private int currOffset = 0;
+	private int tokenLine;
+	private int currLine;
+	private int currOffset;
 
 	private String unescape(String s, int start, int end) {
 		StringBuilder sb = new StringBuilder();
@@ -118,29 +121,55 @@ public class TypesLexer {
 	}
 
 	public void reset(Reader stream) throws IOException {
-		this.stream = stream;
 		this.state = 0;
+		tokenLine = currLine = 1;
+		currOffset = 0;
+		this.stream = stream;
 		datalen = stream.read(data);
 		l = 0;
-		tokenStart = -1;
+		tokenOffset = -1;
+		if (l + 1 >= datalen) {
+			if (l < datalen) {
+				data[0] = data[l];
+				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
+			} else {
+				datalen = stream.read(data);
+			}
+			l = 0;
+		}
+		charOffset = l;
 		chr = l < datalen ? data[l++] : 0;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+				Character.isLowSurrogate(data[l])) {
+			chr = Character.toCodePoint((char) chr, data[l++]);
+		}
 	}
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;
-		currOffset++;
+		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
 		}
-		if (l >= datalen) {
-			if (tokenStart >= 0) {
-				token.append(data, tokenStart, l - tokenStart);
-				tokenStart = 0;
+		if (l + 1 >= datalen) {
+			if (tokenOffset >= 0) {
+				token.append(data, tokenOffset, l - tokenOffset);
+				tokenOffset = 0;
+			}
+			if (l < datalen) {
+				data[0] = data[l];
+				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
+			} else {
+				datalen = stream.read(data);
 			}
 			l = 0;
-			datalen = stream.read(data);
 		}
+		charOffset = l;
 		chr = l < datalen ? data[l++] : 0;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+				Character.isLowSurrogate(data[l])) {
+			chr = Character.toCodePoint((char) chr, data[l++]);
+		}
 	}
 
 	public int getState() {
@@ -241,7 +270,7 @@ public class TypesLexer {
 				token.trimToSize();
 			}
 			token.setLength(0);
-			tokenStart = l - 1;
+			tokenOffset = charOffset;
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
@@ -251,27 +280,38 @@ public class TypesLexer {
 					lapg_n.value = null;
 					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 					lapg_n.offset = currOffset;
-					tokenStart = -1;
+					tokenOffset = -1;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
-					currOffset++;
+					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
 					}
-					if (l >= datalen) {
-						token.append(data, tokenStart, l - tokenStart);
-						tokenStart = l = 0;
-						datalen = stream.read(data);
+					if (l + 1 >= datalen) {
+						token.append(data, tokenOffset, l - tokenOffset);
+						tokenOffset = 0;
+						if (l < datalen) {
+							data[0] = data[l];
+							datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
+						} else {
+							datalen = stream.read(data);
+						}
+						l = 0;
 					}
+					charOffset = l;
 					chr = l < datalen ? data[l++] : 0;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+							Character.isLowSurrogate(data[l])) {
+						chr = Character.toCodePoint((char) chr, data[l++]);
+					}
 				}
 			}
 			lapg_n.endoffset = currOffset;
 
 			if (state == -1) {
-				if (l - 1 > tokenStart) {
-					token.append(data, tokenStart, l - 1 - tokenStart);
+				if (charOffset > tokenOffset) {
+					token.append(data, tokenOffset, charOffset - tokenOffset);
 				}
 				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 				lapg_n.symbol = -1;
@@ -281,19 +321,19 @@ public class TypesLexer {
 			if (state == -2) {
 				lapg_n.symbol = 0;
 				lapg_n.value = null;
-				tokenStart = -1;
+				tokenOffset = -1;
 				return lapg_n;
 			}
 
-			if (l - 1 > tokenStart) {
-				token.append(data, tokenStart, l - 1 - tokenStart);
+			if (charOffset > tokenOffset) {
+				token.append(data, tokenOffset, charOffset - tokenOffset);
 			}
 
 			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		tokenStart = -1;
+		tokenOffset = -1;
 		return lapg_n;
 	}
 

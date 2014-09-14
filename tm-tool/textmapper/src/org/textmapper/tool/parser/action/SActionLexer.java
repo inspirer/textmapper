@@ -52,9 +52,9 @@ public abstract class SActionLexer {
 
 	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
-	private int tokenLine = 1;
-	private int currLine = 1;
-	private int currOffset = 0;
+	private int tokenLine;
+	private int currLine;
+	private int currOffset;
 
 	public SActionLexer(ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
@@ -63,6 +63,8 @@ public abstract class SActionLexer {
 
 	public void reset() throws IOException {
 		this.state = 0;
+		tokenLine = currLine = 1;
+		currOffset = 0;
 		chr = nextChar();
 	}
 
@@ -70,11 +72,14 @@ public abstract class SActionLexer {
 
 	protected void advance() throws IOException {
 		if (chr == 0) return;
-		currOffset++;
 		if (chr == '\n') {
 			currLine++;
 		}
-		token.append(chr);
+		if (chr >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+			token.append(Character.toChars(chr));
+		} else {
+			token.append((char) chr);
+		}
 		chr = nextChar();
 	}
 
@@ -179,11 +184,14 @@ public abstract class SActionLexer {
 					return lapg_n;
 				}
 				if (state >= -1 && chr != 0) {
-					currOffset++;
 					if (chr == '\n') {
 						currLine++;
 					}
-					token.append(chr);
+					if (chr >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+						token.append(Character.toChars(chr));
+					} else {
+						token.append((char) chr);
+					}
 					chr = nextChar();
 				}
 			}
