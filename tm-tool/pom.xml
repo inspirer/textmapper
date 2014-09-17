@@ -80,6 +80,17 @@
 
 	<profiles>
 		<profile>
+			<!--
+			  ~ Release steps:
+			  ~
+			  ~ git checkout -b vx.y.z
+			  ~ mvn versions:set -DnewVersion=x.y.z
+			  ~ mvn clean install
+			  ~ mvn clean deploy -Dmaven.test.skip=true -P oss-release
+			  ~
+			  ~ mvn nexus-staging:release
+			  ~ mvn nexus-staging:drop
+			  -->
 			<id>oss-release</id>
 			<build>
 				<plugins>
