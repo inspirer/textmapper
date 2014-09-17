@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir=".." default="all" name="org.textmapper.tool">
-	<property name="tm.version" value="0.9.3"/>
+	<property name="tm.version" value="0.9.4"/>
 	<property name="tm.qualifier" value="-SNAPSHOT"/>
 	<property name="suffix" value="${tm.version}"/>
 
