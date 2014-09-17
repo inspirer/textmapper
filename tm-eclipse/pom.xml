@@ -14,7 +14,7 @@
     </prerequisites>
 
     <properties>
-        <tycho-version>0.18.0</tycho-version>
+        <tycho-version>0.21.0</tycho-version>
     </properties>
 
     <licenses>
@@ -85,15 +85,15 @@
 
     <profiles>
         <profile>
-            <id>kepler</id>
+            <id>luna</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
             <repositories>
                 <repository>
-                    <id>kepler</id>
+                    <id>luna</id>
                     <layout>p2</layout>
-                    <url>http://download.eclipse.org/releases/kepler/</url>
+                    <url>http://download.eclipse.org/releases/luna/</url>
                 </repository>
             </repositories>
         </profile>
