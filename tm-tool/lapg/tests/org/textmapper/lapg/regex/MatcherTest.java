@@ -96,6 +96,19 @@ public class MatcherTest {
 	}
 
 	@Test
+	public void testUnresolvedRefs() throws RegexParseException {
+		try {
+			new RegexMatcherImpl(RegexFacade.parse("tmp", "a{bcd}e"), createEmptyContext());
+			fail("no exception");
+		} catch (RegexParseException ex) {
+			assertEquals("cannot expand {bcd}, not found", ex.getMessage());
+			// TODO
+			assertEquals(0, ex.getErrorOffset());
+		}
+	}
+
+
+	@Test
 	public void testTwoCharRE() throws RegexParseException {
 		String oldItalicX = new String(Character.toChars(0x10317));
 		assertEquals(2, oldItalicX.length());

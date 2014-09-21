@@ -194,8 +194,10 @@ public class TMLexerCompiler {
 			nonSoft.add(classTerm);
 
 			RegexPart regex;
+			RegexMatcher matcher;
 			try {
 				regex = LapgCore.parse(s.getName(), lexeme.getPattern().getRegexp());
+				matcher = LapgCore.createMatcher(regex, context);
 			} catch (RegexParseException e) {
 				error(lexeme.getPattern(), e.getMessage());
 				continue;
@@ -205,7 +207,7 @@ public class TMLexerCompiler {
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
 					attributes.get(lexeme).getApplicableInStates(), priority,
 					null, lexeme);
-			classMatchers.put(liLexerRule, LapgCore.createMatcher(liLexerRule.getRegexp(), context));
+			classMatchers.put(liLexerRule, matcher);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
@@ -244,7 +246,8 @@ public class TMLexerCompiler {
 
 			if (lexeme.getPattern() == null) {
 				if (isSoft) {
-					error(lexeme, "soft lexeme rule `" + lexeme.getName().getID() + "' should have a regular expression");
+					error(lexeme, "soft lexeme rule `" + lexeme.getName().getID() +
+							"' should have a regular expression");
 				}
 				continue;
 			}
@@ -282,7 +285,8 @@ public class TMLexerCompiler {
 
 				final Terminal oldClass = softToClass.get(term);
 				if (oldClass != null && oldClass != softClass) {
-					error(lexeme, "redeclaration of soft class for `" + term.getName() + "': found " + softClass.getName()
+					error(lexeme, "redeclaration of soft class for `" + term.getName() + "': found " + softClass
+							.getName()
 							+ " instead of " + oldClass.getName());
 					continue;
 				} else if (oldClass == null) {
@@ -329,7 +333,8 @@ public class TMLexerCompiler {
 			if (applicableInStates.size() != l.getApplicableInStates().size()) {
 				return false;
 			}
-			Collection<LexerState> applicableInStatesSet = applicableInStates.size() > 4 ? new HashSet<LexerState>(applicableInStates) : applicableInStates;
+			Collection<LexerState> applicableInStatesSet = applicableInStates.size() > 4
+					? new HashSet<LexerState>(applicableInStates) : applicableInStates;
 			if (!(applicableInStatesSet.containsAll(l.getApplicableInStates()))) {
 				return false;
 			}

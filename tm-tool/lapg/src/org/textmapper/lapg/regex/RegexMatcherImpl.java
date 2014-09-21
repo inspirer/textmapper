@@ -27,14 +27,17 @@ class RegexMatcherImpl implements RegexMatcher {
 	private final RegexPart regex;
 	private State[] states;
 
-	RegexMatcherImpl(RegexPart regex, RegexContext context) {
+	RegexMatcherImpl(RegexPart regex, RegexContext context) throws RegexParseException {
 		this.regex = regex;
 		compile(context);
 	}
 
-	private void compile(RegexContext context) {
+	private void compile(RegexContext context) throws RegexParseException {
 		RegexpBuilder builder = new RegexpBuilder(context);
 		regex.accept(builder);
+		if (builder.getErrorMessage() != null) {
+			throw new RegexParseException(builder.getErrorMessage(), builder.getErrorOffset());
+		}
 		states = builder.getResult();
 	}
 
@@ -117,9 +120,19 @@ class RegexMatcherImpl implements RegexMatcher {
 
 		private List<State> states = new ArrayList<State>();
 		private final RegexContext context;
+		private String errorMessage = null;
+		private int errorOffset = -1;
 
 		public RegexpBuilder(RegexContext context) {
 			this.context = context;
+		}
+
+		public String getErrorMessage() {
+			return errorMessage;
+		}
+
+		public int getErrorOffset() {
+			return errorOffset;
 		}
 
 		public State[] getResult() {
@@ -189,7 +202,10 @@ class RegexMatcherImpl implements RegexMatcher {
 			String name = c.getName();
 			RegexPart inner = context.resolvePattern(name);
 			if (inner == null) {
-				throw new IllegalArgumentException("cannot expand {" + c.getName() + "}, not found");
+				errorMessage = "cannot expand {" + c.getName() + "}, not found";
+				// TODO
+				errorOffset = 0;
+				return null;
 			}
 			inner.accept(this);
 			return null;

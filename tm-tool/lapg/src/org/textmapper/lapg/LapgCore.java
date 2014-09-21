@@ -58,7 +58,10 @@ public class LapgCore {
 		return LexerGenerator.generate(g.getLexerStates(), g.getLexerRules(), g.getPatterns(), status);
 	}
 
-	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) {
+	/**
+	 * @throws RegexParseException if regex contains expand parts that cannot be resolved in the given context.
+	 */
+	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) throws RegexParseException {
 		return RegexFacade.createMatcher(regex, context);
 	}
 

@@ -61,7 +61,7 @@ public class RegexFacade {
 		return result.getRoot();
 	}
 
-	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) {
+	public static RegexMatcher createMatcher(RegexPart regex, RegexContext context) throws RegexParseException {
 		return new RegexMatcherImpl(regex, context);
 	}
 }
