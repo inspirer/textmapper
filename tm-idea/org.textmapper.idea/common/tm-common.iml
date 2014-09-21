@@ -9,7 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="TextMapper" level="project" />
+    <orderEntry type="library" exported="" name="Textmapper lib" level="project" />
   </component>
 </module>
 
