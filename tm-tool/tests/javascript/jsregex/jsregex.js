@@ -353,7 +353,7 @@ jsregex.Lexer.prototype = {
         if (state >= -1 && this.chr !== 0) {
           this.currOffset++;
           this.currColumn++;
-          if (this.chr == '\n') {
+          if (this.chr == 10) {
             this.currColumn = 1;
             this.currLine++;
           }
