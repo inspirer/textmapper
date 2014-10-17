@@ -44,12 +44,6 @@
 		</component>
 	</application-components>
 
-	<project-components>
-		<component>
-			<implementation-class>org.textmapper.idea.compiler.TMCompilerProjectComponent</implementation-class>
-		</component>
-	</project-components>
-
 	<actions>
 		<action id="org.textmapper.idea.actions.NewTMGrammar"
 				class="org.textmapper.idea.actions.NewTMGrammar"
