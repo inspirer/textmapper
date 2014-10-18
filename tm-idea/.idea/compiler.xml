@@ -17,7 +17,7 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
       <entry name="?*.ftl" />
-      <entry name="?*.s.ft" />
+      <entry name="?*.tm.ft" />
     </wildcardResourcePatterns>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="false">
@@ -26,4 +26,3 @@
     </annotationProcessing>
   </component>
 </project>
-

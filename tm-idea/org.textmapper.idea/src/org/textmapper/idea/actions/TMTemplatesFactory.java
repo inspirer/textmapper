@@ -35,7 +35,7 @@ import java.util.Properties;
 public class TMTemplatesFactory implements FileTemplateGroupDescriptorFactory {
 
 	@NonNls
-	public static final String GRAMMAR_FILE = "LapgGrammar.s";
+	public static final String GRAMMAR_FILE = "GrammarForJava.tm";
 	@NonNls
 	static final String NAME_TEMPLATE_PROPERTY = "NAME";
 	@NonNls
@@ -52,12 +52,15 @@ public class TMTemplatesFactory implements FileTemplateGroupDescriptorFactory {
 											 @NonNls String... parameters) throws IncorrectOperationException {
 		final FileTemplate template = FileTemplateManager.getInstance().getInternalTemplate(templateName);
 		Properties properties = new Properties(FileTemplateManager.getInstance().getDefaultProperties());
-		JavaTemplateUtil.setPackageNameAttribute(properties, directory);
+		properties.setProperty(FileTemplate.ATTRIBUTE_PACKAGE_NAME, directory.getName());
 		properties.setProperty(NAME_TEMPLATE_PROPERTY, name);
 		properties.setProperty("DOLLAR", "$");
 		properties.setProperty(NAME_CAP_TEMPLATE_PROPERTY, new DefaultStaticMethods().toFirstUpper(name));
 		for (int i = 0; i < parameters.length; i += 2) {
 			properties.setProperty(parameters[i], parameters[i + 1]);
+		}
+		for (TemplatesHandler handler : TemplatesHandler.EP_NAME.getExtensions()) {
+			handler.customizeProperties(properties, directory, name, fileName, templateName);
 		}
 		String text;
 		try {

@@ -21,6 +21,11 @@
 	<version>0.9.4</version>
 	<vendor url="http://textmapper.org/" email="egryaznov@gmail.com">Evgeny Gryaznov</vendor>
 
+	<depends>com.intellij.modules.lang</depends>
+	<depends>com.intellij.modules.platform</depends>
+	<depends optional="true" config-file="tm-java.xml">com.intellij.modules.java</depends>
+	<depends optional="true" config-file="tm-watcher.xml">com.intellij.plugins.watcher</depends>
+
 	<!-- 12.1.4 -->
 	<idea-version since-build="129.713"/>
 
@@ -52,8 +57,11 @@
 		</action>
 	</actions>
 
+	<extensionPoints>
+		<extensionPoint name="templatesHandler" interface="org.textmapper.idea.actions.TemplatesHandler"/>
+	</extensionPoints>
+
 	<extensions defaultExtensionNs="com.intellij">
-		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.4.jar"/>
 		<facetType implementation="org.textmapper.idea.facet.TMFacetType"/>
 		<framework.detector implementation="org.textmapper.idea.facet.TMFacetType$TMFacetDetector" />
 		<frameworkSupport implementation="org.textmapper.idea.facet.TMFacetTypeFrameworkSupportProvider"/>

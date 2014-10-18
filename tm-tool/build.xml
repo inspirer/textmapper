@@ -48,6 +48,8 @@
 		<property environment="env"/>
 		<fail message="Please, define IDEA_PATH environment variable" unless="env.IDEA_PATH"/>
 		<property name="ideaPath" location="${env.IDEA_PATH}"/>
+		<fail message="Please, define WEBSTORM_PATH environment variable" unless="env.WEBSTORM_PATH"/>
+		<property name="webstormPath" location="${env.WEBSTORM_PATH}"/>
 		<fail message="Please, define IDEA_PLUGINS environment variable" unless="env.IDEA_PLUGINS"/>
 		<property name="ideaPlugins" location="${env.IDEA_PLUGINS}"/>
 
@@ -190,30 +192,20 @@
 	</target>
 
 	<target name="compile-plugin" depends="rev, loadVars">
-		<path id="javac2.classpath">
-			<pathelement location="${ideaPath}/lib/javac2.jar"/>
-			<pathelement location="${ideaPath}/lib/jdom.jar"/>
-			<pathelement location="${ideaPath}/lib/asm.jar"/>
-			<pathelement location="${ideaPath}/lib/asm-all.jar"/>
-			<pathelement location="${ideaPath}/lib/asm4-all.jar"/>
-			<pathelement location="${ideaPath}/lib/jgoodies-forms.jar"/>
-		</path>
-		<taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="javac2.classpath"/>
-
 		<!-- tm-common.jar -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-common"/>
-		<javac2 destdir="${build.folder}/java.out/tm-idea-common" source="${source}" target="${target}"
+		<javac destdir="${build.folder}/java.out/tm-idea-common" source="${source}" target="${target}"
 				includeantruntime="false" includejavaruntime="true">
 			<src path="${tm.idea.dir}/org.textmapper.idea/common/src"/>
 			<classpath>
 				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 			</classpath>
-		</javac2>
+		</javac>
 
 		<!-- jps/tm-jps-plugin.jar -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-jps"/>
-		<javac2 destdir="${build.folder}/java.out/tm-idea-jps" source="${source}" target="${target}"
+		<javac destdir="${build.folder}/java.out/tm-idea-jps" source="${source}" target="${target}"
 				includeantruntime="false" includejavaruntime="true">
 			<src path="${tm.idea.dir}/org.textmapper.idea/jps-plugin/src"/>
 			<classpath>
@@ -221,15 +213,17 @@
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 			</classpath>
-		</javac2>
+		</javac>
 
 		<!-- tm-plugin.jar -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-plugin"/>
 		<copy includeemptydirs="false" todir="${build.folder}/java.out/tm-idea-plugin">
 			<fileset dir="${tm.idea.dir}/org.textmapper.idea" includes="META-INF/plugin.xml"/>
+			<fileset dir="${tm.idea.dir}/org.textmapper.idea" includes="META-INF/tm-java.xml"/>
+			<fileset dir="${tm.idea.dir}/org.textmapper.idea" includes="META-INF/tm-watcher.xml"/>
 			<fileset dir="${tm.idea.dir}/org.textmapper.idea/resources"/>
 		</copy>
-		<javac2 destdir="${build.folder}/java.out/tm-idea-plugin" source="${source}" target="${target}"
+		<javac destdir="${build.folder}/java.out/tm-idea-plugin" source="${source}" target="${target}"
 				includeantruntime="false" includejavaruntime="true">
 			<src path="${tm.idea.dir}/org.textmapper.idea/src"/>
 			<classpath>
@@ -237,7 +231,32 @@
 				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
 				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
 			</classpath>
-		</javac2>
+		</javac>
+
+		<!-- tm-java.jar -->
+		<mkdir dir="${build.folder}/java.out/tm-idea-java"/>
+		<javac destdir="${build.folder}/java.out/tm-idea-java" source="${source}" target="${target}"
+			   includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/tm-java/src"/>
+			<classpath>
+				<fileset dir="${ideaPath}/lib" includes="*.jar"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-plugin"/>
+			</classpath>
+		</javac>
+
+		<!-- tm-watcher.jar -->
+		<mkdir dir="${build.folder}/java.out/tm-idea-watcher"/>
+		<javac destdir="${build.folder}/java.out/tm-idea-watcher" source="${source}" target="${target}"
+			   includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/tm-watcher/src"/>
+			<classpath>
+				<fileset dir="${webstormPath}/lib" includes="*.jar"/>
+				<fileset dir="${webstormPath}/plugins/fileWatcher/lib" includes="*.jar"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-plugin"/>
+			</classpath>
+		</javac>
 	</target>
 
 	<target name="plugin" depends="compile-plugin">
@@ -269,6 +288,28 @@
 		</jar>
 		<jar destfile="${build.folder}/tm-idea/lib/tm-plugin.jar">
 			<fileset dir="${build.folder}/java.out/tm-idea-plugin"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
+		</jar>
+		<jar destfile="${build.folder}/tm-idea/lib/tm-java.jar">
+			<fileset dir="${build.folder}/java.out/tm-idea-java"/>
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-Date" value="${tm.build.date}"/>
+				<attribute name="Implementation-Vendor" value="Evgeny Gryaznov"/>
+				<attribute name="Implementation-Title" value="Textmapper for IntelliJ IDEA"/>
+				<attribute name="Implementation-Version" value="${tm.version}${tm.qualifier}, ${tm.revision}"/>
+			</manifest>
+			<metainf dir="${tm.idea.dir}" includes="LICENSE.txt"/>
+		</jar>
+		<jar destfile="${build.folder}/tm-idea/lib/tm-watcher.jar">
+			<fileset dir="${build.folder}/java.out/tm-idea-watcher"/>
 			<manifest>
 				<attribute name="Built-By" value="${user.name}"/>
 				<attribute name="Built-Date" value="${tm.build.date}"/>
