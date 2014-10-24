@@ -16,11 +16,9 @@
  */
 package org.textmapper.idea.actions;
 
+import com.intellij.ide.actions.CreateFileFromTemplateDialog;
 import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.psi.PsiDirectory;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Properties;
 
 public abstract class TemplatesHandler {
 
@@ -28,7 +26,5 @@ public abstract class TemplatesHandler {
 			ExtensionPointName.create("org.textmapper.idea.templatesHandler");
 
 	@Nullable
-	public void customizeProperties(Properties properties, PsiDirectory directory, final String name,
-									String fileName, String templateName) {
-	}
+	public abstract void addTemplates(CreateFileFromTemplateDialog.Builder builder);
 }

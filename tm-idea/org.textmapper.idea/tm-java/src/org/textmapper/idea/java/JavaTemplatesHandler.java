@@ -16,19 +16,16 @@
  */
 package org.textmapper.idea.java;
 
-import com.intellij.ide.fileTemplates.JavaTemplateUtil;
-import com.intellij.psi.PsiDirectory;
+import com.intellij.ide.actions.CreateFileFromTemplateDialog;
+import com.intellij.openapi.fileTypes.StdFileTypes;
 import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.actions.TemplatesHandler;
-
-import java.util.Properties;
 
 public class JavaTemplatesHandler extends TemplatesHandler {
 	@Override
 	@Nullable
-	public void customizeProperties(Properties properties, PsiDirectory directory, final String name,
-									String fileName, String templateName) {
-		JavaTemplateUtil.setPackageNameAttribute(properties, directory);
+	public void addTemplates(CreateFileFromTemplateDialog.Builder builder) {
+		builder.addKind("generates Java", StdFileTypes.JAVA.getIcon(), "GrammarForJava.tm");
 	}
 
 }

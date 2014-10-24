@@ -50,8 +50,8 @@
 	</application-components>
 
 	<actions>
-		<action id="org.textmapper.idea.actions.NewTMGrammar"
-				class="org.textmapper.idea.actions.NewTMGrammar"
+		<action id="org.textmapper.idea.actions.CreateTextmapperFileAction"
+				class="org.textmapper.idea.actions.CreateTextmapperFileAction"
 				text="Textmapper grammar" description="Creates new Textmapper grammar">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>

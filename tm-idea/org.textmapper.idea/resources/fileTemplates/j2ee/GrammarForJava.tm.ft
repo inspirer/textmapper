@@ -1,6 +1,7 @@
+#set ( $d = "$")
 language ${NAME}(java);
 
-prefix = "${NAME_CAP}"
+prefix = "${NAME.substring(0,1).toUpperCase()}${NAME.substring(1)}"
 #if (${PACKAGE_NAME} && $PACKAGE_NAME != "" )package = "${PACKAGE_NAME}"
 #end
 breaks = true
@@ -11,9 +12,9 @@ endpositions = "offset"
 
 :: lexer
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)  { $symbol = current(); }
-icon(Integer):  /-?[0-9]+/                            { $symbol = Integer.parseInt(current()); }
-scon(String):	/"([^\n\\"]|\\.)*"/		              { $symbol = unescape(current(), 1, token.length()-1); }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)  { ${d}symbol = current(); }
+icon(Integer):  /-?[0-9]+/                            { ${d}symbol = Integer.parseInt(current()); }
+scon(String):	/"([^\n\\"]|\\.)*"/                   { ${d}symbol = unescape(current(), 1, token.length()-1); }
 
 # soft keyword
 kw_object: /object/      (soft)
@@ -38,7 +39,7 @@ object ::=
 
 %%
 
-${DOLLAR}{template java_lexer.lexercode}
+${d}{template java_lexer.lexercode}
 private String unescape(String s, int start, int end) {
 	StringBuilder sb = new StringBuilder();
 	end = Math.min(end, s.length());
@@ -66,4 +67,4 @@ private String unescape(String s, int start, int end) {
 	}
 	return sb.toString();
 }
-${DOLLAR}{end}
+${d}{end}
