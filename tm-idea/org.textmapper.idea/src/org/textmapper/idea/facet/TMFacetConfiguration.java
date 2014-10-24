@@ -30,12 +30,10 @@ import org.jetbrains.annotations.Nls;
 
 import javax.swing.*;
 
-public class TMFacetConfiguration implements FacetConfiguration, PersistentStateComponent<TmConfigurationBean> {
-
-	private TmConfigurationBean tmConfigurationBean = new TmConfigurationBean();
+public class TmFacetConfiguration extends TmSettings implements FacetConfiguration, PersistentStateComponent<TmConfigurationBean> {
 
 	public FacetEditorTab[] createEditorTabs(FacetEditorContext editorContext, FacetValidatorsManager validatorsManager) {
-		return new FacetEditorTab[] { new LapgFacetEditorTab() };
+		return new FacetEditorTab[]{new LapgFacetEditorTab()};
 	}
 
 	@SuppressWarnings({"deprecation"})
@@ -58,7 +56,7 @@ public class TMFacetConfiguration implements FacetConfiguration, PersistentState
 
 	public class LapgFacetEditorTab extends FacetEditorTab {
 
-		private TMFacetEditorTabUI form;
+		private TmSettingsEditorUI form;
 
 		@Nls
 		public String getDisplayName() {
@@ -66,8 +64,8 @@ public class TMFacetConfiguration implements FacetConfiguration, PersistentState
 		}
 
 		public JComponent createComponent() {
-			if(form == null) {
-				form = new TMFacetEditorTabUI();
+			if (form == null) {
+				form = new TmSettingsEditorUI();
 			}
 			return form.getRootComponent();
 		}
@@ -78,13 +76,13 @@ public class TMFacetConfiguration implements FacetConfiguration, PersistentState
 
 		@Override
 		public void apply() throws ConfigurationException {
-			if(form != null) {
+			if (form != null) {
 				form.getData(tmConfigurationBean);
 			}
 		}
 
 		public void reset() {
-			if(form != null) {
+			if (form != null) {
 				form.setData(tmConfigurationBean);
 			}
 		}

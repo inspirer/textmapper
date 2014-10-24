@@ -22,10 +22,10 @@ import com.intellij.facet.ui.FacetBasedFrameworkSupportProvider;
 import com.intellij.ide.util.frameworkSupport.FrameworkVersion;
 import com.intellij.openapi.roots.ModifiableRootModel;
 
-public class TMFacetTypeFrameworkSupportProvider extends FacetBasedFrameworkSupportProvider {
+public class TmFacetTypeFrameworkSupportProvider extends FacetBasedFrameworkSupportProvider {
 
-	protected TMFacetTypeFrameworkSupportProvider() {
-		super(FacetTypeRegistry.getInstance().findFacetType(TMFacetType.ID));
+	protected TmFacetTypeFrameworkSupportProvider() {
+		super(FacetTypeRegistry.getInstance().findFacetType(TmFacetType.ID));
 	}
 
 	@Override

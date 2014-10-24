@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2012 Evgeny Gryaznov
+ * Copyright (c) 2010-2014 Evgeny Gryaznov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,18 @@
  */
 package org.textmapper.idea.facet;
 
-import com.intellij.facet.Facet;
-import com.intellij.facet.FacetType;
-import com.intellij.openapi.module.Module;
-import org.jetbrains.annotations.NotNull;
+public class TmSettings {
+	protected TmConfigurationBean tmConfigurationBean = new TmConfigurationBean();
 
-public class TmFacet extends Facet<TmFacetConfiguration> {
+	public boolean isVerbose() {
+		return tmConfigurationBean.verbose;
+	}
 
-	public TmFacet(@NotNull FacetType facetType, @NotNull Module module, @NotNull String name, @NotNull TmFacetConfiguration configuration, Facet underlyingFacet) {
-		super(facetType, module, name, configuration, underlyingFacet);
+	public boolean isExcludeDefaultTemplates() {
+		return tmConfigurationBean.excludeDefaultTemplates;
+	}
+
+	public String getTemplatesFolder() {
+		return tmConfigurationBean.templatesFolder;
 	}
 }

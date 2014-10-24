@@ -32,14 +32,16 @@ import com.intellij.psi.MultiplePsiFilesPerDocumentFileViewProvider;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.util.PlatformUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.textmapper.idea.compiler.TmCompilerTask;
 import org.textmapper.idea.compiler.TmCompilerUtil;
 import org.textmapper.idea.compiler.TmProcessingStatus;
-import org.textmapper.idea.facet.TMFacet;
-import org.textmapper.idea.facet.TMFacetType;
-import org.textmapper.idea.facet.TmConfigurationBean;
+import org.textmapper.idea.facet.TmFacet;
+import org.textmapper.idea.facet.TmFacetType;
+import org.textmapper.idea.facet.TmProjectSettings;
+import org.textmapper.idea.facet.TmSettings;
 import org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator.TMExtInput;
 import org.textmapper.idea.lang.syntax.compiler.TMExternalAnnotator.TMMessage;
 import org.textmapper.idea.lang.syntax.parser.TMPsiFile;
@@ -72,13 +74,18 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 		if (module == null) {
 			return null;
 		}
-		TMFacet facet = FacetManager.getInstance(module).getFacetByType(TMFacetType.ID);
-		if (facet == null) {
-			return null;
+		final Project project = file.getProject();
+		final TmSettings settings;
+		if (PlatformUtils.isIntelliJ()) {
+			TmFacet facet = FacetManager.getInstance(module).getFacetByType(TmFacetType.ID);
+			if (facet == null) {
+				return null;
+			}
+			settings = facet.getConfiguration();
+		} else {
+			settings = TmProjectSettings.getInstance(project);
 		}
-		final TmConfigurationBean config = facet.getConfiguration().getState();
 
-		Project project = file.getProject();
 		Document document = PsiDocumentManager.getInstance(project).getDocument(file);
 		if (document == null) {
 			return null;
@@ -87,7 +94,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 		if (StringUtil.isEmptyOrSpaces(fileContent)) {
 			return null;
 		}
-		return new TMExtInput(project, file, fileContent, config);
+		return new TMExtInput(project, file, fileContent, settings);
 	}
 
 	@Nullable
@@ -99,7 +106,9 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 						VfsUtil.virtualToIoFile(input.getFile().getVirtualFile()),
 						input.getFileContent(),
 						null,
-						input.getConfig().verbose, input.getConfig().excludeDefaultTemplates, input.getConfig().templatesFolder),
+						input.getSettings().isVerbose(),
+						input.getSettings().isExcludeDefaultTemplates(),
+						input.getSettings().getTemplatesFolder()),
 				result);
 		return result.getResult();
 	}
@@ -171,9 +180,9 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 		private final Project project;
 		private final PsiFile file;
 		private final String fileContent;
-		private final TmConfigurationBean config;
+		private final TmSettings config;
 
-		public TMExtInput(Project project, PsiFile file, String fileContent, TmConfigurationBean config) {
+		public TMExtInput(Project project, PsiFile file, String fileContent, TmSettings config) {
 			this.project = project;
 			this.file = file;
 			this.fileContent = fileContent;
@@ -192,7 +201,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 			return fileContent;
 		}
 
-		public TmConfigurationBean getConfig() {
+		public TmSettings getSettings() {
 			return config;
 		}
 	}

@@ -28,7 +28,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TMFacetEditorTabUI {
+public class TmSettingsEditorUI {
 
 	private JBCheckBox verboseOutputCheckBox = new JBCheckBox("Verbose compiler output");
 	private JBCheckBox noDefaultTemplatesCheckBox = new JBCheckBox("Do not use default templates");
@@ -44,7 +44,7 @@ public class TMFacetEditorTabUI {
 		TEMPLATES_CHOOSER_DESCRIPTOR.setDescription("Choose the directory with custom Textmapper templates");
 	}
 
-	public TMFacetEditorTabUI() {
+	public TmSettingsEditorUI() {
 		customTemplatesDir.addBrowseFolderListener(null, null, null, TEMPLATES_CHOOSER_DESCRIPTOR);
 		customTemplatesDir.setEnabled(useCustomTemplates.isSelected());
 		useCustomTemplates.addActionListener(new ActionListener() {

@@ -33,26 +33,26 @@ import org.textmapper.idea.lang.syntax.TMFileType;
 
 import javax.swing.*;
 
-public class TMFacetType extends FacetType<TMFacet, TMFacetConfiguration> {
+public class TmFacetType extends FacetType<TmFacet, TmFacetConfiguration> {
 
-	public static final FacetTypeId<TMFacet> ID = new FacetTypeId<TMFacet>("textmapper");
+	public static final FacetTypeId<TmFacet> ID = new FacetTypeId<TmFacet>("textmapper");
 
-	public static TMFacetType getInstance() {
-		return findInstance(TMFacetType.class);
+	public static TmFacetType getInstance() {
+		return findInstance(TmFacetType.class);
 	}
 
-	public TMFacetType() {
+	public TmFacetType() {
 		super(ID, TmFacetConstants.TM_FACET_ID, TmFacetConstants.TM_FACET_NAME);
 	}
 
 	@Override
-	public TMFacetConfiguration createDefaultConfiguration() {
-		return new TMFacetConfiguration();
+	public TmFacetConfiguration createDefaultConfiguration() {
+		return new TmFacetConfiguration();
 	}
 
 	@Override
-	public TMFacet createFacet(@NotNull Module module, String name, @NotNull TMFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
-		return new TMFacet(this, module, name, configuration, underlyingFacet);
+	public TmFacet createFacet(@NotNull Module module, String name, @NotNull TmFacetConfiguration configuration, @Nullable Facet underlyingFacet) {
+		return new TmFacet(this, module, name, configuration, underlyingFacet);
 	}
 
 	@Override
@@ -65,15 +65,15 @@ public class TMFacetType extends FacetType<TMFacet, TMFacetConfiguration> {
 		return TMIcons.TM_ICON;
 	}
 
-	public static class TMFacetDetector extends FacetBasedFrameworkDetector<TMFacet, TMFacetConfiguration> {
+	public static class TmFacetDetector extends FacetBasedFrameworkDetector<TmFacet, TmFacetConfiguration> {
 
-		private TMFacetDetector() {
+		private TmFacetDetector() {
 			super("textmapper");
 		}
 
 		@Override
-		public FacetType<TMFacet, TMFacetConfiguration> getFacetType() {
-			return TMFacetType.getInstance();
+		public FacetType<TmFacet, TmFacetConfiguration> getFacetType() {
+			return TmFacetType.getInstance();
 		}
 
 		@NotNull

@@ -62,9 +62,12 @@
 	</extensionPoints>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<facetType implementation="org.textmapper.idea.facet.TMFacetType"/>
-		<framework.detector implementation="org.textmapper.idea.facet.TMFacetType$TMFacetDetector" />
-		<frameworkSupport implementation="org.textmapper.idea.facet.TMFacetTypeFrameworkSupportProvider"/>
+		<facetType implementation="org.textmapper.idea.facet.TmFacetType"/>
+		<framework.detector implementation="org.textmapper.idea.facet.TmFacetType$TmFacetDetector"/>
+		<frameworkSupport implementation="org.textmapper.idea.facet.TmFacetTypeFrameworkSupportProvider"/>
+		<projectService serviceImplementation="org.textmapper.idea.facet.TmProjectSettings"/>
+		<projectConfigurable groupId="language" groupWeight="45" displayName="Textmapper"
+							 provider="org.textmapper.idea.facet.TmSettingsConfigurableProvider"/>
 		<fileTypeFactory implementation="org.textmapper.idea.TMFileTypesFactory"/>
 		<fileTemplateGroup implementation="org.textmapper.idea.actions.TMTemplatesFactory"/>
 
@@ -97,13 +100,13 @@
 		<itemPresentationProvider forClass="org.textmapper.idea.lang.syntax.psi.TmLexerState"
 								  implementationClass="org.textmapper.idea.lang.syntax.presentation.LexerStatePresentationProvider"/>
 		<extendWordSelectionHandler
-			implementation="org.textmapper.idea.lang.syntax.editor.RuleListSelectionHandlerBase" />
+				implementation="org.textmapper.idea.lang.syntax.editor.RuleListSelectionHandlerBase"/>
 		<findUsagesHandlerFactory
 				implementation="org.textmapper.idea.lang.syntax.findUsages.TMFindUsagesHandlerFactory"/>
 		<typedHandler
-			implementation="org.textmapper.idea.lang.syntax.editor.TmTypedHandler"/>
+				implementation="org.textmapper.idea.lang.syntax.editor.TmTypedHandler"/>
 		<enterHandlerDelegate
-			implementation="org.textmapper.idea.lang.syntax.editor.EnterAfterUnmatchedNonTermStartHandler"/>
+				implementation="org.textmapper.idea.lang.syntax.editor.EnterAfterUnmatchedNonTermStartHandler"/>
 		<renamePsiElementProcessor
 				implementation="org.textmapper.idea.lang.syntax.refactoring.RenameTMLexerStateProcessor"/>
 		<colorSettingsPage implementation="org.textmapper.idea.lang.syntax.TMColorsPage"/>
