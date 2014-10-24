@@ -83,7 +83,9 @@ public class TMPsiParser implements PsiParser {
 		while (!parser.markers.isEmpty()) {
 			parser.markers.pop().drop();
 		}
-
+		if (cannotRecover) {
+			parser.mark().error("	syntax error");
+		}
 		while (!builder.eof()) {
 			builder.advanceLexer();
 		}
