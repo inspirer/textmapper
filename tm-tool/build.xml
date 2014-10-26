@@ -52,9 +52,13 @@
 		<property name="webstormPath" location="${env.WEBSTORM_PATH}"/>
 		<fail message="Please, define IDEA_PLUGINS environment variable" unless="env.IDEA_PLUGINS"/>
 		<property name="ideaPlugins" location="${env.IDEA_PLUGINS}"/>
+		<fail message="Please, define WEBSTORM_PLUGINS environment variable" unless="env.WEBSTORM_PLUGINS"/>
+		<property name="webstormPlugins" location="${env.WEBSTORM_PLUGINS}"/>
 
 		<echo message="IDEA: ${ideaPath}"/>
 		<echo message="Plugins: ${ideaPlugins}"/>
+		<echo message="WebStorm: ${webstormPath}"/>
+		<echo message="WS Plugins: ${webstormPlugins}"/>
 	</target>
 
 	<target name="build" depends="rev">
@@ -203,6 +207,17 @@
 			</classpath>
 		</javac>
 
+		<!-- tm-common.jar (WebStorm compilation check) -->
+		<mkdir dir="${build.folder}/java.out/tm-idea-common-webstorm"/>
+		<javac destdir="${build.folder}/java.out/tm-idea-common-webstorm" source="${source}" target="${target}"
+			   includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/common/src"/>
+			<classpath>
+				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
+				<fileset dir="${webstormPath}/lib" includes="*.jar"/>
+			</classpath>
+		</javac>
+
 		<!-- jps/tm-jps-plugin.jar -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-jps"/>
 		<javac destdir="${build.folder}/java.out/tm-idea-jps" source="${source}" target="${target}"
@@ -233,6 +248,18 @@
 			</classpath>
 		</javac>
 
+		<!-- tm-plugin.jar (WebStorm compilation check) -->
+		<mkdir dir="${build.folder}/java.out/tm-idea-plugin-webstorm"/>
+		<javac destdir="${build.folder}/java.out/tm-idea-plugin-webstorm" source="${source}" target="${target}"
+			   includeantruntime="false" includejavaruntime="true">
+			<src path="${tm.idea.dir}/org.textmapper.idea/src"/>
+			<classpath>
+				<fileset dir="${tm.idea.dir}/org.textmapper.idea/lib" includes="*.jar"/>
+				<fileset dir="${webstormPath}/lib" includes="*.jar"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common-webstorm"/>
+			</classpath>
+		</javac>
+
 		<!-- tm-java.jar -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-java"/>
 		<javac destdir="${build.folder}/java.out/tm-idea-java" source="${source}" target="${target}"
@@ -245,7 +272,7 @@
 			</classpath>
 		</javac>
 
-		<!-- tm-watcher.jar -->
+		<!-- tm-watcher.jar (WebStorm specific, compiles against webstorm artifacts) -->
 		<mkdir dir="${build.folder}/java.out/tm-idea-watcher"/>
 		<javac destdir="${build.folder}/java.out/tm-idea-watcher" source="${source}" target="${target}"
 			   includeantruntime="false" includejavaruntime="true">
@@ -253,8 +280,8 @@
 			<classpath>
 				<fileset dir="${webstormPath}/lib" includes="*.jar"/>
 				<fileset dir="${webstormPath}/plugins/fileWatcher/lib" includes="*.jar"/>
-				<pathelement path="${build.folder}/java.out/tm-idea-common"/>
-				<pathelement path="${build.folder}/java.out/tm-idea-plugin"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-common-webstorm"/>
+				<pathelement path="${build.folder}/java.out/tm-idea-plugin-webstorm"/>
 			</classpath>
 		</javac>
 	</target>
@@ -322,10 +349,14 @@
 	</target>
 
 	<target name="install-plugin" depends="loadVars, plugin">
-		<property name="pluginPath" value="${ideaPlugins}"/>
-		<delete dir="${pluginPath}/textmapper" quiet="true"/>
-		<echo message="Installing plug-in into ${pluginPath}/textmapper"/>
-		<copy includeemptydirs="false" todir="${pluginPath}/textmapper/">
+		<echo message="Installing plug-in into ${ideaPlugins}/textmapper"/>
+		<delete dir="${ideaPlugins}/textmapper" quiet="true"/>
+		<copy includeemptydirs="false" todir="${ideaPlugins}/textmapper/">
+			<fileset dir="${build.folder}/tm-idea" includes="lib/**"/>
+		</copy>
+		<echo message="Installing plug-in into ${webstormPlugins}/textmapper"/>
+		<delete dir="${webstormPlugins}/textmapper" quiet="true"/>
+		<copy includeemptydirs="false" todir="${webstormPlugins}/textmapper/">
 			<fileset dir="${build.folder}/tm-idea" includes="lib/**"/>
 		</copy>
 	</target>
