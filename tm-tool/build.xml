@@ -169,8 +169,6 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser"/>
 		<echo message="Action parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser/action"/>
-		<echo message="Rewrite test parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/compiler/input"/>
 		<echo message="Regexp parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/lapg/src/org/textmapper/lapg/regex"/>
 		<echo message="Lapg templates parser"/>

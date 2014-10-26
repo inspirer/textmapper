@@ -79,12 +79,6 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testRewriteTm() {
-		bootstrap("tests/org/textmapper/tool/compiler/input", "rewrite.tm", new String[0],
-				new String[0], 0);
-	}
-
-	@Test
 	public void testXmlTm() {
 		bootstrap("../templates/src/org/textmapper/xml", "xml.tm", new String[0], new String[]{"XmlParser.java",
 				"XmlTree.java", "XmlLexer.java"}, 0);
