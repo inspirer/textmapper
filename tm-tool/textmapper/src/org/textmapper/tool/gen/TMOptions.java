@@ -29,7 +29,7 @@ public class TMOptions {
 	private int debug;
 
 	private String input;
-	private String outputFolder;
+	private String outputDir;
 	private String templateName;
 
 	private final List<String> includeFolders;
@@ -40,7 +40,7 @@ public class TMOptions {
 	public TMOptions() {
 		this.debug = 0;
 		this.input = null;
-		this.outputFolder = null;
+		this.outputDir = null;
 		this.templateName = null;
 		this.includeFolders = new LinkedList<String>();
 		this.useDefaultTemplates = true;
@@ -55,13 +55,12 @@ public class TMOptions {
 		this.input = input;
 	}
 
-	public String getOutputFolder() {
-		// FIXME not used
-		return outputFolder;
+	public String getOutputDirectory() {
+		return outputDir;
 	}
 
-	public void setOutputFolder(String outputFolder) {
-		this.outputFolder = outputFolder;
+	public void setOutputDirectory(String outputDir) {
+		this.outputDir = outputDir;
 	}
 
 	public String getTemplateName() {
@@ -111,8 +110,9 @@ public class TMOptions {
 		"  -d,  --debug                   debug info\n" +
 		"  -e,  --extended-debug          extended debug info\n" +
 		"  -x,  --no-default-templates    removes default templates from engine\n" +
-		"  -o folder, --output=folder     target folder\n" +
-		"  -i folder, --include=folder    adds folder (or semicolon separated folder list) to the lapg.templates stack\n" +
+		"  -o dir, --output=dir           target directory\n" +
+		"  -i dir, --include=dir          adds directory (or semicolon separated directory list) " +
+		"                                 to the textmapper.templates stack\n" +
 		"  -t templateId, --template=id   use template for generation\n" +
 		"  key=val                        any generation option\n";
 
@@ -145,35 +145,35 @@ public class TMOptions {
 				int optionId = optionsHash.containsKey(option) ? optionsHash.get(option) : 0;
 				boolean hasValue = (optionId & HAS_VALUE) != 0;
 				if (optionId == 0 || equalIndex >= 0 && !hasValue) {
-					errorStream.println("lapg: invalid option " + args[i]);
+					errorStream.println("textmapper: invalid option " + args[i]);
 					return null;
 				}
 				if (hasValue && (equalIndex < 0 && i + 1 == args.length || equalIndex + 1 == args[i].length())) {
-					errorStream.println("lapg: no value for option " + args[i]);
+					errorStream.println("textmapper: no value for option " + args[i]);
 					return null;
 				}
 				if (usedOptions.contains(optionId)) {
-					errorStream.println("lapg: option cannot be used twice " + args[i]);
+					errorStream.println("textmapper: option cannot be used twice " + args[i]);
 					return null;
 				}
 				if ((optionId & MULTI_VALUE) == 0) {
 					usedOptions.add(optionId);
 				}
-				setOption(opts, optionId, hasValue ? (equalIndex >= 0 ? args[i].substring(equalIndex + 1) : args[++i])
-						: null);
+				setOption(opts, optionId,
+						hasValue ? (equalIndex >= 0 ? args[i].substring(equalIndex + 1) : args[++i]) : null);
 
 			} else if (equalIndex >= 0) {
 				String key = args[i].substring(0, equalIndex);
 				String value = args[i].substring(equalIndex + 1);
 				if (opts.getAdditionalOptions().containsKey(key)) {
-					errorStream.println("lapg: key is used twice: " + key);
+					errorStream.println("textmapper: key is used twice: " + key);
 					return null;
 				}
 				opts.getAdditionalOptions().put(key, value);
 
 			} else {
 				if (usedOptions.contains(OPT_INPUT)) {
-					errorStream.println("lapg: should be only one input in arguments");
+					errorStream.println("textmapper: should be only one input in arguments");
 					return null;
 				}
 				usedOptions.add(OPT_INPUT);
@@ -205,7 +205,7 @@ public class TMOptions {
 				opts.setTemplateName(value);
 				break;
 			case OPT_OUTPUT:
-				opts.setOutputFolder(value);
+				opts.setOutputDirectory(value);
 				break;
 		}
 	}

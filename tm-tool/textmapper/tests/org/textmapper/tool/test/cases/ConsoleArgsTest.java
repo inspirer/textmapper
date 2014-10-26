@@ -73,7 +73,7 @@ public class ConsoleArgsTest {
 		TMOptions lo = TMOptions.parseArguments(new String[0], failingStream);
 		assertNotNull(lo);
 		assertEquals(null, lo.getInput());
-		assertNull(lo.getOutputFolder());
+		assertNull(lo.getOutputDirectory());
 		assertEquals(0, lo.getDebug());
 		assertNull(lo.getTemplateName());
 		assertEquals(0, lo.getAdditionalOptions().size());
@@ -101,7 +101,7 @@ public class ConsoleArgsTest {
 
 	@Test
 	public void testInput2() {
-		expectError("lapg: should be only one input in arguments\n");
+		expectError("textmapper: should be only one input in arguments\n");
 		TMOptions lo = TMOptions.parseArguments("synt2 synt1".split(" "), System.err);
 		assertNull(lo);
 		closeError();
@@ -109,17 +109,17 @@ public class ConsoleArgsTest {
 
 	@Test
 	public void testTwiceArg() {
-		expectError("lapg: option cannot be used twice -e\n");
+		expectError("textmapper: option cannot be used twice -e\n");
 		TMOptions lo = TMOptions.parseArguments("-e -e".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: option cannot be used twice -x\n");
+		expectError("textmapper: option cannot be used twice -x\n");
 		lo = TMOptions.parseArguments("--no-default-templates -x".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: option cannot be used twice --no-default-templates\n");
+		expectError("textmapper: option cannot be used twice --no-default-templates\n");
 		lo = TMOptions.parseArguments("-x --no-default-templates".split(" "), System.err);
 		assertNull(lo);
 		closeError();
@@ -127,32 +127,32 @@ public class ConsoleArgsTest {
 
 	@Test
 	public void testError() {
-		expectError("lapg: no value for option -o\n");
+		expectError("textmapper: no value for option -o\n");
 		TMOptions lo = TMOptions.parseArguments("-o".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: no value for option --output\n");
+		expectError("textmapper: no value for option --output\n");
 		lo = TMOptions.parseArguments("--output".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: no value for option --output=\n");
+		expectError("textmapper: no value for option --output=\n");
 		lo = TMOptions.parseArguments("--output=".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: invalid option --output1=we\n");
+		expectError("textmapper: invalid option --output1=we\n");
 		lo = TMOptions.parseArguments("--output1=we".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: invalid option -q\n");
+		expectError("textmapper: invalid option -q\n");
 		lo = TMOptions.parseArguments("-q".split(" "), System.err);
 		assertNull(lo);
 		closeError();
 
-		expectError("lapg: key is used twice: a\n");
+		expectError("textmapper: key is used twice: a\n");
 		lo = TMOptions.parseArguments("a=2 a=5".split(" "), System.err);
 		assertNull(lo);
 		closeError();
@@ -163,7 +163,7 @@ public class ConsoleArgsTest {
 		TMOptions lo = TMOptions.parseArguments("-e -x -o outputY -i folder1;folder2 -i folder3 -t java2 a=5 b=6 syntax.g".split(" "), failingStream);
 		assertNotNull(lo);
 		assertEquals("syntax.g", lo.getInput());
-		assertEquals("outputY", lo.getOutputFolder());
+		assertEquals("outputY", lo.getOutputDirectory());
 		assertEquals(TMOptions.DEBUG_TABLES, lo.getDebug());
 		assertEquals("java2", lo.getTemplateName());
 		assertEquals(3, lo.getIncludeFolders().size());

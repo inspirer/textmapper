@@ -72,6 +72,13 @@ public class Tool {
 			return;
 		}
 
+		File outputDir = options.getOutputDirectory() == null ? null : new File(options.getOutputDirectory());
+		if (outputDir != null && !outputDir.isDirectory()) {
+			System.err.println("textmapper: not a directory: " + options.getOutputDirectory());
+			System.exit(1);
+			return;
+		}
+
 		if (options.getInput() == null) {
 			File[] grammars = new File(".").listFiles(new FileFilter() {
 				@Override
@@ -117,9 +124,12 @@ public class Tool {
 		boolean success;
 		try {
 			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
-			FileBasedStrategy strategy = new FileBasedStrategy(null);
+			FileBasedStrategy strategy = new FileBasedStrategy(outputDir);
 
 			success = new TMGenerator(options, status, strategy).compileGrammar(input, false);
+			if (status.hasErrors) {
+				success = false;
+			}
 		} finally {
 			status.dispose();
 		}
@@ -140,11 +150,16 @@ public class Tool {
 		static final String OUT_TABLES = "tables";
 
 		private PrintStream debug, warn;
+		private boolean hasErrors = false;
 
 		public ConsoleStatus(int debuglev) {
 			super(debuglev >= TMOptions.DEBUG_TABLES, debuglev >= TMOptions.DEBUG_AMBIG);
 			debug = null;
 			warn = null;
+		}
+
+		public boolean hasErrors() {
+			return hasErrors;
 		}
 
 		private PrintStream openFile(String name) {
@@ -160,6 +175,7 @@ public class Tool {
 		public void handle(int kind, String text) {
 			if (kind == KIND_ERROR || kind == KIND_FATAL) {
 				System.err.print(text);
+				hasErrors = true;
 			} else if (kind == KIND_INFO) {
 				System.out.print(text);
 			} else if (kind == KIND_DEBUG) {
