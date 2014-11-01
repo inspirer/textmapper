@@ -88,7 +88,7 @@ public class RegexDefLexer {
 	private int currOffset;
 
 	private void quantifierReady() {
-		if (chr == 0) {
+		if (chr == -1) {
 			if (state == 1) state = 0;
 			return;
 		}
@@ -125,7 +125,7 @@ public class RegexDefLexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -133,7 +133,7 @@ public class RegexDefLexer {
 	}
 
 	protected void advance() throws IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
@@ -152,7 +152,7 @@ public class RegexDefLexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -192,7 +192,7 @@ public class RegexDefLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 33, 33, 1, 1, 33, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 33, 33, 1, 1, 33, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 22, 1, 23, 25, 17, 18, 20, 21, 16, 32,
 		35, 35, 35, 35, 35, 35, 35, 35, 31, 31, 26, 1, 1, 1, 1, 19,
@@ -257,10 +257,8 @@ public class RegexDefLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 
 	public LapgSymbol next() throws IOException {
@@ -279,7 +277,7 @@ public class RegexDefLexer {
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -288,7 +286,7 @@ public class RegexDefLexer {
 					tokenOffset = -1;
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -305,7 +303,7 @@ public class RegexDefLexer {
 						l = 0;
 					}
 					charOffset = l;
-					chr = l < datalen ? data[l++] : 0;
+					chr = l < datalen ? data[l++] : -1;
 					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 							Character.isLowSurrogate(data[l])) {
 						chr = Character.toCodePoint((char) chr, data[l++]);

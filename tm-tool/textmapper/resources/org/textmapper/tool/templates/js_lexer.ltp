@@ -19,7 +19,7 @@ ${opts.module}.Lexer.prototype = {
 	reset: function(text) {
 		this.text = text;
 		this.state = 0;
-		this.chr = text.length > 0 ? text.charCodeAt(0) : 0;
+		this.chr = text.length > 0 ? text.charCodeAt(0) : -1;
 		this.offset = 1;
 		this.token = "";
 	},
@@ -30,7 +30,7 @@ ${call lexerTables-}
 		if (chr >= 0 && chr < ${lex.char2no.length}) {
 			return this.tmCharClass[chr];
 		}
-		return 1;
+		return chr === -1 ? 0 : 1;
 	},
 
 ${call createToken-}
@@ -52,7 +52,7 @@ ${end-}
 
 			for (state = ${self->tmStateMapExists() ? 'this.tmStateMap[this.state]' : 'this.state'}; state >= 0;) {
 				state = this.tmGoto[state * this.tmClassesCount + this.mapCharacter(this.chr)];
-				if (state == -1 && this.chr === 0) {
+				if (state == -1 && this.chr === -1) {
 ${if opts.endpositions.contains('offset')-}
 					lapg_n.endoffset = this.currOffset;
 ${end-}
@@ -70,7 +70,7 @@ ${if opts.positions.contains('offset')-}
 ${end-}
 					return lapg_n;
 				}
-				if (state >= -1 && this.chr !== 0) {
+				if (state >= -1 && this.chr !== -1) {
 ${util.shiftRight(self->advanceChar(), 3)-}
 				}
 			}
@@ -91,7 +91,7 @@ ${end-}
 			}
 
 			this.token = this.text.slice(tokenStart, ${if opts.positions.contains('offset')}this.currOffset${
-						else}this.chr == 0 && this.offset == this.text.length ? this.offset : this.offset - 1${end});
+						else}this.chr === -1 && this.offset == this.text.length ? this.offset : this.offset - 1${end});
 			if (state == -1) {
 				this.errorHandler("invalid lexeme at line " + this.currLine + ": `" + this.token + "`, skipped"${call js.err_location('lapg_n', 'this')});
 				lapg_n.symbol = -1;
@@ -186,7 +186,7 @@ ${if opts.positions.contains('column') || opts.endpositions.contains('column')-}
 ${end-}
 			this.currLine++;
 		}
-		this.chr = this.offset < this.text.length ? this.text.charCodeAt(this.offset++) : 0;
+		this.chr = this.offset < this.text.length ? this.text.charCodeAt(this.offset++) : -1;
 ${end}
 
 

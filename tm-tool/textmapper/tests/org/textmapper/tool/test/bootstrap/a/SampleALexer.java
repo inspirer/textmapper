@@ -93,7 +93,7 @@ public class SampleALexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -101,7 +101,7 @@ public class SampleALexer {
 	}
 
 	protected void advance() throws IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 		currOffset += l - charOffset;
 		currColumn += l - charOffset;
 		if (chr == '\n') {
@@ -122,7 +122,7 @@ public class SampleALexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -170,7 +170,7 @@ public class SampleALexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 1, 1, 10, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 10, 10, 1, 1, 10, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 1, 1, 1, 1, 1, 1,
@@ -210,10 +210,8 @@ public class SampleALexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 
 	public LapgSymbol next() throws IOException {
@@ -233,7 +231,7 @@ public class SampleALexer {
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.endline = currLine;
 					lapg_n.endcolumn = currColumn;
@@ -244,7 +242,7 @@ public class SampleALexer {
 					tokenOffset = -1;
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
 					currColumn += l - charOffset;
 					if (chr == '\n') {
@@ -263,7 +261,7 @@ public class SampleALexer {
 						l = 0;
 					}
 					charOffset = l;
-					chr = l < datalen ? data[l++] : 0;
+					chr = l < datalen ? data[l++] : -1;
 					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 							Character.isLowSurrogate(data[l])) {
 						chr = Character.toCodePoint((char) chr, data[l++]);

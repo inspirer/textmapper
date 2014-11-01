@@ -167,6 +167,8 @@
 	<target name="syntax">
 		<echo message="Textmapper parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser"/>
+		<echo message="Importer"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/importer"/>
 		<echo message="Action parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/src/org/textmapper/tool/parser/action"/>
 		<echo message="Regexp parser"/>
@@ -189,6 +191,8 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
 		<echo message="unicode test parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
+		<echo message="set test lexer"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/set"/>
 		<echo message="js lexer"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/tests/javascript/lexer"/>
 	</target>

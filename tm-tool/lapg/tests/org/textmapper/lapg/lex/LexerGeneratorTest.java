@@ -52,7 +52,7 @@ public class LexerGeneratorTest {
 	};
 
 	@Test
-	public void testSimple() throws RegexParseException {
+	public void testSimple() {
 		checkMatch("axy", "ayy", false);
 		checkMatch("axy", "axy", true);
 		checkMatch("abcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyz", true);
@@ -81,7 +81,18 @@ public class LexerGeneratorTest {
 	}
 
 	@Test
-	public void testSpecialChars() throws RegexParseException {
+	public void testZeroCharacter() {
+		// \0
+		checkMatch("\\000", "\0", true);
+		checkMatch("\\000", "\1", false);
+		checkMatch("\\x00", "\0", true);
+		checkMatch("\0|\1", "\0", true);
+		checkMatch("\0|\1", "\1", true);
+		checkMatch("\0|\1", "\2", false);
+	}
+
+	@Test
+	public void testSpecialChars() {
 		checkMatch("\\a", "\\a", false);
 		checkMatch("\\a", "\007", true);
 		checkMatch("\\b", "\b", true);

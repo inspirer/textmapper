@@ -76,7 +76,7 @@ public class SetLexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -84,7 +84,7 @@ public class SetLexer {
 	}
 
 	protected void advance() throws IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
@@ -103,7 +103,7 @@ public class SetLexer {
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -143,7 +143,7 @@ public class SetLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -181,10 +181,8 @@ public class SetLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 
 	public LapgSymbol next() throws IOException {
@@ -203,7 +201,7 @@ public class SetLexer {
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -212,7 +210,7 @@ public class SetLexer {
 					tokenOffset = -1;
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
@@ -229,7 +227,7 @@ public class SetLexer {
 						l = 0;
 					}
 					charOffset = l;
-					chr = l < datalen ? data[l++] : 0;
+					chr = l < datalen ? data[l++] : -1;
 					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 							Character.isLowSurrogate(data[l])) {
 						chr = Character.toCodePoint((char) chr, data[l++]);

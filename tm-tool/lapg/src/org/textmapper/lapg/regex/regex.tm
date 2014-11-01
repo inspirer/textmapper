@@ -152,7 +152,7 @@ ${end}
 
 ${template java_lexer.lexercode}
 private void quantifierReady() {
-	if (chr == 0) {
+	if (chr == -1) {
 		if (state == 1) state = 0;
 		return;
 	}

@@ -34,13 +34,13 @@ lexer1.Lexer.prototype = {
   reset: function(text) {
     this.text = text;
     this.state = 0;
-    this.chr = text.length > 0 ? text.charCodeAt(0) : 0;
+    this.chr = text.length > 0 ? text.charCodeAt(0) : -1;
     this.offset = 1;
     this.token = "";
   },
 
   tmCharClass: [
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 12, 3, 1, 1, 12, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 12, 3, 1, 1, 12, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     12, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
     11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 1, 1, 1, 1, 1, 1,
@@ -74,7 +74,7 @@ lexer1.Lexer.prototype = {
     if (chr >= 0 && chr < 128) {
       return this.tmCharClass[chr];
     }
-    return 1;
+    return chr === -1 ? 0 : 1;
   },
 
   createToken: function(lapg_n, ruleIndex) {
@@ -125,7 +125,7 @@ lexer1.Lexer.prototype = {
 
       for (state = this.tmStateMap[this.state]; state >= 0;) {
         state = this.tmGoto[state * this.tmClassesCount + this.mapCharacter(this.chr)];
-        if (state == -1 && this.chr === 0) {
+        if (state == -1 && this.chr === -1) {
           lapg_n.endoffset = this.currOffset;
           lapg_n.endline = this.currLine;
           lapg_n.endcolumn = this.currColumn;
@@ -135,14 +135,14 @@ lexer1.Lexer.prototype = {
           lapg_n.offset = this.currOffset;
           return lapg_n;
         }
-        if (state >= -1 && this.chr !== 0) {
+        if (state >= -1 && this.chr !== -1) {
           this.currOffset++;
           this.currColumn++;
           if (this.chr == 10) {
             this.currColumn = 1;
             this.currLine++;
           }
-          this.chr = this.offset < this.text.length ? this.text.charCodeAt(this.offset++) : 0;
+          this.chr = this.offset < this.text.length ? this.text.charCodeAt(this.offset++) : -1;
         }
       }
       lapg_n.endoffset = this.currOffset;

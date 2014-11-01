@@ -150,7 +150,7 @@ public class BisonLexer {
 		this.data = input;
 		tokenOffset = l = 0;
 		charOffset = l;
-		chr = l < data.length ? data[l++] : 0;
+		chr = l < data.length ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -158,13 +158,13 @@ public class BisonLexer {
 	}
 
 	protected void advance() throws IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
 			currLine++;
 		}
 		charOffset = l;
-		chr = l < data.length ? data[l++] : 0;
+		chr = l < data.length ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -204,7 +204,7 @@ public class BisonLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 51, 45, 51, 51, 44, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 51, 45, 51, 51, 44, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		51, 1, 9, 1, 1, 13, 1, 4, 1, 1, 11, 1, 1, 37, 46, 18,
 		3, 50, 50, 50, 50, 50, 50, 50, 47, 47, 2, 15, 10, 1, 12, 42,
@@ -406,10 +406,8 @@ public class BisonLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 
 	public LapgSymbol next() throws IOException {
@@ -423,7 +421,7 @@ public class BisonLexer {
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 					lapg_n.endoffset = currOffset;
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
@@ -431,13 +429,13 @@ public class BisonLexer {
 					lapg_n.offset = currOffset;
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
 					if (chr == '\n') {
 						currLine++;
 					}
 					charOffset = l;
-					chr = l < data.length ? data[l++] : 0;
+					chr = l < data.length ? data[l++] : -1;
 					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 							Character.isLowSurrogate(data[l])) {
 						chr = Character.toCodePoint((char) chr, data[l++]);

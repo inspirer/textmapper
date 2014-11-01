@@ -70,7 +70,7 @@ ${if opts.lexerInput == 'custom'-}
 ${end-}
 
 	protected void advance() throws java.io.@IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 ${self->advanceChar(false, false)-}
 	}
 
@@ -150,7 +150,7 @@ ${end-}
 
 			for (state = ${self->tmStateMapExists() ? 'tmStateMap[this.state]' : 'this.state'}; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 ${if opts.endpositions.contains('offset')-}
 					lapg_n.endoffset = currOffset;
 ${end-}
@@ -171,7 +171,7 @@ ${if opts.lexerInput == 'stream'-}
 ${end-}
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 ${util.shiftRight(self->advanceChar(true, false), 3)-}
 				}
 			}
@@ -239,10 +239,8 @@ ${end}
 
 ${template mapCharacter}
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < ${lex.char2no.length}) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < ${lex.char2no.length}) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 ${end}
 
@@ -344,7 +342,7 @@ ${end-}
 		chr = nextChar();
 ${else if opts.lexerInput == 'buffer'-}
 		charOffset = l;
-		chr = l < data.length ? data[l++] : 0;
+		chr = l < data.length ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
@@ -371,7 +369,7 @@ ${end-}
 			l = 0;
 		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : 0;
+		chr = l < datalen ? data[l++] : -1;
 		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);

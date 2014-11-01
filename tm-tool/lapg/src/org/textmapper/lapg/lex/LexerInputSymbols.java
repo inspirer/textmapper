@@ -41,9 +41,8 @@ public class LexerInputSymbols {
 		this.character2symbol = new int[128];
 		this.setpool = new ArrayList<CharacterSet>();
 
-		// 0 - eoi, 1 - any
+		// 0 - eoi (reserved), 1 - any
 		Arrays.fill(character2symbol, 1);
-		character2symbol[0] = 0;
 		symbolCount = 2;
 		sealed = false;
 	}
@@ -61,7 +60,7 @@ public class LexerInputSymbols {
 		if (sealed) {
 			throw new IllegalStateException();
 		}
-		if (ch <= 0 || ch > MAX_UCHAR) {
+		if (ch < 0 || ch > MAX_UCHAR) {
 			return -1;
 		}
 		ensureCharacter(ch);
@@ -73,7 +72,7 @@ public class LexerInputSymbols {
 
 	private void ensureCharacter(int ch) {
 		assert ch >= 0 && ch <= MAX_UCHAR;
-		if (character2symbol.length <= ch) {
+		if (ch >= character2symbol.length) {
 			int newsize = character2symbol.length * 2;
 			while (newsize <= ch) {
 				newsize *= 2;

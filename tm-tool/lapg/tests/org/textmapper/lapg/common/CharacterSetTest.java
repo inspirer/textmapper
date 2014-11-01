@@ -63,6 +63,17 @@ public class CharacterSetTest {
 		b.clear();
 		b.addSymbol(1);
 		assertEquals("[1]", b.create().toString());
+
+		b.clear();
+		b.addSymbol(0);
+		assertEquals("[0]", b.create().toString());
+
+		b.clear();
+		b.addRange(0, 10);
+		characterSet = b.create();
+		assertEquals("[0-10]", characterSet.toString());
+		assertTrue(characterSet.contains(0));
+		assertTrue(characterSet.contains(1));
 	}
 
 	@Test
@@ -70,6 +81,7 @@ public class CharacterSetTest {
 		CharacterSetImpl.Builder b = new CharacterSetImpl.Builder();
 
 		b.clear();
+		b.addSymbol(0);
 		b.addRange('a', 'z');
 		b.addSymbol('_');
 		CharacterSet set = b.create();
@@ -79,7 +91,7 @@ public class CharacterSetTest {
 		b.addSymbol('e');
 		b.addSymbol('c');
 		CharacterSet set2 = b.create();
-		assertEquals("[95,97-98,100,102-104,106-122]", b.subtract(set, set2).toString());
+		assertEquals("[0,95,97-98,100,102-104,106-122]", b.subtract(set, set2).toString());
 	}
 
 	@Test
@@ -159,6 +171,8 @@ public class CharacterSetTest {
 		subtract(new int[]{100, 200}, new int[]{1, 1, 50, 50, 150, 151, 250, 250}, "[100-149,152-200]");
 
 		subtract(new int[]{7, 7, 14, 14, 21, 21, 55, 55}, new int[]{1, 100}, "[]");
+		subtract(new int[]{0, 0, 55, 55}, new int[]{1, 100}, "[0]");
+		subtract(new int[]{0, 0, 55, 55}, new int[]{60, 100}, "[0,55]");
 	}
 
 	@Test

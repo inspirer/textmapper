@@ -21,10 +21,8 @@ ${end}
 
 ${template mapCharacter-}
 	private int mapCharacter(int chr) {
-		if (chr >= 0 && chr < tmCharClass.length) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < tmCharClass.length) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 ${end}
 

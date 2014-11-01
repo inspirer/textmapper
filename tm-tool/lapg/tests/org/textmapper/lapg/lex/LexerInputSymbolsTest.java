@@ -31,7 +31,6 @@ public class LexerInputSymbolsTest {
 
 		int[] expected = new int[128];
 		Arrays.fill(expected, 1);
-		expected[0] = 0;
 		assertArrayEquals(expected, is.getCharacterMap());
 
 		assertEquals(2, is.getSymbolCount());
@@ -45,7 +44,6 @@ public class LexerInputSymbolsTest {
 
 		int[] expected = new int[128];
 		Arrays.fill(expected, 1);
-		expected[0] = 0;
 		expected[1] = 2;
 		assertArrayEquals(expected, is.getCharacterMap());
 
@@ -79,7 +77,7 @@ public class LexerInputSymbolsTest {
 		assertEquals(-1, new LexerInputSymbols().addCharacter(Integer.MAX_VALUE));
 		assertEquals(-1, new LexerInputSymbols().addCharacter(Integer.MIN_VALUE));
 		assertEquals(2, new LexerInputSymbols().addCharacter(LexerInputSymbols.MAX_UCHAR));
-		assertEquals(-1, new LexerInputSymbols().addCharacter(0));
+		assertEquals(2, new LexerInputSymbols().addCharacter(0));
 		assertEquals(2, new LexerInputSymbols().addCharacter(1));
 	}
 }

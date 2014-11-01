@@ -71,7 +71,7 @@ public abstract class SActionLexer {
 	protected abstract int nextChar() throws IOException;
 
 	protected void advance() throws IOException {
-		if (chr == 0) return;
+		if (chr == -1) return;
 		if (chr == '\n') {
 			currLine++;
 		}
@@ -116,7 +116,7 @@ public abstract class SActionLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 6, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -155,10 +155,8 @@ public abstract class SActionLexer {
 	}
 
 	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < 128) {
-			return tmCharClass[chr];
-		}
-		return 1;
+		if (chr >= 0 && chr < 128) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
 	}
 
 	public LapgSymbol next() throws IOException {
@@ -176,14 +174,14 @@ public abstract class SActionLexer {
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
-				if (state == -1 && chr == 0) {
+				if (state == -1 && chr == -1) {
 					lapg_n.symbol = 0;
 					lapg_n.value = null;
 					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset);
 					lapg_n.offset = currOffset;
 					return lapg_n;
 				}
-				if (state >= -1 && chr != 0) {
+				if (state >= -1 && chr != -1) {
 					if (chr == '\n') {
 						currLine++;
 					}
