@@ -58,6 +58,7 @@ public class LexerGenerator {
 		State next, hash;
 		int number;
 		int[] set;
+		// -1 error, -2 succeed, -3... lexer rule #0
 		int[] action;
 	}
 
@@ -477,14 +478,12 @@ public class LexerGenerator {
 				}
 			}
 
-			assert current.action[0] < 0;
-
 			// next state
 			current = current.next;
 		}
 
-		// first group (only) succeeds on EOI (TODO handle eoi in other groups)
-		first.action[0] = -2;
+		// first group (only) succeeds on EOI, unless there is an explicit EOI rule
+		if (first.action[0] == -1) first.action[0] = -2;
 
 		return errors == 0;
 	}

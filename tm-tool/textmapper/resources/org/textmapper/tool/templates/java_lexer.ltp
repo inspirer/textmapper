@@ -197,7 +197,7 @@ ${end-}
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = 0;
+				lapg_n.symbol = Tokens.eoi;
 				lapg_n.value = null;
 ${if opts.lexerInput == 'stream'-}
 				tokenOffset = -1;

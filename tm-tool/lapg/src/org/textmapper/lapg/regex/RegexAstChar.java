@@ -48,7 +48,11 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		RegexUtil.escape(sb, c, false);
+		if (c == -1) {
+			sb.append("{eoi}");
+		} else {
+			RegexUtil.escape(sb, c, false);
+		}
 	}
 
 	@Override
