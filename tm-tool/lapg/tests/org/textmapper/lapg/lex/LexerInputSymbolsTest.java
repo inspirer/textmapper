@@ -73,7 +73,7 @@ public class LexerInputSymbolsTest {
 	@Test
 	public void testAddCharacterInput() throws Exception {
 		assertEquals(-1, new LexerInputSymbols().addCharacter(LexerInputSymbols.MAX_UCHAR + 1));
-		assertEquals(-1, new LexerInputSymbols().addCharacter(-1));
+		assertEquals(0, new LexerInputSymbols().addCharacter(-1));
 		assertEquals(-1, new LexerInputSymbols().addCharacter(Integer.MAX_VALUE));
 		assertEquals(-1, new LexerInputSymbols().addCharacter(Integer.MIN_VALUE));
 		assertEquals(2, new LexerInputSymbols().addCharacter(LexerInputSymbols.MAX_UCHAR));

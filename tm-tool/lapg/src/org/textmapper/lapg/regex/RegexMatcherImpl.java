@@ -41,6 +41,18 @@ class RegexMatcherImpl implements RegexMatcher {
 		states = builder.getResult();
 	}
 
+	private boolean apply(int c, boolean[] current, boolean[] next) {
+		Arrays.fill(next, false);
+		boolean isValid = false;
+		for (int i = 0; i < states.length; i++) {
+			if (current[i] && states[i].simplePart != null && accepts(states[i].simplePart, c)) {
+				states[i + 1].applyTo(next);
+				isValid = true;
+			}
+		}
+		return isValid;
+	}
+
 	public boolean matches(String text) {
 		boolean[][] holders = new boolean[2][];
 		holders[0] = new boolean[states.length];
@@ -56,29 +68,24 @@ class RegexMatcherImpl implements RegexMatcher {
 				c = Character.toCodePoint(input[e++], input[e]);
 			}
 			boolean[] next = holders[++index % 2];
-			Arrays.fill(next, false);
-			boolean isValid = false;
-			for (int i = 0; i < states.length; i++) {
-				if (current[i] && states[i].simplePart != null && accepts(states[i].simplePart, c)) {
-					states[i + 1].applyTo(next);
-					isValid = true;
-				}
-			}
-			if (!isValid) {
-				return false;
-			}
+			if (!apply(c, current, next)) return false;
 			current = next;
 		}
-		return current[states.length - 1];
+		while (!current[states.length - 1]) {
+			boolean[] next = holders[++index % 2];
+			if (!apply(-1, current, next)) return false;
+			current = next;
+		}
+		return true;
 	}
 
 	private boolean accepts(RegexPart simple, int c) {
 		if (simple instanceof RegexChar) {
 			return c == ((RegexChar) simple).getChar();
 		} else if (simple instanceof RegexSet) {
-			return ((RegexSet) simple).getSet().contains(c);
+			return c >= 0 && ((RegexSet) simple).getSet().contains(c);
 		} else if (simple instanceof RegexAny) {
-			return c != '\n';
+			return c != -1 && c != '\n';
 		}
 		return false;
 	}

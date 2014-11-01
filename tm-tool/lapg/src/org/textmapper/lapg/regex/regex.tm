@@ -92,7 +92,10 @@ char(Integer):  /[\(\|\)]/						{ $symbol = current().codePointAt(0); }
 
 :: parser
 
-%input pattern;
+input (RegexAstPart) ::=
+	  pattern
+	| kw_eoi                                    { $$ = new RegexAstChar(-1, source, ${left().offset}, ${left().endoffset}); }
+;
 
 pattern (RegexAstPart) ::=
 	  partsopt									{ $$ = RegexUtil.emptyIfNull($partsopt, source, ${partsopt.offset}); }

@@ -96,6 +96,12 @@ public class MatcherTest {
 	}
 
 	@Test
+	public void testEndOfInput() throws RegexParseException {
+		checkMatch("{eoi}", "abc", false);
+		checkMatch("{eoi}", "", true);
+	}
+
+	@Test
 	public void testUnresolvedRefs() throws RegexParseException {
 		try {
 			new RegexMatcherImpl(RegexFacade.parse("tmp", "a{bcd}e"), createEmptyContext());
@@ -106,7 +112,6 @@ public class MatcherTest {
 			assertEquals(0, ex.getErrorOffset());
 		}
 	}
-
 
 	@Test
 	public void testTwoCharRE() throws RegexParseException {

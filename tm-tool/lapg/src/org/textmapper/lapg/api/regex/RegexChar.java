@@ -17,5 +17,8 @@ package org.textmapper.lapg.api.regex;
 
 public interface RegexChar extends RegexPart {
 
+	/**
+	 *  -1 denotes an end-of-input marker character
+	 */
 	int getChar();
 }

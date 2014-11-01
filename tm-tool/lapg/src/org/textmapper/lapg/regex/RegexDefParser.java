@@ -44,41 +44,41 @@ public class RegexDefParser {
 	private static final boolean DEBUG_SYNTAX = false;
 	TextSource source;
 	CharacterSetImpl.Builder setbuilder = new CharacterSetImpl.Builder();
-	private static final int[] tmAction = RegexDefLexer.unpack_int(37,
-		"\ufffd\uffff\7\0\10\0\11\0\12\0\uffe7\uffff\uffff\uffff\uffff\uffff\16\0\uffff\uffff" +
-		"\30\0\uffd1\uffff\uffb1\uffff\0\0\uffff\uffff\17\0\20\0\21\0\22\0\23\0\uffff\uffff" +
-		"\uffff\uffff\uff99\uffff\3\0\4\0\5\0\6\0\31\0\13\0\14\0\uff81\uffff\24\0\15\0\1\0" +
-		"\26\0\27\0\ufffe\uffff");
+	private static final int[] tmAction = RegexDefLexer.unpack_int(39,
+		"\ufffd\uffff\11\0\12\0\13\0\14\0\uffe5\uffff\uffff\uffff\uffff\uffff\20\0\1\0\uffcf" +
+		"\uffff\32\0\uffc9\uffff\uffa9\uffff\2\0\uffff\uffff\21\0\22\0\23\0\24\0\25\0\uffff" +
+		"\uffff\uffff\uffff\uff91\uffff\5\0\6\0\7\0\10\0\33\0\15\0\16\0\uff79\uffff\26\0\17" +
+		"\0\3\0\30\0\31\0\uffff\uffff\ufffe\uffff");
 
-	private static final short[] tmLalr = RegexDefLexer.unpack_short(136,
-		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\33\15\33\uffff" +
-		"\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\15\33" +
-		"\16\33\uffff\ufffe\5\uffff\6\uffff\7\uffff\10\uffff\0\2\1\2\2\2\3\2\4\2\14\2\15\2" +
-		"\16\2\20\2\21\2\22\2\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff" +
-		"\21\uffff\22\uffff\0\32\15\32\16\32\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14" +
-		"\uffff\20\uffff\21\uffff\22\uffff\0\33\15\33\16\33\uffff\ufffe\1\uffff\2\uffff\3" +
-		"\25\24\25\25\25\uffff\ufffe");
+	private static final short[] tmLalr = RegexDefLexer.unpack_short(144,
+		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\23\uffff\0\35" +
+		"\15\35\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22" +
+		"\uffff\15\35\16\35\uffff\ufffe\15\uffff\0\0\uffff\ufffe\5\uffff\6\uffff\7\uffff\10" +
+		"\uffff\0\4\1\4\2\4\3\4\4\4\14\4\15\4\16\4\20\4\21\4\22\4\uffff\ufffe\1\uffff\2\uffff" +
+		"\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\34\15\34\16\34\uffff\ufffe" +
+		"\1\uffff\2\uffff\3\uffff\4\uffff\14\uffff\20\uffff\21\uffff\22\uffff\0\35\15\35\16" +
+		"\35\uffff\ufffe\1\uffff\2\uffff\3\27\24\27\25\27\uffff\ufffe");
 
-	private static final short[] lapg_sym_goto = RegexDefLexer.unpack_short(30,
-		"\0\1\12\23\33\37\40\41\42\43\43\43\43\47\51\52\52\56\62\66\66\70\74\76\102\106\112" +
-		"\114\117\122");
+	private static final short[] lapg_sym_goto = RegexDefLexer.unpack_short(31,
+		"\0\1\12\23\33\37\40\41\42\43\43\43\43\47\51\52\52\56\62\66\67\71\75\76\100\104\110" +
+		"\114\116\121\124");
 
-	private static final short[] lapg_sym_from = RegexDefLexer.unpack_short(82,
-		"\11\0\5\6\7\14\24\25\26\36\0\5\6\7\14\24\25\26\36\0\5\6\7\14\24\25\26\0\5\14\26\13" +
-		"\13\13\13\0\5\14\26\11\16\16\0\5\14\26\0\5\14\26\0\5\14\26\24\25\6\7\24\25\0\5\0" +
-		"\5\14\26\0\5\14\26\6\7\24\25\6\7\0\5\26\0\5\26");
+	private static final short[] lapg_sym_from = RegexDefLexer.unpack_short(84,
+		"\45\0\5\6\7\15\25\26\27\37\0\5\6\7\15\25\26\27\37\0\5\6\7\15\25\26\27\0\5\15\27\14" +
+		"\14\14\14\0\5\15\27\12\17\17\0\5\15\27\0\5\15\27\0\5\15\27\0\25\26\6\7\25\26\0\0" +
+		"\5\0\5\15\27\0\5\15\27\6\7\25\26\6\7\0\5\27\0\5\27");
 
-	private static final short[] lapg_sym_to = RegexDefLexer.unpack_short(82,
-		"\44\1\1\17\17\1\17\17\1\42\2\2\20\20\2\20\20\2\43\3\3\21\21\3\21\21\3\4\4\4\4\27" +
-		"\30\31\32\5\5\5\5\26\26\34\6\6\6\6\7\7\7\7\10\10\10\10\35\40\22\22\36\36\11\16\12" +
-		"\12\33\12\13\13\13\13\23\23\37\37\24\25\14\14\14\15\15\41");
+	private static final short[] lapg_sym_to = RegexDefLexer.unpack_short(84,
+		"\46\1\1\20\20\1\20\20\1\43\2\2\21\21\2\21\21\2\44\3\3\22\22\3\22\22\3\4\4\4\4\30" +
+		"\31\32\33\5\5\5\5\27\27\35\6\6\6\6\7\7\7\7\10\10\10\10\11\36\41\23\23\37\37\45\12" +
+		"\17\13\13\34\13\14\14\14\14\24\24\40\40\25\26\15\15\15\16\16\42");
 
-	private static final short[] tmRuleLen = RegexDefLexer.unpack_short(28,
-		"\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2\1\0");
+	private static final short[] tmRuleLen = RegexDefLexer.unpack_short(30,
+		"\1\1\1\3\1\2\2\2\2\1\1\1\1\3\3\3\1\1\1\1\1\1\2\2\3\3\1\2\1\0");
 
-	private static final short[] tmRuleSymbol = RegexDefLexer.unpack_short(28,
-		"\26\26\27\27\27\27\27\30\30\30\30\30\30\30\30\31\31\31\32\32\32\32\32\32\33\33\34" +
-		"\34");
+	private static final short[] tmRuleSymbol = RegexDefLexer.unpack_short(30,
+		"\26\26\27\27\30\30\30\30\30\31\31\31\31\31\31\31\31\32\32\32\33\33\33\33\33\33\34" +
+		"\34\35\35");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -103,6 +103,7 @@ public class RegexDefParser {
 		"kw_eoi",
 		"']'",
 		"'-'",
+		"input",
 		"pattern",
 		"part",
 		"primitive_part",
@@ -114,13 +115,14 @@ public class RegexDefParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int pattern = 22;
-		static final int part = 23;
-		static final int primitive_part = 24;
-		static final int setsymbol = 25;
-		static final int charset = 26;
-		static final int parts = 27;
-		static final int partsopt = 28;
+		static final int input = 22;
+		static final int pattern = 23;
+		static final int part = 24;
+		static final int primitive_part = 25;
+		static final int setsymbol = 26;
+		static final int charset = 27;
+		static final int parts = 28;
+		static final int partsopt = 29;
 	}
 
 	/**
@@ -175,7 +177,7 @@ public class RegexDefParser {
 		tmStack[0].state = 0;
 		tmNext = tmLexer.next();
 
-		while (tmStack[tmHead].state != 36) {
+		while (tmStack[tmHead].state != 38) {
 			int action = tmAction(tmStack[tmHead].state, tmNext.symbol);
 
 			if (action >= 0) {
@@ -189,7 +191,7 @@ public class RegexDefParser {
 			}
 		}
 
-		if (tmStack[tmHead].state != 36) {
+		if (tmStack[tmHead].state != 38) {
 			reporter.error(MessageFormat.format("syntax error before line {0}",
 								tmLexer.getTokenLine()), tmNext.offset, tmNext.endoffset);
 			throw new ParseException();
@@ -230,76 +232,79 @@ public class RegexDefParser {
 	@SuppressWarnings("unchecked")
 	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
 		switch (tmRule) {
-			case 0:  // pattern ::= partsopt
+			case 1:  // input ::= kw_eoi
+				 tmLeft.value = new RegexAstChar(-1, source, tmLeft.offset, tmLeft.endoffset); 
+				break;
+			case 2:  // pattern ::= partsopt
 				 tmLeft.value = RegexUtil.emptyIfNull(((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
 				break;
-			case 1:  // pattern ::= pattern '|' partsopt
+			case 3:  // pattern ::= pattern '|' partsopt
 				 tmLeft.value = RegexUtil.createOr(((RegexAstPart)tmStack[tmHead - 2].value), ((RegexAstPart)tmStack[tmHead].value), source, tmStack[tmHead].offset); 
 				break;
-			case 3:  // part ::= primitive_part '*'
+			case 5:  // part ::= primitive_part '*'
 				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, -1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 4:  // part ::= primitive_part '+'
+			case 6:  // part ::= primitive_part '+'
 				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 1, -1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 5:  // part ::= primitive_part '?'
+			case 7:  // part ::= primitive_part '?'
 				 tmLeft.value = new RegexAstQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), 0, 1, source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 6:  // part ::= primitive_part quantifier
+			case 8:  // part ::= primitive_part quantifier
 				 tmLeft.value = RegexUtil.createQuantifier(((RegexAstPart)tmStack[tmHead - 1].value), source, tmStack[tmHead].offset, tmLeft.endoffset, reporter); 
 				break;
-			case 7:  // primitive_part ::= char
+			case 9:  // primitive_part ::= char
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 8:  // primitive_part ::= escaped
+			case 10:  // primitive_part ::= escaped
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 9:  // primitive_part ::= charclass
+			case 11:  // primitive_part ::= charclass
 				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 10:  // primitive_part ::= '.'
+			case 12:  // primitive_part ::= '.'
 				 tmLeft.value = new RegexAstAny(source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 11:  // primitive_part ::= '(' pattern ')'
+			case 13:  // primitive_part ::= '(' pattern ')'
 				 tmLeft.value = RegexUtil.wrap(((RegexAstPart)tmStack[tmHead - 1].value)); 
 				break;
-			case 12:  // primitive_part ::= '[' charset ']'
+			case 14:  // primitive_part ::= '[' charset ']'
 				 tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, false); 
 				break;
-			case 13:  // primitive_part ::= '[^' charset ']'
+			case 15:  // primitive_part ::= '[^' charset ']'
 				 tmLeft.value = RegexUtil.toSet(((List<RegexAstPart>)tmStack[tmHead - 1].value), reporter, setbuilder, true); 
 				break;
-			case 14:  // primitive_part ::= expand
+			case 16:  // primitive_part ::= expand
 				 tmLeft.value = new RegexAstExpand(source, tmLeft.offset, tmLeft.endoffset); RegexUtil.checkExpand((RegexAstExpand) tmLeft.value, reporter); 
 				break;
-			case 15:  // setsymbol ::= char
+			case 17:  // setsymbol ::= char
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 16:  // setsymbol ::= escaped
+			case 18:  // setsymbol ::= escaped
 				 tmLeft.value = new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 17:  // setsymbol ::= charclass
+			case 19:  // setsymbol ::= charclass
 				 tmLeft.value = new RegexAstCharClass(((String)tmStack[tmHead].value), RegexUtil.getClassSet(((String)tmStack[tmHead].value), setbuilder, reporter, tmLeft.offset, tmLeft.endoffset), source, tmLeft.offset, tmLeft.endoffset); 
 				break;
-			case 18:  // charset ::= '-'
+			case 20:  // charset ::= '-'
 				 tmLeft.value = new ArrayList<RegexAstPart>(); ((List<RegexAstPart>)tmLeft.value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); 
 				break;
-			case 19:  // charset ::= setsymbol
+			case 21:  // charset ::= setsymbol
 				 tmLeft.value = new ArrayList<RegexAstPart>(); RegexUtil.addSetSymbol(((List<RegexAstPart>)tmLeft.value), ((RegexAstPart)tmStack[tmHead].value), reporter); 
 				break;
-			case 20:  // charset ::= charset setsymbol
+			case 22:  // charset ::= charset setsymbol
 				 RegexUtil.addSetSymbol(((List<RegexAstPart>)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value), reporter); 
 				break;
-			case 21:  // charset ::= charset '-' %prio char
+			case 23:  // charset ::= charset '-' %prio char
 				 ((List<RegexAstPart>)tmStack[tmHead - 1].value).add(new RegexAstChar('-', source, tmStack[tmHead].offset, tmStack[tmHead].endoffset)); 
 				break;
-			case 22:  // charset ::= charset '-' char
+			case 24:  // charset ::= charset '-' char
 				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
-			case 23:  // charset ::= charset '-' escaped
+			case 25:  // charset ::= charset '-' escaped
 				 RegexUtil.applyRange(((List<RegexAstPart>)tmStack[tmHead - 2].value), new RegexAstChar(((Integer)tmStack[tmHead].value), source, tmStack[tmHead].offset, tmStack[tmHead].endoffset), reporter); 
 				break;
-			case 25:  // parts ::= parts part
+			case 27:  // parts ::= parts part
 				 tmLeft.value = RegexUtil.createSequence(((RegexAstPart)tmStack[tmHead - 1].value), ((RegexAstPart)tmStack[tmHead].value)); 
 				break;
 		}

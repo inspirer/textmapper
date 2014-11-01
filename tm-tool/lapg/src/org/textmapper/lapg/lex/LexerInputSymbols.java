@@ -61,7 +61,7 @@ public class LexerInputSymbols {
 			throw new IllegalStateException();
 		}
 		if (ch < 0 || ch > MAX_UCHAR) {
-			return -1;
+			return ch == -1 ? 0 : -1;
 		}
 		ensureCharacter(ch);
 		if (character2symbol[ch] == 1) {
