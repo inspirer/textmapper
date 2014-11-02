@@ -35,6 +35,7 @@ public class GenericLexer {
 
 	public interface Tokens {
 		public static final int Unavailable_ = -1;
+		public static final int eoi = 0;
 	}
 
 	public interface ErrorReporter {
@@ -229,7 +230,7 @@ public class GenericLexer {
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = 0;
+				lapg_n.symbol = Tokens.eoi;
 				lapg_n.value = null;
 				tokenOffset = -1;
 				return lapg_n;

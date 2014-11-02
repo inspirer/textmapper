@@ -225,7 +225,7 @@ public class SampleBLexer {
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = 0;
+				lapg_n.symbol = Tokens.eoi;
 				lapg_n.value = null;
 				return lapg_n;
 			}
