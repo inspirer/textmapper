@@ -172,8 +172,8 @@ public class EoiLexer {
 	private static final int tmClassesCount = 9;
 
 	private static final short[] tmGoto = unpack_vc_short(153,
-		"\1\ufffe\1\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\uffff\1\4\1\5\1\6\1\14\1\15" +
-		"\1\11\1\12\1\16\1\uffff\1\4\1\5\1\6\1\17\1\20\1\11\1\12\11\ufff6\11\ufffc\11\ufffb" +
+		"\1\3\1\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\uffff\1\4\1\5\1\6\1\14\1\15\1" +
+		"\11\1\12\1\16\1\uffff\1\4\1\5\1\6\1\17\1\20\1\11\1\12\11\ufff6\11\ufffc\11\ufffb" +
 		"\11\ufffa\11\ufff8\11\ufff7\7\ufffd\1\11\1\ufffd\10\ufff9\1\12\11\ufff3\11\ufff5" +
 		"\11\ufff4\11\ufff0\11\ufff2\11\ufff1");
 
@@ -290,7 +290,7 @@ public class EoiLexer {
 				break;
 			case 7: // _customEOI: /{eoi}/
 				spaceToken = true;
-				 if (--eoiToGo == 0) { lapg_n.symbol = Tokens.eoi; } 
+				 if (--eoiToGo < 0) { lapg_n.symbol = Tokens.eoi; spaceToken = false; } 
 				break;
 			case 8: // '(': /\(/
 				state = States.b;

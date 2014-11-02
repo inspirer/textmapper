@@ -24,6 +24,7 @@ import java.io.CharArrayReader;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class EoiTest {
@@ -47,22 +48,27 @@ public class EoiTest {
 
 	@Test
 	public void testLexer() throws IOException {
-		checkTokens("(;)", Tokens.Lparen, Tokens.Semicolon, Tokens.Rparen);
-		checkTokens("(;", Tokens.Lparen, Tokens.Semicolon, Tokens._retfromA);
+		checkTokens("(;)", Tokens.Lparen, Tokens.Semicolon, Tokens.Rparen,
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+		checkTokens("(;", Tokens.Lparen, Tokens.Semicolon, Tokens._retfromA,
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
 
 		checkTokens("(ii:(;);)",
 				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen, Tokens.Semicolon,
-				Tokens.Rparen, Tokens.Semicolon, Tokens.Rparen);
+				Tokens.Rparen, Tokens.Semicolon, Tokens.Rparen,
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
 
 		checkTokens("(ii:(;;",
 				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen,
 				Tokens.Semicolon, Tokens.Semicolon,
-				Tokens._retfromB, Tokens._retfromA);
+				Tokens._retfromB, Tokens._retfromA,
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
 
 		checkTokens("(ii:(ee:(;;;",
 				Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen, Tokens.id, Tokens.Colon, Tokens.Lparen,
 				Tokens.Semicolon, Tokens.Semicolon, Tokens.Semicolon,
-				Tokens._retfromB, Tokens._retfromA);
+				Tokens._retfromB, Tokens._retfromA,
+				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
 	}
 
 	private void check(String s) {
@@ -89,6 +95,7 @@ public class EoiTest {
 		int next;
 		int index = 0;
 		while ((next = lexer.next().symbol) != Tokens.eoi) {
+			assertTrue("unexpected " + next, index < types.length);
 			assertEquals(types[index++], next);
 		}
 		assertEquals(types.length, index);

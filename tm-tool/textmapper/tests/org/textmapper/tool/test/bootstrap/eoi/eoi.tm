@@ -22,7 +22,7 @@ _skip: /[\n\t\r ]+/  (space)
 [initial]
 '(':        /\(/  => a
 ')':        /\)/
-_customEOI:       /{eoi}/  (space) 		{ if (--eoiToGo == 0) { lapg_n.symbol = Tokens.eoi; } }
+_customEOI:       /{eoi}/  (space) 		{ if (--eoiToGo < 0) { lapg_n.symbol = Tokens.eoi; spaceToken = false; } }
 
 [a]
 '(':        /\(/  => b

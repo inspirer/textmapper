@@ -130,6 +130,12 @@ public class BootstrapTest {
 	}
 
 	@Test
+	public void testEoiS() {
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/eoi", "eoi.tm", new String[0],
+				new String[]{"EoiLexer.java", "EoiParser.java", "EoiTree.java"}, 0);
+	}
+
+	@Test
 	public void testJsLexer1() {
 		bootstrap("../tests/javascript/lexer", "lexer1.tm", new String[0],
 				new String[]{"lexer1.js"}, 0);

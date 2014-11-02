@@ -191,6 +191,8 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
 		<echo message="unicode test parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
+		<echo message="eoi test parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/eoi"/>
 		<echo message="set test lexer"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/set"/>
 		<echo message="js lexer"/>
