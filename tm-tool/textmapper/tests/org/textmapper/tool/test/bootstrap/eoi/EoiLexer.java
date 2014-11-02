@@ -19,6 +19,7 @@ public class EoiLexer {
 		public static final int initial = 0;
 		public static final int a = 1;
 		public static final int b = 2;
+		public static final int c = 3;
 	}
 
 	public interface Tokens {
@@ -28,12 +29,13 @@ public class EoiLexer {
 		public static final int Colon = 2;
 		public static final int Semicolon = 3;
 		public static final int Comma = 4;
-		public static final int _skip = 5;
-		public static final int Lparen = 6;
-		public static final int Rparen = 7;
-		public static final int _customEOI = 8;
-		public static final int _retfromA = 9;
-		public static final int _retfromB = 10;
+		public static final int gotoc = 5;
+		public static final int _skip = 6;
+		public static final int Lparen = 7;
+		public static final int Rparen = 8;
+		public static final int _customEOI = 9;
+		public static final int _retfromA = 10;
+		public static final int _retfromB = 11;
 	}
 
 	public interface ErrorReporter {
@@ -152,30 +154,32 @@ public class EoiLexer {
 	}
 
 	private static final short tmCharClass[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 1, 1, 8, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 11, 1, 1, 11, 1, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		8, 1, 1, 1, 1, 1, 1, 1, 5, 6, 1, 1, 4, 1, 1, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1,
-		1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 7,
-		1, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 1, 1, 1, 1, 1
+		11, 1, 1, 1, 1, 1, 1, 1, 8, 9, 1, 1, 4, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 5, 1, 7, 1,
+		1, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+		10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 10,
+		1, 10, 10, 6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+		10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1
 	};
 
 	private static final short tmStateMap[] = {
-		0, 1, 2
+		0, 1, 2, 3
 	};
 
-	private static final short[] tmRuleSymbol = unpack_short(14,
-		"\1\2\3\4\5\6\7\10\6\7\11\6\7\12");
+	private static final short[] tmRuleSymbol = unpack_short(16,
+		"\1\2\3\4\5\6\7\10\11\7\10\12\7\10\13\0");
 
-	private static final int tmClassesCount = 9;
+	private static final int tmClassesCount = 12;
 
-	private static final short[] tmGoto = unpack_vc_short(153,
-		"\1\3\1\uffff\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\uffff\1\4\1\5\1\6\1\14\1\15\1" +
-		"\11\1\12\1\16\1\uffff\1\4\1\5\1\6\1\17\1\20\1\11\1\12\11\ufff6\11\ufffc\11\ufffb" +
-		"\11\ufffa\11\ufff8\11\ufff7\7\ufffd\1\11\1\ufffd\10\ufff9\1\12\11\ufff3\11\ufff5" +
-		"\11\ufff4\11\ufff0\11\ufff2\11\ufff1");
+	private static final short[] tmGoto = unpack_vc_short(264,
+		"\1\4\1\uffff\1\5\1\6\1\7\1\10\1\11\1\uffff\1\12\1\13\1\11\1\14\1\15\1\uffff\1\5\1" +
+		"\6\1\7\1\10\1\11\1\uffff\1\16\1\17\1\11\1\14\1\20\1\uffff\1\5\1\6\1\7\1\10\1\11\1" +
+		"\uffff\1\21\1\22\1\11\1\14\1\23\1\uffff\1\5\1\6\1\7\1\10\1\11\3\uffff\1\11\1\14\14" +
+		"\ufff5\14\ufffc\14\ufffb\14\ufffa\6\uffff\1\24\5\uffff\6\ufffd\1\11\3\ufffd\1\11" +
+		"\1\ufffd\14\ufff7\14\ufff6\13\ufff8\1\14\14\ufff2\14\ufff4\14\ufff3\14\uffef\14\ufff1" +
+		"\14\ufff0\14\uffee\7\uffff\1\25\4\uffff\14\ufff9");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];
@@ -282,30 +286,33 @@ public class EoiLexer {
 	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
-			case 4: // _skip: /[\n\t\r ]+/
+			case 4: // gotoc: /<c>/
+				state = States.c;
+				break;
+			case 5: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
-			case 5: // '(': /\(/
+			case 6: // '(': /\(/
 				state = States.a;
 				break;
-			case 7: // _customEOI: /{eoi}/
+			case 8: // _customEOI: /{eoi}/
 				spaceToken = true;
 				 if (--eoiToGo < 0) { lapg_n.symbol = Tokens.eoi; spaceToken = false; } 
 				break;
-			case 8: // '(': /\(/
+			case 9: // '(': /\(/
 				state = States.b;
 				break;
-			case 9: // ')': /\)/
+			case 10: // ')': /\)/
 				state = States.initial;
 				break;
-			case 10: // _retfromA: /{eoi}/
+			case 11: // _retfromA: /{eoi}/
 				spaceToken = true;
 				state = States.initial;
 				break;
-			case 12: // ')': /\)/
+			case 13: // ')': /\)/
 				state = States.a;
 				break;
-			case 13: // _retfromB: /{eoi}/
+			case 14: // _retfromB: /{eoi}/
 				spaceToken = true;
 				state = States.a;
 				break;

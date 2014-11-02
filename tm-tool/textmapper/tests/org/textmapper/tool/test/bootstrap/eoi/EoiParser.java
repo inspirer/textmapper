@@ -27,10 +27,10 @@ public class EoiParser {
 		"\uffff\uffff\ufff1\uffff\5\0\uffff\uffff\2\0\uffff\uffff\4\0\uffff\uffff\ufffe\uffff");
 
 	private static final short[] tmLalr = EoiLexer.unpack_short(22,
-		"\1\uffff\3\7\uffff\ufffe\4\uffff\3\6\uffff\ufffe\7\uffff\0\3\3\3\4\3\uffff\ufffe");
+		"\1\uffff\3\7\uffff\ufffe\4\uffff\3\6\uffff\ufffe\10\uffff\0\3\3\3\4\3\uffff\ufffe");
 
-	private static final short[] lapg_sym_goto = EoiLexer.unpack_short(16,
-		"\0\1\6\10\11\12\12\15\16\16\16\16\17\22\23\24");
+	private static final short[] lapg_sym_goto = EoiLexer.unpack_short(17,
+		"\0\1\6\10\11\12\12\12\15\16\16\16\16\17\22\23\24");
 
 	private static final short[] lapg_sym_from = EoiLexer.unpack_short(20,
 		"\17\0\2\7\10\15\4\13\6\5\0\7\15\11\0\0\7\15\2\2");
@@ -42,7 +42,7 @@ public class EoiParser {
 		"\1\1\4\3\5\3\1\0");
 
 	private static final short[] tmRuleSymbol = EoiLexer.unpack_short(8,
-		"\13\14\14\14\15\15\16\16");
+		"\14\15\15\15\16\16\17\17");
 
 	protected static final String[] tmSymbolNames = new String[] {
 		"eoi",
@@ -50,6 +50,7 @@ public class EoiParser {
 		"':'",
 		"';'",
 		"','",
+		"gotoc",
 		"_skip",
 		"'('",
 		"')'",
@@ -64,10 +65,10 @@ public class EoiParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 11;
-		static final int expr = 12;
-		static final int list_of_id_and_2_elements_Comma_separated = 13;
-		static final int list_of_id_and_2_elements_Comma_separated_opt = 14;
+		static final int input = 12;
+		static final int expr = 13;
+		static final int list_of_id_and_2_elements_Comma_separated = 14;
+		static final int list_of_id_and_2_elements_Comma_separated_opt = 15;
 	}
 
 	/**

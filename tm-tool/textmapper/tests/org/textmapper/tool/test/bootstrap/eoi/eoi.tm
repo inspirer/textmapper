@@ -10,12 +10,13 @@ endpositions = "offset"
 
 :: lexer
 
-[initial, a, b]
+[initial, a, b, c]
 
 id: /[a-zA-Z_]+/
 ':':        /:/
 ';':        /;/
 ',':        /,/
+gotoc:      /<c>/ => c
 
 _skip: /[\n\t\r ]+/  (space)
 
@@ -33,6 +34,9 @@ _retfromA:       /{eoi}/  => initial (space)
 '(':        /\(/
 ')':        /\)/  => a
 _retfromB:       /{eoi}/  => a (space)
+
+[c]
+eoi:  /{eoi}/
 
 :: parser
 

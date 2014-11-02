@@ -69,6 +69,8 @@ public class EoiTest {
 				Tokens.Semicolon, Tokens.Semicolon, Tokens.Semicolon,
 				Tokens._retfromB, Tokens._retfromA,
 				Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI, Tokens._customEOI);
+
+		checkTokens("<c>", Tokens.gotoc);
 	}
 
 	private void check(String s) {
