@@ -69,7 +69,7 @@ public class TmCompilerUtil {
 	public static void validateFile(TmCompilerTask task, TmProcessingStatus status) {
 		TMOptions options = new TMOptions();
 		task.fillOptions(options);
-		TextSource input = new TextSource(task.getFile().getPath(), task.getFileContent().toCharArray(), 1);
+		TextSource input = new TextSource(task.getFile().getPath(), task.getFileContent(), 1);
 		new TMGenerator(options, status, new FileBasedStrategy(null) {
 			@Override
 			public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {

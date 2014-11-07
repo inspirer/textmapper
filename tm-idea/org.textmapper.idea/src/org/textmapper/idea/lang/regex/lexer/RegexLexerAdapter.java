@@ -46,7 +46,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
-		char[] input = buffer.subSequence(startOffset, endOffset).toString().toCharArray();
+		CharSequence input = buffer.subSequence(startOffset, endOffset);
 
 		try {
 			if (lexer == null) {
@@ -205,7 +205,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	}
 
 	private static class IdeaRegexDefLexer extends RegexDefLexer {
-		public IdeaRegexDefLexer(char[] input) throws IOException {
+		public IdeaRegexDefLexer(CharSequence input) throws IOException {
 			super(input, new ErrorReporter() {
 				@Override
 				public void error(String message, int offset, int endoffset) {
