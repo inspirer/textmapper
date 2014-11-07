@@ -27,7 +27,7 @@ import org.textmapper.idea.lang.syntax.lexer.TMElementType;
 import org.textmapper.idea.lang.syntax.lexer.TMTemplatesElementType;
 import org.textmapper.tool.parser.TMLexer;
 import org.textmapper.tool.parser.TMLexer.ErrorReporter;
-import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Span;
 import org.textmapper.tool.parser.TMLexer.Tokens;
 import org.textmapper.tool.parser.TMParser;
 import org.textmapper.tool.parser.TMParser.ParseException;
@@ -128,7 +128,7 @@ public class TMPsiParser implements PsiParser {
 			}
 		}
 
-		private void drop(LapgSymbol sym) {
+		private void drop(Span sym) {
 			if (sym.value != null) {
 				Marker m = (Marker) sym.value;
 				free(m, true);
@@ -144,9 +144,9 @@ public class TMPsiParser implements PsiParser {
 		}
 
 		@Override
-		protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
-			LapgSymbol leftmost = null;
-			for (int i = 0; i < rulelen; i++) {
+		protected void applyRule(Span left, int ruleIndex, int ruleLength) {
+			Span leftmost = null;
+			for (int i = 0; i < ruleLength; i++) {
 				if (tmStack[tmHead - i].value == null) continue;
 				if (leftmost != null) {
 					drop(leftmost);
@@ -158,22 +158,22 @@ public class TMPsiParser implements PsiParser {
 				m = (PsiBuilder.Marker) leftmost.value;
 				leftmost.value = null;
 			}
-			lapg_gg.value = m;
+			left.value = m;
 
 			if (m != null) {
-				IElementType elementType = reduceType(lapg_gg.symbol);
+				IElementType elementType = reduceType(left.symbol);
 				if (elementType != null) {
-					lapg_gg.value = clone(m);
+					left.value = clone(m);
 
-					if (lapg_gg.symbol == Nonterminals.syntax_problem) {
+					if (left.symbol == Nonterminals.syntax_problem) {
 						m.error("syntax error");
 					} else {
 						m.done(elementType);
 					}
 				}
 			}
-			if (lapg_gg.symbol == Nonterminals.input) {
-				drop(lapg_gg);
+			if (left.symbol == Nonterminals.input) {
+				drop(left);
 			}
 		}
 
@@ -188,19 +188,19 @@ public class TMPsiParser implements PsiParser {
 		}
 
 		@Override
-		protected void dispose(LapgSymbol sym) {
+		protected void dispose(Span sym) {
 			drop(sym);
 		}
 
 		@Override
-		protected void cleanup(LapgSymbol sym) {
+		protected void cleanup(Span sym) {
 			assert sym.value == null;
 		}
 	}
 
 	private static class TMLexerEx extends TMLexer {
 		private final PsiBuilder myBuilder;
-		private LapgSymbol next;
+		private Span next;
 
 		public TMLexerEx(PsiBuilder builder) throws IOException {
 			super(null, null);
@@ -208,7 +208,7 @@ public class TMPsiParser implements PsiParser {
 		}
 
 		@Override
-		public LapgSymbol next() throws IOException {
+		public Span next() throws IOException {
 			return nextInternal();
 		}
 
@@ -216,14 +216,14 @@ public class TMPsiParser implements PsiParser {
 		public void reset(Reader stream) throws IOException {
 		}
 
-		private LapgSymbol nextInternal() {
+		private Span nextInternal() {
 			if (next != null && !myBuilder.eof()) {
 				myBuilder.advanceLexer();
 				while (!myBuilder.eof() && myBuilder.getTokenType() == TokenType.BAD_CHARACTER) {
 					myBuilder.advanceLexer();
 				}
 			}
-			next = new LapgSymbol();
+			next = new Span();
 			if (myBuilder.eof()) {
 				next.symbol = Tokens.eoi;
 			} else if (myBuilder.getTokenType() instanceof TMTemplatesElementType) {

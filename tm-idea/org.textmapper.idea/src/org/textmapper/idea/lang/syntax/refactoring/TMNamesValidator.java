@@ -58,8 +58,8 @@ public class TMNamesValidator implements NamesValidator {
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			super.createToken(lapg_n, lexemIndex);
+		protected boolean createToken(Span token, int ruleIndex) throws IOException {
+			super.createToken(token, ruleIndex);
 			/* include comments and spaces */
 			return true;
 		}

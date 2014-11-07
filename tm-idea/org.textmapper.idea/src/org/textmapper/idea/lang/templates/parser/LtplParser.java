@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.templates.lexer.LtplElementType;
 import org.textmapper.templates.ast.TemplatesLexer;
 import org.textmapper.templates.ast.TemplatesLexer.ErrorReporter;
-import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textmapper.templates.ast.TemplatesLexer.Span;
 import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 import org.textmapper.templates.ast.TemplatesParser;
 import org.textmapper.templates.ast.TemplatesParser.ParseException;
@@ -163,7 +163,7 @@ public class LtplParser implements PsiParser {
 			}
 		}
 
-		private void drop(LapgSymbol sym) {
+		private void drop(Span sym) {
 			if (sym.value != null) {
 				Marker m = (Marker) sym.value;
 				free(m, true);
@@ -179,29 +179,29 @@ public class LtplParser implements PsiParser {
 		}
 
 		@Override
-		protected void applyRule(LapgSymbol lapg_gg, int rule, int rulelen) {
-			for (int i = 0; i < rulelen - 1; i++) {
+		protected void applyRule(Span left, int ruleIndex, int ruleLength) {
+			for (int i = 0; i < ruleLength - 1; i++) {
 				drop(tmStack[tmHead - i]);
 			}
-			if (rulelen > 0) {
-				tmStack[tmHead - (rulelen - 1)].value = null;
+			if (ruleLength > 0) {
+				tmStack[tmHead - (ruleLength - 1)].value = null;
 			}
 
-			Marker m = (Marker) lapg_gg.value;
+			Marker m = (Marker) left.value;
 			if (m != null) {
-				IElementType elementType = reduceType(lapg_gg.symbol, rule);
+				IElementType elementType = reduceType(left.symbol, ruleIndex);
 				if (elementType != null) {
-					lapg_gg.value = clone(m);
+					left.value = clone(m);
 
-					if (lapg_gg.symbol == Nonterminals.syntax_problem) {
+					if (left.symbol == Nonterminals.syntax_problem) {
 						m.error("syntax error");
 					} else {
 						m.done(elementType);
 					}
 				}
 			}
-			if (lapg_gg.symbol == Nonterminals.input || lapg_gg.symbol == Nonterminals.body) {
-				drop(lapg_gg);
+			if (left.symbol == Nonterminals.input || left.symbol == Nonterminals.body) {
+				drop(left);
 			}
 		}
 
@@ -216,19 +216,19 @@ public class LtplParser implements PsiParser {
 		}
 
 		@Override
-		protected void dispose(LapgSymbol sym) {
+		protected void dispose(Span sym) {
 			drop(sym);
 		}
 
 		@Override
-		protected void cleanup(LapgSymbol sym) {
+		protected void cleanup(Span sym) {
 			assert sym.value == null;
 		}
 	}
 
 	private static class LtplLexerEx extends TemplatesLexer {
 		private final PsiBuilder myBuilder;
-		private LapgSymbol next;
+		private Span next;
 
 		public LtplLexerEx(PsiBuilder builder) throws IOException {
 			super(null, null);
@@ -236,7 +236,7 @@ public class LtplParser implements PsiParser {
 		}
 
 		@Override
-		public LapgSymbol next() throws IOException {
+		public Span next() throws IOException {
 			return nextInternal();
 		}
 
@@ -244,14 +244,14 @@ public class LtplParser implements PsiParser {
 		public void reset(Reader stream) throws IOException {
 		}
 
-		private LapgSymbol nextInternal() {
+		private Span nextInternal() {
 			if (next != null && !myBuilder.eof()) {
 				myBuilder.advanceLexer();
 				while (!myBuilder.eof() && myBuilder.getTokenType() == TokenType.BAD_CHARACTER) {
 					myBuilder.advanceLexer();
 				}
 			}
-			next = new LapgSymbol();
+			next = new Span();
 			if (myBuilder.eof()) {
 				next.symbol = Tokens.eoi;
 			} else {

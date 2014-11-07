@@ -19,12 +19,10 @@ package org.textmapper.idea.lang.regex.lexer;
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.tree.IElementType;
 import org.textmapper.lapg.regex.RegexDefLexer;
-import org.textmapper.lapg.regex.RegexDefLexer.LapgSymbol;
+import org.textmapper.lapg.regex.RegexDefLexer.Span;
 import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 
 /**
  * evgeny, 3/4/12
@@ -33,7 +31,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 
 	private CharSequence myText;
 	private RegexDefLexer lexer;
-	private LapgSymbol lexem;
+	private Span token;
 	private int fDocumentLength;
 	private int fTokenOffset;
 	private int fState;
@@ -48,13 +46,13 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
-		Reader reader = new StringReader(buffer.subSequence(startOffset, endOffset).toString());
+		char[] input = buffer.subSequence(startOffset, endOffset).toString().toCharArray();
 
 		try {
 			if (lexer == null) {
-				lexer = new IdeaRegexDefLexer(reader);
+				lexer = new IdeaRegexDefLexer(input);
 			} else {
-				lexer.reset(reader);
+				lexer.reset(input);
 			}
 		} catch (IOException ex) {
 			/* never happens */
@@ -65,7 +63,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		lexer.setState(initialState > 0 ? initialState - 1 : 0);
 		fState = initialState;
 		fTokenLength = 0;
-		lexem = null;
+		token = null;
 		current = null;
 	}
 
@@ -120,30 +118,30 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
-		if (lexem == null) {
+		if (token == null) {
 			fState = lexer.getState() + 1;
 			readNext();
 		}
-		if (fTokenOffset < lexem.offset) {
-			fTokenLength = lexem.offset - fTokenOffset;
+		if (fTokenOffset < token.offset) {
+			fTokenLength = token.offset - fTokenOffset;
 			if (fTokenOffset == fRegexpStartOffset && myText.charAt(fTokenOffset) == '/') {
 				fTokenLength = 1;
 				return RE_DELIMITERS;
 			}
-			if (lexem.symbol == Tokens.eoi && fTokenLength > 1 && myText.charAt(lexem.offset - 1) == '/') {
+			if (token.symbol == Tokens.eoi && fTokenLength > 1 && myText.charAt(token.offset - 1) == '/') {
 				fTokenLength--;
 				return RE_BAD;
 			}
-			if (lexem.symbol == Tokens.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
+			if (token.symbol == Tokens.eoi && fTokenLength == 1 && myText.charAt(fTokenOffset) == '/') {
 				return RE_DELIMITERS;
 			}
 			return RE_BAD;
 		}
-		int token = lexem.symbol;
-		fTokenLength = lexem.endoffset - fTokenOffset;
-		LapgSymbol currentLexem = lexem;
-		lexem = null;
-		switch (token) {
+		int symbol = token.symbol;
+		fTokenLength = token.endoffset - fTokenOffset;
+		Span currentToken = token;
+		token = null;
+		switch (symbol) {
 			case Tokens._char:
 				return RE_CHAR;
 			case Tokens.escaped:
@@ -193,22 +191,22 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		}
 
 		/* default, eoi */
-		lexem = currentLexem;
-		assert lexem.symbol == Tokens.eoi && lexem.endoffset == fDocumentLength;
+		token = currentToken;
+		assert token.symbol == Tokens.eoi && token.endoffset == fDocumentLength;
 		return null;
 	}
 
 	private void readNext() {
 		try {
-			lexem = lexer.next();
+			token = lexer.next();
 		} catch (IOException e) {
 			/* never happens */
 		}
 	}
 
 	private static class IdeaRegexDefLexer extends RegexDefLexer {
-		public IdeaRegexDefLexer(Reader stream) throws IOException {
-			super(stream, new ErrorReporter() {
+		public IdeaRegexDefLexer(char[] input) throws IOException {
+			super(input, new ErrorReporter() {
 				@Override
 				public void error(String message, int offset, int endoffset) {
 				}
@@ -216,8 +214,8 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			super.createToken(lapg_n, lexemIndex);
+		protected boolean createToken(Span token, int ruleIndex) throws IOException {
+			super.createToken(token, ruleIndex);
 			return true;
 		}
 	}

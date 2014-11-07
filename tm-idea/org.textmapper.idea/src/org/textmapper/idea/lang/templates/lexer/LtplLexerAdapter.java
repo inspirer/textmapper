@@ -20,7 +20,7 @@ import com.intellij.lexer.LexerBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.textmapper.templates.ast.TemplatesLexer;
-import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textmapper.templates.ast.TemplatesLexer.Span;
 import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 
 	private CharSequence myText;
 	private TemplatesLexer lexer;
-	private LapgSymbol lexem;
+	private Span token;
 	private int fDocumentLength;
 	private int fTokenOffset;
 	private int fState;
@@ -63,7 +63,7 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		lexer.setState(initialState);
 		fState = initialState;
 		fTokenLength = 0;
-		lexem = null;
+		token = null;
 		current = null;
 	}
 
@@ -108,19 +108,19 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
-		if (lexem == null) {
+		if (token == null) {
 			fState = lexer.getState();
 			readNext();
 		}
-		if (fTokenOffset < lexem.offset) {
-			fTokenLength = lexem.offset - fTokenOffset;
+		if (fTokenOffset < token.offset) {
+			fTokenLength = token.offset - fTokenOffset;
 			return TokenType.BAD_CHARACTER;
 		}
-		int token = lexem.symbol;
-		fTokenLength = lexem.endoffset - fTokenOffset;
-		LapgSymbol currentLexem = lexem;
-		lexem = null;
-		switch (token) {
+		int symbol = token.symbol;
+		fTokenLength = token.endoffset - fTokenOffset;
+		Span currentToken = token;
+		token = null;
+		switch (symbol) {
 			case Tokens.identifier:
 				return IDENTIFIER;
 			case Tokens.any:
@@ -256,14 +256,14 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		}
 
 		/* default, eoi */
-		lexem = currentLexem;
-		assert lexem.symbol == Tokens.eoi && lexem.endoffset == fDocumentLength;
+		token = currentToken;
+		assert token.symbol == Tokens.eoi && token.endoffset == fDocumentLength;
 		return null;
 	}
 
 	private void readNext() {
 		try {
-			lexem = lexer.next();
+			token = lexer.next();
 		} catch (IOException e) {
 			/* never happens */
 		}
@@ -279,8 +279,8 @@ public class LtplLexerAdapter extends LexerBase implements LtplTokenTypes {
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			super.createToken(lapg_n, lexemIndex);
+		protected boolean createToken(Span token, int ruleIndex) throws IOException {
+			super.createToken(token, ruleIndex);
 			return true;
 		}
 	}

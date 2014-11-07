@@ -20,7 +20,7 @@ import com.intellij.lexer.LexerBase;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
 import org.textmapper.tool.parser.TMLexer;
-import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Span;
 import org.textmapper.tool.parser.TMLexer.Tokens;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 	private CharSequence myText;
 	private TMLexer lexer;
-	private LapgSymbol lexem;
+	private Span token;
 	private int fDocumentLength;
 	private int fTokenOffset;
 	private int fTokenLength;
@@ -63,7 +63,7 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		lexer.setState(initialState);
 		fState = initialState;
 		fTokenLength = 0;
-		lexem = null;
+		token = null;
 		current = null;
 	}
 
@@ -115,19 +115,19 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 	public IElementType nextToken() {
 		fTokenOffset += fTokenLength;
-		if (lexem == null) {
+		if (token == null) {
 			fState = lexer.getState();
 			readNext();
 		}
-		if (fTokenOffset < lexem.offset) {
-			fTokenLength = lexem.offset - fTokenOffset;
+		if (fTokenOffset < token.offset) {
+			fTokenLength = token.offset - fTokenOffset;
 			return TokenType.BAD_CHARACTER;
 		}
-		int token = lexem.symbol;
-		fTokenLength = lexem.endoffset - fTokenOffset;
-		LapgSymbol currentLexem = lexem;
-		lexem = null;
-		switch (token) {
+		int symbol = token.symbol;
+		fTokenLength = token.endoffset - fTokenOffset;
+		Span currentToken = token;
+		token = null;
+		switch (symbol) {
 			case Tokens.code:
 				return TOKEN_ACTION;
 			case Tokens._skip:
@@ -290,11 +290,11 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		}
 
 		/* default, eoi */
-		lexem = currentLexem;
-		assert lexem.symbol == Tokens.eoi;
-		if (lexem.offset < fDocumentLength) {
+		token = currentToken;
+		assert token.symbol == Tokens.eoi;
+		if (token.offset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
-			lexem.offset = lexem.endoffset = fDocumentLength;
+			token.offset = token.endoffset = fDocumentLength;
 			return TEMPLATES;
 		}
 		return null;
@@ -302,7 +302,7 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 
 	private void readNext() {
 		try {
-			lexem = lexer.next();
+			token = lexer.next();
 		} catch (IOException e) {
 			/* never happens */
 		}
@@ -337,14 +337,14 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			super.createToken(lapg_n, lexemIndex);
+		protected boolean createToken(Span token, int ruleIndex) throws IOException {
+			super.createToken(token, ruleIndex);
 			return true;
 		}
 
 		@Override
-		public LapgSymbol next() throws IOException {
-			LapgSymbol next = super.next();
+		public Span next() throws IOException {
+			Span next = super.next();
 			if (next.symbol != Tokens._skip && next.symbol != Tokens._skip_comment) {
 				fAfterColonColon = (next.symbol == Tokens.ColonColon && super.getState() == States.initial);
 			}
