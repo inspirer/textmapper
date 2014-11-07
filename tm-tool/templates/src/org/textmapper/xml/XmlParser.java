@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.text.MessageFormat;
 import org.textmapper.xml.XmlLexer.ErrorReporter;
-import org.textmapper.xml.XmlLexer.LapgSymbol;
+import org.textmapper.xml.XmlLexer.Span;
 import org.textmapper.xml.XmlLexer.Tokens;
 import org.textmapper.xml.XmlTree.TextSource;
 
@@ -155,17 +155,17 @@ public class XmlParser {
 	}
 
 	protected int tmHead;
-	protected LapgSymbol[] tmStack;
-	protected LapgSymbol tmNext;
+	protected Span[] tmStack;
+	protected Span tmNext;
 	protected XmlLexer tmLexer;
 
 	public XmlNode parse(XmlLexer lexer) throws IOException, ParseException {
 
 		tmLexer = lexer;
-		tmStack = new LapgSymbol[1024];
+		tmStack = new Span[1024];
 		tmHead = 0;
 
-		tmStack[0] = new LapgSymbol();
+		tmStack[0] = new Span();
 		tmStack[0].state = 0;
 		tmNext = tmLexer.next();
 
@@ -195,7 +195,7 @@ public class XmlParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -203,28 +203,28 @@ public class XmlParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol tmLeft = new LapgSymbol();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		Span left = new Span();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
-		tmLeft.line = startsym.line;
-		tmLeft.offset = startsym.offset;
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		left.line = startsym.line;
+		left.offset = startsym.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
-		switch (tmRule) {
+	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
+		switch (ruleIndex) {
 			case 0:  // input ::= xml_tags
 				 tmLeft.value = new XmlNode("<root>", null, 1); ((XmlNode)tmLeft.value).setData(((List<XmlElement>)tmStack[tmHead].value)); 
 				break;

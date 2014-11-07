@@ -32,11 +32,11 @@ genast = true
 
 [initial, afterAt => initial, afterAtID => initial]
 
-regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $$ = token.toString().substring(1, token.length()-1); }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(current(), 1, token.length()-1); }
-icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(current()); }
+regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $$ = tokenText().substring(1, tokenSize()-1); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(tokenText(), 1, tokenSize()-1); }
+icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(tokenText()); }
 
-eoi:           /%%.*(\r?\n)?/			{ templatesStart = lapg_n.endoffset; }
+eoi:           /%%.*(\r?\n)?/			{ templatesStart = token.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
 _skip_comment:  /#.*(\r?\n)?/			{ spaceToken = skipComments; }
 
@@ -77,7 +77,7 @@ error:
 
 [initial, afterAt => afterAtID, afterAtID => initial]
 
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = current(); }
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = tokenText(); }
 
 Ltrue:  /true/
 Lfalse: /false/
@@ -127,7 +127,7 @@ Lreduce: /reduce/
 
 [initial, afterAt => initial]
 
-code:   /\{/     { skipAction(); lapg_n.endoffset = getOffset(); }
+code:   /\{/     { skipAction(); token.endoffset = getOffset(); }
 
 [afterAtID => initial]
 '{':	/\{/

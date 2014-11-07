@@ -73,7 +73,7 @@ ${end-}
 ${end-}
 ${end}
 
-${query symbolClassName() = 'LapgSymbol'}
+${query symbolClassName() = 'Span'}
 
 ${query err_location(symvar,lexervar) = self->util.location(', ' + symvar + '.', '', '')}
 

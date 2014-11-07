@@ -18,12 +18,11 @@ package org.textmapper.lapg.regex;
 import org.junit.Test;
 import org.textmapper.lapg.api.regex.*;
 import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
-import org.textmapper.lapg.regex.RegexDefLexer.LapgSymbol;
+import org.textmapper.lapg.regex.RegexDefLexer.Span;
 import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 import org.textmapper.lapg.regex.RegexDefTree.TextSource;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import static org.junit.Assert.*;
 
@@ -208,7 +207,7 @@ public class RegexDefTest {
 				fail(message);
 			}
 		});
-		LapgSymbol next;
+		Span next;
 		for (int i = 0; i < tokens.length; i++) {
 			next = lexer.next();
 			assertEquals(tokens[i], next.symbol);

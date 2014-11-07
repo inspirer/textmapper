@@ -30,7 +30,7 @@ genCopyright = true
 
 :: lexer
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $$ = current(); }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ -1 { $$ = tokenText(); }
 _skip:          /[\n\t\r ]+/ (space)
 
 Lclass: /class/

@@ -33,7 +33,7 @@ lexerInput = "buffer"
 :: lexer
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/ (class)
-												{ $$ = current(); }
+												{ $$ = tokenText(); }
 _skip:          /[\n\t\r ]+/ (space)
 
 Lclass: /class/								{ $$ = "class"; }
@@ -55,7 +55,7 @@ error:
 numeric: /0x[0-9a-fA-F]+/	(class)
 
 # class without instances; action
-octal:  /0[0-7]+/			(class)   { $$ = Integer.parseInt(current(), 8); }
+octal:  /0[0-7]+/			(class)   { $$ = Integer.parseInt(tokenText(), 8); }
 
 # class with instance
 decimal:  /[1-9][0-9]+/			(class)

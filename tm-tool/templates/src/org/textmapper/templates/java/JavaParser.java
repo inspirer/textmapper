@@ -3,7 +3,7 @@ package org.textmapper.templates.java;
 import java.io.IOException;
 import java.text.MessageFormat;
 import org.textmapper.templates.java.JavaLexer.ErrorReporter;
-import org.textmapper.templates.java.JavaLexer.LapgSymbol;
+import org.textmapper.templates.java.JavaLexer.Span;
 import org.textmapper.templates.java.JavaLexer.Tokens;
 
 public class JavaParser {
@@ -2189,17 +2189,17 @@ public class JavaParser {
 	}
 
 	protected int tmHead;
-	protected LapgSymbol[] tmStack;
-	protected LapgSymbol tmNext;
+	protected Span[] tmStack;
+	protected Span tmNext;
 	protected JavaLexer tmLexer;
 
 	private Object parse(JavaLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		tmLexer = lexer;
-		tmStack = new LapgSymbol[1024];
+		tmStack = new Span[1024];
 		tmHead = 0;
 
-		tmStack[0] = new LapgSymbol();
+		tmStack[0] = new Span();
 		tmStack[0].state = initialState;
 		tmNext = tmLexer.next();
 
@@ -2229,7 +2229,7 @@ public class JavaParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -2237,27 +2237,27 @@ public class JavaParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol tmLeft = new LapgSymbol();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		Span left = new Span();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
-		tmLeft.line = startsym.line;
-		tmLeft.offset = startsym.offset;
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		left.line = startsym.line;
+		left.offset = startsym.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
+	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
 	}
 
 	public Object parseCompilationUnit(JavaLexer lexer) throws IOException, ParseException {

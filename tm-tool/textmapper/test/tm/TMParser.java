@@ -1052,7 +1052,7 @@ public class TMParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();

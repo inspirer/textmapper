@@ -25,7 +25,7 @@ import org.textmapper.tool.parser.action.SActionParser;
 
 public class TMLexer {
 
-	public static class LapgSymbol {
+	public static class Span {
 		public Object value;
 		public int symbol;
 		public int state;
@@ -136,7 +136,7 @@ public class TMLexer {
 
 	private int state;
 
-	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
+	final private StringBuilder tokenBuffer = new StringBuilder(TOKEN_SIZE);
 
 	private int tokenLine;
 	private int currLine;
@@ -248,7 +248,7 @@ public class TMLexer {
 		}
 		if (l + 1 >= datalen) {
 			if (tokenOffset >= 0) {
-				token.append(data, tokenOffset, l - tokenOffset);
+				tokenBuffer.append(data, tokenOffset, l - tokenOffset);
 				tokenOffset = 0;
 			}
 			if (l < datalen) {
@@ -295,8 +295,12 @@ public class TMLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
-		return token.toString();
+	public String tokenText() {
+		return tokenBuffer.toString();
+	}
+
+	public int tokenSize() {
+		return tokenBuffer.length();
 	}
 
 	private static final short tmCharClass[] = {
@@ -362,30 +366,30 @@ public class TMLexer {
 		return chr == -1 ? 0 : 1;
 	}
 
-	public LapgSymbol next() throws IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public Span next() throws IOException {
+		Span token = new Span();
 		int state;
 
 		do {
-			lapg_n.offset = currOffset;
-			tokenLine = lapg_n.line = currLine;
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
+			token.offset = currOffset;
+			tokenLine = token.line = currLine;
+			if (tokenBuffer.length() > TOKEN_SIZE) {
+				tokenBuffer.setLength(TOKEN_SIZE);
+				tokenBuffer.trimToSize();
 			}
-			token.setLength(0);
+			tokenBuffer.setLength(0);
 			tokenOffset = charOffset;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
-					lapg_n.endoffset = currOffset;
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
-					lapg_n.offset = currOffset;
+					token.endoffset = currOffset;
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached", token.line, token.offset, token.endoffset);
+					token.offset = currOffset;
 					tokenOffset = -1;
-					return lapg_n;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -393,7 +397,7 @@ public class TMLexer {
 						currLine++;
 					}
 					if (l + 1 >= datalen) {
-						token.append(data, tokenOffset, l - tokenOffset);
+						tokenBuffer.append(data, tokenOffset, l - tokenOffset);
 						tokenOffset = 0;
 						if (l < datalen) {
 							data[0] = data[l];
@@ -411,41 +415,41 @@ public class TMLexer {
 					}
 				}
 			}
-			lapg_n.endoffset = currOffset;
+			token.endoffset = currOffset;
 
 			if (state == -1) {
 				if (charOffset > tokenOffset) {
-					token.append(data, tokenOffset, charOffset - tokenOffset);
+					tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
 				}
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
-				lapg_n.symbol = -1;
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
+				token.symbol = Tokens.eoi;
+				token.value = null;
 				tokenOffset = -1;
-				return lapg_n;
+				return token;
 			}
 
 			if (charOffset > tokenOffset) {
-				token.append(data, tokenOffset, charOffset - tokenOffset);
+				tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
 			}
 
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
 		tokenOffset = -1;
-		return lapg_n;
+		return token;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
+	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0:
-				return createIDToken(lapg_n, ruleIndex);
+				return createIDToken(token, ruleIndex);
 			case 1: // regexp: /\/([^\/\\\n]|\\.)*\//
 				switch(state) {
 					case States.afterAt:
@@ -455,7 +459,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = token.toString().substring(1, token.length()-1); 
+				 token.value = tokenText().substring(1, tokenSize()-1); 
 				break;
 			case 2: // scon: /"([^\n\\"]|\\.)*"/
 				switch(state) {
@@ -466,7 +470,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = unescape(current(), 1, token.length()-1); 
+				 token.value = unescape(tokenText(), 1, tokenSize()-1); 
 				break;
 			case 3: // icon: /\-?[0-9]+/
 				switch(state) {
@@ -477,7 +481,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = Integer.parseInt(current()); 
+				 token.value = Integer.parseInt(tokenText()); 
 				break;
 			case 4: // eoi: /%%.*(\r?\n)?/
 				switch(state) {
@@ -488,7 +492,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 templatesStart = lapg_n.endoffset; 
+				 templatesStart = token.endoffset; 
 				break;
 			case 5: // _skip: /[\n\r\t ]+/
 				spaceToken = true;
@@ -821,7 +825,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 skipAction(); lapg_n.endoffset = getOffset(); 
+				 skipAction(); token.endoffset = getOffset(); 
 				break;
 			case 72: // '{': /\{/
 				state = States.initial;
@@ -867,11 +871,11 @@ public class TMLexer {
 		subTokensOfID.put("reduce", 70);
 	}
 
-	protected boolean createIDToken(LapgSymbol lapg_n, int ruleIndex) {
-		Integer replacement = subTokensOfID.get(current());
+	protected boolean createIDToken(Span token, int ruleIndex) {
+		Integer replacement = subTokensOfID.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
-			lapg_n.symbol = tmRuleSymbol[ruleIndex];
+			token.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
@@ -989,7 +993,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = current(); 
+				 token.value = tokenText(); 
 				break;
 		}
 		return !(spaceToken);

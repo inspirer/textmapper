@@ -287,9 +287,9 @@ ${end-}
 ${end}
 
 ${template applyRule-}
-	applyRule: function(tmLeft, tmRule, tmLength) {
+	applyRule: function(tmLeft, ruleIndex, ruleLength) {
 ${if syntax.rules.exists(r|r.getAction())-}
-		switch (tmRule) {
+		switch (ruleIndex) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction()-}
 		case ${rule.getIndex()}:  // ${rule}
@@ -304,7 +304,7 @@ ${end}
 
 ${template debugShift-}
 		if (${context.opts.module}.DEBUG_SYNTAX) {
-			console.log("shift: " + this.tmSymbolNames[this.tmNext.symbol] + " (" + this.tmLexer.current() + ")");
+			console.log("shift: " + this.tmSymbolNames[this.tmNext.symbol] + " (" + this.tmLexer.token + ")");
 		}
 ${end}
 

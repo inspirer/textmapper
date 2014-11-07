@@ -25,4 +25,4 @@ ${end}
 ${template classcode-}
 ${end}
 
-${cached query symbolClassName() = 'ParseSymbol'}
+${cached query symbolClassName() = 'Span'}

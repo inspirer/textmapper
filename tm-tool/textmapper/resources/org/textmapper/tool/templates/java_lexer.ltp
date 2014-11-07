@@ -29,7 +29,7 @@ ${end-}
 	private int state;
 
 ${if opts.lexerInput != 'buffer'-}
-	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
+	final private StringBuilder tokenBuffer = new StringBuilder(TOKEN_SIZE);
 
 ${end-}
 	private int tokenLine;
@@ -114,11 +114,19 @@ ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 	}
 
 ${end-}
-	public String current() {
+	public String tokenText() {
 ${if opts.lexerInput == 'buffer'-}
 		return new String(data, tokenOffset, charOffset - tokenOffset);
 ${else-}
-		return token.toString();
+		return tokenBuffer.toString();
+${end-}
+	}
+
+	public int tokenSize() {
+${if opts.lexerInput == 'buffer'-}
+		return charOffset - tokenOffset;
+${else-}
+		return tokenBuffer.length();
 ${end-}
 	}
 
@@ -126,23 +134,23 @@ ${self->lexerTables()-}
 ${call mapCharacter-}
 
 	public ${self->java.symbolClassName()} next() throws java.io.@IOException {
-		${self->java.symbolClassName()} lapg_n = new ${self->java.symbolClassName()}();
+		${self->java.symbolClassName()} token = new ${self->java.symbolClassName()}();
 		int state;
 
 		do {
 ${if opts.positions.contains('offset')-}
-			lapg_n.offset = currOffset;
+			token.offset = currOffset;
 ${end-}
-			tokenLine =${if opts.positions.contains('line')} lapg_n.line =${end} currLine;
+			tokenLine =${if opts.positions.contains('line')} token.line =${end} currLine;
 ${if opts.positions.contains('column')-}
-			lapg_n.column = currColumn;
+			token.column = currColumn;
 ${end-}
 ${if opts.lexerInput != 'buffer'-}
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
+			if (tokenBuffer.length() > TOKEN_SIZE) {
+				tokenBuffer.setLength(TOKEN_SIZE);
+				tokenBuffer.trimToSize();
 			}
-			token.setLength(0);
+			tokenBuffer.setLength(0);
 ${end-}
 ${if opts.lexerInput == 'stream' || opts.lexerInput == 'buffer'-}
 			tokenOffset = charOffset;
@@ -152,73 +160,73 @@ ${end-}
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
 ${if opts.endpositions.contains('offset')-}
-					lapg_n.endoffset = currOffset;
+					token.endoffset = currOffset;
 ${end-}
 ${if opts.endpositions.contains('line')-}
-					lapg_n.endline = currLine;
+					token.endline = currLine;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-					lapg_n.endcolumn = currColumn;
+					token.endcolumn = currColumn;
 ${end-}
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached"${call java.err_location('lapg_n', 'this') });
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached"${call java.err_location('token', 'this') });
 ${if opts.positions.contains('offset')-}
-					lapg_n.offset = currOffset;
+					token.offset = currOffset;
 ${end-}
 ${if opts.lexerInput == 'stream'-}
 					tokenOffset = -1;
 ${end-}
-					return lapg_n;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 ${util.shiftRight(self->advanceChar(true, false), 3)-}
 				}
 			}
 ${if opts.endpositions.contains('offset')-}
-			lapg_n.endoffset = currOffset;
+			token.endoffset = currOffset;
 ${end-}
 ${if opts.endpositions.contains('line')-}
-			lapg_n.endline = currLine;
+			token.endline = currLine;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-			lapg_n.endcolumn = currColumn;
+			token.endcolumn = currColumn;
 ${end-}
 
 			if (state == -1) {
 ${if opts.lexerInput == 'stream'-}
 				if (charOffset > tokenOffset) {
-					token.append(data, tokenOffset, charOffset - tokenOffset);
+					tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
 				}
 ${end-}
-				reporter.error(java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current())${call java.err_location('lapg_n', 'this') });
-				lapg_n.symbol = -1;
+				reporter.error(java.text.@MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText())${call java.err_location('token', 'this') });
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
+				token.symbol = Tokens.eoi;
+				token.value = null;
 ${if opts.lexerInput == 'stream'-}
 				tokenOffset = -1;
 ${end-}
-				return lapg_n;
+				return token;
 			}
 
 ${if opts.lexerInput == 'stream'-}
 			if (charOffset > tokenOffset) {
-				token.append(data, tokenOffset, charOffset - tokenOffset);
+				tokenBuffer.append(data, tokenOffset, charOffset - tokenOffset);
 			}
 
 ${end-}
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
 ${if opts.lexerInput == 'stream'-}
 		tokenOffset = -1;
 ${end-}
-		return lapg_n;
+		return token;
 	}
 ${call createToken-}
 ${call unpackRoutines-}
@@ -246,17 +254,17 @@ ${end}
 
 
 ${template createToken}
-	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
+	protected boolean createToken(${self->java.symbolClassName()} token, int ruleIndex) throws java.io.@IOException {
 ${if self->hasLexerActions()-}
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 ${foreach rule in syntax.lexerRules-}
 ${if rule.kindAsText == 'class'-}
 			case ${rule.index}:
-				return create${rule->classRuleName()}Token(lapg_n, ruleIndex);
+				return create${rule->classRuleName()}Token(token, ruleIndex);
 ${else if rule->hasActions() && !rule.classRule-}
 			case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for rule-}
+${call lexerAction('token.value', 'token.symbol') for rule-}
 				break;
 ${end-}
 ${end-}
@@ -277,12 +285,12 @@ ${end-}
 	}
 ${end-}
 
-	protected boolean create${classRule->classRuleName()}Token(${self->java.symbolClassName()} lapg_n, int ruleIndex) {
+	protected boolean create${classRule->classRuleName()}Token(${self->java.symbolClassName()} token, int ruleIndex) {
 ${if classRule->classHasInstances()-}
-		Integer replacement = subTokensOf${classRule->classRuleName()}.get(current());
+		Integer replacement = subTokensOf${classRule->classRuleName()}.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
-			lapg_n.symbol = tmRuleSymbol[ruleIndex];
+			token.symbol = tmRuleSymbol[ruleIndex];
 		}
 ${end-}
 ${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActions()-}
@@ -290,7 +298,7 @@ ${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActi
 		switch(ruleIndex) {
 ${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
 			case ${instance.index}:	// ${instance.regexp.constantValue}
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for instance-}
+${call lexerAction('token.value', 'token.symbol') for instance-}
 				break;
 ${end-}
 ${if classRule->hasActions()-}
@@ -298,7 +306,7 @@ ${foreach instance in classRule->classInstances().select(x|!x.action && x.kindAs
 			case ${instance.index}:	// ${instance.regexp.constantValue} (soft)
 ${end-}
 			case ${classRule.index}:	// <default>
-${call lexerAction('lapg_n.value', 'lapg_n.symbol') for classRule-}
+${call lexerAction('token.value', 'token.symbol') for classRule-}
 				break;
 ${end-}
 		}
@@ -334,9 +342,9 @@ ${end-}
 ${if opts.lexerInput == 'custom'-}
 ${if !first-}
 		if (chr >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-			token.append(Character.toChars(chr));
+			tokenBuffer.append(Character.toChars(chr));
 		} else {
-			token.append((char) chr);
+			tokenBuffer.append((char) chr);
 		}
 ${end-}
 		chr = nextChar();
@@ -351,11 +359,11 @@ ${else if opts.lexerInput == 'stream'-}
 		if (l + 1 >= datalen) {
 ${if !first-}
 ${if inNext-}
-			token.append(data, tokenOffset, l - tokenOffset);
+			tokenBuffer.append(data, tokenOffset, l - tokenOffset);
 			tokenOffset = 0;
 ${else-}
 			if (tokenOffset >= 0) {
-				token.append(data, tokenOffset, l - tokenOffset);
+				tokenBuffer.append(data, tokenOffset, l - tokenOffset);
 				tokenOffset = 0;
 			}
 ${end-}

@@ -190,41 +190,41 @@ ${call debugShift-}
 	}
 
 	protected void reduce(int rule) {
-		${self->java.symbolClassName()} tmLeft = new ${self->java.symbolClassName()}();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		${self->java.symbolClassName()} left = new ${self->java.symbolClassName()}();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 ${call debugReduce-}
 ${if opts.positions.contains('line') || opts.positions.contains('offset') || opts.positions.contains('column')-}
 		${self->java.symbolClassName()} startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
 ${if opts.positions.contains('line')-}
-		tmLeft.line = ${if self->lazyNext()}startsym == null ? tmLexer.getLine() : ${end}startsym.line;
+		left.line = ${if self->lazyNext()}startsym == null ? tmLexer.getLine() : ${end}startsym.line;
 ${end-}
 ${if opts.positions.contains('column')-}
-		tmLeft.column = ${if self->lazyNext()}startsym == null ? tmLexer.getColumn() : ${end}startsym.column;
+		left.column = ${if self->lazyNext()}startsym == null ? tmLexer.getColumn() : ${end}startsym.column;
 ${end-}
 ${if opts.positions.contains('offset')-}
-		tmLeft.offset = ${if self->lazyNext()}startsym == null ? tmLexer.getOffset() : ${end}startsym.offset;
+		left.offset = ${if self->lazyNext()}startsym == null ? tmLexer.getOffset() : ${end}startsym.offset;
 ${end-}
 ${end-}
 ${if opts.endpositions.contains('line')-}
-		tmLeft.endline = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endline : ${if self->lazyNext()}tmNext == null ? tmLexer.getLine() : ${end}tmNext.line;
+		left.endline = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endline : ${if self->lazyNext()}tmNext == null ? tmLexer.getLine() : ${end}tmNext.line;
 ${end-}
 ${if opts.endpositions.contains('column')-}
-		tmLeft.endcolumn = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endcolumn : ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column;
+		left.endcolumn = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endcolumn : ${if self->lazyNext()}tmNext == null ? tmLexer.getColumn() : ${end}tmNext.column;
 ${end-}
 ${if opts.endpositions.contains('offset')-}
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : ${if self->lazyNext()}tmNext == null ? tmLexer.getOffset() : ${end}tmNext.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : ${if self->lazyNext()}tmNext == null ? tmLexer.getOffset() : ${end}tmNext.offset;
 ${end-}
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 ${if opts.genCleanup-}
 			cleanup(tmStack[tmHead]);
 ${end-}
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 ${call applyRule-}
@@ -257,9 +257,9 @@ ${end}
 
 ${template applyRule-}
 	@SuppressWarnings("unchecked")
-	protected void applyRule(${self->java.symbolClassName()} tmLeft, int tmRule, int tmLength) {
+	protected void applyRule(${self->java.symbolClassName()} tmLeft, int ruleIndex, int ruleLength) {
 ${if syntax.rules.exists(r|r.getAction()) || opts.genast -}
-		switch (tmRule) {
+		switch (ruleIndex) {
 ${foreach rule in syntax.rules-}
 ${if rule.getAction() || opts.genast && self->java_ast.astcode(rule)-}
 			case ${rule.getIndex()}:  // ${rule}
@@ -288,7 +288,7 @@ ${end}
 
 ${template debugShift-}
 		if (DEBUG_SYNTAX) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
 ${end}
 

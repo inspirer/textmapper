@@ -31,7 +31,7 @@ ${end}
 
 ${template debugShift-}
 		if (debugSyntax) {
-			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.current()));
+			System.out.println(java.text.@MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.tokenText()));
 		}
 ${end}
 

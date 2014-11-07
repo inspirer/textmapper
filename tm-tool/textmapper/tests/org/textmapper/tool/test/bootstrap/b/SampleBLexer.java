@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class SampleBLexer {
 
-	public static class LapgSymbol {
+	public static class Span {
 		public Object value;
 		public int symbol;
 		public int state;
@@ -134,8 +134,12 @@ public class SampleBLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
+	public String tokenText() {
 		return new String(data, tokenOffset, charOffset - tokenOffset);
+	}
+
+	public int tokenSize() {
+		return charOffset - tokenOffset;
 	}
 
 	private static final short tmCharClass[] = {
@@ -184,24 +188,24 @@ public class SampleBLexer {
 		return chr == -1 ? 0 : 1;
 	}
 
-	public LapgSymbol next() throws IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public Span next() throws IOException {
+		Span token = new Span();
 		int state;
 
 		do {
-			lapg_n.offset = currOffset;
+			token.offset = currOffset;
 			tokenLine = currLine;
 			tokenOffset = charOffset;
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
-					lapg_n.endoffset = currOffset;
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached", lapg_n.offset, lapg_n.endoffset);
-					lapg_n.offset = currOffset;
-					return lapg_n;
+					token.endoffset = currOffset;
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached", token.offset, token.endoffset);
+					token.offset = currOffset;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -216,38 +220,38 @@ public class SampleBLexer {
 					}
 				}
 			}
-			lapg_n.endoffset = currOffset;
+			token.endoffset = currOffset;
 
 			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.offset, lapg_n.endoffset);
-				lapg_n.symbol = -1;
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.offset, token.endoffset);
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
-				return lapg_n;
+				token.symbol = Tokens.eoi;
+				token.value = null;
+				return token;
 			}
 
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		return lapg_n;
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		return token;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
+	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0:
-				return createIdentifierToken(lapg_n, ruleIndex);
+				return createIdentifierToken(token, ruleIndex);
 			case 1:
-				return createNumericToken(lapg_n, ruleIndex);
+				return createNumericToken(token, ruleIndex);
 			case 2:
-				return createOctalToken(lapg_n, ruleIndex);
+				return createOctalToken(token, ruleIndex);
 			case 3:
-				return createDecimalToken(lapg_n, ruleIndex);
+				return createDecimalToken(token, ruleIndex);
 			case 4: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
 				break;
@@ -264,41 +268,41 @@ public class SampleBLexer {
 		subTokensOfIdentifier.put("xyzzz", 14);
 	}
 
-	protected boolean createIdentifierToken(LapgSymbol lapg_n, int ruleIndex) {
-		Integer replacement = subTokensOfIdentifier.get(current());
+	protected boolean createIdentifierToken(Span token, int ruleIndex) {
+		Integer replacement = subTokensOfIdentifier.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
-			lapg_n.symbol = tmRuleSymbol[ruleIndex];
+			token.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 5:	// class
-				 lapg_n.value = "class"; 
+				 token.value = "class"; 
 				break;
 			case 11:	// interface
-				 lapg_n.value = "interface"; 
+				 token.value = "interface"; 
 				break;
 			case 12:	// enum
-				 lapg_n.value = new Object(); 
+				 token.value = new Object(); 
 				break;
 			case 6:	// extends (soft)
 			case 14:	// xyzzz (soft)
 			case 0:	// <default>
-				 lapg_n.value = current(); 
+				 token.value = tokenText(); 
 				break;
 		}
 		return !(spaceToken);
 	}
 
-	protected boolean createNumericToken(LapgSymbol lapg_n, int ruleIndex) {
+	protected boolean createNumericToken(Span token, int ruleIndex) {
 		return true;
 	}
 
-	protected boolean createOctalToken(LapgSymbol lapg_n, int ruleIndex) {
+	protected boolean createOctalToken(Span token, int ruleIndex) {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 2:	// <default>
-				 lapg_n.value = Integer.parseInt(current(), 8); 
+				 token.value = Integer.parseInt(tokenText(), 8); 
 				break;
 		}
 		return !(spaceToken);
@@ -309,16 +313,16 @@ public class SampleBLexer {
 		subTokensOfDecimal.put("11", 13);
 	}
 
-	protected boolean createDecimalToken(LapgSymbol lapg_n, int ruleIndex) {
-		Integer replacement = subTokensOfDecimal.get(current());
+	protected boolean createDecimalToken(Span token, int ruleIndex) {
+		Integer replacement = subTokensOfDecimal.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
-			lapg_n.symbol = tmRuleSymbol[ruleIndex];
+			token.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 13:	// 11
-				 lapg_n.value = 11; 
+				 token.value = 11; 
 				break;
 		}
 		return !(spaceToken);

@@ -27,7 +27,7 @@ ${template mapCharacter-}
 ${end}
 
 ${template createToken}
-	protected boolean createToken(${self->java.symbolClassName()} lapg_n, int ruleIndex) throws java.io.@IOException {
+	protected boolean createToken(${self->java.symbolClassName()} token, int ruleIndex) throws java.io.@IOException {
 		int lexemeKind = grammar.getLexerRules()[ruleIndex].getKind();
 		return lexemeKind != org.textmapper.lapg.api.@LexerRule.KIND_SPACE;
 	}

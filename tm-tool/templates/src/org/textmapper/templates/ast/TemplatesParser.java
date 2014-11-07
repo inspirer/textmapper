@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.textmapper.templates.ast.TemplatesLexer.ErrorReporter;
-import org.textmapper.templates.ast.TemplatesLexer.LapgSymbol;
+import org.textmapper.templates.ast.TemplatesLexer.Span;
 import org.textmapper.templates.ast.TemplatesLexer.Tokens;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
 import org.textmapper.templates.bundle.IBundleEntity;
@@ -674,18 +674,18 @@ public class TemplatesParser {
 	}
 
 	protected int tmHead;
-	protected LapgSymbol[] tmStack;
-	protected LapgSymbol tmNext;
+	protected Span[] tmStack;
+	protected Span tmNext;
 	protected TemplatesLexer tmLexer;
 
 	private Object parse(TemplatesLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		tmLexer = lexer;
-		tmStack = new LapgSymbol[1024];
+		tmStack = new Span[1024];
 		tmHead = 0;
 		int tmShiftsAfterError = 4;
 
-		tmStack[0] = new LapgSymbol();
+		tmStack[0] = new Span();
 		tmStack[0].state = initialState;
 		tmNext = tmLexer.next();
 
@@ -712,7 +712,7 @@ public class TemplatesParser {
 				}
 				if (tmHead < 0) {
 					tmHead = 0;
-					tmStack[0] = new LapgSymbol();
+					tmStack[0] = new Span();
 					tmStack[0].state = initialState;
 				}
 				break;
@@ -739,7 +739,7 @@ public class TemplatesParser {
 			tmHead--;
 		}
 		if (tmHead >= 0) {
-			tmStack[++tmHead] = new LapgSymbol();
+			tmStack[++tmHead] = new Span();
 			tmStack[tmHead].symbol = 65;
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, 65);
@@ -755,7 +755,7 @@ public class TemplatesParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (DEBUG_SYNTAX) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", tmSymbolNames[tmNext.symbol], tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = tmLexer.next();
@@ -763,29 +763,29 @@ public class TemplatesParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol tmLeft = new LapgSymbol();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		Span left = new Span();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
-		tmLeft.line = startsym.line;
-		tmLeft.offset = startsym.offset;
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		left.line = startsym.line;
+		left.offset = startsym.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			cleanup(tmStack[tmHead]);
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
-		switch (tmRule) {
+	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
+		switch (ruleIndex) {
 			case 1:  // definitions ::= definition
 				 tmLeft.value = new ArrayList(); if (((IBundleEntity)tmStack[tmHead].value) != null) ((List<IBundleEntity>)tmLeft.value).add(((IBundleEntity)tmStack[tmHead].value)); 
 				break;
@@ -1068,13 +1068,13 @@ public class TemplatesParser {
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(LapgSymbol value) {
+	protected void dispose(Span value) {
 	}
 
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(LapgSymbol value) {
+	protected void cleanup(Span value) {
 	}
 
 	public List<IBundleEntity> parseInput(TemplatesLexer lexer) throws IOException, ParseException {

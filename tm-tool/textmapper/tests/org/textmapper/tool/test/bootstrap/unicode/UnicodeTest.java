@@ -17,10 +17,10 @@ package org.textmapper.tool.test.bootstrap.unicode;
 
 import org.junit.Test;
 import org.textmapper.lapg.api.regex.CharacterSet;
-import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.ErrorReporter;
-import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.LapgSymbol;
-import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.Tokens;
 import org.textmapper.lapg.unicode.UnicodeData;
+import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.ErrorReporter;
+import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.Span;
+import org.textmapper.tool.test.bootstrap.unicode.UnicodeTestLexer.Tokens;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -69,7 +69,7 @@ public class UnicodeTest {
 					fail("unexpected failure: " + line + ": " + message);
 				}
 			});
-			LapgSymbol next;
+			Span next;
 			for (int i = 0; i < expectedTokens.length; i++) {
 				int expected = expectedTokens[i];
 				next = lexer.next();

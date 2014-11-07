@@ -21,7 +21,7 @@ import java.text.MessageFormat;
 
 public abstract class SActionLexer {
 
-	public static class LapgSymbol {
+	public static class Span {
 		public Object value;
 		public int symbol;
 		public int state;
@@ -50,7 +50,7 @@ public abstract class SActionLexer {
 
 	private int state;
 
-	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
+	final private StringBuilder tokenBuffer = new StringBuilder(TOKEN_SIZE);
 
 	private int tokenLine;
 	private int currLine;
@@ -76,9 +76,9 @@ public abstract class SActionLexer {
 			currLine++;
 		}
 		if (chr >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-			token.append(Character.toChars(chr));
+			tokenBuffer.append(Character.toChars(chr));
 		} else {
-			token.append((char) chr);
+			tokenBuffer.append((char) chr);
 		}
 		chr = nextChar();
 	}
@@ -111,8 +111,12 @@ public abstract class SActionLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
-		return token.toString();
+	public String tokenText() {
+		return tokenBuffer.toString();
+	}
+
+	public int tokenSize() {
+		return tokenBuffer.length();
 	}
 
 	private static final short tmCharClass[] = {
@@ -159,61 +163,61 @@ public abstract class SActionLexer {
 		return chr == -1 ? 0 : 1;
 	}
 
-	public LapgSymbol next() throws IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public Span next() throws IOException {
+		Span token = new Span();
 		int state;
 
 		do {
-			lapg_n.offset = currOffset;
-			tokenLine = lapg_n.line = currLine;
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
+			token.offset = currOffset;
+			tokenLine = token.line = currLine;
+			if (tokenBuffer.length() > TOKEN_SIZE) {
+				tokenBuffer.setLength(TOKEN_SIZE);
+				tokenBuffer.trimToSize();
 			}
-			token.setLength(0);
+			tokenBuffer.setLength(0);
 
 			for (state = this.state; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset);
-					lapg_n.offset = currOffset;
-					return lapg_n;
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached", token.line, token.offset);
+					token.offset = currOffset;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 					if (chr == '\n') {
 						currLine++;
 					}
 					if (chr >= Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-						token.append(Character.toChars(chr));
+						tokenBuffer.append(Character.toChars(chr));
 					} else {
-						token.append((char) chr);
+						tokenBuffer.append((char) chr);
 					}
 					chr = nextChar();
 				}
 			}
 
 			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset);
-				lapg_n.symbol = -1;
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset);
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
-				return lapg_n;
+				token.symbol = Tokens.eoi;
+				token.value = null;
+				return token;
 			}
 
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		return lapg_n;
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		return token;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
+	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 1: // _skip: /'([^\n\\']|\\.)*'/

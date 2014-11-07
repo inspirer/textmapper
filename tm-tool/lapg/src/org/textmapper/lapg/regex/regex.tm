@@ -33,9 +33,9 @@ genCopyright = true
 
 [initial, afterChar, inSet]
 
-char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $$ = current().codePointAt(0); quantifierReady(); }
+char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 escaped(Integer): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-												{ $$ = (int) current().charAt(1); quantifierReady(); }
+												{ $$ = (int) tokenText().charAt(1); quantifierReady(); }
 escaped(Integer): /\\a/							{ $$ = (int) 7; quantifierReady(); }
 escaped(Integer): /\\b/							{ $$ = (int) '\b'; quantifierReady(); }
 escaped(Integer): /\\f/							{ $$ = (int) '\f'; quantifierReady(); }
@@ -43,13 +43,13 @@ escaped(Integer): /\\n/							{ $$ = (int) '\n'; quantifierReady(); }
 escaped(Integer): /\\r/							{ $$ = (int) '\r'; quantifierReady(); }
 escaped(Integer): /\\t/							{ $$ = (int) '\t'; quantifierReady(); }
 escaped(Integer): /\\v/							{ $$ = (int) 0xb; quantifierReady(); }
-escaped(Integer): /\\[0-7][0-7][0-7]/			{ $$ = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
+escaped(Integer): /\\[0-7][0-7][0-7]/			{ $$ = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); }
 hx = /[0-9A-Fa-f]/
-escaped(Integer): /\\x{hx}{2}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-escaped(Integer): /\\u{hx}{4}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-escaped(Integer): /\\U{hx}{8}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-charclass(String): /\\[wWsSdD]/					{ $$ = current().substring(1); quantifierReady(); }
-charclass(String): /\\p\{\w+\}/					{ $$ = current().substring(3, current().length() - 1); quantifierReady(); }
+escaped(Integer): /\\x{hx}{2}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+escaped(Integer): /\\u{hx}{4}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+escaped(Integer): /\\U{hx}{8}/					{ $$ = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
+charclass(String): /\\[wWsSdD]/					{ $$ = tokenText().substring(1); quantifierReady(); }
+charclass(String): /\\p\{\w+\}/					{ $$ = tokenText().substring(3, tokenSize() - 1); quantifierReady(); }
 
 '.':  /\./										{ quantifierReady(); }
 
@@ -66,7 +66,7 @@ op_intersect:	/\{&&\}/
 
 [initial, inSet]
 
-char(Integer): /[*+?]/							{ $$ = current().codePointAt(0); quantifierReady(); }
+char(Integer): /[*+?]/							{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 [initial, afterChar]
 
@@ -78,7 +78,7 @@ char(Integer): /[*+?]/							{ $$ = current().codePointAt(0); quantifierReady();
 
 '[':	/\[/  => inSet
 '[^':	/\[^/ => inSet
-char(Integer):  /-/								{ $$ = current().codePointAt(0); quantifierReady(); }
+char(Integer):  /-/								{ $$ = tokenText().codePointAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
 
@@ -89,7 +89,7 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 
 ']':  /\]/										{ state = 0; quantifierReady(); }
 '-':  /-/
-char(Integer):  /[\(\|\)]/						{ $$ = current().codePointAt(0); }
+char(Integer):  /[\(\|\)]/						{ $$ = tokenText().codePointAt(0); }
 
 :: parser
 
@@ -163,10 +163,10 @@ private void quantifierReady() {
 	if (state == 0) state = 1;
 }
 
-private int parseCodePoint(String s, LapgSymbol lapg_n) {
+private int parseCodePoint(String s, Span token) {
 	int ch = RegexUtil.unescapeHex(s);
 	if (Character.isValidCodePoint(ch)) return ch;
-	reporter.error("unicode code point is out of range", lapg_n.offset, lapg_n.endoffset);
+	reporter.error("unicode code point is out of range", token.offset, token.endoffset);
 	return 0;
 }
 ${end}

@@ -88,8 +88,8 @@ public class EoiTest {
 			}
 		}) {
 			@Override
-			protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
-				super.createToken(lapg_n, ruleIndex);
+			protected boolean createToken(Span token, int ruleIndex) throws IOException {
+				super.createToken(token, ruleIndex);
 				// Return (space) tokens as well.
 				return true;
 			}

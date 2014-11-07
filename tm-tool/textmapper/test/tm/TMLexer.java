@@ -265,7 +265,7 @@ public class TMLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
+	public String tokenText() {
 		return token.toString();
 	}
 
@@ -378,7 +378,7 @@ public class TMLexer {
 				if (l - 1 > tokenStart) {
 					token.append(data, tokenStart, l - 1 - tokenStart);
 				}
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
 				lapg_n.symbol = -1;
 				continue;
 			}
@@ -427,7 +427,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = unescape(current(), 1, token.length()-1); 
+				 lapg_n.value = unescape(tokenText(), 1, token.length()-1);
 				break;
 			case 3: // icon: /\-?[0-9]+/
 				switch(state) {
@@ -438,7 +438,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = Integer.parseInt(current()); 
+				 lapg_n.value = Integer.parseInt(tokenText());
 				break;
 			case 4: // eoi: /%%.*(\r?\n)?/
 				switch(state) {
@@ -829,7 +829,7 @@ public class TMLexer {
 	}
 
 	protected boolean createIDToken(LapgSymbol lapg_n, int ruleIndex) {
-		Integer replacement = subTokensOfID.get(current());
+		Integer replacement = subTokensOfID.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
 			lapg_n.symbol = tmRuleSymbol[ruleIndex];
@@ -950,7 +950,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 lapg_n.value = current(); 
+				 lapg_n.value = tokenText();
 				break;
 		}
 		return !(spaceToken);

@@ -22,7 +22,7 @@ import java.util.List;
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.ParserData;
 import org.textmapper.lapg.eval.GenericLexer.ErrorReporter;
-import org.textmapper.lapg.eval.GenericLexer.ParseSymbol;
+import org.textmapper.lapg.eval.GenericLexer.Span;
 import org.textmapper.lapg.eval.GenericLexer.Tokens;
 import org.textmapper.lapg.eval.GenericParseContext.TextSource;
 
@@ -104,18 +104,18 @@ public class GenericParser {
 	}
 
 	protected int tmHead;
-	protected ParseSymbol[] tmStack;
-	protected ParseSymbol tmNext;
+	protected Span[] tmStack;
+	protected Span tmNext;
 	protected GenericLexer tmLexer;
 
 	public Object parse(GenericLexer lexer, int initialState, int finalState, boolean noEoi) throws IOException, ParseException {
 
 		tmLexer = lexer;
-		tmStack = new ParseSymbol[1024];
+		tmStack = new Span[1024];
 		tmHead = 0;
 		int tmShiftsAfterError = 4;
 
-		tmStack[0] = new ParseSymbol();
+		tmStack[0] = new Span();
 		tmStack[0].state = initialState;
 		tmNext = tmLexer.next();
 
@@ -149,7 +149,7 @@ public class GenericParser {
 				}
 				if (tmHead < 0) {
 					tmHead = 0;
-					tmStack[0] = new ParseSymbol();
+					tmStack[0] = new Span();
 					tmStack[0].state = initialState;
 				}
 				break;
@@ -179,7 +179,7 @@ public class GenericParser {
 			tmHead--;
 		}
 		if (tmHead >= 0) {
-			tmStack[++tmHead] = new ParseSymbol();
+			tmStack[++tmHead] = new Span();
 			tmStack[tmHead].symbol = grammar.getError().getIndex();
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, grammar.getError().getIndex());
@@ -198,7 +198,7 @@ public class GenericParser {
 		tmStack[++tmHead] = tmNext;
 		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmNext.symbol);
 		if (debugSyntax) {
-			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.current()));
+			System.out.println(MessageFormat.format("shift: {0} ({1})", grammar.getSymbols()[tmNext.symbol].getName(), tmLexer.tokenText()));
 		}
 		if (tmStack[tmHead].state != -1 && tmNext.symbol != 0) {
 			tmNext = lazy ? null : tmLexer.next();
@@ -206,27 +206,27 @@ public class GenericParser {
 	}
 
 	protected void reduce(int rule) {
-		ParseSymbol tmLeft = new ParseSymbol();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		Span left = new Span();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 		if (debugSyntax) {
 			System.out.println("reduce to " + grammar.getSymbols()[tmRuleSymbol[rule]].getName());
 		}
-		ParseSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
-		tmLeft.line = startsym == null ? tmLexer.getLine() : startsym.line;
-		tmLeft.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		left.line = startsym == null ? tmLexer.getLine() : startsym.line;
+		left.offset = startsym == null ? tmLexer.getOffset() : startsym.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext == null ? tmLexer.getOffset() : tmNext.offset;
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			cleanup(tmStack[tmHead]);
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
-	protected void applyRule(ParseSymbol tmLeft, int rule, int ruleLength) {
+	protected void applyRule(Span tmLeft, int rule, int ruleLength) {
 		if (ruleLength == 1) {
 			Object right = tmStack[tmHead].value;
 			if (right instanceof GenericNode) {
@@ -248,12 +248,12 @@ public class GenericParser {
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(ParseSymbol value) {
+	protected void dispose(Span value) {
 	}
 
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(ParseSymbol value) {
+	protected void cleanup(Span value) {
 	}
 }

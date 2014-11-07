@@ -16,13 +16,14 @@
 package org.textmapper.lapg.regex;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RegexDefLexer {
 
-	public static class LapgSymbol {
+	public static class Span {
 		public Object value;
 		public int symbol;
 		public int state;
@@ -68,6 +69,7 @@ public class RegexDefLexer {
 
 	public static final int TOKEN_SIZE = 2048;
 
+	private Reader stream;
 	final private ErrorReporter reporter;
 
 	private char[] data;
@@ -90,10 +92,10 @@ public class RegexDefLexer {
 		if (state == 0) state = 1;
 	}
 
-	private int parseCodePoint(String s, LapgSymbol lapg_n) {
+	private int parseCodePoint(String s, Span token) {
 		int ch = RegexUtil.unescapeHex(s);
 		if (Character.isValidCodePoint(ch)) return ch;
-		reporter.error("unicode code point is out of range", lapg_n.offset, lapg_n.endoffset);
+		reporter.error("unicode code point is out of range", token.offset, token.endoffset);
 		return 0;
 	}
 
@@ -158,8 +160,12 @@ public class RegexDefLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
+	public String tokenText() {
 		return new String(data, tokenOffset, charOffset - tokenOffset);
+	}
+
+	public int tokenSize() {
+		return charOffset - tokenOffset;
 	}
 
 	private static final short tmCharClass[] = {
@@ -232,24 +238,24 @@ public class RegexDefLexer {
 		return chr == -1 ? 0 : 1;
 	}
 
-	public LapgSymbol next() throws IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public Span next() throws IOException {
+		Span token = new Span();
 		int state;
 
 		do {
-			lapg_n.offset = currOffset;
+			token.offset = currOffset;
 			tokenLine = currLine;
 			tokenOffset = charOffset;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
-					lapg_n.endoffset = currOffset;
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached", lapg_n.offset, lapg_n.endoffset);
-					lapg_n.offset = currOffset;
-					return lapg_n;
+					token.endoffset = currOffset;
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached", token.offset, token.endoffset);
+					token.offset = currOffset;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -264,76 +270,76 @@ public class RegexDefLexer {
 					}
 				}
 			}
-			lapg_n.endoffset = currOffset;
+			token.endoffset = currOffset;
 
 			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.offset, lapg_n.endoffset);
-				lapg_n.symbol = -1;
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.offset, token.endoffset);
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
-				return lapg_n;
+				token.symbol = Tokens.eoi;
+				token.value = null;
+				return token;
 			}
 
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		return lapg_n;
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		return token;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
+	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0:
-				return createExpandToken(lapg_n, ruleIndex);
+				return createExpandToken(token, ruleIndex);
 			case 1: // char: /[^()\[\]\.|\\\/*?+\-]/
-				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
+				 token.value = tokenText().codePointAt(0); quantifierReady(); 
 				break;
 			case 2: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-				 lapg_n.value = (int) current().charAt(1); quantifierReady(); 
+				 token.value = (int) tokenText().charAt(1); quantifierReady(); 
 				break;
 			case 3: // escaped: /\\a/
-				 lapg_n.value = (int) 7; quantifierReady(); 
+				 token.value = (int) 7; quantifierReady(); 
 				break;
 			case 4: // escaped: /\\b/
-				 lapg_n.value = (int) '\b'; quantifierReady(); 
+				 token.value = (int) '\b'; quantifierReady(); 
 				break;
 			case 5: // escaped: /\\f/
-				 lapg_n.value = (int) '\f'; quantifierReady(); 
+				 token.value = (int) '\f'; quantifierReady(); 
 				break;
 			case 6: // escaped: /\\n/
-				 lapg_n.value = (int) '\n'; quantifierReady(); 
+				 token.value = (int) '\n'; quantifierReady(); 
 				break;
 			case 7: // escaped: /\\r/
-				 lapg_n.value = (int) '\r'; quantifierReady(); 
+				 token.value = (int) '\r'; quantifierReady(); 
 				break;
 			case 8: // escaped: /\\t/
-				 lapg_n.value = (int) '\t'; quantifierReady(); 
+				 token.value = (int) '\t'; quantifierReady(); 
 				break;
 			case 9: // escaped: /\\v/
-				 lapg_n.value = (int) 0xb; quantifierReady(); 
+				 token.value = (int) 0xb; quantifierReady(); 
 				break;
 			case 10: // escaped: /\\[0-7][0-7][0-7]/
-				 lapg_n.value = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); 
+				 token.value = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); 
 				break;
 			case 11: // escaped: /\\x{hx}{2}/
-				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
+				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
 				break;
 			case 12: // escaped: /\\u{hx}{4}/
-				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
+				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
 				break;
 			case 13: // escaped: /\\U{hx}{8}/
-				 lapg_n.value = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); 
+				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
 				break;
 			case 14: // charclass: /\\[wWsSdD]/
-				 lapg_n.value = current().substring(1); quantifierReady(); 
+				 token.value = tokenText().substring(1); quantifierReady(); 
 				break;
 			case 15: // charclass: /\\p\{\w+\}/
-				 lapg_n.value = current().substring(3, current().length() - 1); quantifierReady(); 
+				 token.value = tokenText().substring(3, tokenSize() - 1); quantifierReady(); 
 				break;
 			case 16: // '.': /\./
 				 quantifierReady(); 
@@ -360,7 +366,7 @@ public class RegexDefLexer {
 				state = States.initial;
 				break;
 			case 24: // char: /[*+?]/
-				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
+				 token.value = tokenText().codePointAt(0); quantifierReady(); 
 				break;
 			case 25: // '(': /\(/
 				 state = 0; 
@@ -381,13 +387,13 @@ public class RegexDefLexer {
 				state = States.inSet;
 				break;
 			case 31: // char: /\-/
-				 lapg_n.value = current().codePointAt(0); quantifierReady(); 
+				 token.value = tokenText().codePointAt(0); quantifierReady(); 
 				break;
 			case 33: // ']': /\]/
 				 state = 0; quantifierReady(); 
 				break;
 			case 35: // char: /[(|)]/
-				 lapg_n.value = current().codePointAt(0); 
+				 token.value = tokenText().codePointAt(0); 
 				break;
 		}
 		return !(spaceToken);
@@ -398,11 +404,11 @@ public class RegexDefLexer {
 		subTokensOfExpand.put("{eoi}", 32);
 	}
 
-	protected boolean createExpandToken(LapgSymbol lapg_n, int ruleIndex) {
-		Integer replacement = subTokensOfExpand.get(current());
+	protected boolean createExpandToken(Span token, int ruleIndex) {
+		Integer replacement = subTokensOfExpand.get(tokenText());
 		if (replacement != null) {
 			ruleIndex = replacement;
-			lapg_n.symbol = tmRuleSymbol[ruleIndex];
+			token.symbol = tmRuleSymbol[ruleIndex];
 		}
 		boolean spaceToken = false;
 		switch(ruleIndex) {

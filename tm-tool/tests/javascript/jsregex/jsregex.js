@@ -551,7 +551,7 @@ jsregex.Parser.prototype = {
     this.tmStack[++this.tmHead] = this.tmNext;
     this.tmStack[this.tmHead].state = this.tmGoto(this.tmStack[this.tmHead - 1].state, this.tmNext.symbol);
     if (jsregex.DEBUG_SYNTAX) {
-      console.log("shift: " + this.tmSymbolNames[this.tmNext.symbol] + " (" + this.tmLexer.current() + ")");
+      console.log("shift: " + this.tmSymbolNames[this.tmNext.symbol] + " (" + this.tmLexer.token + ")");
     }
     if (this.tmStack[this.tmHead].state != -1 && this.tmNext.symbol != 0) {
       this.tmNext = this.tmLexer.next();

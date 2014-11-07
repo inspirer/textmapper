@@ -476,7 +476,7 @@ public class JavaParserTest {
 				int before = tmHead;
 				super.reduce(rule);
 				int rulelen = tmHead - before + 1;
-				JavaLexer.LapgSymbol r = tmStack[tmHead];
+				JavaLexer.Span r = tmStack[tmHead];
 				recorder.add(tmSymbolNames[r.symbol], text.substring(r.offset, r.endoffset), r.offset, r.endoffset,
 						rulelen == 1);
 			}

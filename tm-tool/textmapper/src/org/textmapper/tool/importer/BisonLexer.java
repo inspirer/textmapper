@@ -6,7 +6,7 @@ import java.text.MessageFormat;
 
 public class BisonLexer {
 
-	public static class LapgSymbol {
+	public static class Span {
 		public Object value;
 		public int symbol;
 		public int state;
@@ -199,8 +199,12 @@ public class BisonLexer {
 		this.currOffset = currOffset;
 	}
 
-	public String current() {
+	public String tokenText() {
 		return new String(data, tokenOffset, charOffset - tokenOffset);
+	}
+
+	public int tokenSize() {
+		return charOffset - tokenOffset;
 	}
 
 	private static final short tmCharClass[] = {
@@ -410,24 +414,24 @@ public class BisonLexer {
 		return chr == -1 ? 0 : 1;
 	}
 
-	public LapgSymbol next() throws IOException {
-		LapgSymbol lapg_n = new LapgSymbol();
+	public Span next() throws IOException {
+		Span token = new Span();
 		int state;
 
 		do {
-			lapg_n.offset = currOffset;
-			tokenLine = lapg_n.line = currLine;
+			token.offset = currOffset;
+			tokenLine = token.line = currLine;
 			tokenOffset = charOffset;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
 				state = tmGoto[state * tmClassesCount + mapCharacter(chr)];
 				if (state == -1 && chr == -1) {
-					lapg_n.endoffset = currOffset;
-					lapg_n.symbol = 0;
-					lapg_n.value = null;
-					reporter.error("Unexpected end of input reached", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
-					lapg_n.offset = currOffset;
-					return lapg_n;
+					token.endoffset = currOffset;
+					token.symbol = 0;
+					token.value = null;
+					reporter.error("Unexpected end of input reached", token.line, token.offset, token.endoffset);
+					token.offset = currOffset;
+					return token;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -442,42 +446,42 @@ public class BisonLexer {
 					}
 				}
 			}
-			lapg_n.endoffset = currOffset;
+			token.endoffset = currOffset;
 
 			if (state == -1) {
-				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.line, lapg_n.offset, lapg_n.endoffset);
-				lapg_n.symbol = -1;
+				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, tokenText()), token.line, token.offset, token.endoffset);
+				token.symbol = -1;
 				continue;
 			}
 
 			if (state == -2) {
-				lapg_n.symbol = Tokens.eoi;
-				lapg_n.value = null;
-				return lapg_n;
+				token.symbol = Tokens.eoi;
+				token.value = null;
+				return token;
 			}
 
-			lapg_n.symbol = tmRuleSymbol[-state - 3];
-			lapg_n.value = null;
+			token.symbol = tmRuleSymbol[-state - 3];
+			token.value = null;
 
-		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		return lapg_n;
+		} while (token.symbol == -1 || !createToken(token, -state - 3));
+		return token;
 	}
 
-	protected boolean createToken(LapgSymbol lapg_n, int ruleIndex) throws IOException {
+	protected boolean createToken(Span token, int ruleIndex) throws IOException {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0: // ID: /{letter}({letter}|[0-9\-])*/
-				 if (lookaheadColon()) lapg_n.symbol = Tokens.ID_COLON; 
+				 if (lookaheadColon()) token.symbol = Tokens.ID_COLON; 
 				break;
 			case 1: // skip: /:/
 				spaceToken = true;
 				
-		if (lapg_n.offset != foundColonOffset)
-			reporter.error("Unexpected colon", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
+		if (token.offset != foundColonOffset)
+			reporter.error("Unexpected colon", token.line, token.offset, token.endoffset);
 	
 				break;
 			case 8: // '%%': /%%/
-				 if (++sectionCounter == 2) lapg_n.symbol = Tokens.eoi; 
+				 if (++sectionCounter == 2) token.symbol = Tokens.eoi; 
 				break;
 			case 13: // skip: /[\r\n\t\f\v ]+/
 				spaceToken = true;
@@ -491,41 +495,41 @@ public class BisonLexer {
 			case 54: // skip: /\{/
 				spaceToken = true;
 				state = States.bracedCode;
-				 nesting = 0; lexemeStart = lapg_n.offset; 
+				 nesting = 0; lexemeStart = token.offset; 
 				break;
 			case 55: // skip: /%\?[ \f\r\n\t\v]*\{/
 				spaceToken = true;
 				state = States.predicate;
-				 nesting = 0; lexemeStart = lapg_n.offset; 
+				 nesting = 0; lexemeStart = token.offset; 
 				break;
 			case 56: // skip: /%\{/
 				spaceToken = true;
 				state = States.prologue;
-				 nesting = 0; lexemeStart = lapg_n.offset; 
+				 nesting = 0; lexemeStart = token.offset; 
 				break;
 			case 57: // skip: /</
 				spaceToken = true;
 				state = States.tag;
-				 nesting = 0; lexemeStart = lapg_n.offset; 
+				 nesting = 0; lexemeStart = token.offset; 
 				break;
 			case 58: // '{...}': /\}/
 				
 		nesting--;
 		if (nesting < 0) {
 			setState(States.initial);
-			lapg_n.offset = lexemeStart;
-			lapg_n.value = ""; // TODO
+			token.offset = lexemeStart;
+			token.value = ""; // TODO
 		} else {
 			spaceToken = true;
 		}
 	
 				break;
 			case 59: // '%?{...}': /\}/
-				 nesting--; if (nesting < 0) { setState(States.initial); lapg_n.offset = lexemeStart; } else { spaceToken = true; } 
+				 nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } 
 				break;
 			case 60: // '%{...%}': /%\}/
 				state = States.initial;
-				 lapg_n.offset = lexemeStart; 
+				 token.offset = lexemeStart; 
 				break;
 			case 61: // tag_any: /([^<>]|\->)+/
 				spaceToken = true;
@@ -535,7 +539,7 @@ public class BisonLexer {
 				 nesting++; 
 				break;
 			case 63: // TAG: />/
-				 nesting--; if (nesting < 0) { setState(States.initial); lapg_n.offset = lexemeStart; } else { spaceToken = true; } 
+				 nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } 
 				break;
 			case 64: // code_char: /'([^'\n\\]|{escape})*'/
 				spaceToken = true;

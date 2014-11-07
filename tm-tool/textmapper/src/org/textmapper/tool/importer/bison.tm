@@ -50,8 +50,8 @@ ID: 		/{letter}({letter}|[0-9\-])*/ 		{ if (lookaheadColon()) $symbol = Tokens.I
 # Colons are detected by the ID rule, so we can ignore them here.
 skip:    /:/  (space)
 	{
-		if (lapg_n.offset != foundColonOffset)
-			reporter.error("Unexpected colon", lapg_n.line, lapg_n.offset, lapg_n.endoffset);
+		if (token.offset != foundColonOffset)
+			reporter.error("Unexpected colon", token.line, token.offset, token.endoffset);
 	}
 
 INT: /[0-9]+/
@@ -126,10 +126,10 @@ skip_ml_comment: /\/\*([^*]|\*+[^\/*])*\*+\// (space)
 ###################
 # Complex tokens.
 
-skip: /{/ 					=> bracedCode (space) { nesting = 0; lexemeStart = lapg_n.offset; }
-skip: /%\?[ \f\r\n\t\v]*\{/	=> predicate  (space) { nesting = 0; lexemeStart = lapg_n.offset; }
-skip: /%{/					=> prologue   (space) { nesting = 0; lexemeStart = lapg_n.offset; }
-skip: /</					=> tag        (space) { nesting = 0; lexemeStart = lapg_n.offset; }
+skip: /{/ 					=> bracedCode (space) { nesting = 0; lexemeStart = token.offset; }
+skip: /%\?[ \f\r\n\t\v]*\{/	=> predicate  (space) { nesting = 0; lexemeStart = token.offset; }
+skip: /%{/					=> prologue   (space) { nesting = 0; lexemeStart = token.offset; }
+skip: /</					=> tag        (space) { nesting = 0; lexemeStart = token.offset; }
 
 [bracedCode]
 '{...}' (String):  /}/
@@ -137,23 +137,23 @@ skip: /</					=> tag        (space) { nesting = 0; lexemeStart = lapg_n.offset; 
 		nesting--;
 		if (nesting < 0) {
 			setState(States.initial);
-			lapg_n.offset = lexemeStart;
-			lapg_n.value = ""; // TODO
+			token.offset = lexemeStart;
+			token.value = ""; // TODO
 		} else {
 			spaceToken = true;
 		}
 	}
 
 [predicate]
-'%?{...}':  /}/  { nesting--; if (nesting < 0) { setState(States.initial); lapg_n.offset = lexemeStart; } else { spaceToken = true; } }
+'%?{...}':  /}/  { nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 
 [prologue]
-'%{...%}':   /%}/ => initial    { lapg_n.offset = lexemeStart; }
+'%{...%}':   /%}/ => initial    { token.offset = lexemeStart; }
 
 [tag]
 tag_any: /([^<>]|->)+/  (space)
 tag_inc_nesting: /</  (space)  { nesting++; }
-TAG: />/ 		{ nesting--; if (nesting < 0) { setState(States.initial); lapg_n.offset = lexemeStart; } else { spaceToken = true; } }
+TAG: />/ 		{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 
 [bracedCode, prologue, epilogue, predicate]
 code_char: /'([^'\n\\]|{escape})*'/  (space)
