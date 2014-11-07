@@ -97,7 +97,7 @@ public class RewriteTest {
 
 	private TMGrammar asGrammar(String contents) {
 		try {
-			TextSource input = new TextSource("input", contents.toCharArray(), 1);
+			TextSource input = new TextSource("input", contents, 1);
 			LoadStatus status = new LoadStatus();
 
 			TemplatesStatusAdapter templatesStatus = new TemplatesStatusAdapter(status);

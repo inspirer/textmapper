@@ -43,7 +43,7 @@ public class RegexFacade {
 			throw new RegexParseException("regexp is empty", 0);
 		}
 
-		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource(alias, regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource(alias, regex, 1));
 		if (result.hasErrors()) {
 			RegexDefProblem problem = result.getErrors().get(0);
 			String message = problem.getMessage();

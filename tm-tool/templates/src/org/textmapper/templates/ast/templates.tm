@@ -445,24 +445,25 @@ String templatePackage;
 private int killEnds = -1;
 
 private int rawText(int start, final int end) {
-	char[] buff = source.getContents();
+	CharSequence buffer = source.getContents();
 	if (killEnds == start) {
-		while (start < end && (buff[start] == '\t' || buff[start] == ' '))
+		while (start < end && (buffer.charAt(start) == '\t' || buffer.charAt(start) == ' '))
 			start++;
 
-		if (start < end && buff[start] == '\r')
+		if (start < end && buffer.charAt(start) == '\r')
 			start++;
 
-		if (start < end && buff[start] == '\n')
+		if (start < end && buffer.charAt(start) == '\n')
 			start++;
 	}
 	return start;
 }
 
 private void checkIsSpace(int start, int end, int line) {
-	String val = source.getText(rawText(start,end),end).trim();
-	if (val.length() > 0)
+	String val = source.getText(rawText(start, end), end).trim();
+	if (val.length() > 0) {
 		reporter.error("Unknown text ignored: `" + val + "`", line, start, end);
+	}
 }
 
 private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int endoffset, int line) {

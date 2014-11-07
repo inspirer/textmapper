@@ -18,11 +18,11 @@ package org.textmapper.xml;
 
 public class XmlData extends XmlElement {
 
-	private final char[] buffer;
+	private final CharSequence buffer;
 	private final int start;
 	private final int len;
 
-	XmlData(char[] buffer, int start, int len) {
+	XmlData(CharSequence buffer, int start, int len) {
 		this.buffer = buffer;
 		this.start = start;
 		this.len = len;
@@ -30,7 +30,7 @@ public class XmlData extends XmlElement {
 
 	@Override
 	public void toString(StringBuilder sb) {
-		sb.append(new String(buffer, start, len));
+		sb.append(buffer.subSequence(start, len));
 	}
 
 	public String getTitle() {

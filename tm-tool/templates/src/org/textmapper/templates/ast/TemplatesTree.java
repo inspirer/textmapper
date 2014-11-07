@@ -19,6 +19,7 @@ package org.textmapper.templates.ast;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -155,10 +156,10 @@ public class TemplatesTree<T> {
 
 		private final String file;
 		private final int initialLine;
-		private final char[] contents;
+		private final CharSequence contents;
 		private int[] lineoffset;
 
-		public TextSource(String file, char[] contents, int initialLine) {
+		public TextSource(String file, CharSequence contents, int initialLine) {
 			this.file = file;
 			this.initialLine = initialLine;
 			this.contents = contents;
@@ -173,7 +174,11 @@ public class TemplatesTree<T> {
 		}
 
 		public Reader getStream() {
-			return new CharArrayReader(contents);
+			if (contents instanceof String) {
+				return new StringReader((String) contents);
+			} else {
+				return new CharArrayReader(contents.toString().toCharArray());
+			}
 		}
 
 		public String getLocation(int offset) {
@@ -181,10 +186,10 @@ public class TemplatesTree<T> {
 		}
 
 		public String getText(int start, int end) {
-			if (start < 0 || start > contents.length || end > contents.length || start > end) {
+			if (start < 0 || start > end || end > contents.length()) {
 				return "";
 			}
-			return new String(contents, start, end - start);
+			return contents.subSequence(start, end).toString();
 		}
 
 		public int lineForOffset(int offset) {
@@ -203,18 +208,19 @@ public class TemplatesTree<T> {
 			return offset >= 0 ? offset - lineoffset[line >= 0 ? line : -line - 2] : 0;
 		}
 
-		public char[] getContents() {
+		public CharSequence getContents() {
 			return contents;
 		}
 	}
 
-	private static int[] getLineOffsets(char[] contents) {
+	private static int[] getLineOffsets(CharSequence contents) {
 		int size = 1;
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] == '\n') {
+		int len = contents.length();
+		for (int i = 0; i < len; i++) {
+			if (contents.charAt(i) == '\n') {
 				size++;
-			} else if (contents[i] == '\r') {
-				if (i + 1 < contents.length && contents[i + 1] == '\n') {
+			} else if (contents.charAt(i) == '\r') {
+				if (i + 1 < len && contents.charAt(i + 1) == '\n') {
 					i++;
 				}
 				size++;
@@ -223,11 +229,11 @@ public class TemplatesTree<T> {
 		int[] result = new int[size];
 		result[0] = 0;
 		int e = 1;
-		for (int i = 0; i < contents.length; i++) {
-			if (contents[i] == '\n') {
+		for (int i = 0; i < len; i++) {
+			if (contents.charAt(i) == '\n') {
 				result[e++] = i + 1;
-			} else if (contents[i] == '\r') {
-				if (i + 1 < contents.length && contents[i + 1] == '\n') {
+			} else if (contents.charAt(i) == '\r') {
+				if (i + 1 < len && contents.charAt(i + 1) == '\n') {
 					i++;
 				}
 				result[e++] = i + 1;

@@ -42,7 +42,7 @@ public class BisonMain {
 
 		try {
 			String contents = getFileContents(new FileInputStream(file));
-			BisonLexer lexer = new BisonLexer(contents.toCharArray(), reporter);
+			BisonLexer lexer = new BisonLexer(contents, reporter);
 			BisonParser parser = new BisonParser(reporter);
 			parser.parse(lexer);
 		} catch (ParseException ex) {

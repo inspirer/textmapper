@@ -45,7 +45,7 @@ public class TemplatesBundle {
 	public static TemplatesBundle parse(final Resource resource, String templatePackage,
 										final TemplatesStatus status) {
 
-		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents().toCharArray(), resource.getInitialLine());
+		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents(), resource.getInitialLine());
 		final TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			status.report(TemplatesStatus.KIND_ERROR, problem.getMessage(), new SourceElement() {

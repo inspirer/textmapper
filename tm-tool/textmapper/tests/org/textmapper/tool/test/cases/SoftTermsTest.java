@@ -61,7 +61,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftShift() {
 		TestStatus er = new TestStatus();
-		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_ss", FileUtil.getFileContents(openStream("syntax_softconflicts_ss", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_ss", FileUtil.getFileContents(openStream("syntax_softconflicts_ss", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -100,7 +100,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ShiftReduce() {
 		TestStatus er = new TestStatus();
-		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_sr", FileUtil.getFileContents(openStream("syntax_softconflicts_sr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_sr", FileUtil.getFileContents(openStream("syntax_softconflicts_sr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -120,7 +120,7 @@ public class SoftTermsTest extends LapgTestCase {
 	@Test
 	public void testSoftConflictsHandling_ReduceReduce() {
 		TestStatus er = new TestStatus();
-		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_rr", FileUtil.getFileContents(openStream("syntax_softconflicts_rr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), er, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TMTree.TextSource("syntax_softconflicts_rr", FileUtil.getFileContents(openStream("syntax_softconflicts_rr", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), er, createDefaultTypesRegistry());
 		assertNotNull(g);
 
 		er.reset(
@@ -139,7 +139,7 @@ public class SoftTermsTest extends LapgTestCase {
 	}
 
 	private void checkParsed(String text, String expected) {
-		SampleBTree<IAstClassdefNoEoi> tree = SampleBTree.parse(new TextSource("input", text.toCharArray(), 1));
+		SampleBTree<IAstClassdefNoEoi> tree = SampleBTree.parse(new TextSource("input", text, 1));
 		assertFalse(tree.hasErrors());
 		assertNotNull(tree.getRoot());
 		final StringBuilder sb = new StringBuilder();

@@ -146,7 +146,7 @@ public class DefaultEvaluationStrategy implements IEvaluationStrategy {
 
 	@Override
 	public String eval(final Resource resource, EvaluationContext context) {
-		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents().toCharArray(), resource.getInitialLine());
+		TextSource source = new TextSource(resource.getUri().toString(), resource.getContents(), resource.getInitialLine());
 		final TemplatesTree<TemplateNode> tree = TemplatesTree.parseBody(source, "syntax");
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			DefaultEvaluationStrategy.this.report(KIND_ERROR, problem.getMessage(), new SourceElement() {

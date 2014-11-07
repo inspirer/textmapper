@@ -85,9 +85,9 @@ public class TMCompiler {
 
 	private TextSourceElement getTemplates() {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
-		char[] text = tree.getSource().getContents();
-		if (offset < text.length && offset != -1) {
-			return new TmaNode(tree.getSource(), tree.getSource().lineForOffset(offset), offset, text.length) {
+		CharSequence text = tree.getSource().getContents();
+		if (offset < text.length() && offset != -1) {
+			return new TmaNode(tree.getSource(), tree.getSource().lineForOffset(offset), offset, text.length()) {
 				@Override
 				public void accept(TmaVisitor v) {
 				}

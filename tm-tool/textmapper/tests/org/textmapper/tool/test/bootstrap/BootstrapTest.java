@@ -158,7 +158,7 @@ public class BootstrapTest {
 			String contents = FileUtil.getFileContents(new FileInputStream(source), FileUtil.DEFAULT_ENCODING);
 			assertNotNull("cannot read " + syntaxFile, contents);
 
-			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
+			TextSource input = new TextSource(options.getInput(), contents, 1);
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
 			BootstrapTestStatus status = new BootstrapTestStatus(expectedResolvedConflicts,
 					options.getDebug() >= TMOptions.DEBUG_TABLES, options.getDebug() >= TMOptions.DEBUG_AMBIG);

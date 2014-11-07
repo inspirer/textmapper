@@ -201,7 +201,7 @@ public class RegexDefTest {
 	}
 
 	private void checkLexer(String regex, int... tokens) throws IOException {
-		RegexDefLexer lexer = new RegexDefLexer(regex.toCharArray(), new ErrorReporter() {
+		RegexDefLexer lexer = new RegexDefLexer(regex, new ErrorReporter() {
 			@Override
 			public void error(String message, int offset, int endoffset) {
 				fail(message);
@@ -217,7 +217,7 @@ public class RegexDefTest {
 	}
 
 	private RegexPart checkRegex(String regex, String expected) {
-		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex, 1));
 		if (result.hasErrors()) {
 			fail(result.getErrors().get(0).getMessage());
 		}
@@ -228,7 +228,7 @@ public class RegexDefTest {
 	}
 
 	private void checkErrors(String regex, String... expectedErrors) {
-		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex, 1));
 		assertTrue("no errors :(", result.hasErrors());
 		for (int i = 0; i < Math.max(expectedErrors.length, result.getErrors().size()); i++) {
 			String expected = i < expectedErrors.length ? expectedErrors[i] : null;
@@ -238,7 +238,7 @@ public class RegexDefTest {
 	}
 
 	private void checkParserViaSwitch(String regex, String expected) {
-		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex.toCharArray(), 1));
+		RegexDefTree<RegexAstPart> result = RegexDefTree.parse(new TextSource("input", regex, 1));
 		if (result.hasErrors()) {
 			fail(result.getErrors().get(0).getMessage());
 		}

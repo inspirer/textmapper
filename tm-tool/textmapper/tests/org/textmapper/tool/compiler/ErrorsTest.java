@@ -111,7 +111,7 @@ public class ErrorsTest {
 
 	private void processGrammar(String contents, ProblemStatus status) {
 		try {
-			TextSource input = new TextSource("input", contents.toCharArray(), 1);
+			TextSource input = new TextSource("input", contents, 1);
 
 			TemplatesStatusAdapter templatesStatus = new TemplatesStatusAdapter(status);
 			ResourceRegistry resources = new ResourceRegistry(new ClassResourceLoader(getClass().getClassLoader(),

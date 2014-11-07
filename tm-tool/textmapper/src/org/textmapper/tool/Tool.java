@@ -123,7 +123,7 @@ public class Tool {
 		ConsoleStatus status = createStatus(options.getDebug());
 		boolean success;
 		try {
-			TextSource input = new TextSource(options.getInput(), contents.toCharArray(), 1);
+			TextSource input = new TextSource(options.getInput(), contents, 1);
 			FileBasedStrategy strategy = new FileBasedStrategy(outputDir);
 
 			success = new TMGenerator(options, status, strategy).compileGrammar(input, false);

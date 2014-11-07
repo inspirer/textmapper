@@ -57,7 +57,7 @@ public class SampleBMain {
 
 		try {
 			String contents = getFileContents(new FileInputStream(file));
-			SampleBLexer lexer = new SampleBLexer(contents.toCharArray(), reporter);
+			SampleBLexer lexer = new SampleBLexer(contents, reporter);
 			SampleBParser parser = new SampleBParser(reporter);
 			parser.parse(lexer);
 		} catch (ParseException ex) {

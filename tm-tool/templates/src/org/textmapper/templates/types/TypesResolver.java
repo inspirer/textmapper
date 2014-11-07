@@ -57,7 +57,7 @@ class TypesResolver {
 	}
 
 	public void build() {
-		final TypesTree<AstInput> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents().toCharArray(), 1));
+		final TypesTree<AstInput> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents(), 1));
 		if (tree.hasErrors()) {
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.report(TemplatesStatus.KIND_ERROR, s.getMessage(), new SourceElement() {

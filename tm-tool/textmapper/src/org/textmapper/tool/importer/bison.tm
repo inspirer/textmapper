@@ -341,7 +341,7 @@ private boolean lookaheadColon() throws IOException {
 
 protected int lookahead(int i) throws IOException {
 	if (i == 0) return chr;
-	return l + i - 1 < data.length ? data[l] : 0;
+	return l + i - 1 < input.length() ? input.charAt(l) : 0;
 }
 
 ${end}

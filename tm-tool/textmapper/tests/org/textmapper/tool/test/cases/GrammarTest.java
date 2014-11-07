@@ -45,7 +45,7 @@ public class GrammarTest extends LapgTestCase {
 
 	private GenericParseContext loadGrammar(String grammarName) {
 		String contents = FileUtil.getFileContents(openStream(grammarName, TESTCONTAINER), FileUtil.DEFAULT_ENCODING);
-		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents.toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource(grammarName, contents, 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(g);
 		assertNotNull(g.getGrammar());
 

@@ -105,7 +105,7 @@ public class BisonLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	private char[] data;
+	private CharSequence input;
 	private int tokenOffset;
 	private int l;
 	private int charOffset;
@@ -135,25 +135,25 @@ public class BisonLexer {
 
 	protected int lookahead(int i) throws IOException {
 		if (i == 0) return chr;
-		return l + i - 1 < data.length ? data[l] : 0;
+		return l + i - 1 < input.length() ? input.charAt(l) : 0;
 	}
 
-	public BisonLexer(char[] input, ErrorReporter reporter) throws IOException {
+	public BisonLexer(CharSequence input, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(input);
 	}
 
-	public void reset(char[] input) throws IOException {
+	public void reset(CharSequence input) throws IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
 		currOffset = 0;
-		this.data = input;
+		this.input = input;
 		tokenOffset = l = 0;
 		charOffset = l;
-		chr = l < data.length ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
@@ -164,10 +164,10 @@ public class BisonLexer {
 			currLine++;
 		}
 		charOffset = l;
-		chr = l < data.length ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
@@ -200,7 +200,7 @@ public class BisonLexer {
 	}
 
 	public String tokenText() {
-		return new String(data, tokenOffset, charOffset - tokenOffset);
+		return input.subSequence(tokenOffset, charOffset).toString();
 	}
 
 	public int tokenSize() {
@@ -439,10 +439,10 @@ public class BisonLexer {
 						currLine++;
 					}
 					charOffset = l;
-					chr = l < data.length ? data[l++] : -1;
-					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-							Character.isLowSurrogate(data[l])) {
-						chr = Character.toCodePoint((char) chr, data[l++]);
+					chr = l < input.length() ? input.charAt(l++) : -1;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+							Character.isLowSurrogate(input.charAt(l))) {
+						chr = Character.toCodePoint((char) chr, input.charAt(l++));
 					}
 				}
 			}

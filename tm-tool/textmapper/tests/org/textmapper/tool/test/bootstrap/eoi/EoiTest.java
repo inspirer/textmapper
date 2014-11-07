@@ -74,7 +74,7 @@ public class EoiTest {
 	}
 
 	private void check(String s) {
-		EoiTree<Object> tree = EoiTree.parse(new TextSource("input", s.toCharArray(), 1));
+		EoiTree<Object> tree = EoiTree.parse(new TextSource("input", s, 1));
 		if (!tree.getErrors().isEmpty()) {
 			fail(tree.getErrors().toString());
 		}

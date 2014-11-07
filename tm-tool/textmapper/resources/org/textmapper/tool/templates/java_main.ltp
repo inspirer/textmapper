@@ -47,7 +47,7 @@ ${end-}
 		try {
 			String contents = getFileContents(new FileInputStream(file));
 ${if opts.lexerInput == 'buffer'-}
-			${call java.package}.@${opts.prefix}Lexer lexer = new ${call java.package}.@${opts.prefix}Lexer(contents.toCharArray(), reporter);
+			${call java.package}.@${opts.prefix}Lexer lexer = new ${call java.package}.@${opts.prefix}Lexer(contents, reporter);
 ${else-}
 			${call java.package}.@${opts.prefix}Lexer lexer = new ${call java.package}.@${opts.prefix}Lexer(new StringReader(contents), reporter);
 ${end-}

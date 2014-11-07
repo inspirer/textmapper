@@ -52,7 +52,7 @@ public class AnnotationsTest extends LapgTestCase {
 
 	@Test
 	public void testAllAnnotations() {
-		TMGrammar lg = SyntaxUtil.parseSyntax(new TextSource("syntax1annotated", FileUtil.getFileContents(openStream("syntax1annotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), new TestStatus(), createDefaultTypesRegistry());
+		TMGrammar lg = SyntaxUtil.parseSyntax(new TextSource("syntax1annotated", FileUtil.getFileContents(openStream("syntax1annotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), new TestStatus(), createDefaultTypesRegistry());
 		assertNotNull(lg);
 
 		Grammar g = lg.getGrammar();
@@ -93,7 +93,7 @@ public class AnnotationsTest extends LapgTestCase {
 	public void testBadAnnotations() {
 		TestStatus notifier = new TestStatus("", "syntax1errannotated,27: notexistingsym cannot be resolved\n"
 				+ "syntax1errannotated,33: redeclaration of annotation `name' for non-terminal: tempanno, skipped\n");
-		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING).toCharArray(), 1), notifier, createDefaultTypesRegistry());
+		TMGrammar g = SyntaxUtil.parseSyntax(new TextSource("syntax1errannotated", FileUtil.getFileContents(openStream("syntax1errannotated", TESTCONTAINER), FileUtil.DEFAULT_ENCODING), 1), notifier, createDefaultTypesRegistry());
 		notifier.assertDone();
 		assertNull(g);
 	}

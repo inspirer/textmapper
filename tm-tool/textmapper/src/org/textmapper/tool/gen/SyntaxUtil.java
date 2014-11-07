@@ -44,7 +44,7 @@ public class SyntaxUtil {
 	}
 
 	public static ITmaExpression parseExpression(String input, TypesRegistry registry) {
-		TMTree<ITmaExpression> tree = TMTree.parseExpression(new TextSource("", input.toCharArray(), 1));
+		TMTree<ITmaExpression> tree = TMTree.parseExpression(new TextSource("", input, 1));
 		if (!tree.hasErrors()) {
 			return tree.getRoot();
 		}

@@ -72,7 +72,7 @@ public class RegexDefLexer {
 	private Reader stream;
 	final private ErrorReporter reporter;
 
-	private char[] data;
+	private CharSequence input;
 	private int tokenOffset;
 	private int l;
 	private int charOffset;
@@ -99,22 +99,22 @@ public class RegexDefLexer {
 		return 0;
 	}
 
-	public RegexDefLexer(char[] input, ErrorReporter reporter) throws IOException {
+	public RegexDefLexer(CharSequence input, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
 		reset(input);
 	}
 
-	public void reset(char[] input) throws IOException {
+	public void reset(CharSequence input) throws IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
 		currOffset = 0;
-		this.data = input;
+		this.input = input;
 		tokenOffset = l = 0;
 		charOffset = l;
-		chr = l < data.length ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
@@ -125,10 +125,10 @@ public class RegexDefLexer {
 			currLine++;
 		}
 		charOffset = l;
-		chr = l < data.length ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-				Character.isLowSurrogate(data[l])) {
-			chr = Character.toCodePoint((char) chr, data[l++]);
+		chr = l < input.length() ? input.charAt(l++) : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+				Character.isLowSurrogate(input.charAt(l))) {
+			chr = Character.toCodePoint((char) chr, input.charAt(l++));
 		}
 	}
 
@@ -161,7 +161,7 @@ public class RegexDefLexer {
 	}
 
 	public String tokenText() {
-		return new String(data, tokenOffset, charOffset - tokenOffset);
+		return input.subSequence(tokenOffset, charOffset).toString();
 	}
 
 	public int tokenSize() {
@@ -263,10 +263,10 @@ public class RegexDefLexer {
 						currLine++;
 					}
 					charOffset = l;
-					chr = l < data.length ? data[l++] : -1;
-					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
-							Character.isLowSurrogate(data[l])) {
-						chr = Character.toCodePoint((char) chr, data[l++]);
+					chr = l < input.length() ? input.charAt(l++) : -1;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < input.length() &&
+							Character.isLowSurrogate(input.charAt(l))) {
+						chr = Character.toCodePoint((char) chr, input.charAt(l++));
 					}
 				}
 			}

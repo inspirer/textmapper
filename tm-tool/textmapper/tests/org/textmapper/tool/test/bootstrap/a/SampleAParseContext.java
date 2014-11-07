@@ -36,7 +36,7 @@ import java.util.List;
 public class SampleAParseContext {
 
 	public Result parse(String text, boolean eoi) {
-		TextSource source = new TextSource("input", text.toCharArray(), 1);
+		TextSource source = new TextSource("input", text, 1);
 		org.textmapper.lapg.eval.GenericParseContext.TextSource source2 = new org.textmapper.lapg.eval.GenericParseContext.TextSource(source.getFile(), source.getContents(), 1);
 		final List<ParseProblem> list = new ArrayList<ParseProblem>();
 		ErrorReporter reporter = new ErrorReporter() {
