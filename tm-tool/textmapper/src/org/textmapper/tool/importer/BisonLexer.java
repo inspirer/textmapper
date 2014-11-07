@@ -135,7 +135,7 @@ public class BisonLexer {
 
 	protected int lookahead(int i) throws IOException {
 		if (i == 0) return chr;
-		return l + i - 1 < input.length() ? input.charAt(l) : 0;
+		return l + i - 1 < input.length() ? input.charAt(l + i - 1) : 0;
 	}
 
 	public BisonLexer(CharSequence input, ErrorReporter reporter) throws IOException {
