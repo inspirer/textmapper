@@ -19,7 +19,7 @@ import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.Token;
 import org.textmapper.lapg.common.ui.editor.LexerBasedPartitionScanner;
 import org.textmapper.tool.parser.TMLexer;
-import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Span;
 import org.textmapper.tool.parser.TMLexer.Tokens;
 
 public class LapgPartitionScanner extends LexerBasedPartitionScanner implements IPartitions {
@@ -32,7 +32,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 	private final IToken fTemplates = new Token(LAPG_TEMPLATES);
 
 	private TMLexer lexer;
-	private LapgSymbol lexem;
+	private Span token;
 	private int fDocumentLength;
 
 	public LapgPartitionScanner() {
@@ -40,36 +40,36 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 
 	public IToken nextToken() {
 		fTokenOffset += fTokenLength;
-		if (lexem == null) {
+		if (token == null) {
 			readNext();
 		}
-		if (fTokenOffset < lexem.offset) {
-			fTokenLength = lexem.offset - fTokenOffset;
+		if (fTokenOffset < token.offset) {
+			fTokenLength = token.offset - fTokenOffset;
 			return fText;
 		}
-		int token = lexem.symbol;
-		switch (token) {
+		int symbol = token.symbol;
+		switch (symbol) {
 			case Tokens._skip_comment:
 			case Tokens.scon:
 			case Tokens.regexp:
-				fTokenLength = lexem.endoffset - fTokenOffset;
-				lexem = null;
-				if (token == Tokens._skip_comment) {
+				fTokenLength = token.endoffset - fTokenOffset;
+				token = null;
+				if (symbol == Tokens._skip_comment) {
 					return fComment;
-				} else if (token == Tokens.scon) {
+				} else if (symbol == Tokens.scon) {
 					return fString;
 				} else {
 					return fRegexp;
 				}
 			case Tokens.code:
-				fTokenLength = lexem.endoffset - fTokenOffset;
-				lexem = null;
+				fTokenLength = token.endoffset - fTokenOffset;
+				token = null;
 				return fAction;
 		}
 		/* default, eoi */
-		if (lexem.endoffset < fDocumentLength) {
+		if (token.endoffset < fDocumentLength) {
 			fTokenLength = fDocumentLength - fTokenOffset;
-			lexem.offset = lexem.endoffset = fDocumentLength;
+			token.offset = token.endoffset = fDocumentLength;
 			return fTemplates;
 		}
 		return Token.EOF;
@@ -77,7 +77,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 
 	private void readNext() {
 		try {
-			lexem = lexer.next();
+			token = lexer.next();
 		} catch (IOException e) {
 			/* never happens */
 		}
@@ -96,7 +96,7 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 			/* never happens */
 		}
 		lexer.setOffset(offset);
-		lexem = null;
+		token = null;
 	}
 
 	private static class SkippingTMLexer extends TMLexer {
@@ -108,15 +108,15 @@ public class LapgPartitionScanner extends LexerBasedPartitionScanner implements 
 		}
 
 		@Override
-		protected boolean createToken(LapgSymbol lapg_n, int lexemIndex) throws IOException {
-			switch (lapg_n.symbol) {
+		protected boolean createToken(Span token, int ruleIndex) throws IOException {
+			switch (token.symbol) {
 				case Tokens._skip_comment:
 				case Tokens.scon:
 				case Tokens.regexp:
 				case Tokens.eoi:
 					return true;
 				case Tokens.code:
-					return super.createToken(lapg_n, lexemIndex);
+					return super.createToken(token, ruleIndex);
 			}
 			return false;
 		}

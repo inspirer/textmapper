@@ -95,7 +95,7 @@ public class IncrementalLapgBuilder extends IncrementalProjectBuilder {
 		try {
 			String content = FileUtil.getStreamContents(file.getContents(), file.getCharset());
 			monitor.worked(1);
-			TextSource source = new TextSource(file.getName(), content.toCharArray(), 1);
+			TextSource source = new TextSource(file.getName(), content, 1);
 			BuilderStrategy strategy = new BuilderStrategy(file);
 			BuilderStatus status = new BuilderStatus(file, TMOptions);
 

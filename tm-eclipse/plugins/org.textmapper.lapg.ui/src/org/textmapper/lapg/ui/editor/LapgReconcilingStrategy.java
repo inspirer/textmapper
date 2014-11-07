@@ -97,7 +97,7 @@ public class LapgReconcilingStrategy extends StructuredTextReconcilingStrategy {
 		IStructuredDocumentProvider documentProvider = (IStructuredDocumentProvider) editor.getDocumentProvider();
 		String content = doc.get();
 
-		TextSource input = new TextSource(mainResource.getName(), content.toCharArray(), 1);
+		TextSource input = new TextSource(mainResource.getName(), content, 1);
 		TMTree<TmaInput> ast = TMTree.parseInput(input);
 		sources.add(TMTree.PARSER_SOURCE);
 
