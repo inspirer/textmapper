@@ -62,7 +62,7 @@ public class RegexDefTree<T> {
 		};
 
 		try {
-			RegexDefLexer lexer = new RegexDefLexer(source.getStream(), reporter);
+			RegexDefLexer lexer = new RegexDefLexer(source.getContents(), reporter);
 			lexer.setLine(source.getInitialLine());
 
 			RegexDefParser parser = new RegexDefParser(reporter);

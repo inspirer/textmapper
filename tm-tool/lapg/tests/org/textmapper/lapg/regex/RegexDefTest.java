@@ -202,7 +202,7 @@ public class RegexDefTest {
 	}
 
 	private void checkLexer(String regex, int... tokens) throws IOException {
-		RegexDefLexer lexer = new RegexDefLexer(new StringReader(regex), new ErrorReporter() {
+		RegexDefLexer lexer = new RegexDefLexer(regex.toCharArray(), new ErrorReporter() {
 			@Override
 			public void error(String message, int offset, int endoffset) {
 				fail(message);

@@ -18,10 +18,11 @@ language regex(java);
 
 prefix = "RegexDef"
 package = "org.textmapper.lapg.regex"
-breaks = true
-gentree = true
+lexerInput = "buffer"
 positions = "offset"
 endpositions = "offset"
+breaks = true
+gentree = true
 genCopyright = true
 
 :: lexer

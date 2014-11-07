@@ -16,7 +16,6 @@
 package org.textmapper.lapg.regex;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,19 +68,15 @@ public class RegexDefLexer {
 
 	public static final int TOKEN_SIZE = 2048;
 
-	private Reader stream;
 	final private ErrorReporter reporter;
 
-	final private char[] data = new char[2048];
-	private int datalen;
+	private char[] data;
 	private int tokenOffset;
 	private int l;
 	private int charOffset;
 	private int chr;
 
 	private int state;
-
-	final private StringBuilder token = new StringBuilder(TOKEN_SIZE);
 
 	private int tokenLine;
 	private int currLine;
@@ -102,31 +97,20 @@ public class RegexDefLexer {
 		return 0;
 	}
 
-	public RegexDefLexer(Reader stream, ErrorReporter reporter) throws IOException {
+	public RegexDefLexer(char[] input, ErrorReporter reporter) throws IOException {
 		this.reporter = reporter;
-		reset(stream);
+		reset(input);
 	}
 
-	public void reset(Reader stream) throws IOException {
+	public void reset(char[] input) throws IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
 		currOffset = 0;
-		this.stream = stream;
-		datalen = stream.read(data);
-		l = 0;
-		tokenOffset = -1;
-		if (l + 1 >= datalen) {
-			if (l < datalen) {
-				data[0] = data[l];
-				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-			} else {
-				datalen = stream.read(data);
-			}
-			l = 0;
-		}
+		this.data = input;
+		tokenOffset = l = 0;
 		charOffset = l;
-		chr = l < datalen ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+		chr = l < data.length ? data[l++] : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
 		}
@@ -138,22 +122,9 @@ public class RegexDefLexer {
 		if (chr == '\n') {
 			currLine++;
 		}
-		if (l + 1 >= datalen) {
-			if (tokenOffset >= 0) {
-				token.append(data, tokenOffset, l - tokenOffset);
-				tokenOffset = 0;
-			}
-			if (l < datalen) {
-				data[0] = data[l];
-				datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-			} else {
-				datalen = stream.read(data);
-			}
-			l = 0;
-		}
 		charOffset = l;
-		chr = l < datalen ? data[l++] : -1;
-		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+		chr = l < data.length ? data[l++] : -1;
+		if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 				Character.isLowSurrogate(data[l])) {
 			chr = Character.toCodePoint((char) chr, data[l++]);
 		}
@@ -188,7 +159,7 @@ public class RegexDefLexer {
 	}
 
 	public String current() {
-		return token.toString();
+		return new String(data, tokenOffset, charOffset - tokenOffset);
 	}
 
 	private static final short tmCharClass[] = {
@@ -268,11 +239,6 @@ public class RegexDefLexer {
 		do {
 			lapg_n.offset = currOffset;
 			tokenLine = currLine;
-			if (token.length() > TOKEN_SIZE) {
-				token.setLength(TOKEN_SIZE);
-				token.trimToSize();
-			}
-			token.setLength(0);
 			tokenOffset = charOffset;
 
 			for (state = tmStateMap[this.state]; state >= 0; ) {
@@ -283,7 +249,6 @@ public class RegexDefLexer {
 					lapg_n.value = null;
 					reporter.error("Unexpected end of input reached", lapg_n.offset, lapg_n.endoffset);
 					lapg_n.offset = currOffset;
-					tokenOffset = -1;
 					return lapg_n;
 				}
 				if (state >= -1 && chr != -1) {
@@ -291,20 +256,9 @@ public class RegexDefLexer {
 					if (chr == '\n') {
 						currLine++;
 					}
-					if (l + 1 >= datalen) {
-						token.append(data, tokenOffset, l - tokenOffset);
-						tokenOffset = 0;
-						if (l < datalen) {
-							data[0] = data[l];
-							datalen = Math.max(stream.read(data, 1, data.length - 1) + 1, 1);
-						} else {
-							datalen = stream.read(data);
-						}
-						l = 0;
-					}
 					charOffset = l;
-					chr = l < datalen ? data[l++] : -1;
-					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < datalen &&
+					chr = l < data.length ? data[l++] : -1;
+					if (chr >= Character.MIN_HIGH_SURROGATE && chr <= Character.MAX_HIGH_SURROGATE && l < data.length &&
 							Character.isLowSurrogate(data[l])) {
 						chr = Character.toCodePoint((char) chr, data[l++]);
 					}
@@ -313,9 +267,6 @@ public class RegexDefLexer {
 			lapg_n.endoffset = currOffset;
 
 			if (state == -1) {
-				if (charOffset > tokenOffset) {
-					token.append(data, tokenOffset, charOffset - tokenOffset);
-				}
 				reporter.error(MessageFormat.format("invalid lexeme at line {0}: `{1}`, skipped", currLine, current()), lapg_n.offset, lapg_n.endoffset);
 				lapg_n.symbol = -1;
 				continue;
@@ -324,19 +275,13 @@ public class RegexDefLexer {
 			if (state == -2) {
 				lapg_n.symbol = Tokens.eoi;
 				lapg_n.value = null;
-				tokenOffset = -1;
 				return lapg_n;
-			}
-
-			if (charOffset > tokenOffset) {
-				token.append(data, tokenOffset, charOffset - tokenOffset);
 			}
 
 			lapg_n.symbol = tmRuleSymbol[-state - 3];
 			lapg_n.value = null;
 
 		} while (lapg_n.symbol == -1 || !createToken(lapg_n, -state - 3));
-		tokenOffset = -1;
 		return lapg_n;
 	}
 
