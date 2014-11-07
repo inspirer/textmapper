@@ -22,10 +22,10 @@ genCopyright = true
 
 :: lexer
 
-identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $symbol = current(); }
-icon(Integer):  /-?[0-9]+/                     { $symbol = Integer.parseInt(current()); }
+identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*/   { $$ = current(); }
+icon(Integer):  /-?[0-9]+/                     { $$ = Integer.parseInt(current()); }
 
 
 schar = /[\w\p{Ll}]/
-string(String): /"({schar})+"/			   { $symbol = current(); }
+string(String): /"({schar})+"/			   { $$ = current(); }
 _skip:          /[\n\t\r ]+/       (space)

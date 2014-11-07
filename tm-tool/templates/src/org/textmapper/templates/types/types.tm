@@ -30,11 +30,11 @@ genCopyright = true
 :: lexer
 
 identifier(String): /[a-zA-Z_][a-zA-Z_0-9]*|'([^\n\\']|\\.)*'/ -1   (class)
-			{ $symbol = current(); }
+			{ $$ = current(); }
 
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
-icon(Integer):	/-?[0-9]+/				{ $symbol = Integer.parseInt(current()); }
-bcon(Boolean):  /true|false/			{ $symbol = current().equals("true"); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(current()); }
+bcon(Boolean):  /true|false/			{ $$ = current().equals("true"); }
 
 _skip:         /[\n\t\r ]+/	(space)
 _skip:  /#.*/	(space)

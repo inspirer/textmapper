@@ -120,7 +120,7 @@ ${if rule.kindAsText == 'class'-}
 			return this.create${rule->classRuleName()}Token(lapg_n, ruleIndex);
 ${else if rule->hasActions() && !rule.classRule-}
 		case ${rule.index}: // ${rule.symbol.name}: /${rule.regexp}/
-${call lexerAction('lapg_n.value') for rule-}
+${call lexerAction('lapg_n.value', 'lapg_n.symbol') for rule-}
 			break;
 ${end-}
 ${end-}
@@ -152,7 +152,7 @@ ${if classRule->classInstances().exists(x|x->hasActions()) || classRule->hasActi
 		switch(ruleIndex) {
 ${foreach instance in classRule->classInstances().select(x|x->hasActions())-}
 		case ${instance.index}:  // ${instance.regexp.constantValue}
-${call lexerAction('lapg_n.value') for instance-}
+${call lexerAction('lapg_n.value', 'lapg_n.symbol') for instance-}
 			break;
 ${end-}
 ${if classRule->hasActions()-}
@@ -160,7 +160,7 @@ ${foreach instance in classRule->classInstances().select(x|!x.action && x.kindAs
 		case ${instance.index}:  // ${instance.regexp.constantValue} (soft)
 ${end-}
 		case ${classRule.index}:  // <default>
-${call lexerAction('lapg_n.value') for classRule-}
+${call lexerAction('lapg_n.value', 'lapg_n.symbol') for classRule-}
 			break;
 ${end-}
 		}
@@ -190,7 +190,7 @@ ${end-}
 ${end}
 
 
-${template lexerAction(symbol)-}
+${template lexerAction($, symbol)-}
 ${if self.kindAsText == 'space'-}
 			spaceToken = true;
 ${end-}

@@ -38,9 +38,9 @@ _skipcomment:   /<!--([^-]|-[^-]|--[^>])*-->/ (space)
 
 [inTag]
 
-identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $symbol = current(); }
-ccon(String):	/"[^\n"]*"/							{ $symbol = token.toString().substring(1, token.length()-1); }
-ccon(String):	/'[^\n']*'/							{ $symbol = token.toString().substring(1, token.length()-1); }
+identifier(String):	/[a-zA-Z_][A-Za-z_0-9-]*/		{ $$ = current(); }
+ccon(String):	/"[^\n"]*"/							{ $$ = token.toString().substring(1, token.length()-1); }
+ccon(String):	/'[^\n']*'/							{ $$ = token.toString().substring(1, token.length()-1); }
 
 '>':	    />/  => initial
 '=':		/=/

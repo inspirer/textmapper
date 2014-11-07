@@ -32,9 +32,9 @@ genast = true
 
 [initial, afterAt => initial, afterAtID => initial]
 
-regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $symbol = token.toString().substring(1, token.length()-1); }
-scon(String):	/"([^\n\\"]|\\.)*"/		{ $symbol = unescape(current(), 1, token.length()-1); }
-icon(Integer):	/-?[0-9]+/				{ $symbol = Integer.parseInt(current()); }
+regexp(String):	/\/([^\/\\\n]|\\.)*\//	{ $$ = token.toString().substring(1, token.length()-1); }
+scon(String):	/"([^\n\\"]|\\.)*"/		{ $$ = unescape(current(), 1, token.length()-1); }
+icon(Integer):	/-?[0-9]+/				{ $$ = Integer.parseInt(current()); }
 
 eoi:           /%%.*(\r?\n)?/			{ templatesStart = lapg_n.endoffset; }
 _skip:         /[\n\r\t ]+/		(space)
@@ -77,7 +77,7 @@ error:
 
 [initial, afterAt => afterAtID, afterAtID => initial]
 
-ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $symbol = current(); }
+ID(String): /[a-zA-Z_]([a-zA-Z_\-0-9]*[a-zA-Z_0-9])?|'([^\n\\']|\\.)*'/  (class)    { $$ = current(); }
 
 Ltrue:  /true/
 Lfalse: /false/

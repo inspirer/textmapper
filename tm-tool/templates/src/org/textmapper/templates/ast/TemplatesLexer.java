@@ -273,22 +273,22 @@ public class TemplatesLexer {
 	private static final int tmClassesCount = 37;
 
 	private static final short[] tmGoto = unpack_vc_short(1887,
-		"\1\ufffe\1\2\1\3\42\2\4\uffff\1\4\1\5\1\6\1\uffff\1\7\1\10\1\11\1\12\1\13\1\14\1" +
-		"\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32\1\7\1\33\1\34" +
-		"\1\uffff\3\7\1\33\1\34\1\ufffc\1\2\1\ufffc\42\2\2\uffff\1\35\1\uffff\1\36\1\37\2" +
-		"\uffff\1\40\23\uffff\1\40\1\41\2\uffff\3\40\1\41\1\uffff\45\uffdb\45\uffd5\1\uffff" +
-		"\5\6\1\42\1\43\26\6\1\uffff\6\6\10\ufffd\1\7\23\ufffd\2\7\2\ufffd\4\7\1\ufffd\45" +
-		"\uffda\11\uffd7\1\44\16\uffd7\1\45\14\uffd7\45\uffd8\45\uffd6\45\uffd4\27\uffd3\1" +
-		"\46\15\uffd3\17\uffd2\1\47\25\uffd2\45\uffd1\45\uffd0\45\uffcf\45\uffce\45\uffcd" +
-		"\45\uffcc\26\uffff\1\50\16\uffff\27\uffc8\1\51\1\52\14\uffc8\27\uffc1\1\53\15\uffc1" +
-		"\27\uffc2\1\54\15\uffc2\45\uffc0\45\uffbf\35\ufff6\1\33\5\ufff6\1\33\1\ufff6\36\uffbe" +
-		"\1\34\5\uffbe\1\34\45\ufffb\45\ufff8\45\ufff7\3\ufffa\1\55\4\ufffa\1\40\23\ufffa" +
-		"\2\40\2\ufffa\4\40\1\ufffa\35\ufff9\1\41\5\ufff9\1\41\1\ufff9\45\ufff5\6\uffff\2" +
-		"\6\1\56\22\uffff\1\6\3\uffff\2\6\1\uffff\1\6\1\57\1\uffff\45\uffd9\45\uffc6\45\uffc7" +
-		"\45\uffca\45\uffcb\45\uffc9\45\uffc5\45\uffc3\45\uffc4\35\uffff\1\60\5\uffff\1\60" +
-		"\36\uffff\1\61\3\uffff\3\61\2\uffff\5\6\1\42\1\43\26\6\1\uffff\4\6\1\62\1\6\35\ufffa" +
-		"\1\60\5\ufffa\1\60\1\ufffa\1\uffff\5\6\1\42\1\43\25\6\1\61\1\uffff\2\6\3\61\1\6\1" +
-		"\uffff\5\6\1\42\1\43\26\6\1\uffff\6\6");
+		"\1\ufffe\1\2\1\3\42\2\2\uffff\1\4\1\uffff\1\5\1\6\1\7\1\uffff\1\4\1\10\1\11\1\12" +
+		"\1\13\1\14\1\15\1\16\1\17\1\20\1\21\1\22\1\23\1\24\1\25\1\26\1\27\1\30\1\31\1\32" +
+		"\1\4\1\33\1\34\1\uffff\3\4\1\33\1\34\1\ufffc\1\2\1\ufffc\42\2\2\uffff\1\35\1\uffff" +
+		"\1\36\1\37\2\uffff\1\40\23\uffff\1\40\1\41\2\uffff\3\40\1\41\1\uffff\2\ufffd\1\4" +
+		"\5\ufffd\1\4\23\ufffd\2\4\2\ufffd\4\4\1\ufffd\45\uffdb\45\uffd5\1\uffff\5\7\1\42" +
+		"\1\43\26\7\1\uffff\6\7\45\uffda\11\uffd7\1\44\16\uffd7\1\45\14\uffd7\45\uffd8\45" +
+		"\uffd6\45\uffd4\27\uffd3\1\46\15\uffd3\17\uffd2\1\47\25\uffd2\45\uffd1\45\uffd0\45" +
+		"\uffcf\45\uffce\45\uffcd\45\uffcc\26\uffff\1\50\16\uffff\27\uffc8\1\51\1\52\14\uffc8" +
+		"\27\uffc1\1\53\15\uffc1\27\uffc2\1\54\15\uffc2\45\uffc0\45\uffbf\35\ufff6\1\33\5" +
+		"\ufff6\1\33\1\ufff6\36\uffbe\1\34\5\uffbe\1\34\45\ufffb\45\ufff8\45\ufff7\3\ufffa" +
+		"\1\55\4\ufffa\1\40\23\ufffa\2\40\2\ufffa\4\40\1\ufffa\35\ufff9\1\41\5\ufff9\1\41" +
+		"\1\ufff9\45\ufff5\6\uffff\2\7\1\56\22\uffff\1\7\3\uffff\2\7\1\uffff\1\7\1\57\1\uffff" +
+		"\45\uffd9\45\uffc6\45\uffc7\45\uffca\45\uffcb\45\uffc9\45\uffc5\45\uffc3\45\uffc4" +
+		"\35\uffff\1\60\5\uffff\1\60\36\uffff\1\61\3\uffff\3\61\2\uffff\5\7\1\42\1\43\26\7" +
+		"\1\uffff\4\7\1\62\1\7\35\ufffa\1\60\5\ufffa\1\60\1\ufffa\1\uffff\5\7\1\42\1\43\25" +
+		"\7\1\61\1\uffff\2\7\3\61\1\7\1\uffff\5\7\1\42\1\43\26\7\1\uffff\6\7");
 
 	private static short[] unpack_vc_short(int size, String... st) {
 		short[] res = new short[size];

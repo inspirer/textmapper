@@ -9,7 +9,7 @@ expandTabs = 2
 
 :: lexer
 
-id:        /[a-zA-Z_][a-zA-Z_0-9]*/  (class)	{ $symbol = this.token; }
+id:        /[a-zA-Z_][a-zA-Z_0-9]*/  (class)	{ $$ = this.token; }
 icon:		/[0-9]+/
 _skip:      /\/\/.*/       (space)
 _skip:      /[\t\r\n ]+/    (space)

@@ -45,7 +45,7 @@ splice = /(\\[ \f\t\v]*\r?\n)*/
 
 # ID which is followed by a colon turns into ID_COLON.
 ID_COLON:
-ID: 		/{letter}({letter}|[0-9\-])*/ 		{ if (lookaheadColon()) lapg_n.symbol = Tokens.ID_COLON; }
+ID: 		/{letter}({letter}|[0-9\-])*/ 		{ if (lookaheadColon()) $symbol = Tokens.ID_COLON; }
 
 # Colons are detected by the ID rule, so we can ignore them here.
 skip:    /:/  (space)
@@ -62,7 +62,7 @@ STRING: /"([^"\r\n\\]|{escape})*"/
 
 '<*>': /<\*>/
 '<>': /<>/
-'%%': /%%/   { if (++sectionCounter == 2) lapg_n.symbol = Tokens.eoi; }
+'%%': /%%/   { if (++sectionCounter == 2) $symbol = Tokens.eoi; }
 
 '|': /\|/
 ';':  /;/

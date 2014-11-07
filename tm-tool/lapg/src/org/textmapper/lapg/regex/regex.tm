@@ -32,23 +32,23 @@ genCopyright = true
 
 [initial, afterChar, inSet]
 
-char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $symbol = current().codePointAt(0); quantifierReady(); }
+char(Integer): /[^()\[\]\.|\\\/*?+-]/			{ $$ = current().codePointAt(0); quantifierReady(); }
 escaped(Integer): /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-												{ $symbol = (int) current().charAt(1); quantifierReady(); }
-escaped(Integer): /\\a/							{ $symbol = (int) 7; quantifierReady(); }
-escaped(Integer): /\\b/							{ $symbol = (int) '\b'; quantifierReady(); }
-escaped(Integer): /\\f/							{ $symbol = (int) '\f'; quantifierReady(); }
-escaped(Integer): /\\n/							{ $symbol = (int) '\n'; quantifierReady(); }
-escaped(Integer): /\\r/							{ $symbol = (int) '\r'; quantifierReady(); }
-escaped(Integer): /\\t/							{ $symbol = (int) '\t'; quantifierReady(); }
-escaped(Integer): /\\v/							{ $symbol = (int) 0xb; quantifierReady(); }
-escaped(Integer): /\\[0-7][0-7][0-7]/			{ $symbol = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
+												{ $$ = (int) current().charAt(1); quantifierReady(); }
+escaped(Integer): /\\a/							{ $$ = (int) 7; quantifierReady(); }
+escaped(Integer): /\\b/							{ $$ = (int) '\b'; quantifierReady(); }
+escaped(Integer): /\\f/							{ $$ = (int) '\f'; quantifierReady(); }
+escaped(Integer): /\\n/							{ $$ = (int) '\n'; quantifierReady(); }
+escaped(Integer): /\\r/							{ $$ = (int) '\r'; quantifierReady(); }
+escaped(Integer): /\\t/							{ $$ = (int) '\t'; quantifierReady(); }
+escaped(Integer): /\\v/							{ $$ = (int) 0xb; quantifierReady(); }
+escaped(Integer): /\\[0-7][0-7][0-7]/			{ $$ = RegexUtil.unescapeOct(current().substring(1)); quantifierReady(); }
 hx = /[0-9A-Fa-f]/
-escaped(Integer): /\\x{hx}{2}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-escaped(Integer): /\\u{hx}{4}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-escaped(Integer): /\\U{hx}{8}/					{ $symbol = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
-charclass(String): /\\[wWsSdD]/					{ $symbol = current().substring(1); quantifierReady(); }
-charclass(String): /\\p\{\w+\}/					{ $symbol = current().substring(3, current().length() - 1); quantifierReady(); }
+escaped(Integer): /\\x{hx}{2}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
+escaped(Integer): /\\u{hx}{4}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
+escaped(Integer): /\\U{hx}{8}/					{ $$ = parseCodePoint(current().substring(2), lapg_n); quantifierReady(); }
+charclass(String): /\\[wWsSdD]/					{ $$ = current().substring(1); quantifierReady(); }
+charclass(String): /\\p\{\w+\}/					{ $$ = current().substring(3, current().length() - 1); quantifierReady(); }
 
 '.':  /\./										{ quantifierReady(); }
 
@@ -65,7 +65,7 @@ op_intersect:	/\{&&\}/
 
 [initial, inSet]
 
-char(Integer): /[*+?]/							{ $symbol = current().codePointAt(0); quantifierReady(); }
+char(Integer): /[*+?]/							{ $$ = current().codePointAt(0); quantifierReady(); }
 
 [initial, afterChar]
 
@@ -77,7 +77,7 @@ char(Integer): /[*+?]/							{ $symbol = current().codePointAt(0); quantifierRea
 
 '[':	/\[/  => inSet
 '[^':	/\[^/ => inSet
-char(Integer):  /-/								{ $symbol = current().codePointAt(0); quantifierReady(); }
+char(Integer):  /-/								{ $$ = current().codePointAt(0); quantifierReady(); }
 
 identifier = /[a-zA-Z_][a-zA-Z_\-0-9]*/
 
@@ -88,7 +88,7 @@ kw_eoi:			/\{eoi\}/						{ state = 0; }
 
 ']':  /\]/										{ state = 0; quantifierReady(); }
 '-':  /-/
-char(Integer):  /[\(\|\)]/						{ $symbol = current().codePointAt(0); }
+char(Integer):  /[\(\|\)]/						{ $$ = current().codePointAt(0); }
 
 :: parser
 
