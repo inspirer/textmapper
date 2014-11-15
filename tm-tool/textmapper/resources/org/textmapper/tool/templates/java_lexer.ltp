@@ -41,9 +41,41 @@ ${if opts.positions.contains('offset') || opts.endpositions.contains('offset')-}
 	private int currOffset;
 ${end-}
 ${util.shiftRight(self->lexercode(), 1)-}
-
 ${call lexerCtor-}
+${call lexerReset-}
+${if opts.lexerInput == 'custom'-}
+	protected abstract int nextChar() throws java.io.@IOException;
+${end-}
 
+	protected void advance()${if opts.lexerInput != 'buffer'} throws java.io.@IOException${end} {
+		if (chr == -1) return;
+${self->advanceChar(false, false)-}
+	}
+${call accessors-}
+${self->lexerTables()-}
+${call mapCharacter-}
+${call next-}
+${if opts.lexerInput == 'buffer'-}
+${call charAt-}
+${end-}
+${call createToken-}
+${call unpackRoutines-}
+}
+${end}
+
+${template unpackRoutines}
+${call java_pack.unpackInt}
+${call java_pack.unpackShort-}
+${end}
+
+${template lexerCtor}
+	public ${opts.prefix}Lexer(${if opts.lexerInput == 'buffer'}CharSequence input, ${else if opts.lexerInput == 'stream'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
+		this.reporter = reporter;
+		reset(${if opts.lexerInput == 'buffer'}input${else if opts.lexerInput == 'stream'}stream${end});
+	}
+${end}
+
+${template lexerReset}
 	public void reset(${if opts.lexerInput == 'buffer'}CharSequence input${else if opts.lexerInput == 'stream'}java.io.@Reader stream${end}) throws java.io.@IOException {
 		this.state = 0;
 		tokenLine = currLine = 1;
@@ -64,16 +96,9 @@ ${else if opts.lexerInput == 'stream'-}
 ${end-}
 ${call advanceChar(false, true)-}
 	}
-${if opts.lexerInput == 'custom'-}
+${end}
 
-	protected abstract int nextChar() throws java.io.@IOException;
-${end-}
-
-	protected void advance() throws java.io.@IOException {
-		if (chr == -1) return;
-${self->advanceChar(false, false)-}
-	}
-
+${template accessors}
 	public int getState() {
 		return state;
 	}
@@ -129,14 +154,24 @@ ${else-}
 		return tokenBuffer.length();
 ${end-}
 	}
+${end}
 
-${self->lexerTables()-}
-${call mapCharacter-}
+${template mapCharacter}
+	private static int mapCharacter(int chr) {
+		if (chr >= 0 && chr < ${lex.char2no.length}) return tmCharClass[chr];
+		return chr == -1 ? 0 : 1;
+	}
+${end}
 
+${template onNext-}
+${end}
+
+${template next}
 	public ${self->java.symbolClassName()} next() throws java.io.@IOException {
 		${self->java.symbolClassName()} token = new ${self->java.symbolClassName()}();
 		int state;
 
+		tokenloop:
 		do {
 ${if opts.positions.contains('offset')-}
 			token.offset = currOffset;
@@ -174,10 +209,7 @@ ${end-}
 ${if opts.positions.contains('offset')-}
 					token.offset = currOffset;
 ${end-}
-${if opts.lexerInput == 'stream'-}
-					tokenOffset = -1;
-${end-}
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 ${util.shiftRight(self->advanceChar(true, false), 3)-}
@@ -207,10 +239,7 @@ ${end-}
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-${if opts.lexerInput == 'stream'-}
-				tokenOffset = -1;
-${end-}
-				return token;
+				break tokenloop;
 			}
 
 ${if opts.lexerInput == 'stream'-}
@@ -226,32 +255,23 @@ ${end-}
 ${if opts.lexerInput == 'stream'-}
 		tokenOffset = -1;
 ${end-}
+${call onNext-}
 		return token;
 	}
-${call createToken-}
-${call unpackRoutines-}
-}
 ${end}
 
-${template unpackRoutines}
-${call java_pack.unpackInt}
-${call java_pack.unpackShort-}
-${end}
-
-${template lexerCtor-}
-	public ${opts.prefix}Lexer(${if opts.lexerInput == 'buffer'}CharSequence input, ${else if opts.lexerInput == 'stream'}java.io.@Reader stream, ${end}ErrorReporter reporter) throws java.io.@IOException {
-		this.reporter = reporter;
-		reset(${if opts.lexerInput == 'buffer'}input${else if opts.lexerInput == 'stream'}stream${end});
+${template charAt}
+	protected int charAt(int i) {
+		if (i == 0) return chr;
+		i += l - 1;
+		int res = i < input.length() ? input.charAt(i++) : -1;
+		if (res >= Character.MIN_HIGH_SURROGATE && res <= Character.MAX_HIGH_SURROGATE && i < input.length() &&
+				Character.isLowSurrogate(input.charAt(i))) {
+			res = Character.toCodePoint((char) res, input.charAt(i++));
+		}
+		return res;
 	}
 ${end}
-
-${template mapCharacter}
-	private static int mapCharacter(int chr) {
-		if (chr >= 0 && chr < ${lex.char2no.length}) return tmCharClass[chr];
-		return chr == -1 ? 0 : 1;
-	}
-${end}
-
 
 ${template createToken}
 	protected boolean createToken(${self->java.symbolClassName()} token, int ruleIndex) throws java.io.@IOException {
@@ -413,7 +433,7 @@ ${if action-}
 ${end-}
 ${end}
 
-${template lexerTables-}
+${template lexerTables}
 ${if lex.char2no.size() > 128-}
 	private static final char[] tmCharClass = ${lex.char2no->java_pack.packCountValue(true)};
 

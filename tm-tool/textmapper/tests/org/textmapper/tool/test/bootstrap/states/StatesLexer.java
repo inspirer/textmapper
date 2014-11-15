@@ -200,6 +200,7 @@ public class StatesLexer {
 		Span token = new Span();
 		int state;
 
+		tokenloop:
 		do {
 			token.offset = currOffset;
 			tokenLine = token.line = currLine;
@@ -217,8 +218,7 @@ public class StatesLexer {
 					token.value = null;
 					reporter.error("Unexpected end of input reached", token.line, token.offset);
 					token.offset = currOffset;
-					tokenOffset = -1;
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -257,8 +257,7 @@ public class StatesLexer {
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-				tokenOffset = -1;
-				return token;
+				break tokenloop;
 			}
 
 			if (charOffset > tokenOffset) {

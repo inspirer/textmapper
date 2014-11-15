@@ -118,7 +118,7 @@ public class RegexDefLexer {
 		}
 	}
 
-	protected void advance() throws IOException {
+	protected void advance() {
 		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
@@ -242,6 +242,7 @@ public class RegexDefLexer {
 		Span token = new Span();
 		int state;
 
+		tokenloop:
 		do {
 			token.offset = currOffset;
 			tokenLine = currLine;
@@ -255,7 +256,7 @@ public class RegexDefLexer {
 					token.value = null;
 					reporter.error("Unexpected end of input reached", token.offset, token.endoffset);
 					token.offset = currOffset;
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -281,7 +282,7 @@ public class RegexDefLexer {
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-				return token;
+				break tokenloop;
 			}
 
 			token.symbol = tmRuleSymbol[-state - 3];
@@ -289,6 +290,17 @@ public class RegexDefLexer {
 
 		} while (token.symbol == -1 || !createToken(token, -state - 3));
 		return token;
+	}
+
+	protected int charAt(int i) {
+		if (i == 0) return chr;
+		i += l - 1;
+		int res = i < input.length() ? input.charAt(i++) : -1;
+		if (res >= Character.MIN_HIGH_SURROGATE && res <= Character.MAX_HIGH_SURROGATE && i < input.length() &&
+				Character.isLowSurrogate(input.charAt(i))) {
+			res = Character.toCodePoint((char) res, input.charAt(i++));
+		}
+		return res;
 	}
 
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {

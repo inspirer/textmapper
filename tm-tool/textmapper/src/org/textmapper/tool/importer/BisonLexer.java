@@ -125,17 +125,12 @@ public class BisonLexer {
 	private boolean lookaheadColon() throws IOException {
 		int offset = 0;
 		// TODO handle "aa [ bb ] :"
-		while (lookahead(offset) == ' ') offset++;
-		if (lookahead(offset) == ':') {
+		while (charAt(offset) == ' ') offset++;
+		if (charAt(offset) == ':') {
 			foundColonOffset = currOffset + offset;
 			return true;
 		}
 		return false;
-	}
-
-	protected int lookahead(int i) throws IOException {
-		if (i == 0) return chr;
-		return l + i - 1 < input.length() ? input.charAt(l + i - 1) : 0;
 	}
 
 	public BisonLexer(CharSequence input, ErrorReporter reporter) throws IOException {
@@ -157,7 +152,7 @@ public class BisonLexer {
 		}
 	}
 
-	protected void advance() throws IOException {
+	protected void advance() {
 		if (chr == -1) return;
 		currOffset += l - charOffset;
 		if (chr == '\n') {
@@ -418,6 +413,7 @@ public class BisonLexer {
 		Span token = new Span();
 		int state;
 
+		tokenloop:
 		do {
 			token.offset = currOffset;
 			tokenLine = token.line = currLine;
@@ -431,7 +427,7 @@ public class BisonLexer {
 					token.value = null;
 					reporter.error("Unexpected end of input reached", token.line, token.offset, token.endoffset);
 					token.offset = currOffset;
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -457,7 +453,7 @@ public class BisonLexer {
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-				return token;
+				break tokenloop;
 			}
 
 			token.symbol = tmRuleSymbol[-state - 3];
@@ -465,6 +461,17 @@ public class BisonLexer {
 
 		} while (token.symbol == -1 || !createToken(token, -state - 3));
 		return token;
+	}
+
+	protected int charAt(int i) {
+		if (i == 0) return chr;
+		i += l - 1;
+		int res = i < input.length() ? input.charAt(i++) : -1;
+		if (res >= Character.MIN_HIGH_SURROGATE && res <= Character.MAX_HIGH_SURROGATE && i < input.length() &&
+				Character.isLowSurrogate(input.charAt(i))) {
+			res = Character.toCodePoint((char) res, input.charAt(i++));
+		}
+		return res;
 	}
 
 	protected boolean createToken(Span token, int ruleIndex) throws IOException {

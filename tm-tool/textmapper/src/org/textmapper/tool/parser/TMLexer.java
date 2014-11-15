@@ -370,6 +370,7 @@ public class TMLexer {
 		Span token = new Span();
 		int state;
 
+		tokenloop:
 		do {
 			token.offset = currOffset;
 			tokenLine = token.line = currLine;
@@ -388,8 +389,7 @@ public class TMLexer {
 					token.value = null;
 					reporter.error("Unexpected end of input reached", token.line, token.offset, token.endoffset);
 					token.offset = currOffset;
-					tokenOffset = -1;
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 					currOffset += l - charOffset;
@@ -429,8 +429,7 @@ public class TMLexer {
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-				tokenOffset = -1;
-				return token;
+				break tokenloop;
 			}
 
 			if (charOffset > tokenOffset) {

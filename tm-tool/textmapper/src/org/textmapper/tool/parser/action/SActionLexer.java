@@ -67,7 +67,6 @@ public abstract class SActionLexer {
 		currOffset = 0;
 		chr = nextChar();
 	}
-
 	protected abstract int nextChar() throws IOException;
 
 	protected void advance() throws IOException {
@@ -167,6 +166,7 @@ public abstract class SActionLexer {
 		Span token = new Span();
 		int state;
 
+		tokenloop:
 		do {
 			token.offset = currOffset;
 			tokenLine = token.line = currLine;
@@ -183,7 +183,7 @@ public abstract class SActionLexer {
 					token.value = null;
 					reporter.error("Unexpected end of input reached", token.line, token.offset);
 					token.offset = currOffset;
-					return token;
+					break tokenloop;
 				}
 				if (state >= -1 && chr != -1) {
 					if (chr == '\n') {
@@ -207,7 +207,7 @@ public abstract class SActionLexer {
 			if (state == -2) {
 				token.symbol = Tokens.eoi;
 				token.value = null;
-				return token;
+				break tokenloop;
 			}
 
 			token.symbol = tmRuleSymbol[-state - 3];

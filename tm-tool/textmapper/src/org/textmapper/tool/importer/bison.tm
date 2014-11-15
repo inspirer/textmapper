@@ -331,17 +331,11 @@ private int sectionCounter = 0;
 private boolean lookaheadColon() throws IOException {
 	int offset = 0;
 	// TODO handle "aa [ bb ] :"
-	while (lookahead(offset) == ' ') offset++;
-	if (lookahead(offset) == ':') {
+	while (charAt(offset) == ' ') offset++;
+	if (charAt(offset) == ':') {
 		foundColonOffset = currOffset + offset;
 		return true;
 	}
 	return false;
 }
-
-protected int lookahead(int i) throws IOException {
-	if (i == 0) return chr;
-	return l + i - 1 < input.length() ? input.charAt(l + i - 1) : 0;
-}
-
 ${end}
