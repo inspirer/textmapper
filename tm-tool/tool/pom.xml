@@ -21,19 +21,19 @@
 	<artifactId>tool</artifactId>
 	<packaging>pom</packaging>
 	<name>Textmapper tool</name>
-	<version>0.9.4-SNAPSHOT</version>
+	<version>0.9.4</version>
 	<url>http://textmapper.org</url>
 	<parent>
 		<groupId>org.textmapper</groupId>
 		<artifactId>tm-master</artifactId>
-		<version>0.9.4-SNAPSHOT</version>
+		<version>0.9.4</version>
 	</parent>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.textmapper</groupId>
 			<artifactId>textmapper</artifactId>
-			<version>0.9.4-SNAPSHOT</version>
+			<version>0.9.4</version>
 		</dependency>
 	</dependencies>
 
