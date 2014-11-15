@@ -1,4 +1,9 @@
 <idea-plugin>
+	<project-components>
+		<component>
+			<implementation-class>org.textmapper.idea.java.GeneratedFilesRefresher</implementation-class>
+		</component>
+	</project-components>
 	<extensions defaultExtensionNs="com.intellij">
 		<compileServer.plugin classpath="jps/tm-jps-plugin.jar;tm-common.jar;textmapper-0.9.4.jar"/>
 	</extensions>
