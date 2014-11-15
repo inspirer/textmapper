@@ -1,7 +1,14 @@
 0.9.4
 -----
 
-....
+[+] /{eoi}/ lexer rules
+[!] allow \0 characters in regular expressions and input streams
+[!] templates cleanup: using $$ in lexer actions
+[+] Unicode 7.0.0
+
+IDEA plugin:
+
+[+] Non-java IDEs support (WebStorm, etc.).
 
 0.9.3
 -----
