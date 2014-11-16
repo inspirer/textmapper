@@ -2,7 +2,7 @@
 <feature
       id="org.textmapper"
       label="%featureName"
-      version="0.9.3.qualifier"
+      version="0.9.5.qualifier"
       provider-name="%providerName">
 
    <description url="http://github.com/inspirer/textmapper">

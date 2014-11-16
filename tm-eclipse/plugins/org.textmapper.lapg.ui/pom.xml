@@ -6,11 +6,11 @@
     <groupId>org.textmapper.eclipse.plugins</groupId>
     <artifactId>org.textmapper.lapg.ui</artifactId>
     <packaging>eclipse-plugin</packaging>
-    <version>0.9.3-SNAPSHOT</version>
+    <version>0.9.5-SNAPSHOT</version>
 
     <parent>
         <groupId>org.textmapper.eclipse</groupId>
         <artifactId>plugins</artifactId>
-        <version>0.9.3-SNAPSHOT</version>
+        <version>0.9.5-SNAPSHOT</version>
     </parent>
 </project>
