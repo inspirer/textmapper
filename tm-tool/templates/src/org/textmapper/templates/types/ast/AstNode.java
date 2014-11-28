@@ -31,6 +31,10 @@ public abstract class AstNode implements IAstNode {
 		this.endoffset = endoffset;
 	}
 
+	public String getLocation() {
+		return source.getLocation(offset);
+	}
+
 	@Override
 	public int getLine() {
 		return this.line;
@@ -49,6 +53,16 @@ public abstract class AstNode implements IAstNode {
 	@Override
 	public TextSource getSource() {
 		return source;
+	}
+
+	@Override
+	public String getResourceName() {
+		return source.getFile();
+	}
+
+	@Override
+	public String getText() {
+		return source.getText(offset, endoffset);
 	}
 
 	@Override

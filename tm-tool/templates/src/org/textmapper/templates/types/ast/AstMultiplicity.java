@@ -34,7 +34,7 @@ public class AstMultiplicity extends AstNode {
 		return lo;
 	}
 
-	public boolean getHasNoUpperBound() {
+	public boolean hasNoUpperBound() {
 		return hasNoUpperBound;
 	}
 

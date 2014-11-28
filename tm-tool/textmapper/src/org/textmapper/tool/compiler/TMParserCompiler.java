@@ -103,7 +103,7 @@ public class TMParserCompiler {
 					}
 				} else if (nonterm.getType() instanceof TmaNontermTypeHint) {
 					TmaNontermTypeHint hint = (TmaNontermTypeHint) nonterm.getType();
-					if (hint.getIsInline()) {
+					if (hint.isInline()) {
 						error(hint, "inline classes are not supported yet");
 						continue;
 					}
@@ -183,7 +183,7 @@ public class TMParserCompiler {
 				List<TmaInputref> refs = ((TmaDirectiveInput) clause).getInputRefs();
 				for (TmaInputref inputRef : refs) {
 					Symbol sym = resolver.resolve(inputRef.getReference());
-					boolean hasEoi = !inputRef.getNoeoi();
+					boolean hasEoi = !inputRef.isNoeoi();
 					if (sym instanceof Nonterminal) {
 						builder.addInput((Nonterminal) sym, hasEoi, inputRef);
 						hasInputs = true;
@@ -371,7 +371,7 @@ public class TMParserCompiler {
 		}
 
 		if (assignment != null) {
-			result = builder.assignment(assignment.getId().getID(), result, assignment.getAddition(), assignment);
+			result = builder.assignment(assignment.getId().getID(), result, assignment.isAddition(), assignment);
 		}
 
 		return result;

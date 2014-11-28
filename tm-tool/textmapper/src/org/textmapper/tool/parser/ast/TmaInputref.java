@@ -32,7 +32,7 @@ public class TmaInputref extends TmaNode {
 		return reference;
 	}
 
-	public boolean getNoeoi() {
+	public boolean isNoeoi() {
 		return noeoi;
 	}
 

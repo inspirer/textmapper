@@ -245,7 +245,7 @@ nonterm ::=
 
 nonterm_type interface ::=
 	  Lreturns reference=symref_noargs									{~nontermTypeAST}
-	| isInline=Linline? kind=Lclass name=identifieropt implementsopt	{~nontermTypeHint}
+	| inline=Linline? kind=Lclass name=identifieropt implementsopt		{~nontermTypeHint}
 	| kind=Linterface name=identifieropt implementsopt					{~nontermTypeHint}
 	| kind=Lvoid														{~nontermTypeHint}
 	| typeText=type														{~nontermTypeRaw}
@@ -404,7 +404,7 @@ param_value ::=
 ;
 
 predicate_primary returns predicate_expression ::=
-	  is_negated='!'? param_ref {~boolPredicate}
+	  negated='!'? param_ref {~boolPredicate}
 	| param_ref (kind='==' | kind='!=') literal {~comparePredicate}
 ;
 
@@ -433,8 +433,8 @@ map_entry ::=
 	  name=ID ':' value=expression ;
 
 literal ::=
-	  sval=scon 			{~literal}
-	| ival=icon 			{~literal}
+	  val=scon 				{~literal}
+	| val=icon 				{~literal}
 	| val=Ltrue as true 	{~literal}
     | val=Lfalse as false	{~literal}
 ;

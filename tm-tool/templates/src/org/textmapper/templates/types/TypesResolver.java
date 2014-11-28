@@ -206,7 +206,7 @@ class TypesResolver {
 						new LocatedNodeAdapter(fd));
 			}
 		}
-		final TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().getIsReference(),
+		final TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().isReference(),
 				multiplicities == null
 						? new IMultiplicity[0]
 						: multiplicities.toArray(new IMultiplicity[multiplicities.size()]));
@@ -227,7 +227,7 @@ class TypesResolver {
 		List<IMultiplicity> multiplicities = new ArrayList<IMultiplicity>();
 		for (AstMultiplicity multiplicity : list) {
 			int loBound = multiplicity.getLo();
-			int hiBound = multiplicity.getHasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
+			int hiBound = multiplicity.hasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
 					.getHi() : loBound;
 			TiMultiplicity new_ = new TiMultiplicity(loBound, hiBound);
 			if(list.size() > 1 && !new_.isMultiple()) {
@@ -284,7 +284,7 @@ class TypesResolver {
 	private void convertType(final TypeHandler handler, final AstType type, List<AstStringConstraint> constraints, boolean async) {
 		if (type.getKind() == null) {
 			// reference or closure
-			if(type.getIsClosure()) {
+			if(type.isClosure()) {
 				final List<AstTypeEx> params = type.getParameters();
 				if(params == null) {
 					handler.typeResolved(new TiClosureType());

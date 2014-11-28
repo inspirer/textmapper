@@ -34,7 +34,7 @@ public class TmaRhsAssignment extends TmaNode implements ITmaRhsPart {
 		return id;
 	}
 
-	public boolean getAddition() {
+	public boolean isAddition() {
 		return addition;
 	}
 

@@ -241,7 +241,7 @@ class NontermTypeAST : NontermType {
 }
 
 class NontermTypeHint : NontermType {
-	boolean isInline;
+	boolean inline;
 	KindKind kind;
 	Identifier name;
 	list<Symref> implements;
@@ -258,7 +258,7 @@ class NontermTypeRaw : NontermType {
 
 nonterm_type  : NontermType ::=
 	this=new.NontermTypeAST: Lreturns reference=symref_noargs
-  | this=new.NontermTypeHint: isInline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
+  | this=new.NontermTypeHint: inline=Linline as true? kind=Lclass as KindKind.LCLASS name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Linterface as KindKind.LINTERFACE name=identifieropt implements=implementsopt
   | this=new.NontermTypeHint: kind=Lvoid as KindKind.LVOID
   | this=new.NontermTypeRaw: typeText=type
@@ -605,7 +605,7 @@ param_value  : ParamValue ::=
 ;
 
 class BoolPredicate : PredicateExpression {
-	boolean isNegated;
+	boolean negated;
 	Identifier paramRef;
 }
 
@@ -620,7 +620,7 @@ class ComparePredicate : PredicateExpression {
 }
 
 predicate_primary  : PredicateExpression ::=
-	this=new.BoolPredicate: isNegated='!' as true? paramRef=param_ref
+	this=new.BoolPredicate: negated='!' as true? paramRef=param_ref
   | this=new.ComparePredicate: paramRef=param_ref (kind='==' as KindKind.EQUAL_EQUAL | kind='!=' as KindKind.EXCLAMATION_EQUAL) {literal}
 ;
 
@@ -670,16 +670,16 @@ map_entry  : MapEntry ::=
 ;
 
 class Literal : ParamValue, Expression {
-	String sval;
-	Integer ival;
-	boolean val;
+	String val;
+	Integer val2;
+	boolean val3;
 }
 
 literal  : Literal ::=
-	sval=scon
-  | ival=icon
-  | val=Ltrue as true
-  | val=Lfalse as false
+	val=scon
+  | val2=icon
+  | val3=Ltrue as true
+  | val3=Lfalse as false
 ;
 
 class Name {

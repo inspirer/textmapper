@@ -43,11 +43,11 @@ public class AstType extends AstNode {
 		return name;
 	}
 
-	public boolean getIsReference() {
+	public boolean isReference() {
 		return isReference;
 	}
 
-	public boolean getIsClosure() {
+	public boolean isClosure() {
 		return isClosure;
 	}
 

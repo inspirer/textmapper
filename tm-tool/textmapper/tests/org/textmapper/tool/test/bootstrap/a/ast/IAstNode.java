@@ -18,6 +18,7 @@ package org.textmapper.tool.test.bootstrap.a.ast;
 import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
 public interface IAstNode {
+	String getLocation();
 	public int getLine();
 	public int getOffset();
 	public int getColumn();
@@ -25,5 +26,7 @@ public interface IAstNode {
 	public int getEndoffset();
 	public int getEndcolumn();
 	TextSource getSource();
+	String getResourceName();
+	String getText();
 	void accept(AstVisitor v);
 }

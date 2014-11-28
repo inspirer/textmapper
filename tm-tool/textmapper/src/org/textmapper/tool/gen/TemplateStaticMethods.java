@@ -257,4 +257,8 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 		}
 		return sb.toString();
 	}
+
+	public String toUpperWithUnderscores(String s) {
+		return FormatUtil.toUpperWithUnderscores(s);
+	}
 }

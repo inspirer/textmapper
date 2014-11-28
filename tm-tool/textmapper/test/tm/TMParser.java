@@ -23,7 +23,7 @@ import org.textmapper.tool.parser.TMLexer.ErrorReporter;
 import org.textmapper.tool.parser.TMLexer.Tokens;
 import org.textmapper.tool.parser.TMTree.TextSource;
 import org.textmapper.tool.parser.ast.*;
-import org.textmapper.tool.parser.TMLexer.LapgSymbol;
+import org.textmapper.tool.parser.TMLexer.Span;
 
 public class TMParser {
 
@@ -971,18 +971,18 @@ public class TMParser {
 	}
 
 	protected int tmHead;
-	protected LapgSymbol[] tmStack;
-	protected LapgSymbol tmNext;
+	protected Span[] tmStack;
+	protected Span tmNext;
 	protected TMLexer tmLexer;
 
 	private Object parse(TMLexer lexer, int initialState, int finalState) throws IOException, ParseException {
 
 		tmLexer = lexer;
-		tmStack = new LapgSymbol[1024];
+		tmStack = new Span[1024];
 		tmHead = 0;
 		int tmShiftsAfterError = 4;
 
-		tmStack[0] = new LapgSymbol();
+		tmStack[0] = new Span();
 		tmStack[0].state = initialState;
 		tmNext = tmLexer.next();
 
@@ -1009,7 +1009,7 @@ public class TMParser {
 				}
 				if (tmHead < 0) {
 					tmHead = 0;
-					tmStack[0] = new LapgSymbol();
+					tmStack[0] = new Span();
 					tmStack[0].state = initialState;
 				}
 				break;
@@ -1036,7 +1036,7 @@ public class TMParser {
 			tmHead--;
 		}
 		if (tmHead >= 0) {
-			tmStack[++tmHead] = new LapgSymbol();
+			tmStack[++tmHead] = new Span();
 			tmStack[tmHead].symbol = 37;
 			tmStack[tmHead].value = null;
 			tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, 37);
@@ -1060,29 +1060,29 @@ public class TMParser {
 	}
 
 	protected void reduce(int rule) {
-		LapgSymbol tmLeft = new LapgSymbol();
-		tmLeft.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
-		tmLeft.symbol = tmRuleSymbol[rule];
-		tmLeft.state = 0;
+		Span left = new Span();
+		left.value = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]].value : null;
+		left.symbol = tmRuleSymbol[rule];
+		left.state = 0;
 		if (DEBUG_SYNTAX) {
 			System.out.println("reduce to " + tmSymbolNames[tmRuleSymbol[rule]]);
 		}
-		LapgSymbol startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
-		tmLeft.line = startsym.line;
-		tmLeft.offset = startsym.offset;
-		tmLeft.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
-		applyRule(tmLeft, rule, tmRuleLen[rule]);
+		Span startsym = (tmRuleLen[rule] != 0) ? tmStack[tmHead + 1 - tmRuleLen[rule]] : tmNext;
+		left.line = startsym.line;
+		left.offset = startsym.offset;
+		left.endoffset = (tmRuleLen[rule] != 0) ? tmStack[tmHead].endoffset : tmNext.offset;
+		applyRule(left, rule, tmRuleLen[rule]);
 		for (int e = tmRuleLen[rule]; e > 0; e--) {
 			cleanup(tmStack[tmHead]);
 			tmStack[tmHead--] = null;
 		}
-		tmStack[++tmHead] = tmLeft;
-		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, tmLeft.symbol);
+		tmStack[++tmHead] = left;
+		tmStack[tmHead].state = tmGoto(tmStack[tmHead - 1].state, left.symbol);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void applyRule(LapgSymbol tmLeft, int tmRule, int tmLength) {
-		switch (tmRule) {
+	protected void applyRule(Span tmLeft, int ruleIndex, int ruleLength) {
+		switch (ruleIndex) {
 			case 0:  // input ::= header import__optlist option_optlist lexer_section parser_section
 				tmLeft.value = new TmaInput(
 						((TmaHeader)tmStack[tmHead - 4].value) /* header */,
@@ -1361,7 +1361,7 @@ public class TMParser {
 				break;
 			case 69:  // nonterm_type ::= Linline Lclass identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
-						true /* isInline */,
+						true /* inline */,
 						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
@@ -1369,7 +1369,7 @@ public class TMParser {
 				break;
 			case 70:  // nonterm_type ::= Lclass identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
-						false /* isInline */,
+						false /* inline */,
 						TmaNontermTypeHint.TmaKindKind.LCLASS /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
@@ -1377,7 +1377,7 @@ public class TMParser {
 				break;
 			case 71:  // nonterm_type ::= Linterface identifieropt implementsopt
 				tmLeft.value = new TmaNontermTypeHint(
-						false /* isInline */,
+						false /* inline */,
 						TmaNontermTypeHint.TmaKindKind.LINTERFACE /* kind */,
 						((TmaIdentifier)tmStack[tmHead - 1].value) /* name */,
 						((List<TmaSymref>)tmStack[tmHead].value) /* _implements */,
@@ -1385,7 +1385,7 @@ public class TMParser {
 				break;
 			case 72:  // nonterm_type ::= Lvoid
 				tmLeft.value = new TmaNontermTypeHint(
-						false /* isInline */,
+						false /* inline */,
 						TmaNontermTypeHint.TmaKindKind.LVOID /* kind */,
 						null /* name */,
 						null /* _implements */,
@@ -1796,13 +1796,13 @@ public class TMParser {
 				break;
 			case 155:  // predicate_primary ::= '!' param_ref
 				tmLeft.value = new TmaBoolPredicate(
-						true /* isNegated */,
+						true /* negated */,
 						((TmaIdentifier)tmStack[tmHead].value) /* paramRef */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 156:  // predicate_primary ::= param_ref
 				tmLeft.value = new TmaBoolPredicate(
-						false /* isNegated */,
+						false /* negated */,
 						((TmaIdentifier)tmStack[tmHead].value) /* paramRef */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
@@ -1853,30 +1853,30 @@ public class TMParser {
 				break;
 			case 168:  // literal ::= scon
 				tmLeft.value = new TmaLiteral(
-						((String)tmStack[tmHead].value) /* sval */,
-						null /* ival */,
-						false /* val */,
+						((String)tmStack[tmHead].value) /* val */,
+						null /* val2 */,
+						false /* val3 */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 169:  // literal ::= icon
 				tmLeft.value = new TmaLiteral(
-						null /* sval */,
-						((Integer)tmStack[tmHead].value) /* ival */,
-						false /* val */,
+						null /* val */,
+						((Integer)tmStack[tmHead].value) /* val2 */,
+						false /* val3 */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 170:  // literal ::= Ltrue
 				tmLeft.value = new TmaLiteral(
-						null /* sval */,
-						null /* ival */,
-						true /* val */,
+						null /* val */,
+						null /* val2 */,
+						true /* val3 */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 171:  // literal ::= Lfalse
 				tmLeft.value = new TmaLiteral(
-						null /* sval */,
-						null /* ival */,
-						false /* val */,
+						null /* val */,
+						null /* val2 */,
+						false /* val3 */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 172:  // name ::= qualified_id
@@ -1976,13 +1976,13 @@ public class TMParser {
 	/**
 	 * disposes symbol dropped by error recovery mechanism
 	 */
-	protected void dispose(LapgSymbol value) {
+	protected void dispose(Span value) {
 	}
 
 	/**
 	 * cleans node removed from the stack
 	 */
-	protected void cleanup(LapgSymbol value) {
+	protected void cleanup(Span value) {
 	}
 
 	public TmaInput parseInput(TMLexer lexer) throws IOException, ParseException {

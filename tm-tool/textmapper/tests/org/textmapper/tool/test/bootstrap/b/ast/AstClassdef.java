@@ -35,7 +35,7 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 		this.identifier = identifier;
 	}
 
-	public boolean getTc() {
+	public boolean isTc() {
 		return tc;
 	}
 
@@ -47,7 +47,7 @@ public class AstClassdef extends AstNode implements IAstClassdefNoEoi {
 		return classdeflist;
 	}
 
-	public boolean getTe() {
+	public boolean isTe() {
 		return te;
 	}
 

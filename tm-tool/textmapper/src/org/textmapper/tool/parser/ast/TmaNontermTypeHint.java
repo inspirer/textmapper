@@ -20,21 +20,21 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNontermTypeHint extends TmaNode implements ITmaNontermType {
 
-	private final boolean isInline;
+	private final boolean inline;
 	private final TmaNontermTypeHint.TmaKindKind kind;
 	private final TmaIdentifier name;
 	private final List<TmaSymref> _implements;
 
-	public TmaNontermTypeHint(boolean isInline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, List<TmaSymref> _implements, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermTypeHint(boolean inline, TmaNontermTypeHint.TmaKindKind kind, TmaIdentifier name, List<TmaSymref> _implements, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.isInline = isInline;
+		this.inline = inline;
 		this.kind = kind;
 		this.name = name;
 		this._implements = _implements;
 	}
 
-	public boolean getIsInline() {
-		return isInline;
+	public boolean isInline() {
+		return inline;
 	}
 
 	public TmaNontermTypeHint.TmaKindKind getKind() {

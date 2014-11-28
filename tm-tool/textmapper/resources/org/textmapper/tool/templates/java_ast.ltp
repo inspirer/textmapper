@@ -75,6 +75,14 @@ public interface ${cl->className()}${call implementedInterfaces(cl,'extends')} {
 ${end}
 
 
+${cached query propertyGetter() =
+	isBool = type is PrimitiveType && type.toString() == 'boolean',
+	noPrefix = isBool && (
+		upper_und = util.toUpperWithUnderscores(self->propertyName()),
+		upper_und.startsWith('HAS_') || upper_und.startsWith('IS_')),
+	suffix = util.toCamelCase(self->propertyName(), !noPrefix),
+	prefix = isBool ? (noPrefix ? '' : 'is') : 'get',
+	prefix + suffix }
 
 ${template ast_class(cl)-}
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
@@ -92,7 +100,7 @@ ${end-}
 	}
 
 ${foreach prop in cl.fields-}
-	public ${prop->fieldType()} get${util.toCamelCase(prop->propertyName(), true)}() {
+	public ${prop->fieldType()} ${prop->propertyGetter()}() {
 		return ${prop->propertyName()};
 	}
 
@@ -150,10 +158,17 @@ ${call java.header-}
 package ${self->astPackage()};
 
 public interface I${opts.astprefix}Node${call astNodeExtends} {
+${if opts.gentree-}
+	String getLocation();
+${end-}
 ${foreach l in self->util.locationList()-}
 	public int get${util.toFirstUpper(l)}();
 ${end-}
 	${call java.package}.${opts.prefix}Tree.@TextSource getSource();
+${if opts.gentree-}
+	String getResourceName();
+	String getText();
+${end-}
 	void accept(${opts.astprefix}Visitor v);
 }
 ${end-}
@@ -192,6 +207,11 @@ ${foreach l in self->util.locationList()-}
 		this.${l} = ${l};
 ${end-}
 	}
+${if opts.gentree}
+	public String getLocation() {
+		return source.getLocation(offset);
+	}
+${end-}
 ${foreach l in self->util.locationList()}
 	@Override
 	public int get${util.toFirstUpper(l)}() {
@@ -202,6 +222,17 @@ ${end}
 	public ${call java.package}.${opts.prefix}Tree.@TextSource getSource() {
 		return source;
 	}
+${if opts.gentree}
+	@Override
+	public String getResourceName() {
+		return source.getFile();
+	}
+
+	@Override
+	public String getText() {
+		return source.getText(offset, endoffset);
+	}
+${end-}
 ${if self->util.hasOffsets()}
 	@Override
 	public String toString() {

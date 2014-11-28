@@ -19,17 +19,17 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaBoolPredicate extends TmaNode implements ITmaPredicateExpression {
 
-	private final boolean isNegated;
+	private final boolean negated;
 	private final TmaIdentifier paramRef;
 
-	public TmaBoolPredicate(boolean isNegated, TmaIdentifier paramRef, TextSource source, int line, int offset, int endoffset) {
+	public TmaBoolPredicate(boolean negated, TmaIdentifier paramRef, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.isNegated = isNegated;
+		this.negated = negated;
 		this.paramRef = paramRef;
 	}
 
-	public boolean getIsNegated() {
-		return isNegated;
+	public boolean isNegated() {
+		return negated;
 	}
 
 	public TmaIdentifier getParamRef() {
