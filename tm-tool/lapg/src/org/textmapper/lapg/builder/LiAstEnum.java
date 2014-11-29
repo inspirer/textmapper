@@ -64,7 +64,7 @@ class LiAstEnum extends LiUserDataHolder implements AstEnum, DerivedSourceElemen
 
 	@Override
 	public boolean isSubtypeOf(AstType another) {
-		return this == another;
+		return this == another || another == AstType.ANY;
 	}
 
 	@Override

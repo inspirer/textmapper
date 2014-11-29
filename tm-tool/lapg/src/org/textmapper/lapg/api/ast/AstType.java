@@ -17,6 +17,8 @@ package org.textmapper.lapg.api.ast;
 
 public interface AstType {
 
+	public static final AstType ANY = new PrimitiveType("any");
+
 	public static final AstType STRING = new PrimitiveType("string");
 	public static final AstType BOOL = new PrimitiveType("boolean");
 	public static final AstType INT = new PrimitiveType("int");
@@ -32,7 +34,7 @@ public interface AstType {
 
 		@Override
 		public boolean isSubtypeOf(AstType another) {
-			return another == this;
+			return another == this || another == ANY;
 		}
 
 		@Override

@@ -43,7 +43,7 @@ ${query type() =
 	context->convertType(self.type)}
 
 ${query fieldType() =
-	type is PrimitiveType ? (value = type.toString(), value == 'string' ? 'String' : value) :
+	type is PrimitiveType ? (value = type.toString(), value == 'string' ? 'String' : value == 'any' ? 'Object' : value) :
 	context->convertType(self.type)
 }
 

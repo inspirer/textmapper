@@ -93,6 +93,7 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 
 	@Override
 	public boolean isSubtypeOf(AstType another) {
+		if (another == AstType.ANY) return true;
 		if (!(another instanceof AstClass)) return false;
 		AstClass cl = (AstClass) another;
 		if (this == cl) return true;

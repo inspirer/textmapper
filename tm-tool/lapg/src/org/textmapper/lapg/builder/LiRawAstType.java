@@ -42,7 +42,7 @@ class LiRawAstType implements AstRawType, DerivedSourceElement {
 
 	@Override
 	public boolean isSubtypeOf(AstType another) {
-		return equals(another);
+		return equals(another) || another == AstType.ANY;
 	}
 
 	@Override

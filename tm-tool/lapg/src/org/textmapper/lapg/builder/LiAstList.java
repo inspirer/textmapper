@@ -49,7 +49,7 @@ class LiAstList implements AstList, DerivedSourceElement {
 
 	@Override
 	public boolean isSubtypeOf(AstType another) {
-		return equals(another);
+		return equals(another) || another == AstType.ANY;
 	}
 
 	@Override

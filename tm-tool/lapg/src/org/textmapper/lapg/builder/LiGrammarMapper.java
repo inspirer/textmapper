@@ -157,9 +157,10 @@ class LiGrammarMapper implements GrammarMapper {
 							? "the field type"
 							: "the nonterminal type"));
 
-		} else if (value instanceof Boolean && type != AstType.BOOL
+		} else if (type != AstType.ANY &&
+				(value instanceof Boolean && type != AstType.BOOL
 				|| value instanceof String && type != AstType.STRING
-				|| value instanceof Integer && type != AstType.INT) {
+				|| value instanceof Integer && type != AstType.INT)) {
 			throw new IllegalArgumentException(
 					"value should match " + (field != null
 							? "the field type"
