@@ -555,3 +555,21 @@ ${end-}
 ${end}
 
 ${query java_ast.astNodeExtends = ' extends org.textmapper.lapg.api.@TextSourceElement'}
+
+${template java_ast.ast_class_fields(cl)-}
+${if cl.name == 'Input'-}
+	private int templatesStart = -1;
+${end-}
+${end}
+
+${template java_ast.ast_class_methods(cl)-}
+${if cl.name == 'Input'}
+	public int getTemplatesStart() {
+		return templatesStart;
+	}
+
+	public void setTemplatesStart(int templatesStart) {
+		this.templatesStart = templatesStart;
+	}
+${end-}
+${end}

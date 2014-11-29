@@ -19,9 +19,12 @@ import org.textmapper.lapg.api.TextSourceElement;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
 public interface ITmaNode extends TextSourceElement {
+	String getLocation();
 	public int getLine();
 	public int getOffset();
 	public int getEndoffset();
 	TextSource getSource();
+	String getResourceName();
+	String getText();
 	void accept(TmaVisitor v);
 }

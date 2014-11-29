@@ -84,28 +84,32 @@ ${cached query propertyGetter() =
 	prefix = isBool ? (noPrefix ? '' : 'is') : 'get',
 	prefix + suffix }
 
+${template ast_class_fields(cl)}${end}
+
+${template ast_class_methods(cl)}${end}
+
 ${template ast_class(cl)-}
 public class ${cl->className()} extends ${opts.astprefix}Node${call implementedInterfaces(cl,'implements')} {
-
-${if cl.fields-}
+${if cl.fields}
+${end-}
 ${foreach prop in cl.fields-}
 	private final ${prop->fieldType()} ${prop->propertyName()};
-${end}
 ${end-}
+${call ast_class_fields(cl)-}
+
 	public ${cl->className()}(${foreach prop in cl.fields}${prop->fieldType()} ${prop->propertyName()}, ${end}${call java.package}.${opts.prefix}Tree.@TextSource source${self->util.location(', int ', '', '')}) {
 		super(source${self->util.location(', ', '', '')});
 ${foreach prop in cl.fields-}
 		this.${prop->propertyName()} = ${prop->propertyName()};
 ${end-}
 	}
-
-${foreach prop in cl.fields-}
+${foreach prop in cl.fields}
 	public ${prop->fieldType()} ${prop->propertyGetter()}() {
 		return ${prop->propertyName()};
 	}
-
 ${end-}
-${if true-}
+${call ast_class_methods(cl)-}
+${if true}
 	@Override
 	public void accept(${opts.astprefix}Visitor v) {
 ${if cl.fields.select(f|f.type->acceptsVisitor()).size() == 0-}
@@ -132,8 +136,7 @@ ${end-}
 ${end-}
 	}
 ${end-}
-${foreach inner in cl.inner-}
-
+${foreach inner in cl.inner}
 ${util.shiftRight(self->('ast_'+inner->kind())(inner),1)-}
 ${end-}
 }
