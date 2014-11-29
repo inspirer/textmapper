@@ -433,10 +433,10 @@ map_entry ::=
 	  name=ID ':' value=expression ;
 
 literal ::=
-	  val=scon 				{~literal}
-	| val=icon 				{~literal}
-	| val=Ltrue as true 	{~literal}
-    | val=Lfalse as false	{~literal}
+	  value=scon
+	| value=icon
+	| value=Ltrue as true
+    | value=Lfalse as false
 ;
 
 name class ::=

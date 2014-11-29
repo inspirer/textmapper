@@ -132,8 +132,8 @@ public class TMExpressionResolver {
 					return resolver.resolve((TmaSymref) expression);
 				}
 				if (expression instanceof TmaLiteral) {
-					Object literal = ((TmaLiteral) expression).getLiteral();
-					return convertLiteral(expression, literal, type);
+					Object value = ((TmaLiteral) expression).getValue();
+					return convertLiteral(expression, value, type);
 				}
 				return null;
 			}

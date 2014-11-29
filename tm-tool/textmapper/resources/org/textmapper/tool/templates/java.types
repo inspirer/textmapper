@@ -26,6 +26,8 @@ class Options extends common.Options {
 
 	bool genCleanup = false;
 	bool genCopyright = false;
+
+	bool __hasAny = true;
 }
 
 class AnnotateReference {

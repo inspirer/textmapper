@@ -260,7 +260,8 @@ public class TMParserCompiler {
 		String alias = action != null && action.getAction() != null ? action.getAction().getID() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);
 		builder.addRule(left, rule, prio);
-		Map<String, Object> annotations = expressionResolver.convert(right.getAnnotations(), "AnnotateRule");
+		Map<String, Object> annotations = expressionResolver.convert(
+				right.getPrefix() != null ? right.getPrefix().getAnnotations() : null, "AnnotateRule");
 
 		TMDataUtil.putAnnotations(rule, annotations);
 		TMDataUtil.putCode(rule, lastAction);
@@ -355,7 +356,7 @@ public class TMParserCompiler {
 			}
 		} else if (literalCast != null) {
 			if (result instanceof RhsSymbol) {
-				TMDataUtil.putLiteral((RhsSymbol) result, literalCast.getLiteral().getLiteral());
+				TMDataUtil.putLiteral((RhsSymbol) result, literalCast.getLiteral().getValue());
 			} else {
 				error(literalCast, "cannot apply `as literal' to a group");
 			}

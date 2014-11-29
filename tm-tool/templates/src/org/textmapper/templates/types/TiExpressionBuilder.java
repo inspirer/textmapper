@@ -33,20 +33,20 @@ public abstract class TiExpressionBuilder<Node> {
 
 	public abstract void report(Node expression, String message);
 
-	protected Object convertLiteral(Node node, Object literal, IType type) {
+	protected Object convertLiteral(Node node, Object value, IType type) {
 		if (!(type instanceof IDataType)) {
 			report(node, "expected value of type `" + type.toString() + "` instead of literal");
 			return null;
 		}
 		IDataType dataType = (IDataType) type;
 		DataTypeKind kind;
-		if (literal instanceof Boolean) {
+		if (value instanceof Boolean) {
 			kind = DataTypeKind.BOOL;
-		} else if (literal instanceof Number) {
+		} else if (value instanceof Number) {
 			kind = DataTypeKind.INT;
 		} else {
-			if(!(literal instanceof String)) {
-				literal = literal.toString();
+			if (!(value instanceof String)) {
+				value = value.toString();
 			}
 			kind = DataTypeKind.STRING;
 		}
@@ -58,7 +58,7 @@ public abstract class TiExpressionBuilder<Node> {
 		}
 
 		if (kind == DataTypeKind.STRING) {
-			String s = (String) literal;
+			String s = (String) value;
 			for (Constraint constraint : dataType.getConstraints()) {
 				String message = ConstraintUtil.validate(s, constraint);
 				if (message != null) {
@@ -68,7 +68,7 @@ public abstract class TiExpressionBuilder<Node> {
 			}
 		}
 
-		return literal;
+		return value;
 	}
 
 	protected Object convertNew(Node node, String className, Map<String, Node> properties, IType type) {
@@ -84,22 +84,23 @@ public abstract class TiExpressionBuilder<Node> {
 		}
 
 		Map<String, Object> result = new HashMap<String, Object>();
-		if(properties != null) {
+		if (properties != null) {
 			for (Entry<String, Node> item : properties.entrySet()) {
 				String key = item.getKey();
 
 				IType requiredType = null;
 				{
 					IFeature feature = aClass.getFeature(key);
-					if(feature != null) {
+					if (feature != null) {
 						requiredType = feature.getType();
 					} else {
 						IMethod method = aClass.getMethod(key);
-						if(method != null) {
+						if (method != null) {
 							IType[] parameterTypes = method.getParameterTypes();
-							IType[] requiredParams = new IType[1 + (parameterTypes != null ? parameterTypes.length : 0)];
+							IType[] requiredParams = new IType[1 + (parameterTypes != null ? parameterTypes.length :
+									0)];
 							requiredParams[0] = method.getDeclaringClass();
-							if(parameterTypes != null) {
+							if (parameterTypes != null) {
 								System.arraycopy(parameterTypes, 0, requiredParams, 1, parameterTypes.length);
 							}
 							requiredType = new TiClosureType(requiredParams);
@@ -108,7 +109,8 @@ public abstract class TiExpressionBuilder<Node> {
 				}
 
 				if (requiredType == null) {
-					report(node, "trying to initialize unknown feature/method `" + key + "` in class `" + className + "`");
+					report(node, "trying to initialize unknown feature/method `" + key + "` in class `" + className +
+							"`");
 					continue;
 				}
 
@@ -128,7 +130,7 @@ public abstract class TiExpressionBuilder<Node> {
 			return null;
 		}
 
-		if(array == null) {
+		if (array == null) {
 			return new ArrayList();
 		}
 
@@ -150,7 +152,7 @@ public abstract class TiExpressionBuilder<Node> {
 			return null;
 		}
 
-		if(!closure.matches((IClosureType) type)) {
+		if (!closure.matches((IClosureType) type)) {
 			report(node, "expected closure of type `" + type.toString() + "`");
 			return null;
 		}

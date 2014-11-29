@@ -927,10 +927,6 @@ public class TMParser {
 		static final int predicate_expression_predicateBinary2 = 161;  // predicate_expression ::= predicate_expression '||' predicate_expression
 		static final int expression_instance = 164;  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
 		static final int expression_array = 165;  // expression ::= '[' expression_list_Comma_separated_opt ']'
-		static final int literal_literal = 168;  // literal ::= scon
-		static final int literal_literal2 = 169;  // literal ::= icon
-		static final int literal_literal3 = 170;  // literal ::= Ltrue
-		static final int literal_literal4 = 171;  // literal ::= Lfalse
 	}
 
 	/**
@@ -1853,30 +1849,22 @@ public class TMParser {
 				break;
 			case 168:  // literal ::= scon
 				tmLeft.value = new TmaLiteral(
-						((String)tmStack[tmHead].value) /* val */,
-						null /* val2 */,
-						false /* val3 */,
+						((String)tmStack[tmHead].value) /* value */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 169:  // literal ::= icon
 				tmLeft.value = new TmaLiteral(
-						null /* val */,
-						((Integer)tmStack[tmHead].value) /* val2 */,
-						false /* val3 */,
+						((Integer)tmStack[tmHead].value) /* value */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 170:  // literal ::= Ltrue
 				tmLeft.value = new TmaLiteral(
-						null /* val */,
-						null /* val2 */,
-						true /* val3 */,
+						true /* value */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 171:  // literal ::= Lfalse
 				tmLeft.value = new TmaLiteral(
-						null /* val */,
-						null /* val2 */,
-						false /* val3 */,
+						false /* value */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 172:  // name ::= qualified_id

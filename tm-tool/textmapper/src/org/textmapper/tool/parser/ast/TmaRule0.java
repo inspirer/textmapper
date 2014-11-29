@@ -65,12 +65,6 @@ public class TmaRule0 extends TmaNode {
 		return suffix;
 	}
 
-	@Deprecated
-	public TmaAnnotations getAnnotations() {
-		// TODO -use getPrefix()
-		return prefix != null ? prefix.getAnnotations() : null;
-	}
-
 	@Override
 	public void accept(TmaVisitor v) {
 		if (error != null) {

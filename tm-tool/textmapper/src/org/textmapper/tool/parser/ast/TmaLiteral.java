@@ -19,15 +19,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaLiteral extends TmaNode implements ITmaParamValue, ITmaExpression {
 
-	private final Object literal;
+	private final Object value;
 
-	public TmaLiteral(Object literal, TextSource source, int line, int offset, int endoffset) {
+	public TmaLiteral(Object value, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.literal = literal;
+		this.value = value;
 	}
 
-	public Object getLiteral() {
-		return literal;
+	public Object getValue() {
+		return value;
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import org.textmapper.lapg.api.builder.GrammarMapper;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.lapg.util.RhsUtil;
+import org.textmapper.lapg.util.TypesUtil;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
 
 import java.util.*;
@@ -33,10 +34,10 @@ import java.util.Map.Entry;
  */
 public class TMMapper {
 
-	private static final MarkerType BOOL_OR_ENUM = new MarkerType();
-
-	private final ProcessingStatus status;
 	private final Grammar grammar;
+	private final ProcessingStatus status;
+	private final boolean allowTypeAny;
+
 	private final GrammarMapper mapper;
 	private final AstBuilder builder;
 	private final Map<Symbol, Symbol> decorators = new HashMap<Symbol, Symbol>();
@@ -46,9 +47,10 @@ public class TMMapper {
 	private final Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
 	private List<Nonterminal> unmapped;
 
-	public TMMapper(Grammar grammar, ProcessingStatus status) {
+	public TMMapper(Grammar grammar, ProcessingStatus status, boolean allowTypeAny) {
 		this.grammar = grammar;
 		this.status = status;
+		this.allowTypeAny = allowTypeAny;
 		this.mapper = LapgCore.createMapper(grammar);
 		this.builder = LapgCore.createAstBuilder();
 	}
@@ -281,7 +283,7 @@ public class TMMapper {
 		return part;
 	}
 
-	private static boolean isConstantOrVoid(RhsPart part) {
+	static boolean isConstantOrVoid(RhsPart part) {
 		part = RhsUtil.unwrapEx(part, false, false, true);
 		if (part instanceof RhsSymbol) {
 			final RhsSymbol sym = (RhsSymbol) part;
@@ -606,6 +608,7 @@ public class TMMapper {
 	}
 
 	private void mapFields() {
+		TMFieldMapper fieldMapper = new TMFieldMapper(status, builder, mapper, allowTypeAny);
 		for (AstClass cl : classContent.keySet()) {
 			List<RhsPart> rhsParts = classContent.get(cl);
 			if (rhsParts == null || rhsParts.isEmpty()) continue;
@@ -613,114 +616,8 @@ public class TMMapper {
 			RhsPart def = rhsParts.size() == 1
 					? rhsParts.get(0)
 					: RhsUtil.asChoice(rhsParts.toArray(new RhsPart[rhsParts.size()]));
-			DefaultMappingContext context = new DefaultMappingContext();
-			traverseFields(def, context, new int[]{0}, true);
-			traverseFields(def, context, new int[]{0}, false);
 
-			Collections.sort(context.result);
-			for (FieldDescriptor fd : context.result) {
-				AstType type = fd.type;
-				Map<Symbol, AstEnumMember> members = new LinkedHashMap<Symbol, AstEnumMember>();
-				if (type == BOOL_OR_ENUM) {
-					for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
-						Symbol target = m.sym.getTarget();
-						members.put(target, null);
-					}
-					if (members.size() > 1) {
-						AstEnum enum_ = builder.addEnum(builder.uniqueName(cl, fd.baseName + "_kind", false), cl,
-								fd.firstMapping.origin);
-						final Symbol[] enumMembers = members.keySet().toArray(new Symbol[members.size()]);
-						for (Symbol enumMember : enumMembers) {
-							final AstEnumMember astEnumMember = builder.addMember(
-									builder.uniqueName(enum_, TMDataUtil.getId(enumMember), true),
-									enum_, null /* TODO ??? */);
-							members.put(enumMember, astEnumMember);
-						}
-						type = enum_;
-					} else {
-						type = AstType.BOOL;
-					}
-				}
-
-				AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true),
-						type, fd.nullable, cl, fd.firstMapping.origin);
-				for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
-					Object value = TMDataUtil.getLiteral(m.sym);
-					if (fd.type == BOOL_OR_ENUM) {
-						if (type == AstType.BOOL) {
-							value = Boolean.TRUE;
-						} else {
-							value = members.get(m.sym.getTarget());
-						}
-					}
-
-					mapper.map(m.sym, field, value, m.addition);
-				}
-			}
-		}
-	}
-
-	private void traverseFields(RhsPart part, MappingContext context, int[] index, boolean withAlias) {
-		if (part instanceof RhsOptional) {
-			traverseFields(((RhsOptional) part).getPart(), context, index, withAlias);
-
-		} else if (part instanceof RhsSet) {
-			// sets do not contain any useful information for ASTs
-
-		} else if (part instanceof RhsUnordered || part instanceof RhsSequence) {
-			RhsPart[] parts = part instanceof RhsUnordered
-					? ((RhsUnordered) part).getParts()
-					: ((RhsSequence) part).getParts();
-			for (RhsPart p : parts) {
-				traverseFields(p, context, index, withAlias);
-			}
-
-		} else if (part instanceof RhsChoice) {
-			ChoiceMappingContext choiceContext = new ChoiceMappingContext(context);
-			RhsPart[] parts = ((RhsChoice) part).getParts();
-			for (RhsPart p : parts) {
-				traverseFields(p, choiceContext, index, withAlias);
-				choiceContext.reset();
-			}
-
-		} else if (part instanceof RhsAssignment || part instanceof RhsCast || part instanceof RhsSymbol) {
-			// field is almost here
-			RhsAssignment assignment = RhsUtil.getAssignment(part);
-			RhsPart unwrapped = RhsUtil.unwrapEx(part, true, true, true);
-			if (!(unwrapped instanceof RhsSymbol)) {
-				error(part, (part instanceof RhsAssignment ? "assignment" : "cast") + " is not expected here");
-				return;
-			}
-
-			index[0]++;
-			if (withAlias && assignment == null || !withAlias && assignment != null) {
-				return;
-			}
-
-			RhsSymbol ref = (RhsSymbol) unwrapped;
-			AstType type = RhsUtil.getCastType(part);
-			if (type == null) {
-				final Object literal = TMDataUtil.getLiteral(ref);
-				if (literal != null) {
-					type = literal instanceof String ? AstType.STRING :
-							literal instanceof Integer ? AstType.INT : AstType.BOOL;
-				}
-			}
-			if (type == null) {
-				if (!isConstantOrVoid(ref)) {
-					type = ref.getTarget().getType();
-				}
-				if (type == null && assignment != null) {
-					type = BOOL_OR_ENUM;
-				}
-			}
-
-			if (type != null) {
-				context.addMapping(assignment != null ? assignment.getName() : null, type, ref,
-						index[0], assignment != null && assignment.isAddition(), part);
-			}
-		} else {
-			throw new IllegalArgumentException();
+			fieldMapper.mapFields(cl, def);
 		}
 	}
 
@@ -728,12 +625,11 @@ public class TMMapper {
 		status.report(ProcessingStatus.KIND_ERROR, message, element);
 	}
 
-
 	/**
-	 *  Returns AST type of the given part (if exists). Builds a list of all RhsSymbols that
-	 *  contribute to the returned type.
+	 * Returns AST type of the given part (if exists). Builds a list of all RhsSymbols that
+	 * contribute to the returned type.
 	 */
-	private static TypeOrSymbolHandle getTypeOrUnresolvedSymbol(RhsPart part, List<RhsSymbol> out) {
+	private TypeOrSymbolHandle getTypeOrUnresolvedSymbol(RhsPart part, List<RhsSymbol> out) {
 		part = RhsUtil.unwrap(part);
 		RhsCast cast = null;
 		boolean optional = false;
@@ -775,24 +671,6 @@ public class TMMapper {
 		return null;
 	}
 
-	private static AstClass getJoinClass(String contextId, AstClass c1, AstClass c2) {
-		// TODO find the least common supertype...
-		return null;
-	}
-
-	private static AstType getJoinType(String contextId, AstType t1, AstType t2) {
-		if (t1.isSubtypeOf(t2)) {
-			return t2;
-		}
-		if (t2.isSubtypeOf(t1)) {
-			return t1;
-		}
-		if (t1 instanceof AstClass && t2 instanceof AstClass) {
-			return getJoinClass(contextId, (AstClass) t1, (AstClass) t2);
-		}
-		return null;
-	}
-
 	private static boolean hasProperty(UserDataHolder o, String name) {
 		final Map<String, Object> annotations = TMDataUtil.getAnnotations(o);
 		if (annotations == null) {
@@ -817,183 +695,7 @@ public class TMMapper {
 		return typeHint != null && typeHint.getKind() == Kind.VOID || hasProperty(n, "noast");
 	}
 
-	private static String getFieldBaseName(RhsSymbol sym) {
-		final String id = TMDataUtil.getId(sym.getTarget());
-		return id.endsWith("opt") && id.length() > 3 ? id.substring(0, id.length() - 3) : id;
-	}
-
-	private interface MappingContext {
-		FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
-								   boolean isAddition, SourceElement origin);
-	}
-
-	private static class DefaultMappingContext implements MappingContext {
-
-		private List<FieldDescriptor> result = new ArrayList<FieldDescriptor>();
-		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId,
-				Collection<FieldDescriptor>>();
-
-		@Override
-		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
-										  boolean isAddition, SourceElement origin) {
-			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
-			Collection<FieldDescriptor> fields = fieldsMap.get(id);
-			if (fields == null) {
-				fields = new ArrayList<FieldDescriptor>();
-				fieldsMap.put(id, fields);
-			}
-			FieldDescriptor fd = new FieldDescriptor(alias != null ? alias : getFieldBaseName(sym), type);
-			fd.addMapping(new FieldMapping(sym, symIndex, isAddition, origin));
-			result.add(fd);
-			fields.add(fd);
-			return fd;
-		}
-	}
-
-	private static class ChoiceMappingContext implements MappingContext {
-
-		private final MappingContext parent;
-		private Map<FieldId, Collection<FieldDescriptor>> localMap = new HashMap<FieldId,
-				Collection<FieldDescriptor>>();
-		private Set<FieldDescriptor> used;
-
-		private ChoiceMappingContext(MappingContext parent) {
-			this.parent = parent;
-		}
-
-		@Override
-		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
-										  boolean isAddition, SourceElement origin) {
-			FieldId id = new FieldId(alias, isAddition, sym.getTarget(), type);
-			Collection<FieldDescriptor> fds = localMap.get(id);
-			if (used == null) {
-				used = new HashSet<FieldDescriptor>();
-			}
-			if (fds != null) {
-				for (FieldDescriptor fd : fds) {
-					if (used.add(fd)) {
-						// reusing field from a previous alternative
-						fd.addMapping(new FieldMapping(sym, symIndex, isAddition, origin));
-						return fd;
-					}
-				}
-			} else {
-				fds = new ArrayList<FieldDescriptor>();
-				localMap.put(id, fds);
-			}
-
-			FieldDescriptor fd = parent.addMapping(alias, type, sym, symIndex, isAddition, origin);
-			fds.add(fd);
-			used.add(fd);
-			return fd;
-		}
-
-		private void reset() {
-			// TODO detect nullables
-			used = null;
-		}
-	}
-
-	private static class FieldDescriptor implements Comparable {
-		private final AstType type;
-		private final String baseName;
-		private FieldMapping firstMapping;
-		private boolean nullable = true;
-
-		private FieldDescriptor(String baseName, AstType type) {
-			this.baseName = baseName;
-			this.type = type;
-		}
-
-		private void addMapping(FieldMapping mapping) {
-			if (firstMapping == null) {
-				firstMapping = mapping;
-				return;
-			}
-			mapping.next = firstMapping.next;
-			firstMapping.next = mapping;
-		}
-
-		@Override
-		public int compareTo(Object o) {
-			return new Integer(firstMapping.symbolIndex).compareTo(((FieldDescriptor) o).firstMapping.symbolIndex);
-		}
-	}
-
-	private static class FieldMapping {
-		private final RhsSymbol sym;
-		private final int symbolIndex;
-		private final boolean addition;
-		private final SourceElement origin;
-		private FieldMapping next;
-
-		private FieldMapping(RhsSymbol sym, int symbolIndex, boolean isAddition, SourceElement origin) {
-			this.sym = sym;
-			this.symbolIndex = symbolIndex;
-			this.addition = isAddition;
-			this.origin = origin;
-		}
-	}
-
-	private static class FieldId {
-		private final Symbol sym;
-		private final AstType type;
-		private final boolean addList;
-		private final String alias;
-
-		private FieldId(String alias, boolean isAddition, Symbol ref, AstType type) {
-			this.alias = alias;
-			this.sym = alias != null ? null : ref;
-			if (!isAddition && type instanceof AstList) {
-				this.addList = true;
-				this.type = ((AstList) type).getInner();
-			} else {
-				this.addList = isAddition;
-				this.type = type;
-			}
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			FieldId fieldId = (FieldId) o;
-
-			if (addList != fieldId.addList) return false;
-			if (alias != null ? !alias.equals(fieldId.alias) : fieldId.alias != null) return false;
-			if (sym != null ? !sym.equals(fieldId.sym) : fieldId.sym != null) return false;
-			if (type != null ? !type.equals(fieldId.type) : fieldId.type != null) return false;
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			int result = sym != null ? sym.hashCode() : 0;
-			result = 31 * result + (type != null ? type.hashCode() : 0);
-			result = 31 * result + (addList ? 1 : 0);
-			result = 31 * result + (alias != null ? alias.hashCode() : 0);
-			return result;
-		}
-	}
-
-	private static final class MarkerType implements AstType {
-		public MarkerType() {
-		}
-
-		@Override
-		public boolean isSubtypeOf(AstType another) {
-			return another == this;
-		}
-
-		@Override
-		public String toString() {
-			return "marker type";
-		}
-	}
-
-	private static final class TypeOrSymbolHandle {
+	private final class TypeOrSymbolHandle {
 
 		// One of the following two is not null.
 		private final Symbol unresolvedSymbol;
@@ -1019,7 +721,7 @@ public class TMMapper {
 				return isNullable ? this : other;
 			}
 			if (type != null && other.type != null) {
-				AstType common = getJoinType(null, type, other.type);
+				AstType common = TypesUtil.getJoinType(type, other.type);
 				if (common != null) {
 					return new TypeOrSymbolHandle(null, common, isNullable || other.isNullable);
 				}

@@ -70,20 +70,20 @@ public final class TMGenerator {
 				return false;
 			}
 
-			// TODO only when options.genast = true
-			AstModel astModel = new TMMapper(s.getGrammar(), status).deriveAST();
-
-			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, templatesStatus);
-			if (!checkOptions(s, registry)) {
-				return false;
-			}
-
 			// prepare options
 			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
 			for (Entry<String, String> entry : options.getAdditionalOptions().entrySet()) {
 
 				// TODO parse value, check type
 				genOptions.put(entry.getKey(), entry.getValue());
+			}
+
+			// Language-specific processing.
+			boolean genast = genOptions.containsKey("genast") && Boolean.TRUE.equals(genOptions.get("genast"));
+			AstModel astModel = null;
+			if (genast) {
+				boolean hasAny = genOptions.containsKey("__hasAny") && Boolean.TRUE.equals(genOptions.get("__hasAny"));
+				astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
 			}
 
 			// Generate tables
@@ -106,6 +106,7 @@ public final class TMGenerator {
 
 			// Generate text
 			start = System.currentTimeMillis();
+			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, templatesStatus);
 			EvaluationContext context = createEvaluationContext(types, s, astModel, genOptions, l, r);
 			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context),
 					registry, genOptions);
@@ -176,7 +177,9 @@ public final class TMGenerator {
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
 		map.put("parser", r);
-		map.put("ast", astModel);
+		if (astModel != null) {
+			map.put("ast", astModel);
+		}
 
 		String templPackage = getTemplatePackage(s);
 		IClass optsClass = types.getClass(templPackage + ".Options", null);

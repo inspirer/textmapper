@@ -670,16 +670,14 @@ map_entry  : MapEntry ::=
 ;
 
 class Literal : ParamValue, Expression {
-	String val;
-	Integer val2;
-	boolean val3;
+	any value;
 }
 
 literal  : Literal ::=
-	val=scon
-  | val2=icon
-  | val3=Ltrue as true
-  | val3=Lfalse as false
+	value=scon
+  | value=icon
+  | value=Ltrue as true
+  | value=Lfalse as false
 ;
 
 class Name {
