@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.tool.compiler.TMTypeHint.Kind;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.ast.*;
+import org.textmapper.tool.parser.ast.TmaRhsQuantifier.TmaQuantifierKind;
 import org.textmapper.tool.parser.ast.TmaSetBinary.TmaKindKind;
 
 import java.util.*;
@@ -308,7 +309,8 @@ public class TMParserCompiler {
 		}
 
 		TmaRhsQuantifier optional = null;
-		if (part instanceof TmaRhsQuantifier && ((TmaRhsQuantifier) part).isOptional()) {
+		if (part instanceof TmaRhsQuantifier
+				&& ((TmaRhsQuantifier) part).getQuantifier() == TmaQuantifierKind.QUESTIONMARK) {
 			optional = (TmaRhsQuantifier) part;
 			part = optional.getInner();
 		}
@@ -496,12 +498,12 @@ public class TMParserCompiler {
 				}
 				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
 			}
-			int quantifier = nestedQuantifier.getQuantifier();
-			if (quantifier == TmaRhsQuantifier.KIND_OPTIONAL) {
+			TmaQuantifierKind quantifier = nestedQuantifier.getQuantifier();
+			if (quantifier == TmaQuantifierKind.QUESTIONMARK) {
 				error(part, "? cannot be a child of another quantifier");
 				return null;
 			}
-			return createList(inner, quantifier == TmaRhsQuantifier.KIND_ONEORMORE, null, part);
+			return createList(inner, quantifier == TmaQuantifierKind.PLUS, null, part);
 		}
 
 		error(part, "internal error: unknown right-hand side part found");

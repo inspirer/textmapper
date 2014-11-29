@@ -393,7 +393,7 @@ rhsAssignment (ITmaRhsPart) ::=
 
 rhsOptional (ITmaRhsPart) ::=
 	  rhsCast
-	| rhsCast '?'										{ $$ = new TmaRhsQuantifier($rhsCast, TmaRhsQuantifier.KIND_OPTIONAL, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| rhsCast '?'										{ $$ = new TmaRhsQuantifier($rhsCast, TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsCast (ITmaRhsPart) ::=
@@ -416,8 +416,8 @@ rhsPrimary (ITmaRhsPart) ::=
 	| '(' rules ')'										{ $$ = new TmaRhsNested($rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '+'		{ $$ = new TmaRhsList($rhsParts, $references, true, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '(' rhsParts Lseparator references ')' '*'		{ $$ = new TmaRhsList($rhsParts, $references, false, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ZEROORMORE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.KIND_ONEORMORE, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.TmaQuantifierKind.MULT, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.TmaQuantifierKind.PLUS, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '$' '(' rules ')'									{ $$ = new TmaRhsIgnored($rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;

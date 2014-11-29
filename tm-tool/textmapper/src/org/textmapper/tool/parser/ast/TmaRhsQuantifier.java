@@ -19,29 +19,21 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 
-	public static final int KIND_OPTIONAL = 0;
-	public static final int KIND_ZEROORMORE = 1;
-	public static final int KIND_ONEORMORE = 2;
-
-	private final int quantifier;
 	private final ITmaRhsPart inner;
+	private final TmaRhsQuantifier.TmaQuantifierKind quantifier;
 
-	public TmaRhsQuantifier(ITmaRhsPart inner, int quantifier, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsQuantifier(ITmaRhsPart inner, TmaRhsQuantifier.TmaQuantifierKind quantifier, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.inner = inner;
 		this.quantifier = quantifier;
-	}
-
-	public int getQuantifier() {
-		return quantifier;
 	}
 
 	public ITmaRhsPart getInner() {
 		return inner;
 	}
 
-	public boolean isOptional() {
-		return quantifier == KIND_OPTIONAL;
+	public TmaRhsQuantifier.TmaQuantifierKind getQuantifier() {
+		return quantifier;
 	}
 
 	@Override
@@ -52,5 +44,11 @@ public class TmaRhsQuantifier extends TmaNode implements ITmaRhsPart {
 		if (inner != null) {
 			inner.accept(v);
 		}
+	}
+
+	public enum TmaQuantifierKind {
+		QUESTIONMARK,
+		PLUS,
+		MULT,
 	}
 }

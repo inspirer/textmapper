@@ -1358,7 +1358,7 @@ public class TMParser {
 				 tmLeft.value = new TmaRhsAssignment(((TmaIdentifier)tmStack[tmHead - 2].value), true, ((ITmaRhsPart)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 129:  // rhsOptional ::= rhsCast '?'
-				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_OPTIONAL, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 131:  // rhsCast ::= rhsClass Las symref
 				 tmLeft.value = new TmaRhsCast(((ITmaRhsPart)tmStack[tmHead - 2].value), ((TmaSymref)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
@@ -1385,10 +1385,10 @@ public class TMParser {
 				 tmLeft.value = new TmaRhsList(((List<ITmaRhsPart>)tmStack[tmHead - 4].value), ((List<TmaSymref>)tmStack[tmHead - 2].value), false, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 140:  // rhsPrimary ::= rhsPrimary '*'
-				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_ZEROORMORE, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.TmaQuantifierKind.MULT, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 141:  // rhsPrimary ::= rhsPrimary '+'
-				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.KIND_ONEORMORE, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRhsQuantifier(((ITmaRhsPart)tmStack[tmHead - 1].value), TmaRhsQuantifier.TmaQuantifierKind.PLUS, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 142:  // rhsPrimary ::= '$' '(' rules ')'
 				 tmLeft.value = new TmaRhsIgnored(((List<TmaRule0>)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
