@@ -1289,31 +1289,31 @@ public class TMParser {
 				 ((List<TmaRule0>)tmStack[tmHead - 2].value).add(((TmaRule0)tmStack[tmHead].value)); 
 				break;
 			case 100:  // rule0 ::= rhsPrefix rhsParts ruleAction rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 3].value), ((List<ITmaRhsPart>)tmStack[tmHead - 2].value), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 3].value), ((List<ITmaRhsPart>)tmStack[tmHead - 2].value), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 101:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 2].value), ((List<ITmaRhsPart>)tmStack[tmHead - 1].value), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 2].value), ((List<ITmaRhsPart>)tmStack[tmHead - 1].value), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 102:  // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 2].value), ((List<ITmaRhsPart>)null), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 2].value), ((List<ITmaRhsPart>)null), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 103:  // rule0 ::= rhsPrefix rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 1].value), ((List<ITmaRhsPart>)null), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)tmStack[tmHead - 1].value), ((List<ITmaRhsPart>)null), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 104:  // rule0 ::= rhsParts ruleAction rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)tmStack[tmHead - 2].value), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)tmStack[tmHead - 2].value), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 105:  // rule0 ::= rhsParts rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)tmStack[tmHead - 1].value), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)tmStack[tmHead - 1].value), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 106:  // rule0 ::= ruleAction rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)null), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)null), ((TmaRuleAction)tmStack[tmHead - 1].value), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 107:  // rule0 ::= rhsSuffixopt
-				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)null), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaRule0(((TmaRhsPrefix)null), ((List<ITmaRhsPart>)null), ((TmaRuleAction)null), ((TmaRhsSuffix)tmStack[tmHead].value), null, source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 108:  // rule0 ::= syntax_problem
-				 tmLeft.value = new TmaRule0(((TmaSyntaxProblem)tmStack[tmHead].value)); 
+				 tmLeft.value = new TmaRule0(null, null, null, null, ((TmaSyntaxProblem)tmStack[tmHead].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 109:  // predicate ::= '[' predicate_expression ']'
 				 tmLeft.value = ((ITmaPredicateExpression)tmStack[tmHead - 1].value); 

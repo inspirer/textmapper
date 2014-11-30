@@ -343,8 +343,8 @@ rule_list (List<TmaRule0>) ::=
 ;
 
 rule0 (TmaRule0) ::=
-	  rhsPrefix? rhsParts? ruleAction? rhsSuffixopt		{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $ruleAction, $rhsSuffixopt, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| syntax_problem									{ $$ = new TmaRule0($syntax_problem); }
+	  rhsPrefix? rhsParts? ruleAction? rhsSuffixopt		{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $ruleAction, $rhsSuffixopt, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| error=syntax_problem								{ $$ = new TmaRule0(null, null, null, null, $error, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 predicate (ITmaPredicateExpression) ::=

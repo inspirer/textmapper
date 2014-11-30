@@ -26,27 +26,13 @@ public class TmaRule0 extends TmaNode {
 	private final TmaRhsSuffix suffix;
 	private final TmaSyntaxProblem error;
 
-	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TextSource source,
-					int line, int offset, int endoffset) {
+	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.prefix = prefix;
 		this.list = list;
 		this.action = action;
 		this.suffix = suffix;
-		this.error = null;
-	}
-
-	public TmaRule0(TmaSyntaxProblem err) {
-		super(err.getSource(), err.getLine(), err.getOffset(), err.getEndoffset());
-		this.prefix = null;
-		this.list = null;
-		this.action = null;
-		this.suffix = null;
-		this.error = err;
-	}
-
-	public boolean hasSyntaxError() {
-		return error != null;
+		this.error = error;
 	}
 
 	public TmaRhsPrefix getPrefix() {
@@ -65,12 +51,12 @@ public class TmaRule0 extends TmaNode {
 		return suffix;
 	}
 
+	public TmaSyntaxProblem getError() {
+		return error;
+	}
+
 	@Override
 	public void accept(TmaVisitor v) {
-		if (error != null) {
-			v.visit(error);
-			return;
-		}
 		if (!v.visit(this)) {
 			return;
 		}
@@ -87,6 +73,9 @@ public class TmaRule0 extends TmaNode {
 		}
 		if (suffix != null) {
 			suffix.accept(v);
+		}
+		if (error != null) {
+			error.accept(v);
 		}
 	}
 }

@@ -284,7 +284,7 @@ rules ::=
 
 rule0 ::=
 	  prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
-	| syntax_problem
+	| error=syntax_problem
 ;
 
 predicate ::=

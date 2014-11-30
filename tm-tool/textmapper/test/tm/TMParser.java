@@ -1461,7 +1461,7 @@ public class TMParser {
 						((List<ITmaRhsPart>)tmStack[tmHead - 2].value) /* list */,
 						((TmaRuleAction)tmStack[tmHead - 1].value) /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
 			case 90:  // rule0 ::= rhsPrefix rhsParts rhsSuffixopt
@@ -1470,7 +1470,7 @@ public class TMParser {
 						((List<ITmaRhsPart>)tmStack[tmHead - 1].value) /* list */,
 						null /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 91:  // rule0 ::= rhsPrefix ruleAction rhsSuffixopt
@@ -1479,7 +1479,7 @@ public class TMParser {
 						null /* list */,
 						((TmaRuleAction)tmStack[tmHead - 1].value) /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 92:  // rule0 ::= rhsPrefix rhsSuffixopt
@@ -1488,7 +1488,7 @@ public class TMParser {
 						null /* list */,
 						null /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 93:  // rule0 ::= rhsParts ruleAction rhsSuffixopt
@@ -1497,7 +1497,7 @@ public class TMParser {
 						((List<ITmaRhsPart>)tmStack[tmHead - 2].value) /* list */,
 						((TmaRuleAction)tmStack[tmHead - 1].value) /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
 			case 94:  // rule0 ::= rhsParts rhsSuffixopt
@@ -1506,7 +1506,7 @@ public class TMParser {
 						((List<ITmaRhsPart>)tmStack[tmHead - 1].value) /* list */,
 						null /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 95:  // rule0 ::= ruleAction rhsSuffixopt
@@ -1515,7 +1515,7 @@ public class TMParser {
 						null /* list */,
 						((TmaRuleAction)tmStack[tmHead - 1].value) /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
 			case 96:  // rule0 ::= rhsSuffixopt
@@ -1524,7 +1524,7 @@ public class TMParser {
 						null /* list */,
 						null /* action */,
 						((TmaRhsSuffix)tmStack[tmHead].value) /* suffix */,
-						null /* syntaxProblem */,
+						null /* error */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 97:  // rule0 ::= syntax_problem
@@ -1533,7 +1533,7 @@ public class TMParser {
 						null /* list */,
 						null /* action */,
 						null /* suffix */,
-						((TmaSyntaxProblem)tmStack[tmHead].value) /* syntaxProblem */,
+						((TmaSyntaxProblem)tmStack[tmHead].value) /* error */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
 			case 98:  // predicate ::= '[' predicate_expression ']'

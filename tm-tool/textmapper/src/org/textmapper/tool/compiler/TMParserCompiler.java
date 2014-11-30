@@ -154,7 +154,7 @@ public class TMParserCompiler {
 					continue; /* error is already reported */
 				}
 				for (TmaRule0 right : nonterm.getRules()) {
-					if (!right.hasSyntaxError()) {
+					if (right.getError() == null) {
 						createRule((Nonterminal) left, right);
 					}
 				}
@@ -445,7 +445,7 @@ public class TMParserCompiler {
 			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
 			List<TmaRule0> rules = ((TmaRhsNested) part).getRules();
 			for (TmaRule0 right : rules) {
-				if (!right.hasSyntaxError()) {
+				if (right.getError() == null) {
 					createRule(nested, right);
 				}
 			}
@@ -583,7 +583,7 @@ public class TMParserCompiler {
 				&& rule.getSuffix() == null
 				&& rule.getList() != null
 				&& !rule.getList().isEmpty()
-				&& !rule.hasSyntaxError();
+				&& rule.getError() == null;
 	}
 
 	private List<ITmaRhsPart> getGroupPart(ITmaRhsPart symbolRef) {

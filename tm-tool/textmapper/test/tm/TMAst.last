@@ -329,12 +329,12 @@ class Rule0 {
 	list<RhsPart> list;
 	RuleAction action;
 	RhsSuffix suffix;
-	SyntaxProblem syntaxProblem;
+	SyntaxProblem error;
 }
 
 rule0  : Rule0 ::=
 	prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
-  | syntaxProblem=syntax_problem
+  | error=syntax_problem
 ;
 
 interface PredicateExpression {
