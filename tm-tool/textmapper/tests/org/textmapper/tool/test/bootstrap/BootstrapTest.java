@@ -124,7 +124,7 @@ public class BootstrapTest {
 	}
 
 	@Test
-	public void testUnicodeS() {
+	public void testUnicodeTm() {
 		bootstrap("tests/org/textmapper/tool/test/bootstrap/unicode", "unicode.tm", new String[0],
 				new String[]{"UnicodeTestLexer.java"}, 0);
 	}
@@ -140,6 +140,19 @@ public class BootstrapTest {
 		bootstrap("../tests/javascript/lexer", "lexer1.tm", new String[0],
 				new String[]{"lexer1.js"}, 0);
 	}
+
+	@Test
+	public void testJavascriptTm() {
+		bootstrap("../samples/es5/src/org/textmapper/js", "javascript.tm", new String[0], new String[]{
+				"JsTree.java", "JsParser.java", "JsLexer.java"}, 1);
+	}
+
+	@Test
+	public void testJsonTm() {
+		bootstrap("../samples/es5/src/org/textmapper/js", "json.tm", new String[0], new String[]{
+				"JsonTree.java", "JsonParser.java", "JsonLexer.java"}, 0);
+	}
+
 
 	private void bootstrap(String folder, String syntaxFile, String[] args, String[] createdFiles,
 						   int expectedResolvedConflicts) {

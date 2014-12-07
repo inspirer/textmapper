@@ -179,6 +179,14 @@
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/templates/types"/>
 		<echo message="java parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/templates/java"/>
+		<echo message="javascript parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/samples/es5/src/org/textmapper/js">
+			<arg line="javascript.tm"/>
+		</java>
+		<echo message="json parser"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/samples/es5/src/org/textmapper/js">
+			<arg line="json.tm"/>
+		</java>
 		<echo message="XML parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
