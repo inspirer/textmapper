@@ -13,18 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.textmapper.lapg.api.rule;
+package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.Symbol;
+public interface TemplateParameter extends SourceElement, UserDataHolder {
 
-/**
- * evgeny, 2/3/13
- */
-public interface RhsCast extends RhsPart {
+	enum Type {
+		Bool,
+		String,
+		Integer,
+		Symbol
+	}
+	Type getType();
 
-	Symbol getTarget();
+	String getName();
 
-	RhsArgument[] getArgs();
-
-	RhsPart getPart();
+	/**
+	 * May hold a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * Or null, if the parameter does not have any default value (unset).
+	 */
+	Object getDefaultValue();
 }

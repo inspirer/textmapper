@@ -275,7 +275,7 @@ public class TMParserCompiler {
 			RhsSequence actionRule = builder.empty(astCode);
 			builder.addRule(codeSym, actionRule, null);
 			TMDataUtil.putCode(actionRule, astCode);
-			return builder.symbol(codeSym, astCode);
+			return builder.symbol(codeSym, null, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
 			List<ITmaRhsPart> refParts = new ArrayList<ITmaRhsPart>();
@@ -354,7 +354,7 @@ public class TMParserCompiler {
 		if (cast != null) {
 			final Symbol asSymbol = resolver.resolve(cast.getTarget());
 			if (asSymbol != null) {
-				result = builder.cast(asSymbol, result, cast);
+				result = builder.cast(asSymbol, resolver.resolveArgs(cast.getTarget()), result, cast);
 			}
 		} else if (literalCast != null) {
 			if (result instanceof RhsSymbol) {
@@ -397,13 +397,13 @@ public class TMParserCompiler {
 			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()), convertSet(binary.getRight()));
 			if (parts == null) return null;
 
-			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, parts, expr);
+			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, null, parts, expr);
 
 		} else if (expr instanceof TmaSetComplement) {
 			Collection<RhsSet> parts = asCollection(convertSet(((TmaSetComplement) expr).getInner()));
 			if (parts == null) return null;
 
-			return builder.set(Operation.Complement, null, parts, expr);
+			return builder.set(Operation.Complement, null, null, parts, expr);
 
 		} else if (expr instanceof TmaSetCompound) {
 			return convertSet(((TmaSetCompound) expr).getInner());
@@ -425,7 +425,7 @@ public class TMParserCompiler {
 				}
 			}
 
-			return builder.set(kind, s, null, expr);
+			return builder.set(kind, s, resolver.resolveArgs(ss.getSymbol()), null, expr);
 		}
 
 		error(expr, "internal error: unknown set expression found");
@@ -435,11 +435,10 @@ public class TMParserCompiler {
 	private RhsSymbol convertPrimary(Symbol outer, ITmaRhsPart part) {
 
 		if (part instanceof TmaRhsSymbol) {
-			Symbol resolved = resolver.resolve(((TmaRhsSymbol) part).getReference());
-			if (resolved == null) {
-				return null;
-			}
-			return builder.symbol(resolved, part);
+			TmaSymref symref = ((TmaRhsSymbol) part).getReference();
+			Symbol resolved = resolver.resolve(symref);
+			if (resolved == null) return null;
+			return builder.symbol(resolved, resolver.resolveArgs(symref), part);
 
 		} else if (part instanceof TmaRhsNested) {
 			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
@@ -449,7 +448,7 @@ public class TMParserCompiler {
 					createRule(nested, right);
 				}
 			}
-			return builder.symbol(nested, part);
+			return builder.symbol(nested, null, part);
 
 		} else if (part instanceof TmaRhsIgnored) {
 			error(part, "$( ) is not supported, yet");
@@ -462,7 +461,7 @@ public class TMParserCompiler {
 
 			String setName = set.getProvisionalName();
 			Nonterminal result = builder.addShared(set, setName);
-			return builder.symbol(result, part);
+			return builder.symbol(result, null, part);
 
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
@@ -475,7 +474,7 @@ public class TMParserCompiler {
 					continue;
 				}
 				if (s instanceof Terminal) {
-					sep.add(builder.symbol(s, ref));
+					sep.add(builder.symbol(s, null, ref));
 				} else {
 					error(ref, "separator must be a terminal symbol");
 				}
@@ -543,10 +542,9 @@ public class TMParserCompiler {
 
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			result = builder.addShared(builder.optional(builder.symbol(result, origin), origin), listName + "_opt");
+			result = builder.addShared(builder.optional(builder.symbol(result, null, origin), origin), listName + "_opt");
 		}
-		return builder.symbol(result, origin);
-
+		return builder.symbol(result, null, origin);
 	}
 
 	private boolean isGroupPart(ITmaRhsPart symbolRef) {

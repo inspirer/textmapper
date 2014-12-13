@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
@@ -32,7 +33,8 @@ import java.util.Map.Entry;
  */
 class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
-	private final Map<String, LiSymbol> symbolsMap = new HashMap<String, LiSymbol>();
+	// The value is either Symbol, or TemplateParameter
+	private final Map<String, Object> symbolsMap = new HashMap<String, Object>();
 
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
@@ -49,6 +51,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final List<Problem> problems = new ArrayList<Problem>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
+	private final LiTemplateEnvironment env = new LiTemplateEnvironment();
 	private final Terminal eoi;
 
 	public LiGrammarBuilder() {
@@ -105,7 +108,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				throw new NullPointerException();
 			}
 			if (symbolsMap.containsKey(name)) {
-				throw new IllegalStateException("symbol `" + name + "' already exists");
+				throw new IllegalStateException("symbol (or template parameter) `" + name + "' already exists");
 			}
 			symbolsMap.put(name, sym);
 		}
@@ -117,6 +120,30 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public Terminal getEoi() {
 		return eoi;
+	}
+
+	@Override
+	public TemplateParameter addParameter(Type type, String name, Object defaultValue, SourceElement origin) {
+		if (name == null) {
+			throw new NullPointerException();
+		}
+		if (name.equals("error")) {
+			throw new IllegalArgumentException("parameters cannot have name `error'");
+		}
+		if (defaultValue != null) {
+			check(type, defaultValue);
+		}
+		if (symbolsMap.containsKey(name)) {
+			throw new IllegalStateException("symbol (or template parameter) `" + name + "' already exists");
+		}
+		LiTemplateParameter param = new LiTemplateParameter(type, name, defaultValue, origin);
+		symbolsMap.put(name, param);
+		return param;
+	}
+
+	@Override
+	public TemplateEnvironment getRootEnvironment() {
+		return env;
 	}
 
 	@Override
@@ -234,18 +261,35 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsCast cast(Symbol asSymbol, RhsPart inner, SourceElement origin) {
+	public RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner, SourceElement origin) {
 		check(inner, true);
 		check(asSymbol);
-		LiRhsCast result = new LiRhsCast(asSymbol, (LiRhsPart) inner, origin);
+		LiRhsCast result = new LiRhsCast(asSymbol, convertArgs(args), (LiRhsPart) inner, origin);
 		rhsSet.add(result);
 		return result;
 	}
 
 	@Override
-	public RhsSymbol symbol(Symbol sym, SourceElement origin) {
+	public RhsArgument argument(TemplateParameter param, Object value, SourceElement origin) {
+		check(param);
+		if (value != null) {
+			check(param.getType(), value);
+		}
+		return new LiRhsArgument(param, value, origin);
+	}
+
+	@Override
+	public RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin) {
 		check(sym);
-		LiRhsSymbol result = new LiRhsSymbol(sym, origin);
+		LiRhsSymbol result = new LiRhsSymbol(sym, convertArgs(args), origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args, SourceElement origin) {
+		check(parameter);
+		LiRhsSymbol result = new LiRhsSymbol(parameter, convertArgs(args), origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -261,6 +305,20 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsChoice result = new LiRhsChoice(liparts, false, origin);
 		rhsSet.add(result);
 		return result;
+	}
+
+	@Override
+	public RhsPredicate predicate(RhsPredicate.Operation operation, TemplateParameter param, Object value,
+								  SourceElement origin) {
+		// TODO implement
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public RhsPredicate compositePredicate(RhsPredicate.Operation operation, Collection<RhsPredicate> children,
+										   SourceElement origin) {
+		// TODO implement
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -328,7 +386,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSet set(Operation operation, Symbol symbol, Collection<RhsSet> parts, SourceElement origin) {
+	public RhsSet set(Operation operation, Symbol symbol, Collection<RhsArgument> args, Collection<RhsSet> parts,
+					  SourceElement origin) {
 		LiRhsSet[] liparts = null;
 		switch (operation) {
 			case Any:
@@ -356,7 +415,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				}
 				break;
 		}
-		LiRhsSet result = new LiRhsSet(operation, symbol, liparts, origin);
+		LiRhsSet result = new LiRhsSet(operation, symbol, convertArgs(args), liparts, origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -380,6 +439,18 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		return symbol;
 	}
 
+	LiRhsArgument[] convertArgs(Collection<RhsArgument> args) {
+		if (args == null) return null;
+
+		LiRhsArgument[] liargs = new LiRhsArgument[args.size()];
+		int index = 0;
+		for (RhsArgument a : args) {
+			check(a);
+			liargs[index++] = (LiRhsArgument) a;
+		}
+		return liargs;
+	}
+
 	@Override
 	void check(RhsPart part, boolean asChild) {
 		if (part == null) {
@@ -393,8 +464,48 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 	}
 
+	void check(TemplateParameter param) {
+		if (param == null) {
+			throw new NullPointerException();
+		}
+		if (symbolsMap.get(param.getName()) != param) {
+			throw new IllegalArgumentException("unknown template parameter passed");
+		}
+	}
+
+	void check(RhsArgument arg) {
+		if (arg == null) {
+			throw new NullPointerException();
+		}
+		check(arg.getParameter());
+	}
+
+	void check(Type type, Object value) {
+		switch (type) {
+			case Symbol:
+				if (!(value instanceof Symbol))
+					throw new IllegalArgumentException("symbol default value is expected");
+				check((Symbol) value);
+				break;
+			case String:
+				if (!(value instanceof String))
+					throw new IllegalArgumentException("string default value is expected");
+				break;
+			case Integer:
+				if (!(value instanceof Integer))
+					throw new IllegalArgumentException("integer default value is expected");
+				break;
+			case Bool:
+				if (!(value instanceof Boolean))
+					throw new IllegalArgumentException("boolean default value is expected");
+				break;
+		}
+	}
+
 	@Override
 	public Grammar create() {
+		// TODO instantiate templates
+
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
@@ -410,7 +521,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
 		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
 
-		LiSymbol error = symbolsMap.get("error");
+		LiSymbol error = (LiSymbol) symbolsMap.get("error");
 
 		final LiRule[] ruleArr;
 		final LiPrio[] prioArr;

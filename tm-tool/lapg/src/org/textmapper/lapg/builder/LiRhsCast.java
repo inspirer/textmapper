@@ -17,9 +17,11 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.rule.RhsArgument;
 import org.textmapper.lapg.api.rule.RhsCast;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -28,11 +30,13 @@ import java.util.List;
 class LiRhsCast extends LiRhsPart implements RhsCast {
 
 	private final Symbol asSymbol;
+	private final LiRhsArgument[] args;
 	private final LiRhsPart inner;
 
-	LiRhsCast(Symbol asSymbol, LiRhsPart inner, SourceElement origin) {
+	LiRhsCast(Symbol asSymbol, LiRhsArgument[] args, LiRhsPart inner, SourceElement origin) {
 		super(origin);
 		this.asSymbol = asSymbol;
+		this.args = args;
 		this.inner = inner;
 		register(false, inner);
 	}
@@ -40,6 +44,11 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	@Override
 	public Symbol getTarget() {
 		return asSymbol;
+	}
+
+	@Override
+	public RhsArgument[] getArgs() {
+		return args;
 	}
 
 	@Override
@@ -59,6 +68,7 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 
 		LiRhsCast that = (LiRhsCast) o;
 		if (!asSymbol.equals(that.asSymbol)) return false;
+		if (!Arrays.equals(args, that.args)) return false;
 		return inner.structurallyEquals(that.inner);
 	}
 
@@ -66,6 +76,7 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	public int structuralHashCode() {
 		int result = inner.structuralHashCode();
 		result = 31 * result + asSymbol.hashCode();
+		result = 31 * result + Arrays.hashCode(args);
 		return result;
 	}
 
@@ -77,7 +88,8 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 	@Override
 	protected void toString(StringBuilder sb) {
 		inner.toString(sb);
-		sb.append(" = ");
+		sb.append(" as ");
 		sb.append(asSymbol.getName());
+		LiUtil.appendArguments(sb, args);
 	}
 }

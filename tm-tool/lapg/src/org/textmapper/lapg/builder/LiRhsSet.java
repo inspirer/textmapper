@@ -18,23 +18,27 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.rule.RhsArgument;
 import org.textmapper.lapg.api.rule.RhsSet;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class LiRhsSet extends LiRhsPart implements RhsSet {
 
-	private Operation operation;
-	private Symbol symbol;
-	private LiRhsSet[] parts;
+	private final Operation operation;
+	private final Symbol symbol;
+	private final LiRhsArgument[] args;
+	private final LiRhsSet[] parts;
 
-	public LiRhsSet(Operation operation, Symbol symbol, LiRhsSet[] parts, SourceElement origin) {
+	public LiRhsSet(Operation operation, Symbol symbol, LiRhsArgument[] args, LiRhsSet[] parts, SourceElement origin) {
 		super(origin);
 		this.operation = operation;
 		this.symbol = symbol;
+		this.args = args;
 		this.parts = parts;
 	}
 
@@ -46,6 +50,11 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	@Override
 	public Symbol getSymbol() {
 		return symbol;
+	}
+
+	@Override
+	public RhsArgument[] getArgs() {
+		return args;
 	}
 
 	@Override
@@ -71,7 +80,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 
 		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>(terminals.length);
 		for (Terminal t : terminals) {
-			result.add(new RhsSymbol[]{new LiRhsSymbol(t, this)});
+			result.add(new RhsSymbol[]{new LiRhsSymbol(t, null, this)});
 		}
 		return result;
 	}
@@ -84,6 +93,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 		LiRhsSet that = (LiRhsSet) o;
 		if (operation != that.operation) return false;
 		if (symbol != null ? !symbol.equals(that.symbol) : that.symbol != null) return false;
+		if (!Arrays.equals(args, that.args)) return false;
 		return structurallyEquals(parts, that.parts);
 	}
 
@@ -91,6 +101,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	public int structuralHashCode() {
 		int result = operation.hashCode();
 		result = 31 * result + (symbol != null ? symbol.hashCode() : 0);
+		result = 31 * result + Arrays.hashCode(args);
 		result = 31 * result + structuralHashCode(parts);
 		return result;
 	}
@@ -113,12 +124,15 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 		switch (operation) {
 			case Any:
 				sb.append(symbol.getName());
+				LiUtil.appendArguments(sb, args);
 				break;
 			case First:
 				sb.append("first ").append(symbol.getName());
+				LiUtil.appendArguments(sb, args);
 				break;
 			case Follow:
 				sb.append("follow ").append(symbol.getName());
+				LiUtil.appendArguments(sb, args);
 				break;
 			case Complement:
 				assert parts.length == 1;

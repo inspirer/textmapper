@@ -37,6 +37,10 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	Terminal getEoi();
 
+	TemplateParameter addParameter(TemplateParameter.Type type,
+								   String name, Object defaultValue, SourceElement origin);
+
+	TemplateEnvironment getRootEnvironment();
 
 	NamedPattern addPattern(String name, RegexPart regexp, SourceElement origin);
 
@@ -45,14 +49,24 @@ public interface GrammarBuilder extends GrammarMapper {
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states,
 						   int priority, LexerRule classLexerRule, SourceElement origin);
 
+	RhsArgument argument(TemplateParameter param, Object value, SourceElement origin);
 
-	RhsSymbol symbol(Symbol sym, SourceElement origin);
+	RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin);
+
+	RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args, SourceElement origin);
 
 	RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin);
 
-	RhsCast cast(Symbol asSymbol, RhsPart inner, SourceElement origin);
+	RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner, SourceElement origin);
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
+
+	RhsPredicate predicate(RhsPredicate.Operation operation,
+						   TemplateParameter param, Object value,
+						   SourceElement origin);
+
+	RhsPredicate compositePredicate(RhsPredicate.Operation operation,
+									Collection<RhsPredicate> children, SourceElement origin);
 
 	RhsSequence sequence(String name, Collection<RhsPart> parts, SourceElement origin);
 
@@ -68,7 +82,9 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsIgnored ignored(RhsPart inner, Collection<RhsIgnored.ParenthesisPair> parentheses, SourceElement origin);
 
-	RhsSet set(Operation operation, Symbol symbol, Collection<RhsSet> parts, SourceElement origin);
+	RhsSet set(Operation operation,
+			   Symbol symbol, Collection<RhsArgument> args,
+			   Collection<RhsSet> parts, SourceElement origin);
 
 	void addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
 

@@ -34,6 +34,8 @@ public interface RhsSet extends RhsPart {
 
 	Symbol getSymbol();
 
+	RhsArgument[] getArgs();
+
 	RhsSet[] getSets();
 
 	String getProvisionalName();

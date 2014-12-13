@@ -18,25 +18,51 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.rule.RhsArgument;
 import org.textmapper.lapg.api.rule.RhsMapping;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	private final Symbol target;
+	// - OR -
+	private final TemplateParameter parameter;
+
+	private final LiRhsArgument[] args;
 	private LiRhsMapping mapping;
 
-	public LiRhsSymbol(Symbol target, SourceElement origin) {
+	LiRhsSymbol(Symbol target, LiRhsArgument[] args, SourceElement origin) {
 		super(origin);
 		this.target = target;
+		this.args = args;
+		this.parameter = null;
+	}
+
+	LiRhsSymbol(TemplateParameter target, LiRhsArgument[] args, SourceElement origin) {
+		super(origin);
+		this.target = null;
+		this.args = args;
+		this.parameter = target;
 	}
 
 	@Override
 	public Symbol getTarget() {
 		return target;
+	}
+
+	@Override
+	public TemplateParameter getTemplateTarget() {
+		return parameter;
+	}
+
+	@Override
+	public RhsArgument[] getArgs() {
+		return args;
 	}
 
 	@Override
@@ -60,12 +86,20 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		if (o == null || getClass() != o.getClass()) return false;
 
 		LiRhsSymbol that = (LiRhsSymbol) o;
-		return target.equals(that.target);
+
+		if (parameter != null ? !parameter.equals(that.parameter) : that.parameter != null) return false;
+		if (target != null ? !target.equals(that.target) : that.target != null) return false;
+		if (!Arrays.equals(args, that.args)) return false;
+
+		return true;
 	}
 
 	@Override
 	public int structuralHashCode() {
-		return target.hashCode();
+		int result = target != null ? target.hashCode() : 0;
+		result = 31 * result + (parameter != null ? parameter.hashCode() : 0);
+		result = 31 * result + Arrays.hashCode(args);
+		return result;
 	}
 
 	@Override
@@ -75,6 +109,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		sb.append(target.getName());
+		if (target != null) {
+			sb.append(target.getName());
+		} else {
+			sb.append(parameter.getName());
+		}
+		LiUtil.appendArguments(sb, args);
 	}
 }

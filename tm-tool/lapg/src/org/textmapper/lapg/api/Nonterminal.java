@@ -32,6 +32,11 @@ public interface Nonterminal extends Symbol {
 	Iterable<Rule> getRules();
 
 	/**
+	 * @return true for nonterminals that are templates and cannot be referenced without parameters.
+	 */
+	boolean isTemplate();
+
+	/**
 	 * @return true if it can derive an empty string
 	 */
 	boolean isNullable();

@@ -16,6 +16,7 @@
 package org.textmapper.lapg.api.rule;
 
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.TemplateParameter;
 
 /**
  * evgeny, 11/24/12
@@ -25,7 +26,17 @@ public interface RhsSymbol extends RhsPart {
 	static final RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
 	static final String UD_REWRITTEN = "rewrittenTo";
 
+	/**
+	 * Instead of referencing some symbol directly, RhsSymbol can reference a template parameter value.
+	 * Only one of getTarget() or getTemplateTarget() is not null.
+	 */
 	Symbol getTarget();
+	TemplateParameter getTemplateTarget();
+
+	/**
+	 * Both symbol and templated symbol may have arguments.
+	 */
+	RhsArgument[] getArgs();
 
 	RhsMapping getMapping();
 }

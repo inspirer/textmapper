@@ -171,7 +171,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 
 	@Override
 	protected RhsSequence[] preprocess() {
-		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), this);
+		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
 		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
 		listRule.add(rightRecursive ? element : selfRef);
 		if (separator != null) {

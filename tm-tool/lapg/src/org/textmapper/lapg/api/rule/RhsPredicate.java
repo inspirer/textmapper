@@ -15,16 +15,34 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.TemplateParameter;
 
-/**
- * evgeny, 2/3/13
- */
-public interface RhsCast extends RhsPart {
+public interface RhsPredicate {
 
-	Symbol getTarget();
+	enum Operation {
+		/* Template parameter checks */
+		Equals,
+		/* Logical expressions */
+		Or,
+		And,
+		Not,
+	}
 
-	RhsArgument[] getArgs();
+	Operation getOperation();
 
-	RhsPart getPart();
+	/**
+	 * For logical expressions
+	 */
+	RhsPredicate[] getChildren();
+
+	/**
+	 * A parameter to check against the value
+	 */
+	TemplateParameter getParameter();
+
+	/**
+	 * Holds a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * Cannot be null.
+	 */
+	Object getValue();
 }

@@ -17,12 +17,14 @@ package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.AstBuilder;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
+import org.textmapper.lapg.api.rule.RhsArgument;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.tool.common.ObjectUtil;
@@ -30,9 +32,7 @@ import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * evgeny, 1/16/13
@@ -48,6 +48,7 @@ public class TMResolver {
 
 	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
 	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
+	private final Map<String, TemplateParameter> parametersMap = new HashMap<String, TemplateParameter>();
 	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
 
 	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
@@ -84,6 +85,7 @@ public class TMResolver {
 
 		if (tree.getRoot().getParser() != null) {
 			collectNonterminals();
+			collectParameters();
 		}
 	}
 
@@ -164,6 +166,84 @@ public class TMResolver {
 		}
 	}
 
+	private void collectParameters() {
+		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
+			if (clause instanceof TmaNontermParam) {
+				TmaNontermParam param = (TmaNontermParam) clause;
+				String name = param.getName().getID();
+				Symbol existingSym = symbolsMap.get(name);
+				if (existingSym != null) {
+					error(param.getName(), "redeclaration of " + (existingSym.isTerm() ? "terminal" : "non-terminal")
+							+ ": " + name);
+					continue;
+				}
+
+				parametersMap.put(name, create(param));
+			}
+		}
+	}
+
+	private String asString(TemplateParameter.Type type) {
+		switch (type) {
+			case Bool:
+				return "bool";
+			case Integer:
+				return "int";
+			case String:
+				return "string";
+			case Symbol:
+				return "symbol";
+		}
+
+		throw new IllegalStateException();
+	}
+
+	private Object getParamValue(TemplateParameter.Type expectedType, ITmaParamValue paramValue) {
+		if (paramValue instanceof TmaLiteral) {
+			Object literalVal = ((TmaLiteral) paramValue).getValue();
+			TemplateParameter.Type actualType = (literalVal instanceof Integer) ? Type.Integer :
+					(literalVal instanceof String) ? Type.String :
+							Type.Bool;
+			if (actualType == expectedType) {
+				return literalVal;
+			}
+			error(paramValue, "type error: " + asString(expectedType) + " is expected");
+
+		} else if (paramValue instanceof TmaSymref) {
+			if (expectedType == Type.Symbol) {
+				return resolve((TmaSymref) paramValue);
+			}
+			error(paramValue, "type error: " + asString(expectedType) + " is expected");
+		}
+		return null;
+	}
+
+	private TemplateParameter create(TmaNontermParam param) {
+		TemplateParameter.Type type;
+
+		switch (param.getParamType()) {
+			case LBOOL:
+				type = Type.Bool;
+				break;
+			case LINT:
+				type = Type.Integer;
+				break;
+			case LSTRING:
+				type = Type.String;
+				break;
+			case LSYMBOL:
+				type = Type.Symbol;
+				break;
+			default:
+				throw new IllegalStateException();
+		}
+
+		return builder.addParameter(
+				type, param.getName().getID(),
+				getParamValue(type, param.getParamValue()),
+				param);
+	}
+
 	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
 		String name = id.getID();
 		if (symbolsMap.containsKey(name)) {
@@ -202,6 +282,34 @@ public class TMResolver {
 		return sym;
 	}
 
+	Collection<RhsArgument> resolveArgs(TmaSymref ref) {
+		TmaSymrefArgs args = ref.getArgs();
+		if (args == null) return null;
+
+		if (args.getValueList() != null) {
+			// TODO
+			error(args, "value list is not supported yet, use key:value syntax");
+			return null;
+		}
+
+		List<RhsArgument> result = new ArrayList<RhsArgument>(args.getKeyvalueList().size());
+		for (TmaKeyvalArg arg : args.getKeyvalueList()) {
+			TemplateParameter param = resolveParam(arg.getName());
+			if (param == null) continue;
+			Object val = getParamValue(param.getType(), arg.getVal());
+			result.add(builder.argument(param, val, arg));
+		}
+		return result.isEmpty() ? null : result;
+	}
+
+	TemplateParameter resolveParam(TmaIdentifier id) {
+		TemplateParameter param = parametersMap.get(id.getID());
+		if (param == null) {
+			error(id, id.getID() + " cannot be resolved");
+		}
+		return param;
+	}
+
 	Symbol resolve(TmaSymref id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);
@@ -213,7 +321,9 @@ public class TMResolver {
 							id.getOffset(), id.getEndoffset());
 					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
 					builder.addRule(symopt, builder.sequence(null,
-							Collections.<RhsPart>singleton(builder.optional(builder.symbol(sym, id), id)), id), null);
+							Collections.<RhsPart>singleton(builder.optional(
+									builder.symbol(sym, null, id),
+									id)), id), null /* no precedence */);
 					return symopt;
 				}
 			}

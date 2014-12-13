@@ -15,16 +15,16 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.TemplateParameter;
 
-/**
- * evgeny, 2/3/13
- */
-public interface RhsCast extends RhsPart {
+public interface RhsArgument extends SourceElement {
 
-	Symbol getTarget();
+	TemplateParameter getParameter();
 
-	RhsArgument[] getArgs();
-
-	RhsPart getPart();
+	/**
+	 * May hold a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * null, if the parameter is to be unset by the argument.
+	 */
+	Object getValue();
 }

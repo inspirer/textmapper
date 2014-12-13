@@ -28,4 +28,19 @@ public class LiUtil {
 		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
 	}
 
+	public static void appendArguments(StringBuilder sb, LiRhsArgument[] args) {
+		if (args == null || args.length == 0) return;
+
+		sb.append("<");
+		boolean first = true;
+		for (LiRhsArgument arg : args) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(",");
+			}
+			arg.toString(sb);
+		}
+		sb.append(">");
+	}
 }

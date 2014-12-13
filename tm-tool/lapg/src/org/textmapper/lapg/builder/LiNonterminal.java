@@ -47,6 +47,12 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	}
 
 	@Override
+	public boolean isTemplate() {
+		// TODO
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
 	public boolean isNullable() {
 		return isNullable;
 	}
