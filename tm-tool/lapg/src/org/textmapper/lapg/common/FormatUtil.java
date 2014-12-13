@@ -195,4 +195,36 @@ public class FormatUtil {
 
 		return map;
 	}
+
+	public static String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (char c : s.toCharArray()) {
+			switch (c) {
+				case '"':
+				case '\'':
+				case '\\':
+					sb.append('\\');
+					sb.append(c);
+					continue;
+				case '\f':
+					sb.append("\\f");
+					continue;
+				case '\n':
+					sb.append("\\n");
+					continue;
+				case '\r':
+					sb.append("\\r");
+					continue;
+				case '\t':
+					sb.append("\\t");
+					continue;
+			}
+			if (c >= 0x20 && c < 0x80) {
+				sb.append(c);
+				continue;
+			}
+			appendEscaped(sb, c);
+		}
+		return sb.toString();
+	}
 }

@@ -16,8 +16,8 @@
 package org.textmapper.tool.gen;
 
 import org.textmapper.lapg.common.FormatUtil;
-import org.textmapper.tool.common.JavaArrayEncoder;
 import org.textmapper.templates.eval.DefaultStaticMethods;
+import org.textmapper.tool.common.JavaArrayEncoder;
 
 import java.util.List;
 
@@ -227,35 +227,7 @@ public class TemplateStaticMethods extends DefaultStaticMethods {
 	}
 
 	public String escape(String s) {
-		StringBuilder sb = new StringBuilder();
-		for (char c : s.toCharArray()) {
-			switch (c) {
-				case '"':
-				case '\'':
-				case '\\':
-					sb.append('\\');
-					sb.append(c);
-					continue;
-				case '\f':
-					sb.append("\\f");
-					continue;
-				case '\n':
-					sb.append("\\n");
-					continue;
-				case '\r':
-					sb.append("\\r");
-					continue;
-				case '\t':
-					sb.append("\\t");
-					continue;
-			}
-			if (c >= 0x20 && c < 0x80) {
-				sb.append(c);
-				continue;
-			}
-			FormatUtil.appendEscaped(sb, c);
-		}
-		return sb.toString();
+		return FormatUtil.escape(s);
 	}
 
 	public String toUpperWithUnderscores(String s) {
