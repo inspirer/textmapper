@@ -177,7 +177,10 @@ public class TMResolver {
 							+ ": " + name);
 					continue;
 				}
-
+				if (parametersMap.containsKey(name)) {
+					error(param.getName(), "redeclaration of template parameter: " + name);
+					continue;
+				}
 				parametersMap.put(name, create(param));
 			}
 		}
