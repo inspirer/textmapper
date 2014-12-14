@@ -400,7 +400,7 @@ param_type ::=
 
 param_value ::=
 	  literal
-	| symref
+	| symref_noargs
 ;
 
 predicate_primary returns predicate_expression ::=

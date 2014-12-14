@@ -67,7 +67,7 @@ identifier  : Identifier ::=
 	{ID}
 ;
 
-class Symref : ParamValue, Expression {
+class Symref : Expression, ParamValue {
 	String name;
 	SymrefArgs args;
 }
@@ -601,7 +601,7 @@ interface ParamValue {
 
 param_value  : ParamValue ::=
 	this=literal
-  | this=symref
+  | this=symref_noargs
 ;
 
 class BoolPredicate : PredicateExpression {

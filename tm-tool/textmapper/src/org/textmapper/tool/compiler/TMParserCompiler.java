@@ -436,9 +436,16 @@ public class TMParserCompiler {
 
 		if (part instanceof TmaRhsSymbol) {
 			TmaSymref symref = ((TmaRhsSymbol) part).getReference();
+			TemplateParameter param = resolver.tryResolveParam(symref);
+			if (param != null) {
+				return builder.templateSymbol(param, resolver.resolveArgs(symref), part);
+			}
+
 			Symbol resolved = resolver.resolve(symref);
-			if (resolved == null) return null;
-			return builder.symbol(resolved, resolver.resolveArgs(symref), part);
+			if (resolved != null) {
+				return builder.symbol(resolved, resolver.resolveArgs(symref), part);
+			}
+			return null;
 
 		} else if (part instanceof TmaRhsNested) {
 			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
@@ -542,7 +549,8 @@ public class TMParserCompiler {
 
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			result = builder.addShared(builder.optional(builder.symbol(result, null, origin), origin), listName + "_opt");
+			result = builder.addShared(builder.optional(builder.symbol(result, null, origin), origin), listName +
+					"_opt");
 		}
 		return builder.symbol(result, null, origin);
 	}

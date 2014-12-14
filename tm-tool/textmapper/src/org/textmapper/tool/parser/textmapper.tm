@@ -475,7 +475,7 @@ param_type (TmaParamType) ::=
 
 param_value (ITmaParamValue) ::=
 	  literal
-	| symref
+	| symref_noargs
 ;
 
 predicate_primary (ITmaPredicateExpression) ::=

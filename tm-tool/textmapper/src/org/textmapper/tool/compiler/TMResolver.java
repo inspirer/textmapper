@@ -310,10 +310,15 @@ public class TMResolver {
 		return param;
 	}
 
+	TemplateParameter tryResolveParam(TmaSymref id) {
+		return parametersMap.get(id.getName());
+	}
+
 	Symbol resolve(TmaSymref id) {
 		String name = id.getName();
 		Symbol sym = symbolsMap.get(name);
 		if (sym == null) {
+			// TODO make "opt" configurable in options
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
