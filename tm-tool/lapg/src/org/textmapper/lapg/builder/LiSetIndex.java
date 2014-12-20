@@ -162,6 +162,8 @@ class LiSetIndex {
 				break;
 			case Symbol:
 				break;
+			case Conditional:
+				throw new UnsupportedOperationException();
 			default:
 				throw new IllegalStateException();
 		}

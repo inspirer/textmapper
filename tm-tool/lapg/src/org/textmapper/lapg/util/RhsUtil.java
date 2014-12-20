@@ -221,6 +221,8 @@ public class RhsUtil {
 				return isNullable(((RhsCast) part).getPart(), dependencies);
 			case Ignored:
 				return isNullable(((RhsIgnored) part).getInner(), dependencies);
+			case Conditional:
+				throw new UnsupportedOperationException();
 		}
 
 		throw new IllegalStateException();

@@ -22,6 +22,7 @@ import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
+import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.RhsUtil;
 
@@ -42,6 +43,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Set<String> namedPatternsSet = new HashSet<String>();
 	private final Set<String> stateNamesSet = new HashSet<String>();
 	private final Set<LexerState> statesSet = new LinkedHashSet<LexerState>();
+	private final Set<RhsPredicate> predicateSet = new HashSet<RhsPredicate>();
 	private final List<LiRule> rules = new ArrayList<LiRule>();
 	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
@@ -227,7 +229,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public void addRule(Nonterminal left, RhsPart rhs, Terminal prio) {
 		check(left);
-		check(rhs, false);
+		checkRoot(rhs);
 		if (prio != null) {
 			check(prio);
 		}
@@ -251,7 +253,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin) {
-		check(inner, true);
+		checkInner(inner, Kind.Assignment);
 		if (name == null) {
 			throw new NullPointerException("name is null");
 		}
@@ -262,7 +264,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner, SourceElement origin) {
-		check(inner, true);
+		checkInner(inner, Kind.Cast);
 		check(asSymbol);
 		LiRhsCast result = new LiRhsCast(asSymbol, convertArgs(args), (LiRhsPart) inner, origin);
 		rhsSet.add(result);
@@ -299,7 +301,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p, true);
+			checkInner(p, Kind.Choice);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsChoice result = new LiRhsChoice(liparts, false, origin);
@@ -308,17 +310,47 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsPredicate predicate(RhsPredicate.Operation operation, TemplateParameter param, Object value,
-								  SourceElement origin) {
-		// TODO implement
-		throw new UnsupportedOperationException();
+	public RhsConditional conditional(RhsPredicate predicate, RhsPart inner, SourceElement origin) {
+		checkInner(inner, Kind.Conditional);
+		check(predicate);
+		return new LiRhsConditional((LiRhsPredicate) predicate, (LiRhsPart) inner, origin);
 	}
 
 	@Override
-	public RhsPredicate compositePredicate(RhsPredicate.Operation operation, Collection<RhsPredicate> children,
-										   SourceElement origin) {
-		// TODO implement
-		throw new UnsupportedOperationException();
+	public RhsPredicate predicate(RhsPredicate.Operation operation, Collection<RhsPredicate> inner,
+								  TemplateParameter param, Object value, SourceElement origin) {
+		LiRhsPredicate[] liinner = null;
+		switch (operation) {
+			case Equals:
+				check(param);
+				check(param.getType(), value);
+				if (inner != null) {
+					throw new IllegalArgumentException("inner");
+				}
+				break;
+			case Or:
+			case And:
+			case Not:
+				if (param != null) {
+					throw new IllegalArgumentException("param");
+				}
+				if (value != null) {
+					throw new IllegalArgumentException("value");
+				}
+				if (inner.size() == 0 || operation == RhsPredicate.Operation.Not && inner.size() != 1) {
+					throw new IllegalArgumentException("inner");
+				}
+				liinner = new LiRhsPredicate[inner.size()];
+				int index = 0;
+				for (RhsPredicate p : inner) {
+					check(p);
+					liinner[index++] = (LiRhsPredicate) p;
+				}
+				break;
+		}
+		LiRhsPredicate result = new LiRhsPredicate(operation, liinner, param, value, origin);
+		predicateSet.add(result);
+		return result;
 	}
 
 	@Override
@@ -326,7 +358,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p, true);
+			checkInner(p, Kind.Sequence);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsSequence result = new LiRhsSequence(name, liparts, false, origin);
@@ -344,7 +376,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsPart[] liparts = new LiRhsPart[parts.size()];
 		int index = 0;
 		for (RhsPart p : parts) {
-			check(p, true);
+			checkInner(p, Kind.Unordered);
 			liparts[index++] = (LiRhsPart) p;
 		}
 		LiRhsUnordered result = new LiRhsUnordered(liparts, origin);
@@ -354,7 +386,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public RhsOptional optional(RhsPart inner, SourceElement origin) {
-		check(inner, true);
+		checkInner(inner, Kind.Optional);
 		LiRhsOptional result = new LiRhsOptional((LiRhsPart) inner, origin);
 		rhsSet.add(result);
 		return result;
@@ -362,9 +394,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin) {
-		check(inner, true);
+		checkInner(inner, Kind.List);
 		if (separator != null) {
-			check(separator, true);
+			checkInner(separator, Kind.List);
 		}
 		if (!nonEmpty && separator != null) {
 			throw new IllegalArgumentException("list with separator should have at least one element");
@@ -410,7 +442,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				liparts = new LiRhsSet[parts.size()];
 				int index = 0;
 				for (RhsPart p : parts) {
-					check(p, true);
+					checkInner(p, Kind.Set);
 					liparts[index++] = (LiRhsSet) p;
 				}
 				break;
@@ -422,7 +454,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Nonterminal addShared(RhsPart part, String nameHint) {
-		check(part, false);
+		checkRoot(part);
 		if (nameHint == null) {
 			throw new NullPointerException("nameHint");
 		}
@@ -452,15 +484,29 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	void check(RhsPart part, boolean asChild) {
+	void check(RhsPart part) {
 		if (part == null) {
 			throw new NullPointerException();
 		}
 		if (!rhsSet.contains(part)) {
 			throw new IllegalArgumentException("unknown right-hand side element passed");
 		}
-		if (asChild && part instanceof RhsRoot) {
+	}
+
+	void checkRoot(RhsPart part) {
+		check(part);
+		if (part instanceof RhsConditional) {
+			throw new IllegalArgumentException("conditionals can only be used as direct children of a choice");
+		}
+	}
+
+	void checkInner(RhsPart part, Kind parent) {
+		check(part);
+		if (part instanceof RhsRoot) {
 			throw new IllegalArgumentException("right-hand side element cannot be nested");
+		}
+		if (parent != Kind.Choice && part instanceof RhsConditional) {
+			throw new IllegalArgumentException("conditionals can only be used as direct children of a choice");
 		}
 	}
 
@@ -470,6 +516,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		if (symbolsMap.get(param.getName()) != param) {
 			throw new IllegalArgumentException("unknown template parameter passed");
+		}
+	}
+
+	void check(RhsPredicate predicate) {
+		if (predicate == null) {
+			throw new NullPointerException();
+		}
+		if (!predicateSet.contains(predicate)) {
+			throw new IllegalArgumentException("unknown predicate passed");
 		}
 	}
 

@@ -65,6 +65,7 @@ public class RuleUtil {
 				}
 				return false;
 			case List:
+			case Conditional:
 				throw new UnsupportedOperationException();
 			default:
 				throw new IllegalStateException();
@@ -117,6 +118,7 @@ public class RuleUtil {
 					// cannot contain named elements
 					return null;
 				case List:
+				case Conditional:
 					throw new UnsupportedOperationException();
 				default:
 					throw new IllegalStateException();

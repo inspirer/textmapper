@@ -42,7 +42,7 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 	}
 
-	void check(RhsPart part, boolean asChild) {
+	void check(RhsPart part) {
 		if (part == null || part.getLeft() == null) {
 			throw new NullPointerException();
 		}
@@ -71,7 +71,7 @@ class LiGrammarMapper implements GrammarMapper {
 
 	@Override
 	public void map(RhsSequence seq, AstField field, AstType subType, boolean isAddition) {
-		check(seq, false);
+		check(seq);
 
 		final AstType contextType = getEnclosingType(seq);
 		if (contextType == null) {
@@ -126,7 +126,7 @@ class LiGrammarMapper implements GrammarMapper {
 
 	@Override
 	public void map(RhsSymbol symbol, AstField field, Object value, boolean isAddition) {
-		check(symbol, false);
+		check(symbol);
 
 		final AstType contextType = getEnclosingType(symbol);
 		if (contextType == null) {

@@ -262,6 +262,8 @@ class LiSetResolver {
 					dependenciesSet.add(index.all(target));
 				}
 				break;
+			case Conditional:
+				throw new UnsupportedOperationException();
 			default:
 				throw new IllegalStateException();
 		}

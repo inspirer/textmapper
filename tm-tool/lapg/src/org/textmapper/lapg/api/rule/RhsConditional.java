@@ -15,34 +15,12 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.UserDataHolder;
-
 /**
- * evgeny, 11/24/12
+ * Note: can only be used as a direct child of {@link RhsChoice}
  */
-public interface RhsPart extends SourceElement, UserDataHolder {
+public interface RhsConditional extends RhsPart {
 
-	enum Kind {
-		Choice,
-		Optional,
-		Sequence,
-		Symbol,
-		Unordered,
-		Assignment,
-		List,
-		Cast,
-		Set,
-		Ignored,
-		Conditional,
-	}
+	RhsPredicate getPredicate();
 
-	Kind getKind();
-
-	Nonterminal getLeft();
-
-	RhsSequence getContext();
-
-	Object structuralNode();
+	RhsPart getInner();
 }

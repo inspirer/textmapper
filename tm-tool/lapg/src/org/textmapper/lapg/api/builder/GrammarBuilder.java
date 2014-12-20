@@ -61,12 +61,10 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 
-	RhsPredicate predicate(RhsPredicate.Operation operation,
-						   TemplateParameter param, Object value,
-						   SourceElement origin);
+	RhsConditional conditional(RhsPredicate predicate, RhsPart inner, SourceElement origin);
 
-	RhsPredicate compositePredicate(RhsPredicate.Operation operation,
-									Collection<RhsPredicate> children, SourceElement origin);
+	RhsPredicate predicate(RhsPredicate.Operation operation, Collection<RhsPredicate> inner,
+						   TemplateParameter param, Object value, SourceElement origin);
 
 	RhsSequence sequence(String name, Collection<RhsPart> parts, SourceElement origin);
 

@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.LexerRule;
 import org.textmapper.lapg.api.Rule;
 import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.rule.RhsAssignment;
 import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
@@ -141,7 +140,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if (args != null && args.length == 1) {
 				if ("mappedSymbols".equals(methodName)) {
-					return getMappedSymbols((RhsSequence) args[0], new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
+					return getMappedSymbols((RhsSequence) args[0], new HashSet<RhsSymbol>(Arrays.asList(rule.getRight
+							())));
 				}
 				if ("isMatched".equals(methodName)) {
 					return isMatched(((RhsSequence) args[0]), new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
@@ -235,7 +235,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 			ActionSymbol result = null;
 			Set<RhsSymbol> matching = RuleUtil.getSymbolsByName(id, rule.getSource());
 			if (matching == null || matching.isEmpty()) {
-				throw new EvaluationException("symbol `" + id + "' is " + (matching == null ? "undefined" : "ambiguous"));
+				throw new EvaluationException("symbol `" + id + "' is " + (matching == null ? "undefined" :
+						"ambiguous"));
 			}
 
 			RhsSymbol[] right = rule.getRight();
@@ -326,7 +327,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 
 		@Override
 		public Object getProperty(SourceElement caller, String id) throws EvaluationException {
-			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id) || "copyrightHeader".equals(id)) {
+			if ("templates".equals(id) || "hasErrors".equals(id) || "options".equals(id) || "copyrightHeader".equals
+					(id)) {
 				return super.getProperty(caller, id);
 			} else {
 				return grammarIxObject.getProperty(caller, id);

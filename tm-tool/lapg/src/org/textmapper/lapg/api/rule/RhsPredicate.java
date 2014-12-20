@@ -15,9 +15,14 @@
  */
 package org.textmapper.lapg.api.rule;
 
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
 
-public interface RhsPredicate {
+/**
+ * An expression which, given a template environment, evaluates to true or false.
+ */
+public interface RhsPredicate extends SourceElement {
 
 	enum Operation {
 		/* Template parameter checks */
@@ -45,4 +50,9 @@ public interface RhsPredicate {
 	 * Cannot be null.
 	 */
 	Object getValue();
+
+	/**
+	 * Evaluates the predicate.
+	 */
+	boolean apply(TemplateEnvironment env);
 }
