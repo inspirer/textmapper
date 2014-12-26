@@ -35,4 +35,6 @@ public interface TemplateEnvironment {
 	 *              is to be unset by the argument.
 	 */
 	TemplateEnvironment extend(TemplateParameter param, Object value);
+
+	String getNonterminalSuffix();
 }

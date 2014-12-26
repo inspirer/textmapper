@@ -18,24 +18,27 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class LiTemplateEnvironment implements TemplateEnvironment {
 
+	public static final Comparator<TemplateParameter> TEMPLATE_PARAMETER_COMPARATOR =
+			new Comparator<TemplateParameter>() {
+				@Override
+				public int compare(TemplateParameter o1, TemplateParameter o2) {
+					return o1.getName().compareTo(o2.getName());
+				}
+			};
+
 	private final Map<TemplateParameter, Object> values;
+	private String nonterminalSuffix;
 
 	LiTemplateEnvironment() {
 		values = new HashMap<TemplateParameter, Object>();
 	}
 
-	private LiTemplateEnvironment(LiTemplateEnvironment env, TemplateParameter param, Object value) {
-		values = new HashMap<TemplateParameter, Object>(env.values);
-		if (value == null) {
-			values.remove(param);
-		} else {
-			values.put(param, value);
-		}
+	private LiTemplateEnvironment(Map<TemplateParameter, Object> map) {
+		values = map;
 	}
 
 	@Override
@@ -46,7 +49,36 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 
 	@Override
 	public TemplateEnvironment extend(TemplateParameter param, Object value) {
-		return new LiTemplateEnvironment(this, param, value);
+		Map<TemplateParameter, Object> result;
+		if (value == null || value.equals(param.getDefaultValue())) {
+			if (!values.containsKey(param)) {
+				return this;
+			}
+			result = new HashMap<TemplateParameter, Object>(values);
+			result.remove(param);
+		} else {
+			if (value.equals(values.get(param))) {
+				return this;
+			}
+			result = new HashMap<TemplateParameter, Object>(values);
+			result.put(param, value);
+		}
+
+		return new LiTemplateEnvironment(result);
+	}
+
+	@Override
+	public String getNonterminalSuffix() {
+		if (nonterminalSuffix != null) return nonterminalSuffix;
+
+		List<TemplateParameter> params = new ArrayList<TemplateParameter>(values.keySet());
+		Collections.sort(params, TEMPLATE_PARAMETER_COMPARATOR);
+		StringBuilder sb = new StringBuilder();
+
+		for (TemplateParameter param : params) {
+			param.appendSuffix(sb, values.get(param));
+		}
+		return nonterminalSuffix = sb.toString();
 	}
 
 	@Override

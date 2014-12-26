@@ -40,6 +40,9 @@ public class PredicatesTest {
 		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, null);
 		TemplateEnvironment env = GrammarFacade.createBuilder().getRootEnvironment();
 
+		assertTrue(env == env.extend(s1, "abc"));
+		assertTrue(env == env.extend(s1, null));
+
 		// With default value
 		assertEquals("abc", env.getValue(s1));
 		env = env.extend(s1, "qwe");

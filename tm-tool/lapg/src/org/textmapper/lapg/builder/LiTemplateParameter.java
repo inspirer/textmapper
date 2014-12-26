@@ -17,7 +17,9 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.common.FormatUtil;
 
 public class LiTemplateParameter extends LiUserDataHolder implements TemplateParameter, DerivedSourceElement {
 
@@ -46,6 +48,32 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
+	}
+
+	@Override
+	public void appendSuffix(StringBuilder sb, Object value) {
+		sb.append("_");
+		if (value == Boolean.FALSE) {
+			sb.append("non");
+		}
+		sb.append(getName());
+		if (value instanceof Integer) {
+			sb.append(value.toString());
+		} else if (value instanceof String) {
+			String s = (String) value;
+			sb.append("-");
+			for (int i = 0; i < s.length(); i++) {
+				int c = s.charAt(i);
+				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-' || c >= '0' && c <= '9') {
+					sb.append((char) c);
+				} else {
+					sb.append(FormatUtil.getCharacterName((char) c));
+				}
+			}
+		} else if (value instanceof Symbol) {
+			sb.append("-");
+			sb.append(((Symbol) value).getName());
+		}
 	}
 
 	@Override

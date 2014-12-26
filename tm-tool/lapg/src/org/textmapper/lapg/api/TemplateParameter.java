@@ -32,4 +32,6 @@ public interface TemplateParameter extends SourceElement, UserDataHolder {
 	 * Or null, if the parameter does not have any default value (unset).
 	 */
 	Object getDefaultValue();
+
+	void appendSuffix(StringBuilder sb, Object value);
 }
