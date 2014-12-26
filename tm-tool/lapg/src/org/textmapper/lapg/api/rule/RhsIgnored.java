@@ -15,18 +15,7 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.Terminal;
-
 public interface RhsIgnored extends RhsRoot {
 
 	RhsPart getInner();
-
-	ParenthesisPair[] getParentheses();
-
-	public interface ParenthesisPair {
-
-		Terminal getOpening();
-
-		Terminal getClosing();
-	}
 }

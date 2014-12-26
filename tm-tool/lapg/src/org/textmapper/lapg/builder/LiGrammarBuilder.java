@@ -21,7 +21,6 @@ import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.*;
-import org.textmapper.lapg.api.rule.RhsIgnored.ParenthesisPair;
 import org.textmapper.lapg.api.rule.RhsPart.Kind;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.RhsUtil;
@@ -314,7 +313,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	public LiRhsConditional conditional(RhsPredicate predicate, RhsSequence inner, SourceElement origin) {
 		checkInner(inner, Kind.Conditional);
 		check(predicate);
-		return new LiRhsConditional((LiRhsPredicate) predicate, (LiRhsSequence) inner, origin);
+		LiRhsConditional result = new LiRhsConditional(
+				(LiRhsPredicate) predicate, (LiRhsSequence) inner, origin);
+		rhsSet.add(result);
+		return result;
 	}
 
 	@Override
@@ -418,12 +420,12 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public ParenthesisPair parenthesisPair(Terminal opening, Terminal closing) {
+	public void addParentheses(Terminal opening, Terminal closing) {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public RhsIgnored ignored(RhsPart inner, Collection<ParenthesisPair> parentheses, SourceElement origin) {
+	public RhsIgnored ignored(RhsPart inner, SourceElement origin) {
 		throw new UnsupportedOperationException();
 	}
 
