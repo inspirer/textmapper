@@ -118,6 +118,8 @@ public class RhsUtil {
 				return Arrays.asList(((RhsSequence) part).getParts());
 			case Optional:
 				return Arrays.asList(((RhsOptional) part).getPart());
+			case Conditional:
+				return Arrays.<RhsPart>asList(((RhsConditional) part).getInner());
 			case Cast:
 				return Arrays.asList(((RhsCast) part).getPart());
 			case Assignment:
