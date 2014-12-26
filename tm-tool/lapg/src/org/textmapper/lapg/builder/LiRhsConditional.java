@@ -17,7 +17,6 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.rule.RhsConditional;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsPredicate;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
@@ -26,9 +25,9 @@ import java.util.List;
 class LiRhsConditional extends LiRhsPart implements RhsConditional {
 
 	private final LiRhsPredicate predicate;
-	private final LiRhsPart inner;
+	private final LiRhsSequence inner;
 
-	public LiRhsConditional(LiRhsPredicate predicate, LiRhsPart inner, SourceElement origin) {
+	public LiRhsConditional(LiRhsPredicate predicate, LiRhsSequence inner, SourceElement origin) {
 		super(origin);
 		this.predicate = predicate;
 		this.inner = inner;
@@ -40,7 +39,7 @@ class LiRhsConditional extends LiRhsPart implements RhsConditional {
 	}
 
 	@Override
-	public RhsPart getInner() {
+	public LiRhsSequence getInner() {
 		return inner;
 	}
 

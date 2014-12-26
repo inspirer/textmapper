@@ -20,6 +20,8 @@ import org.textmapper.lapg.LapgCore;
 import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
+import org.textmapper.lapg.api.rule.RhsSequence;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -45,7 +47,7 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null);
 		builder.addInput(input, true, null);
-		builder.addRule(input, builder.symbol(id, null, null), null);
+		builder.addRule(input, builder.asSequence(builder.symbol(id, null, null)));
 
 		Grammar grammar = builder.create();
 
@@ -204,7 +206,10 @@ public class GrammarFacadeTest {
 
 		Nonterminal input = builder.addNonterminal("input", null);
 		builder.addInput(input, true, null);
-		builder.addRule(input, builder.symbol(id, null, null), id);
+
+		RhsSymbol symbol = builder.symbol(id, null, null);
+		RhsSequence rhs = builder.addPrecedence(symbol, id);
+		builder.addRule(input, rhs);
 
 		assertNotNull(builder.addPrio(Prio.RIGHT, Collections.singleton(id), null));
 

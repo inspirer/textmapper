@@ -25,7 +25,6 @@ import org.textmapper.lapg.api.regex.RegexContext;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
 import org.textmapper.lapg.api.rule.RhsArgument;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.builder.GrammarFacade;
 import org.textmapper.tool.common.ObjectUtil;
 import org.textmapper.tool.parser.TMTree;
@@ -201,7 +200,7 @@ public class TMResolver {
 		throw new IllegalStateException();
 	}
 
-	private Object getParamValue(TemplateParameter.Type expectedType, ITmaParamValue paramValue) {
+	Object getParamValue(TemplateParameter.Type expectedType, ITmaParamValue paramValue) {
 		if (paramValue instanceof TmaLiteral) {
 			Object literalVal = ((TmaLiteral) paramValue).getValue();
 			TemplateParameter.Type actualType = (literalVal instanceof Integer) ? Type.Integer :
@@ -328,10 +327,10 @@ public class TMResolver {
 					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(), id.getLine(),
 							id.getOffset(), id.getEndoffset());
 					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
-					builder.addRule(symopt, builder.sequence(null,
-							Collections.<RhsPart>singleton(builder.optional(
-									builder.symbol(sym, null, id),
-									id)), id), null /* no precedence */);
+					builder.addRule(symopt,
+							builder.asSequence(
+									builder.optional(
+											builder.symbol(sym, null, id), id)));
 					return symopt;
 				}
 			}

@@ -16,9 +16,8 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.rule.RhsChoice;
-import org.textmapper.lapg.api.rule.RhsSequence;
-import org.textmapper.lapg.api.rule.RhsSymbol;
+import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,15 +28,18 @@ import java.util.List;
  */
 class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
-	private List<LiRhsSequence> rulesList;
-	private LiRhsSequence[] rules;
+	private List<LiRhsPart> rulesList;
+	private LiRhsPart[] rules;
 
 	LiRootRhsChoice(Nonterminal left) {
 		super(left, null);
-		rulesList = new ArrayList<LiRhsSequence>();
+		rulesList = new ArrayList<LiRhsPart>();
 	}
 
-	void addRule(LiRhsSequence rule) {
+	void addRule(LiRhsPart rule) {
+		if (!(rule instanceof RhsRule)) {
+			throw new IllegalArgumentException("rule");
+		}
 		toList();
 		rulesList.add(rule);
 		register(false, rule);
@@ -60,14 +62,14 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
 	private void toArr() {
 		if (rules == null) {
-			rules = rulesList.toArray(new LiRhsSequence[rulesList.size()]);
+			rules = rulesList.toArray(new LiRhsPart[rulesList.size()]);
 			rulesList = null;
 		}
 	}
 
 	private void toList() {
 		if (rulesList == null) {
-			rulesList = new ArrayList<LiRhsSequence>(rules.length);
+			rulesList = new ArrayList<LiRhsPart>(rules.length);
 			rulesList.addAll(Arrays.asList(rules));
 			rules = null;
 		}
@@ -94,6 +96,9 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 	@Override
 	protected RhsSequence[] preprocess() {
 		toArr();
+		for (RhsPart p : rules) {
+			if (!(p instanceof RhsSequence)) throw new IllegalStateException();
+		}
 		RhsSequence[] result = new RhsSequence[rules.length];
 		System.arraycopy(rules, 0, result, 0, rules.length);
 		return result;

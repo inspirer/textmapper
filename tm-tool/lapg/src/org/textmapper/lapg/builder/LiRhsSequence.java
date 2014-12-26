@@ -150,6 +150,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 	}
 
 	void setPrio(Terminal prio) {
+		// TODO check unused priorities
 		this.prio = prio;
 	}
 }

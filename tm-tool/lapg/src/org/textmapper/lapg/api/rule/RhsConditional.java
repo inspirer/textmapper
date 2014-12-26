@@ -18,9 +18,9 @@ package org.textmapper.lapg.api.rule;
 /**
  * Note: can only be used as a direct child of {@link RhsChoice}
  */
-public interface RhsConditional extends RhsPart {
+public interface RhsConditional extends RhsRule, RhsPart {
 
 	RhsPredicate getPredicate();
 
-	RhsPart getInner();
+	RhsSequence getInner();
 }

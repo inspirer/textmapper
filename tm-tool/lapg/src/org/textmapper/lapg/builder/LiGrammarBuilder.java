@@ -226,29 +226,30 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		return inp;
 	}
 
-	@Override
-	public void addRule(Nonterminal left, RhsPart rhs, Terminal prio) {
-		check(left);
-		checkRoot(rhs);
-		if (prio != null) {
-			check(prio);
-		}
 
-		LiRhsPart right = (LiRhsPart) rhs;
-		final LiNonterminal liLeft = (LiNonterminal) left;
-		if (right instanceof LiRhsRoot) {
-			if (prio != null) {
-				throw new IllegalArgumentException("prio");
-			}
-			liLeft.setDefinition((LiRhsRoot) right);
-		} else {
-			if (!(right instanceof LiRhsSequence)) {
-				right = new LiRhsSequence(null, new LiRhsPart[]{right}, false, right);
-			}
-			LiRhsSequence rule = (LiRhsSequence) right;
-			rule.setPrio(prio);
-			liLeft.addRule(rule);
-		}
+	@Override
+	public RhsSequence addPrecedence(RhsPart p, Terminal prec) {
+		check(prec);
+		LiRhsSequence result = (LiRhsSequence) asSequence(p);
+		result.setPrio(prec);
+		return result;
+	}
+
+	@Override
+	public void define(Nonterminal left, RhsRoot rhs) {
+		check(left);
+		check(rhs);
+
+		LiNonterminal liLeft = (LiNonterminal) left;
+		liLeft.setDefinition((LiRhsRoot) rhs);
+	}
+
+	@Override
+	public void addRule(Nonterminal left, RhsRule rhs) {
+		check(left);
+		checkInner(rhs, Kind.Choice);
+		LiNonterminal liLeft = (LiNonterminal) left;
+		liLeft.addRule((LiRhsPart) rhs);
 	}
 
 	@Override
@@ -310,10 +311,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsConditional conditional(RhsPredicate predicate, RhsPart inner, SourceElement origin) {
+	public LiRhsConditional conditional(RhsPredicate predicate, RhsSequence inner, SourceElement origin) {
 		checkInner(inner, Kind.Conditional);
 		check(predicate);
-		return new LiRhsConditional((LiRhsPredicate) predicate, (LiRhsPart) inner, origin);
+		return new LiRhsConditional((LiRhsPredicate) predicate, (LiRhsSequence) inner, origin);
 	}
 
 	@Override
@@ -364,6 +365,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiRhsSequence result = new LiRhsSequence(name, liparts, false, origin);
 		rhsSet.add(result);
 		return result;
+	}
+
+	@Override
+	public RhsSequence asSequence(RhsPart part) {
+		if (part instanceof RhsSequence) {
+			check(part);
+			return (RhsSequence) part;
+		}
+		return sequence(null, Collections.singleton(part), part);
 	}
 
 	@Override
@@ -454,15 +464,25 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Nonterminal addShared(RhsPart part, String nameHint) {
-		checkRoot(part);
+		check(part);
 		if (nameHint == null) {
 			throw new NullPointerException("nameHint");
+		}
+		if (part instanceof RhsConditional) {
+			throw new IllegalArgumentException("part");
 		}
 		Object id = part.structuralNode();
 		Nonterminal symbol = instantiations.get(id);
 		if (symbol == null) {
 			symbol = addAnonymous(nameHint, ((LiRhsPart) part).getOrigin());
-			addRule(symbol, part, null);
+			if (part instanceof RhsRoot) {
+				define(symbol, (RhsRoot) part);
+			} else {
+				if (!(part instanceof RhsRule)) {
+					part = asSequence(part);
+				}
+				addRule(symbol, (RhsRule) part);
+			}
 			instantiations.put(id, symbol);
 		} else {
 			// mark as used
@@ -490,13 +510,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		if (!rhsSet.contains(part)) {
 			throw new IllegalArgumentException("unknown right-hand side element passed");
-		}
-	}
-
-	void checkRoot(RhsPart part) {
-		check(part);
-		if (part instanceof RhsConditional) {
-			throw new IllegalArgumentException("conditionals can only be used as direct children of a choice");
 		}
 	}
 

@@ -16,6 +16,7 @@
 package org.textmapper.tool.compiler;
 
 import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
@@ -260,7 +261,11 @@ public class TMParserCompiler {
 		TmaRuleAction action = right.getAction();
 		String alias = action != null && action.getAction() != null ? action.getAction().getID() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);
-		builder.addRule(left, rule, prio);
+		if (prio != null) {
+			rule = builder.addPrecedence(rule, prio);
+		}
+		RhsPredicate predicate = convertPredicate(getPredicate(right));
+		builder.addRule(left, predicate == null ? rule : builder.conditional(predicate, rule, right));
 		Map<String, Object> annotations = expressionResolver.convert(
 				right.getPrefix() != null ? right.getPrefix().getAnnotations() : null, "AnnotateRule");
 
@@ -268,12 +273,62 @@ public class TMParserCompiler {
 		TMDataUtil.putCode(rule, lastAction);
 	}
 
+	private RhsPredicate convertPredicate(ITmaPredicateExpression e) {
+		if (e == null) return null;
+
+		if (e instanceof TmaBoolPredicate) {
+			TemplateParameter param = resolver.resolveParam(((TmaBoolPredicate) e).getParamRef());
+			if (param == null) return null;
+
+			if (param.getType() != Type.Bool) {
+				error(e, "type of " + param.getName() + " must be boolean");
+				return null;
+			}
+
+			return builder.predicate(
+					RhsPredicate.Operation.Equals, null,
+					param, ((TmaBoolPredicate) e).isNegated() ? Boolean.FALSE : Boolean.TRUE, e);
+
+		} else if (e instanceof TmaComparePredicate) {
+			TemplateParameter param = resolver.resolveParam(((TmaComparePredicate) e).getParamRef());
+			if (param == null) return null;
+
+			Object val = resolver.getParamValue(param.getType(), ((TmaComparePredicate) e).getLiteral());
+			RhsPredicate result = builder.predicate(
+					RhsPredicate.Operation.Equals, null,
+					param, val, e);
+			if (((TmaComparePredicate) e).getKind() == TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL) {
+				result = builder.predicate(RhsPredicate.Operation.Not, Collections.singleton(result), null, null, e);
+			}
+			return result;
+
+		} else if (e instanceof TmaPredicateBinary) {
+			RhsPredicate left = convertPredicate(((TmaPredicateBinary) e).getLeft());
+			RhsPredicate right = convertPredicate(((TmaPredicateBinary) e).getRight());
+			if (left == null || right == null) return null;
+
+			RhsPredicate.Operation op;
+			switch (((TmaPredicateBinary) e).getKind()) {
+				case AMPERSAND_AMPERSAND:
+					op = RhsPredicate.Operation.And;
+					break;
+				case OR_OR:
+					op = RhsPredicate.Operation.Or;
+					break;
+				default:
+					throw new UnsupportedOperationException();
+			}
+			return builder.predicate(op, Arrays.asList(left, right), null, null, e);
+		}
+		throw new IllegalArgumentException();
+	}
+
 	private RhsPart convertPart(Symbol outer, ITmaRhsPart part) {
 		if (part instanceof TmaCommand) {
 			TmaCommand astCode = (TmaCommand) part;
 			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
 			RhsSequence actionRule = builder.empty(astCode);
-			builder.addRule(codeSym, actionRule, null);
+			builder.addRule(codeSym, actionRule);
 			TMDataUtil.putCode(actionRule, astCode);
 			return builder.symbol(codeSym, null, astCode);
 
@@ -331,7 +386,7 @@ public class TMParserCompiler {
 			part = cl.getInner();
 		}
 
-		boolean canInline = annotations == null;
+		boolean canInline = (annotations == null);
 		RhsPart result;
 
 		// inline (...)
@@ -502,7 +557,7 @@ public class TMParserCompiler {
 				if (symref == null) {
 					return null;
 				}
-				inner = builder.sequence(null, Arrays.<RhsPart>asList(symref), innerSymRef);
+				inner = builder.sequence(null, Collections.<RhsPart>singleton(symref), innerSymRef);
 			}
 			TmaQuantifierKind quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == TmaQuantifierKind.QUESTIONMARK) {
@@ -519,11 +574,16 @@ public class TMParserCompiler {
 	private RhsPart convertChoice(Symbol outer, List<TmaRule0> rules, SourceElement origin) {
 		Collection<RhsPart> result = new ArrayList<RhsPart>(rules.size());
 		for (TmaRule0 rule : rules) {
-			RhsPart abstractRulePart = convertGroup(outer, rule.getList(), rule);
+			RhsSequence abstractRulePart = convertGroup(outer, rule.getList(), rule);
 			if (abstractRulePart == null) {
 				return null;
 			}
-			result.add(abstractRulePart);
+			RhsPredicate predicate = convertPredicate(getPredicate(rule));
+			if (predicate != null) {
+				result.add(builder.conditional(predicate, abstractRulePart, rule));
+			} else {
+				result.add(abstractRulePart);
+			}
 		}
 		return builder.choice(result, origin);
 	}
@@ -562,7 +622,7 @@ public class TMParserCompiler {
 		List<TmaRule0> innerRules = ((TmaRhsNested) symbolRef).getRules();
 		if (innerRules.size() == 1) {
 			TmaRule0 first = innerRules.get(0);
-			return isSimpleNonEmpty(first);
+			return isSimpleNonEmpty(first, false /* without predicates */);
 		}
 		return false;
 	}
@@ -572,28 +632,37 @@ public class TMParserCompiler {
 			return false;
 		}
 		List<TmaRule0> innerRules = ((TmaRhsNested) symbolRef).getRules();
-		if (innerRules.size() < 2) {
+		if (innerRules.isEmpty()) {
 			return false;
 		}
 		for (TmaRule0 rule : innerRules) {
-			if (!(isSimpleNonEmpty(rule))) {
+			if (!isSimpleNonEmpty(rule, true /* allow predicates */)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	private boolean isSimpleNonEmpty(TmaRule0 rule) {
+	private boolean isSimpleNonEmpty(TmaRule0 rule, boolean allowPredicates) {
 		return rule != null
-				&& rule.getPrefix() == null
 				&& rule.getSuffix() == null
-				&& rule.getList() != null
-				&& !rule.getList().isEmpty()
-				&& rule.getError() == null;
+				&& rule.getAction() == null
+				&& rule.getList() != null && !rule.getList().isEmpty()
+				&& rule.getError() == null
+				&& isSimplePrefix(rule.getPrefix(), allowPredicates);
+	}
+
+	private boolean isSimplePrefix(TmaRhsPrefix prefix, boolean allowPredicates) {
+		return prefix == null
+				|| allowPredicates && prefix.getAnnotations() == null && prefix.getPredicate() != null;
 	}
 
 	private List<ITmaRhsPart> getGroupPart(ITmaRhsPart symbolRef) {
 		return ((TmaRhsNested) symbolRef).getRules().get(0).getList();
+	}
+
+	private ITmaPredicateExpression getPredicate(TmaRule0 rule) {
+		return rule.getPrefix() == null ? null : rule.getPrefix().getPredicate();
 	}
 
 	private void extractUnorderedParts(ITmaRhsPart unorderedRulePart, List<ITmaRhsPart> result) {

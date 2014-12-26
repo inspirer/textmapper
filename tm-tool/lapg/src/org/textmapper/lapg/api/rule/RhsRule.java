@@ -15,22 +15,9 @@
  */
 package org.textmapper.lapg.api.rule;
 
-import org.textmapper.lapg.api.ast.AstType;
-
 /**
- * Ordered sequence of elements.
+ * A marker interface for elements that can appear under the root -OR- element
+ * of a nonterminal definition.
  */
-public interface RhsSequence extends RhsRule, RhsPart {
-
-	String getName();
-
-	RhsPart[] getParts();
-
-	RhsMapping getMapping();
-
-	/**
-	 * Overrides the type of the mapped field.
-	 * Should be a subtype of getMapping().getField().getType();
-	 */
-	AstType getType();
+public interface RhsRule extends RhsPart {
 }

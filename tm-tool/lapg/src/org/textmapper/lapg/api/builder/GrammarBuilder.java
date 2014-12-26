@@ -61,12 +61,14 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 
-	RhsConditional conditional(RhsPredicate predicate, RhsPart inner, SourceElement origin);
+	RhsConditional conditional(RhsPredicate predicate, RhsSequence inner, SourceElement origin);
 
 	RhsPredicate predicate(RhsPredicate.Operation operation, Collection<RhsPredicate> inner,
 						   TemplateParameter param, Object value, SourceElement origin);
 
 	RhsSequence sequence(String name, Collection<RhsPart> parts, SourceElement origin);
+
+	RhsSequence asSequence(RhsPart part);
 
 	RhsSequence empty(SourceElement origin);
 
@@ -84,7 +86,11 @@ public interface GrammarBuilder extends GrammarMapper {
 			   Symbol symbol, Collection<RhsArgument> args,
 			   Collection<RhsSet> parts, SourceElement origin);
 
-	void addRule(Nonterminal left, RhsPart rhSide, Terminal prio);
+	RhsSequence addPrecedence(RhsPart p, Terminal prec);
+
+	void define(Nonterminal left, RhsRoot rhs);
+
+	void addRule(Nonterminal left, RhsRule rhs);
 
 
 	InputRef addInput(Nonterminal inputSymbol, boolean hasEoi, SourceElement origin);

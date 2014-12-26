@@ -34,6 +34,32 @@ import static org.junit.Assert.assertTrue;
 public class PredicatesTest {
 
 	@Test
+	public void testEnvironment() {
+		GrammarBuilder b = GrammarFacade.createBuilder();
+		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", null);
+		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, null);
+		TemplateEnvironment env = GrammarFacade.createBuilder().getRootEnvironment();
+
+		// With default value
+		assertEquals("abc", env.getValue(s1));
+		env = env.extend(s1, "qwe");
+		assertEquals("qwe", env.getValue(s1));
+		env = env.extend(s1, null);
+		assertEquals("abc", env.getValue(s1));
+		env = env.extend(s1, "");
+		assertEquals("", env.getValue(s1));
+
+		// With default value
+		assertEquals(null, env.getValue(s2));
+		env = env.extend(s2, "qwe");
+		assertEquals("qwe", env.getValue(s2));
+		env = env.extend(s2, null);
+		assertEquals(null, env.getValue(s2));
+		env = env.extend(s2, "");
+		assertEquals("", env.getValue(s2));
+	}
+
+	@Test
 	public void testEvaluation() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
 		TemplateParameter p1 = b.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
