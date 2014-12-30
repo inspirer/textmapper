@@ -25,9 +25,7 @@ import org.textmapper.lapg.util.RhsUtil;
 import java.util.*;
 
 class LiSetResolver {
-
-	private static final int[] EMPTY_ARRAY = new int[0];
-	private static final Descriptor SENTINEL = new Descriptor(-1, EMPTY_ARRAY);
+	private static final Descriptor SENTINEL = new Descriptor(-1, SetsClosure.EMPTY_ARRAY);
 
 	private static class Descriptor {
 		private int set;                // positive
@@ -175,7 +173,7 @@ class LiSetResolver {
 				assert set.getSets().length == 1;
 				int targetIndex = index.set(set.getSets()[0]);
 				assert sets[targetIndex] != null;
-				return new Descriptor(closure.complement(sets[targetIndex].set, set), EMPTY_ARRAY);
+				return new Descriptor(closure.complement(sets[targetIndex].set, set), SetsClosure.EMPTY_ARRAY);
 			}
 			case Union:
 				for (RhsSet child : set.getSets()) {
@@ -183,7 +181,7 @@ class LiSetResolver {
 					assert sets[targetIndex] != null;
 					dependenciesSet.add(targetIndex);
 				}
-				return new Descriptor(closure.addSet(EMPTY_ARRAY, set), dependenciesSet.create());
+				return new Descriptor(closure.addSet(SetsClosure.EMPTY_ARRAY, set), dependenciesSet.create());
 			case Intersection: {
 				RhsSet[] children = set.getSets();
 				int[] childSets = new int[children.length];
@@ -192,7 +190,7 @@ class LiSetResolver {
 					assert sets[targetIndex] != null;
 					childSets[i] = sets[targetIndex].set;
 				}
-				return new Descriptor(closure.addIntersection(childSets, set), EMPTY_ARRAY);
+				return new Descriptor(closure.addIntersection(childSets, set), SetsClosure.EMPTY_ARRAY);
 			}
 			default:
 				throw new IllegalStateException();

@@ -128,6 +128,11 @@ public class RhsUtil {
 				return Arrays.asList(((RhsChoice) part).getParts());
 			case Unordered:
 				return Arrays.asList(((RhsUnordered) part).getParts());
+			case Set: {
+				RhsSet[] sets = ((RhsSet) part).getSets();
+				if (sets != null) return Arrays.<RhsPart>asList(sets);
+				break;
+			}
 		}
 		return null;
 	}

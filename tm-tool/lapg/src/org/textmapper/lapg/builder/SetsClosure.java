@@ -23,7 +23,7 @@ import java.util.List;
  * Computes a transitive closure of a set of sets based on the given relations.
  */
 class SetsClosure {
-	private static final int[] EMPTY_ARRAY = new int[0];
+	static final int[] EMPTY_ARRAY = new int[0];
 
 	private final IntegerSets sets = new IntegerSets();
 	private final List<SetNode> nodes = new ArrayList<SetNode>();

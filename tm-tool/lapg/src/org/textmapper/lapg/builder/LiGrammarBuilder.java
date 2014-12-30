@@ -37,6 +37,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Map<String, Object> symbolsMap = new HashMap<String, Object>();
 
 	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
+	private final List<LiTemplateParameter> params = new ArrayList<LiTemplateParameter>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
@@ -139,6 +140,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		LiTemplateParameter param = new LiTemplateParameter(type, name, defaultValue, origin);
 		symbolsMap.put(name, param);
+		params.add(param);
 		return param;
 	}
 
@@ -574,8 +576,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Grammar create() {
-		// TODO instantiate templates
-
+		instantiateTemplates();
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
@@ -612,6 +613,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		assignNames();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error,
 				terminals, grammarSymbols, problemsArr);
+	}
+
+	private void instantiateTemplates() {
+		LiTemplateParameter[] paramsArr = params.toArray(new LiTemplateParameter[params.size()]);
+		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		int terminals = sortAndEnumerateSymbols(symbolArr);
+
+		TemplateInstantiator instantiator = new TemplateInstantiator(paramsArr, symbolArr, terminals);
+		instantiator.instantiate(this, inputs);
 	}
 
 	private void computeSets(ExpansionContext expansionContext) {
