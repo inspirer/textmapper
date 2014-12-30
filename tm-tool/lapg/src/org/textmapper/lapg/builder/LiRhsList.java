@@ -201,7 +201,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			RhsSymbol[] rhsSymbols = RhsUtil.getRhsSymbols(element);
 			sb.append("list_of_");
 			if (rhsSymbols.length > 0) {
-				sb.append(LiUtil.getSymbolName(rhsSymbols[0].getTarget()));
+				sb.append(LiUtil.getSymbolName(rhsSymbols[0]));
 				if (rhsSymbols.length > 1) {
 					sb.append("_and_").append(rhsSymbols.length - 1).append("_elements");
 				}

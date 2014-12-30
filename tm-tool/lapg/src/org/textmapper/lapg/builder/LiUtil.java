@@ -17,8 +17,19 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
+import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.rule.RhsSymbol;
 
 public class LiUtil {
+	public static String getSymbolName(RhsSymbol s) {
+		TemplateParameter templateTarget = s.getTemplateTarget();
+		if (templateTarget != null) {
+			return templateTarget.getName();
+		}
+
+		return getSymbolName(s.getTarget());
+	}
+
 	public static String getSymbolName(Symbol s) {
 		String name = s.getName();
 		if (name != null) {
