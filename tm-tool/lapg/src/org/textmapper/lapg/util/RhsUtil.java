@@ -133,6 +133,9 @@ public class RhsUtil {
 				if (sets != null) return Arrays.<RhsPart>asList(sets);
 				break;
 			}
+			case List:
+				assert ((RhsList) part).getCustomInitialElement() == null;
+				return Arrays.<RhsPart>asList(((RhsList) part).getElement());
 		}
 		return null;
 	}

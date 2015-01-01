@@ -109,11 +109,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 
 	@Override
 	protected void toString(StringBuilder sb) {
-		if (target != null) {
-			sb.append(target.getName());
-		} else {
-			sb.append(parameter.getName());
+		boolean isHint = (parameter == null && target.getName() == null);
+		if (isHint) {
+			sb.append("$");
 		}
+		sb.append(LiUtil.getSymbolName(this));
 		LiUtil.appendArguments(sb, args);
 	}
 }
