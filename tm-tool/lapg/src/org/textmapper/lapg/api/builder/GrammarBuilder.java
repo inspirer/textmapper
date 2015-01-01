@@ -49,6 +49,8 @@ public interface GrammarBuilder extends GrammarMapper {
 	LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states,
 						   int priority, LexerRule classLexerRule, SourceElement origin);
 
+	NamedSet addSet(String name, RhsSet set, SourceElement origin);
+
 	RhsArgument argument(TemplateParameter param, Object value, SourceElement origin);
 
 	RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin);

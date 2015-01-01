@@ -40,7 +40,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final List<LiTemplateParameter> params = new ArrayList<LiTemplateParameter>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
 	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
+	private final List<LiNamedSet> namedSets = new ArrayList<LiNamedSet>();
 	private final Set<String> namedPatternsSet = new HashSet<String>();
+	private final Set<String> namedSetNames = new HashSet<String>();
 	private final Set<String> stateNamesSet = new HashSet<String>();
 	private final Set<LexerState> statesSet = new LinkedHashSet<LexerState>();
 	private final Set<RhsPredicate> predicateSet = new HashSet<RhsPredicate>();
@@ -201,6 +203,23 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		lexerRules.add(l);
 		((LiTerminal) sym).addRule(l);
 		return l;
+	}
+
+	@Override
+	public NamedSet addSet(String name, RhsSet set, SourceElement origin) {
+		if (name == null || set == null) {
+			throw new NullPointerException();
+		}
+		check(set);
+		// mark as used
+		rhsSet.remove(set);
+
+		if (!namedSetNames.add(name)) {
+			throw new IllegalStateException("named set `" + name + "' already exists");
+		}
+		LiNamedSet namedSet = new LiNamedSet(name, set, origin);
+		namedSets.add(namedSet);
+		return namedSet;
 	}
 
 	@Override
