@@ -599,7 +599,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
-		computeSets(expansionContext);
+		LiNamedSet[] setsArr = namedSets.toArray(new LiNamedSet[namedSets.size()]);
+		computeSets(expansionContext, setsArr);
 
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
@@ -630,7 +631,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		Problem[] problemsArr = problems.toArray(new Problem[problems.size()]);
 
 		assignNames();
-		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr, patternsArr, statesArr, inputArr, eoi, error,
+		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr,
+				patternsArr, setsArr,
+				statesArr, inputArr, eoi, error,
 				terminals, grammarSymbols, problemsArr);
 	}
 
@@ -643,10 +646,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		instantiator.instantiate(this, inputs);
 	}
 
-	private void computeSets(ExpansionContext expansionContext) {
+	private void computeSets(ExpansionContext expansionContext, LiNamedSet[] setsArr) {
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
-		LiSetResolver resolver = new LiSetResolver(symbolArr, terminals);
+		LiSetResolver resolver = new LiSetResolver(symbolArr, terminals, setsArr);
 		resolver.resolve(expansionContext, problems);
 	}
 

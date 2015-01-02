@@ -27,21 +27,28 @@ class LiSetIndex {
 	private Map<RhsSet, Integer> sets;
 	private List<RhsSet> sortedSets;
 	private List<RhsSet> topLevelSets;
+	private Set<RhsSet> namedSets;
 	private LiSymbol[] symbols;
 	private int terminals;
 	private int nonterminals;
 	private int size;
 
-	LiSetIndex(LiSymbol[] symbols, int terminals) {
+	LiSetIndex(LiSymbol[] symbols, int terminals, LiNamedSet[] namedSets) {
 		this.symbols = symbols;
 		this.terminals = terminals;
 		this.nonterminals = symbols.length - terminals;
+		this.namedSets = new HashSet<RhsSet>();
 		sets = new HashMap<RhsSet, Integer>();
 		sortedSets = new ArrayList<RhsSet>();
 		topLevelSets = new ArrayList<RhsSet>();
 		size = nonterminals * 3 + terminals;
 		for (int i = terminals; i < symbols.length; i++) {
 			traverse(((Nonterminal) symbols[i]).getDefinition());
+		}
+		for (LiNamedSet s : namedSets) {
+			traverse(s.getSet());
+			topLevelSets.add(s.getSet());
+			this.namedSets.add(s.getSet());
 		}
 	}
 
@@ -103,6 +110,10 @@ class LiSetIndex {
 
 	Collection<RhsSet> topLevelSets() {
 		return topLevelSets;
+	}
+
+	boolean isRhs(RhsSet topLevelSet) {
+		return !namedSets.contains(topLevelSet);
 	}
 
 	int size() {

@@ -32,6 +32,8 @@ public interface Grammar {
 
 	NamedPattern[] getPatterns();
 
+	NamedSet[] getSets();
+
 	int getTerminals();
 
 	int getGrammarSymbols();

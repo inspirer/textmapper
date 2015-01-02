@@ -24,6 +24,7 @@ class LiGrammar implements Grammar {
 	private final Prio[] priorities;
 	private final LexerRule[] lexerRules;
 	private final NamedPattern[] patterns;
+	private final NamedSet[] sets;
 	private final LexerState[] lexerStates;
 
 	private final InputRef[] inputs;
@@ -35,7 +36,7 @@ class LiGrammar implements Grammar {
 	private final Problem[] problems;
 
 	public LiGrammar(Symbol[] symbols, Rule[] rules, Prio[] priorities, LexerRule[] lexerRules,
-					 NamedPattern[] patterns,
+					 NamedPattern[] patterns, NamedSet[] sets,
 					 LexerState[] lexerStates,
 					 InputRef[] inputs, Symbol eoi,
 					 Symbol error, int terminals, int grammarSymbols,
@@ -45,6 +46,7 @@ class LiGrammar implements Grammar {
 		this.priorities = priorities;
 		this.lexerRules = lexerRules;
 		this.patterns = patterns;
+		this.sets = sets;
 		this.lexerStates = lexerStates;
 		this.inputs = inputs;
 		this.eoi = eoi;
@@ -82,6 +84,11 @@ class LiGrammar implements Grammar {
 	@Override
 	public NamedPattern[] getPatterns() {
 		return patterns;
+	}
+
+	@Override
+	public NamedSet[] getSets() {
+		return sets;
 	}
 
 	@Override

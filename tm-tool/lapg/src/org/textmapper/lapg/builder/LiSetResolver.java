@@ -40,16 +40,18 @@ class LiSetResolver {
 	private LiSetIndex index;
 	private SetsClosure closure;
 	private Descriptor[] sets;
+	private LiNamedSet[] namedSets;
 
 	private SetBuilder terminalsSet;
 	private SetBuilder dependenciesSet;
 
-	public LiSetResolver(LiSymbol[] symbols, int terminals) {
-		index = new LiSetIndex(symbols, terminals);
+	public LiSetResolver(LiSymbol[] symbols, int terminals, LiNamedSet[] namedSets) {
+		index = new LiSetIndex(symbols, terminals, namedSets);
 		closure = new SetsClosure();
 		sets = new Descriptor[index.size()];
 		terminalsSet = new SetBuilder(terminals);
 		dependenciesSet = new SetBuilder(index.size());
+		this.namedSets = namedSets;
 	}
 
 	private void scheduleDependencies(Descriptor d, Queue<Integer> queue, List<Descriptor> postProcess) {
@@ -123,33 +125,43 @@ class LiSetResolver {
 		}
 
 		for (RhsSet set : index.topLevelSets()) {
-			int i = index.set(set);
-			assert sets[i] != null;
-			int[] resultSet = closure.getSet(sets[i].set);
-			boolean complement = closure.isComplement(sets[i].set);
-			Terminal[] result;
-			if (complement) {
-				result = new Terminal[index.terminals() - resultSet.length];
-				int k = 0;
-				for (int e = 0; e < index.terminals(); e++) {
-					if (k < resultSet.length && e == resultSet[k]) {
-						k++;
-						continue;
-					}
-					result[e - k] = index.terminal(e);
+			Terminal[] result = getResolvedElements(set);
+			if (index.isRhs(set)) {
+				if (result.length == 0) {
+					problems.add(new LiProblem(set, "Set is empty."));
+					continue;
 				}
-			} else {
-				result = new Terminal[resultSet.length];
-				for (int e = 0; e < resultSet.length; e++) {
-					result[e] = index.terminal(resultSet[e]);
-				}
+				expansionContext.addSet(set, result);
 			}
-			if (result.length == 0) {
-				problems.add(new LiProblem(set, "Set is empty."));
-				continue;
-			}
-			expansionContext.addSet(set, result);
 		}
+		for (LiNamedSet namedSet : namedSets) {
+			namedSet.setElements(getResolvedElements(namedSet.getSet()));
+		}
+	}
+
+	private Terminal[] getResolvedElements(RhsSet set) {
+		int i = index.set(set);
+		assert sets[i] != null;
+		int[] resultSet = closure.getSet(sets[i].set);
+		boolean complement = closure.isComplement(sets[i].set);
+		Terminal[] result;
+		if (complement) {
+			result = new Terminal[index.terminals() - resultSet.length];
+			int k = 0;
+			for (int e = 0; e < index.terminals(); e++) {
+				if (k < resultSet.length && e == resultSet[k]) {
+					k++;
+					continue;
+				}
+				result[e - k] = index.terminal(e);
+			}
+		} else {
+			result = new Terminal[resultSet.length];
+			for (int e = 0; e < resultSet.length; e++) {
+				result[e] = index.terminal(resultSet[e]);
+			}
+		}
+		return result;
 	}
 
 	private Descriptor extractSet(RhsSet set) {
