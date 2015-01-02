@@ -341,6 +341,7 @@ rules  : list<Rule0> ::=
 ;
 
 class Rule0 {
+	PredicateExpression predicate;
 	RhsPrefix prefix;
 	list<RhsPart> list;
 	RuleAction action;
@@ -349,7 +350,7 @@ class Rule0 {
 }
 
 rule0  : Rule0 ::=
-	prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
+	{predicate}? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
   | error=syntax_problem
 ;
 
@@ -361,13 +362,11 @@ predicate  : PredicateExpression ::=
 ;
 
 class RhsPrefix {
-	PredicateExpression predicate;
 	Annotations annotations;
 }
 
 rhsPrefix  : RhsPrefix ::=
-	{predicate}? {annotations} ':'
-  | {predicate} ':'
+	{annotations} ':'
 ;
 
 class RhsSuffix {

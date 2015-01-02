@@ -20,19 +20,25 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRule0 extends TmaNode {
 
+	private final ITmaPredicateExpression predicate;
 	private final TmaRhsPrefix prefix;
 	private final List<ITmaRhsPart> list;
 	private final TmaRuleAction action;
 	private final TmaRhsSuffix suffix;
 	private final TmaSyntaxProblem error;
 
-	public TmaRule0(TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
+	public TmaRule0(ITmaPredicateExpression predicate, TmaRhsPrefix prefix, List<ITmaRhsPart> list, TmaRuleAction action, TmaRhsSuffix suffix, TmaSyntaxProblem error, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.predicate = predicate;
 		this.prefix = prefix;
 		this.list = list;
 		this.action = action;
 		this.suffix = suffix;
 		this.error = error;
+	}
+
+	public ITmaPredicateExpression getPredicate() {
+		return predicate;
 	}
 
 	public TmaRhsPrefix getPrefix() {
@@ -59,6 +65,9 @@ public class TmaRule0 extends TmaNode {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
+		}
+		if (predicate != null) {
+			predicate.accept(v);
 		}
 		if (prefix != null) {
 			prefix.accept(v);

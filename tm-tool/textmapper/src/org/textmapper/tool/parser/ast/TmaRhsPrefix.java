@@ -19,17 +19,11 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaRhsPrefix extends TmaNode {
 
-	private final ITmaPredicateExpression predicate;
 	private final TmaAnnotations annotations;
 
-	public TmaRhsPrefix(ITmaPredicateExpression predicate, TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
+	public TmaRhsPrefix(TmaAnnotations annotations, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.predicate = predicate;
 		this.annotations = annotations;
-	}
-
-	public ITmaPredicateExpression getPredicate() {
-		return predicate;
 	}
 
 	public TmaAnnotations getAnnotations() {
@@ -40,9 +34,6 @@ public class TmaRhsPrefix extends TmaNode {
 	public void accept(TmaVisitor v) {
 		if (!v.visit(this)) {
 			return;
-		}
-		if (predicate != null) {
-			predicate.accept(v);
 		}
 		if (annotations != null) {
 			annotations.accept(v);

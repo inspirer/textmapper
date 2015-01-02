@@ -350,8 +350,9 @@ rule_list (List<TmaRule0>) ::=
 ;
 
 rule0 (TmaRule0) ::=
-	  rhsPrefix? rhsParts? ruleAction? rhsSuffixopt		{ $$ = new TmaRule0($rhsPrefix, $rhsParts, $ruleAction, $rhsSuffixopt, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| error=syntax_problem								{ $$ = new TmaRule0(null, null, null, null, $error, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  predicate? rhsPrefix? rhsParts? ruleAction? rhsSuffixopt
+	  													{ $$ = new TmaRule0($predicate, $rhsPrefix, $rhsParts, $ruleAction, $rhsSuffixopt, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| error=syntax_problem								{ $$ = new TmaRule0(null, null, null, null, null, $error, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 predicate (ITmaPredicateExpression) ::=
@@ -359,8 +360,7 @@ predicate (ITmaPredicateExpression) ::=
 ;
 
 rhsPrefix (TmaRhsPrefix) ::=
-	  predicate? annotations ':'						{ $$ = new TmaRhsPrefix($predicate, $annotations, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| predicate ':'										{ $$ = new TmaRhsPrefix($predicate, null, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	  annotations ':'									{ $$ = new TmaRhsPrefix($annotations, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 rhsSuffix (TmaRhsSuffix) ::=

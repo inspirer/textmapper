@@ -264,7 +264,7 @@ public class TMParserCompiler {
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
 		}
-		RhsPredicate predicate = convertPredicate(getPredicate(right));
+		RhsPredicate predicate = convertPredicate(right.getPredicate());
 		builder.addRule(left, predicate == null ? rule : builder.conditional(predicate, rule, right));
 		Map<String, Object> annotations = expressionResolver.convert(
 				right.getPrefix() != null ? right.getPrefix().getAnnotations() : null, "AnnotateRule");
@@ -578,7 +578,7 @@ public class TMParserCompiler {
 			if (abstractRulePart == null) {
 				return null;
 			}
-			RhsPredicate predicate = convertPredicate(getPredicate(rule));
+			RhsPredicate predicate = convertPredicate(rule.getPredicate());
 			if (predicate != null) {
 				result.add(builder.conditional(predicate, abstractRulePart, rule));
 			} else {
@@ -645,24 +645,16 @@ public class TMParserCompiler {
 
 	private boolean isSimpleNonEmpty(TmaRule0 rule, boolean allowPredicates) {
 		return rule != null
+				&& (allowPredicates || rule.getPredicate() == null)
+				&& rule.getPrefix() == null
 				&& rule.getSuffix() == null
 				&& rule.getAction() == null
 				&& rule.getList() != null && !rule.getList().isEmpty()
-				&& rule.getError() == null
-				&& isSimplePrefix(rule.getPrefix(), allowPredicates);
-	}
-
-	private boolean isSimplePrefix(TmaRhsPrefix prefix, boolean allowPredicates) {
-		return prefix == null
-				|| allowPredicates && prefix.getAnnotations() == null && prefix.getPredicate() != null;
+				&& rule.getError() == null;
 	}
 
 	private List<ITmaRhsPart> getGroupPart(ITmaRhsPart symbolRef) {
 		return ((TmaRhsNested) symbolRef).getRules().get(0).getList();
-	}
-
-	private ITmaPredicateExpression getPredicate(TmaRule0 rule) {
-		return rule.getPrefix() == null ? null : rule.getPrefix().getPredicate();
 	}
 
 	private void extractUnorderedParts(ITmaRhsPart unorderedRulePart, List<ITmaRhsPart> result) {

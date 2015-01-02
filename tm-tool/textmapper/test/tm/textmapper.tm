@@ -290,7 +290,7 @@ rules ::=
  	(rule0 separator '|')+ ;
 
 rule0 ::=
-	  prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
+	  predicate? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
 	| error=syntax_problem
 ;
 
@@ -298,8 +298,7 @@ predicate ::=
 	  '[' @pass predicate_expression ']' ;
 
 rhsPrefix ::=
-	  predicate? annotations ':'
-	| predicate ':'
+	  annotations ':'
 ;
 
 rhsSuffix ::=

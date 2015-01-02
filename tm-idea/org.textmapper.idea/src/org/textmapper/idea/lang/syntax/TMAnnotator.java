@@ -77,6 +77,7 @@ public class TMAnnotator implements Annotator {
 				|| element instanceof TmLexemeAttrs
 				|| element instanceof TmLexerDirective
 				|| element instanceof TmNontermParam) {
+			// TODO do not highlight nonempty as a keyword in: %generate nonempty = set(...);
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
 				if (isSoft(((TMElementType) token.getTokenType()).getSymbol())) {
 					Annotation infoAnnotation = holder.createInfoAnnotation((ASTNode) token, null);
