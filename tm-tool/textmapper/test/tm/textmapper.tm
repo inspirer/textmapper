@@ -102,6 +102,11 @@ Lleft:  /left/				(soft)
 Lright: /right/				(soft)
 Lnonassoc: /nonassoc/		(soft)
 
+Lgenerate: /generate/		(soft)
+Lassert: /assert/			(soft)
+Lempty: /empty/				(soft)
+Lnonempty: /nonempty/		(soft)
+
 Lparam: /param/			    (soft)
 Lstring: /string/			(soft)
 Lbool: /bool/				(soft)
@@ -264,6 +269,8 @@ nonterm_param returns grammar_part ::=
 directive returns grammar_part ::=
 	  '%' assoc symbols=references ';' 						        {~directivePrio}
 	| '%' Linput inputRefs=(inputref separator ',')+ ';'	        {~directiveInput}
+	| '%' Lassert (kind=Lempty | kind=Lnonempty) rhsSet ';'			{~directiveAssert}
+	| '%' Lgenerate name=ID '=' rhsSet ';'							{~directiveSet}
 ;
 
 inputref ::=
@@ -356,7 +363,11 @@ rhsPrimary returns rhsPart ::=
 	| inner=rhsPrimary quantifier='*'														{~rhsQuantifier}
 	| inner=rhsPrimary quantifier='+'														{~rhsQuantifier}
 	| '$' '(' rules ')' 					{~rhsIgnored}
-	| Lset '(' expr=setExpression ')' 														{~rhsSet}
+	| rhsSet
+;
+
+rhsSet returns rhsPart ::=
+	  Lset '(' expr=setExpression ')' 														{~rhsSet}
 ;
 
 setPrimary returns setExpression ::=

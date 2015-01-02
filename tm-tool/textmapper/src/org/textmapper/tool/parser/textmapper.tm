@@ -101,6 +101,11 @@ Lleft:  /left/				(soft)
 Lright: /right/				(soft)
 Lnonassoc: /nonassoc/		(soft)
 
+Lgenerate: /generate/		(soft)
+Lassert: /assert/			(soft)
+Lempty: /empty/				(soft)
+Lnonempty: /nonempty/		(soft)
+
 Lparam: /param/			    (soft)
 Lstring: /string/			(soft)
 Lbool: /bool/				(soft)
@@ -312,6 +317,8 @@ nonterm_param (ITmaGrammarPart) ::=
 directive (ITmaGrammarPart) ::=
 	  '%' assoc references ';'							{ $$ = new TmaDirectivePrio($assoc, $references, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '%' Linput inputs ';'								{ $$ = new TmaDirectiveInput($inputs, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '%' Lassert (Lempty | Lnonempty) rhsSet ';' 		{ $$ = new TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind.L${Lnonempty.rightOffset >= 0 ? 'NONEMPTY' : 'EMPTY'}, $rhsSet, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| '%' Lgenerate name=ID '=' rhsSet ';'				{ $$ = new TmaDirectiveSet($name, $rhsSet, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 inputs (List<TmaInputref>) ::=
@@ -419,7 +426,11 @@ rhsPrimary (ITmaRhsPart) ::=
 	| rhsPrimary '*'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.TmaQuantifierKind.MULT, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| rhsPrimary '+'									{ $$ = new TmaRhsQuantifier($rhsPrimary, TmaRhsQuantifier.TmaQuantifierKind.PLUS, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 	| '$' '(' rules ')'									{ $$ = new TmaRhsIgnored($rules, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
-	| Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
+	| rhsSet
+;
+
+rhsSet (ITmaRhsPart) ::=
+	  Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 
 setPrimary (ITmaSetExpression) ::=

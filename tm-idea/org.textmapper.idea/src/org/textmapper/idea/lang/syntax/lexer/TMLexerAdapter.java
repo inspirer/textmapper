@@ -251,6 +251,15 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			case Tokens.Lnonassoc:
 				return KW_NONASSOC;
 
+			case Tokens.Lgenerate:
+				return KW_GENERATE;
+			case Tokens.Lassert:
+				return KW_ASSERT;
+			case Tokens.Lempty:
+				return KW_EMPTY;
+			case Tokens.Lnonempty:
+				return KW_NONEMPTY;
+
 			case Tokens.Lparam:
 				return KW_PARAM;
 			case Tokens.Lstring:

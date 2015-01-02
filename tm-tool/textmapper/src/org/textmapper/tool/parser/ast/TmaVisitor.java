@@ -181,6 +181,14 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaDirectiveAssert n) {
+		return true;
+	}
+
+	protected boolean visit(TmaDirectiveSet n) {
+		return true;
+	}
+
 	protected boolean visit(TmaRhsAnnotated n) {
 		return true;
 	}

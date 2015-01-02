@@ -299,9 +299,25 @@ class DirectiveInput : GrammarPart {
 	list<Inputref> inputRefs;
 }
 
+class DirectiveAssert : GrammarPart {
+	KindKind kind;
+	RhsPart rhsSet;
+	enum KindKind {
+		LEMPTY,
+		LNONEMPTY
+	}
+}
+
+class DirectiveSet : GrammarPart {
+	String name;
+	RhsPart rhsSet;
+}
+
 directive  : GrammarPart ::=
 	this=new.DirectivePrio: '%' {assoc} symbols=references ';'
   | this=new.DirectiveInput: '%' Linput inputRefs=inputref_list_Comma_separated ';'
+  | this=new.DirectiveAssert: '%' Lassert (kind=Lempty as KindKind.LEMPTY | kind=Lnonempty as KindKind.LNONEMPTY) {rhsSet} ';'
+  | this=new.DirectiveSet: '%' Lgenerate name=ID '=' {rhsSet} ';'
 ;
 
 class Inputref {
@@ -479,10 +495,6 @@ class RhsIgnored : RhsPart {
 	list<Rule0> rules;
 }
 
-class RhsSet : RhsPart {
-	SetExpression expr;
-}
-
 rhsPrimary  : RhsPart ::=
 	this=new.RhsSymbol: reference=symref
   | this=new.RhsNested: '(' {rules} ')'
@@ -491,7 +503,15 @@ rhsPrimary  : RhsPart ::=
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='*' as QuantifierKind.MULT
   | this=new.RhsQuantifier: inner=rhsPrimary quantifier='+' as QuantifierKind.PLUS
   | this=new.RhsIgnored: '$' '(' {rules} ')'
-  | this=new.RhsSet: Lset '(' expr=setExpression ')'
+  | this=rhsSet
+;
+
+class RhsSet : RhsPart {
+	SetExpression expr;
+}
+
+rhsSet  : RhsPart ::=
+	this=new.RhsSet: Lset '(' expr=setExpression ')'
 ;
 
 interface SetExpression {

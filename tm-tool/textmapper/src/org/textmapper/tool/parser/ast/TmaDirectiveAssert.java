@@ -17,23 +17,23 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaSymref extends TmaNode implements ITmaExpression, ITmaParamValue {
+public class TmaDirectiveAssert extends TmaNode implements ITmaGrammarPart {
 
-	private final String name;
-	private final TmaSymrefArgs args;
+	private final TmaDirectiveAssert.TmaKindKind kind;
+	private final ITmaRhsPart rhsSet;
 
-	public TmaSymref(String name, TmaSymrefArgs args, TextSource source, int line, int offset, int endoffset) {
+	public TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind kind, ITmaRhsPart rhsSet, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.name = name;
-		this.args = args;
+		this.kind = kind;
+		this.rhsSet = rhsSet;
 	}
 
-	public String getName() {
-		return name;
+	public TmaDirectiveAssert.TmaKindKind getKind() {
+		return kind;
 	}
 
-	public TmaSymrefArgs getArgs() {
-		return args;
+	public ITmaRhsPart getRhsSet() {
+		return rhsSet;
 	}
 
 	@Override
@@ -41,8 +41,13 @@ public class TmaSymref extends TmaNode implements ITmaExpression, ITmaParamValue
 		if (!v.visit(this)) {
 			return;
 		}
-		if (args != null) {
-			args.accept(v);
+		if (rhsSet != null) {
+			rhsSet.accept(v);
 		}
+	}
+
+	public enum TmaKindKind {
+		LEMPTY,
+		LNONEMPTY,
 	}
 }
