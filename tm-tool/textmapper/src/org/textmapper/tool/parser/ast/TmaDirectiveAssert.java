@@ -20,9 +20,9 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 public class TmaDirectiveAssert extends TmaNode implements ITmaGrammarPart {
 
 	private final TmaDirectiveAssert.TmaKindKind kind;
-	private final ITmaRhsPart rhsSet;
+	private final TmaRhsSet rhsSet;
 
-	public TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind kind, ITmaRhsPart rhsSet, TextSource source, int line, int offset, int endoffset) {
+	public TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind kind, TmaRhsSet rhsSet, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.kind = kind;
 		this.rhsSet = rhsSet;
@@ -32,7 +32,7 @@ public class TmaDirectiveAssert extends TmaNode implements ITmaGrammarPart {
 		return kind;
 	}
 
-	public ITmaRhsPart getRhsSet() {
+	public TmaRhsSet getRhsSet() {
 		return rhsSet;
 	}
 

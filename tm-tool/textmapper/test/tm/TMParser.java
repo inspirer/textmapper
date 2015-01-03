@@ -1046,7 +1046,6 @@ public class TMParser {
 		static final int rhsPrimary_rhsQuantifier = 138;  // rhsPrimary ::= rhsPrimary '*'
 		static final int rhsPrimary_rhsQuantifier2 = 139;  // rhsPrimary ::= rhsPrimary '+'
 		static final int rhsPrimary_rhsIgnored = 140;  // rhsPrimary ::= '$' '(' rules ')'
-		static final int rhsSet_rhsSet = 142;  // rhsSet ::= Lset '(' setExpression ')'
 		static final int setPrimary_setSymbol = 143;  // setPrimary ::= ID symref
 		static final int setPrimary_setSymbol2 = 144;  // setPrimary ::= symref
 		static final int setPrimary_setCompound = 145;  // setPrimary ::= '(' setExpression ')'
@@ -1566,19 +1565,19 @@ public class TMParser {
 			case 82:  // directive ::= '%' Lassert Lempty rhsSet ';'
 				tmLeft.value = new TmaDirectiveAssert(
 						TmaDirectiveAssert.TmaKindKind.LEMPTY /* kind */,
-						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsSet */,
+						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 83:  // directive ::= '%' Lassert Lnonempty rhsSet ';'
 				tmLeft.value = new TmaDirectiveAssert(
 						TmaDirectiveAssert.TmaKindKind.LNONEMPTY /* kind */,
-						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsSet */,
+						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
 			case 84:  // directive ::= '%' Lgenerate ID '=' rhsSet ';'
 				tmLeft.value = new TmaDirectiveSet(
 						((String)tmStack[tmHead - 3].value) /* name */,
-						((ITmaRhsPart)tmStack[tmHead - 1].value) /* rhsSet */,
+						((TmaRhsSet)tmStack[tmHead - 1].value) /* rhsSet */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
 			case 85:  // inputref ::= symref_noargs Lnoeoi

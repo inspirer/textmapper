@@ -223,17 +223,12 @@ public class TMMapper {
 				continue;
 			}
 
-			RhsPart definition = RhsUtil.unwrap(n.getDefinition());
-			Iterable<RhsPart> rules = definition instanceof RhsChoice
-					? Arrays.asList(((RhsChoice) definition).getParts())
-					: Collections.singleton(definition);
 			RhsPart r = null;
-			for (RhsPart part : rules) {
-				if (RhsUtil.isEmpty(part)) {
-					continue;
-				}
+			for (RhsSequence rule : getRules(n)) {
+				if (RhsUtil.isEmpty(rule)) continue;
+
 				if (r == null) {
-					r = RhsUtil.unwrapOpt(RhsUtil.unwrap(part));
+					r = RhsUtil.unwrapOpt(RhsUtil.unwrap(rule));
 				} else {
 					// more than one non-empty rule => not a decorator
 					r = null;
@@ -241,9 +236,9 @@ public class TMMapper {
 				}
 			}
 			if (r != null) {
-				final RhsPart master = withoutConstants(r);
-				if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
-					final Symbol target = ((RhsSymbol) master).getTarget();
+				final RhsSymbol master = getMasterSymbol(r);
+				if (master != null) {
+					final Symbol target = master.getTarget();
 					if (target instanceof Terminal && (target.getType() == null || ((Terminal) target).isSoft())) {
 						// cannot map a terminal without a type, ignoring decorator
 						continue;
@@ -258,7 +253,7 @@ public class TMMapper {
 					postProcessors.add(new Runnable() {
 						@Override
 						public void run() {
-							mapper.map((RhsSymbol) master, null, null, false);
+							mapper.map(master, null, null, false);
 						}
 					});
 					i.remove();
@@ -342,41 +337,30 @@ public class TMMapper {
 				continue;
 			}
 
-			RhsPart definition = n.getDefinition();
-			Iterable<RhsPart> rules = definition instanceof RhsChoice
-					? Arrays.asList(((RhsChoice) definition).getParts())
-					: Collections.singleton(definition);
-
 			extList.clear();
 			customRuleList.clear();
 			passSymbols.clear();
 
 			boolean hasNamedRules = false;
 			boolean isInterface = true;
-			for (RhsPart part : rules) {
-				RhsPart r = RhsUtil.unwrap(part);
-				final RhsPart master = withoutConstants(r);
-				if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
-					final Symbol target = unwrapDecorators(((RhsSymbol) master).getTarget());
+			for (RhsSequence rule : getRules(n)) {
+				RhsSymbol master = getMasterSymbol(rule);
+				if (master != null) {
+					final Symbol target = unwrapDecorators(master.getTarget());
 					if (supportsExtending(target)) {
-						passSymbols.add((RhsSymbol) master);
+						passSymbols.add(master);
 						extList.add((Nonterminal) target);
 						continue;
 					}
 				}
 
-				if (!(part instanceof RhsSequence)) {
-					error(part, "internal error: every rule must start with a sequence");
-					continue;
-				}
-
-				final String ruleAlias = ((RhsSequence) part).getName();
+				final String ruleAlias = rule.getName();
 				if (ruleAlias == null && !hasInterfaceHint(n)) {
 					isInterface = false;
 					break;
 				}
 				hasNamedRules |= (ruleAlias != null);
-				customRuleList.add((RhsSequence) part);
+				customRuleList.add(rule);
 			}
 			if (isInterface && (!passSymbols.isEmpty() || hasInterfaceHint(n) && hasNamedRules)) {
 				AstClass interfaceClass = builder.addInterface(getNonterminalTypeName(n, null), null, n);
@@ -440,6 +424,15 @@ public class TMMapper {
 		return curr;
 	}
 
+	private RhsSymbol getMasterSymbol(RhsPart rule) {
+		RhsPart r = RhsUtil.unwrap(rule);
+		final RhsPart master = withoutConstants(r);
+		if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
+			return (RhsSymbol) master;
+		}
+		return null;
+	}
+
 	private void mapClasses() {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
@@ -484,51 +477,77 @@ public class TMMapper {
 			}
 			final AstClass cl = (AstClass) mappedType;
 			i.remove();
-			mapNonterm(n, cl);
 			customTypes.put(n, cl);
 		}
 		for (Entry<Nonterminal, AstClass> e : customTypes.entrySet()) {
-			mapCustomTypeNonterm(e.getKey(), e.getValue());
+			mapCustomTypeNonterm(e.getKey(), e.getValue(), customTypes);
 		}
 	}
 
-	private void mapCustomTypeNonterm(Nonterminal n, AstClass cl) {
+	private Iterable<RhsSequence> getRules(Nonterminal n) {
+		RhsPart definition = n.getDefinition();
+		if (!(definition instanceof RhsChoice)) {
+			throw new IllegalStateException();
+		}
+
+		RhsPart[] rules = ((RhsChoice) definition).getParts();
+		for (RhsPart p : rules) {
+			if (!(p instanceof RhsSequence)) throw new IllegalStateException();
+		}
+		RhsSequence[] result = new RhsSequence[rules.length];
+		System.arraycopy(rules, 0, result, 0, rules.length);
+		return Arrays.asList(result);
+	}
+
+	private void mapCustomTypeNonterm(Nonterminal n, AstClass cl, Map<Nonterminal, AstClass> customTypes) {
 		if (!cl.isInterface()) {
+			mapNonterm(n, cl);
 			mapClass(cl, RhsUtil.unwrap(n.getDefinition()));
 			return;
 		}
 
-		RhsPart definition = n.getDefinition();
-		Iterable<RhsPart> rules = definition instanceof RhsChoice
-				? Arrays.asList(((RhsChoice) definition).getParts())
-				: Collections.singleton(definition);
+		boolean mapped = false;
+		Set<AstClass> usedClasses = new HashSet<AstClass>();
+		Map<RhsSequence, AstClass> mappedRules = new HashMap<RhsSequence, AstClass>();
 
-		for (RhsPart part : rules) {
-			RhsPart r = RhsUtil.unwrap(part);
-			final RhsPart master = withoutConstants(r);
-			if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
-				final Symbol target = unwrapDecorators(((RhsSymbol) master).getTarget());
-				if (target.getType() != null && target.getType().isSubtypeOf(cl)) {
-					mapper.map((RhsSymbol) master, null, null, false);
+		for (RhsSequence rule : getRules(n)) {
+			RhsSymbol master = getMasterSymbol(rule);
+			if (master != null) {
+				final Symbol target = unwrapDecorators(master.getTarget());
+				AstType masterType = target.getType();
+				if (masterType == null && target instanceof Nonterminal) masterType = customTypes.get(target);
+
+				if (masterType != null && masterType.isSubtypeOf(cl)) {
+					if (!mapped) {
+						mapNonterm(n, cl);
+						mapped = true;
+					}
+					mapper.map(master, null, null, false);
 					continue;
 				}
 			}
-			if (!(part instanceof RhsSequence)) {
-				error(part, "internal error: every rule must start with a sequence");
-				continue;
-			}
 
-			final String ruleAlias = ((RhsSequence) part).getName();
+			final String ruleAlias = rule.getName();
 			final String aliasId = getAliasId(n, ruleAlias);
 			AstClass ruleClass = aliasToClass.get(aliasId);
 			if (ruleClass == null) {
 				ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
-				builder.addExtends(ruleClass, cl);
 				aliasToClass.put(aliasId, ruleClass);
 			}
-			mapClass(ruleClass, part);
-			mapper.map((RhsSequence) part, null, ruleClass, false);
-
+			if (usedClasses.add(ruleClass)) {
+				builder.addExtends(ruleClass, cl);
+			}
+			mapClass(ruleClass, rule);
+			mappedRules.put(rule, ruleClass);
+		}
+		if (!mapped) {
+			if (usedClasses.size() == 1) {
+				cl = usedClasses.iterator().next();
+			}
+			mapNonterm(n, cl);
+		}
+		for (Entry<RhsSequence, AstClass> e : mappedRules.entrySet()) {
+			mapper.map(e.getKey(), null, e.getValue(), false);
 		}
 	}
 

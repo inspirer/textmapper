@@ -366,7 +366,7 @@ rhsPrimary returns rhsPart ::=
 ;
 
 rhsSet returns rhsPart ::=
-	  Lset '(' expr=setExpression ')' 														{~rhsSet}
+	  Lset '(' expr=setExpression ')'
 ;
 
 setPrimary returns setExpression ::=

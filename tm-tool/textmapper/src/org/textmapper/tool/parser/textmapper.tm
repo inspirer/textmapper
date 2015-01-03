@@ -429,7 +429,7 @@ rhsPrimary (ITmaRhsPart) ::=
 	| rhsSet
 ;
 
-rhsSet (ITmaRhsPart) ::=
+rhsSet (TmaRhsSet) ::=
 	  Lset '(' expr=setExpression ')'					{ $$ = new TmaRhsSet($expr, source, ${left().line}, ${left().offset}, ${left().endoffset}); }
 ;
 

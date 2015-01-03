@@ -1392,13 +1392,13 @@ public class TMParser {
 				 tmLeft.value = new TmaDirectiveInput(((List<TmaInputref>)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 90:  // directive ::= '%' Lassert Lempty rhsSet ';'
-				 tmLeft.value = new TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind.LEMPTY, ((ITmaRhsPart)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind.LEMPTY, ((TmaRhsSet)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 91:  // directive ::= '%' Lassert Lnonempty rhsSet ';'
-				 tmLeft.value = new TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind.LNONEMPTY, ((ITmaRhsPart)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaDirectiveAssert(TmaDirectiveAssert.TmaKindKind.LNONEMPTY, ((TmaRhsSet)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 92:  // directive ::= '%' Lgenerate ID '=' rhsSet ';'
-				 tmLeft.value = new TmaDirectiveSet(((String)tmStack[tmHead - 3].value), ((ITmaRhsPart)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
+				 tmLeft.value = new TmaDirectiveSet(((String)tmStack[tmHead - 3].value), ((TmaRhsSet)tmStack[tmHead - 1].value), source, tmLeft.line, tmLeft.offset, tmLeft.endoffset); 
 				break;
 			case 93:  // inputs ::= inputref
 				 tmLeft.value = new ArrayList<TmaInputref>(); ((List<TmaInputref>)tmLeft.value).add(((TmaInputref)tmStack[tmHead].value)); 

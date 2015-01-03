@@ -32,7 +32,7 @@ class LiAstClass extends LiUserDataHolder implements AstClass, DerivedSourceElem
 	private final SourceElement origin;
 	private final List<AstField> fields = new ArrayList<AstField>();
 	private final List<AstClassifier> inner = new ArrayList<AstClassifier>();
-	private final List<AstClass> superClasses = new ArrayList<AstClass>();
+	private final Set<AstClass> superClasses = new LinkedHashSet<AstClass>();
 
 	public LiAstClass(String name, boolean isInterface, AstClass container, SourceElement origin) {
 		this.name = name;

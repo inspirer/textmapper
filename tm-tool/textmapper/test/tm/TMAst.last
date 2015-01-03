@@ -183,7 +183,7 @@ class DirectiveBrackets : LexerPart {
 	Symref closing;
 }
 
-lexer_directive  : LexerPart ::=
+lexer_directive  : DirectiveBrackets ::=
 	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
 ;
 
@@ -286,7 +286,7 @@ class NontermParam : GrammarPart {
 	ParamValue paramValue;
 }
 
-nonterm_param  : GrammarPart ::=
+nonterm_param  : NontermParam ::=
 	this=new.NontermParam: '%' Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
 ;
 
@@ -301,7 +301,7 @@ class DirectiveInput : GrammarPart {
 
 class DirectiveAssert : GrammarPart {
 	KindKind kind;
-	RhsPart rhsSet;
+	RhsSet rhsSet;
 	enum KindKind {
 		LEMPTY,
 		LNONEMPTY
@@ -310,7 +310,7 @@ class DirectiveAssert : GrammarPart {
 
 class DirectiveSet : GrammarPart {
 	String name;
-	RhsPart rhsSet;
+	RhsSet rhsSet;
 }
 
 directive  : GrammarPart ::=
@@ -462,7 +462,7 @@ class RhsUnordered : RhsPart {
 	RhsPart right;
 }
 
-rhsUnordered  : RhsPart ::=
+rhsUnordered  : RhsUnordered ::=
 	this=new.RhsUnordered: left=rhsPart '&' right=rhsPart
 ;
 
@@ -509,7 +509,7 @@ class RhsSet : RhsPart {
 	SetExpression expr;
 }
 
-rhsSet  : RhsPart ::=
+rhsSet  : RhsSet ::=
 	this=new.RhsSet: Lset '(' expr=setExpression ')'
 ;
 
