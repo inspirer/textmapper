@@ -164,6 +164,8 @@ public class TMParserCompiler {
 	}
 
 	private void collectDirectives() {
+		Set<String> seenSets = new HashSet<String>();
+
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaDirectivePrio) {
 				TmaDirectivePrio directive = (TmaDirectivePrio) clause;
@@ -192,6 +194,20 @@ public class TMParserCompiler {
 					} else if (sym != null) {
 						error(inputRef, "input must be a nonterminal");
 					}
+				}
+			} else if (clause instanceof TmaDirectiveAssert) {
+				// TODO implement
+
+			} else if (clause instanceof TmaDirectiveSet) {
+				TmaDirectiveSet namedSet = (TmaDirectiveSet) clause;
+				if (!seenSets.add(namedSet.getName())) {
+					error(clause, "named set `" + namedSet.getName() + "' already exists");
+					continue;
+				}
+
+				RhsSet set = convertSet(namedSet.getRhsSet().getExpr());
+				if (set != null) {
+					builder.addSet(namedSet.getName(), set, clause);
 				}
 			}
 		}

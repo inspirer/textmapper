@@ -215,7 +215,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		rhsSet.remove(set);
 
 		if (!namedSetNames.add(name)) {
-			throw new IllegalStateException("named set `" + name + "' already exists");
+			throw new IllegalArgumentException("named set `" + name + "' already exists");
 		}
 		LiNamedSet namedSet = new LiNamedSet(name, set, origin);
 		namedSets.add(namedSet);
