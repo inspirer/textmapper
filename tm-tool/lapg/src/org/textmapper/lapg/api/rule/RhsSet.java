@@ -23,6 +23,8 @@ public interface RhsSet extends RhsPart {
 		/* Sets of terminals related to a symbol */
 		Any,
 		First,
+		Last,
+		Precede,
 		Follow,
 		/* Composite sets */
 		Union,

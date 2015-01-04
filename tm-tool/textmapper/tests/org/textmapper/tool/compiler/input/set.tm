@@ -18,7 +18,7 @@ i: /i/
 
 input ::=
 	  aa efgh bb qq
-	  bb_all bb_first bb_qq all
+	  bb_all bb_first bb_last bb_qq all
 	  negated negated2 expr ;
 
 # [a, b, c, d, e, f, g, i]
@@ -35,6 +35,9 @@ bb_all ::= set(bb) ;
 
 # [a, b, c, d, i]
 bb_first ::= set(first bb) ;
+
+# [a, b, c, d, i]
+bb_last ::= set(last bb) ;
 
 # [e]
 qq ::= set(e) ;

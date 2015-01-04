@@ -19,9 +19,16 @@ import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.*;
+import org.textmapper.lapg.api.rule.RhsSet.Operation;
 
 import java.util.*;
 
+/**
+ * SetIndex maps all known sets that can be computed for symbols as well as those RhsSets
+ * explicitly mentioned in the grammar into an integer interval.
+ * <p/>
+ * Supported symbol sets are: first, last, all, precede and follow.
+ */
 class LiSetIndex {
 
 	private Map<RhsSet, Integer> sets;
@@ -41,7 +48,7 @@ class LiSetIndex {
 		sets = new HashMap<RhsSet, Integer>();
 		sortedSets = new ArrayList<RhsSet>();
 		topLevelSets = new ArrayList<RhsSet>();
-		size = nonterminals * 3 + terminals;
+		size = 5 * nonterminals + 2 * terminals;
 		for (int i = terminals; i < symbols.length; i++) {
 			traverse(((Nonterminal) symbols[i]).getDefinition());
 		}
@@ -52,8 +59,35 @@ class LiSetIndex {
 		}
 	}
 
-	int first(Symbol symbol) {
-		assert !symbol.isTerm();
+	int index(RhsSet.Operation op, Symbol s) {
+		switch (op) {
+			case Any:
+				return all((Nonterminal) s);
+			case First:
+				return first((Nonterminal) s);
+			case Last:
+				return last((Nonterminal) s);
+			case Precede:
+				return precede(s);
+			case Follow:
+				return follow(s);
+		}
+		throw new IllegalArgumentException("op");
+	}
+
+	RhsSet.Operation operation(int index) {
+		if (isAll(index)) return Operation.Any;
+		if (isFirst(index)) return Operation.First;
+		if (isLast(index)) return Operation.Last;
+		if (isFollow(index)) return Operation.Follow;
+		if (isPrecede(index)) return Operation.Precede;
+		throw new IllegalArgumentException("index");
+	}
+
+	/**
+	 * [0..nonterminals]
+	 */
+	int first(Nonterminal symbol) {
 		return symbol.getIndex() - terminals;
 	}
 
@@ -61,31 +95,64 @@ class LiSetIndex {
 		return index < nonterminals;
 	}
 
-	int all(Symbol symbol) {
-		assert !symbol.isTerm();
+	/**
+	 * [nonterminals..2*nonterminals]
+	 */
+	int last(Nonterminal symbol) {
 		return nonterminals + symbol.getIndex() - terminals;
 	}
 
-	boolean isAll(int index) {
+	boolean isLast(int index) {
 		return index >= nonterminals && index < 2 * nonterminals;
 	}
 
+	/**
+	 * [2*nonterminals..3*nonterminals]
+	 */
+	int all(Nonterminal symbol) {
+		return 2 * nonterminals + symbol.getIndex() - terminals;
+	}
+
+	boolean isAll(int index) {
+		return index >= 2 * nonterminals && index < 3 * nonterminals;
+	}
+
+	/**
+	 * [3*nonterminals..4*nonterminals+terminals]
+	 */
+	int precede(Symbol symbol) {
+		return 3 * nonterminals + symbol.getIndex();
+	}
+
+	boolean isPrecede(int index) {
+		return index >= 3 * nonterminals && index < 4 * nonterminals + terminals;
+	}
+
+	/**
+	 * [4*nonterminals+terminals..5*nonterminals+2*terminals]
+	 */
 	int follow(Symbol symbol) {
-		return 2 * nonterminals + symbol.getIndex();
+		return 4 * nonterminals + terminals + symbol.getIndex();
 	}
 
 	boolean isFollow(int index) {
-		return index >= 2 * nonterminals && index < 3 * nonterminals + terminals;
+		return index >= 4 * nonterminals + terminals && index < 5 * nonterminals + 2 * terminals;
 	}
 
+	/**
+	 * Only for first, last and all.
+	 */
 	Nonterminal nonterminal(int index) {
-		assert index >= 0 && index < 2 * nonterminals;
+		assert index >= 0 && index < 3 * nonterminals;
 		return (Nonterminal) symbols[terminals + (index % nonterminals)];
 	}
 
+	/**
+	 * Only for follow and precede.
+	 */
 	Symbol symbol(int index) {
-		assert index >= 2 * nonterminals && index < 3 * nonterminals + terminals;
-		return symbols[index - 2 * nonterminals];
+		assert index >= 3 * nonterminals && index < 5 * nonterminals + 2 * terminals;
+		return symbols[(index - 3 * nonterminals) % (terminals + nonterminals)];
 	}
 
 	Terminal terminal(int index) {

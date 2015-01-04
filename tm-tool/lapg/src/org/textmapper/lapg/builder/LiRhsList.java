@@ -38,6 +38,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	private final boolean nonEmpty;
 	private final LiRhsSequence customInitialElement;
 	private final boolean rightRecursive;
+	private RhsSequence[] preprocessed;
 
 	LiRhsList(LiRhsSequence element, LiRhsPart separator, boolean nonEmpty,
 			  LiRhsSequence customInitialElement, boolean rightRecursive,
@@ -170,7 +171,14 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
+	public RhsSequence[] asRules() {
+		return preprocess();
+	}
+
+	@Override
 	protected RhsSequence[] preprocess() {
+		if (preprocessed != null) return preprocessed;
+
 		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
 		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
 		listRule.add(rightRecursive ? element : selfRef);
@@ -187,7 +195,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 			rule2 = new LiRhsSequence(null, new LiRhsPart[0], false, this);
 		}
 		register(true, rule1, rule2, customInitialElement, element, separator);
-		return new RhsSequence[]{rule1, rule2};
+		return preprocessed = new RhsSequence[]{rule1, rule2};
 	}
 
 	@Override

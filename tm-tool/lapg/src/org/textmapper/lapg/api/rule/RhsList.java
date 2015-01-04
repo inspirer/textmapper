@@ -14,4 +14,6 @@ public interface RhsList extends RhsRoot {
 	boolean isNonEmpty();
 
 	boolean isRightRecursive();
+
+	RhsSequence[] asRules();
 }

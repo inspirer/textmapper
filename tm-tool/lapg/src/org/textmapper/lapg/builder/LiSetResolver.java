@@ -20,6 +20,7 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
+import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
@@ -79,17 +80,23 @@ class LiSetResolver {
 		while ((item = queue.poll()) != null) {
 			int i = item;
 			assert sets[i] == SENTINEL;
-			if (index.isFirst(i) || index.isAll(i)) {
-				RhsPart part = index.nonterminal(i).getDefinition();
-				collectFirstOrAll(part, index.isFirst(i));
-				sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), part), dependenciesSet.create());
-				scheduleDependencies(sets[i], queue, postProcess);
-			} else if (index.isFollow(i)) {
-				// TODO handle follow
-				problems.add(new LiProblem(index.symbol(i),
-						"Follow sets are not supported yet."));
-			} else {
-				throw new IllegalStateException();
+			Operation op = index.operation(i);
+			switch (op) {
+				case Any:
+				case First:
+				case Last: {
+					RhsPart part = index.nonterminal(i).getDefinition();
+					collectTerminals(part, op);
+					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), part), dependenciesSet.create());
+					scheduleDependencies(sets[i], queue, postProcess);
+					break;
+				}
+				case Follow:
+				case Precede:
+					// TODO handle follow & precede
+					problems.add(new LiProblem(index.symbol(i),
+							"Follow sets are not supported yet."));
+
 			}
 		}
 
@@ -167,19 +174,19 @@ class LiSetResolver {
 	private Descriptor extractSet(RhsSet set) {
 		switch (set.getOperation()) {
 			case Any:
-			case First: {
+			case First:
+			case Last: {
 				Symbol target = set.getSymbol();
 				if (target.isTerm()) {
 					terminalsSet.add(target.getIndex());
-				} else if (set.getOperation() == Operation.Any) {
-					dependenciesSet.add(index.all(target));
 				} else {
-					dependenciesSet.add(index.first(target));
+					dependenciesSet.add(index.index(set.getOperation(), target));
 				}
 				return new Descriptor(closure.addSet(terminalsSet.create(), set), dependenciesSet.create());
 			}
+			case Precede:
 			case Follow:
-				dependenciesSet.add(index.follow(set.getSymbol()));
+				dependenciesSet.add(index.index(set.getOperation(), set.getSymbol()));
 				return new Descriptor(closure.addSet(terminalsSet.create(), set), dependenciesSet.create());
 			case Complement: {
 				assert set.getSets().length == 1;
@@ -209,56 +216,50 @@ class LiSetResolver {
 		}
 	}
 
-	private void collectFirstOrAll(RhsPart p, boolean onlyFirst) {
+	/**
+	 * Only first, last and all are supported.
+	 */
+	private void collectTerminals(RhsPart p, Operation op) {
 		if (p == null) throw new IllegalStateException();
 
 		switch (p.getKind()) {
 			case Assignment:
-				collectFirstOrAll(((RhsAssignment) p).getPart(), onlyFirst);
+				collectTerminals(((RhsAssignment) p).getPart(), op);
 				break;
 			case Cast:
-				collectFirstOrAll(((RhsCast) p).getPart(), onlyFirst);
+				collectTerminals(((RhsCast) p).getPart(), op);
 				break;
 			case Ignored:
-				collectFirstOrAll(((RhsIgnored) p).getInner(), onlyFirst);
+				collectTerminals(((RhsIgnored) p).getInner(), op);
 				break;
 			case List:
 				RhsList list = (RhsList) p;
-				RhsSequence initialElement = list.getCustomInitialElement();
-				if (initialElement != null && !list.isRightRecursive()) {
-					collectFirstOrAll(initialElement, onlyFirst);
-					if (onlyFirst && !RhsUtil.isNullable(initialElement, null)) break;
-					collectFirstOrAll(list.getSeparator(), onlyFirst);
-					if (onlyFirst && !RhsUtil.isNullable(list.getSeparator(), null)) break;
-				}
-				collectFirstOrAll(list.getElement(), onlyFirst);
-				if (onlyFirst && !RhsUtil.isNullable(list.getElement(), null)) break;
-				collectFirstOrAll(list.getSeparator(), onlyFirst);
-				if (initialElement != null && list.isRightRecursive()) {
-					if (onlyFirst && !RhsUtil.isNullable(list.getSeparator(), null)) break;
-					collectFirstOrAll(initialElement, onlyFirst);
+				for (RhsSequence s : list.asRules()) {
+					collectTerminals(s, op);
 				}
 				break;
 			case Optional:
-				collectFirstOrAll(((RhsOptional) p).getPart(), onlyFirst);
+				collectTerminals(((RhsOptional) p).getPart(), op);
 				break;
 			case Unordered:
 				for (RhsPart inner : ((RhsUnordered) p).getParts()) {
-					collectFirstOrAll(inner, onlyFirst);
+					collectTerminals(inner, op);
 				}
 				break;
 			case Choice:
 				for (RhsPart inner : ((RhsChoice) p).getParts()) {
-					collectFirstOrAll(inner, onlyFirst);
+					collectTerminals(inner, op);
 				}
 				break;
-			case Sequence:
-				for (RhsPart inner : ((RhsSequence) p).getParts()) {
-					collectFirstOrAll(inner, onlyFirst);
+			case Sequence: {
+				RhsPart[] parts = ((RhsSequence) p).getParts();
+				for (RhsPart inner : new ArrayIterable<RhsPart>(parts, op == Operation.Last)) {
+					collectTerminals(inner, op);
 
-					if (onlyFirst && !RhsUtil.isNullable(inner, null)) break;
+					if (op != Operation.Any && !RhsUtil.isNullable(inner, null)) break;
 				}
 				break;
+			}
 			case Set:
 				dependenciesSet.add(index.set((RhsSet) p));
 				break;
@@ -266,10 +267,8 @@ class LiSetResolver {
 				Symbol target = ((RhsSymbol) p).getTarget();
 				if (target.isTerm()) {
 					terminalsSet.add(target.getIndex());
-				} else if (onlyFirst) {
-					dependenciesSet.add(index.first(target));
 				} else {
-					dependenciesSet.add(index.all(target));
+					dependenciesSet.add(index.index(op, target));
 				}
 				break;
 			case Conditional:

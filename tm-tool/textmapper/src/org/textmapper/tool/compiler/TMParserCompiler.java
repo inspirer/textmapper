@@ -489,10 +489,14 @@ public class TMParserCompiler {
 				String op = ss.getOperator();
 				if (op.equals("first")) {
 					kind = Operation.First;
+				} else if (op.equals("last")) {
+					kind = Operation.Last;
+				} else if (op.equals("precede")) {
+					kind = Operation.Precede;
 				} else if (op.equals("follow")) {
 					kind = Operation.Follow;
 				} else {
-					error(ss, "operator can be either 'first', or 'follow'");
+					error(ss, "operator can be either 'first', 'last', 'precede' or 'follow'");
 				}
 			}
 
