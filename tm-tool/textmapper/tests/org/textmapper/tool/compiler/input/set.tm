@@ -22,7 +22,7 @@ input ::=
 	  bb_all bb_first bb_last bb_qq all
 	  negated negated2 expr
 	  bb_follow bb_all_precede
-	  use_j_2 j_precede j_follow ;
+	  use_j_2 j_precede j_follow use_j_2_all use_j_all use_j_first use_j_last ;
 
 # [a, b, c, d, e, f, g, i, j]
 aa ::= set(~h & ~eoi) ;
@@ -74,3 +74,15 @@ j_follow ::= set(follow j);
 
 # [a, b, c, d, f]
 j_precede ::= set(precede j);
+
+# [a, b, c, d, e, f, j]
+use_j_2_all ::= set(use_j_2);
+
+# [a, b, d, e, f, j]
+use_j_all ::= set(use_j);
+
+# [a, e, j]
+use_j_first ::= set(first use_j);
+
+# [j]
+use_j_last ::= set(last use_j);

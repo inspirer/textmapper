@@ -43,7 +43,7 @@ public class SetTest {
 
 	@Test
 	public void testValidSets() {
-		process("tests/org/textmapper/tool/compiler/input/set.tm", 16);
+		process("tests/org/textmapper/tool/compiler/input/set.tm", 20);
 	}
 
 	private void process(String filename, int errors) {

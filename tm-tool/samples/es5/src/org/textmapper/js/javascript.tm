@@ -164,6 +164,9 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
 %input Program;
 
+%generate beforeDIV = set(precede '/' | precede '/=');
+%generate beforeRE = set(precede RegularExpressionLiteral);
+
 # TODO set of keywords
 IdentifierName ::=
 	  Identifier
