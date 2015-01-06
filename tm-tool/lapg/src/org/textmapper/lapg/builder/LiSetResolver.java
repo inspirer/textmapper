@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Problem;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
@@ -45,6 +46,7 @@ class LiSetResolver {
 
 	private SetBuilder terminalsSet;
 	private SetBuilder dependenciesSet;
+	private Map<Symbol, Set<LiNonterminal>> usages;
 
 	public LiSetResolver(LiSymbol[] symbols, int terminals, LiNamedSet[] namedSets) {
 		index = new LiSetIndex(symbols, terminals, namedSets);
@@ -92,11 +94,18 @@ class LiSetResolver {
 					break;
 				}
 				case Follow:
-				case Precede:
-					// TODO handle follow & precede
-					problems.add(new LiProblem(index.symbol(i),
-							"Follow sets are not supported yet."));
-
+				case Precede: {
+					Symbol symbol = index.symbol(i);
+					boolean reverse = (op == Operation.Precede);
+					for (LiNonterminal left : getUsages(symbol)) {
+						if (collectAdjacent(symbol, left.getDefinition(), reverse, false)) {
+							dependenciesSet.add(index.index(op, left));
+						}
+					}
+					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), symbol), dependenciesSet.create());
+					scheduleDependencies(sets[i], queue, postProcess);
+					break;
+				}
 			}
 		}
 
@@ -144,6 +153,29 @@ class LiSetResolver {
 		for (LiNamedSet namedSet : namedSets) {
 			namedSet.setElements(getResolvedElements(namedSet.getSet()));
 		}
+	}
+
+	private Iterable<LiNonterminal> getUsages(Symbol s) {
+		if (usages == null) {
+			usages = new HashMap<Symbol, Set<LiNonterminal>>();
+			for (LiSymbol left : index.getSymbols()) {
+				if (!(left instanceof Nonterminal)) continue;
+				for (RhsSymbol ref : RhsUtil.getRhsSymbols(((Nonterminal) left).getDefinition())) {
+					Symbol target = ref.getTarget();
+					assert target != null;
+					Set<LiNonterminal> nonterminals = usages.get(target);
+					if (nonterminals == null) {
+						nonterminals = new LinkedHashSet<LiNonterminal>();
+						usages.put(target, nonterminals);
+					}
+					nonterminals.add((LiNonterminal) left);
+				}
+			}
+		}
+
+		Set<LiNonterminal> result = usages.get(s);
+		if (result == null) result = Collections.emptySet();
+		return result;
 	}
 
 	private Terminal[] getResolvedElements(RhsSet set) {
@@ -271,6 +303,85 @@ class LiSetResolver {
 					dependenciesSet.add(index.index(op, target));
 				}
 				break;
+			case Conditional:
+				throw new UnsupportedOperationException();
+			default:
+				throw new IllegalStateException();
+		}
+	}
+
+	/**
+	 * Only precede and follow are supported.
+	 */
+	private boolean collectAdjacent(Symbol symbol, RhsPart p, boolean reverse, boolean isAfter) {
+		if (p == null) throw new IllegalStateException();
+
+		switch (p.getKind()) {
+			case Assignment:
+				return collectAdjacent(symbol, ((RhsAssignment) p).getPart(), reverse, isAfter);
+			case Cast:
+				return collectAdjacent(symbol, ((RhsCast) p).getPart(), reverse, isAfter);
+			case Ignored:
+				return collectAdjacent(symbol, ((RhsIgnored) p).getInner(), reverse, isAfter);
+			case Optional:
+				return collectAdjacent(symbol, ((RhsOptional) p).getPart(), reverse, isAfter)
+						|| isAfter;
+			case List: {
+				RhsList list = (RhsList) p;
+				boolean result = false;
+				for (RhsSequence s : list.asRules()) {
+					result |= collectAdjacent(symbol, s, reverse, isAfter);
+				}
+				return result;
+			}
+			case Choice: {
+				boolean result = false;
+				for (RhsPart inner : ((RhsChoice) p).getParts()) {
+					result |= collectAdjacent(symbol, inner, reverse, isAfter);
+				}
+				return result;
+			}
+			case Unordered: {
+//				boolean result = false;
+//				for (RhsPart inner : ((RhsUnordered) p).getParts()) {
+//					result |= collectAdjacent(symbol, inner, reverse, isAfter);
+//				}
+//				if (result && !isAfter) {
+//					for (RhsPart inner : ((RhsUnordered) p).getParts()) {
+//						collectAdjacent(symbol, inner, reverse, true);
+//					}
+//				}
+//				return result;
+				// TODO!!!
+				throw new UnsupportedOperationException();
+			}
+			case Sequence: {
+				RhsPart[] parts = ((RhsSequence) p).getParts();
+				for (RhsPart inner : new ArrayIterable<RhsPart>(parts, reverse)) {
+					isAfter = collectAdjacent(symbol, inner, reverse, isAfter);
+				}
+				return isAfter;
+			}
+			case Set:
+				if (isAfter) {
+					RhsSet set = (RhsSet) p;
+					dependenciesSet.add(index.set(set));
+				}
+				if (symbol.isTerm()) {
+					// TODO!!!
+					throw new UnsupportedOperationException();
+				}
+				return false;
+			case Symbol:
+				Symbol target = ((RhsSymbol) p).getTarget();
+				if (isAfter) {
+					if (target.isTerm()) {
+						terminalsSet.add(target.getIndex());
+					} else {
+						dependenciesSet.add(index.index(reverse ? Operation.Last : Operation.First, target));
+					}
+				}
+				return target == symbol;
 			case Conditional:
 				throw new UnsupportedOperationException();
 			default:

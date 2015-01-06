@@ -183,6 +183,10 @@ class LiSetIndex {
 		return !namedSets.contains(topLevelSet);
 	}
 
+	public LiSymbol[] getSymbols() {
+		return symbols;
+	}
+
 	int size() {
 		return size;
 	}

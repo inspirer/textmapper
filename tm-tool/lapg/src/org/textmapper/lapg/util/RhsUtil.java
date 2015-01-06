@@ -134,8 +134,7 @@ public class RhsUtil {
 				break;
 			}
 			case List:
-				assert ((RhsList) part).getCustomInitialElement() == null;
-				return Arrays.<RhsPart>asList(((RhsList) part).getElement());
+				return Arrays.<RhsPart>asList(((RhsList) part).asRules());
 		}
 		return null;
 	}
