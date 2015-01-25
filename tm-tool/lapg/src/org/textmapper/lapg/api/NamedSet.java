@@ -23,5 +23,5 @@ public interface NamedSet extends SourceElement, UserDataHolder {
 
 	RhsSet getSet();
 
-	Terminal[] getElements();
+	int[] getElements();
 }

@@ -166,6 +166,7 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
 %generate beforeDIV = set(precede '/' | precede '/=');
 %generate beforeRE = set(precede RegularExpressionLiteral);
+%generate intersection = set(precede RegularExpressionLiteral & (precede '/' | precede '/='));
 
 # TODO set of keywords
 IdentifierName ::=

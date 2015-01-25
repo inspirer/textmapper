@@ -151,7 +151,12 @@ class LiSetResolver {
 			}
 		}
 		for (LiNamedSet namedSet : namedSets) {
-			namedSet.setElements(getResolvedElements(namedSet.getSet()));
+			Terminal[] resolvedElements = getResolvedElements(namedSet.getSet());
+			int[] res = new int[resolvedElements.length];
+			for (int i = 0; i < resolvedElements.length; i++) {
+				res[i] = resolvedElements[i].getIndex();
+			}
+			namedSet.setElements(res);
 		}
 	}
 

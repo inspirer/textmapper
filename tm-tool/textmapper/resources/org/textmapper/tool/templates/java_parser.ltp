@@ -15,6 +15,7 @@ ${call parserCtor-}
 
 ${util.shiftRight(self->java.classcode(), 1)-}
 ${call parserTables-}
+${call namedSets-}
 	/**
 	 * -3-n   Lookahead (state id)
 	 * -2     Error
@@ -339,6 +340,16 @@ ${end-}
 	}
 ${end-}
 
+${end}
+
+${template namedSets-}
+${foreach set in syntax.sets-}
+	// ${set.set}
+	private static int[] ${set.name} = {
+		${util.format(set.elements, 16, 2)}
+	};
+
+${end-}
 ${end}
 
 ${template parseException-}

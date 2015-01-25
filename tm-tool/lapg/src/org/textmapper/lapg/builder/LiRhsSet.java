@@ -123,15 +123,14 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 		boolean first = true;
 		switch (operation) {
 			case Any:
-				sb.append(symbol.getName());
-				LiUtil.appendArguments(sb, args);
-				break;
 			case First:
-				sb.append("first ").append(symbol.getName());
-				LiUtil.appendArguments(sb, args);
-				break;
+			case Last:
 			case Follow:
-				sb.append("follow ").append(symbol.getName());
+			case Precede:
+				String text = toString(operation);
+				sb.append(text);
+				if (text.length() > 0) sb.append(" ");
+				sb.append(symbol.getName());
 				LiUtil.appendArguments(sb, args);
 				break;
 			case Complement:
@@ -154,6 +153,22 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 		if (level > prec) sb.append(")");
 	}
 
+	private static String toString(Operation op) {
+		switch (op) {
+			case Any:
+				return "";
+			case First:
+				return "first";
+			case Last:
+				return "last";
+			case Precede:
+				return "precede";
+			case Follow:
+				return "follow";
+		}
+		throw new IllegalArgumentException();
+	}
+
 	private void toProvisionalName(StringBuilder sb) {
 		boolean first = true;
 		switch (operation) {
@@ -161,10 +176,10 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 				sb.append(LiUtil.getSymbolName(symbol));
 				break;
 			case First:
-				sb.append("first_").append(LiUtil.getSymbolName(symbol));
-				break;
 			case Follow:
-				sb.append("follow_").append(LiUtil.getSymbolName(symbol));
+			case Last:
+			case Precede:
+				sb.append(toString(operation)).append("_").append(LiUtil.getSymbolName(symbol));
 				break;
 			case Complement:
 				assert parts.length == 1;

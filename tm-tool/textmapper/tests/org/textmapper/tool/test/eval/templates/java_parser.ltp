@@ -71,6 +71,9 @@ ${end}
 ${template customParseRoutines-}
 ${end}
 
+${template namedSets-}
+${end}
+
 ${cached query lazyNext() = true}
 
 ${cached query hasRecovering() = true}

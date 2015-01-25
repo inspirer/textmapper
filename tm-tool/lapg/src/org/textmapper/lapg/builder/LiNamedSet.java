@@ -18,13 +18,12 @@ package org.textmapper.lapg.builder;
 import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.NamedSet;
 import org.textmapper.lapg.api.SourceElement;
-import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsSet;
 
 public class LiNamedSet extends LiUserDataHolder implements NamedSet, DerivedSourceElement {
 	private final String name;
 	private final RhsSet set;
-	private Terminal[] resolvedElements;
+	private int[] resolvedElements;
 	private final SourceElement origin;
 
 	public LiNamedSet(String name, RhsSet set, SourceElement origin) {
@@ -44,11 +43,11 @@ public class LiNamedSet extends LiUserDataHolder implements NamedSet, DerivedSou
 	}
 
 	@Override
-	public Terminal[] getElements() {
+	public int[] getElements() {
 		return resolvedElements;
 	}
 
-	void setElements(Terminal[] value) {
+	void setElements(int[] value) {
 		resolvedElements = value;
 	}
 
