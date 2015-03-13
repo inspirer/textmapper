@@ -23,8 +23,8 @@ import org.textmapper.lapg.api.TemplateParameter;
  */
 public interface RhsSymbol extends RhsPart {
 
-	static final RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
-	static final String UD_REWRITTEN = "rewrittenTo";
+	RhsSymbol[] EMPTY_LIST = new RhsSymbol[0];
+	String UD_REWRITTEN = "rewrittenTo";
 
 	/**
 	 * Instead of referencing some symbol directly, RhsSymbol can reference a template parameter value.

@@ -239,6 +239,7 @@ public class TMMapper {
 				final RhsSymbol master = getMasterSymbol(r);
 				if (master != null) {
 					final Symbol target = master.getTarget();
+					assert target != null;
 					if (target instanceof Terminal && (target.getType() == null || ((Terminal) target).isSoft())) {
 						// cannot map a terminal without a type, ignoring decorator
 						continue;
@@ -407,6 +408,7 @@ public class TMMapper {
 	}
 
 	private Symbol unwrapDecorators(Symbol sym) {
+		assert sym != null;
 		Symbol curr = sym;
 		Symbol next = decorators.get(curr);
 		if (next == null) {
@@ -680,6 +682,7 @@ public class TMMapper {
 				cast = (RhsCast) part;
 				part = RhsUtil.unwrap(cast.getPart());
 			} else if (part instanceof RhsSymbol) {
+				// TODO handle template vars (create an AST type for it)
 				Symbol sym = cast != null ? cast.getTarget() : ((RhsSymbol) part).getTarget();
 				out.add((RhsSymbol) part);
 				return new TypeOrSymbolHandle(sym, optional);

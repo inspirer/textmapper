@@ -219,7 +219,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		}
 		if (separator != null) {
 			Symbol separatorTerminal = RhsUtil.getRepresentative(separator);
-			if (separatorTerminal.isTerm() && ((Terminal) separatorTerminal).isConstant()) {
+			if (separatorTerminal instanceof Terminal && ((Terminal) separatorTerminal).isConstant()) {
 				String val = ((Terminal) separatorTerminal).getConstantValue();
 				sb.append("_").append(FormatUtil.toIdentifier(val)).append("_separated");
 			} else {

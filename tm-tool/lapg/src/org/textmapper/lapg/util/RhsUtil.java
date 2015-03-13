@@ -64,6 +64,9 @@ public class RhsUtil {
 		return part;
 	}
 
+	/**
+	 *  Returns null, if representative is a template parameter.
+	 */
 	public static Symbol getRepresentative(RhsPart part) {
 		part = unwrapEx(part, true, true, true);
 		if (part instanceof RhsSymbol) {
@@ -80,11 +83,6 @@ public class RhsUtil {
 	public static RhsAssignment getAssignment(RhsPart part) {
 		part = unwrapEx(part, true, true, false);
 		return part instanceof RhsAssignment ? (RhsAssignment) part : null;
-	}
-
-	public static boolean isConstant(RhsPart part) {
-		part = unwrapEx(part, false, false, true);
-		return part instanceof RhsSymbol && isConstant((RhsSymbol) part);
 	}
 
 	public static boolean isConstant(RhsSymbol part) {
@@ -199,6 +197,7 @@ public class RhsUtil {
 			case Symbol: {
 				if (((RhsSymbol) part).getTarget().isTerm()) return false;
 				Nonterminal n = (Nonterminal) ((RhsSymbol) part).getTarget();
+				assert !n.isTemplate();
 
 				if (n.isNullable()) return true;
 				if (dependencies != null) dependencies.add(n);

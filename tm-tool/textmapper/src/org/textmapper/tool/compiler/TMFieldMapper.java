@@ -85,6 +85,7 @@ public class TMFieldMapper {
 					if (type == AstType.BOOL) {
 						value = Boolean.TRUE;
 					} else {
+						// TODO handle template vars
 						value = members.get(m.sym.getTarget());
 					}
 				}
@@ -133,6 +134,8 @@ public class TMFieldMapper {
 			}
 
 			RhsSymbol ref = (RhsSymbol) unwrapped;
+			// TODO create an interface if this is a TemplateVar
+
 			AstType type = RhsUtil.getCastType(part);
 			if (type == null) {
 				final Object literal = TMDataUtil.getLiteral(ref);
@@ -160,6 +163,7 @@ public class TMFieldMapper {
 	}
 
 	private static String getFieldBaseName(RhsSymbol sym) {
+		// TODO handle template vars
 		final String id = TMDataUtil.getId(sym.getTarget());
 		return id.endsWith("opt") && id.length() > 3 ? id.substring(0, id.length() - 3) : id;
 	}
@@ -178,6 +182,7 @@ public class TMFieldMapper {
 		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
 										  boolean isAddition, SourceElement origin) {
+			// TODO handle template vars
 			FieldId id = alias != null ? new FieldId(alias) : new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fields = fieldsMap.get(id);
 			if (fields == null) {
@@ -206,6 +211,7 @@ public class TMFieldMapper {
 		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
 										  boolean isAddition, SourceElement origin) {
+			// TODO handle template vars
 			FieldId id = alias != null ? new FieldId(alias) : new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fds = localMap.get(id);
 			if (used == null) {

@@ -25,7 +25,7 @@ public interface Nonterminal extends Symbol {
 	/**
 	 * User data key for name hints for anonymous nonterminals.
 	 */
-	static final String UD_NAME_HINT = "nameHint";
+	String UD_NAME_HINT = "nameHint";
 
 	RhsRoot getDefinition();
 
@@ -35,6 +35,8 @@ public interface Nonterminal extends Symbol {
 	 * @return true for nonterminals that are templates and cannot be referenced without parameters.
 	 */
 	boolean isTemplate();
+
+	Nonterminal getTemplate();
 
 	/**
 	 * @return true if it can derive an empty string

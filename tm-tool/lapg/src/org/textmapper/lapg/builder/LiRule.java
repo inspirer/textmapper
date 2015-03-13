@@ -80,7 +80,7 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 		sb.append(" ::=");
 		for (RhsSymbol s : right) {
 			sb.append(" ");
-			sb.append(s.getTarget().getName());
+			sb.append(LiUtil.getSymbolName(s));
 		}
 		if (priority != null) {
 			sb.append(" %prio ");
