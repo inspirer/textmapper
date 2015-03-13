@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 
 /**
@@ -33,6 +34,10 @@ class SetsClosure {
 	public SetsClosure() {
 	}
 
+	/**
+	 * Returns a new 'node' for the given set, which can be used to add dependencies
+	 * and, after processing, get the result by using getSet() and isComplement().
+	 */
 	public int addSet(int[] set, Object origin) {
 		int i = sets.add(set);
 		nodes.add(new SetNode(i, origin));
@@ -80,6 +85,25 @@ class SetsClosure {
 		assert node >= 0 && node < nodes.size();
 		int set = node_set[node];
 		return sets.sets[set < 0 ? sets.complement(set) : set];
+	}
+
+	/**
+	 * Extracts the results of 'node' into 'set'. Values are expected to
+	 * be in the range of [0, max).
+	 */
+	public void exportIntoBitset(int node, int max, BitSet set) {
+		if (max < 1 || max > set.size()) throw new IllegalArgumentException();
+
+		int[] resultSet = getSet(node);
+		boolean complement = isComplement(node);
+
+		set.set(0, max, complement);
+		for (int value : resultSet) {
+			if (value >= max) {
+				throw new IndexOutOfBoundsException("bitset is too small for " + value);
+			}
+			set.set(value, !complement);
+		}
 	}
 
 	public Object[] getErrorNodes() {

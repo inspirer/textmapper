@@ -17,6 +17,8 @@ package org.textmapper.lapg.builder;
 
 import org.junit.Test;
 
+import java.util.BitSet;
+
 import static org.junit.Assert.*;
 
 public class SetsClosureTest {
@@ -94,8 +96,8 @@ public class SetsClosureTest {
 		closure.addDependencies(3, 4);
 		closure.addDependencies(4, 2);
 
-		closure.addIntersection(new int[]{0, 1}, 2);	// 0 & 1: 3, 5, 9
-		closure.addIntersection(new int[]{1, 4}, 2);	// 3, 9, 12
+		closure.addIntersection(new int[]{0, 1}, 2);    // 0 & 1: 3, 5, 9
+		closure.addIntersection(new int[]{1, 4}, 2);    // 3, 9, 12
 		closure.addIntersection(new int[]{5, 6}, 2);
 
 		closure.addIntersection(new int[]{1, closure.complement(7, 78)}, 2); // 8, 9: = 1 \ {3, 9} = 0 5 12
@@ -128,6 +130,14 @@ public class SetsClosureTest {
 
 		assertArrayEquals(new int[]{1, 2, 4, 6}, closure.getSet(1));
 		assertTrue(closure.isComplement(1));
+
+		BitSet b = new BitSet(13);
+		closure.exportIntoBitset(0, 13, b);
+		assertEquals("{1, 2, 3, 4, 5, 6, 9}", b.toString());
+
+		b.clear();
+		closure.exportIntoBitset(1, 9, b);
+		assertEquals("{0, 3, 5, 7, 8}", b.toString());
 	}
 
 	@Test
