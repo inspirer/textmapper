@@ -642,7 +642,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 
-		TemplateInstantiator instantiator = new TemplateInstantiator(paramsArr, symbolArr, terminals);
+		TemplateInstantiator instantiator = new TemplateInstantiator(paramsArr, symbolArr, terminals, problems);
 		instantiator.instantiate(this, inputs);
 	}
 

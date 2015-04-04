@@ -80,4 +80,9 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 	public SourceElement getOrigin() {
 		return origin;
 	}
+
+	@Override
+	public String toString() {
+		return name + ":" + type;
+	}
 }

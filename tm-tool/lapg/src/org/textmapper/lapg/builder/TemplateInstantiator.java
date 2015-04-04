@@ -15,10 +15,8 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.InputRef;
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.TemplateParameter;
+import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.TemplateEnvironment.ParameterPredicate;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.util.RhsUtil;
@@ -30,14 +28,21 @@ class TemplateInstantiator {
 	private LiTemplateParameter[] params;
 	private final LiSymbol[] symbols;
 	private final int terminals;
+	private final List<Problem> problems;
 	private final int nonterminals;
 	private final Map<TemplateParameter, Integer> paramIndex = new HashMap<TemplateParameter, Integer>();
 	private Map<TemplateParameter, Set<Object>> paramValues;
+	private Map<Nonterminal, BitSet> paramUsage;
 
-	public TemplateInstantiator(LiTemplateParameter[] params, LiSymbol[] symbols, int terminals) {
+	private final Map<InstanceKey, TemplateInstance> instances = new HashMap<InstanceKey, TemplateInstance>();
+	private final Queue<TemplateInstance> queue = new LinkedList<TemplateInstance>();
+
+	public TemplateInstantiator(LiTemplateParameter[] params, LiSymbol[] symbols,
+								int terminals, List<Problem> problems) {
 		this.params = params;
 		this.symbols = symbols;
 		this.terminals = terminals;
+		this.problems = problems;
 		this.nonterminals = symbols.length - terminals;
 		int index = 0;
 		for (TemplateParameter p : params) {
@@ -110,6 +115,13 @@ class TemplateInstantiator {
 		}
 		if (!closure.compute()) {
 			throw new IllegalStateException("Internal error");
+		}
+		this.paramUsage = new HashMap<Nonterminal, BitSet>();
+		for (int i = 0; i < nonterminals; i++) {
+			Nonterminal nonterm = (Nonterminal) symbols[i + terminals];
+			BitSet set = new BitSet(params.length);
+			closure.exportIntoBitset(paramUsage[i], params.length, set);
+			this.paramUsage.put(nonterm, set);
 		}
 	}
 
@@ -215,9 +227,98 @@ class TemplateInstantiator {
 		}
 	}
 
+	private TemplateEnvironment applyArguments(TemplateEnvironment env, Nonterminal target, RhsArgument[] args) {
+		final BitSet acceptedParameters = paramUsage.get(target);
+
+		// Remove unused parameters.
+		env = env.filter(new ParameterPredicate() {
+			@Override
+			public boolean include(TemplateParameter parameter) {
+				return acceptedParameters.get(paramIndex.get(parameter));
+			}
+		});
+
+		if (args == null) return env;
+
+		// Add arguments.
+		for (RhsArgument arg : args) {
+			int index = paramIndex.get(arg.getParameter());
+			if (!acceptedParameters.get(index)) {
+				problems.add(new LiProblem(arg, arg.getParameter().getName() + " is not used in " + target.getName()));
+				continue;
+			}
+			env = env.extend(arg.getParameter(), arg.getValue());
+		}
+		return env;
+	}
+
+	private void instantiateRef(TemplateInstance context, RhsPart part, Symbol target, RhsArgument[] args) {
+		if (!(target instanceof Nonterminal)) {
+			if (args != null && args.length > 0) {
+				problems.add(new LiProblem(part, "Only nonterminals can be templated."));
+			}
+			return;
+		}
+
+		Nonterminal nonterm = (Nonterminal) target;
+		TemplateEnvironment env = applyArguments(context.getEnvironment(), nonterm, args);
+		TemplateInstance instance = instantiate(nonterm, env, part);
+		context.addTarget(part, instance);
+	}
+
+	private void instantiatePart(TemplateInstance context, RhsPart p) {
+		p = RhsUtil.unwrapEx(p, true, false /* cast */, true);
+		if (p instanceof RhsSymbol) {
+			Symbol target = ((RhsSymbol) p).getTarget();
+			if (target == null) {
+				Object value = context.getEnvironment().getValue(((RhsSymbol) p).getTemplateTarget());
+				if (!(value instanceof Symbol)) {
+					// TODO report instantiation trace
+					problems.add(new LiProblem(p, "Template parameter is unset."));
+					return;
+				}
+				target = (Symbol) value;
+			}
+			instantiateRef(context, p, target, ((RhsSymbol) p).getArgs());
+			return;
+		}
+		if (p instanceof RhsCast) {
+			instantiateRef(context, p, ((RhsCast) p).getTarget(), ((RhsCast) p).getArgs());
+		} else if (p instanceof RhsSet) {
+			instantiateRef(context, p, ((RhsSet) p).getSymbol(), ((RhsSet) p).getArgs());
+		}
+		final Iterable<RhsPart> children = RhsUtil.getChildren(p);
+		if (children == null) return;
+
+		for (RhsPart child : children) {
+			instantiatePart(context, child);
+		}
+	}
+
+	private TemplateInstance instantiate(Nonterminal nonterm, TemplateEnvironment env, SourceElement referrer) {
+		InstanceKey key = new InstanceKey(nonterm, env);
+		TemplateInstance instance = instances.get(key);
+		if (instance == null) {
+			instance = new TemplateInstance((LiNonterminal) nonterm, env, referrer);
+			instances.put(key, instance);
+			queue.add(instance);
+		}
+		return instance;
+	}
+
 	void instantiate(GrammarBuilder builder, Collection<? extends InputRef> refs) {
+		if (params.length == 0) return;
+
 		collectParameterValues();
 		computeParametersUsage();
 
+		TemplateEnvironment root = builder.getRootEnvironment();
+		for (InputRef ref : refs) {
+			instantiate(ref.getTarget(), root, ref);
+		}
+		TemplateInstance instance;
+		while ((instance = queue.poll()) != null) {
+			instantiatePart(instance, instance.getTemplate().getDefinition());
+		}
 	}
 }

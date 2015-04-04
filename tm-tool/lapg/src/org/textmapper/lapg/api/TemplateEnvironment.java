@@ -36,5 +36,18 @@ public interface TemplateEnvironment {
 	 */
 	TemplateEnvironment extend(TemplateParameter param, Object value);
 
+	/**
+	 * Returns a human-readable suffix for nonterminals instantiated for this environment.
+	 * The suffix is empty for empty environments and starts with an underscore otherwise.
+	 */
 	String getNonterminalSuffix();
+
+	/**
+	 * Unsets all parameters for which the given predicate returns false.
+	 */
+	TemplateEnvironment filter(ParameterPredicate predicate);
+
+	interface ParameterPredicate {
+		boolean include(TemplateParameter parameter);
+	}
 }

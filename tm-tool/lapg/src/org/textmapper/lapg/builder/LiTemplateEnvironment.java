@@ -82,6 +82,15 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 	}
 
 	@Override
+	public TemplateEnvironment filter(ParameterPredicate predicate) {
+		TemplateEnvironment env = this;
+		for (TemplateParameter param : values.keySet()) {
+			if (!predicate.include(param)) env = env.extend(param, null);
+		}
+		return env;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

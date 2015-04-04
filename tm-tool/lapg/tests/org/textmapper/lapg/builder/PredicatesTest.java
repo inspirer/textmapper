@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.textmapper.lapg.api.TemplateEnvironment;
+import org.textmapper.lapg.api.TemplateEnvironment.ParameterPredicate;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -79,7 +80,12 @@ public class PredicatesTest {
 		assertEquals(false, pr.apply(env));
 		env = env.extend(p2, Boolean.FALSE);
 		assertEquals(true, pr.apply(env));
-		env = env.extend(p1, null);
+		env = env.filter(new ParameterPredicate() {
+			@Override
+			public boolean include(TemplateParameter parameter) {
+				return !parameter.getName().equals("p1");
+			}
+		});
 		assertEquals(false, pr.apply(env));
 	}
 
