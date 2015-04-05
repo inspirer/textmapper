@@ -21,11 +21,11 @@ abc ::=
 ;
 
 xyz ::=
-# ERR: @'c' & ~xyz: Cannot resolve set, since it recursively depends on itself.
+# ERR: @~xyz: Cannot resolve set, since it recursively depends on itself.
 	  set('c' & ~xyz) 'b'
 ;
 
+# This is OK.
 def ::=
-# ERR: @'c' & def: Cannot resolve set, since it recursively depends on itself.
 	  set('c' & def) 'b'
 ;

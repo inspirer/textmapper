@@ -141,18 +141,22 @@ public class SetsClosureTest {
 	}
 
 	@Test
-	public void intersectionError() throws Exception {
+	public void intersectionCycle() throws Exception {
 		SetsClosure closure = new SetsClosure();
 
 		closure.addSet(new int[]{1, 2, 3, 4, 5, 6, 9}, 1);
 		closure.addSet(new int[]{0, 3, 5, 9, 12}, 2);
 
 		closure.addIntersection(new int[]{0, 1}, 3);
-		closure.addDependencies(1, 2);
 
-		assertFalse(closure.compute());
+		closure.addSet(new int[]{1, 48}, 2);
+		closure.addDependencies(1, 2, 3);
 
-		assertArrayEquals(new Object[]{3}, closure.getErrorNodes());
+		assertTrue(closure.compute());
+
+		assertArrayEquals(new int[]{1, 2, 3, 4, 5, 6, 9}, closure.getSet(0));
+		assertArrayEquals(new int[]{0, 1, 3, 5, 9, 12, 48}, closure.getSet(1));
+		assertArrayEquals(new int[]{1, 3, 5, 9}, closure.getSet(2));
 	}
 
 	@Test
@@ -168,5 +172,41 @@ public class SetsClosureTest {
 		assertFalse(closure.compute());
 
 		assertArrayEquals(new Object[]{78}, closure.getErrorNodes());
+	}
+
+	@Test
+	public void testComplexCycle() throws Exception {
+		SetsClosure closure = new SetsClosure();
+		closure.addSet(new int[]{}, 1);
+		closure.addSet(new int[]{}, 2);
+		closure.addSet(new int[]{}, 3);
+		closure.addSet(new int[]{0}, 4);
+		closure.addSet(new int[]{}, 5);
+		closure.addSet(new int[]{0}, 7);
+		closure.complement(5, 8);
+		closure.addIntersection(new int[]{3, 6}, 9);
+		closure.addSet(new int[]{}, 10);
+		closure.addSet(new int[]{}, 11);
+
+		closure.addDependencies(0, 4);
+		closure.addDependencies(4, 1);
+		closure.addDependencies(1, 7);
+		closure.addDependencies(2, 1);
+		closure.addDependencies(3, 8, 9);
+		closure.addDependencies(8, 2);
+		closure.addDependencies(9, 2);
+		assertTrue(closure.compute());
+
+		assertArrayEquals(new int[]{}, closure.getSet(0));
+		assertArrayEquals(new int[]{}, closure.getSet(1));
+		assertArrayEquals(new int[]{}, closure.getSet(2));
+		assertArrayEquals(new int[]{0}, closure.getSet(3));
+		assertArrayEquals(new int[]{}, closure.getSet(4));
+		assertArrayEquals(new int[]{0}, closure.getSet(5));
+		assertArrayEquals(new int[]{0}, closure.getSet(6));
+		assertTrue(closure.isComplement(6));
+		assertArrayEquals(new int[]{}, closure.getSet(7));
+		assertArrayEquals(new int[]{}, closure.getSet(8));
+		assertArrayEquals(new int[]{}, closure.getSet(9));
 	}
 }

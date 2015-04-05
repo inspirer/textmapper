@@ -29,7 +29,8 @@ class SetsClosure {
 	private final IntegerSets sets = new IntegerSets();
 	private final List<SetNode> nodes = new ArrayList<SetNode>();
 	private int[][] graph;
-	private int[] node_set;
+	private int[] nodeSet;
+	private BitSet isIntersection;
 
 	public SetsClosure() {
 	}
@@ -45,7 +46,7 @@ class SetsClosure {
 	}
 
 	public int addIntersection(int[] nodes, Object origin) {
-		SetNode result = new SetNode(-1, origin);
+		SetNode result = new SetNode(SetNode.INTERSECTION, origin);
 		this.nodes.add(result);
 		result.setEdges(nodes);
 		return this.nodes.size() - 1;
@@ -66,24 +67,29 @@ class SetsClosure {
 	public boolean compute() {
 		int size = nodes.size();
 		graph = new int[size][];
-		node_set = new int[size];
+		nodeSet = new int[size];
+		isIntersection = new BitSet(size);
 		for (int i = 0; i < size; i++) {
 			graph[i] = nodes.get(i).edges;
 			if (graph[i] == null) graph[i] = EMPTY_ARRAY;
-			node_set[i] = nodes.get(i).index;
-			assert node_set[i] >= -1;
+			nodeSet[i] = nodes.get(i).index;
+			if (nodeSet[i] == SetNode.INTERSECTION) {
+				nodeSet[i] = IntegerSets.EMPTY_SET;
+				isIntersection.set(i, true);
+			}
+			assert nodeSet[i] >= 0;
 		}
 		return new TransitiveClosure().run();
 	}
 
 	public boolean isComplement(int node) {
 		assert node >= 0 && node < nodes.size();
-		return node_set[node] < 0;
+		return nodeSet[node] < 0;
 	}
 
 	public int[] getSet(int node) {
 		assert node >= 0 && node < nodes.size();
-		int set = node_set[node];
+		int set = nodeSet[node];
 		return sets.sets[set < 0 ? sets.complement(set) : set];
 	}
 
@@ -171,39 +177,58 @@ class SetsClosure {
 			}
 		}
 
-		private void closure(int size) {
-			if (size == 1 && node_set[stack[top]] == -1) {
-				// Intersection.
-				int result = sets.complement(IntegerSets.EMPTY_SET);
-				for (int node : graph[stack[top]]) {
-					int s = node < 0 ? sets.complement(node_set[-1 - node]) : node_set[node];
-					result = sets.intersection(result, s);
+		private void slowClosure(int size) {
+			boolean dirty = true;
+			while (dirty) {
+				dirty = false;
+				for (int i = top; i < top + size; i++) {
+					int node = stack[i];
+					boolean shouldInvalidate = false;
+					boolean intersect = isIntersection.get(node);
+					int result = intersect ? sets.complement(IntegerSets.EMPTY_SET) : nodeSet[node];
+					for (int w : graph[node]) {
+						int targetNode = w < 0 ? -w - 1 : w;
+						int targetSet = w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
+						shouldInvalidate |= onstack[targetNode];
+						if (w < 0 && onstack[targetNode]) {
+							// Complements cannot be part of a dependency cycle.
+							nodes.get(node).markAsError();
+							hasErrors = true;
+							break;
+						}
+						result = intersect ? sets.intersection(result, targetSet) : sets.union(result, targetSet);
+					}
+					if (shouldInvalidate) dirty |= (nodeSet[node] != result);
+					nodeSet[node] = result;
 				}
-				node_set[stack[top]] = result;
-				return;
+				if (hasErrors) break;
+			}
+		}
+
+		private void closure(int size) {
+			for (int i = top; i < top + size; i++) {
+				if (isIntersection.get(stack[i])) {
+					slowClosure(size);
+					return;
+				}
 			}
 
-			// Union.
-			int result = 0;
+			// Simple union (no intersections).
+			int result = IntegerSets.EMPTY_SET;
 			for (int i = top; i < top + size; i++) {
-				int v = stack[i];
-				if (node_set[v] == -1) {
-					nodes.get(v).markAsError();
-					hasErrors = true;
-					continue;
-				}
-
-				result = sets.union(result, node_set[v]);
-				for (int w : graph[v]) {
-					if (w < 0 && size > 1) {
-						nodes.get(v).markAsError();
+				int node = stack[i];
+				result = sets.union(result, nodeSet[node]);
+				for (int w : graph[node]) {
+					int targetNode = w < 0 ? -w - 1 : w;
+					int targetSet = w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
+					if (w < 0 && onstack[targetNode]) {
+						// Complements cannot be part of a dependency cycle.
+						nodes.get(node).markAsError();
 						hasErrors = true;
 						break;
 					}
-					int wNode = w < 0 ? -w - 1 : w;
-					if (onstack[wNode]) continue;
-
-					result = sets.union(result, w < 0 ? sets.complement(node_set[wNode]) : node_set[wNode]);
+					if (onstack[targetNode]) continue;
+					result = sets.union(result, targetSet);
 				}
 			}
 
@@ -211,13 +236,15 @@ class SetsClosure {
 
 			// Update all nodes.
 			for (int i = top; i < top + size; i++) {
-				node_set[stack[i]] = result;
+				nodeSet[stack[i]] = result;
 			}
 		}
 	}
 
 	private static class SetNode {
-		public final int index;    // -1 for intersection nodes, 0+ initial set
+		public static final int INTERSECTION = -1;
+
+		public final int index;    // -1 for intersection nodes, index in sets otherwise
 		public final Object origin;
 		private int[] edges;  // negative edges mean complement of the target set
 		private boolean isError;
