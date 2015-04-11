@@ -19,8 +19,8 @@ import org.textmapper.lapg.api.ast.AstType;
 
 public interface Symbol extends SourceElement, UserDataHolder {
 
-	static final String EOI = "eoi";
-	static final String ERROR = "error";
+	String EOI = "eoi";
+	String ERROR = "error";
 
 	int getIndex();
 

@@ -596,6 +596,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public Grammar create() {
 		instantiateTemplates();
+		if (!problems.isEmpty()) {
+			// It is impossible to recover from instantiation problems.
+			return new LiGrammar(problems.toArray(new Problem[problems.size()]));
+		}
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();

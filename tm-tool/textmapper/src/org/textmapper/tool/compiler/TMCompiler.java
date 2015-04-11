@@ -77,9 +77,9 @@ public class TMCompiler {
 				helper.markUsed(name);
 			}
 		}
-		for (int i = 0; i < g.getSymbols().length; i++) {
-			Symbol sym = g.getSymbols()[i];
-			TMDataUtil.putId(sym, helper.generateSymbolId(sym.getName(), i));
+		int i = 0;
+		for (Symbol s : g.getSymbols()) {
+			TMDataUtil.putId(s, helper.generateSymbolId(s.getName(), i++));
 		}
 	}
 

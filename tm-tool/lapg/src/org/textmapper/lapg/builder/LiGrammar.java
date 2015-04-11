@@ -56,6 +56,11 @@ class LiGrammar implements Grammar {
 		this.problems = problems;
 	}
 
+	public LiGrammar(Problem[] problems) {
+		this(new Symbol[0], new Rule[0], new Prio[0], new LexerRule[0], new NamedPattern[0], new NamedSet[0],
+				new LexerState[0], new InputRef[0], null, null, 0, 0, problems);
+	}
+
 	@Override
 	public Symbol[] getSymbols() {
 		return symbols;

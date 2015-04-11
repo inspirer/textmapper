@@ -74,6 +74,6 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 
 	@Override
 	public String toString() {
-		return name;
+		return LiUtil.getSymbolName(this);
 	}
 }

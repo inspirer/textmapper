@@ -183,6 +183,25 @@ public class TMResolver {
 				parametersMap.put(name, create(param));
 			}
 		}
+		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
+			if (clause instanceof TmaNonterm) {
+				TmaNonterm nonterm = (TmaNonterm) clause;
+				Symbol s = getSymbol(nonterm.getName().getID());
+
+				// Error is already reported.
+				if (!(s instanceof Nonterminal)) continue;
+				if (nonterm.getParams() == null || nonterm.getParams().getRefs() == null) continue;
+
+				List<TemplateParameter> parameters = new ArrayList<TemplateParameter>();
+				for (TmaIdentifier id : nonterm.getParams().getRefs()) {
+					TemplateParameter p = resolveParam(id);
+					if (p != null) parameters.add(p);
+				}
+				if (!parameters.isEmpty()) {
+					s.putUserData(Nonterminal.UD_TEMPLATE_PARAMS, parameters);
+				}
+			}
+		}
 	}
 
 	private String asString(TemplateParameter.Type type) {
@@ -285,14 +304,55 @@ public class TMResolver {
 	}
 
 	Collection<RhsArgument> resolveArgs(TmaSymref ref) {
+		Symbol target = getSymbol(ref.getName());
 		TmaSymrefArgs args = ref.getArgs();
-		if (args == null) return null;
-
-		if (args.getValueList() != null) {
-			// TODO
-			error(args, "value list is not supported yet, use key:value syntax");
+		if (target != null && !(target instanceof Nonterminal)) {
+			if (args != null) {
+				error(args, "Only nonterminals and template parameters can be templated.");
+			}
 			return null;
 		}
+
+		Nonterminal nonterm = (Nonterminal) target;
+		@SuppressWarnings("unchecked")
+		List<TemplateParameter> expectedParameters = (nonterm == null)
+				? null
+				: (List<TemplateParameter>) nonterm.getUserData(Nonterminal.UD_TEMPLATE_PARAMS);
+
+		if (expectedParameters != null && (args == null || args.getValueList() == null)) {
+			error(ref, "A positional template argument list is expected.");
+			return null;
+		}
+
+		if (args == null) return null;
+
+		List<ITmaParamValue> valueList = args.getValueList();
+		if (valueList != null) {
+			if (nonterm == null) {
+				error(args, "A key-value template argument list is expected with parameters.");
+				return null;
+			}
+
+			if (expectedParameters == null) {
+				error(args, "Argument list is not expected.");
+				return null;
+			}
+
+			if (valueList.size() != expectedParameters.size()) {
+				error(args, expectedParameters.size() + " template arguments are expected.");
+				return null;
+			}
+			int index = 0;
+			List<RhsArgument> result = new ArrayList<RhsArgument>(valueList.size());
+			for (ITmaParamValue value : valueList) {
+				TemplateParameter param = expectedParameters.get(index++);
+				Object val = getParamValue(param.getType(), value);
+				result.add(builder.argument(param, val, value));
+			}
+			return result.isEmpty() ? null : result;
+		}
+
+		if (args.getKeyvalueList() == null) return null;
 
 		List<RhsArgument> result = new ArrayList<RhsArgument>(args.getKeyvalueList().size());
 		for (TmaKeyvalArg arg : args.getKeyvalueList()) {

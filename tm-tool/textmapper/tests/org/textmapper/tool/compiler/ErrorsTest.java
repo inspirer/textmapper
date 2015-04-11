@@ -47,6 +47,11 @@ public class ErrorsTest {
 		process("tests/org/textmapper/tool/compiler/error/recursive_set_err.tm2", 2);
 	}
 
+	@Test
+	public void testTemplateErr() {
+		process("tests/org/textmapper/tool/compiler/error/template_usage_err.tm2", 7);
+	}
+
 	private void process(String filename, int errors) {
 		String contents;
 		try {

@@ -23,9 +23,14 @@ import org.textmapper.lapg.api.rule.RhsRoot;
 public interface Nonterminal extends Symbol {
 
 	/**
-	 * User data key for name hints for anonymous nonterminals.
+	 * User data key for name hints for anonymous nonterminals (contains a String).
 	 */
 	String UD_NAME_HINT = "nameHint";
+
+	/**
+	 * User data key for template parameters (contains {@code List<TemplateParameter>})
+	 */
+	String UD_TEMPLATE_PARAMS = "templateParameters";
 
 	RhsRoot getDefinition();
 

@@ -1,0 +1,42 @@
+language template_vars_err(null);
+
+:: lexer
+
+identifier(String): /[a-zA-Z_]+/
+
+'=':        /=/
+':':        /:/
+',':        /,/
+'(':        /\(/
+')':        /\)/
+
+:: parser
+
+input ::=
+	  (identifier '=' object)+
+# ERR: @list<Elem:key_value>: A positional template argument list is expected.
+	list<Elem:key_value>
+# ERR: @<')'>: Only nonterminals and template parameters can be templated.
+	'('<')'>
+# ERR: @<key_value>: Argument list is not expected.
+	key_value<key_value>
+;
+
+object ::=
+# ERR: @<key_value,key_value>: 1 template arguments are expected.
+	  identifier ('(' list<key_value,key_value> ')')?
+;
+
+key_value ::=
+	  identifier ':' object
+;
+
+%param Elem symbol;
+
+list<Elem> ::=
+# ERR: @Elem: Template parameter is unset.
+	  Elem
+# ERR: @Elem: Template parameter is unset.
+# ERR: @list: A positional template argument list is expected.
+	| list ',' Elem
+;
