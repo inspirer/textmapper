@@ -27,10 +27,10 @@ import java.util.List;
 /**
  * evgeny, 2/11/13
  */
-class LiRhsCast extends LiRhsPart implements RhsCast {
+class LiRhsCast extends LiRhsPart implements RhsCast, TemplatedSymbolRef {
 
-	private final Symbol asSymbol;
-	private final LiRhsArgument[] args;
+	private Symbol asSymbol;
+	private LiRhsArgument[] args;
 	private final LiRhsPart inner;
 
 	LiRhsCast(Symbol asSymbol, LiRhsArgument[] args, LiRhsPart inner, SourceElement origin) {
@@ -91,5 +91,11 @@ class LiRhsCast extends LiRhsPart implements RhsCast {
 		sb.append(" as ");
 		sb.append(asSymbol.getName());
 		LiUtil.appendArguments(sb, args);
+	}
+
+	@Override
+	public void setResolvedSymbol(Symbol symbol) {
+		this.args = null;
+		this.asSymbol = symbol;
 	}
 }

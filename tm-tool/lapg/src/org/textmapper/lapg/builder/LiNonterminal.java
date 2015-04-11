@@ -31,6 +31,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	private RhsRoot definition;
 	private boolean isNullable;
 	private final List<Rule> rules = new ArrayList<Rule>();
+	private List<TemplateInstance> instances;
 
 	public LiNonterminal(String name, SourceElement origin) {
 		super(name, origin);
@@ -48,8 +49,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	@Override
 	public boolean isTemplate() {
-		// TODO implement
-		return false;
+		return instances != null && instances.size() > 1;
 	}
 
 	@Override
@@ -93,5 +93,12 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	void setNullable(boolean nullable) {
 		isNullable = nullable;
+	}
+
+	void addInstance(TemplateInstance instance) {
+		if (instances == null) {
+			instances = new ArrayList<TemplateInstance>();
+		}
+		instances.add(instance);
 	}
 }

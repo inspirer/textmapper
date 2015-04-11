@@ -252,18 +252,23 @@ class TemplateInstantiator {
 		return env;
 	}
 
-	private void instantiateRef(TemplateInstance context, RhsPart part, Symbol target, RhsArgument[] args) {
+	private void instantiateRef(TemplateInstance context, TemplatedSymbolRef ref, Symbol target, RhsArgument[] args) {
 		if (!(target instanceof Nonterminal)) {
+			if (!target.isTerm()) {
+				throw new UnsupportedOperationException();
+			}
+
+			context.addTerminalTarget(ref, (Terminal) target);
 			if (args != null && args.length > 0) {
-				problems.add(new LiProblem(part, "Only nonterminals can be templated."));
+				problems.add(new LiProblem(ref, "Only nonterminals can be templated."));
 			}
 			return;
 		}
 
 		Nonterminal nonterm = (Nonterminal) target;
 		TemplateEnvironment env = applyArguments(context.getEnvironment(), nonterm, args);
-		TemplateInstance instance = instantiate(nonterm, env, part);
-		context.addTarget(part, instance);
+		TemplateInstance instance = instantiate(nonterm, env, ref);
+		context.addNonterminalTarget(ref, instance);
 	}
 
 	private void instantiatePart(TemplateInstance context, RhsPart p) {
@@ -279,13 +284,13 @@ class TemplateInstantiator {
 				}
 				target = (Symbol) value;
 			}
-			instantiateRef(context, p, target, ((RhsSymbol) p).getArgs());
+			instantiateRef(context, (LiRhsSymbol) p, target, ((RhsSymbol) p).getArgs());
 			return;
 		}
 		if (p instanceof RhsCast) {
-			instantiateRef(context, p, ((RhsCast) p).getTarget(), ((RhsCast) p).getArgs());
+			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(), ((RhsCast) p).getArgs());
 		} else if (p instanceof RhsSet) {
-			instantiateRef(context, p, ((RhsSet) p).getSymbol(), ((RhsSet) p).getArgs());
+			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(), ((RhsSet) p).getArgs());
 		}
 		final Iterable<RhsPart> children = RhsUtil.getChildren(p);
 		if (children == null) return;
@@ -319,6 +324,9 @@ class TemplateInstantiator {
 		TemplateInstance instance;
 		while ((instance = queue.poll()) != null) {
 			instantiatePart(instance, instance.getTemplate().getDefinition());
+		}
+		for (TemplateInstance i : instances.values()) {
+			i.allocate();
 		}
 	}
 }

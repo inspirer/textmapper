@@ -27,11 +27,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class LiRhsSet extends LiRhsPart implements RhsSet {
+public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 
 	private final Operation operation;
-	private final Symbol symbol;
-	private final LiRhsArgument[] args;
+	private Symbol symbol;
+	private LiRhsArgument[] args;
 	private final LiRhsSet[] parts;
 
 	public LiRhsSet(Operation operation, Symbol symbol, LiRhsArgument[] args, LiRhsSet[] parts, SourceElement origin) {
@@ -203,5 +203,11 @@ public class LiRhsSet extends LiRhsPart implements RhsSet {
 	@Override
 	public Kind getKind() {
 		return Kind.Set;
+	}
+
+	@Override
+	public void setResolvedSymbol(Symbol symbol) {
+		this.args = null;
+		this.symbol = symbol;
 	}
 }

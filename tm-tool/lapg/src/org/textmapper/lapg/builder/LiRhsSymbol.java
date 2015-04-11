@@ -27,13 +27,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
+class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, DerivedSourceElement {
 
-	private final Symbol target;
+	private Symbol target;
 	// - OR -
-	private final TemplateParameter parameter;
+	private TemplateParameter parameter;
 
-	private final LiRhsArgument[] args;
+	private LiRhsArgument[] args;
 	private LiRhsMapping mapping;
 
 	LiRhsSymbol(Symbol target, LiRhsArgument[] args, SourceElement origin) {
@@ -115,5 +115,12 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, DerivedSourceElement {
 		}
 		sb.append(LiUtil.getSymbolName(this));
 		LiUtil.appendArguments(sb, args);
+	}
+
+	@Override
+	public void setResolvedSymbol(Symbol symbol) {
+		this.args = null;
+		this.target = symbol;
+		this.parameter = null;
 	}
 }

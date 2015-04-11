@@ -15,24 +15,28 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.TemplateEnvironment;
-import org.textmapper.lapg.api.rule.RhsPart;
+import org.textmapper.lapg.api.Terminal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 class TemplateInstance {
 
 	private final LiNonterminal template;
 	private final TemplateEnvironment environment;
 	private final SourceElement referrer;
-	private Map<RhsPart, TemplateInstance> targetInstance;
+	private Map<TemplatedSymbolRef, TemplateInstance> targetInstance;
+	private Map<TemplatedSymbolRef, Terminal> terminals;
 
 	TemplateInstance(LiNonterminal template, TemplateEnvironment environment, SourceElement referrer) {
 		this.template = template;
 		this.environment = environment;
 		this.referrer = referrer;
+		template.addInstance(this);
 	}
 
 	LiNonterminal getTemplate() {
@@ -47,10 +51,47 @@ class TemplateInstance {
 		return referrer;
 	}
 
-	void addTarget(RhsPart part, TemplateInstance target) {
+	void addNonterminalTarget(TemplatedSymbolRef ref, TemplateInstance target) {
 		if (targetInstance == null) {
-			targetInstance = new HashMap<RhsPart, TemplateInstance>();
+			targetInstance = new HashMap<TemplatedSymbolRef, TemplateInstance>();
 		}
-		targetInstance.put(part, target);
+		targetInstance.put(ref, target);
+	}
+
+	void addTerminalTarget(TemplatedSymbolRef ref, Terminal target) {
+		if (terminals == null) {
+			terminals = new HashMap<TemplatedSymbolRef, Terminal>();
+		}
+		terminals.put(ref, target);
+	}
+
+	Nonterminal getOrCreateNonterminal() {
+		if (template.isTemplate()) {
+			// TODO create and copy
+			throw new UnsupportedOperationException("templates are not fully working yet");
+		}
+
+		return template;
+	}
+
+	private void updateExistingNonterminal() {
+		if (targetInstance != null) {
+			for (Entry<TemplatedSymbolRef, TemplateInstance> entry : targetInstance.entrySet()) {
+				entry.getKey().setResolvedSymbol(entry.getValue().getOrCreateNonterminal());
+			}
+		}
+		if (terminals != null) {
+			for (Entry<TemplatedSymbolRef, Terminal> entry : terminals.entrySet()) {
+				entry.getKey().setResolvedSymbol(entry.getValue());
+			}
+		}
+	}
+
+	void allocate() {
+		if (template.isTemplate()) {
+			// TODO create and copy
+			throw new UnsupportedOperationException("templates are not fully working yet");
+		}
+		updateExistingNonterminal();
 	}
 }
