@@ -25,6 +25,7 @@ import java.util.*;
 
 class TemplateInstantiator {
 
+	private final GrammarBuilder builder;
 	private LiTemplateParameter[] params;
 	private final LiSymbol[] symbols;
 	private final int terminals;
@@ -37,8 +38,9 @@ class TemplateInstantiator {
 	private final Map<InstanceKey, TemplateInstance> instances = new HashMap<InstanceKey, TemplateInstance>();
 	private final Queue<TemplateInstance> queue = new LinkedList<TemplateInstance>();
 
-	public TemplateInstantiator(LiTemplateParameter[] params, LiSymbol[] symbols,
+	public TemplateInstantiator(GrammarBuilder builder, LiTemplateParameter[] params, LiSymbol[] symbols,
 								int terminals, List<Problem> problems) {
+		this.builder = builder;
 		this.params = params;
 		this.symbols = symbols;
 		this.terminals = terminals;
@@ -304,14 +306,14 @@ class TemplateInstantiator {
 		InstanceKey key = new InstanceKey(nonterm, env);
 		TemplateInstance instance = instances.get(key);
 		if (instance == null) {
-			instance = new TemplateInstance((LiNonterminal) nonterm, env, referrer);
+			instance = new TemplateInstance((LiNonterminal) nonterm, env, builder, referrer);
 			instances.put(key, instance);
 			queue.add(instance);
 		}
 		return instance;
 	}
 
-	void instantiate(GrammarBuilder builder, Collection<? extends InputRef> refs) {
+	void instantiate(Collection<? extends InputRef> refs) {
 		if (params.length == 0) return;
 
 		collectParameterValues();

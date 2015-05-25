@@ -70,6 +70,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Nonterminal addNonterminal(String name, SourceElement origin) {
+		if (origin instanceof LiNonterminal) {
+			throw new IllegalArgumentException("origin");
+		}
 		return addSymbol(new LiNonterminal(name, origin), false);
 	}
 
@@ -646,8 +649,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 
-		TemplateInstantiator instantiator = new TemplateInstantiator(paramsArr, symbolArr, terminals, problems);
-		instantiator.instantiate(this, inputs);
+		TemplateInstantiator instantiator = new TemplateInstantiator(this, paramsArr, symbolArr, terminals, problems);
+		instantiator.instantiate(inputs);
 	}
 
 	private void computeSets(ExpansionContext expansionContext, LiNamedSet[] setsArr) {

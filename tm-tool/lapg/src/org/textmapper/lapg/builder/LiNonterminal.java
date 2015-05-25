@@ -54,8 +54,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	@Override
 	public Nonterminal getTemplate() {
-		// TODO
-		throw new UnsupportedOperationException();
+		return origin instanceof LiNonterminal ? (Nonterminal) origin : null;
 	}
 
 	@Override

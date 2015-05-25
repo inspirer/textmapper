@@ -62,12 +62,12 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	public RhsSequence getElement() {
+	public LiRhsSequence getElement() {
 		return element;
 	}
 
 	@Override
-	public RhsPart getSeparator() {
+	public LiRhsPart getSeparator() {
 		return separator;
 	}
 
@@ -82,7 +82,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 	}
 
 	@Override
-	public RhsSequence getCustomInitialElement() {
+	public LiRhsSequence getCustomInitialElement() {
 		return customInitialElement;
 	}
 

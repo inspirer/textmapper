@@ -89,7 +89,7 @@ class LiRhsCast extends LiRhsPart implements RhsCast, TemplatedSymbolRef {
 	protected void toString(StringBuilder sb) {
 		inner.toString(sb);
 		sb.append(" as ");
-		sb.append(asSymbol.getName());
+		sb.append(LiUtil.getSymbolName(asSymbol));
 		LiUtil.appendArguments(sb, args);
 	}
 

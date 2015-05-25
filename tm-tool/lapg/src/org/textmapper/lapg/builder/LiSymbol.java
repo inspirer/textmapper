@@ -24,7 +24,7 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 
 	private int index;
 	private String name;
-	private final SourceElement origin;
+	protected final SourceElement origin;
 	private AstType mapping;
 
 	protected LiSymbol(String name, SourceElement origin) {

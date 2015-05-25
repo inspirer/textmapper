@@ -58,7 +58,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 	}
 
 	@Override
-	public RhsSet[] getSets() {
+	public LiRhsSet[] getSets() {
 		return parts;
 	}
 
