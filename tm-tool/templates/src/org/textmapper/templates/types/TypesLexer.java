@@ -344,13 +344,13 @@ public class TypesLexer {
 			case 0:
 				return createIdentifierToken(token, ruleIndex);
 			case 1: // scon: /"([^\n\\"]|\\.)*"/
-				 token.value = unescape(tokenText(), 1, tokenSize()-1); 
+				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
 			case 2: // icon: /\-?[0-9]+/
-				 token.value = Integer.parseInt(tokenText()); 
+				{ token.value = Integer.parseInt(tokenText()); }
 				break;
 			case 3: // bcon: /true|false/
-				 token.value = tokenText().equals("true"); 
+				{ token.value = tokenText().equals("true"); }
 				break;
 			case 4: // _skip: /[\n\t\r ]+/
 				spaceToken = true;
@@ -382,7 +382,7 @@ public class TypesLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 0:	// <default>
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 		}
 		return !(spaceToken);

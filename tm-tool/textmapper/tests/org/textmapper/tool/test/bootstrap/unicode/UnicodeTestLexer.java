@@ -353,13 +353,13 @@ public class UnicodeTestLexer {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 			case 1: // icon: /\-?[0-9]+/
-				 token.value = Integer.parseInt(tokenText()); 
+				{ token.value = Integer.parseInt(tokenText()); }
 				break;
 			case 2: // string: /"({schar})+"/
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 			case 3: // _skip: /[\n\t\r ]+/
 				spaceToken = true;

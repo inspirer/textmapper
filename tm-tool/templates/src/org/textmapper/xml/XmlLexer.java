@@ -305,13 +305,13 @@ public class XmlLexer {
 				spaceToken = true;
 				break;
 			case 3: // identifier: /[a-zA-Z_][A-Za-z_0-9\-]*/
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 			case 4: // ccon: /"[^\n"]*"/
-				 token.value = tokenText().substring(1, tokenSize()-1); 
+				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 			case 5: // ccon: /'[^\n']*'/
-				 token.value = tokenText().substring(1, tokenSize()-1); 
+				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 			case 6: // '>': />/
 				state = States.initial;

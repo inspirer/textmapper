@@ -307,7 +307,7 @@ public class SampleALexer {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0: // identifier: /[a-zA-Z_][a-zA-Z_0-9]*/
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 			case 1: // _skip: /[\n\t\r ]+/
 				spaceToken = true;

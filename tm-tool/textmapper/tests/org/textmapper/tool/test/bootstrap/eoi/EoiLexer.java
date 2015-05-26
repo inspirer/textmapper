@@ -300,7 +300,7 @@ public class EoiLexer {
 				break;
 			case 8: // _customEOI: /{eoi}/
 				spaceToken = true;
-				 if (--eoiToGo < 0) { token.symbol = Tokens.eoi; spaceToken = false; } 
+				{ if (--eoiToGo < 0) { token.symbol = Tokens.eoi; spaceToken = false; } }
 				break;
 			case 9: // '(': /\(/
 				state = States.b;

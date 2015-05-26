@@ -462,7 +462,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 token.value = tokenText().substring(1, tokenSize()-1); 
+				{ token.value = tokenText().substring(1, tokenSize()-1); }
 				break;
 			case 2: // scon: /"([^\n\\"]|\\.)*"/
 				switch(state) {
@@ -473,7 +473,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 token.value = unescape(tokenText(), 1, tokenSize()-1); 
+				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
 			case 3: // icon: /\-?[0-9]+/
 				switch(state) {
@@ -484,7 +484,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 token.value = Integer.parseInt(tokenText()); 
+				{ token.value = Integer.parseInt(tokenText()); }
 				break;
 			case 4: // eoi: /%%.*(\r?\n)?/
 				switch(state) {
@@ -495,7 +495,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 templatesStart = token.endoffset; 
+				{ templatesStart = token.endoffset; }
 				break;
 			case 5: // _skip: /[\n\r\t ]+/
 				spaceToken = true;
@@ -517,7 +517,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 spaceToken = skipComments; 
+				{ spaceToken = skipComments; }
 				break;
 			case 7: // '%': /%/
 				switch(state) {
@@ -828,7 +828,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 skipAction(); token.endoffset = getOffset(); 
+				{ skipAction(); token.endoffset = getOffset(); }
 				break;
 			case 76: // '{': /\{/
 				state = States.initial;
@@ -1004,7 +1004,7 @@ public class TMLexer {
 						state = States.initial;
 						break;
 				}
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 		}
 		return !(spaceToken);

@@ -309,52 +309,52 @@ public class RegexDefLexer {
 			case 0:
 				return createExpandToken(token, ruleIndex);
 			case 1: // char: /[^()\[\]\.|\\\/*?+\-]/
-				 token.value = tokenText().codePointAt(0); quantifierReady(); 
+				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
 				break;
 			case 2: // escaped: /\\[^\r\n\t0-9uUxXwWsSdDpPabfnrtv]/
-				 token.value = (int) tokenText().charAt(1); quantifierReady(); 
+				{ token.value = (int) tokenText().charAt(1); quantifierReady(); }
 				break;
 			case 3: // escaped: /\\a/
-				 token.value = (int) 7; quantifierReady(); 
+				{ token.value = (int) 7; quantifierReady(); }
 				break;
 			case 4: // escaped: /\\b/
-				 token.value = (int) '\b'; quantifierReady(); 
+				{ token.value = (int) '\b'; quantifierReady(); }
 				break;
 			case 5: // escaped: /\\f/
-				 token.value = (int) '\f'; quantifierReady(); 
+				{ token.value = (int) '\f'; quantifierReady(); }
 				break;
 			case 6: // escaped: /\\n/
-				 token.value = (int) '\n'; quantifierReady(); 
+				{ token.value = (int) '\n'; quantifierReady(); }
 				break;
 			case 7: // escaped: /\\r/
-				 token.value = (int) '\r'; quantifierReady(); 
+				{ token.value = (int) '\r'; quantifierReady(); }
 				break;
 			case 8: // escaped: /\\t/
-				 token.value = (int) '\t'; quantifierReady(); 
+				{ token.value = (int) '\t'; quantifierReady(); }
 				break;
 			case 9: // escaped: /\\v/
-				 token.value = (int) 0xb; quantifierReady(); 
+				{ token.value = (int) 0xb; quantifierReady(); }
 				break;
 			case 10: // escaped: /\\[0-7][0-7][0-7]/
-				 token.value = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); 
+				{ token.value = RegexUtil.unescapeOct(tokenText().substring(1)); quantifierReady(); }
 				break;
 			case 11: // escaped: /\\x{hx}{2}/
-				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
+				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
 			case 12: // escaped: /\\u{hx}{4}/
-				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
+				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
 			case 13: // escaped: /\\U{hx}{8}/
-				 token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); 
+				{ token.value = parseCodePoint(tokenText().substring(2), token); quantifierReady(); }
 				break;
 			case 14: // charclass: /\\[wWsSdD]/
-				 token.value = tokenText().substring(1); quantifierReady(); 
+				{ token.value = tokenText().substring(1); quantifierReady(); }
 				break;
 			case 15: // charclass: /\\p\{\w+\}/
-				 token.value = tokenText().substring(3, tokenSize() - 1); quantifierReady(); 
+				{ token.value = tokenText().substring(3, tokenSize() - 1); quantifierReady(); }
 				break;
 			case 16: // '.': /\./
-				 quantifierReady(); 
+				{ quantifierReady(); }
 				break;
 			case 17: // '*': /\*/
 				state = States.initial;
@@ -378,19 +378,19 @@ public class RegexDefLexer {
 				state = States.initial;
 				break;
 			case 24: // char: /[*+?]/
-				 token.value = tokenText().codePointAt(0); quantifierReady(); 
+				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
 				break;
 			case 25: // '(': /\(/
-				 state = 0; 
+				{ state = 0; }
 				break;
 			case 26: // '|': /\|/
-				 state = 0; 
+				{ state = 0; }
 				break;
 			case 27: // ')': /\)/
-				 quantifierReady(); 
+				{ quantifierReady(); }
 				break;
 			case 28: // '(?': /\(\?[is\-]+:/
-				 state = 0; 
+				{ state = 0; }
 				break;
 			case 29: // '[': /\[/
 				state = States.inSet;
@@ -399,13 +399,13 @@ public class RegexDefLexer {
 				state = States.inSet;
 				break;
 			case 31: // char: /\-/
-				 token.value = tokenText().codePointAt(0); quantifierReady(); 
+				{ token.value = tokenText().codePointAt(0); quantifierReady(); }
 				break;
 			case 33: // ']': /\]/
-				 state = 0; quantifierReady(); 
+				{ state = 0; quantifierReady(); }
 				break;
 			case 35: // char: /[(|)]/
-				 token.value = tokenText().codePointAt(0); 
+				{ token.value = tokenText().codePointAt(0); }
 				break;
 		}
 		return !(spaceToken);
@@ -425,10 +425,10 @@ public class RegexDefLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 32:	// {eoi}
-				 state = 0; 
+				{ state = 0; }
 				break;
 			case 0:	// <default>
-				 quantifierReady(); 
+				{ quantifierReady(); }
 				break;
 		}
 		return !(spaceToken);

@@ -401,26 +401,26 @@ public class TemplatesLexer {
 			case 0:
 				return createIdentifierToken(token, ruleIndex);
 			case 3: // escid: /$[a-zA-Z_][A-Za-z_0-9]*(#[0-9]+)?/
-				 token.value = tokenText().substring(1, tokenSize()); 
+				{ token.value = tokenText().substring(1, tokenSize()); }
 				break;
 			case 4: // escint: /$[0-9]+/
-				 token.value = Integer.parseInt(tokenText().substring(1, tokenSize())); 
+				{ token.value = Integer.parseInt(tokenText().substring(1, tokenSize())); }
 				break;
 			case 5: // '${': /$\{/
 				state = States.query;
-				 deep = 1;
+				{ deep = 1;}
 				break;
 			case 7: // icon: /[0-9]+/
-				 token.value = Integer.parseInt(tokenText()); 
+				{ token.value = Integer.parseInt(tokenText()); }
 				break;
 			case 8: // ccon: /'([^\n\\']|\\(['"?\\abfnrtv]|x[0-9a-fA-F]+|[0-7]([0-7][0-7]?)?))*'/
-				 token.value = unescape(tokenText(), 1, tokenSize()-1); 
+				{ token.value = unescape(tokenText(), 1, tokenSize()-1); }
 				break;
 			case 34: // '{': /\{/
-				 deep++; 
+				{ deep++; }
 				break;
 			case 35: // '}': /\}/
-				 if (--deep == 0) { state = 0; } 
+				{ if (--deep == 0) { state = 0; } }
 				break;
 			case 36: // '-}': /\-\}/
 				state = States.initial;
@@ -470,7 +470,7 @@ public class TemplatesLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 0:	// <default>
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 		}
 		return !(spaceToken);

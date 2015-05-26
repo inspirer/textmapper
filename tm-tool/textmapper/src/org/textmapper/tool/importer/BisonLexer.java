@@ -493,17 +493,17 @@ public class BisonLexer {
 		boolean spaceToken = false;
 		switch (ruleIndex) {
 			case 0: // ID: /{letter}({letter}|[0-9\-])*/
-				 if (lookaheadColon()) token.symbol = Tokens.ID_COLON; 
+				{ if (lookaheadColon()) token.symbol = Tokens.ID_COLON; }
 				break;
 			case 1: // skip: /:/
 				spaceToken = true;
-				
+				{
 		if (token.offset != foundColonOffset)
 			reporter.error("Unexpected colon", token.line, token.offset, token.endoffset);
-	
+	}
 				break;
 			case 8: // '%%': /%%/
-				 if (++sectionCounter == 2) token.symbol = Tokens.eoi; 
+				{ if (++sectionCounter == 2) token.symbol = Tokens.eoi; }
 				break;
 			case 13: // skip: /[\r\n\t\f\v ]+/
 				spaceToken = true;
@@ -517,25 +517,25 @@ public class BisonLexer {
 			case 54: // skip: /\{/
 				spaceToken = true;
 				state = States.bracedCode;
-				 nesting = 0; lexemeStart = token.offset; 
+				{ nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 55: // skip: /%\?[ \f\r\n\t\v]*\{/
 				spaceToken = true;
 				state = States.predicate;
-				 nesting = 0; lexemeStart = token.offset; 
+				{ nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 56: // skip: /%\{/
 				spaceToken = true;
 				state = States.prologue;
-				 nesting = 0; lexemeStart = token.offset; 
+				{ nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 57: // skip: /</
 				spaceToken = true;
 				state = States.tag;
-				 nesting = 0; lexemeStart = token.offset; 
+				{ nesting = 0; lexemeStart = token.offset; }
 				break;
 			case 58: // '{...}': /\}/
-				
+				{
 		nesting--;
 		if (nesting < 0) {
 			setState(States.initial);
@@ -544,24 +544,24 @@ public class BisonLexer {
 		} else {
 			spaceToken = true;
 		}
-	
+	}
 				break;
 			case 59: // '%?{...}': /\}/
-				 nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } 
+				{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 				break;
 			case 60: // '%{...%}': /%\}/
 				state = States.initial;
-				 token.offset = lexemeStart; 
+				{ token.offset = lexemeStart; }
 				break;
 			case 61: // tag_any: /([^<>]|\->)+/
 				spaceToken = true;
 				break;
 			case 62: // tag_inc_nesting: /</
 				spaceToken = true;
-				 nesting++; 
+				{ nesting++; }
 				break;
 			case 63: // TAG: />/
-				 nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } 
+				{ nesting--; if (nesting < 0) { setState(States.initial); token.offset = lexemeStart; } else { spaceToken = true; } }
 				break;
 			case 64: // code_char: /'([^'\n\\]|{escape})*'/
 				spaceToken = true;
@@ -580,11 +580,11 @@ public class BisonLexer {
 				break;
 			case 69: // code_inc_nesting: /\{|<{splice}%/
 				spaceToken = true;
-				 nesting++; 
+				{ nesting++; }
 				break;
 			case 70: // code_dec_nesting: /%{splice}>/
 				spaceToken = true;
-				 nesting--; 
+				{ nesting--; }
 				break;
 			case 71: // code_lessless: /<{splice}</
 				spaceToken = true;

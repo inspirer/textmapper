@@ -289,18 +289,18 @@ public class SampleBLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 5:	// class
-				 token.value = "class"; 
+				{ token.value = "class"; }
 				break;
 			case 11:	// interface
-				 token.value = "interface"; 
+				{ token.value = "interface"; }
 				break;
 			case 12:	// enum
-				 token.value = new Object(); 
+				{ token.value = new Object(); }
 				break;
 			case 6:	// extends (soft)
 			case 14:	// xyzzz (soft)
 			case 0:	// <default>
-				 token.value = tokenText(); 
+				{ token.value = tokenText(); }
 				break;
 		}
 		return !(spaceToken);
@@ -314,7 +314,7 @@ public class SampleBLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 2:	// <default>
-				 token.value = Integer.parseInt(tokenText(), 8); 
+				{ token.value = Integer.parseInt(tokenText(), 8); }
 				break;
 		}
 		return !(spaceToken);
@@ -334,7 +334,7 @@ public class SampleBLexer {
 		boolean spaceToken = false;
 		switch(ruleIndex) {
 			case 13:	// 11
-				 token.value = 11; 
+				{ token.value = 11; }
 				break;
 		}
 		return !(spaceToken);

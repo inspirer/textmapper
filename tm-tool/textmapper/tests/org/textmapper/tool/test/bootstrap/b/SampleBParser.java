@@ -301,7 +301,7 @@ public class SampleBParser {
 						null /* input */, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
 				break;
 			case 7:  // classdeflist ::= identifier '(' Lextends ')'
-				 String s = /* should be string */ ((String)tmStack[tmHead - 1].value); 
+				{ String s = /* should be string */ ((String)tmStack[tmHead - 1].value); }
 				break;
 			case 8:  // classdeflist ::= classdeflist identifier '(' ')'
 				((List<AstClassdeflistItem>)tmLeft.value).add(new AstClassdeflistItem(
