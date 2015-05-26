@@ -1844,12 +1844,6 @@ public class TMParser {
 						TmaRhsQuantifier.TmaQuantifierKind.QUESTIONMARK /* quantifier */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 128:  // rhsCast ::= rhsClass
-				tmLeft.value = new TmaRhsCast(
-						((ITmaRhsPart)tmStack[tmHead].value) /* inner */,
-						null /* target */,
-						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
-				break;
 			case 129:  // rhsCast ::= rhsClass Las symref
 				tmLeft.value = new TmaRhsCast(
 						((ITmaRhsPart)tmStack[tmHead - 2].value) /* inner */,

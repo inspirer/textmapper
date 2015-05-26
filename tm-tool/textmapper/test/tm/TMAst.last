@@ -452,7 +452,7 @@ class RhsAsLiteral : RhsPart {
 }
 
 rhsCast  : RhsPart ::=
-	this=new.RhsCast: inner=rhsClass
+	this=rhsClass
   | this=new.RhsCast: inner=rhsClass Las target=symref
   | this=new.RhsAsLiteral: inner=rhsClass Las {literal}
 ;

@@ -274,7 +274,7 @@ directive returns grammar_part ::=
 ;
 
 inputref ::=
-	reference=symref_noargs noeoi=Lnoeoi? ;
+	  reference=symref_noargs noeoi=Lnoeoi? ;
 
 references ::=
 	  symref_noargs
@@ -287,7 +287,7 @@ references_cs ::=
 ;
 
 rules ::=
- 	(rule0 separator '|')+ ;
+	  (rule0 separator '|')+ ;
 
 rule0 ::=
 	  predicate? prefix=rhsPrefix? list=rhsParts? action=ruleAction? suffix=rhsSuffixopt
@@ -340,7 +340,7 @@ rhsOptional returns rhsPart ::=
 ;
 
 rhsCast returns rhsPart ::=
-	  inner=rhsClass
+	  rhsClass
 	| inner=rhsClass Las target=symref
 	| inner=rhsClass Las literal 		{~rhsAsLiteral}
 ;
@@ -382,7 +382,7 @@ setExpression interface ::=
 ;
 
 annotations class ::=
-	annotations=annotation+ ;
+	  annotations=annotation+ ;
 
 annotation ::=
 	  '@' name=ID ('{' expression '}')?
@@ -446,11 +446,11 @@ literal ::=
 	  value=scon
 	| value=icon
 	| value=Ltrue as true
-    | value=Lfalse as false
+	| value=Lfalse as false
 ;
 
 name class ::=
-	qualified_id ;
+	  qualified_id ;
 
 qualified_id (String) ::=
 	  ID
@@ -462,7 +462,7 @@ command class ::=
 ;
 
 syntax_problem class : lexer_part, grammar_part, rhsPart ::=
-	error ;
+	  error ;
 
 ##################################################################################
 
@@ -491,13 +491,14 @@ public void setSkipComments(boolean skip) {
 private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
 	org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter() {
-		public void error(int start, int line, String s) {
-			reporter.error(start, start + 1, line, s);
+		@Override
+		public void error(String message, int line, int offset) {
+			reporter.error(message, line, offset, offset + 1);
 		}
 	};
 	org.textmapper.tool.parser.action.@SActionLexer l = new org.textmapper.tool.parser.action.@SActionLexer(innerreporter) {
 		@Override
-		protected char nextChar() throws java.io.@IOException {
+		protected int nextChar() throws java.io.@IOException {
 			if (ind[0] < 2) {
 				return ind[0]++ == 0 ? '{' : chr;
 			}
@@ -509,7 +510,7 @@ private boolean skipAction() throws java.io.@IOException {
 	try {
 		p.parse(l);
 	} catch (org.textmapper.tool.parser.action.@SActionParser.ParseException e) {
-		reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+		reporter.error("syntax error in action", getLine(), getOffset(), getOffset() + 1);
 		return false;
 	}
 	return true;
@@ -564,7 +565,8 @@ if (result != null) {
 ${end-}
 ${end}
 
-${query java_ast.astNodeExtends = ' extends org.textmapper.lapg.api.@TextSourceElement'}
+${query java_ast.astSource() = 'source'}
+${query java_ast.astNodeExtends() = ' extends org.textmapper.lapg.api.@TextSourceElement'}
 
 ${template java_ast.ast_class_fields(cl)-}
 ${if cl.name == 'Input'-}

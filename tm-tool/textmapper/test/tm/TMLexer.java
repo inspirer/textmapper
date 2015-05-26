@@ -161,13 +161,14 @@ public class TMLexer {
 	private boolean skipAction() throws IOException {
 		final int[] ind = new int[] { 0 };
 		SActionLexer.ErrorReporter innerreporter = new SActionLexer.ErrorReporter() {
-			public void error(int start, int line, String s) {
-				reporter.error(start, start + 1, line, s);
+			@Override
+			public void error(String message, int line, int offset) {
+				reporter.error(message, line, offset, offset + 1);
 			}
 		};
 		SActionLexer l = new SActionLexer(innerreporter) {
 			@Override
-			protected char nextChar() throws IOException {
+			protected int nextChar() throws IOException {
 				if (ind[0] < 2) {
 					return ind[0]++ == 0 ? '{' : chr;
 				}
@@ -179,7 +180,7 @@ public class TMLexer {
 		try {
 			p.parse(l);
 		} catch (SActionParser.ParseException e) {
-			reporter.error(getOffset(), getOffset() + 1, getLine(), "syntax error in action");
+			reporter.error("syntax error in action", getLine(), getOffset(), getOffset() + 1);
 			return false;
 		}
 		return true;
