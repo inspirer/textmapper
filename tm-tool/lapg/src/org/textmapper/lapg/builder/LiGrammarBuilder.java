@@ -644,6 +644,17 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				terminals, grammarSymbols, problemsArr);
 	}
 
+	private void dropTemplates() {
+		int size = symbols.size();
+		for (int i = 0; i < size; i++) {
+			Symbol s = symbols.get(i);
+			if (s.isTerm() || !((Nonterminal) s).isTemplate()) continue;
+			size--;
+			symbols.set(i, symbols.get(size));
+			symbols.remove(size);
+		}
+	}
+
 	private void instantiateTemplates() {
 		LiTemplateParameter[] paramsArr = params.toArray(new LiTemplateParameter[params.size()]);
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
@@ -651,6 +662,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 		TemplateInstantiator instantiator = new TemplateInstantiator(this, paramsArr, symbolArr, terminals, problems);
 		instantiator.instantiate(inputs);
+		dropTemplates();
 	}
 
 	private void computeSets(ExpansionContext expansionContext, LiNamedSet[] setsArr) {
