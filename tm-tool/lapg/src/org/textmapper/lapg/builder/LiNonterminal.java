@@ -32,6 +32,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	private boolean isNullable;
 	private final List<Rule> rules = new ArrayList<Rule>();
 	private List<TemplateInstance> instances;
+	private boolean isTemplate;
 
 	public LiNonterminal(String name, SourceElement origin) {
 		super(name, origin);
@@ -49,7 +50,7 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 
 	@Override
 	public boolean isTemplate() {
-		return instances != null && instances.size() > 1;
+		return isTemplate;
 	}
 
 	@Override
@@ -94,10 +95,18 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 		isNullable = nullable;
 	}
 
+	int getNumberOfInstances() {
+		return instances == null ? 0 : instances.size();
+	}
+
 	void addInstance(TemplateInstance instance) {
 		if (instances == null) {
 			instances = new ArrayList<TemplateInstance>();
 		}
 		instances.add(instance);
+	}
+
+	void setTemplate() {
+		this.isTemplate = true;
 	}
 }

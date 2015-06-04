@@ -188,7 +188,7 @@ class TemplateInstance {
 	}
 
 	void allocate() {
-		if (template.isTemplate()) {
+		if (template.getNumberOfInstances() > 1) {
 			getOrCreateNonterminal();
 			((LiNonterminal)instance).setDefinition((LiRhsRoot) clone(template.getDefinition()));
 		} else {

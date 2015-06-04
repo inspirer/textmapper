@@ -26,6 +26,7 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	private String name;
 	protected final SourceElement origin;
 	private AstType mapping;
+	private boolean unused;
 
 	protected LiSymbol(String name, SourceElement origin) {
 		this.name = name;
@@ -68,6 +69,11 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	@Override
+	public boolean isUnused() {
+		return unused;
+	}
+
+	@Override
 	public SourceElement getOrigin() {
 		return origin;
 	}
@@ -75,5 +81,9 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	@Override
 	public String toString() {
 		return LiUtil.getSymbolName(this);
+	}
+
+	void setUnused() {
+		unused = true;
 	}
 }

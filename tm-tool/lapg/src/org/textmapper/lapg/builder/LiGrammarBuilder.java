@@ -603,6 +603,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			// It is impossible to recover from instantiation problems.
 			return new LiGrammar(problems.toArray(new Problem[problems.size()]));
 		}
+		dropTemplatesAndUnused();
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
@@ -644,11 +645,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				terminals, grammarSymbols, problemsArr);
 	}
 
-	private void dropTemplates() {
+	private void dropTemplatesAndUnused() {
 		int size = symbols.size();
 		for (int i = 0; i < size; i++) {
 			Symbol s = symbols.get(i);
-			if (s.isTerm() || !((Nonterminal) s).isTemplate()) continue;
+			if (s.isTerm()) continue;
+			Nonterminal n = (Nonterminal) s;
+			if (!(n.isTemplate() || n.isUnused())) continue;
 			size--;
 			symbols.set(i, symbols.get(size));
 			symbols.remove(size);
@@ -662,7 +665,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 		TemplateInstantiator instantiator = new TemplateInstantiator(this, paramsArr, symbolArr, terminals, problems);
 		instantiator.instantiate(inputs);
-		dropTemplates();
 	}
 
 	private void computeSets(ExpansionContext expansionContext, LiNamedSet[] setsArr) {

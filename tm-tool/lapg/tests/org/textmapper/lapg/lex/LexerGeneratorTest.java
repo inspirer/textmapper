@@ -307,6 +307,11 @@ public class LexerGeneratorTest {
 				}
 
 				@Override
+				public boolean isUnused() {
+					return false;
+				}
+
+				@Override
 				public AstType getType() {
 					return null;
 				}

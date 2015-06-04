@@ -29,4 +29,6 @@ public interface Symbol extends SourceElement, UserDataHolder {
 	AstType getType();
 
 	boolean isTerm();
+
+	boolean isUnused();
 }
