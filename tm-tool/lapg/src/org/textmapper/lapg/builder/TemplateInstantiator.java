@@ -35,7 +35,7 @@ class TemplateInstantiator {
 	private Map<TemplateParameter, Set<Object>> paramValues;
 	private Map<Nonterminal, BitSet> paramUsage;
 
-	private final Map<InstanceKey, TemplateInstance> instances = new HashMap<InstanceKey, TemplateInstance>();
+	private final Map<InstanceKey, TemplateInstance> instances = new LinkedHashMap<InstanceKey, TemplateInstance>();
 	private final Queue<TemplateInstance> queue = new LinkedList<TemplateInstance>();
 
 	public TemplateInstantiator(GrammarBuilder builder, LiTemplateParameter[] params, LiSymbol[] symbols,

@@ -75,7 +75,7 @@ class TemplateInstance {
 	Nonterminal getOrCreateNonterminal() {
 		if (instance != null) return instance;
 
-		if (template.isTemplate()) {
+		if (template.getNumberOfInstances() > 1) {
 			instance = builder.addAnonymous(template.getName() + environment.getNonterminalSuffix(), template);
 		} else {
 			instance = template;
@@ -137,10 +137,12 @@ class TemplateInstance {
 	}
 
 	private LiRhsSequence cloneSeq(RhsSequence p) {
+		if (p == null) return null;
 		return new LiRhsSequence(p.getName(), clone(p.getParts()), false, p);
 	}
 
 	private LiRhsPart clone(RhsPart p) {
+		if (p == null) return null;
 		switch (p.getKind()) {
 			case Choice:
 				// TODO error if evaluates to an empty list

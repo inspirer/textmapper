@@ -1,0 +1,47 @@
+${template main-}
+${file opts.module+'.y'}${call unit('$$')}${end-}
+${end}
+
+
+${template unit($)-}
+${foreach nterm in parser.symbols.select(i|!i.isTerm())-}
+${self->nonterm(nterm)-}
+${end-}
+${end}
+
+
+${template nonterm(nterm)-}
+${nterm.name} :
+	${foreach rule in syntax.rules[nterm] separator '\n  | '}${call rhs(rule)}${end}
+;
+
+${end}
+
+x
+${template rhs(rule)-}
+${foreach sym in rule.getRight() separator ' '}${sym.target.name}${end-}
+${if rule.getAction()}
+			${call parserAction for rule-}${end-}
+${end}
+
+${template parserAction-}
+${eval getAction()-}
+${end}
+
+
+${query symText(property) =
+	isVal = property == 'value',
+	suffix = isVal ? '' : '.' + property,
+	self.rightOffset == -1
+	? (isVal ? 'null' : '-1')
+	: (isVal ? '$' : '@') + (self.isLeft ? '$' : self.leftOffset) + suffix }
+
+${template symAccess(property)-}
+${if property == 'value'-}
+${symbol->type() ? '((' + symbol->type() + ')' + self->symText(property) + ')' : self->symText(property) -}
+${else-}
+${self->symText(property)-}
+${end-}
+${end}
+
+${cached query type() = self.type is LiRawAstType ? self.type : null }

@@ -28,6 +28,7 @@ public class ActionSymbol extends DefaultIxObject {
 	final RhsSymbol ref;
 	final boolean isLeft;
 	final int rightOffset;
+	final int leftOffset;
 	private final IEvaluationStrategy evaluationStrategy;
 	private final EvaluationContext context;
 	private final String templatePackage;
@@ -35,13 +36,14 @@ public class ActionSymbol extends DefaultIxObject {
 	private final TMGrammar grammar;
 
 	public ActionSymbol(TMGrammar grammar, Symbol symbol, RhsSymbol ref, boolean isLeft, int rightOffset,
-						IEvaluationStrategy strategy, EvaluationContext context, String templatePackage,
+						int leftOffset, IEvaluationStrategy strategy, EvaluationContext context, String templatePackage,
 						SourceElement caller) {
 		this.grammar = grammar;
 		this.symbol = symbol;
 		this.ref = ref;
 		this.isLeft = isLeft;
 		this.rightOffset = rightOffset;
+		this.leftOffset = leftOffset;
 		evaluationStrategy = strategy;
 		this.context = context;
 		this.templatePackage = templatePackage;
@@ -83,6 +85,9 @@ public class ActionSymbol extends DefaultIxObject {
 		}
 		if (id.equals("rightOffset")) {
 			return rightOffset;
+		}
+		if (id.equals("leftOffset")) {
+			return leftOffset;
 		}
 		ITemplate templ = (ITemplate) evaluationStrategy.loadEntity(templatePackage + ".symAccess",
 				IBundleEntity.KIND_TEMPLATE, null);

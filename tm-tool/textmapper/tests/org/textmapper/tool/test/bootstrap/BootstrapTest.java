@@ -90,6 +90,11 @@ public class BootstrapTest {
 				new String[]{"BisonLexer.java", "BisonParser.java", "BisonTree.java"}, 0);
 	}
 
+	@Test
+	public void testBison1Tm() {
+		bootstrap("tests/org/textmapper/tool/test/bootstrap/bison", "bison1.tm", new String[0],
+				new String[]{"bison1.y"}, 0);
+	}
 
 	@Test
 	public void testSampleA() {

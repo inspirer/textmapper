@@ -121,7 +121,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					return TMDataUtil.getCode(rule);
 				}
 				if ("left".equals(methodName)) {
-					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, evaluationStrategy, rootContext,
+					return new ActionSymbol(grammar, rule.getLeft(), null, true, 0, 0, evaluationStrategy, rootContext,
 							templatePackage, caller);
 				}
 				if ("sourceSymbols".equals(methodName)) {
@@ -134,7 +134,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 						throw new EvaluationException(methodName + "() cannot be used on empty rule");
 					}
 					int i = methodName.charAt(0) == 'f' ? 0 : array.length - 1;
-					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, array.length - 1 - i,
+					return new ActionSymbol(grammar, array[i].getTarget(), array[i], false, array.length - 1 - i, i,
 							evaluationStrategy, rootContext, templatePackage, caller);
 				}
 			}
@@ -213,14 +213,15 @@ public class GrammarIxFactory extends JavaIxFactory {
 				RhsSymbol ref = sourceSymbols[i];
 
 				RhsSymbol[] right = rule.getRight();
-				int rightOffset = -1;
+				int rightOffset = -1, leftOffset = -1;
 				for (i = 0; i < right.length; i++) {
 					if (right[i] == ref) {
+						leftOffset = i;
 						rightOffset = right.length - 1 - i;
 						break;
 					}
 				}
-				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset,
+				return new ActionSymbol(grammar, ref.getTarget(), ref, false, rightOffset, leftOffset,
 						evaluationStrategy, rootContext, templatePackage, caller);
 			} else if (index instanceof String) {
 				return grammar.getAnnotation(rule, (String) index);
@@ -246,7 +247,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 				}
 
 				assert result == null : "internal error in RuleUtil.getSymbols()";
-				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i,
+				result = new ActionSymbol(grammar, right[i].getTarget(), right[i], false, right.length - 1 - i, i,
 						evaluationStrategy, rootContext, templatePackage, caller);
 			}
 
@@ -255,7 +256,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 
 			final RhsSymbol first = matching.iterator().next();
-			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, evaluationStrategy,
+			return new ActionSymbol(grammar, first.getTarget(), first, false, -1, -1, evaluationStrategy,
 					rootContext, templatePackage, caller);
 		}
 	}

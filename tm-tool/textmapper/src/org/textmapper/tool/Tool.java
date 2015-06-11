@@ -26,7 +26,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 import java.io.*;
 
 /**
- * Main console entry point for Textmapper engine.
+ * Main console entry point for the Textmapper engine.
  */
 public class Tool {
 

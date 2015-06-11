@@ -1,0 +1,13 @@
+class Global {
+	common.Context* context[1];
+}
+
+class Options extends common.Options {
+	string module[notempty; identifier];
+}
+
+class AnnotateReference {
+}
+
+class AnnotateSymbol extends common.AnnotateSymbol {
+}
