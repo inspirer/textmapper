@@ -33,7 +33,7 @@ public class TmSymbolReference extends TmElement implements PsiReference {
 	}
 
 	public String getReferenceText() {
-		return getText();
+		return getFirstChild().getText();
 	}
 
 	public PsiElement resolve() {
@@ -60,12 +60,12 @@ public class TmSymbolReference extends TmElement implements PsiReference {
 	}
 
 	public TextRange getRangeInElement() {
-		return new TextRange(0, getTextLength());
+		return new TextRange(0, getFirstChild().getTextLength());
 	}
 
 	@NotNull
 	public String getCanonicalText() {
-		return getText();
+		return getReferenceText();
 	}
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {

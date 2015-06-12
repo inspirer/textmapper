@@ -23,52 +23,52 @@ import org.textmapper.idea.lang.syntax.lexer.TMElementType;
 import org.textmapper.tool.parser.TMParser.Nonterminals;
 
 public interface TextmapperElementTypes {
-	final IFileElementType FILE = new IFileElementType(TMFileType.TM_LANGUAGE);
-	public static final IElementType GRAMMAR = new TMElementType(Nonterminals.input, "grammar");
+	IFileElementType FILE = new IFileElementType(TMFileType.TM_LANGUAGE);
+	IElementType GRAMMAR = new TMElementType(Nonterminals.input, "grammar");
 
-	public static final IElementType HEADER = new TMElementType(Nonterminals.header, "header");
-	public static final IElementType IMPORT = new TMElementType(Nonterminals.import_, "import");
-	public static final IElementType OPTION = new TMElementType(Nonterminals.option, "option");
+	IElementType HEADER = new TMElementType(Nonterminals.header, "header");
+	IElementType IMPORT = new TMElementType(Nonterminals.import_, "import");
+	IElementType OPTION = new TMElementType(Nonterminals.option, "option");
 
-	public static final IElementType LEXEM = new TMElementType(Nonterminals.lexeme, "lexem");
-	public static final IElementType NAMED_PATTERN = new TMElementType(Nonterminals.named_pattern, "pattern");
-	public static final IElementType STATE_SELECTOR = new TMElementType(Nonterminals.state_selector, "lexer state selector");
-	public static final IElementType LEXEM_ATTRS = new TMElementType(Nonterminals.lexeme_attrs, "lexeme attrs");
-	public static final IElementType LEXER_STATE = new TMElementType(Nonterminals.lexer_state, "lexer state");
-	public static final IElementType LEXER_DIRECTIVE = new TMElementType(Nonterminals.lexer_directive, "lexer directive");
+	IElementType LEXEM = new TMElementType(Nonterminals.lexeme, "lexem");
+	IElementType NAMED_PATTERN = new TMElementType(Nonterminals.named_pattern, "pattern");
+	IElementType STATE_SELECTOR = new TMElementType(Nonterminals.state_selector, "lexer state selector");
+	IElementType LEXEM_ATTRS = new TMElementType(Nonterminals.lexeme_attrs, "lexeme attrs");
+	IElementType LEXER_STATE = new TMElementType(Nonterminals.lexer_state, "lexer state");
+	IElementType LEXER_DIRECTIVE = new TMElementType(Nonterminals.lexer_directive, "lexer directive");
 
-	public static final IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
-	public static final IElementType NONTERM_PARAM = new TMElementType(Nonterminals.nonterm_param, "nonterminal parameter definition");
-	public static final IElementType NONTERM_PARAMS = new TMElementType(Nonterminals.nonterm_params, "nonterminal parameters");
-	public static final IElementType NONTERM_TYPE = new TMElementType(Nonterminals.nonterm_type, "nonterminal type");
-	public static final IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
+	IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
+	IElementType NONTERM_PARAM = new TMElementType(Nonterminals.nonterm_param, "nonterminal parameter definition");
+	IElementType NONTERM_PARAMS = new TMElementType(Nonterminals.nonterm_params, "nonterminal parameters");
+	IElementType NONTERM_TYPE = new TMElementType(Nonterminals.nonterm_type, "nonterminal type");
+	IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
 
-	public static final IElementType RULE = new TMElementType(Nonterminals.rule0, "rule");
-	public static final IElementType RHS_PREFIX = new TMElementType(Nonterminals.rhsPrefix, "rhs prefix");
-	public static final IElementType RHS_SUFFIX = new TMElementType(Nonterminals.rhsSuffix, "rhs suffix");
-	public static final IElementType RULE_ACTION = new TMElementType(Nonterminals.ruleAction, "rule action");
-	public static final IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
-	public static final IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
-	public static final IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
+	IElementType RULE = new TMElementType(Nonterminals.rule0, "rule");
+	IElementType RHS_PREFIX = new TMElementType(Nonterminals.rhsPrefix, "rhs prefix");
+	IElementType RHS_SUFFIX = new TMElementType(Nonterminals.rhsSuffix, "rhs suffix");
+	IElementType RULE_ACTION = new TMElementType(Nonterminals.ruleAction, "rule action");
+	IElementType RHS_PART = new TMElementType(Nonterminals.rhsAnnotated, "rhs part");
+	IElementType RHS_UNORDERED = new TMElementType(Nonterminals.rhsUnordered, "rhs unordered");
+	IElementType RHS_PRIMARY = new TMElementType(Nonterminals.rhsPrimary, "rhs primary");
 
-	public static final IElementType ACTION = new TMElementType(Nonterminals.command, "action");
-	public static final IElementType TYPE = new TMElementType(Nonterminals.type, "type");
-	public static final IElementType ANNOTATION = new TMElementType(Nonterminals.annotation, "annotation");
-	public static final IElementType EXPRESSION = new TMElementType(Nonterminals.expression, "expression");
-	public static final IElementType PREDICATE = new TMElementType(Nonterminals.predicate, "predicate");
-	public static final IElementType PREDICATE_EXPRESSION = new TMElementType(Nonterminals.predicate_expression, "predicate expression");
-	public static final IElementType SYMREF = new TMElementType(Nonterminals.symref, "symbol reference");
-	public static final IElementType SYMREF_ARGS = new TMElementType(Nonterminals.symref_args, "symbol arguments");
-	public static final IElementType SYMREF_NA = new TMElementType(Nonterminals.symref_noargs, "symbol reference");
-	public static final IElementType STATEREF = new TMElementType(Nonterminals.stateref, "state reference");
-	public static final IElementType IDENTIFIER = new TMElementType(Nonterminals.identifier, "symbol");
-	public static final IElementType QUALIFIED_ID = new TMElementType(Nonterminals.qualified_id, "qualified identifier");
+	IElementType ACTION = new TMElementType(Nonterminals.command, "action");
+	IElementType TYPE = new TMElementType(Nonterminals.type, "type");
+	IElementType ANNOTATION = new TMElementType(Nonterminals.annotation, "annotation");
+	IElementType EXPRESSION = new TMElementType(Nonterminals.expression, "expression");
+	IElementType PREDICATE = new TMElementType(Nonterminals.predicate, "predicate");
+	IElementType PREDICATE_EXPRESSION = new TMElementType(Nonterminals.predicate_expression, "predicate expression");
+	IElementType SYMREF = new TMElementType(Nonterminals.symref, "symbol reference");
+	IElementType SYMREF_ARGS = new TMElementType(Nonterminals.symref_args, "symbol arguments");
+	IElementType SYMREF_NA = new TMElementType(Nonterminals.symref_noargs, "symbol reference");
+	IElementType STATEREF = new TMElementType(Nonterminals.stateref, "state reference");
+	IElementType IDENTIFIER = new TMElementType(Nonterminals.identifier, "symbol");
+	IElementType QUALIFIED_ID = new TMElementType(Nonterminals.qualified_id, "qualified identifier");
 
-	public static final IElementType PARAMREF = new TMElementType(Nonterminals.param_ref, "parameter reference");
-	public static final IElementType KEYVAL = new TMElementType(Nonterminals.keyval_arg, "key-value argument");
-	public static final IElementType MAP_ENTRY = new TMElementType(Nonterminals.map_entry, "map entry");
+	IElementType PARAMREF = new TMElementType(Nonterminals.param_ref, "parameter reference");
+	IElementType KEYVAL = new TMElementType(Nonterminals.keyval_arg, "key-value argument");
+	IElementType MAP_ENTRY = new TMElementType(Nonterminals.map_entry, "map entry");
 
-	public static final IElementType[] allElements = {
+	IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, LEXER_DIRECTIVE,
 			NONTERM, NONTERM_PARAM, NONTERM_PARAMS, NONTERM_TYPE, DIRECTIVE,
