@@ -33,7 +33,11 @@ import java.util.List;
 public class TmElementsFactory {
 
 	public static TmIdentifier createIdentifier(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "language a;%%lexer\ntoken: / /\n" + name + " ::= token ;";
+		@NonNls String text = "language a;\n" +
+				":: lexer\n" +
+				"token: / /\n" +
+				":: parser\n" +
+				name + " ::= token ;";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonterm> s = grammar.getNonterms();
@@ -44,7 +48,12 @@ public class TmElementsFactory {
 	}
 
 	public static TmSymbolReference createSymbolReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "language a;%%lexer\n%% parser\n" + name + ": / /\ninput ::= " + name + " ;";
+		@NonNls String text = "language a;\n" +
+				":: lexer\n" +
+				name + ": / /\n\n" +
+				":: parser\n" +
+				"input ::= " + name + " ;";
+
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmNonterm> s = grammar.getNonterms();
@@ -52,12 +61,7 @@ public class TmElementsFactory {
 			throw new IncorrectOperationException();
 		}
 
-		TmRuleGroup ruleGroup = s.get(0).getRuleGroup();
-		if (ruleGroup == null) {
-			throw new IncorrectOperationException();
-		}
-
-		List<TmRule> rules = ruleGroup.getRules();
+		List<TmRule> rules = s.get(0).getRules();
 		if (rules == null || rules.size() != 1) {
 			throw new IncorrectOperationException();
 		}
@@ -81,7 +85,8 @@ public class TmElementsFactory {
 	}
 
 	public static TmStateReference createStateReference(@NotNull Project p, @NotNull String name) throws IncorrectOperationException {
-		@NonNls String text = "language a;%%lexer\n[" + name + "=>" + name + "]";
+		@NonNls String text = "language a;\n" +
+						":: lexer\n[" + name + "=>" + name + "]";
 		TMPsiFile aFile = createDummyFile(p, text);
 		TmGrammar grammar = aFile.getGrammar();
 		List<TmLexerStateSelector> s = grammar.getStateSelectors();

@@ -84,8 +84,6 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmLexerState(node);
 			case Nonterminals.rule0:
 				return new TmRule(node);
-			case Nonterminals.rules:
-				return new TmRuleGroup(node);
 			case Nonterminals.rhsPrefix:
 				return new TmRhsPrefix(node);
 			case Nonterminals.ruleAction:

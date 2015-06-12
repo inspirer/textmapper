@@ -20,6 +20,8 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * Gryaznov Evgeny, 1/26/11
  */
@@ -33,7 +35,7 @@ public class TmNonterm extends TmNamedElement {
 		return PsiTreeUtil.getChildOfType(this, TmNontermType.class);
 	}
 
-	public TmRuleGroup getRuleGroup() {
-		return PsiTreeUtil.getChildOfType(this, TmRuleGroup.class);
+	public List<TmRule> getRules() {
+		return PsiTreeUtil.getChildrenOfTypeAsList(this, TmRule.class);
 	}
 }

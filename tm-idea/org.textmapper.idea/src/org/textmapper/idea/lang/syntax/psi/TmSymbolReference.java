@@ -22,6 +22,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
+import org.textmapper.idea.lang.syntax.lexer.TmToken;
 
 /**
  * Gryaznov Evgeny, 1/25/11
@@ -70,7 +71,10 @@ public class TmSymbolReference extends TmElement implements PsiReference {
 
 	public PsiElement handleElementRename(String newElementName) throws IncorrectOperationException {
 		boolean isOptional = getCanonicalText().endsWith("opt");
-		return replace(TmElementsFactory.createSymbolReference(getProject(), isOptional ? newElementName + "opt" : newElementName));
+		if (isOptional) newElementName += "opt";
+		PsiElement elementAt = this.findElementAt(0);
+		assert elementAt != null && elementAt instanceof TmToken;
+		return elementAt.replace(TmElementsFactory.createIdentifier(getProject(), newElementName));
 	}
 
 	public PsiElement bindToElement(@NotNull PsiElement element) throws IncorrectOperationException {
