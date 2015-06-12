@@ -33,7 +33,7 @@ a4:  /a4/
 %nonassoc a4;
 
 input ::=
-	  list<assignment>
+	  list_of<assignment>
 ;
 
 assignment ::=
@@ -41,7 +41,7 @@ assignment ::=
 ;
 
 object ::=
-	  kw_object ('(' list<key_value>  ')')?
+	  kw_object ('(' list_of<key_value>  ')')?
 ;
 
 key_value ::=
@@ -50,4 +50,4 @@ key_value ::=
 
 %param T symbol;
 
-list<T> ::=  (T separator ',')+ ;
+list_of<T> ::=  (T separator ',')+ ;

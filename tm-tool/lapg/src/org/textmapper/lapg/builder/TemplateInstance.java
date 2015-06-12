@@ -76,7 +76,8 @@ class TemplateInstance {
 		if (instance != null) return instance;
 
 		if (template.getNumberOfInstances() > 1) {
-			instance = builder.addAnonymous(template.getName() + environment.getNonterminalSuffix(), template);
+			instance = builder.addAnonymous(LiUtil.getSymbolName(template) + environment.getNonterminalSuffix(),
+					template);
 		} else {
 			instance = template;
 		}
@@ -192,9 +193,19 @@ class TemplateInstance {
 	void allocate() {
 		if (template.getNumberOfInstances() > 1) {
 			getOrCreateNonterminal();
-			((LiNonterminal)instance).setDefinition((LiRhsRoot) clone(template.getDefinition()));
+			((LiNonterminal) instance).setDefinition((LiRhsRoot) clone(template.getDefinition()));
 		} else {
 			updateExistingNonterminal();
+		}
+	}
+
+	void updateNameHint() {
+		Nonterminal instance = this.instance != null ? this.instance : this.template;
+		if (instance.getName() == null) {
+			String hint = instance.getDefinition().getProvisionalName();
+			if (hint != null) {
+				instance.putUserData(Nonterminal.UD_NAME_HINT, hint);
+			}
 		}
 	}
 }

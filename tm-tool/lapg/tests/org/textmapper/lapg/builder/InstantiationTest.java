@@ -36,36 +36,36 @@ public class InstantiationTest {
 		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", null);
 		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, null);
 		env = env.extend(s1, "abcd");
-		assertEquals("_s1-abcd", env.getNonterminalSuffix());
+		assertEquals("_s1abcd", env.getNonterminalSuffix());
 
 		env = env.extend(s1, "'");
-		assertEquals("_s1-Apostrophe", env.getNonterminalSuffix());
+		assertEquals("_s1Apostrophe", env.getNonterminalSuffix());
 
 		env = env.extend(s1, "q-d123");
-		assertEquals("_s1-q-d123", env.getNonterminalSuffix());
+		assertEquals("_s1q-d123", env.getNonterminalSuffix());
 
 		env = env.extend(s1, "");
-		assertEquals("_s1-", env.getNonterminalSuffix());
+		assertEquals("_s1", env.getNonterminalSuffix());
 
 		env = env.extend(s2, "q");
-		assertEquals("_s1-_s2-q", env.getNonterminalSuffix());
+		assertEquals("_s1_s2q", env.getNonterminalSuffix());
 
 
 		// Booleans
 		TemplateParameter b1 = b.addParameter(Type.Bool, "b1", null, null);
 		env = env.extend(b1, true);
-		assertEquals("_b1_s1-_s2-q", env.getNonterminalSuffix());
+		assertEquals("_b1_s1_s2q", env.getNonterminalSuffix());
 
 		env = env.extend(b1, false);
-		assertEquals("_nonb1_s1-_s2-q", env.getNonterminalSuffix());
+		assertEquals("_nonb1_s1_s2q", env.getNonterminalSuffix());
 
 		// Integers
 		TemplateParameter i = b.addParameter(Type.Integer, "i", null, null);
 		env = env.extend(i, 0);
-		assertEquals("_nonb1_i0_s1-_s2-q", env.getNonterminalSuffix());
+		assertEquals("_nonb1_i0_s1_s2q", env.getNonterminalSuffix());
 
 		env = env.extend(i, 100);
-		assertEquals("_nonb1_i100_s1-_s2-q", env.getNonterminalSuffix());
+		assertEquals("_nonb1_i100_s1_s2q", env.getNonterminalSuffix());
 
 	}
 

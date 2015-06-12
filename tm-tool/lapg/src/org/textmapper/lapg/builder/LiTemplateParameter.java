@@ -53,6 +53,10 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 	@Override
 	public void appendSuffix(StringBuilder sb, Object value) {
 		sb.append("_");
+		if (value instanceof Symbol) {
+			sb.append(((Symbol) value).getName());
+			return;
+		}
 		if (value == Boolean.FALSE) {
 			sb.append("non");
 		}
@@ -61,7 +65,6 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 			sb.append(value.toString());
 		} else if (value instanceof String) {
 			String s = (String) value;
-			sb.append("-");
 			for (int i = 0; i < s.length(); i++) {
 				int c = s.charAt(i);
 				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-' || c >= '0' && c <= '9') {
@@ -70,9 +73,6 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 					sb.append(FormatUtil.getCharacterName((char) c));
 				}
 			}
-		} else if (value instanceof Symbol) {
-			sb.append("-");
-			sb.append(((Symbol) value).getName());
 		}
 	}
 

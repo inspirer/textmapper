@@ -23,7 +23,7 @@
 %%
 
 input :
-  list_TMinusassignment
+  list_of_assignment
 ;
 
 assignment :
@@ -34,7 +34,7 @@ assignment :
 ;
 
 object :
-  kw_object Lparen list_TMinuskey_value Rparen
+  kw_object Lparen list_of_key_value Rparen
 | kw_object
 ;
 
@@ -42,8 +42,8 @@ key_value :
   icon Colon sconopt
 ;
 
-null_TMinuskey_value :
-  null_TMinuskey_value Comma key_value
+key_value_list_Comma_separated :
+  key_value_list_Comma_separated Comma key_value
 | key_value
 ;
 
@@ -52,16 +52,16 @@ sconopt :
 | scon
 ;
 
-list_TMinuskey_value :
-  null_TMinuskey_value
+list_of_key_value :
+  key_value_list_Comma_separated
 ;
 
-list_TMinusassignment :
-  null_TMinusassignment
+list_of_assignment :
+  assignment_list_Comma_separated
 ;
 
-null_TMinusassignment :
-  null_TMinusassignment Comma assignment
+assignment_list_Comma_separated :
+  assignment_list_Comma_separated Comma assignment
 | assignment
 ;
 

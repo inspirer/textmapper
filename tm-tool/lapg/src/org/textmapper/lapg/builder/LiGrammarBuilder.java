@@ -51,7 +51,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
 	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
 	private final Map<Object, Nonterminal> instantiations = new HashMap<Object, Nonterminal>();
-	private final Map<Nonterminal, String> anonymousNames = new LinkedHashMap<Nonterminal, String>();
+	private final Set<Nonterminal> anonymousSymbols = new LinkedHashSet<Nonterminal>();
 	private final List<Problem> problems = new ArrayList<Problem>();
 
 	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
@@ -79,7 +79,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public Nonterminal addAnonymous(String nameHint, SourceElement origin) {
 		LiNonterminal nonterm = addSymbol(new LiNonterminal(null, origin), true);
-		anonymousNames.put(nonterm, nameHint);
+		anonymousSymbols.add(nonterm);
 		nonterm.putUserData(Nonterminal.UD_NAME_HINT, nameHint);
 		return nonterm;
 	}
@@ -706,15 +706,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	private void assignNames() {
 		Map<String, Integer> lastIndex = new HashMap<String, Integer>();
-		for (Entry<Nonterminal, String> e : anonymousNames.entrySet()) {
-			String baseName = e.getValue();
+		for (Nonterminal n : anonymousSymbols) {
+			String baseName = (String) n.getUserData(Nonterminal.UD_NAME_HINT);
 			int index = lastIndex.containsKey(baseName) ? lastIndex.get(baseName) : 0;
 			String name = index == 0 ? baseName : baseName + index;
 			while (symbolsMap.containsKey(name)) {
 				name = baseName + (++index);
 			}
 			lastIndex.put(baseName, index + 1);
-			((LiNonterminal) e.getKey()).setName(name);
+			((LiNonterminal) n).setName(name);
 		}
 	}
 

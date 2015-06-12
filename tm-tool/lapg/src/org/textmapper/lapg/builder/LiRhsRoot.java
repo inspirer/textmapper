@@ -58,6 +58,6 @@ abstract class LiRhsRoot extends LiRhsPart implements RhsRoot {
 
 	@Override
 	public String getProvisionalName() {
-		throw new UnsupportedOperationException();
+		return null;
 	}
 }

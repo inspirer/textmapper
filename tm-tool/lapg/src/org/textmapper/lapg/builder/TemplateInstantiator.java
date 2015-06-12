@@ -330,6 +330,9 @@ class TemplateInstantiator {
 		for (TemplateInstance i : instances.values()) {
 			i.allocate();
 		}
+		for (TemplateInstance i : instances.values()) {
+			i.updateNameHint();
+		}
 		for (int i = 0; i < nonterminals; i++) {
 			LiNonterminal nonterm = (LiNonterminal) symbols[i + terminals];
 			int num = nonterm.getNumberOfInstances();
