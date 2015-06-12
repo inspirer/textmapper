@@ -21,7 +21,16 @@ comment:  /#.*(\r?\n)?/   (space)
 ',':        /,/
 ')':        /\)/
 
+a1:  /a1/
+a2:  /a2/
+a3:  /a3/
+a4:  /a4/
+
 :: parser
+
+%left a1 a2;
+%right a3;
+%nonassoc a4;
 
 input ::=
 	  list<assignment>
@@ -36,7 +45,7 @@ object ::=
 ;
 
 key_value ::=
-	  icon  ':' scon
+	  icon  ':' sconopt
 ;
 
 %param T symbol;
