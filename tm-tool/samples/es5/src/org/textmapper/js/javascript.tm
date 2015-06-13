@@ -1,11 +1,13 @@
-language javascript(java);
+language javascript(bison);
 
-prefix = "Js"
-breaks = true
-gentree = true
-genast = false
-positions = "line,offset"
-endpositions = "offset"
+module = "javascript"
+
+#prefix = "Js"
+#breaks = true
+#gentree = true
+#genast = false
+#positions = "line,offset"
+#endpositions = "offset"
 
 :: lexer
 
