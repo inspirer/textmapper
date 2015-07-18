@@ -148,8 +148,8 @@ public class BootstrapTest {
 
 	@Test
 	public void testJavascriptTm() {
-		bootstrap("../samples/es5/src/org/textmapper/js", "javascript.tm", new String[0], new String[]{
-				"JsTree.java", "JsParser.java", "JsLexer.java"}, 1);
+		bootstrap("../samples/es5/src/org/textmapper/js", "javascript.tm", new String[0],
+				new String[]{"javascript.y"}, 1);
 	}
 
 	@Test
