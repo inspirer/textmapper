@@ -75,9 +75,10 @@ class TemplateInstance {
 	Nonterminal getOrCreateNonterminal() {
 		if (instance != null) return instance;
 
-		if (template.getNumberOfInstances() > 1) {
-			instance = builder.addAnonymous(LiUtil.getSymbolName(template) + environment.getNonterminalSuffix(),
-					template);
+		if (template.isTemplate()) {
+			String nameHint = LiUtil.getSymbolName(template) +
+					(template.getNumberOfInstances() > 1 ? environment.getNonterminalSuffix() : "");
+			instance = builder.addAnonymous(nameHint, template);
 		} else {
 			instance = template;
 		}
@@ -150,7 +151,9 @@ class TemplateInstance {
 				if (p instanceof LiRootRhsChoice) {
 					LiRootRhsChoice target = new LiRootRhsChoice(instance);
 					for (LiRhsPart source : ((LiRootRhsChoice) p).getParts()) {
-						target.addRule(clone(source));
+						LiRhsPart copy = clone(source);
+						if (copy == null) continue;
+						target.addRule(copy);
 					}
 					return target;
 				} else {
@@ -191,8 +194,8 @@ class TemplateInstance {
 	}
 
 	void allocate() {
-		if (template.getNumberOfInstances() > 1) {
-			getOrCreateNonterminal();
+		getOrCreateNonterminal();
+		if (template.isTemplate()) {
 			((LiNonterminal) instance).setDefinition((LiRhsRoot) clone(template.getDefinition()));
 		} else {
 			updateExistingNonterminal();

@@ -293,6 +293,8 @@ class TemplateInstantiator {
 			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(), ((RhsCast) p).getArgs());
 		} else if (p instanceof RhsSet) {
 			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(), ((RhsSet) p).getArgs());
+		} else if (p instanceof RhsConditional) {
+			context.getTemplate().setTemplate();
 		}
 		final Iterable<RhsPart> children = RhsUtil.getChildren(p);
 		if (children == null) return;
@@ -327,12 +329,6 @@ class TemplateInstantiator {
 		while ((instance = queue.poll()) != null) {
 			instantiatePart(instance, instance.getTemplate().getDefinition());
 		}
-		for (TemplateInstance i : instances.values()) {
-			i.allocate();
-		}
-		for (TemplateInstance i : instances.values()) {
-			i.updateNameHint();
-		}
 		for (int i = 0; i < nonterminals; i++) {
 			LiNonterminal nonterm = (LiNonterminal) symbols[i + terminals];
 			int num = nonterm.getNumberOfInstances();
@@ -341,6 +337,12 @@ class TemplateInstantiator {
 			} else if (num == 0) {
 				nonterm.setUnused();
 			}
+		}
+		for (TemplateInstance i : instances.values()) {
+			i.allocate();
+		}
+		for (TemplateInstance i : instances.values()) {
+			i.updateNameHint();
 		}
 	}
 }

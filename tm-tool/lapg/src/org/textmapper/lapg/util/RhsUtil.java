@@ -230,10 +230,10 @@ public class RhsUtil {
 			case Ignored:
 				return isNullable(((RhsIgnored) part).getInner(), dependencies);
 			case Conditional:
-				throw new UnsupportedOperationException();
+				throw new IllegalStateException("Unexpected templates left-over.");
 		}
 
-		throw new IllegalStateException();
+		throw new IllegalStateException("Unknown part.");
 	}
 
 	public static RhsChoice asChoice(final RhsPart... parts) {
