@@ -20,11 +20,11 @@ package org.textmapper.lapg.api;
  */
 public interface LexerData {
 
-	public int getNchars();
+	int getNchars();
 
-	public int[] getChar2no();
+	int[] getChar2no();
 
-	public int[] getGroupset();
+	int[] getGroupset();
 
-	public int[] getChange();
+	int[] getChange();
 }

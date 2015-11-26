@@ -15,17 +15,17 @@ public class StatesLexer {
 	}
 
 	public interface States {
-		public static final int initial = 0;
-		public static final int a = 1;
-		public static final int b = 2;
-		public static final int c = 3;
-		public static final int d = 4;
+		int initial = 0;
+		int a = 1;
+		int b = 2;
+		int c = 3;
+		int d = 4;
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int x = 1;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int x = 1;
 	}
 
 	public interface ErrorReporter {

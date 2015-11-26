@@ -72,18 +72,18 @@ public class SetParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 10;
-		static final int abcdef = 11;
-		static final int pair = 12;
-		static final int test2 = 13;
-		static final int recursive = 14;
-		static final int helper = 15;
-		static final int abcdef_list = 16;
-		static final int setof_first_pair = 17;
-		static final int setof_pair = 18;
-		static final int setof_ApostrophehApostrophe = 19;
-		static final int setof_first_recursive = 20;
-		static final int setof_recursive = 21;
+		int input = 10;
+		int abcdef = 11;
+		int pair = 12;
+		int test2 = 13;
+		int recursive = 14;
+		int helper = 15;
+		int abcdef_list = 16;
+		int setof_first_pair = 17;
+		int setof_pair = 18;
+		int setof_ApostrophehApostrophe = 19;
+		int setof_first_recursive = 20;
+		int setof_recursive = 21;
 	}
 
 	/**

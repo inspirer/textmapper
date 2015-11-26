@@ -20,9 +20,9 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public interface ITmaNode extends TextSourceElement {
 	String getLocation();
-	public int getLine();
-	public int getOffset();
-	public int getEndoffset();
+	int getLine();
+	int getOffset();
+	int getEndoffset();
 	TextSource getSource();
 	String getResourceName();
 	String getText();

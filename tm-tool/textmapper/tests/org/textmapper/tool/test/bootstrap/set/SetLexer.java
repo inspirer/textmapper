@@ -16,17 +16,17 @@ public class SetLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int char_a = 1;
-		public static final int char_b = 2;
-		public static final int char_c = 3;
-		public static final int char_d = 4;
-		public static final int char_e = 5;
-		public static final int char_f = 6;
-		public static final int char_g = 7;
-		public static final int char_h = 8;
-		public static final int char_i = 9;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int char_a = 1;
+		int char_b = 2;
+		int char_c = 3;
+		int char_d = 4;
+		int char_e = 5;
+		int char_f = 6;
+		int char_g = 7;
+		int char_h = 8;
+		int char_i = 9;
 	}
 
 	public interface ErrorReporter {

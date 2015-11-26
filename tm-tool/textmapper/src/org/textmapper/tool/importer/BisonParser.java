@@ -268,36 +268,36 @@ public class BisonParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 68;
-		static final int prologue_declaration = 69;
-		static final int prologue_directive = 70;
-		static final int grammar_declaration = 71;
-		static final int code_props_type = 72;
-		static final int symbol_declaration = 73;
-		static final int prec_declaration = 74;
-		static final int prec_directive = 75;
-		static final int tag_op = 76;
-		static final int symbol_prec = 77;
-		static final int symbol_or_tag = 78;
-		static final int tag = 79;
-		static final int symbol_def = 80;
-		static final int grammar_part = 81;
-		static final int nonterm_rules = 82;
-		static final int rules = 83;
-		static final int rhsPart = 84;
-		static final int named_ref_op = 85;
-		static final int variable = 86;
-		static final int value = 87;
-		static final int symbol = 88;
-		static final int prologue_declaration_optlist = 89;
-		static final int grammar_part_list = 90;
-		static final int valueopt = 91;
-		static final int ApostropheLcurlyDotDotDotRcurlyApostrophe_list = 92;
-		static final int symbol_or_tag_list = 93;
-		static final int symbol_def_list = 94;
-		static final int symbol_list = 95;
-		static final int symbol_prec_list = 96;
-		static final int rhsPart_optlist = 97;
+		int input = 68;
+		int prologue_declaration = 69;
+		int prologue_directive = 70;
+		int grammar_declaration = 71;
+		int code_props_type = 72;
+		int symbol_declaration = 73;
+		int prec_declaration = 74;
+		int prec_directive = 75;
+		int tag_op = 76;
+		int symbol_prec = 77;
+		int symbol_or_tag = 78;
+		int tag = 79;
+		int symbol_def = 80;
+		int grammar_part = 81;
+		int nonterm_rules = 82;
+		int rules = 83;
+		int rhsPart = 84;
+		int named_ref_op = 85;
+		int variable = 86;
+		int value = 87;
+		int symbol = 88;
+		int prologue_declaration_optlist = 89;
+		int grammar_part_list = 90;
+		int valueopt = 91;
+		int ApostropheLcurlyDotDotDotRcurlyApostrophe_list = 92;
+		int symbol_or_tag_list = 93;
+		int symbol_def_list = 94;
+		int symbol_list = 95;
+		int symbol_prec_list = 96;
+		int rhsPart_optlist = 97;
 	}
 
 	/**

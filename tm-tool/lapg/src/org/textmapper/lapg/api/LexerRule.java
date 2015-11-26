@@ -22,11 +22,11 @@ import org.textmapper.lapg.api.regex.RegexPart;
  */
 public interface LexerRule extends SourceElement, UserDataHolder {
 
-	static final int KIND_NONE = 0;
-	static final int KIND_CLASS = 1;
-	static final int KIND_SOFT = 2;
-	static final int KIND_SPACE = 3;
-	static final int KIND_LAYOUT = 4;
+	int KIND_NONE = 0;
+	int KIND_CLASS = 1;
+	int KIND_SOFT = 2;
+	int KIND_SPACE = 3;
+	int KIND_LAYOUT = 4;
 
 	int getIndex();
 

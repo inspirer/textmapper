@@ -23,20 +23,20 @@ public interface IxObject {
 	/*
 	 * Returns value of <propertyName> property of <obj>.
 	 */
-	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException;
+	Object getProperty(SourceElement caller, String propertyName) throws EvaluationException;
 
 	/*
 	 * Returns a result of <obj>.methodName(args) call.
 	 */
-	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException;
+	Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException;
 
 	/*
 	 * Returns indexed value.
 	 */
-	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException;
+	Object getByIndex(SourceElement caller, Object index) throws EvaluationException;
 
 	/*
 	 * "is" expression
 	 */
-	public boolean is(String qualifiedName) throws EvaluationException;
+	boolean is(String qualifiedName) throws EvaluationException;
 }

@@ -30,11 +30,11 @@ public abstract class NoparserLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int Lcurly = 1;
-		public static final int _skip = 2;
-		public static final int Rcurly = 3;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int Lcurly = 1;
+		int _skip = 2;
+		int Rcurly = 3;
 	}
 
 	public interface ErrorReporter {

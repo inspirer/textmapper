@@ -115,14 +115,14 @@ public class RegexDefParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 22;
-		static final int pattern = 23;
-		static final int part = 24;
-		static final int primitive_part = 25;
-		static final int setsymbol = 26;
-		static final int charset = 27;
-		static final int parts = 28;
-		static final int partsopt = 29;
+		int input = 22;
+		int pattern = 23;
+		int part = 24;
+		int primitive_part = 25;
+		int setsymbol = 26;
+		int charset = 27;
+		int parts = 28;
+		int partsopt = 29;
 	}
 
 	/**

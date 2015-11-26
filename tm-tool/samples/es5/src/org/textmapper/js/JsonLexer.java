@@ -16,20 +16,20 @@ public class JsonLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int Lcurly = 1;
-		public static final int Rcurly = 2;
-		public static final int Lsquare = 3;
-		public static final int Rsquare = 4;
-		public static final int Colon = 5;
-		public static final int Comma = 6;
-		public static final int space = 7;
-		public static final int JSONString = 8;
-		public static final int JSONNumber = 9;
-		public static final int _null = 10;
-		public static final int _true = 11;
-		public static final int _false = 12;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int Lcurly = 1;
+		int Rcurly = 2;
+		int Lsquare = 3;
+		int Rsquare = 4;
+		int Colon = 5;
+		int Comma = 6;
+		int space = 7;
+		int JSONString = 8;
+		int JSONNumber = 9;
+		int _null = 10;
+		int _true = 11;
+		int _false = 12;
 	}
 
 	public interface ErrorReporter {

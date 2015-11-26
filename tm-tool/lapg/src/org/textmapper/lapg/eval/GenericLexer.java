@@ -34,8 +34,8 @@ public class GenericLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
+		int Unavailable_ = -1;
+		int eoi = 0;
 	}
 
 	public interface ErrorReporter {

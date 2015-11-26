@@ -30,12 +30,12 @@ public class UnicodeTestLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int identifier = 1;
-		public static final int icon = 2;
-		public static final int string = 3;
-		public static final int _skip = 4;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int identifier = 1;
+		int icon = 2;
+		int string = 3;
+		int _skip = 4;
 	}
 
 	public interface ErrorReporter {

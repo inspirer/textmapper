@@ -33,34 +33,34 @@ public class TypesLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int identifier = 1;
-		public static final int scon = 2;
-		public static final int icon = 3;
-		public static final int bcon = 4;
-		public static final int _skip = 5;
-		public static final int DotDot = 6;
-		public static final int Dot = 7;
-		public static final int Mult = 8;
-		public static final int Semicolon = 9;
-		public static final int Comma = 10;
-		public static final int Colon = 11;
-		public static final int Equal = 12;
-		public static final int EqualGreater = 13;
-		public static final int Lcurly = 14;
-		public static final int Rcurly = 15;
-		public static final int Lparen = 16;
-		public static final int Rparen = 17;
-		public static final int Lsquare = 18;
-		public static final int Rsquare = 19;
-		public static final int Lclass = 20;
-		public static final int Lextends = 21;
-		public static final int Lint = 22;
-		public static final int Lbool = 23;
-		public static final int Lstring = 24;
-		public static final int Lset = 25;
-		public static final int Lchoice = 26;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int identifier = 1;
+		int scon = 2;
+		int icon = 3;
+		int bcon = 4;
+		int _skip = 5;
+		int DotDot = 6;
+		int Dot = 7;
+		int Mult = 8;
+		int Semicolon = 9;
+		int Comma = 10;
+		int Colon = 11;
+		int Equal = 12;
+		int EqualGreater = 13;
+		int Lcurly = 14;
+		int Rcurly = 15;
+		int Lparen = 16;
+		int Rparen = 17;
+		int Lsquare = 18;
+		int Rsquare = 19;
+		int Lclass = 20;
+		int Lextends = 21;
+		int Lint = 22;
+		int Lbool = 23;
+		int Lstring = 24;
+		int Lset = 25;
+		int Lchoice = 26;
 	}
 
 	public interface ErrorReporter {

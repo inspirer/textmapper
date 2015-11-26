@@ -181,40 +181,40 @@ public class TypesParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 27;
-		static final int declarations = 28;
-		static final int type_declaration = 29;
-		static final int extends_clause = 30;
-		static final int member_declaration = 31;
-		static final int feature_declaration = 32;
-		static final int method_declaration = 33;
-		static final int parameters = 34;
-		static final int defaultval = 35;
-		static final int modifiers = 36;
-		static final int constraint = 37;
-		static final int string_constraint = 38;
-		static final int strings = 39;
-		static final int string = 40;
-		static final int multiplicity = 41;
-		static final int type_ex = 42;
-		static final int type = 43;
-		static final int expression = 44;
-		static final int literal_expression = 45;
-		static final int structural_expression = 46;
-		static final int expression_list = 47;
-		static final int map_separator = 48;
-		static final int name = 49;
-		static final int name_list = 50;
-		static final int extends_clauseopt = 51;
-		static final int member_declaration_optlist = 52;
-		static final int modifiersopt = 53;
-		static final int defaultvalopt = 54;
-		static final int parametersopt = 55;
-		static final int constraint_list_Semicolon_separated = 56;
-		static final int multiplicity_list_Comma_separated = 57;
-		static final int list_of_identifier_and_2_elements_Comma_separated = 58;
-		static final int list_of_identifier_and_2_elements_Comma_separated_opt = 59;
-		static final int expression_listopt = 60;
+		int input = 27;
+		int declarations = 28;
+		int type_declaration = 29;
+		int extends_clause = 30;
+		int member_declaration = 31;
+		int feature_declaration = 32;
+		int method_declaration = 33;
+		int parameters = 34;
+		int defaultval = 35;
+		int modifiers = 36;
+		int constraint = 37;
+		int string_constraint = 38;
+		int strings = 39;
+		int string = 40;
+		int multiplicity = 41;
+		int type_ex = 42;
+		int type = 43;
+		int expression = 44;
+		int literal_expression = 45;
+		int structural_expression = 46;
+		int expression_list = 47;
+		int map_separator = 48;
+		int name = 49;
+		int name_list = 50;
+		int extends_clauseopt = 51;
+		int member_declaration_optlist = 52;
+		int modifiersopt = 53;
+		int defaultvalopt = 54;
+		int parametersopt = 55;
+		int constraint_list_Semicolon_separated = 56;
+		int multiplicity_list_Comma_separated = 57;
+		int list_of_identifier_and_2_elements_Comma_separated = 58;
+		int list_of_identifier_and_2_elements_Comma_separated_opt = 59;
+		int expression_listopt = 60;
 	}
 
 	/**

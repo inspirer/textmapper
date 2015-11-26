@@ -488,9 +488,9 @@ ${end}
 
 ${template tokensInterface}
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
+		int Unavailable_ = -1;
 ${for i in [0, syntax.terminals - 1]-}
-		public static final int ${syntax.symbols[i].id->java.escapeJavaReserved()} = ${i};
+		int ${syntax.symbols[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
 ${end}
@@ -499,7 +499,7 @@ ${template statesInterface-}
 ${if syntax.lexerStates.size() > 1}
 	public interface States {
 ${foreach state in syntax.lexerStates-}
-		public static final int ${state->stateId()} = ${state.index};
+		int ${state->stateId()} = ${state.index};
 ${end-}
 	}
 ${end-}

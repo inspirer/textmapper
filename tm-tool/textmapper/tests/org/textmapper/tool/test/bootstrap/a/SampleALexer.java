@@ -34,14 +34,14 @@ public class SampleALexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int identifier = 1;
-		public static final int _skip = 2;
-		public static final int Lclass = 3;
-		public static final int Lcurly = 4;
-		public static final int Rcurly = 5;
-		public static final int error = 6;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int identifier = 1;
+		int _skip = 2;
+		int Lclass = 3;
+		int Lcurly = 4;
+		int Rcurly = 5;
+		int error = 6;
 	}
 
 	public interface ErrorReporter {

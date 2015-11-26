@@ -32,35 +32,35 @@ public class RegexDefLexer {
 	}
 
 	public interface States {
-		public static final int initial = 0;
-		public static final int afterChar = 1;
-		public static final int inSet = 2;
+		int initial = 0;
+		int afterChar = 1;
+		int inSet = 2;
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int _char = 1;
-		public static final int escaped = 2;
-		public static final int charclass = 3;
-		public static final int Dot = 4;
-		public static final int Mult = 5;
-		public static final int Plus = 6;
-		public static final int Questionmark = 7;
-		public static final int quantifier = 8;
-		public static final int op_minus = 9;
-		public static final int op_union = 10;
-		public static final int op_intersect = 11;
-		public static final int Lparen = 12;
-		public static final int Or = 13;
-		public static final int Rparen = 14;
-		public static final int LparenQuestionmark = 15;
-		public static final int Lsquare = 16;
-		public static final int LsquareXor = 17;
-		public static final int expand = 18;
-		public static final int kw_eoi = 19;
-		public static final int Rsquare = 20;
-		public static final int Minus = 21;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int _char = 1;
+		int escaped = 2;
+		int charclass = 3;
+		int Dot = 4;
+		int Mult = 5;
+		int Plus = 6;
+		int Questionmark = 7;
+		int quantifier = 8;
+		int op_minus = 9;
+		int op_union = 10;
+		int op_intersect = 11;
+		int Lparen = 12;
+		int Or = 13;
+		int Rparen = 14;
+		int LparenQuestionmark = 15;
+		int Lsquare = 16;
+		int LsquareXor = 17;
+		int expand = 18;
+		int kw_eoi = 19;
+		int Rsquare = 20;
+		int Minus = 21;
 	}
 
 	public interface ErrorReporter {

@@ -17,11 +17,11 @@ package org.textmapper.lapg.api;
 
 public interface ProcessingStatus {
 
-	static final int KIND_FATAL = 0;
-	static final int KIND_ERROR = 1;
-	static final int KIND_WARN = 2;
-	static final int KIND_INFO = 3;
-	static final int KIND_DEBUG = 4;
+	int KIND_FATAL = 0;
+	int KIND_ERROR = 1;
+	int KIND_WARN = 2;
+	int KIND_INFO = 3;
+	int KIND_DEBUG = 4;
 
 	void report(int kind, String message, SourceElement... anchors);
 

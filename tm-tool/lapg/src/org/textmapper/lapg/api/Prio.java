@@ -20,10 +20,10 @@ package org.textmapper.lapg.api;
  */
 public interface Prio extends SourceElement {
 
-	static final int NOPRIO = -1;
-	static final int LEFT = 1;
-	static final int RIGHT = 2;
-	static final int NONASSOC = 3;
+	int NOPRIO = -1;
+	int LEFT = 1;
+	int RIGHT = 2;
+	int NONASSOC = 3;
 
 	int getPrio();
 

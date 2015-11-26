@@ -65,10 +65,10 @@ public class EoiParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 12;
-		static final int expr = 13;
-		static final int list_of_id_and_2_elements_Comma_separated = 14;
-		static final int list_of_id_and_2_elements_Comma_separated_opt = 15;
+		int input = 12;
+		int expr = 13;
+		int list_of_id_and_2_elements_Comma_separated = 14;
+		int list_of_id_and_2_elements_Comma_separated_opt = 15;
 	}
 
 	/**

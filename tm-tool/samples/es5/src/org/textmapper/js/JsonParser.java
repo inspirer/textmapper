@@ -69,13 +69,13 @@ public class JsonParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int JSONText = 13;
-		static final int JSONValue = 14;
-		static final int JSONObject = 15;
-		static final int JSONMember = 16;
-		static final int JSONMemberList = 17;
-		static final int JSONArray = 18;
-		static final int JSONElementList = 19;
+		int JSONText = 13;
+		int JSONValue = 14;
+		int JSONObject = 15;
+		int JSONMember = 16;
+		int JSONMemberList = 17;
+		int JSONArray = 18;
+		int JSONElementList = 19;
 	}
 
 	/**

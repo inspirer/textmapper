@@ -957,138 +957,138 @@ public class TMParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 79;
-		static final int header = 80;
-		static final int lexer_section = 81;
-		static final int parser_section = 82;
-		static final int parsing_algorithm = 83;
-		static final int import_ = 84;
-		static final int option = 85;
-		static final int identifier = 86;
-		static final int symref = 87;
-		static final int symref_noargs = 88;
-		static final int type = 89;
-		static final int type_part_list = 90;
-		static final int type_part = 91;
-		static final int pattern = 92;
-		static final int lexer_parts = 93;
-		static final int lexer_part = 94;
-		static final int named_pattern = 95;
-		static final int lexeme = 96;
-		static final int lexeme_transition = 97;
-		static final int lexeme_attrs = 98;
-		static final int lexeme_attribute = 99;
-		static final int lexer_directive = 100;
-		static final int state_selector = 101;
-		static final int stateref = 102;
-		static final int lexer_state = 103;
-		static final int grammar_parts = 104;
-		static final int grammar_part = 105;
-		static final int nonterm = 106;
-		static final int nonterm_type = 107;
-		static final int _implements = 108;
-		static final int assoc = 109;
-		static final int nonterm_param = 110;
-		static final int directive = 111;
-		static final int inputref = 112;
-		static final int references = 113;
-		static final int references_cs = 114;
-		static final int rules = 115;
-		static final int rule0 = 116;
-		static final int predicate = 117;
-		static final int rhsPrefix = 118;
-		static final int rhsSuffix = 119;
-		static final int ruleAction = 120;
-		static final int rhsParts = 121;
-		static final int rhsPart = 122;
-		static final int rhsAnnotated = 123;
-		static final int rhsAssignment = 124;
-		static final int rhsOptional = 125;
-		static final int rhsCast = 126;
-		static final int rhsUnordered = 127;
-		static final int rhsClass = 128;
-		static final int rhsPrimary = 129;
-		static final int rhsSet = 130;
-		static final int setPrimary = 131;
-		static final int setExpression = 132;
-		static final int annotations = 133;
-		static final int annotation = 134;
-		static final int nonterm_params = 135;
-		static final int param_ref = 136;
-		static final int symref_args = 137;
-		static final int keyval_arg = 138;
-		static final int param_type = 139;
-		static final int param_value = 140;
-		static final int predicate_primary = 141;
-		static final int predicate_expression = 142;
-		static final int expression = 143;
-		static final int map_entry = 144;
-		static final int literal = 145;
-		static final int name = 146;
-		static final int qualified_id = 147;
-		static final int command = 148;
-		static final int syntax_problem = 149;
-		static final int import__optlist = 150;
-		static final int option_optlist = 151;
-		static final int parsing_algorithmopt = 152;
-		static final int typeopt = 153;
-		static final int lexeme_transitionopt = 154;
-		static final int iconopt = 155;
-		static final int lexeme_attrsopt = 156;
-		static final int commandopt = 157;
-		static final int lexer_state_list_Comma_separated = 158;
-		static final int identifieropt = 159;
-		static final int implementsopt = 160;
-		static final int inputref_list_Comma_separated = 161;
-		static final int rule0_list_Or_separated = 162;
-		static final int rhsSuffixopt = 163;
-		static final int annotation_list = 164;
-		static final int param_ref_list_Comma_separated = 165;
-		static final int param_value_list_Comma_separated = 166;
-		static final int keyval_arg_list_Comma_separated = 167;
-		static final int keyval_arg_list_Comma_separated_opt = 168;
-		static final int map_entry_list_Comma_separated = 169;
-		static final int map_entry_list_Comma_separated_opt = 170;
-		static final int expression_list_Comma_separated = 171;
-		static final int expression_list_Comma_separated_opt = 172;
+		int input = 79;
+		int header = 80;
+		int lexer_section = 81;
+		int parser_section = 82;
+		int parsing_algorithm = 83;
+		int import_ = 84;
+		int option = 85;
+		int identifier = 86;
+		int symref = 87;
+		int symref_noargs = 88;
+		int type = 89;
+		int type_part_list = 90;
+		int type_part = 91;
+		int pattern = 92;
+		int lexer_parts = 93;
+		int lexer_part = 94;
+		int named_pattern = 95;
+		int lexeme = 96;
+		int lexeme_transition = 97;
+		int lexeme_attrs = 98;
+		int lexeme_attribute = 99;
+		int lexer_directive = 100;
+		int state_selector = 101;
+		int stateref = 102;
+		int lexer_state = 103;
+		int grammar_parts = 104;
+		int grammar_part = 105;
+		int nonterm = 106;
+		int nonterm_type = 107;
+		int _implements = 108;
+		int assoc = 109;
+		int nonterm_param = 110;
+		int directive = 111;
+		int inputref = 112;
+		int references = 113;
+		int references_cs = 114;
+		int rules = 115;
+		int rule0 = 116;
+		int predicate = 117;
+		int rhsPrefix = 118;
+		int rhsSuffix = 119;
+		int ruleAction = 120;
+		int rhsParts = 121;
+		int rhsPart = 122;
+		int rhsAnnotated = 123;
+		int rhsAssignment = 124;
+		int rhsOptional = 125;
+		int rhsCast = 126;
+		int rhsUnordered = 127;
+		int rhsClass = 128;
+		int rhsPrimary = 129;
+		int rhsSet = 130;
+		int setPrimary = 131;
+		int setExpression = 132;
+		int annotations = 133;
+		int annotation = 134;
+		int nonterm_params = 135;
+		int param_ref = 136;
+		int symref_args = 137;
+		int keyval_arg = 138;
+		int param_type = 139;
+		int param_value = 140;
+		int predicate_primary = 141;
+		int predicate_expression = 142;
+		int expression = 143;
+		int map_entry = 144;
+		int literal = 145;
+		int name = 146;
+		int qualified_id = 147;
+		int command = 148;
+		int syntax_problem = 149;
+		int import__optlist = 150;
+		int option_optlist = 151;
+		int parsing_algorithmopt = 152;
+		int typeopt = 153;
+		int lexeme_transitionopt = 154;
+		int iconopt = 155;
+		int lexeme_attrsopt = 156;
+		int commandopt = 157;
+		int lexer_state_list_Comma_separated = 158;
+		int identifieropt = 159;
+		int implementsopt = 160;
+		int inputref_list_Comma_separated = 161;
+		int rule0_list_Or_separated = 162;
+		int rhsSuffixopt = 163;
+		int annotation_list = 164;
+		int param_ref_list_Comma_separated = 165;
+		int param_value_list_Comma_separated = 166;
+		int keyval_arg_list_Comma_separated = 167;
+		int keyval_arg_list_Comma_separated_opt = 168;
+		int map_entry_list_Comma_separated = 169;
+		int map_entry_list_Comma_separated_opt = 170;
+		int expression_list_Comma_separated = 171;
+		int expression_list_Comma_separated_opt = 172;
 	}
 
 	public interface Rules {
-		static final int lexer_directive_directiveBrackets = 49;  // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
-		static final int nonterm_type_nontermTypeAST = 68;  // nonterm_type ::= Lreturns symref_noargs
-		static final int nonterm_type_nontermTypeHint = 69;  // nonterm_type ::= Linline Lclass identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint2 = 70;  // nonterm_type ::= Lclass identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint3 = 71;  // nonterm_type ::= Linterface identifieropt implementsopt
-		static final int nonterm_type_nontermTypeHint4 = 72;  // nonterm_type ::= Lvoid
-		static final int nonterm_type_nontermTypeRaw = 73;  // nonterm_type ::= type
-		static final int directive_directivePrio = 82;  // directive ::= '%' assoc references ';'
-		static final int directive_directiveInput = 83;  // directive ::= '%' Linput inputref_list_Comma_separated ';'
-		static final int directive_directiveAssert = 84;  // directive ::= '%' Lassert Lempty rhsSet ';'
-		static final int directive_directiveAssert2 = 85;  // directive ::= '%' Lassert Lnonempty rhsSet ';'
-		static final int directive_directiveSet = 86;  // directive ::= '%' Lgenerate ID '=' rhsSet ';'
-		static final int rhsOptional_rhsQuantifier = 129;  // rhsOptional ::= rhsCast '?'
-		static final int rhsCast_rhsAsLiteral = 132;  // rhsCast ::= rhsClass Las literal
-		static final int rhsPrimary_rhsSymbol = 136;  // rhsPrimary ::= symref
-		static final int rhsPrimary_rhsNested = 137;  // rhsPrimary ::= '(' rules ')'
-		static final int rhsPrimary_rhsList = 138;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
-		static final int rhsPrimary_rhsList2 = 139;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
-		static final int rhsPrimary_rhsQuantifier = 140;  // rhsPrimary ::= rhsPrimary '*'
-		static final int rhsPrimary_rhsQuantifier2 = 141;  // rhsPrimary ::= rhsPrimary '+'
-		static final int rhsPrimary_rhsIgnored = 142;  // rhsPrimary ::= '$' '(' rules ')'
-		static final int setPrimary_setSymbol = 145;  // setPrimary ::= ID symref
-		static final int setPrimary_setSymbol2 = 146;  // setPrimary ::= symref
-		static final int setPrimary_setCompound = 147;  // setPrimary ::= '(' setExpression ')'
-		static final int setPrimary_setComplement = 148;  // setPrimary ::= '~' setPrimary
-		static final int setExpression_setBinary = 150;  // setExpression ::= setExpression '|' setExpression
-		static final int setExpression_setBinary2 = 151;  // setExpression ::= setExpression '&' setExpression
-		static final int predicate_primary_boolPredicate = 169;  // predicate_primary ::= '!' param_ref
-		static final int predicate_primary_boolPredicate2 = 170;  // predicate_primary ::= param_ref
-		static final int predicate_primary_comparePredicate = 171;  // predicate_primary ::= param_ref '==' literal
-		static final int predicate_primary_comparePredicate2 = 172;  // predicate_primary ::= param_ref '!=' literal
-		static final int predicate_expression_predicateBinary = 174;  // predicate_expression ::= predicate_expression '&&' predicate_expression
-		static final int predicate_expression_predicateBinary2 = 175;  // predicate_expression ::= predicate_expression '||' predicate_expression
-		static final int expression_instance = 178;  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
-		static final int expression_array = 179;  // expression ::= '[' expression_list_Comma_separated_opt ']'
+		int lexer_directive_directiveBrackets = 49;  // lexer_directive ::= '%' Lbrackets symref_noargs symref_noargs ';'
+		int nonterm_type_nontermTypeAST = 68;  // nonterm_type ::= Lreturns symref_noargs
+		int nonterm_type_nontermTypeHint = 69;  // nonterm_type ::= Linline Lclass identifieropt implementsopt
+		int nonterm_type_nontermTypeHint2 = 70;  // nonterm_type ::= Lclass identifieropt implementsopt
+		int nonterm_type_nontermTypeHint3 = 71;  // nonterm_type ::= Linterface identifieropt implementsopt
+		int nonterm_type_nontermTypeHint4 = 72;  // nonterm_type ::= Lvoid
+		int nonterm_type_nontermTypeRaw = 73;  // nonterm_type ::= type
+		int directive_directivePrio = 82;  // directive ::= '%' assoc references ';'
+		int directive_directiveInput = 83;  // directive ::= '%' Linput inputref_list_Comma_separated ';'
+		int directive_directiveAssert = 84;  // directive ::= '%' Lassert Lempty rhsSet ';'
+		int directive_directiveAssert2 = 85;  // directive ::= '%' Lassert Lnonempty rhsSet ';'
+		int directive_directiveSet = 86;  // directive ::= '%' Lgenerate ID '=' rhsSet ';'
+		int rhsOptional_rhsQuantifier = 129;  // rhsOptional ::= rhsCast '?'
+		int rhsCast_rhsAsLiteral = 132;  // rhsCast ::= rhsClass Las literal
+		int rhsPrimary_rhsSymbol = 136;  // rhsPrimary ::= symref
+		int rhsPrimary_rhsNested = 137;  // rhsPrimary ::= '(' rules ')'
+		int rhsPrimary_rhsList = 138;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '+'
+		int rhsPrimary_rhsList2 = 139;  // rhsPrimary ::= '(' rhsParts Lseparator references ')' '*'
+		int rhsPrimary_rhsQuantifier = 140;  // rhsPrimary ::= rhsPrimary '*'
+		int rhsPrimary_rhsQuantifier2 = 141;  // rhsPrimary ::= rhsPrimary '+'
+		int rhsPrimary_rhsIgnored = 142;  // rhsPrimary ::= '$' '(' rules ')'
+		int setPrimary_setSymbol = 145;  // setPrimary ::= ID symref
+		int setPrimary_setSymbol2 = 146;  // setPrimary ::= symref
+		int setPrimary_setCompound = 147;  // setPrimary ::= '(' setExpression ')'
+		int setPrimary_setComplement = 148;  // setPrimary ::= '~' setPrimary
+		int setExpression_setBinary = 150;  // setExpression ::= setExpression '|' setExpression
+		int setExpression_setBinary2 = 151;  // setExpression ::= setExpression '&' setExpression
+		int predicate_primary_boolPredicate = 169;  // predicate_primary ::= '!' param_ref
+		int predicate_primary_boolPredicate2 = 170;  // predicate_primary ::= param_ref
+		int predicate_primary_comparePredicate = 171;  // predicate_primary ::= param_ref '==' literal
+		int predicate_primary_comparePredicate2 = 172;  // predicate_primary ::= param_ref '!=' literal
+		int predicate_expression_predicateBinary = 174;  // predicate_expression ::= predicate_expression '&&' predicate_expression
+		int predicate_expression_predicateBinary2 = 175;  // predicate_expression ::= predicate_expression '||' predicate_expression
+		int expression_instance = 178;  // expression ::= Lnew name '(' map_entry_list_Comma_separated_opt ')'
+		int expression_array = 179;  // expression ::= '[' expression_list_Comma_separated_opt ']'
 	}
 
 	/**

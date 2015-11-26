@@ -17,5 +17,5 @@ package org.textmapper.templates.api;
 
 public interface IStreamHandler {
 
-	public void createStream(String name, String contents);
+	void createStream(String name, String contents);
 }

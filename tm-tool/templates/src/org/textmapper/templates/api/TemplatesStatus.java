@@ -17,10 +17,10 @@ package org.textmapper.templates.api;
 
 public interface TemplatesStatus {
 
-	public static final int KIND_FATAL = 0;
-	public static final int KIND_ERROR = 1;
-	public static final int KIND_WARN = 2;
-	public static final int KIND_INFO = 3;
+	int KIND_FATAL = 0;
+	int KIND_ERROR = 1;
+	int KIND_WARN = 2;
+	int KIND_INFO = 3;
 
 	void report(int kind, String message, SourceElement...anchors);
 }

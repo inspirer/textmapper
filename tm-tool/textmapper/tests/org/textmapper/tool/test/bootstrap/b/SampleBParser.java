@@ -95,11 +95,11 @@ public class SampleBParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int classdef_NoEoi = 17;
-		static final int classdef = 18;
-		static final int ID = 19;
-		static final int classdeflist = 20;
-		static final int classdeflistopt = 21;
+		int classdef_NoEoi = 17;
+		int classdef = 18;
+		int ID = 19;
+		int classdeflist = 20;
+		int classdeflistopt = 21;
 	}
 
 	/**

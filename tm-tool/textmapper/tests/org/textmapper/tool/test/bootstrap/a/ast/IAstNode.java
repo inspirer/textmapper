@@ -19,12 +19,12 @@ import org.textmapper.tool.test.bootstrap.a.SampleATree.TextSource;
 
 public interface IAstNode {
 	String getLocation();
-	public int getLine();
-	public int getOffset();
-	public int getColumn();
-	public int getEndline();
-	public int getEndoffset();
-	public int getEndcolumn();
+	int getLine();
+	int getOffset();
+	int getColumn();
+	int getEndline();
+	int getEndoffset();
+	int getEndcolumn();
 	TextSource getSource();
 	String getResourceName();
 	String getText();

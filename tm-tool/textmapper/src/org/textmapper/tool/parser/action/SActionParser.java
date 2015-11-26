@@ -72,10 +72,10 @@ public class SActionParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int javaaction = 4;
-		static final int command_tokens = 5;
-		static final int command_token = 6;
-		static final int command_tokensopt = 7;
+		int javaaction = 4;
+		int command_tokens = 5;
+		int command_token = 6;
+		int command_tokensopt = 7;
 	}
 
 	/**

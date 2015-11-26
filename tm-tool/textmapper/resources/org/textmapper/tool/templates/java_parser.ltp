@@ -327,14 +327,14 @@ ${end-}
 	public interface Nonterminals extends ${call java.package}.${opts.prefix}Lexer.@Tokens {
 		// non-terminals
 ${for i in [parser.nterms, parser.nsyms-1]-}
-		static final int ${parser.symbols[i].id->java.escapeJavaReserved()} = ${i};
+		int ${parser.symbols[i].id->java.escapeJavaReserved()} = ${i};
 ${end-}
 	}
 ${if syntax.rules.exists(x|x.getSource() is org.textmapper.lapg.api.rule.RhsSequence && x.getSource().name)}
 	public interface Rules {
 ${foreach rule in syntax.rules-}
 ${if rule.getSource() is org.textmapper.lapg.api.rule.RhsSequence && rule.getSource().name-}
-		static final int ${util.uniqueId(rule.getLeft().id + '_' + rule.getSource().name, '__rules__')} = ${rule.getIndex()};  // ${rule}
+		int ${util.uniqueId(rule.getLeft().id + '_' + rule.getSource().name, '__rules__')} = ${rule.getIndex()};  // ${rule}
 ${end-}
 ${end-}
 	}

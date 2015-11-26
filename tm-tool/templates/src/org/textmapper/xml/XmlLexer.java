@@ -31,23 +31,23 @@ public class XmlLexer {
 	}
 
 	public interface States {
-		public static final int initial = 0;
-		public static final int inTag = 1;
+		int initial = 0;
+		int inTag = 1;
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int any = 1;
-		public static final int Less = 2;
-		public static final int _skipcomment = 3;
-		public static final int identifier = 4;
-		public static final int ccon = 5;
-		public static final int Greater = 6;
-		public static final int Equal = 7;
-		public static final int Colon = 8;
-		public static final int Slash = 9;
-		public static final int _skip = 10;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int any = 1;
+		int Less = 2;
+		int _skipcomment = 3;
+		int identifier = 4;
+		int ccon = 5;
+		int Greater = 6;
+		int Equal = 7;
+		int Colon = 8;
+		int Slash = 9;
+		int _skip = 10;
 	}
 
 	public interface ErrorReporter {

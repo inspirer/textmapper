@@ -80,10 +80,10 @@ public class SampleAParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int classdef_NoEoi = 7;
-		static final int classdef = 8;
-		static final int classdeflist = 9;
-		static final int classdeflistopt = 10;
+		int classdef_NoEoi = 7;
+		int classdef = 8;
+		int classdeflist = 9;
+		int classdeflistopt = 10;
 	}
 
 	/**

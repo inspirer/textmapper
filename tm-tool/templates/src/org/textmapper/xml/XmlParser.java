@@ -105,16 +105,16 @@ public class XmlParser {
 
 	public interface Nonterminals extends Tokens {
 		// non-terminals
-		static final int input = 11;
-		static final int xml_tags = 12;
-		static final int xml_tag_or_space = 13;
-		static final int tag_name = 14;
-		static final int tag_start = 15;
-		static final int no_body_tag = 16;
-		static final int tag_end = 17;
-		static final int attributes = 18;
-		static final int attribute = 19;
-		static final int attributesopt = 20;
+		int input = 11;
+		int xml_tags = 12;
+		int xml_tag_or_space = 13;
+		int tag_name = 14;
+		int tag_start = 15;
+		int no_body_tag = 16;
+		int tag_end = 17;
+		int attributes = 18;
+		int attribute = 19;
+		int attributesopt = 20;
 	}
 
 	/**

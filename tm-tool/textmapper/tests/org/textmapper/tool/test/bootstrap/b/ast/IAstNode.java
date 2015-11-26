@@ -19,8 +19,8 @@ import org.textmapper.tool.test.bootstrap.b.SampleBTree.TextSource;
 
 public interface IAstNode {
 	String getLocation();
-	public int getOffset();
-	public int getEndoffset();
+	int getOffset();
+	int getEndoffset();
 	TextSource getSource();
 	String getResourceName();
 	String getText();

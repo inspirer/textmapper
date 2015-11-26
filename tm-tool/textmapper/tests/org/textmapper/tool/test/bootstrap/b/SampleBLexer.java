@@ -32,24 +32,24 @@ public class SampleBLexer {
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int identifier = 1;
-		public static final int _skip = 2;
-		public static final int Lclass = 3;
-		public static final int Lextends = 4;
-		public static final int Lcurly = 5;
-		public static final int Rcurly = 6;
-		public static final int Lparen = 7;
-		public static final int Rparen = 8;
-		public static final int Linterface = 9;
-		public static final int Lenum = 10;
-		public static final int error = 11;
-		public static final int numeric = 12;
-		public static final int octal = 13;
-		public static final int decimal = 14;
-		public static final int eleven = 15;
-		public static final int _skipSoftKW = 16;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int identifier = 1;
+		int _skip = 2;
+		int Lclass = 3;
+		int Lextends = 4;
+		int Lcurly = 5;
+		int Rcurly = 6;
+		int Lparen = 7;
+		int Rparen = 8;
+		int Linterface = 9;
+		int Lenum = 10;
+		int error = 11;
+		int numeric = 12;
+		int octal = 13;
+		int decimal = 14;
+		int eleven = 15;
+		int _skipSoftKW = 16;
 	}
 
 	public interface ErrorReporter {

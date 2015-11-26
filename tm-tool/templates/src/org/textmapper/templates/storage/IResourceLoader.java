@@ -17,8 +17,8 @@ package org.textmapper.templates.storage;
 
 public interface IResourceLoader {
 
-	public static final String KIND_TYPES = "types";
-	public static final String KIND_TEMPLATE = "ltp";
+	String KIND_TYPES = "types";
+	String KIND_TEMPLATE = "ltp";
 
 	Resource loadResource(String qualifiedName, String kind);
 }

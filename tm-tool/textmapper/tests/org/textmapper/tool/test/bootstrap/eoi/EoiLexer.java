@@ -16,26 +16,26 @@ public class EoiLexer {
 	}
 
 	public interface States {
-		public static final int initial = 0;
-		public static final int a = 1;
-		public static final int b = 2;
-		public static final int c = 3;
+		int initial = 0;
+		int a = 1;
+		int b = 2;
+		int c = 3;
 	}
 
 	public interface Tokens {
-		public static final int Unavailable_ = -1;
-		public static final int eoi = 0;
-		public static final int id = 1;
-		public static final int Colon = 2;
-		public static final int Semicolon = 3;
-		public static final int Comma = 4;
-		public static final int gotoc = 5;
-		public static final int _skip = 6;
-		public static final int Lparen = 7;
-		public static final int Rparen = 8;
-		public static final int _customEOI = 9;
-		public static final int _retfromA = 10;
-		public static final int _retfromB = 11;
+		int Unavailable_ = -1;
+		int eoi = 0;
+		int id = 1;
+		int Colon = 2;
+		int Semicolon = 3;
+		int Comma = 4;
+		int gotoc = 5;
+		int _skip = 6;
+		int Lparen = 7;
+		int Rparen = 8;
+		int _customEOI = 9;
+		int _retfromA = 10;
+		int _retfromB = 11;
 	}
 
 	public interface ErrorReporter {

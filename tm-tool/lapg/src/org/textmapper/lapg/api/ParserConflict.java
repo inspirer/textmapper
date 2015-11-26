@@ -18,12 +18,12 @@ package org.textmapper.lapg.api;
 
 public interface ParserConflict {
 
-	static final int FIXED = 0;
-	static final int SHIFT_REDUCE = 1;
-	static final int REDUCE_REDUCE = 2;
-	static final int SHIFT_SOFT = 3;
-	static final int SHIFT_REDUCE_SOFT = 4;
-	static final int REDUCE_REDUCE_SOFT = 5;
+	int FIXED = 0;
+	int SHIFT_REDUCE = 1;
+	int REDUCE_REDUCE = 2;
+	int SHIFT_SOFT = 3;
+	int SHIFT_REDUCE_SOFT = 4;
+	int REDUCE_REDUCE_SOFT = 5;
 
 	int getKind();
 
@@ -37,7 +37,7 @@ public interface ParserConflict {
 
 	String getText();
 
-	public interface Input {
+	interface Input {
 		int getState();
 
 		Symbol[] getSymbols();

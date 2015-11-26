@@ -23,15 +23,15 @@ public interface IDataType extends IType {
 
 	Collection<Constraint> getConstraints();
 
-	public enum DataTypeKind {
+	enum DataTypeKind {
 		STRING, BOOL, INT
 	}
 
-	public enum ConstraintKind {
+	enum ConstraintKind {
 		NOTEMPTY, IDENTIFIER, QUALIFIED_IDENTIFIER, SET, CHOICE
 	}
 
-	public interface Constraint {
+	interface Constraint {
 		ConstraintKind getKind();
 
 		Collection<String> getParameters();
