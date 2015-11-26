@@ -43,7 +43,7 @@ class LiRhsChoice extends LiRhsPart implements RhsChoice {
 
 	@Override
 	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
+		List<RhsSymbol[]> result = new ArrayList<>();
 		for (LiRhsPart part : parts) {
 			result.addAll(part.expand(context));
 		}

@@ -50,7 +50,7 @@ class LiRhsOptional extends LiRhsPart implements RhsOptional {
 			}
 		}
 		if (result.size() < 2) {
-			result = new ArrayList<RhsSymbol[]>(result);
+			result = new ArrayList<>(result);
 		}
 		result.add(RhsSymbol.EMPTY_LIST);
 		return result;

@@ -102,7 +102,7 @@ class RegexMatcherImpl implements RegexMatcher {
 		boolean[] closure;
 
 		void addJump(int target) {
-			if (jumps == null) jumps = new LinkedList<Integer>();
+			if (jumps == null) jumps = new LinkedList<>();
 			jumps.add(target);
 		}
 
@@ -125,7 +125,7 @@ class RegexMatcherImpl implements RegexMatcher {
 
 	private static class RegexpBuilder extends RegexCompilingSwitch {
 
-		private List<State> states = new ArrayList<State>();
+		private List<State> states = new ArrayList<>();
 		private final RegexContext context;
 		private String errorMessage = null;
 		private int errorOffset = -1;
@@ -228,7 +228,7 @@ class RegexMatcherImpl implements RegexMatcher {
 
 		@Override
 		public Void caseOr(RegexOr c) {
-			List<Integer> orlocations = new LinkedList<Integer>();
+			List<Integer> orlocations = new LinkedList<>();
 			int startIndex = index();
 			yield(null);    /* ( */
 			boolean first = true;

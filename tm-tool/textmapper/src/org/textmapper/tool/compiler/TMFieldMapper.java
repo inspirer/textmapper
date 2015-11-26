@@ -56,7 +56,7 @@ public class TMFieldMapper {
 		Collections.sort(context.result);
 		for (FieldDescriptor fd : context.result) {
 			AstType type = fd.type;
-			Map<Symbol, AstEnumMember> members = new LinkedHashMap<Symbol, AstEnumMember>();
+			Map<Symbol, AstEnumMember> members = new LinkedHashMap<>();
 			if (type == BOOL_OR_ENUM) {
 				for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
 					Symbol target = m.sym.getTarget();
@@ -181,9 +181,8 @@ public class TMFieldMapper {
 
 	private class DefaultMappingContext implements MappingContext {
 
-		private List<FieldDescriptor> result = new ArrayList<FieldDescriptor>();
-		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<FieldId,
-				Collection<FieldDescriptor>>();
+		private List<FieldDescriptor> result = new ArrayList<>();
+		private Map<FieldId, Collection<FieldDescriptor>> fieldsMap = new HashMap<>();
 
 		@Override
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
@@ -193,7 +192,7 @@ public class TMFieldMapper {
 					new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fields = fieldsMap.get(id);
 			if (fields == null) {
-				fields = new ArrayList<FieldDescriptor>();
+				fields = new ArrayList<>();
 				fieldsMap.put(id, fields);
 			}
 			FieldDescriptor fd = new FieldDescriptor(alias != null ? alias : getFieldBaseName(sym));
@@ -207,8 +206,7 @@ public class TMFieldMapper {
 	private class ChoiceMappingContext implements MappingContext {
 
 		private final MappingContext parent;
-		private Map<FieldId, Collection<FieldDescriptor>> localMap = new HashMap<FieldId,
-				Collection<FieldDescriptor>>();
+		private Map<FieldId, Collection<FieldDescriptor>> localMap = new HashMap<>();
 		private Set<FieldDescriptor> used;
 
 		private ChoiceMappingContext(MappingContext parent) {
@@ -223,7 +221,7 @@ public class TMFieldMapper {
 					new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fds = localMap.get(id);
 			if (used == null) {
-				used = new HashSet<FieldDescriptor>();
+				used = new HashSet<>();
 			}
 			if (fds != null) {
 				for (FieldDescriptor fd : fds) {
@@ -234,7 +232,7 @@ public class TMFieldMapper {
 					}
 				}
 			} else {
-				fds = new ArrayList<FieldDescriptor>();
+				fds = new ArrayList<>();
 				localMap.put(id, fds);
 			}
 

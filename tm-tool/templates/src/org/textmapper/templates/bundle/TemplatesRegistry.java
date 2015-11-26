@@ -32,8 +32,8 @@ public class TemplatesRegistry {
 	public TemplatesRegistry(TemplatesStatus status, ITypesRegistry typesRegistry, IBundleLoader... loaders) {
 		this.status = status;
 		this.typesRegistry = typesRegistry;
-		this.entities = new HashMap<String, IBundleEntity>();
-		this.loadedBundles = new HashSet<String>();
+		this.entities = new HashMap<>();
+		this.loadedBundles = new HashSet<>();
 		this.loaders = loaders;
 
 		if (loaders == null || loaders.length < 1) {
@@ -42,7 +42,7 @@ public class TemplatesRegistry {
 	}
 
 	private TemplatesBundle[] getBundleContents(String bundleName) {
-		List<TemplatesBundle> result = new LinkedList<TemplatesBundle>();
+		List<TemplatesBundle> result = new LinkedList<>();
 		for (IBundleLoader loader : loaders) {
 			TemplatesBundle[] sources = loader.load(bundleName, status);
 			if (sources != null) {
@@ -65,8 +65,8 @@ public class TemplatesRegistry {
 			return;
 		}
 
-		Map<String, IBundleEntity> nameToEntity = new HashMap<String, IBundleEntity>();
-		Set<String> seenNames = new HashSet<String>();
+		Map<String, IBundleEntity> nameToEntity = new HashMap<>();
+		Set<String> seenNames = new HashSet<>();
 		for (int i = contents.length - 1; i >= 0; i--) {
 			IBundleEntity[] loaded = contents[i].getEntities();
 			if (loaded == null || loaded.length == 0) {

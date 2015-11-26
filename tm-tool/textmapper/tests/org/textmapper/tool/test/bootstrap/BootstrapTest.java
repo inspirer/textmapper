@@ -186,11 +186,11 @@ public class BootstrapTest {
 
 			if (status.isDebugMode()) {
 				strategy.createFile("tables", status.tablesFile != null ? status.tablesFile.toString() : "",
-						new HashMap<String, Object>(), status);
+						new HashMap<>(), status);
 			}
 			if (status.isAnalysisMode()) {
 				strategy.createFile("errors", status.errorsFile != null ? status.errorsFile.toString() : "",
-						new HashMap<String, Object>(), status);
+						new HashMap<>(), status);
 			}
 			for (String s : createdFiles) {
 				assertTrue("file is not generated: " + s, strategy.getCreated().contains(s));

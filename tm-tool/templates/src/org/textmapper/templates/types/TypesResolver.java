@@ -40,13 +40,13 @@ class TypesResolver {
 
 	// 1-st stage
 	private TypesTree<AstInput> myTree;
-	private Set<String> requiredPackages = new HashSet<String>();
+	private Set<String> requiredPackages = new HashSet<>();
 
 	// 2-nd stage
-	List<StageWorker> myResolveTypes = new ArrayList<StageWorker>();
+	List<StageWorker> myResolveTypes = new ArrayList<>();
 
 	// 3-d stage
-	List<StageWorker> myResolveDefaultValues = new ArrayList<StageWorker>();
+	List<StageWorker> myResolveDefaultValues = new ArrayList<>();
 
 	public TypesResolver(String package_, Resource resource, Map<String, TiClass> registryClasses,
 						 TemplatesStatus status) {
@@ -83,7 +83,7 @@ class TypesResolver {
 
 		myTree = tree;
 		AstInput input = tree.getRoot();
-		Set<String> myFoundClasses = new HashSet<String>();
+		Set<String> myFoundClasses = new HashSet<>();
 		for (AstTypeDeclaration td : input.getDeclarations()) {
 			TiClass cl = convertClass(td);
 			String fqName = myPackage + "." + cl.getName();
@@ -99,8 +99,8 @@ class TypesResolver {
 	}
 
 	private TiClass convertClass(final AstTypeDeclaration td) {
-		List<IFeature> features = new ArrayList<IFeature>();
-		List<IMethod> methods = new ArrayList<IMethod>();
+		List<IFeature> features = new ArrayList<>();
+		List<IMethod> methods = new ArrayList<>();
 		if (td.getMembers() != null) {
 			for (IAstMemberDeclaration memberDeclaration : td.getMembers()) {
 				if (memberDeclaration instanceof AstFeatureDeclaration) {
@@ -110,9 +110,9 @@ class TypesResolver {
 				}
 			}
 		}
-		final TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<IClass>(), features, methods);
+		final TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<>(), features, methods);
 		if (td.getSuper() != null) {
-			final List<String> superNames = new ArrayList<String>();
+			final List<String> superNames = new ArrayList<>();
 			for (List<String> className : td.getSuper()) {
 				String s = getQualifiedName(className);
 				if (s.indexOf('.') == -1) {
@@ -195,7 +195,7 @@ class TypesResolver {
 					}
 				} else if (c.getStringConstraint() != null) {
 					if (stringConstraints == null) {
-						stringConstraints = new ArrayList<AstStringConstraint>();
+						stringConstraints = new ArrayList<>();
 					}
 					stringConstraints.add(c.getStringConstraint());
 				}
@@ -224,7 +224,7 @@ class TypesResolver {
 	}
 
 	private List<IMultiplicity> convertMultiplicities(List<AstMultiplicity> list) {
-		List<IMultiplicity> multiplicities = new ArrayList<IMultiplicity>();
+		List<IMultiplicity> multiplicities = new ArrayList<>();
 		for (AstMultiplicity multiplicity : list) {
 			int loBound = multiplicity.getLo();
 			int hiBound = multiplicity.hasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
@@ -349,7 +349,7 @@ class TypesResolver {
 				kind = DataTypeKind.BOOL;
 			}
 
-			List<Constraint> convertedConstraints = new ArrayList<Constraint>();
+			List<Constraint> convertedConstraints = new ArrayList<>();
 			if (constraints != null) {
 				for (AstStringConstraint c : constraints) {
 					Constraint convertConstraint = convertConstraint(c);
@@ -364,7 +364,7 @@ class TypesResolver {
 
 	private Constraint convertConstraint(AstStringConstraint c) {
 		if (c.getKind() != null) {
-			List<String> strings = new ArrayList<String>();
+			List<String> strings = new ArrayList<>();
 			for (Ast_String s : c.getStrings()) {
 				strings.add(s.getIdentifier() != null ? s.getIdentifier() : s.getScon());
 			}
@@ -435,7 +435,7 @@ class TypesResolver {
 						}
 						Map<String, IAstExpression> props = null;
 						if (expr.getMapEntries() != null) {
-							props = new HashMap<String, IAstExpression>();
+							props = new HashMap<>();
 							for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem i : expr.getMapEntries()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}

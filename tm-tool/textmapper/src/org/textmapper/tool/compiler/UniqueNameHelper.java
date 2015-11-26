@@ -22,7 +22,7 @@ import java.util.Set;
 
 class UniqueNameHelper {
 
-	private final Set<String> usedIdentifiers = new HashSet<String>();
+	private final Set<String> usedIdentifiers = new HashSet<>();
 
 	void markUsed(String name) {
 		usedIdentifiers.add(name);

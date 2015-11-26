@@ -43,7 +43,7 @@ class LiRhsUnordered extends LiRhsPart implements RhsUnordered {
 
 	@Override
 	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
+		List<RhsSymbol[]> result = new ArrayList<>();
 		int[] permutation = new int[parts.length];
 		for (int i = 0; i < permutation.length; i++) {
 			permutation[i] = i;

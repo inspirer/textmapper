@@ -39,7 +39,7 @@ public class TMLexerCompiler {
 	private final GrammarBuilder builder;
 
 	private final Map<TmaLexeme, RuleAttributes> attributes =
-			new HashMap<TmaLexeme, RuleAttributes>();
+			new HashMap<>();
 
 	public TMLexerCompiler(TMResolver resolver) {
 		this.resolver = resolver;
@@ -52,7 +52,7 @@ public class TMLexerCompiler {
 	}
 
 	private List<LexerState> convertApplicableStates(TmaStateSelector selector) {
-		List<LexerState> result = new ArrayList<LexerState>();
+		List<LexerState> result = new ArrayList<>();
 		for (TmaLexerState state : selector.getStates()) {
 			LexerState applicable = resolver.getState(state.getName().getID());
 			result.add(applicable);
@@ -69,7 +69,7 @@ public class TMLexerCompiler {
 		}
 
 		LexerState defaultTransition = null;
-		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<LexerState, LexerState>();
+		Map<LexerState, LexerState> stateSwitch = new LinkedHashMap<>();
 		for (TmaLexerState state : selector.getStates()) {
 			if (state.getDefaultTransition() == null) {
 				continue;
@@ -152,8 +152,8 @@ public class TMLexerCompiler {
 	}
 
 	public void compile() {
-		Map<Terminal, Terminal> softToClass = new HashMap<Terminal, Terminal>();
-		Set<Terminal> nonSoft = new HashSet<Terminal>();
+		Map<Terminal, Terminal> softToClass = new HashMap<>();
+		Set<Terminal> nonSoft = new HashSet<>();
 
 		// Step 1. Collect states & transitions (attributes).
 
@@ -175,7 +175,7 @@ public class TMLexerCompiler {
 		// Step 2. Process class lexical rules.
 
 		RegexContext context = resolver.createRegexContext();
-		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<LexerRule, RegexMatcher>();
+		Map<LexerRule, RegexMatcher> classMatchers = new LinkedHashMap<>();
 
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (!(clause instanceof TmaLexeme)) {
@@ -341,7 +341,7 @@ public class TMLexerCompiler {
 				return false;
 			}
 			Collection<LexerState> applicableInStatesSet = applicableInStates.size() > 4
-					? new HashSet<LexerState>(applicableInStates) : applicableInStates;
+					? new HashSet<>(applicableInStates) : applicableInStates;
 			if (!(applicableInStatesSet.containsAll(l.getApplicableInStates()))) {
 				return false;
 			}

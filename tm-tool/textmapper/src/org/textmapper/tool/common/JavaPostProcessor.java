@@ -27,11 +27,11 @@ public class JavaPostProcessor {
 	private static Pattern PACKAGE = Pattern.compile("package\\s*((?:[a-zA-Z_][a-zA-Z_0-9]*\\.)*[a-zA-Z_][a-zA-Z_0-9]*)\\s*;[ \\t]*(\\r?\\n){1,2}");
 
 	private String text;
-	private final Map<String, String> toimport = new HashMap<String, String>();
-	private final Set<String> massimport = new HashSet<String>();
+	private final Map<String, String> toimport = new HashMap<>();
+	private final Set<String> massimport = new HashSet<>();
 
-	private final Map<String, Integer> topos = new HashMap<String, Integer>();
-	private final List<String> existingImports = new ArrayList<String>();
+	private final Map<String, Integer> topos = new HashMap<>();
+	private final List<String> existingImports = new ArrayList<>();
 
 	private int lastImportLocation = 0;
 	private int nextAfterPackage = 0;
@@ -48,7 +48,7 @@ public class JavaPostProcessor {
 	}
 
 	private void addImports() {
-		ArrayList<String> imports = new ArrayList<String>();
+		ArrayList<String> imports = new ArrayList<>();
 		for (Entry<String, String> entry : toimport.entrySet()) {
 			String imp = entry.getValue() + "." + entry.getKey();
 			if (!topos.containsKey(imp)) {
@@ -57,7 +57,7 @@ public class JavaPostProcessor {
 		}
 		Collections.sort(imports);
 
-		Map<Integer, String> toinsert = new HashMap<Integer, String>();
+		Map<Integer, String> toinsert = new HashMap<>();
 		Iterator<String> it = existingImports.iterator();
 		String current = it.hasNext() ? it.next() : null;
 
@@ -77,7 +77,7 @@ public class JavaPostProcessor {
 			}
 		}
 
-		List<Integer> locations = new ArrayList<Integer>(toinsert.keySet());
+		List<Integer> locations = new ArrayList<>(toinsert.keySet());
 		Collections.sort(locations);
 		StringBuilder sb = new StringBuilder(text.length());
 		int lastStart = 0;

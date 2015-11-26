@@ -74,7 +74,7 @@ public class TypesUtilTest {
 	}
 
 	private class SimplifiedAstBuilder {
-		Map<String, AstClass> map = new HashMap<String, AstClass>();
+		Map<String, AstClass> map = new HashMap<>();
 		AstBuilder builder = LapgCore.createAstBuilder();
 
 

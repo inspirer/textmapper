@@ -55,9 +55,9 @@ public class SetTest {
 
 			for (Entry<String, String> entry : tests.entrySet()) {
 				Nonterminal left = resolve(grammar, entry.getKey());
-				Set<Terminal> set = new HashSet<Terminal>();
+				Set<Terminal> set = new HashSet<>();
 				traverse(left, set);
-				List<String> list = new ArrayList<String>();
+				List<String> list = new ArrayList<>();
 				for (Terminal t : set) list.add(t.getName());
 				Collections.sort(list);
 				String expected = entry.getValue();
@@ -94,7 +94,7 @@ public class SetTest {
 
 	private Map<String, String> loadExpectedSets(String contents) throws IOException {
 		final BufferedReader bufferedReader = new BufferedReader(new StringReader(contents));
-		Map<String, String> result = new LinkedHashMap<String, String>();
+		Map<String, String> result = new LinkedHashMap<>();
 		String line;
 		String expectedValue = null;
 		while ((line = bufferedReader.readLine()) != null) {

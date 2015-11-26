@@ -92,11 +92,11 @@ public class LapgTemplatesTestHelper {
 	}
 
 	protected Map<String, Object> createOptions() {
-		return new HashMap<String, Object>();
+		return new HashMap<>();
 	}
 
 	protected ResourceRegistry createResourceRegistry(CheckingFileBasedStrategy strategy, String... folders) {
-		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
+		List<IResourceLoader> loaders = new ArrayList<>();
 		for (String path : folders) {
 			IResourceLoader resourceLoader = strategy.createResourceLoader(path);
 			if (resourceLoader != null) {
@@ -108,7 +108,7 @@ public class LapgTemplatesTestHelper {
 	}
 
 	protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		String templPackage = "java";
 		IClass optsClass = types.getClass(templPackage + ".Options", null);
 		if (optsClass != null) {
@@ -137,7 +137,7 @@ public class LapgTemplatesTestHelper {
 
 		@Override
 		public void createStream(String name, String contents) {
-			strategy.createFile(name, contents,  new HashMap<String, Object>(), null);
+			strategy.createFile(name, contents, new HashMap<>(), null);
 		}
 	}
 }

@@ -99,7 +99,7 @@ public class AnnotationsTest extends LapgTestCase {
 	}
 
 	private static Rule[] rulesForName(Rule[] rules, String name) {
-		ArrayList<Rule> result = new ArrayList<Rule>();
+		ArrayList<Rule> result = new ArrayList<>();
 		for (Rule r : rules) {
 			assertNotNull(r.getLeft());
 			assertNotNull(r.getLeft().getName());

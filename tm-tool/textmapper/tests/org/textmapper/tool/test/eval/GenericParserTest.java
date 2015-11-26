@@ -37,7 +37,7 @@ public class GenericParserTest {
 	private static class LapgTemplatesTestHelperEx extends LapgTemplatesTestHelper {
 		@Override
 		protected Map<String, Object> createOptions() {
-			HashMap<String, Object> res = new HashMap<String, Object>();
+			HashMap<String, Object> res = new HashMap<>();
 			res.put("prefix", "Generic");
 			res.put("package", "org.textmapper.lapg.eval");
 			res.put("positions", "line,offset");

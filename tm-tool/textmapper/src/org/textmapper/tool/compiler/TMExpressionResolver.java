@@ -62,7 +62,7 @@ public class TMExpressionResolver {
 			return null;
 		}
 
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		for (TmaAnnotation entry : list) {
 			if (entry.getSyntaxProblem() != null) {
 				continue;
@@ -103,7 +103,7 @@ public class TMExpressionResolver {
 			public Object resolve(ITmaExpression expression, IType type) {
 				if (expression instanceof TmaInstance) {
 					List<TmaMapEntry> list = ((TmaInstance) expression).getEntries();
-					Map<String, ITmaExpression> props = new HashMap<String, ITmaExpression>();
+					Map<String, ITmaExpression> props = new HashMap<>();
 					if (list != null) {
 						for (TmaMapEntry entry : list) {
 							props.put(entry.getName(), entry.getValue());

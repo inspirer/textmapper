@@ -65,7 +65,7 @@ public class EvaluationContext {
 
 	public void setVariable(String id, Object value) {
 		if (vars == null) {
-			vars = new HashMap<String, Object>();
+			vars = new HashMap<>();
 		}
 		vars.put(id, value);
 	}

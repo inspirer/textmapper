@@ -33,7 +33,7 @@ public class CaseNode extends CompoundNode {
 
 	public void addInstruction(Node node) {
 		if( instructions == null ) {
-			instructions = new ArrayList<Node>();
+			instructions = new ArrayList<>();
 		}
 		instructions.add(node);
 	}

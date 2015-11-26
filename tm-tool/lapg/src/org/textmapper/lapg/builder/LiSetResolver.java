@@ -68,8 +68,8 @@ class LiSetResolver {
 	}
 
 	public void resolve(ExpansionContext expansionContext, List<Problem> problems) {
-		Queue<Integer> queue = new LinkedList<Integer>();
-		List<Descriptor> postProcess = new ArrayList<Descriptor>();
+		Queue<Integer> queue = new LinkedList<>();
+		List<Descriptor> postProcess = new ArrayList<>();
 
 		for (RhsSet set : index.sortedSets()) {
 			int i = index.set(set);
@@ -122,8 +122,8 @@ class LiSetResolver {
 		}
 
 		if (!closure.compute()) {
-			Set<RhsSet> problemSets = new HashSet<RhsSet>();
-			List<RhsPart> errors = new ArrayList<RhsPart>();
+			Set<RhsSet> problemSets = new HashSet<>();
+			List<RhsPart> errors = new ArrayList<>();
 			for (Object errorNode : closure.getErrorNodes()) {
 				if (errorNode instanceof RhsSet) {
 					problemSets.add((RhsSet) errorNode);
@@ -162,7 +162,7 @@ class LiSetResolver {
 
 	private Iterable<LiNonterminal> getUsages(Symbol s) {
 		if (usages == null) {
-			usages = new HashMap<Symbol, Set<LiNonterminal>>();
+			usages = new HashMap<>();
 			for (LiSymbol left : index.getSymbols()) {
 				if (!(left instanceof Nonterminal)) continue;
 				for (RhsSymbol ref : RhsUtil.getRhsSymbols(((Nonterminal) left).getDefinition())) {
@@ -170,7 +170,7 @@ class LiSetResolver {
 					assert target != null;
 					Set<LiNonterminal> nonterminals = usages.get(target);
 					if (nonterminals == null) {
-						nonterminals = new LinkedHashSet<LiNonterminal>();
+						nonterminals = new LinkedHashSet<>();
 						usages.put(target, nonterminals);
 					}
 					nonterminals.add((LiNonterminal) left);
@@ -290,7 +290,7 @@ class LiSetResolver {
 				break;
 			case Sequence: {
 				RhsPart[] parts = ((RhsSequence) p).getParts();
-				for (RhsPart inner : new ArrayIterable<RhsPart>(parts, op == Operation.Last)) {
+				for (RhsPart inner : new ArrayIterable<>(parts, op == Operation.Last)) {
 					collectTerminals(inner, op);
 
 					if (op != Operation.Any && !RhsUtil.isNullable(inner, null)) break;
@@ -362,7 +362,7 @@ class LiSetResolver {
 			}
 			case Sequence: {
 				RhsPart[] parts = ((RhsSequence) p).getParts();
-				for (RhsPart inner : new ArrayIterable<RhsPart>(parts, reverse)) {
+				for (RhsPart inner : new ArrayIterable<>(parts, reverse)) {
 					isAfter = collectAdjacent(symbol, inner, reverse, isAfter);
 				}
 				return isAfter;

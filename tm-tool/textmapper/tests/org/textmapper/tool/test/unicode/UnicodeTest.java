@@ -92,10 +92,10 @@ public class UnicodeTest {
 		addProperties(propertiesCollection, "Scripts.txt", "unknown");
 		addCustomProperties(propertiesCollection);
 
-		Set<String> availableProperties = new HashSet<String>(propertiesCollection.collection.keySet());
+		Set<String> availableProperties = new HashSet<>(propertiesCollection.collection.keySet());
 
 		// composite properties
-		final List<CompositeProperty> compositeProperties = new ArrayList<CompositeProperty>();
+		final List<CompositeProperty> compositeProperties = new ArrayList<>();
 		addCompositeProperties(compositeProperties);
 
 		// test composite properties
@@ -121,7 +121,7 @@ public class UnicodeTest {
 		new LapgTemplatesTestHelper() {
 			@Override
 			protected EvaluationContext createEvaluationContext(TypesRegistry types, Map<String, Object> genOptions) {
-				HashMap<String, Object> res = new HashMap<String, Object>();
+				HashMap<String, Object> res = new HashMap<>();
 				res.put("version", "7.0.0");
 				res.put("properties", properties);
 				res.put("aliases", aliases);
@@ -204,7 +204,7 @@ public class UnicodeTest {
 		URL resource = UnicodeTest.class.getResource("data/" + filename);
 		assertNotNull("cannot open " + filename, resource);
 		new NamedRangesParser(false, false).parseData(resource, new NamedRangesBuilder() {
-			Map<String, Builder> psets = new HashMap<String, Builder>();
+			Map<String, Builder> psets = new HashMap<>();
 
 			@Override
 			public void block(int start, int end, String name) {
@@ -291,7 +291,7 @@ public class UnicodeTest {
 	}
 
 	private void addCategoriesList(NamedSetCollection result) throws IOException {
-		final Map<String, Builder> allCharset = new HashMap<String, Builder>();
+		final Map<String, Builder> allCharset = new HashMap<>();
 		for (String category : UnicodeDataParser.GENERAL_CATEGORIES) {
 			allCharset.put(category, new Builder());
 		}
@@ -350,7 +350,7 @@ public class UnicodeTest {
 	}
 
 	private static class NamedSetCollection {
-		private final Map<String, NamedSet> collection = new HashMap<String, NamedSet>();
+		private final Map<String, NamedSet> collection = new HashMap<>();
 
 		public void add(NamedSet s) {
 			if (collection.containsKey(s.getPropertyName())) {
@@ -364,14 +364,14 @@ public class UnicodeTest {
 		}
 
 		public Collection<NamedSet> asList() {
-			List<NamedSet> list = new ArrayList<NamedSet>(collection.values());
+			List<NamedSet> list = new ArrayList<>(collection.values());
 			Collections.sort(list);
 			return list;
 		}
 	}
 
 	public static class AliasCollection {
-		private final Map<String, Alias> collection = new HashMap<String, Alias>();
+		private final Map<String, Alias> collection = new HashMap<>();
 
 		public void add(Alias s) {
 			if (collection.containsKey(s.getAlias())) {
@@ -381,7 +381,7 @@ public class UnicodeTest {
 		}
 
 		public Collection<Alias> asList() {
-			List<Alias> list = new ArrayList<Alias>(collection.values());
+			List<Alias> list = new ArrayList<>(collection.values());
 			Collections.sort(list);
 			return list;
 		}
@@ -440,7 +440,7 @@ public class UnicodeTest {
 
 		public CompositeProperty(String propertyName, Collection<String> content) {
 			this.propertyName = propertyName;
-			this.content = new ArrayList<String>(content);
+			this.content = new ArrayList<>(content);
 			Collections.sort(this.content);
 		}
 

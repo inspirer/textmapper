@@ -146,7 +146,7 @@ public class FormatUtil {
 	private static Map<Character, String> charName = buildCharactersMap();
 
 	private static Map<Character, String> buildCharactersMap() {
-		Map<Character, String> map = new HashMap<Character, String>();
+		Map<Character, String> map = new HashMap<>();
 		map.put('\t', "tab");
 		map.put('\n', "lf");
 		map.put('\r', "cr");

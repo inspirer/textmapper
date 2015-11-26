@@ -482,7 +482,7 @@ class LR0 extends ContextFree {
 
 			build_closure(t, t.elems);
 
-			List<String> items = new ArrayList<String>();
+			List<String> items = new ArrayList<>();
 			for (int i = 0; i < closureend; i++) {
 				items.add(debugText(closure[i]));
 			}
@@ -504,7 +504,7 @@ class LR0 extends ContextFree {
 	}
 
 	protected final Symbol[] getInput(int s) {
-		Stack<Symbol> stack = new Stack<Symbol>();
+		Stack<Symbol> stack = new Stack<>();
 		while (state[s].number != 0) {
 			stack.push(sym[state[s].symbol]);
 			s = state[s].fromstate;

@@ -107,8 +107,8 @@ public class ListsRewriter {
 	}
 
 	private static RhsList createList(RhsChoice def, boolean rightRecursive) {
-		List<LiRhsPart> initialElements = new ArrayList<LiRhsPart>();
-		List<LiRhsSequence> listRules = new ArrayList<LiRhsSequence>();
+		List<LiRhsPart> initialElements = new ArrayList<>();
+		List<LiRhsSequence> listRules = new ArrayList<>();
 		LiRhsPart emptyRule = null;
 
 		final Nonterminal list = def.getLeft();
@@ -180,7 +180,7 @@ public class ListsRewriter {
 
 	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules, int skipParts,
 													   boolean rightRecursive) {
-		List<LiRhsPart> result = new ArrayList<LiRhsPart>();
+		List<LiRhsPart> result = new ArrayList<>();
 
 		for (LiRhsSequence part : listRules) {
 			RhsPart[] ruleSeq = part.getParts();
@@ -205,12 +205,12 @@ public class ListsRewriter {
 			maxLen = Math.min(seq.getParts().length - 2, maxLen);
 		}
 
-		List<LiRhsSymbol> result = new ArrayList<LiRhsSymbol>(maxLen);
+		List<LiRhsSymbol> result = new ArrayList<>(maxLen);
 
 		for (int i = 0; i < maxLen; i++) {
 			Terminal sep = null;
 			RhsSymbol first = null;
-			LinkedList<RhsSymbol> rewriteCandidates = new LinkedList<RhsSymbol>();
+			LinkedList<RhsSymbol> rewriteCandidates = new LinkedList<>();
 
 			for (LiRhsSequence rule : listRules) {
 				RhsPart[] parts = rule.getParts();

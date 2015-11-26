@@ -25,7 +25,7 @@ public class JavaArrayEncoder {
 
 	private static final int MAX_LENGTH = 0xfff0;
 
-	private final List<List<String>> result = new ArrayList<List<String>>();
+	private final List<List<String>> result = new ArrayList<>();
 	private final StringBuilder sb;
 	private final int lineWidth;
 	private List<String> current;
@@ -61,7 +61,7 @@ public class JavaArrayEncoder {
 	}
 
 	private void newString() {
-		current = new ArrayList<String>();
+		current = new ArrayList<>();
 		result.add(current);
 		sb.setLength(0);
 		sb.append("\"");

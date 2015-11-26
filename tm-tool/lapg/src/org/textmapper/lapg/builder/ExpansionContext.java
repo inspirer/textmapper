@@ -23,7 +23,7 @@ import java.util.Map;
 
 final class ExpansionContext {
 
-	private Map<RhsSet, Terminal[]> resolvedSets = new HashMap<RhsSet, Terminal[]>();
+	private Map<RhsSet, Terminal[]> resolvedSets = new HashMap<>();
 
 	ExpansionContext() {
 	}

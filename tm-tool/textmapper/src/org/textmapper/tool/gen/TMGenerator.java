@@ -71,7 +71,7 @@ public final class TMGenerator {
 			}
 
 			// prepare options
-			Map<String, Object> genOptions = new HashMap<String, Object>(s.getOptions());
+			Map<String, Object> genOptions = new HashMap<>(s.getOptions());
 			for (Entry<String, String> entry : options.getAdditionalOptions().entrySet()) {
 
 				// TODO parse value, check type
@@ -146,7 +146,7 @@ public final class TMGenerator {
 	}
 
 	private ResourceRegistry createResourceRegistry() {
-		List<IResourceLoader> loaders = new ArrayList<IResourceLoader>();
+		List<IResourceLoader> loaders = new ArrayList<>();
 		for (String path : options.getIncludeFolders()) {
 			IResourceLoader resourceLoader = strategy.createResourceLoader(path);
 			if (resourceLoader != null) {
@@ -161,7 +161,7 @@ public final class TMGenerator {
 
 	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates, ResourceRegistry resources,
 													 TypesRegistry types, TemplatesStatus templatesStatus) {
-		List<IBundleLoader> loaders = new ArrayList<IBundleLoader>();
+		List<IBundleLoader> loaders = new ArrayList<>();
 		if (grammarTemplates != null) {
 			File file = new File(grammarTemplates.getResourceName());
 			loaders.add(new StringTemplateLoader(new Resource(file.toURI(),
@@ -173,7 +173,7 @@ public final class TMGenerator {
 
 	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, AstModel astModel,
 													  Map<String, Object> genOptions, LexerData l, ParserData r) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
 		map.put("parser", r);

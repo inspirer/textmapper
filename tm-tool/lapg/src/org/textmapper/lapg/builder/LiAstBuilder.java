@@ -24,11 +24,11 @@ import java.util.*;
 
 class LiAstBuilder implements AstBuilder {
 
-	private final List<AstClassifier> classifiers = new ArrayList<AstClassifier>();
-	private final Set<AstType> mine = new HashSet<AstType>();
+	private final List<AstClassifier> classifiers = new ArrayList<>();
+	private final Set<AstType> mine = new HashSet<>();
 
-	private final Map<AstClassifier, Set<String>> usedNames = new HashMap<AstClassifier, Set<String>>();
-	private final Set<String> usedGlobals = new HashSet<String>();
+	private final Map<AstClassifier, Set<String>> usedNames = new HashMap<>();
+	private final Set<String> usedGlobals = new HashSet<>();
 
 	LiAstBuilder() {
 	}
@@ -45,7 +45,7 @@ class LiAstBuilder implements AstBuilder {
 	private void checkName(AstClassifier type, String childName) {
 		Set<String> taken = type == null ? usedGlobals : usedNames.get(type);
 		if (taken == null) {
-			taken = new HashSet<String>();
+			taken = new HashSet<>();
 			usedNames.put(type, taken);
 		}
 

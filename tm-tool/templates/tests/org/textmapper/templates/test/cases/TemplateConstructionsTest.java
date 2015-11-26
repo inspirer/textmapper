@@ -44,7 +44,7 @@ public class TemplateConstructionsTest {
 	// loop.ltp
 	@Test
 	public void testLoops() {
-		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		Hashtable<String, String[]> h = new Hashtable<>();
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
@@ -248,7 +248,7 @@ public class TemplateConstructionsTest {
 	// assert.ltp
 	@Test
 	public void testAssert() {
-		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		Hashtable<String, String[]> h = new Hashtable<>();
 		h.put("list", new String[]{"w1", "w2"});
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
@@ -264,7 +264,7 @@ public class TemplateConstructionsTest {
 	// TODO split call & format
 	@Test
 	public void testCall() {
-		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		Hashtable<String, String[]> h = new Hashtable<>();
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
@@ -292,7 +292,7 @@ public class TemplateConstructionsTest {
 
 	@Test
 	public void testOverrides() {
-		Hashtable<String, String[]> h = new Hashtable<String, String[]>();
+		Hashtable<String, String[]> h = new Hashtable<>();
 		h.put("list", new String[]{"a", "b"});
 
 		TestProblemCollector collector = new TestProblemCollector();
@@ -328,7 +328,7 @@ public class TemplateConstructionsTest {
 
 	@Test
 	public void testFile() {
-		final Map<String, String> fileContent = new HashMap<String, String>();
+		final Map<String, String> fileContent = new HashMap<>();
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector) {
 			@Override
@@ -356,7 +356,7 @@ public class TemplateConstructionsTest {
 	// switch.ltp
 	@Test
 	public void testSwitch() {
-		final Map<String, Object> this_ = new HashMap<String, Object>();
+		final Map<String, Object> this_ = new HashMap<>();
 		this_.put("aa", new Integer(11));
 
 		TestProblemCollector collector = new TestProblemCollector();
@@ -439,7 +439,7 @@ public class TemplateConstructionsTest {
 	}
 
 	public static class ObjectCollector implements Iterable {
-		private List<Object> inner = new ArrayList<Object>();
+		private List<Object> inner = new ArrayList<>();
 
 		public void add(Object o) {
 			inner.add(o);

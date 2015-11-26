@@ -39,7 +39,7 @@ public class LexerInputSymbols {
 	public LexerInputSymbols() {
 		this.builder = new CharacterSetImpl.Builder();
 		this.character2symbol = new int[128];
-		this.setpool = new ArrayList<CharacterSet>();
+		this.setpool = new ArrayList<>();
 
 		// 0 - eoi (reserved), 1 - any
 		Arrays.fill(character2symbol, 1);
@@ -91,8 +91,8 @@ public class LexerInputSymbols {
 		assert !sealed;
 		sealed = true;
 		int base = symbolCount;
-		List<CharacterSet> symbol2chars = new ArrayList<CharacterSet>();
-		Set<Integer> values = new HashSet<Integer>();
+		List<CharacterSet> symbol2chars = new ArrayList<>();
+		Set<Integer> values = new HashSet<>();
 
 		for (int setind = 0; setind < setpool.size(); setind++) {
 			CharacterSet set = setpool.get(setind);

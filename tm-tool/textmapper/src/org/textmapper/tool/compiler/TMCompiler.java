@@ -109,7 +109,7 @@ public class TMCompiler {
 
 	private Map<String, Object> getOptions(TMResolver resolver,
 										   TMExpressionResolver expressionResolver) {
-		Map<String, Object> options = new HashMap<String, Object>();
+		Map<String, Object> options = new HashMap<>();
 
 		// Load class
 		IClass optionsClass = types.getClass(

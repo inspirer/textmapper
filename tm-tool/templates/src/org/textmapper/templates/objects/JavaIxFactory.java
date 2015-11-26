@@ -132,7 +132,7 @@ public class JavaIxFactory implements IxFactory {
 					if (collection instanceof Set<?>) {
 						return collection;
 					}
-					return new LinkedHashSet<Object>(collection);
+					return new LinkedHashSet<>(collection);
 				} else if (methodName.equals("size")) {
 					return collection.size();
 				}
@@ -153,7 +153,7 @@ public class JavaIxFactory implements IxFactory {
 					return -1;
 				} else if (methodName.equals("union")) {
 					if (args[0] != null) {
-						Collection<Object> result = collection instanceof Set<?> ? new LinkedHashSet<Object>(collection) : new ArrayList<Object>(collection);
+						Collection<Object> result = collection instanceof Set<?> ? new LinkedHashSet<>(collection) : new ArrayList<>(collection);
 						if (args[0] instanceof Object[]) {
 							for (Object o : (Object[]) args[0]) {
 								result.add(o);
@@ -344,7 +344,7 @@ public class JavaIxFactory implements IxFactory {
 				} else if (methodName.equals("last")) {
 					return array.length == 0 ? null : array[array.length-1];
 				} else if (methodName.equals("toSet")) {
-					LinkedHashSet<Integer> set = new LinkedHashSet<Integer>();
+					LinkedHashSet<Integer> set = new LinkedHashSet<>();
 					for(int i : array) {
 						set.add(i);
 					}
@@ -428,7 +428,7 @@ public class JavaIxFactory implements IxFactory {
 				} else if (methodName.equals("last")) {
 					return array.length == 0 ? null : array[array.length-1];
 				} else if (methodName.equals("toSet")) {
-					LinkedHashSet<Integer> set = new LinkedHashSet<Integer>();
+					LinkedHashSet<Integer> set = new LinkedHashSet<>();
 					for(int i : array) {
 						set.add(i);
 					}

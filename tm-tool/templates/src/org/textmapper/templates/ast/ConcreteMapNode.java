@@ -34,7 +34,7 @@ public class ConcreteMapNode extends ExpressionNode {
 
 	@Override
 	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		HashMap<Object,Object> result = new HashMap<Object,Object>();
+		HashMap<Object,Object> result = new HashMap<>();
 		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {
 			result.put(entry.getKey(), env.evaluate(entry.getValue(), context, false) );
 		}

@@ -83,9 +83,9 @@ public class ErrorsTest {
 
 	private LinkedHashSet<ReportedProblem> loadTests(String contents) throws IOException {
 		final BufferedReader bufferedReader = new BufferedReader(new StringReader(contents));
-		LinkedHashSet<ReportedProblem> result = new LinkedHashSet<ReportedProblem>();
+		LinkedHashSet<ReportedProblem> result = new LinkedHashSet<>();
 		int lineNumber = 0;
-		List<ReportedProblem> pending = new ArrayList<ReportedProblem>(4);
+		List<ReportedProblem> pending = new ArrayList<>(4);
 
 		String line;
 		while ((line = bufferedReader.readLine()) != null) {
@@ -141,7 +141,7 @@ public class ErrorsTest {
 	}
 
 	private static class ProblemStatus extends AbstractProcessingStatus {
-		private List<ReportedProblem> problems = new ArrayList<ReportedProblem>();
+		private List<ReportedProblem> problems = new ArrayList<>();
 
 		protected ProblemStatus() {
 			super(false, false);

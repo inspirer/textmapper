@@ -38,7 +38,7 @@ import static org.junit.Assert.fail;
 */
 public class CheckingFileBasedStrategy implements ProcessingStrategy {
 
-	private final Set<String> created = new HashSet<String>();
+	private final Set<String> created = new HashSet<>();
 	private final File root;
 
 	public CheckingFileBasedStrategy(File root) {

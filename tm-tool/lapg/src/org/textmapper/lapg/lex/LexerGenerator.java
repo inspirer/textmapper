@@ -192,7 +192,7 @@ public class LexerGenerator {
 	// fills: ljmp
 	private void buildJumps() {
 		int i, k;
-		Stack<Integer> stack = new Stack<Integer>();
+		Stack<Integer> stack = new Stack<>();
 
 		if (status.isDebugMode()) {
 			status.debug("\nRegex jumps:\n");
@@ -495,7 +495,7 @@ public class LexerGenerator {
 		RegexpCompiler rp = new RegexpCompiler(createContext(patterns));
 		boolean success = true;
 
-		ArrayList<RuleData> syms = new ArrayList<RuleData>();
+		ArrayList<RuleData> syms = new ArrayList<>();
 
 		nlexerStates = lexerStates.length;
 
@@ -621,7 +621,7 @@ public class LexerGenerator {
 	}
 
 	private RegexContext createContext(NamedPattern[] patterns) {
-		final Map<String, RegexPart> result = new HashMap<String, RegexPart>();
+		final Map<String, RegexPart> result = new HashMap<>();
 		for (NamedPattern p : patterns) {
 			String name = p.getName();
 			RegexPart regex = p.getRegexp();

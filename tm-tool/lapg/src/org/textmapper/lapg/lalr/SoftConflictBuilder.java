@@ -23,7 +23,7 @@ import java.util.*;
 
 public class SoftConflictBuilder {
 
-	private List<SoftClassConflict> conflicts = new ArrayList<SoftClassConflict>();
+	private List<SoftClassConflict> conflicts = new ArrayList<>();
 
 	public Collection<SoftClassConflict> getConflicts() {
 		return Collections.unmodifiableCollection(conflicts);
@@ -37,8 +37,8 @@ public class SoftConflictBuilder {
 
 	public static class SoftClassConflict {
 		private final int state;
-		private LinkedHashSet<Rule> rules = new LinkedHashSet<Rule>();
-		private ArrayList<Terminal> symbols = new ArrayList<Terminal>();
+		private LinkedHashSet<Rule> rules = new LinkedHashSet<>();
+		private ArrayList<Terminal> symbols = new ArrayList<>();
 
 		public SoftClassConflict(int state) {
 			this.state = state;

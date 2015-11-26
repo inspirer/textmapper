@@ -34,7 +34,7 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 	private String nonterminalSuffix;
 
 	LiTemplateEnvironment() {
-		values = new HashMap<TemplateParameter, Object>();
+		values = new HashMap<>();
 	}
 
 	private LiTemplateEnvironment(Map<TemplateParameter, Object> map) {
@@ -54,13 +54,13 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 			if (!values.containsKey(param)) {
 				return this;
 			}
-			result = new HashMap<TemplateParameter, Object>(values);
+			result = new HashMap<>(values);
 			result.remove(param);
 		} else {
 			if (value.equals(values.get(param))) {
 				return this;
 			}
-			result = new HashMap<TemplateParameter, Object>(values);
+			result = new HashMap<>(values);
 			result.put(param, value);
 		}
 
@@ -71,7 +71,7 @@ public class LiTemplateEnvironment implements TemplateEnvironment {
 	public String getNonterminalSuffix() {
 		if (nonterminalSuffix != null) return nonterminalSuffix;
 
-		List<TemplateParameter> params = new ArrayList<TemplateParameter>(values.keySet());
+		List<TemplateParameter> params = new ArrayList<>(values.keySet());
 		Collections.sort(params, TEMPLATE_PARAMETER_COMPARATOR);
 		StringBuilder sb = new StringBuilder();
 

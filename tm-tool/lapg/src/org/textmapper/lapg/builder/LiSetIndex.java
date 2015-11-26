@@ -44,10 +44,10 @@ class LiSetIndex {
 		this.symbols = symbols;
 		this.terminals = terminals;
 		this.nonterminals = symbols.length - terminals;
-		this.namedSets = new HashSet<RhsSet>();
-		sets = new HashMap<RhsSet, Integer>();
-		sortedSets = new ArrayList<RhsSet>();
-		topLevelSets = new ArrayList<RhsSet>();
+		this.namedSets = new HashSet<>();
+		sets = new HashMap<>();
+		sortedSets = new ArrayList<>();
+		topLevelSets = new ArrayList<>();
 		size = 5 * nonterminals + 2 * terminals;
 		for (int i = terminals; i < symbols.length; i++) {
 			traverse(((Nonterminal) symbols[i]).getDefinition());

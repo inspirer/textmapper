@@ -39,18 +39,18 @@ public class StringTemplateLoader implements IBundleLoader {
 		if(sourceForPackage == null) {
 			TemplatesBundle compositeBundle = TemplatesBundle.parse(resource, null, status);
 
-			Map<String,List<IBundleEntity>> bundleToTemplates = new HashMap<String, List<IBundleEntity>>();
+			Map<String,List<IBundleEntity>> bundleToTemplates = new HashMap<>();
 			for(IBundleEntity t : compositeBundle.getEntities()) {
 				String tbundle = t.getPackage();
 				List<IBundleEntity> list = bundleToTemplates.get(tbundle);
 				if(list == null) {
-					list = new LinkedList<IBundleEntity>();
+					list = new LinkedList<>();
 					bundleToTemplates.put(tbundle,	list);
 				}
 				list.add(t);
 			}
 
-			sourceForPackage = new HashMap<String, TemplatesBundle>();
+			sourceForPackage = new HashMap<>();
 			for(Map.Entry<String, List<IBundleEntity>> entry : bundleToTemplates.entrySet()) {
 				List<IBundleEntity> list = entry.getValue();
 				sourceForPackage.put(entry.getKey(), new TemplatesBundle(resource, list.toArray(new IBundleEntity[list.size()])));

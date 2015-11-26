@@ -29,8 +29,8 @@ public class TypesRegistry implements ITypesRegistry {
 
 	private final ResourceRegistry myResourceRegistry;
 	private final TemplatesStatus myStatus;
-	private final Set<String> myLoadedPackages = new HashSet<String>();
-	private final Map<String, TiClass> myClasses = new HashMap<String, TiClass>();
+	private final Set<String> myLoadedPackages = new HashSet<>();
+	private final Map<String, TiClass> myClasses = new HashMap<>();
 
 	public TypesRegistry(ResourceRegistry resourceRegistry, TemplatesStatus status) {
 		myResourceRegistry = resourceRegistry;
@@ -52,9 +52,9 @@ public class TypesRegistry implements ITypesRegistry {
 	}
 
 	private void loadPackage(String name, SourceElement referer) {
-		LinkedHashSet<String> queue = new LinkedHashSet<String>();
+		LinkedHashSet<String> queue = new LinkedHashSet<>();
 		queue.add(name);
-		List<TypesResolver> loaders = new ArrayList<TypesResolver>();
+		List<TypesResolver> loaders = new ArrayList<>();
 
 		// 1-st stage: load types
 		while(!queue.isEmpty()) {

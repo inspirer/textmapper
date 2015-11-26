@@ -45,10 +45,10 @@ public class TMResolver {
 	private final GrammarBuilder builder;
 	private final AstBuilder rawTypesBuilder;
 
-	private final Map<String, LexerState> statesMap = new HashMap<String, LexerState>();
-	private final Map<String, Symbol> symbolsMap = new HashMap<String, Symbol>();
-	private final Map<String, TemplateParameter> parametersMap = new HashMap<String, TemplateParameter>();
-	private final Map<String, RegexPart> namedPatternsMap = new HashMap<String, RegexPart>();
+	private final Map<String, LexerState> statesMap = new HashMap<>();
+	private final Map<String, Symbol> symbolsMap = new HashMap<>();
+	private final Map<String, TemplateParameter> parametersMap = new HashMap<>();
+	private final Map<String, RegexPart> namedPatternsMap = new HashMap<>();
 
 	public TMResolver(TMTree<TmaInput> tree, GrammarBuilder builder) {
 		this.tree = tree;
@@ -192,7 +192,7 @@ public class TMResolver {
 				if (!(s instanceof Nonterminal)) continue;
 				if (nonterm.getParams() == null || nonterm.getParams().getRefs() == null) continue;
 
-				List<TemplateParameter> parameters = new ArrayList<TemplateParameter>();
+				List<TemplateParameter> parameters = new ArrayList<>();
 				for (TmaIdentifier id : nonterm.getParams().getRefs()) {
 					TemplateParameter p = resolveParam(id);
 					if (p != null) parameters.add(p);
@@ -291,7 +291,7 @@ public class TMResolver {
 		}
 	}
 
-	private Map<String, Integer> lastIndex = new HashMap<String, Integer>();
+	private Map<String, Integer> lastIndex = new HashMap<>();
 
 	Symbol createNestedNonTerm(Symbol outer, ITmaNode source) {
 		final String base_ = outer.getName() + "$";
@@ -347,7 +347,7 @@ public class TMResolver {
 				return null;
 			}
 			int index = 0;
-			List<RhsArgument> result = new ArrayList<RhsArgument>(valueList.size());
+			List<RhsArgument> result = new ArrayList<>(valueList.size());
 			for (ITmaParamValue value : valueList) {
 				TemplateParameter param = expectedParameters.get(index++);
 				Object val = getParamValue(param.getType(), value);
@@ -358,7 +358,7 @@ public class TMResolver {
 
 		if (args.getKeyvalueList() == null) return null;
 
-		List<RhsArgument> result = new ArrayList<RhsArgument>(args.getKeyvalueList().size());
+		List<RhsArgument> result = new ArrayList<>(args.getKeyvalueList().size());
 		for (TmaKeyvalArg arg : args.getKeyvalueList()) {
 			TemplateParameter param = resolveParam(arg.getName());
 			if (param == null) continue;

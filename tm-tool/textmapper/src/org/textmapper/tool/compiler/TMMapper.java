@@ -40,11 +40,11 @@ public class TMMapper {
 
 	private final GrammarMapper mapper;
 	private final AstBuilder builder;
-	private final Map<Symbol, Symbol> decorators = new HashMap<Symbol, Symbol>();
-	private final Map<Symbol, List<Runnable>> typeListeners = new HashMap<Symbol, List<Runnable>>();
-	private final Queue<Runnable> postProcessors = new LinkedList<Runnable>();
-	private final Map<AstClass, List<RhsPart>> classContent = new LinkedHashMap<AstClass, List<RhsPart>>();
-	private final Map<String, AstClass> aliasToClass = new HashMap<String, AstClass>();
+	private final Map<Symbol, Symbol> decorators = new HashMap<>();
+	private final Map<Symbol, List<Runnable>> typeListeners = new HashMap<>();
+	private final Queue<Runnable> postProcessors = new LinkedList<>();
+	private final Map<AstClass, List<RhsPart>> classContent = new LinkedHashMap<>();
+	private final Map<String, AstClass> aliasToClass = new HashMap<>();
 	private List<Nonterminal> unmapped;
 
 	public TMMapper(Grammar grammar, ProcessingStatus status, boolean allowTypeAny) {
@@ -136,7 +136,7 @@ public class TMMapper {
 		} else {
 			List<Runnable> listeners = typeListeners.get(s);
 			if (listeners == null) {
-				listeners = new ArrayList<Runnable>();
+				listeners = new ArrayList<>();
 				typeListeners.put(s, listeners);
 			}
 			listeners.add(r);
@@ -144,7 +144,7 @@ public class TMMapper {
 	}
 
 	private void collectUnmapped() {
-		unmapped = new LinkedList<Nonterminal>();
+		unmapped = new LinkedList<>();
 		for (Symbol sym : grammar.getSymbols()) {
 			if (!(sym instanceof Nonterminal) || sym.getType() != null) continue;
 			unmapped.add((Nonterminal) sym);
@@ -334,9 +334,9 @@ public class TMMapper {
 	}
 
 	private void mapInterfaces() {
-		List<RhsSymbol> passSymbols = new ArrayList<RhsSymbol>();
-		Set<Nonterminal> extList = new LinkedHashSet<Nonterminal>();
-		List<RhsSequence> customRuleList = new ArrayList<RhsSequence>();
+		List<RhsSymbol> passSymbols = new ArrayList<>();
+		Set<Nonterminal> extList = new LinkedHashSet<>();
+		List<RhsSequence> customRuleList = new ArrayList<>();
 
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
@@ -423,7 +423,7 @@ public class TMMapper {
 		if (next == null) {
 			return sym;
 		}
-		Set<Symbol> seen = new HashSet<Symbol>();
+		Set<Symbol> seen = new HashSet<>();
 		while (next != null) {
 			if (!seen.add(next)) {
 				// TODO handle, report etc.
@@ -469,7 +469,7 @@ public class TMMapper {
 	 */
 	private void mapCustomTypeClasses() {
 		Iterator<Nonterminal> i = unmapped.iterator();
-		Map<Nonterminal, AstClass> customTypes = new LinkedHashMap<Nonterminal, AstClass>();
+		Map<Nonterminal, AstClass> customTypes = new LinkedHashMap<>();
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList) continue;
@@ -521,8 +521,8 @@ public class TMMapper {
 		}
 
 		boolean mapped = false;
-		Set<AstClass> usedClasses = new HashSet<AstClass>();
-		Map<RhsSequence, AstClass> mappedRules = new HashMap<RhsSequence, AstClass>();
+		Set<AstClass> usedClasses = new HashSet<>();
+		Map<RhsSequence, AstClass> mappedRules = new HashMap<>();
 
 		for (RhsSequence rule : getRules(n)) {
 			RhsSymbol master = getMasterSymbol(rule);
@@ -568,7 +568,7 @@ public class TMMapper {
 	}
 
 	private void mapLists() {
-		final List<RhsSymbol> rhsSymbols = new ArrayList<RhsSymbol>();
+		final List<RhsSymbol> rhsSymbols = new ArrayList<>();
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
 			final Nonterminal n = i.next();
@@ -635,7 +635,7 @@ public class TMMapper {
 	private void mapClass(AstClass cl, RhsPart... parts) {
 		List<RhsPart> rhsParts = classContent.get(cl);
 		if (rhsParts == null) {
-			rhsParts = new ArrayList<RhsPart>();
+			rhsParts = new ArrayList<>();
 			classContent.put(cl, rhsParts);
 		}
 		for (RhsPart part : parts) {

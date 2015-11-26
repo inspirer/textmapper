@@ -70,12 +70,12 @@ public class TiClass implements IClass {
 				return f;
 			}
 		}
-		LinkedList<IClass> queue = new LinkedList<IClass>(this.getExtends());
+		LinkedList<IClass> queue = new LinkedList<>(this.getExtends());
 		if (queue.isEmpty()) {
 			return null;
 		}
 
-		Set<IClass> processed = new HashSet<IClass>();
+		Set<IClass> processed = new HashSet<>();
 		processed.add(this);
 		processed.addAll(queue);
 		while (!queue.isEmpty()) {
@@ -101,12 +101,12 @@ public class TiClass implements IClass {
 				return m;
 			}
 		}
-		LinkedList<IClass> queue = new LinkedList<IClass>(this.getExtends());
+		LinkedList<IClass> queue = new LinkedList<>(this.getExtends());
 		if (queue.isEmpty()) {
 			return null;
 		}
 
-		Set<IClass> processed = new HashSet<IClass>();
+		Set<IClass> processed = new HashSet<>();
 		processed.add(this);
 		processed.addAll(queue);
 		while (!queue.isEmpty()) {
@@ -127,8 +127,8 @@ public class TiClass implements IClass {
 	}
 
 	public boolean isSubtypeOf(String qualifiedName) {
-		Set<IClass> validated = new HashSet<IClass>();
-		LinkedList<IClass> queue = new LinkedList<IClass>();
+		Set<IClass> validated = new HashSet<>();
+		LinkedList<IClass> queue = new LinkedList<>();
 		queue.add(this);
 		validated.add(this);
 		while (!queue.isEmpty()) {

@@ -101,8 +101,8 @@ public class DefaultStaticMethods {
 		return new String(string, 0, len);
 	}
 
-	private final Set<String> usedIdentifiers = new HashSet<String>();
-	private final Map<Object, String> objectIds = new HashMap<Object, String>();
+	private final Set<String> usedIdentifiers = new HashSet<>();
+	private final Map<Object, String> objectIds = new HashMap<>();
 	int objectIdCounter = 1;
 
 	public String objectId(Object o) {

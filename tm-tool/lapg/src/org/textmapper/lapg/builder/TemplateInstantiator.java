@@ -31,12 +31,12 @@ class TemplateInstantiator {
 	private final int terminals;
 	private final List<Problem> problems;
 	private final int nonterminals;
-	private final Map<TemplateParameter, Integer> paramIndex = new HashMap<TemplateParameter, Integer>();
+	private final Map<TemplateParameter, Integer> paramIndex = new HashMap<>();
 	private Map<TemplateParameter, Set<Object>> paramValues;
 	private Map<Nonterminal, BitSet> paramUsage;
 
-	private final Map<InstanceKey, TemplateInstance> instances = new LinkedHashMap<InstanceKey, TemplateInstance>();
-	private final Queue<TemplateInstance> queue = new LinkedList<TemplateInstance>();
+	private final Map<InstanceKey, TemplateInstance> instances = new LinkedHashMap<>();
+	private final Queue<TemplateInstance> queue = new LinkedList<>();
 
 	public TemplateInstantiator(GrammarBuilder builder, LiTemplateParameter[] params, LiSymbol[] symbols,
 								int terminals, List<Problem> problems) {
@@ -56,7 +56,7 @@ class TemplateInstantiator {
 	 * Collects possible values for all parameters in {@link #paramValues}.
 	 */
 	private void collectParameterValues() {
-		paramValues = new HashMap<TemplateParameter, Set<Object>>();
+		paramValues = new HashMap<>();
 		for (int i = 0; i < nonterminals; i++) {
 			LiNonterminal nonterm = (LiNonterminal) symbols[i + terminals];
 			collectParameterValues(nonterm.getDefinition());
@@ -89,7 +89,7 @@ class TemplateInstantiator {
 			TemplateParameter param = arg.getParameter();
 			Set<Object> set = paramValues.get(param);
 			if (set == null) {
-				set = new HashSet<Object>();
+				set = new HashSet<>();
 				paramValues.put(param, set);
 			}
 			set.add(arg.getValue());
@@ -118,7 +118,7 @@ class TemplateInstantiator {
 		if (!closure.compute()) {
 			throw new IllegalStateException("Internal error");
 		}
-		this.paramUsage = new HashMap<Nonterminal, BitSet>();
+		this.paramUsage = new HashMap<>();
 		for (int i = 0; i < nonterminals; i++) {
 			Nonterminal nonterm = (Nonterminal) symbols[i + terminals];
 			BitSet set = new BitSet(params.length);

@@ -27,7 +27,7 @@ class SetsClosure {
 	static final int[] EMPTY_ARRAY = new int[0];
 
 	private final IntegerSets sets = new IntegerSets();
-	private final List<SetNode> nodes = new ArrayList<SetNode>();
+	private final List<SetNode> nodes = new ArrayList<>();
 	private int[][] graph;
 	private int[] nodeSet;
 	private BitSet isIntersection;
@@ -113,7 +113,7 @@ class SetsClosure {
 	}
 
 	public Object[] getErrorNodes() {
-		List<Object> list = new ArrayList<Object>();
+		List<Object> list = new ArrayList<>();
 		for (SetNode node : nodes) {
 			if (node.isError) list.add(node.origin);
 		}

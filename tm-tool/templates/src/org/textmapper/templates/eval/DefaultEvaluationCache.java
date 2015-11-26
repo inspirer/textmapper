@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class DefaultEvaluationCache implements IEvaluationCache {
 
-	private final Map<CompositeKey, Object> globalCache = new HashMap<CompositeKey, Object>();
+	private final Map<CompositeKey, Object> globalCache = new HashMap<>();
 
 	public void cache(Object value, Object... keys) {
 		globalCache.put(new CompositeKey(keys), value);

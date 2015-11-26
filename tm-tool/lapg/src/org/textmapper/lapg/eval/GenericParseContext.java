@@ -49,7 +49,7 @@ public class GenericParseContext {
 	}
 
 	public Result parse(TextSource source, int inputIndex) {
-		final List<ParseProblem> list = new ArrayList<ParseProblem>();
+		final List<ParseProblem> list = new ArrayList<>();
 		ErrorReporter reporter = new ErrorReporter() {
 			@Override
 			public void error(String s, int line, int offset, int endoffset) {

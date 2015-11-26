@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class TestProblemCollector implements TemplatesStatus {
-	public ArrayList<String> nextErrors = new ArrayList<String>();
+	public ArrayList<String> nextErrors = new ArrayList<>();
 
 	public void addErrors(String... errors) {
 		for (String s : errors) {

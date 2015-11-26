@@ -513,7 +513,7 @@ public class JavaParserTest {
 		return recorder.getRoot();
 	}
 
-	private static Set<String> doNotMerge = new HashSet<String>();
+	private static Set<String> doNotMerge = new HashSet<>();
 
 	static {
 		doNotMerge.add("ArithmeticExpressionNotName");
@@ -523,7 +523,7 @@ public class JavaParserTest {
 
 	private static class TreeRecorder {
 
-		private Stack<AstNode> stack = new Stack<AstNode>();
+		private Stack<AstNode> stack = new Stack<>();
 
 		public void add(String symbol, String text, int offset, int endoffset, boolean simpleRule) {
 			if (endoffset == offset) return;
@@ -579,7 +579,7 @@ public class JavaParserTest {
 
 		public void addChild(AstNode node) {
 			if (children == null) {
-				children = new ArrayList<AstNode>();
+				children = new ArrayList<>();
 			}
 			children.add(node);
 		}

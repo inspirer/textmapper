@@ -30,7 +30,7 @@ import java.util.List;
  */
 class RegexAstOr extends RegexAstPart implements RegexOr {
 
-	List<RegexAstPart> variants = new ArrayList<RegexAstPart>();
+	List<RegexAstPart> variants = new ArrayList<>();
 
 	public RegexAstOr(RegexAstPart initialPart) {
 		super(initialPart.getInput(), initialPart.getOffset(), initialPart.getEndOffset());

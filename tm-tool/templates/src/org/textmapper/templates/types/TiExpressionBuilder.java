@@ -83,7 +83,7 @@ public abstract class TiExpressionBuilder<Node> {
 			return null;
 		}
 
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new HashMap<>();
 		if (properties != null) {
 			for (Entry<String, Node> item : properties.entrySet()) {
 				String key = item.getKey();
@@ -135,7 +135,7 @@ public abstract class TiExpressionBuilder<Node> {
 		}
 
 		IType innerType = ((IArrayType) type).getInnerType();
-		List<Object> result = new ArrayList<Object>(array.size());
+		List<Object> result = new ArrayList<>(array.size());
 		for (Node expression : array) {
 			Object subexpr = resolve(expression, innerType);
 			if (subexpr != null) {

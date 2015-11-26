@@ -185,7 +185,7 @@ public class Builder extends Lalr1 {
 	}
 
 	private void action() {
-		List<short[]> actionTables = new ArrayList<short[]>();
+		List<short[]> actionTables = new ArrayList<>();
 		int rr = 0, sr = 0;
 		short[] actionset = new short[nterms], next = new short[nterms];
 		ConflictBuilder conflicts = new ConflictBuilder(nterms);

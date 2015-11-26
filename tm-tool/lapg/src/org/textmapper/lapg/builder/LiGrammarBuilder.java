@@ -30,27 +30,27 @@ import java.util.*;
 class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	// The value is either Symbol, or TemplateParameter
-	private final Map<String, Object> symbolsMap = new HashMap<String, Object>();
+	private final Map<String, Object> symbolsMap = new HashMap<>();
 
-	private final List<LiSymbol> symbols = new ArrayList<LiSymbol>();
-	private final List<LiTemplateParameter> params = new ArrayList<LiTemplateParameter>();
-	private final List<LiLexerRule> lexerRules = new ArrayList<LiLexerRule>();
-	private final List<LiNamedPattern> namedPatterns = new ArrayList<LiNamedPattern>();
-	private final List<LiNamedSet> namedSets = new ArrayList<LiNamedSet>();
-	private final Set<String> namedPatternsSet = new HashSet<String>();
-	private final Set<String> namedSetNames = new HashSet<String>();
-	private final Set<String> stateNamesSet = new HashSet<String>();
-	private final Set<LexerState> statesSet = new LinkedHashSet<LexerState>();
-	private final Set<RhsPredicate> predicateSet = new HashSet<RhsPredicate>();
-	private final List<LiRule> rules = new ArrayList<LiRule>();
-	private final List<LiPrio> priorities = new ArrayList<LiPrio>();
-	private final Set<RhsPart> rhsSet = new HashSet<RhsPart>();
-	private final Set<Terminal> sealedTerminals = new HashSet<Terminal>();
-	private final Map<Object, Nonterminal> instantiations = new HashMap<Object, Nonterminal>();
-	private final Set<Nonterminal> anonymousSymbols = new LinkedHashSet<Nonterminal>();
-	private final List<Problem> problems = new ArrayList<Problem>();
+	private final List<LiSymbol> symbols = new ArrayList<>();
+	private final List<LiTemplateParameter> params = new ArrayList<>();
+	private final List<LiLexerRule> lexerRules = new ArrayList<>();
+	private final List<LiNamedPattern> namedPatterns = new ArrayList<>();
+	private final List<LiNamedSet> namedSets = new ArrayList<>();
+	private final Set<String> namedPatternsSet = new HashSet<>();
+	private final Set<String> namedSetNames = new HashSet<>();
+	private final Set<String> stateNamesSet = new HashSet<>();
+	private final Set<LexerState> statesSet = new LinkedHashSet<>();
+	private final Set<RhsPredicate> predicateSet = new HashSet<>();
+	private final List<LiRule> rules = new ArrayList<>();
+	private final List<LiPrio> priorities = new ArrayList<>();
+	private final Set<RhsPart> rhsSet = new HashSet<>();
+	private final Set<Terminal> sealedTerminals = new HashSet<>();
+	private final Map<Object, Nonterminal> instantiations = new HashMap<>();
+	private final Set<Nonterminal> anonymousSymbols = new LinkedHashSet<>();
+	private final List<Problem> problems = new ArrayList<>();
 
-	private final List<LiInputRef> inputs = new ArrayList<LiInputRef>();
+	private final List<LiInputRef> inputs = new ArrayList<>();
 	private final LiTemplateEnvironment env = new LiTemplateEnvironment();
 	private final Terminal eoi;
 
@@ -194,7 +194,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (sym.isSoft() != (kind == LexerRule.KIND_SOFT)) {
 			throw new IllegalArgumentException("wrong rule kind, doesn't match symbol kind");
 		}
-		List<LexerState> liStates = new ArrayList<LexerState>();
+		List<LexerState> liStates = new ArrayList<>();
 		for (LexerState state : states) {
 			if (!statesSet.contains(state)) {
 				throw new IllegalArgumentException(
@@ -718,7 +718,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private void assignNames() {
-		Map<String, Integer> lastIndex = new HashMap<String, Integer>();
+		Map<String, Integer> lastIndex = new HashMap<>();
 		for (Nonterminal n : anonymousSymbols) {
 			String baseName = (String) n.getUserData(Nonterminal.UD_NAME_HINT);
 			int index = lastIndex.containsKey(baseName) ? lastIndex.get(baseName) : 0;
@@ -733,10 +733,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	private void annotateNullables() {
 		// build back dependencies and mark first layer of nullable nonterminals
-		Map<Nonterminal, List<Nonterminal>> backDependencies =
-				new HashMap<Nonterminal, List<Nonterminal>>();
-		List<Nonterminal> dependencies = new ArrayList<Nonterminal>();
-		Set<Nonterminal> candidates = new HashSet<Nonterminal>();
+		Map<Nonterminal, List<Nonterminal>> backDependencies = new HashMap<>();
+		List<Nonterminal> dependencies = new ArrayList<>();
+		Set<Nonterminal> candidates = new HashSet<>();
 		for (Symbol s : symbols) {
 			if (s.isTerm()) continue;
 
@@ -751,7 +750,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 					if (dep == n) continue;
 					List<Nonterminal> dependOn = backDependencies.get(dep);
 					if (dependOn == null) {
-						dependOn = new ArrayList<Nonterminal>();
+						dependOn = new ArrayList<>();
 						backDependencies.put(dep, dependOn);
 					}
 					dependOn.add(n);
@@ -760,8 +759,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 
 		// effectively invalidate potentially nullable nonterminals
-		Queue<Nonterminal> queue = new LinkedList<Nonterminal>(candidates);
-		Set<Nonterminal> inQueue = new HashSet<Nonterminal>(candidates);
+		Queue<Nonterminal> queue = new LinkedList<>(candidates);
+		Set<Nonterminal> inQueue = new HashSet<>(candidates);
 		Nonterminal next;
 		while ((next = queue.poll()) != null) {
 			assert !next.isNullable();

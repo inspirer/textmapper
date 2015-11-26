@@ -38,7 +38,7 @@ public class ConflictBuilder {
 
 	public ConflictBuilder(int nterms) {
 		nextconfl = new ConflictData[nterms];
-		conflicts = new ArrayList<ConflictData>();
+		conflicts = new ArrayList<>();
 	}
 
 	public void clear() {
@@ -75,7 +75,7 @@ public class ConflictBuilder {
 			}
 		}
 
-		Map<Object, ConflictData> map = new HashMap<Object, ConflictData>();
+		Map<Object, ConflictData> map = new HashMap<>();
 		for (ConflictData c : conflicts) {
 			Object key = c.getRulesAndKindKey();
 			ConflictData data = map.get(key);
@@ -88,7 +88,7 @@ public class ConflictBuilder {
 		Input inp = new InputImpl(state, input);
 		Collection<ConflictData> values = map.values();
 
-		List<LalrConflict> result = new ArrayList<LalrConflict>(values.size());
+		List<LalrConflict> result = new ArrayList<>(values.size());
 		for (ConflictData data : values) {
 			result.add(new LalrConflict(data.getKind(), data.getKindAsText(), inp, data.getSymbols(), data.getRules()));
 		}
@@ -101,7 +101,7 @@ public class ConflictBuilder {
 		private final Terminal termSym;
 		private final boolean canShift;
 		private boolean isSoft;
-		private final List<Rule> rules = new ArrayList<Rule>();
+		private final List<Rule> rules = new ArrayList<>();
 		private int status = NONE;
 
 		private ConflictData linked = null;

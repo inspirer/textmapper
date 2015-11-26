@@ -25,7 +25,7 @@ class IntArrayBuilder {
 	private int size;
 
 	IntArrayBuilder(boolean dedupe) {
-		seen = dedupe ? new HashSet<Integer>() : null;
+		seen = dedupe ? new HashSet<>() : null;
 		size = 0;
 	}
 

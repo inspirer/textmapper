@@ -78,7 +78,7 @@ public class LiRhsSet extends LiRhsPart implements RhsSet, TemplatedSymbolRef {
 			return Collections.singletonList(RhsSymbol.EMPTY_LIST);
 		}
 
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>(terminals.length);
+		List<RhsSymbol[]> result = new ArrayList<>(terminals.length);
 		for (Terminal t : terminals) {
 			result.add(new RhsSymbol[]{new LiRhsSymbol(t, null, this)});
 		}

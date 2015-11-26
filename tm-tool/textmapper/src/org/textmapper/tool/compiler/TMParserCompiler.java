@@ -80,7 +80,7 @@ public class TMParserCompiler {
 	}
 
 	private void collectAstTypes() {
-		Set<String> withType = new HashSet<String>();
+		Set<String> withType = new HashSet<>();
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
@@ -128,7 +128,7 @@ public class TMParserCompiler {
 							hint.getName() == null ? null : hint.getName().getID()));
 
 					if (hint.getImplements() != null && !hint.getImplements().isEmpty()) {
-						List<Nonterminal> interfaces = new ArrayList<Nonterminal>();
+						List<Nonterminal> interfaces = new ArrayList<>();
 						for (TmaSymref ref : hint.getImplements()) {
 							Nonterminal type = asNonterminalWithoutType(ref, withType);
 							if (type != null) {
@@ -164,7 +164,7 @@ public class TMParserCompiler {
 	}
 
 	private void collectDirectives() {
-		Set<String> seenSets = new HashSet<String>();
+		Set<String> seenSets = new HashSet<>();
 
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaDirectivePrio) {
@@ -218,7 +218,7 @@ public class TMParserCompiler {
 			Symbol sym = resolver.getSymbol(id.getID());
 			Map<String, Object> symAnnotations = TMDataUtil.getAnnotations(sym);
 			if (symAnnotations == null) {
-				symAnnotations = new HashMap<String, Object>();
+				symAnnotations = new HashMap<>();
 				TMDataUtil.putAnnotations(sym, symAnnotations);
 			}
 			for (Map.Entry<String, Object> ann : annotations.entrySet()) {
@@ -244,7 +244,7 @@ public class TMParserCompiler {
 	}
 
 	private void createRule(Nonterminal left, TmaRule0 right) {
-		List<RhsPart> rhs = new ArrayList<RhsPart>();
+		List<RhsPart> rhs = new ArrayList<>();
 		List<ITmaRhsPart> list = right.getList();
 		TmaCommand lastAction = null;
 		if (list != null) {
@@ -356,13 +356,13 @@ public class TMParserCompiler {
 			return builder.symbol(codeSym, null, astCode);
 
 		} else if (part instanceof TmaRhsUnordered) {
-			List<ITmaRhsPart> refParts = new ArrayList<ITmaRhsPart>();
+			List<ITmaRhsPart> refParts = new ArrayList<>();
 			extractUnorderedParts(part, refParts);
 			if (refParts.size() < 2 || refParts.size() > 5) {
 				error(part, "max 5 elements are allowed for permutation");
 				return null;
 			}
-			List<RhsPart> resolved = new ArrayList<RhsPart>(refParts.size());
+			List<RhsPart> resolved = new ArrayList<>(refParts.size());
 			for (ITmaRhsPart refPart : refParts) {
 				RhsPart rulePart = convertPart(outer, refPart);
 				if (rulePart == null) {
@@ -562,7 +562,7 @@ public class TMParserCompiler {
 
 			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(),
 					listWithSeparator);
-			List<RhsPart> sep = new ArrayList<RhsPart>();
+			List<RhsPart> sep = new ArrayList<>();
 			for (TmaSymref ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolver.resolve(ref);
 				if (s == null) {
@@ -606,7 +606,7 @@ public class TMParserCompiler {
 	}
 
 	private RhsPart convertChoice(Symbol outer, List<TmaRule0> rules, SourceElement origin) {
-		Collection<RhsPart> result = new ArrayList<RhsPart>(rules.size());
+		Collection<RhsPart> result = new ArrayList<>(rules.size());
 		for (TmaRule0 rule : rules) {
 			RhsSequence abstractRulePart = convertGroup(outer, rule.getList(), rule);
 			if (abstractRulePart == null) {
@@ -624,7 +624,7 @@ public class TMParserCompiler {
 
 	private RhsSequence convertGroup(Symbol outer, List<ITmaRhsPart> groupPart,
 									 SourceElement origin) {
-		List<RhsPart> groupResult = new ArrayList<RhsPart>();
+		List<RhsPart> groupResult = new ArrayList<>();
 		if (groupPart == null) {
 			return null;
 		}
@@ -706,7 +706,7 @@ public class TMParserCompiler {
 	}
 
 	private List<Terminal> resolveTerminals(List<TmaSymref> input) {
-		List<Terminal> result = new ArrayList<Terminal>(input.size());
+		List<Terminal> result = new ArrayList<>(input.size());
 		for (TmaSymref id : input) {
 			Symbol sym = resolver.resolve(id);
 			if (sym instanceof Terminal) {

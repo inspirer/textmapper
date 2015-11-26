@@ -75,7 +75,7 @@ public class RewriteTest {
 
 	private Map<String, String> loadTests(String contents) throws IOException {
 		final BufferedReader bufferedReader = new BufferedReader(new StringReader(contents));
-		Map<String, String> result = new LinkedHashMap<String, String>();
+		Map<String, String> result = new LinkedHashMap<>();
 		String line;
 		String expectedValue = null;
 		while ((line = bufferedReader.readLine()) != null) {

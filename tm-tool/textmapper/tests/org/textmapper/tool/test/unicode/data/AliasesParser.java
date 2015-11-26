@@ -55,7 +55,7 @@ public class AliasesParser {
 				throw new IOException(line + ": unknown line: " + inputLine);
 			}
 			try {
-				Collection<String> aliases = new ArrayList<String>();
+				Collection<String> aliases = new ArrayList<>();
 				aliases.add(m.group(valueAliases ? 2 : 1));
 				String propertyName = valueAliases ? m.group(1) : null;
 				String rest = m.group(valueAliases ? 4 : 3);

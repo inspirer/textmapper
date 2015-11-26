@@ -136,7 +136,7 @@ public class RuleUtil {
 						result = pr;
 					} else {
 						if (result.size() < 2) {
-							result = new HashSet<RhsSymbol>(result);
+							result = new HashSet<>(result);
 						}
 						RhsSymbol first = result.iterator().next();
 						for (RhsSymbol n : pr) {

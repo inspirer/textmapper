@@ -27,7 +27,7 @@ import java.util.*;
  */
 public class UnicodeDataParser {
 
-	public static final Set<String> GENERAL_CATEGORIES = new HashSet<String>(Arrays.asList(
+	public static final Set<String> GENERAL_CATEGORIES = new HashSet<>(Arrays.asList(
 			"lu", "ll", "lt", "lm", "lo",
 			"mn", "mc", "me",
 			"nd", "nl", "no",
@@ -74,7 +74,7 @@ public class UnicodeDataParser {
 	}
 
 	private String[] split(String s) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		int start = 0;
 		int nextSC = s.indexOf(';', start);
 		while (nextSC >= 0) {

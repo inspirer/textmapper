@@ -28,7 +28,7 @@ import java.util.List;
 class LiAstEnum extends LiUserDataHolder implements AstEnum, DerivedSourceElement {
 
 	private final String name;
-	private final List<LiAstEnumMember> memberList = new ArrayList<LiAstEnumMember>();
+	private final List<LiAstEnumMember> memberList = new ArrayList<>();
 	private final AstClass container;
 	private final SourceElement origin;
 

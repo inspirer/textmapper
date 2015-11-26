@@ -26,8 +26,8 @@ public class TypesUtil {
 	 * Returns transitive closure of all superclasses of c.
 	 */
 	static AstClass[] getAllSuperClasses(AstClass c) {
-		LinkedList<AstClass> queue = new LinkedList<AstClass>();
-		Set<AstClass> seen = new LinkedHashSet<AstClass>();
+		LinkedList<AstClass> queue = new LinkedList<>();
+		Set<AstClass> seen = new LinkedHashSet<>();
 		queue.addAll(Arrays.asList(c.getSuper()));
 		seen.addAll(queue);
 		AstClass next;
@@ -47,7 +47,7 @@ public class TypesUtil {
 		AstClass[] c2Super = getAllSuperClasses(c2);
 		if (c1Super.length == 0 || c2Super.length == 0) return null;
 
-		Map<AstClass, Integer> map = new HashMap<AstClass, Integer>();
+		Map<AstClass, Integer> map = new HashMap<>();
 		for (int i = 0; i < c1Super.length; i++) {
 			map.put(c1Super[i], i);
 		}

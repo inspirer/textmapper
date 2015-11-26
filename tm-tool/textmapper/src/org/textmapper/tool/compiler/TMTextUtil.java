@@ -43,7 +43,7 @@ public class TMTextUtil {
 		try {
 			TMLexer lexer = new TMLexer(source.getStream(), reporter);
 			lexer.setSkipComments(false);
-			List<String> headers = new LinkedList<String>();
+			List<String> headers = new LinkedList<>();
 
 			Span sym = lexer.next();
 			int lastline = 0;

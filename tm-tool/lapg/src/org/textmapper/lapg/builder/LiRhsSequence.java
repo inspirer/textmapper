@@ -117,7 +117,7 @@ class LiRhsSequence extends LiRhsPart implements RhsSequence {
 		if (left == ONE) {
 			return right;
 		}
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>(left.size() * right.size());
+		List<RhsSymbol[]> result = new ArrayList<>(left.size() * right.size());
 		for (RhsSymbol[] leftElement : left) {
 			for (RhsSymbol[] rightElement : right) {
 				RhsSymbol[] elem = new RhsSymbol[leftElement.length + rightElement.length];

@@ -32,7 +32,7 @@ public class ResourceRegistry {
 		for (IResourceLoader loader : loaders) {
 			Resource res = loader.loadResource(qualifiedName, kind);
 			if(res != null) {
-				(loaded != null ? loaded : (loaded = new LinkedList<Resource>())).add(res);
+				(loaded != null ? loaded : (loaded = new LinkedList<>())).add(res);
 				count++;
 			}
 		}

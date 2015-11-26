@@ -30,7 +30,7 @@ import java.util.List;
  */
 class RegexAstList extends RegexAstPart implements RegexList {
 
-	private List<RegexAstPart> elements = new ArrayList<RegexAstPart>();
+	private List<RegexAstPart> elements = new ArrayList<>();
 	private boolean inParentheses;
 
 	public RegexAstList(RegexAstPart initialPart) {

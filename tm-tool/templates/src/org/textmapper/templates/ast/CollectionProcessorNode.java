@@ -66,7 +66,7 @@ public class CollectionProcessorNode extends ExpressionNode {
 		}
 
 		if(instruction == SELECT || instruction == REJECT || instruction == COLLECT || instruction == COLLECTUNIQUE) {
-			Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<Object>() : new ArrayList<Object>();
+			Collection<Object> result = instruction == COLLECTUNIQUE ? new LinkedHashSet<>() : new ArrayList<>();
 			while(it.hasNext()) {
 				Object curr = it.next();
 				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
@@ -93,10 +93,10 @@ public class CollectionProcessorNode extends ExpressionNode {
 					result.add(val);
 				}
 			}
-			return instruction == COLLECTUNIQUE ? new ArrayList<Object>(result) : result;
+			return instruction == COLLECTUNIQUE ? new ArrayList<>(result) : result;
 		} else if(instruction == GROUPBY) {
-			List<Object> result = new ArrayList<Object>();
-			Map<Object,Integer> keyToIndex = new HashMap<Object, Integer>();
+			List<Object> result = new ArrayList<>();
+			Map<Object,Integer> keyToIndex = new HashMap<>();
 			while(it.hasNext()) {
 				Object curr = it.next();
 				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
@@ -120,8 +120,8 @@ public class CollectionProcessorNode extends ExpressionNode {
 			}
 			return result;
 		} else if(instruction == SORT) {
-			List<Object> result = new ArrayList<Object>();
-			final Map<Object, Comparable<Object>> sortKey = new HashMap<Object, Comparable<Object>>();
+			List<Object> result = new ArrayList<>();
+			final Map<Object, Comparable<Object>> sortKey = new HashMap<>();
 			while(it.hasNext()) {
 				Object curr = it.next();
 				EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);

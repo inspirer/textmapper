@@ -59,7 +59,7 @@ public class XmlIxFactory extends JavaIxFactory {
 				}
 			}
 
-			ArrayList<XmlNode> nodes = new ArrayList<XmlNode>();
+			ArrayList<XmlNode> nodes = new ArrayList<>();
 			for (XmlNode o : node.getNodes()) {
 				if (o.getTagName().equals(key)) {
 					nodes.add(o);

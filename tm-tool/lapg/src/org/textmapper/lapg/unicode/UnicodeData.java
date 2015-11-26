@@ -35,7 +35,7 @@ public class UnicodeData {
 	private Map<String, String> rawData;
 	private Map<String, String> aliases;
 	private Map<String, Collection<String>> composites;
-	private Map<String, CharacterSet> set = new HashMap<String, CharacterSet>();
+	private Map<String, CharacterSet> set = new HashMap<>();
 
 	private UnicodeData() {
 	}
@@ -48,7 +48,7 @@ public class UnicodeData {
 		initRawData();
 		initAliases();
 		initComposites();
-		List<String> list = new ArrayList<String>(rawData.size() + aliases.size() + composites.size());
+		List<String> list = new ArrayList<>(rawData.size() + aliases.size() + composites.size());
 		list.addAll(rawData.keySet());
 		list.addAll(aliases.keySet());
 		list.addAll(composites.keySet());
@@ -91,7 +91,7 @@ public class UnicodeData {
 		if (aliases != null) {
 			return;
 		}
-		aliases = new HashMap<String, String>();
+		aliases = new HashMap<>();
 		for (int i = 0; i < UnicodeDataTables.ALIASES.length; ) {
 			aliases.put(UnicodeDataTables.ALIASES[i++], UnicodeDataTables.ALIASES[i++]);
 		}
@@ -101,10 +101,10 @@ public class UnicodeData {
 		if (composites != null) {
 			return;
 		}
-		composites = new HashMap<String, Collection<String>>();
+		composites = new HashMap<>();
 		for (int i = 0; i < UnicodeDataTables.COMPOSITES.length; i++) {
 			String name = UnicodeDataTables.COMPOSITES[i++];
-			Collection<String> properties = new ArrayList<String>();
+			Collection<String> properties = new ArrayList<>();
 			while (UnicodeDataTables.COMPOSITES[i] != null) {
 				properties.add(UnicodeDataTables.COMPOSITES[i++]);
 			}
@@ -116,7 +116,7 @@ public class UnicodeData {
 		if (rawData != null) {
 			return;
 		}
-		rawData = new HashMap<String, String>();
+		rawData = new HashMap<>();
 		String[] properties = UnicodeDataTables.PROPERTIES;
 		for (int i = 0; i < properties.length; ) {
 			rawData.put(properties[i++], properties[i++]);

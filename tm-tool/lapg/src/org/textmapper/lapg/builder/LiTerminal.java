@@ -31,7 +31,7 @@ import java.util.List;
 public class LiTerminal extends LiSymbol implements Terminal {
 
 	private Symbol softClass;
-	private List<LexerRule> rules = new ArrayList<LexerRule>();
+	private List<LexerRule> rules = new ArrayList<>();
 
 	public LiTerminal(String name, AstType type, SourceElement origin) {
 		super(name, origin);

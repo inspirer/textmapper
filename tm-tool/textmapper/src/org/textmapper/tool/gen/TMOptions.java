@@ -42,9 +42,9 @@ public class TMOptions {
 		this.input = null;
 		this.outputDir = null;
 		this.templateName = null;
-		this.includeFolders = new LinkedList<String>();
+		this.includeFolders = new LinkedList<>();
 		this.useDefaultTemplates = true;
-		this.templateOptions = new HashMap<String, String>();
+		this.templateOptions = new HashMap<>();
 	}
 
 	public String getInput() {
@@ -117,7 +117,7 @@ public class TMOptions {
 		"  key=val                        any generation option\n";
 
 	private static Map<String, Integer> buildOptionsHash() {
-		Map<String, Integer> res = new HashMap<String, Integer>();
+		Map<String, Integer> res = new HashMap<>();
 		res.put("d", OPT_DEBUG);
 		res.put("-debug", OPT_DEBUG);
 		res.put("e", OPT_EXT_DEBUG);
@@ -136,7 +136,7 @@ public class TMOptions {
 	public static TMOptions parseArguments(String[] args, PrintStream errorStream) {
 		TMOptions opts = new TMOptions();
 		Map<String, Integer> optionsHash = buildOptionsHash();
-		Set<Integer> usedOptions = new HashSet<Integer>();
+		Set<Integer> usedOptions = new HashSet<>();
 
 		for (int i = 0; i < args.length; i++) {
 			int equalIndex = args[i].indexOf('=');

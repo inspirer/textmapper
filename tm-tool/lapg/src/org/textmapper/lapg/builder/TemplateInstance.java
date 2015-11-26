@@ -60,14 +60,14 @@ class TemplateInstance {
 
 	void addNonterminalTarget(TemplatedSymbolRef ref, TemplateInstance target) {
 		if (targetInstance == null) {
-			targetInstance = new HashMap<TemplatedSymbolRef, TemplateInstance>();
+			targetInstance = new HashMap<>();
 		}
 		targetInstance.put(ref, target);
 	}
 
 	void addTerminalTarget(TemplatedSymbolRef ref, Terminal target) {
 		if (terminals == null) {
-			terminals = new HashMap<TemplatedSymbolRef, Terminal>();
+			terminals = new HashMap<>();
 		}
 		terminals.put(ref, target);
 	}

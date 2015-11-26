@@ -154,7 +154,7 @@ public class RhsUtil {
 	}
 
 	public static RhsSymbol[] getRhsSymbols(RhsPart p) {
-		final List<RhsSymbol> result = new ArrayList<RhsSymbol>();
+		final List<RhsSymbol> result = new ArrayList<>();
 		collectRhsSymbols(p, result);
 		return result.toArray(new RhsSymbol[result.size()]);
 	}

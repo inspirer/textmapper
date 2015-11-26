@@ -180,7 +180,7 @@ class LiRhsList extends LiRhsRoot implements RhsList {
 		if (preprocessed != null) return preprocessed;
 
 		LiRhsSymbol selfRef = new LiRhsSymbol(getLeft(), null, this);
-		List<LiRhsPart> listRule = new ArrayList<LiRhsPart>(3);
+		List<LiRhsPart> listRule = new ArrayList<>(3);
 		listRule.add(rightRecursive ? element : selfRef);
 		if (separator != null) {
 			listRule.add(separator);

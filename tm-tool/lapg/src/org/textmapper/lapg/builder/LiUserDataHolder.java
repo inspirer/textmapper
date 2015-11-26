@@ -36,7 +36,7 @@ public class LiUserDataHolder implements UserDataHolder {
 	public void putUserData(String key, Object value) {
 		if (userData == null) {
 			if (value == null) return;
-			userData = new HashMap<String, Object>();
+			userData = new HashMap<>();
 		}
 		userData.put(key, value);
 	}

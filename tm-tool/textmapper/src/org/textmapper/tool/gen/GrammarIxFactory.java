@@ -140,11 +140,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 			}
 			if (args != null && args.length == 1) {
 				if ("mappedSymbols".equals(methodName)) {
-					return getMappedSymbols((RhsSequence) args[0], new HashSet<RhsSymbol>(Arrays.asList(rule.getRight
+					return getMappedSymbols((RhsSequence) args[0], new HashSet<>(Arrays.asList(rule.getRight
 							())));
 				}
 				if ("isMatched".equals(methodName)) {
-					return isMatched(((RhsSequence) args[0]), new HashSet<RhsSymbol>(Arrays.asList(rule.getRight())));
+					return isMatched(((RhsSequence) args[0]), new HashSet<>(Arrays.asList(rule.getRight())));
 				}
 			}
 			return super.callMethod(caller, methodName, args);
@@ -167,7 +167,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 
 		private RhsPart[] getMappedSymbols(RhsSequence seq, Set<RhsSymbol> active) {
-			List<RhsPart> result = new ArrayList<RhsPart>();
+			List<RhsPart> result = new ArrayList<>();
 			for (RhsPart p : seq.getParts()) {
 				collectMappedSymbols(p, result, active);
 			}
@@ -337,7 +337,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 		}
 	}
 
-	private final Map<Grammar, GrammarRules> rules = new HashMap<Grammar, GrammarRules>();
+	private final Map<Grammar, GrammarRules> rules = new HashMap<>();
 
 	private final class GrammarIxObject extends DefaultJavaIxObject {
 
@@ -385,11 +385,11 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if (rulesBySymbol != null) {
 				return rulesBySymbol;
 			}
-			rulesBySymbol = new HashMap<Symbol, List<Rule>>();
+			rulesBySymbol = new HashMap<>();
 			for (Rule r : myRules) {
 				List<Rule> target = rulesBySymbol.get(r.getLeft());
 				if (target == null) {
-					target = new ArrayList<Rule>();
+					target = new ArrayList<>();
 					rulesBySymbol.put(r.getLeft(), target);
 				}
 				target.add(r);
@@ -401,8 +401,8 @@ public class GrammarIxFactory extends JavaIxFactory {
 			if (rulesWithSymbol != null) {
 				return rulesWithSymbol;
 			}
-			rulesWithSymbol = new HashMap<Symbol, List<Rule>>();
-			Set<Symbol> seen = new HashSet<Symbol>();
+			rulesWithSymbol = new HashMap<>();
+			Set<Symbol> seen = new HashSet<>();
 			for (Rule r : myRules) {
 				seen.clear();
 				for (RhsSymbol sref : r.getRight()) {
@@ -413,7 +413,7 @@ public class GrammarIxFactory extends JavaIxFactory {
 					seen.add(s);
 					List<Rule> list = rulesWithSymbol.get(s);
 					if (list == null) {
-						list = new ArrayList<Rule>();
+						list = new ArrayList<>();
 						rulesWithSymbol.put(s, list);
 					}
 					list.add(r);

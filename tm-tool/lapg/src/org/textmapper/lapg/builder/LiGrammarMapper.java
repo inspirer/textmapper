@@ -34,7 +34,7 @@ import java.util.Set;
 
 class LiGrammarMapper implements GrammarMapper {
 
-	protected final Set<Symbol> symbolsSet = new HashSet<Symbol>();
+	protected final Set<Symbol> symbolsSet = new HashSet<>();
 
 	LiGrammarMapper(Grammar grammar) {
 		if (grammar != null) {

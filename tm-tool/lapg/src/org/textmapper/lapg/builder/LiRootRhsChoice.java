@@ -33,7 +33,7 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
 	LiRootRhsChoice(Nonterminal left) {
 		super(left, null);
-		rulesList = new ArrayList<LiRhsPart>();
+		rulesList = new ArrayList<>();
 	}
 
 	void addRule(LiRhsPart rule) {
@@ -53,7 +53,7 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
 	@Override
 	List<RhsSymbol[]> expand(ExpansionContext context) {
-		List<RhsSymbol[]> result = new ArrayList<RhsSymbol[]>();
+		List<RhsSymbol[]> result = new ArrayList<>();
 		for (LiRhsPart part : rules) {
 			result.addAll(part.expand(context));
 		}
@@ -69,7 +69,7 @@ class LiRootRhsChoice extends LiRhsRoot implements RhsChoice {
 
 	private void toList() {
 		if (rulesList == null) {
-			rulesList = new ArrayList<LiRhsPart>(rules.length);
+			rulesList = new ArrayList<>(rules.length);
 			rulesList.addAll(Arrays.asList(rules));
 			rules = null;
 		}

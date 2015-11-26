@@ -48,7 +48,7 @@ public class CollectMapNode extends ExpressionNode {
 			throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of " + select.getClass().getCanonicalName() + ")");
 		}
 
-		Map<Object, Object> result = new HashMap<Object, Object>();
+		Map<Object, Object> result = new HashMap<>();
 		while (it.hasNext()) {
 			Object curr = it.next();
 			EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);

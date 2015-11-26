@@ -35,7 +35,7 @@ public class RegexpCompiler {
 
 	public RegexpCompiler(RegexContext context) {
 		this.context = context;
-		this.result = new ArrayList<RegexInstruction>(256);
+		this.result = new ArrayList<>(256);
 		this.inputSymbols = new LexerInputSymbols();
 	}
 
