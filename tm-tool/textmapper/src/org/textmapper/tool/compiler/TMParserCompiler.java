@@ -223,7 +223,8 @@ public class TMParserCompiler {
 			}
 			for (Map.Entry<String, Object> ann : annotations.entrySet()) {
 				if (symAnnotations.containsKey(ann.getKey())) {
-					error(id, "redeclaration of annotation `" + ann.getKey() + "' for non-terminal: " + id.getID()
+					error(id, "redeclaration of annotation `" + ann.getKey() +
+							"' for non-terminal: " + id.getID()
 							+ ", skipped");
 				} else {
 					symAnnotations.put(ann.getKey(), ann.getValue());
@@ -236,8 +237,8 @@ public class TMParserCompiler {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
-				addSymbolAnnotations(nonterm.getName(), expressionResolver.convert(nonterm.getAnnotations(),
-						"AnnotateSymbol"));
+				addSymbolAnnotations(nonterm.getName(),
+						expressionResolver.convert(nonterm.getAnnotations(), "AnnotateSymbol"));
 			}
 		}
 	}
@@ -261,8 +262,9 @@ public class TMParserCompiler {
 			}
 		}
 		TmaRhsSuffix ruleAttribute = right.getSuffix();
-		TmaSymref rulePrio = ruleAttribute != null && ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO ?
-				ruleAttribute.getSymref() : null;
+		TmaSymref rulePrio = ruleAttribute != null &&
+				ruleAttribute.getKind() == TmaRhsSuffix.TmaKindKind.LPRIO
+				? ruleAttribute.getSymref() : null;
 		Terminal prio = null;
 		if (rulePrio != null) {
 			Symbol prioSym = resolver.resolve(rulePrio);
@@ -275,15 +277,17 @@ public class TMParserCompiler {
 
 		// TODO store %shift attribute
 		TmaRuleAction action = right.getAction();
-		String alias = action != null && action.getAction() != null ? action.getAction().getID() : null;
+		String alias = action != null && action.getAction() != null
+				? action.getAction().getID() : null;
 		RhsSequence rule = builder.sequence(alias, rhs, right);
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
 		}
 		RhsPredicate predicate = convertPredicate(right.getPredicate());
-		builder.addRule(left, predicate == null ? rule : builder.conditional(predicate, rule, right));
-		Map<String, Object> annotations = expressionResolver.convert(
-				right.getPrefix() != null ? right.getPrefix().getAnnotations() : null, "AnnotateRule");
+		builder.addRule(left, predicate == null
+				? rule : builder.conditional(predicate, rule, right));
+		Map<String, Object> annotations = expressionResolver.convert(right.getPrefix() != null ?
+				right.getPrefix().getAnnotations() : null, "AnnotateRule");
 
 		TMDataUtil.putAnnotations(rule, annotations);
 		TMDataUtil.putCode(rule, lastAction);
@@ -306,15 +310,18 @@ public class TMParserCompiler {
 					param, ((TmaBoolPredicate) e).isNegated() ? Boolean.FALSE : Boolean.TRUE, e);
 
 		} else if (e instanceof TmaComparePredicate) {
-			TemplateParameter param = resolver.resolveParam(((TmaComparePredicate) e).getParamRef());
+			TemplateParameter param = resolver.resolveParam(
+					((TmaComparePredicate) e).getParamRef());
 			if (param == null) return null;
 
-			Object val = resolver.getParamValue(param.getType(), ((TmaComparePredicate) e).getLiteral());
+			Object val = resolver.getParamValue(
+					param.getType(),((TmaComparePredicate) e).getLiteral());
 			RhsPredicate result = builder.predicate(
 					RhsPredicate.Operation.Equals, null,
 					param, val, e);
 			if (((TmaComparePredicate) e).getKind() == TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL) {
-				result = builder.predicate(RhsPredicate.Operation.Not, Collections.singleton(result), null, null, e);
+				result = builder.predicate(RhsPredicate.Operation.Not,
+						Collections.singleton(result), null, null, e);
 			}
 			return result;
 
@@ -380,8 +387,8 @@ public class TMParserCompiler {
 		}
 
 		TmaRhsQuantifier optional = null;
-		if (part instanceof TmaRhsQuantifier
-				&& ((TmaRhsQuantifier) part).getQuantifier() == TmaQuantifierKind.QUESTIONMARK) {
+		if (part instanceof TmaRhsQuantifier &&
+				((TmaRhsQuantifier) part).getQuantifier() == TmaQuantifierKind.QUESTIONMARK) {
 			optional = (TmaRhsQuantifier) part;
 			part = optional.getInner();
 		}
@@ -425,7 +432,8 @@ public class TMParserCompiler {
 		if (cast != null) {
 			final Symbol asSymbol = resolver.resolve(cast.getTarget());
 			if (asSymbol != null) {
-				result = builder.cast(asSymbol, resolver.resolveArgs(cast.getTarget()), result, cast);
+				result = builder.cast(asSymbol,
+						resolver.resolveArgs(cast.getTarget()), result, cast);
 			}
 		} else if (literalCast != null) {
 			if (result instanceof RhsSymbol) {
@@ -445,7 +453,8 @@ public class TMParserCompiler {
 		}
 
 		if (assignment != null) {
-			result = builder.assignment(assignment.getId().getID(), result, assignment.isAddition(), assignment);
+			result = builder.assignment(assignment.getId().getID(), result,
+					assignment.isAddition(), assignment);
 		}
 
 		return result;
@@ -465,13 +474,16 @@ public class TMParserCompiler {
 			TmaSetBinary binary = (TmaSetBinary) expr;
 			boolean is_and = binary.getKind() == TmaKindKind.AMPERSAND;
 
-			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()), convertSet(binary.getRight()));
+			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()),
+					convertSet(binary.getRight()));
 			if (parts == null) return null;
 
-			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, null, parts, expr);
+			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, null,
+					parts, expr);
 
 		} else if (expr instanceof TmaSetComplement) {
-			Collection<RhsSet> parts = asCollection(convertSet(((TmaSetComplement) expr).getInner()));
+			Collection<RhsSet> parts = asCollection(
+					convertSet(((TmaSetComplement) expr).getInner()));
 			if (parts == null) return null;
 
 			return builder.set(Operation.Complement, null, null, parts, expr);
@@ -548,7 +560,8 @@ public class TMParserCompiler {
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
 
-			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(), listWithSeparator);
+			RhsSequence inner = convertGroup(outer, listWithSeparator.getRuleParts(),
+					listWithSeparator);
 			List<RhsPart> sep = new ArrayList<RhsPart>();
 			for (TmaSymref ref : listWithSeparator.getSeparator()) {
 				Symbol s = resolver.resolve(ref);
@@ -577,7 +590,8 @@ public class TMParserCompiler {
 				if (symref == null) {
 					return null;
 				}
-				inner = builder.sequence(null, Collections.<RhsPart>singleton(symref), innerSymRef);
+				inner = builder.sequence(null, Collections.<RhsPart>singleton(symref),
+						innerSymRef);
 			}
 			TmaQuantifierKind quantifier = nestedQuantifier.getQuantifier();
 			if (quantifier == TmaQuantifierKind.QUESTIONMARK) {
@@ -608,7 +622,8 @@ public class TMParserCompiler {
 		return builder.choice(result, origin);
 	}
 
-	private RhsSequence convertGroup(Symbol outer, List<ITmaRhsPart> groupPart, SourceElement origin) {
+	private RhsSequence convertGroup(Symbol outer, List<ITmaRhsPart> groupPart,
+									 SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<RhsPart>();
 		if (groupPart == null) {
 			return null;
@@ -622,15 +637,17 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
-	private RhsSymbol createList(RhsSequence inner, boolean nonEmpty, RhsPart separator, ITmaRhsPart origin) {
-		RhsList list = builder.list(inner, separator, (separator != null && !nonEmpty) || nonEmpty, origin);
+	private RhsSymbol createList(RhsSequence inner, boolean nonEmpty, RhsPart separator,
+								 ITmaRhsPart origin) {
+		RhsList list = builder.list(inner, separator,
+				(separator != null && !nonEmpty) || nonEmpty, origin);
 		String listName = list.getProvisionalName();
 		Nonterminal result = builder.addShared(list, listName);
 
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			result = builder.addShared(builder.optional(builder.symbol(result, null, origin), origin), listName +
-					"_opt");
+			result = builder.addShared(builder.optional(builder.symbol(result, null, origin),
+					origin), listName + "_opt");
 		}
 		return builder.symbol(result, null, origin);
 	}

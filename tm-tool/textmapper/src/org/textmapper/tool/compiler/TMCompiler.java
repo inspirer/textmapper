@@ -48,7 +48,8 @@ public class TMCompiler {
 		resolver.collectSymbols();
 
 		String targetLanguage = getTargetLanguage();
-		TMExpressionResolver expressionResolver = new TMExpressionResolver(resolver, types, targetLanguage);
+		TMExpressionResolver expressionResolver = new TMExpressionResolver(
+				resolver, types, targetLanguage);
 
 		Map<String, Object> options = getOptions(resolver, expressionResolver);
 
@@ -66,7 +67,8 @@ public class TMCompiler {
 			resolver.error(unwrap(p.getSourceElement()), p.getMessage());
 		}
 		generateUniqueIds(g);
-		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options, copyrightHeader, targetLanguage);
+		return new TMGrammar(g, templates, !tree.getErrors().isEmpty(), options,
+				copyrightHeader, targetLanguage);
 	}
 
 	private void generateUniqueIds(Grammar g) {
@@ -87,7 +89,8 @@ public class TMCompiler {
 		int offset = tree.getRoot() != null ? tree.getRoot().getTemplatesStart() : -1;
 		CharSequence text = tree.getSource().getContents();
 		if (offset < text.length() && offset != -1) {
-			return new TmaNode(tree.getSource(), tree.getSource().lineForOffset(offset), offset, text.length()) {
+			return new TmaNode(tree.getSource(), tree.getSource().lineForOffset(offset),
+					offset, text.length()) {
 				@Override
 				public void accept(TmaVisitor v) {
 				}
@@ -104,14 +107,16 @@ public class TMCompiler {
 		return "common";
 	}
 
-	private Map<String, Object> getOptions(TMResolver resolver, TMExpressionResolver expressionResolver) {
+	private Map<String, Object> getOptions(TMResolver resolver,
+										   TMExpressionResolver expressionResolver) {
 		Map<String, Object> options = new HashMap<String, Object>();
 
 		// Load class
-		IClass optionsClass = types.getClass(expressionResolver.getTypesPackage() + ".Options", null);
+		IClass optionsClass = types.getClass(
+				expressionResolver.getTypesPackage() + ".Options", null);
 		if (optionsClass == null) {
-			resolver.error(tree.getRoot(), "cannot load options class `" + expressionResolver.getTypesPackage() +
-					".Options`");
+			resolver.error(tree.getRoot(), "cannot load options class `" + expressionResolver
+					.getTypesPackage() + ".Options`");
 			return options;
 		}
 

@@ -31,7 +31,8 @@ public class TMStateTransitionSwitch {
 		this(null, defaultTransition);
 	}
 
-	public TMStateTransitionSwitch(Map<LexerState, LexerState> stateSwitch, LexerState defaultTransition) {
+	public TMStateTransitionSwitch(Map<LexerState, LexerState> stateSwitch,
+								   LexerState defaultTransition) {
 		this.stateSwitch = stateSwitch;
 		this.defaultTransition = defaultTransition;
 		assert stateSwitch != null || defaultTransition != null;
@@ -53,9 +54,11 @@ public class TMStateTransitionSwitch {
 
 		TMStateTransitionSwitch that = (TMStateTransitionSwitch) o;
 
-		if (defaultTransition != null ? !defaultTransition.equals(that.defaultTransition) : that.defaultTransition != null)
+		if (defaultTransition != null ? !defaultTransition.equals(that.defaultTransition) : that
+				.defaultTransition != null)
 			return false;
-		if (stateSwitch != null ? !stateSwitch.equals(that.stateSwitch) : that.stateSwitch != null) return false;
+		if (stateSwitch != null ? !stateSwitch.equals(that.stateSwitch) : that.stateSwitch != null)
+			return false;
 
 		return true;
 	}

@@ -15,7 +15,10 @@
  */
 package org.textmapper.tool.compiler;
 
-import org.textmapper.lapg.api.*;
+import org.textmapper.lapg.api.Grammar;
+import org.textmapper.lapg.api.SourceElement;
+import org.textmapper.lapg.api.TextSourceElement;
+import org.textmapper.lapg.api.UserDataHolder;
 
 import java.util.Map;
 
@@ -28,8 +31,8 @@ public class TMGrammar {
 	private final String copyrightHeader;
 	private final String targetLanguage;
 
-	public TMGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors, Map<String, Object> options,
-					 String copyrightHeader, String targetLanguage) {
+	public TMGrammar(Grammar grammar, TextSourceElement templates, boolean hasErrors,
+					 Map<String, Object> options, String copyrightHeader, String targetLanguage) {
 		this.grammar = grammar;
 		this.templates = templates;
 		this.hasErrors = hasErrors;

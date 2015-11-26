@@ -38,7 +38,8 @@ public class TMLexerCompiler {
 	private final TMResolver resolver;
 	private final GrammarBuilder builder;
 
-	private final Map<TmaLexeme, RuleAttributes> attributes = new HashMap<TmaLexeme, RuleAttributes>();
+	private final Map<TmaLexeme, RuleAttributes> attributes =
+			new HashMap<TmaLexeme, RuleAttributes>();
 
 	public TMLexerCompiler(TMResolver resolver) {
 		this.resolver = resolver;
@@ -87,11 +88,13 @@ public class TMLexerCompiler {
 				stateSwitch.put(source, target);
 			}
 		}
-		return stateSwitch.isEmpty() && defaultTransition == null ? null
-				: new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch, defaultTransition);
+		return stateSwitch.isEmpty() && defaultTransition == null ? null :
+				new TMStateTransitionSwitch(stateSwitch.isEmpty() ? null : stateSwitch,
+						defaultTransition);
 	}
 
-	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme, TMStateTransitionSwitch active) {
+	private TMStateTransitionSwitch getTransition(TmaLexeme lexeme,
+												  TMStateTransitionSwitch active) {
 		TmaStateref transition = lexeme.getTransition();
 		if (transition != null) {
 			String targetName = transition.getName();
@@ -105,7 +108,8 @@ public class TMLexerCompiler {
 		return active;
 	}
 
-	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, TmaLexeme l, RegexPart regex) {
+	private LexerRule getClassRule(Map<LexerRule, RegexMatcher> classMatchers, TmaLexeme l,
+								   RegexPart regex) {
 		LexerRule result = null;
 		TmaLexemeAttrs attrs = l.getAttrs();
 		boolean isClass = attrs != null && attrs.getKind() == TmaLexemeAttribute.LCLASS;
@@ -118,8 +122,8 @@ public class TMLexerCompiler {
 				RegexMatcher m = classMatchers.get(rule);
 				if (m.matches(regex.getConstantValue())) {
 					if (result != null) {
-						error(l, "regex matches two classes `" + result.getSymbol().getName() + "' and `"
-								+ rule.getSymbol().getName() + "', using first");
+						error(l, "regex matches two classes `" + result.getSymbol().getName() +
+								"' and `" + rule.getSymbol().getName() + "', using first");
 					} else {
 						result = rule;
 					}
@@ -154,12 +158,14 @@ public class TMLexerCompiler {
 		// Step 1. Collect states & transitions (attributes).
 
 		TMStateTransitionSwitch activeTransitions = null;
-		List<LexerState> activeStates = Collections.singletonList(resolver.getState(TMResolver.INITIAL_STATE));
+		List<LexerState> activeStates = Collections.singletonList(resolver.getState(
+				TMResolver.INITIAL_STATE));
 
 		for (ITmaLexerPart clause : tree.getRoot().getLexer()) {
 			if (clause instanceof TmaLexeme) {
 				TmaLexeme lexeme = (TmaLexeme) clause;
-				attributes.put(lexeme, new RuleAttributes(getTransition(lexeme, activeTransitions), activeStates));
+				attributes.put(lexeme, new RuleAttributes(getTransition(lexeme, activeTransitions),
+						activeStates));
 			} else if (clause instanceof TmaStateSelector) {
 				activeStates = convertApplicableStates((TmaStateSelector) clause);
 				activeTransitions = convertTransitions((TmaStateSelector) clause);
@@ -205,8 +211,7 @@ public class TMLexerCompiler {
 
 			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
 			LexerRule liLexerRule = builder.addLexerRule(LexerRule.KIND_CLASS, classTerm, regex,
-					attributes.get(lexeme).getApplicableInStates(), priority,
-					null, lexeme);
+					attributes.get(lexeme).getApplicableInStates(), priority, null, lexeme);
 			classMatchers.put(liLexerRule, matcher);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
@@ -263,14 +268,15 @@ public class TMLexerCompiler {
 
 			if (isSoft && lexeme.getCommand() != null) {
 				// TODO Note: soft lexeme is able to override the code
-				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getID()
-						+ "' cannot have a semantic action");
+				error(lexeme.getCommand(), "soft lexeme rule `" + lexeme.getName().getID() +
+						"' cannot have a semantic action");
 			}
 			LexerRule classRule = getClassRule(classMatchers, lexeme, regex);
 			if (isSoft) {
 				if (classRule == null) {
 					error(lexeme, "soft lexeme rule `" + name + "' " +
-							(regex.isConstant() ? "doesn't match any class rule" : "should have a constant regexp"));
+							(regex.isConstant() ? "doesn't match any class rule" :
+									"should have a constant regexp"));
 					continue;
 				}
 				Terminal softClass = classRule.getSymbol();
@@ -278,16 +284,17 @@ public class TMLexerCompiler {
 				String type = lexeme.getType();
 				String classtype = getSymbolType(softClass);
 				if (type != null && !type.equals(classtype)) {
-					error(lexeme, "soft terminal `" + name + "' overrides base type: expected `"
-							+ (classtype == null ? "<no type>" : classtype) + "', found `" + type + "'");
+					error(lexeme, "soft terminal `" + name + "' overrides base type: expected `" +
+							(classtype == null ? "<no type>" : classtype) + "', found `" + type +
+							"'");
 					continue;
 				}
 
 				final Terminal oldClass = softToClass.get(term);
 				if (oldClass != null && oldClass != softClass) {
-					error(lexeme, "redeclaration of soft class for `" + term.getName() + "': found " + softClass
-							.getName()
-							+ " instead of " + oldClass.getName());
+					error(lexeme, "redeclaration of soft class for `" + term.getName() +
+							"': found " + softClass.getName() + " instead of " +
+							oldClass.getName());
 					continue;
 				} else if (oldClass == null) {
 					builder.makeSoft(term, softClass);
@@ -299,8 +306,7 @@ public class TMLexerCompiler {
 
 			int priority = lexeme.getPriority() == null ? 0 : lexeme.getPriority();
 			LexerRule liLexerRule = builder.addLexerRule(kind, term, regex,
-					attributes.get(lexeme).getApplicableInStates(), priority,
-					classRule, lexeme);
+					attributes.get(lexeme).getApplicableInStates(), priority, classRule, lexeme);
 			TMDataUtil.putCode(liLexerRule, lexeme.getCommand());
 			TMDataUtil.putTransition(liLexerRule, attributes.get(lexeme).getTransitions());
 		}
@@ -316,7 +322,8 @@ public class TMLexerCompiler {
 		private final TMStateTransitionSwitch transitions;
 		private final List<LexerState> applicableInStates;
 
-		public RuleAttributes(TMStateTransitionSwitch transitions, List<LexerState> applicableInStates) {
+		public RuleAttributes(TMStateTransitionSwitch transitions,
+							  List<LexerState> applicableInStates) {
 			this.transitions = transitions;
 			this.applicableInStates = applicableInStates;
 		}
@@ -338,7 +345,8 @@ public class TMLexerCompiler {
 			if (!(applicableInStatesSet.containsAll(l.getApplicableInStates()))) {
 				return false;
 			}
-			return this.transitions == null ? l.getTransitions() == null : this.transitions.equals(l.getTransitions());
+			return this.transitions == null ? l.getTransitions() == null :
+					this.transitions.equals(l.getTransitions());
 		}
 
 	}

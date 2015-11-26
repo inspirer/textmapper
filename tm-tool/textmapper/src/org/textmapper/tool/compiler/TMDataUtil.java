@@ -110,7 +110,9 @@ public class TMDataUtil {
 	}
 
 	public static void putLiteral(RhsSymbol rhsSym, Object literal) {
-		assert literal instanceof String || literal instanceof Boolean || literal instanceof Integer;
+		assert literal instanceof String ||
+				literal instanceof Boolean ||
+				literal instanceof Integer;
 		rhsSym.putUserData(UD_LITERAL, literal);
 	}
 

@@ -36,7 +36,8 @@ public class TMFieldMapper {
 	private final GrammarMapper mapper;
 	private final boolean allowTypeAny;
 
-	public TMFieldMapper(ProcessingStatus status, AstBuilder builder, GrammarMapper mapper, boolean allowTypeAny) {
+	public TMFieldMapper(ProcessingStatus status, AstBuilder builder,
+						 GrammarMapper mapper, boolean allowTypeAny) {
 		this.status = status;
 		this.builder = builder;
 		this.mapper = mapper;
@@ -62,9 +63,11 @@ public class TMFieldMapper {
 					members.put(target, null);
 				}
 				if (members.size() > 1) {
-					AstEnum enum_ = builder.addEnum(builder.uniqueName(cl, fd.baseName + "_kind", false), cl,
-							fd.firstMapping.origin);
-					final Symbol[] enumMembers = members.keySet().toArray(new Symbol[members.size()]);
+					AstEnum enum_ = builder.addEnum(
+							builder.uniqueName(cl, fd.baseName + "_kind", false),
+							cl, fd.firstMapping.origin);
+					final Symbol[] enumMembers =
+							members.keySet().toArray(new Symbol[members.size()]);
 					for (Symbol enumMember : enumMembers) {
 						final AstEnumMember astEnumMember = builder.addMember(
 								builder.uniqueName(enum_, TMDataUtil.getId(enumMember), true),
@@ -77,8 +80,8 @@ public class TMFieldMapper {
 				}
 			}
 
-			AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true),
-					type, fd.nullable, cl, fd.firstMapping.origin);
+			AstField field = builder.addField(builder.uniqueName(cl, fd.baseName, true), type, fd
+					.nullable, cl, fd.firstMapping.origin);
 			for (FieldMapping m = fd.firstMapping; m != null; m = m.next) {
 				Object value = TMDataUtil.getLiteral(m.sym);
 				if (fd.type == BOOL_OR_ENUM) {
@@ -96,7 +99,8 @@ public class TMFieldMapper {
 
 	}
 
-	private void traverseFields(RhsPart part, MappingContext context, int[] index, boolean withAlias) {
+	private void traverseFields(RhsPart part, MappingContext context,
+								int[] index, boolean withAlias) {
 		if (part instanceof RhsOptional) {
 			traverseFields(((RhsOptional) part).getPart(), context, index, withAlias);
 
@@ -119,12 +123,14 @@ public class TMFieldMapper {
 				choiceContext.reset();
 			}
 
-		} else if (part instanceof RhsAssignment || part instanceof RhsCast || part instanceof RhsSymbol) {
+		} else if (part instanceof RhsAssignment || part instanceof RhsCast ||
+				part instanceof RhsSymbol) {
 			// field is almost here
 			RhsAssignment assignment = RhsUtil.getAssignment(part);
 			RhsPart unwrapped = RhsUtil.unwrapEx(part, true, true, true);
 			if (!(unwrapped instanceof RhsSymbol)) {
-				error(part, (part instanceof RhsAssignment ? "assignment" : "cast") + " is not expected here");
+				error(part, (part instanceof RhsAssignment ? "assignment" : "cast") +
+						" is not expected here");
 				return;
 			}
 
@@ -183,7 +189,8 @@ public class TMFieldMapper {
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
 										  boolean isAddition, SourceElement origin) {
 			// TODO handle template vars
-			FieldId id = alias != null ? new FieldId(alias) : new FieldId(isAddition, sym.getTarget(), type);
+			FieldId id = alias != null ? new FieldId(alias) :
+					new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fields = fieldsMap.get(id);
 			if (fields == null) {
 				fields = new ArrayList<FieldDescriptor>();
@@ -212,7 +219,8 @@ public class TMFieldMapper {
 		public FieldDescriptor addMapping(String alias, AstType type, RhsSymbol sym, int symIndex,
 										  boolean isAddition, SourceElement origin) {
 			// TODO handle template vars
-			FieldId id = alias != null ? new FieldId(alias) : new FieldId(isAddition, sym.getTarget(), type);
+			FieldId id = alias != null ? new FieldId(alias) :
+					new FieldId(isAddition, sym.getTarget(), type);
 			Collection<FieldDescriptor> fds = localMap.get(id);
 			if (used == null) {
 				used = new HashSet<FieldDescriptor>();
@@ -265,7 +273,8 @@ public class TMFieldMapper {
 						commonType = AstType.ANY;
 					} else {
 						error(mapping.origin, "cannot deduce type for `" + baseName +
-								"': no common type for " + this.type.toString() + " and " + type.toString());
+								"': no common type for " + this.type.toString() + " and " +
+								type.toString());
 						// Ignore mapping.
 						return;
 					}
@@ -278,7 +287,8 @@ public class TMFieldMapper {
 
 		@Override
 		public int compareTo(Object o) {
-			return new Integer(firstMapping.symbolIndex).compareTo(((FieldDescriptor) o).firstMapping.symbolIndex);
+			return new Integer(firstMapping.symbolIndex).compareTo(((FieldDescriptor) o)
+					.firstMapping.symbolIndex);
 		}
 	}
 
@@ -289,7 +299,8 @@ public class TMFieldMapper {
 		private final SourceElement origin;
 		private FieldMapping next;
 
-		private FieldMapping(RhsSymbol sym, int symbolIndex, boolean isAddition, SourceElement origin) {
+		private FieldMapping(RhsSymbol sym, int symbolIndex, boolean isAddition,
+							 SourceElement origin) {
 			this.sym = sym;
 			this.symbolIndex = symbolIndex;
 			this.addition = isAddition;

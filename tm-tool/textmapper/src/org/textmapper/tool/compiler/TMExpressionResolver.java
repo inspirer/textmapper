@@ -79,7 +79,8 @@ public class TMExpressionResolver {
 			ITmaExpression expr = entry.getExpression();
 			if (expr == null) {
 				if (!TypesUtil.isBooleanType(expected)) {
-					error(entry, "expected value of type `" + expected.toString() + "` instead of boolean");
+					error(entry, "expected value of type `" + expected.toString() +
+							"` instead of boolean");
 					continue;
 				}
 				result.put(name, Boolean.TRUE);
@@ -125,8 +126,8 @@ public class TMExpressionResolver {
 						return null;
 					}
 					if (!symbolClass.isSubtypeOf(type)) {
-						report(expression, "`" + symbolClass.toString() + "` is not a subtype of `" + type.toString()
-								+ "`");
+						report(expression, "`" + symbolClass.toString() + "` is not a subtype of " +
+								"`" + type.toString() + "`");
 						return null;
 					}
 					return resolver.resolve((TmaSymref) expression);
