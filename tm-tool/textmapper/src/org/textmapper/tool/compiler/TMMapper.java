@@ -121,7 +121,7 @@ public class TMMapper {
 		if (type == null || n == null) {
 			throw new NullPointerException();
 		}
-		final List<Runnable> listeners = typeListeners.remove(n);
+		List<Runnable> listeners = typeListeners.remove(n);
 		mapper.map(n, type);
 		if (listeners != null) {
 			for (Runnable r : listeners) {
@@ -220,7 +220,7 @@ public class TMMapper {
 	private void mapDecorators() {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
-			final Nonterminal n = i.next();
+			Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList) continue;
 			if (hasClassHint(n) || TMDataUtil.getCustomType(n) != null || hasInterfaceHint(n)) {
 				continue;
@@ -239,9 +239,9 @@ public class TMMapper {
 				}
 			}
 			if (r != null) {
-				final RhsSymbol master = getMasterSymbol(r);
+				RhsSymbol master = getMasterSymbol(r);
 				if (master != null) {
-					final Symbol target = master.getTarget();
+					Symbol target = master.getTarget();
 					assert target != null;
 					if (target instanceof Terminal &&
 							(target.getType() == null || ((Terminal) target).isSoft())) {
@@ -249,18 +249,8 @@ public class TMMapper {
 						continue;
 					}
 					decorators.put(n, target);
-					whenMapped(target, new Runnable() {
-						@Override
-						public void run() {
-							mapNonterm(n, target.getType());
-						}
-					});
-					postProcessors.add(new Runnable() {
-						@Override
-						public void run() {
-							mapper.map(master, null, null, false);
-						}
-					});
+					whenMapped(target, () -> mapNonterm(n, target.getType()));
+					postProcessors.add(() -> mapper.map(master, null, null, false));
 					i.remove();
 				}
 			}
@@ -287,48 +277,42 @@ public class TMMapper {
 	static boolean isConstantOrVoid(RhsPart part) {
 		part = RhsUtil.unwrapEx(part, false, false, true);
 		if (part instanceof RhsSymbol) {
-			final RhsSymbol sym = (RhsSymbol) part;
+			RhsSymbol sym = (RhsSymbol) part;
 			return RhsUtil.isConstant(sym) || sym.getTarget() instanceof Nonterminal &&
 					sym.getTarget().getType() instanceof VoidType;
 		}
 		return false;
 	}
 
-	private void addExtends(final Nonterminal n, final AstClass baseClass) {
-		whenMapped(n, new Runnable() {
-			@Override
-			public void run() {
-				AstClass cl = (AstClass) n.getType();
-				try {
-					builder.addExtends(cl, baseClass);
-				} catch (IllegalArgumentException ex) {
-					error(n, n.getName() + ": " + cl.getName() + " cannot extend " +
-							baseClass.getName() +
-							" (would introduce a cycle in the inheritance hierarchy)");
-				}
+	private void addExtends(Nonterminal n, AstClass baseClass) {
+		whenMapped(n, () -> {
+			AstClass cl = (AstClass) n.getType();
+			try {
+				builder.addExtends(cl, baseClass);
+			} catch (IllegalArgumentException ex) {
+				error(n, n.getName() + ": " + cl.getName() + " cannot extend " +
+						baseClass.getName() +
+						" (would introduce a cycle in the inheritance hierarchy)");
 			}
 		});
 	}
 
-	private void addInterface(final AstClass cl, final Nonterminal baseInterface,
-							  final SourceElement origin) {
-		whenMapped(baseInterface, new Runnable() {
-			@Override
-			public void run() {
-				boolean isInterface = baseInterface.getType() instanceof AstClass &&
-						((AstClass)baseInterface.getType()).isInterface();
-				if (!isInterface) {
-					error(origin, cl.getName() + " cannot extend " + baseInterface.getName() +
-							" (interface is expected)");
-					return;
-				}
-				AstClass superInterface = (AstClass) baseInterface.getType();
-				try {
-					builder.addExtends(cl, superInterface);
-				} catch (IllegalArgumentException ex) {
-					error(origin, cl.getName() + " cannot extend " + superInterface.getName() +
-							" (would introduce a cycle in the inheritance hierarchy)");
-				}
+	private void addInterface(AstClass cl, Nonterminal baseInterface,
+							  SourceElement origin) {
+		whenMapped(baseInterface, () -> {
+			boolean isInterface = baseInterface.getType() instanceof AstClass &&
+					((AstClass)baseInterface.getType()).isInterface();
+			if (!isInterface) {
+				error(origin, cl.getName() + " cannot extend " + baseInterface.getName() +
+						" (interface is expected)");
+				return;
+			}
+			AstClass superInterface = (AstClass) baseInterface.getType();
+			try {
+				builder.addExtends(cl, superInterface);
+			} catch (IllegalArgumentException ex) {
+				error(origin, cl.getName() + " cannot extend " + superInterface.getName() +
+						" (would introduce a cycle in the inheritance hierarchy)");
 			}
 		});
 	}
@@ -355,7 +339,7 @@ public class TMMapper {
 			for (RhsSequence rule : getRules(n)) {
 				RhsSymbol master = getMasterSymbol(rule);
 				if (master != null) {
-					final Symbol target = unwrapDecorators(master.getTarget());
+					Symbol target = unwrapDecorators(master.getTarget());
 					if (supportsExtending(target)) {
 						passSymbols.add(master);
 						extList.add((Nonterminal) target);
@@ -363,7 +347,7 @@ public class TMMapper {
 					}
 				}
 
-				final String ruleAlias = rule.getName();
+				String ruleAlias = rule.getName();
 				if (ruleAlias == null && !hasInterfaceHint(n)) {
 					isInterface = false;
 					break;
@@ -437,7 +421,7 @@ public class TMMapper {
 
 	private RhsSymbol getMasterSymbol(RhsPart rule) {
 		RhsPart r = RhsUtil.unwrap(rule);
-		final RhsPart master = withoutConstants(r);
+		RhsPart master = withoutConstants(r);
 		if (master instanceof RhsSymbol && (master == r || hasProperty(master, "pass"))) {
 			return (RhsSymbol) master;
 		}
@@ -471,9 +455,9 @@ public class TMMapper {
 		Iterator<Nonterminal> i = unmapped.iterator();
 		Map<Nonterminal, AstClass> customTypes = new LinkedHashMap<>();
 		while (i.hasNext()) {
-			final Nonterminal n = i.next();
+			Nonterminal n = i.next();
 			if (n.getDefinition() instanceof RhsList) continue;
-			final Nonterminal customType = TMDataUtil.getCustomType(n);
+			Nonterminal customType = TMDataUtil.getCustomType(n);
 			assert customType != null;
 			if (decorators.containsKey(customType)) {
 				i.remove();
@@ -481,14 +465,14 @@ public class TMMapper {
 				mapNonterm(n, builder.addClass(getNonterminalTypeName(n, null), null, n));
 				continue;
 			}
-			final AstType mappedType = customType.getType();
+			AstType mappedType = customType.getType();
 			if (!(mappedType instanceof AstClass)) {
 				i.remove();
 				error(n, "type for `" + n.getName() + "' is not a classifier");
 				mapNonterm(n, builder.addClass(getNonterminalTypeName(n, null), null, n));
 				continue;
 			}
-			final AstClass cl = (AstClass) mappedType;
+			AstClass cl = (AstClass) mappedType;
 			i.remove();
 			customTypes.put(n, cl);
 		}
@@ -527,7 +511,7 @@ public class TMMapper {
 		for (RhsSequence rule : getRules(n)) {
 			RhsSymbol master = getMasterSymbol(rule);
 			if (master != null) {
-				final Symbol target = unwrapDecorators(master.getTarget());
+				Symbol target = unwrapDecorators(master.getTarget());
 				AstType masterType = target.getType();
 				if (masterType == null && target instanceof Nonterminal) {
 					masterType = customTypes.get(target);
@@ -543,8 +527,8 @@ public class TMMapper {
 				}
 			}
 
-			final String ruleAlias = rule.getName();
-			final String aliasId = getAliasId(n, ruleAlias);
+			String ruleAlias = rule.getName();
+			String aliasId = getAliasId(n, ruleAlias);
 			AstClass ruleClass = aliasToClass.get(aliasId);
 			if (ruleClass == null) {
 				ruleClass = builder.addClass(getNonterminalTypeName(n, ruleAlias), null, n);
@@ -568,12 +552,12 @@ public class TMMapper {
 	}
 
 	private void mapLists() {
-		final List<RhsSymbol> rhsSymbols = new ArrayList<>();
+		List<RhsSymbol> rhsSymbols = new ArrayList<>();
 		Iterator<Nonterminal> i = unmapped.iterator();
 		while (i.hasNext()) {
-			final Nonterminal n = i.next();
+			Nonterminal n = i.next();
 			if (!(n.getDefinition() instanceof RhsList)) continue;
-			final RhsList list = (RhsList) n.getDefinition();
+			RhsList list = (RhsList) n.getDefinition();
 
 			// Is there already exists a type for the list element?
 			rhsSymbols.clear();
@@ -598,22 +582,19 @@ public class TMMapper {
 					}
 				} else {
 					// We got some unresolved symbol, which usually means list<list<...>>
-					final Symbol listElement = typeOrSymbol.getUnresolvedSymbol();
+					Symbol listElement = typeOrSymbol.getUnresolvedSymbol();
 					if (listElement instanceof Terminal && listElement.getType() == null) {
 						error(listElement, "terminal symbol must have a type");
 					} else {
-						whenMapped(listElement, new Runnable() {
-							@Override
-							public void run() {
-								if (listElement.getType() instanceof VoidType) {
-									mapper.map(n, VoidType.INSTANCE);
-									return;
-								}
-								mapNonterm(n, builder.list(
-										listElement.getType(), list.isNonEmpty(), n));
-								for (RhsSymbol sym : rhsSymbols) {
-									mapper.map(sym, null, null, true);
-								}
+						whenMapped(listElement, () -> {
+							if (listElement.getType() instanceof VoidType) {
+								mapper.map(n, VoidType.INSTANCE);
+								return;
+							}
+							mapNonterm(n, builder.list(
+									listElement.getType(), list.isNonEmpty(), n));
+							for (RhsSymbol sym : rhsSymbols) {
+								mapper.map(sym, null, null, true);
 							}
 						});
 					}
@@ -711,27 +692,27 @@ public class TMMapper {
 	}
 
 	private static boolean hasProperty(UserDataHolder o, String name) {
-		final Map<String, Object> annotations = TMDataUtil.getAnnotations(o);
+		Map<String, Object> annotations = TMDataUtil.getAnnotations(o);
 		if (annotations == null) {
 			return false;
 		}
-		final Object o1 = annotations.get(name);
+		Object o1 = annotations.get(name);
 		return o1 instanceof Boolean ? (Boolean) o1 : false;
 	}
 
 	private static boolean hasClassHint(Nonterminal n) {
-		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
 		return typeHint != null && typeHint.getKind() == Kind.CLASS || hasProperty(n, "_class");
 	}
 
 	private static boolean hasInterfaceHint(Nonterminal n) {
-		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
 		return typeHint != null && typeHint.getKind() == Kind.INTERFACE ||
 				hasProperty(n, "_interface");
 	}
 
 	private static boolean hasVoidHint(Nonterminal n) {
-		final TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
+		TMTypeHint typeHint = TMDataUtil.getTypeHint(n);
 		return typeHint != null && typeHint.getKind() == Kind.VOID || hasProperty(n, "noast");
 	}
 
