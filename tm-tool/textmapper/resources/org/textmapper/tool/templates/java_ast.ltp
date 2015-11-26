@@ -165,7 +165,7 @@ ${if opts.gentree-}
 	String getLocation();
 ${end-}
 ${foreach l in self->util.locationList()-}
-	public int get${util.toFirstUpper(l)}();
+	int get${util.toFirstUpper(l)}();
 ${end-}
 	${call java.package}.${opts.prefix}Tree.@TextSource getSource();
 ${if opts.gentree-}

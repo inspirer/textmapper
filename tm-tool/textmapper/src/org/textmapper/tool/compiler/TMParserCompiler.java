@@ -94,9 +94,8 @@ public class TMParserCompiler {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
-				if (left == null || !(left instanceof Nonterminal)) {
-					continue; /* error is already reported */
-				}
+				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
+
 				if (nonterm.getType() instanceof TmaNontermTypeAST) {
 					final TmaNontermTypeAST astType = (TmaNontermTypeAST) nonterm.getType();
 					Nonterminal type = asNonterminalWithoutType(astType.getReference(), withType);
@@ -151,9 +150,8 @@ public class TMParserCompiler {
 			if (clause instanceof TmaNonterm) {
 				TmaNonterm nonterm = (TmaNonterm) clause;
 				Symbol left = resolver.getSymbol(nonterm.getName().getID());
-				if (left == null || !(left instanceof Nonterminal)) {
-					continue; /* error is already reported */
-				}
+				if (!(left instanceof Nonterminal)) continue; /* error is already reported */
+
 				for (TmaRule0 right : nonterm.getRules()) {
 					if (right.getError() == null) {
 						createRule((Nonterminal) left, right);
@@ -315,7 +313,7 @@ public class TMParserCompiler {
 			if (param == null) return null;
 
 			Object val = resolver.getParamValue(
-					param.getType(),((TmaComparePredicate) e).getLiteral());
+					param.getType(), ((TmaComparePredicate) e).getLiteral());
 			RhsPredicate result = builder.predicate(
 					RhsPredicate.Operation.Equals, null,
 					param, val, e);
