@@ -10,8 +10,8 @@
 
 	<property name="build.folder" location="build"/>
 	<property name="debug.level" value="source,lines,vars"/>
-	<property name="target" value="1.5"/>
-	<property name="source" value="1.5"/>
+	<property name="target" value="1.8"/>
+	<property name="source" value="1.8"/>
 
 	<tstamp>
 		<format property="tm.build.date" pattern="EEE MMM d HH:mm:ss z yyyy"/>

@@ -36,13 +36,6 @@
       <profile default="true" name="Default" enabled="false">
         <processorPath useClasspath="true" />
       </profile>
-      <profile default="false" name="Annotation profile for textmapper" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-        <module name="textmapper" />
-      </profile>
       <profile default="false" name="Annotation profile for lapg" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -57,14 +50,21 @@
         <processorPath useClasspath="true" />
         <module name="templates" />
       </profile>
+      <profile default="false" name="Annotation profile for textmapper" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="true" />
+        <module name="textmapper" />
+      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="lapg" target="1.6" />
+      <module name="lapg" target="1.8" />
       <module name="lapg-master" target="1.6" />
-      <module name="templates" target="1.6" />
-      <module name="textmapper" target="1.6" />
-      <module name="tm-master" target="1.6" />
-      <module name="tool" target="1.6" />
+      <module name="templates" target="1.8" />
+      <module name="textmapper" target="1.8" />
+      <module name="tm-master" target="1.8" />
+      <module name="tool" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
