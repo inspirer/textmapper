@@ -21,11 +21,13 @@ public class TmaKeyvalArg extends TmaNode {
 
 	private final TmaIdentifier name;
 	private final ITmaParamValue val;
+	private final TmaKeyvalArg.TmaBoolKind bool;
 
-	public TmaKeyvalArg(TmaIdentifier name, ITmaParamValue val, TextSource source, int line, int offset, int endoffset) {
+	public TmaKeyvalArg(TmaIdentifier name, ITmaParamValue val, TmaKeyvalArg.TmaBoolKind bool, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
 		this.name = name;
 		this.val = val;
+		this.bool = bool;
 	}
 
 	public TmaIdentifier getName() {
@@ -34,6 +36,10 @@ public class TmaKeyvalArg extends TmaNode {
 
 	public ITmaParamValue getVal() {
 		return val;
+	}
+
+	public TmaKeyvalArg.TmaBoolKind getBool() {
+		return bool;
 	}
 
 	@Override
@@ -47,5 +53,10 @@ public class TmaKeyvalArg extends TmaNode {
 		if (val != null) {
 			val.accept(v);
 		}
+	}
+
+	public enum TmaBoolKind {
+		PLUS,
+		TILDE,
 	}
 }

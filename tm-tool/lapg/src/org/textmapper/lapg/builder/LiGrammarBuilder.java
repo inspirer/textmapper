@@ -26,11 +26,7 @@ import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
-import java.util.Map.Entry;
 
-/**
- * evgeny, 14.12.11
- */
 class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	// The value is either Symbol, or TemplateParameter
@@ -95,14 +91,16 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new IllegalStateException("terminal is already soft");
 		}
 		if (terminal.getType() != null && !terminal.getType().equals(softClass.getType())) {
-			throw new IllegalStateException("soft terminal cannot override class terminal's type");
+			throw new IllegalStateException(
+					"soft terminal cannot override class terminal's type");
 		}
 		if (sealedTerminals.contains(terminal)) {
-			throw new IllegalArgumentException("cannot convert terminal into a soft terminal (was already used as " +
-					"non-soft)");
+			throw new IllegalArgumentException(
+					"cannot convert terminal into a soft terminal (was already used as non-soft)");
 		}
 		if (softClass.isSoft()) {
-			throw new IllegalArgumentException("cannot use soft terminal as a class terminal");
+			throw new IllegalArgumentException(
+					"cannot use soft terminal as a class terminal");
 		}
 		sealedTerminals.add(softClass);
 		((LiTerminal) terminal).setSoftClass(softClass);
@@ -115,7 +113,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				throw new NullPointerException();
 			}
 			if (symbolsMap.containsKey(name)) {
-				throw new IllegalStateException("symbol (or template parameter) `" + name + "' already exists");
+				throw new IllegalStateException(
+						"symbol (or template parameter) `" + name + "' already exists");
 			}
 			symbolsMap.put(name, sym);
 		}
@@ -130,7 +129,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public TemplateParameter addParameter(Type type, String name, Object defaultValue, SourceElement origin) {
+	public TemplateParameter addParameter(Type type, String name, Object defaultValue,
+										  boolean implicit, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -141,9 +141,11 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			check(type, defaultValue);
 		}
 		if (symbolsMap.containsKey(name)) {
-			throw new IllegalStateException("symbol (or template parameter) `" + name + "' already exists");
+			throw new IllegalStateException(
+					"symbol (or template parameter) `" + name + "' already exists");
 		}
-		LiTemplateParameter param = new LiTemplateParameter(type, name, defaultValue, origin);
+		LiTemplateParameter param =
+				new LiTemplateParameter(type, name, defaultValue, implicit, origin);
 		symbolsMap.put(name, param);
 		params.add(param);
 		return param;
@@ -181,7 +183,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp, Iterable<LexerState> states, int priority,
+	public LexerRule addLexerRule(int kind, Terminal sym, RegexPart regexp,
+								  Iterable<LexerState> states, int priority,
 								  LexerRule classLexerRule, SourceElement origin) {
 		check(sym);
 		if (regexp == null) {
@@ -194,15 +197,16 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		List<LexerState> liStates = new ArrayList<LexerState>();
 		for (LexerState state : states) {
 			if (!statesSet.contains(state)) {
-				throw new IllegalArgumentException("unknown state passed `" + state.getName() + "'");
+				throw new IllegalArgumentException(
+						"unknown state passed `" + state.getName() + "'");
 			}
 			liStates.add(state);
 		}
 		if (liStates.isEmpty()) {
 			throw new IllegalArgumentException("no states passed");
 		}
-		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority, classLexerRule,
-				origin);
+		LiLexerRule l = new LiLexerRule(kind, lexerRules.size(), sym, regexp, liStates, priority,
+				classLexerRule, origin);
 		lexerRules.add(l);
 		((LiTerminal) sym).addRule(l);
 		return l;
@@ -276,7 +280,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin) {
+	public RhsAssignment assignment(String name, RhsPart inner, boolean isAddition,
+									SourceElement origin) {
 		checkInner(inner, Kind.Assignment);
 		if (name == null) {
 			throw new NullPointerException("name is null");
@@ -287,7 +292,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner, SourceElement origin) {
+	public RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner,
+						SourceElement origin) {
 		checkInner(inner, Kind.Cast);
 		check(asSymbol);
 		LiRhsCast result = new LiRhsCast(asSymbol, convertArgs(args), (LiRhsPart) inner, origin);
@@ -313,7 +319,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args, SourceElement origin) {
+	public RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args,
+									SourceElement origin) {
 		check(parameter);
 		LiRhsSymbol result = new LiRhsSymbol(parameter, convertArgs(args), origin);
 		rhsSet.add(result);
@@ -334,7 +341,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public LiRhsConditional conditional(RhsPredicate predicate, RhsSequence inner, SourceElement origin) {
+	public LiRhsConditional conditional(RhsPredicate predicate, RhsSequence inner,
+										SourceElement origin) {
 		checkInner(inner, Kind.Conditional);
 		check(predicate);
 		LiRhsConditional result = new LiRhsConditional(
@@ -364,7 +372,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				if (value != null) {
 					throw new IllegalArgumentException("value");
 				}
-				if (inner.size() == 0 || operation == RhsPredicate.Operation.Not && inner.size() != 1) {
+				if (inner.size() == 0 || operation == RhsPredicate.Operation.Not &&
+						inner.size() != 1) {
 					throw new IllegalArgumentException("inner");
 				}
 				liinner = new LiRhsPredicate[inner.size()];
@@ -429,16 +438,18 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty, SourceElement origin) {
+	public RhsList list(RhsSequence inner, RhsPart separator, boolean nonEmpty,
+						SourceElement origin) {
 		checkInner(inner, Kind.List);
 		if (separator != null) {
 			checkInner(separator, Kind.List);
 		}
 		if (!nonEmpty && separator != null) {
-			throw new IllegalArgumentException("list with separator should have at least one element");
+			throw new IllegalArgumentException(
+					"list with separator should have at least one element");
 		}
-		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator, nonEmpty, null, false, false,
-				origin);
+		LiRhsList result = new LiRhsList((LiRhsSequence) inner, (LiRhsPart) separator,
+				nonEmpty, null, false, false, origin);
 		rhsSet.add(result);
 		return result;
 	}
@@ -454,8 +465,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsSet set(Operation operation, Symbol symbol, Collection<RhsArgument> args, Collection<RhsSet> parts,
-					  SourceElement origin) {
+	public RhsSet set(Operation operation, Symbol symbol, Collection<RhsArgument> args,
+					  Collection<RhsSet> parts, SourceElement origin) {
 		LiRhsSet[] liparts = null;
 		switch (operation) {
 			case Any:
@@ -545,7 +556,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new IllegalArgumentException("right-hand side element cannot be nested");
 		}
 		if (parent != Kind.Choice && part instanceof RhsConditional) {
-			throw new IllegalArgumentException("conditionals can only be used as direct children of a choice");
+			throw new IllegalArgumentException(
+					"conditionals can only be used as direct children of a choice");
 		}
 	}
 
@@ -663,7 +675,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 
-		TemplateInstantiator instantiator = new TemplateInstantiator(this, paramsArr, symbolArr, terminals, problems);
+		TemplateInstantiator instantiator = new TemplateInstantiator(
+				this, paramsArr, symbolArr, terminals, problems);
 		instantiator.instantiate(inputs);
 	}
 
@@ -720,7 +733,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	private void annotateNullables() {
 		// build back dependencies and mark first layer of nullable nonterminals
-		Map<Nonterminal, List<Nonterminal>> backDependencies = new HashMap<Nonterminal, List<Nonterminal>>();
+		Map<Nonterminal, List<Nonterminal>> backDependencies =
+				new HashMap<Nonterminal, List<Nonterminal>>();
 		List<Nonterminal> dependencies = new ArrayList<Nonterminal>();
 		Set<Nonterminal> candidates = new HashSet<Nonterminal>();
 		for (Symbol s : symbols) {
@@ -757,7 +771,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 				List<Nonterminal> deps = backDependencies.get(next);
 				if (deps != null) {
 					for (Nonterminal dep : deps) {
-						if (!dep.isNullable() && !inQueue.contains(dep) && candidates.contains(dep)) {
+						if (!dep.isNullable() && !inQueue.contains(dep) &&
+								candidates.contains(dep)) {
 							queue.add(dep);
 							inQueue.add(dep);
 						}

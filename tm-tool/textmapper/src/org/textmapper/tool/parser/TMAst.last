@@ -281,13 +281,14 @@ assoc  : Assoc ::=
 ;
 
 class NontermParam : GrammarPart {
+	boolean implicit;
 	Identifier name;
 	ParamType paramType;
 	ParamValue paramValue;
 }
 
 nonterm_param  : NontermParam ::=
-	this=new.NontermParam: '%' Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
+	this=new.NontermParam: '%' implicit=Limplicit as true? Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
 ;
 
 class DirectivePrio : GrammarPart {
@@ -595,10 +596,16 @@ symref_args  : SymrefArgs ::=
 class KeyvalArg {
 	Identifier name;
 	ParamValue val;
+	BoolKind bool;
+	enum BoolKind {
+		PLUS,
+		TILDE
+	}
 }
 
 keyval_arg  : KeyvalArg ::=
 	name=param_ref ':' val=param_value
+  | (bool='+' as BoolKind.PLUS | bool='~' as BoolKind.TILDE) name=param_ref
 ;
 
 enum ParamType {

@@ -17,15 +17,15 @@ package org.textmapper.lapg.api.ast;
 
 public interface AstType {
 
-	public static final AstType ANY = new PrimitiveType("any");
+	AstType ANY = new PrimitiveType("any");
 
-	public static final AstType STRING = new PrimitiveType("string");
-	public static final AstType BOOL = new PrimitiveType("boolean");
-	public static final AstType INT = new PrimitiveType("int");
+	AstType STRING = new PrimitiveType("string");
+	AstType BOOL = new PrimitiveType("boolean");
+	AstType INT = new PrimitiveType("int");
 
 	boolean isSubtypeOf(AstType another);
 
-	static final class PrimitiveType implements AstType {
+	final class PrimitiveType implements AstType {
 		private final String name;
 
 		public PrimitiveType(String name) {

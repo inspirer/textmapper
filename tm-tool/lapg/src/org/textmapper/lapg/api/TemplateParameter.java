@@ -33,5 +33,7 @@ public interface TemplateParameter extends SourceElement, UserDataHolder {
 	 */
 	Object getDefaultValue();
 
+	boolean isImplicit();
+
 	void appendSuffix(StringBuilder sb, Object value);
 }

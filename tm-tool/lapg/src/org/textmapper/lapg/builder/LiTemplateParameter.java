@@ -26,12 +26,15 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 	private final Type type;
 	private final String name;
 	private final Object defaultValue;
+	private final boolean implicit;
 	private final SourceElement origin;
 
-	public LiTemplateParameter(Type type, String name, Object defaultValue, SourceElement origin) {
+	public LiTemplateParameter(Type type, String name, Object defaultValue,
+							   boolean implicit, SourceElement origin) {
 		this.type = type;
 		this.name = name;
 		this.defaultValue = defaultValue;
+		this.implicit = implicit;
 		this.origin = origin;
 	}
 
@@ -48,6 +51,11 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
+	}
+
+	@Override
+	public boolean isImplicit() {
+		return implicit;
 	}
 
 	@Override

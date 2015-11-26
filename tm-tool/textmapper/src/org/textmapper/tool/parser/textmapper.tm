@@ -107,6 +107,7 @@ Lassert: /assert/			(soft)
 Lempty: /empty/				(soft)
 Lnonempty: /nonempty/		(soft)
 
+Limplicit: /implicit/		(soft)
 Lparam: /param/			    (soft)
 Lstring: /string/			(soft)
 Lbool: /bool/				(soft)
@@ -263,7 +264,7 @@ assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
 nonterm_param returns grammar_part ::=
-	  '%' Lparam name=identifier param_type ('=' param_value)? ';'
+	  '%' implicit=Limplicit? Lparam name=identifier param_type ('=' param_value)? ';'
 ;
 
 directive returns grammar_part ::=
@@ -403,7 +404,9 @@ symref_args ::=
 ;
 
 keyval_arg ::=
-	  name=param_ref ':' val=param_value ;
+	  name=param_ref ':' val=param_value
+	| (bool='+'|bool='~') name=param_ref
+;
 
 param_type ::=
 	  Lint | Lstring | Lbool | Lsymbol ;

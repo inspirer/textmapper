@@ -37,8 +37,9 @@ public class PredicatesTest {
 	@Test
 	public void testEnvironment() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", null);
-		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, null);
+		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", true, null);
+		TemplateParameter s2 = b.addParameter(Type.String, "s2", null /* defaultValue */,
+				true, null);
 		TemplateEnvironment env = GrammarFacade.createBuilder().getRootEnvironment();
 
 		assertTrue(env == env.extend(s1, "abc"));
@@ -66,8 +67,8 @@ public class PredicatesTest {
 	@Test
 	public void testEvaluation() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter p1 = b.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
-		TemplateParameter p2 = b.addParameter(Type.Bool, "p2", null, null);
+		TemplateParameter p1 = b.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
+		TemplateParameter p2 = b.addParameter(Type.Bool, "p2", null, true, null);
 
 		RhsPredicate pr = and(b, not(b, equals(b, p1, Boolean.TRUE)), equals(b, p2, Boolean.FALSE));
 		assertEquals("!(p1 == true) && p2 == false", pr.toString());
@@ -92,14 +93,16 @@ public class PredicatesTest {
 	@Test
 	public void testToStringAndEquals() {
 		GrammarBuilder b = GrammarFacade.createBuilder();
-		TemplateParameter p1 = b.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
-		TemplateParameter p2 = b.addParameter(Type.Bool, "p2", null, null);
+		TemplateParameter p1 = b.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
+		TemplateParameter p2 = b.addParameter(Type.Bool, "p2", null, true, null);
 
-		RhsPredicate pr = not(b, and(b, or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
+		RhsPredicate pr = not(b, and(b,
+				or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
 				equals(b, p2, Boolean.FALSE)));
 		assertEquals("!((p1 == true || p1 == false) && p2 == false)", pr.toString());
 
-		RhsPredicate identical = not(b, and(b, or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
+		RhsPredicate identical = not(b, and(b,
+				or(b, equals(b, p1, Boolean.TRUE), equals(b, p1, Boolean.FALSE)),
 				equals(b, p2, Boolean.FALSE)));
 		assertTrue(pr.equals(identical));
 	}
@@ -129,8 +132,8 @@ public class PredicatesTest {
 		expectedEx.expectMessage("symbol (or template parameter) `p1' already exists");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
-		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
+		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
+		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
 	}
 
 	@Test
@@ -140,7 +143,7 @@ public class PredicatesTest {
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addTerminal("p1", null, null);
-		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
+		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
 	}
 
 	@Test
@@ -149,7 +152,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("symbol (or template parameter) `p1' already exists");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
+		builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
 		builder.addTerminal("p1", null, null);
 	}
 
@@ -159,14 +162,14 @@ public class PredicatesTest {
 		expectedEx.expectMessage("error");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Bool, "error", Boolean.TRUE, null);
+		builder.addParameter(Type.Bool, "error", Boolean.TRUE, true, null);
 	}
 
 	@Test
 	public void testNullName() {
 		expectedEx.expect(NullPointerException.class);
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Bool, null, Boolean.TRUE, null);
+		builder.addParameter(Type.Bool, null, Boolean.TRUE, true, null);
 	}
 
 	@Test
@@ -175,7 +178,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("boolean default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Bool, "error1", 1, null);
+		builder.addParameter(Type.Bool, "error1", 1, true, null);
 	}
 
 	@Test
@@ -184,7 +187,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("integer default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.Integer, "int", "aaa", null);
+		builder.addParameter(Type.Integer, "int", "aaa", true, null);
 	}
 
 	@Test
@@ -193,7 +196,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("string default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		builder.addParameter(Type.String, "int", Boolean.TRUE, null);
+		builder.addParameter(Type.String, "int", Boolean.TRUE, true, null);
 	}
 
 	@Test
@@ -203,7 +206,8 @@ public class PredicatesTest {
 
 		GrammarBuilder builder1 = GrammarFacade.createBuilder();
 		GrammarBuilder builder2 = GrammarFacade.createBuilder();
-		builder1.addParameter(Type.Symbol, "int", builder2.addTerminal("bb", null, null), null);
+		builder1.addParameter(Type.Symbol, "int",
+				builder2.addTerminal("bb", null, null), true, null);
 	}
 
 	@Test
@@ -221,7 +225,7 @@ public class PredicatesTest {
 		expectedEx.expectMessage("boolean default value is expected");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
-		TemplateParameter p1 = builder.addParameter(Type.Bool, "p1", Boolean.TRUE, null);
+		TemplateParameter p1 = builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
 		builder.predicate(Operation.Equals, null, p1, null, null);
 	}
 

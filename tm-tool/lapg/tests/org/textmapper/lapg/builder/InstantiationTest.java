@@ -33,8 +33,8 @@ public class InstantiationTest {
 		assertEquals("", env.getNonterminalSuffix());
 
 		// Strings
-		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", null);
-		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, null);
+		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", true, null);
+		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, true, null);
 		env = env.extend(s1, "abcd");
 		assertEquals("_s1abcd", env.getNonterminalSuffix());
 
@@ -52,7 +52,7 @@ public class InstantiationTest {
 
 
 		// Booleans
-		TemplateParameter b1 = b.addParameter(Type.Bool, "b1", null, null);
+		TemplateParameter b1 = b.addParameter(Type.Bool, "b1", null, true, null);
 		env = env.extend(b1, true);
 		assertEquals("_b1_s1_s2q", env.getNonterminalSuffix());
 
@@ -60,7 +60,7 @@ public class InstantiationTest {
 		assertEquals("_nonb1_s1_s2q", env.getNonterminalSuffix());
 
 		// Integers
-		TemplateParameter i = b.addParameter(Type.Integer, "i", null, null);
+		TemplateParameter i = b.addParameter(Type.Integer, "i", null, true, null);
 		env = env.extend(i, 0);
 		assertEquals("_nonb1_i0_s1_s2q", env.getNonterminalSuffix());
 

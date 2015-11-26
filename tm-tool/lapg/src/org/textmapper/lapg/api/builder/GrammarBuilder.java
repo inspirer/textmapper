@@ -38,7 +38,8 @@ public interface GrammarBuilder extends GrammarMapper {
 	Terminal getEoi();
 
 	TemplateParameter addParameter(TemplateParameter.Type type,
-								   String name, Object defaultValue, SourceElement origin);
+								   String name, Object defaultValue, boolean implicit,
+								   SourceElement origin);
 
 	TemplateEnvironment getRootEnvironment();
 

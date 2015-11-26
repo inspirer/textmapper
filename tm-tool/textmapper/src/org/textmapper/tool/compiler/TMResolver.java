@@ -172,8 +172,8 @@ public class TMResolver {
 				String name = param.getName().getID();
 				Symbol existingSym = symbolsMap.get(name);
 				if (existingSym != null) {
-					error(param.getName(), "redeclaration of " + (existingSym.isTerm() ? "terminal" : "non-terminal")
-							+ ": " + name);
+					String kind = existingSym.isTerm() ? "terminal" : "non-terminal";
+					error(param.getName(), "redeclaration of " + kind + ": " + name);
 					continue;
 				}
 				if (parametersMap.containsKey(name)) {
@@ -262,6 +262,7 @@ public class TMResolver {
 		return builder.addParameter(
 				type, param.getName().getID(),
 				getParamValue(type, param.getParamValue()),
+				param.isImplicit(),
 				param);
 	}
 
@@ -270,15 +271,18 @@ public class TMResolver {
 		if (symbolsMap.containsKey(name)) {
 			Symbol sym = symbolsMap.get(name);
 			if (sym.isTerm() != isTerm) {
-				error(id, "redeclaration of " + (sym.isTerm() ? "terminal" : "non-terminal") + ": " + name);
+				String symKind = sym.isTerm() ? "terminal" : "non-terminal";
+				error(id, "redeclaration of " + symKind + ": " + name);
 			} else if (!(ObjectUtil.safeEquals(sym.getType(), type))) {
-				error(id,
-						"redeclaration of type: " + (type == null ? "<empty>" : type) + " instead of "
-								+ (sym.getType() == null ? "<empty>" : sym.getType()));
+				String newType = type == null ? "<empty>" : type.toString();
+				String existingType = sym.getType() == null ? "<empty>" : sym.getType().toString();
+				error(id, "redeclaration of type: " + newType + " instead of " + existingType);
 			}
 			return sym;
 		} else {
-			Symbol sym = isTerm ? builder.addTerminal(name, type, id) : builder.addNonterminal(name, id);
+			Symbol sym = isTerm
+					? builder.addTerminal(name, type, id)
+					: builder.addNonterminal(name, id);
 			if (type != null && !isTerm) {
 				builder.map((Nonterminal) sym, type);
 			}
@@ -384,8 +388,8 @@ public class TMResolver {
 			if (name.length() > 3 && name.endsWith("opt")) {
 				sym = symbolsMap.get(name.substring(0, name.length() - 3));
 				if (sym != null) {
-					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(), id.getLine(),
-							id.getOffset(), id.getEndoffset());
+					TmaIdentifier tmaId = new TmaIdentifier(id.getName(), id.getSource(),
+							id.getLine(), id.getOffset(), id.getEndoffset());
 					Nonterminal symopt = (Nonterminal) create(tmaId, sym.getType(), false);
 					builder.addRule(symopt,
 							builder.asSequence(
@@ -401,8 +405,8 @@ public class TMResolver {
 
 	void error(TextSourceElement n, String message) {
 		if (n == null || message == null) return;
-		tree.getErrors().add(
-				new LapgResolverProblem(TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
+		tree.getErrors().add(new LapgResolverProblem(
+				TMTree.KIND_ERROR, n.getLine(), n.getOffset(), n.getEndoffset(), message));
 	}
 
 	private static class LapgResolverProblem extends TMProblem {
