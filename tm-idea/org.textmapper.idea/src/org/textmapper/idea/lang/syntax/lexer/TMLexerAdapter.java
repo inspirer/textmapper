@@ -260,6 +260,8 @@ public class TMLexerAdapter extends LexerBase implements TMTokenTypes {
 			case Tokens.Lnonempty:
 				return KW_NONEMPTY;
 
+			case Tokens.Limplicit:
+				return KW_IMPLICIT;
 			case Tokens.Lparam:
 				return KW_PARAM;
 			case Tokens.Lstring:

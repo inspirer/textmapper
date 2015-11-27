@@ -116,6 +116,7 @@ public interface TMTokenTypes {
 	IElementType KW_EMPTY = new TMElementType(Tokens.Lempty, "empty");
 	IElementType KW_NONEMPTY = new TMElementType(Tokens.Lnonempty, "nonempty");
 
+	IElementType KW_IMPLICIT = new TMElementType(Tokens.Limplicit, "implicit");
 	IElementType KW_PARAM = new TMElementType(Tokens.Lparam, "param");
 	IElementType KW_STRING = new TMElementType(Tokens.Lstring, "string");
 	IElementType KW_BOOL = new TMElementType(Tokens.Lbool, "bool");
@@ -147,7 +148,7 @@ public interface TMTokenTypes {
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,
-			KW_PARAM, KW_STRING, KW_BOOL, KW_INT, KW_SYMBOL,
+			KW_IMPLICIT, KW_PARAM, KW_STRING, KW_BOOL, KW_INT, KW_SYMBOL,
 			KW_NOEOI,
 			KW_SOFT, KW_CLASS, KW_INTERFACE, KW_VOID, KW_SPACE, KW_LAYOUT, KW_LANGUAGE, KW_LALR,
 			KW_LEXER, KW_PARSER);
