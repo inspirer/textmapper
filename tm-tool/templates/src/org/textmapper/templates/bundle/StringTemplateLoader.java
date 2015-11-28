@@ -35,6 +35,7 @@ public class StringTemplateLoader implements IBundleLoader {
 		this.resource = resource;
 	}
 
+	@Override
 	public TemplatesBundle[] load(String bundleName, TemplatesStatus status) {
 		if(sourceForPackage == null) {
 			TemplatesBundle compositeBundle = TemplatesBundle.parse(resource, null, status);

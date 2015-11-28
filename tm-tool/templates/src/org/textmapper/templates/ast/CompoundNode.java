@@ -15,11 +15,11 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.List;
-
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.IEvaluationStrategy;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+
+import java.util.List;
 
 public class CompoundNode extends Node {
 

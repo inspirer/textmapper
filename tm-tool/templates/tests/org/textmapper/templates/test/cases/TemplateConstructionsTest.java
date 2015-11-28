@@ -357,7 +357,7 @@ public class TemplateConstructionsTest {
 	@Test
 	public void testSwitch() {
 		final Map<String, Object> this_ = new HashMap<>();
-		this_.put("aa", new Integer(11));
+		this_.put("aa", 11);
 
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
@@ -374,7 +374,7 @@ public class TemplateConstructionsTest {
 		assertEquals("Ye", q);
 
 		// test 3
-		this_.put("aa", new Integer(12));
+		this_.put("aa", 12);
 		q = env.executeTemplate("switch.check1", context, null, null);
 		assertEquals("No", q);
 	}
@@ -445,6 +445,7 @@ public class TemplateConstructionsTest {
 			inner.add(o);
 		}
 
+		@Override
 		public Iterator iterator() {
 			return inner.iterator();
 		}

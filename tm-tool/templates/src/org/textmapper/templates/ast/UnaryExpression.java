@@ -46,7 +46,7 @@ public class UnaryExpression extends ExpressionNode {
 		if (kind == MINUS) {
 			Object value = env.evaluate(expr, context, false);
 			if (value instanceof Integer) {
-				return -((Integer) value).intValue();
+				return -(Integer) value;
 			} else {
 				throw new EvaluationException("unary minus expression should be Integer");
 			}

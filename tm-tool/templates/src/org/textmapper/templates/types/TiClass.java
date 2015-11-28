@@ -44,26 +44,32 @@ public class TiClass implements IClass {
 		}
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public String getQualifiedName() {
 		return package_ + "." + name;
 	}
 
+	@Override
 	public Collection<IClass> getExtends() {
 		return _super;
 	}
 
+	@Override
 	public Collection<IFeature> getFeatures() {
 		return features;
 	}
 
+	@Override
 	public Collection<IMethod> getMethods() {
 		return methods;
 	}
 
+	@Override
 	public IFeature getFeature(String name) {
 		for (IFeature f : features) {
 			if (f.getName().equals(name)) {
@@ -95,6 +101,7 @@ public class TiClass implements IClass {
 		return null;
 	}
 
+	@Override
 	public IMethod getMethod(String name) {
 		for (IMethod m : methods) {
 			if (m.getName().equals(name)) {
@@ -126,6 +133,7 @@ public class TiClass implements IClass {
 		return null;
 	}
 
+	@Override
 	public boolean isSubtypeOf(String qualifiedName) {
 		Set<IClass> validated = new HashSet<>();
 		LinkedList<IClass> queue = new LinkedList<>();
@@ -146,6 +154,7 @@ public class TiClass implements IClass {
 		return false;
 	}
 
+	@Override
 	public boolean isSubtypeOf(IType anotherType) {
 		if (!(anotherType instanceof IClass)) {
 			return false;

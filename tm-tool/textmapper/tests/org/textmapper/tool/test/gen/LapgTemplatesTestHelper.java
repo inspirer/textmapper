@@ -59,15 +59,12 @@ public class LapgTemplatesTestHelper {
 			assertTrue("folder doesn't exist: " + tpl.getAbsolutePath(), tpl.exists() && tpl.isDirectory());
 
 			CheckingFileBasedStrategy strategy = new CheckingFileBasedStrategy(root);
-			TemplatesStatus templatesStatus = new TemplatesStatus() {
-				@Override
-				public void report(int kind, String message, SourceElement... anchors) {
-					String location = "";
-					for (SourceElement el : anchors) {
-						location += el.getResourceName() + "," + el.getLine() + ": ";
-					}
-					fail((kind == KIND_INFO ? "info" : kind == KIND_WARN ? "warn" : "error") + " reported: " + location + message);
+			TemplatesStatus templatesStatus = (kind, message, anchors) -> {
+				String location = "";
+				for (SourceElement el : anchors) {
+					location += el.getResourceName() + "," + el.getLine() + ": ";
 				}
+				fail((kind == TemplatesStatus.KIND_INFO ? "info" : kind == TemplatesStatus.KIND_WARN ? "warn" : "error") + " reported: " + location + message);
 			};
 			ResourceRegistry resources = createResourceRegistry(strategy, tpl.getAbsolutePath());
 			TypesRegistry types = new TypesRegistry(resources, templatesStatus);

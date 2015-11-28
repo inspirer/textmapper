@@ -27,78 +27,97 @@ public class JavaStringIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		this.myString = string;
 	}
 
+	@Override
 	public Object castTo(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("cannot cast a string");
 	}
 
+	@Override
 	public String asString() throws EvaluationException {
 		return myString != null ? myString : "null";
 	}
 
+	@Override
 	public boolean asBoolean() {
 		return myString != null && myString.length() > 0;
 	}
 
+	@Override
 	public Iterator asSequence() throws EvaluationException {
 		throw new EvaluationException("cannot iterate over a string");
 	}
 
+	@Override
 	public Object plus(Object v) throws EvaluationException {
 		return asString() + asString(v);
 	}
 
+	@Override
 	public Object minus(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot subtract from a string");
 	}
 
+	@Override
 	public Object multiply(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot multiply a string");
 	}
 
+	@Override
 	public Object div(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot divide a string");
 	}
 
+	@Override
 	public Object mod(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot divide a string");
 	}
 
+	@Override
 	public Object or(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot apply the bitwise operation to a string");
 	}
 
+	@Override
 	public Object and(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot apply the bitwise operation to a string");
 	}
 
+	@Override
 	public Object xor(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot apply the bitwise operation to a string");
 	}
 
+	@Override
 	public Object next() throws EvaluationException {
 		throw new EvaluationException("cannot increment a string");
 	}
 
+	@Override
 	public Object previous() throws EvaluationException {
 		throw new EvaluationException("cannot decrement a string");
 	}
 
+	@Override
 	public Object negative() throws EvaluationException {
 		throw new EvaluationException("cannot make a string negative");
 	}
 
+	@Override
 	public Object leftShift(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot shift a string");
 	}
 
+	@Override
 	public Object rightShift(Object v) throws EvaluationException {
 		throw new EvaluationException("cannot shift a string");
 	}
 
+	@Override
 	public int compareTo(Object v) throws EvaluationException {
 		return myString.compareTo(asString(v));
 	}
 
+	@Override
 	public boolean equalsTo(Object v) throws EvaluationException {
 		return myString.equals(asString(v)); 
 	}
@@ -118,6 +137,7 @@ public class JavaStringIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		return real.toString();
 	}
 
+	@Override
 	public Object getObject() {
 		return myString;
 	}

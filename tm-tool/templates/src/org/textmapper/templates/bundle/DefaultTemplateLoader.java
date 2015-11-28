@@ -30,6 +30,7 @@ public class DefaultTemplateLoader implements IBundleLoader {
 		this.resources = resources;
 	}
 
+	@Override
 	public TemplatesBundle[] load(String bundleName, TemplatesStatus status) {
 		Resource[] loaded = resources.loadResources(bundleName, IResourceLoader.KIND_TEMPLATE);
 		if (loaded == null) {

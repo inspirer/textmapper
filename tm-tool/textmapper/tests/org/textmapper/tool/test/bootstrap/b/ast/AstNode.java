@@ -29,6 +29,7 @@ public abstract class AstNode implements IAstNode {
 		this.endoffset = endoffset;
 	}
 
+	@Override
 	public String getLocation() {
 		return source.getLocation(offset);
 	}

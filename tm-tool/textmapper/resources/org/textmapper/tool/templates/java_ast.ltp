@@ -211,6 +211,7 @@ ${foreach l in self->util.locationList()-}
 ${end-}
 	}
 ${if opts.gentree}
+	@Override
 	public String getLocation() {
 		return source.getLocation(offset);
 	}

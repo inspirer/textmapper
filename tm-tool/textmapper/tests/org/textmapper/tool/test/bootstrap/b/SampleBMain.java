@@ -30,14 +30,11 @@ public class SampleBMain {
 	public static String getFileContents(InputStream stream) throws IOException {
 		StringBuilder contents = new StringBuilder();
 		char[] buffer = new char[2048];
-		Reader in = new InputStreamReader(stream, ENCODING);
-		try {
+		try (Reader in = new InputStreamReader(stream, ENCODING)) {
 			int count;
 			while ((count = in.read(buffer)) > 0) {
 				contents.append(buffer, 0, count);
 			}
-		} finally {
-			in.close();
 		}
 		return contents.toString();
 	}
@@ -47,12 +44,9 @@ public class SampleBMain {
 		counter++;
 
 		final int[] problems = new int[]{0};
-		ErrorReporter reporter = new ErrorReporter() {
-			@Override
-			public void error(String message, int offset, int endoffset) {
-				System.out.println("   " + message);
-				problems[0]++;
-			}
+		ErrorReporter reporter = (message, offset, endoffset) -> {
+			System.out.println("   " + message);
+			problems[0]++;
 		};
 
 		try {

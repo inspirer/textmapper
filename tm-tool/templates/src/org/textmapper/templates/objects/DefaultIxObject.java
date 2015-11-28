@@ -22,34 +22,42 @@ import java.util.Iterator;
 
 public abstract class DefaultIxObject implements IxObject, IxAdaptable {
 
+	@Override
 	public Object castTo(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("cast to '" + qualifiedName + "' is undefined for `" + getType() + "`");
 	}
 
+	@Override
 	public String asString() throws EvaluationException {
 		throw new EvaluationException("string representation is undefined for `" + getType() + "`");
 	}
 
+	@Override
 	public boolean asBoolean() {
 		return true;
 	}
 
+	@Override
 	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		throw new EvaluationException("property `" + propertyName + "` is absent in `" + getType() + "`");
 	}
 
+	@Override
 	public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 		throw new EvaluationException("method `" + methodName + "` is absent in `" + getType() + "`");
 	}
 
+	@Override
 	public Object getByIndex(SourceElement caller, Object index) throws EvaluationException {
 		throw new EvaluationException("index operator is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public boolean is(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("'is' (instanceof) operator is undefined for `" + getType() + "`");
 	}
 
+	@Override
 	public Iterator asSequence() throws EvaluationException {
 		throw new EvaluationException("iteration is not supported over `" + getType() + "`");
 	}

@@ -29,7 +29,9 @@ public class CallTemplateNode extends ExpressionNode {
 	private final ExpressionNode selectExpr;
 	private final boolean isStatement;
 
-	public CallTemplateNode(String identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, boolean isStatement, TextSource source, int offset, int endoffset) {
+	public CallTemplateNode(String identifier, List<ExpressionNode> args,
+							ExpressionNode selectExpr, String currentPackage, boolean isStatement,
+							TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.isStatement = isStatement;
 		this.arguments = args != null ? args.toArray(new ExpressionNode[args.size()]) : null;
@@ -37,19 +39,28 @@ public class CallTemplateNode extends ExpressionNode {
 		this.templateId = identifier;
 	}
 
-	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args, ExpressionNode selectExpr, String currentPackage, TextSource source, int offset, int endoffset) {
-		this((String) null, args, selectExpr, currentPackage, false, source, offset, endoffset);
+	public CallTemplateNode(ExpressionNode identifier, List<ExpressionNode> args,
+							ExpressionNode selectExpr, String currentPackage,
+							TextSource source, int offset, int endoffset) {
+		this(null, args, selectExpr, currentPackage, false, source, offset, endoffset);
 		this.templateIdExpr = identifier;
 	}
 
 	private static String getTemplateId(EvaluationContext context, String templateId) {
-		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base") ? context.getCurrent().getPackage() + "." + templateId : templateId;
+		return templateId != null && templateId.indexOf('.') == -1 && !templateId.equals("base")
+				? context.getCurrent().getPackage() + "." + templateId
+				: templateId;
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		EvaluationContext callContext = selectExpr != null ? new EvaluationContext(env.evaluate(selectExpr, context, false), this, context) : context;
-		String tid = getTemplateId(context, templateId != null ? templateId : (String/* TODO */) env.evaluate(templateIdExpr, context, false));
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
+			throws EvaluationException {
+		EvaluationContext callContext = selectExpr != null
+				? new EvaluationContext(env.evaluate(selectExpr, context, false), this, context)
+				: context;
+		String tid = getTemplateId(context, templateId != null
+				? templateId
+				: (String/* TODO */) env.evaluate(templateIdExpr, context, false));
 
 		Object[] args = null;
 		if (arguments != null) {
@@ -67,7 +78,8 @@ public class CallTemplateNode extends ExpressionNode {
 				isBase = true;
 				t = current.getBase();
 				if (t == null) {
-					env.report(TemplatesStatus.KIND_ERROR, "Cannot find base template for `" + current.getName() + "`", this);
+					env.report(TemplatesStatus.KIND_ERROR,
+							"Cannot find base template for `" + current.getName() + "`", this);
 				}
 			}
 		}

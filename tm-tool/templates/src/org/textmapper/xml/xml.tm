@@ -102,7 +102,6 @@ ${template java.imports-}
 ${call base-}
 import java.util.ArrayList;
 import java.util.List;
-import java.text.MessageFormat;
 ${end}
 
 ${template java_tree.createParser-}

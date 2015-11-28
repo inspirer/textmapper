@@ -105,7 +105,6 @@ public class ErrorsTest {
 					result.add(p);
 				}
 				pending.clear();
-				continue;
 			} else {
 				assertFalse("bad comment: " + line, line.startsWith("#") && line.contains("ERR"));
 			}

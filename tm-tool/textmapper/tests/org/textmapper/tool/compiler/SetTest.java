@@ -34,6 +34,7 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -57,9 +58,11 @@ public class SetTest {
 				Nonterminal left = resolve(grammar, entry.getKey());
 				Set<Terminal> set = new HashSet<>();
 				traverse(left, set);
-				List<String> list = new ArrayList<>();
-				for (Terminal t : set) list.add(t.getName());
-				Collections.sort(list);
+
+				List<String> list = set.stream()
+						.map(Terminal::getName)
+						.sorted().collect(Collectors.toList());
+
 				String expected = entry.getValue();
 				assertEquals(expected, Arrays.toString(list.toArray()));
 			}

@@ -19,6 +19,7 @@ import org.textmapper.templates.api.SourceElement;
 import org.textmapper.templates.api.TemplatesStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -27,9 +28,7 @@ public class TestProblemCollector implements TemplatesStatus {
 	public ArrayList<String> nextErrors = new ArrayList<>();
 
 	public void addErrors(String... errors) {
-		for (String s : errors) {
-			nextErrors.add(s);
-		}
+		Collections.addAll(nextErrors, errors);
 	}
 
 	public void assertEmptyErrors() {
@@ -38,6 +37,7 @@ public class TestProblemCollector implements TemplatesStatus {
 		}
 	}
 
+	@Override
 	public void report(int kind, String message, SourceElement... anchors) {
 		if (kind == KIND_ERROR || kind == KIND_FATAL) {
 			if (anchors != null && anchors.length >= 1 && anchors[0] != null) {

@@ -74,9 +74,7 @@ public class TMMapper {
 				error(s, "cannot compute AST type (detected a cycle in type dependencies)");
 			}
 		} else {
-			for (Runnable pp : postProcessors) {
-				pp.run();
-			}
+			postProcessors.forEach(Runnable::run);
 		}
 
 		return builder.create();
@@ -124,9 +122,7 @@ public class TMMapper {
 		List<Runnable> listeners = typeListeners.remove(n);
 		mapper.map(n, type);
 		if (listeners != null) {
-			for (Runnable r : listeners) {
-				r.run();
-			}
+			listeners.forEach(Runnable::run);
 		}
 	}
 

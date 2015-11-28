@@ -17,7 +17,6 @@ package org.textmapper.templates.types;
 
 import org.textmapper.templates.api.types.IDataType;
 import org.textmapper.templates.api.types.IDataType.DataTypeKind;
-import org.textmapper.templates.api.types.IFeature;
 import org.textmapper.templates.api.types.IType;
 
 public class TypesUtil {

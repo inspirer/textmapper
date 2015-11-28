@@ -31,6 +31,7 @@ public abstract class TmaNode implements ITmaNode {
 		this.endoffset = endoffset;
 	}
 
+	@Override
 	public String getLocation() {
 		return source.getLocation(offset);
 	}

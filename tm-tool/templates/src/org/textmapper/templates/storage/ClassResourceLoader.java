@@ -52,6 +52,7 @@ public class ClassResourceLoader implements IResourceLoader {
 		return contents.toString();
 	}
 
+	@Override
 	public Resource loadResource(String qualifiedName, String kind) {
 		String name = rootPackage + "/" + qualifiedName.replace('.', '/') + "." + kind;
 		URL url = loader.getResource(name);

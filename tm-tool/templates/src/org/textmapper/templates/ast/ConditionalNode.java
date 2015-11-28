@@ -31,13 +31,15 @@ public class ConditionalNode extends ExpressionNode {
 	public static final int AND = 7;
 	public static final int OR = 8;
 
-	private static String[] operators = new String[]{"", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || "};
+	private static String[] operators = new String[]{
+			"", " < ", " > ", " <= ", " >= ", " == ", " != ", " && ", " || "};
 
 	private final int kind;
 	private final ExpressionNode leftExpr;
 	private final ExpressionNode rightExpr;
 
-	public ConditionalNode(int kind, ExpressionNode left, ExpressionNode right, TextSource source, int offset, int endoffset) {
+	public ConditionalNode(int kind, ExpressionNode left, ExpressionNode right,
+						   TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.kind = kind;
 		this.leftExpr = left;
@@ -45,15 +47,16 @@ public class ConditionalNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
+			throws EvaluationException {
 		Object leftVal = env.evaluate(leftExpr, context, kind == AND || kind == OR);
 		switch (kind) {
 			case LT:
 			case GE:
 			case GT:
-			case LE:
-			{
-				int result = env.asOperand(leftVal).compareTo(env.evaluate(rightExpr, context, false));
+			case LE: {
+				int result = env.asOperand(leftVal).compareTo(
+						env.evaluate(rightExpr, context, false));
 				switch (kind) {
 					case LT:
 						return result < 0;
@@ -66,15 +69,17 @@ public class ConditionalNode extends ExpressionNode {
 				}
 			}
 			case EQ:
-			case NE:
-			{
-				boolean equals = env.asOperand(leftVal).equalsTo(env.evaluate(rightExpr, context, false));
+			case NE: {
+				boolean equals = env.asOperand(leftVal).equalsTo(
+						env.evaluate(rightExpr, context, false));
 				return kind == EQ ? equals : !equals;
 			}
 			case AND:
-				return env.asAdaptable(leftVal).asBoolean() && env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
+				return env.asAdaptable(leftVal).asBoolean()
+						&& env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
 			case OR:
-				return env.asAdaptable(leftVal).asBoolean() || env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
+				return env.asAdaptable(leftVal).asBoolean()
+						|| env.asAdaptable(env.evaluate(rightExpr, context, true)).asBoolean();
 		}
 		throw new EvaluationException("internal error: unknown kind");
 	}

@@ -33,14 +33,17 @@ public class TiFeature implements IFeature {
 		this.isReference = isReference;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public IType getTarget() {
 		return type;
 	}
 
+	@Override
 	public IType getType() {
 		IType type = getTarget();
 		if (multiplicities != null) {
@@ -57,14 +60,17 @@ public class TiFeature implements IFeature {
 		this.type = type;
 	}
 
+	@Override
 	public IMultiplicity[] getMultiplicities() {
 		return multiplicities;
 	}
 
+	@Override
 	public boolean isReference() {
 		return isReference;
 	}
 
+	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
@@ -83,14 +89,17 @@ public class TiFeature implements IFeature {
 			this.hiBound = hiBound;
 		}
 
+		@Override
 		public int getLowBound() {
 			return loBound;
 		}
 
+		@Override
 		public boolean isMultiple() {
 			return hiBound == -1 || hiBound > 1;
 		}
 
+		@Override
 		public int getHighBound() {
 			return hiBound;
 		}

@@ -16,9 +16,9 @@
 package org.textmapper.xml;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.text.MessageFormat;
 import org.textmapper.xml.XmlLexer.ErrorReporter;
 import org.textmapper.xml.XmlLexer.Span;
 import org.textmapper.xml.XmlLexer.Tokens;

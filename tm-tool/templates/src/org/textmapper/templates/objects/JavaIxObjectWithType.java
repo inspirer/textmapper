@@ -30,6 +30,7 @@ public class JavaIxObjectWithType extends DefaultJavaIxObject {
 		this.type = type;
 	}
 
+	@Override
 	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		if(type == null) {
 			return super.getProperty(caller, propertyName);

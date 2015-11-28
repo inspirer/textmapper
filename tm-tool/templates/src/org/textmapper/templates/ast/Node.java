@@ -37,14 +37,17 @@ public abstract class Node implements SourceElement {
 		return source.getLocation(offset);
 	}
 
+	@Override
 	public int getLine() {
 		return source.lineForOffset(offset);
 	}
 
+	@Override
 	public int getOffset() {
 		return offset;
 	}
 
+	@Override
 	public int getEndOffset() {
 		return endoffset;
 	}
@@ -53,6 +56,7 @@ public abstract class Node implements SourceElement {
 		return source;
 	}
 
+	@Override
 	public String getResourceName() {
 		return source.getFile();
 	}

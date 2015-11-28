@@ -42,12 +42,7 @@ public class AnnotationsTest extends LapgTestCase {
 		ResourceRegistry resources = new ResourceRegistry(
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/test/cases/templates", "utf8"),
 				new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/templates", "utf8"));
-		return new TypesRegistry(resources, new TemplatesStatus() {
-			@Override
-			public void report(int kind, String message, SourceElement... anchors) {
-				fail(message);
-			}
-		});
+		return new TypesRegistry(resources, (kind, message, anchors) -> fail(message));
 	}
 
 	@Test

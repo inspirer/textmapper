@@ -479,12 +479,7 @@ public class JavaParserTest {
 
 	private AstNode parse(final String text) throws IOException {
 		final TreeRecorder recorder = new TreeRecorder();
-		JavaLexer.ErrorReporter reporter = new JavaLexer.ErrorReporter() {
-			@Override
-			public void error(String message, int line, int offset, int endoffset) {
-				fail(line + ": " + message);
-			}
-		};
+		JavaLexer.ErrorReporter reporter = (message, line, offset, endoffset) -> fail(line + ": " + message);
 		JavaParser p = new JavaParser(reporter) {
 			@Override
 			protected void reduce(int rule) {

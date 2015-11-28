@@ -34,7 +34,8 @@ public class AssertNode extends Node {
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		try {
 			if (!env.asAdaptable(env.evaluate(expr, context, true)).asBoolean()) {
-				env.report(TemplatesStatus.KIND_ERROR, "Assertion `" + expr.toString() + "` failed for " + env.getTitle(context.getThisObject()), this);
+				env.report(TemplatesStatus.KIND_ERROR, "Assertion `" + expr.toString()
+						+ "` failed for " + env.getTitle(context.getThisObject()), this);
 			}
 		} catch (EvaluationException ex) {
 			/* already handled, ignore */

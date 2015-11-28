@@ -22,6 +22,7 @@ import org.textmapper.templates.objects.IxObject;
 import org.textmapper.templates.objects.JavaIxFactory;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class XmlIxFactory extends JavaIxFactory {
 
@@ -59,13 +60,8 @@ public class XmlIxFactory extends JavaIxFactory {
 				}
 			}
 
-			ArrayList<XmlNode> nodes = new ArrayList<>();
-			for (XmlNode o : node.getNodes()) {
-				if (o.getTagName().equals(key)) {
-					nodes.add(o);
-				}
-			}
-			return nodes;
+			return node.getNodes().stream().filter(o -> o.getTagName().equals
+					(key)).collect(Collectors.toList());
 		}
 
 		@Override

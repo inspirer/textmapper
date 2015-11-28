@@ -25,62 +25,77 @@ public class DefaultIxOperand implements IxOperand, IxWrapper {
 		this.myObject = object;
 	}
 
+	@Override
 	public Object plus(Object v) throws EvaluationException {
 		throw new EvaluationException("'+' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object minus(Object v) throws EvaluationException {
 		throw new EvaluationException("'-' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object multiply(Object v) throws EvaluationException {
 		throw new EvaluationException("'*' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object div(Object v) throws EvaluationException {
 		throw new EvaluationException("'/' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object mod(Object v) throws EvaluationException {
 		throw new EvaluationException("'%' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object or(Object v) throws EvaluationException {
 		throw new EvaluationException("'|' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object and(Object v) throws EvaluationException {
 		throw new EvaluationException("'&' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object xor(Object v) throws EvaluationException {
 		throw new EvaluationException("'^' is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object next() throws EvaluationException {
 		throw new EvaluationException("increment is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object previous() throws EvaluationException {
 		throw new EvaluationException("decrement is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object negative() throws EvaluationException {
 		throw new EvaluationException("negative is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object leftShift(Object v) throws EvaluationException {
 		throw new EvaluationException("left shift is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public Object rightShift(Object v) throws EvaluationException {
 		throw new EvaluationException("right shift is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public int compareTo(Object v) throws EvaluationException {
 		throw new EvaluationException("compare is not supported for `" + getType() + "`");
 	}
 
+	@Override
 	public boolean equalsTo(Object v) throws EvaluationException {
 		Object real = v instanceof IxWrapper ? ((IxWrapper) v).getObject() : v;
 		return myObject == null ? real == null : myObject.equals(real);
@@ -90,6 +105,7 @@ public class DefaultIxOperand implements IxOperand, IxWrapper {
 		return "Object";
 	}
 
+	@Override
 	public Object getObject() {
 		return myObject;
 	}

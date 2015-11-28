@@ -15,28 +15,30 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ConcreteMapNode extends ExpressionNode {
 
-	private final Map<String,ExpressionNode> fields;
+	private final Map<String, ExpressionNode> fields;
 
-	public ConcreteMapNode(Map<String,ExpressionNode> fields, TextSource source, int offset, int endoffset) {
+	public ConcreteMapNode(Map<String, ExpressionNode> fields,
+						   TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.fields = fields;
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
-		HashMap<Object,Object> result = new HashMap<>();
-		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {
-			result.put(entry.getKey(), env.evaluate(entry.getValue(), context, false) );
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
+			throws EvaluationException {
+		HashMap<Object, Object> result = new HashMap<>();
+		for (Map.Entry<String, ExpressionNode> entry : fields.entrySet()) {
+			result.put(entry.getKey(), env.evaluate(entry.getValue(), context, false));
 		}
 		return result;
 	}
@@ -45,8 +47,8 @@ public class ConcreteMapNode extends ExpressionNode {
 	public void toString(StringBuilder sb) {
 		sb.append('[');
 		boolean notFirst = false;
-		for( Map.Entry<String,ExpressionNode> entry : fields.entrySet() ) {
-			if(notFirst) {
+		for (Map.Entry<String, ExpressionNode> entry : fields.entrySet()) {
+			if (notFirst) {
 				sb.append(",");
 			} else {
 				notFirst = true;

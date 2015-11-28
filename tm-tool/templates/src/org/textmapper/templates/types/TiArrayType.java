@@ -26,10 +26,12 @@ public class TiArrayType implements IArrayType {
 		this.innerType = innerType;
 	}
 
+	@Override
 	public IType getInnerType() {
 		return innerType;
 	}
 
+	@Override
 	public boolean isSubtypeOf(IType anotherType) {
 		if(anotherType instanceof IArrayType) {
 			return innerType.isSubtypeOf(((IArrayType) anotherType).getInnerType());

@@ -49,18 +49,22 @@ public class TemplatesBundle {
 		final TemplatesTree<List<IBundleEntity>> tree = TemplatesTree.parseInput(source, templatePackage);
 		for (final TemplatesProblem problem : tree.getErrors()) {
 			status.report(TemplatesStatus.KIND_ERROR, problem.getMessage(), new SourceElement() {
+				@Override
 				public String getResourceName() {
 					return resource.getUri().toString();
 				}
 
+				@Override
 				public int getOffset() {
 					return problem.getOffset();
 				}
 
+				@Override
 				public int getEndOffset() {
 					return problem.getEndoffset();
 				}
 
+				@Override
 				public int getLine() {
 					return tree.getSource().lineForOffset(problem.getOffset());
 				}

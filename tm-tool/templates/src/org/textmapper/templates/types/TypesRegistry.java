@@ -37,15 +37,17 @@ public class TypesRegistry implements ITypesRegistry {
 		myStatus = status;
 	}
 
+	@Override
 	public IClass getClass(String qualifiedName, SourceElement referer) {
 		int lastDot = qualifiedName.lastIndexOf('.');
 		if (lastDot == -1) {
-			myStatus.report(TemplatesStatus.KIND_ERROR, "Fully qualified type name should contain dot.", referer);
+			myStatus.report(TemplatesStatus.KIND_ERROR,
+					"Fully qualified type name should contain dot.", referer);
 			return null;
 		}
 
 		String package_ = qualifiedName.substring(0, lastDot);
-		if(!myLoadedPackages.contains(package_)) {
+		if (!myLoadedPackages.contains(package_)) {
 			loadPackage(package_, referer);
 		}
 		return myClasses.get(qualifiedName);
@@ -57,23 +59,25 @@ public class TypesRegistry implements ITypesRegistry {
 		List<TypesResolver> loaders = new ArrayList<>();
 
 		// 1-st stage: load types
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			String current = queue.iterator().next();
 			queue.remove(current);
 			assert !myLoadedPackages.contains(current);
 			myLoadedPackages.add(current);
 
-			Resource[] contentLayers = myResourceRegistry.loadResources(current, IResourceLoader.KIND_TYPES);
-			if(contentLayers == null || contentLayers.length < 1) {
-				myStatus.report(TemplatesStatus.KIND_ERROR, "Couldn't load types package `" + current + "`", referer);
+			Resource[] contentLayers = myResourceRegistry.loadResources(
+					current, IResourceLoader.KIND_TYPES);
+			if (contentLayers == null || contentLayers.length < 1) {
+				myStatus.report(TemplatesStatus.KIND_ERROR, "Couldn't load types package `"
+						+ current + "`", referer);
 				continue;
 			}
 
-			for(Resource content : contentLayers) {
+			for (Resource content : contentLayers) {
 				TypesResolver resolver = new TypesResolver(current, content, myClasses, myStatus);
 				resolver.build();
-				for(String package_ : resolver.getRequired()) {
-					if(!myLoadedPackages.contains(package_)) {
+				for (String package_ : resolver.getRequired()) {
+					if (!myLoadedPackages.contains(package_)) {
 						queue.add(package_);
 					}
 				}
@@ -82,13 +86,9 @@ public class TypesRegistry implements ITypesRegistry {
 		}
 
 		// 2-nd stage: resolve references
-		for(TypesResolver resolver : loaders) {
-			resolver.resolve();
-		}
+		loaders.forEach(TypesResolver::resolve);
 
 		// 3-d stage: resolve expressions
-		for(TypesResolver resolver : loaders) {
-			resolver.resolveExpressions();
-		}
+		loaders.forEach(TypesResolver::resolveExpressions);
 	}
 }

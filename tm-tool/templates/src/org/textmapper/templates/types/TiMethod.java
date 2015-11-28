@@ -30,18 +30,22 @@ public class TiMethod implements IMethod {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public IClass getDeclaringClass() {
 		return declaringClass;
 	}
 
+	@Override
 	public IType getReturnType() {
 		return returnType;
 	}
 
+	@Override
 	public IType[] getParameterTypes() {
 		return parameterTypes;
 	}

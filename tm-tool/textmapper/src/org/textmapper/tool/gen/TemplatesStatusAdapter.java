@@ -55,22 +55,27 @@ public final class TemplatesStatusAdapter implements TemplatesStatus {
 			myWrapped = element;
 		}
 
+		@Override
 		public int getOffset() {
 			return myWrapped.getOffset();
 		}
 
+		@Override
 		public int getEndoffset() {
 			return myWrapped.getEndOffset();
 		}
 
+		@Override
 		public int getLine() {
 			return myWrapped.getLine();
 		}
 
+		@Override
 		public String getText() {
 			return myWrapped.toString();
 		}
 
+		@Override
 		public String getResourceName() {
 			return myWrapped.getResourceName();
 		}

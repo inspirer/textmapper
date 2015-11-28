@@ -80,12 +80,7 @@ public class Tool {
 		}
 
 		if (options.getInput() == null) {
-			File[] grammars = new File(".").listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					return pathname.isFile() && pathname.getName().endsWith(".tm");
-				}
-			});
+			File[] grammars = new File(".").listFiles(pathname -> pathname.isFile() && pathname.getName().endsWith(".tm"));
 			if (grammars == null || grammars.length != 1) {
 				if (grammars == null || grammars.length == 0) {
 					System.err.println("textmapper: no syntax files found, please specify");

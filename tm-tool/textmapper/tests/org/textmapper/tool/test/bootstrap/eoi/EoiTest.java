@@ -81,12 +81,8 @@ public class EoiTest {
 	}
 
 	private void checkTokens(String s, int... types) throws IOException {
-		EoiLexer lexer = new EoiLexer(new CharArrayReader(s.toCharArray()), new ErrorReporter() {
-			@Override
-			public void error(String message, int line, int offset, int endoffset) {
-				fail(line + ":" + message);
-			}
-		}) {
+		EoiLexer lexer = new EoiLexer(new CharArrayReader(s.toCharArray()), (ErrorReporter)
+				(message, line, offset, endoffset) -> fail(line + ":" + message)) {
 			@Override
 			protected boolean createToken(Span token, int ruleIndex) throws IOException {
 				super.createToken(token, ruleIndex);

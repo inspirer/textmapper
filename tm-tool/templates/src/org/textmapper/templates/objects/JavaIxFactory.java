@@ -20,9 +20,11 @@ import org.textmapper.templates.api.IEvaluationStrategy;
 import org.textmapper.templates.api.SourceElement;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaIxFactory implements IxFactory {
 
+	@Override
 	public IxObject asObject(Object o) {
 		if (o instanceof IxObject) {
 			return (IxObject) o;
@@ -51,6 +53,7 @@ public class JavaIxFactory implements IxFactory {
 		return new DefaultJavaIxObject(o);
 	}
 
+	@Override
 	public IxOperand asOperand(Object o) {
 		if (o instanceof IxOperand) {
 			return (IxOperand) o;
@@ -67,6 +70,7 @@ public class JavaIxFactory implements IxFactory {
 		return new DefaultIxOperand(o);
 	}
 
+	@Override
 	public IxAdaptable asAdaptable(Object o) {
 		if (o instanceof IxAdaptable) {
 			return (IxAdaptable) o;
@@ -98,6 +102,7 @@ public class JavaIxFactory implements IxFactory {
 		return new DefaultJavaIxObject(o);
 	}
 
+	@Override
 	public void setStrategy(IEvaluationStrategy strategy) {
 	}
 
@@ -117,55 +122,55 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
-				if (methodName.equals("first")) {
-					return collection.isEmpty() ? null : collection.iterator().next();
-				} else if (methodName.equals("last")) {
-					if (collection instanceof List<?>) {
-						return ((List<?>) collection).get(((List<?>) collection).size() - 1);
-					}
-					Object last = null;
-					for (Object r : collection) {
-						last = r;
-					}
-					return last;
-				} else if (methodName.equals("toSet")) {
-					if (collection instanceof Set<?>) {
-						return collection;
-					}
-					return new LinkedHashSet<>(collection);
-				} else if (methodName.equals("size")) {
-					return collection.size();
+				switch (methodName) {
+					case "first":
+						return collection.isEmpty() ? null : collection.iterator().next();
+					case "last":
+						if (collection instanceof List<?>)
+							return ((List<?>) collection).get(collection.size() - 1);
+						Object last = null;
+						for (Object r : collection) {
+							last = r;
+						}
+						return last;
+					case "toSet":
+						if (collection instanceof Set<?>) {
+							return collection;
+						}
+						return new LinkedHashSet<>(collection);
+					case "size":
+						return collection.size();
 				}
 			} else if (args.length == 1) {
-				if (methodName.equals("contains")) {
-					return collection.contains(args[0]);
-				} else if (methodName.equals("indexOf")) {
-					if (collection instanceof List<?>) {
-						return ((List<?>) collection).indexOf(args[0]);
-					}
-					int i = 0;
-					for (Object o : collection) {
-						if (o != null && o.equals(args[0])) {
-							return i;
+				switch (methodName) {
+					case "contains":
+						return collection.contains(args[0]);
+					case "indexOf":
+						if (collection instanceof List<?>) {
+							return ((List<?>) collection).indexOf(args[0]);
 						}
-						i++;
-					}
-					return -1;
-				} else if (methodName.equals("union")) {
-					if (args[0] != null) {
-						Collection<Object> result = collection instanceof Set<?> ? new LinkedHashSet<>(collection) : new ArrayList<>(collection);
-						if (args[0] instanceof Object[]) {
-							for (Object o : (Object[]) args[0]) {
-								result.add(o);
+						int i = 0;
+						for (Object o : collection) {
+							if (o != null && o.equals(args[0])) {
+								return i;
 							}
-						} else if (args[0] instanceof Collection<?>) {
-							result.addAll((Collection<?>) args[0]);
-						} else {
-							result.add(args[0]);
+							i++;
 						}
-						return result;
-					}
-					return collection;
+						return -1;
+					case "union":
+						if (args[0] != null) {
+							Collection<Object> result = collection instanceof Set<?> ? new
+									LinkedHashSet<>(collection) : new ArrayList<>(collection);
+							if (args[0] instanceof Object[]) {
+								Collections.addAll(result, (Object[]) args[0]);
+							} else if (args[0] instanceof Collection<?>) {
+								result.addAll((Collection<?>) args[0]);
+							} else {
+								result.add(args[0]);
+							}
+							return result;
+						}
+						return collection;
 				}
 			}
 			return super.callMethod(caller, methodName, args);
@@ -198,6 +203,7 @@ public class JavaIxFactory implements IxFactory {
 			return collection.size() > 0;
 		}
 
+		@Override
 		public Object getObject() {
 			return collection;
 		}
@@ -293,6 +299,7 @@ public class JavaIxFactory implements IxFactory {
 			return "Map";
 		}
 
+		@Override
 		public Object getObject() {
 			return map;
 		}
@@ -339,18 +346,19 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
-				if (methodName.equals("first")) {
-					return array.length == 0 ? null : array[0];
-				} else if (methodName.equals("last")) {
-					return array.length == 0 ? null : array[array.length-1];
-				} else if (methodName.equals("toSet")) {
-					LinkedHashSet<Integer> set = new LinkedHashSet<>();
-					for(int i : array) {
-						set.add(i);
-					}
-					return set;
-				} else if (methodName.equals("size")) {
-					return array.length;
+				switch (methodName) {
+					case "first":
+						return array.length == 0 ? null : array[0];
+					case "last":
+						return array.length == 0 ? null : array[array.length - 1];
+					case "toSet":
+						LinkedHashSet<Integer> set = new LinkedHashSet<>();
+						for (int i : array) {
+							set.add(i);
+						}
+						return set;
+					case "size":
+						return array.length;
 				}
 			} else if (args.length == 1) {
 				if (methodName.equals("contains")) {
@@ -377,6 +385,7 @@ public class JavaIxFactory implements IxFactory {
 			return "int[]";
 		}
 
+		@Override
 		public Object getObject() {
 			return array;
 		}
@@ -423,18 +432,19 @@ public class JavaIxFactory implements IxFactory {
 		@Override
 		public Object callMethod(SourceElement caller, String methodName, Object... args) throws EvaluationException {
 			if (args == null) {
-				if (methodName.equals("first")) {
-					return array.length == 0 ? null : array[0];
-				} else if (methodName.equals("last")) {
-					return array.length == 0 ? null : array[array.length-1];
-				} else if (methodName.equals("toSet")) {
-					LinkedHashSet<Integer> set = new LinkedHashSet<>();
-					for(int i : array) {
-						set.add(i);
-					}
-					return set;
-				} else if (methodName.equals("size")) {
-					return array.length;
+				switch (methodName) {
+					case "first":
+						return array.length == 0 ? null : array[0];
+					case "last":
+						return array.length == 0 ? null : array[array.length - 1];
+					case "toSet":
+						LinkedHashSet<Integer> set = new LinkedHashSet<>();
+						for (int i : array) {
+							set.add(i);
+						}
+						return set;
+					case "size":
+						return array.length;
 				}
 			} else if (args.length == 1) {
 				if (methodName.equals("contains")) {
@@ -461,6 +471,7 @@ public class JavaIxFactory implements IxFactory {
 			return "short[]";
 		}
 
+		@Override
 		public Object getObject() {
 			return array;
 		}

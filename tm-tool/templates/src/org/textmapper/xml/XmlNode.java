@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class XmlNode extends XmlElement {
 
@@ -52,7 +53,7 @@ public class XmlNode extends XmlElement {
 
 	public Map<String,XmlAttribute> getAttributesMap() {
 		if( attributesMap == null ) {
-			attributesMap = new HashMap<String,XmlAttribute>();
+			attributesMap = new HashMap<>();
 			for( XmlAttribute attr : attributes) {
 				attributesMap.put(attr.getName(), attr);
 			}
@@ -62,13 +63,10 @@ public class XmlNode extends XmlElement {
 
 	public List<XmlNode> getNodes() {
 		if( nodes == null ) {
-			nodes = new ArrayList<XmlNode>();
+			nodes = new ArrayList<>();
 			if( data != null ) {
-				for( Object o : data) {
-					if( o instanceof XmlNode ) {
-						nodes.add((XmlNode)o);
-					}
-				}
+				nodes.addAll(data.stream().filter(o -> o instanceof XmlNode).map(o -> (XmlNode) o)
+						.collect(Collectors.toList()));
 			}
 		}
 		return nodes;

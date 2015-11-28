@@ -35,6 +35,7 @@ public class TiInstance extends DefaultIxObject implements INamedEntity {
 		this.myValues = myValues;
 	}
 
+	@Override
 	public String getType() {
 		return myClass.getQualifiedName();
 	}
@@ -44,6 +45,7 @@ public class TiInstance extends DefaultIxObject implements INamedEntity {
 		return myClass.isSubtypeOf(qualifiedName);
 	}
 
+	@Override
 	public Object getProperty(SourceElement caller, String propertyName) throws EvaluationException {
 		IFeature feature = myClass.getFeature(propertyName);
 		if (feature == null) {

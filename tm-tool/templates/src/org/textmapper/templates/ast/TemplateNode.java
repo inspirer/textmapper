@@ -44,10 +44,12 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
 	}
 
+	@Override
 	public int getKind() {
 		return KIND_TEMPLATE;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -56,6 +58,7 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return contextType;
 	}
 
+	@Override
 	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
 				: 0;
@@ -80,10 +83,12 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return getSignature();
 	}
 
+	@Override
 	public String getPackage() {
 		return templatePackage;
 	}
 
+	@Override
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
@@ -100,10 +105,12 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		return sb.toString();
 	}
 
+	@Override
 	public IBundleEntity getBase() {
 		return base;
 	}
 
+	@Override
 	public void setBase(IBundleEntity template) {
 		this.base = (ITemplate) template;
 	}

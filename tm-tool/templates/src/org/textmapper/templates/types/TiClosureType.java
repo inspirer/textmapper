@@ -33,6 +33,7 @@ public class TiClosureType implements IClosureType {
 		this.parameterTypes = parameterTypes;
 	}
 
+	@Override
 	public boolean isSubtypeOf(IType anotherType) {
 		if(!(anotherType instanceof IClosureType)) {
 			return false;
@@ -52,6 +53,7 @@ public class TiClosureType implements IClosureType {
 		return true;
 	}
 
+	@Override
 	public Collection<IType> getParameterTypes() {
 		return parameterTypes == null ? Collections.<IType>emptyList() : Arrays.asList(parameterTypes);
 	}

@@ -15,15 +15,15 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class CollectMapNode extends ExpressionNode {
 
@@ -32,7 +32,9 @@ public class CollectMapNode extends ExpressionNode {
 	private final ExpressionNode key;
 	private final ExpressionNode value;
 
-	public CollectMapNode(ExpressionNode select, String varName, ExpressionNode key, ExpressionNode value, TextSource source, int offset, int endoffset) {
+	public CollectMapNode(ExpressionNode select, String varName,
+						  ExpressionNode key, ExpressionNode value,
+						  TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.selectExpression = select;
 		this.varName = varName;
@@ -41,17 +43,21 @@ public class CollectMapNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
+			throws EvaluationException {
 		Object select = env.evaluate(selectExpression, context, false);
 		Iterator<?> it = env.asAdaptable(select).asSequence();
 		if (it == null) {
-			throw new EvaluationException("`" + selectExpression.toString() + "` should be array or collection (instead of " + select.getClass().getCanonicalName() + ")");
+			throw new EvaluationException("`" + selectExpression.toString()
+					+ "` should be array or collection (instead of "
+					+ select.getClass().getCanonicalName() + ")");
 		}
 
 		Map<Object, Object> result = new HashMap<>();
 		while (it.hasNext()) {
 			Object curr = it.next();
-			EvaluationContext innerContext = new EvaluationContext(context.getThisObject(), null, context);
+			EvaluationContext innerContext = new EvaluationContext(
+					context.getThisObject(), null, context);
 			innerContext.setVariable(varName, curr != null ? curr : EvaluationContext.NULL_VALUE);
 			Object key_ = env.evaluate(key, innerContext, false);
 			Object value_ = env.evaluate(value, innerContext, false);
@@ -73,10 +79,7 @@ public class CollectMapNode extends ExpressionNode {
 	@Override
 	public void toString(StringBuilder sb) {
 		selectExpression.toString(sb);
-		sb.append(".collect");
-		sb.append("(");
-		sb.append(varName);
-		sb.append("|");
+		sb.append(".collect").append("(").append(varName).append("|");
 		key.toString(sb);
 		sb.append(":");
 		value.toString(sb);

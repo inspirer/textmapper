@@ -47,10 +47,12 @@ public class QueryNode extends Node implements IQuery {
 		this.isCached = cache;
 	}
 
+	@Override
 	public int getKind() {
 		return KIND_QUERY;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -59,10 +61,12 @@ public class QueryNode extends Node implements IQuery {
 		return contextType;
 	}
 
+	@Override
 	public String getPackage() {
 		return templatePackage;
 	}
 
+	@Override
 	public Object invoke(EvaluationContext context, IEvaluationStrategy env, Object[] arguments)
 			throws EvaluationException {
 		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
@@ -93,6 +97,7 @@ public class QueryNode extends Node implements IQuery {
 		return result;
 	}
 
+	@Override
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
@@ -123,10 +128,12 @@ public class QueryNode extends Node implements IQuery {
 		return sb.toString();
 	}
 
+	@Override
 	public IBundleEntity getBase() {
 		return base;
 	}
 
+	@Override
 	public void setBase(IBundleEntity template) {
 		this.base = (IQuery) template;
 	}

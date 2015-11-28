@@ -37,6 +37,7 @@ public abstract class AstNode implements IAstNode {
 		this.endcolumn = endcolumn;
 	}
 
+	@Override
 	public String getLocation() {
 		return source.getLocation(offset);
 	}

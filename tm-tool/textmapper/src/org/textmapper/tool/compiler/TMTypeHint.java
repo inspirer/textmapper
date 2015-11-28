@@ -36,7 +36,7 @@ public class TMTypeHint {
 		return nameHint;
 	}
 
-	public static enum Kind {
+	public enum Kind {
 		VOID, INTERFACE, CLASS
 	}
 }

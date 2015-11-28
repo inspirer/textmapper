@@ -57,7 +57,7 @@ ${template applyRule-}
 				tmLeft.value = new org.textmapper.lapg.eval.@GenericNode(source, tmLeft.offset, tmLeft.endoffset);
 			}
 		} else if (ruleLength > 1) {
-			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<org.textmapper.lapg.eval.@GenericNode>(ruleLength);
+			java.util.@List<org.textmapper.lapg.eval.@GenericNode> children = new java.util.@ArrayList<>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
 				if (tmStack[tmHead - i].value instanceof org.textmapper.lapg.eval.@GenericNode) {
 					children.add((org.textmapper.lapg.eval.@GenericNode) tmStack[tmHead - i].value);

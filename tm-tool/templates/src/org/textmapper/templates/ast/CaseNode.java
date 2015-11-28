@@ -15,9 +15,9 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.ArrayList;
-
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+
+import java.util.ArrayList;
 
 public class CaseNode extends CompoundNode {
 	ExpressionNode caseExpr;
@@ -32,14 +32,14 @@ public class CaseNode extends CompoundNode {
 	}
 
 	public void addInstruction(Node node) {
-		if( instructions == null ) {
+		if (instructions == null) {
 			instructions = new ArrayList<>();
 		}
 		instructions.add(node);
 	}
 
-	public static void add(ArrayList<CaseNode> cases, Node instruction ) {
-		CaseNode node = cases.get(cases.size()-1);
+	public static void add(ArrayList<CaseNode> cases, Node instruction) {
+		CaseNode node = cases.get(cases.size() - 1);
 		node.addInstruction(instruction);
 	}
 }

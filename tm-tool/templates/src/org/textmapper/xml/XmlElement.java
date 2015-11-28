@@ -30,18 +30,22 @@ public abstract class XmlElement implements SourceElement {
 
 	// TODO ?
 
+	@Override
 	public String getResourceName() {
 		return null;
 	}
 
+	@Override
 	public int getOffset() {
 		return 0;
 	}
 
+	@Override
 	public int getEndOffset() {
 		return 0;
 	}
 
+	@Override
 	public int getLine() {
 		return 0;
 	}

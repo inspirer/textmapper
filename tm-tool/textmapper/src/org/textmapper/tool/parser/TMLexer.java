@@ -161,12 +161,8 @@ public class TMLexer {
 
 	private boolean skipAction() throws IOException {
 		final int[] ind = new int[] { 0 };
-		SActionLexer.ErrorReporter innerreporter = new SActionLexer.ErrorReporter() {
-			@Override
-			public void error(String message, int line, int offset) {
+		SActionLexer.ErrorReporter innerreporter = (String message, int line, int offset) ->
 				reporter.error(message, line, offset, offset + 1);
-			}
-		};
 		SActionLexer l = new SActionLexer(innerreporter) {
 			@Override
 			protected int nextChar() throws IOException {

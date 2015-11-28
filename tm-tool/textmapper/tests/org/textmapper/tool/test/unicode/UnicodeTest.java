@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -104,9 +105,8 @@ public class UnicodeTest {
 				assertTrue(availableProperties.contains(content));
 			}
 		}
-		for (CompositeProperty composite : compositeProperties) {
-			availableProperties.add(composite.getPropertyName());
-		}
+		availableProperties.addAll(compositeProperties.stream()
+				.map(CompositeProperty::getPropertyName).collect(Collectors.toList()));
 
 		// aliases
 		final AliasCollection aliasesCollection = new AliasCollection();

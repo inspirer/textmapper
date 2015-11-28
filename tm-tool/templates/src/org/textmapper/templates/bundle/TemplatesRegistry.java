@@ -46,9 +46,7 @@ public class TemplatesRegistry {
 		for (IBundleLoader loader : loaders) {
 			TemplatesBundle[] sources = loader.load(bundleName, status);
 			if (sources != null) {
-				for(TemplatesBundle source : sources) {
-					result.add(source);
-				}
+				Collections.addAll(result, sources);
 			}
 		}
 		return result.size() > 0 ? result.toArray(new TemplatesBundle[result.size()]) : null;

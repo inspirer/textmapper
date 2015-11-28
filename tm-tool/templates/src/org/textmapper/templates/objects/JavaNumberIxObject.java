@@ -30,6 +30,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		}
 	}
 
+	@Override
 	public Object plus(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -41,6 +42,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object minus(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -52,6 +54,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object multiply(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -63,6 +66,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object div(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -74,6 +78,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object mod(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -85,6 +90,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object or(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -96,6 +102,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object and(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -107,6 +114,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object xor(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -118,6 +126,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object next() throws EvaluationException {
 		if (isInt(myNumber)) {
 			return myNumber.intValue() + 1;
@@ -128,6 +137,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + myNumber.getClass() + "`");
 	}
 
+	@Override
 	public Object previous() throws EvaluationException {
 		if (isInt(myNumber)) {
 			return myNumber.intValue() - 1;
@@ -138,6 +148,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + myNumber.getClass() + "`");
 	}
 
+	@Override
 	public Object negative() throws EvaluationException {
 		if (isInt(myNumber)) {
 			return -myNumber.intValue();
@@ -148,6 +159,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + myNumber.getClass() + "`");
 	}
 
+	@Override
 	public Object leftShift(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -159,6 +171,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public Object rightShift(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -170,6 +183,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public int compareTo(Object v) throws EvaluationException {
 		Number op = asNumber(v);
 		if (isInt(myNumber) && isInt(op)) {
@@ -181,6 +195,7 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		throw new EvaluationException("unsupported operand of type `" + op.getClass() + "`");
 	}
 
+	@Override
 	public boolean equalsTo(Object v) throws EvaluationException {
 		return compareTo(v) == 0;
 	}
@@ -219,22 +234,27 @@ public class JavaNumberIxObject implements IxWrapper, IxOperand, IxAdaptable {
 		return object instanceof Double || object instanceof Float;
 	}
 
+	@Override
 	public Object getObject() {
 		return myNumber;
 	}
 
+	@Override
 	public Object castTo(String qualifiedName) throws EvaluationException {
 		throw new EvaluationException("cannot cast a number");
 	}
 
+	@Override
 	public String asString() throws EvaluationException {
 		return myNumber.toString();
 	}
 
+	@Override
 	public boolean asBoolean() {
 		return myNumber.longValue() != 0;
 	}
 
+	@Override
 	public Iterator asSequence() throws EvaluationException {
 		throw new EvaluationException("cannot iterate over a number");
 	}

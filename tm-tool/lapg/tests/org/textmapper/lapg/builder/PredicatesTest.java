@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.textmapper.lapg.api.TemplateEnvironment;
-import org.textmapper.lapg.api.TemplateEnvironment.ParameterPredicate;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.TemplateParameter.Type;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
@@ -223,5 +222,4 @@ public class PredicatesTest {
 		TemplateParameter p1 = builder.addParameter(Type.Bool, "p1", Boolean.TRUE, true, null);
 		builder.predicate(Operation.Equals, null, p1, null, null);
 	}
-
 }

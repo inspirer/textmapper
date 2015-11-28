@@ -15,6 +15,14 @@ public class ${opts.prefix}Main {
 	public static String getFileContents(InputStream stream) throws IOException {
 		StringBuilder contents = new StringBuilder();
 		char[] buffer = new char[2048];
+${if opts.java8-}
+		try (Reader in = new InputStreamReader(stream, ENCODING)) {
+			int count;
+			while ((count = in.read(buffer)) > 0) {
+				contents.append(buffer, 0, count);
+			}
+		}
+${else-}
 		Reader in = new InputStreamReader(stream, ENCODING);
 		try {
 			int count;
@@ -24,6 +32,7 @@ public class ${opts.prefix}Main {
 		} finally {
 			in.close();
 		}
+${end-}
 		return contents.toString();
 	}
 
@@ -32,16 +41,17 @@ public class ${opts.prefix}Main {
 		counter++;
 
 		final int[] problems = new int[]{0};
-		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
+		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = ${if opts.java8}(message${self->util.location(', ', '', '')}) -> {${else}new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {${end}
+${if opts.java8-}
+			System.out.println("   " + ${if opts.positions.contains('line')}line + ": " + ${end}message);
+			problems[0]++;
+${else}
 			@Override
 			public void error(String message${self->util.location(', int ', '', '')}) {
-${if opts.positions.contains('line')-}
-				System.out.println("   " + line + ": " + message);
-${else-}
-				System.out.println("   " + message);
-${end-}
+				System.out.println("   " + ${if opts.positions.contains('line')}line + ": " + ${end}message);
 				problems[0]++;
 			}
+${end-}
 		};
 
 		try {

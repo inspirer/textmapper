@@ -30,13 +30,14 @@ public class ArithmeticNode extends ExpressionNode {
 	public static final int DIV = 4;
 	public static final int REM = 5;
 
-	private static String[] operators = new String[] { "", " + ", " - ", " * ", " / ", " % " };
+	private static String[] operators = new String[]{"", " + ", " - ", " * ", " / ", " % "};
 
 	private final int kind;
 	private final ExpressionNode leftExpr;
 	private final ExpressionNode rightExpr;
 
-	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right, TextSource source, int offset, int endoffset) {
+	public ArithmeticNode(int kind, ExpressionNode left, ExpressionNode right,
+						  TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.kind = kind;
 		this.leftExpr = left;
@@ -44,10 +45,11 @@ public class ArithmeticNode extends ExpressionNode {
 	}
 
 	@Override
-	public Object evaluate(EvaluationContext context, IEvaluationStrategy env) throws EvaluationException {
+	public Object evaluate(EvaluationContext context, IEvaluationStrategy env)
+			throws EvaluationException {
 		IxOperand left = env.asOperand(env.evaluate(leftExpr, context, false));
 		Object right = env.evaluate(rightExpr, context, false);
-		switch(kind) {
+		switch (kind) {
 			case PLUS:
 				return left.plus(right);
 			case MINUS:

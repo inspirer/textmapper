@@ -22,7 +22,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.text.MessageFormat;
 import org.textmapper.xml.XmlLexer.ErrorReporter;
 import org.textmapper.xml.XmlParser.ParseException;
 

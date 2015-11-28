@@ -46,6 +46,7 @@ public class FileBasedResourceLoader implements IResourceLoader {
 		return contents.toString();
 	}
 
+	@Override
 	public Resource loadResource(String resourceName, String kind) {
 		String fileName = resourceName.replace('.', '/') + "." + kind;
 		for (File f : myFolders) {

@@ -30,14 +30,17 @@ public class TiDataType implements IDataType {
 		this.constraints = constraints;
 	}
 
+	@Override
 	public DataTypeKind getKind() {
 		return kind;
 	}
 
+	@Override
 	public Collection<Constraint> getConstraints() {
 		return constraints;
 	}
 
+	@Override
 	public boolean isSubtypeOf(IType anotherType) {
 		if(!(anotherType instanceof IDataType)) {
 			return false;
@@ -72,10 +75,12 @@ public class TiDataType implements IDataType {
 			this.parameters = parameters;
 		}
 
+		@Override
 		public ConstraintKind getKind() {
 			return kind;
 		}
 
+		@Override
 		public Collection<String> getParameters() {
 			return parameters;
 		}

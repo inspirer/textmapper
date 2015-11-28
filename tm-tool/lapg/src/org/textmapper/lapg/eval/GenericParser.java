@@ -235,7 +235,7 @@ public class GenericParser {
 				tmLeft.value = new GenericNode(source, tmLeft.offset, tmLeft.endoffset);
 			}
 		} else if (ruleLength > 1) {
-			List<GenericNode> children = new ArrayList<GenericNode>(ruleLength);
+			List<GenericNode> children = new ArrayList<>(ruleLength);
 			for (int i = ruleLength - 1; i >= 0; i--) {
 				if (tmStack[tmHead - i].value instanceof GenericNode) {
 					children.add((GenericNode) tmStack[tmHead - i].value);

@@ -254,11 +254,6 @@ public class JavaLexerTest {
 	}
 
 	private JavaLexer.ErrorReporter testReporter() {
-		return new JavaLexer.ErrorReporter() {
-			@Override
-			public void error(String message, int line, int offset, int endoffset) {
-				fail(line + ": " + message);
-			}
-		};
+		return (message, line, offset, endoffset) -> fail(line + ": " + message);
 	}
 }

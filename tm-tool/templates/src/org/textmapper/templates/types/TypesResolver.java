@@ -27,6 +27,7 @@ import org.textmapper.templates.types.TypesTree.TypesProblem;
 import org.textmapper.templates.types.ast.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Two-pass types model loader.
@@ -57,22 +58,28 @@ class TypesResolver {
 	}
 
 	public void build() {
-		final TypesTree<AstInput> tree = TypesTree.parse(new TypesTree.TextSource(myPackage, myResource.getContents(), 1));
+		final TypesTree<AstInput> tree = TypesTree.parse(
+				new TypesTree.TextSource(myPackage, myResource.getContents(), 1));
+
 		if (tree.hasErrors()) {
 			for (final TypesProblem s : tree.getErrors()) {
 				myStatus.report(TemplatesStatus.KIND_ERROR, s.getMessage(), new SourceElement() {
+					@Override
 					public String getResourceName() {
 						return myResource.getUri().toString();
 					}
 
+					@Override
 					public int getOffset() {
 						return s.getOffset();
 					}
 
+					@Override
 					public int getEndOffset() {
 						return s.getEndoffset();
 					}
 
+					@Override
 					public int getLine() {
 						return tree.getSource().lineForOffset(s.getOffset());
 					}
@@ -89,7 +96,8 @@ class TypesResolver {
 			String fqName = myPackage + "." + cl.getName();
 			if (myRegistryClasses.containsKey(fqName)) {
 				myStatus.report(TemplatesStatus.KIND_ERROR,
-						"class is declared twice: " + fqName + (myFoundClasses.contains(fqName) ? " (in one file)" : ""),
+						"class is declared twice: " + fqName
+								+ (myFoundClasses.contains(fqName) ? " (in one file)" : ""),
 						new LocatedNodeAdapter(td));
 			} else {
 				myRegistryClasses.put(fqName, cl);
@@ -110,62 +118,68 @@ class TypesResolver {
 				}
 			}
 		}
-		final TiClass result = new TiClass(td.getName(), myPackage, new ArrayList<>(), features, methods);
-		if (td.getSuper() != null) {
-			final List<String> superNames = new ArrayList<>();
-			for (List<String> className : td.getSuper()) {
-				String s = getQualifiedName(className);
-				if (s.indexOf('.') == -1) {
-					s = myPackage + "." + s;
-				} else {
-					String targetPackage = s.substring(0, s.lastIndexOf('.'));
-					requiredPackages.add(targetPackage);
-				}
-				superNames.add(s);
+		final TiClass result = new TiClass(
+				td.getName(), myPackage, new ArrayList<>(), features, methods);
+
+		if (td.getSuper() == null) return result;
+
+		final List<String> superNames = new ArrayList<>();
+		for (List<String> className : td.getSuper()) {
+			String s = getQualifiedName(className);
+			if (s.indexOf('.') == -1) {
+				s = myPackage + "." + s;
+			} else {
+				String targetPackage = s.substring(0, s.lastIndexOf('.'));
+				requiredPackages.add(targetPackage);
 			}
-			myResolveTypes.add(new StageWorker() {
-				public void resolve() {
-					for (String ref : superNames) {
-						TiClass target = myRegistryClasses.get(ref);
-						if (target == null) {
-							myStatus.report(TemplatesStatus.KIND_ERROR,
-									"cannot resolve super type: " + ref + " for " + result.getName(),
-									new LocatedNodeAdapter(td));
-						} else {
-							result.getExtends().add(target);
-						}
-					}
-				}
-			});
+			superNames.add(s);
 		}
+		myResolveTypes.add(() -> {
+			for (String ref : superNames) {
+				TiClass target = myRegistryClasses.get(ref);
+				if (target == null) {
+					myStatus.report(TemplatesStatus.KIND_ERROR,
+							"cannot resolve super type: " + ref + " for " + result.getName(),
+							new LocatedNodeAdapter(td));
+				} else {
+					result.getExtends().add(target);
+				}
+			}
+		});
 		return result;
 	}
 
 	private IMethod convertMethod(final AstMethodDeclaration memberDeclaration) {
 		final TiMethod result = new TiMethod(memberDeclaration.getName());
 		convertType(new TypeHandler() {
+			@Override
 			public void typeResolved(IType type) {
 				result.setType(type);
 			}
+
+			@Override
 			public String containerName() {
 				return memberDeclaration.getName();
 			}
 		}, memberDeclaration.getReturnType(), true);
 		List<AstTypeEx> parametersopt = memberDeclaration.getParameters();
-		final IType[] params = parametersopt == null || parametersopt.size() == 0 ? null : new IType[parametersopt.size()];
-		if(params == null) {
-			return result;
-		}
-		for(int i = 0; i < params.length; i++) {
+		final IType[] params = parametersopt == null || parametersopt.size() == 0
+				? null : new IType[parametersopt.size()];
+		if (params == null) return result;
+
+		for (int i = 0; i < params.length; i++) {
 			final int boundI = i;
 			AstTypeEx astTypeEx = parametersopt.get(i);
 			convertType(new TypeHandler() {
+				@Override
 				public void typeResolved(IType type) {
 					params[boundI] = type;
-					if(boundI == params.length-1) {
+					if (boundI == params.length - 1) {
 						result.setParameterTypes(params);
 					}
 				}
+
+				@Override
 				public String containerName() {
 					return memberDeclaration.getName();
 				}
@@ -188,10 +202,12 @@ class TypesResolver {
 				if (c.getMultiplicityListCommaSeparated() != null) {
 					if (multiplicities != null) {
 						myStatus.report(TemplatesStatus.KIND_ERROR,
-								"several multiplicity constraints found (feature `" + fd.getName() + "`)",
+								"several multiplicity constraints found (feature `"
+										+ fd.getName() + "`)",
 								new LocatedNodeAdapter(fd));
 					} else {
-						multiplicities = convertMultiplicities(c.getMultiplicityListCommaSeparated());
+						multiplicities = convertMultiplicities(
+								c.getMultiplicityListCommaSeparated());
 					}
 				} else if (c.getStringConstraint() != null) {
 					if (stringConstraints == null) {
@@ -200,21 +216,24 @@ class TypesResolver {
 					stringConstraints.add(c.getStringConstraint());
 				}
 			}
-			if (stringConstraints != null && fd.getTypeEx().getType().getKind() != AstType.AstKindKind.LSTRING) {
+			if (stringConstraints != null
+					&& fd.getTypeEx().getType().getKind() != AstType.AstKindKind.LSTRING) {
 				myStatus.report(TemplatesStatus.KIND_ERROR,
 						"only string type can have constraints (feature `" + fd.getName() + "`)",
 						new LocatedNodeAdapter(fd));
 			}
 		}
-		final TiFeature feature = new TiFeature(fd.getName(), fd.getTypeEx().getType().isReference(),
-				multiplicities == null
-						? new IMultiplicity[0]
-						: multiplicities.toArray(new IMultiplicity[multiplicities.size()]));
+		final TiFeature feature = new TiFeature(fd.getName(),
+				fd.getTypeEx().getType().isReference(), multiplicities == null
+				? new IMultiplicity[0]
+				: multiplicities.toArray(new IMultiplicity[multiplicities.size()]));
 		convertType(new TypeHandler() {
+			@Override
 			public void typeResolved(IType type) {
 				feature.setType(type);
 			}
 
+			@Override
 			public String containerName() {
 				return feature.getName();
 			}
@@ -227,11 +246,14 @@ class TypesResolver {
 		List<IMultiplicity> multiplicities = new ArrayList<>();
 		for (AstMultiplicity multiplicity : list) {
 			int loBound = multiplicity.getLo();
-			int hiBound = multiplicity.hasNoUpperBound() ? -1 : multiplicity.getHi() != null ? multiplicity
-					.getHi() : loBound;
+			int hiBound = multiplicity.hasNoUpperBound() ? -1
+					: multiplicity.getHi() != null ? multiplicity.getHi()
+					: loBound;
 			TiMultiplicity new_ = new TiMultiplicity(loBound, hiBound);
-			if(list.size() > 1 && !new_.isMultiple()) {
-				myStatus.report(TemplatesStatus.KIND_ERROR, "cannot combine 1 or 0..1 with other multiplicities", new LocatedNodeAdapter(multiplicity));
+			if (list.size() > 1 && !new_.isMultiple()) {
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"cannot combine 1 or 0..1 with other multiplicities",
+						new LocatedNodeAdapter(multiplicity));
 				return null;
 			}
 			multiplicities.add(new_);
@@ -244,23 +266,19 @@ class TypesResolver {
 			return;
 		}
 		scanRequiredClasses(defaultValue);
-		myResolveDefaultValues.add(new StageWorker() {
-			public void resolve() {
-				feature.setDefaultValue(convertExpression(defaultValue, feature.getType()));
-			}
-		});
+		myResolveDefaultValues.add(() ->
+				feature.setDefaultValue(convertExpression(defaultValue, feature.getType())));
 	}
 
 	private void scanRequiredClasses(IAstExpression expression) {
 		if (expression instanceof AstStructuralExpression) {
 			AstStructuralExpression expr = (AstStructuralExpression) expression;
 			if (expr.getExpressionList() != null) {
-				for (IAstExpression inner : expr.getExpressionList()) {
-					scanRequiredClasses(inner);
-				}
+				expr.getExpressionList().forEach(this::scanRequiredClasses);
 			}
 			if (expr.getMapEntries() != null) {
-				for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem item : expr.getMapEntries()) {
+				for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem item
+						: expr.getMapEntries()) {
 					scanRequiredClasses(item.getExpression());
 				}
 			}
@@ -281,33 +299,35 @@ class TypesResolver {
 		// FIXME handle list
 	}
 
-	private void convertType(final TypeHandler handler, final AstType type, List<AstStringConstraint> constraints, boolean async) {
+	private void convertType(final TypeHandler handler, final AstType type,
+							 List<AstStringConstraint> constraints, boolean async) {
 		if (type.getKind() == null) {
 			// reference or closure
-			if(type.isClosure()) {
+			if (type.isClosure()) {
 				final List<AstTypeEx> params = type.getParameters();
-				if(params == null) {
+				if (params == null) {
 					handler.typeResolved(new TiClosureType());
 					return;
 				}
-				StageWorker worker = new StageWorker() {
-					public void resolve() {
-						final IType[] types = new IType[params.size()];
-						for(int i = 0; i < params.size(); i++) {
-							final int boundI = i;
-							convertType(new TypeHandler() {
-								public void typeResolved(IType type) {
-									types[boundI] = type;
-								}
-								public String containerName() {
-									return "closure";
-								}
-							}, params.get(i), false);
-						}
-						handler.typeResolved(new TiClosureType(types));
+				StageWorker worker = () -> {
+					final IType[] types = new IType[params.size()];
+					for (int i = 0; i < params.size(); i++) {
+						final int boundI = i;
+						convertType(new TypeHandler() {
+							@Override
+							public void typeResolved(IType type1) {
+								types[boundI] = type1;
+							}
+
+							@Override
+							public String containerName() {
+								return "closure";
+							}
+						}, params.get(i), false);
 					}
+					handler.typeResolved(new TiClosureType(types));
 				};
-				if(async) {
+				if (async) {
 					myResolveTypes.add(worker);
 				} else {
 					worker.resolve();
@@ -322,19 +342,18 @@ class TypesResolver {
 					requiredPackages.add(targetPackage);
 				}
 				final String className = reference;
-				StageWorker worker = new StageWorker() {
-					public void resolve() {
-						TiClass tiClass = myRegistryClasses.get(className);
-						if (tiClass == null) {
-							myStatus.report(TemplatesStatus.KIND_ERROR,
-									"cannot resolve type: " + className + " in " + handler.containerName(),
-									new LocatedNodeAdapter(type));
-						} else {
-							handler.typeResolved(tiClass);
-						}
+				StageWorker worker = () -> {
+					TiClass tiClass = myRegistryClasses.get(className);
+					if (tiClass == null) {
+						myStatus.report(TemplatesStatus.KIND_ERROR,
+								"cannot resolve type: " + className + " in "
+										+ handler.containerName(),
+								new LocatedNodeAdapter(type));
+					} else {
+						handler.typeResolved(tiClass);
 					}
 				};
-				if(async) {
+				if (async) {
 					myResolveTypes.add(worker);
 				} else {
 					worker.resolve();
@@ -364,25 +383,27 @@ class TypesResolver {
 
 	private Constraint convertConstraint(AstStringConstraint c) {
 		if (c.getKind() != null) {
-			List<String> strings = new ArrayList<>();
-			for (Ast_String s : c.getStrings()) {
-				strings.add(s.getIdentifier() != null ? s.getIdentifier() : s.getScon());
-			}
-			return new TiDataType.TiConstraint(c.getKind() == AstStringConstraint.AstKindKind.LCHOICE ? ConstraintKind.CHOICE
-					: ConstraintKind.SET, strings);
+			List<String> strings = c.getStrings().stream().map(s -> s.getIdentifier() != null ? s
+					.getIdentifier() : s.getScon()).collect(Collectors.toList());
+			return new TiDataType.TiConstraint(
+					c.getKind() == AstStringConstraint.AstKindKind.LCHOICE
+							? ConstraintKind.CHOICE
+							: ConstraintKind.SET,
+					strings);
 		}
 		String constraintId = c.getIdentifier();
-		if (constraintId.equals("notempty")) {
-			return new TiDataType.TiConstraint(ConstraintKind.NOTEMPTY, null);
-		} else if (constraintId.equals("qualified")) {
-			return new TiDataType.TiConstraint(ConstraintKind.QUALIFIED_IDENTIFIER, null);
-		} else if (constraintId.equals("identifier")) {
-			return new TiDataType.TiConstraint(ConstraintKind.IDENTIFIER, null);
-		} else {
-			myStatus.report(TemplatesStatus.KIND_ERROR,
-					"unknown string constraint: " + constraintId,
-					new LocatedNodeAdapter(c));
-			return null;
+		switch (constraintId) {
+			case "notempty":
+				return new TiDataType.TiConstraint(ConstraintKind.NOTEMPTY, null);
+			case "qualified":
+				return new TiDataType.TiConstraint(ConstraintKind.QUALIFIED_IDENTIFIER, null);
+			case "identifier":
+				return new TiDataType.TiConstraint(ConstraintKind.IDENTIFIER, null);
+			default:
+				myStatus.report(TemplatesStatus.KIND_ERROR,
+						"unknown string constraint: " + constraintId,
+						new LocatedNodeAdapter(c));
+				return null;
 		}
 	}
 
@@ -398,15 +419,11 @@ class TypesResolver {
 	}
 
 	void resolve() {
-		for (StageWorker entry : myResolveTypes) {
-			entry.resolve();
-		}
+		myResolveTypes.forEach(StageWorker::resolve);
 	}
 
 	void resolveExpressions() {
-		for (StageWorker entry : myResolveDefaultValues) {
-			entry.resolve();
-		}
+		myResolveDefaultValues.forEach(StageWorker::resolve);
 	}
 
 	private Object convertExpression(IAstExpression expression, IType type) {
@@ -436,7 +453,8 @@ class TypesResolver {
 						Map<String, IAstExpression> props = null;
 						if (expr.getMapEntries() != null) {
 							props = new HashMap<>();
-							for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem i : expr.getMapEntries()) {
+							for (AstListOfIdentifierAnd2ElementsCommaSeparatedItem i
+									: expr.getMapEntries()) {
 								props.put(i.getIdentifier(), i.getExpression());
 							}
 						}
@@ -450,7 +468,8 @@ class TypesResolver {
 
 			@Override
 			public void report(IAstExpression expression, String message) {
-				myStatus.report(TemplatesStatus.KIND_ERROR, message, new LocatedNodeAdapter((IAstNode) expression));
+				myStatus.report(TemplatesStatus.KIND_ERROR, message,
+						new LocatedNodeAdapter(expression));
 			}
 		}.resolve(expression, type);
 	}
@@ -467,18 +486,22 @@ class TypesResolver {
 			this.node = node;
 		}
 
+		@Override
 		public String getResourceName() {
 			return myResource.getUri().toString();
 		}
 
+		@Override
 		public int getOffset() {
 			return node.getOffset();
 		}
 
+		@Override
 		public int getEndOffset() {
 			return node.getEndoffset();
 		}
 
+		@Override
 		public int getLine() {
 			return myTree.getSource().lineForOffset(node.getOffset());
 		}

@@ -493,12 +493,8 @@ public void setSkipComments(boolean skip) {
 
 private boolean skipAction() throws java.io.@IOException {
 	final int[] ind = new int[] { 0 };
-	org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter innerreporter = new org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter() {
-		@Override
-		public void error(String message, int line, int offset) {
+	org.textmapper.tool.parser.action.@SActionLexer.ErrorReporter innerreporter = (String message, int line, int offset) ->
 			reporter.error(message, line, offset, offset + 1);
-		}
-	};
 	org.textmapper.tool.parser.action.@SActionLexer l = new org.textmapper.tool.parser.action.@SActionLexer(innerreporter) {
 		@Override
 		protected int nextChar() throws java.io.@IOException {

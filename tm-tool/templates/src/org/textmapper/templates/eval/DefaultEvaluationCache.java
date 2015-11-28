@@ -24,10 +24,12 @@ public class DefaultEvaluationCache implements IEvaluationCache {
 
 	private final Map<CompositeKey, Object> globalCache = new HashMap<>();
 
+	@Override
 	public void cache(Object value, Object... keys) {
 		globalCache.put(new CompositeKey(keys), value);
 	}
 
+	@Override
 	public Object lookup(Object... keys) {
 		Object result = globalCache.get(new CompositeKey(keys));
 		if (result != null) {

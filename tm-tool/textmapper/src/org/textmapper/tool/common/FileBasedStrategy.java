@@ -32,6 +32,7 @@ public class FileBasedStrategy implements ProcessingStrategy {
 		this.rootFolder = rootFolder;
 	}
 
+	@Override
 	public void createFile(String name, String contents, Map<String, Object> options, ProcessingStatus status) {
 		try {
 			new GeneratedFile(rootFolder, name, contents, options).create();
@@ -40,6 +41,7 @@ public class FileBasedStrategy implements ProcessingStrategy {
 		}
 	}
 
+	@Override
 	public IResourceLoader createResourceLoader(String qualifiedName) {
 		File folder = new File(qualifiedName);
 		if (folder.isDirectory()) {

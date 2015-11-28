@@ -33,12 +33,7 @@ public class TMTextUtil {
 
 	public static String extractCopyright(TextSource source) {
 		final boolean[] hasErrors = new boolean[]{false};
-		ErrorReporter reporter = new ErrorReporter() {
-			@Override
-			public void error(String s, int line, int offset, int endoffset) {
-				hasErrors[0] = true;
-			}
-		};
+		ErrorReporter reporter = (s, line, offset, endoffset) -> hasErrors[0] = true;
 
 		try {
 			TMLexer lexer = new TMLexer(source.getStream(), reporter);

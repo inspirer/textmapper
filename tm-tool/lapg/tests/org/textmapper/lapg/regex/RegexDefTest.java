@@ -17,7 +17,6 @@ package org.textmapper.lapg.regex;
 
 import org.junit.Test;
 import org.textmapper.lapg.api.regex.*;
-import org.textmapper.lapg.regex.RegexDefLexer.ErrorReporter;
 import org.textmapper.lapg.regex.RegexDefLexer.Span;
 import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
 import org.textmapper.lapg.regex.RegexDefTree.TextSource;

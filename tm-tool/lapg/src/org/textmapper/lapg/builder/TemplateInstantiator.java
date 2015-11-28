@@ -16,7 +16,6 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.*;
-import org.textmapper.lapg.api.TemplateEnvironment.ParameterPredicate;
 import org.textmapper.lapg.api.builder.GrammarBuilder;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.util.RhsUtil;
