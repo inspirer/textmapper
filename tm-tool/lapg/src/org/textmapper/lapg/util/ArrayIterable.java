@@ -26,18 +26,22 @@ public class ArrayIterable<T> implements Iterable<T> {
 		this.reversed = reversed;
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
 			int index = reversed ? array.length - 1 : 0;
 
+			@Override
 			public boolean hasNext() {
 				return reversed ? index >= 0 : index < array.length;
 			}
 
+			@Override
 			public T next() {
 				return array[reversed ? index-- : index++];
 			}
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}

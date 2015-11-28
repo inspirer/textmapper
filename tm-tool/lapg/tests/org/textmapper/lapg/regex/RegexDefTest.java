@@ -201,16 +201,11 @@ public class RegexDefTest {
 	}
 
 	private void checkLexer(String regex, int... tokens) throws IOException {
-		RegexDefLexer lexer = new RegexDefLexer(regex, new ErrorReporter() {
-			@Override
-			public void error(String message, int offset, int endoffset) {
-				fail(message);
-			}
-		});
+		RegexDefLexer lexer = new RegexDefLexer(regex, (message, offset, endoffset) -> fail(message));
 		Span next;
-		for (int i = 0; i < tokens.length; i++) {
+		for (int token : tokens) {
 			next = lexer.next();
-			assertEquals(tokens[i], next.symbol);
+			assertEquals(token, next.symbol);
 		}
 		next = lexer.next();
 		assertEquals(Tokens.eoi, next.symbol);
@@ -290,7 +285,8 @@ public class RegexDefTest {
 			@Override
 			public String caseQuantifier(RegexQuantifier c) {
 				StringBuilder sb = new StringBuilder();
-				sb.append("quantifier {" + c.getMin() + "," + c.getMax() + "} [\n");
+				sb.append("quantifier {").append(c.getMin()).append(",")
+						.append(c.getMax()).append("} [\n");
 				String s = c.getInner().accept(this);
 				for (String line : s.split("\n")) {
 					sb.append('\t').append(line).append('\n');

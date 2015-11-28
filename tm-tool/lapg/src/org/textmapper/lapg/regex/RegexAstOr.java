@@ -42,6 +42,7 @@ class RegexAstOr extends RegexAstPart implements RegexOr {
 		include(part);
 	}
 
+	@Override
 	public Collection<RegexPart> getVariants() {
 		return Collections.<RegexPart>unmodifiableCollection(variants);
 	}

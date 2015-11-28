@@ -36,10 +36,12 @@ class RegexAstSet extends RegexAstPart implements RegexSet {
 		this.charset = charset;
 	}
 
+	@Override
 	public CharacterSet getSet() {
 		return set;
 	}
 
+	@Override
 	public Collection<RegexPart> getCharset() {
 		return Collections.<RegexPart>unmodifiableCollection(charset);
 	}

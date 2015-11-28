@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
 import org.textmapper.lapg.api.rule.RhsList;
-import org.textmapper.lapg.api.rule.RhsPart;
 import org.textmapper.lapg.api.rule.RhsSequence;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.common.FormatUtil;

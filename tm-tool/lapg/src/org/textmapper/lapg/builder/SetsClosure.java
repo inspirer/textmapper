@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Computes a transitive closure of a set of sets based on the given relations.
@@ -113,10 +114,10 @@ class SetsClosure {
 	}
 
 	public Object[] getErrorNodes() {
-		List<Object> list = new ArrayList<>();
-		for (SetNode node : nodes) {
-			if (node.isError) list.add(node.origin);
-		}
+		List<Object> list = nodes.stream()
+				.filter(node -> node.isError)
+				.map(node -> node.origin)
+				.collect(Collectors.toList());
 
 		return list.toArray();
 	}

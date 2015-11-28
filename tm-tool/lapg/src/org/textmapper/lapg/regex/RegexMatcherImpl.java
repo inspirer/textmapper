@@ -53,6 +53,7 @@ class RegexMatcherImpl implements RegexMatcher {
 		return isValid;
 	}
 
+	@Override
 	public boolean matches(String text) {
 		boolean[][] holders = new boolean[2][];
 		holders[0] = new boolean[states.length];

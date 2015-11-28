@@ -23,12 +23,7 @@ import java.util.*;
 public class LiTemplateEnvironment implements TemplateEnvironment {
 
 	public static final Comparator<TemplateParameter> TEMPLATE_PARAMETER_COMPARATOR =
-			new Comparator<TemplateParameter>() {
-				@Override
-				public int compare(TemplateParameter o1, TemplateParameter o2) {
-					return o1.getName().compareTo(o2.getName());
-				}
-			};
+			(o1, o2) -> o1.getName().compareTo(o2.getName());
 
 	private final Map<TemplateParameter, Object> values;
 	private String nonterminalSuffix;

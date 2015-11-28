@@ -21,7 +21,6 @@ import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.ast.AstType;
 import org.textmapper.lapg.api.regex.RegexParseException;
 import org.textmapper.lapg.api.regex.RegexPart;
-import org.textmapper.lapg.api.rule.RhsSymbol;
 import org.textmapper.lapg.test.TestStatus;
 
 import java.util.Collections;

@@ -32,6 +32,7 @@ class RegexAstChar extends RegexAstPart implements RegexChar {
 		this.c = c;
 	}
 
+	@Override
 	public int getChar() {
 		return c;
 	}

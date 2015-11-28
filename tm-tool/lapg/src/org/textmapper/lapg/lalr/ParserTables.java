@@ -50,6 +50,7 @@ class ParserTables implements ParserData {
 		this.final_states = final_states;
 	}
 
+	@Override
 	public int[] getRuleLength() {
 		return rlen;
 	}

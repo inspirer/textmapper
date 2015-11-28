@@ -32,18 +32,22 @@ class LexerTables implements LexerData {
 		this.change = change;
 	}
 
+	@Override
 	public int getNchars() {
 		return nchars;
 	}
 
+	@Override
 	public int[] getChar2no() {
 		return char2no;
 	}
 
+	@Override
 	public int[] getGroupset() {
 		return groupset;
 	}
 
+	@Override
 	public int[] getChange() {
 		return change;
 	}

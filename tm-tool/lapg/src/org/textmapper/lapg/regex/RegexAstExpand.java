@@ -40,6 +40,7 @@ class RegexAstExpand extends RegexAstPart implements RegexExpand {
 		sb.append('}');
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}

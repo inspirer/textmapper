@@ -382,12 +382,11 @@ public class Builder extends Lalr1 {
 			}
 			rlen[i] = e;
 		}
-		ParserTables r = new ParserTables(sym,
+		return new ParserTables(sym,
 				rules, nsyms, nterms, nstates,
 				rleft, rlen,
 				term_goto, term_from, term_to,
 				action_table, action_index, final_states);
-		return r;
 	}
 
 	public static ParserData compile(Grammar g, ProcessingStatus status) {

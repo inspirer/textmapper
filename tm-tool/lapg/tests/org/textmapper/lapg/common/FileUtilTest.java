@@ -15,13 +15,14 @@
  */
 package org.textmapper.lapg.common;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
-public class FileUtilTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class FileUtilTest {
 
 	@Test
 	public void testGetFileContent() {

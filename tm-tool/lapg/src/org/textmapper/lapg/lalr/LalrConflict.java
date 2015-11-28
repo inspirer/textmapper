@@ -37,26 +37,32 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 		this.rules = rules;
 	}
 
+	@Override
 	public int getKind() {
 		return kind;
 	}
 
+	@Override
 	public String getKindAsText() {
 		return kindtext;
 	}
 
+	@Override
 	public Input getInput() {
 		return input;
 	}
 
+	@Override
 	public Rule[] getRules() {
 		return rules;
 	}
 
+	@Override
 	public Terminal[] getSymbols() {
 		return symbols;
 	}
 
+	@Override
 	public String getText() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("input: ");
@@ -92,14 +98,17 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 			this.symbols = symbols;
 		}
 
+		@Override
 		public int getState() {
 			return state;
 		}
 
+		@Override
 		public Symbol[] getSymbols() {
 			return symbols;
 		}
 
+		@Override
 		public String getText() {
 			StringBuilder sb = new StringBuilder();
 			for (Symbol s : symbols) {
@@ -112,6 +121,7 @@ public class LalrConflict implements ParserConflict, Comparable<LalrConflict> {
 		}
 	}
 
+	@Override
 	public int compareTo(LalrConflict o) {
 		if (input.getState() != o.input.getState()) {
 			return input.getState() < o.input.getState() ? -1 : 1;

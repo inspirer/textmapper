@@ -47,6 +47,7 @@ class RegexAstList extends RegexAstPart implements RegexList {
 		include(part);
 	}
 
+	@Override
 	public Collection<RegexPart> getElements() {
 		return Collections.<RegexPart>unmodifiableCollection(elements);
 	}
@@ -55,6 +56,7 @@ class RegexAstList extends RegexAstPart implements RegexList {
 		this.inParentheses = true;
 	}
 
+	@Override
 	public boolean isParenthesized() {
 		return inParentheses;
 	}

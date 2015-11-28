@@ -30,12 +30,7 @@ import java.util.Map;
 public class RegexFacade {
 
 	public static RegexContext createContext(final Map<String, RegexPart> map) {
-		return new RegexContext() {
-			@Override
-			public RegexPart resolvePattern(String name) {
-				return map.get(name);
-			}
-		};
+		return map::get;
 	}
 
 	public static RegexPart parse(String alias, String regex) throws RegexParseException {

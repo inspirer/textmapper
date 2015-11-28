@@ -234,9 +234,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (prio != Prio.LEFT && prio != Prio.RIGHT && prio != Prio.NONASSOC) {
 			throw new IllegalArgumentException("wrong priority");
 		}
-		for (Terminal s : symbols) {
-			check(s);
-		}
+		symbols.forEach(this::check);
 		LiPrio liprio = new LiPrio(prio, symbols.toArray(new Terminal[symbols.size()]), origin);
 		priorities.add(liprio);
 		return liprio;

@@ -35,14 +35,17 @@ class RegexAstQuantifier extends RegexAstPart implements RegexQuantifier {
 		this.inner = inner;
 	}
 
+	@Override
 	public int getMin() {
 		return min;
 	}
 
+	@Override
 	public int getMax() {
 		return max;
 	}
 
+	@Override
 	public RegexAstPart getInner() {
 		return inner;
 	}

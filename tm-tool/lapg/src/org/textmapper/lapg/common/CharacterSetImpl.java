@@ -44,6 +44,7 @@ public final class CharacterSetImpl implements CharacterSet {
 		this(set, set.length, false);
 	}
 
+	@Override
 	public boolean contains(int c) {
 		int sind = binarySearch(set, 0, set.length, c);
 		if (sind < 0) {
@@ -55,14 +56,17 @@ public final class CharacterSetImpl implements CharacterSet {
 		}
 	}
 
+	@Override
 	public boolean isEmpty() {
 		return set.length == 0 && !inverted;
 	}
 
+	@Override
 	public boolean isInverted() {
 		return inverted;
 	}
 
+	@Override
 	public int[] toArray() {
 		if (inverted) {
 			throw new UnsupportedOperationException();
@@ -70,15 +74,18 @@ public final class CharacterSetImpl implements CharacterSet {
 		return Arrays.copyOf(set, set.length);
 	}
 
+	@Override
 	public Iterator<int[]> iterator() {
 		return new Iterator<int[]>() {
 			int[] token = new int[2];
 			int index = 0;
 
+			@Override
 			public boolean hasNext() {
 				return index < set.length;
 			}
 
+			@Override
 			public int[] next() {
 				if (index < set.length) {
 					token[0] = set[index++];
@@ -88,6 +95,7 @@ public final class CharacterSetImpl implements CharacterSet {
 				return null;
 			}
 
+			@Override
 			public void remove() {
 				throw new UnsupportedOperationException();
 			}

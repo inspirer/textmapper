@@ -164,7 +164,7 @@ abstract class ContextFree {
 			if (i == item) {
 				sb.append(" _");
 			}
-			sb.append(" " + sym[rright[i]].getName());
+			sb.append(" ").append(sym[rright[i]].getName());
 		}
 		if (i == item) {
 			sb.append(" _");

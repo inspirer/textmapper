@@ -25,6 +25,7 @@ import org.textmapper.lapg.util.ArrayIterable;
 import org.textmapper.lapg.util.RhsUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 class LiSetResolver {
 	private static final Descriptor SENTINEL = new Descriptor(-1, SetsClosure.EMPTY_ARRAY);
@@ -134,9 +135,10 @@ class LiSetResolver {
 			for (RhsSet set : index.topLevelSets()) {
 				traverseProblemSets(set, problemSets, errors);
 			}
-			for (RhsPart error : errors) {
-				problems.add(new LiProblem(error, "Cannot resolve set, since it recursively depends on itself."));
-			}
+			problems.addAll(errors.stream()
+					.map(error -> new LiProblem(error,
+							"Cannot resolve set, since it recursively depends on itself."))
+					.collect(Collectors.toList()));
 			return;
 		}
 

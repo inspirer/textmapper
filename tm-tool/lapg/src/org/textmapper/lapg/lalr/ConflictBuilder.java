@@ -24,6 +24,7 @@ import org.textmapper.lapg.common.SymbolUtil;
 import org.textmapper.lapg.lalr.LalrConflict.InputImpl;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ConflictBuilder {
 
@@ -61,7 +62,8 @@ public class ConflictBuilder {
 		nextconfl[termSym].addReduce(status, rule);
 	}
 
-	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input, short[] next, int[] classterm) {
+	public List<LalrConflict> getMergedConflicts(int state, Symbol[] input,
+												 short[] next, int[] classterm) {
 		if (conflicts.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -88,12 +90,11 @@ public class ConflictBuilder {
 		Input inp = new InputImpl(state, input);
 		Collection<ConflictData> values = map.values();
 
-		List<LalrConflict> result = new ArrayList<>(values.size());
-		for (ConflictData data : values) {
-			result.add(new LalrConflict(data.getKind(), data.getKindAsText(), inp, data.getSymbols(), data.getRules()));
-		}
-		Collections.sort(result);
-		return result;
+		return values.stream()
+				.map(data -> new LalrConflict(data.getKind(), data.getKindAsText(), inp,
+						data.getSymbols(), data.getRules()))
+				.sorted()
+				.collect(Collectors.toList());
 	}
 
 	public static class ConflictData {
@@ -141,7 +142,9 @@ public class ConflictBuilder {
 		public int getKind() {
 			if (status == CONFLICT) {
 				if (isSoft) {
-					return canShift ? ParserConflict.SHIFT_REDUCE_SOFT : ParserConflict.REDUCE_REDUCE_SOFT;
+					return canShift
+							? ParserConflict.SHIFT_REDUCE_SOFT
+							: ParserConflict.REDUCE_REDUCE_SOFT;
 				} else {
 					return canShift ? ParserConflict.SHIFT_REDUCE : ParserConflict.REDUCE_REDUCE;
 				}
@@ -196,7 +199,7 @@ public class ConflictBuilder {
 				int result = 1;
 				result = prime * result + (canShift ? 1231 : 1237);
 				result = prime * result + (isSoft ? 1231 : 1237);
-				result = prime * result + ((rules == null) ? 0 : rules.hashCode());
+				result = prime * result + rules.hashCode();
 				result = prime * result + status;
 				return result;
 			}

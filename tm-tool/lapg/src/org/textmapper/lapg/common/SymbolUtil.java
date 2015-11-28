@@ -27,10 +27,7 @@ public class SymbolUtil {
 	private SymbolUtil() {
 	}
 
-	public static final Comparator<Symbol> COMPARATOR = new Comparator<Symbol>() {
-		@Override
-		public int compare(Symbol o1, Symbol o2) {
-			return o1.getIndex() < o2.getIndex() ? -1 : (o1.getIndex() == o2.getIndex() ? 0 : 1);
-		}
-	};
+	public static final Comparator<Symbol> COMPARATOR = (o1, o2) ->
+			o1.getIndex() < o2.getIndex() ? -1
+					: (o1.getIndex() == o2.getIndex() ? 0 : 1);
 }

@@ -233,12 +233,7 @@ class TemplateInstantiator {
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove unused parameters.
-		env = env.filter(new ParameterPredicate() {
-			@Override
-			public boolean include(TemplateParameter parameter) {
-				return acceptedParameters.get(paramIndex.get(parameter));
-			}
-		});
+		env = env.filter(parameter -> acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;
 
@@ -338,11 +333,7 @@ class TemplateInstantiator {
 				nonterm.setUnused();
 			}
 		}
-		for (TemplateInstance i : instances.values()) {
-			i.allocate();
-		}
-		for (TemplateInstance i : instances.values()) {
-			i.updateNameHint();
-		}
+		instances.values().forEach(TemplateInstance::allocate);
+		instances.values().forEach(TemplateInstance::updateNameHint);
 	}
 }
