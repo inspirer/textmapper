@@ -47,12 +47,14 @@ ${end}
 ${template parse-}
 ${foreach inp in syntax.input}
 	public static ${opts.prefix}Tree<${call typeofsym for inp.target}> ${if syntax.input.length > 1}parse${util.toFirstUpper(inp.target.id)}${else}parse${end}(${call parseParameters for inp}) {
-		final java.util.@List<${opts.prefix}Problem> list = new java.util.@ArrayList<${opts.prefix}Problem>();
-		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
-			public void error(String message${self->util.location(', int ', '', '')}) {
+		final java.util.@List<${opts.prefix}Problem> list = new java.util.@ArrayList<${if !opts.java8}${opts.prefix}Problem${end}>();
+		${call java.package}.${opts.prefix}Lexer.@ErrorReporter reporter = ${if opts.java8}(message${self->util.location(', ', '', '')}) ->${else}new ${call java.package}.${opts.prefix}Lexer.@ErrorReporter() {
+			public void error(String message${self->util.location(', int ', '', '')}) {${end}
 				list.add(new ${opts.prefix}Problem(KIND_ERROR, message, ${self->util.location('', ', ', '')}null));
+${if !opts.java8-}
 			}
 		};
+${end-}
 
 		try {
 ${util.shiftRight(self->createLexer(),3)-}
@@ -60,13 +62,13 @@ ${util.shiftRight(self->createLexer(),3)-}
 ${util.shiftRight(self->createParser(),3)-}
 ${util.shiftRight(self->parseStatements(),3)-}
 
-			return new ${opts.prefix}Tree<${call typeofsym for inp.target}>(source, result, list);
+			return new ${opts.prefix}Tree<${if !opts.java8}${call typeofsym for inp.target}${end}>(source, result, list);
 		} catch (${call java.package}.${opts.prefix}Parser.@ParseException ex) {
 			/* not parsed */
 		} catch (java.io.@IOException ex) {
 			list.add(new ${opts.prefix}Problem(KIND_FATAL, "I/O problem: " + ex.getMessage(), ${foreach l in self->util.locationList()}0, ${end}ex));
 		}
-		return new ${opts.prefix}Tree<${call typeofsym for inp.target}>(source, null, list);
+		return new ${opts.prefix}Tree<${if !opts.java8}${call typeofsym for inp.target}${end}>(source, null, list);
 	}
 ${end}
 ${end}

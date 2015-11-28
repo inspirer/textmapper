@@ -50,12 +50,8 @@ public class GenericParseContext {
 
 	public Result parse(TextSource source, int inputIndex) {
 		final List<ParseProblem> list = new ArrayList<>();
-		ErrorReporter reporter = new ErrorReporter() {
-			@Override
-			public void error(String s, int line, int offset, int endoffset) {
+		ErrorReporter reporter = (s, line, offset, endoffset) ->
 				list.add(new ParseProblem(KIND_ERROR, offset, endoffset, s, null));
-			}
-		};
 
 		try {
 			GenericLexer lexer = createLexer(source, reporter);

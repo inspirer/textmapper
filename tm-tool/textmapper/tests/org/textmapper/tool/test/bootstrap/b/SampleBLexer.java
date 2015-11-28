@@ -271,7 +271,7 @@ public class SampleBLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
 		subTokensOfIdentifier.put("class", 5);
 		subTokensOfIdentifier.put("extends", 6);
@@ -320,7 +320,7 @@ public class SampleBLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfDecimal = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfDecimal = new HashMap<>();
 	static {
 		subTokensOfDecimal.put("11", 13);
 	}

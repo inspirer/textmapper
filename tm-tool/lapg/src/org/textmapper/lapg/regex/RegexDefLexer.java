@@ -411,7 +411,7 @@ public class RegexDefLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfExpand = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfExpand = new HashMap<>();
 	static {
 		subTokensOfExpand.put("{eoi}", 32);
 	}

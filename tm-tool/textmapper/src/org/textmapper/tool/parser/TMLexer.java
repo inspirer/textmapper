@@ -838,7 +838,7 @@ public class TMLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfID = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfID = new HashMap<>();
 	static {
 		subTokensOfID.put("true", 38);
 		subTokensOfID.put("false", 39);

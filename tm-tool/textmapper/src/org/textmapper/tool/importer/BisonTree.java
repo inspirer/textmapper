@@ -55,12 +55,9 @@ public class BisonTree<T> {
 
 
 	public static BisonTree<Object> parse(TextSource source) {
-		final List<BisonProblem> list = new ArrayList<BisonProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<BisonProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new BisonProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			BisonLexer lexer = new BisonLexer(source.getContents(), reporter);
@@ -69,13 +66,13 @@ public class BisonTree<T> {
 			BisonParser parser = new BisonParser(reporter);
 			Object result = parser.parse(lexer);
 
-			return new BisonTree<Object>(source, result, list);
+			return new BisonTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new BisonProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new BisonTree<Object>(source, null, list);
+		return new BisonTree<>(source, null, list);
 	}
 
 

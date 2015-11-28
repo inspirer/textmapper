@@ -17,6 +17,7 @@ class Options extends common.Options {
 	bool genast = false;
 	bool genastdef = false;
 	bool genmain = false;
+	bool java8 = true;
 
 	string astprefix = "Ast";
 	string astsubpackage[qualified] = "ast";

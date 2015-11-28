@@ -57,12 +57,9 @@ public class SampleATree<T> {
 
 
 	public static SampleATree<IAstClassdefNoEoi> parseClassdef_NoEoi(TextSource source) {
-		final List<SampleAProblem> list = new ArrayList<SampleAProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+		final List<SampleAProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, column, endline, endoffset, endcolumn) ->
 				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
-			}
-		};
 
 		try {
 			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
@@ -71,22 +68,19 @@ public class SampleATree<T> {
 			SampleAParser parser = new SampleAParser(reporter);
 			IAstClassdefNoEoi result = parser.parseClassdef_NoEoi(lexer);
 
-			return new SampleATree<IAstClassdefNoEoi>(source, result, list);
+			return new SampleATree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new SampleAProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, 0, 0, 0, ex));
 		}
-		return new SampleATree<IAstClassdefNoEoi>(source, null, list);
+		return new SampleATree<>(source, null, list);
 	}
 
 	public static SampleATree<AstClassdef> parseClassdef(TextSource source) {
-		final List<SampleAProblem> list = new ArrayList<SampleAProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int column, int endline, int endoffset, int endcolumn) {
+		final List<SampleAProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, column, endline, endoffset, endcolumn) ->
 				list.add(new SampleAProblem(KIND_ERROR, message, line, offset, column, endline, endoffset, endcolumn, null));
-			}
-		};
 
 		try {
 			SampleALexer lexer = new SampleALexer(source.getStream(), reporter);
@@ -95,13 +89,13 @@ public class SampleATree<T> {
 			SampleAParser parser = new SampleAParser(reporter);
 			AstClassdef result = parser.parseClassdef(lexer);
 
-			return new SampleATree<AstClassdef>(source, result, list);
+			return new SampleATree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new SampleAProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, 0, 0, 0, ex));
 		}
-		return new SampleATree<AstClassdef>(source, null, list);
+		return new SampleATree<>(source, null, list);
 	}
 
 

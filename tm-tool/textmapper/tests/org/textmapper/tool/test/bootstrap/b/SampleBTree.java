@@ -56,12 +56,9 @@ public class SampleBTree<T> {
 
 
 	public static SampleBTree<IAstClassdefNoEoi> parse(TextSource source) {
-		final List<SampleBProblem> list = new ArrayList<SampleBProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int offset, int endoffset) {
+		final List<SampleBProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, offset, endoffset) ->
 				list.add(new SampleBProblem(KIND_ERROR, message, offset, endoffset, null));
-			}
-		};
 
 		try {
 			SampleBLexer lexer = new SampleBLexer(source.getContents(), reporter);
@@ -70,13 +67,13 @@ public class SampleBTree<T> {
 			SampleBParser parser = new SampleBParser(reporter);
 			IAstClassdefNoEoi result = parser.parse(lexer);
 
-			return new SampleBTree<IAstClassdefNoEoi>(source, result, list);
+			return new SampleBTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new SampleBProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, ex));
 		}
-		return new SampleBTree<IAstClassdefNoEoi>(source, null, list);
+		return new SampleBTree<>(source, null, list);
 	}
 
 

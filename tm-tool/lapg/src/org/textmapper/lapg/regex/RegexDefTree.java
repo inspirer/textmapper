@@ -55,12 +55,9 @@ public class RegexDefTree<T> {
 
 
 	public static RegexDefTree<RegexAstPart> parse(TextSource source) {
-		final List<RegexDefProblem> list = new ArrayList<RegexDefProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int offset, int endoffset) {
+		final List<RegexDefProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, offset, endoffset) ->
 				list.add(new RegexDefProblem(KIND_ERROR, message, offset, endoffset, null));
-			}
-		};
 
 		try {
 			RegexDefLexer lexer = new RegexDefLexer(source.getContents(), reporter);
@@ -70,13 +67,13 @@ public class RegexDefTree<T> {
 			parser.source = source;
 			RegexAstPart result = parser.parse(lexer);
 
-			return new RegexDefTree<RegexAstPart>(source, result, list);
+			return new RegexDefTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new RegexDefProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, ex));
 		}
-		return new RegexDefTree<RegexAstPart>(source, null, list);
+		return new RegexDefTree<>(source, null, list);
 	}
 
 

@@ -57,12 +57,9 @@ public class TemplatesTree<T> {
 
 
 	public static TemplatesTree<List<IBundleEntity>> parseInput(TextSource source, String templatePackage) {
-		final List<TemplatesProblem> list = new ArrayList<TemplatesProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<TemplatesProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TemplatesProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
@@ -73,22 +70,19 @@ public class TemplatesTree<T> {
 			parser.templatePackage = templatePackage;
 			List<IBundleEntity> result = parser.parseInput(lexer);
 
-			return new TemplatesTree<List<IBundleEntity>>(source, result, list);
+			return new TemplatesTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TemplatesProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new TemplatesTree<List<IBundleEntity>>(source, null, list);
+		return new TemplatesTree<>(source, null, list);
 	}
 
 	public static TemplatesTree<TemplateNode> parseBody(TextSource source, String templatePackage) {
-		final List<TemplatesProblem> list = new ArrayList<TemplatesProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<TemplatesProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TemplatesProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			TemplatesLexer lexer = new TemplatesLexer(source.getStream(), reporter);
@@ -99,13 +93,13 @@ public class TemplatesTree<T> {
 			parser.templatePackage = templatePackage;
 			TemplateNode result = parser.parseBody(lexer);
 
-			return new TemplatesTree<TemplateNode>(source, result, list);
+			return new TemplatesTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TemplatesProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new TemplatesTree<TemplateNode>(source, null, list);
+		return new TemplatesTree<>(source, null, list);
 	}
 
 

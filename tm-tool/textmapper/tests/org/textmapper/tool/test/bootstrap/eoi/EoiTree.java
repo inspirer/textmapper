@@ -40,12 +40,9 @@ public class EoiTree<T> {
 
 
 	public static EoiTree<Object> parse(TextSource source) {
-		final List<EoiProblem> list = new ArrayList<EoiProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<EoiProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new EoiProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			EoiLexer lexer = new EoiLexer(source.getStream(), reporter);
@@ -54,13 +51,13 @@ public class EoiTree<T> {
 			EoiParser parser = new EoiParser(reporter);
 			Object result = parser.parse(lexer);
 
-			return new EoiTree<Object>(source, result, list);
+			return new EoiTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new EoiProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new EoiTree<Object>(source, null, list);
+		return new EoiTree<>(source, null, list);
 	}
 
 

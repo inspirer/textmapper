@@ -362,7 +362,7 @@ public class TypesLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
 		subTokensOfIdentifier.put("class", 20);
 		subTokensOfIdentifier.put("extends", 21);

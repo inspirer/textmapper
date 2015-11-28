@@ -56,12 +56,9 @@ public class TMTree<T> {
 
 
 	public static TMTree<TmaInput> parseInput(TextSource source) {
-		final List<TMProblem> list = new ArrayList<TMProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<TMProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			TMLexer lexer = new TMLexer(source.getStream(), reporter);
@@ -74,22 +71,19 @@ public class TMTree<T> {
 				result.setTemplatesStart(lexer.getTemplatesStart());
 			}
 
-			return new TMTree<TmaInput>(source, result, list);
+			return new TMTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TMProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new TMTree<TmaInput>(source, null, list);
+		return new TMTree<>(source, null, list);
 	}
 
 	public static TMTree<ITmaExpression> parseExpression(TextSource source) {
-		final List<TMProblem> list = new ArrayList<TMProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<TMProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TMProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			TMLexer lexer = new TMLexer(source.getStream(), reporter);
@@ -99,13 +93,13 @@ public class TMTree<T> {
 			parser.source = source;
 			ITmaExpression result = parser.parseExpression(lexer);
 
-			return new TMTree<ITmaExpression>(source, result, list);
+			return new TMTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TMProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new TMTree<ITmaExpression>(source, null, list);
+		return new TMTree<>(source, null, list);
 	}
 
 

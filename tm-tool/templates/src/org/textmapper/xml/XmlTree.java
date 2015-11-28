@@ -56,12 +56,9 @@ public class XmlTree<T> {
 
 
 	public static XmlTree<XmlNode> parse(TextSource source) {
-		final List<XmlProblem> list = new ArrayList<XmlProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<XmlProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new XmlProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			XmlLexer lexer = new XmlLexer(source.getStream(), reporter);
@@ -71,13 +68,13 @@ public class XmlTree<T> {
 			parser.source = source;
 			XmlNode result = parser.parse(lexer);
 
-			return new XmlTree<XmlNode>(source, result, list);
+			return new XmlTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new XmlProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new XmlTree<XmlNode>(source, null, list);
+		return new XmlTree<>(source, null, list);
 	}
 
 

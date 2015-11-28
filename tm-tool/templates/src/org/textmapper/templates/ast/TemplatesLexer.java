@@ -432,7 +432,7 @@ public class TemplatesLexer {
 		return !(spaceToken);
 	}
 
-	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<String,Integer>();
+	private static Map<String,Integer> subTokensOfIdentifier = new HashMap<>();
 	static {
 		subTokensOfIdentifier.put("call", 9);
 		subTokensOfIdentifier.put("cached", 10);

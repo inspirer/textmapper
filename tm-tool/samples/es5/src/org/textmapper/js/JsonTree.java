@@ -40,12 +40,9 @@ public class JsonTree<T> {
 
 
 	public static JsonTree<Object> parse(TextSource source) {
-		final List<JsonProblem> list = new ArrayList<JsonProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<JsonProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new JsonProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			JsonLexer lexer = new JsonLexer(source.getStream(), reporter);
@@ -54,13 +51,13 @@ public class JsonTree<T> {
 			JsonParser parser = new JsonParser(reporter);
 			Object result = parser.parse(lexer);
 
-			return new JsonTree<Object>(source, result, list);
+			return new JsonTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new JsonProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new JsonTree<Object>(source, null, list);
+		return new JsonTree<>(source, null, list);
 	}
 
 

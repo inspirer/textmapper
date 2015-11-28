@@ -297,7 +297,7 @@ ${end-}
 ${foreach classRule in self->classRules()-}
 ${if classRule->classHasInstances()-}
 
-	private static java.util.@Map<String,Integer> subTokensOf${classRule->classRuleName()} = new java.util.@HashMap<String,Integer>();
+	private static java.util.@Map<String,Integer> subTokensOf${classRule->classRuleName()} = new java.util.@HashMap<${if !opts.java8}String,Integer${end}>();
 	static {
 ${foreach instance in classRule->classInstances()-}
 		subTokensOf${classRule->classRuleName()}.put("${util.escape(instance.regexp.constantValue)}", ${instance.index});

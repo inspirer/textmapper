@@ -56,12 +56,9 @@ public class TypesTree<T> {
 
 
 	public static TypesTree<AstInput> parse(TextSource source) {
-		final List<TypesProblem> list = new ArrayList<TypesProblem>();
-		ErrorReporter reporter = new ErrorReporter() {
-			public void error(String message, int line, int offset, int endoffset) {
+		final List<TypesProblem> list = new ArrayList<>();
+		ErrorReporter reporter = (message, line, offset, endoffset) ->
 				list.add(new TypesProblem(KIND_ERROR, message, line, offset, endoffset, null));
-			}
-		};
 
 		try {
 			TypesLexer lexer = new TypesLexer(source.getStream(), reporter);
@@ -70,13 +67,13 @@ public class TypesTree<T> {
 			TypesParser parser = new TypesParser(reporter);
 			AstInput result = parser.parse(lexer);
 
-			return new TypesTree<AstInput>(source, result, list);
+			return new TypesTree<>(source, result, list);
 		} catch (ParseException ex) {
 			/* not parsed */
 		} catch (IOException ex) {
 			list.add(new TypesProblem(KIND_FATAL, "I/O problem: " + ex.getMessage(), 0, 0, 0, ex));
 		}
-		return new TypesTree<AstInput>(source, null, list);
+		return new TypesTree<>(source, null, list);
 	}
 
 
