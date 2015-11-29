@@ -17,7 +17,7 @@ package org.textmapper.tool.test.common;
 
 import org.junit.Test;
 import org.textmapper.tool.gen.TemplateStaticMethods;
-import org.textmapper.tool.test.gen.JavaTemplateRoutines;
+import org.textmapper.tool.gen.JavaTemplateRoutines;
 
 import java.util.Arrays;
 import java.util.List;
