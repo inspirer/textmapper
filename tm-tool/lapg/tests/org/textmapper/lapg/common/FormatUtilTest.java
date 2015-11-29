@@ -19,9 +19,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * evgeny, 5/22/13
- */
 public class FormatUtilTest {
 	@Test
 	public void testToCamelCase() throws Exception {
@@ -36,5 +33,20 @@ public class FormatUtilTest {
 		assertEquals("AAA_BBB_CCC", FormatUtil.toUpperWithUnderscores("aaa_bbb_ccc_"));
 		assertEquals("AAA_BBB_CCC", FormatUtil.toUpperWithUnderscores("AaaBbbCcc_"));
 		assertEquals("AAA_BBB_CCC", FormatUtil.toUpperWithUnderscores("_Aaa_bbbCcc_"));
+	}
+
+	@Test
+	public void testEscape() throws Exception {
+		assertEquals("\\\'", FormatUtil.escape("'"));
+		assertEquals("\\\"", FormatUtil.escape("\""));
+		assertEquals("\\\\", FormatUtil.escape("\\"));
+		assertEquals("\\uffff", FormatUtil.escape("\uFFFF"));
+		assertEquals("\\u0100", FormatUtil.escape("\u0100"));
+		assertEquals("\\xff", FormatUtil.escape("\u00FF"));
+		assertEquals("\\x08", FormatUtil.escape("\u0008"));
+		assertEquals("\\t", FormatUtil.escape("\u0009"));
+		assertEquals("\\x00", FormatUtil.escape("\u0000"));
+		assertEquals("\\f\\n\\r\\t", FormatUtil.escape("\f\n\r\t"));
+		assertEquals(" abc", FormatUtil.escape(" abc"));
 	}
 }

@@ -23,17 +23,6 @@ public class FormatUtil {
 	private FormatUtil() {
 	}
 
-	public static void appendEscaped(StringBuilder sb, char c) {
-		String sym = Integer.toString(c, 16);
-		boolean isShort = sym.length() <= 2;
-		sb.append(isShort ? "\\x" : "\\u");
-		int len = isShort ? 2 : 4;
-		if (sym.length() < len) {
-			sb.append("0000".substring(sym.length() + (4 - len)));
-		}
-		sb.append(sym);
-	}
-
 	public static String asHex(int i, int width) {
 		String s = Integer.toHexString(i);
 		if (s.length() >= width) {
@@ -60,17 +49,15 @@ public class FormatUtil {
 		return sb.toString();
 	}
 
-	public static boolean isIdentifier(String s) {
-		if (s == null || s.length() == 0) {
-			return false;
-		}
-		char[] c = s.toCharArray();
-		for (int i = 0; i < c.length; i++) {
-			if (!(
-					c[i] >= 'a' && c[i] <= 'z' ||
-							c[i] >= 'A' && c[i] <= 'Z' ||
-							c[i] == '_' ||
-							i > 0 && c[i] >= '0' && c[i] <= '9')) {
+	public static boolean isIdentifier(CharSequence s) {
+		if (s == null || s.length() == 0) return false;
+
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if (!(c >= 'a' && c <= 'z'
+					|| c >= 'A' && c <= 'Z'
+					|| c == '_'
+					|| i > 0 && c >= '0' && c <= '9')) {
 				return false;
 			}
 		}
@@ -80,11 +67,13 @@ public class FormatUtil {
 	public static String toIdentifier(String s) {
 		StringBuilder res = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
-			int c = s.charAt(i);
-			if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_' || c >= '0' && c <= '9' && res.length() > 0) {
-				res.append((char) c);
+			char c = s.charAt(i);
+			if (c >= 'a' && c <= 'z'
+					|| c >= 'A' && c <= 'Z' || c == '_'
+					|| c >= '0' && c <= '9' && res.length() > 0) {
+				res.append(c);
 			} else {
-				res.append(getCharacterName((char) c));
+				res.append(getCharacterName(c));
 			}
 		}
 
@@ -143,62 +132,71 @@ public class FormatUtil {
 		return name;
 	}
 
-	private static Map<Character, String> charName = buildCharactersMap();
+	private static Map<Character, String> charName = new HashMap<>();
 
-	private static Map<Character, String> buildCharactersMap() {
-		Map<Character, String> map = new HashMap<>();
-		map.put('\t', "tab");
-		map.put('\n', "lf");
-		map.put('\r', "cr");
+	static {
+		charName.put('\t', "tab");
+		charName.put('\n', "lf");
+		charName.put('\r', "cr");
 
 		// 0x20
-		map.put(' ', "space");
-		map.put('!', "exclamation");
-		map.put('"', "quote");
-		map.put('#', "sharp");
-		map.put('$', "dollar");
-		map.put('%', "percent");
-		map.put('&', "ampersand");
-		map.put('\'', "apostrophe");
-		map.put('(', "lparen");
-		map.put(')', "rparen");
-		map.put('*', "mult");
-		map.put('+', "plus");
-		map.put(',', "comma");
-		map.put('-', "minus");
-		map.put('.', "dot");
-		map.put('/', "slash");
+		charName.put(' ', "space");
+		charName.put('!', "exclamation");
+		charName.put('"', "quote");
+		charName.put('#', "sharp");
+		charName.put('$', "dollar");
+		charName.put('%', "percent");
+		charName.put('&', "ampersand");
+		charName.put('\'', "apostrophe");
+		charName.put('(', "lparen");
+		charName.put(')', "rparen");
+		charName.put('*', "mult");
+		charName.put('+', "plus");
+		charName.put(',', "comma");
+		charName.put('-', "minus");
+		charName.put('.', "dot");
+		charName.put('/', "slash");
 
 		// 0x3A
-		map.put(':', "colon");
-		map.put(';', "semicolon");
-		map.put('<', "less");
-		map.put('=', "equal");
-		map.put('>', "greater");
-		map.put('?', "questionmark");
-		map.put('@', "atsign");
+		charName.put(':', "colon");
+		charName.put(';', "semicolon");
+		charName.put('<', "less");
+		charName.put('=', "equal");
+		charName.put('>', "greater");
+		charName.put('?', "questionmark");
+		charName.put('@', "atsign");
 
 		// 0x5B
-		map.put('[', "lsquare");
-		map.put('\\', "backslash");
-		map.put(']', "rsquare");
-		map.put('^', "xor");
+		charName.put('[', "lsquare");
+		charName.put('\\', "backslash");
+		charName.put(']', "rsquare");
+		charName.put('^', "xor");
 
 		// 0x60
-		map.put('`', "graveaccent");
+		charName.put('`', "graveaccent");
 
 		// 0x7B
-		map.put('{', "lcurly");
-		map.put('|', "or");
-		map.put('}', "rcurly");
-		map.put('~', "tilde");
+		charName.put('{', "lcurly");
+		charName.put('|', "or");
+		charName.put('}', "rcurly");
+		charName.put('~', "tilde");
+	}
 
-		return map;
+	private static void appendEscaped(StringBuilder sb, char c) {
+		String sym = Integer.toString(c, 16);
+		boolean isShort = c <= 0xff;
+		sb.append(isShort ? "\\x" : "\\u");
+		int len = isShort ? 2 : 4;
+		if (sym.length() < len) {
+			sb.append("0000".substring(sym.length() + (4 - len)));
+		}
+		sb.append(sym);
 	}
 
 	public static String escape(String s) {
 		StringBuilder sb = new StringBuilder();
-		for (char c : s.toCharArray()) {
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
 			switch (c) {
 				case '"':
 				case '\'':
