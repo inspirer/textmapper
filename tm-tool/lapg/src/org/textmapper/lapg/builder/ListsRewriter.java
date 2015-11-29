@@ -115,7 +115,8 @@ public class ListsRewriter {
 		for (RhsPart rule : def.getParts()) {
 			if (rule instanceof RhsSequence) {
 				RhsPart[] ruleSeq = ((RhsSequence) rule).getParts();
-				RhsPart p = ruleSeq.length > 0 ? ruleSeq[rightRecursive ? ruleSeq.length - 1 : 0] : null;
+				RhsPart p = ruleSeq.length > 0
+						? ruleSeq[rightRecursive ? ruleSeq.length - 1 : 0] : null;
 				if (p instanceof RhsSymbol && ((RhsSymbol) p).getTarget() == list) {
 					listRules.add((LiRhsSequence) rule);
 					continue;
@@ -135,7 +136,8 @@ public class ListsRewriter {
 		List<LiRhsPart> elements = extractListElements(listRules, skipParts, rightRecursive);
 
 		final LiRhsSequence element = asSequence(merge(elements, MergeStrategy.CHOICE));
-		LiRhsSequence customInitialElement = asSequence(merge(initialElements, MergeStrategy.CHOICE));
+		LiRhsSequence customInitialElement =
+				asSequence(merge(initialElements, MergeStrategy.CHOICE));
 		LiRhsSequence rewritten = null;
 		if (customInitialElement != null && element.structurallyEquals(customInitialElement)) {
 			rewritten = customInitialElement;
@@ -178,8 +180,8 @@ public class ListsRewriter {
 		}
 	}
 
-	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules, int skipParts,
-													   boolean rightRecursive) {
+	private static List<LiRhsPart> extractListElements(List<LiRhsSequence> listRules,
+													   int skipParts, boolean rightRecursive) {
 		List<LiRhsPart> result = new ArrayList<>();
 
 		for (LiRhsSequence part : listRules) {
@@ -189,7 +191,8 @@ public class ListsRewriter {
 			} else {
 				LiRhsPart[] newArr = new LiRhsPart[ruleSeq.length - skipParts];
 				//noinspection SuspiciousSystemArraycopy
-				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts, newArr, 0, newArr.length);
+				System.arraycopy(ruleSeq, rightRecursive ? 0 : skipParts,
+						newArr, 0, newArr.length);
 				result.add(new LiRhsSequence(null, newArr, true, part));
 			}
 		}
@@ -197,7 +200,8 @@ public class ListsRewriter {
 		return result;
 	}
 
-	private static List<LiRhsSymbol> getCommonSeparator(Collection<LiRhsSequence> listRules, boolean rightRecursive) {
+	private static List<LiRhsSymbol> getCommonSeparator(Collection<LiRhsSequence> listRules,
+														boolean rightRecursive) {
 		if (listRules.isEmpty()) return null;
 
 		int maxLen = Integer.MAX_VALUE;

@@ -37,8 +37,8 @@ class TemplateInstantiator {
 	private final Map<InstanceKey, TemplateInstance> instances = new LinkedHashMap<>();
 	private final Queue<TemplateInstance> queue = new LinkedList<>();
 
-	public TemplateInstantiator(GrammarBuilder builder, LiTemplateParameter[] params, LiSymbol[] symbols,
-								int terminals, List<Problem> problems) {
+	public TemplateInstantiator(GrammarBuilder builder, LiTemplateParameter[] params,
+								LiSymbol[] symbols, int terminals, List<Problem> problems) {
 		this.builder = builder;
 		this.params = params;
 		this.symbols = symbols;
@@ -228,7 +228,8 @@ class TemplateInstantiator {
 		}
 	}
 
-	private TemplateEnvironment applyArguments(TemplateEnvironment env, Nonterminal target, RhsArgument[] args) {
+	private TemplateEnvironment applyArguments(TemplateEnvironment env,
+											   Nonterminal target, RhsArgument[] args) {
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove unused parameters.
@@ -240,7 +241,8 @@ class TemplateInstantiator {
 		for (RhsArgument arg : args) {
 			int index = paramIndex.get(arg.getParameter());
 			if (!acceptedParameters.get(index)) {
-				problems.add(new LiProblem(arg, arg.getParameter().getName() + " is not used in " + target.getName()));
+				problems.add(new LiProblem(arg, arg.getParameter().getName()
+						+ " is not used in " + target.getName()));
 				continue;
 			}
 			env = env.extend(arg.getParameter(), arg.getValue());
@@ -248,7 +250,8 @@ class TemplateInstantiator {
 		return env;
 	}
 
-	private void instantiateRef(TemplateInstance context, TemplatedSymbolRef ref, Symbol target, RhsArgument[] args) {
+	private void instantiateRef(TemplateInstance context, TemplatedSymbolRef ref,
+								Symbol target, RhsArgument[] args) {
 		if (!(target instanceof Nonterminal)) {
 			if (!target.isTerm()) {
 				throw new UnsupportedOperationException();
@@ -272,7 +275,8 @@ class TemplateInstantiator {
 		if (p instanceof RhsSymbol) {
 			Symbol target = ((RhsSymbol) p).getTarget();
 			if (target == null) {
-				Object value = context.getEnvironment().getValue(((RhsSymbol) p).getTemplateTarget());
+				Object value = context.getEnvironment().getValue(
+						((RhsSymbol) p).getTemplateTarget());
 				if (!(value instanceof Symbol)) {
 					// TODO report instantiation trace
 					problems.add(new LiProblem(p, "Template parameter is unset."));
@@ -284,9 +288,11 @@ class TemplateInstantiator {
 			return;
 		}
 		if (p instanceof RhsCast) {
-			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(), ((RhsCast) p).getArgs());
+			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(),
+					((RhsCast) p).getArgs());
 		} else if (p instanceof RhsSet) {
-			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(), ((RhsSet) p).getArgs());
+			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(),
+					((RhsSet) p).getArgs());
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
 		}
@@ -298,7 +304,8 @@ class TemplateInstantiator {
 		}
 	}
 
-	private TemplateInstance instantiate(Nonterminal nonterm, TemplateEnvironment env, SourceElement referrer) {
+	private TemplateInstance instantiate(Nonterminal nonterm, TemplateEnvironment env,
+										 SourceElement referrer) {
 		InstanceKey key = new InstanceKey(nonterm, env);
 		TemplateInstance instance = instances.get(key);
 		if (instance == null) {

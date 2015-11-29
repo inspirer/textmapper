@@ -57,9 +57,8 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 	}
 
 	void setName(String value) {
-		if (name != null) {
-			throw new IllegalStateException();
-		}
+		if (name != null) throw new IllegalStateException();
+
 		name = value;
 	}
 

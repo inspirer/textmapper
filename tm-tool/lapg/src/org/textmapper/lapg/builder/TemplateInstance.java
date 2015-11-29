@@ -76,8 +76,9 @@ class TemplateInstance {
 		if (instance != null) return instance;
 
 		if (template.isTemplate()) {
-			String nameHint = LiUtil.getSymbolName(template) +
-					(template.getNumberOfInstances() > 1 ? environment.getNonterminalSuffix() : "");
+			String nameHint =
+					LiUtil.getSymbolName(template) + (template.getNumberOfInstances() > 1
+							? environment.getNonterminalSuffix() : "");
 			instance = builder.addAnonymous(nameHint, template);
 		} else {
 			instance = template;
@@ -135,7 +136,8 @@ class TemplateInstance {
 				children[i] = cloneSet(nested[i]);
 			}
 		}
-		return new LiRhsSet(set.getOperation(), resolveSymbol(set), null /* args */, children, set);
+		return new LiRhsSet(
+				set.getOperation(), resolveSymbol(set), null /* args */, children, set);
 	}
 
 	private LiRhsSequence cloneSeq(RhsSequence p) {
@@ -169,16 +171,20 @@ class TemplateInstance {
 				return new LiRhsUnordered(clone(((LiRhsUnordered) p).getParts()), p);
 			case Assignment: {
 				RhsAssignment source = (RhsAssignment) p;
-				return new LiRhsAssignment(source.getName(), clone(source.getPart()), source.isAddition(), p);
+				return new LiRhsAssignment(
+						source.getName(), clone(source.getPart()), source.isAddition(), p);
 			}
 			case List: {
 				LiRhsList list = (LiRhsList) p;
-				return new LiRhsList(cloneSeq(list.getElement()), clone(list.getSeparator()), list.isNonEmpty(),
-						cloneSeq(list.getCustomInitialElement()), list.isRightRecursive(), false, p);
+				return new LiRhsList(
+						cloneSeq(list.getElement()), clone(list.getSeparator()), list.isNonEmpty(),
+						cloneSeq(list.getCustomInitialElement()), list.isRightRecursive(),
+						false, p);
 			}
 			case Cast: {
 				LiRhsCast cast = (LiRhsCast) p;
-				return new LiRhsCast(resolveSymbol(cast), null /* args */, clone(cast.getPart()), p);
+				return new LiRhsCast(
+						resolveSymbol(cast), null /* args */, clone(cast.getPart()), p);
 			}
 			case Ignored:
 				// TODO implement

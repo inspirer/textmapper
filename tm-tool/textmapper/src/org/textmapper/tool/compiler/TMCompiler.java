@@ -115,8 +115,8 @@ public class TMCompiler {
 		IClass optionsClass = types.getClass(
 				expressionResolver.getTypesPackage() + ".Options", null);
 		if (optionsClass == null) {
-			resolver.error(tree.getRoot(), "cannot load options class `" + expressionResolver
-					.getTypesPackage() + ".Options`");
+			resolver.error(tree.getRoot(), "cannot load options class `"
+					+ expressionResolver.getTypesPackage() + ".Options`");
 			return options;
 		}
 

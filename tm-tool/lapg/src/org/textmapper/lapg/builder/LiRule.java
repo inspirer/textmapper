@@ -27,7 +27,8 @@ class LiRule extends LiUserDataHolder implements Rule, DerivedSourceElement {
 	private final Symbol priority;
 	private final RhsSequence definition;
 
-	public LiRule(int index, Nonterminal left, RhsSymbol[] right, Symbol priority, RhsSequence definition) {
+	public LiRule(int index, Nonterminal left, RhsSymbol[] right,
+				  Symbol priority, RhsSequence definition) {
 		this.index = index;
 		this.left = left;
 		this.right = right;

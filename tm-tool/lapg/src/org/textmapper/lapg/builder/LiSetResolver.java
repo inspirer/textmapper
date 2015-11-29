@@ -58,7 +58,8 @@ class LiSetResolver {
 		this.namedSets = namedSets;
 	}
 
-	private void scheduleDependencies(Descriptor d, Queue<Integer> queue, List<Descriptor> postProcess) {
+	private void scheduleDependencies(Descriptor d, Queue<Integer> queue,
+									  List<Descriptor> postProcess) {
 		for (int dep : d.dependencies) {
 			if (sets[dep] == null) {
 				sets[dep] = SENTINEL;
@@ -90,7 +91,8 @@ class LiSetResolver {
 				case Last: {
 					RhsPart part = index.nonterminal(i).getDefinition();
 					collectTerminals(part, op);
-					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), part), dependenciesSet.create());
+					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), part),
+							dependenciesSet.create());
 					scheduleDependencies(sets[i], queue, postProcess);
 					break;
 				}
@@ -103,7 +105,8 @@ class LiSetResolver {
 							dependenciesSet.add(index.index(op, left));
 						}
 					}
-					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), symbol), dependenciesSet.create());
+					sets[i] = new Descriptor(closure.addSet(terminalsSet.create(), symbol),
+							dependenciesSet.create());
 					scheduleDependencies(sets[i], queue, postProcess);
 					break;
 				}
@@ -221,17 +224,20 @@ class LiSetResolver {
 				} else {
 					dependenciesSet.add(index.index(set.getOperation(), target));
 				}
-				return new Descriptor(closure.addSet(terminalsSet.create(), set), dependenciesSet.create());
+				return new Descriptor(closure.addSet(terminalsSet.create(), set),
+						dependenciesSet.create());
 			}
 			case Precede:
 			case Follow:
 				dependenciesSet.add(index.index(set.getOperation(), set.getSymbol()));
-				return new Descriptor(closure.addSet(terminalsSet.create(), set), dependenciesSet.create());
+				return new Descriptor(closure.addSet(terminalsSet.create(), set),
+						dependenciesSet.create());
 			case Complement: {
 				assert set.getSets().length == 1;
 				int targetIndex = index.set(set.getSets()[0]);
 				assert sets[targetIndex] != null;
-				return new Descriptor(closure.complement(sets[targetIndex].set, set), SetsClosure.EMPTY_ARRAY);
+				return new Descriptor(closure.complement(sets[targetIndex].set, set),
+						SetsClosure.EMPTY_ARRAY);
 			}
 			case Union:
 				for (RhsSet child : set.getSets()) {
@@ -239,7 +245,8 @@ class LiSetResolver {
 					assert sets[targetIndex] != null;
 					dependenciesSet.add(targetIndex);
 				}
-				return new Descriptor(closure.addSet(SetsClosure.EMPTY_ARRAY, set), dependenciesSet.create());
+				return new Descriptor(closure.addSet(SetsClosure.EMPTY_ARRAY, set),
+						dependenciesSet.create());
 			case Intersection: {
 				RhsSet[] children = set.getSets();
 				int[] childSets = new int[children.length];
@@ -248,7 +255,8 @@ class LiSetResolver {
 					assert sets[targetIndex] != null;
 					childSets[i] = sets[targetIndex].set;
 				}
-				return new Descriptor(closure.addIntersection(childSets, set), SetsClosure.EMPTY_ARRAY);
+				return new Descriptor(closure.addIntersection(childSets, set),
+						SetsClosure.EMPTY_ARRAY);
 			}
 			default:
 				throw new IllegalStateException();
@@ -385,7 +393,8 @@ class LiSetResolver {
 					if (target.isTerm()) {
 						terminalsSet.add(target.getIndex());
 					} else {
-						dependenciesSet.add(index.index(reverse ? Operation.Last : Operation.First, target));
+						dependenciesSet.add(
+								index.index(reverse ? Operation.Last : Operation.First, target));
 					}
 				}
 				return target == symbol;
@@ -399,7 +408,8 @@ class LiSetResolver {
 	/**
 	 * Copies to errors only topmost problem sets.
 	 */
-	private static void traverseProblemSets(RhsSet set, Set<RhsSet> problemSets, List<RhsPart> errors) {
+	private static void traverseProblemSets(RhsSet set, Set<RhsSet> problemSets,
+											List<RhsPart> errors) {
 		if (problemSets.contains(set)) {
 			errors.add(set);
 			return;

@@ -186,10 +186,12 @@ class SetsClosure {
 					int node = stack[i];
 					boolean shouldInvalidate = false;
 					boolean intersect = isIntersection.get(node);
-					int result = intersect ? sets.complement(IntegerSets.EMPTY_SET) : nodeSet[node];
+					int result =
+							intersect ? sets.complement(IntegerSets.EMPTY_SET) : nodeSet[node];
 					for (int w : graph[node]) {
 						int targetNode = w < 0 ? -w - 1 : w;
-						int targetSet = w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
+						int targetSet =
+								w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
 						shouldInvalidate |= onstack[targetNode];
 						if (w < 0 && onstack[targetNode]) {
 							// Complements cannot be part of a dependency cycle.
@@ -197,7 +199,9 @@ class SetsClosure {
 							hasErrors = true;
 							break;
 						}
-						result = intersect ? sets.intersection(result, targetSet) : sets.union(result, targetSet);
+						result = intersect
+								? sets.intersection(result, targetSet)
+								: sets.union(result, targetSet);
 					}
 					if (shouldInvalidate) dirty |= (nodeSet[node] != result);
 					nodeSet[node] = result;
@@ -221,7 +225,8 @@ class SetsClosure {
 				result = sets.union(result, nodeSet[node]);
 				for (int w : graph[node]) {
 					int targetNode = w < 0 ? -w - 1 : w;
-					int targetSet = w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
+					int targetSet =
+							w < 0 ? sets.complement(nodeSet[targetNode]) : nodeSet[targetNode];
 					if (w < 0 && onstack[targetNode]) {
 						// Complements cannot be part of a dependency cycle.
 						nodes.get(node).markAsError();

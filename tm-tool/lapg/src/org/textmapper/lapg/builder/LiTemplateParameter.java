@@ -21,7 +21,8 @@ import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.common.FormatUtil;
 
-public class LiTemplateParameter extends LiUserDataHolder implements TemplateParameter, DerivedSourceElement {
+public class LiTemplateParameter extends LiUserDataHolder
+		implements TemplateParameter, DerivedSourceElement {
 
 	private final Type type;
 	private final String name;
@@ -74,11 +75,14 @@ public class LiTemplateParameter extends LiUserDataHolder implements TemplatePar
 		} else if (value instanceof String) {
 			String s = (String) value;
 			for (int i = 0; i < s.length(); i++) {
-				int c = s.charAt(i);
-				if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-' || c >= '0' && c <= '9') {
-					sb.append((char) c);
+				char c = s.charAt(i);
+				if (c >= 'a' && c <= 'z'
+						|| c >= 'A' && c <= 'Z'
+						|| c == '-'
+						|| c >= '0' && c <= '9') {
+					sb.append(c);
 				} else {
-					sb.append(FormatUtil.getCharacterName((char) c));
+					sb.append(FormatUtil.getCharacterName(c));
 				}
 			}
 		}

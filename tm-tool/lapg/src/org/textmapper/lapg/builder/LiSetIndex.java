@@ -216,8 +216,12 @@ class LiSetIndex {
 				break;
 			case List:
 				RhsList list = (RhsList) p;
-				if (list.getCustomInitialElement() != null) traverse(list.getCustomInitialElement());
-				if (list.getSeparator() != null) traverse(list.getSeparator());
+				if (list.getCustomInitialElement() != null) {
+					traverse(list.getCustomInitialElement());
+				}
+				if (list.getSeparator() != null) {
+					traverse(list.getSeparator());
+				}
 				traverse(list.getElement());
 				break;
 			case Optional:

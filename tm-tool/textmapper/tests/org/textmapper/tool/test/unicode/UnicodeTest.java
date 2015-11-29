@@ -74,11 +74,8 @@ public class UnicodeTest {
 	}
 
 	private static String getContent(URL location) throws IOException {
-		InputStream inputStream = location.openStream();
-		try {
+		try (InputStream inputStream = location.openStream()) {
 			return FileUtil.getFileContents(inputStream, "utf-8");
-		} finally {
-			inputStream.close();
 		}
 	}
 

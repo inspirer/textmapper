@@ -21,6 +21,7 @@ import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 public class LiUtil {
+	
 	public static String getSymbolName(RhsSymbol s) {
 		TemplateParameter templateTarget = s.getTemplateTarget();
 		if (templateTarget != null) {
@@ -32,9 +33,8 @@ public class LiUtil {
 
 	public static String getSymbolName(Symbol s) {
 		String name = s.getName();
-		if (name != null) {
-			return name;
-		}
+		if (name != null) return name;
+
 		// for anonymous nonterminals we can get an approximate name from nameHint user data.
 		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
 	}
