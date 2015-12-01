@@ -34,6 +34,12 @@ a4:  /a4/
 
 input ::=
 	  list_of<assignment>
+			epilogue<T: a1, +AllowObject>
+			epilogue<T: a2, ~AllowObject>
+;
+
+epilogue ::=
+	  T '(' list_of<expression> ')'
 ;
 
 assignment ::=
@@ -51,3 +57,10 @@ key_value ::=
 %param T symbol;
 
 list_of<T> ::=  (T separator ',')+ ;
+
+%param AllowObject bool;
+
+expression ::=
+	  icon
+	| [AllowObject] object
+;

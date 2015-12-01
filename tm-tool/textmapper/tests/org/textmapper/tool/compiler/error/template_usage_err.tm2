@@ -13,6 +13,8 @@ identifier(String): /[a-zA-Z_]+/
 :: parser
 
 input ::=
+# ERR: @Elem: Template parameter is unset.
+	  Elem
 	  (identifier '=' object)+
 # ERR: @list<Elem:key_value>: A positional template argument list is expected.
 	list<Elem:key_value>
@@ -20,6 +22,14 @@ input ::=
 	'('<')'>
 # ERR: @<key_value>: Argument list is not expected.
 	key_value<key_value>
+	A<+Bool>
+# ERR: @+Bool: Bool is not used in key_value
+	key_value<+Bool>
+# ERR: @+Elem: type error: symbol is expected
+	key_value<+Elem>
+# ERR: @~Elem: type error: symbol is expected
+	key_value<~Elem>
+	A<~Bool>
 ;
 
 object ::=
@@ -39,4 +49,11 @@ list<Elem> ::=
 # ERR: @Elem: Template parameter is unset.
 # ERR: @list: A positional template argument list is expected.
 	| list ',' Elem
+;
+
+%param Bool bool;
+
+A ::=
+	  identifier
+	| [Bool] '(' ')'
 ;

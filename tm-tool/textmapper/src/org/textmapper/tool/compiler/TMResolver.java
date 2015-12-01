@@ -30,6 +30,7 @@ import org.textmapper.tool.common.ObjectUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
+import org.textmapper.tool.parser.ast.TmaKeyvalArg.TmaBoolKind;
 
 import java.util.*;
 
@@ -362,7 +363,16 @@ public class TMResolver {
 		for (TmaKeyvalArg arg : args.getKeyvalueList()) {
 			TemplateParameter param = resolveParam(arg.getName());
 			if (param == null) continue;
-			Object val = getParamValue(param.getType(), arg.getVal());
+			Object val;
+			if (arg.getBool() != null) {
+				val = (arg.getBool() == TmaBoolKind.PLUS);
+				if (param.getType() != Type.Bool) {
+					val = null;
+					error(arg, "type error: " + asString(param.getType()) + " is expected");
+				}
+			} else {
+				val = getParamValue(param.getType(), arg.getVal());
+			}
 			result.add(builder.argument(param, val, arg));
 		}
 		return result.isEmpty() ? null : result;
