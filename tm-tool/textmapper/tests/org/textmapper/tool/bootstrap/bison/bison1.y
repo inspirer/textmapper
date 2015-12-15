@@ -65,12 +65,12 @@ list_of_AllowObject_key_value :
   key_value_list_Comma_separated1
 ;
 
-epilogue_AllowObject_a1 :
-  a1 Lparen list_of_AllowObject_expression Rparen
-;
-
 list_of_assignment :
   assignment_list_Comma_separated
+;
+
+epilogue_AllowObject_a1 :
+  a1 Lparen list_of_AllowObject_expression Rparen
 ;
 
 epilogue_nonAllowObject_a2 :

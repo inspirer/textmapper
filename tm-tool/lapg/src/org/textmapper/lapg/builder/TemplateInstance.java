@@ -21,6 +21,7 @@ import org.textmapper.lapg.api.rule.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -60,7 +61,7 @@ class TemplateInstance {
 
 	void addNonterminalTarget(TemplatedSymbolRef ref, TemplateInstance target) {
 		if (targetInstance == null) {
-			targetInstance = new HashMap<>();
+			targetInstance = new LinkedHashMap<>();
 		}
 		targetInstance.put(ref, target);
 	}

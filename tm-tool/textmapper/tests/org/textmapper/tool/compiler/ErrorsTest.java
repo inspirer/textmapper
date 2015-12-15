@@ -49,7 +49,7 @@ public class ErrorsTest {
 
 	@Test
 	public void testTemplateErr() {
-		process("tests/org/textmapper/tool/compiler/error/template_usage_err.tm2", 10);
+		process("tests/org/textmapper/tool/compiler/error/template_usage_err.tm2", 11);
 	}
 
 	private void process(String filename, int errors) {
