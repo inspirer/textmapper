@@ -24,6 +24,6 @@ import javax.swing.*;
  * Gryaznov Evgeny, 3/13/11
  */
 public interface TMIcons {
-	final Icon TM_ICON = IconLoader.findIcon("/icons/syntax.png");
-	final Icon TM_TEMPLATES_ICON = IconLoader.findIcon("/icons/ltp.png");
+	Icon TM_ICON = IconLoader.findIcon("/icons/syntax.png");
+	Icon TM_TEMPLATES_ICON = IconLoader.findIcon("/icons/ltp.png");
 }

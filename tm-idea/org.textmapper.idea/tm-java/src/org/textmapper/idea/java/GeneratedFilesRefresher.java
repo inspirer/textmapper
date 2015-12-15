@@ -58,7 +58,7 @@ public class GeneratedFilesRefresher implements ProjectComponent {
 	private class RefreshJavaCompilationStatusListener implements CustomBuilderMessageHandler {
 
 		private final AtomicReference<List<File>>
-				myAffectedFiles = new AtomicReference<List<File>>(new ArrayList<File>());
+				myAffectedFiles = new AtomicReference<>(new ArrayList<>());
 
 		@Override
 		public void messageReceived(String builderId, String messageType, String messageText) {
@@ -70,7 +70,7 @@ public class GeneratedFilesRefresher implements ProjectComponent {
 				myAffectedFiles.get().add(new File(messageText));
 
 			} else if (messageType.equals(TmBuilderMessages.MSG_REFRESH)) {
-				final List<File> generatedJava = myAffectedFiles.getAndSet(new ArrayList<File>());
+				final List<File> generatedJava = myAffectedFiles.getAndSet(new ArrayList<>());
 				if (project.isDisposed() || generatedJava.isEmpty()) {
 					return;
 				}

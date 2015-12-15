@@ -26,9 +26,9 @@ import java.util.*;
 public class TmIdeaRefreshComponent {
 
 	private final Object LOCK = new Object();
-	private List<String> created = new ArrayList<String>();
-	private List<String> removed = new ArrayList<String>();
-	private List<String> genRoots = new ArrayList<String>();
+	private List<String> created = new ArrayList<>();
+	private List<String> removed = new ArrayList<>();
+	private List<String> genRoots = new ArrayList<>();
 
 	public void refresh(String path) {
 		synchronized (LOCK) {
@@ -50,7 +50,7 @@ public class TmIdeaRefreshComponent {
 	}
 
 	Collection<String> getFilesToRefresh() {
-		Set<String> result = new HashSet<String>();
+		Set<String> result = new HashSet<>();
 		synchronized (LOCK) {
 			result.addAll(created);
 			for (String r : removed) {

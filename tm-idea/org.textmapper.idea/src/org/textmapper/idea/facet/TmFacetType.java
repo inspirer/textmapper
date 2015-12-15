@@ -35,7 +35,7 @@ import javax.swing.*;
 
 public class TmFacetType extends FacetType<TmFacet, TmFacetConfiguration> {
 
-	public static final FacetTypeId<TmFacet> ID = new FacetTypeId<TmFacet>("textmapper");
+	public static final FacetTypeId<TmFacet> ID = new FacetTypeId<>("textmapper");
 
 	public static TmFacetType getInstance() {
 		return findInstance(TmFacetType.class);

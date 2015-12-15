@@ -19,7 +19,6 @@ package org.textmapper.idea.actions;
 import com.intellij.ide.fileTemplates.FileTemplateDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptor;
 import com.intellij.ide.fileTemplates.FileTemplateGroupDescriptorFactory;
-import org.jetbrains.annotations.NonNls;
 import org.textmapper.idea.TMIcons;
 import org.textmapper.idea.TextmapperBundle;
 

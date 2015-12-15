@@ -117,7 +117,7 @@ public class TMSyntaxHighlighter extends SyntaxHighlighterBase {
 	private static final Map<IElementType, TextAttributesKey> attributes;
 
 	static {
-		attributes = new HashMap<IElementType, TextAttributesKey>();
+		attributes = new HashMap<>();
 
 		fillMap(attributes, TMTokenTypes.keywords, KEYWORD);
 		fillMap(attributes, TMTokenTypes.softKeywords, IDENTIFIER);

@@ -56,16 +56,8 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 	private static final String TM_EXTENSION = ".tm";
 	private static final FileFilter TM_SOURCES_FILTER =
 			SystemInfo.isFileSystemCaseSensitive ?
-					new FileFilter() {
-						public boolean accept(File file) {
-							return file.getPath().endsWith(TM_EXTENSION);
-						}
-					} :
-					new FileFilter() {
-						public boolean accept(File file) {
-							return StringUtil.endsWithIgnoreCase(file.getPath(), TM_EXTENSION);
-						}
-					};
+					file -> file.getPath().endsWith(TM_EXTENSION) :
+					file -> StringUtil.endsWithIgnoreCase(file.getPath(), TM_EXTENSION);
 
 	private TmIdeaRefreshComponent refreshComponent = new TmIdeaRefreshComponent();
 
@@ -157,22 +149,20 @@ public class TextmapperModuleLevelBuilder extends ModuleLevelBuilder {
 		final JpsJavaCompilerConfiguration configuration = JpsJavaExtensionService.getInstance().getCompilerConfiguration(context.getProjectDescriptor().getProject());
 		assert configuration != null;
 
-		final List<Pair<TmCompilerTask, ModuleBuildTarget>> toCompile = new ArrayList<Pair<TmCompilerTask, ModuleBuildTarget>>();
-		dirtyFilesHolder.processDirtyFiles(new FileProcessor<JavaSourceRootDescriptor, ModuleBuildTarget>() {
-			public boolean apply(ModuleBuildTarget target, File file, JavaSourceRootDescriptor sourceRoot) throws IOException {
-				if (TM_SOURCES_FILTER.accept(file) /* TODO && !configuration.isResourceFile(file, sourceRoot.root) */) {
-					JpsTmModuleExtension ext = JpsTmExtensionService.getInstance().getExtension(target.getModule());
-					if (ext != null) {
-						File outputDir = file.getParentFile();
-						if (outputDir.isDirectory()) {
-							toCompile.add(new Pair<TmCompilerTask, ModuleBuildTarget>(
-									new TmCompilerTask(file, null, outputDir, ext.isVerbose(), ext.isExcludeDefaultTemplates(), ext.getCustomTemplatesFolder()),
-									target));
-						}
+		final List<Pair<TmCompilerTask, ModuleBuildTarget>> toCompile = new ArrayList<>();
+		dirtyFilesHolder.processDirtyFiles((target, file, sourceRoot) -> {
+			if (TM_SOURCES_FILTER.accept(file) /* TODO && !configuration.isResourceFile(file, sourceRoot.root) */) {
+				JpsTmModuleExtension ext = JpsTmExtensionService.getInstance().getExtension(target.getModule());
+				if (ext != null) {
+					File outputDir = file.getParentFile();
+					if (outputDir.isDirectory()) {
+						toCompile.add(new Pair<>(
+								new TmCompilerTask(file, null, outputDir, ext.isVerbose(), ext.isExcludeDefaultTemplates(), ext.getCustomTemplatesFolder()),
+								target));
 					}
 				}
-				return true;
 			}
+			return true;
 		});
 		return toCompile;
 	}

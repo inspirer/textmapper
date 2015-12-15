@@ -47,11 +47,9 @@ public class TmSettingsEditorUI {
 	public TmSettingsEditorUI() {
 		customTemplatesDir.addBrowseFolderListener(null, null, null, TEMPLATES_CHOOSER_DESCRIPTOR);
 		customTemplatesDir.setEnabled(useCustomTemplates.isSelected());
-		useCustomTemplates.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final boolean selected = useCustomTemplates.isSelected();
-				customTemplatesDir.setEnabled(selected);
-			}
+		useCustomTemplates.addActionListener(e -> {
+			final boolean selected = useCustomTemplates.isSelected();
+			customTemplatesDir.setEnabled(selected);
 		});
 
 		final GridBagConstraints gc = new GridBagConstraints(0, GridBagConstraints.RELATIVE, 1, 1, 1.0, 0.0,

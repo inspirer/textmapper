@@ -44,7 +44,7 @@ public class TMPsiParser implements PsiParser {
 	private static final Map<Integer, IElementType> types = initTypes();
 
 	private static Map<Integer, IElementType> initTypes() {
-		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
+		Map<Integer, IElementType> result = new HashMap<>();
 		for (IElementType t : TextmapperElementTypes.allElements) {
 			int symbol = ((TMElementType) t).getSymbol();
 			if (symbol >= 0) {
@@ -95,14 +95,11 @@ public class TMPsiParser implements PsiParser {
 	private static class TMParserEx extends TMParser {
 
 		private final PsiBuilder myBuilder;
-		private final Stack<Marker> markers = new Stack<Marker>();
+		private final Stack<Marker> markers = new Stack<>();
 
 		public TMParserEx(PsiBuilder builder) {
-			super(new ErrorReporter() {
-				@Override
-				public void error(String message, int line, int offset, int endoffset) {
-					// ignore, errors are reported as syntax_problem productions
-				}
+			super((message, line, offset, endoffset) -> {
+				// ignore, errors are reported as syntax_problem productions
 			});
 			myBuilder = builder;
 		}

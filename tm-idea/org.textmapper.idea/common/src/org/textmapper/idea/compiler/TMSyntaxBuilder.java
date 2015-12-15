@@ -81,7 +81,7 @@ public class TMSyntaxBuilder implements ProcessingStrategy {
 			return false;
 		}
 
-		myGeneratedContent = new HashMap<String, String>();
+		myGeneratedContent = new HashMap<>();
 		TextSource input = new TextSource(file.getPath(), contents, 1);
 		return new TMGenerator(options, status, this).compileGrammar(input, false);
 	}

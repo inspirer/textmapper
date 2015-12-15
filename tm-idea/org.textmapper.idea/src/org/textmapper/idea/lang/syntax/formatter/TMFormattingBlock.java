@@ -89,11 +89,11 @@ public class TMFormattingBlock extends AbstractBlock {
 		if (children == null) {
 			children = buildChildrenInternal();
 		}
-		return new ArrayList<Block>(children);
+		return new ArrayList<>(children);
 	}
 
 	private List<Block> buildChildrenInternal() {
-		List<Block> blocks = new ArrayList<Block>();
+		List<Block> blocks = new ArrayList<>();
 
 		ASTNode prev = null;
 		for (ASTNode child = myNode.getFirstChildNode(); child != null; child = child.getTreeNext()) {

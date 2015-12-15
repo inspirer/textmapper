@@ -85,8 +85,8 @@ public class TmStateReference extends TmElement implements PsiPolyVariantReferen
 	public Object[] getVariants() {
 		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
 		if (grammar != null) {
-			List<TmLexerState> states = new ArrayList<TmLexerState>();
-			Set<String> seen = new HashSet<String>();
+			List<TmLexerState> states = new ArrayList<>();
+			Set<String> seen = new HashSet<>();
 			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
 				for (TmLexerState tmLexerState : selector.getStates()) {
 					if (seen.add(tmLexerState.getName())) {
@@ -109,7 +109,7 @@ public class TmStateReference extends TmElement implements PsiPolyVariantReferen
 		String referenceText = getReferenceText();
 		TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(this, TmGrammar.class);
 		if (grammar != null && referenceText != null) {
-			List<ResolveResult> states = new ArrayList<ResolveResult>();
+			List<ResolveResult> states = new ArrayList<>();
 			for (TmLexerStateSelector selector : grammar.getStateSelectors()) {
 				for (TmLexerState state : selector.getStates()) {
 					if (referenceText.equals(state.getName())) {

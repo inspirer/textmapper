@@ -18,6 +18,7 @@ package org.textmapper.idea.lang.regex.lexer;
 
 import com.intellij.lexer.LexerBase;
 import com.intellij.psi.tree.IElementType;
+import org.jetbrains.annotations.NotNull;
 import org.textmapper.lapg.regex.RegexDefLexer;
 import org.textmapper.lapg.regex.RegexDefLexer.Span;
 import org.textmapper.lapg.regex.RegexDefLexer.Tokens;
@@ -43,7 +44,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 	}
 
 	@Override
-	public void start(final CharSequence buffer, int startOffset, int endOffset, int initialState) {
+	public void start(@NotNull final CharSequence buffer, int startOffset, int endOffset, int initialState) {
 		myText = buffer;
 		fDocumentLength = endOffset;
 		CharSequence input = buffer.subSequence(startOffset, endOffset);
@@ -100,6 +101,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 		current = null;
 	}
 
+	@NotNull
 	@Override
 	public CharSequence getBufferSequence() {
 		return myText;
@@ -206,10 +208,7 @@ public class RegexLexerAdapter extends LexerBase implements RegexTokenTypes {
 
 	private static class IdeaRegexDefLexer extends RegexDefLexer {
 		public IdeaRegexDefLexer(CharSequence input) throws IOException {
-			super(input, new ErrorReporter() {
-				@Override
-				public void error(String message, int offset, int endoffset) {
-				}
+			super(input, (message, offset, endoffset) -> {
 			});
 		}
 

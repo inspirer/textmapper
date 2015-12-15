@@ -21,6 +21,7 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LtplSyntaxHighlighterProvider implements SyntaxHighlighterProvider {
 
-	public SyntaxHighlighter create(FileType fileType, @Nullable Project project, @Nullable VirtualFile file) {
+	public SyntaxHighlighter create(@NotNull FileType fileType, @Nullable Project project, @Nullable VirtualFile file) {
 		return new LtplSyntaxHighlighter();
 	}
 }

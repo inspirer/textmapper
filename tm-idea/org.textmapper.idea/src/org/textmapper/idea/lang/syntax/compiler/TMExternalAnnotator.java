@@ -238,7 +238,7 @@ public class TMExternalAnnotator extends ExternalAnnotator<TMExtInput, List<TMMe
 	}
 
 	private static class AnnotatorProcessingStatus implements TmProcessingStatus {
-		private List<TMMessage> result = new ArrayList<TMMessage>();
+		private List<TMMessage> result = new ArrayList<>();
 
 		private boolean hasErrors = false;
 

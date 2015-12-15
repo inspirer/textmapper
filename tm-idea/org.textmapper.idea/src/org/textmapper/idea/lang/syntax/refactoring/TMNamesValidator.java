@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public class TMNamesValidator implements NamesValidator {
 
-	private static final Set<String> keywords = new HashSet<String>(Arrays.asList("new", "separator", "true", "false"));
+	private static final Set<String> keywords = new HashSet<>(Arrays.asList("new", "separator", "true", "false"));
 
 	public boolean isKeyword(String name, Project project) {
 		return keywords.contains(name);
@@ -49,11 +49,8 @@ public class TMNamesValidator implements NamesValidator {
 
 	private static class ValidatingLexer extends TMLexer {
 		public ValidatingLexer(String name) throws java.io.IOException {
-			super(new StringReader(name), new ErrorReporter() {
-				@Override
-				public void error(String message, int line, int offset, int endoffset) {
-					throw new IllegalArgumentException();
-				}
+			super(new StringReader(name), (message, line, offset, endoffset) -> {
+				throw new IllegalArgumentException();
 			});
 		}
 

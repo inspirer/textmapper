@@ -113,7 +113,7 @@ public class TMAnnotator implements Annotator {
 		}
 	}
 
-	private static Set<Integer> softKeywords = new HashSet<Integer>();
+	private static Set<Integer> softKeywords = new HashSet<>();
 
 	static {
 		for (IElementType softKeyword : TMTokenTypes.softKeywords.getTypes()) {

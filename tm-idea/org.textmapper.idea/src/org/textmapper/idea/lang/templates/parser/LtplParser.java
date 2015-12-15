@@ -46,7 +46,7 @@ public class LtplParser implements PsiParser {
 	private static final Map<Integer, IElementType> types = initTypes();
 
 	private static Map<Integer, IElementType> initTypes() {
-		Map<Integer, IElementType> result = new HashMap<Integer, IElementType>();
+		Map<Integer, IElementType> result = new HashMap<>();
 		result.put(Nonterminals.syntax_problem, TokenType.ERROR_ELEMENT);
 		for (IElementType t : LtplElementTypes.allElements) {
 			result.put(((LtplElementType) t).getSymbol(), t);
@@ -67,7 +67,7 @@ public class LtplParser implements PsiParser {
 	}
 
 	@NotNull
-	public ASTNode parse(IElementType root, PsiBuilder builder) {
+	public ASTNode parse(@NotNull IElementType root, @NotNull PsiBuilder builder) {
 		final PsiBuilder.Marker file = builder.mark();
 		parseBundle(builder);
 		file.done(root);
@@ -131,14 +131,11 @@ public class LtplParser implements PsiParser {
 	private static class LtplParserEx extends TemplatesParser {
 
 		private final PsiBuilder myBuilder;
-		private final Stack<Marker> markers = new Stack<Marker>();
+		private final Stack<Marker> markers = new Stack<>();
 
 		public LtplParserEx(PsiBuilder builder) {
-			super(new ErrorReporter() {
-				@Override
-				public void error(String message, int line, int offset, int endoffset) {
-					// ignore, errors are reported as syntax_problem productions
-				}
+			super((message, line, offset, endoffset) -> {
+				// ignore, errors are reported as syntax_problem productions
 			});
 			myBuilder = builder;
 		}

@@ -35,7 +35,7 @@ public class TMFoldingBuilder implements FoldingBuilder {
 
 	@NotNull
 	public FoldingDescriptor[] buildFoldRegions(@NotNull ASTNode node, @NotNull Document document) {
-		List<FoldingDescriptor> descriptors = new ArrayList<FoldingDescriptor>();
+		List<FoldingDescriptor> descriptors = new ArrayList<>();
         collectDescriptors(node, document, descriptors);
         return descriptors.toArray(new FoldingDescriptor[descriptors.size()]);
 	}

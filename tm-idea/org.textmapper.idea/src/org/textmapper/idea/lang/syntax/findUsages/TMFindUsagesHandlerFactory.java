@@ -61,7 +61,7 @@ public class TMFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
 			String name = anchorState.getName();
 			TmGrammar grammar = PsiTreeUtil.getTopmostParentOfType(anchorState, TmGrammar.class);
 			if (grammar != null && name != null) {
-				List<TmLexerState> states = new ArrayList<TmLexerState>();
+				List<TmLexerState> states = new ArrayList<>();
 				for (TmLexerStateSelector stateSet : grammar.getStateSelectors()) {
 					for (TmLexerState lexerState : stateSet.getStates()) {
 						if (name.equals(lexerState.getName())) {

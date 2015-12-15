@@ -38,7 +38,7 @@ public class LtplSyntaxHighlighter extends SyntaxHighlighterBase implements Ltpl
 	private static final Map<IElementType, TextAttributesKey> attributes;
 
 	static {
-		attributes = new HashMap<IElementType, TextAttributesKey>();
+		attributes = new HashMap<>();
 
 		fillMap(attributes, DefaultLanguageHighlighterColors.STRING, CCON);
 		fillMap(attributes, DefaultLanguageHighlighterColors.NUMBER, ICON);

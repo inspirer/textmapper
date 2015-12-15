@@ -45,7 +45,7 @@ public class LtplFile extends PsiFileImpl {
 
 	public TpsiBundle getBundle() {
 		ASTNode[] children = getNode().getChildren(TokenSet.create(LtplElementTypes.BUNDLE));
-		if (children != null && children.length == 1) {
+		if (children.length == 1) {
 			return (TpsiBundle) children[0].getPsi();
 		}
 		return null;

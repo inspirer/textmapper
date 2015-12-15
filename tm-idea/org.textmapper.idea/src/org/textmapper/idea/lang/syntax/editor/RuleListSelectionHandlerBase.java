@@ -43,7 +43,7 @@ public class RuleListSelectionHandlerBase extends ExtendWordSelectionHandlerBase
 
 	@Override
 	public List<TextRange> select(PsiElement e, CharSequence editorText, int cursorOffset, Editor editor) {
-		List<TextRange> result = new ArrayList<TextRange>();
+		List<TextRange> result = new ArrayList<>();
 
 		PsiElement parent = e.getParent();
 

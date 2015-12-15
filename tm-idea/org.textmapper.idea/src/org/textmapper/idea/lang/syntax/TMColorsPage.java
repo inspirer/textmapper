@@ -68,7 +68,7 @@ public class TMColorsPage implements ColorSettingsPage {
 	};
 
 	@NonNls
-	private static final Map<String, TextAttributesKey> ourTagToDescriptorMap = new HashMap<String, TextAttributesKey>();
+	private static final Map<String, TextAttributesKey> ourTagToDescriptorMap = new HashMap<>();
 
 	static {
 		ourTagToDescriptorMap.put("lexemeRef", TMSyntaxHighlighter.LEXEM_REFERENCE);

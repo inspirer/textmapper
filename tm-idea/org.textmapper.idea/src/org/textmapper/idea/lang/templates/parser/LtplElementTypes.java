@@ -26,22 +26,22 @@ import org.textmapper.templates.ast.TemplatesParser.Nonterminals;
  * evgeny, 3/3/12
  */
 public interface LtplElementTypes {
-	final IFileElementType FILE = new IFileElementType(LtplFileType.LTPL_LANGUAGE);
+	IFileElementType FILE = new IFileElementType(LtplFileType.LTPL_LANGUAGE);
 
-	public static final IElementType BUNDLE = new LtplElementType(Nonterminals.input, "bundle");
-	public static final IElementType TEMPLATE_BODY = new LtplElementType(Nonterminals.body, "body");
+	IElementType BUNDLE = new LtplElementType(Nonterminals.input, "bundle");
+	IElementType TEMPLATE_BODY = new LtplElementType(Nonterminals.body, "body");
 
-	public static final IElementType TEMPLATE = new LtplElementType(Nonterminals.template_def, "template");
-	public static final IElementType QUERY = new LtplElementType(Nonterminals.query_def, "query");
-	public static final IElementType INSTRUCTION = new LtplElementType(Nonterminals.instruction, "instruction");
+	IElementType TEMPLATE = new LtplElementType(Nonterminals.template_def, "template");
+	IElementType QUERY = new LtplElementType(Nonterminals.query_def, "query");
+	IElementType INSTRUCTION = new LtplElementType(Nonterminals.instruction, "instruction");
 
-	public static final IElementType[] allElements = {
+	IElementType[] allElements = {
 			TEMPLATE, QUERY, INSTRUCTION
 	};
 
-	public static final IElementType EXPRESSION = new LtplElementType(Nonterminals.expression, "expression");
+	IElementType EXPRESSION = new LtplElementType(Nonterminals.expression, "expression");
 
-	public static final int[] allExpressions = {
+	int[] allExpressions = {
 			Nonterminals.primary_expression,
 			Nonterminals.unary_expression,
 			Nonterminals.binary_op,
