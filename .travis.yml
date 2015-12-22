@@ -1,4 +1,4 @@
 language: java
 before_script: cd tm-tool
 jdk:
-  - openjdk8
+  - oraclejdk8
