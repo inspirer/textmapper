@@ -40,6 +40,10 @@ import org.textmapper.tool.compiler.TMGrammar;
 import org.textmapper.tool.compiler.TMMapper;
 import org.textmapper.tool.parser.TMTree.TextSource;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -79,10 +83,12 @@ public final class TMGenerator {
 			}
 
 			// Language-specific processing.
-			boolean genast = genOptions.containsKey("genast") && Boolean.TRUE.equals(genOptions.get("genast"));
+			boolean genast = genOptions.containsKey("genast")
+					&& Boolean.TRUE.equals(genOptions.get("genast"));
 			AstModel astModel = null;
 			if (genast) {
-				boolean hasAny = genOptions.containsKey("__hasAny") && Boolean.TRUE.equals(genOptions.get("__hasAny"));
+				boolean hasAny = genOptions.containsKey("__hasAny")
+						&& Boolean.TRUE.equals(genOptions.get("__hasAny"));
 				astModel = new TMMapper(s.getGrammar(), status, hasAny).deriveAST();
 			}
 
@@ -106,14 +112,41 @@ public final class TMGenerator {
 
 			// Generate text
 			start = System.currentTimeMillis();
-			TemplatesRegistry registry = createTemplateRegistry(s.getTemplates(), resources, types, templatesStatus);
-			EvaluationContext context = createEvaluationContext(types, s, astModel, genOptions, l, r);
-			TemplatesFacade env = new TemplatesFacadeExt(new GrammarIxFactory(s, getTemplatePackage(s), context),
-					registry, genOptions);
-			env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
+			Object nashornValue = genOptions.get("nashorn");
+			if (nashornValue instanceof String) {
+				String script = (String) nashornValue;
+
+				ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+				engine.put("syntax", s);
+				engine.put("lex", l);
+				engine.put("parser", r);
+				if (astModel != null) {
+					engine.put("ast", astModel);
+				}
+				engine.put("opts", genOptions);
+				ScriptBuiltin builtin = new ScriptBuiltin(engine, resources, genOptions);
+				engine.put("__context", builtin);
+
+				engine.eval("function write(name, content) { __context.write(name, content); }\n"
+						+ "function load(name) { __context.load(name); }");
+				builtin.load(script);
+
+				Invocable invocable = (Invocable) engine;
+				invocable.invokeFunction("main");
+
+			} else {
+				TemplatesRegistry registry = createTemplateRegistry(
+						s.getTemplates(), resources, types, templatesStatus);
+				EvaluationContext context = createEvaluationContext(types, s, astModel,
+						genOptions, l, r);
+				TemplatesFacade env = new TemplatesFacadeExt(
+						new GrammarIxFactory(s, getTemplatePackage(s), context),
+						registry, genOptions);
+				env.executeTemplate(getTemplatePackage(s) + ".main", context, null, null);
+			}
 			long textTime = System.currentTimeMillis() - start;
-			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, text: " + textTime
-					/ 1000. + "s");
+			status.report(ProcessingStatus.KIND_INFO, "lalr: " + generationTime / 1000. + "s, "
+					+ "text: " + textTime / 1000. + "s");
 			return true;
 		} catch (Exception t) {
 			String message = "lapg: internal error: " + t.getClass().getName();
@@ -154,25 +187,32 @@ public final class TMGenerator {
 			}
 		}
 		if (options.isUseDefaultTemplates()) {
-			loaders.add(new ClassResourceLoader(getClass().getClassLoader(), "org/textmapper/tool/templates", "utf8"));
+			loaders.add(new ClassResourceLoader(getClass().getClassLoader(),
+					"org/textmapper/tool/templates", "utf8"));
 		}
 		return new ResourceRegistry(loaders.toArray(new IResourceLoader[loaders.size()]));
 	}
 
-	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates, ResourceRegistry resources,
-													 TypesRegistry types, TemplatesStatus templatesStatus) {
+	private TemplatesRegistry createTemplateRegistry(TextSourceElement grammarTemplates,
+													 ResourceRegistry resources,
+													 TypesRegistry types,
+													 TemplatesStatus templatesStatus) {
 		List<IBundleLoader> loaders = new ArrayList<>();
 		if (grammarTemplates != null) {
 			File file = new File(grammarTemplates.getResourceName());
 			loaders.add(new StringTemplateLoader(new Resource(file.toURI(),
-					grammarTemplates.getText(), grammarTemplates.getLine(), grammarTemplates.getOffset())));
+					grammarTemplates.getText(), grammarTemplates.getLine(),
+					grammarTemplates.getOffset())));
 		}
 		loaders.add(new DefaultTemplateLoader(resources));
-		return new TemplatesRegistry(templatesStatus, types, loaders.toArray(new IBundleLoader[loaders.size()]));
+		return new TemplatesRegistry(templatesStatus, types,
+				loaders.toArray(new IBundleLoader[loaders.size()]));
 	}
 
-	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s, AstModel astModel,
-													  Map<String, Object> genOptions, LexerData l, ParserData r) {
+	private EvaluationContext createEvaluationContext(TypesRegistry types, TMGrammar s,
+													  AstModel astModel,
+													  Map<String, Object> genOptions, LexerData l,
+													  ParserData r) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("syntax", s);
 		map.put("lex", l); // new JavaIxObjectWithType(l, types.getClass("common.Lexer", null))
@@ -201,7 +241,8 @@ public final class TMGenerator {
 	private final class TemplatesFacadeExt extends TemplatesFacade {
 		Map<String, Object> options;
 
-		private TemplatesFacadeExt(IxFactory factory, TemplatesRegistry registry, Map<String, Object> options) {
+		private TemplatesFacadeExt(IxFactory factory, TemplatesRegistry registry,
+								   Map<String, Object> options) {
 			super(factory, registry);
 			this.options = options;
 		}
@@ -209,6 +250,31 @@ public final class TMGenerator {
 		@Override
 		public void createStream(String name, String contents) {
 			strategy.createFile(name, contents, options, status);
+		}
+	}
+
+	public final class ScriptBuiltin {
+		private final ScriptEngine engine;
+		private final ResourceRegistry resources;
+		private final Map<String, Object> options;
+
+		private ScriptBuiltin(ScriptEngine engine, ResourceRegistry resources,
+							  Map<String, Object> options) {
+			this.engine = engine;
+			this.resources = resources;
+			this.options = options;
+		}
+
+		public void write(String name, String contents) {
+			strategy.createFile(name, contents, options, status);
+		}
+
+		public void load(String name) throws ScriptException {
+			Resource[] res = resources.loadResources(name, "js");
+			if (res == null || res.length == 0) {
+				throw new RuntimeException("No resource found: " + name);
+			}
+			engine.eval(res[0].getContents());
 		}
 	}
 }
