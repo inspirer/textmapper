@@ -161,19 +161,6 @@ public class TemplateConstructionsTest {
 	}
 
 	@Test
-	public void testCollectMap() {
-		TestProblemCollector collector = new TestProblemCollector();
-		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);
-
-		EvaluationContext context = new EvaluationContext(null);
-		context.setVariable("util", new DefaultStaticMethods());
-
-		// test 1
-		String q = env.executeTemplate("filter.collector1", context, null, null);
-		assertEquals("[1a -> 1A,Bb -> BB,c -> C,d -> D]", q);
-	}
-
-	@Test
 	public void testSort() {
 		TestProblemCollector collector = new TestProblemCollector();
 		TemplatesFacade env = new TemplatesFacade(new JavaIxFactory(), createRegistry(collector), collector);

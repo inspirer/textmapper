@@ -275,8 +275,6 @@ primary_expression (ExpressionNode) ::=
     												{ $$ = new MethodCallNode($primary_expression, $identifier, $expression_listopt, source, ${left().offset}, ${left().endoffset}); }
     | primary_expression '.' identifier '(' var=identifier '|' expression ')'
     												{ $$ = createCollectionProcessor($primary_expression, $identifier, $var, $expression, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
-    | primary_expression '.' identifier '(' var=identifier '|' key=expression ':' value=expression ')'
-    												{ $$ = createMapCollect($primary_expression, $identifier, $var, $key, $value, source, ${left().offset}, ${left().endoffset}, ${left().line}); }
     | primary_expression '->' qualified_id '(' expression_listopt ')'
     												{ $$ = new CallTemplateNode($qualified_id, $expression_listopt, $primary_expression, templatePackage, false, source, ${left().offset}, ${left().endoffset}); }
     | primary_expression '->' '(' expression ')' '(' expression_listopt ')'  
@@ -475,14 +473,6 @@ private void applyElse(CompoundNode node, ElseIfNode elseNode, int offset, int e
 	} else {
 		reporter.error("Unknown else node, instructions skipped", line, offset, endoffset);
 	}
-}
-
-private ExpressionNode createMapCollect(ExpressionNode context, String instruction, String varName, ExpressionNode key, ExpressionNode value, org.textmapper.templates.ast.TemplatesTree.@TextSource source, int offset, int endoffset, int line) {
-	if (!instruction.equals("collect")) {
-		reporter.error("unknown collection processing instruction: " + instruction, line, offset, endoffset);
-		return new ErrorNode(source, offset, endoffset);
-	}
-	return new CollectMapNode(context, varName, key, value, source, offset, endoffset);
 }
 
 private ExpressionNode createCollectionProcessor(ExpressionNode context, String instruction, String varName, ExpressionNode foreachExpr, org.textmapper.templates.ast.TemplatesTree.@TextSource source, int offset, int endoffset, int line) {

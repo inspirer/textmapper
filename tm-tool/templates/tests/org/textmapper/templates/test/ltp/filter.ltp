@@ -11,10 +11,6 @@ ${[[name:'nbsss',value:'a3'],
 ${end}
 
 
-${template collector1-}
-${util.print(['1a','Bb','c','d'].collect(x| x : x.toUpperCase()))-}
-${end}
-
 ${template collectorUnique-}
 ${foreach qq in ['1a','Bb','bB','c','d','d','C'].collectUnique(x| x.toUpperCase())-}
 ${qq} ${end-}
