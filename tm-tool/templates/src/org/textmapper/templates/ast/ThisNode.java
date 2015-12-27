@@ -34,4 +34,9 @@ public class ThisNode extends ExpressionNode {
 	public void toString(StringBuilder sb) {
 		sb.append("self");
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("this");
+	}
 }

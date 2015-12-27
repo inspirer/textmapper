@@ -35,4 +35,9 @@ public class DollarNode extends Node {
 			sb.append("$");
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("##### /* TODO conversion error */");
+	}
 }

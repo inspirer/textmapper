@@ -58,4 +58,19 @@ public class IfNode extends CompoundNode {
 			/* ignore, skip if */
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append('(');
+		condition.toJavascript(sb);
+		sb.append('?');
+		contentToJavascript(sb);
+		sb.append(':');
+		if (elseClauses != null) {
+			elseClauses.toJavascript(sb);
+		} else {
+			sb.append("''");
+		}
+		sb.append(')');
+	}
 }

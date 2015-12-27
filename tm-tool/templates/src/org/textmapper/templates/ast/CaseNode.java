@@ -42,4 +42,9 @@ public class CaseNode extends CompoundNode {
 		CaseNode node = cases.get(cases.size() - 1);
 		node.addInstruction(instruction);
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("### /* TODO conversion error */");
+	}
 }

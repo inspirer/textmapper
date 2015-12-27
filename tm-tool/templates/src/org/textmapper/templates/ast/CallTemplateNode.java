@@ -141,4 +141,33 @@ public class CallTemplateNode extends ExpressionNode {
 			}
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		if (templateId != null) {
+			sb.append(templateId);
+		} else {
+			sb.append("(/*TODO*/");
+			templateIdExpr.toString(sb);
+			sb.append(")");
+		}
+		if (selectExpr != null && !(selectExpr instanceof ThisNode)) {
+			sb.append(".call(");
+			selectExpr.toString(sb);
+			if (arguments != null && arguments.length > 0) {
+				sb.append(",");
+			}
+		} else {
+			sb.append("(");
+		}
+		if (arguments != null) {
+			for (int i = 0; i < arguments.length; i++) {
+				if (i > 0) {
+					sb.append(", ");
+				}
+				arguments[i].toString(sb);
+			}
+		}
+		sb.append(")");
+	}
 }

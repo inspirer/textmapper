@@ -41,4 +41,11 @@ public class AssertNode extends Node {
 			/* already handled, ignore */
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("/* TODO assert(");
+		expr.toJavascript(sb);
+		sb.append(") */");
+	}
 }

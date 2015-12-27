@@ -32,4 +32,53 @@ public class TextNode extends Node {
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		sb.append(getText());
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("'").append(escape(getText())).append("'");
+	}
+
+	private static void appendEscaped(StringBuilder sb, char c) {
+		String sym = Integer.toString(c, 16);
+		boolean isShort = c <= 0xff;
+		sb.append(isShort ? "\\x" : "\\u");
+		int len = isShort ? 2 : 4;
+		if (sym.length() < len) {
+			sb.append("0000".substring(sym.length() + (4 - len)));
+		}
+		sb.append(sym);
+	}
+
+	public static String escape(String s) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			switch (c) {
+				case '"':
+				case '\'':
+				case '\\':
+					sb.append('\\');
+					sb.append(c);
+					continue;
+				case '\f':
+					sb.append("\\f");
+					continue;
+				case '\n':
+					sb.append("\\n");
+					continue;
+				case '\r':
+					sb.append("\\r");
+					continue;
+				case '\t':
+					sb.append("\\t");
+					continue;
+			}
+			if (c >= 0x20 && c < 0x80) {
+				sb.append(c);
+				continue;
+			}
+			appendEscaped(sb, c);
+		}
+		return sb.toString();
+	}
 }

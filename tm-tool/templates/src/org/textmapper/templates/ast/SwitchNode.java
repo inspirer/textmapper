@@ -53,4 +53,9 @@ public class SwitchNode extends Node {
 			/* ignore, statement will be skipped */
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("###### /* TODO conversion problem */");
+	}
 }

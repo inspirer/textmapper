@@ -50,4 +50,17 @@ public class LiteralNode extends ExpressionNode {
 			sb.append(literal.toString());
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		if( literal == null ) {
+			sb.append("null");
+		} else if( literal instanceof String) {
+			sb.append("'");
+			sb.append(TextNode.escape(literal.toString()));
+			sb.append("'");
+		} else {
+			sb.append(literal.toString());
+		}
+	}
 }

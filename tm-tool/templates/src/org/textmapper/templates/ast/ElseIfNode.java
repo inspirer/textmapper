@@ -24,7 +24,8 @@ public class ElseIfNode extends CompoundNode {
 	private final ExpressionNode condition;
 	private final ElseIfNode next;
 
-	protected ElseIfNode(ExpressionNode condition, List<Node> instructions, ElseIfNode next, TextSource source, int offset, int endoffset) {
+	protected ElseIfNode(ExpressionNode condition, List<Node> instructions, ElseIfNode next,
+						 TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.condition = condition;
 		this.next = next;
@@ -37,5 +38,20 @@ public class ElseIfNode extends CompoundNode {
 
 	public ElseIfNode getNext() {
 		return next;
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append('(');
+		condition.toJavascript(sb);
+		sb.append('?');
+		contentToJavascript(sb);
+		sb.append(':');
+		if (next != null) {
+			next.toJavascript(sb);
+		} else {
+			sb.append("''");
+		}
+		sb.append(')');
 	}
 }

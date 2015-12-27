@@ -15,14 +15,14 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.List;
-
 import org.textmapper.templates.api.EvaluationContext;
 import org.textmapper.templates.api.EvaluationException;
 import org.textmapper.templates.api.IEvaluationStrategy;
-import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.api.ITemplate;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.bundle.IBundleEntity;
+
+import java.util.List;
 
 public class TemplateNode extends CompoundNode implements ITemplate {
 	private final String name;
@@ -31,7 +31,8 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	private ITemplate base;
 	private String contextType;
 
-	public TemplateNode(String name, List<ParameterNode> parameters, String contextType, String templatePackage, TextSource source, int offset, int endoffset) {
+	public TemplateNode(String name, List<ParameterNode> parameters, String contextType,
+						String templatePackage, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		this.contextType = contextType;
 		int dot = name.lastIndexOf('.');
@@ -41,7 +42,8 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 		} else {
 			this.templatePackage = templatePackage;
 		}
-		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
+		this.parameters = parameters != null ?
+				parameters.toArray(new ParameterNode[parameters.size()]) : null;
 	}
 
 	@Override
@@ -59,19 +61,21 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	}
 
 	@Override
-	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments) throws EvaluationException {
-		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
-				: 0;
+	public String apply(EvaluationContext context, IEvaluationStrategy env, Object[] arguments)
+			throws EvaluationException {
+		int paramCount = parameters != null ? parameters.length : 0;
+		int argsCount = arguments != null ? arguments.length : 0;
 
 		if (paramCount != argsCount) {
-			throw new EvaluationException("Wrong number of arguments used while calling `" + toString()
-					+ "`: should be " + paramCount + " instead of " + argsCount);
+			throw new EvaluationException("Wrong number of arguments used while calling `"
+					+ toString() + "`: should be " + paramCount + " instead of " + argsCount);
 		}
 
 		StringBuilder sb = new StringBuilder();
 		if (paramCount > 0) {
 			for (int i = 0; i < paramCount; i++) {
-				context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
+				context.setVariable(parameters[i].getName(),
+						arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 			}
 		}
 		emit(sb, context, env);
@@ -84,6 +88,24 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	}
 
 	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("function ").append(getSignature()).append(" {\n");
+		if (instructions == null || instructions.isEmpty()) {
+			sb.append("  return '';");
+		} else {
+			sb.append("  return ");
+			for (int i = 0; i < instructions.size(); i++) {
+				if (i > 0) {
+					sb.append(" + \n\t\t");
+				}
+				instructions.get(i).toJavascript(sb);
+			}
+			sb.append(";");
+		}
+		sb.append("}\n\n");
+	}
+
+	@Override
 	public String getPackage() {
 		return templatePackage;
 	}
@@ -92,16 +114,16 @@ public class TemplateNode extends CompoundNode implements ITemplate {
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
+		sb.append('(');
 		if (parameters != null) {
-			sb.append('(');
 			for (int i = 0; i < parameters.length; i++) {
 				if (i > 0) {
-					sb.append(',');
+					sb.append(", ");
 				}
 				parameters[i].toString(sb);
 			}
-			sb.append(')');
 		}
+		sb.append(')');
 		return sb.toString();
 	}
 

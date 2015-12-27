@@ -22,8 +22,8 @@ import org.textmapper.templates.ast.TemplatesTree.TextSource;
 
 public class CommaNode extends ExpressionNode {
 
-	private final ExpressionNode leftExpr;
-	private final ExpressionNode rightExpr;
+	final ExpressionNode leftExpr;
+	final ExpressionNode rightExpr;
 
 	public CommaNode(ExpressionNode leftExpr, ExpressionNode rightExpr,
 					 TextSource source, int offset, int endoffset) {
@@ -44,5 +44,10 @@ public class CommaNode extends ExpressionNode {
 		leftExpr.toString(sb);
 		sb.append(", ");
 		rightExpr.toString(sb);
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("## /* TODO conversion error */");
 	}
 }

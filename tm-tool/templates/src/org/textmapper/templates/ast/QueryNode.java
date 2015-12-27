@@ -15,11 +15,12 @@
  */
 package org.textmapper.templates.ast;
 
-import java.util.List;
-
 import org.textmapper.templates.api.*;
-import org.textmapper.templates.bundle.IBundleEntity;
 import org.textmapper.templates.ast.TemplatesTree.TextSource;
+import org.textmapper.templates.bundle.IBundleEntity;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class QueryNode extends Node implements IQuery {
 
@@ -31,8 +32,9 @@ public class QueryNode extends Node implements IQuery {
 	private IQuery base;
 	private String contextType;
 
-	public QueryNode(String name, List<ParameterNode> parameters, String contextType, String templatePackage, ExpressionNode expr, boolean cache,
-			TextSource source, int offset, int endoffset) {
+	public QueryNode(String name, List<ParameterNode> parameters, String contextType,
+					 String templatePackage, ExpressionNode expr, boolean cache,
+					 TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
 		int dot = name.lastIndexOf('.');
 		this.name = dot > 0 ? name.substring(dot + 1) : name;
@@ -41,7 +43,8 @@ public class QueryNode extends Node implements IQuery {
 		} else {
 			this.templatePackage = templatePackage;
 		}
-		this.parameters = parameters != null ? parameters.toArray(new ParameterNode[parameters.size()]) : null;
+		this.parameters = parameters != null ?
+				parameters.toArray(new ParameterNode[parameters.size()]) : null;
 		this.contextType = contextType;
 		this.expr = expr;
 		this.isCached = cache;
@@ -69,12 +72,13 @@ public class QueryNode extends Node implements IQuery {
 	@Override
 	public Object invoke(EvaluationContext context, IEvaluationStrategy env, Object[] arguments)
 			throws EvaluationException {
-		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null ? arguments.length
+		int paramCount = parameters != null ? parameters.length : 0, argsCount = arguments != null
+				? arguments.length
 				: 0;
 
 		if (paramCount != argsCount) {
-			throw new EvaluationException("Wrong number of arguments used while calling `" + toString()
-					+ "`: should be " + paramCount + " instead of " + argsCount);
+			throw new EvaluationException("Wrong number of arguments used while calling `"
+					+ toString() + "`: should be " + paramCount + " instead of " + argsCount);
 		}
 
 		Object result;
@@ -87,7 +91,8 @@ public class QueryNode extends Node implements IQuery {
 
 		if (paramCount > 0) {
 			for (int i = 0; i < paramCount; i++) {
-				context.setVariable(parameters[i].getName(), arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
+				context.setVariable(parameters[i].getName(),
+						arguments[i] != null ? arguments[i] : EvaluationContext.NULL_VALUE);
 			}
 		}
 		result = env.evaluate(expr, context, true);
@@ -101,16 +106,16 @@ public class QueryNode extends Node implements IQuery {
 	public String getSignature() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
+		sb.append('(');
 		if (parameters != null) {
-			sb.append('(');
 			for (int i = 0; i < parameters.length; i++) {
 				if (i > 0) {
-					sb.append(',');
+					sb.append(", ");
 				}
 				parameters[i].toString(sb);
 			}
-			sb.append(')');
 		}
+		sb.append(')');
 		return sb.toString();
 	}
 
@@ -126,6 +131,26 @@ public class QueryNode extends Node implements IQuery {
 		sb.append(" = ");
 		expr.toString(sb);
 		return sb.toString();
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("function ").append(getSignature()).append(" {\n");
+		LinkedList<Node> queue = new LinkedList<>();
+		queue.add(expr);
+
+		Node head;
+		while ((head = queue.poll()) != null) {
+			if (head instanceof CommaNode) {
+				queue.addFirst(((CommaNode) head).rightExpr);
+				queue.addFirst(((CommaNode) head).leftExpr);
+				continue;
+			}
+			sb.append(queue.isEmpty() ? "  return " : "  ");
+			head.toJavascript(sb);
+			sb.append(";\n");
+		}
+		sb.append("}\n\n");
 	}
 
 	@Override

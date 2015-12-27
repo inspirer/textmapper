@@ -21,17 +21,11 @@ import org.textmapper.templates.ast.TemplatesTree.TextSource;
 
 public class ParameterNode extends Node {
 
-	private String type;
 	private String name;
 
-	public ParameterNode(String type, String name, TextSource source, int offset, int endoffset) {
+	public ParameterNode(String name, TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
-		this.type = type;
 		this.name = name;
-	}
-
-	public String getType() {
-		return type;
 	}
 
 	public String getName() {
@@ -44,10 +38,11 @@ public class ParameterNode extends Node {
 	}
 
 	public void toString(StringBuilder sb) {
-		if(type != null) {
-			sb.append(type);
-			sb.append(' ');
-		}
+		sb.append(name);
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
 		sb.append(name);
 	}
 }

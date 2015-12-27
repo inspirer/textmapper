@@ -147,10 +147,8 @@ parameters (List<ParameterNode>) ::=
 ;
 
 parameter_list (List<ParameterNode>) ::=
-	  identifier                       				{ $$ = new ArrayList(); ${left()}.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
-	| qualified_id identifier                       { $$ = new ArrayList(); ${left()}.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
-	| parameter_list ',' identifier                 { $parameter_list.add(new ParameterNode(null, $identifier, source, ${identifier.offset}, ${left().endoffset})); }
-	| parameter_list ',' qualified_id identifier    { $parameter_list.add(new ParameterNode($qualified_id, $identifier, source, ${qualified_id.offset}, ${left().endoffset})); }
+	  identifier                       				{ $$ = new ArrayList(); ${left()}.add(new ParameterNode($identifier, source, ${identifier.offset}, ${left().endoffset})); }
+	| parameter_list ',' identifier                 { $parameter_list.add(new ParameterNode($identifier, source, ${identifier.offset}, ${left().endoffset})); }
 ;
 
 context_type (String) ::=

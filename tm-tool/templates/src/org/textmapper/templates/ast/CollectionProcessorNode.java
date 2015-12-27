@@ -34,8 +34,12 @@ public class CollectionProcessorNode extends ExpressionNode {
 	static final int SORT = 7;
 	static final int GROUPBY = 8;
 
-	private static final String[] INSTR_WORDS = new String[]{null,
+	private static final String[] INSTR_VERBS = new String[]{null,
 			"collect", "collectUnique", "reject", "select",
+			"forAll", "exists", "sort", "groupBy"};
+
+	private static final String[] JS_VERBS = new String[]{null,
+			"map", "collectUnique", "reject", "filter",
 			"forAll", "exists", "sort", "groupBy"};
 
 	private final ExpressionNode selectExpression;
@@ -188,10 +192,19 @@ public class CollectionProcessorNode extends ExpressionNode {
 	@Override
 	public void toString(StringBuilder sb) {
 		selectExpression.toString(sb);
-		sb.append(".").append(INSTR_WORDS[instruction]).append("(")
+		sb.append(".").append(INSTR_VERBS[instruction]).append("(")
 				.append(varName).append("|");
 		foreachExpr.toString(sb);
 		sb.append(")");
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		selectExpression.toString(sb);
+		sb.append(".").append(JS_VERBS[instruction]).append("(function(")
+				.append(varName).append(") { return ");
+		foreachExpr.toString(sb);
+		sb.append(";})");
 	}
 
 	private static class GroupList extends ArrayList<Object> {

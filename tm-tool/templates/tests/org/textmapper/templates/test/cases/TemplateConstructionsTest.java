@@ -307,7 +307,7 @@ public class TemplateConstructionsTest {
 		EvaluationContext context = new EvaluationContext(null);
 
 		// test 1
-		collector.addErrors("inline,1: Template `my1(aa)` is not compatible with base template `my1`");
+		collector.addErrors("inline,1: Template `my1(aa)` is not compatible with base template `my1()`");
 		collector.addErrors("inline,1: Wrong number of arguments used while calling `my1(aa)`: should be 1 instead of 0");
 		String q = env.executeTemplate("overrides.my1", context, null, null);
 		assertEquals("", q);

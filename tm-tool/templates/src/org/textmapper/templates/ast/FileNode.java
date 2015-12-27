@@ -35,12 +35,22 @@ public class FileNode extends CompoundNode {
 	protected void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env) {
 		StringBuilder file = new StringBuilder();
 		try {
-			String fileName = env.toString(env.evaluate(targetNameExpr, context, false), targetNameExpr);
+			String fileName = env.toString(
+					env.evaluate(targetNameExpr, context, false), targetNameExpr);
 			super.emit(file, context, env);
 
 			env.createStream(fileName, file.toString());
 		} catch (EvaluationException ex) {
 			/* ignore, skip if */
 		}
+	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("write(");
+		targetNameExpr.toString(sb);
+		sb.append(", ");
+		contentToJavascript(sb);
+		sb.append(")");
 	}
 }

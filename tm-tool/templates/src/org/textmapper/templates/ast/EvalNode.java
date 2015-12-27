@@ -62,6 +62,13 @@ public class EvalNode extends Node {
 		}
 	}
 
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		sb.append("eval/*TODO*/(");
+		templateExpr.toJavascript(sb);
+		sb.append(')');
+	}
+
 	private String prepareForURI(String s) {
 		StringBuilder sb = new StringBuilder();
 		for (char c : s.toCharArray()) {

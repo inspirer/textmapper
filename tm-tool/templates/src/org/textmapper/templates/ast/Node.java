@@ -33,6 +33,8 @@ public abstract class Node implements SourceElement {
 
 	protected abstract void emit(StringBuilder sb, EvaluationContext context, IEvaluationStrategy env);
 
+	public abstract void toJavascript(StringBuilder sb);
+
 	public String getLocation() {
 		return source.getLocation(offset);
 	}

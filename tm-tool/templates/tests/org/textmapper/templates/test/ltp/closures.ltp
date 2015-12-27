@@ -1,4 +1,4 @@
-${query F(x,yy) = {cached int i => '=' + (i + x) + ' and ' + yy }}
+${query F(x,yy) = {cached i => '=' + (i + x) + ' and ' + yy }}
 
 ${template test1-}
 ${call test11(42)-}
@@ -11,7 +11,7 @@ ${end}
 
 
 
-${query P(qt) = [3,5,7,9].collect(yt|{cached string prefix => prefix + (qt * yt)}) }
+${query P(qt) = [3,5,7,9].collect(yt|{cached prefix => prefix + (qt * yt)}) }
 
 ${template test2-}
 ${foreach res in []->P(3) separator ', '-}

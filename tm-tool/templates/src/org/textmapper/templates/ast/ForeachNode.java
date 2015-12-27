@@ -96,4 +96,24 @@ public class ForeachNode extends CompoundNode {
 			/* ignore, skip foreach */
 		}
 	}
+
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		selectExpr.toJavascript(sb);
+		sb.append(".map(function(");
+		sb.append(var);
+		if (targetExpr != null) {
+			sb.append(" to ### /* TODO */");
+			targetExpr.toJavascript(sb);
+		}
+		sb.append(") { return ");
+		contentToJavascript(sb);
+		sb.append("; }).join(");
+		if (separatorExpr != null) {
+			separatorExpr.toString(sb);
+		} else {
+			sb.append("''");
+		}
+		sb.append(")");
+	}
 }

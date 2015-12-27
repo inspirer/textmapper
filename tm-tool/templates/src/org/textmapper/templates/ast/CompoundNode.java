@@ -21,7 +21,7 @@ import org.textmapper.templates.ast.TemplatesTree.TextSource;
 
 import java.util.List;
 
-public class CompoundNode extends Node {
+public abstract class CompoundNode extends Node {
 
 	protected CompoundNode(TextSource source, int offset, int endoffset) {
 		super(source, offset, endoffset);
@@ -43,6 +43,15 @@ public class CompoundNode extends Node {
 			for (Node n : instructions) {
 				n.emit(sb, context, env);
 			}
+		}
+	}
+
+	protected void contentToJavascript(StringBuilder sb) {
+		boolean first = true;
+		for (Node n : instructions) {
+			if (!first) sb.append('+');
+			first = false;
+			n.toJavascript(sb);
 		}
 	}
 }

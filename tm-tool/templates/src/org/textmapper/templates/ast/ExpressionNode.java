@@ -44,5 +44,11 @@ public abstract class ExpressionNode extends Node {
 		return sb.toString();
 	}
 
+	@Override
+	public void toJavascript(StringBuilder sb) {
+		// TODO remove this function and implement it in all subclasses
+		toString(sb);
+	}
+
 	public abstract void toString(StringBuilder sb);
 }
