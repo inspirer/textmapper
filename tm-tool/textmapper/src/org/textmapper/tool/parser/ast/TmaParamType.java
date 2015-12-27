@@ -16,8 +16,6 @@
 package org.textmapper.tool.parser.ast;
 
 public enum TmaParamType {
-	LINT,
-	LSTRING,
 	LBOOL,
 	LSYMBOL,
 }

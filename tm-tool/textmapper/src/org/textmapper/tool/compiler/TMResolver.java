@@ -207,12 +207,8 @@ public class TMResolver {
 
 	private String asString(TemplateParameter.Type type) {
 		switch (type) {
-			case Bool:
+			case Flag:
 				return "bool";
-			case Integer:
-				return "int";
-			case String:
-				return "string";
 			case Symbol:
 				return "symbol";
 		}
@@ -223,10 +219,7 @@ public class TMResolver {
 	Object getParamValue(TemplateParameter.Type expectedType, ITmaParamValue paramValue) {
 		if (paramValue instanceof TmaLiteral) {
 			Object literalVal = ((TmaLiteral) paramValue).getValue();
-			TemplateParameter.Type actualType = (literalVal instanceof Integer) ? Type.Integer :
-					(literalVal instanceof String) ? Type.String :
-							Type.Bool;
-			if (actualType == expectedType) {
+			if (literalVal instanceof Boolean && expectedType == Type.Flag) {
 				return literalVal;
 			}
 			error(paramValue, "type error: " + asString(expectedType) + " is expected");
@@ -245,13 +238,7 @@ public class TMResolver {
 
 		switch (param.getParamType()) {
 			case LBOOL:
-				type = Type.Bool;
-				break;
-			case LINT:
-				type = Type.Integer;
-				break;
-			case LSTRING:
-				type = Type.String;
+				type = Type.Flag;
 				break;
 			case LSYMBOL:
 				type = Type.Symbol;
@@ -263,7 +250,7 @@ public class TMResolver {
 		return builder.addParameter(
 				type, param.getName().getID(),
 				getParamValue(type, param.getParamValue()),
-				param.isImplicit(),
+				param.isGlobal(),
 				param);
 	}
 
@@ -366,7 +353,7 @@ public class TMResolver {
 			Object val;
 			if (arg.getBool() != null) {
 				val = (arg.getBool() == TmaBoolKind.PLUS);
-				if (param.getType() != Type.Bool) {
+				if (param.getType() != Type.Flag) {
 					val = null;
 					error(arg, "type error: " + asString(param.getType()) + " is expected");
 				}

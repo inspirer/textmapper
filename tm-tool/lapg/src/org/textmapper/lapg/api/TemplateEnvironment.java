@@ -17,7 +17,7 @@ package org.textmapper.lapg.api;
 
 /**
  * The immutable data structure that maps template parameters to their values.
- * Template parameters can hold values of type Integer, String, Boolean, or (reference to) Symbol.
+ * Template parameters can hold values of type Boolean, or (reference to) Symbol.
  * Unset parameters are represented as nulls.
  */
 public interface TemplateEnvironment {

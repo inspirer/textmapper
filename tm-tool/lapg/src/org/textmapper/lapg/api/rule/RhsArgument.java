@@ -23,7 +23,7 @@ public interface RhsArgument extends SourceElement {
 	TemplateParameter getParameter();
 
 	/**
-	 * May hold a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * May hold a value of type Boolean, or (reference to) Symbol.
 	 * null, if the parameter is to be unset by the argument.
 	 */
 	Object getValue();

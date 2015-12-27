@@ -16,6 +16,7 @@
 package org.textmapper.lapg.builder;
 
 import org.junit.Test;
+import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateEnvironment;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.TemplateParameter.Type;
@@ -32,41 +33,31 @@ public class InstantiationTest {
 
 		assertEquals("", env.getNonterminalSuffix());
 
-		// Strings
-		TemplateParameter s1 = b.addParameter(Type.String, "s1", "abc", true, null);
-		TemplateParameter s2 = b.addParameter(Type.String, "s2", null, true, null);
-		env = env.extend(s1, "abcd");
-		assertEquals("_s1abcd", env.getNonterminalSuffix());
-
-		env = env.extend(s1, "'");
-		assertEquals("_s1Apostrophe", env.getNonterminalSuffix());
-
-		env = env.extend(s1, "q-d123");
-		assertEquals("_s1q-d123", env.getNonterminalSuffix());
-
-		env = env.extend(s1, "");
-		assertEquals("_s1", env.getNonterminalSuffix());
-
-		env = env.extend(s2, "q");
-		assertEquals("_s1_s2q", env.getNonterminalSuffix());
-
-
 		// Booleans
-		TemplateParameter b1 = b.addParameter(Type.Bool, "b1", null, true, null);
+		TemplateParameter b1 = b.addParameter(Type.Flag, "b1",
+				null /* no default */, true /* global */, null);
 		env = env.extend(b1, true);
-		assertEquals("_b1_s1_s2q", env.getNonterminalSuffix());
+		assertEquals("_b1", env.getNonterminalSuffix());
 
 		env = env.extend(b1, false);
-		assertEquals("_nonb1_s1_s2q", env.getNonterminalSuffix());
+		assertEquals("", env.getNonterminalSuffix());
+		env = env.extend(b1, true);
 
-		// Integers
-		TemplateParameter i = b.addParameter(Type.Integer, "i", null, true, null);
-		env = env.extend(i, 0);
-		assertEquals("_nonb1_i0_s1_s2q", env.getNonterminalSuffix());
+		// Symbols
+		Symbol t1 = b.addNonterminal("T1", null);
+		Symbol t2 = b.addNonterminal("T2", null);
 
-		env = env.extend(i, 100);
-		assertEquals("_nonb1_i100_s1_s2q", env.getNonterminalSuffix());
+		TemplateParameter s1 = b.addParameter(Type.Symbol, "s1", t1, true /* global */, null);
+		TemplateParameter s2 = b.addParameter(Type.Symbol, "s2",
+				null /* default value */, true /* global */, null);
+		env = env.extend(s1, t2);
+		assertEquals("_b1_s1_T2", env.getNonterminalSuffix());
 
+		env = env.extend(s1, null);
+		assertEquals("_b1", env.getNonterminalSuffix());
+
+		env = env.extend(s1, t1);
+		assertEquals("_b1", env.getNonterminalSuffix());
 	}
 
 }

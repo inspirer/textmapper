@@ -23,7 +23,7 @@
 %%
 
 input :
-  list_of_assignment epilogue_AllowObject_a1 epilogue_nonAllowObject_a2
+  list_of_T_assignment epilogue_AllowObject_T_a1 epilogue_T_a2
 ;
 
 key_value_list_Comma_separated2 :
@@ -47,12 +47,12 @@ key_value :
   icon Colon sconopt
 ;
 
-list_of_nonAllowObject_key_value :
+list_of_T_key_value1 :
   key_value_list_Comma_separated2
 ;
 
-object_nonAllowObject :
-  kw_object Lparen list_of_nonAllowObject_key_value Rparen
+object2 :
+  kw_object Lparen list_of_T_key_value1 Rparen
 | kw_object
 ;
 
@@ -61,20 +61,20 @@ sconopt :
 | scon
 ;
 
-list_of_AllowObject_key_value :
+list_of_AllowObject_T_key_value :
   key_value_list_Comma_separated1
 ;
 
-list_of_assignment :
+list_of_T_assignment :
   assignment_list_Comma_separated
 ;
 
-epilogue_AllowObject_a1 :
-  a1 Lparen list_of_AllowObject_expression Rparen
+epilogue_AllowObject_T_a1 :
+  a1 Lparen list_of_AllowObject_T_expression Rparen
 ;
 
-epilogue_nonAllowObject_a2 :
-  a2 Lparen list_of_nonAllowObject_expression Rparen
+epilogue_T_a2 :
+  a2 Lparen list_of_T_expression Rparen
 ;
 
 assignment_list_Comma_separated :
@@ -82,12 +82,12 @@ assignment_list_Comma_separated :
 | assignment
 ;
 
-list_of_AllowObject_expression :
+list_of_AllowObject_T_expression :
   expression_AllowObject_list_Comma_separated
 ;
 
-list_of_nonAllowObject_expression :
-  expression_nonAllowObject_list_Comma_separated
+list_of_T_expression :
+  expression_list_Comma_separated
 ;
 
 expression_AllowObject_list_Comma_separated :
@@ -95,13 +95,13 @@ expression_AllowObject_list_Comma_separated :
 | expression_AllowObject
 ;
 
-expression_nonAllowObject_list_Comma_separated :
-  expression_nonAllowObject_list_Comma_separated Comma expression_nonAllowObject
-| expression_nonAllowObject
+expression_list_Comma_separated :
+  expression_list_Comma_separated Comma expression1
+| expression1
 ;
 
 object1 :
-  kw_object Lparen list_of_key_value Rparen
+  kw_object Lparen list_of_T_key_value Rparen
 | kw_object
 ;
 
@@ -110,16 +110,16 @@ expression_AllowObject :
 | object_AllowObject
 ;
 
-expression_nonAllowObject :
+expression1 :
   icon
 ;
 
-list_of_key_value :
+list_of_T_key_value :
   key_value_list_Comma_separated
 ;
 
 object_AllowObject :
-  kw_object Lparen list_of_AllowObject_key_value Rparen
+  kw_object Lparen list_of_AllowObject_T_key_value Rparen
 | kw_object
 ;
 

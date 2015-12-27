@@ -19,7 +19,6 @@ import org.textmapper.lapg.api.DerivedSourceElement;
 import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
-import org.textmapper.lapg.common.FormatUtil;
 
 public class LiTemplateParameter extends LiUserDataHolder
 		implements TemplateParameter, DerivedSourceElement {
@@ -27,15 +26,15 @@ public class LiTemplateParameter extends LiUserDataHolder
 	private final Type type;
 	private final String name;
 	private final Object defaultValue;
-	private final boolean implicit;
+	private final boolean global;
 	private final SourceElement origin;
 
 	public LiTemplateParameter(Type type, String name, Object defaultValue,
-							   boolean implicit, SourceElement origin) {
+							   boolean global, SourceElement origin) {
 		this.type = type;
 		this.name = name;
 		this.defaultValue = defaultValue;
-		this.implicit = implicit;
+		this.global = global;
 		this.origin = origin;
 	}
 
@@ -55,36 +54,20 @@ public class LiTemplateParameter extends LiUserDataHolder
 	}
 
 	@Override
-	public boolean isImplicit() {
-		return implicit;
+	public boolean isGlobal() {
+		return global;
 	}
 
 	@Override
 	public void appendSuffix(StringBuilder sb, Object value) {
-		sb.append("_");
-		if (value instanceof Symbol) {
-			sb.append(((Symbol) value).getName());
+		if (type == Type.Flag && !value.equals(Boolean.TRUE)) {
 			return;
 		}
-		if (value == Boolean.FALSE) {
-			sb.append("non");
-		}
+		sb.append("_");
 		sb.append(getName());
-		if (value instanceof Integer) {
-			sb.append(value.toString());
-		} else if (value instanceof String) {
-			String s = (String) value;
-			for (int i = 0; i < s.length(); i++) {
-				char c = s.charAt(i);
-				if (c >= 'a' && c <= 'z'
-						|| c >= 'A' && c <= 'Z'
-						|| c == '-'
-						|| c >= '0' && c <= '9') {
-					sb.append(c);
-				} else {
-					sb.append(FormatUtil.getCharacterName(c));
-				}
-			}
+		if (value instanceof Symbol) {
+			sb.append("_");
+			sb.append(((Symbol) value).getName());
 		}
 	}
 
@@ -95,6 +78,6 @@ public class LiTemplateParameter extends LiUserDataHolder
 
 	@Override
 	public String toString() {
-		return name + ":" + type;
+		return name + " " + type;
 	}
 }

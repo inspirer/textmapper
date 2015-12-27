@@ -130,7 +130,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public TemplateParameter addParameter(Type type, String name, Object defaultValue,
-										  boolean implicit, SourceElement origin) {
+										  boolean global, SourceElement origin) {
 		if (name == null) {
 			throw new NullPointerException();
 		}
@@ -145,7 +145,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 					"symbol (or template parameter) `" + name + "' already exists");
 		}
 		LiTemplateParameter param =
-				new LiTemplateParameter(type, name, defaultValue, implicit, origin);
+				new LiTemplateParameter(type, name, defaultValue, global, origin);
 		symbolsMap.put(name, param);
 		params.add(param);
 		return param;
@@ -591,15 +591,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 					throw new IllegalArgumentException("symbol default value is expected");
 				check((Symbol) value);
 				break;
-			case String:
-				if (!(value instanceof String))
-					throw new IllegalArgumentException("string default value is expected");
-				break;
-			case Integer:
-				if (!(value instanceof Integer))
-					throw new IllegalArgumentException("integer default value is expected");
-				break;
-			case Bool:
+			case Flag:
 				if (!(value instanceof Boolean))
 					throw new IllegalArgumentException("boolean default value is expected");
 				break;

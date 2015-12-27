@@ -38,7 +38,7 @@ public interface GrammarBuilder extends GrammarMapper {
 	Terminal getEoi();
 
 	TemplateParameter addParameter(TemplateParameter.Type type,
-								   String name, Object defaultValue, boolean implicit,
+								   String name, Object defaultValue, boolean global,
 								   SourceElement origin);
 
 	TemplateEnvironment getRootEnvironment();
@@ -56,11 +56,13 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin);
 
-	RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args, SourceElement origin);
+	RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args,
+							 SourceElement origin);
 
 	RhsAssignment assignment(String name, RhsPart inner, boolean isAddition, SourceElement origin);
 
-	RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner, SourceElement origin);
+	RhsCast cast(Symbol asSymbol, Collection<RhsArgument> args, RhsPart inner,
+				 SourceElement origin);
 
 	RhsChoice choice(Collection<RhsPart> parts, SourceElement origin);
 

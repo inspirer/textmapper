@@ -19,21 +19,21 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNontermParam extends TmaNode implements ITmaGrammarPart {
 
-	private final boolean implicit;
+	private final boolean global;
 	private final TmaIdentifier name;
 	private final TmaParamType paramType;
 	private final ITmaParamValue paramValue;
 
-	public TmaNontermParam(boolean implicit, TmaIdentifier name, TmaParamType paramType, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermParam(boolean global, TmaIdentifier name, TmaParamType paramType, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.implicit = implicit;
+		this.global = global;
 		this.name = name;
 		this.paramType = paramType;
 		this.paramValue = paramValue;
 	}
 
-	public boolean isImplicit() {
-		return implicit;
+	public boolean isGlobal() {
+		return global;
 	}
 
 	public TmaIdentifier getName() {

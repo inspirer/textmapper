@@ -18,9 +18,7 @@ package org.textmapper.lapg.api;
 public interface TemplateParameter extends SourceElement, UserDataHolder {
 
 	enum Type {
-		Bool,
-		String,
-		Integer,
+		Flag,
 		Symbol
 	}
 	Type getType();
@@ -28,12 +26,12 @@ public interface TemplateParameter extends SourceElement, UserDataHolder {
 	String getName();
 
 	/**
-	 * May hold a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * May hold a value of type Boolean, or (reference to) Symbol.
 	 * Or null, if the parameter does not have any default value (unset).
 	 */
 	Object getDefaultValue();
 
-	boolean isImplicit();
+	boolean isGlobal();
 
 	void appendSuffix(StringBuilder sb, Object value);
 }

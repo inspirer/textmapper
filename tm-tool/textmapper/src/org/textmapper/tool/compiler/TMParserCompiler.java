@@ -298,7 +298,7 @@ public class TMParserCompiler {
 			TemplateParameter param = resolver.resolveParam(((TmaBoolPredicate) e).getParamRef());
 			if (param == null) return null;
 
-			if (param.getType() != Type.Bool) {
+			if (param.getType() != Type.Flag) {
 				error(e, "type of " + param.getName() + " must be boolean");
 				return null;
 			}
