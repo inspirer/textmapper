@@ -23,7 +23,7 @@ package org.textmapper.lapg.api;
 public interface TemplateEnvironment {
 
 	/**
-	 * May hold a value of type Integer, String, Boolean, or (reference to) Symbol.
+	 * May hold a value of type Boolean, or (reference to) Symbol.
 	 * Returns null, if the parameter is unset.
 	 */
 	Object getValue(TemplateParameter param);
@@ -31,7 +31,7 @@ public interface TemplateEnvironment {
 	/**
 	 * Creates a new template environment based on the current one with the parameter set to value.
 	 *
-	 * @param value Integer, String, Boolean, (reference to) Symbol, or null if the parameter
+	 * @param value Boolean, (reference to) Symbol, or null if the parameter
 	 *              is to be unset by the argument.
 	 */
 	TemplateEnvironment extend(TemplateParameter param, Object value);

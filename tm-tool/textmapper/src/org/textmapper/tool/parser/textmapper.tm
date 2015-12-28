@@ -109,8 +109,7 @@ Lnonempty: /nonempty/		(soft)
 
 Lglobal: /global/			(soft)
 Lparam: /param/			    (soft)
-Lbool: /bool/				(soft)
-Lsymbol: /symbol/			(soft)
+Lflag: /flag/				(soft)
 
 Lnoeoi: /no-eoi/			(soft)
 
@@ -262,7 +261,7 @@ assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
 nonterm_param returns grammar_part ::=
-	  '%' global=Lglobal? Lparam name=identifier param_type ('=' param_value)? ';'
+	  '%' global=Lglobal? param_type name=identifier ('=' param_value)? ';'
 ;
 
 directive returns grammar_part ::=
@@ -407,7 +406,7 @@ keyval_arg ::=
 ;
 
 param_type ::=
-	  Lbool | Lsymbol ;
+	  Lflag | Lparam ;
 
 param_value ::=
 	  literal

@@ -25,11 +25,14 @@ import org.textmapper.lapg.common.FormatUtil;
 public class LiRhsArgument implements RhsArgument, DerivedSourceElement {
 
 	private final TemplateParameter parameter;
+	private final TemplateParameter source;
 	private final Object value;
 	private final SourceElement origin;
 
-	public LiRhsArgument(TemplateParameter parameter, Object value, SourceElement origin) {
+	public LiRhsArgument(TemplateParameter parameter, TemplateParameter source,
+						 Object value, SourceElement origin) {
 		this.parameter = parameter;
+		this.source = source;
 		this.value = value;
 		this.origin = origin;
 	}
@@ -37,6 +40,11 @@ public class LiRhsArgument implements RhsArgument, DerivedSourceElement {
 	@Override
 	public TemplateParameter getParameter() {
 		return parameter;
+	}
+
+	@Override
+	public TemplateParameter getSource() {
+		return source;
 	}
 
 	@Override

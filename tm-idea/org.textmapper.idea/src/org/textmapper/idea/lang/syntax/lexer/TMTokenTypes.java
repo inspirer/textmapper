@@ -118,8 +118,7 @@ public interface TMTokenTypes {
 
 	IElementType KW_GLOBAL = new TMElementType(Tokens.Lglobal, "global");
 	IElementType KW_PARAM = new TMElementType(Tokens.Lparam, "param");
-	IElementType KW_BOOL = new TMElementType(Tokens.Lbool, "bool");
-	IElementType KW_SYMBOL = new TMElementType(Tokens.Lsymbol, "symbol");
+	IElementType KW_FLAG = new TMElementType(Tokens.Lflag, "flag");
 
 	IElementType KW_NOEOI = new TMElementType(Tokens.Lnoeoi, "no-eoi");
 
@@ -146,7 +145,7 @@ public interface TMTokenTypes {
 			KW_RETURNS,
 			KW_INPUT, KW_LEFT, KW_RIGHT, KW_NONASSOC,
 			KW_GENERATE, KW_ASSERT, KW_EMPTY, KW_NONEMPTY,
-			KW_GLOBAL, KW_PARAM, KW_BOOL, KW_SYMBOL,
+			KW_GLOBAL, KW_PARAM, KW_FLAG,
 			KW_NOEOI,
 			KW_SOFT, KW_CLASS, KW_INTERFACE, KW_VOID, KW_SPACE, KW_LAYOUT, KW_LANGUAGE, KW_LALR,
 			KW_LEXER, KW_PARSER);

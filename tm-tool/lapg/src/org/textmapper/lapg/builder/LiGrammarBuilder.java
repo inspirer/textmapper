@@ -300,12 +300,23 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public RhsArgument argument(TemplateParameter param, Object value, SourceElement origin) {
+	public RhsArgument argument(TemplateParameter param, TemplateParameter source, Object value,
+								SourceElement origin) {
 		check(param);
+		if (source != null) {
+			check(source);
+			if (source.getType() != param.getType()) {
+				throw new IllegalArgumentException("Invalid source: type mismatch");
+			}
+			if (source.getType() == Type.Symbol && param != source) {
+				throw new IllegalArgumentException(
+						"Only direct propagation is allowed for symbol parameters");
+			}
+		}
 		if (value != null) {
 			check(param.getType(), value);
 		}
-		return new LiRhsArgument(param, value, origin);
+		return new LiRhsArgument(param, source, value, origin);
 	}
 
 	@Override

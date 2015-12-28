@@ -23,8 +23,16 @@ public interface RhsArgument extends SourceElement {
 	TemplateParameter getParameter();
 
 	/**
+	 * If set, the value is taken from this parameter available at the call site.
+	 * getSource() can point to the same parameter as getParameter() to propagate values
+	 * between nonterminals.
+	 */
+	TemplateParameter getSource();
+
+	/**
 	 * May hold a value of type Boolean, or (reference to) Symbol.
 	 * null, if the parameter is to be unset by the argument.
+	 * Note: this is ignored if getSource() is not null.
 	 */
 	Object getValue();
 }

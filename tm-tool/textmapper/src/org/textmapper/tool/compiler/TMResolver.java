@@ -237,10 +237,10 @@ public class TMResolver {
 		TemplateParameter.Type type;
 
 		switch (param.getParamType()) {
-			case LBOOL:
+			case LFLAG:
 				type = Type.Flag;
 				break;
-			case LSYMBOL:
+			case LPARAM:
 				type = Type.Symbol;
 				break;
 			default:
@@ -339,7 +339,7 @@ public class TMResolver {
 			for (ITmaParamValue value : valueList) {
 				TemplateParameter param = expectedParameters.get(index++);
 				Object val = getParamValue(param.getType(), value);
-				result.add(builder.argument(param, val, value));
+				result.add(builder.argument(param, null /* TODO */, val, value));
 			}
 			return result.isEmpty() ? null : result;
 		}
@@ -360,7 +360,7 @@ public class TMResolver {
 			} else {
 				val = getParamValue(param.getType(), arg.getVal());
 			}
-			result.add(builder.argument(param, val, arg));
+			result.add(builder.argument(param, null /* TODO */, val, arg));
 		}
 		return result.isEmpty() ? null : result;
 	}

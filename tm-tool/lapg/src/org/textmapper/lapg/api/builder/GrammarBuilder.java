@@ -52,7 +52,8 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	NamedSet addSet(String name, RhsSet set, SourceElement origin);
 
-	RhsArgument argument(TemplateParameter param, Object value, SourceElement origin);
+	RhsArgument argument(TemplateParameter param, TemplateParameter source, Object value,
+						 SourceElement origin);
 
 	RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin);
 

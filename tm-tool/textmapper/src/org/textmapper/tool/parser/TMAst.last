@@ -282,13 +282,13 @@ assoc  : Assoc ::=
 
 class NontermParam : GrammarPart {
 	boolean global;
-	Identifier name;
 	ParamType paramType;
+	Identifier name;
 	ParamValue paramValue;
 }
 
 nonterm_param  : NontermParam ::=
-	this=new.NontermParam: '%' global=Lglobal as true? Lparam name=identifier paramType=param_type ('=' paramValue=param_value)? ';'
+	this=new.NontermParam: '%' global=Lglobal as true? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
 ;
 
 class DirectivePrio : GrammarPart {
@@ -609,13 +609,13 @@ keyval_arg  : KeyvalArg ::=
 ;
 
 enum ParamType {
-	LBOOL,
-	LSYMBOL
+	LFLAG,
+	LPARAM
 }
 
 param_type  : ParamType ::=
-	this=Lbool as ParamType.LBOOL
-  | this=Lsymbol as ParamType.LSYMBOL
+	this=Lflag as ParamType.LFLAG
+  | this=Lparam as ParamType.LPARAM
 ;
 
 interface ParamValue {

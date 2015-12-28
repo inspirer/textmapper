@@ -85,6 +85,8 @@ class TemplateInstantiator {
 		if (args == null) return;
 
 		for (RhsArgument arg : args) {
+			if (!(arg.getValue() instanceof Symbol)) continue;
+
 			TemplateParameter param = arg.getParameter();
 			Set<Object> set = paramValues.get(param);
 			if (set == null) {
@@ -228,12 +230,14 @@ class TemplateInstantiator {
 		}
 	}
 
-	private TemplateEnvironment applyArguments(TemplateEnvironment env,
+	private TemplateEnvironment applyArguments(TemplateEnvironment sourceEnv,
 											   Nonterminal target, RhsArgument[] args) {
 		final BitSet acceptedParameters = paramUsage.get(target);
 
-		// Remove unused parameters.
-		env = env.filter(parameter -> acceptedParameters.get(paramIndex.get(parameter)));
+		// Remove non-global & unused parameters.
+		TemplateEnvironment env = sourceEnv.filter(
+				parameter -> parameter.isGlobal()
+						&& acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;
 
@@ -245,7 +249,9 @@ class TemplateInstantiator {
 						+ " is not used in " + target.getName()));
 				continue;
 			}
-			env = env.extend(arg.getParameter(), arg.getValue());
+			TemplateParameter source = arg.getSource();
+			Object val = source != null ? sourceEnv.getValue(source) : arg.getValue();
+			env = env.extend(arg.getParameter(), val);
 		}
 		return env;
 	}

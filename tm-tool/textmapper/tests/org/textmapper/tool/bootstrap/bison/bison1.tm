@@ -54,11 +54,11 @@ key_value ::=
 	  icon  ':' sconopt
 ;
 
-%param T symbol;
+%global param T;
 
 list_of<T> ::=  (T separator ',')+ ;
 
-%param AllowObject bool;
+%global flag AllowObject;
 
 expression ::=
 	  icon

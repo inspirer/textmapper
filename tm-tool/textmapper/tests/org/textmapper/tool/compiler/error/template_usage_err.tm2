@@ -41,7 +41,7 @@ key_value ::=
 	  identifier ':' object
 ;
 
-%param Elem symbol;
+%global param Elem;
 
 list<Elem> ::=
 # ERR: @Elem: Template parameter is unset.
@@ -51,7 +51,7 @@ list<Elem> ::=
 	| list ',' Elem
 ;
 
-%param Bool bool;
+%global flag Bool;
 
 A ::=
 	  identifier
