@@ -20,15 +20,15 @@ import org.textmapper.tool.parser.TMTree.TextSource;
 
 public class TmaNontermParams extends TmaNode {
 
-	private final List<TmaIdentifier> refs;
+	private final List<ITmaNontermParam> list;
 
-	public TmaNontermParams(List<TmaIdentifier> refs, TextSource source, int line, int offset, int endoffset) {
+	public TmaNontermParams(List<ITmaNontermParam> list, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.refs = refs;
+		this.list = list;
 	}
 
-	public List<TmaIdentifier> getRefs() {
-		return refs;
+	public List<ITmaNontermParam> getList() {
+		return list;
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class TmaNontermParams extends TmaNode {
 		if (!v.visit(this)) {
 			return;
 		}
-		if (refs != null) {
-			for (TmaIdentifier it : refs) {
+		if (list != null) {
+			for (ITmaNontermParam it : list) {
 				it.accept(v);
 			}
 		}

@@ -167,7 +167,8 @@ class TemplateInstance {
 			case Sequence:
 				return cloneSeq((RhsSequence) p);
 			case Symbol:
-				return new LiRhsSymbol(resolveSymbol((TemplatedSymbolRef) p), null /* args */, p);
+				return new LiRhsSymbol(resolveSymbol((TemplatedSymbolRef) p),
+						null /* args */, false, p);
 			case Unordered:
 				return new LiRhsUnordered(clone(((LiRhsUnordered) p).getParts()), p);
 			case Assignment: {

@@ -125,6 +125,8 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmNamedPattern(node);
 			case Nonterminals.nonterm:
 				return new TmNonterm(node);
+			case Nonterminals.template_param:
+				return new TmTemplateParam(node);
 			case Nonterminals.nonterm_params:
 				return new TmNontermParams(node);
 			case Nonterminals.nonterm_type:
@@ -137,8 +139,8 @@ public class TMParserDefinition implements ParserDefinition {
 				return new TmLexerDirective(node);
 			case Nonterminals.param_ref:
 				return new TmParameterReference(node);
-			case Nonterminals.keyval_arg:
-				return new TmKeyValueArgument(node);
+			case Nonterminals.argument:
+				return new TmTemplateArg(node);
 			case Nonterminals.map_entry:
 				return new TmMapEntry(node);
 		}

@@ -322,7 +322,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	@Override
 	public RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin) {
 		check(sym);
-		LiRhsSymbol result = new LiRhsSymbol(sym, convertArgs(args), origin);
+		LiRhsSymbol result = new LiRhsSymbol(sym, convertArgs(args), false, origin);
+		rhsSet.add(result);
+		return result;
+	}
+
+	@Override
+	public RhsSymbol symbolFwdAll(Symbol sym, SourceElement origin) {
+		check(sym);
+		LiRhsSymbol result = new LiRhsSymbol(sym, null, true, origin);
 		rhsSet.add(result);
 		return result;
 	}

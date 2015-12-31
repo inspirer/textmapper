@@ -33,13 +33,15 @@ a4:  /a4/
 %nonassoc a4;
 
 input ::=
-	  list_of<assignment>
+	  list<Of: assignment>
 			epilogue<T: a1, +AllowObject>
 			epilogue<T: a2, ~AllowObject>
 ;
 
+%global param T;
+
 epilogue ::=
-	  T '(' list_of<expression> ')'
+	  T '(' list<Of: expression> ')'
 ;
 
 assignment ::=
@@ -47,16 +49,14 @@ assignment ::=
 ;
 
 object ::=
-	  kw_object ('(' list_of<key_value>  ')')?
+	  kw_object ('(' list<Of: key_value>  ')')?
 ;
 
 key_value ::=
 	  icon  ':' sconopt
 ;
 
-%global param T;
-
-list_of<T> ::=  (T separator ',')+ ;
+list<param Of> ::=  (Of separator ',')+ ;
 
 %global flag AllowObject;
 

@@ -38,5 +38,10 @@ public interface RhsSymbol extends RhsPart {
 	 */
 	RhsArgument[] getArgs();
 
+	/**
+	 * Forwards all template arguments, including non-globals.
+	 */
+	boolean isFwdAll();
+
 	RhsMapping getMapping();
 }

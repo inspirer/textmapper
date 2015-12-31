@@ -20,7 +20,6 @@ import org.textmapper.lapg.api.SourceElement;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.rule.RhsArgument;
-import org.textmapper.lapg.common.FormatUtil;
 
 public class LiRhsArgument implements RhsArgument, DerivedSourceElement {
 
@@ -65,29 +64,32 @@ public class LiRhsArgument implements RhsArgument, DerivedSourceElement {
 		LiRhsArgument that = (LiRhsArgument) o;
 
 		if (!parameter.equals(that.parameter)) return false;
-		if (!value.equals(that.value)) return false;
+		if (source != null ? !source.equals(that.source) : that.source != null) return false;
+		return value != null ? value.equals(that.value) : that.value == null;
 
-		return true;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = parameter.hashCode();
-		result = 31 * result + value.hashCode();
+		result = 31 * result + (source != null ? source.hashCode() : 0);
+		result = 31 * result + (value != null ? value.hashCode() : 0);
 		return result;
 	}
 
 	public void toString(StringBuilder sb) {
-		sb.append(parameter.getName());
-		sb.append(":");
-		if (value instanceof Symbol) {
-			sb.append(((Symbol) value).getName());
-		} else if (value instanceof Integer || value instanceof Boolean) {
-			sb.append(value);
-		} else if (value instanceof String) {
-			sb.append('"');
-			sb.append(FormatUtil.escape((String) value));
-			sb.append('"');
+		if (source != null) {
+			sb.append(parameter.getName());
+			if (source != parameter) {
+				sb.append(":").append(source.getName());
+			}
+		} else if (value instanceof Boolean) {
+			sb.append((boolean) value ? "+" : "~");
+			sb.append(parameter.getName());
+		} else if (value instanceof Symbol || value == null) {
+			sb.append(parameter.getName());
+			sb.append(":");
+			sb.append(value == null ? "null" : ((Symbol) value).getName());
 		} else {
 			throw new IllegalStateException();
 		}

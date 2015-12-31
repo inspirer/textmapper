@@ -38,8 +38,9 @@ public interface TextmapperElementTypes {
 	IElementType LEXER_DIRECTIVE = new TMElementType(Nonterminals.lexer_directive, "lexer directive");
 
 	IElementType NONTERM = new TMElementType(Nonterminals.nonterm, "nonterminal");
-	IElementType NONTERM_PARAM = new TMElementType(Nonterminals.nonterm_param, "nonterminal parameter definition");
+	IElementType TEMPLATE_PARAM = new TMElementType(Nonterminals.template_param, "template parameter definition");
 	IElementType NONTERM_PARAMS = new TMElementType(Nonterminals.nonterm_params, "nonterminal parameters");
+	IElementType NONTERM_PARAM = new TMElementType(Nonterminals.nonterm_param, "nonterminal parameter definition");
 	IElementType NONTERM_TYPE = new TMElementType(Nonterminals.nonterm_type, "nonterminal type");
 	IElementType DIRECTIVE = new TMElementType(Nonterminals.directive, "directive");
 
@@ -65,16 +66,16 @@ public interface TextmapperElementTypes {
 	IElementType QUALIFIED_ID = new TMElementType(Nonterminals.qualified_id, "qualified identifier");
 
 	IElementType PARAMREF = new TMElementType(Nonterminals.param_ref, "parameter reference");
-	IElementType KEYVAL = new TMElementType(Nonterminals.keyval_arg, "key-value argument");
+	IElementType TEMPLATE_ARG = new TMElementType(Nonterminals.argument, "template argument");
 	IElementType MAP_ENTRY = new TMElementType(Nonterminals.map_entry, "map entry");
 
 	IElementType[] allElements = {
 			HEADER, IMPORT, OPTION,
 			LEXEM, STATE_SELECTOR, NAMED_PATTERN, LEXEM_ATTRS, LEXER_STATE, LEXER_DIRECTIVE,
-			NONTERM, NONTERM_PARAM, NONTERM_PARAMS, NONTERM_TYPE, DIRECTIVE,
+			NONTERM, TEMPLATE_PARAM, NONTERM_PARAMS, NONTERM_PARAM, NONTERM_TYPE, DIRECTIVE,
 			RULE, RHS_PREFIX, RHS_SUFFIX, RULE_ACTION, RHS_PART, RHS_UNORDERED, RHS_PRIMARY,
 			ACTION, TYPE, ANNOTATION, EXPRESSION, PREDICATE, PREDICATE_EXPRESSION,
 			SYMREF, SYMREF_ARGS, SYMREF_NA, STATEREF, IDENTIFIER, QUALIFIED_ID,
-			PARAMREF, KEYVAL, MAP_ENTRY
+			PARAMREF, TEMPLATE_ARG, MAP_ENTRY
 	};
 }

@@ -241,7 +241,7 @@ grammar_parts ::=
 ;
 
 grammar_part ::=
-	  nonterm | nonterm_param | directive ;
+	  nonterm | template_param | directive ;
 
 nonterm ::=
 	  annotations? name=identifier params=nonterm_params? type=nonterm_type? '::=' rules ';' ;
@@ -260,7 +260,7 @@ implements ::=
 assoc ::=
 	  Lleft | Lright | Lnonassoc ;
 
-nonterm_param returns grammar_part ::=
+template_param returns grammar_part ::=
 	  '%' global=Lglobal? param_type name=identifier ('=' param_value)? ';'
 ;
 
@@ -390,19 +390,22 @@ annotation ::=
 ##### Nonterminal parameters
 
 nonterm_params ::=
-	  '<' refs=(param_ref separator ',')+ '>' ;
+	  '<' list=(nonterm_param separator ',')+ '>' ;
 
-param_ref ::=
-	  identifier ;
-
-symref_args ::=
-	  '<' value_list=(param_value separator ',')+ '>'
-	| '<' keyvalue_list=(keyval_arg separator ',')* '>'
+nonterm_param interface ::=
+	  param_ref
+	| param_type=ID name=identifier ('=' param_value)?     {~inlineParameter}
 ;
 
-keyval_arg ::=
+param_ref ::=
+	  ref=identifier ;
+
+symref_args ::=
+	  '<' arg_list=(argument separator ',')* '>' ;
+
+argument ::=
 	  name=param_ref ':' val=param_value
-	| (bool='+'|bool='~') name=param_ref
+	| (bool='+'|bool='~')? name=param_ref
 ;
 
 param_type ::=

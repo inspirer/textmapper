@@ -15,31 +15,5 @@
  */
 package org.textmapper.tool.parser.ast;
 
-import java.util.List;
-import org.textmapper.tool.parser.TMTree.TextSource;
-
-public class TmaSymrefArgs extends TmaNode {
-
-	private final List<TmaArgument> argList;
-
-	public TmaSymrefArgs(List<TmaArgument> argList, TextSource source, int line, int offset, int endoffset) {
-		super(source, line, offset, endoffset);
-		this.argList = argList;
-	}
-
-	public List<TmaArgument> getArgList() {
-		return argList;
-	}
-
-	@Override
-	public void accept(TmaVisitor v) {
-		if (!v.visit(this)) {
-			return;
-		}
-		if (argList != null) {
-			for (TmaArgument it : argList) {
-				it.accept(v);
-			}
-		}
-	}
+public interface ITmaNontermParam extends ITmaNode {
 }

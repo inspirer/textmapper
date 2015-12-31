@@ -203,7 +203,7 @@ public class TMParserCompiler {
 					continue;
 				}
 
-				RhsSet set = convertSet(namedSet.getRhsSet().getExpr());
+				RhsSet set = convertSet(namedSet.getRhsSet().getExpr(), null);
 				if (set != null) {
 					builder.addSet(namedSet.getName(), set, clause);
 				}
@@ -281,7 +281,7 @@ public class TMParserCompiler {
 		if (prio != null) {
 			rule = builder.addPrecedence(rule, prio);
 		}
-		RhsPredicate predicate = convertPredicate(right.getPredicate());
+		RhsPredicate predicate = convertPredicate(right.getPredicate(), left);
 		builder.addRule(left, predicate == null
 				? rule : builder.conditional(predicate, rule, right));
 		Map<String, Object> annotations = expressionResolver.convert(right.getPrefix() != null ?
@@ -291,11 +291,12 @@ public class TMParserCompiler {
 		TMDataUtil.putCode(rule, lastAction);
 	}
 
-	private RhsPredicate convertPredicate(ITmaPredicateExpression e) {
+	private RhsPredicate convertPredicate(ITmaPredicateExpression e, Nonterminal context) {
 		if (e == null) return null;
 
 		if (e instanceof TmaBoolPredicate) {
-			TemplateParameter param = resolver.resolveParam(((TmaBoolPredicate) e).getParamRef());
+			TemplateParameter param = resolver.resolveParam(
+					((TmaBoolPredicate) e).getParamRef(), context);
 			if (param == null) return null;
 
 			if (param.getType() != Type.Flag) {
@@ -309,7 +310,7 @@ public class TMParserCompiler {
 
 		} else if (e instanceof TmaComparePredicate) {
 			TemplateParameter param = resolver.resolveParam(
-					((TmaComparePredicate) e).getParamRef());
+					((TmaComparePredicate) e).getParamRef(), context);
 			if (param == null) return null;
 
 			Object val = resolver.getParamValue(
@@ -317,15 +318,16 @@ public class TMParserCompiler {
 			RhsPredicate result = builder.predicate(
 					RhsPredicate.Operation.Equals, null,
 					param, val, e);
-			if (((TmaComparePredicate) e).getKind() == TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL) {
+			if (((TmaComparePredicate) e).getKind()
+					== TmaComparePredicate.TmaKindKind.EXCLAMATION_EQUAL) {
 				result = builder.predicate(RhsPredicate.Operation.Not,
 						Collections.singleton(result), null, null, e);
 			}
 			return result;
 
 		} else if (e instanceof TmaPredicateBinary) {
-			RhsPredicate left = convertPredicate(((TmaPredicateBinary) e).getLeft());
-			RhsPredicate right = convertPredicate(((TmaPredicateBinary) e).getRight());
+			RhsPredicate left = convertPredicate(((TmaPredicateBinary) e).getLeft(), context);
+			RhsPredicate right = convertPredicate(((TmaPredicateBinary) e).getRight(), context);
 			if (left == null || right == null) return null;
 
 			RhsPredicate.Operation op;
@@ -344,10 +346,10 @@ public class TMParserCompiler {
 		throw new IllegalArgumentException();
 	}
 
-	private RhsPart convertPart(Symbol outer, ITmaRhsPart part) {
+	private RhsPart convertPart(Nonterminal outer, ITmaRhsPart part) {
 		if (part instanceof TmaCommand) {
 			TmaCommand astCode = (TmaCommand) part;
-			Nonterminal codeSym = (Nonterminal) resolver.createNestedNonTerm(outer, astCode);
+			Nonterminal codeSym = resolver.createNestedNonTerm(outer, astCode);
 			RhsSequence actionRule = builder.empty(astCode);
 			builder.addRule(codeSym, actionRule);
 			TMDataUtil.putCode(actionRule, astCode);
@@ -431,7 +433,7 @@ public class TMParserCompiler {
 			final Symbol asSymbol = resolver.resolve(cast.getTarget());
 			if (asSymbol != null) {
 				result = builder.cast(asSymbol,
-						resolver.resolveArgs(cast.getTarget()), result, cast);
+						resolver.resolveArgs(cast.getTarget(), outer), result, cast);
 			}
 		} else if (literalCast != null) {
 			if (result instanceof RhsSymbol) {
@@ -467,13 +469,13 @@ public class TMParserCompiler {
 		return Arrays.asList(sets);
 	}
 
-	private RhsSet convertSet(ITmaSetExpression expr) {
+	private RhsSet convertSet(ITmaSetExpression expr, Nonterminal context) {
 		if (expr instanceof TmaSetBinary) {
 			TmaSetBinary binary = (TmaSetBinary) expr;
 			boolean is_and = binary.getKind() == TmaKindKind.AMPERSAND;
 
-			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft()),
-					convertSet(binary.getRight()));
+			Collection<RhsSet> parts = asCollection(convertSet(binary.getLeft(), context),
+					convertSet(binary.getRight(), context));
 			if (parts == null) return null;
 
 			return builder.set(is_and ? Operation.Intersection : Operation.Union, null, null,
@@ -481,13 +483,13 @@ public class TMParserCompiler {
 
 		} else if (expr instanceof TmaSetComplement) {
 			Collection<RhsSet> parts = asCollection(
-					convertSet(((TmaSetComplement) expr).getInner()));
+					convertSet(((TmaSetComplement) expr).getInner(), context));
 			if (parts == null) return null;
 
 			return builder.set(Operation.Complement, null, null, parts, expr);
 
 		} else if (expr instanceof TmaSetCompound) {
-			return convertSet(((TmaSetCompound) expr).getInner());
+			return convertSet(((TmaSetCompound) expr).getInner(), context);
 
 		} else if (expr instanceof TmaSetSymbol) {
 			TmaSetSymbol ss = (TmaSetSymbol) expr;
@@ -516,37 +518,39 @@ public class TMParserCompiler {
 				}
 			}
 
-			return builder.set(kind, s, resolver.resolveArgs(ss.getSymbol()), null, expr);
+			return builder.set(kind, s, resolver.resolveArgs(ss.getSymbol(), context), null, expr);
 		}
 
 		error(expr, "internal error: unknown set expression found");
 		return null;
 	}
 
-	private RhsSymbol convertPrimary(Symbol outer, ITmaRhsPart part) {
+	private RhsSymbol convertPrimary(Nonterminal outer, ITmaRhsPart part) {
 
 		if (part instanceof TmaRhsSymbol) {
 			TmaSymref symref = ((TmaRhsSymbol) part).getReference();
-			TemplateParameter param = resolver.tryResolveParam(symref);
+			TemplateParameter param = resolver.tryResolveParam(symref, outer);
 			if (param != null) {
-				return builder.templateSymbol(param, resolver.resolveArgs(symref), part);
+				return builder.templateSymbol(param, resolver.resolveArgs(symref, outer), part);
 			}
 
 			Symbol resolved = resolver.resolve(symref);
 			if (resolved != null) {
-				return builder.symbol(resolved, resolver.resolveArgs(symref), part);
+				return builder.symbol(resolved, resolver.resolveArgs(symref, outer), part);
 			}
 			return null;
 
 		} else if (part instanceof TmaRhsNested) {
-			Nonterminal nested = (Nonterminal) resolver.createNestedNonTerm(outer, part);
+			Nonterminal nested = resolver.createNestedNonTerm(outer, part);
+			copyParameters(outer, nested);
+
 			List<TmaRule0> rules = ((TmaRhsNested) part).getRules();
 			for (TmaRule0 right : rules) {
 				if (right.getError() == null) {
 					createRule(nested, right);
 				}
 			}
-			return builder.symbol(nested, null, part);
+			return builder.symbolFwdAll(nested, part);
 
 		} else if (part instanceof TmaRhsIgnored) {
 			error(part, "$( ) is not supported, yet");
@@ -554,12 +558,12 @@ public class TMParserCompiler {
 			return null;
 
 		} else if (part instanceof TmaRhsSet) {
-			RhsSet set = convertSet(((TmaRhsSet) part).getExpr());
+			RhsSet set = convertSet(((TmaRhsSet) part).getExpr(), outer);
 			if (set == null) return null;
 
 			String setName = set.getProvisionalName();
 			Nonterminal result = builder.addShared(set, setName);
-			return builder.symbol(result, null, part);
+			return builder.symbolFwdAll(result, part);
 
 		} else if (part instanceof TmaRhsList) {
 			TmaRhsList listWithSeparator = (TmaRhsList) part;
@@ -579,7 +583,7 @@ public class TMParserCompiler {
 				}
 			}
 			RhsPart separator = builder.sequence(null, sep, listWithSeparator);
-			return createList(inner, listWithSeparator.isAtLeastOne(), separator, part);
+			return createList(outer, inner, listWithSeparator.isAtLeastOne(), separator, part);
 
 		} else if (part instanceof TmaRhsQuantifier) {
 			TmaRhsQuantifier nestedQuantifier = (TmaRhsQuantifier) part;
@@ -602,21 +606,21 @@ public class TMParserCompiler {
 				error(part, "? cannot be a child of another quantifier");
 				return null;
 			}
-			return createList(inner, quantifier == TmaQuantifierKind.PLUS, null, part);
+			return createList(outer, inner, quantifier == TmaQuantifierKind.PLUS, null, part);
 		}
 
 		error(part, "internal error: unknown right-hand side part found");
 		return null;
 	}
 
-	private RhsPart convertChoice(Symbol outer, List<TmaRule0> rules, SourceElement origin) {
+	private RhsPart convertChoice(Nonterminal outer, List<TmaRule0> rules, SourceElement origin) {
 		Collection<RhsPart> result = new ArrayList<>(rules.size());
 		for (TmaRule0 rule : rules) {
 			RhsSequence abstractRulePart = convertGroup(outer, rule.getList(), rule);
 			if (abstractRulePart == null) {
 				return null;
 			}
-			RhsPredicate predicate = convertPredicate(rule.getPredicate());
+			RhsPredicate predicate = convertPredicate(rule.getPredicate(), outer);
 			if (predicate != null) {
 				result.add(builder.conditional(predicate, abstractRulePart, rule));
 			} else {
@@ -626,7 +630,7 @@ public class TMParserCompiler {
 		return builder.choice(result, origin);
 	}
 
-	private RhsSequence convertGroup(Symbol outer, List<ITmaRhsPart> groupPart,
+	private RhsSequence convertGroup(Nonterminal outer, List<ITmaRhsPart> groupPart,
 									 SourceElement origin) {
 		List<RhsPart> groupResult = new ArrayList<>();
 		if (groupPart == null) {
@@ -641,19 +645,21 @@ public class TMParserCompiler {
 		return groupResult.isEmpty() ? null : builder.sequence(null, groupResult, origin);
 	}
 
-	private RhsSymbol createList(RhsSequence inner, boolean nonEmpty, RhsPart separator,
-								 ITmaRhsPart origin) {
+	private RhsSymbol createList(Nonterminal outer, RhsSequence inner, boolean nonEmpty,
+								 RhsPart separator, ITmaRhsPart origin) {
 		RhsList list = builder.list(inner, separator,
 				(separator != null && !nonEmpty) || nonEmpty, origin);
 		String listName = list.getProvisionalName();
 		Nonterminal result = builder.addShared(list, listName);
+		copyParameters(outer, result);
 
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
-			result = builder.addShared(builder.optional(builder.symbol(result, null, origin),
+			result = builder.addShared(builder.optional(builder.symbolFwdAll(result, origin),
 					origin), listName + "_opt");
+			copyParameters(outer, result);
 		}
-		return builder.symbol(result, null, origin);
+		return builder.symbolFwdAll(result, origin);
 	}
 
 	private boolean isGroupPart(ITmaRhsPart symbolRef) {
@@ -720,6 +726,11 @@ public class TMParserCompiler {
 			}
 		}
 		return result;
+	}
+
+	private void copyParameters(Nonterminal source, Nonterminal target) {
+		List<TemplateParameter> params = resolver.requiredParams(source);
+		if (params != null) target.putUserData(Nonterminal.UD_TEMPLATE_PARAMS, params);
 	}
 
 	private void error(ITmaNode n, String message) {

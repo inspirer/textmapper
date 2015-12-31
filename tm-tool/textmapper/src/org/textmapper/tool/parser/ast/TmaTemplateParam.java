@@ -17,29 +17,35 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaKeyvalArg extends TmaNode {
+public class TmaTemplateParam extends TmaNode implements ITmaGrammarPart {
 
+	private final boolean global;
+	private final TmaParamType paramType;
 	private final TmaIdentifier name;
-	private final ITmaParamValue val;
-	private final TmaKeyvalArg.TmaBoolKind bool;
+	private final ITmaParamValue paramValue;
 
-	public TmaKeyvalArg(TmaIdentifier name, ITmaParamValue val, TmaKeyvalArg.TmaBoolKind bool, TextSource source, int line, int offset, int endoffset) {
+	public TmaTemplateParam(boolean global, TmaParamType paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
+		this.global = global;
+		this.paramType = paramType;
 		this.name = name;
-		this.val = val;
-		this.bool = bool;
+		this.paramValue = paramValue;
+	}
+
+	public boolean isGlobal() {
+		return global;
+	}
+
+	public TmaParamType getParamType() {
+		return paramType;
 	}
 
 	public TmaIdentifier getName() {
 		return name;
 	}
 
-	public ITmaParamValue getVal() {
-		return val;
-	}
-
-	public TmaKeyvalArg.TmaBoolKind getBool() {
-		return bool;
+	public ITmaParamValue getParamValue() {
+		return paramValue;
 	}
 
 	@Override
@@ -50,13 +56,8 @@ public class TmaKeyvalArg extends TmaNode {
 		if (name != null) {
 			name.accept(v);
 		}
-		if (val != null) {
-			val.accept(v);
+		if (paramValue != null) {
+			paramValue.accept(v);
 		}
-	}
-
-	public enum TmaBoolKind {
-		PLUS,
-		TILDE,
 	}
 }

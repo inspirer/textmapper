@@ -23,7 +23,7 @@
 %%
 
 input :
-  list_of_T_assignment epilogue_AllowObject_T_a1 epilogue_T_a2
+  list_listDollarOf_assignment epilogue_AllowObject_T_a1 epilogue_T_a2
 ;
 
 key_value_list_Comma_separated2 :
@@ -47,12 +47,12 @@ key_value :
   icon Colon sconopt
 ;
 
-list_of_T_key_value1 :
+list_listDollarOf_key_value1 :
   key_value_list_Comma_separated2
 ;
 
 object2 :
-  kw_object Lparen list_of_T_key_value1 Rparen
+  kw_object Lparen list_listDollarOf_key_value1 Rparen
 | kw_object
 ;
 
@@ -61,20 +61,20 @@ sconopt :
 | scon
 ;
 
-list_of_AllowObject_T_key_value :
+list_AllowObject_listDollarOf_key_value :
   key_value_list_Comma_separated1
 ;
 
-list_of_T_assignment :
+list_listDollarOf_assignment :
   assignment_list_Comma_separated
 ;
 
 epilogue_AllowObject_T_a1 :
-  a1 Lparen list_of_AllowObject_T_expression Rparen
+  a1 Lparen list_AllowObject_listDollarOf_expression Rparen
 ;
 
 epilogue_T_a2 :
-  a2 Lparen list_of_T_expression Rparen
+  a2 Lparen list_listDollarOf_expression Rparen
 ;
 
 assignment_list_Comma_separated :
@@ -82,11 +82,11 @@ assignment_list_Comma_separated :
 | assignment
 ;
 
-list_of_AllowObject_T_expression :
+list_AllowObject_listDollarOf_expression :
   expression_AllowObject_list_Comma_separated
 ;
 
-list_of_T_expression :
+list_listDollarOf_expression :
   expression_list_Comma_separated
 ;
 
@@ -101,7 +101,7 @@ expression_list_Comma_separated :
 ;
 
 object1 :
-  kw_object Lparen list_of_T_key_value Rparen
+  kw_object Lparen list_listDollarOf_key_value Rparen
 | kw_object
 ;
 
@@ -114,12 +114,12 @@ expression1 :
   icon
 ;
 
-list_of_T_key_value :
+list_listDollarOf_key_value :
   key_value_list_Comma_separated
 ;
 
 object_AllowObject :
-  kw_object Lparen list_of_AllowObject_T_key_value Rparen
+  kw_object Lparen list_AllowObject_listDollarOf_key_value Rparen
 | kw_object
 ;
 

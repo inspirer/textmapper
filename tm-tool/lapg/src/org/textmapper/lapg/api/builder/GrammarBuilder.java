@@ -57,6 +57,8 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	RhsSymbol symbol(Symbol sym, Collection<RhsArgument> args, SourceElement origin);
 
+	RhsSymbol symbolFwdAll(Symbol sym, SourceElement origin);
+
 	RhsSymbol templateSymbol(TemplateParameter parameter, Collection<RhsArgument> args,
 							 SourceElement origin);
 

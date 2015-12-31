@@ -34,10 +34,13 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 	private TemplateParameter parameter;
 
 	private LiRhsArgument[] args;
+	private boolean fwdAll;
 	private LiRhsMapping mapping;
 
-	LiRhsSymbol(Symbol target, LiRhsArgument[] args, SourceElement origin) {
+	LiRhsSymbol(Symbol target, LiRhsArgument[] args, boolean fwdAll, SourceElement origin) {
 		super(origin);
+		this.fwdAll = fwdAll;
+		if (target == null) throw new NullPointerException("target");
 		this.target = target;
 		this.args = args;
 		this.parameter = null;
@@ -45,6 +48,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 
 	LiRhsSymbol(TemplateParameter target, LiRhsArgument[] args, SourceElement origin) {
 		super(origin);
+		if (target == null) throw new NullPointerException("target");
 		this.target = null;
 		this.args = args;
 		this.parameter = target;
@@ -63,6 +67,11 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 	@Override
 	public RhsArgument[] getArgs() {
 		return args;
+	}
+
+	@Override
+	public boolean isFwdAll() {
+		return fwdAll;
 	}
 
 	@Override

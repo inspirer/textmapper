@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2014 Evgeny Gryaznov
+ * Copyright (c) 2010-2015 Evgeny Gryaznov
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ package org.textmapper.idea.lang.syntax.psi;
 import com.intellij.lang.ASTNode;
 import org.jetbrains.annotations.NotNull;
 
-public class TmKeyValueArgument extends TmElement {
-	public TmKeyValueArgument(@NotNull ASTNode node) {
+public class TmTemplateParam extends TmNamedElement {
+	public TmTemplateParam(@NotNull ASTNode node) {
 		super(node);
 	}
 }

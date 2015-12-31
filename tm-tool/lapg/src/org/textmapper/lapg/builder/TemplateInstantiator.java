@@ -85,8 +85,6 @@ class TemplateInstantiator {
 		if (args == null) return;
 
 		for (RhsArgument arg : args) {
-			if (!(arg.getValue() instanceof Symbol)) continue;
-
 			TemplateParameter param = arg.getParameter();
 			Set<Object> set = paramValues.get(param);
 			if (set == null) {
@@ -208,7 +206,10 @@ class TemplateInstantiator {
 
 			if (args != null) {
 				for (RhsArgument arg : args) {
-					sb.add(paramIndex.get(arg.getParameter()));
+					if (arg.getSource() != arg.getParameter()) {
+						// TODO fix propagation
+						sb.add(paramIndex.get(arg.getParameter()));
+					}
 				}
 				int[] paramSet = sb.create();
 				if (paramSet.length > 0) {
@@ -231,12 +232,13 @@ class TemplateInstantiator {
 	}
 
 	private TemplateEnvironment applyArguments(TemplateEnvironment sourceEnv,
-											   Nonterminal target, RhsArgument[] args) {
+											   Nonterminal target, RhsArgument[] args,
+											   boolean fwdAll) {
 		final BitSet acceptedParameters = paramUsage.get(target);
 
 		// Remove non-global & unused parameters.
 		TemplateEnvironment env = sourceEnv.filter(
-				parameter -> parameter.isGlobal()
+				parameter -> (fwdAll || parameter.isGlobal())
 						&& acceptedParameters.get(paramIndex.get(parameter)));
 
 		if (args == null) return env;
@@ -245,6 +247,7 @@ class TemplateInstantiator {
 		for (RhsArgument arg : args) {
 			int index = paramIndex.get(arg.getParameter());
 			if (!acceptedParameters.get(index)) {
+
 				problems.add(new LiProblem(arg, arg.getParameter().getName()
 						+ " is not used in " + target.getName()));
 				continue;
@@ -257,21 +260,18 @@ class TemplateInstantiator {
 	}
 
 	private void instantiateRef(TemplateInstance context, TemplatedSymbolRef ref,
-								Symbol target, RhsArgument[] args) {
+								Symbol target, RhsArgument[] args, boolean fwdAll) {
 		if (!(target instanceof Nonterminal)) {
 			if (!target.isTerm()) {
 				throw new UnsupportedOperationException();
 			}
 
 			context.addTerminalTarget(ref, (Terminal) target);
-			if (args != null && args.length > 0) {
-				problems.add(new LiProblem(ref, "Only nonterminals can be templated."));
-			}
 			return;
 		}
 
 		Nonterminal nonterm = (Nonterminal) target;
-		TemplateEnvironment env = applyArguments(context.getEnvironment(), nonterm, args);
+		TemplateEnvironment env = applyArguments(context.getEnvironment(), nonterm, args, fwdAll);
 		TemplateInstance instance = instantiate(nonterm, env, ref);
 		context.addNonterminalTarget(ref, instance);
 	}
@@ -290,15 +290,15 @@ class TemplateInstantiator {
 				}
 				target = (Symbol) value;
 			}
-			instantiateRef(context, (LiRhsSymbol) p, target, ((RhsSymbol) p).getArgs());
+			instantiateRef(context, (LiRhsSymbol) p, target, ((RhsSymbol) p).getArgs(), ((RhsSymbol) p).isFwdAll());
 			return;
 		}
 		if (p instanceof RhsCast) {
 			instantiateRef(context, (LiRhsCast) p, ((RhsCast) p).getTarget(),
-					((RhsCast) p).getArgs());
+					((RhsCast) p).getArgs(), false);
 		} else if (p instanceof RhsSet) {
 			instantiateRef(context, (LiRhsSet) p, ((RhsSet) p).getSymbol(),
-					((RhsSet) p).getArgs());
+					((RhsSet) p).getArgs(), false);
 		} else if (p instanceof RhsConditional) {
 			context.getTemplate().setTemplate();
 		}
@@ -345,6 +345,8 @@ class TemplateInstantiator {
 				nonterm.setUnused();
 			}
 		}
+		if (!problems.isEmpty()) return;
+
 		instances.values().forEach(TemplateInstance::allocate);
 		instances.values().forEach(TemplateInstance::updateNameHint);
 	}

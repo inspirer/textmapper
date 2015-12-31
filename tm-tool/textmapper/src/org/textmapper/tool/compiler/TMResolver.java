@@ -30,9 +30,10 @@ import org.textmapper.tool.common.ObjectUtil;
 import org.textmapper.tool.parser.TMTree;
 import org.textmapper.tool.parser.TMTree.TMProblem;
 import org.textmapper.tool.parser.ast.*;
-import org.textmapper.tool.parser.ast.TmaKeyvalArg.TmaBoolKind;
+import org.textmapper.tool.parser.ast.TmaArgument.TmaBoolKind;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * evgeny, 1/16/13
@@ -168,20 +169,15 @@ public class TMResolver {
 
 	private void collectParameters() {
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
-			if (clause instanceof TmaNontermParam) {
-				TmaNontermParam param = (TmaNontermParam) clause;
+			if (clause instanceof TmaTemplateParam) {
+				TmaTemplateParam param = (TmaTemplateParam) clause;
 				String name = param.getName().getID();
-				Symbol existingSym = symbolsMap.get(name);
-				if (existingSym != null) {
-					String kind = existingSym.isTerm() ? "terminal" : "non-terminal";
-					error(param.getName(), "redeclaration of " + kind + ": " + name);
-					continue;
-				}
-				if (parametersMap.containsKey(name)) {
-					error(param.getName(), "redeclaration of template parameter: " + name);
-					continue;
-				}
-				parametersMap.put(name, create(param));
+
+				Type type = (param.getParamType() == TmaParamType.LFLAG) ? Type.Flag : Type.Symbol;
+
+				TemplateParameter value = createParameter(param.getName().getID(), type,
+						param.isGlobal(), param.getParamValue(), param);
+				if (value != null) parametersMap.put(name, value);
 			}
 		}
 		for (ITmaGrammarPart clause : tree.getRoot().getParser()) {
@@ -191,12 +187,37 @@ public class TMResolver {
 
 				// Error is already reported.
 				if (!(s instanceof Nonterminal)) continue;
-				if (nonterm.getParams() == null || nonterm.getParams().getRefs() == null) continue;
+				if (nonterm.getParams() == null || nonterm.getParams().getList() == null) continue;
 
 				List<TemplateParameter> parameters = new ArrayList<>();
-				for (TmaIdentifier id : nonterm.getParams().getRefs()) {
-					TemplateParameter p = resolveParam(id);
-					if (p != null) parameters.add(p);
+				for (ITmaNontermParam param : nonterm.getParams().getList()) {
+					if (param instanceof TmaParamRef) {
+						TemplateParameter p = resolveParam((TmaParamRef) param, null /* global */);
+						if (p != null) parameters.add(p);
+					} else if (param instanceof TmaInlineParameter) {
+						String name = ((TmaInlineParameter) param).getName().getID();
+						Type type;
+						switch (((TmaInlineParameter) param).getParamType()) {
+							case "flag":
+								type = Type.Flag;
+								break;
+							case "param":
+								type = Type.Symbol;
+								break;
+							default:
+								error(param, "Syntax error.");
+								continue;
+						}
+
+						TemplateParameter p = createParameter(s.getName() + "$" + name, type,
+								false, ((TmaInlineParameter) param).getParamValue(), param);
+						if (p == null) continue;
+
+						parametersMap.put(name, p);
+						parameters.add(p);
+					} else {
+						throw new IllegalStateException();
+					}
 				}
 				if (!parameters.isEmpty()) {
 					s.putUserData(Nonterminal.UD_TEMPLATE_PARAMS, parameters);
@@ -229,30 +250,29 @@ public class TMResolver {
 				return resolve((TmaSymref) paramValue);
 			}
 			error(paramValue, "type error: " + asString(expectedType) + " is expected");
+		} else {
+			throw new IllegalStateException();
 		}
 		return null;
 	}
 
-	private TemplateParameter create(TmaNontermParam param) {
-		TemplateParameter.Type type;
-
-		switch (param.getParamType()) {
-			case LFLAG:
-				type = Type.Flag;
-				break;
-			case LPARAM:
-				type = Type.Symbol;
-				break;
-			default:
-				throw new IllegalStateException();
+	private TemplateParameter createParameter(String name, TemplateParameter.Type type,
+											  boolean global, ITmaParamValue paramValue,
+											  TextSourceElement origin) {
+		Symbol existingSym = symbolsMap.get(name);
+		if (existingSym != null) {
+			String kind = existingSym.isTerm() ? "terminal" : "non-terminal";
+			error(origin, "redeclaration of " + kind + ": " + name);
+			return null;
 		}
-
-		return builder.addParameter(
-				type, param.getName().getID(),
-				getParamValue(type, param.getParamValue()),
-				param.isGlobal(),
-				param);
+		if (parametersMap.containsKey(name)) {
+			error(origin, "redeclaration of template parameter: " + name);
+			return null;
+		}
+		return builder.addParameter(type, name,
+				paramValue == null ? null : getParamValue(type, paramValue), global, origin);
 	}
+
 
 	private Symbol create(TmaIdentifier id, AstType type, boolean isTerm) {
 		String name = id.getID();
@@ -281,7 +301,7 @@ public class TMResolver {
 
 	private Map<String, Integer> lastIndex = new HashMap<>();
 
-	Symbol createNestedNonTerm(Symbol outer, ITmaNode source) {
+	Nonterminal createNestedNonTerm(Nonterminal outer, ITmaNode source) {
 		final String base_ = outer.getName() + "$";
 		int index = lastIndex.containsKey(base_) ? lastIndex.get(base_) : 1;
 		while (symbolsMap.containsKey(base_ + index)) {
@@ -289,14 +309,15 @@ public class TMResolver {
 		}
 		String name = base_ + index;
 
-		Symbol sym = builder.addNonterminal(name, source);
+		Nonterminal sym = builder.addNonterminal(name, source);
 		symbolsMap.put(name, sym);
 		lastIndex.put(base_, index + 1);
 		return sym;
 	}
 
-	Collection<RhsArgument> resolveArgs(TmaSymref ref) {
-		Symbol target = getSymbol(ref.getName());
+	Collection<RhsArgument> resolveArgs(TmaSymref ref, Nonterminal context) {
+		TemplateParameter targetParam = tryResolveParam(ref, context);
+		Symbol target = targetParam != null ? null : getSymbol(ref.getName());
 		TmaSymrefArgs args = ref.getArgs();
 		if (target != null && !(target instanceof Nonterminal)) {
 			if (args != null) {
@@ -306,74 +327,137 @@ public class TMResolver {
 		}
 
 		Nonterminal nonterm = (Nonterminal) target;
-		@SuppressWarnings("unchecked")
-		List<TemplateParameter> expectedParameters = (nonterm == null)
-				? null
-				: (List<TemplateParameter>) nonterm.getUserData(Nonterminal.UD_TEMPLATE_PARAMS);
+		List<TemplateParameter> requiredParameters = requiredParams(nonterm);
 
-		if (expectedParameters != null && (args == null || args.getValueList() == null)) {
-			error(ref, "A positional template argument list is expected.");
+		if (args == null && requiredParameters == null) {
+			if (targetParam != null && targetParam.isGlobal()) {
+				// One should use X<X> to make X available in X.
+				return Collections.singleton(builder.argument(targetParam, null, null, ref));
+			}
 			return null;
 		}
 
-		if (args == null) return null;
-
-		List<ITmaParamValue> valueList = args.getValueList();
-		if (valueList != null) {
-			if (nonterm == null) {
-				error(args, "A key-value template argument list is expected with parameters.");
-				return null;
+		List<RhsArgument> result = null;
+		if (requiredParameters != null
+				&& args == null
+				&& getTemplateSignature(nonterm).equals(getTemplateSignature(context))) {
+			// Forward all context parameters.
+			result = new ArrayList<>(requiredParameters.size());
+			for (TemplateParameter p : requiredParameters) {
+				if (p.isGlobal()) continue;
+				result.add(builder.argument(p, p, null, ref));
 			}
-
-			if (expectedParameters == null) {
-				error(args, "Argument list is not expected.");
-				return null;
-			}
-
-			if (valueList.size() != expectedParameters.size()) {
-				error(args, expectedParameters.size() + " template arguments are expected.");
-				return null;
-			}
-			int index = 0;
-			List<RhsArgument> result = new ArrayList<>(valueList.size());
-			for (ITmaParamValue value : valueList) {
-				TemplateParameter param = expectedParameters.get(index++);
-				Object val = getParamValue(param.getType(), value);
-				result.add(builder.argument(param, null /* TODO */, val, value));
-			}
-			return result.isEmpty() ? null : result;
+			return result;
 		}
 
-		if (args.getKeyvalueList() == null) return null;
+		Set<TemplateParameter> provided = new HashSet<>();
+		if (args != null && args.getArgList() != null) {
+			result = new ArrayList<>(args.getArgList().size());
+			for (TmaArgument arg : args.getArgList()) {
+				TemplateParameter param = resolveParam(arg.getName(), nonterm);
+				if (param == null) continue;
 
-		List<RhsArgument> result = new ArrayList<>(args.getKeyvalueList().size());
-		for (TmaKeyvalArg arg : args.getKeyvalueList()) {
-			TemplateParameter param = resolveParam(arg.getName());
-			if (param == null) continue;
-			Object val;
-			if (arg.getBool() != null) {
-				val = (arg.getBool() == TmaBoolKind.PLUS);
-				if (param.getType() != Type.Flag) {
-					val = null;
-					error(arg, "type error: " + asString(param.getType()) + " is expected");
+				if (!param.isGlobal()
+						&& (requiredParameters == null || !requiredParameters.contains(param))) {
+					error(arg, "Template parameter " + arg.getName() + " is not expected by "
+							+ ref.getName());
+					continue;
 				}
-			} else {
-				val = getParamValue(param.getType(), arg.getVal());
+
+				provided.add(param);
+				if (arg.getVal() != null) {
+					if (arg.getVal() instanceof TmaSymref) {
+						TemplateParameter source = tryResolveParam(
+								(TmaSymref) arg.getVal(), context);
+						if (source != null) {
+							result.add(builder.argument(param, source, null, arg));
+							continue;
+						}
+					}
+					Object val = getParamValue(param.getType(), arg.getVal());
+					if (val != null) result.add(builder.argument(param, null, val, arg));
+
+				} else if (arg.getBool() != null) {
+					boolean val = (arg.getBool() == TmaBoolKind.PLUS);
+					if (param.getType() != Type.Flag) {
+						error(arg, "type error: " + asString(param.getType()) + " is expected");
+						continue;
+					}
+					result.add(builder.argument(param, null, val, arg));
+				} else {
+					TemplateParameter source = resolveParam(arg.getName(), context);
+					if (source == null) {
+						error(arg, "cannot resolve " + arg.getName() + " in " + context.getName());
+						continue;
+					} else if (source != target) {
+						error(arg, arg.getName() + " has different meanings in "
+								+ context.getName() + " and "
+								+ (nonterm != null ? nonterm.getName() : "globally"));
+						continue;
+					}
+					result.add(builder.argument(param, source, null, arg));
+				}
 			}
-			result.add(builder.argument(param, null /* TODO */, val, arg));
+			if (result.isEmpty()) result = null;
 		}
-		return result.isEmpty() ? null : result;
+
+		if (requiredParameters != null) {
+			String unfulfilled = requiredParameters.stream()
+					.filter(p -> p.getType() == Type.Symbol && !provided.contains(p))
+					.map(TemplateParameter::getName)
+					.collect(Collectors.joining(", "));
+
+			if (!unfulfilled.isEmpty()) {
+				error(ref, "Required parameters are not provided: " + unfulfilled);
+			}
+		}
+
+		if (targetParam != null && targetParam.isGlobal() && !provided.contains(targetParam)) {
+			// One should use X<X> to make X available in X.
+			return Collections.singleton(builder.argument(targetParam, null, null, ref));
+		}
+		return result;
 	}
 
-	TemplateParameter resolveParam(TmaIdentifier id) {
-		TemplateParameter param = parametersMap.get(id.getID());
-		if (param == null) {
-			error(id, id.getID() + " cannot be resolved");
+	TemplateParameter resolveParam(TmaParamRef ref, Nonterminal context) {
+		TemplateParameter param;
+		if (context != null) {
+			param = parametersMap.get(context.getName() + "$" + ref.getRef().getID());
+			if (param != null) return param;
 		}
-		return param;
+
+		param = parametersMap.get(ref.getRef().getID());
+		if (param != null) return param;
+
+		error(ref, ref.getRef().getID() + " cannot be resolved");
+		return null;
 	}
 
-	TemplateParameter tryResolveParam(TmaSymref id) {
+	List<TemplateParameter> requiredParams(Nonterminal nonterm) {
+		@SuppressWarnings("unchecked")
+		List<TemplateParameter> params = (nonterm == null)
+				? null
+				: (List<TemplateParameter>) nonterm.getUserData(Nonterminal.UD_TEMPLATE_PARAMS);
+		return params == null || params.isEmpty() ? null : params;
+	}
+
+	String getTemplateSignature(Nonterminal nonterm) {
+		List<TemplateParameter> params = requiredParams(nonterm);
+		if (params == null || params.isEmpty()) return "";
+		StringBuilder sb = new StringBuilder();
+		for (TemplateParameter p : params) {
+			if (sb.length() > 0) sb.append(',');
+			sb.append(p.getName());
+		}
+		return sb.toString();
+	}
+
+
+	TemplateParameter tryResolveParam(TmaSymref id, Nonterminal context) {
+		if (context != null) {
+			TemplateParameter param = parametersMap.get(context.getName() + "$" + id.getName());
+			if (param != null) return param;
+		}
 		return parametersMap.get(id.getName());
 	}
 
@@ -391,7 +475,7 @@ public class TMResolver {
 					builder.addRule(symopt,
 							builder.asSequence(
 									builder.optional(
-											builder.symbol(sym, null, id), id)));
+											builder.symbolFwdAll(sym, id), id)));
 					return symopt;
 				}
 			}

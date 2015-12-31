@@ -17,29 +17,17 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpression {
+public class TmaParamRef extends TmaNode implements ITmaNontermParam {
 
-	private final TmaParamRef paramRef;
-	private final TmaComparePredicate.TmaKindKind kind;
-	private final TmaLiteral literal;
+	private final TmaIdentifier ref;
 
-	public TmaComparePredicate(TmaParamRef paramRef, TmaComparePredicate.TmaKindKind kind, TmaLiteral literal, TextSource source, int line, int offset, int endoffset) {
+	public TmaParamRef(TmaIdentifier ref, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.paramRef = paramRef;
-		this.kind = kind;
-		this.literal = literal;
+		this.ref = ref;
 	}
 
-	public TmaParamRef getParamRef() {
-		return paramRef;
-	}
-
-	public TmaComparePredicate.TmaKindKind getKind() {
-		return kind;
-	}
-
-	public TmaLiteral getLiteral() {
-		return literal;
+	public TmaIdentifier getRef() {
+		return ref;
 	}
 
 	@Override
@@ -47,16 +35,8 @@ public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpress
 		if (!v.visit(this)) {
 			return;
 		}
-		if (paramRef != null) {
-			paramRef.accept(v);
+		if (ref != null) {
+			ref.accept(v);
 		}
-		if (literal != null) {
-			literal.accept(v);
-		}
-	}
-
-	public enum TmaKindKind {
-		EQUAL_EQUAL,
-		EXCLAMATION_EQUAL,
 	}
 }

@@ -17,29 +17,29 @@ package org.textmapper.tool.parser.ast;
 
 import org.textmapper.tool.parser.TMTree.TextSource;
 
-public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpression {
+public class TmaInlineParameter extends TmaNode implements ITmaNontermParam {
 
-	private final TmaParamRef paramRef;
-	private final TmaComparePredicate.TmaKindKind kind;
-	private final TmaLiteral literal;
+	private final String paramType;
+	private final TmaIdentifier name;
+	private final ITmaParamValue paramValue;
 
-	public TmaComparePredicate(TmaParamRef paramRef, TmaComparePredicate.TmaKindKind kind, TmaLiteral literal, TextSource source, int line, int offset, int endoffset) {
+	public TmaInlineParameter(String paramType, TmaIdentifier name, ITmaParamValue paramValue, TextSource source, int line, int offset, int endoffset) {
 		super(source, line, offset, endoffset);
-		this.paramRef = paramRef;
-		this.kind = kind;
-		this.literal = literal;
+		this.paramType = paramType;
+		this.name = name;
+		this.paramValue = paramValue;
 	}
 
-	public TmaParamRef getParamRef() {
-		return paramRef;
+	public String getParamType() {
+		return paramType;
 	}
 
-	public TmaComparePredicate.TmaKindKind getKind() {
-		return kind;
+	public TmaIdentifier getName() {
+		return name;
 	}
 
-	public TmaLiteral getLiteral() {
-		return literal;
+	public ITmaParamValue getParamValue() {
+		return paramValue;
 	}
 
 	@Override
@@ -47,16 +47,11 @@ public class TmaComparePredicate extends TmaNode implements ITmaPredicateExpress
 		if (!v.visit(this)) {
 			return;
 		}
-		if (paramRef != null) {
-			paramRef.accept(v);
+		if (name != null) {
+			name.accept(v);
 		}
-		if (literal != null) {
-			literal.accept(v);
+		if (paramValue != null) {
+			paramValue.accept(v);
 		}
-	}
-
-	public enum TmaKindKind {
-		EQUAL_EQUAL,
-		EXCLAMATION_EQUAL,
 	}
 }

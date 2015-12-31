@@ -217,7 +217,7 @@ interface GrammarPart {
 
 grammar_part  : GrammarPart ::=
 	this=nonterm
-  | this=nonterm_param
+  | this=template_param
   | this=directive
 ;
 
@@ -280,15 +280,15 @@ assoc  : Assoc ::=
   | this=Lnonassoc as Assoc.LNONASSOC
 ;
 
-class NontermParam : GrammarPart {
+class TemplateParam : GrammarPart {
 	boolean global;
 	ParamType paramType;
 	Identifier name;
 	ParamValue paramValue;
 }
 
-nonterm_param  : NontermParam ::=
-	this=new.NontermParam: '%' global=Lglobal as true? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
+template_param  : TemplateParam ::=
+	this=new.TemplateParam: '%' global=Lglobal as true? paramType=param_type name=identifier ('=' paramValue=param_value)? ';'
 ;
 
 class DirectivePrio : GrammarPart {
@@ -572,29 +572,45 @@ annotation  : Annotation ::=
 ;
 
 class NontermParams {
-	list<Identifier> refs;
+	list<NontermParam> list;
 }
 
 nonterm_params  : NontermParams ::=
-	'<' refs=param_ref_list_Comma_separated '>'
+	'<' list=nonterm_param_list_Comma_separated '>'
 ;
 
-param_ref  : Identifier ::=
-	this=identifier
+interface NontermParam {
+}
+
+class InlineParameter : NontermParam {
+	String paramType;
+	Identifier name;
+	ParamValue paramValue;
+}
+
+nonterm_param  : NontermParam ::=
+	this=param_ref
+  | this=new.InlineParameter: paramType=ID name=identifier ('=' paramValue=param_value)?
+;
+
+class ParamRef : NontermParam {
+	Identifier ref;
+}
+
+param_ref  : ParamRef ::=
+	ref=identifier
 ;
 
 class SymrefArgs {
-	list<ParamValue> valueList;
-	list<KeyvalArg> keyvalueList;
+	list<Argument> argList;
 }
 
 symref_args  : SymrefArgs ::=
-	'<' valueList=param_value_list_Comma_separated '>'
-  | '<' keyvalueList=keyval_arg_list_Comma_separated_opt '>'
+	'<' argList=argument_list_Comma_separated_opt '>'
 ;
 
-class KeyvalArg {
-	Identifier name;
+class Argument {
+	ParamRef name;
 	ParamValue val;
 	BoolKind bool;
 	enum BoolKind {
@@ -603,9 +619,9 @@ class KeyvalArg {
 	}
 }
 
-keyval_arg  : KeyvalArg ::=
+argument  : Argument ::=
 	name=param_ref ':' val=param_value
-  | (bool='+' as BoolKind.PLUS | bool='~' as BoolKind.TILDE) name=param_ref
+  | (bool='+' as BoolKind.PLUS | bool='~' as BoolKind.TILDE)? name=param_ref
 ;
 
 enum ParamType {
@@ -628,11 +644,11 @@ param_value  : ParamValue ::=
 
 class BoolPredicate : PredicateExpression {
 	boolean negated;
-	Identifier paramRef;
+	ParamRef paramRef;
 }
 
 class ComparePredicate : PredicateExpression {
-	Identifier paramRef;
+	ParamRef paramRef;
 	KindKind kind;
 	Literal literal;
 	enum KindKind {
@@ -786,20 +802,16 @@ rhsSuffixopt  : RhsSuffix ::=
 annotation_list  : list<Annotation>
 	(this+=annotation)+ ;
 
-param_ref_list_Comma_separated  : list<Identifier>
-	(this+=param_ref
+nonterm_param_list_Comma_separated  : list<NontermParam>
+	(this+=nonterm_param
 		separator ',')+ ;
 
-param_value_list_Comma_separated  : list<ParamValue>
-	(this+=param_value
+argument_list_Comma_separated  : list<Argument>
+	(this+=argument
 		separator ',')+ ;
 
-keyval_arg_list_Comma_separated  : list<KeyvalArg>
-	(this+=keyval_arg
-		separator ',')+ ;
-
-keyval_arg_list_Comma_separated_opt  : list<KeyvalArg> ::=
-	this=keyval_arg_list_Comma_separated?
+argument_list_Comma_separated_opt  : list<Argument> ::=
+	this=argument_list_Comma_separated?
 ;
 
 map_entry_list_Comma_separated  : list<MapEntry>

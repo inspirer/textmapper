@@ -16,11 +16,9 @@ input ::=
 # ERR: @Elem: Template parameter is unset.
 	  Elem
 	  (identifier '=' object)+
-# ERR: @list<Elem:key_value>: A positional template argument list is expected.
-	list<Elem:key_value>
 # ERR: @<')'>: Only nonterminals and template parameters can be templated.
 	'('<')'>
-# ERR: @<key_value>: Argument list is not expected.
+# ERR: @key_value: key_value cannot be resolved
 	key_value<key_value>
 	A<+Bool>
 # ERR: @+Bool: Bool is not used in key_value
@@ -33,8 +31,8 @@ input ::=
 ;
 
 object ::=
-# ERR: @<key_value,key_value>: 1 template arguments are expected.
-	  identifier ('(' list<key_value,key_value> ')')?
+# ERR: @list: Required parameters are not provided: Elem
+	  identifier ('(' list ')')?
 ;
 
 key_value ::=
@@ -47,7 +45,6 @@ list<Elem> ::=
 # ERR: @Elem: Template parameter is unset.
 	  Elem
 # ERR: @Elem: Template parameter is unset.
-# ERR: @list: A positional template argument list is expected.
 	| list ',' Elem
 ;
 

@@ -33,6 +33,10 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaInlineParameter n) {
+		return true;
+	}
+
 	protected boolean visit(TmaPredicateBinary n) {
 		return true;
 	}
@@ -137,11 +141,15 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
+	protected boolean visit(TmaParamRef n) {
+		return true;
+	}
+
 	protected boolean visit(TmaSymrefArgs n) {
 		return true;
 	}
 
-	protected boolean visit(TmaKeyvalArg n) {
+	protected boolean visit(TmaArgument n) {
 		return true;
 	}
 
@@ -169,7 +177,7 @@ public abstract class TmaVisitor {
 		return true;
 	}
 
-	protected boolean visit(TmaNontermParam n) {
+	protected boolean visit(TmaTemplateParam n) {
 		return true;
 	}
 
