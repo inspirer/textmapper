@@ -17,7 +17,6 @@
 package org.textmapper.idea.lang.syntax.psi;
 
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -27,9 +26,5 @@ public class TmRhsPrimary extends TmElement {
 
 	public TmRhsPrimary(@NotNull ASTNode node) {
 		super(node);
-	}
-
-	public TmSymbolReference getReference() {
-		return PsiTreeUtil.getChildOfType(this, TmSymbolReference.class);
 	}
 }

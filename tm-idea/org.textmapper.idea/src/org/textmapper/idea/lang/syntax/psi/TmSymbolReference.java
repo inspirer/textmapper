@@ -20,6 +20,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.textmapper.idea.lang.syntax.lexer.TmToken;
@@ -42,6 +43,19 @@ public class TmSymbolReference extends TmElement implements PsiReference {
 		if (referenceText == null) return null;
 		PsiElement context = this.getContext();
 		while (context != null) {
+			if (context instanceof TmNonterm) {
+				TmNontermParams params = PsiTreeUtil.getChildOfType(context, TmNontermParams.class);
+				TmNontermParam[] paramsList = params == null
+						? null
+						: PsiTreeUtil.getChildrenOfType(params, TmNontermParam.class);
+				if (paramsList != null) {
+					for (TmNontermParam p : paramsList) {
+						if (p.isInline() && referenceText.equals(p.getName())) {
+							return p;
+						}
+					}
+				}
+			}
 			if (context instanceof TmGrammar) {
 				TmGrammar grammar = (TmGrammar) context;
 				return grammar.resolve(referenceText);

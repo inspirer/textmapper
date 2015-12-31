@@ -19,6 +19,7 @@ package org.textmapper.idea.lang.syntax.psi;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFileFactory;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +77,7 @@ public class TmElementsFactory {
 			throw new IncorrectOperationException();
 		}
 
-		TmSymbolReference ref = symbolRef.getReference();
+		TmSymbolReference ref = PsiTreeUtil.getChildOfType(symbolRef, TmSymbolReference.class);
 		if (ref == null) {
 			throw new IncorrectOperationException();
 		}

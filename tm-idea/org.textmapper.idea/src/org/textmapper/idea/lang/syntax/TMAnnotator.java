@@ -46,7 +46,7 @@ public class TMAnnotator implements Annotator {
 			if (target instanceof TmLexeme) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.LEXEM_REFERENCE);
-			} else if (target instanceof TmNontermParam) {
+			} else if (target instanceof TmTemplateParam || target instanceof TmNontermParam) {
 				Annotation infoAnnotation = holder.createInfoAnnotation(ref, null);
 				infoAnnotation.setTextAttributes(TMSyntaxHighlighter.NONTERM_PARAMETER_NAME);
 			} else if (target == null) {
@@ -76,7 +76,8 @@ public class TMAnnotator implements Annotator {
 				|| element instanceof TmHeader
 				|| element instanceof TmLexemeAttrs
 				|| element instanceof TmLexerDirective
-				|| element instanceof TmNontermParam) {
+				|| element instanceof TmNontermParam
+				|| element instanceof TmTemplateParam) {
 			// TODO do not highlight nonempty as a keyword in: %generate nonempty = set(...);
 			for (TmToken token : PsiTreeUtil.getChildrenOfTypeAsList(element, TmToken.class)) {
 				if (isSoft(((TMElementType) token.getTokenType()).getSymbol())) {

@@ -23,4 +23,8 @@ public class TmNontermParam extends TmNamedElement {
 	public TmNontermParam(@NotNull ASTNode node) {
 		super(node);
 	}
+
+	boolean isInline() {
+		return !(getFirstChild() instanceof TmParameterReference);
+	}
 }
