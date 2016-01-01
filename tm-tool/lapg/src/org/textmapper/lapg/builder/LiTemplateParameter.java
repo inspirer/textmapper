@@ -33,7 +33,8 @@ public class LiTemplateParameter extends LiUserDataHolder
 							   boolean global, SourceElement origin) {
 		this.type = type;
 		this.name = name;
-		this.defaultValue = defaultValue;
+		boolean flagWithoutDefault = type == Type.Flag && !(defaultValue instanceof Boolean);
+		this.defaultValue = flagWithoutDefault ? Boolean.FALSE : defaultValue;
 		this.global = global;
 		this.origin = origin;
 	}
@@ -64,7 +65,7 @@ public class LiTemplateParameter extends LiUserDataHolder
 			return;
 		}
 		sb.append("_");
-		sb.append(getName());
+		sb.append(name.substring(name.indexOf('$') + 1));
 		if (value instanceof Symbol) {
 			sb.append("_");
 			sb.append(((Symbol) value).getName());

@@ -39,10 +39,10 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 
 	LiRhsSymbol(Symbol target, LiRhsArgument[] args, boolean fwdAll, SourceElement origin) {
 		super(origin);
-		this.fwdAll = fwdAll;
 		if (target == null) throw new NullPointerException("target");
 		this.target = target;
 		this.args = args;
+		this.fwdAll = fwdAll;
 		this.parameter = null;
 	}
 
@@ -51,6 +51,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 		if (target == null) throw new NullPointerException("target");
 		this.target = null;
 		this.args = args;
+		this.fwdAll = false;
 		this.parameter = target;
 	}
 
@@ -120,7 +121,7 @@ class LiRhsSymbol extends LiRhsPart implements RhsSymbol, TemplatedSymbolRef, De
 	protected void toString(StringBuilder sb) {
 		boolean isHint = (parameter == null && target.getName() == null);
 		if (isHint) {
-			sb.append("$");
+			sb.append("#");
 		}
 		sb.append(LiUtil.getSymbolName(this));
 		LiUtil.appendArguments(sb, args);

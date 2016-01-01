@@ -80,7 +80,7 @@ public class PredicatesTest {
 		TemplateEnvironment env = b.getRootEnvironment();
 		assertEquals(false, pr.apply(env));
 		env = env.extend(p1, Boolean.FALSE);
-		assertEquals(false, pr.apply(env));
+		assertEquals(true, pr.apply(env));
 		env = env.extend(p2, Boolean.TRUE);
 		assertEquals(false, pr.apply(env));
 		env = env.extend(p2, Boolean.FALSE);

@@ -195,7 +195,8 @@ public class TMResolver {
 						TemplateParameter p = resolveParam((TmaParamRef) param, null /* global */);
 						if (p != null) parameters.add(p);
 					} else if (param instanceof TmaInlineParameter) {
-						String name = ((TmaInlineParameter) param).getName().getID();
+						String name = s.getName() + "$"
+								+ ((TmaInlineParameter) param).getName().getID();
 						Type type;
 						switch (((TmaInlineParameter) param).getParamType()) {
 							case "flag":
@@ -209,7 +210,7 @@ public class TMResolver {
 								continue;
 						}
 
-						TemplateParameter p = createParameter(s.getName() + "$" + name, type,
+						TemplateParameter p = createParameter(name, type,
 								false, ((TmaInlineParameter) param).getParamValue(), param);
 						if (p == null) continue;
 
@@ -389,7 +390,7 @@ public class TMResolver {
 					if (source == null) {
 						error(arg, "cannot resolve " + arg.getName() + " in " + context.getName());
 						continue;
-					} else if (source != target) {
+					} else if (source != param) {
 						error(arg, arg.getName() + " has different meanings in "
 								+ context.getName() + " and "
 								+ (nonterm != null ? nonterm.getName() : "globally"));

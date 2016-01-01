@@ -190,19 +190,21 @@
 		<echo message="XML parser"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/templates/src/org/textmapper/xml"/>
 		<echo message="Sample1 parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/a"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/a"/>
 		<echo message="Sample2 parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/b"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/b"/>
+		<echo message="Bison features"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/bison"/>
 		<echo message="States parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/states"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/states"/>
 		<echo message="lexeronly parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/lexeronly"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/lexeronly"/>
 		<echo message="unicode test parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/unicode"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/unicode"/>
 		<echo message="eoi test parser"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/eoi"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/eoi"/>
 		<echo message="set test lexer"/>
-		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/test/bootstrap/set"/>
+		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/textmapper/tests/org/textmapper/tool/bootstrap/set"/>
 		<echo message="js lexer"/>
 		<java jar="${tm.dir}/libs/textmapper-${suffix}.jar" fork="true" dir="${tm.dir}/tests/javascript/lexer"/>
 	</target>
