@@ -97,6 +97,12 @@ public class BootstrapTest {
 	}
 
 	@Test
+	public void testBison2Tm() {
+		bootstrap("tests/org/textmapper/tool/bootstrap/templates", "templates1.tm", new String[0],
+				new String[]{"templates1.y"}, 0);
+	}
+
+	@Test
 	public void testSampleA() {
 		bootstrap("tests/org/textmapper/tool/bootstrap/a", "sample1.tm", new String[0],
 				new String[]{"SampleALexer.java", "SampleATree.java", "SampleAParser.java", "ast/IAstNode.java",
