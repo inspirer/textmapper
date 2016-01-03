@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2015 Evgeny Gryaznov
+ * Copyright 2002-2016 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,7 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.regex.RegexPart;
+public interface NamedElement {
 
-/**
- * Gryaznov Evgeny, 6/23/11
- */
-public interface NamedPattern extends NamedElement, SourceElement {
-
-	RegexPart getRegexp();
+	String getName();
 }

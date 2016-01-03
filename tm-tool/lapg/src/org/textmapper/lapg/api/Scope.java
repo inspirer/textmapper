@@ -1,5 +1,5 @@
 /**
- * Copyright 2002-2015 Evgeny Gryaznov
+ * Copyright 2002-2016 Evgeny Gryaznov
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,25 @@
  */
 package org.textmapper.lapg.api;
 
-import org.textmapper.lapg.api.regex.RegexPart;
+import java.util.Collection;
 
-/**
- * Gryaznov Evgeny, 6/23/11
- */
-public interface NamedPattern extends NamedElement, SourceElement {
+public interface Scope<T extends NamedElement> {
 
-	RegexPart getRegexp();
+	/**
+	 * Generates a unique name that does not conflict with existing elements in the scope.
+	 */
+	String newName(String nameHint);
+
+	/**
+	 * Forwards the request to the parent scope if not found in this scope.
+	 */
+	T resolve(String name);
+
+	boolean insert(T element, T anchor);
+
+	/**
+	 * Elements without an anchor are reported in the order of appearance,
+	 * while anchored elements are returned next to their anchor, sorted by name.
+	 */
+	Collection<T> elements();
 }

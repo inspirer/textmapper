@@ -18,9 +18,7 @@ package org.textmapper.lapg.api;
 /**
  * Gryaznov Evgeny, 9/10/12
  */
-public interface LexerState extends SourceElement {
+public interface LexerState extends NamedElement, SourceElement {
 
 	int getIndex();
-
-	String getName();
 }

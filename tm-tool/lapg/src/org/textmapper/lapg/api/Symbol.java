@@ -17,14 +17,12 @@ package org.textmapper.lapg.api;
 
 import org.textmapper.lapg.api.ast.AstType;
 
-public interface Symbol extends SourceElement, UserDataHolder {
+public interface Symbol extends NamedElement, SourceElement, UserDataHolder {
 
 	String EOI = "eoi";
 	String ERROR = "error";
 
 	int getIndex();
-
-	String getName();
 
 	AstType getType();
 

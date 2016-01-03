@@ -15,15 +15,13 @@
  */
 package org.textmapper.lapg.api;
 
-public interface TemplateParameter extends SourceElement, UserDataHolder {
+public interface TemplateParameter extends NamedElement, SourceElement, UserDataHolder {
 
 	enum Type {
 		Flag,
 		Symbol
 	}
 	Type getType();
-
-	String getName();
 
 	/**
 	 * May hold a value of type Boolean, or (reference to) Symbol.

@@ -17,9 +17,7 @@ package org.textmapper.lapg.api;
 
 import org.textmapper.lapg.api.rule.RhsSet;
 
-public interface NamedSet extends SourceElement, UserDataHolder {
-
-	String getName();
+public interface NamedSet extends NamedElement, SourceElement, UserDataHolder {
 
 	RhsSet getSet();
 
