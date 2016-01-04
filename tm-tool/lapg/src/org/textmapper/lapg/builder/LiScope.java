@@ -19,6 +19,7 @@ import org.textmapper.lapg.api.NamedElement;
 import org.textmapper.lapg.api.Scope;
 
 import java.util.*;
+import java.util.function.IntFunction;
 
 class LiScope<T extends NamedElement> implements Scope<T> {
 
@@ -27,6 +28,11 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	private final Map<T, Integer> elementIndex = new HashMap<>();
 	private final Map<String, Integer> lastIndex = new HashMap<>();
 	private List<T> cache;
+
+
+	public LiScope() {
+		this(null);
+	}
 
 	public LiScope(LiScope<T> parent) {
 		this.parent = parent;
@@ -76,6 +82,11 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	}
 
 	@Override
+	public boolean contains(T element) {
+		return elementIndex.containsKey(element);
+	}
+
+	@Override
 	public Collection<T> elements() {
 		if (cache != null) return cache;
 
@@ -84,5 +95,16 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 				.thenComparing(NamedElement::getName, String.CASE_INSENSITIVE_ORDER);
 		Collections.sort(cache, cmp);
 		return cache;
+	}
+
+	@Override
+	public T[] toArray(IntFunction<T[]> creator) {
+		Collection<T> elements = elements();
+		return elements.toArray(creator.apply(elements.size()));
+	}
+
+	@Override
+	public int size() {
+		return elementMap.size();
 	}
 }

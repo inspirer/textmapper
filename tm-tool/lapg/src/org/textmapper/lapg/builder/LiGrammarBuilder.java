@@ -29,18 +29,16 @@ import java.util.*;
 
 class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
+	private Scope<NamedPattern> patternScope = new LiScope<>();
+	private Scope<NamedSet> setScope = new LiScope<>();
+	private Scope<LexerState> statesScope = new LiScope<>();
+
 	// The value is either Symbol, or TemplateParameter
 	private final Map<String, Object> symbolsMap = new HashMap<>();
 
 	private final List<LiSymbol> symbols = new ArrayList<>();
 	private final List<LiTemplateParameter> params = new ArrayList<>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<>();
-	private final List<LiNamedPattern> namedPatterns = new ArrayList<>();
-	private final List<LiNamedSet> namedSets = new ArrayList<>();
-	private final Set<String> namedPatternsSet = new HashSet<>();
-	private final Set<String> namedSetNames = new HashSet<>();
-	private final Set<String> stateNamesSet = new HashSet<>();
-	private final Set<LexerState> statesSet = new LinkedHashSet<>();
 	private final Set<RhsPredicate> predicateSet = new HashSet<>();
 	private final List<LiRule> rules = new ArrayList<>();
 	private final List<LiPrio> priorities = new ArrayList<>();
@@ -161,11 +159,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (name == null || regexp == null) {
 			throw new NullPointerException();
 		}
-		if (!namedPatternsSet.add(name)) {
+		LiNamedPattern pattern = new LiNamedPattern(name, regexp, origin);
+		if (!patternScope.insert(pattern, null)) {
 			throw new IllegalStateException("named pattern `" + name + "' already exists");
 		}
-		LiNamedPattern pattern = new LiNamedPattern(name, regexp, origin);
-		namedPatterns.add(pattern);
 		return pattern;
 	}
 
@@ -174,11 +171,10 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (name == null) {
 			throw new NullPointerException();
 		}
-		if (!stateNamesSet.add(name)) {
+		LiLexerState state = new LiLexerState(statesScope.size(), name, origin);
+		if (!statesScope.insert(state, null)) {
 			throw new IllegalStateException("state `" + name + "' already exists");
 		}
-		LiLexerState state = new LiLexerState(statesSet.size(), name, origin);
-		statesSet.add(state);
 		return state;
 	}
 
@@ -196,7 +192,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 		List<LexerState> liStates = new ArrayList<>();
 		for (LexerState state : states) {
-			if (!statesSet.contains(state)) {
+			if (!statesScope.contains(state)) {
 				throw new IllegalArgumentException(
 						"unknown state passed `" + state.getName() + "'");
 			}
@@ -218,14 +214,13 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			throw new NullPointerException();
 		}
 		check(set);
-		// mark as used
-		rhsSet.remove(set);
 
-		if (!namedSetNames.add(name)) {
+		LiNamedSet namedSet = new LiNamedSet(name, set, origin);
+		if (!setScope.insert(namedSet, null)) {
 			throw new IllegalArgumentException("named set `" + name + "' already exists");
 		}
-		LiNamedSet namedSet = new LiNamedSet(name, set, origin);
-		namedSets.add(namedSet);
+		// mark as used
+		rhsSet.remove(set);
 		return namedSet;
 	}
 
@@ -628,7 +623,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
-		LiNamedSet[] setsArr = namedSets.toArray(new LiNamedSet[namedSets.size()]);
+		NamedSet[] setsArr = setScope.toArray(LiNamedSet[]::new);
 		computeSets(expansionContext, setsArr);
 
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
@@ -639,7 +634,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
-		NamedPattern[] patternsArr = namedPatterns.toArray(new NamedPattern[namedPatterns.size()]);
+		NamedPattern[] patternsArr = patternScope.toArray(NamedPattern[]::new);
 
 		LiSymbol error = (LiSymbol) symbolsMap.get("error");
 
@@ -656,7 +651,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 			prioArr = null;
 			inputArr = null;
 		}
-		LexerState[] statesArr = statesSet.toArray(new LexerState[statesSet.size()]);
+		LexerState[] statesArr = statesScope.toArray(LexerState[]::new);
 		Problem[] problemsArr = problems.toArray(new Problem[problems.size()]);
 
 		assignNames();
@@ -689,7 +684,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		instantiator.instantiate(inputs);
 	}
 
-	private void computeSets(ExpansionContext expansionContext, LiNamedSet[] setsArr) {
+	private void computeSets(ExpansionContext expansionContext, NamedSet[] setsArr) {
 		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 		LiSetResolver resolver = new LiSetResolver(symbolArr, terminals, setsArr);

@@ -15,10 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
-import org.textmapper.lapg.api.Problem;
-import org.textmapper.lapg.api.Symbol;
-import org.textmapper.lapg.api.Terminal;
+import org.textmapper.lapg.api.*;
 import org.textmapper.lapg.api.rule.*;
 import org.textmapper.lapg.api.rule.RhsSet.Operation;
 import org.textmapper.lapg.util.ArrayIterable;
@@ -43,13 +40,13 @@ class LiSetResolver {
 	private LiSetIndex index;
 	private SetsClosure closure;
 	private Descriptor[] sets;
-	private LiNamedSet[] namedSets;
+	private NamedSet[] namedSets;
 
 	private SetBuilder terminalsSet;
 	private SetBuilder dependenciesSet;
 	private Map<Symbol, Set<LiNonterminal>> usages;
 
-	public LiSetResolver(LiSymbol[] symbols, int terminals, LiNamedSet[] namedSets) {
+	public LiSetResolver(LiSymbol[] symbols, int terminals, NamedSet[] namedSets) {
 		index = new LiSetIndex(symbols, terminals, namedSets);
 		closure = new SetsClosure();
 		sets = new Descriptor[index.size()];
@@ -155,13 +152,13 @@ class LiSetResolver {
 				expansionContext.addSet(set, result);
 			}
 		}
-		for (LiNamedSet namedSet : namedSets) {
+		for (NamedSet namedSet : namedSets) {
 			Terminal[] resolvedElements = getResolvedElements(namedSet.getSet());
 			int[] res = new int[resolvedElements.length];
 			for (int i = 0; i < resolvedElements.length; i++) {
 				res[i] = resolvedElements[i].getIndex();
 			}
-			namedSet.setElements(res);
+			((LiNamedSet)namedSet).setElements(res);
 		}
 	}
 

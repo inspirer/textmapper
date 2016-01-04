@@ -15,6 +15,7 @@
  */
 package org.textmapper.lapg.builder;
 
+import org.textmapper.lapg.api.NamedSet;
 import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.Terminal;
@@ -40,7 +41,7 @@ class LiSetIndex {
 	private int nonterminals;
 	private int size;
 
-	LiSetIndex(LiSymbol[] symbols, int terminals, LiNamedSet[] namedSets) {
+	LiSetIndex(LiSymbol[] symbols, int terminals, NamedSet[] namedSets) {
 		this.symbols = symbols;
 		this.terminals = terminals;
 		this.nonterminals = symbols.length - terminals;
@@ -52,7 +53,7 @@ class LiSetIndex {
 		for (int i = terminals; i < symbols.length; i++) {
 			traverse(((Nonterminal) symbols[i]).getDefinition());
 		}
-		for (LiNamedSet s : namedSets) {
+		for (NamedSet s : namedSets) {
 			traverse(s.getSet());
 			topLevelSets.add(s.getSet());
 			this.namedSets.add(s.getSet());

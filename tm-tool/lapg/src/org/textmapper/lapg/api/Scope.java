@@ -16,6 +16,7 @@
 package org.textmapper.lapg.api;
 
 import java.util.Collection;
+import java.util.function.IntFunction;
 
 public interface Scope<T extends NamedElement> {
 
@@ -31,9 +32,19 @@ public interface Scope<T extends NamedElement> {
 
 	boolean insert(T element, T anchor);
 
+	boolean contains(T element);
+
 	/**
 	 * Elements without an anchor are reported in the order of appearance,
 	 * while anchored elements are returned next to their anchor, sorted by name.
 	 */
 	Collection<T> elements();
+
+	/**
+	 * Returns an array containing the elements of this scope, using the
+	 * provided {@code creator} function to allocate the returned array.
+	 */
+	T[] toArray(IntFunction<T[]> creator);
+
+	int size();
 }
