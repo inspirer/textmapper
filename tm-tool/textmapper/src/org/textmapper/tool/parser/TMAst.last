@@ -1,6 +1,9 @@
 
 // Ast
 
+import__optlist  : list<Import>
+	(this+=import_)* ;
+
 class Input {
 	Header header;
 	list<Import> imports;
@@ -12,6 +15,9 @@ class Input {
 input  : Input ::=
 	{header} imports=import__optlist options=option_optlist lexer=lexer_section parser=parser_section?
 ;
+
+option_optlist  : list<Option>
+	(this+=option)* ;
 
 class Header {
 	Name name;
@@ -187,6 +193,10 @@ lexer_directive  : DirectiveBrackets ::=
 	this=new.DirectiveBrackets: '%' Lbrackets opening=symref_noargs closing=symref_noargs ';'
 ;
 
+lexer_state_list_Comma_separated  : list<LexerState>
+	(this+=lexer_state
+		separator ',')+ ;
+
 class StateSelector : LexerPart {
 	list<LexerState> states;
 }
@@ -321,6 +331,10 @@ directive  : GrammarPart ::=
   | this=new.DirectiveSet: '%' Lgenerate name=ID '=' {rhsSet} ';'
 ;
 
+inputref_list_Comma_separated  : list<Inputref>
+	(this+=inputref
+		separator ',')+ ;
+
 class Inputref {
 	Symref reference;
 	boolean noeoi;
@@ -336,6 +350,10 @@ references  : list<Symref>
 references_cs  : list<Symref>
 	(this+=symref_noargs
 		separator ',')+ ;
+
+rule0_list_Or_separated  : list<Rule0>
+	(this+=rule0
+		separator '|')+ ;
 
 rules  : list<Rule0> ::=
 	this=rule0_list_Or_separated
@@ -552,6 +570,9 @@ setExpression  : SetExpression ::=
   | this=new.SetBinary: left=setExpression kind='&' as KindKind.AMPERSAND right=setExpression
 ;
 
+annotation_list  : list<Annotation>
+	(this+=annotation)+ ;
+
 class Annotations {
 	list<Annotation> annotations;
 }
@@ -570,6 +591,10 @@ annotation  : Annotation ::=
 	'@' name=ID ('{' {expression} '}')?
   | '@' syntaxProblem=syntax_problem
 ;
+
+nonterm_param_list_Comma_separated  : list<NontermParam>
+	(this+=nonterm_param
+		separator ',')+ ;
 
 class NontermParams {
 	list<NontermParam> list;
@@ -599,6 +624,14 @@ class ParamRef : NontermParam {
 
 param_ref  : ParamRef ::=
 	ref=identifier
+;
+
+argument_list_Comma_separated  : list<Argument>
+	(this+=argument
+		separator ',')+ ;
+
+argument_list_Comma_separated_opt  : list<Argument> ::=
+	this=argument_list_Comma_separated?
 ;
 
 class SymrefArgs {
@@ -698,6 +731,22 @@ expression  : Expression ::=
   | this=syntax_problem
 ;
 
+expression_list_Comma_separated  : list<Expression>
+	(this+=expression
+		separator ',')+ ;
+
+expression_list_Comma_separated_opt  : list<Expression> ::=
+	this=expression_list_Comma_separated?
+;
+
+map_entry_list_Comma_separated  : list<MapEntry>
+	(this+=map_entry
+		separator ',')+ ;
+
+map_entry_list_Comma_separated_opt  : list<MapEntry> ::=
+	this=map_entry_list_Comma_separated?
+;
+
 class MapEntry {
 	String name;
 	Expression value;
@@ -745,12 +794,6 @@ syntax_problem  : SyntaxProblem ::=
 	error
 ;
 
-import__optlist  : list<Import>
-	(this+=import_)* ;
-
-option_optlist  : list<Option>
-	(this+=option)* ;
-
 parsing_algorithmopt  : ParsingAlgorithm ::=
 	this=parsing_algorithm?
 ;
@@ -775,10 +818,6 @@ commandopt  : Command ::=
 	this=command?
 ;
 
-lexer_state_list_Comma_separated  : list<LexerState>
-	(this+=lexer_state
-		separator ',')+ ;
-
 identifieropt  : Identifier ::=
 	this=identifier?
 ;
@@ -787,46 +826,7 @@ implementsopt  : list<Symref> ::=
 	this=implements?
 ;
 
-inputref_list_Comma_separated  : list<Inputref>
-	(this+=inputref
-		separator ',')+ ;
-
-rule0_list_Or_separated  : list<Rule0>
-	(this+=rule0
-		separator '|')+ ;
-
 rhsSuffixopt  : RhsSuffix ::=
 	this=rhsSuffix?
-;
-
-annotation_list  : list<Annotation>
-	(this+=annotation)+ ;
-
-nonterm_param_list_Comma_separated  : list<NontermParam>
-	(this+=nonterm_param
-		separator ',')+ ;
-
-argument_list_Comma_separated  : list<Argument>
-	(this+=argument
-		separator ',')+ ;
-
-argument_list_Comma_separated_opt  : list<Argument> ::=
-	this=argument_list_Comma_separated?
-;
-
-map_entry_list_Comma_separated  : list<MapEntry>
-	(this+=map_entry
-		separator ',')+ ;
-
-map_entry_list_Comma_separated_opt  : list<MapEntry> ::=
-	this=map_entry_list_Comma_separated?
-;
-
-expression_list_Comma_separated  : list<Expression>
-	(this+=expression
-		separator ',')+ ;
-
-expression_list_Comma_separated_opt  : list<Expression> ::=
-	this=expression_list_Comma_separated?
 ;
 

@@ -56,63 +56,63 @@ public class TypesParser {
 
 	private static final boolean DEBUG_SYNTAX = false;
 	private static final int[] tmAction = TypesLexer.unpack_int(108,
-		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\61\0\uffff\uffff" +
-		"\55\0\ufff1\uffff\uffe9\uffff\uffe3\uffff\uffff\uffff\uffff\uffff\uffff\uffff\56" +
-		"\0\uffd5\uffff\uffcd\uffff\3\0\33\0\35\0\34\0\63\0\5\0\6\0\uffff\uffff\uffbf\uffff" +
-		"\uffb3\uffff\uffa3\uffff\11\0\uffff\uffff\uff9b\uffff\uffff\uffff\37\0\uffff\uffff" +
-		"\uffff\uffff\uff91\uffff\uffff\uffff\65\0\uff83\uffff\uff7d\uffff\76\0\uffff\uffff" +
-		"\12\0\40\0\uffff\uffff\21\0\uffff\uffff\uffff\uffff\74\0\15\0\uffff\uffff\uff73\uffff" +
-		"\uffff\uffff\67\0\uffff\uffff\uffff\uffff\uffff\uffff\32\0\uffff\uffff\uffff\uffff" +
-		"\uffff\uffff\uffff\uffff\14\0\43\0\44\0\45\0\uff6b\uffff\13\0\42\0\41\0\uffff\uffff" +
-		"\7\0\30\0\27\0\75\0\10\0\24\0\25\0\uff5d\uffff\23\0\uff55\uffff\73\0\50\0\uff4d\uffff" +
-		"\uffff\uffff\uff47\uffff\uffff\uffff\uffff\uffff\47\0\uffff\uffff\uff41\uffff\uffff" +
-		"\uffff\22\0\51\0\52\0\53\0\54\0\uffff\uffff\uffff\uffff\46\0\100\0\uffff\uffff\uffff" +
-		"\uffff\77\0\uffff\uffff\ufffe\uffff");
+		"\uffff\uffff\uffff\uffff\ufffd\uffff\2\0\ufff7\uffff\1\0\uffff\uffff\73\0\uffff\uffff" +
+		"\67\0\ufff1\uffff\uffe9\uffff\uffe3\uffff\uffff\uffff\uffff\uffff\uffff\uffff\70" +
+		"\0\uffd5\uffff\uffcd\uffff\5\0\41\0\43\0\42\0\3\0\7\0\10\0\uffff\uffff\uffbf\uffff" +
+		"\uffb3\uffff\uffa3\uffff\13\0\uffff\uffff\uff9b\uffff\uffff\uffff\45\0\uffff\uffff" +
+		"\uffff\uffff\uff91\uffff\uffff\uffff\75\0\uff83\uffff\uff7d\uffff\uffff\uffff\24" +
+		"\0\14\0\46\0\uffff\uffff\27\0\uffff\uffff\uffff\uffff\uffff\uffff\17\0\uff73\uffff" +
+		"\21\0\uffff\uffff\77\0\uffff\uffff\uffff\uffff\uffff\uffff\40\0\uffff\uffff\uffff" +
+		"\uffff\uffff\uffff\uffff\uffff\20\0\51\0\52\0\53\0\uff6b\uffff\15\0\50\0\47\0\uffff" +
+		"\uffff\11\0\36\0\35\0\23\0\12\0\32\0\33\0\uff5d\uffff\31\0\uff55\uffff\16\0\62\0" +
+		"\uff4d\uffff\uffff\uffff\uff47\uffff\uffff\uffff\uffff\uffff\61\0\uffff\uffff\uff41" +
+		"\uffff\uffff\uffff\30\0\63\0\64\0\65\0\66\0\uffff\uffff\uffff\uffff\60\0\55\0\uffff" +
+		"\uffff\uffff\uffff\54\0\uffff\uffff\ufffe\uffff");
 
 	private static final short[] tmLalr = TypesLexer.unpack_short(194,
-		"\24\uffff\0\0\uffff\ufffe\25\uffff\16\62\uffff\ufffe\7\uffff\12\57\16\57\uffff\ufffe" +
-		"\12\uffff\16\4\uffff\ufffe\1\64\16\64\17\64\26\64\27\64\30\64\uffff\ufffe\7\uffff" +
-		"\12\60\16\60\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\15\72\uffff" +
-		"\ufffe\22\uffff\1\31\12\31\15\31\21\31\uffff\ufffe\7\uffff\10\uffff\1\36\12\36\15" +
-		"\36\21\36\22\36\uffff\ufffe\12\uffff\15\71\21\71\uffff\ufffe\20\uffff\22\uffff\11" +
-		"\66\14\66\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\21\72\uffff\ufffe" +
-		"\14\uffff\11\70\uffff\ufffe\6\uffff\11\26\12\26\23\26\uffff\ufffe\12\uffff\11\16" +
-		"\23\16\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\22\uffff\23\104\uffff\ufffe\12" +
-		"\uffff\11\17\23\17\uffff\ufffe\12\uffff\11\20\23\20\uffff\ufffe\12\uffff\23\103\uffff" +
-		"\ufffe\1\uffff\21\102\uffff\ufffe\12\uffff\21\101\uffff\ufffe");
+		"\24\uffff\0\0\uffff\ufffe\25\uffff\16\74\uffff\ufffe\7\uffff\12\71\16\71\uffff\ufffe" +
+		"\12\uffff\16\6\uffff\ufffe\1\4\16\4\17\4\26\4\27\4\30\4\uffff\ufffe\7\uffff\12\72" +
+		"\16\72\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\15\102\uffff\ufffe" +
+		"\22\uffff\1\37\12\37\15\37\21\37\uffff\ufffe\7\uffff\10\uffff\1\44\12\44\15\44\21" +
+		"\44\22\44\uffff\ufffe\12\uffff\15\101\21\101\uffff\ufffe\20\uffff\22\uffff\11\76" +
+		"\14\76\uffff\ufffe\1\uffff\16\uffff\26\uffff\27\uffff\30\uffff\21\102\uffff\ufffe" +
+		"\14\uffff\11\100\uffff\ufffe\6\uffff\11\34\12\34\23\34\uffff\ufffe\12\uffff\11\22" +
+		"\23\22\uffff\ufffe\1\uffff\2\uffff\3\uffff\4\uffff\22\uffff\23\104\uffff\ufffe\12" +
+		"\uffff\11\25\23\25\uffff\ufffe\12\uffff\11\26\23\26\uffff\ufffe\12\uffff\23\103\uffff" +
+		"\ufffe\1\uffff\21\57\uffff\ufffe\12\uffff\21\56\uffff\ufffe");
 
 	private static final short[] lapg_sym_goto = TypesLexer.unpack_short(62,
 		"\0\1\26\36\50\55\55\56\62\64\67\77\103\106\111\116\120\122\124\133\136\140\141\145" +
-		"\151\155\157\161\162\163\165\166\167\170\171\173\174\175\177\201\203\206\212\216" +
-		"\222\227\234\241\242\244\257\260\261\262\263\264\266\267\272\273\274\275");
+		"\151\155\157\161\162\163\164\166\167\170\171\172\174\175\176\177\201\204\206\210" +
+		"\213\217\223\227\234\241\242\243\250\251\253\266\267\270\271\272\274\275");
 
 	private static final short[] lapg_sym_from = TypesLexer.unpack_short(189,
 		"\152\1\6\15\16\17\22\32\43\45\46\66\75\76\77\104\127\130\131\143\144\150\66\75\76" +
 		"\104\130\131\143\150\41\46\66\71\72\77\104\131\143\150\66\104\131\143\150\51\12\21" +
-		"\34\110\34\71\64\70\74\13\35\53\65\120\122\125\134\60\61\133\147\50\133\147\37\133" +
-		"\147\10\17\22\43\45\17\44\40\110\56\135\33\40\66\104\131\143\150\53\64\126\0\2\4" +
-		"\17\22\43\45\17\22\43\45\17\22\43\45\46\77\46\77\0\0\0\2\4\17\17\17\22\45\50\40\46" +
-		"\77\46\77\75\76\75\76\130\41\46\72\77\17\22\43\45\17\22\43\45\66\104\131\143\150" +
-		"\66\104\131\143\150\66\104\131\143\150\104\133\147\6\16\17\22\43\45\66\104\131\143" +
-		"\150\6\4\14\40\50\22\45\46\41\46\77\127\127\104");
+		"\34\110\34\71\62\70\74\13\35\52\64\120\122\125\134\60\61\133\147\50\133\147\37\133" +
+		"\147\10\17\22\43\45\17\44\40\110\56\135\33\40\66\104\131\143\150\52\62\126\0\2\4" +
+		"\17\22\43\45\17\22\43\45\17\22\43\45\46\77\46\77\0\0\14\0\2\4\17\17\17\22\45\50\46" +
+		"\40\46\77\41\46\77\46\77\75\76\75\76\130\41\46\72\77\17\22\43\45\17\22\43\45\66\104" +
+		"\131\143\150\66\104\131\143\150\127\127\66\104\131\143\150\104\133\147\6\16\17\22" +
+		"\43\45\66\104\131\143\150\6\4\40\50\22\45\104");
 
 	private static final short[] lapg_sym_to = TypesLexer.unpack_short(189,
 		"\153\4\11\20\11\11\11\40\11\11\57\11\116\116\57\11\133\116\11\11\147\11\101\117\117" +
 		"\101\117\101\101\101\51\51\102\112\51\51\102\102\102\102\103\103\103\103\103\71\15" +
 		"\15\15\15\42\113\77\111\115\16\43\72\72\130\130\131\144\75\76\140\140\66\141\141" +
 		"\44\142\142\14\22\22\22\22\23\55\45\127\74\145\41\46\104\104\104\104\104\73\100\132" +
-		"\1\1\6\24\24\24\24\25\25\25\25\26\26\26\26\60\60\61\61\152\2\3\5\7\27\30\31\35\35" +
-		"\67\47\62\123\63\63\120\122\121\121\136\52\52\114\52\32\36\54\36\33\33\33\33\105" +
-		"\124\137\146\151\106\106\106\106\106\107\107\107\107\107\125\143\150\12\21\34\34" +
-		"\34\34\110\110\110\110\110\13\10\17\50\70\37\56\64\53\65\65\134\135\126");
+		"\1\1\6\24\24\24\24\25\25\25\25\26\26\26\26\60\60\61\61\152\2\17\3\5\7\27\30\31\35" +
+		"\35\67\62\47\63\123\52\64\64\65\65\120\122\121\121\136\53\53\114\53\32\36\54\36\33" +
+		"\33\33\33\105\124\137\146\151\106\106\106\106\106\134\135\107\107\107\107\107\125" +
+		"\143\150\12\21\34\34\34\34\110\110\110\110\110\13\10\50\70\37\56\126");
 
 	private static final short[] tmRuleLen = TypesLexer.unpack_short(69,
-		"\1\2\1\6\2\1\1\5\6\1\3\2\3\1\1\3\3\1\3\1\1\1\1\3\3\1\4\1\1\1\1\2\4\1\1\1\1\1\4\3" +
-		"\1\3\1\1\1\1\3\1\3\1\0\2\0\1\0\1\0\1\0\3\1\3\1\5\3\1\0\1\0");
+		"\1\2\1\2\0\6\2\1\1\5\6\1\3\2\3\1\3\1\1\3\1\3\3\1\3\1\1\1\1\3\3\1\4\1\1\1\1\2\4\1" +
+		"\1\1\1\1\5\3\1\0\4\3\1\3\1\1\1\1\3\1\3\1\0\1\0\1\0\1\0\1\0");
 
 	private static final short[] tmRuleSymbol = TypesLexer.unpack_short(69,
-		"\33\34\34\35\36\37\37\40\41\42\42\43\44\45\45\46\46\46\47\47\50\50\51\51\51\52\52" +
-		"\53\53\53\53\53\53\54\54\55\55\55\56\56\57\57\60\60\60\61\61\62\62\63\63\64\64\65" +
+		"\33\34\34\35\35\36\37\40\40\41\42\43\43\44\45\45\46\47\47\50\50\51\51\51\52\52\53" +
+		"\53\54\54\54\55\55\56\56\56\56\56\56\57\57\60\60\60\61\61\62\62\63\63\64\64\65\65" +
 		"\65\66\66\67\67\70\70\71\71\72\72\73\73\74\74");
 
 	protected static final String[] tmSymbolNames = new String[] {
@@ -145,6 +145,7 @@ public class TypesParser {
 		"Lchoice",
 		"input",
 		"declarations",
+		"member_declaration_optlist",
 		"type_declaration",
 		"extends_clause",
 		"member_declaration",
@@ -152,8 +153,10 @@ public class TypesParser {
 		"method_declaration",
 		"parameters",
 		"defaultval",
+		"constraint_list_Semicolon_separated",
 		"modifiers",
 		"constraint",
+		"multiplicity_list_Comma_separated",
 		"string_constraint",
 		"strings",
 		"string",
@@ -162,20 +165,17 @@ public class TypesParser {
 		"type",
 		"expression",
 		"literal_expression",
+		"list_of_identifier_and_2_elements_Comma_separated",
+		"list_of_identifier_and_2_elements_Comma_separated_opt",
 		"structural_expression",
 		"expression_list",
 		"map_separator",
 		"name",
 		"name_list",
 		"extends_clauseopt",
-		"member_declaration_optlist",
 		"modifiersopt",
 		"defaultvalopt",
 		"parametersopt",
-		"constraint_list_Semicolon_separated",
-		"multiplicity_list_Comma_separated",
-		"list_of_identifier_and_2_elements_Comma_separated",
-		"list_of_identifier_and_2_elements_Comma_separated_opt",
 		"expression_listopt",
 	};
 
@@ -183,37 +183,37 @@ public class TypesParser {
 		// non-terminals
 		int input = 27;
 		int declarations = 28;
-		int type_declaration = 29;
-		int extends_clause = 30;
-		int member_declaration = 31;
-		int feature_declaration = 32;
-		int method_declaration = 33;
-		int parameters = 34;
-		int defaultval = 35;
-		int modifiers = 36;
-		int constraint = 37;
-		int string_constraint = 38;
-		int strings = 39;
-		int string = 40;
-		int multiplicity = 41;
-		int type_ex = 42;
-		int type = 43;
-		int expression = 44;
-		int literal_expression = 45;
-		int structural_expression = 46;
-		int expression_list = 47;
-		int map_separator = 48;
-		int name = 49;
-		int name_list = 50;
-		int extends_clauseopt = 51;
-		int member_declaration_optlist = 52;
-		int modifiersopt = 53;
-		int defaultvalopt = 54;
-		int parametersopt = 55;
-		int constraint_list_Semicolon_separated = 56;
-		int multiplicity_list_Comma_separated = 57;
-		int list_of_identifier_and_2_elements_Comma_separated = 58;
-		int list_of_identifier_and_2_elements_Comma_separated_opt = 59;
+		int member_declaration_optlist = 29;
+		int type_declaration = 30;
+		int extends_clause = 31;
+		int member_declaration = 32;
+		int feature_declaration = 33;
+		int method_declaration = 34;
+		int parameters = 35;
+		int defaultval = 36;
+		int constraint_list_Semicolon_separated = 37;
+		int modifiers = 38;
+		int constraint = 39;
+		int multiplicity_list_Comma_separated = 40;
+		int string_constraint = 41;
+		int strings = 42;
+		int string = 43;
+		int multiplicity = 44;
+		int type_ex = 45;
+		int type = 46;
+		int expression = 47;
+		int literal_expression = 48;
+		int list_of_identifier_and_2_elements_Comma_separated = 49;
+		int list_of_identifier_and_2_elements_Comma_separated_opt = 50;
+		int structural_expression = 51;
+		int expression_list = 52;
+		int map_separator = 53;
+		int name = 54;
+		int name_list = 55;
+		int extends_clauseopt = 56;
+		int modifiersopt = 57;
+		int defaultvalopt = 58;
+		int parametersopt = 59;
 		int expression_listopt = 60;
 	}
 
@@ -337,17 +337,23 @@ public class TypesParser {
 				tmLeft.value = new ArrayList();
 				((List<AstTypeDeclaration>)tmLeft.value).add(((AstTypeDeclaration)tmStack[tmHead].value));
 				break;
-			case 3:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_optlist '}'
+			case 3:  // member_declaration_optlist ::= member_declaration_optlist member_declaration
+				((List<IAstMemberDeclaration>)tmLeft.value).add(((IAstMemberDeclaration)tmStack[tmHead].value));
+				break;
+			case 4:  // member_declaration_optlist ::=
+				tmLeft.value = new ArrayList();
+				break;
+			case 5:  // type_declaration ::= Lclass identifier extends_clauseopt '{' member_declaration_optlist '}'
 				tmLeft.value = new AstTypeDeclaration(
 						((String)tmStack[tmHead - 4].value) /* name */,
 						((List<List<String>>)tmStack[tmHead - 3].value) /* _super */,
 						((List<IAstMemberDeclaration>)tmStack[tmHead - 1].value) /* members */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 4:  // extends_clause ::= Lextends name_list
+			case 6:  // extends_clause ::= Lextends name_list
 				tmLeft.value = ((List<List<String>>)tmStack[tmHead].value);
 				break;
-			case 7:  // feature_declaration ::= type_ex identifier modifiersopt defaultvalopt ';'
+			case 9:  // feature_declaration ::= type_ex identifier modifiersopt defaultvalopt ';'
 				tmLeft.value = new AstFeatureDeclaration(
 						((AstTypeEx)tmStack[tmHead - 4].value) /* typeEx */,
 						((String)tmStack[tmHead - 3].value) /* name */,
@@ -355,112 +361,126 @@ public class TypesParser {
 						((IAstExpression)tmStack[tmHead - 1].value) /* defaultval */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset);
 				break;
-			case 8:  // method_declaration ::= type_ex identifier '(' parametersopt ')' ';'
+			case 10:  // method_declaration ::= type_ex identifier '(' parametersopt ')' ';'
 				tmLeft.value = new AstMethodDeclaration(
 						((AstTypeEx)tmStack[tmHead - 5].value) /* returnType */,
 						((String)tmStack[tmHead - 4].value) /* name */,
 						((List<AstTypeEx>)tmStack[tmHead - 2].value) /* parameters */,
 						null /* input */, tmStack[tmHead - 5].line, tmStack[tmHead - 5].offset, tmStack[tmHead].endoffset);
 				break;
-			case 9:  // parameters ::= type_ex
+			case 11:  // parameters ::= type_ex
 				tmLeft.value = new ArrayList();
 				((List<AstTypeEx>)tmLeft.value).add(((AstTypeEx)tmStack[tmHead].value));
 				break;
-			case 10:  // parameters ::= parameters ',' type_ex
+			case 12:  // parameters ::= parameters ',' type_ex
 				((List<AstTypeEx>)tmLeft.value).add(((AstTypeEx)tmStack[tmHead].value));
 				break;
-			case 11:  // defaultval ::= '=' expression
+			case 13:  // defaultval ::= '=' expression
 				tmLeft.value = ((IAstExpression)tmStack[tmHead].value);
 				break;
-			case 12:  // modifiers ::= '[' constraint_list_Semicolon_separated ']'
+			case 14:  // constraint_list_Semicolon_separated ::= constraint_list_Semicolon_separated ';' constraint
+				((List<AstConstraint>)tmLeft.value).add(((AstConstraint)tmStack[tmHead].value));
+				break;
+			case 15:  // constraint_list_Semicolon_separated ::= constraint
+				tmLeft.value = new ArrayList();
+				((List<AstConstraint>)tmLeft.value).add(((AstConstraint)tmStack[tmHead].value));
+				break;
+			case 16:  // modifiers ::= '[' constraint_list_Semicolon_separated ']'
 				tmLeft.value = ((List<AstConstraint>)tmStack[tmHead - 1].value);
 				break;
-			case 13:  // constraint ::= string_constraint
+			case 17:  // constraint ::= string_constraint
 				tmLeft.value = new AstConstraint(
 						((AstStringConstraint)tmStack[tmHead].value) /* stringConstraint */,
 						null /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 14:  // constraint ::= multiplicity_list_Comma_separated
+			case 18:  // constraint ::= multiplicity_list_Comma_separated
 				tmLeft.value = new AstConstraint(
 						null /* stringConstraint */,
 						((List<AstMultiplicity>)tmStack[tmHead].value) /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 15:  // string_constraint ::= Lset ':' strings
+			case 19:  // multiplicity_list_Comma_separated ::= multiplicity_list_Comma_separated ',' multiplicity
+				((List<AstMultiplicity>)tmLeft.value).add(((AstMultiplicity)tmStack[tmHead].value));
+				break;
+			case 20:  // multiplicity_list_Comma_separated ::= multiplicity
+				tmLeft.value = new ArrayList();
+				((List<AstMultiplicity>)tmLeft.value).add(((AstMultiplicity)tmStack[tmHead].value));
+				break;
+			case 21:  // string_constraint ::= Lset ':' strings
 				tmLeft.value = new AstStringConstraint(
 						AstStringConstraint.AstKindKind.LSET /* kind */,
 						((List<Ast_String>)tmStack[tmHead].value) /* strings */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 16:  // string_constraint ::= Lchoice ':' strings
+			case 22:  // string_constraint ::= Lchoice ':' strings
 				tmLeft.value = new AstStringConstraint(
 						AstStringConstraint.AstKindKind.LCHOICE /* kind */,
 						((List<Ast_String>)tmStack[tmHead].value) /* strings */,
 						null /* identifier */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 17:  // string_constraint ::= identifier
+			case 23:  // string_constraint ::= identifier
 				tmLeft.value = new AstStringConstraint(
 						null /* kind */,
 						null /* strings */,
 						((String)tmStack[tmHead].value) /* identifier */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 18:  // strings ::= strings ',' string
+			case 24:  // strings ::= strings ',' string
 				((List<Ast_String>)tmLeft.value).add(((Ast_String)tmStack[tmHead].value));
 				break;
-			case 19:  // strings ::= string
+			case 25:  // strings ::= string
 				tmLeft.value = new ArrayList();
 				((List<Ast_String>)tmLeft.value).add(((Ast_String)tmStack[tmHead].value));
 				break;
-			case 20:  // string ::= identifier
+			case 26:  // string ::= identifier
 				tmLeft.value = new Ast_String(
 						((String)tmStack[tmHead].value) /* identifier */,
 						null /* scon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 21:  // string ::= scon
+			case 27:  // string ::= scon
 				tmLeft.value = new Ast_String(
 						null /* identifier */,
 						((String)tmStack[tmHead].value) /* scon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 22:  // multiplicity ::= icon
+			case 28:  // multiplicity ::= icon
 				tmLeft.value = new AstMultiplicity(
 						((Integer)tmStack[tmHead].value) /* lo */,
 						false /* hasNoUpperBound */,
 						null /* hi */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 23:  // multiplicity ::= icon '..' '*'
+			case 29:  // multiplicity ::= icon '..' '*'
 				tmLeft.value = new AstMultiplicity(
 						((Integer)tmStack[tmHead - 2].value) /* lo */,
 						true /* hasNoUpperBound */,
 						null /* hi */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 24:  // multiplicity ::= icon '..' icon
+			case 30:  // multiplicity ::= icon '..' icon
 				tmLeft.value = new AstMultiplicity(
 						((Integer)tmStack[tmHead - 2].value) /* lo */,
 						false /* hasNoUpperBound */,
 						((Integer)tmStack[tmHead].value) /* hi */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
 				break;
-			case 25:  // type_ex ::= type
+			case 31:  // type_ex ::= type
 				tmLeft.value = new AstTypeEx(
 						((AstType)tmStack[tmHead].value) /* type */,
 						null /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 26:  // type_ex ::= type '[' multiplicity_list_Comma_separated ']'
+			case 32:  // type_ex ::= type '[' multiplicity_list_Comma_separated ']'
 				tmLeft.value = new AstTypeEx(
 						((AstType)tmStack[tmHead - 3].value) /* type */,
 						((List<AstMultiplicity>)tmStack[tmHead - 1].value) /* multiplicityListCommaSeparated */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 27:  // type ::= Lint
+			case 33:  // type ::= Lint
 				tmLeft.value = new AstType(
 						AstType.AstKindKind.LINT /* kind */,
 						null /* name */,
@@ -469,7 +489,7 @@ public class TypesParser {
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 28:  // type ::= Lstring
+			case 34:  // type ::= Lstring
 				tmLeft.value = new AstType(
 						AstType.AstKindKind.LSTRING /* kind */,
 						null /* name */,
@@ -478,7 +498,7 @@ public class TypesParser {
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 29:  // type ::= Lbool
+			case 35:  // type ::= Lbool
 				tmLeft.value = new AstType(
 						AstType.AstKindKind.LBOOL /* kind */,
 						null /* name */,
@@ -487,7 +507,7 @@ public class TypesParser {
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 30:  // type ::= name
+			case 36:  // type ::= name
 				tmLeft.value = new AstType(
 						null /* kind */,
 						((List<String>)tmStack[tmHead].value) /* name */,
@@ -496,7 +516,7 @@ public class TypesParser {
 						null /* parameters */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 31:  // type ::= name '*'
+			case 37:  // type ::= name '*'
 				tmLeft.value = new AstType(
 						null /* kind */,
 						((List<String>)tmStack[tmHead - 1].value) /* name */,
@@ -505,7 +525,7 @@ public class TypesParser {
 						null /* parameters */,
 						null /* input */, tmStack[tmHead - 1].line, tmStack[tmHead - 1].offset, tmStack[tmHead].endoffset);
 				break;
-			case 32:  // type ::= '{' parametersopt '=>' '}'
+			case 38:  // type ::= '{' parametersopt '=>' '}'
 				tmLeft.value = new AstType(
 						null /* kind */,
 						null /* name */,
@@ -514,105 +534,85 @@ public class TypesParser {
 						((List<AstTypeEx>)tmStack[tmHead - 2].value) /* parameters */,
 						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
 				break;
-			case 35:  // literal_expression ::= scon
+			case 41:  // literal_expression ::= scon
 				tmLeft.value = new AstLiteralExpression(
 						((String)tmStack[tmHead].value) /* scon */,
 						null /* icon */,
 						null /* bcon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 36:  // literal_expression ::= icon
+			case 42:  // literal_expression ::= icon
 				tmLeft.value = new AstLiteralExpression(
 						null /* scon */,
 						((Integer)tmStack[tmHead].value) /* icon */,
 						null /* bcon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 37:  // literal_expression ::= bcon
+			case 43:  // literal_expression ::= bcon
 				tmLeft.value = new AstLiteralExpression(
 						null /* scon */,
 						null /* icon */,
 						((Boolean)tmStack[tmHead].value) /* bcon */,
 						null /* input */, tmStack[tmHead].line, tmStack[tmHead].offset, tmStack[tmHead].endoffset);
 				break;
-			case 38:  // structural_expression ::= name '(' list_of_identifier_and_2_elements_Comma_separated_opt ')'
-				tmLeft.value = new AstStructuralExpression(
-						((List<String>)tmStack[tmHead - 3].value) /* name */,
-						((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,
-						null /* expressionList */,
-						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
-				break;
-			case 39:  // structural_expression ::= '[' expression_listopt ']'
-				tmLeft.value = new AstStructuralExpression(
-						null /* name */,
-						null /* mapEntries */,
-						((List<IAstExpression>)tmStack[tmHead - 1].value) /* expressionList */,
-						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
-				break;
-			case 40:  // expression_list ::= expression
-				tmLeft.value = new ArrayList();
-				((List<IAstExpression>)tmLeft.value).add(((IAstExpression)tmStack[tmHead].value));
-				break;
-			case 41:  // expression_list ::= expression_list ',' expression
-				((List<IAstExpression>)tmLeft.value).add(((IAstExpression)tmStack[tmHead].value));
-				break;
-			case 42:  // map_separator ::= ':'
-				tmLeft.value = AstMapSeparator.COLON;
-				break;
-			case 43:  // map_separator ::= '='
-				tmLeft.value = AstMapSeparator.EQUAL;
-				break;
-			case 44:  // map_separator ::= '=>'
-				tmLeft.value = AstMapSeparator.EQUAL_GREATER;
-				break;
-			case 45:  // name ::= identifier
-				tmLeft.value = new ArrayList();
-				((List<String>)tmLeft.value).add(((String)tmStack[tmHead].value));
-				break;
-			case 46:  // name ::= name '.' identifier
-				((List<String>)tmLeft.value).add(((String)tmStack[tmHead].value));
-				break;
-			case 47:  // name_list ::= name
-				tmLeft.value = new ArrayList();
-				((List<List<String>>)tmLeft.value).add(((List<String>)tmStack[tmHead].value));
-				break;
-			case 48:  // name_list ::= name_list ',' name
-				((List<List<String>>)tmLeft.value).add(((List<String>)tmStack[tmHead].value));
-				break;
-			case 51:  // member_declaration_optlist ::= member_declaration_optlist member_declaration
-				((List<IAstMemberDeclaration>)tmLeft.value).add(((IAstMemberDeclaration)tmStack[tmHead].value));
-				break;
-			case 52:  // member_declaration_optlist ::=
-				tmLeft.value = new ArrayList();
-				break;
-			case 59:  // constraint_list_Semicolon_separated ::= constraint_list_Semicolon_separated ';' constraint
-				((List<AstConstraint>)tmLeft.value).add(((AstConstraint)tmStack[tmHead].value));
-				break;
-			case 60:  // constraint_list_Semicolon_separated ::= constraint
-				tmLeft.value = new ArrayList();
-				((List<AstConstraint>)tmLeft.value).add(((AstConstraint)tmStack[tmHead].value));
-				break;
-			case 61:  // multiplicity_list_Comma_separated ::= multiplicity_list_Comma_separated ',' multiplicity
-				((List<AstMultiplicity>)tmLeft.value).add(((AstMultiplicity)tmStack[tmHead].value));
-				break;
-			case 62:  // multiplicity_list_Comma_separated ::= multiplicity
-				tmLeft.value = new ArrayList();
-				((List<AstMultiplicity>)tmLeft.value).add(((AstMultiplicity)tmStack[tmHead].value));
-				break;
-			case 63:  // list_of_identifier_and_2_elements_Comma_separated ::= list_of_identifier_and_2_elements_Comma_separated ',' identifier map_separator expression
+			case 44:  // list_of_identifier_and_2_elements_Comma_separated ::= list_of_identifier_and_2_elements_Comma_separated ',' identifier map_separator expression
 				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 4].line, tmStack[tmHead - 4].offset, tmStack[tmHead].endoffset));
 				break;
-			case 64:  // list_of_identifier_and_2_elements_Comma_separated ::= identifier map_separator expression
+			case 45:  // list_of_identifier_and_2_elements_Comma_separated ::= identifier map_separator expression
 				tmLeft.value = new ArrayList();
 				((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmLeft.value).add(new AstListOfIdentifierAnd2ElementsCommaSeparatedItem(
 						((String)tmStack[tmHead - 2].value) /* identifier */,
 						((AstMapSeparator)tmStack[tmHead - 1].value) /* mapSeparator */,
 						((IAstExpression)tmStack[tmHead].value) /* expression */,
 						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset));
+				break;
+			case 48:  // structural_expression ::= name '(' list_of_identifier_and_2_elements_Comma_separated_opt ')'
+				tmLeft.value = new AstStructuralExpression(
+						((List<String>)tmStack[tmHead - 3].value) /* name */,
+						((List<AstListOfIdentifierAnd2ElementsCommaSeparatedItem>)tmStack[tmHead - 1].value) /* mapEntries */,
+						null /* expressionList */,
+						null /* input */, tmStack[tmHead - 3].line, tmStack[tmHead - 3].offset, tmStack[tmHead].endoffset);
+				break;
+			case 49:  // structural_expression ::= '[' expression_listopt ']'
+				tmLeft.value = new AstStructuralExpression(
+						null /* name */,
+						null /* mapEntries */,
+						((List<IAstExpression>)tmStack[tmHead - 1].value) /* expressionList */,
+						null /* input */, tmStack[tmHead - 2].line, tmStack[tmHead - 2].offset, tmStack[tmHead].endoffset);
+				break;
+			case 50:  // expression_list ::= expression
+				tmLeft.value = new ArrayList();
+				((List<IAstExpression>)tmLeft.value).add(((IAstExpression)tmStack[tmHead].value));
+				break;
+			case 51:  // expression_list ::= expression_list ',' expression
+				((List<IAstExpression>)tmLeft.value).add(((IAstExpression)tmStack[tmHead].value));
+				break;
+			case 52:  // map_separator ::= ':'
+				tmLeft.value = AstMapSeparator.COLON;
+				break;
+			case 53:  // map_separator ::= '='
+				tmLeft.value = AstMapSeparator.EQUAL;
+				break;
+			case 54:  // map_separator ::= '=>'
+				tmLeft.value = AstMapSeparator.EQUAL_GREATER;
+				break;
+			case 55:  // name ::= identifier
+				tmLeft.value = new ArrayList();
+				((List<String>)tmLeft.value).add(((String)tmStack[tmHead].value));
+				break;
+			case 56:  // name ::= name '.' identifier
+				((List<String>)tmLeft.value).add(((String)tmStack[tmHead].value));
+				break;
+			case 57:  // name_list ::= name
+				tmLeft.value = new ArrayList();
+				((List<List<String>>)tmLeft.value).add(((List<String>)tmStack[tmHead].value));
+				break;
+			case 58:  // name_list ::= name_list ',' name
+				((List<List<String>>)tmLeft.value).add(((List<String>)tmStack[tmHead].value));
 				break;
 		}
 	}

@@ -18,28 +18,11 @@
 %%
 
 input :
-  DefaultP1 DefaultP_C DefaultP_A_C DefaultP_A_B_C
+  DefaultP DefaultP_C DefaultP_A_C DefaultP_A_B_C
 ;
 
-Terms_B :
-  b
-;
-
-Terms_A_B_C :
-  a b c
-;
-
-DefaultP1 :
-  Terms1
-;
-
-DefaultP_C :
-  Terms_C
-;
-
-DefaultP_A_C :
-  Terms_A_C
-| d Terms1
+DefaultP :
+  Terms
 ;
 
 DefaultP_A_B_C :
@@ -47,16 +30,33 @@ DefaultP_A_B_C :
 | d Terms_B
 ;
 
-Terms1 :
+DefaultP_A_C :
+  Terms_A_C
+| d Terms
+;
+
+DefaultP_C :
+  Terms_C
+;
+
+Terms :
   %empty
 ;
 
-Terms_C :
-  c
+Terms_A_B_C :
+  a b c
 ;
 
 Terms_A_C :
   a c
+;
+
+Terms_B :
+  b
+;
+
+Terms_C :
+  c
 ;
 
 %%
