@@ -22,14 +22,18 @@ import org.textmapper.lapg.api.ast.AstType;
 
 abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourceElement {
 
-	private int index;
 	private String name;
+	// OR
+	private String nameHint;
+
+	private int index;
 	protected final SourceElement origin;
 	private AstType mapping;
 	private boolean unused;
 
-	protected LiSymbol(String name, SourceElement origin) {
-		this.name = name;
+	protected LiSymbol(String name, boolean isAnonymous, SourceElement origin) {
+		this.name = isAnonymous ? null : name;
+		this.nameHint = isAnonymous ? name : null;
 		this.origin = origin;
 	}
 
@@ -56,10 +60,21 @@ abstract class LiSymbol extends LiUserDataHolder implements Symbol, DerivedSourc
 		return name;
 	}
 
-	void setName(String value) {
+	@Override
+	public void setName(String value) {
 		if (name != null) throw new IllegalStateException();
 
 		name = value;
+	}
+
+	@Override
+	public void updateNameHint(String nameHint) {
+		this.nameHint = nameHint;
+	}
+
+	@Override
+	public String getNameHint() {
+		return nameHint;
 	}
 
 	@Override

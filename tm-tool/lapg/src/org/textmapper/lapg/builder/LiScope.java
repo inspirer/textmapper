@@ -16,19 +16,20 @@
 package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.NamedElement;
+import org.textmapper.lapg.api.NamedElement.Anonymous;
 import org.textmapper.lapg.api.Scope;
 
 import java.util.*;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 class LiScope<T extends NamedElement> implements Scope<T> {
 
 	private final LiScope<T> parent;
-	private final Map<String, T> elementMap = new HashMap<>();
+	private final Map<String, T> nameToElement = new HashMap<>();
 	private final Map<T, Integer> elementIndex = new HashMap<>();
 	private final Map<String, Integer> lastIndex = new HashMap<>();
-	private List<T> cache;
-
+	private List<T> allElements = new ArrayList<>();
 
 	public LiScope() {
 		this(null);
@@ -40,7 +41,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 
 	@Override
 	public T resolve(String name) {
-		T result = elementMap.get(name);
+		T result = nameToElement.get(name);
 		if (result != null) return result;
 
 		return parent == null ? null : parent.resolve(name);
@@ -48,11 +49,11 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 
 	@Override
 	public String newName(String baseName) {
-		if (!elementMap.containsKey(baseName)) return baseName;
+		if (!nameToElement.containsKey(baseName)) return baseName;
 
 		int index = lastIndex.containsKey(baseName) ? lastIndex.get(baseName) : 1;
 		String name = baseName + index;
-		while (elementMap.containsKey(name)) {
+		while (nameToElement.containsKey(name)) {
 			name = baseName + (++index);
 		}
 		lastIndex.put(baseName, index);
@@ -60,13 +61,39 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	}
 
 	@Override
+	public void assignNames() {
+		for (T element : allElements) {
+			if (!(element instanceof NamedElement.Anonymous)) {
+				if (element.getName() == null) throw new IllegalStateException("oops");
+				continue;
+			}
+
+			String name = element.getName();
+			if (name != null) continue;
+
+			name = newName(((Anonymous) element).getNameHint());
+			nameToElement.put(name, element);
+			((Anonymous) element).setName(name);
+		}
+	}
+
+	@Override
+	public void sort() {
+		Comparator<T> cmp = Comparator.<T>comparingInt(elementIndex::get)
+				.thenComparing(NamedElement::getName,
+						Comparator.nullsFirst(String.CASE_INSENSITIVE_ORDER));
+		Collections.sort(allElements, cmp);
+	}
+
+	@Override
 	public boolean insert(T element, T anchor) {
-		cache = null;
-
 		String name = element.getName();
-		if (elementMap.containsKey(name)) return false;
-
-		elementMap.put(name, element);
+		if (name != null) {
+			if (nameToElement.containsKey(name)) return false;
+			nameToElement.put(name, element);
+		} else if (anchor == null) {
+			throw new NullPointerException("both `element' and `anchor' cannot be null");
+		}
 
 		int index;
 		if (anchor != null) {
@@ -75,9 +102,18 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 			}
 			index = elementIndex.get(anchor);
 		} else {
-			index = elementMap.size();
+			index = allElements.size();
 		}
 		elementIndex.put(element, index);
+		allElements.add(element);
+		return true;
+	}
+
+	@Override
+	public boolean reserve(String name) {
+		if (nameToElement.containsKey(name)) return false;
+
+		nameToElement.put(name, null);
 		return true;
 	}
 
@@ -88,13 +124,7 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 
 	@Override
 	public Collection<T> elements() {
-		if (cache != null) return cache;
-
-		cache = new ArrayList<>(elementMap.values());
-		Comparator<T> cmp = Comparator.<T>comparingInt(elementIndex::get)
-				.thenComparing(NamedElement::getName, String.CASE_INSENSITIVE_ORDER);
-		Collections.sort(cache, cmp);
-		return cache;
+		return allElements;
 	}
 
 	@Override
@@ -104,7 +134,21 @@ class LiScope<T extends NamedElement> implements Scope<T> {
 	}
 
 	@Override
+	public void removeIf(Predicate<? super T> filter) {
+		final Iterator<T> each = allElements.iterator();
+		while (each.hasNext()) {
+			T next = each.next();
+			if (filter.test(next)) {
+				String name = next.getName();
+				if (name != null) nameToElement.remove(name);
+				elementIndex.remove(next);
+				each.remove();
+			}
+		}
+	}
+
+	@Override
 	public int size() {
-		return elementMap.size();
+		return allElements.size();
 	}
 }

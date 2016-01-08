@@ -34,7 +34,7 @@ public class LiTerminal extends LiSymbol implements Terminal {
 	private List<LexerRule> rules = new ArrayList<>();
 
 	public LiTerminal(String name, AstType type, SourceElement origin) {
-		super(name, origin);
+		super(name, false /* anonymous */, origin);
 		setType(type);
 	}
 

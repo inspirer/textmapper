@@ -562,7 +562,7 @@ public class TMParserCompiler {
 			if (set == null) return null;
 
 			String setName = set.getProvisionalName();
-			Nonterminal result = builder.addShared(set, setName);
+			Nonterminal result = builder.addShared(set, outer, setName);
 			return builder.symbolFwdAll(result, part);
 
 		} else if (part instanceof TmaRhsList) {
@@ -650,13 +650,13 @@ public class TMParserCompiler {
 		RhsList list = builder.list(inner, separator,
 				(separator != null && !nonEmpty) || nonEmpty, origin);
 		String listName = list.getProvisionalName();
-		Nonterminal result = builder.addShared(list, listName);
+		Nonterminal result = builder.addShared(list, outer, listName);
 		copyParameters(outer, result);
 
 		if (separator != null && !nonEmpty) {
 			// (a separator ',')*  => alistopt ::= alist | ; alist ::= a | alist ',' a ;
 			result = builder.addShared(builder.optional(builder.symbolFwdAll(result, origin),
-					origin), listName + "_opt");
+					origin), outer, listName + "_opt");
 			copyParameters(outer, result);
 		}
 		return builder.symbolFwdAll(result, origin);

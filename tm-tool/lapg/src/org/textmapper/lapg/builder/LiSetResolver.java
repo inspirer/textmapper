@@ -46,7 +46,7 @@ class LiSetResolver {
 	private SetBuilder dependenciesSet;
 	private Map<Symbol, Set<LiNonterminal>> usages;
 
-	public LiSetResolver(LiSymbol[] symbols, int terminals, NamedSet[] namedSets) {
+	public LiSetResolver(Symbol[] symbols, int terminals, NamedSet[] namedSets) {
 		index = new LiSetIndex(symbols, terminals, namedSets);
 		closure = new SetsClosure();
 		sets = new Descriptor[index.size()];
@@ -165,7 +165,7 @@ class LiSetResolver {
 	private Iterable<LiNonterminal> getUsages(Symbol s) {
 		if (usages == null) {
 			usages = new HashMap<>();
-			for (LiSymbol left : index.getSymbols()) {
+			for (Symbol left : index.getSymbols()) {
 				if (!(left instanceof Nonterminal)) continue;
 				for (RhsSymbol ref : RhsUtil.getRhsSymbols(((Nonterminal) left).getDefinition())) {
 					Symbol target = ref.getTarget();

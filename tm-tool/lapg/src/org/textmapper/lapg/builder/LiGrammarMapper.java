@@ -17,6 +17,7 @@ package org.textmapper.lapg.builder;
 
 import org.textmapper.lapg.api.Grammar;
 import org.textmapper.lapg.api.Nonterminal;
+import org.textmapper.lapg.api.Scope;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.ast.AstEnumMember;
 import org.textmapper.lapg.api.ast.AstField;
@@ -34,11 +35,16 @@ import java.util.Set;
 
 class LiGrammarMapper implements GrammarMapper {
 
-	protected final Set<Symbol> symbolsSet = new HashSet<>();
+	protected Scope<Symbol> symScope = new LiScope<>();
 
 	LiGrammarMapper(Grammar grammar) {
 		if (grammar != null) {
-			symbolsSet.addAll(Arrays.asList(grammar.getSymbols()));
+			for (Symbol s : grammar.getSymbols()) {
+				if (s.getName() == null) {
+					throw new IllegalArgumentException("grammar contains symbols without a name");
+				}
+				symScope.insert(s, null);
+			}
 		}
 	}
 
@@ -46,7 +52,7 @@ class LiGrammarMapper implements GrammarMapper {
 		if (part == null || part.getLeft() == null) {
 			throw new NullPointerException();
 		}
-		if (!symbolsSet.contains(part.getLeft())) {
+		if (!symScope.contains(part.getLeft())) {
 			throw new IllegalArgumentException("unknown right-hand side element passed");
 		}
 	}
@@ -55,7 +61,7 @@ class LiGrammarMapper implements GrammarMapper {
 		if (sym == null) {
 			throw new NullPointerException();
 		}
-		if (!symbolsSet.contains(sym)) {
+		if (!symScope.contains(sym)) {
 			throw new IllegalArgumentException("unknown symbol passed");
 		}
 	}
@@ -92,8 +98,9 @@ class LiGrammarMapper implements GrammarMapper {
 		}
 
 		if (subType != null && !subType.isSubtypeOf(type)) {
-			throw new IllegalArgumentException("sequence type should be a subtype of its context type (" +
-					type.toString() + ")");
+			throw new IllegalArgumentException(
+					"sequence type should be a subtype of its context type (" +
+							type.toString() + ")");
 		}
 		if (seq.getMapping() != null || seq.getType() != null) {
 			throw new IllegalArgumentException("cannot re-map sequences");
@@ -148,10 +155,12 @@ class LiGrammarMapper implements GrammarMapper {
 
 		if (value != null && !(value instanceof AstEnumMember) && !(value instanceof Boolean)
 				&& !(value instanceof Integer) && !(value instanceof String)) {
-			throw new IllegalArgumentException("value must be AstEnumMember, Integer, Boolean or String");
+			throw new IllegalArgumentException(
+					"value must be AstEnumMember, Integer, Boolean or String");
 		}
 
-		if (value instanceof AstEnumMember && type != ((AstEnumMember) value).getContainingEnum()) {
+		if (value instanceof AstEnumMember
+				&& type != ((AstEnumMember) value).getContainingEnum()) {
 			throw new IllegalArgumentException(
 					"enumeration value should match " + (field != null
 							? "the field type"
@@ -159,8 +168,8 @@ class LiGrammarMapper implements GrammarMapper {
 
 		} else if (type != AstType.ANY &&
 				(value instanceof Boolean && type != AstType.BOOL
-				|| value instanceof String && type != AstType.STRING
-				|| value instanceof Integer && type != AstType.INT)) {
+						|| value instanceof String && type != AstType.STRING
+						|| value instanceof Integer && type != AstType.INT)) {
 			throw new IllegalArgumentException(
 					"value should match " + (field != null
 							? "the field type"

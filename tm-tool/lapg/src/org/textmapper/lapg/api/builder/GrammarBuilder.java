@@ -31,9 +31,9 @@ public interface GrammarBuilder extends GrammarMapper {
 
 	Nonterminal addNonterminal(String name, SourceElement origin);
 
-	Nonterminal addAnonymous(String nameHint, SourceElement origin);
+	Nonterminal addAnonymous(String nameHint, Symbol anchor, SourceElement origin);
 
-	Nonterminal addShared(RhsPart part, String nameHint);
+	Nonterminal addShared(RhsPart part, Symbol anchor, String nameHint);
 
 	Terminal getEoi();
 

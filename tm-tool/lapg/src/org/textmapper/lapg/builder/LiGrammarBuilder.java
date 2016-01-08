@@ -32,12 +32,8 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private Scope<NamedPattern> patternScope = new LiScope<>();
 	private Scope<NamedSet> setScope = new LiScope<>();
 	private Scope<LexerState> statesScope = new LiScope<>();
+	private Scope<TemplateParameter> paramScope = new LiScope<>();
 
-	// The value is either Symbol, or TemplateParameter
-	private final Map<String, Object> symbolsMap = new HashMap<>();
-
-	private final List<LiSymbol> symbols = new ArrayList<>();
-	private final List<LiTemplateParameter> params = new ArrayList<>();
 	private final List<LiLexerRule> lexerRules = new ArrayList<>();
 	private final Set<RhsPredicate> predicateSet = new HashSet<>();
 	private final List<LiRule> rules = new ArrayList<>();
@@ -45,7 +41,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	private final Set<RhsPart> rhsSet = new HashSet<>();
 	private final Set<Terminal> sealedTerminals = new HashSet<>();
 	private final Map<Object, Nonterminal> instantiations = new HashMap<>();
-	private final Set<Nonterminal> anonymousSymbols = new LinkedHashSet<>();
 	private final List<Problem> problems = new ArrayList<>();
 
 	private final List<LiInputRef> inputs = new ArrayList<>();
@@ -59,23 +54,27 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 	@Override
 	public Terminal addTerminal(String name, AstType type, SourceElement origin) {
-		return addSymbol(new LiTerminal(name, type, origin), false);
+		if (name == null) {
+			throw new NullPointerException();
+		}
+		return addSymbol(new LiTerminal(name, type, origin), null /* anchor */);
 	}
 
 	@Override
 	public Nonterminal addNonterminal(String name, SourceElement origin) {
+		if (name == null) {
+			throw new NullPointerException();
+		}
 		if (origin instanceof LiNonterminal) {
 			throw new IllegalArgumentException("origin");
 		}
-		return addSymbol(new LiNonterminal(name, origin), false);
+		return addSymbol(new LiNonterminal(name, false /* anonymous */, origin), null /* anchor */);
 	}
 
 	@Override
-	public Nonterminal addAnonymous(String nameHint, SourceElement origin) {
-		LiNonterminal nonterm = addSymbol(new LiNonterminal(null, origin), true);
-		anonymousSymbols.add(nonterm);
-		nonterm.putUserData(Nonterminal.UD_NAME_HINT, nameHint);
-		return nonterm;
+	public Nonterminal addAnonymous(String nameHint, Symbol anchor, SourceElement origin) {
+		return addSymbol(
+				new LiNonterminal(nameHint, true /* anonymous */, origin), anchor);
 	}
 
 	@Override
@@ -104,20 +103,12 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		((LiTerminal) terminal).setSoftClass(softClass);
 	}
 
-	private <T extends LiSymbol> T addSymbol(T sym, boolean anonymous) {
-		if (!anonymous) {
-			String name = sym.getName();
-			if (name == null) {
-				throw new NullPointerException();
-			}
-			if (symbolsMap.containsKey(name)) {
-				throw new IllegalStateException(
-						"symbol (or template parameter) `" + name + "' already exists");
-			}
-			symbolsMap.put(name, sym);
+	private <T extends LiSymbol> T addSymbol(T sym, Symbol anchor) {
+		String name = sym.getName();
+		if (!symScope.insert(sym, anchor)) {
+			throw new IllegalStateException("name `" + name + "' is already used");
 		}
-		symbols.add(sym);
-		symbolsSet.add(sym);
+		paramScope.reserve(name);
 		return sym;
 	}
 
@@ -138,14 +129,12 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (defaultValue != null) {
 			check(type, defaultValue);
 		}
-		if (symbolsMap.containsKey(name)) {
-			throw new IllegalStateException(
-					"symbol (or template parameter) `" + name + "' already exists");
+		LiTemplateParameter param = new LiTemplateParameter(
+				type, name, defaultValue, global, origin);
+		if (!paramScope.insert(param, null /* anchor */)) {
+			throw new IllegalStateException("name `" + name + "' is already used");
 		}
-		LiTemplateParameter param =
-				new LiTemplateParameter(type, name, defaultValue, global, origin);
-		symbolsMap.put(name, param);
-		params.add(param);
+		symScope.reserve(name);
 		return param;
 	}
 
@@ -512,7 +501,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	@Override
-	public Nonterminal addShared(RhsPart part, String nameHint) {
+	public Nonterminal addShared(RhsPart part, Symbol anchor, String nameHint) {
 		check(part);
 		if (nameHint == null) {
 			throw new NullPointerException("nameHint");
@@ -523,7 +512,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		Object id = part.structuralNode();
 		Nonterminal symbol = instantiations.get(id);
 		if (symbol == null) {
-			symbol = addAnonymous(nameHint, ((LiRhsPart) part).getOrigin());
+			symbol = addAnonymous(nameHint, anchor, ((LiRhsPart) part).getOrigin());
 			if (part instanceof RhsRoot) {
 				define(symbol, (RhsRoot) part);
 			} else {
@@ -577,7 +566,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		if (param == null) {
 			throw new NullPointerException();
 		}
-		if (symbolsMap.get(param.getName()) != param) {
+		if (!paramScope.contains(param)) {
 			throw new IllegalArgumentException("unknown template parameter passed");
 		}
 	}
@@ -623,10 +612,14 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		annotateNullables();
 
 		ExpansionContext expansionContext = new ExpansionContext();
-		NamedSet[] setsArr = setScope.toArray(LiNamedSet[]::new);
+		NamedSet[] setsArr = setScope.toArray(NamedSet[]::new);
 		computeSets(expansionContext, setsArr);
 
-		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		LiSymbol error = (LiSymbol) symScope.resolve("error");
+		symScope.assignNames();
+		symScope.sort();
+
+		LiSymbol[] symbolArr = new LiSymbol[symScope.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 		int grammarSymbols = symbolArr.length;
 		for (int i = terminals; i < grammarSymbols; i++) {
@@ -635,8 +628,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 
 		LiLexerRule[] lexerRulesArr = lexerRules.toArray(new LiLexerRule[lexerRules.size()]);
 		NamedPattern[] patternsArr = patternScope.toArray(NamedPattern[]::new);
-
-		LiSymbol error = (LiSymbol) symbolsMap.get("error");
 
 		final LiRule[] ruleArr;
 		final LiPrio[] prioArr;
@@ -654,7 +645,6 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		LexerState[] statesArr = statesScope.toArray(LexerState[]::new);
 		Problem[] problemsArr = problems.toArray(new Problem[problems.size()]);
 
-		assignNames();
 		return new LiGrammar(symbolArr, ruleArr, prioArr, lexerRulesArr,
 				patternsArr, setsArr,
 				statesArr, inputArr, eoi, error,
@@ -662,21 +652,16 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private void dropTemplatesAndUnused() {
-		int size = symbols.size();
-		for (int i = 0; i < size; i++) {
-			Symbol s = symbols.get(i);
-			if (s.isTerm()) continue;
+		symScope.removeIf(s -> {
+			if (s.isTerm()) return false;
 			Nonterminal n = (Nonterminal) s;
-			if (!(n.isTemplate() || n.isUnused())) continue;
-			size--;
-			symbols.set(i, symbols.get(size));
-			symbols.remove(size);
-		}
+			return n.isTemplate() || n.isUnused();
+		});
 	}
 
 	private void instantiateTemplates() {
-		LiTemplateParameter[] paramsArr = params.toArray(new LiTemplateParameter[params.size()]);
-		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		TemplateParameter[] paramsArr = paramScope.toArray(TemplateParameter[]::new);
+		Symbol[] symbolArr = new LiSymbol[symScope.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 
 		TemplateInstantiator instantiator = new TemplateInstantiator(
@@ -685,7 +670,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 	}
 
 	private void computeSets(ExpansionContext expansionContext, NamedSet[] setsArr) {
-		LiSymbol[] symbolArr = new LiSymbol[symbols.size()];
+		Symbol[] symbolArr = new Symbol[symScope.size()];
 		int terminals = sortAndEnumerateSymbols(symbolArr);
 		LiSetResolver resolver = new LiSetResolver(symbolArr, terminals, setsArr);
 		resolver.resolve(expansionContext, problems);
@@ -700,13 +685,15 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		}
 	}
 
-	private int sortAndEnumerateSymbols(LiSymbol[] result) {
+	private int sortAndEnumerateSymbols(Symbol[] result) {
+		Collection<Symbol> all = symScope.elements();
+
 		int terminals = 0;
-		for (LiSymbol s : symbols) {
+		for (Symbol s : all) {
 			if (s.isTerm()) terminals++;
 		}
 		int term_index = 0, nonterm_index = terminals;
-		for (LiSymbol s : symbols) {
+		for (Symbol s : all) {
 			if (s.isTerm()) {
 				result[term_index++] = s;
 			} else {
@@ -716,23 +703,9 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		assert term_index == terminals;
 		assert nonterm_index == result.length;
 		for (int i = 0; i < result.length; i++) {
-			result[i].setIndex(i);
+			((LiSymbol) result[i]).setIndex(i);
 		}
 		return terminals;
-	}
-
-	private void assignNames() {
-		Map<String, Integer> lastIndex = new HashMap<>();
-		for (Nonterminal n : anonymousSymbols) {
-			String baseName = (String) n.getUserData(Nonterminal.UD_NAME_HINT);
-			int index = lastIndex.containsKey(baseName) ? lastIndex.get(baseName) : 0;
-			String name = index == 0 ? baseName : baseName + index;
-			while (symbolsMap.containsKey(name)) {
-				name = baseName + (++index);
-			}
-			lastIndex.put(baseName, index + 1);
-			((LiNonterminal) n).setName(name);
-		}
 	}
 
 	private void annotateNullables() {
@@ -740,7 +713,7 @@ class LiGrammarBuilder extends LiGrammarMapper implements GrammarBuilder {
 		Map<Nonterminal, List<Nonterminal>> backDependencies = new HashMap<>();
 		List<Nonterminal> dependencies = new ArrayList<>();
 		Set<Nonterminal> candidates = new HashSet<>();
-		for (Symbol s : symbols) {
+		for (Symbol s : symScope.elements()) {
 			if (s.isTerm()) continue;
 
 			Nonterminal n = (Nonterminal) s;

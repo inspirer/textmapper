@@ -27,7 +27,7 @@ public class LiScopeTest {
 
 	@Test
 	public void testNewName() throws Exception {
-		LiScope<NameOnly> scope = new LiScope<>(null);
+		LiScope<NameOnly> scope = new LiScope<>();
 		NameOnly ab = new NameOnly("ab");
 		assertTrue(scope.insert(ab, null));
 		assertTrue(scope.insert(new NameOnly("bc"), null));
@@ -48,8 +48,20 @@ public class LiScopeTest {
 	}
 
 	@Test
+	public void testReserve() throws Exception {
+		LiScope<NameOnly> scope = new LiScope<>();
+		add(scope, "abc");
+		assertFalse(scope.reserve("abc"));
+		assertTrue(scope.reserve("foo"));
+		assertFalse(scope.insert(new NameOnly("foo"), null));
+		NameOnly[] result = scope.toArray(NameOnly[]::new);
+		assertEquals(1, result.length);
+		assertEquals("abc", result[0].getName());
+	}
+
+	@Test
 	public void testParent() throws Exception {
-		LiScope<NameOnly> parent = new LiScope<>(null);
+		LiScope<NameOnly> parent = new LiScope<>();
 		LiScope<NameOnly> scope = new LiScope<>(parent);
 
 		NameOnly aa = add(parent, "aa");
@@ -66,7 +78,7 @@ public class LiScopeTest {
 
 	@Test
 	public void testOrdering() throws Exception {
-		LiScope<NameOnly> scope = new LiScope<>(null);
+		LiScope<NameOnly> scope = new LiScope<>();
 		NameOnly qef = add(scope, "qef");
 		NameOnly abc = add(scope, "abc");
 
@@ -77,7 +89,7 @@ public class LiScopeTest {
 
 		NameOnly zxy = add(scope, "zxy");
 		NameOnly foo = add(scope, "foo");
-		NameOnly bar = add(scope, "bar");
+		add(scope, "bar");
 		add(scope, "last");
 
 		addAfter(scope, "aaa_bc1", abc);
@@ -90,7 +102,7 @@ public class LiScopeTest {
 		addAfter(scope, "foo_a_type", foo);
 		addAfter(scope, "foo_A_type_2", foo);
 
-		System.out.println(scope.elements());
+		scope.sort();
 
 		List<String> result = scope.elements().stream()
 				.map(NameOnly::getName)

@@ -36,12 +36,12 @@ class LiSetIndex {
 	private List<RhsSet> sortedSets;
 	private List<RhsSet> topLevelSets;
 	private Set<RhsSet> namedSets;
-	private LiSymbol[] symbols;
+	private Symbol[] symbols;
 	private int terminals;
 	private int nonterminals;
 	private int size;
 
-	LiSetIndex(LiSymbol[] symbols, int terminals, NamedSet[] namedSets) {
+	LiSetIndex(Symbol[] symbols, int terminals, NamedSet[] namedSets) {
 		this.symbols = symbols;
 		this.terminals = terminals;
 		this.nonterminals = symbols.length - terminals;
@@ -184,7 +184,7 @@ class LiSetIndex {
 		return !namedSets.contains(topLevelSet);
 	}
 
-	public LiSymbol[] getSymbols() {
+	public Symbol[] getSymbols() {
 		return symbols;
 	}
 

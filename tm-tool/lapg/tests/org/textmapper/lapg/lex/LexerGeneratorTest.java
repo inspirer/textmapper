@@ -301,6 +301,21 @@ public class LexerGeneratorTest {
 		public Terminal getSymbol() {
 			return new Terminal() {
 				@Override
+				public void setName(String name) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public void updateNameHint(String nameHint) {
+					throw new UnsupportedOperationException();
+				}
+
+				@Override
+				public String getNameHint() {
+					return null;
+				}
+
+				@Override
 				public boolean isTerm() {
 					throw new UnsupportedOperationException();
 				}

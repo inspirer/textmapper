@@ -80,7 +80,7 @@ class TemplateInstance {
 			String nameHint =
 					LiUtil.getSymbolName(template) + (template.getNumberOfInstances() > 1
 							? environment.getNonterminalSuffix() : "");
-			instance = builder.addAnonymous(nameHint, template);
+			instance = builder.addAnonymous(nameHint, template, template);
 		} else {
 			instance = template;
 		}
@@ -215,7 +215,7 @@ class TemplateInstance {
 		if (instance.getName() == null) {
 			String hint = instance.getDefinition().getProvisionalName();
 			if (hint != null) {
-				instance.putUserData(Nonterminal.UD_NAME_HINT, hint);
+				instance.updateNameHint(hint);
 			}
 		}
 	}

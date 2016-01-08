@@ -17,7 +17,8 @@ package org.textmapper.lapg.api;
 
 import org.textmapper.lapg.api.ast.AstType;
 
-public interface Symbol extends NamedElement, SourceElement, UserDataHolder {
+public interface Symbol extends NamedElement, NamedElement.Anonymous,
+		SourceElement, UserDataHolder {
 
 	String EOI = "eoi";
 	String ERROR = "error";

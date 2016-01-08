@@ -34,8 +34,8 @@ public class LiNonterminal extends LiSymbol implements Nonterminal {
 	private List<TemplateInstance> instances;
 	private boolean isTemplate;
 
-	public LiNonterminal(String name, SourceElement origin) {
-		super(name, origin);
+	public LiNonterminal(String name, boolean isAnonymous, SourceElement origin) {
+		super(name, isAnonymous, origin);
 	}
 
 	@Override

@@ -128,7 +128,7 @@ public class PredicatesTest {
 	@Test
 	public void testDuplicateParameter() {
 		expectedEx.expect(IllegalStateException.class);
-		expectedEx.expectMessage("symbol (or template parameter) `p1' already exists");
+		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, true, null);
@@ -138,7 +138,7 @@ public class PredicatesTest {
 	@Test
 	public void testParameterAfterSymbol() {
 		expectedEx.expect(IllegalStateException.class);
-		expectedEx.expectMessage("symbol (or template parameter) `p1' already exists");
+		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addTerminal("p1", null, null);
@@ -148,7 +148,7 @@ public class PredicatesTest {
 	@Test
 	public void testSymbolAfterParameter() {
 		expectedEx.expect(IllegalStateException.class);
-		expectedEx.expectMessage("symbol (or template parameter) `p1' already exists");
+		expectedEx.expectMessage("name `p1' is already used");
 
 		GrammarBuilder builder = GrammarFacade.createBuilder();
 		builder.addParameter(Type.Flag, "p1", Boolean.TRUE, true, null);

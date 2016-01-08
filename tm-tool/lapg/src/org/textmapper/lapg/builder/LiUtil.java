@@ -15,13 +15,12 @@
  */
 package org.textmapper.lapg.builder;
 
-import org.textmapper.lapg.api.Nonterminal;
 import org.textmapper.lapg.api.Symbol;
 import org.textmapper.lapg.api.TemplateParameter;
 import org.textmapper.lapg.api.rule.RhsSymbol;
 
 public class LiUtil {
-	
+
 	public static String getSymbolName(RhsSymbol s) {
 		TemplateParameter templateTarget = s.getTemplateTarget();
 		if (templateTarget != null) {
@@ -36,7 +35,7 @@ public class LiUtil {
 		if (name != null) return name;
 
 		// for anonymous nonterminals we can get an approximate name from nameHint user data.
-		return (String) s.getUserData(Nonterminal.UD_NAME_HINT);
+		return s.getNameHint();
 	}
 
 	public static void appendArguments(StringBuilder sb, LiRhsArgument[] args) {

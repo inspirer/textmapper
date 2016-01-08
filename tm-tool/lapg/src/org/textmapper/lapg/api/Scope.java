@@ -17,8 +17,24 @@ package org.textmapper.lapg.api;
 
 import java.util.Collection;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 public interface Scope<T extends NamedElement> {
+
+	boolean insert(T element, T anchor);
+
+	/**
+	 * Forwards the request to the parent scope if not found in this scope.
+	 */
+	T resolve(String name);
+
+	boolean contains(T element);
+
+	/**
+	 * Tries to reserve a name and returns true on success. All future attempts to
+	 * <tt>insert</tt> this name will fail.
+	 */
+	boolean reserve(String name);
 
 	/**
 	 * Generates a unique name that does not conflict with existing elements in the scope.
@@ -26,13 +42,14 @@ public interface Scope<T extends NamedElement> {
 	String newName(String nameHint);
 
 	/**
-	 * Forwards the request to the parent scope if not found in this scope.
+	 * Generates new names for all anonymous elements in the scope and sorts the result.
 	 */
-	T resolve(String name);
+	void assignNames();
 
-	boolean insert(T element, T anchor);
-
-	boolean contains(T element);
+	/**
+	 * Puts elements next to their anchor and sorts element around the same anchor.
+	 */
+	void sort();
 
 	/**
 	 * Elements without an anchor are reported in the order of appearance,
@@ -45,6 +62,11 @@ public interface Scope<T extends NamedElement> {
 	 * provided {@code creator} function to allocate the returned array.
 	 */
 	T[] toArray(IntFunction<T[]> creator);
+
+	/**
+	 * Removes all elements from the scope for which "filter" returns true.
+	 */
+	void removeIf(Predicate<? super T> filter);
 
 	int size();
 }
