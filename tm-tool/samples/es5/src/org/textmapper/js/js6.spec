@@ -1,4 +1,4 @@
-# Standard ECMA-262, 6th Edition / Draft March 17, 2015
+# Standard ECMA-262, 6th Edition / June 2015
 # ECMAScript 2015 Language Specification
 
 # A.1	Lexical Grammar
@@ -398,7 +398,7 @@ PrimaryExpression[Yield] :
     ArrayLiteral[?Yield]
     ObjectLiteral[?Yield]
     FunctionExpression
-    ClassExpression
+    ClassExpression[?Yield]
     GeneratorExpression
     RegularExpressionLiteral
     TemplateLiteral[?Yield]
@@ -457,10 +457,9 @@ PropertyDefinition[Yield] :
 	PropertyName[?Yield] : AssignmentExpression[In, ?Yield]
 	MethodDefinition[?Yield]
 
-PropertyName[Yield,GeneratorParameter] :
+PropertyName[Yield] :
 	LiteralPropertyName
-	[+GeneratorParameter] ComputedPropertyName
-	[~GeneratorParameter] ComputedPropertyName[?Yield]
+	ComputedPropertyName[?Yield]
 
 LiteralPropertyName :
 	IdentifierName
@@ -609,7 +608,7 @@ LogicalORExpression[In, Yield] :
 
 ConditionalExpression[In, Yield] :
 	LogicalORExpression[?In, ?Yield]
-	LogicalORExpression[?In,?Yield] ? AssignmentExpression[In, ?Yield] : AssignmentExpression[?In, ?Yield]
+	LogicalORExpression[?In, ?Yield] ? AssignmentExpression[In, ?Yield] : AssignmentExpression[?In, ?Yield]
 
 AssignmentExpression[In, Yield] :
 	ConditionalExpression[?In, ?Yield]
@@ -696,53 +695,50 @@ VariableDeclaration[In, Yield] :
 	BindingIdentifier[?Yield] Initializer[?In, ?Yield]opt
 	BindingPattern[?Yield] Initializer[?In, ?Yield]
 
-BindingPattern[Yield,GeneratorParameter] :
-	ObjectBindingPattern[?Yield,?GeneratorParameter]
-	ArrayBindingPattern[?Yield,?GeneratorParameter]
+BindingPattern[Yield] :
+	ObjectBindingPattern[?Yield]
+	ArrayBindingPattern[?Yield]
 
-ObjectBindingPattern[Yield,GeneratorParameter] :
+ObjectBindingPattern[Yield] :
 	{ }
-	{ BindingPropertyList[?Yield,?GeneratorParameter] }
-	{ BindingPropertyList[?Yield,?GeneratorParameter] , }
+	{ BindingPropertyList[?Yield] }
+	{ BindingPropertyList[?Yield] , }
 
-ArrayBindingPattern[Yield,GeneratorParameter] :
-	[ Elisionopt BindingRestElement[?Yield, ?GeneratorParameter]opt ]
-	[ BindingElementList[?Yield, ?GeneratorParameter] ]
-	[ BindingElementList[?Yield, ?GeneratorParameter] , Elisionopt BindingRestElement[?Yield, ?GeneratorParameter]opt ]
+ArrayBindingPattern[Yield] :
+	[ Elisionopt BindingRestElement[?Yield]opt ]
+	[ BindingElementList[?Yield] ]
+	[ BindingElementList[?Yield] , Elisionopt BindingRestElement[?Yield]opt ]
 
-BindingPropertyList[Yield,GeneratorParameter] :
-	BindingProperty[?Yield, ?GeneratorParameter]
-	BindingPropertyList[?Yield, ?GeneratorParameter] , BindingProperty[?Yield, ?GeneratorParameter]
+BindingPropertyList[Yield] :
+	BindingProperty[?Yield]
+	BindingPropertyList[?Yield] , BindingProperty[?Yield]
 
-BindingElementList[Yield,GeneratorParameter] :
-	BindingElisionElement[?Yield, ?GeneratorParameter]
-	BindingElementList[?Yield, ?GeneratorParameter] , BindingElisionElement[?Yield, ?GeneratorParameter]
+BindingElementList[Yield] :
+	BindingElisionElement[?Yield]
+	BindingElementList[?Yield] , BindingElisionElement[?Yield]
 
-BindingElisionElement[Yield,GeneratorParameter] :
-	Elisionopt BindingElement[?Yield, ?GeneratorParameter]
+BindingElisionElement[Yield] :
+	Elisionopt BindingElement[?Yield]
 
-BindingProperty[Yield,GeneratorParameter] :
-	SingleNameBinding[?Yield, ?GeneratorParameter]
-	PropertyName[?Yield, ?GeneratorParameter] : BindingElement[?Yield, ?GeneratorParameter]
+BindingProperty[Yield] :
+	SingleNameBinding[?Yield]
+	PropertyName[?Yield] : BindingElement[?Yield]
 
-BindingElement[Yield, GeneratorParameter ] :
-	SingleNameBinding[?Yield, ?GeneratorParameter]
-	[+GeneratorParameter] BindingPattern[?Yield,GeneratorParameter] Initializer[In]opt
-	[~GeneratorParameter] BindingPattern[?Yield] Initializer[In, ?Yield]opt
+BindingElement[Yield] :
+	SingleNameBinding[?Yield]
+	BindingPattern[?Yield] Initializer[In, ?Yield]opt
 
-SingleNameBinding[Yield,GeneratorParameter] :
-	[+GeneratorParameter] BindingIdentifier[Yield] Initializer[In]opt
-	[~GeneratorParameter] BindingIdentifier[?Yield] Initializer[In, ?Yield]opt
+SingleNameBinding[Yield] :
+	BindingIdentifier[?Yield] Initializer[In, ?Yield]opt
 
-BindingRestElement[Yield, GeneratorParameter] :
-	[+GeneratorParameter] . . . BindingIdentifier[Yield]
-	[~GeneratorParameter] . . . BindingIdentifier[?Yield]
+BindingRestElement[Yield] :
+	. . . BindingIdentifier[?Yield]
 
 EmptyStatement :
 	;
 
 ExpressionStatement[Yield] :
-	[lookahead != {{, function, class, let [ }] Expression[In, ?Yield] ;
+	[lookahead != {'{', function, class, let '[' }] Expression[In, ?Yield] ;
 
 IfStatement[Yield, Return] :
 	if ( Expression[In, ?Yield] ) Statement[?Yield, ?Return] else Statement[?Yield, ?Return]
@@ -837,27 +833,27 @@ FunctionDeclaration[Yield, Default] :
 FunctionExpression :
 	function BindingIdentifieropt ( FormalParameters ) { FunctionBody }
 
-StrictFormalParameters[Yield, GeneratorParameter] :
-	FormalParameters[?Yield, ?GeneratorParameter]
+StrictFormalParameters[Yield] :
+	FormalParameters[?Yield]
 
-FormalParameters[Yield,GeneratorParameter] :
+FormalParameters[Yield] :
 	[empty]
-	FormalParameterList[?Yield, ?GeneratorParameter]
+	FormalParameterList[?Yield]
 
-FormalParameterList[Yield,GeneratorParameter] :
+FormalParameterList[Yield] :
 	FunctionRestParameter[?Yield]
-	FormalsList[?Yield, ?GeneratorParameter]
-	FormalsList[?Yield, ?GeneratorParameter] , FunctionRestParameter[?Yield]
+	FormalsList[?Yield]
+	FormalsList[?Yield] , FunctionRestParameter[?Yield]
 
-FormalsList[Yield,GeneratorParameter] :
-	FormalParameter[?Yield, ?GeneratorParameter]
-	FormalsList[?Yield, ?GeneratorParameter] , FormalParameter[?Yield,?GeneratorParameter]
+FormalsList[Yield] :
+	FormalParameter[?Yield]
+	FormalsList[?Yield] , FormalParameter[?Yield]
 
 FunctionRestParameter[Yield] :
 	BindingRestElement[?Yield]
 
-FormalParameter[Yield,GeneratorParameter] :
-	BindingElement[?Yield, ?GeneratorParameter]
+FormalParameter[Yield] :
+	BindingElement[?Yield]
 
 FunctionBody[Yield] :
 	FunctionStatementList[?Yield]
@@ -881,8 +877,8 @@ ConciseBody[In] :
 #  is recognized the following grammar is used to refine the interpretation of
 #  CoverParenthesizedExpressionAndArrowParameterList:
 
-ArrowFormalParameters[Yield, GeneratorParameter] :
-	( StrictFormalParameters[?Yield, ?GeneratorParameter] )
+ArrowFormalParameters[Yield] :
+	( StrictFormalParameters[?Yield] )
 
 MethodDefinition[Yield] :
 	PropertyName[?Yield] ( StrictFormalParameters ) { FunctionBody }
@@ -894,14 +890,14 @@ PropertySetParameterList :
 	FormalParameter
 
 GeneratorMethod[Yield] :
-	* PropertyName[?Yield] (StrictFormalParameters[Yield,GeneratorParameter] ) { GeneratorBody }
+	* PropertyName[?Yield] (StrictFormalParameters[Yield] ) { GeneratorBody }
 
 GeneratorDeclaration[Yield, Default] :
-	function * BindingIdentifier[?Yield] ( FormalParameters[Yield,GeneratorParameter] ) { GeneratorBody }
-	[+Default] function * ( FormalParameters[Yield,GeneratorParameter] ) { GeneratorBody }
+	function * BindingIdentifier[?Yield] ( FormalParameters[Yield] ) { GeneratorBody }
+	[+Default] function * ( FormalParameters[Yield] ) { GeneratorBody }
 
 GeneratorExpression :
-	function * BindingIdentifier[Yield]opt ( FormalParameters[Yield,GeneratorParameter] ) { GeneratorBody }
+	function * BindingIdentifier[Yield]opt ( FormalParameters[Yield] ) { GeneratorBody }
 
 GeneratorBody :
 	FunctionBody[Yield]
@@ -915,12 +911,11 @@ ClassDeclaration[Yield, Default] :
 	class BindingIdentifier[?Yield] ClassTail[?Yield]
 	[+Default] class ClassTail[?Yield]
 
-ClassExpression[Yield,GeneratorParameter] :
-	class BindingIdentifier[?Yield]opt ClassTail[?Yield,?GeneratorParameter]
+ClassExpression[Yield] :
+	class BindingIdentifier[?Yield]opt ClassTail[?Yield]
 
-ClassTail[Yield,GeneratorParameter] :
-	[~GeneratorParameter] ClassHeritage[?Yield]opt { ClassBody[?Yield]opt }
-	[+GeneratorParameter] ClassHeritageopt { ClassBodyopt }
+ClassTail[Yield] :
+	ClassHeritage[?Yield]opt { ClassBody[?Yield]opt }
 
 ClassHeritage[Yield] :
 	extends LeftHandSideExpression[?Yield]
@@ -938,6 +933,7 @@ ClassElement[Yield] :
 	;
 
 # A.5 Scripts and Modules
+
 Script :
 	ScriptBodyopt
 
@@ -1021,9 +1017,11 @@ ExportSpecifier :
 	IdentifierName
 	IdentifierName as IdentifierName
 
-# A.6 Universal Resource Identifier Character Classes (skipped)
+# A.6 Number Conversions (skipped)
 
-# A.7 Regular Expressions
+# A.7 Universal Resource Identifier Character Classes (skipped)
+
+# A.8 Regular Expressions
 
 Pattern[U] ::
 	Disjunction[?U]
@@ -1080,7 +1078,7 @@ AtomEscape[U] ::
 	CharacterEscape[?U]
 	CharacterClassEscape
 
-CharacterEscape[U] :: See 21.2.1
+CharacterEscape[U] ::
 	ControlEscape
 	c ControlLetter
 	HexEscapeSequence
@@ -1096,23 +1094,34 @@ ControlLetter :: one of
 
 RegExpUnicodeEscapeSequence[U] ::
 	[+U] u LeadSurrogate \u TrailSurrogate
-	u Hex4Digits
+	[+U] u LeadSurrogate
+	[+U] u TrailSurrogate
+	[+U] u NonSurrogate
+	[~U] u Hex4Digits
 	[+U] u { HexDigits }
+
+# Each \u TrailSurrogate for which the choice of associated u LeadSurrogate is ambiguous shall be
+# associated with the nearest possible u LeadSurrogate that would otherwise have no corresponding
+# \u TrailSurrogate.
 
 LeadSurrogate ::
 	Hex4Digits [match only if the SV of Hex4Digits is in the inclusive range 0xD800 to 0xDBFF]
 
-TrailSurrogate :: See 21.2.1
+TrailSurrogate ::
 	Hex4Digits [match only if the SV of Hex4Digits is in the inclusive range 0xDC00 to 0xDFFF]
+
+NonSurrogate ::
+	Hex4Digits [match only if the SV of Hex4Digits is not in the inclusive range 0xD800 to 0xDFFF]
 
 IdentityEscape[U] ::
 	[+U] SyntaxCharacter
+	[+U] /
 	[~U] SourceCharacter but not UnicodeIDContinue
 
 DecimalEscape ::
 	DecimalIntegerLiteral [lookahead != DecimalDigit]
 
-CharacterClassEscape ::
+CharacterClassEscape :: one of
 	d D s S w W
 
 CharacterClass[U] ::
