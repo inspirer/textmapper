@@ -322,26 +322,19 @@ ShiftExpression ::=
 	| ShiftExpression '>>>' AdditiveExpression
 ;
 
-RelationalExpression ::=
+%flag NoIn;
+
+RelationalExpression<NoIn> ::=
 	  ShiftExpression
 	| RelationalExpression '<' ShiftExpression
 	| RelationalExpression '>' ShiftExpression
 	| RelationalExpression '<=' ShiftExpression
 	| RelationalExpression '>=' ShiftExpression
 	| RelationalExpression 'instanceof' ShiftExpression
-	| RelationalExpression 'in' ShiftExpression
+	| [!NoIn] RelationalExpression 'in' ShiftExpression
 ;
 
-RelationalExpressionNoIn ::=
-	  ShiftExpression
-	| RelationalExpressionNoIn '<' ShiftExpression
-	| RelationalExpressionNoIn '>' ShiftExpression
-	| RelationalExpressionNoIn '<=' ShiftExpression
-	| RelationalExpressionNoIn '>=' ShiftExpression
-	| RelationalExpressionNoIn 'instanceof' ShiftExpression
-;
-
-EqualityExpression ::=
+EqualityExpression<NoIn> ::=
 	  RelationalExpression
 	| EqualityExpression '==' RelationalExpression
 	| EqualityExpression '!=' RelationalExpression
@@ -349,82 +342,39 @@ EqualityExpression ::=
 	| EqualityExpression '!==' RelationalExpression
 ;
 
-EqualityExpressionNoIn ::=
-	  RelationalExpressionNoIn
-	| EqualityExpressionNoIn '==' RelationalExpressionNoIn
-	| EqualityExpressionNoIn '!=' RelationalExpressionNoIn
-	| EqualityExpressionNoIn '===' RelationalExpressionNoIn
-	| EqualityExpressionNoIn '!==' RelationalExpressionNoIn
-;
-
-BitwiseANDExpression ::=
+BitwiseANDExpression<NoIn> ::=
 	  EqualityExpression
 	| BitwiseANDExpression '&' EqualityExpression
 ;
 
-BitwiseANDExpressionNoIn ::=
-	  EqualityExpressionNoIn
-	| BitwiseANDExpressionNoIn '&' EqualityExpressionNoIn
-;
-
-BitwiseXORExpression ::=
+BitwiseXORExpression<NoIn> ::=
 	  BitwiseANDExpression
 	| BitwiseXORExpression '^' BitwiseANDExpression
 ;
 
-BitwiseXORExpressionNoIn ::=
-	  BitwiseANDExpressionNoIn
-	| BitwiseXORExpressionNoIn '^' BitwiseANDExpressionNoIn
-;
-
-BitwiseORExpression ::=
+BitwiseORExpression<NoIn> ::=
 	  BitwiseXORExpression
 	| BitwiseORExpression '|' BitwiseXORExpression
 ;
 
-BitwiseORExpressionNoIn ::=
-	  BitwiseXORExpressionNoIn
-	| BitwiseORExpressionNoIn '|' BitwiseXORExpressionNoIn
-;
-
-LogicalANDExpression ::=
+LogicalANDExpression<NoIn> ::=
 	  BitwiseORExpression
 	| LogicalANDExpression '&&' BitwiseORExpression
 ;
 
-LogicalANDExpressionNoIn ::=
-	  BitwiseORExpressionNoIn
-	| LogicalANDExpressionNoIn '&&' BitwiseORExpressionNoIn
-;
-
-LogicalORExpression ::=
+LogicalORExpression<NoIn> ::=
 	  LogicalANDExpression
 	| LogicalORExpression '||' LogicalANDExpression
 ;
 
-LogicalORExpressionNoIn ::=
-	  LogicalANDExpressionNoIn
-	| LogicalORExpressionNoIn '||' LogicalANDExpressionNoIn
-;
-
-ConditionalExpression ::=
+ConditionalExpression<NoIn> ::=
 	  LogicalORExpression
 	| LogicalORExpression '?' AssignmentExpression ':' AssignmentExpression
 ;
 
-ConditionalExpressionNoIn ::=
-	  LogicalORExpressionNoIn
-	| LogicalORExpressionNoIn '?' AssignmentExpressionNoIn ':' AssignmentExpressionNoIn
-;
-
-AssignmentExpression ::=
+AssignmentExpression<NoIn> ::=
 	  ConditionalExpression
 	| LeftHandSideExpression AssignmentOperator AssignmentExpression
-;
-
-AssignmentExpressionNoIn ::=
-	  ConditionalExpressionNoIn
-	| LeftHandSideExpression AssignmentOperator AssignmentExpressionNoIn
 ;
 
 AssignmentOperator ::=
@@ -442,14 +392,9 @@ AssignmentOperator ::=
 	| '|='
 ;
 
-Expression ::=
+Expression<NoIn> ::=
 	  AssignmentExpression
 	| Expression ',' AssignmentExpression
-;
-
-ExpressionNoIn ::=
-	  AssignmentExpressionNoIn
-	| ExpressionNoIn ',' AssignmentExpressionNoIn
 ;
 
 Statement ::=
@@ -483,30 +428,17 @@ VariableStatement ::=
 	  'var' VariableDeclarationList ';'
 ;
 
-VariableDeclarationList ::=
+VariableDeclarationList<NoIn> ::=
 	  VariableDeclaration
 	| VariableDeclarationList ',' VariableDeclaration
 ;
 
-VariableDeclarationListNoIn ::=
-	  VariableDeclarationNoIn
-	| VariableDeclarationListNoIn ',' VariableDeclarationNoIn
-;
-
-VariableDeclaration ::=
+VariableDeclaration<NoIn> ::=
 	  Identifier Initialiseropt
 ;
 
-VariableDeclarationNoIn ::=
-	  Identifier InitialiserNoInopt
-;
-
-Initialiser ::=
+Initialiser<NoIn> ::=
 	  '=' AssignmentExpression
-;
-
-InitialiserNoIn ::=
-	  '=' AssignmentExpressionNoIn
 ;
 
 EmptyStatement ::=
@@ -529,10 +461,10 @@ IfStatement ::=
 IterationStatement ::=
 	  'do' Statement 'while' '(' Expression ')' ';'
 	| 'while' '(' Expression ')' Statement
-	| 'for' '(' ExpressionNoInopt ';' Expressionopt ';' Expressionopt ')' Statement
-	| 'for' '(' 'var' VariableDeclarationListNoIn ';' Expressionopt ';' Expressionopt ')' Statement
+	| 'for' '(' Expressionopt<+NoIn> ';' Expressionopt ';' Expressionopt ')' Statement
+	| 'for' '(' 'var' VariableDeclarationList<+NoIn> ';' Expressionopt ';' Expressionopt ')' Statement
 	| 'for' '(' LeftHandSideExpression 'in' Expression ')' Statement
-	| 'for' '(' 'var' VariableDeclarationNoIn 'in' Expression ')' Statement
+	| 'for' '(' 'var' VariableDeclaration<+NoIn> 'in' Expression ')' Statement
 ;
 
 # TODO no LineTerminator after 'continue'

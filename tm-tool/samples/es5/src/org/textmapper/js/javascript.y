@@ -282,13 +282,13 @@ RelationalExpression :
 | RelationalExpression in ShiftExpression
 ;
 
-RelationalExpressionNoIn :
+RelationalExpression_NoIn :
   ShiftExpression
-| RelationalExpressionNoIn Less ShiftExpression
-| RelationalExpressionNoIn Greater ShiftExpression
-| RelationalExpressionNoIn LessEqual ShiftExpression
-| RelationalExpressionNoIn GreaterEqual ShiftExpression
-| RelationalExpressionNoIn instanceof ShiftExpression
+| RelationalExpression_NoIn Less ShiftExpression
+| RelationalExpression_NoIn Greater ShiftExpression
+| RelationalExpression_NoIn LessEqual ShiftExpression
+| RelationalExpression_NoIn GreaterEqual ShiftExpression
+| RelationalExpression_NoIn instanceof ShiftExpression
 ;
 
 EqualityExpression :
@@ -299,12 +299,12 @@ EqualityExpression :
 | EqualityExpression ExclamationEqualEqual RelationalExpression
 ;
 
-EqualityExpressionNoIn :
-  RelationalExpressionNoIn
-| EqualityExpressionNoIn EqualEqual RelationalExpressionNoIn
-| EqualityExpressionNoIn ExclamationEqual RelationalExpressionNoIn
-| EqualityExpressionNoIn EqualEqualEqual RelationalExpressionNoIn
-| EqualityExpressionNoIn ExclamationEqualEqual RelationalExpressionNoIn
+EqualityExpression_NoIn :
+  RelationalExpression_NoIn
+| EqualityExpression_NoIn EqualEqual RelationalExpression_NoIn
+| EqualityExpression_NoIn ExclamationEqual RelationalExpression_NoIn
+| EqualityExpression_NoIn EqualEqualEqual RelationalExpression_NoIn
+| EqualityExpression_NoIn ExclamationEqualEqual RelationalExpression_NoIn
 ;
 
 BitwiseANDExpression :
@@ -312,9 +312,9 @@ BitwiseANDExpression :
 | BitwiseANDExpression Ampersand EqualityExpression
 ;
 
-BitwiseANDExpressionNoIn :
-  EqualityExpressionNoIn
-| BitwiseANDExpressionNoIn Ampersand EqualityExpressionNoIn
+BitwiseANDExpression_NoIn :
+  EqualityExpression_NoIn
+| BitwiseANDExpression_NoIn Ampersand EqualityExpression_NoIn
 ;
 
 BitwiseXORExpression :
@@ -322,9 +322,9 @@ BitwiseXORExpression :
 | BitwiseXORExpression Xor BitwiseANDExpression
 ;
 
-BitwiseXORExpressionNoIn :
-  BitwiseANDExpressionNoIn
-| BitwiseXORExpressionNoIn Xor BitwiseANDExpressionNoIn
+BitwiseXORExpression_NoIn :
+  BitwiseANDExpression_NoIn
+| BitwiseXORExpression_NoIn Xor BitwiseANDExpression_NoIn
 ;
 
 BitwiseORExpression :
@@ -332,9 +332,9 @@ BitwiseORExpression :
 | BitwiseORExpression Or BitwiseXORExpression
 ;
 
-BitwiseORExpressionNoIn :
-  BitwiseXORExpressionNoIn
-| BitwiseORExpressionNoIn Or BitwiseXORExpressionNoIn
+BitwiseORExpression_NoIn :
+  BitwiseXORExpression_NoIn
+| BitwiseORExpression_NoIn Or BitwiseXORExpression_NoIn
 ;
 
 LogicalANDExpression :
@@ -342,9 +342,9 @@ LogicalANDExpression :
 | LogicalANDExpression AmpersandAmpersand BitwiseORExpression
 ;
 
-LogicalANDExpressionNoIn :
-  BitwiseORExpressionNoIn
-| LogicalANDExpressionNoIn AmpersandAmpersand BitwiseORExpressionNoIn
+LogicalANDExpression_NoIn :
+  BitwiseORExpression_NoIn
+| LogicalANDExpression_NoIn AmpersandAmpersand BitwiseORExpression_NoIn
 ;
 
 LogicalORExpression :
@@ -352,9 +352,9 @@ LogicalORExpression :
 | LogicalORExpression OrOr LogicalANDExpression
 ;
 
-LogicalORExpressionNoIn :
-  LogicalANDExpressionNoIn
-| LogicalORExpressionNoIn OrOr LogicalANDExpressionNoIn
+LogicalORExpression_NoIn :
+  LogicalANDExpression_NoIn
+| LogicalORExpression_NoIn OrOr LogicalANDExpression_NoIn
 ;
 
 ConditionalExpression :
@@ -362,9 +362,9 @@ ConditionalExpression :
 | LogicalORExpression Questionmark AssignmentExpression Colon AssignmentExpression
 ;
 
-ConditionalExpressionNoIn :
-  LogicalORExpressionNoIn
-| LogicalORExpressionNoIn Questionmark AssignmentExpressionNoIn Colon AssignmentExpressionNoIn
+ConditionalExpression_NoIn :
+  LogicalORExpression_NoIn
+| LogicalORExpression_NoIn Questionmark AssignmentExpression_NoIn Colon AssignmentExpression_NoIn
 ;
 
 AssignmentExpression :
@@ -372,9 +372,9 @@ AssignmentExpression :
 | LeftHandSideExpression AssignmentOperator AssignmentExpression
 ;
 
-AssignmentExpressionNoIn :
-  ConditionalExpressionNoIn
-| LeftHandSideExpression AssignmentOperator AssignmentExpressionNoIn
+AssignmentExpression_NoIn :
+  ConditionalExpression_NoIn
+| LeftHandSideExpression AssignmentOperator AssignmentExpression_NoIn
 ;
 
 AssignmentOperator :
@@ -397,9 +397,9 @@ Expression :
 | Expression Comma AssignmentExpression
 ;
 
-ExpressionNoIn :
-  AssignmentExpressionNoIn
-| ExpressionNoIn Comma AssignmentExpressionNoIn
+Expression_NoIn :
+  AssignmentExpression_NoIn
+| Expression_NoIn Comma AssignmentExpression_NoIn
 ;
 
 Statement :
@@ -439,25 +439,25 @@ VariableDeclarationList :
 | VariableDeclarationList Comma VariableDeclaration
 ;
 
-VariableDeclarationListNoIn :
-  VariableDeclarationNoIn
-| VariableDeclarationListNoIn Comma VariableDeclarationNoIn
+VariableDeclarationList_NoIn :
+  VariableDeclaration_NoIn
+| VariableDeclarationList_NoIn Comma VariableDeclaration_NoIn
 ;
 
 VariableDeclaration :
   Identifier Initialiseropt
 ;
 
-VariableDeclarationNoIn :
-  Identifier InitialiserNoInopt
+VariableDeclaration_NoIn :
+  Identifier Initialiseropt_NoIn
 ;
 
 Initialiser :
   Equal AssignmentExpression
 ;
 
-InitialiserNoIn :
-  Equal AssignmentExpressionNoIn
+Initialiser_NoIn :
+  Equal AssignmentExpression_NoIn
 ;
 
 EmptyStatement :
@@ -476,10 +476,10 @@ IfStatement :
 IterationStatement :
   do Statement while Lparen Expression Rparen Semicolon
 | while Lparen Expression Rparen Statement
-| for Lparen ExpressionNoInopt Semicolon Expressionopt Semicolon Expressionopt Rparen Statement
-| for Lparen var VariableDeclarationListNoIn Semicolon Expressionopt Semicolon Expressionopt Rparen Statement
+| for Lparen Expressionopt_NoIn Semicolon Expressionopt Semicolon Expressionopt Rparen Statement
+| for Lparen var VariableDeclarationList_NoIn Semicolon Expressionopt Semicolon Expressionopt Rparen Statement
 | for Lparen LeftHandSideExpression in Expression Rparen Statement
-| for Lparen var VariableDeclarationNoIn in Expression Rparen Statement
+| for Lparen var VariableDeclaration_NoIn in Expression Rparen Statement
 ;
 
 ContinueStatement :
@@ -590,19 +590,19 @@ Initialiseropt :
 | Initialiser
 ;
 
-InitialiserNoInopt :
+Initialiseropt_NoIn :
   %empty
-| InitialiserNoIn
-;
-
-ExpressionNoInopt :
-  %empty
-| ExpressionNoIn
+| Initialiser_NoIn
 ;
 
 Expressionopt :
   %empty
 | Expression
+;
+
+Expressionopt_NoIn :
+  %empty
+| Expression_NoIn
 ;
 
 CaseClausesopt :

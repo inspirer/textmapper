@@ -477,6 +477,8 @@ public class TMResolver {
 							builder.asSequence(
 									builder.optional(
 											builder.symbolFwdAll(sym, id), id)));
+					symopt.putUserData(Nonterminal.UD_TEMPLATE_PARAMS,
+							sym.getUserData(Nonterminal.UD_TEMPLATE_PARAMS));
 					return symopt;
 				}
 			}
