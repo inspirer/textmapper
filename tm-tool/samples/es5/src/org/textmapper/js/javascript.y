@@ -164,30 +164,25 @@ PrimaryExpression_ExprStart :
 ;
 
 ArrayLiteral :
-  Lsquare Elisionopt Rsquare
-| Lsquare ElementList Rsquare
-| Lsquare ElementList Comma Elisionopt Rsquare
+  Lsquare AssignmentExpression_list_Comma_separated Rsquare
 ;
 
-ElementList :
-  Elisionopt AssignmentExpression
-| ElementList Comma Elisionopt AssignmentExpression
-;
-
-Elision :
-  Comma
-| Elision Comma
+AssignmentExpression_list_Comma_separated :
+  %empty
+| AssignmentExpression_list_Comma_separated Comma AssignmentExpression
+| AssignmentExpression_list_Comma_separated Comma
+| AssignmentExpression
 ;
 
 ObjectLiteral :
-  Lcurly Rcurly
-| Lcurly PropertyNameAndValueList Rcurly
-| Lcurly PropertyNameAndValueList Comma Rcurly
+  Lcurly PropertyAssignment_list_Comma_separated Comma Rcurly
+| Lcurly PropertyAssignment_list_Comma_separated Rcurly
+| Lcurly Rcurly
 ;
 
-PropertyNameAndValueList :
-  PropertyAssignment
-| PropertyNameAndValueList Comma PropertyAssignment
+PropertyAssignment_list_Comma_separated :
+  PropertyAssignment_list_Comma_separated Comma PropertyAssignment
+| PropertyAssignment
 ;
 
 PropertyAssignment :
@@ -246,13 +241,17 @@ CallExpression_ExprStart :
 ;
 
 Arguments :
-  Lparen Rparen
-| Lparen ArgumentList Rparen
+  Lparen AssignmentExpression_list_Comma_separated_opt Rparen
 ;
 
-ArgumentList :
-  AssignmentExpression
-| ArgumentList Comma AssignmentExpression
+AssignmentExpression_list_Comma_separated1 :
+  AssignmentExpression_list_Comma_separated1 Comma AssignmentExpression
+| AssignmentExpression
+;
+
+AssignmentExpression_list_Comma_separated_opt :
+  %empty
+| AssignmentExpression_list_Comma_separated1
 ;
 
 LeftHandSideExpression :
@@ -550,13 +549,12 @@ Statement :
 ;
 
 Block :
-  Lcurly StatementList Rcurly
-| Lcurly Rcurly
+  Lcurly Statement_optlist Rcurly
 ;
 
-StatementList :
-  Statement
-| StatementList Statement
+Statement_optlist :
+  %empty
+| Statement_optlist Statement
 ;
 
 VariableStatement :
@@ -634,21 +632,21 @@ SwitchStatement :
 ;
 
 CaseBlock :
-  Lcurly CaseClausesopt Rcurly
-| Lcurly CaseClausesopt DefaultClause CaseClausesopt Rcurly
+  Lcurly CaseClause_optlist DefaultClause CaseClause_optlist Rcurly
+| Lcurly CaseClause_optlist Rcurly
 ;
 
-CaseClauses :
-  CaseClause
-| CaseClauses CaseClause
+CaseClause_optlist :
+  %empty
+| CaseClause_optlist CaseClause
 ;
 
 CaseClause :
-  case Expression Colon StatementListopt
+  case Expression Colon Statement_optlist
 ;
 
 DefaultClause :
-  default Colon StatementListopt
+  default Colon Statement_optlist
 ;
 
 LabelledStatement :
@@ -692,26 +690,21 @@ FormalParameterList :
 ;
 
 FunctionBody :
-  SourceElementsopt
+  SourceElement_optlist
+;
+
+SourceElement_optlist :
+  %empty
+| SourceElement_optlist SourceElement
 ;
 
 Program :
-  SourceElementsopt
-;
-
-SourceElements :
-  SourceElement
-| SourceElements SourceElement
+  SourceElement_optlist
 ;
 
 SourceElement :
   Statement
 | FunctionDeclaration
-;
-
-Elisionopt :
-  %empty
-| Elision
 ;
 
 Initialiseropt :
@@ -734,24 +727,9 @@ Expressionopt_NoIn :
 | Expression_NoIn
 ;
 
-CaseClausesopt :
-  %empty
-| CaseClauses
-;
-
-StatementListopt :
-  %empty
-| StatementList
-;
-
 FormalParameterListopt :
   %empty
 | FormalParameterList
-;
-
-SourceElementsopt :
-  %empty
-| SourceElements
 ;
 
 %%

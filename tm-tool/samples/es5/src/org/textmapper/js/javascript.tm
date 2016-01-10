@@ -206,30 +206,11 @@ PrimaryExpression<ExprStart> ::=
 ;
 
 ArrayLiteral ::=
-	  '[' Elisionopt ']'
-	| '[' ElementList ']'
-	| '[' ElementList ',' Elisionopt ']'
-;
-
-ElementList ::=
-	  Elisionopt AssignmentExpression
-	| ElementList ',' Elisionopt AssignmentExpression
-;
-
-Elision ::=
-	  ','
-	| Elision ','
+	  '[' (AssignmentExpression? separator ',')+ ']'
 ;
 
 ObjectLiteral ::=
-	  '{' '}'
-	| '{' PropertyNameAndValueList '}'
-	| '{' PropertyNameAndValueList ',' '}'
-;
-
-PropertyNameAndValueList ::=
-	  PropertyAssignment
-	| PropertyNameAndValueList ',' PropertyAssignment
+	  '{' ((PropertyAssignment separator ',')+ ','?)? '}'
 ;
 
 # TODO use 'get' and 'set'
@@ -246,8 +227,7 @@ PropertyName ::=
 ;
 
 PropertySetParameterList ::=
-	  Identifier
-;
+	  Identifier ;
 
 MemberExpression<ExprStart> ::=
 	  PrimaryExpression
@@ -270,21 +250,14 @@ CallExpression<ExprStart> ::=
 ;
 
 Arguments ::=
-	  '(' ')'
-	| '(' ArgumentList ')'
-;
-
-ArgumentList ::=
-	  AssignmentExpression
-	| ArgumentList ',' AssignmentExpression
-;
+	  '(' (AssignmentExpression separator ',')* ')' ;
 
 LeftHandSideExpression<ExprStart> ::=
 	  NewExpression
 	| CallExpression
 ;
 
-# TODO no LineTerminator after LeftHandSideExpression
+# Note: no LineTerminator after LeftHandSideExpression
 PostfixExpression<ExprStart> ::=
 	  LeftHandSideExpression
 	| LeftHandSideExpression '++'
@@ -418,17 +391,10 @@ Statement ::=
 ;
 
 Block ::=
-	  '{' StatementList? '}'
-;
-
-StatementList ::=
-	  Statement
-	| StatementList Statement
-;
+	  '{' Statement* '}' ;
 
 VariableStatement ::=
-	  'var' VariableDeclarationList ';'
-;
+	  'var' VariableDeclarationList ';' ;
 
 VariableDeclarationList<NoIn> ::=
 	  VariableDeclaration
@@ -436,16 +402,13 @@ VariableDeclarationList<NoIn> ::=
 ;
 
 VariableDeclaration<NoIn> ::=
-	  Identifier Initialiseropt
-;
+	  Identifier Initialiseropt ;
 
 Initialiser<NoIn> ::=
-	  '=' AssignmentExpression<NoIn>
-;
+	  '=' AssignmentExpression<NoIn> ;
 
 EmptyStatement ::=
-	  ';'
-;
+	  ';' ;
 
 ExpressionStatement ::=
 	Expression<+ExprStart> ';' ;
@@ -466,78 +429,58 @@ IterationStatement ::=
 	| 'for' '(' 'var' VariableDeclaration<+NoIn> 'in' Expression ')' Statement
 ;
 
-# TODO no LineTerminator after 'continue'
 ContinueStatement ::=
+# Note: no LineTerminator after 'continue'
 	'continue' Identifier? ';' ;
 
-# TODO no LineTerminator after 'break'
 BreakStatement ::=
+# Note: no LineTerminator after 'break'
 	'break' Identifier? ';' ;
 
-# TODO no LineTerminator after 'return'
 ReturnStatement ::=
+# Note: no LineTerminator after 'return'
     'return' Expressionopt ';' ;
 
 WithStatement ::=
-	  'with' '(' Expression ')' Statement
-;
+	  'with' '(' Expression ')' Statement ;
 
 SwitchStatement ::=
-	  'switch' '(' Expression ')' CaseBlock
-;
+	  'switch' '(' Expression ')' CaseBlock ;
 
 CaseBlock ::=
-	  '{' CaseClausesopt '}'
-	| '{' CaseClausesopt DefaultClause CaseClausesopt '}'
-;
-
-CaseClauses ::=
-	  CaseClause
-	| CaseClauses CaseClause
-;
+	  '{' CaseClause* (DefaultClause CaseClause*)? '}' ;
 
 CaseClause ::=
-	  'case' Expression ':' StatementListopt
-;
+	  'case' Expression ':' Statement* ;
 
 DefaultClause ::=
-	  'default' ':' StatementListopt
-;
+	  'default' ':' Statement* ;
 
 LabelledStatement ::=
-	  Identifier ':' Statement
-;
+	  Identifier ':' Statement ;
 
 ThrowStatement ::=
-# TODO no LineTerminator after 'throw'
+# Note: no LineTerminator after 'throw'
 	'throw' Expression ';'
 ;
 
 TryStatement ::=
-	  'try' Block Catch
-	| 'try' Block Finally
-	| 'try' Block Catch Finally
-;
+	  'try' Block (Catch | Finally | Catch Finally) ;
 
 Catch ::=
-	  'catch' '(' Identifier ')' Block
-;
+	  'catch' '(' Identifier ')' Block ;
 
 Finally ::=
-	  'finally' Block
-;
+	  'finally' Block ;
 
 DebuggerStatement ::=
-	  'debugger' ';'
-;
+	  'debugger' ';' ;
 
 FunctionDeclaration ::=
-	  'function' Identifier '(' FormalParameterListopt ')' '{' FunctionBody '}'
-;
+	  'function' Identifier '(' FormalParameterListopt ')' '{' FunctionBody '}' ;
 
 FunctionExpression ::=
-	  'function' Identifier? '(' FormalParameterListopt ')' '{' FunctionBody '}'
-;
+	  'function' Identifier? '(' FormalParameterListopt ')' '{' FunctionBody '}' ;
 
 FormalParameterList ::=
 	  Identifier
@@ -545,17 +488,10 @@ FormalParameterList ::=
 ;
 
 FunctionBody ::=
-	  SourceElementsopt
-;
+	  SourceElement* ;
 
 Program ::=
-	  SourceElementsopt
-;
-
-SourceElements ::=
-	  SourceElement
-	| SourceElements SourceElement
-;
+	  SourceElement* ;
 
 SourceElement ::=
 	  Statement
