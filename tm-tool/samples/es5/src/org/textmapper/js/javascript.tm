@@ -2,6 +2,7 @@ language javascript(bison);
 
 module = "javascript"
 
+#package = "org.textmapper.js"
 #prefix = "Js"
 #breaks = true
 #gentree = true
@@ -166,9 +167,16 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 
 %input Program;
 
+# The following sets are used to figure out in which state the lexer
+# should continue in order to correctly tell apart Division from RegexpLiteral.
+#  http://stackoverflow.com/questions/5519596#11766233
+
 %generate beforeDIV = set(precede '/' | precede '/=');
 %generate beforeRE = set(precede RegularExpressionLiteral);
 %generate intersection = set(precede RegularExpressionLiteral & (precede '/' | precede '/='));
+%generate nonExprParens = set('with' | 'for' | 'while' | 'if');
+%generate kwBeforeRE = set('new' | 'delete' | 'void' | 'typeof' | 'instanceof' |
+                           'in' | 'do' | 'return' | 'case' | 'throw' | 'else');
 
 # TODO set of keywords
 IdentifierName ::=
