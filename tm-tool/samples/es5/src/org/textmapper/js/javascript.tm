@@ -19,7 +19,7 @@ space: /[\t\x0b\x0c\x20\xa0\ufeff\p{Zs}]/ (space)
 # Note: LineTerminator: /[\n\r\u2028\u2029]/
 LineTerminatorSequence: /[\n\r\u2028\u2029]|\r\n/ (space)
 
-commentChars = /([^*]*\*+[^*\/])*([^*]*\**)?/
+commentChars = /([^*]|\*+[^*\/])*([^*]|\*+[^*\/]?)/
 MultiLineComment: /\/\*{commentChars}?\*\// (space)
 SingleLineComment: /\/\/[^\n\r\u2028\u2029]*/ (space)
 
@@ -33,41 +33,41 @@ Identifier: /{identifierStart}{identifierPart}*/    (class)
 ## TODO: smart keywords? (used in PropertyAssignment)
 #	get set
 
-
 'break': /break/
-'do': /do/
-'instanceof': /instanceof/
-'typeof': /typeof/
 'case': /case/
-'else': /else/
-'new': /new/
-'var': /var/
 'catch': /catch/
-'finally': /finally/
-'return': /return/
-'void': /void/
 'continue': /continue/
-'for': /for/
-'switch': /switch/
-'while': /while/
 'debugger': /debugger/
-'function': /function/
-'this': /this/
-'with': /with/
 'default': /default/
-'if': /if/
-'throw': /throw/
 'delete': /delete/
+'do': /do/
+'else': /else/
+'finally': /finally/
+'for': /for/
+'function': /function/
+'if': /if/
 'in': /in/
+'instanceof': /instanceof/
+'new': /new/
+'return': /return/
+'switch': /switch/
+'this': /this/
+'throw': /throw/
 'try': /try/
+'typeof': /typeof/
+'var': /var/
+'void': /void/
+'while': /while/
+'with': /with/
 
+# Future-reserved.
 'class': /class/
-'enum': /enum/
-'extends': /extends/
-'super': /super/
 'const': /const/
+'enum': /enum/
 'export': /export/
+'extends': /extends/
 'import': /import/
+'super': /super/
 
 
 # In strict mode:
@@ -181,6 +181,8 @@ RegularExpressionLiteral: /\/{reFirst}{reChar}*\/{identifierPart}*/
 # TODO set of keywords
 IdentifierName ::=
 	  Identifier
+
+	# Keywords
 	| 'break'		| 'do'			| 'instanceof'	| 'typeof'
 	| 'case'        | 'else'		| 'new'			| 'var'
 	| 'catch'		| 'finally'		| 'return'		| 'void'
@@ -189,8 +191,12 @@ IdentifierName ::=
 	| 'default'		| 'if'			| 'throw'
 	| 'delete'		| 'in'			| 'try'
 
+	# Future-reserved.
 	| 'class' 		| 'enum'		| 'extends'		| 'super'
 	| 'const'		| 'export'		| 'import'
+
+	# NullLiteral | BooleanLiteral
+	| 'null' | 'true' | 'false'
 ;
 
 Literal ::=
